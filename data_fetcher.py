@@ -110,10 +110,32 @@ def fetch_tw_market():
     return result
 
 
-def fetch_ticker_news() -> list:
+def fetch_custom_stocks(symbols: list) -> dict:
+    result = {}
+    for symbol in symbols:
+        try:
+            yf_symbol = f"{symbol}.TW" if symbol.isdigit() or (len(symbol) == 4 and symbol.isdigit()) else symbol
+            ticker = yf.Ticker(yf_symbol)
+            hist = ticker.history(period="2d")
+            if len(hist) >= 2:
+                prev_close = hist["Close"].iloc[-2]
+                last_close = hist["Close"].iloc[-1]
+                change_pct = (last_close - prev_close) / prev_close * 100
+                result[symbol] = {
+                    "price": round(last_close, 2),
+                    "change_pct": round(change_pct, 2)
+                }
+        except Exception:
+            continue
+    return result
+
+
+def fetch_ticker_news(extra_symbols: list = None) -> list:
     articles = []
     seen = set()
-    for symbol in ["NVDA", "AAPL", "MSFT", "TSLA", "META", "GOOGL", "TSM", "AMD"]:
+    base = ["NVDA", "AAPL", "MSFT", "TSLA", "META", "GOOGL", "TSM", "AMD"]
+    all_symbols = list(dict.fromkeys(base + (extra_symbols or [])))
+    for symbol in all_symbols:
         try:
             ticker = yf.Ticker(symbol)
             for item in ticker.news[:5]:
@@ -136,7 +158,7 @@ def fetch_ticker_news() -> list:
     return articles
 
 
-def fetch_us_news():
+def fetch_us_news(extra_tickers: list = None):
     yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     domains = ",".join(NEWS_WHITELIST_DOMAINS)
     url = (
@@ -157,7 +179,7 @@ def fetch_us_news():
         api_articles = []
 
     rss_articles = fetch_rss_news()
-    ticker_articles = fetch_ticker_news()
+    ticker_articles = fetch_ticker_news(extra_tickers)
     return api_articles + rss_articles + ticker_articles
 
 
@@ -320,11 +342,23 @@ def fetch_earnings_calendar() -> list:
     return events
 
 
-def fetch_all():
+def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
+    us_market = fetch_us_market()
+    if extra_us_stocks:
+        missing = [s for s in extra_us_stocks if s not in us_market]
+        if missing:
+            us_market.update(fetch_custom_stocks(missing))
+
+    tw_market = fetch_tw_market()
+    if extra_tw_stocks:
+        missing_tw = [s for s in extra_tw_stocks if s not in tw_market]
+        if missing_tw:
+            tw_market.update(fetch_custom_stocks(missing_tw))
+
     return {
-        "us_market": fetch_us_market(),
-        "tw_market": fetch_tw_market(),
-        "us_news": fetch_us_news(),
+        "us_market": us_market,
+        "tw_market": tw_market,
+        "us_news": fetch_us_news(extra_us_stocks),
         "tw_news": fetch_tw_news(),
         "indicators": fetch_indicators(),
         "crypto": fetch_crypto(),

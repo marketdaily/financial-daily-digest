@@ -4,7 +4,30 @@ from config import GROQ_API_KEY
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
-def _format_market_data(data: dict) -> str:
+def get_personalized_subject(data: dict, us_stocks: list, tw_stocks: list, date: str) -> str:
+    us_market = data.get("us_market", {})
+    tw_market = data.get("tw_market", {})
+    biggest_sym, biggest_pct = None, 0
+    for sym in (us_stocks or []):
+        if sym in us_market:
+            pct = abs(us_market[sym]["change_pct"])
+            if pct > biggest_pct:
+                biggest_pct = pct
+                biggest_sym = (sym, us_market[sym]["change_pct"])
+    for sym in (tw_stocks or []):
+        if sym in tw_market:
+            pct = abs(tw_market[sym]["change_pct"])
+            if pct > biggest_pct:
+                biggest_pct = pct
+                biggest_sym = (sym, tw_market[sym]["change_pct"])
+    if biggest_sym and biggest_pct >= 2:
+        sym, pct = biggest_sym
+        direction = "漲" if pct > 0 else "跌"
+        return f"📊 你的 {sym} 今天{direction}了 {abs(pct):.1f}%｜財經日報 {date}"
+    return f"📊 財經日報 {date} — AI 精選美股 + 台股"
+
+
+def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None) -> str:
     lines = []
     us = data.get("us_market", {})
     tw = data.get("tw_market", {})
@@ -26,17 +49,42 @@ def _format_market_data(data: dict) -> str:
         d = tw["^TWII"]
         lines.append(f"  台灣加權指數: {d['price']} ({d['change_pct']:+.2f}%)")
 
-    lines.append("\n【美股個股】")
-    us_stocks = ["AAPL","MSFT","GOOGL","AMZN","META","NVDA","TSLA","AMD","TSM","ARM","JPM","GS","BRK-B"]
-    for sym in us_stocks:
+    if user_us_stocks or user_tw_stocks:
+        lines.append("\n【⭐ 用戶持倉今日表現（最重要，優先分析）】")
+        gainers, losers, no_data = [], [], []
+        for sym in (user_us_stocks or []):
+            if sym in us:
+                d = us[sym]
+                arrow = "▲" if d["change_pct"] >= 0 else "▼"
+                entry = f"  {sym}: ${d['price']} {arrow}{d['change_pct']:+.2f}%"
+                (gainers if d["change_pct"] >= 0 else losers).append(entry)
+            else:
+                no_data.append(f"  {sym}: 今日無數據")
+        for sym in (user_tw_stocks or []):
+            if sym in tw:
+                d = tw[sym]
+                arrow = "▲" if d["change_pct"] >= 0 else "▼"
+                entry = f"  {sym} {d.get('name','')}: ${d['price']} {arrow}{d['change_pct']:+.2f}%"
+                (gainers if d["change_pct"] >= 0 else losers).append(entry)
+            else:
+                no_data.append(f"  {sym}: 今日無數據")
+        for line in gainers + losers + no_data:
+            lines.append(line)
+
+    lines.append("\n【美股個股（市場參考）】")
+    default_us = ["AAPL","MSFT","GOOGL","AMZN","META","NVDA","TSLA","AMD","TSM","ARM","JPM","GS","BRK-B"]
+    show_us = list(dict.fromkeys((user_us_stocks or []) + default_us))
+    for sym in show_us:
         if sym in us:
             d = us[sym]
-            lines.append(f"  {sym}: {d['price']} ({d['change_pct']:+.2f}%)")
+            flag = " ⭐持倉" if user_us_stocks and sym in user_us_stocks else ""
+            lines.append(f"  {sym}: {d['price']} ({d['change_pct']:+.2f}%){flag}")
 
     lines.append("\n【台股個股】")
     for sym, d in tw.items():
         if sym != "^TWII":
-            lines.append(f"  {d.get('name', sym)}: {d['price']} ({d['change_pct']:+.2f}%)")
+            flag = " ⭐持倉" if user_tw_stocks and sym in user_tw_stocks else ""
+            lines.append(f"  {d.get('name', sym)}: {d['price']} ({d['change_pct']:+.2f}%){flag}")
 
     lines.append("\n【風險指標】")
     if "vix" in ind:
@@ -95,52 +143,86 @@ def _format_news(articles: list, max_items: int = 8) -> str:
 
 
 def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None) -> str:
-    market_text = _format_market_data(data)
+    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
     us_news_text = _format_news(data.get("us_news", []))
     tw_news_text = _format_news(data.get("tw_news", []))
     date = data.get("date", "")
 
+    has_holdings = bool(user_us_stocks or user_tw_stocks)
     default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
     watchlist_us = user_us_stocks if user_us_stocks else default_us
     watchlist_tw = user_tw_stocks if user_tw_stocks else []
+    all_holdings = watchlist_us + watchlist_tw
 
-    watchlist_section = f"【用戶持倉清單（優先分析這些股票）】\n美股：{', '.join(watchlist_us)}"
+    # Portfolio performance summary for prompt context
+    us_market = data.get("us_market", {})
+    tw_market = data.get("tw_market", {})
+    portfolio_lines = []
+    if has_holdings:
+        for sym in (user_us_stocks or []):
+            if sym in us_market:
+                d = us_market[sym]
+                portfolio_lines.append(f"  {sym}: {d['change_pct']:+.2f}% (${d['price']})")
+            else:
+                portfolio_lines.append(f"  {sym}: 今日無數據")
+        for sym in (user_tw_stocks or []):
+            if sym in tw_market:
+                d = tw_market[sym]
+                portfolio_lines.append(f"  {sym}: {d['change_pct']:+.2f}% (${d['price']})")
+
+    watchlist_section = f"【用戶持倉清單（這份報告的核心主角）】\n美股：{', '.join(watchlist_us)}"
     if watchlist_tw:
         watchlist_section += f"\n台股：{', '.join(watchlist_tw)}"
+    if portfolio_lines:
+        watchlist_section += "\n\n【持倉今日漲跌摘要】\n" + "\n".join(portfolio_lines)
 
-    holdings_instruction = f"（只寫用戶持倉清單內的股票：{', '.join(watchlist_us)}，有數據的才寫）"
+    few_stocks_note = ""
+    if has_holdings and len(all_holdings) < 3:
+        few_stocks_note = f"""
+【用戶持倉不多（只有 {len(all_holdings)} 支），請主動做到以下事情】
+1. 在「持倉深度追蹤」區塊中，除了追蹤現有持倉，還要主動推薦 2-3 支「相關股票」，說明為什麼值得關注
+2. 在「今天的結論」後面，加一個「💡 你可能也感興趣」區塊，推薦 2-3 支跟用戶持倉同產業或有關聯的股票，附上今日表現和一句話說明理由
+3. TLDR 的最後一條改成：「建議你也關注：XXX（理由一句話）」"""
+
+    holdings_instruction = f"（只寫用戶持倉：{', '.join(watchlist_us)}，有數據的才寫。每支股票都要給出明確的今日評語：漲跌原因 + 短期要注意什麼）"
     tw_holdings_instruction = ""
     if watchlist_tw:
         tw_holdings_instruction = f"""
 <div class="section-label">🏢 你的台股今天怎樣</div>
-（只寫用戶台股持倉：{', '.join(watchlist_tw)}，有數據的才寫，格式同美股 stock-card）"""
+（只寫用戶台股持倉：{', '.join(watchlist_tw)}，有數據的才寫，格式同美股 stock-card，同樣給出明確今日評語）"""
 
     personalized_news_instruction = f"""
 <div class="section-label">🔍 持倉深度追蹤</div>
-（從今日新聞中，找出跟以下持倉相關的消息：{', '.join(watchlist_us + watchlist_tw)}
-每個有相關新聞的股票寫一個 stock-news-item，沒有新聞就跳過不寫，格式：
+（從今日新聞中，找出跟以下持倉相關的消息：{', '.join(all_holdings)}
+每個有相關新聞的股票寫一個 stock-news-item，格式：
 <div class="stock-news-item">
   <span class="stock-news-ticker">（代號）</span>
   <div class="stock-news-content">
-    <div class="stock-news-headline">（相關新聞標題，口語化改寫）</div>
-    <div class="stock-news-impact">📊 影響分析：（這則消息對這支股票代表什麼，要買/賣/觀望？一句話）</div>
+    <div class="stock-news-headline">（相關新聞標題，口語化改寫，不超過 25 字）</div>
+    <div class="stock-news-impact">📊 影響分析：（這則消息對這支股票代表什麼？要買/持有/賣/觀望？給出明確建議，一句話）</div>
     <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
   </div>
 </div>
+{f"持倉不多，請也推薦 2-3 支相關股票的 stock-news-item，ticker 後面加上「推薦關注」字樣" if few_stocks_note else ""}
 如果沒有任何持倉相關新聞，寫：<div class="stock-news-empty">今日無持倉相關重大新聞</div>）"""
 
-    prompt = f"""你是一個很懂財經、但說話很生活化的朋友。你的讀者是台灣上班族，每天早上 7 點看你的日報。
+    prompt = f"""你是這位用戶的專屬財經顧問，說話生活化、直接、像朋友。這份報告是**專門為持有 {', '.join(all_holdings) if has_holdings else '各種股票的'} 的用戶客製化生成的**，不是通用報告。
 
 【無幻覺原則】
 - 所有內容只能基於以下提供的真實數據和新聞，不得憑空補充或使用訓練資料臆測
 - 如果某項資訊不足，就說「今日數據不足」，不要捏造
 
+【個人化原則】
+- TLDR 30秒重點：如果用戶持倉有重要動向，**第一條就寫他的股票**，不是寫大盤
+- 所有分析都圍繞用戶的持倉，大盤新聞只在跟他持倉有關時才詳細寫
+- 給建議要明確：說「建議觀望」「可以考慮加倉」「注意停損」，不要模糊
+- 口語化，像在 Line 傳訊息，不是寫報告
+
 【寫作風格】
-- 像聰明的朋友在傳訊息，不是在寫分析報告
 - 數字要具體（不說「大幅上漲」，要說「漲了 3.2%」）
 - 每個重點一兩句話說清楚，不廢話
 - 繁體中文，可夾帶英文股票代號
-
+{few_stocks_note}
 日期：{date}
 
 {watchlist_section}

@@ -153,50 +153,70 @@ def get_user_preferences(email: str) -> dict:
 
 
 def run():
-    print("① 抓取市場數據與新聞...")
-    data = fetch_all()
-
-    print("② 過濾假訊息...")
-    data["us_news"] = filter_us_news(data["us_news"])
-    data["tw_news"] = filter_tw_news(data["tw_news"])
-    print(f"   美股新聞：{len(data['us_news'])} 則通過過濾")
-    print(f"   台股新聞：{len(data['tw_news'])} 則通過過濾")
-
     from config import BREVO_API_KEY
     from publisher import get_list_id, check_subscriber_count, get_all_subscribers, send_transactional_email
 
     if not BREVO_API_KEY:
-        print("   Brevo API key 尚未設定，只生成本地預覽")
+        print("① 抓取市場數據與新聞...")
+        data = fetch_all()
+        print("② 過濾假訊息...")
+        data["us_news"] = filter_us_news(data["us_news"])
+        data["tw_news"] = filter_tw_news(data["tw_news"])
         print("③ AI 生成報告（預設版）...")
         html_report = generate_report(data)
         print("④ 儲存本地預覽...")
         save_local(data["date"], html_report)
         return
 
-    print("③ 取得訂閱者名單...")
+    print("① 取得訂閱者名單與持倉偏好...")
     list_id = get_list_id()
     check_subscriber_count(list_id)
     subscribers = get_all_subscribers(list_id)
     print(f"   共 {len(subscribers)} 位訂閱者")
+
+    subscriber_prefs = {}
+    all_us_extra, all_tw_extra = set(), set()
+    for email in subscribers:
+        prefs = get_user_preferences(email)
+        subscriber_prefs[email] = prefs
+        for s in prefs.get("us_stocks") or []:
+            all_us_extra.add(s)
+        for s in prefs.get("tw_stocks") or []:
+            all_tw_extra.add(s)
+
+    print(f"② 抓取市場數據（含用戶個股：美股 +{len(all_us_extra)}，台股 +{len(all_tw_extra)}）...")
+    data = fetch_all(
+        extra_us_stocks=list(all_us_extra) if all_us_extra else None,
+        extra_tw_stocks=list(all_tw_extra) if all_tw_extra else None
+    )
+
+    print("③ 過濾假訊息...")
+    data["us_news"] = filter_us_news(data["us_news"])
+    data["tw_news"] = filter_tw_news(data["tw_news"])
+    print(f"   美股新聞：{len(data['us_news'])} 則通過過濾")
+    print(f"   台股新聞：{len(data['tw_news'])} 則通過過濾")
 
     print("④ 儲存本地預覽（預設版）...")
     default_report = generate_report(data)
     save_local(data["date"], default_report)
 
     print("⑤ 個人化發送...")
+    from analyzer import get_personalized_subject
     success_count = 0
     for email in subscribers:
-        prefs = get_user_preferences(email)
+        prefs = subscriber_prefs[email]
         us_stocks = prefs.get("us_stocks") or []
         tw_stocks = prefs.get("tw_stocks") or []
 
         if us_stocks or tw_stocks:
-            print(f"   {email} → 個人化報告（美股:{len(us_stocks)}, 台股:{len(tw_stocks)}）")
+            print(f"   {email} → 個人化（美股:{len(us_stocks)}, 台股:{len(tw_stocks)}）")
             html = generate_report(data, us_stocks or None, tw_stocks or None)
+            subject = get_personalized_subject(data, us_stocks, tw_stocks, data["date"])
         else:
             html = default_report
+            subject = None
 
-        ok = send_transactional_email(email, data["date"], html, BREVO_API_KEY)
+        ok = send_transactional_email(email, data["date"], html, BREVO_API_KEY, subject=subject)
         if ok:
             success_count += 1
         else:

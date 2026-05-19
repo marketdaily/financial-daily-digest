@@ -81,11 +81,11 @@ def get_all_subscribers(list_id: int) -> list:
     return emails
 
 
-def send_transactional_email(email: str, date: str, html_content: str, api_key: str) -> bool:
+def send_transactional_email(email: str, date: str, html_content: str, api_key: str, subject: str = None) -> bool:
     payload = {
         "sender": {"name": SENDER_NAME, "email": SENDER_EMAIL},
         "to": [{"email": email}],
-        "subject": f"📊 財經日報 {date} — AI 精選美股 + 台股",
+        "subject": subject or f"📊 財經日報 {date} — AI 精選美股 + 台股",
         "htmlContent": html_content,
     }
     try:
