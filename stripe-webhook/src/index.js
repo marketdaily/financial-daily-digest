@@ -116,9 +116,9 @@ async function sendWelcomeEmail(email, apiKey, isPaid = false) {
 <div style="max-width:560px;margin:32px auto;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);">
 
   <div style="background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);padding:32px 28px 24px;">
-    <div style="font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;">財經日報</div>
-    <h1 style="margin:0;font-size:22px;font-weight:800;color:#fff;">📊 訂閱確認</h1>
-    <p style="margin:8px 0 0;font-size:13px;color:rgba(255,255,255,0.45);">AI 精選 · 假訊息過濾 · 美股 + 台股</p>
+    <div style="font-size:11px;color:#a5b4fc;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-weight:700;">財經日報</div>
+    <h1 style="margin:0;font-size:24px;font-weight:800;color:#fde68a;">📊 訂閱確認</h1>
+    <p style="margin:10px 0 0;font-size:14px;color:#c4b5fd;font-weight:600;letter-spacing:0.5px;">AI 精選 · 假訊息過濾 · 美股 + 台股</p>
   </div>
 
   <div style="padding:28px;">
