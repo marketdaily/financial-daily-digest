@@ -266,12 +266,10 @@
   </div>
   <div id="invite-form" style="display:none;margin-top:16px;">
     <div class="subscribe-box">
-      <input type="email" id="email-input" placeholder="your@email.com" />
-      <input type="text" id="invite-code-input" placeholder="DELVIN-XXXXXX" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:15px;padding:14px 20px;border-radius:10px;width:180px;outline:none;" />
+      <input type="text" id="invite-code-input" placeholder="DELVIN-XXXXXX" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:15px;padding:14px 20px;border-radius:10px;width:200px;outline:none;" />
       <button onclick="subscribe()" data-i18n="btn_sub1">Redeem Free →</button>
     </div>
   </div>
-  <div class="success-msg" id="success-msg" data-i18n="success1">🎉 You're in! First issue arrives tomorrow at 7AM Taiwan time.</div>
   <div class="error-msg" id="error-msg" data-i18n="error">Invalid invite code. Please check and try again.</div>
 </div>
 
@@ -417,7 +415,7 @@
 </footer>
 
 <script>
-  const BREVO_API_KEY = "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";
+  const BREVO_FORM_URL = "https://1b6af947.sibforms.com/serve/MUIFAFZXFBAmYk56RdBKruSrfwgLQyV4nVj7RnFhZmNhj3ZcC1guM1yD-426GDnRtKwSLz6fSwmvip3cy8lYzsS0Mq5SzqPtMi9qsLpPnAIVD7DLmq-FRtt2p_WR0F5nM-o4xCgUNyUJb9cYx_u99dLfEHJXZBwItOUJJhfjjhWRHCj5N485sGezBOV2cT5ig7V0GfG9DKcaOYOvQ==";
 
   const i18n = {
     en: {
@@ -593,37 +591,19 @@
     document.getElementById("invite-form").style.display = "block";
   }
 
-  async function addContact(email) {
-    const resp = await fetch("https://api.brevo.com/v3/contacts", {
-      method: "POST",
-      headers: { "api-key": BREVO_API_KEY, "Content-Type": "application/json" },
-      body: JSON.stringify({ email, listIds: [2], updateEnabled: true })
-    });
-    return resp.ok || resp.status === 204;
-  }
-
-  async function subscribe() {
-    const email = document.getElementById("email-input").value.trim();
+  function subscribe() {
     const code = document.getElementById("invite-code-input").value.trim().toUpperCase();
-    if (!email || !email.includes("@")) return;
     if (!INVITE_CODES.includes(code)) {
       document.getElementById("error-msg").style.display = "block";
       return;
     }
-    const btn = document.querySelector("#invite-form button");
-    const origText = btn.textContent;
-    btn.textContent = currentLang === "zh" ? "驗證中..." : "Verifying...";
-    btn.disabled = true;
-    const ok = await addContact(email);
-    btn.textContent = origText;
-    btn.disabled = false;
     document.getElementById("error-msg").style.display = "none";
-    document.getElementById(ok ? "success-msg" : "error-msg").style.display = "block";
+    window.open(BREVO_FORM_URL, "_blank");
   }
 
   document.addEventListener("DOMContentLoaded", () => {
-    const ei = document.getElementById("email-input");
-    if (ei) ei.addEventListener("keydown", e => { if (e.key === "Enter") subscribe(); });
+    const ci = document.getElementById("invite-code-input");
+    if (ci) ci.addEventListener("keydown", e => { if (e.key === "Enter") subscribe(); });
   });
 </script>
 
