@@ -418,7 +418,7 @@
 </footer>
 
 <script>
-  const BREVO_FORM_URL = "https://1b6af947.sibforms.com/serve/MUIFAFZXFBAmYk56RdBKruSrfwgLQyV4nVj7RnFhZmNhj3ZcC1guM1yD-426GDnRtKwSLz6fSwmvip3cy8lYzsS0Mq5SzqPtMi9qsLpPnAIVD7DLmq-FRtt2p_WR0F5nM-o4xCgUNyUJb9cYx_u99dLfEHJXZBwItOUJJhfjjhWRHCj5N485sGezBOV2cT5ig7V0GfG9DKcaOYOvQ==";
+  const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
 
   const i18n = {
     en: {
@@ -594,36 +594,53 @@
     applyLang(currentLang);
   }
 
-  const INVITE_CODES = [
-    "DELVIN-FE8FZ1","DELVIN-XKNJ4N","DELVIN-F4ONQQ","DELVIN-RBIG9S",
-    "DELVIN-WYW4IP","DELVIN-BE2O13","DELVIN-OVMFHN","DELVIN-AV3VIB",
-    "DELVIN-06U59N","DELVIN-CVRBWF"
-  ];
 
   function showInviteForm() {
     document.getElementById("invite-form").style.display = "block";
   }
 
-  function subscribe() {
+  async function subscribe() {
     const email = document.getElementById("invite-email-input").value.trim();
     const code = document.getElementById("invite-code-input").value.trim().toUpperCase();
-    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const btn = document.querySelector("#invite-form button");
 
     document.getElementById("error-msg").style.display = "none";
     document.getElementById("error-email-msg").style.display = "none";
+    document.getElementById("success-msg").style.display = "none";
 
-    if (!emailValid) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       document.getElementById("error-email-msg").style.display = "block";
       return;
     }
-    if (!INVITE_CODES.includes(code)) {
-      document.getElementById("error-msg").style.display = "block";
-      return;
-    }
 
-    const url = BREVO_FORM_URL + "&EMAIL=" + encodeURIComponent(email);
-    window.open(url, "_blank");
-    document.getElementById("success-msg").style.display = "block";
+    btn.disabled = true;
+    btn.textContent = "...";
+
+    try {
+      const res = await fetch(WORKER_URL + "/free-subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        document.getElementById("success-msg").style.display = "block";
+        document.getElementById("invite-email-input").value = "";
+        document.getElementById("invite-code-input").value = "";
+      } else if (data.error === "invalid_code") {
+        document.getElementById("error-msg").style.display = "block";
+      } else {
+        document.getElementById("error-email-msg").textContent = currentLang === "zh" ? "出了點問題，請稍後再試。" : "Something went wrong. Please try again.";
+        document.getElementById("error-email-msg").style.display = "block";
+      }
+    } catch {
+      document.getElementById("error-email-msg").textContent = currentLang === "zh" ? "出了點問題，請稍後再試。" : "Something went wrong. Please try again.";
+      document.getElementById("error-email-msg").style.display = "block";
+    } finally {
+      btn.disabled = false;
+      const t = i18n[currentLang];
+      btn.textContent = t.btn_sub1 || "免費訂閱 →";
+    }
   }
 
   document.addEventListener("DOMContentLoaded", () => {
