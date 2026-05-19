@@ -266,11 +266,14 @@
   </div>
   <div id="invite-form" style="display:none;margin-top:16px;">
     <div class="subscribe-box">
-      <input type="text" id="invite-code-input" placeholder="DELVIN-XXXXXX" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:15px;padding:14px 20px;border-radius:10px;width:200px;outline:none;" />
-      <button onclick="subscribe()" data-i18n="btn_sub1">Redeem Free →</button>
+      <input type="email" id="invite-email-input" placeholder="your@email.com" data-i18n-placeholder="placeholder_email" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:15px;padding:14px 20px;border-radius:10px;width:220px;outline:none;" />
+      <input type="text" id="invite-code-input" placeholder="DELVIN-XXXXXX" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);color:#fff;font-size:15px;padding:14px 20px;border-radius:10px;width:160px;outline:none;" />
+      <button onclick="subscribe()" data-i18n="btn_sub1">免費訂閱 →</button>
     </div>
   </div>
   <div class="error-msg" id="error-msg" data-i18n="error">Invalid invite code. Please check and try again.</div>
+  <div class="error-msg" id="error-email-msg" style="display:none;" data-i18n="error_email">Please enter a valid email address.</div>
+  <div id="success-msg" style="display:none;margin:12px 28px 0;padding:12px 16px;background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.4);border-radius:10px;font-size:14px;color:#86efac;text-align:center;" data-i18n="success_msg">✅ 訂閱成功！請到信箱確認訂閱連結。</div>
 </div>
 
 <!-- Stats -->
@@ -428,10 +431,13 @@
       cta_invite_link: "Use your invite code above ↑",
       hero_h1: 'Your daily stock market<br><span class="gradient">briefing in 30 seconds</span>',
       hero_sub: "Every morning at 7AM Taiwan time — AI-curated US & Taiwan market news, fake-news filtered, written like a smart friend texting you.",
-      btn_sub1: "Get It Free →",
+      btn_sub1: "Subscribe Free →",
+      placeholder_email: "your@email.com",
       sub_note: "Join readers getting smarter about their portfolio every morning.",
       success1: "🎉 You're in! First issue arrives tomorrow at 7AM Taiwan time.",
-      error: "Oops, something went wrong. Please try again.",
+      success_msg: "✅ One more step — confirm your subscription in the email we just sent!",
+      error: "Invalid invite code. Please check and try again.",
+      error_email: "Please enter a valid email address.",
       stat1: "Taiwan Time Daily",
       stat2: "News Sources Scanned",
       stat3: "Fake News Through",
@@ -499,9 +505,12 @@
       hero_h1: '每天早上 7 點<br><span class="gradient">30 秒看完財經大事</span>',
       hero_sub: "每天早上 7 點準時送達，AI 精選美股 + 台股新聞，假訊息全過濾，像聰明朋友傳訊息給你一樣好懂。",
       btn_sub1: "免費訂閱 →",
+      placeholder_email: "你的Email",
       sub_note: "加入每天早上讀更聰明的投資人行列。",
       success1: "🎉 訂閱成功！明天早上 7 點見。",
-      error: "出了點問題，請再試一次。",
+      success_msg: "✅ 訂閱完成！請到信箱點一下確認連結，明天早上 7 點見。",
+      error: "邀請碼不對，請再確認一次。",
+      error_email: "請輸入有效的 Email 地址。",
       stat1: "台灣時間每日發送",
       stat2: "新聞來源掃描數",
       stat3: "假新聞通過率",
@@ -572,6 +581,10 @@
       const key = el.getAttribute("data-i18n-html");
       if (t[key] !== undefined) el.innerHTML = t[key];
     });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+      const key = el.getAttribute("data-i18n-placeholder");
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
     document.getElementById("lang-toggle").textContent = lang === "en" ? "中文" : "EN";
     document.documentElement.lang = lang === "en" ? "en" : "zh-Hant";
   }
@@ -592,18 +605,32 @@
   }
 
   function subscribe() {
+    const email = document.getElementById("invite-email-input").value.trim();
     const code = document.getElementById("invite-code-input").value.trim().toUpperCase();
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    document.getElementById("error-msg").style.display = "none";
+    document.getElementById("error-email-msg").style.display = "none";
+
+    if (!emailValid) {
+      document.getElementById("error-email-msg").style.display = "block";
+      return;
+    }
     if (!INVITE_CODES.includes(code)) {
       document.getElementById("error-msg").style.display = "block";
       return;
     }
-    document.getElementById("error-msg").style.display = "none";
-    window.open(BREVO_FORM_URL, "_blank");
+
+    const url = BREVO_FORM_URL + "&EMAIL=" + encodeURIComponent(email);
+    window.open(url, "_blank");
+    document.getElementById("success-msg").style.display = "block";
   }
 
   document.addEventListener("DOMContentLoaded", () => {
     const ci = document.getElementById("invite-code-input");
     if (ci) ci.addEventListener("keydown", e => { if (e.key === "Enter") subscribe(); });
+    const ei = document.getElementById("invite-email-input");
+    if (ei) ei.addEventListener("keydown", e => { if (e.key === "Enter") subscribe(); });
   });
 </script>
 
