@@ -94,11 +94,40 @@ def _format_news(articles: list, max_items: int = 8) -> str:
     return "\n".join(lines)
 
 
-def generate_report(data: dict) -> str:
+def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None) -> str:
     market_text = _format_market_data(data)
     us_news_text = _format_news(data.get("us_news", []))
     tw_news_text = _format_news(data.get("tw_news", []))
     date = data.get("date", "")
+
+    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
+    watchlist_us = user_us_stocks if user_us_stocks else default_us
+    watchlist_tw = user_tw_stocks if user_tw_stocks else []
+
+    watchlist_section = f"【用戶持倉清單（優先分析這些股票）】\n美股：{', '.join(watchlist_us)}"
+    if watchlist_tw:
+        watchlist_section += f"\n台股：{', '.join(watchlist_tw)}"
+
+    holdings_instruction = f"（只寫用戶持倉清單內的股票：{', '.join(watchlist_us)}，有數據的才寫）"
+    tw_holdings_instruction = ""
+    if watchlist_tw:
+        tw_holdings_instruction = f"""
+<div class="section-label">🏢 你的台股今天怎樣</div>
+（只寫用戶台股持倉：{', '.join(watchlist_tw)}，有數據的才寫，格式同美股 stock-card）"""
+
+    personalized_news_instruction = f"""
+<div class="section-label">🔍 持倉深度追蹤</div>
+（從今日新聞中，找出跟以下持倉相關的消息：{', '.join(watchlist_us + watchlist_tw)}
+每個有相關新聞的股票寫一個 stock-news-item，沒有新聞就跳過不寫，格式：
+<div class="stock-news-item">
+  <span class="stock-news-ticker">（代號）</span>
+  <div class="stock-news-content">
+    <div class="stock-news-headline">（相關新聞標題，口語化改寫）</div>
+    <div class="stock-news-impact">📊 影響分析：（這則消息對這支股票代表什麼，要買/賣/觀望？一句話）</div>
+    <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
+  </div>
+</div>
+如果沒有任何持倉相關新聞，寫：<div class="stock-news-empty">今日無持倉相關重大新聞</div>）"""
 
     prompt = f"""你是一個很懂財經、但說話很生活化的朋友。你的讀者是台灣上班族，每天早上 7 點看你的日報。
 
@@ -113,6 +142,8 @@ def generate_report(data: dict) -> str:
 - 繁體中文，可夾帶英文股票代號
 
 日期：{date}
+
+{watchlist_section}
 
 {market_text}
 
@@ -206,13 +237,16 @@ def generate_report(data: dict) -> str:
 （根據今天美股動向，分析對台灣供應鏈的傳導影響。例如：NVDA 漲 → CoWoS 封裝需求 → 台積電/日月光受惠。只寫真正有關聯的，沒有就不寫。2-3 條 bullet，繁體中文）
 </div>
 
-<div class="section-label">🏢 你的持股今天怎樣</div>
+{personalized_news_instruction}
+
+<div class="section-label">🏢 你的美股今天怎樣</div>
 <div class="stock-card">
-  <span class="ticker">NVDA</span>
-  <span class="stock-move up">▲ +4.2%</span>
-  <div class="stock-comment">（漲/跌原因 + 要不要擔心）</div>
+  <span class="ticker">（代號）</span>
+  <span class="stock-move up/down">（▲/▼ 漲跌%）</span>
+  <div class="stock-comment">（漲/跌原因 + 要不要擔心，一句話）</div>
 </div>
-（涵蓋 AAPL MSFT GOOGL AMZN META NVDA TSLA AMD TSM JPM，有數據的才寫）
+{holdings_instruction}
+{tw_holdings_instruction}
 
 <div class="section-label">📅 即將公布財報</div>
 <div class="earnings-list">

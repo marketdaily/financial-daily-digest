@@ -89,6 +89,13 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .earnings-date { font-size: 12px; color: #888; min-width: 78px; }
 .earnings-note { font-size: 13px; color: #555; flex: 1; }
 
+.stock-news-item { margin: 0 28px 12px; padding: 14px 16px; border: 1px solid #eef2ff; border-radius: 12px; background: #f8faff; display: flex; gap: 12px; align-items: flex-start; }
+.stock-news-ticker { font-size: 14px; font-weight: 800; color: #4338ca; min-width: 52px; padding-top: 2px; }
+.stock-news-content { flex: 1; }
+.stock-news-headline { font-size: 14px; font-weight: 700; color: #111; line-height: 1.4; margin-bottom: 6px; }
+.stock-news-impact { font-size: 13px; color: #555; background: #eef2ff; padding: 7px 10px; border-radius: 8px; line-height: 1.5; }
+.stock-news-empty { margin: 0 28px 20px; font-size: 13px; color: #aaa; padding: 10px 0; }
+
 .footer { background: #1a1a2e; color: rgba(255,255,255,0.35); text-align: center; padding: 20px 28px; font-size: 11px; line-height: 2; }
 """
 
@@ -125,6 +132,24 @@ def save_local(date: str, html_report: str):
     return path
 
 
+WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev"
+
+
+def get_user_preferences(email: str) -> dict:
+    import requests
+    try:
+        res = requests.post(
+            f"{WORKER_URL}/get-preferences",
+            json={"email": email},
+            timeout=5
+        )
+        if res.ok:
+            return res.json()
+    except Exception:
+        pass
+    return {"us_stocks": [], "tw_stocks": []}
+
+
 def run():
     print("① 抓取市場數據與新聞...")
     data = fetch_all()
@@ -135,24 +160,47 @@ def run():
     print(f"   美股新聞：{len(data['us_news'])} 則通過過濾")
     print(f"   台股新聞：{len(data['tw_news'])} 則通過過濾")
 
-    print("③ AI 生成報告...")
-    html_report = generate_report(data)
-
-    print("④ 儲存本地預覽...")
-    save_local(data["date"], html_report)
-
-    print("⑤ 發布到 Brevo...")
     from config import BREVO_API_KEY
-    from publisher import get_list_id, check_subscriber_count
+    from publisher import get_list_id, check_subscriber_count, get_all_subscribers, send_transactional_email
+
     if not BREVO_API_KEY:
-        print("   Brevo API key 尚未設定，跳過發布")
-    else:
-        check_subscriber_count(get_list_id())
-        success = publish_to_brevo(data["date"], html_report)
-        if success:
-            print("✅ 今日財經日報發布完成！")
+        print("   Brevo API key 尚未設定，只生成本地預覽")
+        print("③ AI 生成報告（預設版）...")
+        html_report = generate_report(data)
+        print("④ 儲存本地預覽...")
+        save_local(data["date"], html_report)
+        return
+
+    print("③ 取得訂閱者名單...")
+    list_id = get_list_id()
+    check_subscriber_count(list_id)
+    subscribers = get_all_subscribers(list_id)
+    print(f"   共 {len(subscribers)} 位訂閱者")
+
+    print("④ 儲存本地預覽（預設版）...")
+    default_report = generate_report(data)
+    save_local(data["date"], default_report)
+
+    print("⑤ 個人化發送...")
+    success_count = 0
+    for email in subscribers:
+        prefs = get_user_preferences(email)
+        us_stocks = prefs.get("us_stocks") or []
+        tw_stocks = prefs.get("tw_stocks") or []
+
+        if us_stocks or tw_stocks:
+            print(f"   {email} → 個人化報告（美股:{len(us_stocks)}, 台股:{len(tw_stocks)}）")
+            html = generate_report(data, us_stocks or None, tw_stocks or None)
         else:
-            print("❌ Brevo 發布失敗，本地預覽仍可查看")
+            html = default_report
+
+        ok = send_transactional_email(email, data["date"], html, BREVO_API_KEY)
+        if ok:
+            success_count += 1
+        else:
+            print(f"   ❌ 發送失敗：{email}")
+
+    print(f"✅ 今日財經日報發送完成！成功 {success_count}/{len(subscribers)} 位")
 
 
 if __name__ == "__main__":

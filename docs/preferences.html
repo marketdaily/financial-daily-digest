@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的設定 · 財經日報</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f0f2f5; color: #1a1a1a; min-height: 100vh; }
+
+.header { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); color: #fff; padding: 28px 24px 22px; text-align: center; }
+.header-label { font-size: 11px; color: #a5b4fc; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin-bottom: 8px; }
+.header h1 { font-size: 22px; font-weight: 800; color: #fde68a; }
+.header-sub { font-size: 13px; color: #c4b5fd; margin-top: 6px; }
+
+.container { max-width: 600px; margin: 0 auto; padding: 24px 16px 48px; }
+
+.card { background: #fff; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.card-title { font-size: 14px; font-weight: 800; color: #333; margin-bottom: 6px; }
+.card-desc { font-size: 12px; color: #888; margin-bottom: 18px; line-height: 1.6; }
+
+.email-input { width: 100%; padding: 12px 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.2s; }
+.email-input:focus { border-color: #6366f1; }
+
+/* Search */
+.search-wrap { position: relative; }
+.search-input { width: 100%; padding: 11px 14px 11px 38px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 14px; outline: none; transition: border-color 0.2s; background: #fafafa; }
+.search-input:focus { border-color: #6366f1; background: #fff; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 15px; pointer-events: none; }
+
+.dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.10); z-index: 100; max-height: 220px; overflow-y: auto; display: none; }
+.dropdown.open { display: block; }
+.dropdown-item { padding: 10px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: background 0.12s; }
+.dropdown-item:hover, .dropdown-item.active { background: #eef2ff; }
+.dropdown-item:first-child { border-radius: 10px 10px 0 0; }
+.dropdown-item:last-child { border-radius: 0 0 10px 10px; }
+.d-ticker { font-size: 13px; font-weight: 800; color: #4338ca; min-width: 56px; }
+.d-name { font-size: 13px; color: #555; flex: 1; }
+.d-add { font-size: 11px; color: #aaa; }
+.dropdown-empty { padding: 14px; text-align: center; font-size: 13px; color: #aaa; }
+
+/* Tags */
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; min-height: 20px; }
+.tag { display: inline-flex; align-items: center; gap: 6px; background: #eef2ff; border: 1.5px solid #c7d2fe; border-radius: 20px; padding: 5px 10px 5px 12px; font-size: 13px; font-weight: 700; color: #4338ca; }
+.tag-remove { cursor: pointer; font-size: 14px; color: #a5b4fc; line-height: 1; transition: color 0.15s; }
+.tag-remove:hover { color: #ef4444; }
+.tags-empty { font-size: 12px; color: #ccc; padding: 4px 0; }
+
+.save-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #6366f1, #4338ca); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: opacity 0.2s; letter-spacing: 0.3px; }
+.save-btn:hover { opacity: 0.9; }
+.save-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.msg { display: none; padding: 14px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; margin-top: 12px; text-align: center; }
+.msg.success { background: #f0fdf4; color: #166534; border: 1.5px solid #86efac; }
+.msg.error { background: #fef2f2; color: #991b1b; border: 1.5px solid #fca5a5; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-label">財經日報</div>
+  <h1>⚙️ 我的設定</h1>
+  <div class="header-sub">選擇你想追蹤的股票，每天報告會優先分析你的持股</div>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <div class="card-title">📧 你的訂閱 Email</div>
+    <div class="card-desc">請輸入你訂閱財經日報的 Email，設定會儲存在你的帳號下</div>
+    <input type="email" class="email-input" id="email-input" placeholder="your@email.com">
+  </div>
+
+  <div class="card">
+    <div class="card-title">🇺🇸 美股持倉</div>
+    <div class="card-desc">搜尋代號或公司名稱（例如 NVDA、Tesla、Apple），點擊加入清單</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="us-search" placeholder="搜尋美股代號或名稱..." autocomplete="off">
+      <div class="dropdown" id="us-dropdown"></div>
+    </div>
+    <div class="tags" id="us-tags"><span class="tags-empty">尚未選擇任何美股</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🇹🇼 台股持倉</div>
+    <div class="card-desc">搜尋代號或公司名稱（例如 2330、台積電、聯發科），點擊加入清單</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="tw-search" placeholder="搜尋台股代號或名稱..." autocomplete="off">
+      <div class="dropdown" id="tw-dropdown"></div>
+    </div>
+    <div class="tags" id="tw-tags"><span class="tags-empty">尚未選擇任何台股</span></div>
+  </div>
+
+  <button class="save-btn" id="save-btn" onclick="savePreferences()">儲存設定</button>
+  <div class="msg success" id="success-msg">✅ 設定已儲存！明天起的報告會依照你的選股客製化。</div>
+  <div class="msg error" id="error-msg"></div>
+
+</div>
+
+<script>
+const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
+
+// ── 美股資料庫 ──
+const US_STOCKS = [
+  ["AAPL","Apple"],["MSFT","Microsoft"],["NVDA","NVIDIA"],["GOOGL","Google / Alphabet"],
+  ["GOOG","Google Class C"],["META","Meta Platforms"],["AMZN","Amazon"],["TSLA","Tesla"],
+  ["AMD","AMD"],["TSM","台積電 ADR"],["ARM","ARM Holdings"],["AVGO","Broadcom"],
+  ["QCOM","Qualcomm"],["INTC","Intel"],["MU","Micron Technology"],["ASML","ASML"],
+  ["JPM","JPMorgan Chase"],["GS","Goldman Sachs"],["MS","Morgan Stanley"],["BAC","Bank of America"],
+  ["WFC","Wells Fargo"],["BRK-B","Berkshire Hathaway"],["V","Visa"],["MA","Mastercard"],
+  ["PYPL","PayPal"],["SQ","Block (Square)"],["COIN","Coinbase"],["HOOD","Robinhood"],
+  ["NFLX","Netflix"],["DIS","Disney"],["SPOT","Spotify"],["RBLX","Roblox"],
+  ["UBER","Uber"],["LYFT","Lyft"],["ABNB","Airbnb"],["BKNG","Booking Holdings"],
+  ["SBUX","Starbucks"],["MCD","McDonald's"],["NKE","Nike"],["LULU","Lululemon"],
+  ["COST","Costco"],["WMT","Walmart"],["TGT","Target"],["AMZN","Amazon"],
+  ["PG","Procter & Gamble"],["KO","Coca-Cola"],["PEP","PepsiCo"],["JNJ","Johnson & Johnson"],
+  ["PFE","Pfizer"],["MRNA","Moderna"],["ABBV","AbbVie"],["LLY","Eli Lilly"],
+  ["XOM","ExxonMobil"],["CVX","Chevron"],["BP","BP"],["COP","ConocoPhillips"],
+  ["BA","Boeing"],["CAT","Caterpillar"],["GE","GE Aerospace"],["HON","Honeywell"],
+  ["PLTR","Palantir"],["SNOW","Snowflake"],["CRM","Salesforce"],["NOW","ServiceNow"],
+  ["ORCL","Oracle"],["IBM","IBM"],["DELL","Dell Technologies"],["HPQ","HP Inc"],
+  ["MSTR","MicroStrategy"],["RIOT","Riot Platforms"],["MARA","Marathon Digital"],
+  ["SPY","S&P 500 ETF"],["QQQ","Nasdaq 100 ETF"],["SOXL","半導體 3x ETF"],
+];
+
+// ── 台股資料庫 ──
+const TW_STOCKS = [
+  ["2330","台積電"],["2317","鴻海"],["2454","聯發科"],["2308","台達電"],
+  ["2303","聯電"],["2412","中華電信"],["2882","國泰金"],["2886","兆豐金"],
+  ["2881","富邦金"],["6505","台塑化"],["3008","大立光"],["2891","中信金"],
+  ["2002","中鋼"],["1301","台塑"],["1303","南亞"],["1326","台化"],
+  ["2357","華碩"],["2382","廣達"],["2395","研華"],["2376","技嘉"],
+  ["3034","聯詠"],["3711","日月光投控"],["2379","瑞昱"],["2408","南亞科"],
+  ["6669","緯穎"],["2301","光寶科"],["2353","宏碁"],["3045","台灣大"],
+  ["4904","遠傳"],["2498","宏達電"],["2474","可成"],["3037","欣興"],
+  ["2337","旺宏"],["2344","華邦電"],["3533","嘉澤"],["6415","矽力-KY"],
+  ["2609","陽明"],["2615","萬海"],["2603","長榮"],["2618","長榮航"],
+  ["2610","華航"],["5880","合庫金"],["2884","玉山金"],["2885","元大金"],
+  ["2887","台新金"],["2888","新光金"],["2892","第一金"],["5876","上海商銀"],
+  ["1216","統一"],["1101","台泥"],["1102","亞泥"],["2207","和泰車"],
+  ["2912","統一超"],["2801","彰銀"],["2823","中壽"],["2834","臺企銀"],
+  ["6278","台表科"],["3231","緯創"],["4938","和碩"],["2356","英業達"],
+];
+
+const selected = { us: [], tw: [] };
+let activeDropdown = null;
+let highlightIndex = { us: -1, tw: -1 };
+
+function searchStocks(query, db) {
+  if (!query) return [];
+  const q = query.toLowerCase();
+  return db.filter(([sym, name]) =>
+    sym.toLowerCase().includes(q) || name.toLowerCase().includes(q)
+  ).slice(0, 8);
+}
+
+function renderDropdown(market, results, query) {
+  const dd = document.getElementById(`${market}-dropdown`);
+  if (!results.length && query.length < 1) { dd.classList.remove("open"); return; }
+
+  if (!results.length) {
+    dd.innerHTML = `<div class="dropdown-empty">沒有找到「${query}」，請確認代號是否正確</div>`;
+    dd.classList.add("open");
+    return;
+  }
+
+  dd.innerHTML = results.map(([sym, name], i) => `
+    <div class="dropdown-item" data-sym="${sym}" data-name="${name}" onclick="addStock('${market}','${sym}','${name.replace(/'/g,"&#39;")}')">
+      <span class="d-ticker">${sym}</span>
+      <span class="d-name">${name}</span>
+      <span class="d-add">+ 加入</span>
+    </div>
+  `).join("");
+  dd.classList.add("open");
+  highlightIndex[market] = -1;
+}
+
+function addStock(market, sym, name) {
+  if (selected[market].find(s => s.sym === sym)) return;
+  selected[market].push({ sym, name });
+  renderTags(market);
+  document.getElementById(`${market}-search`).value = "";
+  document.getElementById(`${market}-dropdown`).classList.remove("open");
+}
+
+function removeStock(market, sym) {
+  selected[market] = selected[market].filter(s => s.sym !== sym);
+  renderTags(market);
+}
+
+function renderTags(market) {
+  const container = document.getElementById(`${market}-tags`);
+  if (!selected[market].length) {
+    container.innerHTML = `<span class="tags-empty">尚未選擇任何${market === "us" ? "美股" : "台股"}</span>`;
+    return;
+  }
+  container.innerHTML = selected[market].map(({ sym, name }) => `
+    <div class="tag">
+      ${sym}
+      <span class="tag-remove" onclick="removeStock('${market}','${sym}')" title="移除">×</span>
+    </div>
+  `).join("");
+}
+
+// Input handlers
+["us","tw"].forEach(market => {
+  const input = document.getElementById(`${market}-search`);
+  const db = market === "us" ? US_STOCKS : TW_STOCKS;
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim();
+    renderDropdown(market, searchStocks(q, db), q);
+  });
+
+  input.addEventListener("keydown", e => {
+    const dd = document.getElementById(`${market}-dropdown`);
+    const items = dd.querySelectorAll(".dropdown-item");
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      highlightIndex[market] = Math.min(highlightIndex[market] + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle("active", i === highlightIndex[market]));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      highlightIndex[market] = Math.max(highlightIndex[market] - 1, 0);
+      items.forEach((el, i) => el.classList.toggle("active", i === highlightIndex[market]));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (highlightIndex[market] >= 0 && items[highlightIndex[market]]) {
+        items[highlightIndex[market]].click();
+      } else if (input.value.trim()) {
+        // Allow entering custom ticker not in DB
+        const sym = input.value.trim().toUpperCase();
+        addStock(market, sym, sym);
+      }
+    } else if (e.key === "Escape") {
+      dd.classList.remove("open");
+    }
+  });
+
+  document.addEventListener("click", e => {
+    if (!input.closest(".search-wrap").contains(e.target)) {
+      document.getElementById(`${market}-dropdown`).classList.remove("open");
+    }
+  });
+});
+
+// Load saved preferences on email blur
+document.getElementById("email-input").addEventListener("blur", async () => {
+  const email = document.getElementById("email-input").value.trim().toLowerCase();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+  try {
+    const res = await fetch(WORKER_URL + "/get-preferences", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    selected.us = []; selected.tw = [];
+
+    (data.us_stocks || []).forEach(sym => {
+      const found = US_STOCKS.find(([s]) => s === sym);
+      selected.us.push({ sym, name: found ? found[1] : sym });
+    });
+    (data.tw_stocks || []).forEach(sym => {
+      const found = TW_STOCKS.find(([s]) => s === sym);
+      selected.tw.push({ sym, name: found ? found[1] : sym });
+    });
+    renderTags("us"); renderTags("tw");
+  } catch {}
+});
+
+async function savePreferences() {
+  const email = document.getElementById("email-input").value.trim().toLowerCase();
+  const successEl = document.getElementById("success-msg");
+  const errorEl = document.getElementById("error-msg");
+  successEl.style.display = "none"; errorEl.style.display = "none";
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errorEl.textContent = "❌ 請輸入有效的 Email";
+    errorEl.style.display = "block"; return;
+  }
+
+  const btn = document.getElementById("save-btn");
+  btn.disabled = true; btn.textContent = "儲存中...";
+
+  try {
+    const res = await fetch(WORKER_URL + "/save-preferences", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        us_stocks: selected.us.map(s => s.sym),
+        tw_stocks: selected.tw.map(s => s.sym),
+      }),
+    });
+    const data = await res.json();
+    if (data.ok) {
+      successEl.style.display = "block";
+    } else {
+      errorEl.textContent = "❌ 儲存失敗，請稍後再試";
+      errorEl.style.display = "block";
+    }
+  } catch {
+    errorEl.textContent = "❌ 網路錯誤，請稍後再試";
+    errorEl.style.display = "block";
+  } finally {
+    btn.disabled = false; btn.textContent = "儲存設定";
+  }
+}
+</script>
+
+</body>
+</html>

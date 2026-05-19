@@ -57,6 +57,49 @@ def _send_warning_email(count: int):
         pass
 
 
+def get_all_subscribers(list_id: int) -> list:
+    emails = []
+    offset = 0
+    limit = 500
+    try:
+        while True:
+            resp = requests.get(
+                f"https://api.brevo.com/v3/contacts/lists/{list_id}/contacts",
+                headers={"api-key": BREVO_API_KEY},
+                params={"limit": limit, "offset": offset},
+                timeout=15
+            )
+            contacts = resp.json().get("contacts", [])
+            if not contacts:
+                break
+            emails.extend(c["email"] for c in contacts if c.get("email"))
+            if len(contacts) < limit:
+                break
+            offset += limit
+    except Exception as e:
+        print(f"   無法取得訂閱者名單：{e}")
+    return emails
+
+
+def send_transactional_email(email: str, date: str, html_content: str, api_key: str) -> bool:
+    payload = {
+        "sender": {"name": SENDER_NAME, "email": SENDER_EMAIL},
+        "to": [{"email": email}],
+        "subject": f"📊 財經日報 {date} — AI 精選美股 + 台股",
+        "htmlContent": html_content,
+    }
+    try:
+        resp = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            json=payload,
+            headers={"api-key": api_key, "Content-Type": "application/json"},
+            timeout=15
+        )
+        return resp.ok
+    except Exception:
+        return False
+
+
 def publish_to_brevo(date: str, html_content: str) -> bool:
     headers = {
         "api-key": BREVO_API_KEY,

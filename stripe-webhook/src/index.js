@@ -18,6 +18,38 @@ export default {
 
     const url = new URL(request.url);
 
+    // Save user preferences
+    if (url.pathname === "/save-preferences" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch {
+        return json({ error: "Invalid request" }, 400);
+      }
+      const email = (body.email || "").trim().toLowerCase();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return json({ error: "invalid_email" }, 400);
+      }
+      const prefs = {
+        us_stocks: Array.isArray(body.us_stocks) ? body.us_stocks : [],
+        tw_stocks: Array.isArray(body.tw_stocks) ? body.tw_stocks : [],
+        updated_at: new Date().toISOString(),
+      };
+      await env.USER_PREFS.put(email, JSON.stringify(prefs));
+      return json({ ok: true });
+    }
+
+    // Get user preferences
+    if (url.pathname === "/get-preferences" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch {
+        return json({ error: "Invalid request" }, 400);
+      }
+      const email = (body.email || "").trim().toLowerCase();
+      if (!email) return json({ error: "invalid_email" }, 400);
+      const raw = await env.USER_PREFS.get(email);
+      if (!raw) return json({ us_stocks: [], tw_stocks: [] });
+      return json(JSON.parse(raw));
+    }
+
     // Free subscription endpoint
     if (url.pathname === "/free-subscribe" && request.method === "POST") {
       let body;
