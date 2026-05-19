@@ -1,3 +1,5 @@
+const ADMIN_EMAILS = ["delvin.12345678@gmail.com"];
+
 const INVITE_CODES = [
   "DELVIN-FE8FZ1","DELVIN-XKNJ4N","DELVIN-F4ONQQ","DELVIN-RBIG9S",
   "DELVIN-WYW4IP","DELVIN-BE2O13","DELVIN-OVMFHN","DELVIN-AV3VIB",
@@ -26,6 +28,11 @@ export default {
       }
       const email = (body.email || "").trim().toLowerCase();
       if (!email) return json({ subscribed: false });
+
+      if (ADMIN_EMAILS.includes(email)) {
+        return json({ subscribed: true, plan: "admin" });
+      }
+
       const res = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
         headers: { "api-key": env.BREVO_API_KEY }
       });
@@ -39,6 +46,23 @@ export default {
         plan: isPaid ? "paid" : "free",
         since: contact.createdAt || null,
       });
+    }
+
+    // Admin stats
+    if (url.pathname === "/admin-stats" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      const email = (body.email || "").trim().toLowerCase();
+      if (!ADMIN_EMAILS.includes(email)) return json({ error: "Forbidden" }, 403);
+      try {
+        const listId = parseInt(env.BREVO_LIST_ID) || 2;
+        const res = await fetch(`https://api.brevo.com/v3/contacts/lists/${listId}`, {
+          headers: { "api-key": env.BREVO_API_KEY }
+        });
+        const data = await res.json();
+        const total = data.uniqueSubscribers || 0;
+        return json({ total, free: total, paid: 0 });
+      } catch { return json({ total: 0, free: 0, paid: 0 }); }
     }
 
     // Save user preferences

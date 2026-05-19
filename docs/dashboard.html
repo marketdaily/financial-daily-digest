@@ -77,6 +77,17 @@ nav { background: var(--nav-bg); border-bottom: 1px solid var(--nav-border); dis
 .hero-name { font-size: 24px; font-weight: 800; color: #fde68a; margin-bottom: 6px; }
 .hero-sub { font-size: 13px; color: #c4b5fd; }
 .plan-badge { display: inline-block; margin-top: 12px; background: rgba(99,102,241,0.25); border: 1px solid rgba(99,102,241,0.4); color: #a5b4fc; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.5px; }
+.plan-badge.admin { background: rgba(234,179,8,0.2); border-color: rgba(234,179,8,0.5); color: #fde68a; }
+.admin-badge { display: inline-flex; align-items: center; gap: 5px; background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.4); color: #fde68a; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px; }
+.admin-panel { background: rgba(234,179,8,0.06); border: 1px solid rgba(234,179,8,0.2); border-radius: 16px; padding: 20px 22px; margin-bottom: 14px; display: none; }
+.admin-panel-title { font-size: 13px; font-weight: 800; color: #fde68a; margin-bottom: 14px; letter-spacing: 0.3px; }
+.admin-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.admin-stat { background: rgba(234,179,8,0.08); border: 1px solid rgba(234,179,8,0.15); border-radius: 12px; padding: 14px; text-align: center; }
+.admin-stat-value { font-size: 22px; font-weight: 800; color: #fde68a; }
+.admin-stat-label { font-size: 11px; color: rgba(253,230,138,0.6); margin-top: 3px; }
+.admin-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.admin-action-btn { font-size: 12px; font-weight: 700; padding: 7px 16px; border-radius: 10px; border: 1px solid rgba(234,179,8,0.3); background: rgba(234,179,8,0.1); color: #fde68a; cursor: pointer; transition: all 0.15s; }
+.admin-action-btn:hover { background: rgba(234,179,8,0.2); }
 
 .container { max-width: 700px; margin: 0 auto; padding: 28px 20px 60px; }
 
@@ -162,6 +173,7 @@ nav { background: var(--nav-bg); border-bottom: 1px solid var(--nav-border); dis
     <div class="logo">Market<span>Daily</span></div>
     <div class="nav-right">
       <span class="nav-email" id="nav-email"></span>
+      <span class="admin-badge" id="admin-badge" style="display:none;">👑 Admin</span>
       <button class="theme-btn" onclick="toggleTheme()" title="切換深色/白色" id="theme-icon">🌙</button>
       <button class="logout-btn" onclick="doLogout()">登出</button>
     </div>
@@ -175,6 +187,22 @@ nav { background: var(--nav-bg); border-bottom: 1px solid var(--nav-border); dis
   </div>
 
   <div class="container">
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="admin-panel">
+      <div class="admin-panel-title">👑 管理員面板</div>
+      <div class="admin-stats">
+        <div class="admin-stat"><div class="admin-stat-value" id="admin-total">—</div><div class="admin-stat-label">總訂閱人數</div></div>
+        <div class="admin-stat"><div class="admin-stat-value" id="admin-free">—</div><div class="admin-stat-label">免費訂閱</div></div>
+        <div class="admin-stat"><div class="admin-stat-value" id="admin-paid">—</div><div class="admin-stat-label">付費訂閱</div></div>
+      </div>
+      <div class="admin-actions">
+        <button class="admin-action-btn" onclick="window.open('https://app.brevo.com/contact/list','_blank')">📋 Brevo 訂閱名單</button>
+        <button class="admin-action-btn" onclick="window.open('https://dashboard.stripe.com/','_blank')">💳 Stripe 後台</button>
+        <button class="admin-action-btn" onclick="window.open('https://dash.cloudflare.com/','_blank')">☁️ Cloudflare</button>
+        <button class="admin-action-btn" onclick="window.open('https://github.com/delvin12345678-wq/financial-daily-digest/actions','_blank')">⚙️ GitHub Actions</button>
+      </div>
+    </div>
 
     <div class="stats">
       <div class="stat">
@@ -417,11 +445,37 @@ async function showDashboard(email, plan) {
   const name = email.split("@")[0];
   document.getElementById("hero-name").textContent = `👋 嗨，${name}！`;
   document.getElementById("nav-email").textContent = email;
-  document.getElementById("stat-plan").textContent = plan === "paid" ? "付費方案 NT$500/月" : "免費方案";
-  document.getElementById("plan-badge").textContent = plan === "paid" ? "⭐ 付費方案 · 訂閱中" : "✅ 免費方案 · 訂閱中";
+
+  if (plan === "admin") {
+    document.getElementById("stat-plan").textContent = "管理員";
+    const badge = document.getElementById("plan-badge");
+    badge.textContent = "👑 管理員 · 完整權限";
+    badge.classList.add("admin");
+    document.getElementById("admin-badge").style.display = "inline-flex";
+    document.getElementById("admin-panel").style.display = "block";
+    loadAdminStats();
+  } else {
+    document.getElementById("stat-plan").textContent = plan === "paid" ? "付費方案 NT$500/月" : "免費方案";
+    document.getElementById("plan-badge").textContent = plan === "paid" ? "⭐ 付費方案 · 訂閱中" : "✅ 免費方案 · 訂閱中";
+  }
 
   await loadPreferences(email);
   loadReports();
+}
+
+async function loadAdminStats() {
+  try {
+    const res = await fetch(WORKER_URL + "/admin-stats", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: localStorage.getItem("md-email") }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      document.getElementById("admin-total").textContent = data.total ?? "—";
+      document.getElementById("admin-free").textContent = data.free ?? "—";
+      document.getElementById("admin-paid").textContent = data.paid ?? "—";
+    }
+  } catch {}
 }
 
 async function loadPreferences(email) {
