@@ -2,15 +2,36 @@
 import sys, os, json, glob, re
 import html as _html
 import urllib.request, urllib.error
-from datetime import datetime
-
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from config import BREVO_API_KEY, SENDER_EMAIL
+from datetime import datetime, timezone, timedelta
 
 DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(DIR)
 STATE = os.path.join(DIR, "state.json")
 OWNER = "delvin.12345678@gmail.com"
 BREVO_URL = "https://api.brevo.com/v3/smtp/email"
+TPE = timezone(timedelta(hours=8))
+
+
+def _load_key():
+    """讀 BREVO 金鑰:先環境變數,再 repo 根目錄 .env(純 stdlib,不依賴 dotenv/config)。"""
+    key = os.getenv("BREVO_API_KEY")
+    sender = os.getenv("SENDER_EMAIL")
+    envp = os.path.join(ROOT, ".env")
+    if (not key or not sender) and os.path.exists(envp):
+        for line in open(envp, encoding="utf-8"):
+            line = line.strip()
+            if "=" not in line or line.startswith("#"):
+                continue
+            k, v = line.split("=", 1)
+            v = v.strip().strip('"').strip("'")
+            if k.strip() == "BREVO_API_KEY" and not key:
+                key = v
+            elif k.strip() == "SENDER_EMAIL" and not sender:
+                sender = v
+    return key, sender or "delvin.12345678@gmail.com"
+
+
+BREVO_API_KEY, SENDER_EMAIL = _load_key()
 
 STATUS = {
     "done":    ("#30d158", "✅ 完成"),
@@ -168,7 +189,8 @@ def digest():
             meta, body = parse_task(p)
             if meta.get("completed", "") > since:
                 items.append((meta, body))
-    now = datetime.now().isoformat(timespec="seconds")
+    now_utc = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    today = datetime.now(TPE).strftime("%Y-%m-%d")
     if not items:
         inner = ('<p style="font-size:14px;color:#666;line-height:1.7;">昨夜沒有完成的任務。'
                  '佇列是空的,或任務還在進行中。</p>')
@@ -190,9 +212,9 @@ def digest():
                  f'完成 <strong style="color:#30d158;">{done}</strong> · '
                  f'失敗 <strong style="color:#ff453a;">{failed}</strong></p>'
                  + "".join(cards))
-    ok = _send(f"☀️ Agent Team 晨間匯總 — {now[:10]}", shell("☀️ 晨間匯總", inner))
+    ok = _send(f"☀️ Agent Team 晨間匯總 — {today}", shell("☀️ 晨間匯總", inner))
     if ok:
-        state["last_digest"] = now
+        state["last_digest"] = now_utc
         save_state(state)
     return ok
 
