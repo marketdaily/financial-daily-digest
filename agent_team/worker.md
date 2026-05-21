@@ -6,15 +6,14 @@
 ## 流程
 
 1. `git pull --rebase --autostash` 取得最新佇列。
-2. 把現在時間(ISO)寫進 `agent_team/state.json` 的 `last_worker_run`。
-3. 看 `agent_team/working/`:
+2. 看 `agent_team/working/`:
    - 已有任務 → 上次沒做完的,**優先接手**。讀「## 進度紀錄」從中斷點繼續,不重做。
    - 空的 → 從 `agent_team/inbox/` 挑一個:先比 `priority`(高>中>低),同級比 `created` 最早。
-4. inbox 與 working 都空 → 把 state.json 的更新 commit & push 後直接結束。
-5. 認領任務:`mv` 任務檔到 `working/`,frontmatter `status` 改 `working`、`attempts` +1。
+3. inbox 與 working 都空 → 沒任務,直接結束,**不要 commit**。
+4. 認領任務:`mv` 任務檔到 `working/`,frontmatter `status` 改 `working`、`attempts` +1。
    **立刻 `git add agent_team/ && git commit && git push`**。
-   若 push 被拒(其他環境已認領)→ `git pull` 後回步驟 3 重挑。
-6. 讀 frontmatter 的 `type`,執行任務。對應專家 skill:
+   若 push 被拒(其他環境已認領)→ `git pull` 後回步驟 2 重挑。
+5. 讀 frontmatter 的 `type`,執行任務。對應專家 skill:
 
    | type | skill |
    |------|-------|
@@ -25,7 +24,7 @@
    | 短影片 | antigravity / nano-banana-pro |
 
    skill 在當前環境可用就載入;若不可用(雲端備援環境通常沒有),直接用你自身能力完成。
-7. 邊做邊把進度寫進「## 進度紀錄」並 commit,讓中斷不丟進度。
+6. 邊做邊把進度寫進「## 進度紀錄」並 commit,讓中斷不丟進度。
 
 ## ⚠️ 用量上限處理(最重要)
 
@@ -53,6 +52,8 @@ frontmatter `status` 改 `failed`、加 `completed: <ISO>`;`mv` 到 `failed/`;
 
 - 一次只處理一個任務。
 - 每個重要步驟都 commit,確保中斷可恢復;結束前一定 `git push`。
+- 每次 commit 前,順手把 `agent_team/state.json` 的 `last_worker_run` 更新為現在時間 ——
+  這是雲端備援判斷「本機是否還在線」的心跳,搭著既有 commit 走,不另開 commit。
 - **git add 只加 `agent_team/` 底下的檔案**,絕不 `git add -A` ——
   repo 其他未提交的變更是 delvin 的工作,不可碰、不可提交。
 - 不可逆或對外的動作(刪檔、寄信給訂閱者、部署上線、付費)**先不要做** ——

@@ -1,8 +1,8 @@
 """Agent Team 交付通知 — 即時完成信 + 晨間匯總信(Brevo HTML 卡片)"""
 import sys, os, json, glob, re
 import html as _html
+import urllib.request, urllib.error
 from datetime import datetime
-import requests
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import BREVO_API_KEY, SENDER_EMAIL
@@ -122,14 +122,24 @@ def shell(subtitle, inner):
 def _send(subject, html):
     if not BREVO_API_KEY:
         print("❌ 找不到 BREVO_API_KEY"); return False
-    r = requests.post(BREVO_URL, json={
+    payload = json.dumps({
         "sender": {"name": "MarketDaily Agent Team", "email": SENDER_EMAIL},
         "to": [{"email": OWNER}],
         "subject": subject,
         "htmlContent": html,
-    }, headers={"api-key": BREVO_API_KEY, "Content-Type": "application/json"}, timeout=15)
-    print(("✅ 寄出 " if r.ok else f"❌ 失敗 {r.status_code} {r.text} ") + subject)
-    return r.ok
+    }).encode("utf-8")
+    req = urllib.request.Request(BREVO_URL, data=payload, method="POST",
+        headers={"api-key": BREVO_API_KEY, "Content-Type": "application/json"})
+    try:
+        with urllib.request.urlopen(req, timeout=15):
+            print("✅ 寄出 " + subject)
+            return True
+    except urllib.error.HTTPError as e:
+        print(f"❌ 失敗 {e.code} {e.read().decode('utf-8', 'ignore')} {subject}")
+        return False
+    except Exception as e:
+        print(f"❌ 失敗 {e} {subject}")
+        return False
 
 
 def instant(path):
