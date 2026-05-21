@@ -4,3 +4,6 @@ __pycache__/
 .DS_Store
 agent_team/logs/
 agent_team/.worker.lock
+agent-relay/.relay-secret
+.wrangler/
+node_modules/
