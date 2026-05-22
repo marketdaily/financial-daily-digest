@@ -925,7 +925,7 @@ async function showDashboard(email, plan) {
     document.getElementById("admin-panel").style.display = "block";
     loadAdminStats();
   } else {
-    document.getElementById("stat-plan").textContent = plan === "paid" ? "付費方案 NT$500/月" : "免費方案";
+    document.getElementById("stat-plan").textContent = plan === "paid" ? "付費方案" : "免費方案";
     document.getElementById("plan-badge").textContent = plan === "paid" ? "⭐ 付費方案 · 訂閱中" : "✅ 免費方案 · 訂閱中";
   }
   setupLineCard(email, plan);
