@@ -281,7 +281,7 @@ def _postprocess_html(html: str, data: dict) -> str:
         return f'<span class="{cls}">{stock_names.badge_html(code, tw_hint.get(code))}</span>'
 
     html = _re.sub(
-        r'<span class="(signal-ticker|ticker|stock-news-ticker|earnings-ticker)">([^<]*)</span>',
+        r'<span class="(signal-ticker|ticker|stock-news-ticker|earnings-ticker|rookie-name)">([^<]*)</span>',
         _expand_ticker, html
     )
 
@@ -342,6 +342,8 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
     date = data.get("date", "")
 
     has_holdings = bool(user_us_stocks or user_tw_stocks)
+    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
+    is_beginner = user_holding_count <= 4
     default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
     watchlist_us = user_us_stocks if user_us_stocks else default_us
     watchlist_tw = user_tw_stocks if user_tw_stocks else []
@@ -457,6 +459,24 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
 </div>
 <div class="signal-disclaimer">⚠️ AI 分析僅供參考，不構成投資建議</div>"""
 
+    rookie_section = ""
+    if is_beginner:
+        rookie_section = """
+<div class="section-label">🌱 新手推薦：現在適合入手的股票</div>
+（這位讀者是投資新手、持股不多。請從上方「今日數據」中，挑 1-2 支「體質穩健、知名度高、適合新手入門」的大型藍籌股
+——例如蘋果、微軟、Google、台積電這類；‼️ 絕對不要推薦高波動的小型股、概念股、迷因股給新手。只能推薦今日有真實數據的股票。
+每支一張 rookie-pick：
+<div class="rookie-pick">
+  <div class="rookie-top">
+    <span class="rookie-name">代號</span>
+    <span class="rookie-verdict">🟢 適合新手入手</span>
+  </div>
+  <div class="rookie-why">用最白話的話講 2-3 句：這是什麼公司、為什麼適合新手（大家都認識、體質穩）、今天為什麼可以考慮買</div>
+  <div class="rookie-tip">💡 新手提醒：先小額試單、別一次重押；想更穩健可定期定額買指數型 ETF（台股 0050、美股 VOO）</div>
+</div>
+若今天大盤大跌、沒有適合進場的標的，就只放一張 rookie-pick，rookie-verdict 改成「🟡 今天先別急」，rookie-why 說明今天先觀望、可等回穩或改用定期定額。
+rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張。）"""
+
     prompt = f"""你是這位用戶的專屬財經顧問，說話生活化、直接、像朋友。這份報告是**專門為持有 {', '.join(all_holdings) if has_holdings else '各種股票的'} 的用戶客製化生成的**，不是通用報告。
 
 【無幻覺原則 — 最重要，違反就是廢稿】
@@ -504,6 +524,7 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
 </div>
 
 {signal_instruction}
+{rookie_section}
 
 <div class="section-label">🌡️ 市場情緒儀表板</div>
 <div class="indicator-bar">
