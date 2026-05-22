@@ -3,3 +3,4 @@
 {"ts": "2026-05-22T14:28:28.531247", "post": "launch", "results": {"instagram": {"ok": true, "detail": "18374187196206656"}, "facebook": {"ok": true, "detail": "1133333363197689_122094385665345835"}, "threads": {"ok": false, "detail": "{'error': {'message': 'Invalid OAuth 2.0 Access Token', 'type': 'THApiException', 'code': 190, 'error_data': {}, 'fbtrace_id': 'Alg_N-Z2uqfVIEANDWBKvmr'}}"}}}
 {"ts": "2026-05-22T15:02:06.911606", "post": "launch", "results": {"threads": {"ok": true, "detail": "17937384453234807"}}}
 {"ts": "2026-05-22T15:20:32.436493", "post": "launch", "results": {"line": {"ok": true, "detail": "broadcast sent"}}}
+{"ts": "2026-05-22T10:03:15.854947", "post": "explainer", "results": {"instagram": {"ok": true, "detail": "17948186709189011"}, "facebook": {"ok": true, "detail": "914644141592632"}}}
