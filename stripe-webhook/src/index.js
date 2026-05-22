@@ -559,22 +559,14 @@ export default {
             }
           } catch {}
         }
-        // Yahoo: Taiwan stocks + fallback when Finnhub is unset or fails
-        const sym = isTW ? `${t}.TW` : t;
-        try {
-          const res = await fetch(
-            `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=5d`,
-            { headers: yfHeaders, cf: { cacheTtl: 15, cacheEverything: true } }
-          );
-          if (!res.ok) return { symbol: t, name: t, price: null, change: null };
-          const data = await res.json();
-          const meta = data?.chart?.result?.[0]?.meta;
-          if (!meta) return { symbol: t, name: t, price: null, change: null };
-          const price = meta.regularMarketPrice ?? null;
-          const prev = meta.chartPreviousClose ?? null;
-          const change = (price !== null && prev !== null && prev !== 0) ? ((price - prev) / prev * 100) : null;
-          return { symbol: t, name: meta.shortName || meta.longName || sym, price, change };
-        } catch { return { symbol: t, name: t, price: null, change: null }; }
+        // Yahoo:台股(.TW 上市 / .TWO 上櫃 自動切換)+ Finnhub 未設或失敗時的後援
+        const r = await fetchYahooChart(t, isTW, "1d", "5d", yfHeaders, 15);
+        if (!r) return { symbol: t, name: t, price: null, change: null };
+        const meta = r.meta;
+        const price = meta.regularMarketPrice ?? null;
+        const prev = meta.chartPreviousClose ?? null;
+        const change = (price !== null && prev !== null && prev !== 0) ? ((price - prev) / prev * 100) : null;
+        return { symbol: t, name: meta.shortName || meta.longName || t, price, change };
       }));
       const quotes = results.map((r, i) => r.status === "fulfilled" ? r.value : { symbol: raw[i], name: raw[i], price: null, change: null });
       return new Response(JSON.stringify({ quotes }), {
@@ -592,20 +584,14 @@ export default {
         "1M": { interval: "1d",  range: "1mo" },
         "3M": { interval: "1d",  range: "3mo" },
       }[url.searchParams.get("range") || "1M"] || { interval: "1d", range: "1mo" };
-      const sym = /^\d{4,6}$/.test(t) ? `${t}.TW` : t;
+      const isTW = /^\d{4,6}$/.test(t);
       const yfHeaders = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
         "Accept": "application/json",
         "Referer": "https://finance.yahoo.com/"
       };
       try {
-        const res = await fetch(
-          `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=${cfg.interval}&range=${cfg.range}`,
-          { headers: yfHeaders }
-        );
-        if (!res.ok) return json({ error: "fetch failed" }, 502);
-        const data = await res.json();
-        const r = data?.chart?.result?.[0];
+        const r = await fetchYahooChart(t, isTW, cfg.interval, cfg.range, yfHeaders, 300);
         if (!r) return json({ error: "no data" }, 404);
         const ts = r.timestamp || [];
         const closes = r.indicators?.quote?.[0]?.close || [];
@@ -763,6 +749,25 @@ function json(data, status = 200) {
     status,
     headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
   });
+}
+
+// 抓 Yahoo Finance chart。台股先試 .TW(上市)再試 .TWO(上櫃),
+// 回傳第一個有實際報價的 result —— 任何台股(含上櫃、新加入的)都抓得到。
+async function fetchYahooChart(base, isTW, interval, range, headers, cacheTtl) {
+  const symbols = isTW ? [`${base}.TW`, `${base}.TWO`] : [base];
+  for (const sym of symbols) {
+    try {
+      const res = await fetch(
+        `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=${interval}&range=${range}`,
+        { headers, cf: { cacheTtl, cacheEverything: true } }
+      );
+      if (!res.ok) continue;
+      const data = await res.json();
+      const r = data?.chart?.result?.[0];
+      if (r && r.meta && r.meta.regularMarketPrice != null) return r;
+    } catch {}
+  }
+  return null;
 }
 
 async function verifyStripeSignature(payload, sigHeader, secret) {
