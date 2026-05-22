@@ -43,10 +43,12 @@
   var steps = [], idx = 0, tourId = "default", active = false;
   var els = {};
 
-  // 跟隨網站語言(localStorage "md-lang",預設 zh)。
+  // 跟隨網站語言(各頁存 md-lang-v2,舊頁可能用 md-lang;預設 zh)。
   function lang() {
-    try { return localStorage.getItem("md-lang") === "en" ? "en" : "zh"; }
-    catch (e) { return "zh"; }
+    try {
+      var v = localStorage.getItem("md-lang-v2") || localStorage.getItem("md-lang");
+      return v === "en" ? "en" : "zh";
+    } catch (e) { return "zh"; }
   }
   var UI = {
     zh: { fab: "新手教學", next: "下一步 →", done: "完成 ✓", prev: "上一步", skip: "跳過教學" },
