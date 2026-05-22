@@ -496,7 +496,7 @@ export default {
       // 優惠碼註冊者 = Premium
       await env.USER_PREFS.put(`plan:${email}`, "premium");
       await sendWelcomeEmail(email, env.BREVO_API_KEY, false);
-      ctx.waitUntil(sendTodayDigestToAll(env.BREVO_API_KEY, parseInt(env.BREVO_LIST_ID) || 2, env.USER_PREFS));
+      ctx.waitUntil(sendTodayDigestToOne(email, env.BREVO_API_KEY, env.USER_PREFS));
       return json({ ok: true });
     }
 
@@ -634,7 +634,7 @@ export default {
         }
       }
       await sendWelcomeEmail(email, env.BREVO_API_KEY, false);
-      ctx.waitUntil(sendTodayDigestToAll(env.BREVO_API_KEY, parseInt(env.BREVO_LIST_ID) || 2, env.USER_PREFS));
+      ctx.waitUntil(sendTodayDigestToOne(email, env.BREVO_API_KEY, env.USER_PREFS));
       return json({ ok: true });
     }
 
@@ -725,7 +725,7 @@ export default {
         await env.USER_PREFS.put(`plan:${email}`, tier === "Premium" ? "premium" : "pro");
         if (session.customer) await env.USER_PREFS.put(`stripe-cust:${session.customer}`, email);
         await sendWelcomeEmail(email, env.BREVO_API_KEY, true, tier);
-        ctx.waitUntil(sendTodayDigestToAll(env.BREVO_API_KEY, listId, env.USER_PREFS));
+        ctx.waitUntil(sendTodayDigestToOne(email, env.BREVO_API_KEY, env.USER_PREFS));
       }
     }
 
@@ -790,40 +790,21 @@ function getTaiwanDate() {
   return new Date(now.getTime() + 8 * 60 * 60 * 1000).toISOString().split("T")[0];
 }
 
-async function getAllBrevoSubscribers(apiKey, listId) {
-  const emails = [];
-  let offset = 0;
-  const limit = 100;
-  while (true) {
-    const res = await fetch(
-      `https://api.brevo.com/v3/contacts/lists/${listId}/contacts?limit=${limit}&offset=${offset}`,
-      { headers: { "api-key": apiKey } }
-    );
-    if (!res.ok) break;
-    const data = await res.json();
-    const contacts = data.contacts || [];
-    for (const c of contacts) if (c.email) emails.push(c.email);
-    if (contacts.length < limit) break;
-    offset += limit;
-  }
-  return emails;
-}
-
-async function sendTodayDigestToAll(apiKey, listId, kv) {
+// 補寄今日日報給「單一新訂閱者」—— 只寄本人,不碰其他訂閱者。
+// 每日全名單廣播由每日 pipeline(main.py)負責,這裡絕不群發。
+async function sendTodayDigestToOne(email, apiKey, kv) {
   const today = getTaiwanDate();
-  const sentKey = `digest_sent:${today}`;
 
-  // 防重複：同一天只觸發一次
-  const alreadySent = await kv.get(sentKey);
-  if (alreadySent) return;
+  // 同一位用戶當天最多補寄一次
+  const sentKey = `digest_sent:${today}:${email}`;
+  if (await kv.get(sentKey)) return;
 
   // 確認今天有 digest（讀 manifest）
   try {
     const manifestRes = await fetch(`https://marketdaily.ai/output/manifest.json?t=${Date.now()}`);
     if (!manifestRes.ok) return;
     const manifest = await manifestRes.json();
-    const dates = manifest.dates || [];
-    if (!dates.includes(today)) return; // 今天還沒有日報
+    if (!(manifest.dates || []).includes(today)) return; // 今天還沒有日報
   } catch { return; }
 
   // 抓今天的 digest HTML
@@ -835,27 +816,18 @@ async function sendTodayDigestToAll(apiKey, listId, kv) {
     if (!digestHtml.includes('財經日報')) return; // SPA fallback guard
   } catch { return; }
 
-  // 標記已發送（先標記防 race condition）
   await kv.put(sentKey, "1", { expirationTtl: 86400 * 3 });
 
-  // 取全名單
-  const emails = await getAllBrevoSubscribers(apiKey, listId);
-  if (!emails.length) return;
-
-  // 批量寄送（平行，最多同時 20 個）
-  const subject = `📈 財經日報 ${today} — 今日市場速覽`;
-  const sender = { name: "MarketDaily 財經日報", email: "delvin.12345678@gmail.com" };
-  const chunks = [];
-  for (let i = 0; i < emails.length; i += 20) chunks.push(emails.slice(i, i + 20));
-  for (const chunk of chunks) {
-    await Promise.allSettled(chunk.map(email =>
-      fetch("https://api.brevo.com/v3/smtp/email", {
-        method: "POST",
-        headers: { "api-key": apiKey, "Content-Type": "application/json" },
-        body: JSON.stringify({ sender, to: [{ email }], subject, htmlContent: digestHtml }),
-      })
-    ));
-  }
+  await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: { "api-key": apiKey, "Content-Type": "application/json" },
+    body: JSON.stringify({
+      sender: { name: "MarketDaily 財經日報", email: "delvin.12345678@gmail.com" },
+      to: [{ email }],
+      subject: `📈 財經日報 ${today} — 今日市場速覽`,
+      htmlContent: digestHtml,
+    }),
+  });
 }
 
 async function addToBrevo(email, apiKey, listId, attributes) {
