@@ -317,8 +317,9 @@ nav {
 .chat-msg.ai { align-self: flex-start; background: rgba(255,255,255,0.06); border: 1px solid var(--input-border); color: var(--text); border-bottom-left-radius: 4px; }
 .chat-msg.thinking { color: var(--text2); font-style: italic; }
 .chat-msg.err { align-self: stretch; max-width: 100%; background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: #f87171; text-align: center; font-size: 13px; }
-.chat-input-row { display: flex; gap: 8px; margin-top: 12px; }
-#chat-input { flex: 1; resize: none; padding: 11px 14px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 10px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; line-height: 1.5; }
+.chat-input-row { display: flex; align-items: flex-end; gap: 8px; margin-top: 12px; }
+#chat-send { min-height: 46px; }
+#chat-input { flex: 1; resize: none; min-height: 46px; padding: 12px 14px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 10px; color: var(--text); font-size: 14px; font-family: inherit; outline: none; line-height: 1.5; }
 #chat-input:focus { border-color: var(--primary); }
 #chat-send { padding: 0 18px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-weight: 700; font-family: inherit; font-size: 14px; cursor: pointer; white-space: nowrap; }
 #chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -702,7 +703,7 @@ nav {
       <div id="chat-box" style="display:none;margin-top:14px;">
         <div id="chat-messages"></div>
         <div class="chat-input-row">
-          <textarea id="chat-input" rows="1" data-i18n-placeholder="chat_input_ph" placeholder="問點什麼…例如「我的持股今天要注意什麼?」" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+          <textarea id="chat-input" rows="1" data-i18n-placeholder="chat_input_ph" placeholder="問我你的持股、大盤…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
           <button id="chat-send" onclick="sendChat()" data-i18n="chat_send_btn">送出</button>
         </div>
         <div id="chat-meta"></div>
@@ -769,7 +770,7 @@ const i18n = {
     chat_card_title: "💬 AI 投資助手",
     chat_card_desc: "問 AI 你的持股、大盤、財經概念 —— 它知道你正在追蹤的股票。Premium 專屬。",
     chat_locked_notice: "⚠️ AI 投資助手是 Premium 專屬功能。<a href=\"pricing.html\" style=\"color:#fbbf24;font-weight:700;\">升級 Premium →</a>",
-    chat_input_ph: "問點什麼…例如「我的持股今天要注意什麼?」",
+    chat_input_ph: "問我你的持股、大盤…",
     chat_send_btn: "送出",
     chat_greeting: "嗨 👋 我是你的 MarketDaily AI 投資助手。可以問我你追蹤的股票、大盤走勢,或任何財經問題 —— 我知道你的持股清單。",
     chat_thinking: "思考中…",
@@ -916,7 +917,7 @@ const i18n = {
     chat_card_title: "💬 AI Investment Assistant",
     chat_card_desc: "Ask AI about your holdings, the market and finance — it knows the stocks you track. Premium-only.",
     chat_locked_notice: "⚠️ The AI Investment Assistant is a Premium-only feature. <a href=\"pricing.html\" style=\"color:#fbbf24;font-weight:700;\">Upgrade to Premium →</a>",
-    chat_input_ph: "Ask anything… e.g. \"Anything to watch on my holdings today?\"",
+    chat_input_ph: "Ask about your holdings, the market…",
     chat_send_btn: "Send",
     chat_greeting: "Hi 👋 I'm your MarketDaily AI investment assistant. Ask me about the stocks you track, market trends, or any finance question — I know your holdings.",
     chat_thinking: "Thinking…",
