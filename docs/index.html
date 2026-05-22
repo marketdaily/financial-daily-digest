@@ -2421,11 +2421,7 @@ function switchAbout(panel, btn) {
   loop();
 })();
 </script>
-<script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));
-}
-</script>
+<!-- service worker 已移除 —— 純網路供應,避免快取導致看到舊版或跳轉失敗 -->
 <script src="onboarding-tour.js"></script>
 <script>
 MDTour.mount([

@@ -1,49 +1,15 @@
-const CACHE = "md-v4";
-const STATIC = [
-  "/",
-  "/index.html",
-  "/dashboard.html",
-  "/preferences.html",
-  "/pricing.html",
-  "/contact.html",
-  "/ui-pro.js",
-  "/logo-icon.svg",
-  "/manifest.json",
-  "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
-];
-
-self.addEventListener("install", e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(STATIC).catch(() => {})));
-  self.skipWaiting();
-});
-
-self.addEventListener("activate", e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ));
-  self.clients.claim();
-});
-
-self.addEventListener("fetch", e => {
-  if (e.request.method !== "GET") return;
-  const url = new URL(e.request.url);
-  // Always network-first for API/Worker calls
-  if (url.hostname.includes("workers.dev") || url.pathname.startsWith("/api")) {
-    return;
-  }
-  // 同源資源(HTML / JS / CSS)一律抓伺服器最新版,繞過瀏覽器 HTTP 快取;
-  // 快取只當離線後援 —— 避免改版後看到舊頁或新舊檔案版本不一致。
-  const sameOrigin = url.origin === self.location.origin;
-  const req = sameOrigin ? new Request(e.request.url, { cache: "no-store" }) : e.request;
-  e.respondWith(
-    fetch(req)
-      .then(res => {
-        if (res.ok) {
-          const clone = res.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
-        }
-        return res;
-      })
-      .catch(() => caches.match(e.request))
-  );
+// MarketDaily 已不再使用 service worker。
+// 舊版 SW 造成兩個問題:(1) 改版後瀏覽器仍看到舊頁;(2) 攔截導覽請求時回傳
+// 重定向回應,觸發瀏覽器「Response served by service worker has redirections」錯誤,
+// 導致所有頁面跳轉失敗。
+// 此檔的唯一作用:清掉舊 SW 在既有用戶瀏覽器留下的快取,並自我卸載。
+// 之後網站為純網路供應 —— 每次都是最新版,不會再有快取問題。
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (event) => {
+  event.waitUntil((async () => {
+    for (const key of await caches.keys()) {
+      await caches.delete(key);
+    }
+    await self.registration.unregister();
+  })());
 });
