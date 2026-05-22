@@ -130,8 +130,60 @@ def post_line(env, image_url, caption):
     return (True, "broadcast sent") if ok else (False, r)
 
 
+def post_instagram_reel(env, video_url, caption):
+    ig, tok = env["IG_USER_ID"], env["META_ACCESS_TOKEN"]
+    ok, c = http(f"{GRAPH}/{ig}/media", "POST",
+                 form={"media_type": "REELS", "video_url": video_url,
+                       "caption": caption, "access_token": tok})
+    if not ok or "id" not in c:
+        return False, c
+    cid, qtok = c["id"], urllib.parse.quote(tok)
+    for _ in range(60):
+        time.sleep(5)
+        _, st = http(f"{GRAPH}/{cid}?fields=status_code&access_token={qtok}")
+        if st.get("status_code") == "FINISHED":
+            break
+        if st.get("status_code") == "ERROR":
+            return False, st
+    else:
+        return False, {"error": "Reel 處理逾時"}
+    ok, p = http(f"{GRAPH}/{ig}/media_publish", "POST",
+                 form={"creation_id": cid, "access_token": tok})
+    return (True, p["id"]) if ok and "id" in p else (False, p)
+
+
+def post_facebook_reel(env, video_url, caption):
+    page, tok = env["FB_PAGE_ID"], env["META_ACCESS_TOKEN"]
+    ok, r = http(f"{GRAPH}/{page}/video_reels", "POST",
+                 form={"upload_phase": "start", "access_token": tok})
+    if not ok or "video_id" not in r:
+        return False, r
+    vid = r["video_id"]
+    upload_url = r.get("upload_url") or f"https://rupload.facebook.com/video-upload/v21.0/{vid}"
+    ok, u = http(upload_url, "POST",
+                 headers={"Authorization": f"OAuth {tok}", "file_url": video_url})
+    if not ok:
+        return False, u
+    qtok = urllib.parse.quote(tok)
+    for _ in range(50):
+        time.sleep(6)
+        _, st = http(f"{GRAPH}/{vid}?fields=status&access_token={qtok}")
+        status = st.get("status") or {}
+        if status.get("video_status") in ("ready", "upload_complete"):
+            break
+        if status.get("video_status") == "error":
+            return False, st
+    ok, p = http(f"{GRAPH}/{page}/video_reels", "POST",
+                 form={"video_id": vid, "upload_phase": "finish",
+                       "video_state": "PUBLISHED", "description": caption,
+                       "access_token": tok})
+    return (True, vid) if ok and p.get("success") else (False, p)
+
+
 PLATFORMS = {"facebook": post_facebook, "instagram": post_instagram,
              "threads": post_threads, "line": post_line}
+
+REEL_PLATFORMS = {"instagram": post_instagram_reel, "facebook": post_facebook_reel}
 
 
 def load_posts():
@@ -140,7 +192,8 @@ def load_posts():
 
 def cmd_list():
     for p in load_posts():
-        print(f"  [{p['id']:<10}] day {p['day']} · {p['image']} · {', '.join(p['platforms'])}")
+        kind = "Reel" if p.get("type") == "reel" else "圖卡"
+        print(f"  [{p['id']:<10}] day {p['day']} · {kind} · {p.get('image') or p.get('video')} · {', '.join(p['platforms'])}")
 
 
 def cmd_check(env):
@@ -195,18 +248,24 @@ def cmd_post(env, post_id, only=None):
         sys.exit(f"找不到貼文 id:{post_id}(用 list 看清單)")
     post = posts[post_id]
     base = env.get("SITE_BASE", "https://marketdaily.ai")
-    image_url = f"{base}/social/{Path(post['image']).stem}.jpg"
+    is_reel = post.get("type") == "reel"
+    if is_reel:
+        media_url = f"{base}/social/{post['video']}"
+        table = REEL_PLATFORMS
+    else:
+        media_url = f"{base}/social/{Path(post['image']).stem}.jpg"
+        table = PLATFORMS
     targets = only or post["platforms"]
     line_url = env.get("LINE_ADD_URL", "")
-    print(f"發布 [{post_id}] → {image_url}\n平台:{', '.join(targets)}\n")
+    print(f"發布 [{post_id}]{' (Reel)' if is_reel else ''} → {media_url}\n平台:{', '.join(targets)}\n")
     results = {}
     for plat in targets:
-        fn = PLATFORMS.get(plat)
+        fn = table.get(plat)
         if not fn:
-            print(f"  ⚠️ {plat}:不支援(TikTok 需官方審核,不在此工具內)")
+            print(f"  ⚠️ {plat}:{'此貼文型態不支援此平台' if is_reel else '不支援(TikTok 需官方審核)'}")
             continue
         try:
-            ok, detail = fn(env, image_url, caption_for(post["caption"], plat, line_url))
+            ok, detail = fn(env, media_url, caption_for(post["caption"], plat, line_url))
         except KeyError as e:
             ok, detail = False, f".env 缺少 {e}"
         results[plat] = {"ok": ok, "detail": str(detail)}

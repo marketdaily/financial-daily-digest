@@ -10,6 +10,10 @@ on:
         type: choice
         default: post
         options: [post, check, dry]
+      post_id:
+        description: "指定貼文 id(填了就發這篇,留空則照 mode)"
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -38,11 +42,16 @@ jobs:
           SITE_BASE: ${{ secrets.SITE_BASE }}
         run: |
           MODE="${{ github.event.inputs.mode || 'post' }}"
-          case "$MODE" in
-            check) python auto_post.py check ;;
-            dry)   python daily_run.py --dry ;;
-            *)     python daily_run.py ;;
-          esac
+          PID="${{ github.event.inputs.post_id }}"
+          if [ -n "$PID" ]; then
+            python auto_post.py post "$PID"
+          else
+            case "$MODE" in
+              check) python auto_post.py check ;;
+              dry)   python daily_run.py --dry ;;
+              *)     python daily_run.py ;;
+            esac
+          fi
 
       - name: 提交發文紀錄
         run: |
