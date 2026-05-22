@@ -660,24 +660,6 @@ nav {
     </div>
     <div class="save-status" id="save-status" onclick="doAutoSave()" data-i18n="save_status_idle">你的選擇會自動儲存,不需要按任何按鈕。</div>
 
-    <!-- Change Password -->
-    <div class="card" id="change-pwd-card" style="margin-top:8px;">
-      <div class="card-title" data-i18n="cpwd_card_title">🔒 修改密碼</div>
-      <div class="card-desc" data-i18n="cpwd_card_desc">修改你的帳號登入密碼</div>
-      <div id="change-pwd-form" style="display:none;margin-top:14px;">
-        <label class="login-label" for="cpwd-old" style="display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:7px;" data-i18n="cpwd_old_label">目前密碼</label>
-        <input type="password" class="login-input" id="cpwd-old" placeholder="••••••••" autocomplete="current-password" style="width:100%;padding:13px 16px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:all 0.2s;margin-bottom:14px;">
-        <label class="login-label" for="cpwd-new" style="display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:7px;" data-i18n="cpwd_new_label">新密碼</label>
-        <input type="password" class="login-input" id="cpwd-new" placeholder="至少 6 位" autocomplete="new-password" style="width:100%;padding:13px 16px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:all 0.2s;margin-bottom:14px;" data-i18n-placeholder="ph_min6">
-        <label class="login-label" for="cpwd-confirm" style="display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:7px;" data-i18n="cpwd_confirm_label">確認新密碼</label>
-        <input type="password" class="login-input" id="cpwd-confirm" placeholder="再輸入一次" autocomplete="new-password" style="width:100%;padding:13px 16px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:all 0.2s;margin-bottom:14px;" onkeydown="if(event.key==='Enter')doChangePassword()" data-i18n-placeholder="ph_again">
-        <button class="save-btn" onclick="doChangePassword()" id="cpwd-btn" data-i18n="cpwd_submit">確認修改 →</button>
-        <div style="display:none;margin-top:12px;font-size:13px;color:#f87171;text-align:center;" id="cpwd-err"></div>
-        <div style="display:none;margin-top:12px;padding:12px 16px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7;font-size:13px;font-weight:600;border-radius:10px;text-align:center;" id="cpwd-ok" data-i18n="cpwd_ok">✅ 密碼已更新！</div>
-      </div>
-      <button class="save-btn" onclick="toggleChangePwd()" id="toggle-pwd-btn" style="margin-top:0;" data-i18n="cpwd_toggle">修改密碼</button>
-    </div>
-
     <!-- LINE 即時提醒(Premium 專屬) -->
     <div class="card" id="line-alert-card" style="margin-top:8px;display:none;">
       <div class="card-title" data-i18n="line_card_title">⚡ 即時 LINE 重大新聞提醒</div>
@@ -754,6 +736,24 @@ nav {
           <span data-i18n="ref_copy_btn2">複製連結</span>
         </button>
       </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="card" id="change-pwd-card" style="margin-top:8px;">
+      <div class="card-title" data-i18n="cpwd_card_title">🔒 修改密碼</div>
+      <div class="card-desc" data-i18n="cpwd_card_desc">修改你的帳號登入密碼</div>
+      <div id="change-pwd-form" style="display:none;margin-top:14px;">
+        <label class="login-label" for="cpwd-old" style="display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:7px;" data-i18n="cpwd_old_label">目前密碼</label>
+        <input type="password" class="login-input" id="cpwd-old" placeholder="••••••••" autocomplete="current-password" style="width:100%;padding:13px 16px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:all 0.2s;margin-bottom:14px;">
+        <label class="login-label" for="cpwd-new" style="display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:7px;" data-i18n="cpwd_new_label">新密碼</label>
+        <input type="password" class="login-input" id="cpwd-new" placeholder="至少 6 位" autocomplete="new-password" style="width:100%;padding:13px 16px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:all 0.2s;margin-bottom:14px;" data-i18n-placeholder="ph_min6">
+        <label class="login-label" for="cpwd-confirm" style="display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:7px;" data-i18n="cpwd_confirm_label">確認新密碼</label>
+        <input type="password" class="login-input" id="cpwd-confirm" placeholder="再輸入一次" autocomplete="new-password" style="width:100%;padding:13px 16px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;color:var(--text);outline:none;transition:all 0.2s;margin-bottom:14px;" onkeydown="if(event.key==='Enter')doChangePassword()" data-i18n-placeholder="ph_again">
+        <button class="save-btn" onclick="doChangePassword()" id="cpwd-btn" data-i18n="cpwd_submit">確認修改 →</button>
+        <div style="display:none;margin-top:12px;font-size:13px;color:#f87171;text-align:center;" id="cpwd-err"></div>
+        <div style="display:none;margin-top:12px;padding:12px 16px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7;font-size:13px;font-weight:600;border-radius:10px;text-align:center;" id="cpwd-ok" data-i18n="cpwd_ok">✅ 密碼已更新！</div>
+      </div>
+      <button class="save-btn" onclick="toggleChangePwd()" id="toggle-pwd-btn" style="margin-top:0;" data-i18n="cpwd_toggle">修改密碼</button>
     </div>
 
   </div>
