@@ -1245,8 +1245,15 @@ footer {
       const a = document.getElementById('tr-stat-a');
       const c = document.getElementById('tr-stat-c');
       const t = document.getElementById('tr-stat-total');
-      if (a && typeof d.stats.a_rate === 'number') a.textContent = d.stats.a_rate.toFixed(1) + '%';
-      if (c && typeof d.stats.c_rate === 'number') c.textContent = d.stats.c_rate.toFixed(1) + '%';
+      // 樣本 < 20 顯示「樣本累積中」,跟戰績頁口徑一致
+      const MIN_N = 20;
+      const fmt = (rate, n) => {
+        if (typeof n !== 'number' || n === 0) return '—';
+        if (n < MIN_N) return `累積中<br><span style="font-size:14px;opacity:0.7;">(${n}/${MIN_N})</span>`;
+        return (typeof rate === 'number' ? rate.toFixed(1) : '—') + '%';
+      };
+      if (a) a.innerHTML = fmt(d.stats.a_rate, d.stats.a_count);
+      if (c) c.innerHTML = fmt(d.stats.c_rate, d.stats.c_count);
       if (t && typeof d.stats.total_records === 'number') t.textContent = d.stats.total_records;
     })
     .catch(() => {});

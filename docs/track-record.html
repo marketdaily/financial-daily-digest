@@ -576,46 +576,9 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 </footer>
 
 <script>
-// Fallback sample data — replaced at runtime by /data/track-record.json
-let RECORDS = [
-  { date: "2026-05-22", ticker: "TSM",   market: "us", call: "台積電 (TSM) 留意 180 支撐,法說後若守穩可期待反彈",                                   type: "A", win: true  },
-  { date: "2026-05-22", ticker: "NVDA",  market: "us", call: "NVDA 短期過熱,RSI 接近 80,建議觀望等回檔",                                             type: "C", win: true  },
-  { date: "2026-05-22", ticker: "2330",  market: "tw", call: "台積電 (2330) 留意 1080 支撐,外資連三日小幅買超",                                       type: "A", win: true  },
-  { date: "2026-05-21", ticker: "AAPL",  market: "us", call: "AAPL 季報前偏多,iPhone 17 預售數據優於預期",                                            type: "A", win: true  },
-  { date: "2026-05-21", ticker: "GOOG",  market: "us", call: "GOOG 法說會風險,廣告營收成長放緩,建議拉回觀察",                                          type: "C", win: true  },
-  { date: "2026-05-21", ticker: "2317",  market: "tw", call: "鴻海 (2317) AI 伺服器訂單能見度高,偏多看 215",                                           type: "A", win: false },
-  { date: "2026-05-20", ticker: "META",  market: "us", call: "META 突破 600 美元壓力,動能轉強",                                                       type: "A", win: true  },
-  { date: "2026-05-20", ticker: "TSLA",  market: "us", call: "TSLA 短線過熱,Robotaxi 利多已反映,建議拉回觀望",                                         type: "C", win: false },
-  { date: "2026-05-20", ticker: "2454",  market: "tw", call: "聯發科 (2454) 短期過熱,籌碼面投信連續賣超,風險升高",                                     type: "C", win: true  },
-  { date: "2026-05-19", ticker: "AMZN",  market: "us", call: "AMZN 偏多,AWS 雲端需求強勁,Q1 財報優於預期",                                            type: "A", win: true  },
-  { date: "2026-05-19", ticker: "MSFT",  market: "us", call: "MSFT 留意 470 支撐,Copilot 訂閱數成長",                                                 type: "A", win: true  },
-  { date: "2026-05-19", ticker: "2603",  market: "tw", call: "長榮 (2603) 短期過熱,航運運價回落,建議獲利了結",                                          type: "C", win: true  },
-  { date: "2026-05-18", ticker: "AMD",   market: "us", call: "AMD MI400 量產進度落後,短期風險升高,觀望",                                              type: "C", win: false },
-  { date: "2026-05-18", ticker: "2891",  market: "tw", call: "中信金 (2891) 偏多,升息週期未結束,股息穩定",                                            type: "A", win: true  },
-  { date: "2026-05-17", ticker: "NFLX",  market: "us", call: "NFLX 訂閱數放緩風險,Q2 財報前建議觀望",                                                 type: "C", win: true  },
-  { date: "2026-05-17", ticker: "3008",  market: "tw", call: "大立光 (3008) 留意 2500 支撐,iPhone 17 鏡頭升級利多",                                   type: "A", win: true  },
-  { date: "2026-05-16", ticker: "COIN",  market: "us", call: "COIN 加密貨幣回檔風險,短期觀望",                                                        type: "C", win: true  },
-  { date: "2026-05-16", ticker: "PLTR",  market: "us", call: "PLTR 短線過熱,本益比 > 200 倍,建議拉回觀察",                                            type: "C", win: false },
-  { date: "2026-05-16", ticker: "2412",  market: "tw", call: "中華電 (2412) 偏多,5G 用戶數穩定成長",                                                  type: "A", win: true  },
-  { date: "2026-05-15", ticker: "ASML",  market: "us", call: "ASML 偏多,中國訂單恢復,EUV 出貨優於預期",                                               type: "A", win: true  },
-  { date: "2026-05-15", ticker: "JPM",   market: "us", call: "JPM 升息預期下偏多,但留意信貸風險",                                                     type: "A", win: false },
-  { date: "2026-05-15", ticker: "1301",  market: "tw", call: "台塑 (1301) 風險升高,塑化景氣循環向下",                                                  type: "C", win: true  },
-  { date: "2026-05-14", ticker: "AVGO",  market: "us", call: "AVGO 留意 1700 支撐,客製 ASIC 訂單增加",                                                type: "A", win: true  },
-  { date: "2026-05-14", ticker: "QCOM",  market: "us", call: "QCOM AI 手機晶片成長動能,偏多",                                                         type: "A", win: true  },
-  { date: "2026-05-14", ticker: "2382",  market: "tw", call: "廣達 (2382) 留意 280 支撐,AI 伺服器訂單能見度高",                                       type: "A", win: false },
-  { date: "2026-05-13", ticker: "INTC",  market: "us", call: "INTC 短期風險,18A 製程量產進度仍不明朗,觀望",                                            type: "C", win: true  },
-  { date: "2026-05-13", ticker: "BABA",  market: "us", call: "BABA 偏多,雲端業務分拆題材",                                                            type: "A", win: false },
-  { date: "2026-05-13", ticker: "2002",  market: "tw", call: "中鋼 (2002) 鋼價回落風險,短期觀望",                                                     type: "C", win: true  },
-  { date: "2026-05-12", ticker: "DIS",   market: "us", call: "DIS 串流業務轉虧為盈,偏多",                                                             type: "A", win: true  },
-  { date: "2026-05-12", ticker: "WMT",   market: "us", call: "WMT 偏多,Q1 EPS 優於市場預期",                                                          type: "A", win: true  },
-  { date: "2026-05-12", ticker: "5871",  market: "tw", call: "中租 (5871) 留意 180 支撐,租賃市佔率穩定",                                              type: "A", win: true  },
-  { date: "2026-05-11", ticker: "ORCL",  market: "us", call: "ORCL 雲端訂單成長動能,偏多",                                                            type: "A", win: true  },
-  { date: "2026-05-11", ticker: "BA",    market: "us", call: "BA 風險偏高,新機交付進度落後,觀望",                                                     type: "C", win: true  },
-  { date: "2026-05-11", ticker: "2308",  market: "tw", call: "台達電 (2308) 留意 380 支撐,AI 散熱解決方案出貨增加",                                    type: "A", win: true  },
-  { date: "2026-05-10", ticker: "CRM",   market: "us", call: "CRM AI Agent 訂閱動能,偏多",                                                            type: "A", win: false },
-  { date: "2026-05-10", ticker: "3034",  market: "tw", call: "聯詠 (3034) 短期過熱,IC 設計族群拉回觀察",                                              type: "C", win: true  },
-  { date: "2026-05-10", ticker: "2912",  market: "tw", call: "統一超 (2912) 偏多,Q1 EPS 同比成長 8%",                                                 type: "A", win: true  },
-];
+// 真實資料來源:/data/track-record.json(由 scripts/build_track_record.py 每週從歷史日報抽出,
+// Yahoo Finance 計算 outcome)。fetch 失敗或無資料 → 顯示「資料準備中」空狀態,絕不顯示 mock。
+let RECORDS = [];
 
 // Normalize record from JSON file or inline fallback to unified shape
 function normalize(r) {
@@ -695,10 +658,19 @@ function renderRecords(filter) {
   const c = NORMALIZED.filter(r => r.type === "C" && (r.outcome === "win" || r.outcome === "loss"));
   const aw = a.filter(r => r.outcome === "win").length;
   const cw = c.filter(r => r.outcome === "win").length;
-  document.getElementById("stat-direction").textContent =
-    a.length > 0 ? ((aw / a.length) * 100).toFixed(1) + "%" : "—";
-  document.getElementById("stat-risk").textContent =
-    c.length > 0 ? ((cw / c.length) * 100).toFixed(1) + "%" : "—";
+  // 樣本 < 20 視為統計上不可信,改顯示「樣本累積中 (X/20)」而非具體百分比
+  const MIN_N = 20;
+  const fmtRate = (wins, total) => {
+    if (total === 0) return "—";
+    if (total < MIN_N) return `樣本累積中<br><span style="font-size:13px;color:rgba(255,255,255,0.5);font-weight:600;">(${total}/${MIN_N})</span>`;
+    return ((wins / total) * 100).toFixed(1) + "%";
+  };
+  const sd = document.getElementById("stat-direction");
+  const sr = document.getElementById("stat-risk");
+  sd.innerHTML = fmtRate(aw, a.length);
+  sr.innerHTML = fmtRate(cw, c.length);
+  if (a.length > 0 && a.length < MIN_N) sd.style.fontSize = "20px";
+  if (c.length > 0 && c.length < MIN_N) sr.style.fontSize = "20px";
   document.getElementById("stat-total").textContent = NORMALIZED.length;
   const days = new Set(NORMALIZED.map(r => r.date)).size;
   document.getElementById("stat-days").textContent = days;
@@ -729,11 +701,27 @@ function applyFilter(btn) {
       }
     }
   } catch (e) {
-    console.warn("Falling back to inline records:", e);
+    console.warn("track-record.json load failed:", e);
   }
   NORMALIZED = RECORDS.map(normalize);
   renderRecords("all");
+  if (NORMALIZED.length === 0) renderEmptyState();
 })();
+
+function renderEmptyState() {
+  const table = document.getElementById("rec-table");
+  if (table) {
+    table.innerHTML = `<div style="padding:48px 24px;text-align:center;color:rgba(255,255,255,0.55);">
+      <div style="font-size:48px;margin-bottom:12px;">📊</div>
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:6px;">資料準備中</div>
+      <div style="font-size:13px;line-height:1.6;">日報剛上線不久,戰績紀錄正在累積中。<br>每週日重新計算,等樣本累積到 20+ 筆才會公開勝率。</div>
+    </div>`;
+  }
+  ["stat-direction","stat-risk","stat-total","stat-days"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = "—";
+  });
+}
 
 // Minimal i18n
 const i18n = {
