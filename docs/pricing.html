@@ -692,8 +692,9 @@ footer {
     <div class="tier-card pro scene-reveal scene-reveal-d2">
       <div class="tier-name" data-i18n="tier_pro_name">⭐ Premium 試讀</div>
       <div class="tier-price">
+        <div class="price-prefix" style="font-size:14px;font-weight:700;color:rgba(255,255,255,0.6);margin-right:4px;align-self:flex-end;padding-bottom:14px;" data-i18n="tier_pro_prefix">首月</div>
         <div class="price-num" id="pro-price-num">299</div>
-        <div class="price-unit" data-i18n="price_per_month">首月</div>
+        <div class="price-unit" data-i18n="price_per_month">/月</div>
       </div>
       <div class="price-annual-note" id="pro-price-note" data-i18n="tier_pro_renew" style="color:rgba(255,255,255,0.45);font-size:12px;">次月起 NT$499/月 · 隨時取消</div>
       <p class="tier-desc" data-i18n="tier_pro_desc">用 4 折體驗整整一個月 Premium 全功能。覺得不適合,30 天內無理由全額退費。</p>
@@ -1043,7 +1044,9 @@ const i18n = {
     pf6: "Portfolio P&L tracking",
     pf7: "Priority customer support",
     tier_prem_desc: "For serious investors. Unlimited tracking, real-time alerts, monthly portfolio health checks.",
-    pmf1: "Everything in Pro",
+    pmf1: "Everything in Premium trial",
+    tier_pro_renew: "Then NT$499/mo · cancel anytime",
+    tier_pro_prefix: "First month",
     pmf2: "Unlimited stock tracking",
     pmf3: "Real-time LINE breaking-news alerts",
     pmf4: "Monthly portfolio health report",
@@ -1121,7 +1124,9 @@ const i18n = {
     pf6: "持倉損益追蹤",
     pf7: "優先客服回覆",
     tier_prem_desc: "給高度投入的投資人。無限追蹤、即時警報、月度健檢，全方位掌控投資組合。",
-    pmf1: "Pro 所有功能",
+    pmf1: "試讀方案所有功能",
+    tier_pro_renew: "次月起 NT$499/月 · 隨時取消",
+    tier_pro_prefix: "首月",
     pmf2: "無限股票追蹤",
     pmf3: "即時 LINE 重大新聞提醒",
     pmf4: "月度投資組合健檢報告",
@@ -1228,7 +1233,11 @@ function setBilling(mode) {
   const proNote = document.getElementById('pro-price-note');
   const proCta = document.getElementById('pro-cta');
   animatePrice(proNum, p.pro);
-  proNote.textContent = mode === 'annual' ? t.annual_pro_note : '';
+  // 試讀卡:monthly 模式顯示「次月起 NT$499/月」trial reminder;annual 顯示年付一次扣款
+  proNote.textContent = mode === 'annual' ? t.annual_pro_note : (t.tier_pro_renew || '次月起 NT$499/月 · 隨時取消');
+  // 「首月」prefix 只在 monthly 顯示(年付沒有 trial 折扣概念)
+  const proPrefix = document.querySelector('.tier-card.pro .price-prefix');
+  if (proPrefix) proPrefix.style.display = mode === 'monthly' ? '' : 'none';
   proCta.href = STRIPE_LINKS[mode].pro;
 
   const premiumNum = document.getElementById('premium-price-num');
