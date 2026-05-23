@@ -66,9 +66,64 @@ async function verifyState(state, secret) {
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
 };
+
+// 歸一化 utm_source 到固定集合,讓 daily aggregate 桶數可控
+const ATTR_SOURCES = ["ig", "fb", "threads", "line", "x", "tiktok", "youtube", "email", "direct", "other"];
+function normalizeSource(s) {
+  const v = (s || "").toString().trim().toLowerCase();
+  if (!v) return "direct";
+  if (v === "instagram") return "ig";
+  if (v === "facebook") return "fb";
+  if (v === "twitter") return "x";
+  if (v === "yt") return "youtube";
+  if (v === "tt") return "tiktok";
+  return ATTR_SOURCES.includes(v) ? v : "other";
+}
+
+// 寫一筆 convert + 更新當日聚合。Worker 沒有 KV 原子操作,
+// 同秒兩個寫入會互蓋 —— 我們可接受小幅低估(訂閱量級小);要強一致再上 D1。
+async function recordConvert(env, { email, event, visit_id, utm_source, utm_medium, utm_campaign }) {
+  if (!email || !event) return;
+  let attr = { utm_source: null, utm_medium: null, utm_campaign: null };
+  if (visit_id) {
+    try {
+      const raw = await env.USER_PREFS.get(`attr:visit:${visit_id}`);
+      if (raw) {
+        const v = JSON.parse(raw);
+        attr.utm_source = v.utm_source || null;
+        attr.utm_medium = v.utm_medium || null;
+        attr.utm_campaign = v.utm_campaign || null;
+      }
+    } catch {}
+  }
+  if (utm_source && !attr.utm_source) attr.utm_source = utm_source;
+  if (utm_medium && !attr.utm_medium) attr.utm_medium = utm_medium;
+  if (utm_campaign && !attr.utm_campaign) attr.utm_campaign = utm_campaign;
+
+  const ts = Date.now();
+  const record = { visit_id: visit_id || null, email, event, ts, ...attr };
+  await env.USER_PREFS.put(
+    `attr:convert:${ts}_${email}`,
+    JSON.stringify(record),
+    { expirationTtl: 86400 * 365 }
+  );
+
+  const day = new Date(ts + 8 * 3600 * 1000).toISOString().slice(0, 10);
+  const aggKey = `attr:daily:${day}`;
+  let agg = { by_source: {}, by_event: {}, total: 0 };
+  try {
+    const raw = await env.USER_PREFS.get(aggKey);
+    if (raw) agg = JSON.parse(raw);
+  } catch {}
+  const src = normalizeSource(attr.utm_source);
+  agg.by_source[src] = (agg.by_source[src] || 0) + 1;
+  agg.by_event[event] = (agg.by_event[event] || 0) + 1;
+  agg.total = (agg.total || 0) + 1;
+  await env.USER_PREFS.put(aggKey, JSON.stringify(agg), { expirationTtl: 86400 * 400 });
+}
 
 export default {
   async fetch(request, env, ctx) {
@@ -402,6 +457,89 @@ export default {
       return json({ ok: true, target, plan });
     }
 
+    // Attribution: 記錄首次訪問(UTM)
+    if (url.pathname === "/track/visit" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
+      const visit_id = (crypto.randomUUID && crypto.randomUUID()) ||
+        (Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
+      const record = {
+        utm_source: (body.utm_source || "").toString().slice(0, 64) || null,
+        utm_medium: (body.utm_medium || "").toString().slice(0, 64) || null,
+        utm_campaign: (body.utm_campaign || "").toString().slice(0, 128) || null,
+        utm_term: (body.utm_term || "").toString().slice(0, 128) || null,
+        utm_content: (body.utm_content || "").toString().slice(0, 128) || null,
+        ts: typeof body.ts === "number" ? body.ts : Date.now(),
+        ip_country: request.headers.get("cf-ipcountry") || null,
+      };
+      await env.USER_PREFS.put(
+        `attr:visit:${visit_id}`,
+        JSON.stringify(record),
+        { expirationTtl: 7776000 }
+      );
+      return json({ visit_id });
+    }
+
+    // Attribution: 訂閱事件轉換
+    if (url.pathname === "/track/convert" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
+      const email = (body.email || "").trim().toLowerCase();
+      const event = (body.event || "").toString();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "invalid_email" }, 400);
+      const allowed = ["subscribe_free", "subscribe_pro", "subscribe_premium", "invite_used"];
+      if (!allowed.includes(event)) return json({ error: "invalid_event" }, 400);
+      await recordConvert(env, {
+        email, event,
+        visit_id: body.visit_id || null,
+        utm_source: body.utm_source,
+        utm_medium: body.utm_medium,
+        utm_campaign: body.utm_campaign,
+      });
+      return json({ ok: true });
+    }
+
+    // Admin: 歸因摘要(最近 30 天 daily stats + 最近 50 筆 convert)
+    if (url.pathname === "/admin/analytics-summary" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      const email = (body.email || "").trim().toLowerCase();
+      if (!ADMIN_EMAILS.includes(email)) return json({ error: "Forbidden" }, 403);
+
+      const days = [];
+      const totals = { by_source: {}, by_event: {}, total: 0 };
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(Date.now() + 8 * 3600 * 1000 - i * 86400 * 1000)
+          .toISOString().slice(0, 10);
+        const raw = await env.USER_PREFS.get(`attr:daily:${d}`);
+        const agg = raw ? JSON.parse(raw) : { by_source: {}, by_event: {}, total: 0 };
+        days.push({ date: d, ...agg });
+        for (const [k, v] of Object.entries(agg.by_source || {})) {
+          totals.by_source[k] = (totals.by_source[k] || 0) + v;
+        }
+        for (const [k, v] of Object.entries(agg.by_event || {})) {
+          totals.by_event[k] = (totals.by_event[k] || 0) + v;
+        }
+        totals.total += agg.total || 0;
+      }
+
+      // 最近 50 筆 convert(key 用 timestamp prefix,list reverse 取最新)
+      const list = await env.USER_PREFS.list({ prefix: "attr:convert:", limit: 1000 });
+      const sortedKeys = list.keys
+        .map(k => k.name)
+        .sort()
+        .reverse()
+        .slice(0, 50);
+      const recent = [];
+      for (const k of sortedKeys) {
+        const raw = await env.USER_PREFS.get(k);
+        if (raw) {
+          try { recent.push(JSON.parse(raw)); } catch {}
+        }
+      }
+      return json({ days, totals, recent });
+    }
+
     // Save user preferences
     if (url.pathname === "/save-preferences" && request.method === "POST") {
       let body;
@@ -511,6 +649,11 @@ export default {
       await env.USER_PREFS.put(`plan:${email}`, "free");
       // 歡迎信、補寄日報、推薦轉換全部背景化 —— 任一失敗都不影響「註冊成功」的回應
       ctx.waitUntil(postSignupTasks(email, body.ref, env));
+      ctx.waitUntil(recordConvert(env, {
+        email, event: "invite_used",
+        visit_id: body.visit_id, utm_source: body.utm_source,
+        utm_medium: body.utm_medium, utm_campaign: body.utm_campaign,
+      }));
       return json({ ok: true });
     }
 
@@ -636,6 +779,11 @@ export default {
       const added = await addToBrevo(email, env.BREVO_API_KEY, listId);
       if (!added) return json({ error: "brevo_error" }, 502);
       ctx.waitUntil(postSignupTasks(email, body.ref, env));
+      ctx.waitUntil(recordConvert(env, {
+        email, event: "subscribe_free",
+        visit_id: body.visit_id, utm_source: body.utm_source,
+        utm_medium: body.utm_medium, utm_campaign: body.utm_campaign,
+      }));
       return json({ ok: true });
     }
 
@@ -732,6 +880,14 @@ export default {
           try { await sendTodayDigestToOne(email, env.BREVO_API_KEY, env.USER_PREFS); }
           catch (e) { console.log("stripe digest error:", String(e)); }
         })());
+        // Attribution: Stripe Checkout 透過 session.metadata 帶 visit_id / utm
+        const md = session.metadata || {};
+        ctx.waitUntil(recordConvert(env, {
+          email,
+          event: tier === "Premium" ? "subscribe_premium" : "subscribe_pro",
+          visit_id: md.visit_id, utm_source: md.utm_source,
+          utm_medium: md.utm_medium, utm_campaign: md.utm_campaign,
+        }));
       }
     }
 

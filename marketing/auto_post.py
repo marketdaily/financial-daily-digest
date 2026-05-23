@@ -410,7 +410,14 @@ def cmd_stage(env):
     print(f"\n完成 —— 圖片公開網址例:{base}/social/00_teaser.jpg")
 
 
+UTM_SRC = {"instagram": "ig", "facebook": "fb", "threads": "threads",
+           "line": "line", "x": "x", "tiktok": "tiktok", "youtube": "youtube"}
+
+
 def caption_for(caption, plat, line_url):
+    # Per-platform UTM source swap so attribution can tell which network drove the click
+    src = UTM_SRC.get(plat, "social")
+    caption = caption.replace("utm_source=social&", f"utm_source={src}&")
     if plat in ("line", "x") or not line_url:
         return caption
     if plat == "instagram":

@@ -878,7 +878,6 @@ footer {
     <a href="track-record.html" class="lang-btn" data-i18n="nav_record">📊 戰績</a>
     <a href="vs.html" class="lang-btn" data-i18n="nav_vs">vs 對手</a>
     <a href="pricing.html" class="lang-btn" data-i18n="nav_pricing">定價</a>
-    <a href="dashboard.html" class="lang-btn" data-i18n="nav_settings">⚙️ 我的專區</a>
     <button class="lang-btn" id="lang-toggle" onclick="toggleLang()">中文</button>
   </div>
 </nav>
@@ -919,6 +918,7 @@ footer {
           <span data-i18n="remember_email">記住我的 Email</span>
         </label>
         <p class="subscribe-note" style="margin-top:8px;" data-i18n="sub_note_netflix">已訂閱？輸入你的 Email 直接登入</p>
+        <a href="dashboard.html" class="hero-my-account" data-i18n="hero_my_account" style="display:inline-block;margin-top:6px;font-size:13px;color:#a5b4fc;text-decoration:none;font-weight:600;transition:color .2s;" onmouseover="this.style.color='#c7d2fe'" onmouseout="this.style.color='#a5b4fc'">⚙️ 已有帳號？直接前往我的專區 →</a>
         <div class="error-msg" id="error-email-msg" style="display:none;" data-i18n="error_email">Please enter a valid email address.</div>
       </div>
 
@@ -1142,7 +1142,7 @@ footer {
 
 <!-- ── Track Record Summary ── -->
 <style>
-.tr-summary { max-width: 1120px; margin: 80px auto 0; padding: 0 24px; }
+.tr-summary { max-width: 1120px; margin: 32px auto 104px; padding: 0 24px; }
 .tr-card {
   background: linear-gradient(135deg, rgba(16,185,129,0.08), rgba(99,102,241,0.06));
   border: 1px solid rgba(16,185,129,0.2);
@@ -1192,6 +1192,7 @@ footer {
   display: block; margin-bottom: 6px;
 }
 .tr-stat-num.indigo { color: #a5b4fc; }
+.tr-stat-num.red { color: #fca5a5; }
 .tr-stat-num.amber { color: #fbbf24; }
 .tr-stat-label {
   font-size: 11px; font-weight: 600;
@@ -1228,11 +1229,11 @@ footer {
     <div class="tr-stats-row">
       <div class="tr-stat">
         <span class="tr-stat-num">75.5%</span>
-        <div class="tr-stat-label" data-i18n="tr_s1">方向勝率</div>
+        <div class="tr-stat-label" data-i18n="tr_s1">🟢 看多勝率</div>
       </div>
       <div class="tr-stat">
-        <span class="tr-stat-num indigo">68%</span>
-        <div class="tr-stat-label" data-i18n="tr_s2">避坑勝率</div>
+        <span class="tr-stat-num red">68%</span>
+        <div class="tr-stat-label" data-i18n="tr_s2">🔴 看空勝率</div>
       </div>
       <div class="tr-stat">
         <span class="tr-stat-num amber">90</span>
@@ -1856,55 +1857,6 @@ footer {
   </div>
 </div>
 
-<!-- Email Preview -->
-<div class="preview scene-zoom-in">
-  <div class="section-head" style="margin-bottom:40px;">
-    <div class="section-eyebrow">Sample Issue</div>
-    <h2 data-i18n="preview_title">What it looks like 👇</h2>
-  </div>
-  <div class="preview-window">
-    <div class="preview-browser-bar">
-      <div class="browser-dots">
-        <div class="browser-dot bd-red"></div>
-        <div class="browser-dot bd-yellow"></div>
-        <div class="browser-dot bd-green"></div>
-      </div>
-      <div class="browser-bar-url" data-i18n="prev_bar">📩 MarketDaily · 2026-05-20 Morning Briefing</div>
-    </div>
-    <div class="preview-email-header">
-      <div class="preview-date" data-i18n="prev_date">Wednesday · May 20, 2026</div>
-      <div class="preview-title-text" data-i18n="prev_title">📈 Morning Briefing · US &amp; Taiwan Markets</div>
-      <div class="preview-verdict" data-i18n="prev_verdict">📊 Verdict: Cautiously Bullish</div>
-    </div>
-    <div class="preview-email-body">
-      <div class="preview-tldr">
-        <div class="preview-tldr-title" data-i18n="prev_tldr_title">⚡ TL;DR — 30 seconds</div>
-        <ul>
-          <li data-i18n="prev_li1">Fed hints at rate pause → tech stocks rallied overnight</li>
-          <li data-i18n="prev_li2">TSMC beats Q1 forecast → TWSE opens strong</li>
-          <li data-i18n="prev_li3">Oil drops 2% on inventory data → airline & logistics stocks up</li>
-        </ul>
-      </div>
-      <div class="preview-news-label" data-i18n="prev_news_label">Today's Top Stories</div>
-      <div class="preview-news-item">
-        <div class="preview-badge v" data-i18n="prev_badge_v">✅ Multi-source</div>
-        <div class="preview-news-text" data-i18n="prev_news1">Fed Chair signals potential pause in rate hike cycle at Jackson Hole</div>
-        <div class="preview-news-why" data-i18n="prev_why1">💡 Lower rates → cheaper borrowing → good for growth stocks like NVDA, AAPL</div>
-      </div>
-      <div class="preview-news-item">
-        <div class="preview-badge v" data-i18n="prev_badge_v">✅ Multi-source</div>
-        <div class="preview-news-text" data-i18n="prev_news2">TSMC Q1 revenue beats estimates by 8%, raises full-year outlook</div>
-        <div class="preview-news-why" data-i18n="prev_why2">💡 Good news for 2330.TW holders — strong AI chip demand continues into H2</div>
-      </div>
-      <div class="preview-news-item">
-        <div class="preview-badge s" data-i18n="prev_badge_s">⚠️ Single source</div>
-        <div class="preview-news-text" data-i18n="prev_news3">Crude oil falls 2.3% on surprise inventory build</div>
-        <div class="preview-news-why" data-i18n="prev_why3">💡 Lower oil = cost savings for airlines, shipping; watch EVA Air 2618.TW</div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- CTA Bottom -->
 <div class="cta-bottom scene-zoom-in">
   <div class="cta-inner">
@@ -1938,9 +1890,52 @@ footer {
 <script>
 const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
 
+// ── Attribution: capture UTM on first visit, persist for 90 days, ping /track/visit ──
+(function captureAttribution() {
+  try {
+    const u = new URL(window.location.href);
+    const utm = {
+      utm_source:   u.searchParams.get("utm_source"),
+      utm_medium:   u.searchParams.get("utm_medium"),
+      utm_campaign: u.searchParams.get("utm_campaign"),
+      utm_term:     u.searchParams.get("utm_term"),
+      utm_content:  u.searchParams.get("utm_content"),
+    };
+    const hasUtm = Object.values(utm).some(Boolean);
+    // sessionStorage carries through the subscribe flow; localStorage persists across return visits
+    if (hasUtm) {
+      const payload = { ...utm, ts: Date.now() };
+      sessionStorage.setItem("md-attr", JSON.stringify(payload));
+      localStorage.setItem("md-attr-first", JSON.stringify(payload));
+      // Fire and forget — request a visit_id from worker, store it
+      fetch(WORKER_URL + "/track/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d && d.visit_id) sessionStorage.setItem("md-visit-id", d.visit_id); })
+        .catch(() => {});
+    }
+  } catch (e) { /* ignore */ }
+})();
+
+function getAttrPayload() {
+  try {
+    const attr = JSON.parse(sessionStorage.getItem("md-attr") || localStorage.getItem("md-attr-first") || "{}");
+    return {
+      visit_id:     sessionStorage.getItem("md-visit-id") || null,
+      utm_source:   attr.utm_source   || null,
+      utm_medium:   attr.utm_medium   || null,
+      utm_campaign: attr.utm_campaign || null,
+    };
+  } catch { return { visit_id: null }; }
+}
+
 const i18n = {
   en: {
     nav_settings: "⚙️ My Account", nav_pricing: "Pricing", nav_guide: "📖 Getting Started",
+    hero_my_account: "⚙️ Already have an account? Go to My Account →",
     sp_heading: "🎉 Subscription confirmed! Set your password",
     sp_pwd_placeholder: "Set a password (at least 6 characters)",
     sp_pwd2_placeholder: "Re-enter password",
@@ -2054,6 +2049,7 @@ const i18n = {
   },
   zh: {
     nav_settings: "⚙️ 我的專區", nav_pricing: "定價", nav_guide: "📖 新手教學",
+    hero_my_account: "⚙️ 已有帳號？直接前往我的專區 →",
     sp_heading: "🎉 訂閱確認！設定你的密碼",
     sp_pwd_placeholder: "設定密碼（至少 6 位）",
     sp_pwd2_placeholder: "再輸入一次",
@@ -2306,7 +2302,7 @@ async function subscribeFree() {
     const refCode = localStorage.getItem("md-ref") || "";
     const res = await fetch(WORKER_URL + "/subscribe-free-direct", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, ref: refCode }),
+      body: JSON.stringify({ email, ref: refCode, ...getAttrPayload() }),
     });
     const data = await res.json();
     if (data.ok) {
@@ -2341,7 +2337,7 @@ async function subscribeInvite() {
     const refCode = localStorage.getItem("md-ref") || "";
     const res = await fetch(WORKER_URL + "/free-subscribe", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, code, ref: refCode }),
+      body: JSON.stringify({ email, code, ref: refCode, ...getAttrPayload() }),
     });
     const data = await res.json();
     if (data.ok) {
