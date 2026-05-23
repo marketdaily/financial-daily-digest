@@ -294,15 +294,18 @@ export default {
     // LINE Bot Messaging API webhook:接收訊息 → AI Q&A → reply
     if (url.pathname === "/line/webhook" && request.method === "POST") {
       const bodyText = await request.text();
-      const sig = request.headers.get("x-line-signature");
-      const channelSecret = env.LINE_MESSAGING_CHANNEL_SECRET || env.LINE_CHANNEL_SECRET;
-      if (!await verifyLineSignature(bodyText, sig, channelSecret)) {
-        return new Response("Bad signature", { status: 401 });
-      }
       let payload;
       try { payload = JSON.parse(bodyText); } catch { return new Response("OK", { status: 200 }); }
       const events = payload.events || [];
-      // 非同步處理,Webhook 必須 200 OK 否則 LINE 重試
+      // LINE Console 的 Verify 按鈕送空 events 連通性測試 — 不驗簽,直接 200
+      if (events.length === 0) return new Response("OK", { status: 200 });
+      // 真實事件:嚴格驗 HMAC-SHA256 簽名
+      const sig = request.headers.get("x-line-signature");
+      const channelSecret = env.LINE_MESSAGING_CHANNEL_SECRET || env.LINE_CHANNEL_SECRET;
+      if (!await verifyLineSignature(bodyText, sig, channelSecret)) {
+        console.log("line webhook signature mismatch");
+        return new Response("Bad signature", { status: 401 });
+      }
       ctx.waitUntil(processLineEvents(events, env));
       return new Response("OK", { status: 200 });
     }
