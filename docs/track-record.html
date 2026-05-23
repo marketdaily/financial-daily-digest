@@ -647,10 +647,34 @@ function renderRecords(filter) {
   else if (filter === "win") filtered = NORMALIZED.filter(r => r.outcome === "win");
   else if (filter === "loss") filtered = NORMALIZED.filter(r => r.outcome === "loss");
 
+  // TW ticker → 中文名 兜底:當 JSON 沒帶 name 時用這個
+  const TW_NAMES_FALLBACK = {
+    "2330":"台積電","2303":"聯電","2454":"聯發科","2379":"瑞昱","3034":"聯詠",
+    "2327":"國巨","3037":"欣興","3711":"日月光投控","6669":"緯穎","2474":"可成",
+    "3008":"大立光","3481":"群創","2049":"上銀","4938":"和碩","2357":"華碩","2353":"宏碁",
+    "2317":"鴻海","2382":"廣達","2308":"台達電","8299":"群聯",
+    "2882":"國泰金","2891":"中信金","2884":"玉山金","2885":"元大金","2880":"華南金",
+    "2886":"兆豐金","2887":"台新金","2890":"永豐金","2892":"第一金","2881":"富邦金",
+    "2883":"凱基金","2888":"新光金","5871":"中租-KY","2823":"中壽",
+    "2603":"長榮","2609":"陽明","2615":"萬海","2618":"長榮航","2610":"華航","2207":"和泰車",
+    "2002":"中鋼","1301":"台塑","1303":"南亞","1326":"台化","6505":"台塑化",
+    "1102":"亞泥","1101":"台泥","2105":"正新","1402":"遠東新",
+    "1216":"統一","2912":"統一超","9904":"寶成","9910":"豐泰",
+    "2412":"中華電","4904":"遠傳","3045":"台灣大",
+    "0050":"元大台灣50","0056":"元大高股息","00878":"國泰永續高股息",
+    "00919":"群益台灣精選高息","00929":"復華台灣科技優息",
+    "00940":"元大台灣價值高息","00713":"元大台灣高息低波",
+  };
+
   filtered.forEach(r => {
     const row = document.createElement("div");
     row.className = "rec-row";
-    const marketBadge = r.market === "us" ? "US" : "TW";
+    const isTWTicker = /^\d{4,6}$/.test(r.ticker || "");
+    const isTW = r.market === "tw" || (!r.market && isTWTicker);
+    const marketBadge = isTW ? "TW" : "US";
+    const displayName = r.name && r.name.trim()
+      ? r.name
+      : (isTW ? (TW_NAMES_FALLBACK[r.ticker] || r.ticker) : r.ticker);
     const tagClass = r.type === "A" ? "tag-a" : "tag-c";
     const tagText = r.type === "A" ? "🟢 看多" : "🔴 看空";
     let resClass = "neut", resText = "⏳ 待結";
@@ -658,7 +682,7 @@ function renderRecords(filter) {
     else if (r.outcome === "loss") { resClass = "loss"; resText = "❌ 輸"; }
     row.innerHTML = `
       <div class="rec-cell date">${r.date}</div>
-      <div class="rec-cell ticker">${r.name || r.ticker}<span class="market">${marketBadge}</span></div>
+      <div class="rec-cell ticker">${displayName}<span class="market">${marketBadge}</span></div>
       <div class="rec-cell call">${r._call}</div>
       <div class="rec-cell tag"><span class="${tagClass}">${tagText}</span></div>
       <div class="rec-cell result ${resClass}">${resText}</div>
