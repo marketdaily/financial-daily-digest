@@ -37,6 +37,47 @@ BULL_KW = ("看漲", "建議買進", "可以買進", "繼續持有", "繼續抱"
 BEAR_KW = ("停損", "獲利了結", "認賠出場", "建議賣出", "風險升高", "短期過熱", "拉回",
            "觀望", "別出手", "保守", "減碼", "看跌", "偏空")
 
+# ── TW ticker → 中文公司名 對照表 ────────────────────────────────
+# 用於 signal-card / stock-card 解析時補上中文公司名(parse 出來只有 4 位數代碼時)
+TW_NAMES: dict[str, str] = {
+    # 半導體 / IC 設計
+    "2330": "台積電", "2303": "聯電", "2454": "聯發科", "2379": "瑞昱",
+    "3034": "聯詠", "2327": "國巨", "3037": "欣興", "3711": "日月光投控",
+    "6669": "緯穎", "2474": "可成", "3008": "大立光", "3481": "群創",
+    "2049": "上銀", "4938": "和碩", "2357": "華碩", "2353": "宏碁",
+    # 電子代工 / 系統
+    "2317": "鴻海", "2382": "廣達", "2308": "台達電",
+    # 金融
+    "2882": "國泰金", "2891": "中信金", "2884": "玉山金", "2885": "元大金",
+    "2880": "華南金", "2886": "兆豐金", "2887": "台新金", "2890": "永豐金",
+    "2892": "第一金", "2881": "富邦金", "2883": "凱基金", "2888": "新光金",
+    "5871": "中租-KY", "2823": "中壽",
+    # 航運 / 運輸
+    "2603": "長榮", "2609": "陽明", "2615": "萬海", "2618": "長榮航",
+    "2610": "華航", "2207": "和泰車",
+    # 鋼鐵 / 塑化 / 原物料
+    "2002": "中鋼", "1301": "台塑", "1303": "南亞", "1326": "台化",
+    "6505": "台塑化", "1102": "亞泥", "1101": "台泥", "2105": "正新",
+    "1402": "遠東新",
+    # 食品 / 民生
+    "1216": "統一", "2912": "統一超", "9904": "寶成", "9910": "豐泰",
+    # 電信
+    "2412": "中華電", "4904": "遠傳", "3045": "台灣大",
+    # ETF
+    "0050": "元大台灣50", "0056": "元大高股息", "00878": "國泰永續高股息",
+    "00919": "群益台灣精選高息", "00929": "復華台灣科技優息",
+    "00940": "元大台灣價值高息", "00713": "元大台灣高息低波",
+}
+
+
+def _enrich_tw_name(name: str, ticker: str) -> str:
+    """If ticker is a 4-digit TW code and name is empty, look up Chinese name."""
+    if name:
+        return name
+    if re.fullmatch(r"\d{4}", ticker):
+        return TW_NAMES.get(ticker, "")
+    return name
+
 
 def _clean(s: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
@@ -80,6 +121,7 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
         name, ticker = _extract_name_ticker(name_span)
         if not ticker:
             continue
+        name = _enrich_tw_name(name, ticker)
         rtype = "A" if verdict_class in ("buy", "hold") else "C"
         maybe_add({
             "date": date_str,
@@ -111,6 +153,7 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
         name, ticker = _extract_name_ticker(ticker_span)
         if not ticker:
             continue
+        name = _enrich_tw_name(name, ticker)
         maybe_add({
             "date": date_str,
             "name": name,
@@ -131,6 +174,7 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
         name, ticker = _extract_name_ticker(ticker_span)
         if not ticker or ticker == "無數據":
             continue
+        name = _enrich_tw_name(name, ticker)
         comment = _clean(comment_div.get_text())
         hit_bear = any(kw in comment for kw in BEAR_KW)
         hit_bull = any(kw in comment for kw in BULL_KW)

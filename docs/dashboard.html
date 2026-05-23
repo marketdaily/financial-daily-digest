@@ -683,26 +683,29 @@ nav {
 
     <!-- Referral Program -->
     <div class="card referral-card scene-reveal scene-reveal-d1" id="referral-section">
+      <a id="referral" style="position:relative;top:-80px;visibility:hidden;"></a>
       <div class="referral-header">
         <div class="referral-icon">🎁</div>
         <div>
-          <div class="referral-title" data-i18n="ref_title">推薦好友，一起賺報告！</div>
-          <div class="referral-subtitle" data-i18n="ref_subtitle">分享你的專屬連結，追蹤好友點擊與加入 · Pro 獎勵即將開放</div>
+          <div class="referral-title" data-i18n="ref_title">邀請朋友,雙方都得 30 天 Premium</div>
+          <div class="referral-subtitle" data-i18n="ref_subtitle">分享你的專屬連結 · 朋友訂閱成功,你跟他各自獲得 30 天 Premium 免費</div>
         </div>
       </div>
 
+      <div id="ref-bonus-badge" style="display:none;margin-bottom:14px;padding:12px 16px;border-radius:12px;background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(99,102,241,.18));border:1px solid rgba(16,185,129,.35);color:#a7f3d0;font-size:14px;font-weight:700;text-align:center;"></div>
+
       <div class="referral-stats">
         <div class="referral-stat">
-          <div class="referral-stat-num" id="ref-clicks">—</div>
-          <div class="referral-stat-label" data-i18n="ref_stat_clicks">連結點擊</div>
-        </div>
-        <div class="referral-stat">
           <div class="referral-stat-num" id="ref-signups">—</div>
-          <div class="referral-stat-label" data-i18n="ref_stat_signups">成功加入</div>
+          <div class="referral-stat-label" data-i18n="ref_stat_signups">已邀請人數</div>
         </div>
         <div class="referral-stat">
           <div class="referral-stat-num" id="ref-rewards">—</div>
-          <div class="referral-stat-label" data-i18n="ref_stat_rewards">可累積獎勵（天）</div>
+          <div class="referral-stat-label" data-i18n="ref_stat_rewards">已賺免費天數</div>
+        </div>
+        <div class="referral-stat">
+          <div class="referral-stat-num" id="ref-clicks">—</div>
+          <div class="referral-stat-label" data-i18n="ref_stat_clicks">連結點擊</div>
         </div>
       </div>
 
@@ -712,7 +715,7 @@ nav {
       </div>
 
       <div class="referral-reward-info" data-i18n-html="ref_reward_info">
-        <strong>🎁 推薦獎勵即將開放：</strong>系統已開始記錄你的連結點擊與好友加入 — <strong>現在累積的每一次推薦，獎勵啟用後都會算數</strong>。先把連結分享出去，搶先累積。
+        <strong>🎁 怎麼運作:</strong>朋友從你的專屬連結訂閱 → 系統自動記入 <strong>你 +30 天、朋友 +30 天 Premium 免費</strong>。已賺天數會自動累加在這個帳號上。
       </div>
 
       <div class="referral-share-btns">
@@ -720,10 +723,21 @@ nav {
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
           <span data-i18n="ref_share_line">分享到 LINE</span>
         </button>
+        <button class="share-btn" onclick="shareToFacebook()" style="background:#1877f2;color:#fff;border-color:#1877f2;">
+          <span data-i18n="ref_share_fb">Facebook</span>
+        </button>
+        <button class="share-btn" onclick="shareToX()" style="background:#0f1419;color:#fff;border-color:#0f1419;">
+          <span data-i18n="ref_share_x">X / Twitter</span>
+        </button>
         <button class="share-btn copy-link" onclick="copyRefLink()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           <span data-i18n="ref_copy_btn2">複製連結</span>
         </button>
+      </div>
+
+      <div style="margin-top:18px;">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.5px;margin-bottom:6px;" data-i18n="ref_recent_title">最近邀請</div>
+        <div id="ref-recent-list"></div>
       </div>
     </div>
 
@@ -826,16 +840,22 @@ const i18n = {
     line_bind_btn: "綁定 LINE →",
     line_bound_notice: "✓ LINE 已綁定 — 重大新聞會即時推播給你",
     line_unbind_btn: "解除綁定",
-    ref_title: "推薦好友，一起賺報告！",
-    ref_subtitle: "分享你的專屬連結，追蹤好友點擊與加入 · Pro 獎勵即將開放",
+    ref_title: "邀請朋友,雙方都得 30 天 Premium",
+    ref_subtitle: "分享你的專屬連結 · 朋友訂閱成功,你跟他各自獲得 30 天 Premium 免費",
     ref_stat_clicks: "連結點擊",
-    ref_stat_signups: "成功加入",
-    ref_stat_rewards: "可累積獎勵（天）",
+    ref_stat_signups: "已邀請人數",
+    ref_stat_rewards: "已賺免費天數",
     ref_loading: "載入中...",
     ref_copy_btn: "複製連結",
     ref_copy_btn2: "複製連結",
-    ref_reward_info: "<strong>🎁 推薦獎勵即將開放：</strong>系統已開始記錄你的連結點擊與好友加入 — <strong>現在累積的每一次推薦，獎勵啟用後都會算數</strong>。先把連結分享出去，搶先累積。",
+    ref_reward_info: "<strong>🎁 怎麼運作:</strong>朋友從你的專屬連結訂閱 → 系統自動記入 <strong>你 +30 天、朋友 +30 天 Premium 免費</strong>。已賺天數會自動累加在這個帳號上。",
     ref_share_line: "分享到 LINE",
+    ref_share_fb: "Facebook",
+    ref_share_x: "X / Twitter",
+    ref_recent_title: "最近邀請",
+    ref_recent_empty: "還沒有人加入 — 快把連結分享給朋友吧。",
+    ref_bonus_badge: "🎁 你目前累積 {days} 天 Premium 免費",
+    share_msg_template: "邀請新朋友訂閱 MarketDaily,你跟他都得 30 天 Premium 免費。連結:{link}",
     // dynamic
     plan_free: "免費方案",
     plan_paid: "付費方案",
@@ -976,15 +996,21 @@ const i18n = {
     line_bind_btn: "Bind LINE →",
     line_bound_notice: "✓ LINE connected — breaking news will be pushed to you in real time.",
     line_unbind_btn: "Unbind",
-    ref_title: "Refer Friends, Earn Reports Together!",
-    ref_subtitle: "Share your personal link and track friend clicks and sign-ups · Pro rewards coming soon.",
+    ref_title: "Invite friends — both get 30 days of Premium",
+    ref_subtitle: "Share your link. When a friend subscribes, you each get 30 days of Premium free.",
     ref_stat_clicks: "Link Clicks",
-    ref_stat_signups: "Sign-ups",
-    ref_stat_rewards: "Earnable Rewards (days)",
+    ref_stat_signups: "Friends Invited",
+    ref_stat_rewards: "Free Days Earned",
+    ref_share_fb: "Facebook",
+    ref_share_x: "X / Twitter",
+    ref_recent_title: "Recent Invites",
+    ref_recent_empty: "No one yet — share your link with friends.",
+    ref_bonus_badge: "🎁 You have earned {days} days of free Premium",
+    share_msg_template: "Subscribe to MarketDaily with my link — we both get 30 days of Premium free. Link: {link}",
     ref_loading: "Loading...",
     ref_copy_btn: "Copy Link",
     ref_copy_btn2: "Copy Link",
-    ref_reward_info: "<strong>🎁 Referral rewards coming soon:</strong> the system is already logging your link clicks and friend sign-ups — <strong>every referral you accumulate now will count once rewards go live</strong>. Share your link and get a head start.",
+    ref_reward_info: "<strong>🎁 How it works:</strong> When a friend subscribes via your link, you both get <strong>30 days of Premium free</strong>. Days are credited to your account automatically.",
     ref_share_line: "Share to LINE",
     // dynamic
     plan_free: "Free Plan",
@@ -2142,7 +2168,7 @@ let _refLink = "";
 
 async function loadReferral(email) {
   try {
-    const res = await fetch(WORKER_URL + "/get-referral", {
+    const res = await fetch(WORKER_URL + "/referral-stats", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email })
@@ -2150,12 +2176,39 @@ async function loadReferral(email) {
     if (!res.ok) return;
     const data = await res.json();
     _refCode = data.code || "";
-    _refLink = `https://marketdaily.ai/?ref=${_refCode}`;
+    _refLink = data.link || `https://marketdaily.ai/?ref=${_refCode}&utm_source=referral&utm_medium=user&utm_campaign=share`;
     document.getElementById("ref-link-display").textContent = _refLink;
     document.getElementById("ref-clicks").textContent = data.clicks ?? 0;
-    document.getElementById("ref-signups").textContent = data.conversions ?? 0;
-    document.getElementById("ref-rewards").textContent = (data.conversions ?? 0) * 7;
+    document.getElementById("ref-signups").textContent = data.total_referrals ?? 0;
+    document.getElementById("ref-rewards").textContent = data.total_bonus_days ?? 0;
+    renderRecentReferrals(data.recent_referrals || []);
+    renderBonusBadge(data.total_bonus_days || 0);
   } catch {}
+}
+
+function renderRecentReferrals(list) {
+  const host = document.getElementById("ref-recent-list");
+  if (!host) return;
+  if (!list.length) {
+    host.innerHTML = `<div style="font-size:12px;color:var(--text2);padding:8px 0;">${T('ref_recent_empty')}</div>`;
+    return;
+  }
+  host.innerHTML = list.map(r => {
+    const d = r.ts ? new Date(r.ts).toLocaleDateString() : "";
+    return `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--border);font-size:13px;color:var(--text);"><span>${r.email}</span><span style="color:var(--text2);font-size:12px;">${d}</span></div>`;
+  }).join("");
+}
+
+function renderBonusBadge(days) {
+  const host = document.getElementById("ref-bonus-badge");
+  if (!host) return;
+  if (!days) { host.style.display = "none"; return; }
+  host.style.display = "block";
+  host.innerHTML = T('ref_bonus_badge').replace("{days}", days);
+}
+
+function shareText() {
+  return (T('share_msg_template') || "邀請新朋友訂閱 MarketDaily,你跟他都得 30 天 Premium 免費。連結:{link}").replace("{link}", _refLink);
 }
 
 function copyRefLink() {
@@ -2170,9 +2223,17 @@ function copyRefLink() {
 
 function shareToLine() {
   if (!_refLink) return;
-  const text = encodeURIComponent(T('share_line_text'));
-  const url = encodeURIComponent(_refLink);
-  window.open(`https://line.me/R/msg/text/?${text}%0A${url}`, "_blank");
+  window.open(`https://line.me/R/msg/text/?${encodeURIComponent(shareText())}`, "_blank");
+}
+
+function shareToFacebook() {
+  if (!_refLink) return;
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(_refLink)}&quote=${encodeURIComponent(shareText())}`, "_blank");
+}
+
+function shareToX() {
+  if (!_refLink) return;
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText())}`, "_blank");
 }
 
 async function init() {

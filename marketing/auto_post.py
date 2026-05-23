@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MarketDaily 社群自動發文 — IG / FB / Threads / LINE / X / YouTube。
+"""MarketDaily 社群自動發文 — IG / FB / Threads / LINE / X / YouTube / TikTok。
 
 一次性設定見 SETUP_AUTOPOST.md;把權杖填進 marketing/.env。
 用法:
@@ -36,7 +36,9 @@ ENV_KEYS = ("META_ACCESS_TOKEN", "FB_PAGE_ID", "IG_USER_ID", "THREADS_ACCESS_TOK
             "THREADS_USER_ID", "LINE_CHANNEL_ID", "LINE_CHANNEL_SECRET",
             "LINE_CHANNEL_ACCESS_TOKEN", "LINE_ADD_URL", "SITE_BASE",
             "X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET",
-            "YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN")
+            "YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN",
+            "TIKTOK_CLIENT_KEY", "TIKTOK_CLIENT_SECRET",
+            "TIKTOK_ACCESS_TOKEN", "TIKTOK_REFRESH_TOKEN")
 
 
 def load_env():
@@ -312,8 +314,17 @@ def _yt_title_desc(caption):
     if first.startswith("標題"):
         if rest.startswith("說明"):
             rest = rest[2:].lstrip(":：\n ").strip()
-        return first[2:].lstrip(":： ").strip()[:100], rest
-    return first.strip()[:100], text
+        title = first[2:].lstrip(":： ").strip()
+    else:
+        title = first.strip()
+        rest = text
+    # YouTube Shorts 認定靠 #Shorts:標題或說明含 hashtag + 垂直 ≤ 60s 即可。
+    if "#Shorts" not in title and "#shorts" not in title:
+        suffix = " #Shorts"
+        title = (title[: 100 - len(suffix)].rstrip() + suffix) if len(title) + len(suffix) > 100 else title + suffix
+    if "#Shorts" not in rest and "#shorts" not in rest:
+        rest = (rest + "\n\n#Shorts").strip()
+    return title[:100], rest
 
 
 def post_youtube(env, video_url, caption):
@@ -347,11 +358,63 @@ def post_youtube(env, video_url, caption):
         return False, str(e)
 
 
+# ── TikTok(Content Posting API,PULL_FROM_URL 模式)──
+# 沒設 secrets 時安全跳過,不打斷其他平台。app 設置流程見 TIKTOK_SETUP.md。
+
+def _tiktok_access_token(env):
+    """優先用現有 access_token;若有 refresh_token,失敗時自動換新。"""
+    tok = env.get("TIKTOK_ACCESS_TOKEN", "").strip()
+    if tok:
+        return tok
+    rt = env.get("TIKTOK_REFRESH_TOKEN", "").strip()
+    ck = env.get("TIKTOK_CLIENT_KEY", "").strip()
+    cs = env.get("TIKTOK_CLIENT_SECRET", "").strip()
+    if not (rt and ck and cs):
+        return None
+    ok, r = http("https://open.tiktokapis.com/v2/oauth/token/", "POST", form={
+        "client_key": ck, "client_secret": cs,
+        "grant_type": "refresh_token", "refresh_token": rt})
+    return r.get("access_token") if ok else None
+
+
+def _tiktok_caption(caption):
+    # TikTok 文案上限 2200 字元(含 hashtag);URL 會自動縮短但仍占字元。
+    return caption[:2200]
+
+
+def post_tiktok(env, video_url, caption):
+    if not (env.get("TIKTOK_ACCESS_TOKEN") or env.get("TIKTOK_REFRESH_TOKEN")):
+        return False, "TikTok 未設定 secrets,跳過(見 TIKTOK_SETUP.md)"
+    token = _tiktok_access_token(env)
+    if not token:
+        return False, "TikTok 權杖刷新失敗(檢查 TIKTOK_CLIENT_KEY / SECRET / REFRESH_TOKEN)"
+    payload = {
+        "post_info": {
+            "title": _tiktok_caption(caption),
+            "privacy_level": "PUBLIC_TO_EVERYONE",
+            "disable_duet": False,
+            "disable_comment": False,
+            "disable_stitch": False,
+            "video_cover_timestamp_ms": 1000,
+        },
+        "source_info": {"source": "PULL_FROM_URL", "video_url": video_url},
+    }
+    ok, r = http("https://open.tiktokapis.com/v2/post/publish/inbox/video/init/",
+                 "POST", json_body=payload,
+                 headers={"Authorization": f"Bearer {token}"})
+    if ok:
+        pid = ((r.get("data") or {}).get("publish_id")) or r.get("publish_id")
+        if pid:
+            return True, f"publish_id={pid}(影片由 TikTok async 拉取上架)"
+    return False, r
+
+
 PLATFORMS = {"facebook": post_facebook, "instagram": post_instagram,
              "threads": post_threads, "line": post_line, "x": post_x}
 
 REEL_PLATFORMS = {"instagram": post_instagram_reel, "facebook": post_facebook_reel,
-                  "youtube": post_youtube, "x": post_x_reel}
+                  "youtube": post_youtube, "x": post_x_reel,
+                  "tiktok": post_tiktok}
 
 
 def load_posts():
@@ -390,6 +453,18 @@ def cmd_check(env):
         token = _yt_access_token(env)
         print(f"  YouTube:      "
               f"{'✅ refresh token 有效(youtube.upload)' if token else '❌ 換取失敗,重跑 get_youtube_token.py'}")
+    if env.get("TIKTOK_ACCESS_TOKEN") or env.get("TIKTOK_REFRESH_TOKEN"):
+        token = _tiktok_access_token(env)
+        if not token:
+            print("  TikTok:       ❌ 換取 access token 失敗,重跑 get_tiktok_token.py")
+        else:
+            ok, r = http("https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name",
+                         headers={"Authorization": f"Bearer {token}"})
+            info = (r.get("data") or {}).get("user") or {}
+            name = info.get("display_name") or info.get("open_id")
+            print(f"  TikTok:       {'✅ @' + str(name) if ok and name else '❌ ' + str(r)}")
+    else:
+        print("  TikTok:       ⏸️ 未設定(見 TIKTOK_SETUP.md)")
 
 
 def cmd_stage(env):
@@ -451,17 +526,24 @@ def cmd_post(env, post_id, only=None):
     for plat in targets:
         fn = table.get(plat)
         if not fn:
-            print(f"  ⚠️ {plat}:{'此貼文型態不支援此平台' if is_reel else '不支援(TikTok 需官方審核)'}")
+            print(f"  ⚠️ {plat}:此貼文型態不支援此平台")
             continue
         try:
             ok, detail = fn(env, media_url, caption_for(post["caption"], plat, line_url))
         except KeyError as e:
             ok, detail = False, f".env 缺少 {e}"
-        # X 已改付費、未充值 → 任何失敗都軟略過;補 credits 後自動恢復發文。
-        soft = not ok and plat == "x"
+        # X 未充值、TikTok 未設定 secrets → 軟略過,不打斷其他平台。
+        soft = (not ok) and (plat == "x"
+                             or (plat == "tiktok"
+                                 and not (env.get("TIKTOK_ACCESS_TOKEN") or env.get("TIKTOK_REFRESH_TOKEN"))))
         results[plat] = {"ok": ok, "skipped": soft, "detail": str(detail)}
         mark = "✅" if ok else ("⏭️" if soft else "❌")
-        print(f"  {mark} {plat}: {'(X 改手動,略過)' if soft else ''}{detail}")
+        soft_note = ""
+        if soft and plat == "x":
+            soft_note = "(X 改手動,略過)"
+        elif soft and plat == "tiktok":
+            soft_note = "(TikTok 未設定 secrets,略過)"
+        print(f"  {mark} {plat}: {soft_note}{detail}")
     LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
     with LOG_FILE.open("a", encoding="utf-8") as f:
         f.write(json.dumps({"ts": datetime.now().isoformat(), "post": post_id,

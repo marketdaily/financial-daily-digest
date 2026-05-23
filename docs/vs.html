@@ -211,6 +211,22 @@ h1 {
   .cmp-val { font-size: 11px; }
 }
 
+@media (max-width: 520px) {
+  .cmp-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 16px;
+  }
+  .cmp-row {
+    grid-template-columns: 1.3fr repeat(5, 1fr);
+    min-width: 640px;
+  }
+  .cmp-row .cmp-cell:nth-child(4),
+  .cmp-row .cmp-cell:nth-child(5) { display: flex; }
+  .cmp-row.header { position: static; }
+  .cmp-section-row { min-width: 640px; }
+}
+
 /* Why us cards */
 .why-grid {
   display: grid;

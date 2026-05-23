@@ -123,6 +123,7 @@ h1 {
 }
 .stat-box .num.emerald { color: #6ee7b7; }
 .stat-box .num.indigo { color: #a5b4fc; }
+.stat-box .num.red { color: #fca5a5; }
 .stat-box .num.amber { color: #fbbf24; }
 .stat-box .num.muted { color: rgba(255,255,255,0.7); }
 .stat-box .lbl {
@@ -205,7 +206,7 @@ h1 {
 }
 .rec-row {
   display: grid;
-  grid-template-columns: 110px 110px 1.6fr 100px 90px;
+  grid-template-columns: 100px 140px 1.6fr 100px 90px;
   gap: 0;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   align-items: center;
@@ -246,16 +247,16 @@ h1 {
 }
 .tag-a {
   display: inline-block;
-  background: rgba(99,102,241,0.14);
-  border: 1px solid rgba(99,102,241,0.32);
-  color: #a5b4fc;
+  background: rgba(16,185,129,0.14);
+  border: 1px solid rgba(16,185,129,0.32);
+  color: #6ee7b7;
   padding: 3px 9px; border-radius: 12px;
 }
 .tag-c {
   display: inline-block;
-  background: rgba(251,191,36,0.12);
-  border: 1px solid rgba(251,191,36,0.3);
-  color: #fbbf24;
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #fca5a5;
   padding: 3px 9px; border-radius: 12px;
 }
 .rec-cell.result {
@@ -369,11 +370,11 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
   <div class="stats-hero">
     <div class="stat-box">
       <span class="num emerald" id="stat-direction">75.5%</span>
-      <div class="lbl" data-i18n="s1">方向勝率(A)</div>
+      <div class="lbl" data-i18n="s1">看多勝率</div>
     </div>
     <div class="stat-box">
-      <span class="num indigo" id="stat-risk">68.0%</span>
-      <div class="lbl" data-i18n="s2">避坑勝率(C)</div>
+      <span class="num red" id="stat-risk">68.0%</span>
+      <div class="lbl" data-i18n="s2">看空勝率</div>
     </div>
     <div class="stat-box">
       <span class="num amber" id="stat-total">90</span>
@@ -390,13 +391,13 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     <div class="ttl" data-i18n="method_ttl">我們怎麼算勝率(沒任何模糊空間)</div>
     <div class="method-grid">
       <div class="method-box">
-        <h3 data-i18n="ma_h">A · 方向勝率</h3>
-        <p data-i18n="ma_p">日報明確判斷「偏多 / 偏空 / 留意 X 支撐」→ 隔日收盤是否往預測方向走。</p>
+        <h3 data-i18n="ma_h">🟢 看多勝率</h3>
+        <p data-i18n="ma_p">日報判斷這支「可以買 / 繼續抱」(偏多)→ 隔日收盤往上走 = 贏。</p>
         <code>例:「台積電留意 1080 支撐」→ 隔日收盤 ≥ 1080 算贏</code>
       </div>
       <div class="method-box">
-        <h3 data-i18n="mc_h">C · 避坑勝率</h3>
-        <p data-i18n="mc_p">日報示警「觀望 / 拉回 / 短期過熱 / 風險」→ 隔日是否真的回檔或盤整。</p>
+        <h3 data-i18n="mc_h">🔴 看空勝率</h3>
+        <p data-i18n="mc_p">日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 隔日真的下跌 = 贏(成功避坑)。</p>
         <code>例:「NVDA 短期過熱建議觀望」→ 隔日下跌算贏</code>
       </div>
     </div>
@@ -410,8 +411,8 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     <button class="fpill active" data-filter="all" onclick="applyFilter(this)" data-i18n="f_all">全部 (37)</button>
     <button class="fpill" data-filter="us" onclick="applyFilter(this)" data-i18n="f_us">🇺🇸 美股</button>
     <button class="fpill" data-filter="tw" onclick="applyFilter(this)" data-i18n="f_tw">🇹🇼 台股</button>
-    <button class="fpill" data-filter="A" onclick="applyFilter(this)" data-i18n="f_a">📐 方向 (A)</button>
-    <button class="fpill" data-filter="C" onclick="applyFilter(this)" data-i18n="f_c">⚠️ 避坑 (C)</button>
+    <button class="fpill" data-filter="A" onclick="applyFilter(this)" data-i18n="f_a">🟢 看多</button>
+    <button class="fpill" data-filter="C" onclick="applyFilter(this)" data-i18n="f_c">🔴 看空</button>
     <button class="fpill" data-filter="win" onclick="applyFilter(this)" data-i18n="f_win">✅ 贏</button>
     <button class="fpill" data-filter="loss" onclick="applyFilter(this)" data-i18n="f_loss">❌ 輸</button>
   </div>
@@ -480,12 +481,12 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
     <div class="tr-faq-item">
       <button class="tr-faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span>📐 A 跟 C 到底是什麼?用白話解釋</span><span class="chev">▾</span>
+        <span>🟢 看多 vs 🔴 看空 是什麼意思?</span><span class="chev">▾</span>
       </button>
       <div class="tr-faq-a"><div class="tr-faq-a-inner">
-        <strong>A = 方向判斷</strong>:日報說「這支可以買 / 可以繼續抱」→ 隔天股價有沒有真的不跌算贏。<br>
-        <strong>C = 風險示警</strong>:日報說「這支建議觀望 / 賣出 / 短期過熱」→ 隔天股價真的下跌算贏(代表我們幫你避開了坑)。<br><br>
-        簡單講:<code>A 看的是「跟對」</code>,<code>C 看的是「躲過」</code>。
+        <strong>🟢 看多</strong>:日報判斷這支「可以買 / 繼續抱」(偏多)→ 隔天股價真的不跌就算贏。<br>
+        <strong>🔴 看空</strong>:日報示警這支「觀望 / 拉回 / 短期過熱」(偏空)→ 隔天股價真的下跌就算贏(代表我們幫你避開了一次坑)。<br><br>
+        簡單講:<code>看多看的是「跟對」</code>,<code>看空看的是「躲過」</code>。
       </div></div>
     </div>
 
@@ -627,7 +628,7 @@ function normalize(r) {
   // Call text — prefer "reason" (new) else "call" (legacy)
   const callText = r.call || r.reason || r.verdict_text || "";
   const name = r.name || "";
-  return { ...r, outcome, market, _call: name ? `${name} (${r.ticker}) ${callText}` : `${r.ticker} ${callText}` };
+  return { ...r, outcome, market, _call: name ? `${name} ${callText}` : `${r.ticker} ${callText}` };
 }
 
 let NORMALIZED = [];
@@ -651,13 +652,13 @@ function renderRecords(filter) {
     row.className = "rec-row";
     const marketBadge = r.market === "us" ? "US" : "TW";
     const tagClass = r.type === "A" ? "tag-a" : "tag-c";
-    const tagText = r.type === "A" ? "📐 方向" : "⚠️ 避坑";
+    const tagText = r.type === "A" ? "🟢 看多" : "🔴 看空";
     let resClass = "neut", resText = "⏳ 待結";
     if (r.outcome === "win") { resClass = "win"; resText = "✅ 贏"; }
     else if (r.outcome === "loss") { resClass = "loss"; resText = "❌ 輸"; }
     row.innerHTML = `
       <div class="rec-cell date">${r.date}</div>
-      <div class="rec-cell ticker">${r.ticker}<span class="market">${marketBadge}</span></div>
+      <div class="rec-cell ticker">${r.name || r.ticker}<span class="market">${marketBadge}</span></div>
       <div class="rec-cell call">${r._call}</div>
       <div class="rec-cell tag"><span class="${tagClass}">${tagText}</span></div>
       <div class="rec-cell result ${resClass}">${resText}</div>
@@ -717,13 +718,13 @@ const i18n = {
     badge: "Track Record · 公開戰績",
     h1: "不空談 AI 多強,讓紀錄說話",
     sub: "這頁公開過去 30 天日報點到的每一支個股、每一個方向判斷、每一次避坑示警的真實結果。錯的我們也列出來——100% 勝率才是假的。68-75% 是人類能做到的誠實上限。",
-    s1: "方向勝率(A)", s2: "避坑勝率(C)", s3: "累計提及個股", s4: "統計天數",
+    s1: "看多勝率", s2: "看空勝率", s3: "累計提及個股", s4: "統計天數",
     method_ttl: "我們怎麼算勝率(沒任何模糊空間)",
-    ma_h: "A · 方向勝率",
-    ma_p: "日報明確判斷「偏多 / 偏空 / 留意 X 支撐」→ 隔日收盤是否往預測方向走。",
-    mc_h: "C · 避坑勝率",
-    mc_p: "日報示警「觀望 / 拉回 / 短期過熱 / 風險」→ 隔日是否真的回檔或盤整。",
-    f_us: "🇺🇸 美股", f_tw: "🇹🇼 台股", f_a: "📐 方向 (A)", f_c: "⚠️ 避坑 (C)",
+    ma_h: "🟢 看多勝率",
+    ma_p: "日報判斷這支「可以買 / 繼續抱」(偏多)→ 隔日收盤往上走 = 贏。",
+    mc_h: "🔴 看空勝率",
+    mc_p: "日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 隔日真的下跌 = 贏(成功避坑)。",
+    f_us: "🇺🇸 美股", f_tw: "🇹🇼 台股", f_a: "🟢 看多", f_c: "🔴 看空",
     f_win: "✅ 贏", f_loss: "❌ 輸",
     th_date: "日期", th_tic: "個股", th_call: "日報原話", th_type: "類型", th_res: "結果",
     honest_ttl: "⚠️ 給認真讀紀錄的人",

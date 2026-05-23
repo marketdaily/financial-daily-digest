@@ -830,6 +830,40 @@ export default {
       return json(newData);
     }
 
+    // Aggregated referral stats for dashboard
+    if (url.pathname === "/referral-stats" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      const email = (body.email || "").trim().toLowerCase();
+      if (!email) return json({ error: "invalid_email" }, 400);
+
+      let userRaw = await env.USER_PREFS.get(`referral:user:${email}`);
+      let user;
+      if (userRaw) {
+        user = JSON.parse(userRaw);
+      } else {
+        let code = generateRefCode(email);
+        const existing = await env.USER_PREFS.get(`referral:code:${code}`);
+        if (existing) code = generateRefCode(email) + Math.floor(Math.random()*9);
+        user = { code, clicks: 0, conversions: 0, created_at: new Date().toISOString() };
+        await env.USER_PREFS.put(`referral:user:${email}`, JSON.stringify(user));
+        await env.USER_PREFS.put(`referral:code:${code}`, email);
+      }
+
+      const bonusRaw = await env.USER_PREFS.get(`bonus:${email}`);
+      const bonus = bonusRaw ? JSON.parse(bonusRaw) : { days_credit: 0, history: [] };
+      const refs = Array.isArray(user.referrals) ? user.referrals.slice(-5).reverse() : [];
+
+      return json({
+        code: user.code,
+        link: `https://marketdaily.ai/?ref=${user.code}&utm_source=referral&utm_medium=user&utm_campaign=share`,
+        total_referrals: user.total_referrals || (Array.isArray(user.referrals) ? user.referrals.length : 0) || 0,
+        clicks: user.clicks || 0,
+        total_bonus_days: bonus.days_credit || 0,
+        recent_referrals: refs.map(r => ({ email: maskEmail(r.email), ts: r.ts })),
+      });
+    }
+
     // Track referral click (called from landing page when ?ref= param present)
     if (url.pathname === "/track-referral-click" && request.method === "POST") {
       let body;
@@ -880,8 +914,9 @@ export default {
           try { await sendTodayDigestToOne(email, env.BREVO_API_KEY, env.USER_PREFS); }
           catch (e) { console.log("stripe digest error:", String(e)); }
         })());
-        // Attribution: Stripe Checkout 透過 session.metadata 帶 visit_id / utm
+        // Attribution: Stripe Checkout 透過 session.metadata 帶 visit_id / utm / ref
         const md = session.metadata || {};
+        if (md.ref) ctx.waitUntil(grantReferralReward(env, md.ref, email));
         ctx.waitUntil(recordConvert(env, {
           email,
           event: tier === "Premium" ? "subscribe_premium" : "subscribe_pro",
@@ -1019,26 +1054,63 @@ async function addToBrevo(email, apiKey, listId, attributes) {
 // 註冊成功後的背景工作:推薦轉換 + 歡迎信 + 補寄今日日報。
 // 每項各自 try/catch —— 任一失敗都不影響「註冊已成功」這個結果。
 async function postSignupTasks(email, refCode, env, isPaid = false, tier = "") {
-  try {
-    refCode = (refCode || "").trim().toUpperCase();
-    if (refCode) {
-      const ownerEmail = await env.USER_PREFS.get(`referral:code:${refCode}`);
-      if (ownerEmail && ownerEmail !== email) {
-        const raw = await env.USER_PREFS.get(`referral:user:${ownerEmail}`);
-        if (raw) {
-          const data = JSON.parse(raw);
-          data.conversions = (data.conversions || 0) + 1;
-          await env.USER_PREFS.put(`referral:user:${ownerEmail}`, JSON.stringify(data));
-        }
-      }
-    }
-  } catch (e) { console.log("postSignup referral error:", String(e)); }
+  try { await grantReferralReward(env, refCode, email); }
+  catch (e) { console.log("postSignup referral error:", String(e)); }
   try {
     await sendWelcomeEmail(email, env.BREVO_API_KEY, isPaid, tier);
   } catch (e) { console.log("postSignup welcome error:", String(e)); }
   try {
     await sendTodayDigestToOne(email, env.BREVO_API_KEY, env.USER_PREFS);
   } catch (e) { console.log("postSignup digest error:", String(e)); }
+}
+
+// 推薦獎勵兌現:雙方各得 30 天 Premium。防自推、防重複。
+async function grantReferralReward(env, refCode, newEmail) {
+  refCode = (refCode || "").trim().toUpperCase();
+  newEmail = (newEmail || "").trim().toLowerCase();
+  if (!refCode || !newEmail) return false;
+
+  const referrer = await env.USER_PREFS.get(`referral:code:${refCode}`);
+  if (!referrer || referrer === newEmail) return false;
+
+  const dupKey = `referral:fulfilled:${newEmail}`;
+  if (await env.USER_PREFS.get(dupKey)) return false;
+
+  const ts = new Date().toISOString();
+  await env.USER_PREFS.put(dupKey, JSON.stringify({ referrer, code: refCode, ts }));
+
+  const raw = await env.USER_PREFS.get(`referral:user:${referrer}`);
+  if (raw) {
+    const data = JSON.parse(raw);
+    data.conversions = (data.conversions || 0) + 1;
+    data.total_referrals = (data.total_referrals || 0) + 1;
+    data.referrals = Array.isArray(data.referrals) ? data.referrals : [];
+    data.referrals.push({ email: newEmail, ts });
+    if (data.referrals.length > 50) data.referrals = data.referrals.slice(-50);
+    await env.USER_PREFS.put(`referral:user:${referrer}`, JSON.stringify(data));
+  }
+
+  await addBonusDays(env, referrer, 30, `referred ${newEmail}`);
+  await addBonusDays(env, newEmail, 30, `joined via ${refCode}`);
+  return true;
+}
+
+async function addBonusDays(env, email, days, reason) {
+  const key = `bonus:${email}`;
+  const raw = await env.USER_PREFS.get(key);
+  const data = raw ? JSON.parse(raw) : { days_credit: 0, history: [] };
+  data.days_credit = (data.days_credit || 0) + days;
+  data.history = Array.isArray(data.history) ? data.history : [];
+  data.history.push({ ts: new Date().toISOString(), days, reason });
+  if (data.history.length > 100) data.history = data.history.slice(-100);
+  await env.USER_PREFS.put(key, JSON.stringify(data));
+}
+
+function maskEmail(e) {
+  const [u, d] = (e || "").split("@");
+  if (!u || !d) return e || "";
+  const head = u.slice(0, 1);
+  return `${head}${"*".repeat(Math.max(1, u.length - 1))}@${d}`;
 }
 
 async function generateSupportResponse(name, topic, message, apiKey) {
