@@ -1064,7 +1064,16 @@ export default {
       if (email) {
         const tier = TIER_BY_AMOUNT[session.amount_total] || "付費";
         await addToBrevo(email, env.BREVO_API_KEY, listId, { PAID: true, PLAN: "paid", PLAN_TIER: tier });
-        await env.USER_PREFS.put(`plan:${email}`, tier === "Premium" ? "premium" : "pro");
+        // Pro 改為「Premium 試讀首月」定位 — Pro 購買者立即享 Premium 全功能(LINE 推播 + AI Q&A 等)
+        await env.USER_PREFS.put(`plan:${email}`, "premium");
+        // 標記試讀者,給後續續訂提醒 / 帳務追蹤用
+        if (tier === "Pro") {
+          await env.USER_PREFS.put(`premium_trial:${email}`, JSON.stringify({
+            started_at: Date.now(),
+            iso: new Date().toISOString(),
+            stripe_amount: session.amount_total,
+          }));
+        }
         if (session.customer) await env.USER_PREFS.put(`stripe-cust:${session.customer}`, email);
         // 歡迎信與補寄日報背景化 —— webhook 快速回 200,避免 Stripe 因逾時重送
         ctx.waitUntil((async () => {
