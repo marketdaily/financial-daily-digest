@@ -3,11 +3,19 @@
 
 import { extractTickers } from "./stock_names.js";
 
-// 大盤綜合 feed —— 僅在無 Premium 持股(dry-run 觀察)時使用;
-// 有持股時改走 fetchNews({tickers}) 的 Yahoo 個股 RSS。
+// 廣源新聞 — 每次都跑,文字比對 ticker 提取。涵蓋英文大盤 + 中文台股。
 const GENERAL_FEEDS = [
   { url: "https://feeds.content.dowjones.io/public/rss/mw_topstories", source: "MarketWatch" },
   { url: "https://www.cnbc.com/id/100003114/device/rss/rss.html", source: "CNBC" },
+  { url: "https://seekingalpha.com/market_currents.xml", source: "Seeking Alpha" },
+  { url: "https://finance.yahoo.com/news/rssindex", source: "Yahoo Finance Top" },
+];
+
+// 中文台股 — 補英文源抓不到的台股新聞;中文公司名會被 extractTickers 對到 4 位數代碼
+const TW_FEEDS = [
+  { url: "https://udn.com/rssfeed/news/2/6644?ch=news", source: "聯合報財經" },
+  { url: "https://news.ltn.com.tw/rss/business.xml", source: "自由時報財經" },
+  { url: "https://money.udn.com/rssfeed/news/1001/5590?ch=money", source: "經濟日報股市" },
 ];
 
 function djb2(str) {
@@ -63,7 +71,10 @@ function parseFeed(xml, source) {
 async function fetchFeed(feed) {
   try {
     const res = await fetch(feed.url, {
-      headers: { "User-Agent": "MarketDaily-AlertWorker/1.0 (+https://marketdaily.ai)" },
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "application/rss+xml, application/xml, text/xml, */*",
+      },
       cf: { cacheTtl: 0 },
     });
     if (!res.ok) return { items: [], error: `${feed.source}:${res.status}` };
@@ -86,31 +97,40 @@ function dedupe(items) {
   return [...byId.values()];
 }
 
-// tickers 提供時:用 Yahoo 個股 RSS(已預先標好 ticker、可靠);否則抓大盤綜合 feed + 文字比對。
+// 策略:per-ticker(精準源,個股 RSS)+ 廣源(GENERAL + TW)永遠跑、文字比對。
+// 廣源涵蓋英文大盤新聞 + 中文台股新聞 — 跟個股 RSS 互補,確保台股 Premium 也能收到推播。
 export async function fetchNews({ tickers } = {}) {
   const errors = [];
-  if (Array.isArray(tickers) && tickers.length) {
-    const feeds = tickers.map((t) => ({
-      url: `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${encodeURIComponent(t)}&region=US&lang=en-US`,
-      source: "Yahoo Finance",
-      ticker: t,
-    }));
-    const results = await Promise.all(feeds.map(async (f) => {
-      const r = await fetchFeed(f);
-      if (r.error) errors.push(r.error);
-      for (const it of r.items) it.tickers = [f.ticker];
-      return r.items;
-    }));
-    return { items: dedupe(results.flat()), errors };
-  }
-  const results = await Promise.all(GENERAL_FEEDS.map(fetchFeed));
-  const items = [];
-  for (const r of results) {
-    if (r.error) errors.push(r.error);
-    for (const it of r.items) {
-      it.tickers = extractTickers(`${it.title} ${it.summary}`);
-      items.push(it);
-    }
-  }
-  return { items: dedupe(items), errors };
+
+  // 1. per-ticker(只對美股 ticker 跑;台股無對應 Yahoo 個股 RSS)
+  const perTickerPromise = (Array.isArray(tickers) && tickers.length)
+    ? Promise.all(tickers.map(async (t) => {
+        const f = {
+          url: `https://feeds.finance.yahoo.com/rss/2.0/headline?s=${encodeURIComponent(t)}&region=US&lang=en-US`,
+          source: "Yahoo Finance",
+          ticker: t,
+        };
+        const r = await fetchFeed(f);
+        if (r.error) errors.push(r.error);
+        for (const it of r.items) it.tickers = [f.ticker];
+        return r.items;
+      })).then((arr) => arr.flat())
+    : Promise.resolve([]);
+
+  // 2. 廣源(英文 + 中文)— 永遠跑,文字比對 ticker
+  const broadPromise = Promise.all([...GENERAL_FEEDS, ...TW_FEEDS].map(fetchFeed))
+    .then((results) => {
+      const items = [];
+      for (const r of results) {
+        if (r.error) errors.push(r.error);
+        for (const it of r.items) {
+          it.tickers = extractTickers(`${it.title} ${it.summary}`);
+          items.push(it);
+        }
+      }
+      return items;
+    });
+
+  const [perTicker, broad] = await Promise.all([perTickerPromise, broadPromise]);
+  return { items: dedupe([...perTicker, ...broad]), errors };
 }
