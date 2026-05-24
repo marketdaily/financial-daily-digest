@@ -1,0 +1,37 @@
+name: 每週 SEO 個股文章
+
+on:
+  schedule:
+    # 每週日 17:00 UTC = 週一 01:00 TWT(網站冷時段跑,週一早上才有新內容上線)
+    - cron: "0 17 * * 0"
+  workflow_dispatch:
+    inputs:
+      count:
+        description: 一次生幾篇(預設 5)
+        type: number
+        default: 5
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run SEO article generator
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          COUNT="${{ github.event.inputs.count || '5' }}"
+          python scripts/seo_articles.py --count "$COUNT"
+      - name: Commit + push generated articles
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/blog/
+          git diff --staged --quiet || git commit -m "chore: weekly SEO articles [skip ci]"
+          git push origin HEAD:main

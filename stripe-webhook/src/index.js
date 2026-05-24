@@ -577,7 +577,7 @@ export default {
       const target = (body.target || body.to || "").trim().toLowerCase();
       const type = (body.type || "").trim().toLowerCase();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target)) return json({ error: "invalid_target" }, 400);
-      const handlers = { d1: sendD1Email, d7: sendD7Email, d14: sendD14Email };
+      const handlers = { d1: sendD1Email, d7: sendD7Email, d14: sendD14Email, d21: sendD21Email, d45: sendD45Email };
       if (!handlers[type]) return json({ error: "invalid_type" }, 400);
       try {
         await handlers[type](target, env.BREVO_API_KEY, env);
@@ -1268,7 +1268,7 @@ export default {
 async function runLifecycleSweep(env) {
   const dayMs = 86400000;
   let cursor = undefined;
-  let scanned = 0, sent = { d1: 0, d7: 0, d14: 0 }, errors = 0;
+  let scanned = 0, sent = { d1: 0, d7: 0, d14: 0, d21: 0, d45: 0 }, errors = 0;
   // KV list 一頁 1000 筆;用 cursor 翻頁直到 list_complete 才停 —— 別把規模上限寫死。
   do {
     const opts = { prefix: "signup:", limit: 1000 };
@@ -1302,6 +1302,22 @@ async function runLifecycleSweep(env) {
             await sendD14Email(email, env.BREVO_API_KEY, env);
             await env.USER_PREFS.put(`lc_d14_sent:${email}`, String(Date.now()));
             sent.d14++;
+          }
+        } else if (days === 21) {
+          // D21:習慣養成里程碑(已讀 ~15-18 封日報)+ 軟銷 Premium 試讀
+          const plan = (await env.USER_PREFS.get(`plan:${email}`)) || "free";
+          if (plan === "free" && !(await env.USER_PREFS.get(`lc_d21_sent:${email}`))) {
+            await sendD21Email(email, env.BREVO_API_KEY, env);
+            await env.USER_PREFS.put(`lc_d21_sent:${email}`, String(Date.now()));
+            sent.d21 = (sent.d21 || 0) + 1;
+          }
+        } else if (days === 45) {
+          // D45:重新介入 — 強化 Premium 升級(限時誘因)
+          const plan = (await env.USER_PREFS.get(`plan:${email}`)) || "free";
+          if (plan === "free" && !(await env.USER_PREFS.get(`lc_d45_sent:${email}`))) {
+            await sendD45Email(email, env.BREVO_API_KEY, env);
+            await env.USER_PREFS.put(`lc_d45_sent:${email}`, String(Date.now()));
+            sent.d45 = (sent.d45 || 0) + 1;
           }
         }
       } catch (e) {
@@ -2002,6 +2018,96 @@ async function sendD14Email(email, apiKey, env) {
     badge: "Day 14 · 推薦計畫",
     headerTitle: "🎁 邀請朋友,雙方各得 30 天 Premium",
     headerSub: "兩週的讀者,是我們最好的代言人",
+    bodyHtml: body,
+  });
+  return sendLifecycleEmail(email, apiKey, subject, html);
+}
+
+async function sendD21Email(email, apiKey, env) {
+  const subject = "📊 你已經養成早晨財經習慣了 — 要不要升級 Premium 試讀首月 NT$299?";
+  const upgradeLink = `https://marketdaily.ai/pricing?utm_source=lifecycle&utm_campaign=d21_premium&email=${encodeURIComponent(email)}`;
+  const body = `
+    <p style="font-size:17px;font-weight:800;color:#1a1a1a;margin:0 0 12px;">三週了 ☕</p>
+    <p style="font-size:15px;color:#444;line-height:1.8;margin:0 0 22px;">
+      你已經連讀 ~18 封 MarketDaily 日報 —— 早晨財經習慣養成了。<br>
+      接下來,要不要試試 <strong>Premium 全功能</strong>?
+    </p>
+    <div style="background:linear-gradient(135deg,rgba(168,85,247,0.10),rgba(99,102,241,0.10));border:1px solid rgba(168,85,247,0.30);border-radius:14px;padding:22px 24px;margin-bottom:22px;">
+      <p style="margin:0 0 14px;font-size:14px;color:#7e22ce;font-weight:800;letter-spacing:1px;">PREMIUM 試讀</p>
+      <p style="margin:0 0 6px;font-size:26px;font-weight:900;color:#1a1a1a;">
+        首月 NT$299 <span style="font-size:18px;color:rgba(0,0,0,0.4);text-decoration:line-through;font-weight:700;margin-left:8px;">NT$499</span>
+      </p>
+      <p style="margin:0 0 16px;font-size:13px;color:#666;">之後 NT$499/月,隨時取消,30 天無理由退費</p>
+      <ul style="margin:0;padding-left:18px;font-size:14px;color:#444;line-height:1.95;">
+        <li><strong>個人化日報</strong>(無限持股追蹤,免費版只 5 支)</li>
+        <li><strong>個股深度分析</strong>(每支 3-5 段,不只是 1 句 verdict)</li>
+        <li><strong>LINE Bot 雙向 AI 對話</strong>(盤中可直接問你的持股)</li>
+        <li><strong>重大新聞 LINE 即時推播</strong>(5 分鐘內到)</li>
+      </ul>
+    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:18px;">
+      <tr>
+        <td align="center">
+          <a href="${upgradeLink}" style="display:block;padding:17px 24px;background:linear-gradient(135deg,#a855f7,#6366f1);color:#fff;font-size:17px;font-weight:800;text-decoration:none;border-radius:12px;">試讀首月 NT$299 →</a>
+        </td>
+      </tr>
+    </table>
+    <p style="font-size:13px;color:#666;line-height:1.7;margin:0 0 8px;text-align:center;">
+      30 天不滿意?寄信給 <a href="mailto:marketdailyhq@gmail.com" style="color:#6366f1;">marketdailyhq@gmail.com</a> 全額退費,不問理由。
+    </p>
+    <p style="font-size:12px;color:#888;line-height:1.7;margin:0;text-align:center;">
+      還沒準備好升級沒關係,免費版會繼續寄。明早 7 點見 ☕
+    </p>`;
+  const html = lifecycleShell({
+    badge: "Day 21 · 習慣養成",
+    headerTitle: "📊 你已經是 MarketDaily 老朋友了",
+    headerSub: "三週 ~18 封日報 — 該升級了嗎?",
+    bodyHtml: body,
+  });
+  return sendLifecycleEmail(email, apiKey, subject, html);
+}
+
+async function sendD45Email(email, apiKey, env) {
+  const subject = "⏰ 最後一次提醒:Premium 試讀 NT$299(45 天後就沒有了)";
+  const upgradeLink = `https://marketdaily.ai/pricing?utm_source=lifecycle&utm_campaign=d45_final&email=${encodeURIComponent(email)}`;
+  const body = `
+    <p style="font-size:17px;font-weight:800;color:#1a1a1a;margin:0 0 12px;">45 天了 — 想跟你說一聲</p>
+    <p style="font-size:15px;color:#444;line-height:1.8;margin:0 0 22px;">
+      你已收 MarketDaily 日報超過 6 週(扣掉週日約 38 封)。<br>
+      如果還沒升級 Premium,這封是<strong>最後一次主動推銷</strong>。
+      之後我們不會再寄升級信,免費版會繼續陪你。
+    </p>
+    <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.32);border-radius:14px;padding:20px 22px;margin-bottom:22px;">
+      <p style="margin:0 0 10px;font-size:13px;color:#b45309;font-weight:800;letter-spacing:1px;">⚡ 為什麼我推薦你升級</p>
+      <p style="margin:0 0 14px;font-size:15px;color:#1a1a1a;font-weight:700;line-height:1.6;">
+        因為你已經養成讀日報的習慣 —— 表示你真的在意自己的投資組合。
+      </p>
+      <p style="margin:0;font-size:14px;color:#666;line-height:1.8;">
+        Premium 的核心價值是 <strong>盤中即時對話</strong>(LINE Bot)。<br>
+        早上 7 點看完 → 白天有突發狀況 → 直接 LINE 問 AI 「我的 NVDA 現在怎樣?」<br>
+        5 秒給你答案,不用自己滑 PTT。
+      </p>
+    </div>
+    <div style="background:linear-gradient(135deg,rgba(168,85,247,0.10),rgba(99,102,241,0.10));border:1px solid rgba(168,85,247,0.30);border-radius:14px;padding:22px 24px;margin-bottom:22px;text-align:center;">
+      <p style="margin:0 0 6px;font-size:26px;font-weight:900;color:#1a1a1a;">
+        首月 NT$299 <span style="font-size:18px;color:rgba(0,0,0,0.4);text-decoration:line-through;font-weight:700;margin-left:8px;">NT$499</span>
+      </p>
+      <p style="margin:0;font-size:13px;color:#666;">之後 NT$499/月 · 隨時取消 · 30 天無理由退費</p>
+    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:18px;">
+      <tr>
+        <td align="center">
+          <a href="${upgradeLink}" style="display:block;padding:17px 24px;background:linear-gradient(135deg,#a855f7,#6366f1);color:#fff;font-size:17px;font-weight:800;text-decoration:none;border-radius:12px;">升級 Premium 首月 NT$299 →</a>
+        </td>
+      </tr>
+    </table>
+    <p style="font-size:13px;color:#666;line-height:1.7;margin:0;text-align:center;">
+      不想升級?完全沒關係。免費版會繼續陪你,週一到週六早上 7 點 ☕
+    </p>`;
+  const html = lifecycleShell({
+    badge: "Day 45 · 最後提醒",
+    headerTitle: "⏰ 最後一次主動跟你聊升級",
+    headerSub: "45 天了,該決定要不要 Premium",
     bodyHtml: body,
   });
   return sendLifecycleEmail(email, apiKey, subject, html);
