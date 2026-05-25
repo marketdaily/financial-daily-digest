@@ -1,8 +1,10 @@
 name: 社群每日自動發文
 
 on:
-  schedule:
-    - cron: "0 22 * * *"   # 約台灣 06:00（GitHub 排程有延遲，內容貼文可接受）
+  # schedule 已關閉 — 2026-05-26 因 GitHub Actions + 本機 launchd 雙跑導致每篇貼文重複,
+  # 改由本機 launchd com.marketdaily.socialpost 14:00 統一發。需臨時補發用 workflow_dispatch。
+  # schedule:
+  #   - cron: "0 22 * * *"   # 約台灣 06:00
   workflow_dispatch:
     inputs:
       mode:

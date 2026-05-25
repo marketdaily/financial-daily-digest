@@ -129,13 +129,33 @@ def post_threads(env, image_url, caption):
 
 
 def post_line(env, image_url, caption):
-    ok, r = http("https://api.line.me/v2/bot/message/broadcast", "POST",
-                 json_body={"messages": [
-                     {"type": "image", "originalContentUrl": image_url,
-                      "previewImageUrl": image_url},
-                     {"type": "text", "text": caption}]},
-                 headers={"Authorization": f"Bearer {env['LINE_CHANNEL_ACCESS_TOKEN']}"})
-    return (True, "broadcast sent") if ok else (False, r)
+    # 行銷貼文改 multicast 排除 premium:從 alert-worker 拉「非 premium 已綁 LINE」清單,
+    # 切批 500 推送。未設定 ALERT_WORKER_URL/INTERNAL_TOKEN → fail-closed 跳過。
+    worker_url = env.get("MARKETDAILY_ALERT_WORKER_URL")
+    internal_tok = env.get("MARKETDAILY_INTERNAL_TOKEN")
+    if not worker_url or not internal_tok:
+        return False, "skip:未設 MARKETDAILY_ALERT_WORKER_URL/MARKETDAILY_INTERNAL_TOKEN(避免誤發 premium)"
+    ok, r = http(f"{worker_url.rstrip('/')}/internal/marketing-line-targets",
+                 headers={"Authorization": f"Bearer {internal_tok}"})
+    if not ok:
+        return False, f"取 targets 失敗: {r}"
+    targets = r.get("targets", [])
+    if not targets:
+        return True, f"no non-premium LINE users (scanned={r.get('scanned',0)} excluded={r.get('excludedPremium',0)})"
+    msgs = [
+        {"type": "image", "originalContentUrl": image_url, "previewImageUrl": image_url},
+        {"type": "text", "text": caption},
+    ]
+    headers = {"Authorization": f"Bearer {env['LINE_CHANNEL_ACCESS_TOKEN']}"}
+    sent = 0
+    for i in range(0, len(targets), 500):
+        chunk = targets[i:i + 500]
+        ok, r2 = http("https://api.line.me/v2/bot/message/multicast", "POST",
+                      json_body={"to": chunk, "messages": msgs}, headers=headers)
+        if not ok:
+            return False, f"multicast 第 {i//500+1} 批失敗 (已發 {sent}): {r2}"
+        sent += len(chunk)
+    return True, f"multicast sent to {sent} non-premium users (excluded premium={r.get('excludedPremium',0)})"
 
 
 def post_instagram_reel(env, video_url, caption):
