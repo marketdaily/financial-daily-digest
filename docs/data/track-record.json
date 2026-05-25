@@ -1,6 +1,6 @@
 {
   "stats": {
-    "generated_at": "2026-05-25T14:15:54",
+    "generated_at": "2026-05-25T15:17:48",
     "days_covered": 2,
     "total_records": 18,
     "judged_records": 12,
@@ -9,7 +9,16 @@
     "a_rate": 91.7,
     "c_count": 0,
     "c_wins": 0,
-    "c_rate": 0.0
+    "c_rate": 0.0,
+    "public_only": {
+      "a_count": 12,
+      "a_wins": 11,
+      "a_rate": 91.7,
+      "c_count": 0,
+      "c_wins": 0,
+      "c_rate": 0.0
+    },
+    "personal_samples_added": 0
   },
   "records": [
     {

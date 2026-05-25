@@ -131,6 +131,21 @@ h1 {
   color: rgba(255,255,255,0.55);
   letter-spacing: 0.6px; text-transform: uppercase;
 }
+.stat-box .sub-rate {
+  font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.4);
+  margin-top: 6px; letter-spacing: 0.2px;
+}
+.stat-box .sub-rate.combined { color: rgba(165,180,252,0.75); }
+.real-service-note {
+  display: inline-block; margin: -20px 0 32px;
+  font-size: 12px; color: rgba(165,180,252,0.7);
+  background: rgba(99,102,241,0.08);
+  border: 1px solid rgba(99,102,241,0.25);
+  padding: 8px 14px; border-radius: 999px;
+  letter-spacing: 0.3px;
+}
+.real-service-note .hi { color: #c7d2fe; font-weight: 700; }
 @media (max-width: 720px) {
   .stats-hero { grid-template-columns: repeat(2, 1fr); }
   .stat-box .num { font-size: 30px; }
@@ -353,7 +368,10 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     Market<em>Daily</em>
   </a>
   <div class="nav-right">
-    <a href="index.html" class="nav-back">← 返回首頁</a>
+    <a href="vs.html" class="nav-back" data-i18n="nav_vs">vs 對手</a>
+    <a href="pricing.html" class="nav-back" data-i18n="nav_pricing">定價</a>
+    <a href="dashboard.html" class="nav-back" data-i18n="nav_dash">我的專區</a>
+    <a href="index.html" class="nav-back" data-i18n="nav_home">← 首頁</a>
     <button class="lang-btn" onclick="toggleLang()">EN</button>
   </div>
 </nav>
@@ -369,21 +387,27 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
   <!-- Headline stats -->
   <div class="stats-hero">
     <div class="stat-box">
-      <span class="num emerald" id="stat-direction">75.5%</span>
+      <span class="num emerald" id="stat-direction">—</span>
       <div class="lbl" data-i18n="s1">看多勝率</div>
+      <div class="sub-rate combined" id="stat-direction-combined"></div>
     </div>
     <div class="stat-box">
-      <span class="num red" id="stat-risk">68.0%</span>
+      <span class="num red" id="stat-risk">—</span>
       <div class="lbl" data-i18n="s2">看空勝率</div>
+      <div class="sub-rate combined" id="stat-risk-combined"></div>
     </div>
     <div class="stat-box">
-      <span class="num amber" id="stat-total">90</span>
+      <span class="num amber" id="stat-total">—</span>
       <div class="lbl" data-i18n="s3">累計提及個股</div>
+      <div class="sub-rate combined" id="stat-total-combined"></div>
     </div>
     <div class="stat-box">
-      <span class="num muted" id="stat-days">30</span>
+      <span class="num muted" id="stat-days">—</span>
       <div class="lbl" data-i18n="s4">統計天數</div>
     </div>
+  </div>
+  <div class="real-service-note" id="real-service-note" style="display:none;">
+    <span class="hi">👥 含全部訂閱者個人化日報</span>:<span id="rs-note-detail"></span>
   </div>
 
   <!-- Method explainer -->
@@ -401,14 +425,14 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
         <code>例:「NVDA 短期過熱建議觀望」→ 隔日下跌算贏</code>
       </div>
     </div>
-    <div style="margin-top:14px;font-size:12.5px;color:rgba(255,255,255,0.5);line-height:1.65;" data-i18n="method_note">
+    <div style="margin-top:14px;font-size:12.5px;color:rgba(255,255,255,0.5);line-height:1.65;" data-i18n-html="method_note">
       <strong style="color:#fbbf24;">我們不做這件事:</strong>不會在日報明確說「請在 X 元進場」「設停損 Y 元」——那是投顧的事,需要牌照,也容易變炒股嫌疑。我們只判讀方向 + 警示風險,進場價位由你自己決定。
     </div>
   </div>
 
   <!-- Filter -->
   <div class="filter-bar">
-    <button class="fpill active" data-filter="all" onclick="applyFilter(this)" data-i18n="f_all">全部 (37)</button>
+    <button class="fpill active" data-filter="all" onclick="applyFilter(this)" data-i18n="f_all">全部</button>
     <button class="fpill" data-filter="us" onclick="applyFilter(this)" data-i18n="f_us">🇺🇸 美股</button>
     <button class="fpill" data-filter="tw" onclick="applyFilter(this)" data-i18n="f_tw">🇹🇼 台股</button>
     <button class="fpill" data-filter="A" onclick="applyFilter(this)" data-i18n="f_a">🟢 看多</button>
@@ -684,6 +708,7 @@ function applyFilter(btn) {
 }
 
 // Try to load real data; fall back to inline sample
+let STATS = null;
 (async () => {
   try {
     const res = await fetch("/data/track-record.json", { cache: "no-cache" });
@@ -691,6 +716,7 @@ function applyFilter(btn) {
       const data = await res.json();
       if (data && Array.isArray(data.records) && data.records.length > 0) {
         RECORDS = data.records;
+        STATS = data.stats || null;
         if (data.stats && data.stats.generated_at) {
           const badge = document.createElement("div");
           badge.style.cssText = "display:inline-block;margin-top:8px;font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:0.3px;";
@@ -705,8 +731,37 @@ function applyFilter(btn) {
   }
   NORMALIZED = RECORDS.map(normalize);
   renderRecords("all");
+  renderCombinedStats();
   if (NORMALIZED.length === 0) renderEmptyState();
 })();
+
+// 跨用戶聚合勝率 — 從 stats.a_count/a_wins/c_count/c_wins 讀(這些是公版+個人化合計)
+// 隱私:records 列表只放公版,但 stats 已包含全部用戶訊號
+function renderCombinedStats() {
+  if (!STATS || typeof STATS.a_count !== "number") return;
+  const personal = STATS.personal_samples_added || 0;
+  if (personal === 0) return; // 沒個人化樣本就不顯示對比,避免冗餘
+  const MIN_N = 20;
+  const fmt = (wins, total) => {
+    if (total === 0) return "—";
+    if (total < MIN_N) return `${total}/${MIN_N} 樣本累積中`;
+    return `全用戶 ${((wins/total)*100).toFixed(1)}% (${wins}/${total})`;
+  };
+  const sdc = document.getElementById("stat-direction-combined");
+  const src_ = document.getElementById("stat-risk-combined");
+  const stc = document.getElementById("stat-total-combined");
+  if (sdc) sdc.textContent = fmt(STATS.a_wins, STATS.a_count);
+  if (src_) src_.textContent = fmt(STATS.c_wins, STATS.c_count);
+  if (stc) stc.textContent = `含 ${personal} 筆訂閱者訊號`;
+  const note = document.getElementById("real-service-note");
+  const det = document.getElementById("rs-note-detail");
+  if (note && det) {
+    const pub = STATS.public_only || {};
+    det.textContent =
+      `公版 ${pub.a_count||0}+${pub.c_count||0} 筆,訂閱者個人化額外 ${personal} 筆 → 合計樣本 ${(STATS.a_count||0)+(STATS.c_count||0)} 筆。隱私保護:列表只列公版,訂閱者個人化只進總勝率。`;
+    note.style.display = "inline-block";
+  }
+}
 
 function renderEmptyState() {
   const table = document.getElementById("rec-table");
@@ -727,6 +782,12 @@ function renderEmptyState() {
 const i18n = {
   zh: {
     nav_back: "← 返回首頁",
+    nav_vs: "vs 對手",
+    nav_pricing: "定價",
+    nav_dash: "我的專區",
+    nav_home: "← 首頁",
+    method_note: "<strong style=\"color:#fbbf24;\">我們不做這件事:</strong>不會在日報明確說「請在 X 元進場」「設停損 Y 元」——那是投顧的事,需要牌照,也容易變炒股嫌疑。我們只判讀方向 + 警示風險,進場價位由你自己決定。",
+    f_all: "全部",
     badge: "Track Record · 公開戰績",
     h1: "不空談 AI 多強,讓紀錄說話",
     sub: "這頁公開過去 30 天日報點到的每一支個股、每一個方向判斷、每一次避坑示警的真實結果。錯的我們也列出來——100% 勝率才是假的。68-75% 是人類能做到的誠實上限。",
@@ -748,6 +809,12 @@ const i18n = {
   },
   en: {
     nav_back: "← Back to Home",
+    nav_vs: "vs Rivals",
+    nav_pricing: "Pricing",
+    nav_dash: "My Account",
+    nav_home: "← Home",
+    method_note: "<strong style=\"color:#fbbf24;\">What we don't do:</strong> we never say \"buy at $X, set stop at $Y\" — that's a licensed-advisor act and skirts pump-and-dump territory. We call direction and flag risk; entry price is your call.",
+    f_all: "All",
     badge: "Track Record · Public Scorecard",
     h1: "We don't claim AI is magical. The record speaks.",
     sub: "Every stock mention from our daily digest over the past 30 days — direction calls, risk warnings, real outcomes. Losses included. 100% would be fake; 68-75% is the honest human ceiling.",
@@ -775,6 +842,10 @@ function applyLang(lang) {
   document.querySelectorAll("[data-i18n]").forEach(el => {
     const key = el.dataset.i18n;
     if (i18n[lang] && i18n[lang][key]) el.textContent = i18n[lang][key];
+  });
+  document.querySelectorAll("[data-i18n-html]").forEach(el => {
+    const key = el.dataset.i18nHtml;
+    if (i18n[lang] && i18n[lang][key]) el.innerHTML = i18n[lang][key];
   });
   document.querySelector(".lang-btn").textContent = lang === "zh" ? "EN" : "中文";
   document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
