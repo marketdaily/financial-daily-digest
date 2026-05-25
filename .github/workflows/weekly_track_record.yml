@@ -32,6 +32,10 @@ jobs:
         run: pip install beautifulsoup4
 
       - name: Build track-record.json
+        env:
+          # 若有設此 secret,builder 會列舉 Worker KV 裡的個人化日報並
+          # 把訊號卡算進總勝率(隱私策略 A:stats 全算,records 只留公版)
+          MARKETDAILY_INTERNAL_TOKEN: ${{ secrets.MARKETDAILY_INTERNAL_TOKEN }}
         run: python3 scripts/build_track_record.py
 
       - name: Show diff summary

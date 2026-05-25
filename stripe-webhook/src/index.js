@@ -810,16 +810,45 @@ export default {
       });
     }
 
-    // Save a personalized digest HTML; returns a shareable web URL
+    // Save a personalized digest HTML; returns a shareable web URL.
+    // 可選 date 欄位 → 同步寫索引 digest_idx:{date}:{token},供 track-record builder 列舉
     if (url.pathname === "/save-digest" && request.method === "POST") {
       let body;
       try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
       const token = (body.token || "").trim();
       const html = body.html || "";
+      const date = (body.date || "").trim();
       if (!/^[A-Za-z0-9_-]{8,64}$/.test(token)) return json({ error: "invalid_token" }, 400);
       if (!html || html.length > 5000000) return json({ error: "invalid_html" }, 400);
       await env.USER_PREFS.put(`digest:${token}`, html, { expirationTtl: 86400 * 45 });
+      if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        // 同步寫索引,TTL 同 digest 本體
+        await env.USER_PREFS.put(`digest_idx:${date}:${token}`, "1", { expirationTtl: 86400 * 45 });
+      }
       return json({ ok: true, url: `${url.origin}/digest/${token}` });
+    }
+
+    // 內部用:列舉某日所有 digest tokens(供 track-record builder)
+    // 認證:Bearer header 比對 env.INTERNAL_TOKEN
+    if (url.pathname === "/internal/list-digests" && request.method === "GET") {
+      const auth = request.headers.get("authorization") || "";
+      const expected = `Bearer ${env.INTERNAL_TOKEN || ""}`;
+      if (!env.INTERNAL_TOKEN || auth !== expected) return json({ error: "unauthorized" }, 401);
+      const date = (url.searchParams.get("date") || "").trim();
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return json({ error: "invalid_date" }, 400);
+      const tokens = [];
+      let cursor = undefined;
+      // KV list 一次最多 1000 鍵,需要分頁
+      for (let i = 0; i < 10; i++) {
+        const res = await env.USER_PREFS.list({ prefix: `digest_idx:${date}:`, cursor });
+        for (const k of res.keys) {
+          const t = k.name.slice(`digest_idx:${date}:`.length);
+          if (t) tokens.push(t);
+        }
+        if (res.list_complete) break;
+        cursor = res.cursor;
+      }
+      return json({ date, count: tokens.length, tokens });
     }
 
     // Serve a hosted digest page by token

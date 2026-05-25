@@ -232,6 +232,10 @@ def save_cache(cache: dict[str, dict]) -> None:
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36")
 WORKER = "https://marketdaily-webhook.delvin-12345678.workers.dev"
+# 內部 token 用來呼叫 /internal/list-digests 列舉某日所有個人化 digest tokens
+# 透過 GitHub Actions secret 或本機環境變數注入,未設定就只跑公版日報(向後相容)
+import os
+INTERNAL_TOKEN = os.environ.get("MARKETDAILY_INTERNAL_TOKEN", "").strip()
 
 
 def yahoo_chart(sym: str, _start_iso: str, _end_iso: str) -> dict[str, float] | None:
@@ -358,6 +362,37 @@ def discover_dates() -> list[str]:
         return []
 
 
+def list_personal_digest_tokens(date_str: str) -> list[str]:
+    """呼叫 Worker /internal/list-digests 列舉某日所有個人化 digest tokens。
+    沒設 INTERNAL_TOKEN 就回空清單(向後相容,只跑公版)。"""
+    if not INTERNAL_TOKEN:
+        return []
+    url = f"{WORKER}/internal/list-digests?date={date_str}"
+    req = urllib.request.Request(
+        url,
+        headers={"Authorization": f"Bearer {INTERNAL_TOKEN}", "User-Agent": UA},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        return data.get("tokens") or []
+    except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError) as exc:
+        print(f"[warn] list-digests {date_str}: {exc}", file=sys.stderr)
+        return []
+
+
+def fetch_personal_digest_html(token: str) -> str | None:
+    """透過 Worker public /digest/{token} 取個人化日報 HTML。"""
+    url = f"{WORKER}/digest/{token}"
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html"})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            return resp.read().decode("utf-8", errors="ignore")
+    except (urllib.error.URLError, urllib.error.HTTPError) as exc:
+        print(f"[warn] personal digest {token[:8]}: {exc}", file=sys.stderr)
+        return None
+
+
 def main() -> int:
     dates = discover_dates()
     if not dates:
@@ -366,6 +401,7 @@ def main() -> int:
     print(f"[discover] {len(dates)} dates to process")
 
     all_records: list[dict] = []
+    personal_records: list[dict] = []  # 跨用戶聚合用,不寫進公開 records 列表
     for date_str in dates:
         html = fetch_digest_html(date_str)
         if not html:
@@ -375,29 +411,66 @@ def main() -> int:
         all_records.extend(recs)
         print(f"[parse] digest_{date_str}.html: {len(recs)} records")
 
-    keys = {(r["ticker"], r["date"]) for r in all_records}
+        # 跨用戶:列舉當日所有個人化 digest tokens,parse 後僅算進 stats
+        # 隱私策略:不洩漏個別用戶持股,records 列表只保留公版
+        if INTERNAL_TOKEN:
+            tokens = list_personal_digest_tokens(date_str)
+            if tokens:
+                # 去重避免同一個人化 digest 多次計算 — 用 (date, ticker, verdict) 三元組
+                seen_keys = {(r["date"], r["ticker"], r["verdict_class"]) for r in recs}
+                added = 0
+                for tok in tokens:
+                    p_html = fetch_personal_digest_html(tok)
+                    if not p_html:
+                        continue
+                    p_recs = parse_digest_html(date_str, p_html)
+                    for pr in p_recs:
+                        key = (pr["date"], pr["ticker"], pr["verdict_class"])
+                        if key in seen_keys:
+                            continue
+                        seen_keys.add(key)
+                        pr["source_scope"] = "personal"  # 標記不寫入公開 records
+                        personal_records.append(pr)
+                        added += 1
+                    time.sleep(0.1)  # 對 worker 客氣點
+                print(f"  + personal: {len(tokens)} tokens → {added} new (ticker,verdict) added to stats only")
+
+    # 公版 + 個人化合在一起算 price + judge
+    combined = all_records + personal_records
+    keys = {(r["ticker"], r["date"]) for r in combined}
     print(f"[fetch] {len(keys)} (ticker,date) pairs via yfinance (cached where possible)...")
     prices = fetch_prices(keys)
 
-    judged = []
+    judged_public = []
     for r in all_records:
         r["outcome"] = judge(r, prices)
-        judged.append(r)
+        judged_public.append(r)
+    judged_personal = []
+    for r in personal_records:
+        r["outcome"] = judge(r, prices)
+        judged_personal.append(r)
 
-    # Sort by date desc, then by ticker
-    judged.sort(key=lambda x: (x["date"], x["ticker"]), reverse=True)
+    # records 列表只放公版(隱私策略 A),personal 只進 stats
+    judged_public.sort(key=lambda x: (x["date"], x["ticker"]), reverse=True)
+    judged_all = judged_public + judged_personal  # stats 用
 
-    a_recs = [r for r in judged if r["type"] == "A" and r["outcome"]]
-    c_recs = [r for r in judged if r["type"] == "C" and r["outcome"]]
+    a_recs = [r for r in judged_all if r["type"] == "A" and r["outcome"]]
+    c_recs = [r for r in judged_all if r["type"] == "C" and r["outcome"]]
     a_wins = sum(1 for r in a_recs if r["outcome"] == "win")
     c_wins = sum(1 for r in c_recs if r["outcome"] == "win")
     a_rate = (a_wins / len(a_recs) * 100) if a_recs else 0.0
     c_rate = (c_wins / len(c_recs) * 100) if c_recs else 0.0
 
+    # 公版單獨統計(供對比)
+    a_pub = [r for r in judged_public if r["type"] == "A" and r["outcome"]]
+    c_pub = [r for r in judged_public if r["type"] == "C" and r["outcome"]]
+    a_pub_wins = sum(1 for r in a_pub if r["outcome"] == "win")
+    c_pub_wins = sum(1 for r in c_pub if r["outcome"] == "win")
+
     stats = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "days_covered": len({r["date"] for r in judged}),
-        "total_records": len(judged),
+        "days_covered": len({r["date"] for r in judged_all}),
+        "total_records": len(judged_all),
         "judged_records": len(a_recs) + len(c_recs),
         "a_count": len(a_recs),
         "a_wins": a_wins,
@@ -405,17 +478,31 @@ def main() -> int:
         "c_count": len(c_recs),
         "c_wins": c_wins,
         "c_rate": round(c_rate, 1),
+        # 區分公版 / 個人化來源,讓前端可看到是否包含跨用戶聚合
+        "public_only": {
+            "a_count": len(a_pub),
+            "a_wins": a_pub_wins,
+            "a_rate": round(a_pub_wins / len(a_pub) * 100, 1) if a_pub else 0.0,
+            "c_count": len(c_pub),
+            "c_wins": c_pub_wins,
+            "c_rate": round(c_pub_wins / len(c_pub) * 100, 1) if c_pub else 0.0,
+        },
+        "personal_samples_added": len(judged_personal),
     }
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     OUT_FILE.write_text(
-        json.dumps({"stats": stats, "records": judged}, ensure_ascii=False, indent=2),
+        json.dumps({"stats": stats, "records": judged_public}, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+    pub = stats["public_only"]
     print(
         f"[write] {OUT_FILE}\n"
-        f"  total={stats['total_records']} judged={stats['judged_records']}\n"
-        f"  A: {a_wins}/{stats['a_count']} = {stats['a_rate']}%\n"
-        f"  C: {c_wins}/{stats['c_count']} = {stats['c_rate']}%"
+        f"  total={stats['total_records']} judged={stats['judged_records']} "
+        f"(public={len(judged_public)} personal_added={stats['personal_samples_added']})\n"
+        f"  A (all):    {a_wins}/{stats['a_count']} = {stats['a_rate']}%\n"
+        f"  A (public): {pub['a_wins']}/{pub['a_count']} = {pub['a_rate']}%\n"
+        f"  C (all):    {c_wins}/{stats['c_count']} = {stats['c_rate']}%\n"
+        f"  C (public): {pub['c_wins']}/{pub['c_count']} = {pub['c_rate']}%"
     )
     return 0
 

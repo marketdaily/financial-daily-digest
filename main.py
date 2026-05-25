@@ -392,14 +392,19 @@ def get_user_preferences(email: str) -> dict:
     return {"us_stocks": [], "tw_stocks": [], "plan": "free"}
 
 
-def save_hosted_digest(html: str) -> str:
-    """把完整日報 HTML 上傳到 Worker KV，回傳可分享的網頁連結；失敗回 None。"""
+def save_hosted_digest(html: str, date: str = "") -> str:
+    """把完整日報 HTML 上傳到 Worker KV，回傳可分享的網頁連結；失敗回 None。
+    date 若有值會同步寫進 digest_idx:{date}:{token},供 track-record builder 列舉所有
+    當日個人化日報、算進跨用戶總勝率。"""
     import requests
     token = secrets.token_urlsafe(12)
     try:
+        payload = {"token": token, "html": html}
+        if date:
+            payload["date"] = date
         res = requests.post(
             f"{WORKER_URL}/save-digest",
-            json={"token": token, "html": html},
+            json=payload,
             timeout=20,
         )
         if res.ok:
@@ -495,7 +500,7 @@ def run():
     save_local(data["date"], default_report)
 
     print("⑥ 上傳預設版網頁...")
-    default_web_url = save_hosted_digest(build_email_html(data["date"], default_report))
+    default_web_url = save_hosted_digest(build_email_html(data["date"], default_report), data["date"])
 
     print("⑦ 個人化發送...")
     from analyzer import get_personalized_subject
@@ -523,7 +528,7 @@ def run():
                 ai_calls += 1
                 full_inner = _inject_ai_banner(full_inner, data["date"])
                 # 完整版（含全部持倉）上傳網頁
-                web_url = save_hosted_digest(build_email_html(data["date"], full_inner)) or default_web_url
+                web_url = save_hosted_digest(build_email_html(data["date"], full_inner), data["date"]) or default_web_url
                 # email 版：持倉超過上限時縮減，避免被 Gmail 截斷
                 if total > DIGEST_EMAIL_MAX_HOLDINGS:
                     time.sleep(5)
