@@ -1,4 +1,110 @@
 {
-  "_comment": "MarketDaily 社群貼文排程定義。2026-05-26 清空 —— 原 46 篇有虛假勝率/編造訂戶/舊邀請制/寫死即時市況等地雷,backup 在 social_posts.json.bak-2026-05-26。新一波文案待規劃後重新填入。daily_run.py 跑會直接顯示「都發完了 — 無動作」。",
-  "posts": []
+  "_comment": "MarketDaily v2 organic post — 2026-05-26 Marketing Agents 4 段串聯產出,15 篇 (avg 86/100, 0 法規 flag)。圖卡走 social_cards.py SVG 模板 (marketing/make_v2_cards.py),已轉 JPEG 到 docs/social/。X 平台跳過 (token 已停)。",
+  "posts": [
+    {
+      "id": "explainer_v01_30sec",
+      "day": 1,
+      "image": "explainer_v01_30sec.png",
+      "platforms": ["instagram", "facebook", "threads", "line"],
+      "caption": "30 秒讀完一封財經早報, 然後去上班。\n\n— 你的美股 + 台股, AI 寫成中文\n— 假消息過濾掉\n— 重點 + 操作思考, 不是 80 則無結論的快訊\n\n7AM 在你 inbox。先免費讀一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=explainer_v01_30sec\n\n#美股 #台股 #投資理財 #財經日報 #理財"
+    },
+    {
+      "id": "explainer_v02_only_yours",
+      "day": 2,
+      "image": "explainer_v02_only_yours.png",
+      "platforms": ["instagram", "facebook", "threads", "line"],
+      "caption": "市場每天 1000 條財經新聞。\n你需要的, 大概只有 5 條 — 跟你的持股有關的那 5 條。\n\nMarketDaily 做的就是這件事:你設定持股, AI 每天早上挑出跟你有關的, 中文寫給你。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=explainer_v02_only_yours\n\n#個人化 #美股 #台股 #投資理財 #財經"
+    },
+    {
+      "id": "problem_v01_time_steal",
+      "day": 3,
+      "image": "problem_v01_time_steal.png",
+      "platforms": ["instagram", "facebook", "threads"],
+      "caption": "你早上的 1 小時, 被多少則沒結論的新聞偷走?\n\nFed 講話、TSMC 漲跌、AI 又一輪、地緣政治、誰賣超誰買超…\n看完還是不知道:那, 我手上的股票呢?\n\nMarketDaily 把這 1 小時壓縮成 30 秒。中文寫, AI 過濾, 只給跟你持股有關的。\n\n試一份明早就到: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=problem_v01_time_steal\n\n#財經日報 #投資理財 #美股 #台股 #媒體識讀"
+    },
+    {
+      "id": "problem_v02_fake_news",
+      "day": 4,
+      "image": "problem_v02_fake_news.png",
+      "platforms": ["instagram", "facebook", "threads", "line"],
+      "caption": "假新聞不是最危險的。\n\n最危險的是你看了 30 篇, 還是不知道哪些是真的、哪些跟你的股票有關。\n\nMarketDaily 每天從多家可信媒體交叉比對, AI 過濾掉雜訊, 中文寫成 30 秒可讀的早報。\n\n7AM, inbox 見: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=problem_v02_fake_news\n\n#假新聞 #媒體識讀 #財經日報 #投資 #美股 #台股"
+    },
+    {
+      "id": "proof_v01_track_record",
+      "day": 5,
+      "image": "proof_v01_track_record.png",
+      "platforms": ["instagram", "facebook", "threads", "line"],
+      "caption": "大部分財經頻道只給你「賺到」的案例。\n\n我們做了一個公開的戰績頁:每天看多 / 看空 / 觀望, 後續對錯都列。看對的會貼出來, 看錯的也會。\n\n投資不是抽卡, 是要看樣本累積夠不夠誠實。\n\n戰績頁長這樣 → https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=proof_v01_track_record\n\n#戰績公開 #投資 #財經日報 #美股 #台股 #透明"
+    },
+    {
+      "id": "proof_v02_editor_promise",
+      "day": 6,
+      "image": "proof_v02_editor_promise.png",
+      "platforms": ["instagram", "facebook", "threads"],
+      "caption": "MarketDaily 編輯五條紀律:\n\n1. 不收業配\n2. 日報提及的個股, 編輯不持有 (避免利益衝突)\n3. 不喊單 (給你思考材料, 不是當你老師)\n4. 看錯了會列出來 (戰績頁公開)\n5. 永遠中文寫 (英文新聞 AI 翻好給你)\n\n大部分財經內容做不到第 1, 4。我們把這五條當底線。\n\n看實際早報: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=proof_v02_editor_promise\n\n#編輯紀律 #財經 #投資 #媒體識讀 #透明"
+    },
+    {
+      "id": "founder_v01_why_built",
+      "day": 7,
+      "image": "founder_v01_why_built.png",
+      "platforms": ["instagram", "facebook", "threads"],
+      "caption": "我是 Delvin, MarketDaily 創辦人。\n\n做這個的原因簡單:我自己持股 (美股 + 台股), 每天早上要花 1 小時掃新聞, 還是常常漏掉跟我的股票有關的東西。\n\n所以我寫了一個 AI, 每天早上 7 點把跟我持股有關的事整理成 30 秒可讀的中文早報。\n\n後來我發現朋友也在用。然後就開了讓你也能訂。\n\n想看一份長怎樣 → https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=founder_v01_why_built\n\n#創辦人 #財經日報 #個人化 #投資"
+    },
+    {
+      "id": "founder_v02_not_a_teacher",
+      "day": 8,
+      "image": "founder_v02_not_a_teacher.png",
+      "platforms": ["instagram", "facebook", "threads", "line"],
+      "caption": "「投資老師」這個詞我聽到就警覺。\n\n我做 MarketDaily 不是要教你怎麼買, 而是把我自己每天早上會做的「讀新聞 → 整理 → 想我的持股」這件事自動化, 然後分享出來。\n\n你做決定。我給原料。\n\n這也是為什麼戰績頁公開、不收業配、日報提及的個股編輯不持有 — 我講錯了你可以馬上驗證。\n\nhttps://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=founder_v02_not_a_teacher\n\n#財經 #投資 #媒體識讀 #獨立媒體"
+    },
+    {
+      "id": "edu_v01_signal_noise",
+      "day": 9,
+      "image": "edu_v01_signal_noise.png",
+      "platforms": ["instagram", "facebook", "threads"],
+      "caption": "投資的真功夫, 不是「知道更多」, 是「過濾更少」。\n\n資訊永遠夠多, 你的注意力才稀缺。\n\nMarketDaily 的工作就是幫你做 80% 的過濾 — AI 跨多家媒體比對、去掉廣告稿和點擊餌、只留下對你持股可能有影響的。\n\n剩下 20% 留給你做判斷。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=edu_v01_signal_noise\n\n#投資思維 #媒體識讀 #財經 #理財"
+    },
+    {
+      "id": "edu_v02_market_vs_yours",
+      "day": 10,
+      "image": "edu_v02_market_vs_yours.png",
+      "platforms": ["instagram", "facebook", "threads", "line"],
+      "caption": "市場分析 ≠ 你的股票分析。\n\n大盤漲 1%, 你的持股可能跌 3%。\nFed 升息對你影響大不大, 取決於你持有什麼。\n\n大部分財經內容只告訴你大盤怎麼了。MarketDaily 設計成相反的:你設定持股, 它每天告訴你「對你」怎麼了。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=edu_v02_market_vs_yours\n\n#個人化 #投資 #財經 #媒體識讀"
+    },
+    {
+      "id": "vs_v01_vs_local",
+      "day": 11,
+      "image": "vs_v01_vs_local.png",
+      "platforms": ["instagram", "facebook", "threads"],
+      "caption": "你早上追財經的選項 (台灣散戶版):\n\n→ 鉅亨網 / 經濟日報: 內容夠多, 但廣告滿版 + 沒個人化, 要自己挑\n→ Yahoo 股市 / 三竹股市: 看盤即時, 但沒人幫你寫摘要\n→ 滑社群: 免費, 但要自己過濾喊單和業配\n→ MarketDaily: 中文 + AI 過濾 + 只給跟你持股有關的, 30 秒讀完\n\n看 MarketDaily 長怎樣 → https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=vs_v01_vs_local\n\n#財經 #美股 #台股 #投資 #理財"
+    },
+    {
+      "id": "vs_v02_vs_chatgpt",
+      "day": 12,
+      "image": "vs_v02_vs_chatgpt.png",
+      "platforms": ["instagram", "facebook", "threads", "line"],
+      "caption": "用 ChatGPT 查財經?\n\n問題 1: 你要每天記得去問\n問題 2: 它可能引用過時資料\n問題 3: 它不知道你持有什麼\n\nMarketDaily 是相反設計:\n→ 不用你問, 7AM 自己到 inbox\n→ 每天當天的新聞 + 標明來源\n→ 知道你的持股 (你設定過), 只給有關的\n\n看一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=vs_v02_vs_chatgpt\n\n#ChatGPT #AI #財經 #投資 #個人化"
+    },
+    {
+      "id": "habit_v01_weekly",
+      "day": 13,
+      "image": "habit_v01_weekly.png",
+      "platforms": ["instagram", "facebook", "threads", "line"],
+      "caption": "MarketDaily 的節奏:\n\n→ 週一到週六 早上 7:00 寄出\n→ 週六是「本週回顧」版, 不是當天新聞\n→ 週日休息 (你也該休息)\n\n設計理由:盤前讀完, 開盤前你已經知道今天的故事。週末不打擾。\n\n從下一封早報開始: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=habit_v01_weekly\n\n#財經日報 #早起 #投資理財 #習慣"
+    },
+    {
+      "id": "explainer_v03_inbox_friend",
+      "day": 14,
+      "image": "explainer_v03_inbox_friend.png",
+      "platforms": ["instagram", "facebook", "threads"],
+      "caption": "MarketDaily 的寫法不是新聞稿, 是「朋友傳給你的早報」。\n\n中文。口語。\n你的股票漲跌 + 為什麼 + 你今天可能要注意什麼。\n沒有「投資人應審慎評估」這種廢話。\n\n試一份, 看寫法對不對你的口味: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=explainer_v03_inbox_friend\n\n#財經日報 #投資 #個人化 #中文"
+    },
+    {
+      "id": "faq_v01_who_for",
+      "day": 15,
+      "image": "faq_v01_who_for.png",
+      "platforms": ["instagram", "facebook", "threads", "line"],
+      "caption": "MarketDaily 適合你嗎?\n\n✅ 適合: 持有美股或台股 / 上班族 / 想知道你持股的動態 / 不想花 1 小時掃新聞\n❌ 不適合: 完全不投資 / 純當沖技術派 / 想要喊單老師 (我們不喊單)\n\n如果上面 ✅ 你中了 2 個以上, 試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=faq_v01_who_for\n\n#財經日報 #投資 #美股 #台股 #理財"
+    }
+  ]
 }
