@@ -1,0 +1,11 @@
+name = "marketdaily-preflight-cron"
+main = "src/index.js"
+compatibility_date = "2026-05-01"
+
+# 每天 22:25 UTC = 台灣 06:25 觸發,比主 cron 早 30 分鐘。
+# 派發 digest_preview.yml workflow (--dry-run),audit 跑完任何 HIGH fail
+# 會立刻 LINE 推 admin,admin 有 30 分鐘改 prompt + push 再讓主 cron 跑。
+[triggers]
+crons = ["25 22 * * *"]
+
+# Secret:GITHUB_TOKEN — 同 digest-cron 用同個 fine-grained PAT。

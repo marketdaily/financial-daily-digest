@@ -1,0 +1,40 @@
+name: 財經日報 Pre-Flight 預檢
+
+# 主寄送 cron 是 22:55 UTC(TW 06:55),這個 preflight 在 22:25 UTC(TW 06:25)跑,
+# 跑完整 pipeline 但 --dry-run 不寄信,只生 HTML + audit。
+# 任何 HIGH fail 立刻 LINE 推 admin,admin 有 30 分鐘修 prompt 再讓主 cron 跑。
+# 用戶絕不會看到「最差情況」。
+
+on:
+  workflow_dispatch:    # 手動觸發測試
+  # cron 由 marketdaily-preflight-cron worker 派發(GitHub schedule 延遲不準)
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Run preflight (dry-run, no send)
+        env:
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_NAME: ${{ secrets.SENDER_NAME }}
+          MARKETDAILY_INTERNAL_TOKEN: ${{ secrets.MARKETDAILY_INTERNAL_TOKEN }}
+        run: python main.py --dry-run
+      - name: Commit audit report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add output/digest_audit_*.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "chore(preflight): audit report [skip ci]"
+          git push origin HEAD:main || true

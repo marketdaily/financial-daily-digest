@@ -602,7 +602,11 @@ def run():
                     deterministic_fallbacks.append(email)
             if fails:
                 audit_failures_by_email[email] = fails
-            ok = send_transactional_email(email, data["date"], html, BREVO_API_KEY, subject=subject)
+            if DRY_RUN:
+                print(f"   [DRY-RUN] 略過寄信 → {email}")
+                ok = True
+            else:
+                ok = send_transactional_email(email, data["date"], html, BREVO_API_KEY, subject=subject)
         except Exception as e:
             ok = False
             print(f"   ❌ 發送異常：{email}（{e}）")
@@ -618,9 +622,26 @@ def run():
     if deterministic_fallbacks or personalization_failures:
         print(f"🛡️ {len(deterministic_fallbacks)} 位走 deterministic fallback")
         try:
-            _push_admin_halt_alert(data["date"], deterministic_fallbacks, personalization_failures)
+            _push_admin_halt_alert(data["date"], deterministic_fallbacks, personalization_failures,
+                                   dry_run=DRY_RUN)
         except Exception as e:
             print(f"   ⚠️ admin LINE 推失敗:{e}")
+
+    # Pre-flight 額外:任何 HIGH audit fail 即時 LINE 推 admin(寄信前 30 分跑時用),
+    # 讓 admin 有時間在真實 cron 跑前修 prompt。
+    if DRY_RUN:
+        all_high_fails = []
+        for em, fs in audit_failures_by_email.items():
+            highs = [f for f in fs if f.get("severity") == "high"]
+            if highs:
+                all_high_fails.append((em, highs))
+        if all_high_fails:
+            try:
+                _push_preflight_alert(data["date"], all_high_fails, len(subscribers))
+            except Exception as e:
+                print(f"   ⚠️ preflight LINE 推失敗:{e}")
+        else:
+            print(f"✅ [PRE-FLIGHT] {len(subscribers)} 位用戶日報無 HIGH fail,可放心讓主 cron 跑")
 
     # 個人化失敗的用戶 → 寫進 audit 報告主檔
     if personalization_failures:
@@ -661,7 +682,36 @@ def run():
             print(f"   ⚠️ audit 報告寫檔失敗: {e}")
 
 
-def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails):
+def _push_preflight_alert(date_str, high_fails, total_subscribers):
+    """Pre-flight 跑出 HIGH fail → 立刻推 admin,他有 30 分鐘修。"""
+    import os, json as _json, urllib.request
+    worker = os.environ.get("MARKETDAILY_WEBHOOK_URL",
+                            "https://marketdaily-webhook.delvin-12345678.workers.dev")
+    tok = os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN")
+    if not tok:
+        print("   (skip preflight push:INTERNAL_TOKEN 未設)")
+        return
+    lines = [f"🚨 [PRE-FLIGHT] 日報 {date_str} 有 HIGH 品質問題 — 寄信前必修"]
+    lines.append(f"影響:{len(high_fails)}/{total_subscribers} 位訂閱者")
+    sample_checks = {}
+    for em, highs in high_fails:
+        for h in highs:
+            sample_checks.setdefault(h["check"], []).append(em)
+    for check, ems in sorted(sample_checks.items(), key=lambda x: -len(x[1]))[:5]:
+        lines.append(f"  🔴 [{check}] {len(ems)} 位:{ems[0]}…")
+    lines.append("\n主 cron 30 分後跑,把握時間修 prompt + 重 deploy")
+    msg = "\n".join(lines)[:4900]
+    req = urllib.request.Request(
+        f"{worker.rstrip('/')}/internal/admin-line-push",
+        data=_json.dumps({"message": msg}).encode("utf-8"),
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        print(f"   preflight LINE push status={resp.status}")
+
+
+def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails, dry_run=False):
     """日報品質守門:走 deterministic fallback / personalization fail → LINE 即時推 admin。
     用戶不會缺信(都有寄),但 admin 需要立刻知道哪些用戶今天拿到的是降級版,趕快查 prompt 問題。"""
     import os, json as _json, urllib.request
@@ -671,7 +721,8 @@ def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails):
     if not tok:
         print("   (skip:MARKETDAILY_INTERNAL_TOKEN/INTERNAL_TOKEN 未設,無法推 admin)")
         return
-    lines = [f"🛡️ MarketDaily 日報品質告警 {date_str}"]
+    prefix = "🧪 [PRE-FLIGHT]" if dry_run else "🛡️"
+    lines = [f"{prefix} MarketDaily 日報品質告警 {date_str}"]
     if det_fallbacks:
         lines.append(f"⬇️ {len(det_fallbacks)} 位走 deterministic fallback(retry 仍 HIGH fail):")
         for em in det_fallbacks[:8]:
@@ -692,6 +743,10 @@ def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails):
     )
     with urllib.request.urlopen(req, timeout=10) as resp:
         print(f"   admin LINE push status={resp.status}")
+
+
+import sys as _sys
+DRY_RUN = "--dry-run" in _sys.argv
 
 
 if __name__ == "__main__":
