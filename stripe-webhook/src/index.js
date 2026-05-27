@@ -1211,12 +1211,24 @@ export default {
       }
       const email = (body.email || "").trim().toLowerCase();
       if (!email) return json({ error: "invalid_email" }, 400);
+      // Server-to-server bypass:daily digest job 帶 Bearer INTERNAL_TOKEN 可跳過 password gate。
+      // 不能拿掉 password gate(否則 marketdaily.ai 任何人都能 enum 持股),但 digest job 也不能拿用戶密碼。
+      let internalOk = false;
+      const auth = request.headers.get("authorization") || "";
+      const expected = `Bearer ${env.INTERNAL_TOKEN || ""}`;
+      if (env.INTERNAL_TOKEN && auth.length === expected.length) {
+        let diff = 0;
+        for (let i = 0; i < auth.length; i++) diff |= auth.charCodeAt(i) ^ expected.charCodeAt(i);
+        if (diff === 0) internalOk = true;
+      }
       // 身份驗證:若用戶已設密碼,read 必須帶正確密碼,否則任何人能查別人持股。
-      const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
-      if (storedHash) {
-        const password = body.password || "";
-        if (!password || !(await verifyPwd(password, storedHash))) {
-          return json({ error: "auth" }, 403);
+      if (!internalOk) {
+        const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
+        if (storedHash) {
+          const password = body.password || "";
+          if (!password || !(await verifyPwd(password, storedHash))) {
+            return json({ error: "auth" }, 403);
+          }
         }
       }
       const plan = (await env.USER_PREFS.get(`plan:${email}`)) || "free";

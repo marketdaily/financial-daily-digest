@@ -368,15 +368,21 @@ def _inject_ai_banner(inner_html: str, date: str) -> str:
 
 
 def get_user_preferences(email: str) -> dict:
-    """讀取用戶在「我的專區」設定的持倉偏好。失敗會重試，確保日報依個人設定客製化。"""
+    """讀取用戶在「我的專區」設定的持倉偏好。失敗會重試，確保日報依個人設定客製化。
+    server-to-server 帶 INTERNAL_TOKEN 跳過 password gate（用戶已設密碼後 endpoint 預設拒絕匿名讀）。"""
     import requests
+    tok = os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN") or ""
+    headers = {"Authorization": f"Bearer {tok}"} if tok else {}
+    last_status = None
     for attempt in range(3):
         try:
             res = requests.post(
                 f"{WORKER_URL}/get-preferences",
                 json={"email": email},
+                headers=headers,
                 timeout=10
             )
+            last_status = res.status_code
             if res.ok:
                 d = res.json() or {}
                 return {
@@ -388,8 +394,11 @@ def get_user_preferences(email: str) -> dict:
             pass
         if attempt < 2:
             time.sleep(2)
-    print(f"   ⚠️ 無法取得 {email} 的偏好設定（重試 3 次後仍失敗），本次改用預設版")
-    return {"us_stocks": [], "tw_stocks": [], "plan": "free"}
+    print(f"   ⚠️ 無法取得 {email} 的偏好設定（重試 3 次後仍失敗 status={last_status}），本次改用預設版")
+    if last_status == 403:
+        reason = "INTERNAL_TOKEN 未設" if not tok else "INTERNAL_TOKEN 與 worker env 不匹配"
+        print(f"      → 原因：{reason}，server-to-server bypass 失效")
+    return {"us_stocks": [], "tw_stocks": [], "plan": "free", "_fetch_failed": True, "_status": last_status}
 
 
 def save_hosted_digest(html: str, date: str = "") -> str:
@@ -479,6 +488,24 @@ def run():
             all_us_extra.add(s)
         for s in prefs.get("tw_stocks") or []:
             all_tw_extra.add(s)
+
+    # zero-error gate：prefs 抓取失敗 ≥ 30% → 所有人都會收到預設版（=「跟昨天一樣」的事故）
+    # 2026-05-27 出包過：endpoint 加 password gate 但 daily job 沒帶 INTERNAL_TOKEN → 10/10 全部 403
+    failed = [em for em, p in subscriber_prefs.items() if p.get("_fetch_failed")]
+    if failed and len(failed) / max(len(subscribers), 1) >= 0.3:
+        msg = (
+            f"🚨 [PREFS-FETCH] {len(failed)}/{len(subscribers)} 位訂閱者的偏好抓取失敗，"
+            f"將收到預設版（無個人化）\n"
+            f"sample status：{subscriber_prefs[failed[0]].get('_status')}\n"
+            f"修法：確認 worker INTERNAL_TOKEN 與 GH Actions secret 同步，再重 deploy stripe-webhook"
+        )
+        print(f"   🚨 {msg}")
+        try:
+            _push_admin_halt_alert(time.strftime("%Y-%m-%d"),
+                                   det_fallbacks=[], perso_fails=[(e, "prefs_403") for e in failed],
+                                   dry_run=DRY_RUN)
+        except Exception as e:
+            print(f"   (admin alert push 失敗：{e})")
 
     print(f"② 抓取市場數據（含用戶個股：美股 +{len(all_us_extra)}，台股 +{len(all_tw_extra)}）...")
     data = fetch_all(

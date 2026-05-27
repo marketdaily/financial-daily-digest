@@ -2,7 +2,7 @@ import yfinance as yf
 from yahooquery import Ticker as YQTicker
 import requests
 import feedparser
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from config import (
     NEWS_API_KEY, US_STOCKS, TW_STOCKS, US_INDICES, TW_INDICES,
     NEWS_WHITELIST_DOMAINS, TW_NEWS_WHITELIST_DOMAINS
@@ -417,5 +417,8 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         "crypto": fetch_crypto(),
         "sectors": fetch_sector_performance(),
         "earnings": fetch_earnings_calendar(),
-        "date": datetime.now().strftime("%Y-%m-%d")
+        # 必用 TW 時區：GH Actions runner 在 UTC，06:55 TW 寄送時 UTC 還是前一天
+        # 2026-05-27 出包過：runner UTC 22:55 (= TW 5/27 06:55) datetime.now()→5/26
+        # 害 _market_status() 拿 5/26 算「昨晚」變成 5/25 Memorial Day 假，日報通篇寫錯
+        "date": (datetime.now(timezone.utc) + timedelta(hours=8)).strftime("%Y-%m-%d")
     }
