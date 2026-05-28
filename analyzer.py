@@ -444,43 +444,23 @@ def _postprocess_html(html: str, data: dict) -> str:
         if isinstance(d, dict) and d.get("name"):
             tw_hint[code] = d["name"]
 
-    # 新手友善「一眼看懂買賣」總覽：從訊號卡自動彙整每支股票的買/賣/持有/觀望
-    _verdict = {
-        "buy":  ("🟢 可以買進", "buy"),
-        "hold": ("🟡 抱著別動", "hold"),
-        "sell": ("🔴 建議賣出", "sell"),
-        "wait": ("⚪ 先觀望",   "wait"),
+    # signal-card 內把買/賣 verdict 拉到代號旁邊,讓「一眼看懂」效果更好
+    # (原本 action-board 總覽已移除,改成直接在每張卡頂端標明買賣)
+    _verdict_inline = {
+        "buy":  "🟢 建議買入",
+        "hold": "🟡 續抱持有",
+        "sell": "🔴 建議賣出",
+        "wait": "⚪ 暫時觀望",
     }
-    _card_re = _re.compile(
-        r'<div class="signal-card (buy|hold|sell|wait)">.*?'
-        r'<span class="signal-ticker">\s*([^<]+?)\s*</span>'
-        r'(?:\s*<span class="signal-day-move (up|down)">\s*([^<]*?)\s*</span>)?'
-        r'.*?<div class="signal-reason">\s*(.*?)\s*</div>',
-        _re.DOTALL,
+    _card_verdict_re = _re.compile(
+        r'(<div class="signal-card (buy|hold|sell|wait)">\s*<div class="signal-card-top">\s*<span class="signal-ticker">[^<]+</span>)',
     )
-    _rows = []
-    for verdict, code_raw, dm_dir, dm_text, reason in _card_re.findall(html):
-        code = stock_names.pick_code(code_raw)
-        label, cls = _verdict[verdict]
-        move = f'<span class="action-move {dm_dir}">{dm_text}</span>' if dm_dir else ""
-        reason_plain = _re.sub(r"<[^>]+>", "", reason).strip()
-        _rows.append(
-            f'<div class="action-item {cls}">'
-            f'<div class="action-main"><span class="action-name">{stock_names.badge_html(code, tw_hint.get(code))}</span>'
-            f'{move}<span class="action-verdict {cls}">{label}</span></div>'
-            f'<div class="action-reason">{reason_plain}</div></div>'
-        )
-    if _rows:
-        board = (
-            '<div class="action-board">'
-            '<div class="action-board-title">📋 一眼看懂：你的股票今天買還是賣</div>'
-            + "".join(_rows)
-            + '<div class="action-legend">🟢 買進＝現在可考慮進場 ｜ 🟡 持有＝抱著別動 ｜ '
-            '🔴 賣出＝建議獲利了結或停損（認賠出場） ｜ ⚪ 觀望＝先別出手</div></div>'
-        )
-        html = html.replace(
-            '<div class="signal-header">', board + '\n<div class="signal-header">', 1
-        )
+    def _add_chip(m):
+        full, verdict = m.group(1), m.group(2)
+        label = _verdict_inline.get(verdict, "")
+        chip = f'<span class="signal-verdict-chip {verdict}">{label}</span>'
+        return f'{full}{chip}'
+    html = _card_verdict_re.sub(_add_chip, html)
 
     def _expand_ticker(m):
         cls, content = m.group(1), m.group(2)
@@ -699,14 +679,6 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
 1. 在「持倉深度追蹤」區塊中，除了追蹤現有持倉，還要主動推薦 2-3 支「相關股票」，說明為什麼值得關注
 2. 在「今天的結論」後面，加一個「💡 你可能也感興趣」區塊，推薦 2-3 支跟用戶持倉同產業或有關聯的股票，附上今日表現和一句話說明理由
 3. TLDR 的最後一條改成：「建議你也關注：XXX（理由一句話）」"""
-
-    holdings_instruction = f"（只寫用戶持倉：{', '.join(watchlist_us)}，有數據的才寫。stock-comment 必須與該股今日實際漲跌方向一致——上漲就講上漲原因、下跌就講下跌原因，嚴禁對下跌的股票說「營收成長帶來正面影響」這類與走勢矛盾的話。每支給明確今日評語：漲跌原因 + 短期要注意什麼。"
-    "‼️ 看空語意管控：『觀望/拉回/保守』屬中性偏謹慎，不要在 stock-comment 隨手丟。要喊看空就要言之有物：用『停損/減碼/獲利了結/短期過熱/風險升高/看跌/偏空』這類強看空詞，且必須說明具體理由（估值過高、技術破位、催化劑利空等）。若只是當日小跌但中期中性，直接寫『短線拉回但中期維持中性』，不要混用看空詞。）"
-    tw_holdings_instruction = ""
-    if watchlist_tw:
-        tw_holdings_instruction = f"""
-<div class="section-label">🏢 你的台股今天怎樣</div>
-（只寫用戶台股持倉：{', '.join(watchlist_tw)}，有數據的才寫，格式同美股 stock-card，同樣給出明確今日評語）"""
 
     personalized_news_instruction = f"""
 <div class="section-label">🔍 持倉深度追蹤</div>
@@ -978,15 +950,6 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 {second_order_section}
 
 {personalized_news_instruction}
-
-<div class="section-label">🏢 你的美股今天怎樣</div>
-<div class="stock-card">
-  <span class="ticker">（代號）</span>
-  <span class="stock-move up/down">（▲/▼ 漲跌%）</span>
-  <div class="stock-comment">（漲/跌原因 + 要不要擔心，一句話）</div>
-</div>
-{holdings_instruction}
-{tw_holdings_instruction}
 
 <div class="section-label">📅 即將公布財報</div>
 <div class="earnings-list">

@@ -179,25 +179,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .signal-horizon { font-size: 11px; color: #6b7280; background: #f3f4f6; padding: 2px 8px; border-radius: 20px; }
 .signal-disclaimer { margin: 4px 20px 14px; font-size: 10px; color: #aeaeb2; text-align: center; line-height: 1.6; }
 
-.action-board { margin: 16px 20px 6px; }
-.action-board-title { font-size: 14px; font-weight: 900; color: #1d1d1f; margin-bottom: 11px; }
-.action-item { border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; border: 1px solid; }
-.action-item.buy { background: #f0fdf4; border-color: #bbf7d0; }
-.action-item.hold { background: #fffbeb; border-color: #fde68a; }
-.action-item.sell { background: #fff1f2; border-color: #fecdd3; }
-.action-item.wait { background: #f8fafc; border-color: #e2e8f0; }
-.action-main { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
-.action-name { font-size: 14px; font-weight: 800; color: #1d1d1f; }
-.action-move { font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
-.action-move.up { background: #dcfce7; color: #166534; }
-.action-move.down { background: #ffe4e6; color: #9f1239; }
-.action-verdict { margin-left: auto; font-size: 13px; font-weight: 900; padding: 5px 13px; border-radius: 20px; white-space: nowrap; }
-.action-verdict.buy { background: #16a34a; color: #ffffff; }
-.action-verdict.hold { background: #f59e0b; color: #ffffff; }
-.action-verdict.sell { background: #e11d48; color: #ffffff; }
-.action-verdict.wait { background: #94a3b8; color: #ffffff; }
-.action-reason { font-size: 13px; color: #48484a; line-height: 1.6; }
-.action-legend { font-size: 11px; color: #8e8e93; line-height: 1.8; margin-top: 9px; padding: 10px 13px; background: #f2f2f7; border-radius: 10px; }
+.signal-verdict-chip { font-size: 12px; font-weight: 900; padding: 4px 11px; border-radius: 20px; white-space: nowrap; }
+.signal-verdict-chip.buy { background: #16a34a; color: #ffffff; }
+.signal-verdict-chip.hold { background: #f59e0b; color: #ffffff; }
+.signal-verdict-chip.sell { background: #e11d48; color: #ffffff; }
+.signal-verdict-chip.wait { background: #94a3b8; color: #ffffff; }
 
 .rookie-pick { margin: 0 20px 10px; padding: 14px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; }
 .rookie-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 7px; }
