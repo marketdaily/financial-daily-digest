@@ -523,7 +523,7 @@ def _postprocess_html(html: str, data: dict) -> str:
     # 結論情緒 chip 提前:把今天偏多/偏空標籤抓到 TLDR 標題,讓用戶第一眼就掃到結論
     def _hoist_verdict_chip(h):
         vm = _re.search(
-            r'<div class="verdict (bullish|bearish|neutral)">\s*'
+            r'<div class="verdict[^"]*\b(bullish|bearish|neutral)\b[^"]*">\s*'
             r'<div class="verdict-emoji">([^<]*)</div>',
             h,
         )
@@ -541,6 +541,9 @@ def _postprocess_html(html: str, data: dict) -> str:
         return h2 if n else h
 
     html = _hoist_verdict_chip(html)
+
+    # LLM 偶爾吐 markdown 粗體 **xxx**,轉成 <strong>,別讓星號直接露在卡片上
+    html = _re.sub(r'\*\*([^*\n<]+?)\*\*', r'<strong>\1</strong>', html)
 
     return html
 
