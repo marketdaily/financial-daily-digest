@@ -499,6 +499,49 @@ def _postprocess_html(html: str, data: dict) -> str:
         _strip_empty_impact, html, flags=_re.DOTALL
     )
 
+    # 空區塊自動隱藏:沒有實質內容的 section 整塊移除,不留空標題洗版
+    def _drop_empty_sections(h):
+        parts = _re.split(r'(<div class="section-label">)', h)
+        out = [parts[0]]
+        i = 1
+        while i < len(parts):
+            label_tag = parts[i]
+            body = parts[i + 1] if i + 1 < len(parts) else ""
+            m = _re.match(r'([^<]*)</div>', body)
+            title = m.group(1) if m else ""
+            drop = (
+                ("即將公布財報" in title and "earnings-item" not in body)
+                or ("持倉深度追蹤" in title and "stock-news-item" not in body)
+            )
+            if not drop:
+                out.append(label_tag + body)
+            i += 2
+        return "".join(out)
+
+    html = _drop_empty_sections(html)
+
+    # 結論情緒 chip 提前:把今天偏多/偏空標籤抓到 TLDR 標題,讓用戶第一眼就掃到結論
+    def _hoist_verdict_chip(h):
+        vm = _re.search(
+            r'<div class="verdict (bullish|bearish|neutral)">\s*'
+            r'<div class="verdict-emoji">([^<]*)</div>',
+            h,
+        )
+        if not vm:
+            return h
+        cls, label = vm.group(1), vm.group(2).strip()
+        if not label:
+            return h
+        chip = f'<span class="tldr-chip {cls}">{label}</span>'
+        h2, n = _re.subn(
+            r'(<div class="tldr-title">[^<]*)</div>',
+            lambda m: m.group(1) + " " + chip + "</div>",
+            h, count=1,
+        )
+        return h2 if n else h
+
+    html = _hoist_verdict_chip(html)
+
     return html
 
 
@@ -903,7 +946,31 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 </div>
 
 {signal_instruction}
+{personalized_news_instruction}
 {rookie_section}
+
+<div class="section-label">🔥 今天最重要的 5 件事</div>
+<div class="news-card">
+  <div class="news-tag verified">✅ 多源確認</div>
+  <div class="news-headline">（標題，口語化改寫，不超過 25 字）</div>
+  <div class="news-why">💡 為什麼重要：（這件事的來龍去脈與後續影響，要有實質分析，不可只是把標題換句話說）</div>
+  <div class="news-impact">
+    <span class="impact-label">📊 影響個股</span>
+    <span class="impact-stock up">NVDA</span>
+    <span class="impact-stock down">INTC</span>
+  </div>
+  <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
+</div>
+（重複 5 次，單一來源用 <div class="news-tag single">⚠️ 單一來源</div>）
+
+‼️ news-impact 是強制要求：5 張新聞卡【每一張都必須】有 news-impact 區塊，且至少列 1 支 impact-stock。
+- impact-stock span 內只放純股票代號（例如 NVDA、AAPL、2330），不要放公司名，系統會自動補名稱與漲跌標示
+- class 用 up＝這則消息對該股是利多（可能漲）、down＝利空（可能跌）
+- 想不到具體個股時，就挑受影響產業的龍頭股：Fed 利率→JPM、GS；油價→XOM、CVX；AI/算力→NVDA、TSM；半導體→TSM、2330、2454；消費→AMZN、WMT
+- 優先列跟用戶持倉（{', '.join(all_holdings) if has_holdings else '主流科技股'}）相關的個股
+- 只有新聞完全與任何上市公司無關時（例如純政治事件）才可省略，且這種最多 1 張
+
+<div class="advanced-divider">📊 以下是大盤與進階分析 — 想深入再看，不看也不影響你上面的操作</div>
 
 {mood_section}
 {indicator_section}
@@ -927,30 +994,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 
 {sector_section}
 
-<div class="section-label">🔥 今天最重要的 5 件事</div>
-<div class="news-card">
-  <div class="news-tag verified">✅ 多源確認</div>
-  <div class="news-headline">（標題，口語化改寫，不超過 25 字）</div>
-  <div class="news-why">💡 為什麼重要：（這件事的來龍去脈與後續影響，要有實質分析，不可只是把標題換句話說）</div>
-  <div class="news-impact">
-    <span class="impact-label">📊 影響個股</span>
-    <span class="impact-stock up">NVDA</span>
-    <span class="impact-stock down">INTC</span>
-  </div>
-  <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
-</div>
-（重複 5 次，單一來源用 <div class="news-tag single">⚠️ 單一來源</div>）
-
-‼️ news-impact 是強制要求：5 張新聞卡【每一張都必須】有 news-impact 區塊，且至少列 1 支 impact-stock。
-- impact-stock span 內只放純股票代號（例如 NVDA、AAPL、2330），不要放公司名，系統會自動補名稱與漲跌標示
-- class 用 up＝這則消息對該股是利多（可能漲）、down＝利空（可能跌）
-- 想不到具體個股時，就挑受影響產業的龍頭股：Fed 利率→JPM、GS；油價→XOM、CVX；AI/算力→NVDA、TSM；半導體→TSM、2330、2454；消費→AMZN、WMT
-- 優先列跟用戶持倉（{', '.join(all_holdings) if has_holdings else '主流科技股'}）相關的個股
-- 只有新聞完全與任何上市公司無關時（例如純政治事件）才可省略，且這種最多 1 張
-
 {second_order_section}
-
-{personalized_news_instruction}
 
 <div class="section-label">📅 即將公布財報</div>
 <div class="earnings-list">
