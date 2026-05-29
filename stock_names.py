@@ -184,16 +184,29 @@ def display_name(code, tw_hint=None):
     return cn or code
 
 
+def _is_tw(code):
+    return (code or "").strip().isdigit()
+
+
 def label_with_code(code, tw_hint=None):
-    """回傳『中文 代號』,例如 '輝達 NVDA'、'台積電 2330'。"""
+    """美股回『中文 代號』(輝達 NVDA);台股優先顯示台股名稱,代號可省(台積電)。"""
     cn, _ = _names(code, tw_hint)
     if cn and cn != code:
-        return f"{cn} {code}"
+        return cn if _is_tw(code) else f"{cn} {code}"
     return code
 
 
 def badge_html(code, tw_hint=None):
-    """ticker 徽章 HTML:公司中英文名 + 小灰代號。"""
+    """ticker 徽章 HTML。台股:只顯示台股名稱(代號不一定要顯示);美股:公司中英文名 + 小灰代號。"""
+    if _is_tw(code):
+        cn, _ = _names(code, tw_hint)
+        name = cn or code
+        if name == code:
+            return code
+        return (
+            '<span style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;'
+            f'font-weight:800;">{name}</span>'
+        )
     name = display_name(code, tw_hint)
     if name == code:
         return code
