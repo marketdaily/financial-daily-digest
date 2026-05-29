@@ -60,24 +60,47 @@ def fetch_rss_news() -> list:
 
 
 def _batch_prices(symbols: list) -> dict:
-    """Batch fetch via yahooquery — one HTTP call, no rate limit issues"""
+    """yahooquery 批次抓 + 重試 + yfinance 逐檔備援。
+    GH Actions 上 Yahoo 常整批失敗(429/空回),7am 寄送時害美股全變「今日無報價」,故加韌性。"""
     if not symbols:
         return {}
-    try:
-        data = YQTicker(symbols).price
-        result = {}
-        for sym in symbols:
-            p = data.get(sym, {})
-            price = p.get("regularMarketPrice")
-            prev = p.get("regularMarketPreviousClose")
-            if price and prev and prev != 0:
-                result[sym] = {
-                    "price": round(float(price), 2),
-                    "change_pct": round((float(price) - float(prev)) / float(prev) * 100, 2),
-                }
-        return result
-    except Exception:
-        return {}
+    result = {}
+    for _ in range(2):
+        try:
+            data = YQTicker(symbols).price
+            if isinstance(data, dict):
+                for sym in symbols:
+                    if sym in result:
+                        continue
+                    p = data.get(sym, {})
+                    if not isinstance(p, dict):
+                        continue
+                    price = p.get("regularMarketPrice")
+                    prev = p.get("regularMarketPreviousClose")
+                    if price and prev and prev != 0:
+                        result[sym] = {
+                            "price": round(float(price), 2),
+                            "change_pct": round((float(price) - float(prev)) / float(prev) * 100, 2),
+                        }
+            if len(result) == len(symbols):
+                return result
+        except Exception:
+            pass
+    # yahooquery 沒補齊的,逐檔用 yfinance 歷史價備援(不同 endpoint,常在 quote API 被擋時仍可用)
+    for sym in [s for s in symbols if s not in result]:
+        try:
+            hist = yf.Ticker(sym).history(period="5d")
+            if len(hist) >= 2:
+                price = float(hist["Close"].iloc[-1])
+                prev = float(hist["Close"].iloc[-2])
+                if price and prev and prev != 0:
+                    result[sym] = {
+                        "price": round(price, 2),
+                        "change_pct": round((price - prev) / prev * 100, 2),
+                    }
+        except Exception:
+            continue
+    return result
 
 
 def _get_cached_price(symbol: str) -> dict:
@@ -122,6 +145,48 @@ def _fetch_twse_all() -> dict:
         return result
     except Exception:
         return _TWSE_CACHE
+
+
+# TPEx OpenAPI — 上櫃股票收盤(含群聯 8299、精測 6510 等),官方數據無 rate limit
+_TPEX_CACHE: dict = {}
+_TPEX_CACHE_TIME: datetime = None
+
+def _fetch_tpex_all() -> dict:
+    """Return {stock_code: {name, price, change_pct}} for all TPEx (上櫃) stocks"""
+    global _TPEX_CACHE, _TPEX_CACHE_TIME
+    now = datetime.now()
+    if _TPEX_CACHE and _TPEX_CACHE_TIME and (now - _TPEX_CACHE_TIME).seconds < 3600:
+        return _TPEX_CACHE
+    for _ in range(2):
+        try:
+            resp = requests.get(
+                "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes",
+                timeout=15
+            )
+            result = {}
+            for row in resp.json():
+                code = (row.get("SecuritiesCompanyCode") or "").strip()
+                if not code.isdigit():
+                    continue
+                try:
+                    close = float(str(row["Close"]).strip())
+                    change = float(str(row["Change"]).strip())
+                    prev = close - change
+                    change_pct = (change / prev * 100) if prev != 0 else 0
+                    result[code] = {
+                        "name": (row.get("CompanyName") or code).strip(),
+                        "price": round(close, 2),
+                        "change_pct": round(change_pct, 2),
+                    }
+                except (ValueError, ZeroDivisionError, KeyError):
+                    continue
+            if result:
+                _TPEX_CACHE = result
+                _TPEX_CACHE_TIME = now
+                return _TPEX_CACHE
+        except Exception:
+            continue
+    return _TPEX_CACHE
 
 
 _TW_NAME_CACHE: dict = {}
@@ -171,6 +236,7 @@ def fetch_us_market():
 
 def fetch_tw_market():
     twse = _fetch_twse_all()
+    tpex = _fetch_tpex_all()
     result = {}
     d = _get_cached_price("^TWII")
     if d:
@@ -179,16 +245,24 @@ def fetch_tw_market():
         code = stock["symbol"] if isinstance(stock, dict) else stock
         if code in twse:
             result[code] = twse[code]
+        elif code in tpex:
+            result[code] = tpex[code]
     return result
 
 
 def fetch_custom_stocks(symbols: list) -> dict:
     twse = _fetch_twse_all()
+    tpex = None
     result = {}
     for sym in symbols:
-        if sym.isdigit() or (len(sym) == 4 and sym.isdigit()):
+        if sym.isdigit():
             if sym in twse:
                 result[sym] = twse[sym]
+            else:
+                if tpex is None:
+                    tpex = _fetch_tpex_all()
+                if sym in tpex:
+                    result[sym] = tpex[sym]
         else:
             d = _get_cached_price(sym)
             if d:
