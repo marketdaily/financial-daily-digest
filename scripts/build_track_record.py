@@ -334,14 +334,18 @@ def fetch_digest_html(date_str: str) -> str | None:
     local = DIGEST_DIR / f"digest_{date_str}.html"
     if local.exists():
         return local.read_text(encoding="utf-8", errors="ignore")
-    url = f"{CDN_BASE}/digest_{date_str}.html"
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html"})
-    try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            return resp.read().decode("utf-8", errors="ignore")
-    except (urllib.error.URLError, urllib.error.HTTPError) as exc:
-        print(f"[warn] cdn {date_str}: {exc}", file=sys.stderr)
-        return None
+    # Cloudflare Pages 會把 .html 用 308 轉到無副檔名路徑;部分環境的 urllib
+    # 不跟 308,故兩個 URL 都試,任一抓到非空 HTML 就用。
+    for url in (f"{CDN_BASE}/digest_{date_str}.html", f"{CDN_BASE}/digest_{date_str}"):
+        req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "text/html"})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                html = resp.read().decode("utf-8", errors="ignore")
+            if html.strip():
+                return html
+        except (urllib.error.URLError, urllib.error.HTTPError) as exc:
+            print(f"[warn] cdn {url}: {exc}", file=sys.stderr)
+    return None
 
 
 def discover_dates() -> list[str]:
@@ -489,6 +493,21 @@ def main() -> int:
         },
         "personal_samples_added": len(judged_personal),
     }
+    # 防呆:刷新拿到 0 筆通常是 CDN 抓取失敗,不是真的沒戰績。
+    # 若既有檔案已有資料,拒絕用空結果覆蓋,改報錯讓排程 fail 不靜默歸零。
+    if stats["total_records"] == 0 and OUT_FILE.exists():
+        try:
+            prev = json.loads(OUT_FILE.read_text(encoding="utf-8"))["stats"]["total_records"]
+        except Exception:
+            prev = 0
+        if prev > 0:
+            print(
+                f"[abort] parsed 0 records but existing file has {prev} — "
+                f"likely a fetch failure, refusing to overwrite.",
+                file=sys.stderr,
+            )
+            return 1
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     OUT_FILE.write_text(
         json.dumps({"stats": stats, "records": judged_public}, ensure_ascii=False, indent=2),
