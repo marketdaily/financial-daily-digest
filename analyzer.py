@@ -763,6 +763,29 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
     else:
         top_signal_stocks = sorted(signal_stocks, key=_abs_change, reverse=True)[:5]
 
+    technicals = data.get("technicals", {})
+    tech_rows = []
+    for sym in top_signal_stocks:
+        t = technicals.get(sym)
+        if not t:
+            continue
+        hint = tw_market.get(sym, {}).get("name") if sym.isdigit() else None
+        nm = stock_names.display_name(sym, hint)
+        ma50 = f" | MA50 {t['ma50']}" if t.get("ma50") else ""
+        tech_rows.append(
+            f"  {nm}（{sym}）: 現價 {t['price']} | MA20 {t['ma20']}{ma50} | "
+            f"20日高 {t['hi20']} / 20日低 {t['lo20']} | 60日高 {t['hi60']} / 60日低 {t['lo60']} | ATR14 {t['atr14']}"
+        )
+    tech_block = ""
+    if tech_rows:
+        tech_block = (
+            "\n【各持股真實技術價位 — 進場/目標/停損價必須參考這些真實數字,嚴禁編造偏離現價的價位】\n"
+            + "\n".join(tech_rows)
+            + "\n‼️ 定價規則:建議買價靠近 MA20 / 20日低 / 近期支撐;賺錢目標參考 20日高 / 60日高 壓力;"
+            "止損賣價設在跌破關鍵支撐(MA50 或 60日低)或現價 − 1.5~2×ATR。"
+            "所有價位都要落在上面真實數字的合理範圍內,美股用美元、台股用台幣,不可憑空捏造。\n"
+        )
+
     signal_instruction = f"""
 <div class="signal-header">
   <div class="signal-header-title">⚡ 詳細進出場計畫</div>
@@ -771,6 +794,7 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
 <div class="signal-grid">
 **為以下每一支股票各生成一個 signal-card（共 {len(top_signal_stocks)} 支,一支都不能少、不能合併、不能省略,順序照列）**：{', '.join(top_signal_stocks)}
 ⚠️ 這份是用戶的主商品 — 他選的每一支都期待看到「下一步」,漏掉任一支用戶會炸。如果某支今日無報價數據,仍要生成 signal-card,用「📭 今日無報價」標示,並寫「等盤後數據出來後 X」這類動作。
+{tech_block}
 
 每張卡格式（最外層 class 從 buy/hold/sell/wait 四選一，要跟結論一致）：
 <div class="signal-card buy">

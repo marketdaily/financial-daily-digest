@@ -270,6 +270,62 @@ def fetch_custom_stocks(symbols: list) -> dict:
     return result
 
 
+def _yahoo_symbol(code: str, twse: dict, tpex: dict) -> str:
+    if code.isdigit():
+        if code in twse:
+            return f"{code}.TW"
+        if code in tpex:
+            return f"{code}.TWO"
+        return f"{code}.TW"
+    return code
+
+
+def fetch_technicals(symbols: list) -> dict:
+    """各持股真實技術價位:現價/MA20/MA50/20日高低/60日高低/ATR14,給日報訂進出場關卡用真實數字。"""
+    syms = list(dict.fromkeys([s for s in (symbols or []) if s]))
+    if not syms:
+        return {}
+    import pandas as pd
+    twse = _fetch_twse_all()
+    tpex = _fetch_tpex_all()
+    ymap = {s: _yahoo_symbol(s, twse, tpex) for s in syms}
+    try:
+        h = YQTicker(list(ymap.values())).history(period="3mo")
+    except Exception:
+        return {}
+    if h is None or not hasattr(h, "columns") or "close" not in getattr(h, "columns", []):
+        return {}
+    out = {}
+    for raw, ysym in ymap.items():
+        try:
+            df = h
+            if isinstance(h.index, pd.MultiIndex):
+                lvl0 = h.index.get_level_values(0)
+                if ysym not in lvl0:
+                    continue
+                df = h.xs(ysym, level=0)
+            c = df["close"].dropna()
+            if len(c) < 25:
+                continue
+            hi, lo = df["high"], df["low"]
+            prev = c.shift(1)
+            tr = pd.concat([(hi - lo), (hi - prev).abs(), (lo - prev).abs()], axis=1).max(axis=1)
+            atr = tr.rolling(14).mean().iloc[-1]
+            out[raw] = {
+                "price": round(float(c.iloc[-1]), 2),
+                "ma20": round(float(c.tail(20).mean()), 2),
+                "ma50": round(float(c.tail(50).mean()), 2) if len(c) >= 50 else None,
+                "hi20": round(float(hi.tail(20).max()), 2),
+                "lo20": round(float(lo.tail(20).min()), 2),
+                "hi60": round(float(hi.tail(60).max()), 2),
+                "lo60": round(float(lo.tail(60).min()), 2),
+                "atr14": round(float(atr), 2),
+            }
+        except Exception:
+            continue
+    return out
+
+
 def fetch_ticker_news(extra_symbols: list = None) -> list:
     articles = []
     seen = set()
@@ -516,9 +572,13 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         if missing_tw:
             tw_market.update(fetch_custom_stocks(missing_tw))
 
+    tech_syms = (extra_us_stocks or []) + (extra_tw_stocks or []) + ["AAPL", "MSFT", "NVDA", "TSLA"]
+    technicals = fetch_technicals(tech_syms)
+
     return {
         "us_market": us_market,
         "tw_market": tw_market,
+        "technicals": technicals,
         "tw_names_all": tw_name_map(),
         "us_news": fetch_us_news(extra_us_stocks),
         "tw_news": fetch_tw_news(),
