@@ -124,6 +124,40 @@ def _fetch_twse_all() -> dict:
         return _TWSE_CACHE
 
 
+_TW_NAME_CACHE: dict = {}
+_TW_NAME_CACHE_TIME: datetime = None
+
+def tw_name_map() -> dict:
+    """全部上市(TWSE)+上櫃(TPEx)台股 {code: 中文名},給日報把代號展開成公司名。"""
+    global _TW_NAME_CACHE, _TW_NAME_CACHE_TIME
+    now = datetime.now()
+    if _TW_NAME_CACHE and _TW_NAME_CACHE_TIME and (now - _TW_NAME_CACHE_TIME).seconds < 3600:
+        return _TW_NAME_CACHE
+    names = {}
+    try:
+        for c, d in _fetch_twse_all().items():
+            if d.get("name"):
+                names[c] = d["name"]
+    except Exception:
+        pass
+    try:
+        resp = requests.get(
+            "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes",
+            timeout=15
+        )
+        for row in resp.json():
+            code = (row.get("SecuritiesCompanyCode") or "").strip()
+            name = (row.get("CompanyName") or "").strip()
+            if code and name:
+                names.setdefault(code, name)
+    except Exception:
+        pass
+    if names:
+        _TW_NAME_CACHE = names
+        _TW_NAME_CACHE_TIME = now
+    return _TW_NAME_CACHE or names
+
+
 def fetch_us_market():
     active_stocks = get_us_stocks()
     symbols = US_INDICES + [s if isinstance(s, str) else s["symbol"] for s in active_stocks]
@@ -411,6 +445,7 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
     return {
         "us_market": us_market,
         "tw_market": tw_market,
+        "tw_names_all": tw_name_map(),
         "us_news": fetch_us_news(extra_us_stocks),
         "tw_news": fetch_tw_news(),
         "indicators": fetch_indicators(),

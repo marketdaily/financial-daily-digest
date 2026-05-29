@@ -439,7 +439,8 @@ def _postprocess_html(html: str, data: dict) -> str:
     )
 
     # 代號 → 公司中英文名：把 ticker 類 span 內的純代號展開成「公司名 + 小灰代號」
-    tw_hint = {}
+    # 完整上市+上櫃名稱表打底,再用持股報價的名稱覆蓋,確保任何台股代號都能展開成中文名
+    tw_hint = dict(data.get("tw_names_all", {}))
     for code, d in data.get("tw_market", {}).items():
         if isinstance(d, dict) and d.get("name"):
             tw_hint[code] = d["name"]
