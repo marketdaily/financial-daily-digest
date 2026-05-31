@@ -1514,8 +1514,10 @@ export default {
     if (url.pathname === "/supply-chain" && request.method === "GET") {
       const ticker = (url.searchParams.get("ticker") || "").trim().toUpperCase().slice(0, 12);
       if (!ticker || !/^[A-Z0-9.\-]+$/.test(ticker)) return json({ error: "invalid_ticker" }, 400);
+      const givenName = (url.searchParams.get("name") || "").trim().slice(0, 40);
 
-      const cacheKey = `sc:${ticker}`;
+      // cache key 含公司名:台股裸代號 AI 會猜錯公司,帶名才準,故名也納入 key
+      const cacheKey = `sc:v2:${ticker}:${givenName}`;
       const cached = await env.USER_PREFS.get(cacheKey);
       if (cached) {
         try { return json(JSON.parse(cached)); } catch {}
@@ -1532,6 +1534,7 @@ export default {
       const sysPrompt = `你是財經產業鏈分析助手。針對給定的股票代號,輸出這家公司的產業鏈資料。
 
 嚴格規則:
+- 若提供了公司名稱,以「公司名稱」為準辨識這家公司,不要從代號數字臆測;若公司名稱與你認知的代號不符,以公司名稱為準。
 - 只列「真實、公認」的供應鏈關係。不確定就回空陣列,絕不亂掰、絕不臆測。
 - 關聯公司的 ticker 只在你確定它是上市公司時才填,否則填 null。
 - mid.desc 用一句話說明這家公司做什麼(繁體中文)。
@@ -1555,7 +1558,7 @@ export default {
             model: "claude-haiku-4-5-20251001",
             max_tokens: 1200,
             system: sysPrompt,
-            messages: [{ role: "user", content: `股票代號:${ticker}${isTW ? "(台股)" : "(美股)"}。輸出它的產業鏈 JSON。` }],
+            messages: [{ role: "user", content: `${givenName ? `公司名稱:${givenName}、` : ""}股票代號:${ticker}${isTW ? "(台股)" : "(美股)"}。輸出它的產業鏈 JSON。` }],
           }),
         });
       } catch {
