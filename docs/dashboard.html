@@ -412,6 +412,28 @@ nav {
 .sc-sig-score { font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 600; }
 .story-card-levels { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
 .sc-level-chip { font-size: 11px; color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); }
+/* 產業鏈 / 供應鏈 */
+#sc-supplychain { margin-top: 14px; }
+.sc-loading, .sc-empty { font-size: 12.5px; color: rgba(226,232,240,0.45); padding: 14px 4px; text-align: center; }
+.sc-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.sc-title { font-size: 13px; font-weight: 800; color: #e2e8f0; }
+.sc-industry { font-size: 11px; color: var(--primary-light); background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.25); padding: 2px 8px; border-radius: 7px; }
+.sc-src { font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 7px; margin-left: auto; }
+.sc-src-ok { color: #4ade80; background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.3); }
+.sc-src-ai { color: #fbbf24; background: rgba(251,191,36,0.1); border: 1px solid rgba(251,191,36,0.28); }
+.sc-bizmodel { font-size: 12.5px; line-height: 1.55; color: rgba(226,232,240,0.78); margin-bottom: 12px; }
+.sc-chain { display: flex; flex-direction: column; gap: 8px; }
+.sc-row-label { font-size: 11px; font-weight: 700; color: rgba(226,232,240,0.5); margin-bottom: 5px; }
+.sc-up .sc-row-label { color: rgba(96,165,250,0.85); }
+.sc-down .sc-row-label { color: rgba(251,146,60,0.85); }
+.sc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.sc-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; color: #e2e8f0; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); padding: 4px 9px; border-radius: 9px; }
+.sc-chip-tk { font-size: 10px; color: rgba(165,180,252,0.8); font-weight: 700; }
+.sc-chip-crit { font-size: 9.5px; color: rgba(248,113,113,0.85); }
+.sc-none { font-size: 11.5px; color: rgba(226,232,240,0.3); }
+.sc-mid-box { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 800; color: #fff; background: linear-gradient(135deg, rgba(99,102,241,0.22), rgba(139,92,246,0.18)); border: 1px solid rgba(99,102,241,0.5); padding: 7px 12px; border-radius: 10px; }
+.sc-you { font-size: 10px; font-weight: 700; color: var(--primary-light); background: rgba(255,255,255,0.1); padding: 1px 6px; border-radius: 6px; }
+.sc-disclaimer { font-size: 10px; color: rgba(226,232,240,0.35); margin-top: 10px; text-align: center; }
 .story-bubble.loading .story-ring { background: rgba(255,255,255,0.08); animation: story-pulse 1.4s ease-in-out infinite; }
 @keyframes story-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.9; } }
 
@@ -1011,6 +1033,17 @@ const i18n = {
     verdict_down: "📉 明顯回調，賣壓出現，建議暫時觀望，等止跌訊號。",
     verdict_strong_down: "🔴 重挫！單日大跌，注意風險，避免追殺，等反彈再評估。",
     chart_full: "完整圖表 ↗",
+    sc_heading: "產業鏈",
+    sc_loading: "載入產業鏈…",
+    sc_unavailable: "暫時無法載入產業鏈",
+    sc_upstream: "上游 原材料/設備",
+    sc_midstream: "中游 本公司",
+    sc_downstream: "下游 應用/客戶",
+    sc_you: "你追蹤",
+    sc_none: "—",
+    sc_verified: "✓ 已核實",
+    sc_ai: "AI 整理",
+    sc_disclaimer: "資料僅供參考,非投資建議",
     level_support: "支撐",
     level_target: "目標",
     level_stop: "止損",
@@ -1194,6 +1227,17 @@ const i18n = {
     verdict_down: "📉 Clear correction, selling pressure appearing. Best to wait for a bottoming signal.",
     verdict_strong_down: "🔴 Sharp drop! Big single-day loss — mind the risk, don't chase the fall, reassess on a bounce.",
     chart_full: "Full chart ↗",
+    sc_heading: "Supply Chain",
+    sc_loading: "Loading supply chain…",
+    sc_unavailable: "Supply chain unavailable right now",
+    sc_upstream: "Upstream materials/equipment",
+    sc_midstream: "Midstream this company",
+    sc_downstream: "Downstream applications/customers",
+    sc_you: "you track",
+    sc_none: "—",
+    sc_verified: "✓ Verified",
+    sc_ai: "AI-compiled",
+    sc_disclaimer: "For reference only, not investment advice",
     level_support: "Support",
     level_target: "Target",
     level_stop: "Stop",
@@ -2208,6 +2252,103 @@ function renderStoryCard() {
   }
   chartEl.innerHTML = chartSection;
   loadChart(sym, _chartPeriod);
+
+  // 產業鏈 / 供應鏈區塊(走勢圖下方)
+  let scEl = document.getElementById("sc-supplychain");
+  if (!scEl) {
+    scEl = document.createElement("div");
+    scEl.id = "sc-supplychain";
+    chartEl.parentNode.insertBefore(scEl, chartEl.nextSibling);
+  }
+  loadSupplyChain(sym);
+}
+
+// ── 產業鏈 / 供應鏈 ──────────────────────────────
+let _scStaticDB = null;        // docs/data/supply_chain.json(核實資料), null=未載, {}=載入失敗
+let _scStaticLoading = null;
+const _scCache = {};           // session 內快取(含 AI 結果)
+
+async function _loadScStaticDB() {
+  if (_scStaticDB !== null) return _scStaticDB;
+  if (!_scStaticLoading) {
+    _scStaticLoading = fetch("data/supply_chain.json")
+      .then(r => r.ok ? r.json() : {})
+      .catch(() => ({}))
+      .then(db => { _scStaticDB = db || {}; return _scStaticDB; });
+  }
+  return _scStaticLoading;
+}
+
+function _scLookupStatic(db, sym) {
+  if (db[sym]) return db[sym];
+  if (/^\d{4,6}$/.test(sym)) return db[`${sym}.TW`] || db[`${sym}.TWO`] || null;
+  return null;
+}
+
+async function loadSupplyChain(sym) {
+  const el = document.getElementById("sc-supplychain");
+  if (!el) return;
+  const reqSym = sym;
+  el.innerHTML = `<div class="sc-loading">${T('sc_loading')}</div>`;
+
+  let data = _scCache[sym];
+  if (!data) {
+    const db = await _loadScStaticDB();
+    if (reqSym !== _stories[_storyIdx]?.symbol) return;  // 已切到別張卡
+    data = _scLookupStatic(db, sym);
+    if (!data) {
+      try {
+        const res = await fetch(`${WORKER_URL}/supply-chain?ticker=${encodeURIComponent(sym)}`);
+        if (res.ok) data = await res.json();
+      } catch {}
+    }
+    if (data) _scCache[sym] = data;
+  }
+  if (reqSym !== _stories[_storyIdx]?.symbol) return;
+  if (!data || (!data.mid?.desc && !(data.upstream||[]).length && !(data.downstream||[]).length)) {
+    el.innerHTML = `<div class="sc-empty">${T('sc_unavailable')}</div>`;
+    return;
+  }
+  el.innerHTML = renderSupplyChain(data, sym);
+}
+
+function _scChip(p) {
+  const lang = (localStorage.getItem("md-lang-v2") || "zh");
+  const name = lang === "en" ? (p.name_en || p.name_zh) : (p.name_zh || p.name_en);
+  const tk = p.ticker ? `<span class="sc-chip-tk">${p.ticker}</span>` : "";
+  const crit = p.criticality ? `<span class="sc-chip-crit">${p.criticality}</span>` : "";
+  return `<span class="sc-chip" title="${(p.role||p.category||'').replace(/"/g,'')}">${name}${tk}${crit}</span>`;
+}
+
+function renderSupplyChain(d, sym) {
+  const up = (d.upstream || []).map(_scChip).join("") || `<span class="sc-none">${T('sc_none')}</span>`;
+  const down = (d.downstream || []).map(_scChip).join("") || `<span class="sc-none">${T('sc_none')}</span>`;
+  const isTW = /^\d{4,6}$/.test(String(sym));
+  const midName = d.mid?.name || d.company_zh || sym;
+  const industry = d.industry ? `<span class="sc-industry">${d.industry}</span>` : "";
+  const srcLabel = d.source === "verified"
+    ? `<span class="sc-src sc-src-ok">${T('sc_verified')}</span>`
+    : `<span class="sc-src sc-src-ai">${T('sc_ai')}</span>`;
+  return `
+    <div class="sc-head">
+      <span class="sc-title">${T('sc_heading')}</span>${industry}${srcLabel}
+    </div>
+    ${d.mid?.desc ? `<div class="sc-bizmodel">${d.mid.desc}</div>` : ""}
+    <div class="sc-chain">
+      <div class="sc-row sc-up">
+        <div class="sc-row-label">▲ ${T('sc_upstream')}</div>
+        <div class="sc-chips">${up}</div>
+      </div>
+      <div class="sc-row sc-mid">
+        <div class="sc-row-label">● ${T('sc_midstream')}</div>
+        <div class="sc-mid-box">${isTW ? (midName||sym) : sym} · ${midName}<span class="sc-you">${T('sc_you')}</span></div>
+      </div>
+      <div class="sc-row sc-down">
+        <div class="sc-row-label">▼ ${T('sc_downstream')}</div>
+        <div class="sc-chips">${down}</div>
+      </div>
+    </div>
+    <div class="sc-disclaimer">${T('sc_disclaimer')}</div>`;
 }
 
 function storyNav(dir) {

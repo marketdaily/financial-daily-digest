@@ -1509,6 +1509,90 @@ export default {
       }
     }
 
+    // 產業鏈 / 供應鏈 — DB 未命中的股票走這裡用 AI 生成(前端先查靜態 DB)。
+    // 免登入(免費功能),但加 per-IP rate limit 防 LLM 濫用;結果存 KV 30 天。
+    if (url.pathname === "/supply-chain" && request.method === "GET") {
+      const ticker = (url.searchParams.get("ticker") || "").trim().toUpperCase().slice(0, 12);
+      if (!ticker || !/^[A-Z0-9.\-]+$/.test(ticker)) return json({ error: "invalid_ticker" }, 400);
+
+      const cacheKey = `sc:${ticker}`;
+      const cached = await env.USER_PREFS.get(cacheKey);
+      if (cached) {
+        try { return json(JSON.parse(cached)); } catch {}
+      }
+
+      // 輕量 per-IP rate limit:30 次/分
+      const ip = clientIp(request);
+      const rlKey = `rl:sc:${ip}`;
+      const rlCount = parseInt((await env.USER_PREFS.get(rlKey)) || "0", 10);
+      if (rlCount >= 30) return json({ error: "rate_limited" }, 429);
+      ctx.waitUntil(env.USER_PREFS.put(rlKey, String(rlCount + 1), { expirationTtl: 60 }));
+
+      const isTW = /^\d{4,6}$/.test(ticker);
+      const sysPrompt = `你是財經產業鏈分析助手。針對給定的股票代號,輸出這家公司的產業鏈資料。
+
+嚴格規則:
+- 只列「真實、公認」的供應鏈關係。不確定就回空陣列,絕不亂掰、絕不臆測。
+- 關聯公司的 ticker 只在你確定它是上市公司時才填,否則填 null。
+- mid.desc 用一句話說明這家公司做什麼(繁體中文)。
+- industry 填「大產業 › 細分」格式(如「半導體 › 晶圓代工」),不確定填空字串。
+- upstream = 它的上游供應商/原材料/設備;downstream = 它的下游客戶/應用。
+- 每個關聯公司物件:{ "name_zh", "name_en", "ticker"(或 null), "role" }。
+
+只輸出 JSON,不要任何其他文字,格式:
+{"ticker":"${ticker}","source":"ai","company_zh":"","industry":"","mid":{"name":"","desc":""},"upstream":[],"downstream":[]}`;
+
+      let aiRes;
+      try {
+        aiRes = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "x-api-key": env.ANTHROPIC_API_KEY,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            model: "claude-haiku-4-5-20251001",
+            max_tokens: 1200,
+            system: sysPrompt,
+            messages: [{ role: "user", content: `股票代號:${ticker}${isTW ? "(台股)" : "(美股)"}。輸出它的產業鏈 JSON。` }],
+          }),
+        });
+      } catch {
+        return json({ error: "ai_unreachable" }, 502);
+      }
+      if (!aiRes.ok) return json({ error: "ai_error" }, 502);
+
+      let parsed;
+      try {
+        const data = await aiRes.json();
+        let txt = (data.content || []).map(c => c.text || "").join("").trim();
+        const s = txt.indexOf("{"), e = txt.lastIndexOf("}");
+        if (s === -1 || e === -1) throw new Error("no json");
+        parsed = JSON.parse(txt.slice(s, e + 1));
+      } catch {
+        return json({ error: "ai_parse" }, 502);
+      }
+      // 正規化 + 防呆:結構不對就當失敗,不回半成品
+      const out = {
+        ticker,
+        source: "ai",
+        company_zh: typeof parsed.company_zh === "string" ? parsed.company_zh : "",
+        industry: typeof parsed.industry === "string" ? parsed.industry : "",
+        mid: {
+          name: parsed.mid?.name || parsed.company_zh || ticker,
+          desc: parsed.mid?.desc || "",
+        },
+        upstream: Array.isArray(parsed.upstream) ? parsed.upstream.slice(0, 10) : [],
+        downstream: Array.isArray(parsed.downstream) ? parsed.downstream.slice(0, 10) : [],
+      };
+      if (!out.mid.desc && !out.upstream.length && !out.downstream.length) {
+        return json({ error: "no_data" }, 404);
+      }
+      ctx.waitUntil(env.USER_PREFS.put(cacheKey, JSON.stringify(out), { expirationTtl: 30 * 86400 }));
+      return json(out);
+    }
+
     // Direct free signup (no invite code required)
     if (url.pathname === "/subscribe-free-direct" && request.method === "POST") {
       let body;
