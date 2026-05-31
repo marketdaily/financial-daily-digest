@@ -1417,7 +1417,8 @@ export default {
 
     // Real-time stock quotes proxy (Yahoo Finance)
     if (url.pathname === "/stock-quotes" && request.method === "GET") {
-      const raw = (url.searchParams.get("tickers") || "").split(",").map(t => t.trim()).filter(Boolean).slice(0, 50);
+      // 上限 100:原本 50 會把超過的持股(美股在前→台股在後,新加台股排最尾)直接砍掉顯示「—」
+      const raw = (url.searchParams.get("tickers") || "").split(",").map(t => t.trim()).filter(Boolean).slice(0, 100);
       if (!raw.length) return json({ quotes: [] });
       const fh = env.FINNHUB_API_KEY;
       const yfHeaders = {
