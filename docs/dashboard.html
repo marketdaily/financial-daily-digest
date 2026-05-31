@@ -2298,7 +2298,8 @@ async function loadSupplyChain(sym) {
     data = _scLookupStatic(db, sym);
     if (!data) {
       try {
-        const res = await fetch(`${WORKER_URL}/supply-chain?ticker=${encodeURIComponent(sym)}`);
+        const nm = _stories[_storyIdx]?.name || "";
+        const res = await fetch(`${WORKER_URL}/supply-chain?ticker=${encodeURIComponent(sym)}&name=${encodeURIComponent(nm)}`);
         if (res.ok) data = await res.json();
       } catch {}
     }
