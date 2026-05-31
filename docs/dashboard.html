@@ -413,7 +413,7 @@ nav {
 .story-card-levels { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
 .sc-level-chip { font-size: 11px; color: rgba(255,255,255,0.45); background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.07); }
 /* 產業鏈 / 供應鏈 */
-#sc-supplychain { margin-top: 14px; }
+#sc-supplychain { margin-top: 14px; text-align: left; }
 .sc-loading, .sc-empty { font-size: 12.5px; color: rgba(226,232,240,0.45); padding: 14px 4px; text-align: center; }
 .sc-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 .sc-title { font-size: 13px; font-weight: 800; color: #e2e8f0; }
@@ -431,8 +431,6 @@ nav {
 .sc-chip-tk { font-size: 10px; color: rgba(165,180,252,0.8); font-weight: 700; }
 .sc-chip-crit { font-size: 9.5px; color: rgba(248,113,113,0.85); }
 .sc-none { font-size: 11.5px; color: rgba(226,232,240,0.3); }
-.sc-mid-box { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 800; color: #fff; background: linear-gradient(135deg, rgba(99,102,241,0.22), rgba(139,92,246,0.18)); border: 1px solid rgba(99,102,241,0.5); padding: 7px 12px; border-radius: 10px; }
-.sc-you { font-size: 10px; font-weight: 700; color: var(--primary-light); background: rgba(255,255,255,0.1); padding: 1px 6px; border-radius: 6px; }
 .sc-disclaimer { font-size: 10px; color: rgba(226,232,240,0.35); margin-top: 10px; text-align: center; }
 .story-bubble.loading .story-ring { background: rgba(255,255,255,0.08); animation: story-pulse 1.4s ease-in-out infinite; }
 @keyframes story-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.9; } }
@@ -447,7 +445,9 @@ nav {
 .story-prog-fill.active { background: #fff; }
 .story-progress-row { gap: 10px; justify-content: center; }
 .story-close { position: absolute; top: 32px; right: 20px; background: rgba(255,255,255,0.1); border: none; color: #fff; font-size: 18px; width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; }
-.story-card { width: min(420px, 94vw); background: #0d0d20; border-radius: 24px; padding: 36px 28px 32px; text-align: center; border: 1px solid rgba(255,255,255,0.08); position: relative; }
+.story-card { width: min(420px, 94vw); max-height: 90vh; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; background: #0d0d20; border-radius: 24px; padding: 36px 28px 32px; text-align: center; border: 1px solid rgba(255,255,255,0.08); position: relative; }
+.story-card::-webkit-scrollbar { width: 0; height: 0; }
+.story-card { scrollbar-width: none; }
 .story-card-ticker { font-size: 42px; font-weight: 900; letter-spacing: -2px; color: #fff; margin-bottom: 4px; }
 .story-card-name { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 24px; }
 .story-card-change { font-size: 56px; font-weight: 900; letter-spacing: -3px; margin-bottom: 6px; }
@@ -2324,8 +2324,6 @@ function _scChip(p) {
 function renderSupplyChain(d, sym) {
   const up = (d.upstream || []).map(_scChip).join("") || `<span class="sc-none">${T('sc_none')}</span>`;
   const down = (d.downstream || []).map(_scChip).join("") || `<span class="sc-none">${T('sc_none')}</span>`;
-  const isTW = /^\d{4,6}$/.test(String(sym));
-  const midName = d.mid?.name || d.company_zh || sym;
   const industry = d.industry ? `<span class="sc-industry">${d.industry}</span>` : "";
   const srcLabel = d.source === "verified"
     ? `<span class="sc-src sc-src-ok">${T('sc_verified')}</span>`
@@ -2339,10 +2337,6 @@ function renderSupplyChain(d, sym) {
       <div class="sc-row sc-up">
         <div class="sc-row-label">▲ ${T('sc_upstream')}</div>
         <div class="sc-chips">${up}</div>
-      </div>
-      <div class="sc-row sc-mid">
-        <div class="sc-row-label">● ${T('sc_midstream')}</div>
-        <div class="sc-mid-box">${isTW ? (midName||sym) : sym} · ${midName}<span class="sc-you">${T('sc_you')}</span></div>
       </div>
       <div class="sc-row sc-down">
         <div class="sc-row-label">▼ ${T('sc_downstream')}</div>
