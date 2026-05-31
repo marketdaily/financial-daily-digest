@@ -115,6 +115,7 @@
     if (active || !steps.length) return;
     active = true;
     idx = 0;
+    markDone(tourId);
     setFab(false);
     buildOverlay();
     show();

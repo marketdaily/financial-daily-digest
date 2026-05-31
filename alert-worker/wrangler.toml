@@ -2,9 +2,11 @@ name = "marketdaily-alert-worker"
 main = "src/index.js"
 compatibility_date = "2026-05-01"
 
-# 每 2 分鐘掃一次新聞,比對 Premium 用戶持股,重大則即時 LINE 推播。
+# 兩個 cron 觸發點(scheduled() 用 event.cron 分支):
+#   每 2 分鐘   → 主管線:抓新聞 → 比對持股 → AI 嚴重度 → LINE 推播
+#   每小時整點 → canary:強制動態換 token 並戳 LINE API,失敗 LINE 告知 admin
 [triggers]
-crons = ["*/2 * * * *"]
+crons = ["*/2 * * * *", "0 * * * *"]
 
 # 與 marketdaily-webhook 共用同一個 KV namespace。
 [[kv_namespaces]]
@@ -13,9 +15,12 @@ id = "f5229c5bf86a4f8b88d71995005cd670"
 
 # Secret(用 `wrangler secret put` 設定,不寫進這裡):
 #   ANTHROPIC_API_KEY          — Claude 嚴重度判定
-#   LINE_CHANNEL_ID            — Messaging API channel id(2010166664),動態換推播 token
+#   LINE_CHANNEL_ID            — Messaging API channel id,主路徑用此動態換 token
 #   LINE_CHANNEL_SECRET        — Messaging API channel secret
-#   LINE_CHANNEL_ACCESS_TOKEN  — (選用)直接給長期 token,設了就不動態換
+#   LINE_CHANNEL_ACCESS_TOKEN  — (已停用)2026-05-25 該 long-lived token 過期後 28 筆推播全 401,
+#                                改成動態 swap 為主路徑,linePush 收 401 自動 force-refresh 重試
+#   ADMIN_LINE_USER_ID         — 推播 / canary 失敗時要主動告知的 LINE userId(Delvin)
+#   INTERNAL_TOKEN             — admin endpoint(/check 詳版、/dry-run、/recent、/token-test、/canary)的 Bearer 認證
 #
 # 開真推前先觀察:KV `alert:enabled` 不是 "true" 時,scheduled() 只跑不推。
 #   開:  npx wrangler kv key put "alert:enabled" "true"  --namespace-id=f5229c5bf86a4f8b88d71995005cd670

@@ -378,16 +378,16 @@ nav {
 .stories-row { display: flex; gap: 18px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
 .stories-row::-webkit-scrollbar { display: none; }
 .story-bubble { display: flex; flex-direction: column; align-items: center; gap: 7px; cursor: pointer; flex-shrink: 0; }
-.story-ring { width: 66px; height: 66px; border-radius: 50%; padding: 2.5px; background: conic-gradient(#10b981, #6366f1, #10b981); transition: transform 0.18s; }
-.story-ring.down { background: conic-gradient(#ef4444, #f97316, #ef4444); }
+.story-ring { width: 66px; height: 66px; border-radius: 50%; padding: 2.5px; background: conic-gradient(#ef4444, #f97316, #ef4444); transition: transform 0.18s; }
+.story-ring.down { background: conic-gradient(#10b981, #06b6d4, #10b981); }
 .story-ring.neutral { background: conic-gradient(#6366f1, #8b5cf6, #6366f1); }
 .story-ring.seen { background: rgba(255,255,255,0.12); }
 .story-bubble:hover .story-ring { transform: scale(1.07); }
 .story-inner { width: 100%; height: 100%; border-radius: 50%; background: #0d0d20; border: 2px solid #0d0d20; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; color: #fff; letter-spacing: -0.5px; }
 .story-ticker-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.55); max-width: 66px; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .story-change-label { font-size: 11px; font-weight: 800; letter-spacing: 0.2px; margin-top: -3px; }
-.story-change-label.up { color: #10b981; }
-.story-change-label.down { color: #ef4444; }
+.story-change-label.up { color: #ef4444; }
+.story-change-label.down { color: #10b981; }
 .story-change-label.flat { color: rgba(255,255,255,0.3); }
 
 /* Market overview */
@@ -399,15 +399,15 @@ nav {
 .mo-label { font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.32); letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px; }
 .mo-price { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 3px; letter-spacing: -0.3px; }
 .mo-change { font-size: 12px; font-weight: 700; }
-.mo-change.up { color: #10b981; }
-.mo-change.down { color: #ef4444; }
+.mo-change.up { color: #ef4444; }
+.mo-change.down { color: #10b981; }
 .mo-change.flat { color: rgba(255,255,255,0.28); }
 
 /* Story card signal */
 .story-card-sig-row { display: flex; align-items: center; gap: 8px; justify-content: center; margin-bottom: 14px; margin-top: -8px; }
 .sc-sig-badge { font-size: 11px; font-weight: 800; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.5px; }
-.sc-sig-badge.bull { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
-.sc-sig-badge.bear { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+.sc-sig-badge.bull { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+.sc-sig-badge.bear { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
 .sc-sig-badge.neutral { background: rgba(165,180,252,0.1); color: #a5b4fc; border: 1px solid rgba(165,180,252,0.2); }
 .sc-sig-score { font-size: 12px; color: rgba(255,255,255,0.35); font-weight: 600; }
 .story-card-levels { display: flex; gap: 8px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
@@ -429,8 +429,8 @@ nav {
 .story-card-ticker { font-size: 42px; font-weight: 900; letter-spacing: -2px; color: #fff; margin-bottom: 4px; }
 .story-card-name { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 24px; }
 .story-card-change { font-size: 56px; font-weight: 900; letter-spacing: -3px; margin-bottom: 6px; }
-.story-card-change.up { color: #10b981; }
-.story-card-change.down { color: #ef4444; }
+.story-card-change.up { color: #ef4444; }
+.story-card-change.down { color: #10b981; }
 .story-card-change.flat { color: #a5b4fc; }
 .story-card-price { font-size: 16px; color: rgba(255,255,255,0.45); margin-bottom: 22px; }
 .story-card-verdict { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 13px 16px; font-size: 14px; color: rgba(255,255,255,0.72); line-height: 1.65; }
@@ -464,6 +464,32 @@ nav {
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 .reveal-d1 { transition-delay: 0.1s; } .reveal-d2 { transition-delay: 0.2s; }
+
+/* ── QUICK ADD (BUNDLES + BULK) ── */
+.quick-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0 12px; }
+.quick-label { font-size: 10.5px; font-weight: 800; color: var(--text3); letter-spacing: 1.2px; text-transform: uppercase; width: 100%; margin-bottom: 2px; }
+.bundle-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 20px; background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(139,92,246,0.10)); border: 1px solid rgba(99,102,241,0.28); color: var(--primary-light); font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+.bundle-chip:hover { background: linear-gradient(135deg, rgba(99,102,241,0.22), rgba(139,92,246,0.20)); border-color: rgba(99,102,241,0.55); color: #fff; transform: translateY(-1px); }
+.bulk-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border-radius: 20px; background: var(--surface2); border: 1px dashed var(--border2); color: var(--text2); font-size: 12.5px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; margin-left: auto; }
+.bulk-chip:hover { border-color: var(--primary-border); color: var(--text); background: var(--primary-dim); border-style: solid; }
+.md-modal-backdrop { position: fixed; inset: 0; background: rgba(6,6,17,0.86); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; }
+.md-modal-backdrop.open { display: flex; animation: mdFade 0.2s ease-out; }
+.md-modal-card { background: #0f0f1e; border: 1px solid var(--border2); border-radius: var(--radius); padding: 28px; max-width: 480px; width: 100%; max-height: 86vh; overflow-y: auto; box-shadow: 0 24px 60px rgba(0,0,0,0.7); }
+.md-modal-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.4px; color: var(--text); }
+.md-modal-desc { font-size: 13px; color: var(--text2); line-height: 1.65; margin-bottom: 16px; }
+.md-modal-textarea { width: 100%; min-height: 140px; padding: 14px 16px; background: rgba(255,255,255,0.04); border: 1px solid var(--border2); color: var(--text); font-size: 14px; font-family: inherit; line-height: 1.6; border-radius: var(--radius-sm); outline: none; transition: all 0.2s; resize: vertical; }
+.md-modal-textarea:focus { border-color: var(--primary); background: rgba(99,102,241,0.08); box-shadow: 0 0 0 3px rgba(99,102,241,0.16); }
+.md-modal-actions { display: flex; gap: 10px; margin-top: 16px; }
+.md-modal-btn { flex: 1; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; font-family: inherit; cursor: pointer; transition: all 0.2s; border: none; }
+.md-modal-btn.primary { background: var(--primary); color: #fff; box-shadow: 0 4px 16px rgba(99,102,241,0.4); }
+.md-modal-btn.primary:hover { background: #4f46e5; transform: translateY(-1px); }
+.md-modal-btn.ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+.md-modal-btn.ghost:hover { border-color: var(--border2); color: var(--text); }
+.md-modal-result { margin-top: 14px; padding: 12px 14px; border-radius: var(--radius-sm); font-size: 13px; line-height: 1.6; background: rgba(255,255,255,0.035); border: 1px solid var(--border); color: var(--text2); }
+.md-modal-result b { color: var(--text); }
+.md-modal-result .ok { color: #6ee7b7; }
+.md-modal-result .err { color: #fca5a5; }
+@keyframes mdFade { from { opacity: 0 } to { opacity: 1 } }
 </style>
 </head>
 <body>
@@ -624,9 +650,11 @@ nav {
     </div>
 
     <!-- US Stocks -->
+    <a id="stocks" style="position:relative;top:-80px;visibility:hidden;"></a>
     <div class="card">
       <div class="card-title" data-i18n="us_card_title">🇺🇸 美股持倉</div>
       <div class="card-desc" data-i18n="us_card_desc">搜尋代號或公司名稱（例如 NVDA、Tesla），點擊加入清單</div>
+      <div class="quick-row" id="us-quick"></div>
       <div class="tags" id="us-tags"><span class="tags-empty" data-i18n="us_tags_empty">尚未選擇任何美股</span></div>
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
@@ -639,6 +667,7 @@ nav {
     <div class="card">
       <div class="card-title" data-i18n="tw_card_title">🇹🇼 台股持倉</div>
       <div class="card-desc" data-i18n="tw_card_desc">搜尋代號或公司名稱（例如 2330、台積電），點擊加入清單</div>
+      <div class="quick-row" id="tw-quick"></div>
       <div class="tags" id="tw-tags"><span class="tags-empty" data-i18n="tw_tags_empty">尚未選擇任何台股</span></div>
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
@@ -671,8 +700,10 @@ nav {
       <div class="card-title" data-i18n="line_card_title">⚡ 即時 LINE 重大新聞提醒</div>
       <div class="card-desc" data-i18n="line_card_desc">重大新聞影響到你的持股時,立刻用 LINE 通知你,不必等隔天日報。Premium 專屬功能。</div>
       <div id="line-unbound-box" style="display:none;margin-top:14px;">
-        <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:14px;padding:10px 13px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.22);border-radius:10px;" data-i18n-html="line_friend_notice">⚠️ 綁定前,請先 <a href="https://line.me/R/ti/p/@516nponm" target="_blank" rel="noopener" style="color:#fbbf24;font-weight:700;">加 MarketDaily 官方帳號好友</a>,提醒才送得到。</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:14px;padding:10px 13px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.22);border-radius:10px;" data-i18n="line_friend_notice">💡 綁定完成後會自動跳出「加 MarketDaily 好友」頁,請按「加入好友」才會收到推播。</div>
         <button class="save-btn" onclick="bindLine()" id="line-bind-btn" style="margin-top:0;background:#06C755;" data-i18n="line_bind_btn">綁定 LINE →</button>
+        <a id="line-open-app" href="#" style="display:none;margin-top:12px;text-decoration:none;background:#06C755;color:#fff;padding:14px 20px;border-radius:12px;font-weight:800;font-size:15px;text-align:center;letter-spacing:0.3px;box-shadow:0 8px 24px rgba(6,199,85,0.35);">📱 在 LINE App 開啟綁定 →</a>
+        <div id="line-open-hint" style="display:none;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6;text-align:center;">點上方按鈕,會直接打開 LINE App 完成綁定(不需要再輸入 LINE 帳密)。如果沒反應,代表手機沒裝 LINE,請改用 <a href="#" onclick="event.preventDefault();bindLineOAuth();" style="color:#6366f1;font-weight:700;">瀏覽器登入綁定</a>。</div>
         <div style="display:none;margin-top:12px;font-size:13px;color:#f87171;text-align:center;" id="line-err"></div>
       </div>
       <div id="line-bound-box" style="display:none;margin-top:14px;">
@@ -779,9 +810,52 @@ nav {
   </div>
 </div>
 
-<script src="stocks.js"></script>
+<script src="stocks.js?v=20260528"></script>
+<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
 const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
+const LIFF_ID = "2010167489-3x0AdJF2";
+let __liffReady = false;
+// LIFF init:純粹載入 SDK,絕不修改 localStorage / 不砍 URL,避免破壞 login / setpwd flow
+window.__pendingBindLine = false;
+(async function initLiffSafe(){
+  try {
+    if (!LIFF_ID || LIFF_ID === "__LIFF_ID__") return;
+    if (!window.liff) return;
+    await liff.init({ liffId: LIFF_ID });
+    __liffReady = true;
+    // Token 路徑:URL 帶 ?action=bindLine&token=xxx → 直接用 token 換綁定(完全不需要登入)
+    const qs = new URLSearchParams(window.location.search);
+    if (qs.get("action") === "bindLine" && qs.get("token") && liff.isInClient && liff.isInClient()) {
+      const token = qs.get("token");
+      history.replaceState(null, "", "dashboard.html");
+      const doTokenBind = async function(){
+        if (!liff.isLoggedIn || !liff.isLoggedIn()) {
+          try { liff.login({ redirectUri: location.href }); } catch {}
+          return;
+        }
+        const idToken = liff.getIDToken();
+        if (!idToken) { alert("LINE idToken 取得失敗,請重試。"); return; }
+        try {
+          const res = await fetch(WORKER_URL + "/line/bind-by-token", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token, idToken }),
+          });
+          const data = await res.json();
+          if (data.ok) {
+            if (data.email) localStorage.setItem("md-email", data.email);
+            location.href = "?line=bound";
+          } else {
+            alert("綁定失敗:" + (data.error || "請重試"));
+          }
+        } catch (e) {
+          alert("綁定失敗,請檢查網路後重試。");
+        }
+      };
+      setTimeout(doTokenBind, 400);
+    }
+  } catch (e) { console.warn("LIFF init failed, fallback to OAuth", e); }
+})();
 
 /* ── i18n ── */
 const i18n = {
@@ -853,7 +927,7 @@ const i18n = {
     cpwd_toggle: "修改密碼",
     line_card_title: "⚡ 即時 LINE 重大新聞提醒",
     line_card_desc: "重大新聞影響到你的持股時,立刻用 LINE 通知你,不必等隔天日報。Premium 專屬功能。",
-    line_friend_notice: "⚠️ 綁定前,請先 <a href=\"https://line.me/R/ti/p/@516nponm\" target=\"_blank\" rel=\"noopener\" style=\"color:#fbbf24;font-weight:700;\">加 MarketDaily 官方帳號好友</a>,提醒才送得到。",
+    line_friend_notice: "💡 綁定完成後會自動跳出「加 MarketDaily 好友」頁,請按「加入好友」才會收到推播。",
     line_bind_btn: "綁定 LINE →",
     line_bound_notice: "✓ LINE 已綁定 — 重大新聞會即時推播給你",
     line_unbind_btn: "解除綁定",
@@ -939,7 +1013,34 @@ const i18n = {
     chart_full: "完整圖表 ↗",
     level_support: "支撐",
     level_target: "目標",
-    level_stop: "止損"
+    level_stop: "止損",
+    quick_label: "一鍵加入熱門組合",
+    bulk_chip: "📋 我有清單",
+    bundle_mag7: "👑 美股七巨頭",
+    bundle_ai: "🤖 AI 概念股",
+    bundle_etf_us: "📊 主流 ETF",
+    bundle_finance_us: "🏦 金融銀行",
+    bundle_dividend_us: "💰 高股息巨頭",
+    bundle_blue_tw: "💎 權值龍頭",
+    bundle_etf_tw: "📊 熱門 ETF",
+    bundle_fin_tw: "🏦 金融金控",
+    bundle_semi_tw: "🔬 半導體鏈",
+    bulk_title_us: "📋 一次貼上多檔美股",
+    bulk_title_tw: "📋 一次貼上多檔台股",
+    bulk_desc_us: "把代號或公司名稱貼進來,用逗號、空格或換行分隔都可以。例如:<br><code style=\"color:#a5b4fc;background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px;font-size:12px;\">AAPL, NVDA, 蘋果, 輝達</code>",
+    bulk_desc_tw: "把代號或公司名稱貼進來,用逗號、空格或換行分隔都可以。例如:<br><code style=\"color:#a5b4fc;background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px;font-size:12px;\">2330, 鴻海, 聯發科, 0050</code>",
+    bulk_ph_us: "貼上美股代號或名稱…\n例如:AAPL, MSFT, 蘋果, 輝達",
+    bulk_ph_tw: "貼上台股代號或名稱…\n例如:2330, 2317, 鴻海, 0050",
+    bulk_cancel: "取消",
+    bulk_confirm: "解析並加入",
+    bulk_added: n => `✅ 已加入 ${n} 檔`,
+    bulk_dupe: n => `已追蹤 ${n} 檔`,
+    bulk_unknown: n => `找不到 ${n} 檔`,
+    bulk_capped: n => `${n} 檔因免費方案上限未加入,升級可解鎖`,
+    bulk_nothing: "沒有解析到任何股票,請檢查輸入內容",
+    bundle_added: n => `✅ 已加入 ${n} 檔`,
+    bundle_all_have: "你已經追蹤這組所有股票",
+    bundle_capped: (a, c) => `已加入 ${a} 檔;${c} 檔因免費方案上限未加入,升級可解鎖`
   },
   en: {
     page_title: "Subscriber Area · MarketDaily",
@@ -1009,7 +1110,7 @@ const i18n = {
     cpwd_toggle: "Change Password",
     line_card_title: "⚡ Real-Time LINE Breaking-News Alerts",
     line_card_desc: "When major news affects your holdings, we notify you instantly on LINE — no need to wait for the next day's digest. Premium-only feature.",
-    line_friend_notice: "⚠️ Before binding, please <a href=\"https://line.me/R/ti/p/@516nponm\" target=\"_blank\" rel=\"noopener\" style=\"color:#fbbf24;font-weight:700;\">add the MarketDaily official account as a friend</a>, otherwise alerts can't reach you.",
+    line_friend_notice: "💡 After binding, the \"Add MarketDaily as friend\" page will open automatically. Tap \"Add friend\" to receive alerts.",
     line_bind_btn: "Bind LINE →",
     line_bound_notice: "✓ LINE connected — breaking news will be pushed to you in real time.",
     line_unbind_btn: "Unbind",
@@ -1095,7 +1196,34 @@ const i18n = {
     chart_full: "Full chart ↗",
     level_support: "Support",
     level_target: "Target",
-    level_stop: "Stop"
+    level_stop: "Stop",
+    quick_label: "Quick add — popular bundles",
+    bulk_chip: "📋 I have a list",
+    bundle_mag7: "👑 Magnificent 7",
+    bundle_ai: "🤖 AI Plays",
+    bundle_etf_us: "📊 Core ETFs",
+    bundle_finance_us: "🏦 Banks & Finance",
+    bundle_dividend_us: "💰 Dividend Giants",
+    bundle_blue_tw: "💎 TW Blue Chips",
+    bundle_etf_tw: "📊 Popular ETFs",
+    bundle_fin_tw: "🏦 Financials",
+    bundle_semi_tw: "🔬 Semiconductors",
+    bulk_title_us: "📋 Paste a list of US stocks",
+    bulk_title_tw: "📋 Paste a list of TW stocks",
+    bulk_desc_us: "Paste tickers or company names — separate with commas, spaces or new lines. Example:<br><code style=\"color:#a5b4fc;background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px;font-size:12px;\">AAPL, NVDA, Apple, Nvidia</code>",
+    bulk_desc_tw: "Paste tickers or company names — separate with commas, spaces or new lines. Example:<br><code style=\"color:#a5b4fc;background:rgba(99,102,241,0.1);padding:2px 6px;border-radius:4px;font-size:12px;\">2330, 2317, TSMC, 0050</code>",
+    bulk_ph_us: "Paste US tickers or names…\ne.g. AAPL, MSFT, Apple, Nvidia",
+    bulk_ph_tw: "Paste TW tickers or names…\ne.g. 2330, 2317, TSMC, 0050",
+    bulk_cancel: "Cancel",
+    bulk_confirm: "Parse & add",
+    bulk_added: n => `✅ Added ${n} stocks`,
+    bulk_dupe: n => `${n} already tracked`,
+    bulk_unknown: n => `${n} not found`,
+    bulk_capped: n => `${n} skipped — free plan cap reached. Upgrade to unlock.`,
+    bulk_nothing: "Nothing parsed — please check your input",
+    bundle_added: n => `✅ Added ${n} stocks`,
+    bundle_all_have: "You already track every stock in this bundle",
+    bundle_capped: (a, c) => `Added ${a}; ${c} skipped due to free plan cap — upgrade to unlock`
   }
 };
 
@@ -1143,6 +1271,7 @@ function refreshDynamicLang() {
     const badge = document.getElementById("plan-badge");
     if (badge) badge.textContent = plan === "admin" ? T('hdr_plan_admin') : plan === "free" ? T('hdr_plan_free') : T('hdr_plan_paid');
     renderTags("us"); renderTags("tw"); updateStats();
+    if (typeof renderQuickRow === 'function') { renderQuickRow('us'); renderQuickRow('tw'); }
   }
 }
 
@@ -1204,6 +1333,143 @@ function removeStock(market, sym) {
   selected[market] = selected[market].filter(s => s.sym !== sym);
   renderTags(market); updateStats();
   scheduleSave();
+}
+
+// ── 一鍵套組 + 批量貼上 ──
+const BUNDLES = {
+  us: [
+    { id: "mag7",      i18n: "bundle_mag7",       syms: ["AAPL","MSFT","NVDA","GOOGL","AMZN","META","TSLA"] },
+    { id: "ai",        i18n: "bundle_ai",         syms: ["NVDA","AMD","AVGO","TSM","MSFT"] },
+    { id: "etf",       i18n: "bundle_etf_us",     syms: ["VOO","QQQ","VTI","SPY"] },
+    { id: "dividend",  i18n: "bundle_dividend_us",syms: ["JNJ","KO","PG","XOM","PEP"] },
+    { id: "finance",   i18n: "bundle_finance_us", syms: ["JPM","BAC","V","MA","BRK.B"] }
+  ],
+  tw: [
+    { id: "blue",      i18n: "bundle_blue_tw",    syms: ["2330","2317","2454","2308","2412"] },
+    { id: "etf",       i18n: "bundle_etf_tw",     syms: ["0050","006208","00878","00919"] },
+    { id: "fin",       i18n: "bundle_fin_tw",     syms: ["2882","2891","2885","2884"] },
+    { id: "semi",      i18n: "bundle_semi_tw",    syms: ["2330","2454","2303","3711","3034"] }
+  ]
+};
+
+function renderQuickRow(market) {
+  const wrap = document.getElementById(`${market}-quick`);
+  if (!wrap) return;
+  const bundles = BUNDLES[market] || [];
+  const chips = bundles.map(b =>
+    `<button type="button" class="bundle-chip" onclick="addBundle('${market}','${b.id}')">${T(b.i18n)}</button>`
+  ).join("");
+  wrap.innerHTML =
+    `<span class="quick-label">${T("quick_label")}</span>` +
+    chips +
+    `<button type="button" class="bulk-chip" onclick="openBulk('${market}')">${T("bulk_chip")}</button>`;
+}
+
+function addBundle(market, bundleId) {
+  const bundle = (BUNDLES[market] || []).find(b => b.id === bundleId);
+  if (!bundle) return;
+  const db = market === "us" ? US_STOCKS : TW_STOCKS;
+  let added = 0, dupe = 0, capped = 0;
+  for (const sym of bundle.syms) {
+    if (selected[market].find(s => s.sym === sym)) { dupe++; continue; }
+    if (userCap !== Infinity && selected.us.length + selected.tw.length >= userCap) { capped++; continue; }
+    const found = db.find(([s]) => s === sym);
+    selected[market].push({ sym, name: found ? found[1] : sym });
+    added++;
+  }
+  renderTags(market); updateStats();
+  if (added > 0) scheduleSave();
+  if (capped > 0) {
+    setSaveStatus("warn", "⚠️ " + T("bundle_capped")(added, capped));
+  } else if (added === 0 && dupe > 0) {
+    setSaveStatus("", "✓ " + T("bundle_all_have"));
+  } else {
+    setSaveStatus("saved", T("bundle_added")(added));
+  }
+}
+
+let bulkMarket = "us";
+
+function openBulk(market) {
+  bulkMarket = market;
+  const modal = document.getElementById("bulk-modal");
+  if (!modal) return;
+  document.getElementById("bulk-title").textContent = T(`bulk_title_${market}`);
+  document.getElementById("bulk-desc").innerHTML = T(`bulk_desc_${market}`);
+  const ta = document.getElementById("bulk-textarea");
+  ta.value = "";
+  ta.placeholder = T(`bulk_ph_${market}`);
+  document.getElementById("bulk-cancel").textContent = T("bulk_cancel");
+  document.getElementById("bulk-confirm").textContent = T("bulk_confirm");
+  document.getElementById("bulk-result").style.display = "none";
+  modal.classList.add("open");
+  setTimeout(() => ta.focus(), 50);
+}
+
+function closeBulk() {
+  const m = document.getElementById("bulk-modal");
+  if (m) m.classList.remove("open");
+}
+
+function parseBulkInput(text, market) {
+  const db = market === "us" ? US_STOCKS : TW_STOCKS;
+  const tokens = text.split(/[\s,，、;；|]+/).map(t => t.trim()).filter(Boolean);
+  const matches = [], unknown = [];
+  const seen = new Set();
+  for (const raw of tokens) {
+    let found = null;
+    const upper = raw.toUpperCase();
+    found = db.find(([s]) => s.toUpperCase() === upper);
+    if (!found) {
+      const lo = raw.toLowerCase();
+      found = db.find(([s, n]) => {
+        if (n.toLowerCase() === lo) return true;
+        if (market === "us" && typeof US_ZH !== "undefined" && US_ZH[s] === raw) return true;
+        return false;
+      });
+    }
+    if (!found) {
+      const lo = raw.toLowerCase();
+      found = db.find(([s, n]) => {
+        if (n.toLowerCase().includes(lo)) return true;
+        if (market === "us" && typeof US_ZH !== "undefined" && US_ZH[s] && US_ZH[s].includes(raw)) return true;
+        return false;
+      });
+    }
+    if (found) {
+      if (!seen.has(found[0])) { seen.add(found[0]); matches.push(found); }
+    } else {
+      unknown.push(raw);
+    }
+  }
+  return { matches, unknown };
+}
+
+function confirmBulk() {
+  const text = document.getElementById("bulk-textarea").value;
+  const { matches, unknown } = parseBulkInput(text, bulkMarket);
+  const market = bulkMarket;
+  let added = 0, dupe = 0, capped = 0;
+  for (const [sym, name] of matches) {
+    if (selected[market].find(s => s.sym === sym)) { dupe++; continue; }
+    if (userCap !== Infinity && selected.us.length + selected.tw.length >= userCap) { capped++; continue; }
+    selected[market].push({ sym, name });
+    added++;
+  }
+  renderTags(market); updateStats();
+  if (added > 0) scheduleSave();
+  const parts = [];
+  if (added > 0) parts.push(`<span class="ok">${T("bulk_added")(added)}</span>`);
+  if (dupe > 0) parts.push(T("bulk_dupe")(dupe));
+  if (capped > 0) parts.push(`<span class="err">${T("bulk_capped")(capped)}</span>`);
+  if (unknown.length > 0) parts.push(`<span class="err">${T("bulk_unknown")(unknown.length)}: ${unknown.slice(0,8).map(u=>`<b>${u}</b>`).join(", ")}${unknown.length>8?"…":""}</span>`);
+  if (parts.length === 0) parts.push(T("bulk_nothing"));
+  const res = document.getElementById("bulk-result");
+  res.innerHTML = parts.join("<br>");
+  res.style.display = "";
+  if (added > 0 && unknown.length === 0 && capped === 0) {
+    setTimeout(closeBulk, 1100);
+  }
 }
 
 function renderTags(market) {
@@ -1341,7 +1607,16 @@ function doLogout() {
 async function showDashboard(email, plan) {
   document.getElementById("login-screen").style.display = "none";
   document.getElementById("dashboard").style.display = "block";
+  if (typeof renderQuickRow === 'function') { renderQuickRow('us'); renderQuickRow('tw'); }
   setTimeout(function () { if (window.mdStockTour) window.mdStockTour(); }, 700);
+  // 從 preferences.html redirect 過來時自動 scroll 到股票卡(支援 #stocks 或 ?focus=stocks)
+  const want = location.hash === "#stocks" || new URLSearchParams(location.search).get("focus") === "stocks";
+  if (want) {
+    setTimeout(function () {
+      const el = document.getElementById("stocks");
+      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 400);
+  }
   const name = email.split("@")[0];
   document.getElementById("hero-name").textContent = T('hero_name_greeting')(name);
   document.getElementById("nav-email").textContent = email;
@@ -1376,6 +1651,8 @@ async function setupLineCard(email, plan) {
   } catch {}
   document.getElementById("line-bound-box").style.display = bound ? "block" : "none";
   document.getElementById("line-unbound-box").style.display = bound ? "none" : "block";
+  // 清除任何殘留的 pending flag(避免舊版本留下的副作用)
+  sessionStorage.removeItem("md-pending-bindLine");
 }
 
 // ── AI 投資助手 ──
@@ -1387,8 +1664,14 @@ async function setupChatCard(email, plan) {
   if (plan !== "premium" && plan !== "admin") { card.style.display = "none"; return; }
   card.style.display = "block";
   let premium = false, remaining = 30;
+  // 改 POST + password,worker 不會洩漏 plan 給未授權 caller
+  const pwd = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
   try {
-    const res = await fetch(`${WORKER_URL}/chat-status?email=${encodeURIComponent(email)}`);
+    const res = await fetch(`${WORKER_URL}/chat-status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password: pwd }),
+    });
     if (res.ok) { const d = await res.json(); premium = !!d.premium; remaining = d.remaining; }
   } catch {}
   document.getElementById("chat-box").style.display = premium ? "block" : "none";
@@ -1500,6 +1783,10 @@ function askPassword(opts = {}) {
   });
 }
 
+function isLineInAppBrowser() {
+  return /\bLine\//i.test(navigator.userAgent || "");
+}
+
 async function bindLine(retryPwd, retryErr) {
   const email = localStorage.getItem("md-email");
   let password = retryPwd || sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd");
@@ -1516,6 +1803,86 @@ async function bindLine(retryPwd, retryErr) {
     if (!password) return;
   }
   btn.disabled = true; btn.textContent = T('line_processing');
+
+  // 路徑 A:已在 LIFF context(LINE App 內 + 透過 LIFF URL 開) — 真 0 跳轉
+  if (__liffReady && window.liff && liff.isInClient && liff.isInClient()) {
+    try {
+      if (!liff.isLoggedIn()) {
+        sessionStorage.setItem("md-pwd", password);
+        sessionStorage.setItem("md-line-resume", "1");
+        liff.login({ redirectUri: "https://marketdaily.ai/dashboard.html" });
+        return;
+      }
+      const idToken = liff.getIDToken();
+      if (!idToken) throw new Error("no_id_token");
+      const res = await fetch(WORKER_URL + "/line/liff-bind", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, idToken }),
+      });
+      const data = await res.json();
+      btn.disabled = false; btn.textContent = T('line_bind_btn');
+      if (data.ok) { sessionStorage.removeItem("md-pwd"); location.href = "?line=bound"; return; }
+      if (data.error === "auth") {
+        const p = await askPassword({ title: "密碼錯誤,請再試一次", desc: "看起來密碼不對。請再輸入一次,或點取消放棄綁定。", errorText: "❌ 密碼錯誤" });
+        if (p) bindLine(p); return;
+      }
+      errEl.textContent = T('line_bind_failed'); errEl.style.display = "block"; return;
+    } catch (e) {
+      console.warn("LIFF bind failed, fallback to OAuth", e);
+      // fallthrough
+    }
+  }
+
+  // 路徑 B:手機(非 LIFF)→ 拿一次性 token → 顯示「在 LINE App 開啟」按鈕讓使用者親手 tap
+  // 親手 tap <a> 才會被 iOS/Android 當 universal link → 直接喚起 LINE App(免再輸 LINE 帳密)
+  // JS location.href 會被當成普通 web navigation,常常卡在 LINE web login,所以改成顯示按鈕
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || "");
+  if (isMobile && (!window.liff || !liff.isInClient || !liff.isInClient())) {
+    try {
+      const tokenRes = await fetch(WORKER_URL + "/line/bind-token", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const tokenData = await tokenRes.json();
+      if (tokenData.error === "auth") {
+        btn.disabled = false; btn.textContent = T('line_bind_btn');
+        const p = await askPassword({ title: "密碼錯誤,請再試一次", desc: "看起來密碼不對。請再輸入一次,或點取消放棄綁定。", errorText: "❌ 密碼錯誤" });
+        if (p) bindLine(p); return;
+      }
+      if (!tokenData.token) throw new Error("no_token");
+      sessionStorage.setItem("md-pwd", password);
+      const liffTarget = "https://liff.line.me/" + LIFF_ID +
+        "?action=bindLine&token=" + encodeURIComponent(tokenData.token);
+      const openA = document.getElementById("line-open-app");
+      const openHint = document.getElementById("line-open-hint");
+      if (openA && openHint) {
+        openA.href = liffTarget;
+        openA.style.display = "block";
+        openHint.style.display = "block";
+        btn.style.display = "none";
+      } else {
+        location.href = liffTarget;
+      }
+      return;
+    } catch (e) {
+      btn.disabled = false; btn.textContent = T('line_bind_btn');
+      errEl.textContent = T('line_net_err'); errEl.style.display = "block"; return;
+    }
+  }
+
+  // 路徑 C:OAuth — desktop fallback 或手機沒裝 LINE 的退路(由「瀏覽器登入綁定」連結觸發)
+  return bindLineOAuth(email, password);
+}
+
+// 手機沒裝 LINE 的退路 — 走標準 LINE OAuth(會要 LINE 帳密,接受率低,只當 fallback)
+async function bindLineOAuth(email, password) {
+  const errEl = document.getElementById("line-err");
+  if (!email) email = localStorage.getItem("md-email");
+  if (!password) password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd");
+  if (!password) {
+    password = await askPassword({ title: "綁定 LINE 帳號", desc: "為了保護你的 LINE 不被別人綁走,需要再輸入一次密碼。" });
+    if (!password) return;
+  }
   let data;
   try {
     const res = await fetch(WORKER_URL + "/line/login", {
@@ -1524,21 +1891,15 @@ async function bindLine(retryPwd, retryErr) {
     });
     data = await res.json();
   } catch {
-    btn.disabled = false; btn.textContent = T('line_bind_btn');
-    errEl.textContent = T('line_net_err'); errEl.style.display = "block"; return;
+    if (errEl) { errEl.textContent = T('line_net_err'); errEl.style.display = "block"; } return;
   }
-  btn.disabled = false; btn.textContent = T('line_bind_btn');
   if (data.authUrl) { sessionStorage.setItem("md-pwd", password); window.location.href = data.authUrl; return; }
   if (data.error === "auth") {
-    const p = await askPassword({
-      title: "密碼錯誤,請再試一次",
-      desc: "看起來密碼不對。請再輸入一次,或點取消放棄綁定。",
-      errorText: "❌ 密碼錯誤",
-    });
-    if (p) bindLine(p);
+    const p = await askPassword({ title: "密碼錯誤,請再試一次", desc: "看起來密碼不對。請再輸入一次,或點取消放棄綁定。", errorText: "❌ 密碼錯誤" });
+    if (p) bindLineOAuth(email, p);
     return;
   }
-  errEl.textContent = T('line_bind_failed'); errEl.style.display = "block";
+  if (errEl) { errEl.textContent = T('line_bind_failed'); errEl.style.display = "block"; }
 }
 
 async function unbindLine() {
@@ -1566,14 +1927,28 @@ async function unbindLine() {
 
 async function loadAdminStats() {
   try {
-    const res = await fetch(WORKER_URL + "/admin-stats", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: localStorage.getItem("md-email") }) });
-    if (res.ok) { const data = await res.json(); document.getElementById("admin-total").textContent = data.total ?? "—"; document.getElementById("admin-free").textContent = data.free ?? "—"; document.getElementById("admin-paid").textContent = data.paid ?? "—"; }
+    const email = localStorage.getItem("md-email");
+    const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
+    const res = await fetch(WORKER_URL + "/admin-stats", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const total = data.totalSubscribers ?? data.total ?? 0;
+    const subs = data.subscribers || [];
+    let paid = 0, free = 0;
+    for (const s of subs) { if (s.plan === "pro" || s.plan === "premium") paid++; else free++; }
+    document.getElementById("admin-total").textContent = total || "—";
+    document.getElementById("admin-free").textContent = free || "—";
+    document.getElementById("admin-paid").textContent = paid || "—";
   } catch {}
 }
 
 async function loadPreferences(email) {
   try {
-    const res = await fetch(WORKER_URL + "/get-preferences", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email }) });
+    const pwd = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
+    const res = await fetch(WORKER_URL + "/get-preferences", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password: pwd }) });
     const data = await res.json();
     userPlan = data.plan || "free";
     userCap = data.cap == null ? Infinity : data.cap;
@@ -1581,6 +1956,7 @@ async function loadPreferences(email) {
     (data.us_stocks || []).forEach(sym => { const f = US_STOCKS.find(([s])=>s===sym); selected.us.push({ sym, name: f ? f[1] : sym }); });
     (data.tw_stocks || []).forEach(sym => { const f = TW_STOCKS.find(([s])=>s===sym); selected.tw.push({ sym, name: f ? f[1] : sym }); });
     renderTags("us"); renderTags("tw"); updateStats();
+    if (typeof renderQuickRow === 'function') { renderQuickRow('us'); renderQuickRow('tw'); }
     _lastSaved = curPayload();
   } catch {}
 }
@@ -1608,6 +1984,17 @@ async function loadMarketOverview() {
 }
 
 /* ── STORIES ── */
+// 統一格式化股價漲跌:含台股漲停 (≥9.9%) / 跌停 (≤-9.9%) 標籤。
+// 台股代號 = 4-6 位數字;美股不套漲跌停(美股沒有 ±10% 限制)。
+function fmtChange(change, symbol) {
+  if (change === null || change === undefined) return { dir: "neutral", label: "—" };
+  const isTW = /^\d{4,6}$/.test(String(symbol || ""));
+  if (isTW && change >= 9.9)  return { dir: "up",   label: "🔥 漲停" };
+  if (isTW && change <= -9.9) return { dir: "down", label: "❄️ 跌停" };
+  const dir = change >= 0 ? "up" : "down";
+  return { dir, label: `${change >= 0 ? "▲" : "▼"} ${Math.abs(change).toFixed(2)}%` };
+}
+
 let _stories = [];
 let _storyIdx = 0;
 let _quotesRefreshTimer = null;
@@ -1643,24 +2030,24 @@ async function refreshQuotes() {
       // Update bubble
       const bubble = document.querySelector(`[data-sym="${q.symbol}"]`);
       if (bubble) {
-        const dir = q.change === null ? "neutral" : q.change >= 0 ? "up" : "down";
-        const changeLabel = q.change !== null ? `${q.change >= 0 ? "▲" : "▼"} ${Math.abs(q.change).toFixed(2)}%` : "—";
+        const { dir, label } = fmtChange(q.change, q.symbol);
         const ring = bubble.querySelector(".story-ring");
         if (ring) { ring.classList.remove("up","down","neutral"); ring.classList.add(dir); }
         const cl = bubble.querySelector(".story-change-label");
-        if (cl) { cl.textContent = changeLabel; cl.className = `story-change-label ${dir}`; }
+        if (cl) { cl.textContent = label; cl.className = `story-change-label ${dir}`; }
       }
     });
     // Update open story card if visible
     if (document.getElementById("story-overlay").classList.contains("open")) {
       const q = _stories[_storyIdx];
       if (q) {
-        const changeVal = q.change;
-        const dir = changeVal === null ? "flat" : changeVal >= 0 ? "up" : "down";
-        const arrow = dir === "up" ? "▲" : dir === "down" ? "▼" : "—";
-        document.getElementById("sc-change").textContent = changeVal !== null ? `${arrow} ${Math.abs(changeVal).toFixed(2)}%` : "—";
+        const { dir, label } = fmtChange(q.change, q.symbol);
+        document.getElementById("sc-change").textContent = label;
         document.getElementById("sc-change").className = `story-card-change ${dir}`;
-        document.getElementById("sc-price").textContent = q.price !== null ? `$${q.price.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}` : "";
+        const isTW = /^\d{4,6}$/.test(String(q.symbol || ""));
+        const ccy = isTW ? "" : "$";
+        const fp = (v) => v >= 100 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : v.toFixed(2);
+        document.getElementById("sc-price").textContent = q.price !== null ? `${ccy}${fp(q.price)}` : "";
       }
     }
   } catch {}
@@ -1714,9 +2101,8 @@ async function loadStories(email) {
     startCountdown();
     const seen = JSON.parse(sessionStorage.getItem("md-stories-seen") || "{}");
     row.innerHTML = quotes.map((q, i) => {
-      const dir = q.change === null ? "neutral" : q.change >= 0 ? "up" : "down";
+      const { dir, label: changeLabel } = fmtChange(q.change, q.symbol);
       const isSeen = !!seen[q.symbol];
-      const changeLabel = q.change !== null ? `${q.change >= 0 ? "▲" : "▼"} ${Math.abs(q.change).toFixed(2)}%` : "—";
       const isTW = /^\d{4,6}$/.test(q.symbol);
       const bubbleLabel = isTW ? (nameMap[q.symbol] || q.symbol) : q.symbol;
       const innerLabel = isTW ? (nameMap[q.symbol] ? nameMap[q.symbol].slice(0,4) : q.symbol) : (q.symbol.length > 5 ? q.symbol.slice(0,4) : q.symbol);
@@ -1744,10 +2130,12 @@ function renderStoryCard() {
   if (!q) { closeStories(); return; }
 
   const changeVal = q.change !== null ? q.change : null;
-  const dir = changeVal === null ? "flat" : changeVal >= 0 ? "up" : "down";
-  const arrow = dir === "up" ? "▲" : dir === "down" ? "▼" : "—";
-  const changeStr = changeVal !== null ? `${arrow} ${Math.abs(changeVal).toFixed(2)}%` : "—";
-  const priceStr = q.price !== null ? `$${q.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "";
+  const isTW = /^\d{4,6}$/.test(String(q.symbol || ""));
+  const ccy = isTW ? "" : "$";  // 台股慣例不加 $,美股加 $
+  // 用 fmtChange 統一 (與 stories bubble 一致,含台股漲停/跌停標籤)
+  const { dir, label: changeStr } = fmtChange(changeVal, q.symbol);
+  const fmtPrice = (v) => v >= 100 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : v.toFixed(2);
+  const priceStr = q.price !== null ? `${ccy}${fmtPrice(q.price)}` : "";
 
   document.getElementById("sc-ticker").textContent = q.symbol;
   document.getElementById("sc-name").textContent = q.name;
@@ -1762,14 +2150,14 @@ function renderStoryCard() {
   badge.className = `sc-sig-badge ${sig.cls}`;
   document.getElementById("sc-sig-score").textContent = `${sig.score}/10`;
 
-  // Key levels: prev close (support) + target
+  // Key levels: prev close (support) + target (含貨幣符號,跟價格區一致)
   const levelsEl = document.getElementById("sc-levels");
   if (q.price !== null && changeVal !== null) {
     const prevClose = q.price / (1 + changeVal / 100);
     const target = q.price * (1 + sig.targetPct / 100);
     levelsEl.innerHTML =
-      `<span class="sc-level-chip">${T('level_support')} ${prevClose >= 100 ? prevClose.toFixed(0) : prevClose.toFixed(2)}</span>` +
-      `<span class="sc-level-chip">${sig.targetPct >= 0 ? T('level_target') : T('level_stop')} ${target >= 100 ? target.toFixed(0) : target.toFixed(2)} (${sig.targetPct > 0 ? "+" : ""}${sig.targetPct}%)</span>`;
+      `<span class="sc-level-chip">${T('level_support')} ${ccy}${fmtPrice(prevClose)}</span>` +
+      `<span class="sc-level-chip">${sig.targetPct >= 0 ? T('level_target') : T('level_stop')} ${ccy}${fmtPrice(target)} (${sig.targetPct > 0 ? "+" : ""}${sig.targetPct}%)</span>`;
   } else {
     levelsEl.innerHTML = "";
   }
@@ -1937,8 +2325,8 @@ function renderChart(canvas, progress, hoverIdx) {
   _chartGeom = { padL, plotW, n };
 
   const up = last >= first;
-  const line = up ? "#34d399" : "#f87171";
-  const rgb = up ? "52,211,153" : "248,113,113";
+  const line = up ? "#f87171" : "#34d399";
+  const rgb = up ? "248,113,113" : "52,211,153";
   const fmt = v => v >= 1000 ? Math.round(v).toLocaleString() : v.toFixed(2);
 
   // horizontal gridlines + price axis
@@ -2183,7 +2571,9 @@ function setSaveStatus(state, text) {
 
 function curPayload() {
   const email = localStorage.getItem("md-email") || "";
-  return JSON.stringify({ email, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym) });
+  // 帶 password 給 /save-preferences (worker 需驗證,否則任何人能改別人偏好)
+  const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
+  return JSON.stringify({ email, password, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym) });
 }
 
 // 去抖動:連續選股只在停手 0.65 秒後送一次。
@@ -2227,10 +2617,11 @@ let _refLink = "";
 
 async function loadReferral(email) {
   try {
+    const pwd = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
     const res = await fetch(WORKER_URL + "/referral-stats", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email, password: pwd })
     });
     if (!res.ok) return;
     const data = await res.json();
@@ -2300,6 +2691,9 @@ async function init() {
   US_STOCKS = typeof US_STOCKS_FULL !== 'undefined' ? US_STOCKS_FULL : [];
   TW_STOCKS = typeof TW_STOCKS_FULL !== 'undefined' ? TW_STOCKS_FULL : [];
 
+  // 先讀 action(因為下面會 replaceState 清 URL)
+  const initAction = new URLSearchParams(window.location.search).get("action");
+
   // 切換帳號偵測:URL ?email= 或 hero 剛輸的 email 跟舊 session 不同 → 清舊登入
   const urlEmail = (new URLSearchParams(window.location.search).get("email") || "").trim().toLowerCase();
   const heroEmail = (localStorage.getItem("md-hero-email") || "").trim().toLowerCase();
@@ -2318,12 +2712,23 @@ async function init() {
   const email = localStorage.getItem("md-email"); const plan = localStorage.getItem("md-plan") || "free";
   if (email) showDashboard(email, plan);
   const lineParam = new URLSearchParams(window.location.search).get("line");
-  if (lineParam === "bound") { alert(T('line_bound_alert')); history.replaceState(null, "", "dashboard.html"); }
+  if (lineParam === "bound") {
+    history.replaceState(null, "", "dashboard.html");
+    alert(T('line_bound_alert') + "\n\n👉 接下來會自動跳到「加 MarketDaily 好友」頁,請按「加入好友」才會收到推播提醒。");
+    setTimeout(function(){ window.open("https://line.me/R/ti/p/@516nponm", "_blank"); }, 300);
+  }
   else if (lineParam === "error") { alert(T('line_error_alert')); history.replaceState(null, "", "dashboard.html"); }
+
+  // action=bindLine 但「不在 LIFF 環境 + 沒帶 token」(LIFF token 流程由 LIFF init 處理,這裡跳過)
+  // 唯一還需要這裡接手的情境:LIFF 環境 + 用戶尚未登入 LIFF localStorage(罕見 fallback)
+  // 不設 sessionStorage flag,避免殘留在 desktop 引發非預期 auto-bind
+  if (initAction === "bindLine") {
+    history.replaceState(null, "", "dashboard.html");
+  }
 }
 init();
 </script>
-<script>window.META_PIXEL_ID = "";  /* TODO 設 Pixel ID 後立即生效 */</script>
+<script>window.META_PIXEL_ID = "1497334655104185";</script>
 <script src="meta-pixel.js"></script>
 <script src="ui-pro.js"></script>
 
@@ -2441,7 +2846,7 @@ init();
   loop();
 })();
 </script>
-<script src="onboarding-tour.js"></script>
+<script src="onboarding-tour.js?v=20260526b"></script>
 <script>
 MDTour.mount([
   { selector: "#login-email",
@@ -2465,5 +2870,19 @@ window.mdStockTour = function () {
   ], { tourId: "dashboard-stocks", auto: true });
 };
 </script>
+
+<!-- Bulk paste modal -->
+<div class="md-modal-backdrop" id="bulk-modal" onclick="if(event.target===this)closeBulk()">
+  <div class="md-modal-card">
+    <div class="md-modal-title" id="bulk-title">📋 一次貼上多檔股票</div>
+    <div class="md-modal-desc" id="bulk-desc"></div>
+    <textarea class="md-modal-textarea" id="bulk-textarea" placeholder=""></textarea>
+    <div class="md-modal-result" id="bulk-result" style="display:none;"></div>
+    <div class="md-modal-actions">
+      <button class="md-modal-btn ghost" id="bulk-cancel" onclick="closeBulk()">取消</button>
+      <button class="md-modal-btn primary" id="bulk-confirm" onclick="confirmBulk()">解析並加入</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

@@ -136,7 +136,8 @@ def post_line(env, image_url, caption):
     if not worker_url or not internal_tok:
         return False, "skip:未設 MARKETDAILY_ALERT_WORKER_URL/MARKETDAILY_INTERNAL_TOKEN(避免誤發 premium)"
     ok, r = http(f"{worker_url.rstrip('/')}/internal/marketing-line-targets",
-                 headers={"Authorization": f"Bearer {internal_tok}"})
+                 headers={"Authorization": f"Bearer {internal_tok}",
+                          "User-Agent": "MarketDaily-Marketing/1.0"})
     if not ok:
         return False, f"取 targets 失敗: {r}"
     targets = r.get("targets", [])

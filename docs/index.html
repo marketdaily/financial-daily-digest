@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MarketDaily — 台灣投資人的每日 AI 財經日報</title>
 <meta name="description" content="每天早上 7 點，AI 為你精選美股與台股市場簡報。假訊息全過濾，像聰明朋友傳訊息給你一樣好懂，30 秒掌握市場大事。">
+<meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#6366f1">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1070,7 +1071,7 @@ footer {
       <div class="fc-verdict-value">📈 Bullish</div>
       <div class="fc-verdict-bar"><div class="fc-verdict-fill"></div></div>
       <div class="fc-sources" style="margin-top:10px;">Confidence: 72%</div>
-      <div class="fc-sources">Based on 75+ sources</div>
+      <div class="fc-sources">Based on Reuters · Bloomberg · Yahoo Finance · 經濟日報</div>
     </div>
 
   </div>
@@ -1119,8 +1120,8 @@ footer {
       <div class="stat-label" data-i18n="stat1">Taiwan Time Daily</div>
     </div>
     <div class="stat-item">
-      <span class="stat-num" data-count-to="75" data-suffix="+">75+</span>
-      <div class="stat-label" data-i18n="stat2">News Sources Scanned</div>
+      <span class="stat-num" data-count-to="100" data-suffix="%">100%</span>
+      <div class="stat-label" data-i18n="stat2">Personalized Filter</div>
     </div>
     <div class="stat-item">
       <span class="stat-num" data-count-to="0">0</span>
@@ -1293,7 +1294,7 @@ footer {
     <div class="about-half solution">
       <div class="about-half-eyebrow" data-i18n="about_sol_eye">Your morning with MarketDaily</div>
       <div class="about-time-badge">⚡ <span data-i18n="about_sol_time">5 minutes. Done.</span></div>
-      <div class="about-check-item"><span class="about-check-icon">✅</span><span data-i18n="about_s1">75+ sources scanned overnight while you sleep</span></div>
+      <div class="about-check-item"><span class="about-check-icon">✅</span><span data-i18n="about_s1">Reuters, Bloomberg, Yahoo Finance &amp; more — scanned overnight while you sleep</span></div>
       <div class="about-check-item"><span class="about-check-icon">✅</span><span data-i18n="about_s2">Fake news filtered — every story cross-checked and labeled</span></div>
       <div class="about-check-item"><span class="about-check-icon">✅</span><span data-i18n="about_s3">Only your stocks analyzed — nothing irrelevant</span></div>
       <div class="about-check-item"><span class="about-check-icon">✅</span><span data-i18n="about_s4">Clear Buy / Hold / Sell signal with target price and confidence</span></div>
@@ -1385,7 +1386,7 @@ footer {
           <div class="feat-panel-desc" data-i18n="f2_desc">Only news from Reuters, CNBC, Bloomberg, FT and other verified sources. Every story is cross-checked.</div>
           <div class="feat-proof">
             <span class="feat-proof-chip">✅ Multi-source verified</span>
-            <span class="feat-proof-chip">75+ sources</span>
+            <span class="feat-proof-chip">Reuters · Bloomberg · Yahoo</span>
             <span class="feat-proof-chip">0% fake news</span>
           </div>
         </div>
@@ -1584,6 +1585,14 @@ footer {
 
       <div class="faq-item-acc">
         <button class="faq-q-btn" onclick="toggleFaq(this)">
+          <span data-i18n="faq_q_chatgpt">我用 ChatGPT 就好，為什麼要付錢訂閱？</span>
+          <span class="faq-chevron">▾</span>
+        </button>
+        <div class="faq-a-body"><p data-i18n-html="faq_a_chatgpt">ChatGPT 不會在早上 6:55 主動掃完台積電、特斯拉、輝達的隔夜消息，挑出影響<strong>你部位</strong>的那幾則送到你信箱。它是<strong>「你問它答」</strong>的工具；我們是<strong>「不問也送到你眼前」</strong>的助理 —— 知道你抱什麼股、自動篩相關新聞、Premium 還會即時推播持股利空到 LINE，並支援 LINE Bot 雙向問答。比 ChatGPT Plus 便宜一半，只專心做好一件事:讓你不用再決定「今天該問 AI 什麼」。<br><br><a href="/vs-chatgpt" style="color:#a5b4fc;text-decoration:underline;font-weight:600;">看完整逐項對比 →</a></p></div>
+      </div>
+
+      <div class="faq-item-acc">
+        <button class="faq-q-btn" onclick="toggleFaq(this)">
           <span data-i18n="faq_q1">幾點收到日報？</span>
           <span class="faq-chevron">▾</span>
         </button>
@@ -1595,7 +1604,7 @@ footer {
           <span data-i18n="faq_q2">日報涵蓋哪些內容？</span>
           <span class="faq-chevron">▾</span>
         </button>
-        <div class="faq-a-body"><p data-i18n="faq_a2">30 秒 TL;DR 摘要、今日頭條（假訊息過濾）、AI 操作建議（每支持股 買/賣/持有 + 目標價 + 信心百分比）、市場情緒儀表板，以及你的個人持倉動態分析。</p></div>
+        <div class="faq-a-body"><p data-i18n="faq_a2">30 秒精華摘要、今日頭條（假訊息過濾）、AI 操作建議（每支持股 買/賣/持有 + 目標價 + 信心百分比）、市場情緒儀表板，以及你的個人持倉動態分析。</p></div>
       </div>
 
       <div class="faq-item-acc">
@@ -1948,7 +1957,7 @@ function getAttrPayload() {
 
 const i18n = {
   en: {
-    nav_settings: "⚙️ My Account", nav_pricing: "Pricing", nav_guide: "📖 Getting Started",
+    nav_settings: "⚙️ My Account", nav_pricing: "Pricing", nav_guide: "📖 Getting Started", nav_record: "📊 Record", nav_vs: "vs Rivals",
     hero_my_account: "⚙️ Already have an account? Go to My Account →",
     sp_heading: "🎉 Subscription confirmed! Set your password",
     sp_pwd_placeholder: "Set a password (at least 6 characters)",
@@ -1973,7 +1982,7 @@ const i18n = {
     or_divider: "or",
     btn_use_invite: "Claim my free briefing →",
     remember_email: "Remember my email",
-    stat1: "Taiwan Time Daily", stat2: "News Sources Scanned", stat3: "Fake News Got Through", stat4_num: "30s", stat4: "Morning Briefing",
+    stat1: "Taiwan Time Daily", stat2: "Personalized Filter", stat3: "Fake News Got Through", stat4_num: "30s", stat4: "Morning Briefing",
     feat_title: "Built for busy people",
     f1_title: "30-Second Summary", f1_desc: "3 bullet points at the top. Catch the most important thing even on your most hectic morning.",
     f2_title: "Fake News Filtered", f2_desc: "Only news from Reuters, CNBC, Bloomberg, FT and other verified sources. Every story is cross-checked.",
@@ -1998,6 +2007,8 @@ const i18n = {
     price_premium_btn: "Learn More →", price_compare_link: "See full plan comparison →",
     slider_title: "What's in every brief", slider_sub: "5 AI-curated sections. Delivered every morning at 7AM Taiwan time.",
     faq_eyebrow: "FAQ", faq_title: "Common Questions",
+    faq_q_chatgpt: "I already use ChatGPT — why pay for this?",
+    faq_a_chatgpt: "ChatGPT doesn't wake up at 6:55 AM to scan TSMC, Tesla and Nvidia's overnight news and deliver only the items affecting <strong>your</strong> positions to your inbox. It's a <strong>\"you ask, it answers\"</strong> tool; we're a <strong>\"shows up without being asked\"</strong> assistant — we know your holdings, auto-filter relevant news, and (Premium) push breaking news to LINE plus two-way LINE Bot Q&amp;A. Half the price of ChatGPT Plus, focused on one job: removing your daily \"what should I even ask AI today?\" decision.<br><br><a href=\"/vs-chatgpt\" style=\"color:#a5b4fc;text-decoration:underline;font-weight:600;\">See the full head-to-head →</a>",
     faq_q1: "What time does the brief arrive?", faq_a1: "Monday through Saturday, 7:00 AM Taiwan time. <strong>Saturday is a special 'weekly recap + next-week catalysts' edition</strong>. No email on Sunday — US and TW markets are closed, so we rest one day. If you don't see it, check your spam folder.",
     faq_q2: "What's inside every briefing?", faq_a2: "30-second TL;DR, top headlines (fake-news filtered), AI trade signals per stock (Buy/Sell/Hold + target price + confidence %), market sentiment dashboard, and personalized holdings analysis.",
     faq_q3: "How do I get an invite code?", faq_a3: "Invite codes are issued by Delvin personally and are limited. Currently for friends and family only. Contact us if you'd like one.",
@@ -2020,14 +2031,14 @@ const i18n = {
     about_prob_quote: '"I spend an hour every morning and still feel confused."',
     about_prob_attr: "— every investor before MarketDaily",
     about_sol_eye: "Your morning with MarketDaily", about_sol_time: "5 minutes. Done.",
-    about_s1: "75+ sources scanned overnight while you sleep",
+    about_s1: "Reuters, Bloomberg, Yahoo Finance &amp; more — scanned overnight while you sleep",
     about_s2: "Fake news filtered — every story cross-checked and labeled",
     about_s3: "Only your stocks analyzed — nothing irrelevant",
     about_s4: "Clear Buy / Hold / Sell signal with target price and confidence",
     about_sol_quote: '"It\'s already in my inbox. I read it with coffee. Done."',
     about_sol_attr: "— MarketDaily subscriber",
     about_problem_title: "The problem", about_problem_desc: "Every morning, thousands of news articles flood the internet. Most are noise. Some are fake. And the few that actually matter — the ones that move markets — are buried under clickbait and speculation.",
-    about_solution_title: "Our solution", about_solution_desc: "MarketDaily scans 75+ verified sources every night, filters out fake news, and uses AI to write a plain-language briefing — delivered to your inbox every morning at 7AM Taiwan time.",
+    about_solution_title: "Our solution", about_solution_desc: "MarketDaily scans major financial sources (Reuters, Bloomberg, Yahoo Finance, FT) every night, filters out fake news, and uses AI to write a plain-language briefing — delivered to your inbox every morning at 7AM Taiwan time.",
     about_who_title: "Who it's for", about_who_desc: "Busy professionals and investors in Taiwan who hold US or Taiwan stocks and want to make smarter decisions — without spending an hour reading financial news every morning.",
     about_trust_title: "Our commitment", about_trust_desc: "Every story is cross-checked across multiple trusted sources. We clearly label what's verified and what isn't. No hype, no clickbait — just the facts that matter to your portfolio.",
     cta_title: "Start your mornings smarter", cta_sub: "From NT$299/mo · Cancel anytime", cta_btn: "Subscribe Pro →",
@@ -2061,9 +2072,42 @@ const i18n = {
     prev_why2: "💡 Good news for 2330.TW holders — strong AI chip demand continues into H2",
     prev_news3: "Crude oil falls 2.3% on surprise inventory build",
     prev_why3: "💡 Lower oil = cost savings for airlines, shipping; watch EVA Air 2618.TW",
+    tr_eyebrow: "Track Record · Public Results",
+    tr_title: "We don't talk up AI — we let the record talk",
+    tr_sub: "Every stock the daily mentioned in the last 30 days — direction win-rate and avoid-the-bad-ones rate, fully public. Misses are listed too — 100% would be the fake number.",
+    tr_cta: "See the full record →",
+    tr_s1: "🟢 Long win-rate",
+    tr_s2: "🔴 Short win-rate",
+    tr_s3: "Stocks mentioned to date",
+    refund_badge: "🛡️ 30-day no-questions refund",
+    nocard_badge: "⭐ First month 60% off (NT$299)",
+    cancel_badge: "⚡ Cancel anytime · 1 click",
+    commit_1: "No sponsored content",
+    commit_2: "No positions in mentioned stocks",
+    commit_3: "Mistakes corrected publicly",
+    commit_4: "No \"guru\" commissions",
+    founder_meet_cta: "Meet the editor + see our editorial process →",
+    vs_mini_eyebrow: "vs what you're doing now",
+    vs_mini_title: "The difference, at a glance",
+    vs_mini_sub: "Same time spent watching markets — the difference is who has already done 80% of the work for you.",
+    vs_col0: "",
+    vs_col1: "LINE tip groups",
+    vs_col2: "Charting apps",
+    vs_col3: "Stock \"gurus\"",
+    vs_r1: "Pushed to your inbox",
+    vs_r2: "Filtered to your holdings",
+    vs_r3: "Public track record",
+    vs_r4: "No conflicts of interest",
+    vs_r5: "Time spent per day",
+    vs_r6: "Monthly cost",
+    vs_mini_cta: "Full comparison (incl. SanChu / TradingView / Futu) →",
+    footer_record: "📊 Track Record",
+    footer_vs: "vs Rivals",
+    footer_about: "Editor · Process",
+    footer_pricing: "Pricing",
   },
   zh: {
-    nav_settings: "⚙️ 我的專區", nav_pricing: "定價", nav_guide: "📖 新手教學",
+    nav_settings: "⚙️ 我的專區", nav_pricing: "定價", nav_guide: "📖 新手教學", nav_record: "📊 戰績", nav_vs: "vs 對手",
     hero_my_account: "⚙️ 已有帳號？直接前往我的專區 →",
     sp_heading: "🎉 訂閱確認！設定你的密碼",
     sp_pwd_placeholder: "設定密碼（至少 6 位）",
@@ -2088,7 +2132,7 @@ const i18n = {
     or_divider: "或",
     btn_use_invite: "領取我的免費日報 →",
     remember_email: "記住我的 Email",
-    stat1: "台灣時間每日發送", stat2: "新聞來源掃描數", stat3: "假新聞漏網數", stat4_num: "30s", stat4: "每日早晨摘要",
+    stat1: "台灣時間每日發送", stat2: "個人化篩選", stat3: "假新聞漏網數", stat4_num: "30s", stat4: "每日早晨摘要",
     feat_title: "專為忙碌的人打造",
     f1_title: "30 秒快速摘要", f1_desc: "最上方三個重點，再忙的早晨也能在 30 秒內掌握市場大事。",
     f2_title: "假訊息過濾", f2_desc: "只採用 Reuters、CNBC、Bloomberg、FT 等可信媒體，每則新聞交叉比對。",
@@ -2118,8 +2162,10 @@ const i18n = {
     price_premium_btn: "了解更多 →", price_compare_link: "查看完整方案比較 →",
     slider_title: "每日簡報包含什麼", slider_sub: "5 個 AI 精選區塊，每天早上 7 點準時送達。",
     faq_eyebrow: "FAQ", faq_title: "常見問題",
+    faq_q_chatgpt: "我用 ChatGPT 就好，為什麼要付錢訂閱？",
+    faq_a_chatgpt: "ChatGPT 不會在早上 6:55 主動掃完台積電、特斯拉、輝達的隔夜消息，挑出影響<strong>你部位</strong>的那幾則送到你信箱。它是<strong>「你問它答」</strong>的工具；我們是<strong>「不問也送到你眼前」</strong>的助理 —— 知道你抱什麼股、自動篩相關新聞、Premium 還會即時推播持股利空到 LINE，並支援 LINE Bot 雙向問答。比 ChatGPT Plus 便宜一半，只專心做好一件事:讓你不用再決定「今天該問 AI 什麼」。<br><br><a href=\"/vs-chatgpt\" style=\"color:#a5b4fc;text-decoration:underline;font-weight:600;\">看完整逐項對比 →</a>",
     faq_q1: "幾點收到日報？", faq_a1: "週一到週六早上 7:00 AM(台灣時間)準時送達。<strong>週六是「本週回顧 + 下週重點」特別版</strong>,週日不寄信(美股、台股都沒開盤,我們週日休息一天,讓你跟家人喝杯咖啡)。沒收到請先看垃圾郵件夾。",
-    faq_q2: "每封日報包含什麼？", faq_a2: "30 秒 TL;DR 摘要、今日頭條（假訊息過濾）、AI 操作建議（每支持股 買/賣/持有 + 目標價 + 信心百分比）、市場情緒儀表板，以及你的個人持倉動態分析。",
+    faq_q2: "每封日報包含什麼？", faq_a2: "30 秒精華摘要、今日頭條（假訊息過濾）、AI 操作建議（每支持股 買/賣/持有 + 目標價 + 信心百分比）、市場情緒儀表板，以及你的個人持倉動態分析。",
     faq_q3: "邀請碼哪裡取得？", faq_a3: "邀請碼由 Delvin 本人發出，數量有限，目前僅開放給親友。如有需要請透過客服聯繫。",
     faq_q4: "如何取消訂閱？", faq_a4: "在任何一封日報 Email 底部點「取消訂閱」即可立即生效，完全不需要聯繫客服。",
     faq_q5: "免費版跟 Premium 差在哪？", faq_a5: "免費版提供每天早上 7 點的 AI 財經日報基本版,完全免費、不需邀請碼。Premium 首月 NT$299(原價 NT$499/月)立即解鎖全部 Premium 功能 —— 個人化日報、LINE Bot 雙向 AI 對話、重大新聞即時推播。試讀月後自動續訂 NT$499/月,隨時可取消。",
@@ -2135,14 +2181,14 @@ const i18n = {
     about_prob_quote: "「每天早上花一小時，讀完還是一頭霧水。」",
     about_prob_attr: "— 每個用 MarketDaily 之前的投資人",
     about_sol_eye: "有了 MarketDaily 的早晨", about_sol_time: "5 分鐘，搞定。",
-    about_s1: "75+ 個可信來源在你睡覺時掃完",
+    about_s1: "Reuters、Bloomberg、Yahoo Finance、經濟日報等主流來源,在你睡覺時掃完",
     about_s2: "假訊息全過濾，每則新聞都交叉比對並標記",
     about_s3: "只分析你持有的股票，其他的不浪費你時間",
     about_s4: "清楚的買/持有/賣建議，含目標價與信心百分比",
     about_sol_quote: "「它在信箱等我，配著咖啡讀完。不用多說。」",
     about_sol_attr: "— MarketDaily 訂閱者",
     about_problem_title: "問題在哪裡", about_problem_desc: "每天早上，網路上充斥著成千上萬篇財經新聞。大多數都是雜訊，有些甚至是假新聞。真正影響股市的關鍵訊息，往往被埋在標題黨和謠言之下。",
-    about_solution_title: "我們的解法", about_solution_desc: "財經日報每晚掃描 75+ 個可信來源，過濾假新聞，再由 AI 用生活化的語言寫成摘要，每天早上 7 點準時送進你的收件匣。",
+    about_solution_title: "我們的解法", about_solution_desc: "財經日報每晚掃描 Reuters、Bloomberg、Yahoo Finance、經濟日報等主流財經來源，過濾假新聞，再由 AI 用生活化的語言寫成摘要，每天早上 7 點準時送進你的收件匣。",
     about_who_title: "適合誰看", about_who_desc: "持有美股或台股、想做出更聰明投資決策的台灣上班族與投資人。不想每天花一個小時讀財經新聞，但又不想錯過重要消息的人。",
     about_trust_title: "我們的承諾", about_trust_desc: "每則新聞都經過多個可信來源交叉比對，並明確標示「多源確認」或「單一來源」。不炒作、不標題黨，只給你真正影響持股的事實。",
     cta_title: "讓每個早晨更聰明", cta_sub: "從 NT$299/月起 · 隨時取消", cta_btn: "立即訂閱 Pro →",
@@ -2176,6 +2222,39 @@ const i18n = {
     prev_why2: "💡 2330.TW 持有者利多 — AI 晶片需求強勁延續至下半年",
     prev_news3: "原油庫存意外大增，WTI 跌 2.3%",
     prev_why3: "💡 油價下跌 = 航空、海運省成本；關注長榮航 2618.TW",
+    tr_eyebrow: "Track Record · 公開戰績",
+    tr_title: "不空談 AI 多強,讓紀錄說話",
+    tr_sub: "過去 30 天,日報點到的個股「方向勝率」與「避坑勝率」全部公開。錯的我們也列出來——100% 才是假的。",
+    tr_cta: "看完整紀錄表 →",
+    tr_s1: "🟢 看多勝率",
+    tr_s2: "🔴 看空勝率",
+    tr_s3: "累計提及個股",
+    refund_badge: "🛡️ 30 天無理由退費",
+    nocard_badge: "⭐ 試讀首月 4 折 NT$299",
+    cancel_badge: "⚡ 隨時取消 · 1 鍵搞定",
+    commit_1: "不收業配",
+    commit_2: "不持有提及個股",
+    commit_3: "錯了會公開更正",
+    commit_4: "沒有老師抽成",
+    founder_meet_cta: "認識主編 + 看完整編輯流程 →",
+    vs_mini_eyebrow: "vs 你現在在做的",
+    vs_mini_title: "看一眼就懂差別在哪",
+    vs_mini_sub: "同樣是花時間關心市場,差別在誰替你做完了 80% 的工。",
+    vs_col0: "",
+    vs_col1: "LINE 明牌群",
+    vs_col2: "看盤 App",
+    vs_col3: "投顧老師",
+    vs_r1: "主動送到你信箱",
+    vs_r2: "只看你關心的股",
+    vs_r3: "公開戰績可查",
+    vs_r4: "無利益衝突",
+    vs_r5: "每天花費時間",
+    vs_r6: "月費",
+    vs_mini_cta: "看完整對比(含三竹/TradingView/富途) →",
+    footer_record: "📊 戰績紀錄",
+    footer_vs: "vs 對手比較",
+    footer_about: "主編 · 編輯流程",
+    footer_pricing: "定價",
   }
 };
 
@@ -2232,30 +2311,30 @@ async function checkEmail() {
     } else {
       localStorage.removeItem("md-hero-email");
     }
-    // 三條 path:
-    // 1. 已設過密碼(needsPasswordEntry) → 老用戶登入
-    // 2. 需設密碼 + 真有方案(hasKvPlan) → 老用戶設密碼
-    // 3. 其他(包括 Brevo 沒方案 / 完全沒訂閱) → 視為新用戶,跳選方案
+    // 四條 path:
+    // 1. 已設過密碼 → 老用戶登入(returning-step)
+    // 2. Brevo 已訂閱 + 沒設密碼 + KV 真有方案 → 老用戶設密碼(set-pwd-step,_pendingIsNewSignup=false)
+    // 3. 全新 email(subscribed:false 或 Brevo 沒方案) → 新用戶先設密碼,設完再選方案(set-pwd-step,_pendingIsNewSignup=true)
     const isReturning = data.subscribed && !data.needsPasswordSetup;
     const isLegitNeedsSetup = data.needsPasswordSetup && data.hasKvPlan === true;
-    if (isReturning || isLegitNeedsSetup) {
-      document.getElementById("email-step").style.display = "none";
-      if (data.needsPasswordSetup) {
-        _pendingSetupEmail = email;
-        document.getElementById("sp-email-text").textContent = email;
-        document.getElementById("set-pwd-step").style.display = "block";
-      } else {
-        document.getElementById("wb-email").textContent = email;
-        document.getElementById("wb-signin-btn").href = `dashboard.html?email=${encodeURIComponent(email)}`;
-        document.getElementById("returning-step").style.display = "block";
-      }
+    document.getElementById("email-step").style.display = "none";
+    if (isReturning) {
+      document.getElementById("wb-email").textContent = email;
+      document.getElementById("wb-signin-btn").href = `dashboard.html?email=${encodeURIComponent(email)}`;
+      document.getElementById("returning-step").style.display = "block";
     } else {
-      document.getElementById("email-step").style.display = "none";
-      document.getElementById("new-invite-email").value = email;
-      document.getElementById("invite-sec-email").value = email;
-      const stripBtn = document.getElementById("stripe-plan-btn");
-      if (stripBtn) stripBtn.dataset.prefillEmail = email;
-      document.getElementById("new-user-step").style.display = "block";
+      _pendingSetupEmail = email;
+      _pendingIsNewSignup = !isLegitNeedsSetup;
+      const heading = document.querySelector("#set-pwd-step [data-i18n='sp_heading']");
+      if (heading) {
+        if (_pendingIsNewSignup) {
+          heading.textContent = currentLang === "zh" ? "🔐 設定你的密碼" : "🔐 Set your password";
+        } else {
+          heading.textContent = currentLang === "zh" ? "🎉 訂閱確認！設定你的密碼" : "🎉 Subscribed! Set your password";
+        }
+      }
+      document.getElementById("sp-email-text").textContent = email;
+      document.getElementById("set-pwd-step").style.display = "block";
     }
   } catch {
     errEl.textContent = currentLang === "zh" ? "網路錯誤，請稍後再試。" : "Network error. Please try again.";
@@ -2275,6 +2354,7 @@ function resetEmailStep() {
 }
 
 let _pendingSetupEmail = "";
+let _pendingIsNewSignup = false;
 
 async function heroSetPassword() {
   const pwd = document.getElementById("sp-pwd").value;
@@ -2288,12 +2368,32 @@ async function heroSetPassword() {
   try {
     const res = await fetch(WORKER_URL + "/set-password", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: _pendingSetupEmail, password: pwd })
+      body: JSON.stringify({
+        email: _pendingSetupEmail, password: pwd,
+        ref: localStorage.getItem("md-ref") || "",
+        ...getAttrPayload(),
+      })
     });
     const data = await res.json();
     if (data.ok) {
       localStorage.setItem("md-email", _pendingSetupEmail);
-      window.location.href = `dashboard.html?email=${encodeURIComponent(_pendingSetupEmail)}`;
+      if (_pendingIsNewSignup) {
+        // 新註冊:設完密碼 → 跳選方案(Free 已自動加,可直接 Premium 升級)
+        if (window.mdTrackLead) window.mdTrackLead({ plan: "free" });
+        document.getElementById("set-pwd-step").style.display = "none";
+        document.getElementById("new-invite-email").value = _pendingSetupEmail;
+        document.getElementById("invite-sec-email").value = _pendingSetupEmail;
+        const stripBtn = document.getElementById("stripe-plan-btn");
+        if (stripBtn) stripBtn.dataset.prefillEmail = _pendingSetupEmail;
+        const freeBtn = document.getElementById("free-signup-btn");
+        if (freeBtn) {
+          freeBtn.textContent = currentLang === "zh" ? "前往我的專區 →" : "Go to dashboard →";
+          freeBtn.onclick = () => { window.location.href = `dashboard.html?email=${encodeURIComponent(_pendingSetupEmail)}`; };
+        }
+        document.getElementById("new-user-step").style.display = "block";
+      } else {
+        window.location.href = `dashboard.html?email=${encodeURIComponent(_pendingSetupEmail)}`;
+      }
     } else {
       errEl.textContent = data.error || "設定失敗，請稍後再試"; errEl.style.display = "block";
       btn.disabled = false; btn.textContent = "設定並進入 →";
@@ -2490,7 +2590,7 @@ document.querySelectorAll(".reveal, .scene-reveal, .scene-from-left, .scene-from
 (function() {
   const SLIDES = [
     { icon: "🌅", title: "Market Overview", titleZh: "大盤總覽", desc: "S&P 500, NASDAQ, TAIEX — all major indices with overnight moves at a glance.", descZh: "美股、台股三大指數漲跌，一眼掌握今日市場開盤方向。", tag: "Daily", tagZh: "每日必讀", color: "#6366f1", bg: "rgba(99,102,241,0.13)" },
-    { icon: "🔥", title: "Top Stories", titleZh: "今日頭條", desc: "5 biggest market-moving stories filtered from 75+ verified sources. Zero noise.", descZh: "從 75+ 個可信來源篩出今天最影響股價的 5 件大事，去除雜訊。", tag: "Curated", tagZh: "AI 精選", color: "#f59e0b", bg: "rgba(245,158,11,0.13)" },
+    { icon: "🔥", title: "Top Stories", titleZh: "今日頭條", desc: "5 biggest market-moving stories filtered from major sources (Reuters, Bloomberg, Yahoo, FT). Zero noise.", descZh: "從 Reuters、Bloomberg、Yahoo、經濟日報等主流來源篩出今天最影響股價的 5 件大事，去除雜訊。", tag: "Curated", tagZh: "AI 精選", color: "#f59e0b", bg: "rgba(245,158,11,0.13)" },
     { icon: "🤖", title: "AI Verdict", titleZh: "AI 今日判斷", desc: "Our AI reads all sources and gives a directional outlook: Bullish, Bearish, or Wait.", descZh: "AI 讀完所有來源後給出方向：偏多、偏空、或觀望，附信心指數。", tag: "AI Powered", tagZh: "AI 驅動", color: "#8b5cf6", bg: "rgba(139,92,246,0.13)" },
     { icon: "📊", title: "Portfolio Watch", titleZh: "你的持股動態", desc: "Your personalized watchlist — NVDA, TSMC, Apple — reported with why it matters.", descZh: "根據你設定的台股 / 美股，專屬解讀每支持股今天發生了什麼。", tag: "Personalized", tagZh: "個人化", color: "#10b981", bg: "rgba(16,185,129,0.13)" },
     { icon: "🌐", title: "Global Macro", titleZh: "全球總經", desc: "FED decisions, CPI, earnings surprises and global capital flows that matter today.", descZh: "Fed 決策、CPI、財報驚喜、全球資金流向，影響今天行情的宏觀因素。", tag: "Macro", tagZh: "總體經濟", color: "#38bdf8", bg: "rgba(56,189,248,0.13)" },
@@ -2741,7 +2841,7 @@ function switchAbout(panel, btn) {
 </script>
 
 <!-- Meta Pixel: 設好 META_PIXEL_ID 才會載 fbevents.js,沒設整支 noop -->
-<script>window.META_PIXEL_ID = "";  /* TODO 設 Pixel ID 後立即生效 */</script>
+<script>window.META_PIXEL_ID = "1497334655104185";</script>
 <script src="meta-pixel.js"></script>
 <script src="ui-pro.js"></script>
 
@@ -2861,7 +2961,7 @@ function switchAbout(panel, btn) {
 })();
 </script>
 <!-- service worker 已移除 —— 純網路供應,避免快取導致看到舊版或跳轉失敗 -->
-<script src="onboarding-tour.js"></script>
+<script src="onboarding-tour.js?v=20260526b"></script>
 <script>
 MDTour.mount([
   { selector: "#hero-email",

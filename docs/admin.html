@@ -501,6 +501,10 @@ body {
       <label for="auth-pw">Password</label>
       <input id="auth-pw" class="auth-input" type="password" placeholder="••••••••" autocomplete="current-password">
     </div>
+    <div class="auth-field" id="auth-totp-wrap" style="display:none">
+      <label for="auth-totp">2FA Code</label>
+      <input id="auth-totp" class="auth-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="123456" autocomplete="one-time-code">
+    </div>
     <div style="display:flex;align-items:center;gap:8px;margin:4px 0 10px;">
       <input type="checkbox" id="auth-remember" style="width:14px;height:14px;accent-color:#6366f1;cursor:pointer;">
       <label for="auth-remember" style="font-size:12px;color:rgba(255,255,255,0.45);cursor:pointer;">記住我的 Email</label>
@@ -678,6 +682,43 @@ body {
             <span class="badge badge-green">● 公開 API</span>
           </div>
         </div>
+
+        <div class="card" style="margin-top:16px">
+          <div class="card-title"><span class="dot"></span>2FA 安全（TOTP）</div>
+          <div class="toggle-row" style="align-items:flex-start;flex-direction:column;gap:12px">
+            <div class="toggle-info" style="width:100%">
+              <div class="toggle-label">兩步驟驗證</div>
+              <div class="toggle-sub" id="totp-state-text">載入中…</div>
+            </div>
+            <div id="totp-action-row" style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-primary btn-sm" id="totp-enable-btn" onclick="totpStartSetup()" style="display:none">啟用 2FA</button>
+              <button class="btn btn-ghost btn-sm" id="totp-disable-btn" onclick="totpDisableUI()" style="display:none">停用 2FA</button>
+            </div>
+
+            <div id="totp-setup-box" style="display:none;width:100%;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.25);border-radius:12px;padding:16px;margin-top:8px">
+              <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:10px">用 Google Authenticator / 1Password 掃描下方 QR(或複製 Secret 手動輸入)。掃完輸入當前 6 碼確認啟用。</div>
+              <div id="totp-qr" style="background:#fff;padding:12px;border-radius:8px;width:fit-content;margin:0 auto 12px"></div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:4px">Secret(備用手動輸入):</div>
+              <div id="totp-secret" style="font-family:ui-monospace,monospace;font-size:13px;background:rgba(0,0,0,0.3);padding:8px;border-radius:6px;word-break:break-all;color:rgba(255,255,255,0.9);margin-bottom:12px;user-select:all">-</div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <input id="totp-confirm-code" class="auth-input" style="max-width:160px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="當前 6 碼">
+                <button class="btn btn-primary btn-sm" onclick="totpConfirmSetup()">確認啟用</button>
+                <button class="btn btn-ghost btn-sm" onclick="totpCancelSetup()">取消</button>
+              </div>
+              <div id="totp-setup-err" style="display:none;color:#ef4444;font-size:12px;margin-top:8px">代碼錯誤,請再試</div>
+            </div>
+
+            <div id="totp-disable-box" style="display:none;width:100%;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:12px;padding:16px;margin-top:8px">
+              <div style="font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:10px">停用 2FA 會降低 admin 安全性,請輸入當前 6 碼確認:</div>
+              <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <input id="totp-disable-code" class="auth-input" style="max-width:160px" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="當前 6 碼">
+                <button class="btn btn-ghost btn-sm" onclick="totpConfirmDisable()">確認停用</button>
+                <button class="btn btn-ghost btn-sm" onclick="totpCancelDisable()">取消</button>
+              </div>
+              <div id="totp-disable-err" style="display:none;color:#ef4444;font-size:12px;margin-top:8px">代碼錯誤,請再試</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- ── Subscribers ── -->
@@ -741,24 +782,63 @@ let cfg = {
 };
 
 // ── Auth ──
+// 進入登入頁時偵測 admin 是否已啟用 2FA → 顯示 TOTP 欄位
+async function probeTotpRequired() {
+  const email = document.getElementById("auth-email").value.trim() || ADMIN_EMAIL;
+  try {
+    const r = await fetch(WORKER_URL + "/admin/totp-status", {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ email })
+    });
+    const d = await r.json();
+    document.getElementById("auth-totp-wrap").style.display = d.enabled ? "" : "none";
+  } catch {}
+}
+
 async function doLogin() {
   const email = document.getElementById("auth-email").value.trim();
   const pw    = document.getElementById("auth-pw").value;
+  const totp  = (document.getElementById("auth-totp")?.value || "").trim();
   const err   = document.getElementById("auth-err");
   err.style.display = "none";
 
   if (email !== ADMIN_EMAIL) { err.style.display = "block"; return; }
 
   try {
+    // 1) 密碼驗證(走 check-subscriber)
     const res = await fetch(WORKER_URL + "/check-subscriber", {
       method: "POST", headers: {"Content-Type":"application/json"},
       body: JSON.stringify({email, password: pw})
     });
     const d = await res.json();
-    if (d.plan !== "admin") { err.style.display = "block"; return; }
+    if (d.plan !== "admin") {
+      err.textContent = d.error === "too_many_attempts" ? "嘗試太多次,15 分鐘後再試" : "Email 或密碼錯誤,或無管理員權限";
+      err.style.display = "block"; return;
+    }
+    // 2) 若已啟用 2FA → 必須驗證 TOTP(打一個 admin 端點當測試,例如 /admin/get-config)
+    const totpStatus = await fetch(WORKER_URL + "/admin/totp-status", {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ email })
+    }).then(r => r.json()).catch(() => ({}));
+    if (totpStatus.enabled) {
+      if (!/^\d{6}$/.test(totp)) {
+        document.getElementById("auth-totp-wrap").style.display = "";
+        err.textContent = "請輸入 6 位數驗證碼";
+        err.style.display = "block"; return;
+      }
+      const t = await fetch(WORKER_URL + "/admin/get-config", {
+        method: "POST", headers: {"Content-Type":"application/json"},
+        body: JSON.stringify({ email, password: pw, totp })
+      });
+      if (!t.ok) {
+        const td = await t.json().catch(() => ({}));
+        err.textContent = td.error === "too_many_attempts" ? "嘗試太多次,15 分鐘後再試" : "2FA 驗證碼錯誤";
+        err.style.display = "block"; return;
+      }
+    }
   } catch {
-    // offline mode — allow admin email through
-    if (email !== ADMIN_EMAIL) { err.style.display = "block"; return; }
+    err.textContent = "登入失敗,請稍後再試";
+    err.style.display = "block"; return;
   }
 
   if (document.getElementById("auth-remember")?.checked) {
@@ -767,7 +847,122 @@ async function doLogin() {
     localStorage.removeItem("md-admin-email-saved");
   }
   localStorage.setItem("md-admin-email", email);
+  sessionStorage.setItem("md-admin-pwd", pw);
+  // TOTP 通過後,server 已記憶同 IP 10 分鐘,後續 admin call 不用再帶 totp
   bootAdmin(email);
+}
+
+function adminAuth() {
+  return {
+    email: localStorage.getItem("md-admin-email") || "",
+    password: sessionStorage.getItem("md-admin-pwd") || ""
+  };
+}
+
+// ── TOTP 2FA setup ──
+async function refreshTotpUi() {
+  try {
+    const r = await fetch(WORKER_URL + "/admin/totp-status", {
+      method: "POST", headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ email: adminAuth().email })
+    });
+    const d = await r.json();
+    const enabled = !!d.enabled;
+    document.getElementById("totp-state-text").textContent = enabled ? "已啟用 — admin 操作需要 6 位驗證碼" : "未啟用 — 強烈建議開啟";
+    document.getElementById("totp-enable-btn").style.display  = enabled ? "none" : "";
+    document.getElementById("totp-disable-btn").style.display = enabled ? "" : "none";
+  } catch {}
+}
+
+async function totpStartSetup() {
+  const a = adminAuth();
+  if (!a.password) { toast("Session 已過期,請重新登入", true); return; }
+  const r = await fetch(WORKER_URL + "/admin/totp-setup", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(a)
+  });
+  const d = await r.json();
+  if (!d.secret) { toast("啟動 2FA 失敗: " + (d.error || "未知"), true); return; }
+  document.getElementById("totp-secret").textContent = d.secret;
+  const box = document.getElementById("totp-setup-box");
+  box.style.display = "";
+  // 渲染 QR(載 qrcode.js)
+  const qrHost = document.getElementById("totp-qr");
+  qrHost.innerHTML = "";
+  await loadQrcodeLib();
+  if (window.QRCode) {
+    new window.QRCode(qrHost, { text: d.otpauth, width: 180, height: 180,
+      colorDark: "#000", colorLight: "#fff",
+      correctLevel: window.QRCode.CorrectLevel.M });
+  } else {
+    qrHost.innerHTML = '<div style="font-size:12px;color:#333">QR 載入失敗,請用上方 Secret 手動輸入</div>';
+  }
+}
+
+function loadQrcodeLib() {
+  if (window.QRCode) return Promise.resolve();
+  return new Promise(resolve => {
+    const s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js";
+    s.onload = resolve;
+    s.onerror = resolve;
+    document.head.appendChild(s);
+  });
+}
+
+async function totpConfirmSetup() {
+  const a = adminAuth();
+  const code = (document.getElementById("totp-confirm-code").value || "").trim();
+  const errEl = document.getElementById("totp-setup-err");
+  errEl.style.display = "none";
+  if (!/^\d{6}$/.test(code)) { errEl.textContent = "請輸入 6 位數"; errEl.style.display = "block"; return; }
+  const r = await fetch(WORKER_URL + "/admin/totp-confirm", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ ...a, code })
+  });
+  const d = await r.json();
+  if (!d.ok) {
+    errEl.textContent = d.error === "wrong_code" ? "代碼錯誤,請用 Authenticator 當前 6 碼再試" : ("失敗: " + (d.error || ""));
+    errEl.style.display = "block"; return;
+  }
+  toast("2FA 已啟用 ✓ 下次登入需要驗證碼");
+  totpCancelSetup();
+  refreshTotpUi();
+}
+
+function totpCancelSetup() {
+  document.getElementById("totp-setup-box").style.display = "none";
+  document.getElementById("totp-confirm-code").value = "";
+  document.getElementById("totp-setup-err").style.display = "none";
+}
+
+function totpDisableUI() {
+  document.getElementById("totp-disable-box").style.display = "";
+}
+
+async function totpConfirmDisable() {
+  const a = adminAuth();
+  const code = (document.getElementById("totp-disable-code").value || "").trim();
+  const errEl = document.getElementById("totp-disable-err");
+  errEl.style.display = "none";
+  const r = await fetch(WORKER_URL + "/admin/totp-disable", {
+    method: "POST", headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ ...a, code })
+  });
+  const d = await r.json();
+  if (!d.ok) {
+    errEl.textContent = d.error === "wrong_code" ? "代碼錯誤" : ("失敗: " + (d.error || ""));
+    errEl.style.display = "block"; return;
+  }
+  toast("2FA 已停用");
+  totpCancelDisable();
+  refreshTotpUi();
+}
+
+function totpCancelDisable() {
+  document.getElementById("totp-disable-box").style.display = "none";
+  document.getElementById("totp-disable-code").value = "";
+  document.getElementById("totp-disable-err").style.display = "none";
 }
 
 function bootAdmin(email) {
@@ -783,10 +978,12 @@ function bootAdmin(email) {
   renderDomains();
   fetchAdminStats();
   loadFromWorker();
+  refreshTotpUi();
 }
 
 function logout() {
   localStorage.removeItem("md-admin-email");
+  sessionStorage.removeItem("md-admin-pwd");
   location.reload();
 }
 
@@ -824,7 +1021,7 @@ async function loadFromWorker() {
   try {
     const res = await fetch(WORKER_URL + "/admin/get-config", {
       method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({email: localStorage.getItem("md-admin-email")})
+      body: JSON.stringify(adminAuth())
     });
     const d = await res.json();
     if (d.config) {
@@ -842,7 +1039,7 @@ async function saveAll() {
   try {
     const res = await fetch(WORKER_URL + "/admin/save-config", {
       method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({email: localStorage.getItem("md-admin-email"), config: cfg})
+      body: JSON.stringify({...adminAuth(), config: cfg})
     });
     const d = await res.json();
     if (d.ok) toast("已儲存至 Cloudflare KV ✓ — Python 下次執行自動生效");
@@ -942,7 +1139,7 @@ async function fetchAdminStats() {
   try {
     const res = await fetch(WORKER_URL + "/admin-stats", {
       method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({email: localStorage.getItem("md-admin-email")})
+      body: JSON.stringify(adminAuth())
     });
     const d = await res.json();
     if (d.totalSubscribers != null)
@@ -955,24 +1152,32 @@ async function loadSubscribers() {
   try {
     const res = await fetch(WORKER_URL + "/admin-stats", {
       method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({email: localStorage.getItem("md-admin-email")})
+      body: JSON.stringify(adminAuth())
     });
+    if (res.status === 403) {
+      el.innerHTML = `<div class="empty-state"><div class="emoji">🔒</div>登入過期,請重新登入<br><button onclick="logout()" style="margin-top:10px;padding:6px 14px;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:#fff;cursor:pointer;">回登入畫面</button></div>`;
+      return;
+    }
     const d = await res.json();
     const subs = d.subscribers || [];
     if (!subs.length) {
       el.innerHTML = `<div class="empty-state"><div class="emoji">📭</div>尚無訂閱者資料</div>`;
       return;
     }
+    const esc = (s) => String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
     el.innerHTML = subs.map(s => {
       const plan = s.plan || "free";
-      const email = (s.email || "").replace(/"/g, "&quot;");
+      const rawEmail = s.email || "";
+      const emailAttr = esc(rawEmail);
+      const emailText = esc(rawEmail || "-");
+      const avatar = esc((rawEmail||"?")[0].toUpperCase());
       const opt = (v, label) => `<option value="${v}"${plan === v ? " selected" : ""}>${label}</option>`;
       return `
       <div class="sub-row">
-        <div class="sub-av">${(s.email||"?")[0].toUpperCase()}</div>
-        <div class="sub-email">${s.email||"-"}</div>
+        <div class="sub-av">${avatar}</div>
+        <div class="sub-email">${emailText}</div>
         <div class="sub-joined">${s.since ? new Date(s.since).toLocaleDateString("zh-TW") : "-"}</div>
-        <select class="plan-select" data-email="${email}" data-prev="${plan}" onchange="stagePlan(this)" aria-label="方案">
+        <select class="plan-select" data-email="${emailAttr}" data-prev="${plan}" onchange="stagePlan(this)" aria-label="方案">
           ${opt("free","免費")}${opt("pro","Pro")}${opt("premium","Premium")}
         </select>
         <button class="plan-apply" onclick="applyPlan(this)" disabled>套用</button>
@@ -1007,7 +1212,7 @@ async function applyPlan(btn) {
   try {
     const res = await fetch(WORKER_URL + "/admin/set-plan", {
       method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ email: localStorage.getItem("md-admin-email"), target, plan })
+      body: JSON.stringify({ ...adminAuth(), target, plan })
     });
     const d = await res.json();
     if (d.ok) {
@@ -1044,7 +1249,13 @@ function toast(msg, isErr = false) {
 // ── Bootstrap ──
 (function() {
   const email = localStorage.getItem("md-admin-email");
-  if (email === ADMIN_EMAIL) {
+  const pwd = sessionStorage.getItem("md-admin-pwd");
+  // 已登入過(email 在 localStorage)但本分頁沒密碼 → admin/* 端點會 403
+  // 強制清掉登入狀態,跳回登入畫面
+  if (email && !pwd) {
+    localStorage.removeItem("md-admin-email");
+  }
+  if (email === ADMIN_EMAIL && pwd) {
     bootAdmin(email);
   } else {
     document.getElementById("auth-screen").style.display = "flex";
@@ -1059,7 +1270,18 @@ function toast(msg, isErr = false) {
       document.getElementById("auth-pw").focus();
     }
     document.getElementById("auth-email").addEventListener("keydown", e => { if(e.key==="Enter") document.getElementById("auth-pw").focus(); });
-    document.getElementById("auth-pw").addEventListener("keydown", e => { if(e.key==="Enter") doLogin(); });
+    document.getElementById("auth-pw").addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        const totpWrap = document.getElementById("auth-totp-wrap");
+        if (totpWrap && totpWrap.style.display !== "none") {
+          document.getElementById("auth-totp").focus();
+        } else { doLogin(); }
+      }
+    });
+    document.getElementById("auth-totp").addEventListener("keydown", e => { if(e.key==="Enter") doLogin(); });
+    // 偵測該 admin email 是否已啟用 2FA → 顯示 TOTP 欄
+    probeTotpRequired();
+    document.getElementById("auth-email").addEventListener("blur", probeTotpRequired);
   }
 })();
 </script>

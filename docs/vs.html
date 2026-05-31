@@ -363,7 +363,10 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     Market<em>Daily</em>
   </a>
   <div class="nav-right">
-    <a href="index.html" class="nav-back">← 返回首頁</a>
+    <a href="track-record.html" class="nav-back" data-i18n="nav_record">📊 戰績</a>
+    <a href="pricing.html" class="nav-back" data-i18n="nav_pricing">定價</a>
+    <a href="dashboard.html" class="nav-back" data-i18n="nav_dash">我的專區</a>
+    <a href="index.html" class="nav-back" data-i18n="nav_home">← 首頁</a>
     <button class="lang-btn" onclick="toggleLang()">EN</button>
   </div>
 </nav>
@@ -651,11 +654,30 @@ function switchCat(cat, btn) {
   });
 }
 
-function toggleLang() {
-  // Lightweight — for now just keep zh-only on this comparison page
+// 內容區大部分是中文寫死(這頁主要為台灣讀者比較本地對手),只切換 nav。
+const VS_I18N = {
+  zh: { nav_record: "📊 戰績", nav_pricing: "定價", nav_dash: "我的專區", nav_home: "← 首頁" },
+  en: { nav_record: "📊 Record", nav_pricing: "Pricing", nav_dash: "My Account", nav_home: "← Home" },
+};
+
+function applyLang(lang) {
+  const dict = VS_I18N[lang] || VS_I18N.zh;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const v = dict[el.dataset.i18n];
+    if (v !== undefined) el.textContent = v;
+  });
+  localStorage.setItem("md-lang-v2", lang);
   const btn = document.querySelector(".lang-btn");
-  btn.textContent = btn.textContent === "EN" ? "中文" : "EN";
+  if (btn) btn.textContent = lang === "zh" ? "EN" : "中文";
+  document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
 }
+
+function toggleLang() {
+  const cur = localStorage.getItem("md-lang-v2") || "zh";
+  applyLang(cur === "zh" ? "en" : "zh");
+}
+
+applyLang(localStorage.getItem("md-lang-v2") || "zh");
 </script>
 </body>
 </html>

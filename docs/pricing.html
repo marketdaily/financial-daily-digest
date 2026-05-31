@@ -619,6 +619,8 @@ footer {
   </a>
   <div class="nav-right">
     <a class="nav-link" href="index.html" data-i18n="nav_home">首頁</a>
+    <a class="nav-link" href="track-record.html" data-i18n="nav_record">📊 戰績</a>
+    <a class="nav-link" href="vs.html" data-i18n="nav_vs">vs 對手</a>
     <a class="nav-link active" href="pricing.html" data-i18n="nav_pricing">定價</a>
     <a class="nav-link" href="dashboard.html" data-i18n="nav_dashboard">我的專區</a>
     <button class="lang-btn" onclick="toggleLang()">EN</button>
@@ -888,14 +890,14 @@ footer {
       </div>
       <div class="faq-body">
         <div class="faq-body-inner" data-i18n-html="faq_a2">
-          年付方案每月費用比月付便宜 20%。以 Pro 為例：<strong>月付 NT$299/月，年付則是 NT$239/月（一次扣款 NT$2,870）</strong>。Premium 年付為 NT$399/月（一次扣款 NT$4,788）。
+          Premium 年付方案每月費用比月付便宜 20%：<strong>月付 NT$499/月，年付則是 NT$399/月（一次扣款 NT$4,788）</strong>。首月試讀 NT$299 折扣只適用於月付方案。
         </div>
       </div>
     </div>
 
     <div class="faq-item scene-reveal scene-reveal-d3">
       <div class="faq-q" onclick="toggleFaq(this)">
-        <span data-i18n="faq_q3">免費版跟 Pro 差在哪？</span>
+        <span data-i18n="faq_q3">免費版跟 Premium 差在哪？</span>
         <div class="faq-arrow">&#9660;</div>
       </div>
       <div class="faq-body">
@@ -912,7 +914,7 @@ footer {
       </div>
       <div class="faq-body">
         <div class="faq-body-inner" data-i18n-html="faq_a4">
-          MarketDaily 目前以邀請制推出免費版，確保服務品質。<strong>邀請碼可透過現有訂閱者分享</strong>，或在 Instagram / X 追蹤官方帳號參加不定期抽選活動取得。付費方案（Pro / Premium）不需要邀請碼。
+          MarketDaily 目前以邀請制推出免費版，確保服務品質。<strong>邀請碼可透過現有訂閱者分享</strong>，或在 Instagram / X 追蹤官方帳號參加不定期抽選活動取得。Premium 方案不需要邀請碼，可直接訂閱。
         </div>
       </div>
     </div>
@@ -924,7 +926,7 @@ footer {
       </div>
       <div class="faq-body">
         <div class="faq-body-inner" data-i18n-html="faq_a5">
-          選擇 Pro 或 Premium 後，款項由 <strong>Stripe 立即處理</strong>並開始當期計費，之後按月（或按年）自動續訂。你可以<strong>隨時在帳號設定取消</strong>，取消後方案維持到當期結束，不會再扣款。
+          選擇 Premium 後，款項由 <strong>Stripe 立即處理</strong>並開始當期計費，之後按月（或按年）自動續訂。你可以<strong>隨時在帳號設定取消</strong>，取消後方案維持到當期結束，不會再扣款。
         </div>
       </div>
     </div>
@@ -950,20 +952,20 @@ footer {
     <div class="social-quote">
       <span class="quote-mark">"</span>
       <div class="quote-text" data-i18n="social_quote">以前每天花一小時看財經新聞，現在七點打開信箱，十分鐘就掌握今天該注意的事。</div>
-      <div class="quote-author" data-i18n="social_author">— 台積電股東，使用 Pro 方案 3 個月</div>
+      <div class="quote-author" data-i18n="social_author">— MarketDaily 為你設計的核心訴求</div>
     </div>
     <div class="social-stats">
       <div class="stat-item">
-        <span class="stat-num">500+</span>
-        <div class="stat-label" data-i18n="stat_subscribers">活躍訂閱者</div>
-      </div>
-      <div class="stat-item">
         <span class="stat-num">7AM</span>
-        <div class="stat-label" data-i18n="stat_delivery">每日準時送達</div>
+        <div class="stat-label" data-i18n="stat_delivery">每日主動送達</div>
       </div>
       <div class="stat-item">
-        <span class="stat-num">98%</span>
-        <div class="stat-label" data-i18n="stat_renewal">續訂率</div>
+        <span class="stat-num">30秒</span>
+        <div class="stat-label" data-i18n="stat_speed">精華摘要讀完</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">30天</span>
+        <div class="stat-label" data-i18n="stat_refund">無理由退費</div>
       </div>
     </div>
   </div>
@@ -976,7 +978,7 @@ footer {
   <div class="footer-note" data-i18n="footer_note">每日早上 7 點 · 台灣投資人的 AI 財經日報</div>
 </footer>
 
-<script>window.META_PIXEL_ID = "";  /* TODO 設 Pixel ID 後立即生效 */</script>
+<script>window.META_PIXEL_ID = "1497334655104185";</script>
 <script src="meta-pixel.js"></script>
 <script src="ui-pro.js"></script>
 <script>
@@ -984,7 +986,7 @@ footer {
 const i18n = {
   en: {
     page_title: "Pricing · MarketDaily",
-    nav_home: "Home", nav_pricing: "Pricing", nav_dashboard: "My Account",
+    nav_home: "Home", nav_pricing: "Pricing", nav_dashboard: "My Account", nav_record: "📊 Record", nav_vs: "vs Rivals",
     price_pill: "Plans & Pricing",
     price_h1: "Choose the plan that<br><span class=\"grad\">fits you best</span>",
     price_sub: "Start free, upgrade anytime. Cancel anytime, no hidden fees.",
@@ -1043,30 +1045,30 @@ const i18n = {
     faq_q1: "Can I cancel anytime?",
     faq_a1: "Yes. After canceling, your plan stays active until the end of the current billing period. <strong>No cancellation fees, no hidden charges</strong> — cancel anytime in your account settings.",
     faq_q2: "How does annual billing work?",
-    faq_a2: "Annual plans are 20% cheaper per month. For Pro: <strong>NT$299/mo monthly, NT$239/mo annually (billed NT$2,870 once)</strong>. Premium annual is NT$399/mo (billed NT$4,788 once).",
-    faq_q3: "What's the difference between Free and Pro?",
+    faq_a2: "Premium's annual plan is 20% cheaper per month: <strong>NT$499/mo monthly, NT$399/mo annually (billed NT$4,788 once)</strong>. The first-month NT$299 trial discount applies to the monthly plan only.",
+    faq_q3: "What's the difference between Free and Premium?",
     faq_a3: "Free gives you daily market overviews, top news, and personalized analysis for up to 5 stocks. <strong>Premium unlocks unlimited tracking</strong> — you set as many stocks as you want and the AI analyzes today's news for your full portfolio specifically.",
     faq_q4: "What is an invite code?",
-    faq_a4: "MarketDaily's free tier currently launches by invitation to ensure quality. <strong>Invite codes are shared by existing subscribers</strong> or distributed via giveaways on Instagram / X. Paid plans (Pro / Premium) don't need an invite code.",
+    faq_a4: "MarketDaily's free tier currently launches by invitation to ensure quality. <strong>Invite codes are shared by existing subscribers</strong> or distributed via giveaways on Instagram / X. The Premium plan does not require an invite code and can be subscribed to directly.",
     faq_q5: "How does billing work after I subscribe?",
-    faq_a5: "After choosing Pro or Premium, payment is <strong>processed immediately by Stripe</strong> and your billing period begins, renewing automatically each month or year. You can <strong>cancel anytime in your account settings</strong> — your plan stays active until the end of the current period, with no further charges.",
+    faq_a5: "After choosing Premium, payment is <strong>processed immediately by Stripe</strong> and your billing period begins, renewing automatically each month or year. You can <strong>cancel anytime in your account settings</strong> — your plan stays active until the end of the current period, with no further charges.",
     faq_q6: "What payment methods are supported?",
     faq_a6: "We accept <strong>Visa, Mastercard, JCB</strong> credit and debit cards, plus <strong>Apple Pay and Google Pay</strong>. Payments are securely processed by Stripe — MarketDaily never stores card numbers.",
     social_quote: "I used to spend an hour every morning on financial news. Now I open my inbox at 7AM and in 10 minutes I know exactly what to watch today.",
-    social_author: "— TSMC shareholder, Pro plan for 3 months",
-    stat_subscribers: "Active Subscribers", stat_delivery: "Delivered Daily at 7AM", stat_renewal: "Renewal Rate",
+    social_author: "— Core value proposition of MarketDaily",
+    stat_subscribers: "Active Subscribers", stat_delivery: "Pushed Daily at 7AM", stat_speed: "Brief Read Time", stat_refund: "No-questions Refund", stat_renewal: "Renewal Rate",
     cta_eyebrow: "Get Started",
     cta_title: "Every Digest, Tailored to Your Holdings",
-    cta_sub: "Pro is NT$299/mo. Cancel anytime — your plan stays active until the end of the billing period, with no hidden fees.",
+    cta_sub: "First month NT$299, then NT$499/mo. Cancel anytime — your plan stays active until the end of the billing period, with no hidden fees.",
     cta_price_unit: "/mo",
     cta_monthly_note: "Monthly plan, cancel anytime",
-    cta_btn: "Subscribe to Pro",
+    cta_btn: "Subscribe to Premium",
     cta_guarantee: "Cancel Anytime", cta_no_card: "No Hidden Fees", cta_cancel: "Secure Stripe Checkout",
     footer_note: "Every morning at 7AM · AI financial digest for investors"
   },
   zh: {
     page_title: "定價方案 · MarketDaily",
-    nav_home: "首頁", nav_pricing: "定價", nav_dashboard: "我的專區",
+    nav_home: "首頁", nav_pricing: "定價", nav_dashboard: "我的專區", nav_record: "📊 戰績", nav_vs: "vs 對手",
     price_pill: "方案與定價",
     price_h1: "選擇最適合你的<br><span class=\"grad\">方案</span>",
     price_sub: "從免費開始，隨時升級。取消隨時生效，沒有隱藏費用。",
@@ -1125,24 +1127,24 @@ const i18n = {
     faq_q1: "我可以隨時取消嗎？",
     faq_a1: "可以。取消訂閱後，你的方案在當前計費週期結束前仍然有效。<strong>沒有違約金，沒有任何隱藏費用</strong>，隨時在帳號設定裡一鍵取消。",
     faq_q2: "年付方案怎麼算？",
-    faq_a2: "年付方案每月費用比月付便宜 20%。以 Pro 為例：<strong>月付 NT$299/月，年付則是 NT$239/月（一次扣款 NT$2,870）</strong>。Premium 年付為 NT$399/月（一次扣款 NT$4,788）。",
-    faq_q3: "免費版跟 Pro 差在哪？",
+    faq_a2: "Premium 年付方案每月費用比月付便宜 20%：<strong>月付 NT$499/月，年付則是 NT$399/月（一次扣款 NT$4,788）</strong>。首月試讀 NT$299 折扣只適用於月付方案。",
+    faq_q3: "免費版跟 Premium 差在哪？",
     faq_a3: "免費版提供每日大盤概覽、新聞精選，以及最多 5 檔的個人化持倉分析。<strong>Premium 直接無限追蹤</strong>——你設定多少支股票都行,AI 就針對你的完整投資組合分析今天的新聞如何影響你,而不是泛泛的市場報導。",
     faq_q4: "什麼是邀請碼？",
-    faq_a4: "MarketDaily 目前以邀請制推出免費版，確保服務品質。<strong>邀請碼可透過現有訂閱者分享</strong>，或在 Instagram / X 追蹤官方帳號參加不定期抽選活動取得。付費方案（Pro / Premium）不需要邀請碼。",
+    faq_a4: "MarketDaily 目前以邀請制推出免費版，確保服務品質。<strong>邀請碼可透過現有訂閱者分享</strong>，或在 Instagram / X 追蹤官方帳號參加不定期抽選活動取得。Premium 方案不需要邀請碼，可直接訂閱。",
     faq_q5: "訂閱後是怎麼計費的？",
-    faq_a5: "選擇 Pro 或 Premium 後，款項由 <strong>Stripe 立即處理</strong>並開始當期計費，之後按月（或按年）自動續訂。你可以<strong>隨時在帳號設定取消</strong>，取消後方案維持到當期結束，不會再扣款。",
+    faq_a5: "選擇 Premium 後，款項由 <strong>Stripe 立即處理</strong>並開始當期計費，之後按月（或按年）自動續訂。你可以<strong>隨時在帳號設定取消</strong>，取消後方案維持到當期結束，不會再扣款。",
     faq_q6: "支援哪些付款方式？",
     faq_a6: "目前支援 <strong>Visa、Mastercard、JCB</strong> 信用卡與簽帳卡，以及 <strong>Apple Pay、Google Pay</strong>。付款由 Stripe 安全處理，MarketDaily 不儲存任何卡號資訊。",
     social_quote: "以前每天花一小時看財經新聞，現在七點打開信箱，十分鐘就掌握今天該注意的事。",
-    social_author: "— 台積電股東，使用 Pro 方案 3 個月",
-    stat_subscribers: "活躍訂閱者", stat_delivery: "每日準時送達", stat_renewal: "續訂率",
+    social_author: "— MarketDaily 為你設計的核心訴求",
+    stat_subscribers: "活躍訂閱者", stat_delivery: "每日主動送達", stat_speed: "精華摘要讀完", stat_refund: "無理由退費", stat_renewal: "續訂率",
     cta_eyebrow: "立即開始",
     cta_title: "讓每封日報，只講你的持股",
-    cta_sub: "Pro 方案 NT$299/月。隨時可取消，取消後服務維持到當期結束，沒有隱藏費用。",
+    cta_sub: "首月 NT$299，之後 NT$499/月。隨時可取消，取消後服務維持到當期結束，沒有隱藏費用。",
     cta_price_unit: "/月",
     cta_monthly_note: "月付方案，隨時取消",
-    cta_btn: "立即訂閱 Pro",
+    cta_btn: "立即訂閱 Premium",
     cta_guarantee: "隨時取消", cta_no_card: "沒有隱藏費用", cta_cancel: "Stripe 安全付款",
     footer_note: "每日早上 7 點 · 台灣投資人的 AI 財經日報"
   }

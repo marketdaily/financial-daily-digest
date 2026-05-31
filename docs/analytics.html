@@ -139,10 +139,11 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
   <!-- Auth gate -->
   <div id="auth-view" class="auth-card">
     <h2>歸因分析後台</h2>
-    <p>輸入 admin email 進入分析儀表板。資料只給管理員看。</p>
+    <p>需要 admin email + 密碼。資料只給管理員看。</p>
     <input id="auth-email" class="auth-input" type="email" placeholder="admin@example.com" autocomplete="email">
+    <input id="auth-pw" class="auth-input" type="password" placeholder="密碼" autocomplete="current-password" style="margin-top:10px;">
     <button class="auth-btn" id="auth-btn">進入 →</button>
-    <div class="auth-err" id="auth-err">沒權限或 email 不對。</div>
+    <div class="auth-err" id="auth-err">沒權限或 email/密碼不對。</div>
   </div>
 
   <!-- Dashboard -->
@@ -204,6 +205,8 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
 const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
 
 function adminEmail() { return localStorage.getItem("md-admin-email"); }
+function adminPwd() { return sessionStorage.getItem("md-admin-pwd") || ""; }
+function adminAuth() { return { email: adminEmail() || "", password: adminPwd() }; }
 
 function show(view) {
   document.getElementById("auth-view").style.display = view === "auth" ? "block" : "none";
@@ -212,17 +215,18 @@ function show(view) {
 
 document.getElementById("auth-btn").onclick = async () => {
   const email = document.getElementById("auth-email").value.trim();
+  const pw = document.getElementById("auth-pw").value;
   const err = document.getElementById("auth-err");
   err.style.display = "none";
-  if (!email) { err.style.display = "block"; return; }
-  // Try to call summary — server checks ADMIN_EMAILS
+  if (!email || !pw) { err.style.display = "block"; return; }
   try {
     const res = await fetch(WORKER_URL + "/admin/analytics-summary", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, password: pw }),
     });
     if (!res.ok) { err.style.display = "block"; return; }
     localStorage.setItem("md-admin-email", email);
+    sessionStorage.setItem("md-admin-pwd", pw);
     show("dash");
     loadData();
   } catch {
@@ -234,9 +238,8 @@ document.getElementById("auth-btn").onclick = async () => {
 const saved = localStorage.getItem("md-admin-email-saved") || adminEmail();
 if (saved) document.getElementById("auth-email").value = saved;
 
-// If we already have a saved admin email, try auto-enter
-if (adminEmail()) {
-  // Will be verified by first loadData() call
+// 已登入 + session 有密碼才自動進儀表板
+if (adminEmail() && adminPwd()) {
   show("dash");
   loadData();
 }
@@ -245,7 +248,7 @@ async function loadData() {
   try {
     const res = await fetch(WORKER_URL + "/admin/analytics-summary", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: adminEmail() }),
+      body: JSON.stringify(adminAuth()),
     });
     if (!res.ok) { show("auth"); return; }
     const data = await res.json();

@@ -149,10 +149,14 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
 <div class="page-wrap">
   <div id="auth-view" class="auth-card">
     <h2>Hot Take 審稿後台</h2>
-    <p>輸入 admin email 進入待審佇列。</p>
+    <p>需要 admin email + 密碼。</p>
     <input id="auth-email" class="auth-input" type="email" placeholder="admin@example.com" autocomplete="email">
+    <input id="auth-pw" class="auth-input" type="password" placeholder="密碼" autocomplete="current-password">
+    <div id="auth-totp-wrap" style="display:none">
+      <input id="auth-totp" class="auth-input" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" placeholder="2FA 6 位驗證碼" autocomplete="one-time-code">
+    </div>
     <button class="auth-btn" id="auth-btn">進入 →</button>
-    <div class="auth-err" id="auth-err">沒權限或 email 不對。</div>
+    <div class="auth-err" id="auth-err">沒權限或 email/密碼不對。</div>
   </div>
 
   <div id="dash-view" style="display:none;">
@@ -174,6 +178,8 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
 <script>
 const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
 function adminEmail() { return localStorage.getItem("md-admin-email"); }
+function adminPwd() { return sessionStorage.getItem("md-admin-pwd") || ""; }
+function adminAuth() { return { email: adminEmail() || "", password: adminPwd() }; }
 function show(view) {
   document.getElementById("auth-view").style.display = view === "auth" ? "block" : "none";
   document.getElementById("dash-view").style.display = view === "dash" ? "block" : "none";
@@ -184,16 +190,33 @@ function escapeHtml(s) {
 
 document.getElementById("auth-btn").onclick = async () => {
   const email = document.getElementById("auth-email").value.trim();
+  const pw = document.getElementById("auth-pw").value;
+  const totp = (document.getElementById("auth-totp")?.value || "").trim();
   const err = document.getElementById("auth-err");
   err.style.display = "none";
-  if (!email) { err.style.display = "block"; return; }
+  if (!email || !pw) { err.style.display = "block"; return; }
   try {
-    const res = await fetch(WORKER_URL + "/admin/reactive-list", {
+    // 先看 2FA 是否啟用
+    const st = await fetch(WORKER_URL + "/admin/totp-status", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email }),
+    }).then(r => r.json()).catch(() => ({}));
+    if (st.enabled && !/^\d{6}$/.test(totp)) {
+      document.getElementById("auth-totp-wrap").style.display = "";
+      err.textContent = "請輸入 6 位 2FA 驗證碼";
+      err.style.display = "block"; return;
+    }
+    const res = await fetch(WORKER_URL + "/admin/reactive-list", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password: pw, totp }),
     });
-    if (!res.ok) { err.style.display = "block"; return; }
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      err.textContent = d.error === "too_many_attempts" ? "嘗試太多次,15 分鐘後再試" : "Email / 密碼 / 2FA 驗證碼錯誤";
+      err.style.display = "block"; return;
+    }
     localStorage.setItem("md-admin-email", email);
+    sessionStorage.setItem("md-admin-pwd", pw);
     show("dash");
     loadData();
   } catch { err.style.display = "block"; }
@@ -201,7 +224,7 @@ document.getElementById("auth-btn").onclick = async () => {
 
 const saved = localStorage.getItem("md-admin-email-saved") || adminEmail();
 if (saved) document.getElementById("auth-email").value = saved;
-if (adminEmail()) { show("dash"); loadData(); }
+if (adminEmail() && adminPwd()) { show("dash"); loadData(); }
 
 let currentItems = [];
 let editingId = null;
@@ -210,7 +233,7 @@ async function loadData() {
   try {
     const res = await fetch(WORKER_URL + "/admin/reactive-list", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: adminEmail() }),
+      body: JSON.stringify(adminAuth()),
     });
     if (!res.ok) { show("auth"); return; }
     const data = await res.json();
@@ -284,7 +307,7 @@ async function approve(id, payload) {
   setBtnDisabled(id, true);
   showStatus(id, "發布中...", "ok");
   try {
-    const body = Object.assign({ email: adminEmail(), id }, payload || {});
+    const body = Object.assign(adminAuth(), { id }, payload || {});
     const res = await fetch(WORKER_URL + "/admin/reactive-approve", {
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -314,7 +337,7 @@ async function reject(id) {
   try {
     const res = await fetch(WORKER_URL + "/admin/reactive-reject", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: adminEmail(), id }),
+      body: JSON.stringify({ ...adminAuth(), id }),
     });
     const data = await res.json();
     if (!res.ok) { showStatus(id, "失敗:" + (data.error || res.status), "err"); setBtnDisabled(id, false); return; }
