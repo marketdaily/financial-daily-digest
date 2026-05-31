@@ -2069,6 +2069,8 @@ async function refreshQuotes() {
     quotes.forEach(q => {
       const idx = _stories.findIndex(s => s.symbol === q.symbol);
       if (idx === -1) return;
+      // 抓到空值時保留上一個好報價,不要把已顯示的數字蓋成「—」
+      if (q.price == null && q.change == null && _stories[idx].price != null) return;
       _stories[idx].price = q.price;
       _stories[idx].change = q.change;
       // Update bubble
@@ -2142,10 +2144,13 @@ async function loadStories(email) {
     _stories = quotes;
     if (_quotesRefreshTimer) clearInterval(_quotesRefreshTimer);
     _quotesRefreshTimer = setInterval(refreshQuotes, 15000);
+    // 初次載入有股票還沒抓到價(Yahoo 偶發限流),4s/9s 各補抓一次,不乾等 15s
+    if (quotes.some(q => q.price == null)) { setTimeout(refreshQuotes, 4000); setTimeout(refreshQuotes, 9000); }
     startCountdown();
     const seen = JSON.parse(sessionStorage.getItem("md-stories-seen") || "{}");
     row.innerHTML = quotes.map((q, i) => {
-      const { dir, label: changeLabel } = fmtChange(q.change, q.symbol);
+      let { dir, label: changeLabel } = fmtChange(q.change, q.symbol);
+      if (q.price == null && q.change == null) { changeLabel = "···"; dir = "neutral"; }
       const isSeen = !!seen[q.symbol];
       const isTW = /^\d{4,6}$/.test(q.symbol);
       const bubbleLabel = isTW ? (nameMap[q.symbol] || q.symbol) : q.symbol;
