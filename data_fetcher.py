@@ -575,6 +575,17 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
     tech_syms = (extra_us_stocks or []) + (extra_tw_stocks or []) + ["AAPL", "MSFT", "NVDA", "TSLA"]
     technicals = fetch_technicals(tech_syms)
 
+    the_date = (datetime.now(timezone.utc) + timedelta(hours=8)).strftime("%Y-%m-%d")
+    # 財報/營收影響(事件日才喊話) — 估值出錯絕不拖垮日報,整段 try 包住
+    earnings_impact = {}
+    try:
+        import datetime as _dt
+        from valuation.earnings_impact import compute_impacts
+        earnings_impact = compute_impacts(extra_us_stocks, extra_tw_stocks,
+                                          _dt.date.fromisoformat(the_date))
+    except Exception as _e:
+        print(f"[earnings_impact] skipped: {_e}")
+
     return {
         "us_market": us_market,
         "tw_market": tw_market,
@@ -586,8 +597,9 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         "crypto": fetch_crypto(),
         "sectors": fetch_sector_performance(),
         "earnings": fetch_earnings_calendar(),
+        "earnings_impact": earnings_impact,
         # 必用 TW 時區：GH Actions runner 在 UTC，06:55 TW 寄送時 UTC 還是前一天
         # 2026-05-27 出包過：runner UTC 22:55 (= TW 5/27 06:55) datetime.now()→5/26
         # 害 _market_status() 拿 5/26 算「昨晚」變成 5/25 Memorial Day 假，日報通篇寫錯
-        "date": (datetime.now(timezone.utc) + timedelta(hours=8)).strftime("%Y-%m-%d")
+        "date": the_date
     }

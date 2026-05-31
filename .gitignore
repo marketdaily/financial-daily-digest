@@ -22,3 +22,4 @@ tuna_pipeline/debug_*.png
 
 # 產出物 —— 每日 pipeline 生成的 digest,不版控
 /output/
+valuation/cache/

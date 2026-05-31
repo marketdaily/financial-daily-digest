@@ -391,6 +391,28 @@ def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks:
         for e in earnings[:6]:
             lines.append(f"  {stock_names.display_name(e['symbol'])}（{e['symbol']}）: {e['date']}")
 
+    # 財報/營收影響(事件日才喊話):只列「用戶持股 + is_event」的,數字已核實
+    impacts = data.get("earnings_impact", {}) or {}
+    held = list(user_us_stocks or []) + list(user_tw_stocks or [])
+    events = [impacts[s] for s in held if s in impacts and impacts[s].get("is_event")]
+    if events:
+        lines.append("\n【📊 財報影響事件(以下數字已核實，撰寫時必須照寫不可竄改；"
+                     "只針對這些剛公布財報的持股，在其卡片用第二人稱說明對用戶部位的影響）】")
+        for a in events:
+            yoy = f"{a['yoy']:+.1f}%" if a.get("yoy") is not None else "—"
+            base = "(低基期)" if a.get("base_effect") else ""
+            extra = []
+            if a.get("streak", 0) >= 2:
+                extra.append(f"連{a['streak']}月正成長")
+            if a.get("cum_yoy") is not None:
+                extra.append(f"累計YoY{a['cum_yoy']:+.1f}%")
+            if a.get("eps_yoy") is not None:
+                extra.append(f"EPS YoY{a['eps_yoy']:+.1f}%")
+            extra_s = ("、" + "、".join(extra)) if extra else ""
+            lines.append(f"  {a.get('name', a['symbol'])}（{a['symbol']}）{a['period']} {a['kind']}："
+                         f"YoY {yoy}{base}{extra_s} → 對部位{a['verdict']}（{a['impact']}）；"
+                         f"下一觀察點 {a['next_point']}")
+
     return "\n".join(lines)
 
 
@@ -556,6 +578,16 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
     us_market = data.get("us_market", {})
     tw_market = data.get("tw_market", {})
     today = data.get("date", "")
+    _impacts = data.get("earnings_impact", {}) or {}
+
+    def _impact_note(sym):
+        a = _impacts.get(sym)
+        if not a or not a.get("is_event") or a.get("yoy") is None:
+            return ""
+        base = "(低基期)" if a.get("base_effect") else ""
+        return (f' 你追蹤的{a.get("name", sym)}剛公布{a["kind"]} YoY {a["yoy"]:+.1f}%{base},'
+                f'對你部位{a["verdict"]}({a["impact"]});留意 {a["next_point"]}。')
+
     parts = ['<div class="tldr"><div class="tldr-title">☕ 30 秒看完今天重點</div><ul>']
     parts.append('<li>⚠️ 今天 AI 個人化生成異常,這封是備援版本,只列基本事實不做主觀分析</li>')
     if mkt_status.get("us_traded_last_session"):
@@ -591,7 +623,7 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
                     f'</div>'
                     f'<div class="signal-body">'
                     f'<div class="signal-reason">{name}({sym}) 昨晚收 ${d.get("price","?")} ,'
-                    f'{action}。今日 AI 分析異常,主編將於 24 小時內修復並重發完整版。</div>'
+                    f'{action}。{_impact_note(sym)}今日 AI 分析異常,主編將於 24 小時內修復並重發完整版。</div>'
                     f'</div></div>'
                 )
             else:
@@ -620,7 +652,7 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
                     f'</div>'
                     f'<div class="signal-body">'
                     f'<div class="signal-reason">{name}({sym}) 昨日收 ${d.get("price","?")} 元,'
-                    f'{action}。今日 AI 分析異常,主編將於 24 小時內修復並重發完整版。</div>'
+                    f'{action}。{_impact_note(sym)}今日 AI 分析異常,主編將於 24 小時內修復並重發完整版。</div>'
                     f'</div></div>'
                 )
             else:
@@ -827,6 +859,7 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
 - ‼️ 敢給 sell/wait：當該股有真實利空（估值過高 / 技術破位 / 重大利空消息 / 法人連續賣超），就要明確給 sell（強利空）或 wait（短中期不利但未到認賠程度），不要為了「政治正確」永遠 buy/hold。理由必須言之有物，不可只寫「短期波動大」這種空話
 - 進場 / 目標 / 停損價位要落在該股目前股價的合理範圍，台股用台幣、美股用美元
 - **signal-reason 內必須出現至少一個 $ 美元 / NT$ / 數字+元 / 時間窗(今早/今晚/盤後/財報前/X 月 X 日);三件都缺就是廢卡**
+- ‼️ **財報影響事件**:若上方「📊 財報影響事件」區塊有列到這支股,代表它剛公布財報/月營收,signal-reason 必須用**第二人稱**點出「你追蹤的 XXX 剛公布 X 月營收/季報 YoY ±X%,對你的部位…」,數字**照抄該區塊不可改**,並把 signal-watch 的觀察重點設成該區塊的「下一觀察點」。沒被列到的股不要硬掰財報。
 </div>
 <div class="signal-disclaimer">⚠️ AI 分析僅供參考，不構成投資建議</div>"""
 
