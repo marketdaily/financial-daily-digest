@@ -1425,6 +1425,18 @@ export default {
         "Accept": "application/json",
         "Referer": "https://finance.yahoo.com/"
       };
+      // 抓成功就把最後一筆好報價存 KV(2天);Yahoo/Finnhub 抽風時拿來墊著,新股不再顯示「—」
+      const persist = (q) => {
+        if (q && q.price != null) {
+          ctx.waitUntil(env.USER_PREFS.put(`q:${q.symbol}`, JSON.stringify({ price: q.price, change: q.change, name: q.name }), { expirationTtl: 2 * 86400 }));
+        }
+        return q;
+      };
+      const lastGood = async (t) => {
+        const raw0 = await env.USER_PREFS.get(`q:${t}`);
+        if (raw0) { try { const d = JSON.parse(raw0); return { symbol: t, name: d.name || t, price: d.price, change: d.change, stale: true }; } catch {} }
+        return { symbol: t, name: t, price: null, change: null };
+      };
       const results = await Promise.allSettled(raw.map(async (t) => {
         const isTW = /^\d{4,6}$/.test(t);
         // US stocks: Finnhub real-time last-trade quote (subrequest cached 15s to stay under rate limit)
@@ -1437,14 +1449,14 @@ export default {
             if (r.ok) {
               const d = await r.json();
               if (d && typeof d.c === "number" && d.c > 0) {
-                return { symbol: t, name: t, price: d.c, change: typeof d.dp === "number" ? d.dp : null };
+                return persist({ symbol: t, name: t, price: d.c, change: typeof d.dp === "number" ? d.dp : null });
               }
             }
           } catch {}
         }
         // Yahoo:台股(.TW 上市 / .TWO 上櫃 自動切換)+ Finnhub 未設或失敗時的後援
         const r = await fetchYahooChart(t, isTW, "1d", "5d", yfHeaders, 15);
-        if (!r) return { symbol: t, name: t, price: null, change: null };
+        if (!r) return await lastGood(t);
         const meta = r.meta;
         // ⚠️ 用 chart close array 算「當日漲跌」,不可用 meta.chartPreviousClose:
         // chartPreviousClose 是 range 起始前一天的收盤 → 5d range 它是 5 天前,
@@ -1453,7 +1465,8 @@ export default {
         const price = meta.regularMarketPrice ?? (closes.length ? closes[closes.length - 1] : null);
         const prev = closes.length >= 2 ? closes[closes.length - 2] : (meta.chartPreviousClose ?? null);
         const change = (price !== null && prev !== null && prev !== 0) ? ((price - prev) / prev * 100) : null;
-        return { symbol: t, name: meta.shortName || meta.longName || t, price, change };
+        if (price == null) return await lastGood(t);
+        return persist({ symbol: t, name: meta.shortName || meta.longName || t, price, change });
       }));
       const quotes = results.map((r, i) => r.status === "fulfilled" ? r.value : { symbol: raw[i], name: raw[i], price: null, change: null });
       return new Response(JSON.stringify({ quotes }), {
@@ -1978,17 +1991,21 @@ function json(data, status = 200) {
 // 回傳第一個有實際報價的 result —— 任何台股(含上櫃、新加入的)都抓得到。
 async function fetchYahooChart(base, isTW, interval, range, headers, cacheTtl) {
   const symbols = isTW ? [`${base}.TW`, `${base}.TWO`] : [base];
+  // query1 限流時換 query2 host —— 新股沒暖快取最容易踩到 429,雙 host 大幅提升成功率
+  const hosts = ["query1.finance.yahoo.com", "query2.finance.yahoo.com"];
   for (const sym of symbols) {
-    try {
-      const res = await fetch(
-        `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=${interval}&range=${range}`,
-        { headers, cf: { cacheTtl, cacheEverything: true } }
-      );
-      if (!res.ok) continue;
-      const data = await res.json();
-      const r = data?.chart?.result?.[0];
-      if (r && r.meta && r.meta.regularMarketPrice != null) return r;
-    } catch {}
+    for (const host of hosts) {
+      try {
+        const res = await fetch(
+          `https://${host}/v8/finance/chart/${encodeURIComponent(sym)}?interval=${interval}&range=${range}`,
+          { headers, cf: { cacheTtl, cacheEverything: true } }
+        );
+        if (!res.ok) continue;
+        const data = await res.json();
+        const r = data?.chart?.result?.[0];
+        if (r && r.meta && r.meta.regularMarketPrice != null) return r;
+      } catch {}
+    }
   }
   return null;
 }
