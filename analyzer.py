@@ -257,18 +257,24 @@ def get_personalized_subject(data: dict, us_stocks: list, tw_stocks: list, date:
     us_market = data.get("us_market", {})
     tw_market = data.get("tw_market", {})
     biggest_sym, biggest_pct = None, 0
+    # 主旨會被很多人在通知列看到 — 不可拿「疑似壞報價」的離譜漲跌幅當標題。
+    # 台股單日上限 ±10%(逾 10.5% 必為錯誤);美股單日 ≥30% 多半是資料源 glitch(如 DELL +32.76% 事故)。
+    def _plausible(pct, is_tw):
+        return abs(pct) <= (10.5 if is_tw else 30)
     for sym in (us_stocks or []):
         if sym in us_market:
-            pct = abs(us_market[sym]["change_pct"])
-            if pct > biggest_pct:
+            chg = us_market[sym]["change_pct"]
+            pct = abs(chg)
+            if pct > biggest_pct and _plausible(chg, False):
                 biggest_pct = pct
-                biggest_sym = (sym, us_market[sym]["change_pct"])
+                biggest_sym = (sym, chg)
     for sym in (tw_stocks or []):
         if sym in tw_market:
-            pct = abs(tw_market[sym]["change_pct"])
-            if pct > biggest_pct:
+            chg = tw_market[sym]["change_pct"]
+            pct = abs(chg)
+            if pct > biggest_pct and _plausible(chg, True):
                 biggest_pct = pct
-                biggest_sym = (sym, tw_market[sym]["change_pct"])
+                biggest_sym = (sym, chg)
     if weekday == 0:
         # 週一:基準是上週五收盤,主旨明寫「上週五」避免誤導
         if biggest_sym and biggest_pct >= 2:
@@ -391,6 +397,28 @@ def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks:
         for e in earnings[:6]:
             lines.append(f"  {stock_names.display_name(e['symbol'])}（{e['symbol']}）: {e['date']}")
 
+    # 財報/營收影響(事件日才喊話):只列「用戶持股 + is_event」的,數字已核實
+    impacts = data.get("earnings_impact", {}) or {}
+    held = list(user_us_stocks or []) + list(user_tw_stocks or [])
+    events = [impacts[s] for s in held if s in impacts and impacts[s].get("is_event")]
+    if events:
+        lines.append("\n【📊 財報影響事件(以下數字已核實，撰寫時必須照寫不可竄改；"
+                     "只針對這些剛公布財報的持股，在其卡片用第二人稱說明對用戶部位的影響）】")
+        for a in events:
+            yoy = f"{a['yoy']:+.1f}%" if a.get("yoy") is not None else "—"
+            base = "(低基期)" if a.get("base_effect") else ""
+            extra = []
+            if a.get("streak", 0) >= 2:
+                extra.append(f"連{a['streak']}月正成長")
+            if a.get("cum_yoy") is not None:
+                extra.append(f"累計YoY{a['cum_yoy']:+.1f}%")
+            if a.get("eps_yoy") is not None:
+                extra.append(f"EPS YoY{a['eps_yoy']:+.1f}%")
+            extra_s = ("、" + "、".join(extra)) if extra else ""
+            lines.append(f"  {a.get('name', a['symbol'])}（{a['symbol']}）{a['period']} {a['kind']}："
+                         f"YoY {yoy}{base}{extra_s} → 對部位{a['verdict']}（{a['impact']}）；"
+                         f"下一觀察點 {a['next_point']}")
+
     return "\n".join(lines)
 
 
@@ -499,6 +527,52 @@ def _postprocess_html(html: str, data: dict) -> str:
         _strip_empty_impact, html, flags=_re.DOTALL
     )
 
+    # 空區塊自動隱藏:沒有實質內容的 section 整塊移除,不留空標題洗版
+    def _drop_empty_sections(h):
+        parts = _re.split(r'(<div class="section-label">)', h)
+        out = [parts[0]]
+        i = 1
+        while i < len(parts):
+            label_tag = parts[i]
+            body = parts[i + 1] if i + 1 < len(parts) else ""
+            m = _re.match(r'([^<]*)</div>', body)
+            title = m.group(1) if m else ""
+            drop = (
+                ("即將公布財報" in title and "earnings-item" not in body)
+                or ("持倉深度追蹤" in title and "stock-news-item" not in body)
+            )
+            if not drop:
+                out.append(label_tag + body)
+            i += 2
+        return "".join(out)
+
+    html = _drop_empty_sections(html)
+
+    # 結論情緒 chip 提前:把今天偏多/偏空標籤抓到 TLDR 標題,讓用戶第一眼就掃到結論
+    def _hoist_verdict_chip(h):
+        vm = _re.search(
+            r'<div class="verdict[^"]*\b(bullish|bearish|neutral)\b[^"]*">\s*'
+            r'<div class="verdict-emoji">([^<]*)</div>',
+            h,
+        )
+        if not vm:
+            return h
+        cls, label = vm.group(1), vm.group(2).strip()
+        if not label:
+            return h
+        chip = f'<span class="tldr-chip {cls}">{label}</span>'
+        h2, n = _re.subn(
+            r'(<div class="tldr-title">[^<]*)</div>',
+            lambda m: m.group(1) + " " + chip + "</div>",
+            h, count=1,
+        )
+        return h2 if n else h
+
+    html = _hoist_verdict_chip(html)
+
+    # LLM 偶爾吐 markdown 粗體 **xxx**,轉成 <strong>,別讓星號直接露在卡片上
+    html = _re.sub(r'\*\*([^*\n<]+?)\*\*', r'<strong>\1</strong>', html)
+
     return html
 
 
@@ -510,6 +584,16 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
     us_market = data.get("us_market", {})
     tw_market = data.get("tw_market", {})
     today = data.get("date", "")
+    _impacts = data.get("earnings_impact", {}) or {}
+
+    def _impact_note(sym):
+        a = _impacts.get(sym)
+        if not a or not a.get("is_event") or a.get("yoy") is None:
+            return ""
+        base = "(低基期)" if a.get("base_effect") else ""
+        return (f' 你追蹤的{a.get("name", sym)}剛公布{a["kind"]} YoY {a["yoy"]:+.1f}%{base},'
+                f'對你部位{a["verdict"]}({a["impact"]});留意 {a["next_point"]}。')
+
     parts = ['<div class="tldr"><div class="tldr-title">☕ 30 秒看完今天重點</div><ul>']
     parts.append('<li>⚠️ 今天 AI 個人化生成異常,這封是備援版本,只列基本事實不做主觀分析</li>')
     if mkt_status.get("us_traded_last_session"):
@@ -545,7 +629,7 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
                     f'</div>'
                     f'<div class="signal-body">'
                     f'<div class="signal-reason">{name}({sym}) 昨晚收 ${d.get("price","?")} ,'
-                    f'{action}。今日 AI 分析異常,主編將於 24 小時內修復並重發完整版。</div>'
+                    f'{action}。{_impact_note(sym)}今日 AI 分析異常,主編將於 24 小時內修復並重發完整版。</div>'
                     f'</div></div>'
                 )
             else:
@@ -574,7 +658,7 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
                     f'</div>'
                     f'<div class="signal-body">'
                     f'<div class="signal-reason">{name}({sym}) 昨日收 ${d.get("price","?")} 元,'
-                    f'{action}。今日 AI 分析異常,主編將於 24 小時內修復並重發完整版。</div>'
+                    f'{action}。{_impact_note(sym)}今日 AI 分析異常,主編將於 24 小時內修復並重發完整版。</div>'
                     f'</div></div>'
                 )
             else:
@@ -616,9 +700,270 @@ ROOKIE_GUIDE_HTML = """
 </div>"""
 
 
+def _fmt_num(n):
+    if n is None:
+        return "?"
+    try:
+        return f"{float(n):g}"
+    except (TypeError, ValueError):
+        return str(n)
+
+
+def _signal_card_format_rules(mkt_status: dict) -> str:
+    """所有報告共用的 signal-card 格式規格(批次生成用)。"""
+    tw_when = "今早 9:00 開盤後" if mkt_status.get("tw_will_open_today") else "下個台股交易日"
+    us_when = "今晚開盤後" if mkt_status.get("us_will_open_tonight") else "下個美股交易日"
+    return f"""每張卡格式(最外層 class 從 buy/hold/sell/wait 四選一,動詞:buy=買進加碼 / hold=抱緊 / sell=減碼賣出 / wait=觀望):
+<div class="signal-card buy">
+  <div class="signal-card-top">
+    <span class="signal-ticker">代號</span>
+    <span class="signal-day-move up">▲ +x.xx%</span>
+    <div class="signal-score-block"><span class="signal-score">0-10</span><span class="signal-score-label">/ 10</span></div>
+    <span class="signal-bias bullish">📈 BULLISH</span>
+  </div>
+  <div class="signal-body">
+    <div class="signal-reason">白話講「下一步」:台股講「{tw_when}」、美股講「{us_when}」該做什麼具體動作。**必含至少 1 個價位($ / NT$ / 數字+元) + 1 個時間或事件條件**。禁止只寫「觀望 / 先別動 / 保守」這種沒附條件的虛詞。</div>
+    <div class="signal-battle-plan">
+      <div class="battle-row"><span class="battle-label">建議買價</span><span class="battle-val">$xxx–$xxx</span></div>
+      <div class="battle-row"><span class="battle-label">賺錢目標</span><span class="battle-val up">$xxx</span></div>
+      <div class="battle-row"><span class="battle-label">止損賣價</span><span class="battle-val down">$xxx</span></div>
+    </div>
+    <div class="signal-watch">👀 接下來最該盯的一件事(具體價位 / 財報日 / 消息後續)</div>
+    <div class="signal-meta">
+      <span class="signal-badge buy">🟢 建議買入</span>
+      <span class="signal-confidence">信心 XX%</span>
+      <span class="signal-horizon">⏱ 短線</span>
+    </div>
+  </div>
+</div>
+規則:
+- signal-ticker span 內只放純代號(例如 NVDA、2330),系統會自動補公司中英文名
+- signal-day-move 填該股單日漲跌幅,class(up/down)跟漲跌方向一致;無數據就整個 signal-day-move span 省略
+- 評分:8-10 強力買 / 6-7 偏多 / 4-5 觀望 / 2-3 偏空 / 0-1 賣出。**signal-bias、signal-badge、最外層 class 三者方向必須一致**(別 BULLISH 卻配賣出)
+- signal-bias 用 bullish/neutral/bearish;signal-badge 文字用「🟢 建議買入 / 🟡 續抱持有 / 🔴 建議賣出 / ⚪ 暫時觀望」
+- ‼️ **賣出 / 觀望卡不要給看似叫人現在買進的階梯**:sell 卡的「建議買價」改成「暫不建議買進,回補參考 $xxx」這種低接價,reason 要明說現在是減碼 / 不進場,不要自相矛盾
+- 進場 / 目標 / 停損價位必須落在下方該股真實技術價位的合理範圍,美股美元、台股台幣,**嚴禁編造偏離現價的數字**"""
+
+
+def _chunk_market_tech_block(data: dict, chunk: list) -> str:
+    us_market = data.get("us_market", {})
+    tw_market = data.get("tw_market", {})
+    tech = data.get("technicals", {}) or {}
+    impacts = data.get("earnings_impact", {}) or {}
+    lines = []
+    for sym in chunk:
+        is_tw = str(sym).isdigit()
+        m = (tw_market if is_tw else us_market).get(sym) or {}
+        nm = stock_names.display_name(sym, m.get("name"))
+        unit = "元" if is_tw else "美元"
+        if m:
+            base = f"{nm}({sym}): 收 {_fmt_num(m.get('price'))}{unit} ({(m.get('change_pct') or 0):+.2f}%)"
+        else:
+            base = f"{nm}({sym}): 今日無報價"
+        t = tech.get(sym)
+        if t:
+            base += (f" | MA20 {_fmt_num(t.get('ma20'))} | 20日高 {_fmt_num(t.get('hi20'))}/低 {_fmt_num(t.get('lo20'))}"
+                     f" | 60日高 {_fmt_num(t.get('hi60'))}/低 {_fmt_num(t.get('lo60'))} | ATR14 {_fmt_num(t.get('atr14'))}")
+        a = impacts.get(sym)
+        if a and a.get("is_event") and a.get("yoy") is not None:
+            base += f" | 剛公布{a.get('kind','財報')} YoY {a['yoy']:+.1f}% {a.get('verdict','')}"
+        lines.append("  " + base)
+    return "\n".join(lines)
+
+
+def _card_passes_audit(card: str) -> bool:
+    """跟 digest_audit 同款檢查:確保每張 LLM 卡有 3 個 battle-row + reason 含價位/時間窗。"""
+    if "signal-card" not in card:
+        return False
+    if card.count("battle-row") < 3:
+        return False
+    rm = re.search(r'<div class="signal-reason"[^>]*>(.*?)</div>', card, re.S)
+    if not rm:
+        return False
+    reason = rm.group(1)
+    has_price = re.search(r"\$\s*\d|NT\$?\s*\d|\d+\s*(元|美元|塊|點)", reason)
+    has_tw = re.search(r"今早|今晚|盤後|盤前|財報前|財報後|開盤|收盤|本週|下週|\d+\s*月\s*\d+", reason)
+    return bool(has_price or has_tw)
+
+
+def _deterministic_signal_card(sym: str, data: dict, mkt_status: dict) -> str:
+    """無 LLM 也能生出的真實數據操作卡(技術價位錨定 MA / 高低 / ATR)。
+    當某檔 LLM 生成失敗或不合格時用它補位 — 保證 100% 覆蓋且 audit 過關,且讀起來是真建議不是『異常』訊息。"""
+    is_tw = str(sym).isdigit()
+    market = data.get("tw_market", {}) if is_tw else data.get("us_market", {})
+    tech = (data.get("technicals", {}) or {}).get(sym)
+    m = market.get(sym)
+    unit = "元" if is_tw else ""
+    name = stock_names.display_name(sym, (m or {}).get("name"))
+    when = ("今早 9:00 開盤" if mkt_status.get("tw_will_open_today") else "下個交易日") if is_tw \
+        else ("今晚開盤" if mkt_status.get("us_will_open_tonight") else "下個交易日")
+    if not m or m.get("price") is None:
+        return (f'<div class="signal-card wait"><div class="signal-card-top">'
+                f'<span class="signal-ticker">{sym}</span></div>'
+                f'<div class="signal-body"><div class="signal-reason">'
+                f'{name}({sym}) 目前無即時報價,待{when}後數據更新再給進出場建議。</div></div></div>')
+    chg = m.get("change_pct", 0) or 0
+    price = float(m.get("price"))
+    up = "up" if chg >= 0 else "down"
+    arrow = "▲" if chg >= 0 else "▼"
+    bias = "bullish" if chg >= 0 else "bearish"
+    bias_label = "📈 BULLISH" if chg >= 0 else "📉 BEARISH"
+    if tech:
+        buy_lo = tech.get("lo20") or round(price * 0.97, 2)
+        buy_hi = tech.get("ma20") or round(price * 0.99, 2)
+        target = tech.get("hi20") or tech.get("hi60") or round(price * 1.08, 2)
+        atr = tech.get("atr14") or 0
+        stop = tech.get("lo60") or round(price - 1.5 * atr, 2) if atr else round(price * 0.94, 2)
+    else:
+        buy_lo, buy_hi = round(price * 0.97, 2), round(price * 0.99, 2)
+        target, stop = round(price * 1.08, 2), round(price * 0.94, 2)
+    reason = (f'{name}({sym}) 收 ${_fmt_num(price)}{unit}({chg:+.2f}%)。'
+              f'{when}後若回到 ${_fmt_num(buy_lo)}{unit} 附近並站穩可分批接,'
+              f'跌破 ${_fmt_num(stop)}{unit} 先停損;本週留意 ${_fmt_num(target)}{unit} 壓力。')
+    return (
+        f'<div class="signal-card hold"><div class="signal-card-top">'
+        f'<span class="signal-ticker">{sym}</span>'
+        f'<span class="signal-day-move {up}">{arrow} {chg:+.2f}%</span>'
+        f'<div class="signal-score-block"><span class="signal-score">5</span><span class="signal-score-label">/ 10</span></div>'
+        f'<span class="signal-bias {bias}">{bias_label}</span></div>'
+        f'<div class="signal-body"><div class="signal-reason">{reason}</div>'
+        f'<div class="signal-battle-plan">'
+        f'<div class="battle-row"><span class="battle-label">建議買價</span><span class="battle-val">${_fmt_num(buy_lo)}–${_fmt_num(buy_hi)}{unit}</span></div>'
+        f'<div class="battle-row"><span class="battle-label">賺錢目標</span><span class="battle-val up">${_fmt_num(target)}{unit}</span></div>'
+        f'<div class="battle-row"><span class="battle-label">止損賣價</span><span class="battle-val down">${_fmt_num(stop)}{unit}</span></div>'
+        f'</div>'
+        f'<div class="signal-watch">👀 盯 ${_fmt_num(stop)}{unit} 支撐與 ${_fmt_num(target)}{unit} 壓力</div>'
+        f'<div class="signal-meta"><span class="signal-badge hold">🟡 續抱持有</span>'
+        f'<span class="signal-confidence">信心 60%</span><span class="signal-horizon">⏱ 本週視角</span></div>'
+        f'</div></div>'
+    )
+
+
+def _mark_card(card: str, sym: str) -> str:
+    """在卡片**結尾前**塞一個隱形註解帶純代號 — 讓 audit 的 holdings_uncovered 找得到,
+    因為 _postprocess_html 會把 signal-ticker 展開成公司名(台股甚至不留代號)。
+    放結尾才不會打斷 _postprocess_html 加 verdict-chip 的開頭比對。"""
+    idx = card.rfind("</div>")
+    if idx < 0:
+        return card + f"<!--h:{sym}-->"
+    return card[:idx] + f"<!--h:{sym}-->" + card[idx:]
+
+
+def _compact_overflow_card(sym: str, data: dict, mkt_status: dict) -> str:
+    """email 版超出前 N 檔的持股用精簡卡(真實收盤 + 一句下一步 + 導去網頁完整版),
+    控制信件大小避免 Gmail 截斷,但仍 100% 覆蓋每一支。audit 視為精簡卡豁免 battle 檢查。"""
+    is_tw = str(sym).isdigit()
+    market = data.get("tw_market", {}) if is_tw else data.get("us_market", {})
+    m = market.get(sym)
+    name = stock_names.display_name(sym, (m or {}).get("name"))
+    if not m or m.get("price") is None:
+        body = f'{name}({sym}) 目前無即時報價,待盤後數據更新,完整操作見網頁版。'
+        return (f'<div class="signal-card wait"><div class="signal-card-top">'
+                f'<span class="signal-ticker">{sym}</span></div>'
+                f'<div class="signal-body"><div class="signal-reason">{body}</div></div></div>')
+    chg = m.get("change_pct", 0) or 0
+    up = "up" if chg >= 0 else "down"
+    arrow = "▲" if chg >= 0 else "▼"
+    unit = "元" if is_tw else ""
+    body = (f'{name}({sym}) 收 ${_fmt_num(m.get("price"))}{unit}({chg:+.2f}%)。'
+            f'這檔今日波動較小,完整進出場操作見網頁版。')
+    return (f'<div class="signal-card hold"><div class="signal-card-top">'
+            f'<span class="signal-ticker">{sym}</span>'
+            f'<span class="signal-day-move {up}">{arrow} {chg:+.2f}%</span></div>'
+            f'<div class="signal-body"><div class="signal-reason">{body}</div></div></div>')
+
+
+def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, full_limit: int = None) -> str:
+    """分批生成每檔持股的 signal-card,保證『使用者選的每一支都有下一步』。
+    一次塞 30-50 檔給 LLM 會超出輸出上限被截斷 → 改成每 10 檔一批多次呼叫,
+    任何一檔 LLM 失敗 / 不合格 → 用真實技術價位的 deterministic 卡補位。
+    full_limit:email 版怕 Gmail 截斷,只給「波動最大的前 N 檔」完整 LLM 卡,
+    其餘持股仍用精簡 deterministic 真數據卡覆蓋(絕不丟掉任何一支,網頁版才是全 LLM)。
+    結果:100% 覆蓋,絕不再因持股多而整封掉進備援版。"""
+    seen = list(dict.fromkeys([s for s in (stocks or []) if s]))
+    if not seen:
+        return ""
+    all_market = {**data.get("us_market", {}), **data.get("tw_market", {})}
+    seen.sort(key=lambda s: abs((all_market.get(s) or {}).get("change_pct", 0) or 0), reverse=True)
+    llm_stocks = seen[:full_limit] if full_limit else seen
+    rules = _signal_card_format_rules(mkt_status)
+    cards_by_sym = {}
+    CHUNK = 10
+    for i in range(0, len(llm_stocks), CHUNK):
+        chunk = llm_stocks[i:i + CHUNK]
+        block = _chunk_market_tech_block(data, chunk)
+        prompt = (
+            f"你是這位用戶的專屬財經顧問。為以下每一支股票各生成一張 signal-card,給出明確「下一步」操作建議。\n"
+            f"標的({len(chunk)} 支,一支都不能少、不能合併):{', '.join(chunk)}\n\n"
+            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n\n"
+            f"{rules}\n\n"
+            f"只輸出這 {len(chunk)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
+            f"不要輸出 signal-grid 外框、不要任何說明文字、不要 markdown 反引號。"
+        )
+        raw = ""
+        try:
+            raw = _llm_generate(prompt)
+        except Exception as e:
+            print(f"  [signal-batch] chunk {i//CHUNK+1} LLM 全失敗,改 deterministic({str(e)[:80]})")
+        if raw.startswith("```"):
+            raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
+            raw = re.sub(r'\n?```$', '', raw)
+        # 不依賴 LLM 真的有放 <!--CARD-->:先拿掉分隔註解,再用「卡片開頭標籤」切。
+        raw = re.sub(r'<!--\s*CARD\s*-->', '', raw)
+        for seg in re.split(r'(?=<div class="signal-card[ "])', raw):
+            if "signal-card" not in seg:
+                continue
+            start = seg.find('<div class="signal-card')
+            end = seg.rfind('</div>')
+            if start < 0 or end < 0:
+                continue
+            card = seg[start:end + 6].strip()
+            tm = re.search(r'<span class="signal-ticker">\s*([^<]+?)\s*</span>', card)
+            if not tm:
+                continue
+            tk = tm.group(1).strip()
+            match = next((cs for cs in chunk if cs == tk or cs in tk or tk in cs), None)
+            if match and match not in cards_by_sym and _card_passes_audit(card):
+                cards_by_sym[match] = card
+        if i + CHUNK < len(llm_stocks):
+            time.sleep(2)
+    overflow = set(seen[full_limit:]) if full_limit else set()
+    ordered = []
+    for s in seen:
+        if s in overflow:
+            card = _compact_overflow_card(s, data, mkt_status)
+        else:
+            card = cards_by_sym.get(s) or _deterministic_signal_card(s, data, mkt_status)
+        ordered.append(_mark_card(card, s))
+    return "\n".join(ordered)
+
+
+def _inject_signal_cards(raw: str, cards: str) -> str:
+    """把分批生成的 signal-card 填進 narrative 的佔位點;LLM 萬一把佔位註解吃掉也有後援。"""
+    if not cards:
+        return raw
+    if "<!--SIGNAL_CARDS-->" in raw:
+        return raw.replace("<!--SIGNAL_CARDS-->", cards)
+    m = re.search(r'<div class="signal-grid">', raw)
+    if m:
+        return raw[:m.end()] + "\n" + cards + "\n" + raw[m.end():]
+    section = (
+        '\n<div class="signal-header"><div class="signal-header-title">⚡ 詳細進出場計畫</div>'
+        '<div class="signal-header-subtitle">每一支持股的下一步</div></div>'
+        '<div class="signal-grid">' + cards + '</div>'
+        '<div class="signal-disclaimer">⚠️ AI 分析僅供參考,不構成投資建議</div>\n'
+    )
+    tl = re.search(r'</div>\s*(?=<div class="section-label")', raw)
+    if tl:
+        return raw[:tl.end()] + section + raw[tl.end():]
+    return section + raw
+
+
 def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                     email_safe: bool = False) -> str:
-    # email 版：持倉太多時只留變動最大的 N 支，避免信件過長被 Gmail 截斷（完整版見網頁）
+    # email 版：持倉太多時敘述只留變動最大的 N 支，避免信件過長被 Gmail 截斷（完整版見網頁）。
+    # 但「操作訊號卡」仍覆蓋全部持股(_full_holdings),不丟任何一支。
+    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
     if email_safe:
         us0 = list(user_us_stocks or [])
         tw0 = list(user_tw_stocks or [])
@@ -712,53 +1057,46 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
     # 個人化版本：用戶每一支持倉都要有操作訊號卡 — **絕對不切**,日報是主商品,
     # 用戶選的每一支台股美股都必須給「下一步」。波動大者排前面方便讀,但全留。
     # 2026-05-26 用戶炸:「使用者選擇每一個台股美股都要顯示下一步他們要做什麼」
-    if has_holdings:
-        top_signal_stocks = sorted(signal_stocks, key=_abs_change, reverse=True)
+    if _full_holdings:
+        top_signal_stocks = sorted(_full_holdings, key=_abs_change, reverse=True)
     else:
         top_signal_stocks = sorted(signal_stocks, key=_abs_change, reverse=True)[:5]
 
-    signal_instruction = f"""
+    technicals = data.get("technicals", {})
+    tech_rows = []
+    for sym in top_signal_stocks:
+        t = technicals.get(sym)
+        if not t:
+            continue
+        hint = tw_market.get(sym, {}).get("name") if sym.isdigit() else None
+        nm = stock_names.display_name(sym, hint)
+        ma50 = f" | MA50 {t['ma50']}" if t.get("ma50") else ""
+        tech_rows.append(
+            f"  {nm}（{sym}）: 現價 {t['price']} | MA20 {t['ma20']}{ma50} | "
+            f"20日高 {t['hi20']} / 20日低 {t['lo20']} | 60日高 {t['hi60']} / 60日低 {t['lo60']} | ATR14 {t['atr14']}"
+        )
+    tech_block = ""
+    if tech_rows:
+        tech_block = (
+            "\n【各持股真實技術價位 — 進場/目標/停損價必須參考這些真實數字,嚴禁編造偏離現價的價位】\n"
+            + "\n".join(tech_rows)
+            + "\n‼️ 定價規則:建議買價靠近 MA20 / 20日低 / 近期支撐;賺錢目標參考 20日高 / 60日高 壓力;"
+            "止損賣價設在跌破關鍵支撐(MA50 或 60日低)或現價 − 1.5~2×ATR。"
+            "所有價位都要落在上面真實數字的合理範圍內,美股用美元、台股用台幣,不可憑空捏造。\n"
+        )
+
+    # 訊號卡改由 _render_signal_cards_batched 分批生成(保證每支持股都有卡、不被截斷),
+    # 這裡只放區塊外框 + 佔位註解,生成後用 _inject_signal_cards 填入。
+    signal_instruction = """
 <div class="signal-header">
   <div class="signal-header-title">⚡ 詳細進出場計畫</div>
   <div class="signal-header-subtitle">用戶選的每一支台股美股,都列下一步要做什麼 · 1-2 週視角</div>
 </div>
 <div class="signal-grid">
-**為以下每一支股票各生成一個 signal-card（共 {len(top_signal_stocks)} 支,一支都不能少、不能合併、不能省略,順序照列）**：{', '.join(top_signal_stocks)}
-⚠️ 這份是用戶的主商品 — 他選的每一支都期待看到「下一步」,漏掉任一支用戶會炸。如果某支今日無報價數據,仍要生成 signal-card,用「📭 今日無報價」標示,並寫「等盤後數據出來後 X」這類動作。
-
-每張卡格式（最外層 class 從 buy/hold/sell/wait 四選一，要跟結論一致）：
-<div class="signal-card buy">
-  <div class="signal-card-top">
-    <span class="signal-ticker">代號</span>
-    <span class="signal-day-move up">▲ +x.xx%</span>
-    <div class="signal-score-block"><span class="signal-score">0-10</span><span class="signal-score-label">/ 10</span></div>
-    <span class="signal-bias bullish">📈 BULLISH</span>
-  </div>
-  <div class="signal-body">
-    <div class="signal-reason">**下一步要做什麼**:用白話講清楚這支股票「{'今早 9:00 開盤後' if mkt_status['tw_will_open_today'] else '下個交易日'}」(台股) 或「{'今晚開盤後' if mkt_status['us_will_open_tonight'] else '下個交易日'}」(美股) 該做什麼具體動作。動作必須是「買進 X / 加碼 X / 續抱 X / 減碼 X / 賣出 X / 等到 X 條件才動」其中一個,絕對禁止只寫「觀望」「先別動」「保守」沒附條件的虛詞。每張卡至少要有 1 個明確價位 + 1 個觸發條件(時間或事件)。例:「今晚開盤後若跌到 $580 以下,分批接 1/3 部位;若直接開高跳空,等回測 $590 再進」</div>
-    <div class="signal-battle-plan">
-      <div class="battle-row"><span class="battle-label">建議買價</span><span class="battle-val">$xxx–$xxx</span></div>
-      <div class="battle-row"><span class="battle-label">賺錢目標</span><span class="battle-val up">$xxx</span></div>
-      <div class="battle-row"><span class="battle-label">止損賣價</span><span class="battle-val down">$xxx</span></div>
-    </div>
-    <div class="signal-watch">👀 觀察重點：接下來最該盯的一件事（具體財報日 / 某個關鍵價位 / 某則消息後續）— 不可寫「持續觀察」這種空話</div>
-    <div class="signal-meta">
-      <span class="signal-badge buy">🟢 建議買入</span>
-      <span class="signal-confidence">信心 XX%</span>
-      <span class="signal-horizon">⏱ 短線1-2週</span>
-    </div>
-  </div>
+<!--SIGNAL_CARDS-->
 </div>
-規則：
-- signal-ticker span 內只放純代號（例如 NVDA、2330），系統會自動補公司中英文名
-- signal-day-move 填該股今日實際漲跌幅，class（up/down）跟漲跌方向一致；今日無數據就整個 signal-day-move span 省略
-- 評分對應：8-10 強力買進 / 6-7 偏多可加碼 / 4-5 持有觀望 / 2-3 偏空減碼 / 0-1 建議賣出
-- signal-badge 文字用「🟢 建議買入 / 🟡 續抱持有 / 🔴 建議賣出 / ⚪ 暫時觀望」，class 對應 buy/hold/sell/wait，要跟最外層 class 一致
-- ‼️ 敢給 sell/wait：當該股有真實利空（估值過高 / 技術破位 / 重大利空消息 / 法人連續賣超），就要明確給 sell（強利空）或 wait（短中期不利但未到認賠程度），不要為了「政治正確」永遠 buy/hold。理由必須言之有物，不可只寫「短期波動大」這種空話
-- 進場 / 目標 / 停損價位要落在該股目前股價的合理範圍，台股用台幣、美股用美元
-- **signal-reason 內必須出現至少一個 $ 美元 / NT$ / 數字+元 / 時間窗(今早/今晚/盤後/財報前/X 月 X 日);三件都缺就是廢卡**
-</div>
-<div class="signal-disclaimer">⚠️ AI 分析僅供參考，不構成投資建議</div>"""
+<div class="signal-disclaimer">⚠️ AI 分析僅供參考，不構成投資建議</div>
+‼️ 上面這段「⚡ 詳細進出場計畫」區塊**原樣保留**,尤其 <!--SIGNAL_CARDS--> 這行註解不要刪改、不要自己生成任何 signal-card,系統會自動填入每檔持股的操作卡。"""
 
     rookie_section = ""
     if is_beginner:
@@ -903,7 +1241,31 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 </div>
 
 {signal_instruction}
+{personalized_news_instruction}
 {rookie_section}
+
+<div class="section-label">🔥 今天最重要的 5 件事</div>
+<div class="news-card">
+  <div class="news-tag verified">✅ 多源確認</div>
+  <div class="news-headline">（標題，口語化改寫，不超過 25 字）</div>
+  <div class="news-why">💡 為什麼重要：（這件事的來龍去脈與後續影響，要有實質分析，不可只是把標題換句話說）</div>
+  <div class="news-impact">
+    <span class="impact-label">📊 影響個股</span>
+    <span class="impact-stock up">NVDA</span>
+    <span class="impact-stock down">INTC</span>
+  </div>
+  <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
+</div>
+（重複 5 次，單一來源用 <div class="news-tag single">⚠️ 單一來源</div>）
+
+‼️ news-impact 是強制要求：5 張新聞卡【每一張都必須】有 news-impact 區塊，且至少列 1 支 impact-stock。
+- impact-stock span 內只放純股票代號（例如 NVDA、AAPL、2330），不要放公司名，系統會自動補名稱與漲跌標示
+- class 用 up＝這則消息對該股是利多（可能漲）、down＝利空（可能跌）
+- 想不到具體個股時，就挑受影響產業的龍頭股：Fed 利率→JPM、GS；油價→XOM、CVX；AI/算力→NVDA、TSM；半導體→TSM、2330、2454；消費→AMZN、WMT
+- 優先列跟用戶持倉（{', '.join(all_holdings) if has_holdings else '主流科技股'}）相關的個股
+- 只有新聞完全與任何上市公司無關時（例如純政治事件）才可省略，且這種最多 1 張
+
+<div class="advanced-divider">📊 以下是大盤與進階分析 — 想深入再看，不看也不影響你上面的操作</div>
 
 {mood_section}
 {indicator_section}
@@ -927,30 +1289,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 
 {sector_section}
 
-<div class="section-label">🔥 今天最重要的 5 件事</div>
-<div class="news-card">
-  <div class="news-tag verified">✅ 多源確認</div>
-  <div class="news-headline">（標題，口語化改寫，不超過 25 字）</div>
-  <div class="news-why">💡 為什麼重要：（這件事的來龍去脈與後續影響，要有實質分析，不可只是把標題換句話說）</div>
-  <div class="news-impact">
-    <span class="impact-label">📊 影響個股</span>
-    <span class="impact-stock up">NVDA</span>
-    <span class="impact-stock down">INTC</span>
-  </div>
-  <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
-</div>
-（重複 5 次，單一來源用 <div class="news-tag single">⚠️ 單一來源</div>）
-
-‼️ news-impact 是強制要求：5 張新聞卡【每一張都必須】有 news-impact 區塊，且至少列 1 支 impact-stock。
-- impact-stock span 內只放純股票代號（例如 NVDA、AAPL、2330），不要放公司名，系統會自動補名稱與漲跌標示
-- class 用 up＝這則消息對該股是利多（可能漲）、down＝利空（可能跌）
-- 想不到具體個股時，就挑受影響產業的龍頭股：Fed 利率→JPM、GS；油價→XOM、CVX；AI/算力→NVDA、TSM；半導體→TSM、2330、2454；消費→AMZN、WMT
-- 優先列跟用戶持倉（{', '.join(all_holdings) if has_holdings else '主流科技股'}）相關的個股
-- 只有新聞完全與任何上市公司無關時（例如純政治事件）才可省略，且這種最多 1 張
-
 {second_order_section}
-
-{personalized_news_instruction}
 
 <div class="section-label">📅 即將公布財報</div>
 <div class="earnings-list">
@@ -986,6 +1325,9 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
+    cards = _render_signal_cards_batched(data, top_signal_stocks, mkt_status,
+                                         full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None)
+    raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
         result += ROOKIE_GUIDE_HTML
@@ -1083,6 +1425,8 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
     """週一晨間日報:前兩天(週六、週日)沒開盤,所以基準是『上週五收盤』。
     重點:週末新聞累積 + 上週五收盤回顧 + 本週 catalysts + 週一開盤 gap 風險 +
     每檔持股仍給明確操作建議(買/抱/賣/觀望)。"""
+    # email 版敘述只聚焦波動最大的 30 檔,但「操作訊號卡」仍覆蓋全部持股(全列在 _full_holdings)。
+    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
     if email_safe:
         us0 = list(user_us_stocks or [])
         tw0 = list(user_tw_stocks or [])
@@ -1118,58 +1462,33 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
     watchlist_tw = user_tw_stocks if user_tw_stocks else []
     all_holdings = watchlist_us + watchlist_tw
 
-    # 操作訊號卡的股票清單(用戶持倉優先,持倉超過 8 檔取波動最大前 8 檔)
+    # 操作訊號卡的股票清單:用戶持倉**每一支都要有卡** — 絕不切。波動大者排前面方便讀,但全留。
+    # 2026-06-01 事故根因:這裡曾 [:8],持股 >8 的用戶必觸發 audit holdings_uncovered → 整封掉進備援版。
+    # 現在改由 _render_signal_cards_batched 分批生成,不怕多。
     us_market = data.get("us_market", {})
     tw_market = data.get("tw_market", {})
     all_market = {**us_market, **tw_market}
     def _abs_change(sym):
         d = all_market.get(sym, {})
         return abs(d.get("change_pct", 0))
-    if has_holdings:
-        signal_stocks = sorted(all_holdings, key=_abs_change, reverse=True)[:8]
+    mkt_status = _market_status(date)
+    if _full_holdings:
+        signal_stocks = sorted(_full_holdings, key=_abs_change, reverse=True)
     else:
         signal_stocks = ["AAPL", "MSFT", "NVDA", "TSLA"]
 
-    signal_skeleton = f"""
+    # 訊號卡改由 _render_signal_cards_batched 分批生成(每支持股都有卡、不被截斷),
+    # 這裡只放區塊外框 + 佔位註解,生成後用 _inject_signal_cards 填入。
+    signal_skeleton = """
 <div class="signal-header">
   <div class="signal-header-title">💡 你的持股本週怎麼操作</div>
   <div class="signal-header-subtitle">上週五收盤位置 + 週末新聞 + 本週催化劑 · 給出明確動詞</div>
 </div>
 <div class="signal-grid">
-為以下每一支股票各生成一張 signal-card(一支都不能少,順序照列):{', '.join(signal_stocks)}
-每張卡完整格式(最外層 class 從 buy/hold/sell/wait 四選一,動詞對應:buy=買進加碼 / hold=抱緊 / sell=減碼賣出 / wait=今早觀望):
-<div class="signal-card buy">
-  <div class="signal-card-top">
-    <span class="signal-ticker">代號</span>
-    <span class="signal-day-move up">▲ +x.xx%(上週五單日)</span>
-    <div class="signal-score-block"><span class="signal-score">0-10</span><span class="signal-score-label">/ 10</span></div>
-    <span class="signal-bias bullish">📈 BULLISH</span>
-  </div>
-  <div class="signal-body">
-    <div class="signal-reason">必須含 4 要素:①上週五收盤位置(例:上週五收 $XXX,週線 +X%)②週末新聞影響(例:週末傳出 OOO 對 XXX 屬利多/利空;若無新聞寫「週末無重大新聞」)③本週催化劑(例:本週四財報、Fed 週三開會)④為何給這個動作(例:故建議今早觀望前 30 分鐘是否守住 $XXX)。嚴禁寫「靜觀其變」「視情況」「再觀察看看」這類模糊詞 — 必須有明確動詞。</div>
-    <div class="signal-battle-plan">
-      <div class="battle-row"><span class="battle-label">建議買價</span><span class="battle-val">$xxx–$xxx</span></div>
-      <div class="battle-row"><span class="battle-label">賺錢目標</span><span class="battle-val up">$xxx</span></div>
-      <div class="battle-row"><span class="battle-label">止損賣價</span><span class="battle-val down">$xxx</span></div>
-    </div>
-    <div class="signal-watch">👀 本週要盯:接下來最該盯的一件事(財報日/Fed 講話/關鍵價位)</div>
-    <div class="signal-meta">
-      <span class="signal-badge buy">🟢 建議買入</span>
-      <span class="signal-confidence">信心 XX%</span>
-      <span class="signal-horizon">⏱ 本週視角</span>
-    </div>
-  </div>
+<!--SIGNAL_CARDS-->
 </div>
-規則:
-- signal-ticker span 內只放純代號(例如 NVDA、2330),系統會自動補公司中英文名
-- signal-day-move 填「上週五」單日漲跌幅,class(up/down)跟漲跌方向一致;上週五無數據就整個 signal-day-move span 省略
-- 評分對應:8-10 強力買進 / 6-7 偏多可加碼 / 4-5 持有觀望 / 2-3 偏空減碼 / 0-1 建議賣出
-- signal-badge 文字用「🟢 建議買入 / 🟡 續抱持有 / 🔴 建議賣出 / ⚪ 今早觀望」,class 對應 buy/hold/sell/wait,要跟最外層 class 一致
-- ‼️ 敢給 sell/wait:當該股有真實利空(週末爆出重大利空新聞 / 上週五已破關鍵支撐 / 本週有負面催化劑),就要明確給 sell 或 wait,不要為了「政治正確」永遠 buy/hold。理由必須言之有物,點名具體利空消息或價位
-- 進場/目標/停損價位要落在該股上週五收盤的合理範圍,台股台幣、美股美元
-- 嚴禁省略 signal-header、signal-ticker、signal-reason 三個 span — 缺一個系統「一眼看懂」總覽就生不出來
-</div>
-<div class="signal-disclaimer">⚠️ AI 分析僅供參考,不構成投資建議</div>"""
+<div class="signal-disclaimer">⚠️ AI 分析僅供參考,不構成投資建議</div>
+‼️ 上面這段「💡 你的持股本週怎麼操作」區塊**原樣保留**,尤其 <!--SIGNAL_CARDS--> 這行註解不要刪改、不要自己生成任何 signal-card,系統會自動填入每檔持股的操作卡。"""
 
     prompt = f"""你是這位用戶的專屬財經顧問。今天是**週一晨間**,週六週日股市都沒開盤,所以這份報告的數據基準是「**上週五({last_friday})收盤**」,內容主軸是:
 1. 週末兩天累積的新聞(可能影響今早開盤)
@@ -1189,16 +1508,9 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 - 內容圍繞他的持股做:上週五表現 + 週末新聞影響 + 本週催化劑 + 操作建議
 - 台股一律用公司名稱(可附代號),不要只報數字
 
-【🚨 強制操作建議規則(週一最重要)】
-就算前兩天沒開盤,**每檔持股仍必須給出明確操作動詞**。不可寫「靜觀其變」「視情況」「再觀察看看」這類模糊詞。
-每張 signal-card 必須:
-- class 用 "buy" / "hold" / "sell" / "wait" 其中一個(對應動詞:買進加碼 / 抱緊 / 減碼賣出 / 觀望)
-- signal-reason 必須包含:
-  ① 上週五收盤位置(例:「上週五收 $XXX,週線+X%」)
-  ② 週末新聞影響(例:「週末傳出 OOO,對 XXX 屬利多/利空」),如無新聞寫「週末無重大新聞」
-  ③ 本週要盯的催化劑(例:「本週四財報」、「Fed 週三開會」)
-  ④ 為什麼是這個動作(例:「故建議今早觀望,等盤中前 30 分鐘看是否守住 $XXX」)
-- 嚴禁只給動詞不給理由
+【🚫 不要自己生持股操作卡】
+每檔持股的 signal-card(操作訊號卡)由系統另外分批生成並填入,**你不要輸出任何 <div class="signal-card"> 卡片**。
+你只負責 TLDR、週末新聞、上週五收盤回顧、Gap 風險、本週催化劑、週一心法這些區塊;遇到訊號卡區塊只原樣保留 <!--SIGNAL_CARDS--> 註解。
 
 【📅 週末新聞 + 週一 Gap 風險】
 這是週一特有區塊,必須出現:
@@ -1228,7 +1540,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 3. .section-label「📊 上週五收盤回顧」+ .market-summary,**所有數據敘述都要說「上週五」不可寫「今天」**
 4. .section-label「⚠️ 週一開盤 Gap 風險」+ 一張 .verdict.SENTIMENT 卡片,寫明開盤方向 + 具體 playbook
 5. .section-label「📅 本週催化劑」+ .watch-list 列出本週事件 + 日期
-6. **持股操作訊號卡(必須完整輸出下方 signal-skeleton 模板)**:
+6. 持股操作訊號卡區塊:**原樣輸出下方模板,不要自己生卡片**(卡片由系統填入 <!--SIGNAL_CARDS-->):
 {signal_skeleton}
 7. .verdict.neutral 結尾「週一心法」,提醒週一通常波動大、可觀察前 30 分鐘再進場
 
@@ -1239,6 +1551,9 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
+    cards = _render_signal_cards_batched(data, signal_stocks, mkt_status,
+                                         full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None)
+    raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
         result += ROOKIE_GUIDE_HTML

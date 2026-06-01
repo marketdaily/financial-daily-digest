@@ -60,24 +60,47 @@ def fetch_rss_news() -> list:
 
 
 def _batch_prices(symbols: list) -> dict:
-    """Batch fetch via yahooquery — one HTTP call, no rate limit issues"""
+    """yahooquery 批次抓 + 重試 + yfinance 逐檔備援。
+    GH Actions 上 Yahoo 常整批失敗(429/空回),7am 寄送時害美股全變「今日無報價」,故加韌性。"""
     if not symbols:
         return {}
-    try:
-        data = YQTicker(symbols).price
-        result = {}
-        for sym in symbols:
-            p = data.get(sym, {})
-            price = p.get("regularMarketPrice")
-            prev = p.get("regularMarketPreviousClose")
-            if price and prev and prev != 0:
-                result[sym] = {
-                    "price": round(float(price), 2),
-                    "change_pct": round((float(price) - float(prev)) / float(prev) * 100, 2),
-                }
-        return result
-    except Exception:
-        return {}
+    result = {}
+    for _ in range(2):
+        try:
+            data = YQTicker(symbols).price
+            if isinstance(data, dict):
+                for sym in symbols:
+                    if sym in result:
+                        continue
+                    p = data.get(sym, {})
+                    if not isinstance(p, dict):
+                        continue
+                    price = p.get("regularMarketPrice")
+                    prev = p.get("regularMarketPreviousClose")
+                    if price and prev and prev != 0:
+                        result[sym] = {
+                            "price": round(float(price), 2),
+                            "change_pct": round((float(price) - float(prev)) / float(prev) * 100, 2),
+                        }
+            if len(result) == len(symbols):
+                return result
+        except Exception:
+            pass
+    # yahooquery 沒補齊的,逐檔用 yfinance 歷史價備援(不同 endpoint,常在 quote API 被擋時仍可用)
+    for sym in [s for s in symbols if s not in result]:
+        try:
+            hist = yf.Ticker(sym).history(period="5d")
+            if len(hist) >= 2:
+                price = float(hist["Close"].iloc[-1])
+                prev = float(hist["Close"].iloc[-2])
+                if price and prev and prev != 0:
+                    result[sym] = {
+                        "price": round(price, 2),
+                        "change_pct": round((price - prev) / prev * 100, 2),
+                    }
+        except Exception:
+            continue
+    return result
 
 
 def _get_cached_price(symbol: str) -> dict:
@@ -122,6 +145,48 @@ def _fetch_twse_all() -> dict:
         return result
     except Exception:
         return _TWSE_CACHE
+
+
+# TPEx OpenAPI — 上櫃股票收盤(含群聯 8299、精測 6510 等),官方數據無 rate limit
+_TPEX_CACHE: dict = {}
+_TPEX_CACHE_TIME: datetime = None
+
+def _fetch_tpex_all() -> dict:
+    """Return {stock_code: {name, price, change_pct}} for all TPEx (上櫃) stocks"""
+    global _TPEX_CACHE, _TPEX_CACHE_TIME
+    now = datetime.now()
+    if _TPEX_CACHE and _TPEX_CACHE_TIME and (now - _TPEX_CACHE_TIME).seconds < 3600:
+        return _TPEX_CACHE
+    for _ in range(2):
+        try:
+            resp = requests.get(
+                "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes",
+                timeout=15
+            )
+            result = {}
+            for row in resp.json():
+                code = (row.get("SecuritiesCompanyCode") or "").strip()
+                if not code.isdigit():
+                    continue
+                try:
+                    close = float(str(row["Close"]).strip())
+                    change = float(str(row["Change"]).strip())
+                    prev = close - change
+                    change_pct = (change / prev * 100) if prev != 0 else 0
+                    result[code] = {
+                        "name": (row.get("CompanyName") or code).strip(),
+                        "price": round(close, 2),
+                        "change_pct": round(change_pct, 2),
+                    }
+                except (ValueError, ZeroDivisionError, KeyError):
+                    continue
+            if result:
+                _TPEX_CACHE = result
+                _TPEX_CACHE_TIME = now
+                return _TPEX_CACHE
+        except Exception:
+            continue
+    return _TPEX_CACHE
 
 
 _TW_NAME_CACHE: dict = {}
@@ -171,6 +236,7 @@ def fetch_us_market():
 
 def fetch_tw_market():
     twse = _fetch_twse_all()
+    tpex = _fetch_tpex_all()
     result = {}
     d = _get_cached_price("^TWII")
     if d:
@@ -179,21 +245,85 @@ def fetch_tw_market():
         code = stock["symbol"] if isinstance(stock, dict) else stock
         if code in twse:
             result[code] = twse[code]
+        elif code in tpex:
+            result[code] = tpex[code]
     return result
 
 
 def fetch_custom_stocks(symbols: list) -> dict:
     twse = _fetch_twse_all()
+    tpex = None
     result = {}
     for sym in symbols:
-        if sym.isdigit() or (len(sym) == 4 and sym.isdigit()):
+        if sym.isdigit():
             if sym in twse:
                 result[sym] = twse[sym]
+            else:
+                if tpex is None:
+                    tpex = _fetch_tpex_all()
+                if sym in tpex:
+                    result[sym] = tpex[sym]
         else:
             d = _get_cached_price(sym)
             if d:
                 result[sym] = d
     return result
+
+
+def _yahoo_symbol(code: str, twse: dict, tpex: dict) -> str:
+    if code.isdigit():
+        if code in twse:
+            return f"{code}.TW"
+        if code in tpex:
+            return f"{code}.TWO"
+        return f"{code}.TW"
+    return code
+
+
+def fetch_technicals(symbols: list) -> dict:
+    """各持股真實技術價位:現價/MA20/MA50/20日高低/60日高低/ATR14,給日報訂進出場關卡用真實數字。"""
+    syms = list(dict.fromkeys([s for s in (symbols or []) if s]))
+    if not syms:
+        return {}
+    import pandas as pd
+    twse = _fetch_twse_all()
+    tpex = _fetch_tpex_all()
+    ymap = {s: _yahoo_symbol(s, twse, tpex) for s in syms}
+    try:
+        h = YQTicker(list(ymap.values())).history(period="3mo")
+    except Exception:
+        return {}
+    if h is None or not hasattr(h, "columns") or "close" not in getattr(h, "columns", []):
+        return {}
+    out = {}
+    for raw, ysym in ymap.items():
+        try:
+            df = h
+            if isinstance(h.index, pd.MultiIndex):
+                lvl0 = h.index.get_level_values(0)
+                if ysym not in lvl0:
+                    continue
+                df = h.xs(ysym, level=0)
+            c = df["close"].dropna()
+            if len(c) < 25:
+                continue
+            hi, lo = df["high"], df["low"]
+            prev = c.shift(1)
+            tr = pd.concat([(hi - lo), (hi - prev).abs(), (lo - prev).abs()], axis=1).max(axis=1)
+            atr = tr.rolling(14).mean().iloc[-1]
+            out[raw] = {
+                "price": round(float(c.iloc[-1]), 2),
+                "ma20": round(float(c.tail(20).mean()), 2),
+                "ma50": round(float(c.tail(50).mean()), 2) if len(c) >= 50 else None,
+                "hi20": round(float(hi.tail(20).max()), 2),
+                "lo20": round(float(lo.tail(20).min()), 2),
+                "hi60": round(float(hi.tail(60).max()), 2),
+                "lo60": round(float(lo.tail(60).min()), 2),
+                "atr14": round(float(atr), 2),
+            }
+        except Exception:
+            continue
+    return out
 
 
 def fetch_ticker_news(extra_symbols: list = None) -> list:
@@ -442,9 +572,24 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         if missing_tw:
             tw_market.update(fetch_custom_stocks(missing_tw))
 
+    tech_syms = (extra_us_stocks or []) + (extra_tw_stocks or []) + ["AAPL", "MSFT", "NVDA", "TSLA"]
+    technicals = fetch_technicals(tech_syms)
+
+    the_date = (datetime.now(timezone.utc) + timedelta(hours=8)).strftime("%Y-%m-%d")
+    # 財報/營收影響(事件日才喊話) — 估值出錯絕不拖垮日報,整段 try 包住
+    earnings_impact = {}
+    try:
+        import datetime as _dt
+        from valuation.earnings_impact import compute_impacts
+        earnings_impact = compute_impacts(extra_us_stocks, extra_tw_stocks,
+                                          _dt.date.fromisoformat(the_date))
+    except Exception as _e:
+        print(f"[earnings_impact] skipped: {_e}")
+
     return {
         "us_market": us_market,
         "tw_market": tw_market,
+        "technicals": technicals,
         "tw_names_all": tw_name_map(),
         "us_news": fetch_us_news(extra_us_stocks),
         "tw_news": fetch_tw_news(),
@@ -452,8 +597,9 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         "crypto": fetch_crypto(),
         "sectors": fetch_sector_performance(),
         "earnings": fetch_earnings_calendar(),
+        "earnings_impact": earnings_impact,
         # 必用 TW 時區：GH Actions runner 在 UTC，06:55 TW 寄送時 UTC 還是前一天
         # 2026-05-27 出包過：runner UTC 22:55 (= TW 5/27 06:55) datetime.now()→5/26
         # 害 _market_status() 拿 5/26 算「昨晚」變成 5/25 Memorial Day 假，日報通篇寫錯
-        "date": (datetime.now(timezone.utc) + timedelta(hours=8)).strftime("%Y-%m-%d")
+        "date": the_date
     }

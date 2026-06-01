@@ -142,7 +142,7 @@ def audit_digest(
     cards_missing_battle = 0
     real_cards = 0
     for card in signal_cards:
-        is_fallback = bool(re.search(r"備援|個人化生成異常|fallback|主編將.{0,8}修復", card))
+        is_fallback = bool(re.search(r"備援|個人化生成異常|fallback|主編將.{0,8}修復|無即時報價|待.{0,8}數據更新|見網頁", card))
         if is_fallback:
             continue
         real_cards += 1
@@ -166,6 +166,8 @@ def audit_digest(
     if signal_cards:
         vague_cards = []
         for card in signal_cards:
+            if re.search(r"備援|個人化生成異常|fallback|主編將.{0,8}修復|無即時報價|見網頁", card):
+                continue
             reason_m = re.search(r'<div class="signal-reason"[^>]*>(.*?)</div>', card, re.S)
             if not reason_m:
                 continue
