@@ -5,7 +5,8 @@
 import { fetchNews } from "./news_source.js";
 import { displayName } from "./stock_names.js";
 
-const SEVERITY_THRESHOLD = 7;
+const SEVERITY_THRESHOLD = 7;          // 已發生/已公告事件的推播門檻
+const SPECULATIVE_THRESHOLD = 9;       // 傳言/觀點/臆測文門檻拉高,避免「If…will…」評論文當 🚨重大消息 轟炸
 const DAILY_CAP = 5;
 const MAX_AGE_HOURS = 24;     // 超過此時數的新聞視為舊聞,不評分、不推(即時提醒只推新鮮事)
 const PRESCORE_FLOOR = 40;    // 規則預評分低於此值直接跳過 AI;調高=更省 AI,調低=更不漏新聞
@@ -100,6 +101,25 @@ function classify(text) {
   return null;
 }
 
+// 臆測/觀點標記:標題出現條件式(If…will…)、傳言或評論語氣 → 視為「非已發生事件」,
+// 推播門檻拉到 SPECULATIVE_THRESHOLD、標籤改「觀點／傳言」。
+// 解 2026-05-31 出包:Yahoo「If Elon Musk merges SpaceX with Tesla he'll create a $3.4tn behemoth」
+// 這種假設推演評論文被掛 🚨重大消息 推給訂閱者,稀釋紅色驚嘆號的信任(狼來了)。
+const SPECULATIVE_MARKERS = [
+  /\bif\s+\w+/i, /\bcould\b/i, /\bwould\b/i, /\bmight\b/i, /\bmay\s+\w+/i,
+  /\brumor|speculat|reportedly|allegedly|what if\b/i,
+  /\bhere'?s why\b/i, /\bopinion\b|\banalysis\b|\bcolumn\b/i,
+  /^\s*(why|how|is|are|will|should|can|does|what|could)\b[^?]*\?/i, // 問句式標題
+  /傳聞|傳言|據傳|市場傳|盛傳|揣測|猜測|臆測|傳出|據報導稱/,
+  /專欄|評論|觀點|社論|分析師認為|外媒指/,
+  /假如|倘若|若.{0,8}(將|恐|可能|有望)/,
+];
+
+function isSpeculative(text) {
+  const t = text || "";
+  return SPECULATIVE_MARKERS.some((re) => re.test(t));
+}
+
 function clusterKey(ticker, eventType, publishedAt) {
   let ms = Date.parse(publishedAt);
   if (isNaN(ms)) ms = Date.now();
@@ -166,7 +186,12 @@ async function aiSeverity(env, news, tickers) {
 - 4-6:一般財經報導、分析師例行評論、影響有限。
 - 0-3:無實質影響、舊聞、與該公司關聯薄弱。
 
-只輸出 JSON,格式:{"severity": <0-10 整數>, "reason": "<一句繁體中文,說明為何重大>"}`;
+另外判斷三件事:
+- category:這則屬於「event」(已發生或已正式公告的事實)、「rumor」(未經證實的傳言/小道消息)、還是「opinion」(評論、分析、假設推演,例如「如果…將會…」「為什麼…」)。臆測與評論不是事件,即使聳動也不應給高分。
+- stance:對持有 ${names} 的投資人,你的操作傾向,從「加碼/續抱/觀望/減碼/賣出」擇一。
+- action:一句繁體中文,說明此刻具體該怎麼做與理由。若 category 是 rumor 或 opinion,務必明說「尚未證實/僅為推測,對基本面無立即影響」,不要建議因此追高或殺低,可提示真正該盯的下一個事件(財報/官方說法等)。
+
+只輸出 JSON,格式:{"severity": <0-10 整數>, "category": "event|rumor|opinion", "stance": "加碼|續抱|觀望|減碼|賣出", "reason": "<一句:為何跟投資人有關>", "action": "<一句:此刻該怎麼做與理由>"}`;
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -189,7 +214,16 @@ async function aiSeverity(env, news, tickers) {
     const parsed = JSON.parse(m[0]);
     let sev = Math.round(Number(parsed.severity));
     if (isNaN(sev)) sev = 0;
-    return { severity: Math.max(0, Math.min(10, sev)), reason: String(parsed.reason || "").slice(0, 200) };
+    const cat = ["event", "rumor", "opinion"].includes(parsed.category) ? parsed.category : "event";
+    const stanceSet = ["加碼", "續抱", "觀望", "減碼", "賣出"];
+    const stance = stanceSet.includes(parsed.stance) ? parsed.stance : "";
+    return {
+      severity: Math.max(0, Math.min(10, sev)),
+      category: cat,
+      stance,
+      reason: String(parsed.reason || "").slice(0, 200),
+      action: String(parsed.action || "").slice(0, 200),
+    };
   } catch (e) {
     return { severity: null, reason: `AI 例外:${e.message}`, error: true };
   }
@@ -222,20 +256,29 @@ async function lineToken(env, { force = false } = {}) {
   return data.access_token;
 }
 
-function alertMessage(news, ticker, severity, reason) {
-  const head = severity >= 9 ? "🚨 重大消息｜⚠️ 高度重大" : "🚨 重大消息";
+function alertMessage(news, ticker, severity, reason, meta = {}) {
+  const { speculative = false, stance = "", action = "" } = meta;
   const name = displayName(ticker);
-  return [
+  const head = speculative
+    ? "💬 觀點／傳言"
+    : (severity >= 9 ? "🚨 重大消息｜⚠️ 高度重大" : "🚨 重大消息");
+  const lines = [
     `${head}｜你的持股 ${name}`,
     "",
     news.title,
     "",
     "💡 為什麼跟你有關",
     reason || `這則新聞與你持有的 ${name} 相關,留意股價反應。`,
+  ];
+  if (stance || action) {
+    lines.push("", `📊 對你的部位:${stance}${stance && action ? " — " : ""}${action}`);
+  }
+  lines.push(
     "",
     `🔗 原文:${news.url}`,
     "—— MarketDaily 即時提醒｜僅供參考,非投資建議",
-  ].join("\n");
+  );
+  return lines.join("\n");
 }
 
 async function linePush(env, token, userId, text) {
@@ -388,11 +431,16 @@ async function runPipeline(env, { push, persist }) {
     report.counts.premiumMatched++;
 
     // AI 嚴重度
-    const { severity, reason, skipped, error } = await aiSeverity(env, news, news.tickers);
+    const { severity, reason, category, stance, action, skipped, error } = await aiSeverity(env, news, news.tickers);
     if (!skipped) report.counts.aiEvaluated++;
+    // 臆測/觀點:標題標記命中 或 AI 判 rumor/opinion → 門檻拉高 + 標籤改「觀點／傳言」。
+    const speculative = isSpeculative(`${news.title} ${news.summary || ""}`)
+      || category === "rumor" || category === "opinion";
+    const threshold = speculative ? SPECULATIVE_THRESHOLD : SEVERITY_THRESHOLD;
     const cand = {
       title: news.title, source: news.source, url: news.url,
-      tickers: news.tickers, eventType, preScore, severity, reason,
+      tickers: news.tickers, eventType, preScore, severity, category, stance, action,
+      speculative, threshold, reason,
       recipients: [],
     };
 
@@ -407,8 +455,9 @@ async function runPipeline(env, { push, persist }) {
       report.candidates.push(cand);
       continue;
     }
-    if (severity < SEVERITY_THRESHOLD) {
+    if (severity < threshold) {
       if (persist) await env.USER_PREFS.put(seenKey, report.ts, { expirationTtl: SEEN_TTL });
+      if (speculative) cand.reason = `${cand.reason || ""}(傳言/觀點,需 severity≥${threshold} 才推,本則 ${severity})`.trim();
       report.candidates.push(cand);
       continue;
     }
@@ -439,7 +488,7 @@ async function runPipeline(env, { push, persist }) {
         cand.recipients.push({ email: h.email, ticker: hit, status: "would-push" });
         continue;
       }
-      const msg = alertMessage(news, hit, severity, reason);
+      const msg = alertMessage(news, hit, severity, reason, { speculative, stance, action });
       const pushed = await linePush(env, token, h.userId, msg);
       if (pushed.ok) {
         await env.USER_PREFS.put(cluster, report.ts, { expirationTtl: PUSHED_TTL });
@@ -476,6 +525,9 @@ async function runPipeline(env, { push, persist }) {
             title: news.title,
             url: news.url,
             reason: reason,
+            stance: stance,
+            action: action,
+            category: category,
             severity: severity,
             body: msg.slice(0, 1200),
           });
@@ -592,8 +644,8 @@ export default {
           INTERNAL_TOKEN: !!env.INTERNAL_TOKEN,
         },
         config: {
-          severityThreshold: SEVERITY_THRESHOLD, dailyCap: DAILY_CAP,
-          maxAgeHours: MAX_AGE_HOURS, preScoreFloor: PRESCORE_FLOOR,
+          severityThreshold: SEVERITY_THRESHOLD, speculativeThreshold: SPECULATIVE_THRESHOLD,
+          dailyCap: DAILY_CAP, maxAgeHours: MAX_AGE_HOURS, preScoreFloor: PRESCORE_FLOOR,
           crons: ["*/2 * * * *(pipeline)", "0 * * * *(canary)"],
         },
         lastRun: lastRaw ? JSON.parse(lastRaw) : null,
