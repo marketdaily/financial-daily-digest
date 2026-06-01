@@ -30,6 +30,7 @@ jobs:
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           SENDER_NAME: ${{ secrets.SENDER_NAME }}
           MARKETDAILY_INTERNAL_TOKEN: ${{ secrets.MARKETDAILY_INTERNAL_TOKEN }}
+          MARKETDAILY_ALERT_TOKEN: ${{ secrets.MARKETDAILY_ALERT_TOKEN }}
         run: python main.py --dry-run
       - name: Commit audit report
         run: |

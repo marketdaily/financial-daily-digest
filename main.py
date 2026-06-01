@@ -736,9 +736,12 @@ def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails, dry_run=False):
     import os, json as _json, urllib.request
     worker = os.environ.get("MARKETDAILY_ALERT_WORKER_URL",
                             "https://marketdaily-alert-worker.delvin-12345678.workers.dev")
-    tok = os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN")
+    # admin 推播用 alert-worker 專屬 token(它的 INTERNAL_TOKEN 與主 worker 不同把);
+    # 退回 MARKETDAILY_INTERNAL_TOKEN 只為相容,真正能過 alert-worker auth 的是 ALERT_TOKEN。
+    tok = (os.environ.get("MARKETDAILY_ALERT_TOKEN")
+           or os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN"))
     if not tok:
-        print("   (skip:MARKETDAILY_INTERNAL_TOKEN/INTERNAL_TOKEN 未設,無法推 admin)")
+        print("   (skip:MARKETDAILY_ALERT_TOKEN/INTERNAL_TOKEN 未設,無法推 admin)")
         return
     prefix = "🧪 [PRE-FLIGHT]" if dry_run else "🛡️"
     lines = [f"{prefix} MarketDaily 日報品質告警 {date_str}"]
