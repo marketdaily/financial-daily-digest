@@ -597,7 +597,8 @@ def run():
                 print(f"   ⚠️ {email} HIGH audit fail,retry 一次")
                 try:
                     time.sleep(5)
-                    retry_inner = _report_fn()(data, us_stocks or None, tw_stocks or None)
+                    # retry 強制換更強模型(Claude/OpenAI 先於 Gemini),否則又從 Gemini 起跑 = 白 retry
+                    retry_inner = _report_fn()(data, us_stocks or None, tw_stocks or None, prefer_strong=True)
                     ai_calls += 1
                     retry_inner = _inject_ai_banner(retry_inner, data["date"])
                     retry_html = build_email_html(data["date"], retry_inner)

@@ -226,20 +226,22 @@ def _call_openai(prompt: str) -> str:
     return resp.json()["choices"][0]["message"]["content"].strip()
 
 
-def _llm_generate(prompt: str) -> str:
+def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     """多 provider LLM 鏈:Gemini Flash → Gemini Lite → Claude Haiku → OpenAI gpt-4o-mini。
     四層 LLM,任一可用就成功 — deterministic fallback 在現實中應該永遠跑不到。
-    2026-05-26:用戶要求不能有「最差情況」,LLM 路徑必須近 100%。"""
+    2026-05-26:用戶要求不能有「最差情況」,LLM 路徑必須近 100%。
+    prefer_strong=True:把 Claude/OpenAI 排到 Gemini 前面。retry 專用 —
+    第一次 Gemini 在配額壓力下回的弱內容會過 _llm_generate 但 audit HIGH fail,
+    retry 若還從 Gemini 起跑等於白做;換更強模型才有意義。Gemini 仍留最後一層,
+    不破壞「永不掉 deterministic」保證。"""
     last_err = None
-    providers = []
-    for model in GEMINI_MODELS:
-        providers.append((f"gemini:{model}", lambda p, m=model: _call_gemini(p, m)))
-    providers.append(("claude:haiku-4.5", _call_claude))
-    providers.append(("openai:gpt-4o-mini", _call_openai))
+    gemini = [(f"gemini:{m}", lambda p, mm=m: _call_gemini(p, mm)) for m in GEMINI_MODELS]
+    strong = [("claude:haiku-4.5", _call_claude), ("openai:gpt-4o-mini", _call_openai)]
+    providers = (strong + gemini) if prefer_strong else (gemini + strong)
     for name, fn in providers:
         try:
             out = fn(prompt)
-            print(f"  [LLM] 使用 {name}")
+            print(f"  [LLM] 使用 {name}{' (retry強化)' if prefer_strong else ''}")
             return out
         except Exception as e:
             last_err = e
@@ -873,7 +875,7 @@ def _compact_overflow_card(sym: str, data: dict, mkt_status: dict) -> str:
             f'<div class="signal-body"><div class="signal-reason">{body}</div></div></div>')
 
 
-def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, full_limit: int = None) -> str:
+def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, full_limit: int = None, prefer_strong: bool = False) -> str:
     """分批生成每檔持股的 signal-card,保證『使用者選的每一支都有下一步』。
     一次塞 30-50 檔給 LLM 會超出輸出上限被截斷 → 改成每 10 檔一批多次呼叫,
     任何一檔 LLM 失敗 / 不合格 → 用真實技術價位的 deterministic 卡補位。
@@ -902,7 +904,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
         )
         raw = ""
         try:
-            raw = _llm_generate(prompt)
+            raw = _llm_generate(prompt, prefer_strong)
         except Exception as e:
             print(f"  [signal-batch] chunk {i//CHUNK+1} LLM 全失敗,改 deterministic({str(e)[:80]})")
         if raw.startswith("```"):
@@ -960,7 +962,7 @@ def _inject_signal_cards(raw: str, cards: str) -> str:
 
 
 def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                    email_safe: bool = False) -> str:
+                    email_safe: bool = False, prefer_strong: bool = False) -> str:
     # email 版：持倉太多時敘述只留變動最大的 N 支，避免信件過長被 Gmail 截斷（完整版見網頁）。
     # 但「操作訊號卡」仍覆蓋全部持股(_full_holdings),不丟任何一支。
     _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
@@ -1321,12 +1323,13 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 - signal-ticker、ticker、stock-news-ticker、earnings-ticker、impact-stock 這些 span 內一律只放純股票代號，系統會自動補上公司中英文名稱
 """
 
-    raw = _llm_generate(prompt)
+    raw = _llm_generate(prompt, prefer_strong)
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
     cards = _render_signal_cards_batched(data, top_signal_stocks, mkt_status,
-                                         full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None)
+                                         full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
+                                         prefer_strong=prefer_strong)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
@@ -1336,7 +1339,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 
 # ─── Weekend Recap(週六專用:本週回顧 + 下週預告)──────────────
 def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                            email_safe: bool = False) -> str:
+                            email_safe: bool = False, prefer_strong: bool = False) -> str:
     """週六晨間日報:不講當日大盤(已收),改聚焦『本週回顧 + 下週重點』。"""
     if email_safe:
         us0 = list(user_us_stocks or [])
@@ -1409,7 +1412,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 不要 markdown ```、不要在 .stock-card 內塞當日資料(改成本週區間)、不要寫「今日」「盤中」這類週六不該出現的字眼。
 """
 
-    raw = _llm_generate(prompt)
+    raw = _llm_generate(prompt, prefer_strong)
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
@@ -1421,7 +1424,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 
 # ─── Monday Outlook(週一專用:上週五收盤 + 週末新聞 + 本週展望 + Gap 警示)──────────────
 def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                           email_safe: bool = False) -> str:
+                           email_safe: bool = False, prefer_strong: bool = False) -> str:
     """週一晨間日報:前兩天(週六、週日)沒開盤,所以基準是『上週五收盤』。
     重點:週末新聞累積 + 上週五收盤回顧 + 本週 catalysts + 週一開盤 gap 風險 +
     每檔持股仍給明確操作建議(買/抱/賣/觀望)。"""
@@ -1547,12 +1550,13 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 不要 markdown ```、不要寫「今天大盤」這類週一早上不該出現的字眼(因為現在還沒開盤),改用「上週五」「今早開盤前」「本週」。
 """
 
-    raw = _llm_generate(prompt)
+    raw = _llm_generate(prompt, prefer_strong)
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
     cards = _render_signal_cards_batched(data, signal_stocks, mkt_status,
-                                         full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None)
+                                         full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
+                                         prefer_strong=prefer_strong)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
