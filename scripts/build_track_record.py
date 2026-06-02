@@ -19,6 +19,7 @@ from pathlib import Path
 
 import urllib.request
 import urllib.error
+import urllib.parse
 from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -107,9 +108,14 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
     PRI = {"action-board": 3, "signal-card": 2, "stock-card": 1}
 
     def maybe_add(rec: dict) -> None:
-        existing = by_ticker.get(rec["ticker"])
+        # ticker 必須是美股 [A-Z.] 或台股 4-6 位數字;中文公司名等非法 ticker
+        # (解析只抓到單一中文 span 時會誤判)直接擋掉,否則會炸 Yahoo URL ascii 編碼
+        t = rec["ticker"]
+        if not re.fullmatch(r"[A-Z][A-Z.]*|\d{4,6}", t):
+            return
+        existing = by_ticker.get(t)
         if existing is None or PRI[rec["source"]] > PRI[existing["source"]]:
-            by_ticker[rec["ticker"]] = rec
+            by_ticker[t] = rec
 
     # ── action-item (cleanest) ──
     for item in soup.select(".action-item"):
@@ -246,7 +252,7 @@ def yahoo_chart(sym: str, _start_iso: str, _end_iso: str) -> dict[str, float] | 
     """
     # Strip .TW because worker auto-handles TW symbols when /^\d{4}$/
     base = sym.replace(".TW", "").replace(".TWO", "")
-    url = f"{WORKER}/stock-chart?ticker={base}&range=1M"
+    url = f"{WORKER}/stock-chart?ticker={urllib.parse.quote(base)}&range=1M"
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
     last_err = None
     for attempt in range(3):
