@@ -18,10 +18,12 @@ def check(name, cond):
 check("standard 不注入指令(baseline 不退化)", _depth_directive("standard") == "")
 check("未知值退回 standard 行為", _depth_directive("garbage") == "")
 
-# 2. simple / deep 各有對應指令
+# 2. 累加語意:simple=純操作(砍新聞) / standard=操作+新聞+技術 / deep=標準全部+估值產業鏈
 check("simple 指令含『精簡』", "精簡" in _depth_directive("simple"))
-check("simple 限制長篇大盤", "不要長篇" in _depth_directive("simple"))
+check("simple = 純重點操作", "純重點操作" in _depth_directive("simple"))
+check("simple 明令不要新聞", "不要新聞" in _depth_directive("simple"))
 check("deep 指令含『深入』", "深入" in _depth_directive("deep"))
+check("deep = 標準版全部再加碼(累加)", "標準版全部" in _depth_directive("deep"))
 check("deep 含估值/供應鏈", "估值" in _depth_directive("deep") and "供應鏈" in _depth_directive("deep"))
 check("deep 仍禁止編造財務數字", "不可臆測" in _depth_directive("deep"))
 

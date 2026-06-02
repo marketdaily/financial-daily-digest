@@ -714,11 +714,12 @@ def _fmt_num(n):
 def _depth_directive(depth: str) -> str:
     """日報深度客製(Premium 專屬)注入 prompt 的指令。simple=精簡 / deep=深入 / standard=不加。"""
     if depth == "simple":
-        return ("【深度設定:精簡版】這位用戶選了「簡單看」—— 只要 TLDR + 每支持股的操作卡 + 最多 3 則跟他持倉直接相關的新聞。"
-                "不要長篇大盤分析、不要進階指標區塊。每支股票一兩句講重點:該買/抱/賣 + 條件(價位或事件),不鋪陳。")
+        return ("【深度設定:精簡版 = 純重點操作】這位用戶選了「簡單看」—— 只輸出 TLDR(30秒重點)+ 每支持股的操作卡 + 今天的結論。"
+                "完全不要新聞區塊(不要『今天最重要的5件事』、不要『持倉深度追蹤』)、不要大盤/加密/財報/板塊/進階指標。"
+                "每支股票一兩句講重點:該買/抱/賣 + 條件(價位或事件),不鋪陳。")
     if depth == "deep":
-        return ("【深度設定:深入版】這位用戶選了「看深入」—— 在標準內容之外,針對每支持股額外補充:"
-                "(1) 估值看法(便宜/合理/偏貴,可給合理價區間,但只能依提供的真實數據,不可臆測本益比或編造財務數字);"
+        return ("【深度設定:深入版 = 標準版全部再加碼】這位用戶選了「看深入」—— 保留標準版的一切(操作卡 + 新聞 + 技術 + 大盤),"
+                "並針對每支持股額外補充:(1) 估值看法(便宜/合理/偏貴,可給合理價區間,但只能依提供的真實數據,不可臆測本益比或編造財務數字);"
                 "(2) 同產業或供應鏈關聯的個股;(3) 若新聞提到法人/機構/內部人動向要點出。分析可深一點,但仍要口語、每個建議都附價位或時間條件。")
     return ""
 
@@ -1203,6 +1204,75 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
         mood_section = ""
     depth_directive = _depth_directive(depth)
 
+    # 累加式深度:simple=只有 TLDR + 操作卡(+結論);standard 在此之上加新聞;
+    # 大盤/進階尾段 standard 也有,deep 全開,simple 全砍。
+    news5_block = f"""<div class="section-label">🔥 今天最重要的 5 件事</div>
+<div class="news-card">
+  <div class="news-tag verified">✅ 多源確認</div>
+  <div class="news-headline">（標題，口語化改寫，不超過 25 字）</div>
+  <div class="news-why">💡 為什麼重要：（這件事的來龍去脈與後續影響，要有實質分析，不可只是把標題換句話說）</div>
+  <div class="news-impact">
+    <span class="impact-label">📊 影響個股</span>
+    <span class="impact-stock up">NVDA</span>
+    <span class="impact-stock down">INTC</span>
+  </div>
+  <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
+</div>
+（重複 5 次，單一來源用 <div class="news-tag single">⚠️ 單一來源</div>）
+
+‼️ news-impact 是強制要求：5 張新聞卡【每一張都必須】有 news-impact 區塊，且至少列 1 支 impact-stock。
+- impact-stock span 內只放純股票代號（例如 NVDA、AAPL、2330），不要放公司名，系統會自動補名稱與漲跌標示
+- class 用 up＝這則消息對該股是利多（可能漲）、down＝利空（可能跌）
+- 想不到具體個股時，就挑受影響產業的龍頭股：Fed 利率→JPM、GS；油價→XOM、CVX；AI/算力→NVDA、TSM；半導體→TSM、2330、2454；消費→AMZN、WMT
+- 優先列跟用戶持倉（{', '.join(all_holdings) if has_holdings else '主流科技股'}）相關的個股
+- 只有新聞完全與任何上市公司無關時（例如純政治事件）才可省略，且這種最多 1 張"""
+
+    market_tail_block = f"""<div class="advanced-divider">📊 以下是大盤與進階分析 — 想深入再看，不看也不影響你上面的操作</div>
+
+{mood_section}
+{indicator_section}
+
+<div class="section-label">₿ 加密貨幣</div>
+<div class="crypto-bar">
+  <div class="crypto-item">
+    <div class="crypto-name">BTC</div>
+    <div class="crypto-price BTCDIR">（價格）</div>
+    <div class="crypto-change">（漲跌%）</div>
+  </div>
+  <div class="crypto-item">
+    <div class="crypto-name">ETH</div>
+    <div class="crypto-price ETHDIR">（價格）</div>
+    <div class="crypto-change">（漲跌%）</div>
+  </div>
+</div>
+
+<div class="section-label">📈 大盤怎麼了</div>
+<div class="market-summary">（用 2-3 句話說大盤狀況，口語化，包含台股）</div>
+
+{sector_section}
+
+{second_order_section}
+
+<div class="section-label">📅 即將公布財報</div>
+<div class="earnings-list">
+（根據財報日曆，列出未來兩週內的財報，格式：
+  <div class="earnings-item">
+    <span class="earnings-ticker">（代號）</span>
+    <span class="earnings-date">（日期）</span>
+    <span class="earnings-note">（一句話：市場預期什麼）</span>
+  </div>
+若無資料則寫「近期無重大財報」）
+</div>"""
+
+    if depth == "simple":
+        # 簡單看 = 純重點操作:只留 TLDR + 操作卡(+結論),新聞與大盤全砍
+        personalized_news_instruction = ""
+        news5_section = ""
+        market_tail_section = ""
+    else:
+        news5_section = news5_block
+        market_tail_section = market_tail_block
+
     prompt = f"""你是這位用戶的專屬財經顧問，說話生活化、直接、像朋友。這份報告是**專門為持有 {', '.join(all_holdings) if has_holdings else '各種股票的'} 的用戶客製化生成的**，不是通用報告。
 
 【⏰ 時序紀律 — 違反 = 廢稿】
@@ -1269,63 +1339,9 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 {personalized_news_instruction}
 {rookie_section}
 
-<div class="section-label">🔥 今天最重要的 5 件事</div>
-<div class="news-card">
-  <div class="news-tag verified">✅ 多源確認</div>
-  <div class="news-headline">（標題，口語化改寫，不超過 25 字）</div>
-  <div class="news-why">💡 為什麼重要：（這件事的來龍去脈與後續影響，要有實質分析，不可只是把標題換句話說）</div>
-  <div class="news-impact">
-    <span class="impact-label">📊 影響個股</span>
-    <span class="impact-stock up">NVDA</span>
-    <span class="impact-stock down">INTC</span>
-  </div>
-  <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
-</div>
-（重複 5 次，單一來源用 <div class="news-tag single">⚠️ 單一來源</div>）
+{news5_section}
 
-‼️ news-impact 是強制要求：5 張新聞卡【每一張都必須】有 news-impact 區塊，且至少列 1 支 impact-stock。
-- impact-stock span 內只放純股票代號（例如 NVDA、AAPL、2330），不要放公司名，系統會自動補名稱與漲跌標示
-- class 用 up＝這則消息對該股是利多（可能漲）、down＝利空（可能跌）
-- 想不到具體個股時，就挑受影響產業的龍頭股：Fed 利率→JPM、GS；油價→XOM、CVX；AI/算力→NVDA、TSM；半導體→TSM、2330、2454；消費→AMZN、WMT
-- 優先列跟用戶持倉（{', '.join(all_holdings) if has_holdings else '主流科技股'}）相關的個股
-- 只有新聞完全與任何上市公司無關時（例如純政治事件）才可省略，且這種最多 1 張
-
-<div class="advanced-divider">📊 以下是大盤與進階分析 — 想深入再看，不看也不影響你上面的操作</div>
-
-{mood_section}
-{indicator_section}
-
-<div class="section-label">₿ 加密貨幣</div>
-<div class="crypto-bar">
-  <div class="crypto-item">
-    <div class="crypto-name">BTC</div>
-    <div class="crypto-price BTCDIR">（價格）</div>
-    <div class="crypto-change">（漲跌%）</div>
-  </div>
-  <div class="crypto-item">
-    <div class="crypto-name">ETH</div>
-    <div class="crypto-price ETHDIR">（價格）</div>
-    <div class="crypto-change">（漲跌%）</div>
-  </div>
-</div>
-
-<div class="section-label">📈 大盤怎麼了</div>
-<div class="market-summary">（用 2-3 句話說大盤狀況，口語化，包含台股）</div>
-
-{sector_section}
-
-{second_order_section}
-
-<div class="section-label">📅 即將公布財報</div>
-<div class="earnings-list">
-（根據財報日曆，列出未來兩週內的財報，格式：
-  <div class="earnings-item">
-    <span class="earnings-ticker">（代號）</span>
-    <span class="earnings-date">（日期）</span>
-    <span class="earnings-note">（一句話：市場預期什麼）</span>
-  </div>
-若無資料則寫「近期無重大財報」）
-</div>
+{market_tail_section}
 
 <div class="section-label">🎯 今天的結論</div>
 <div class="verdict SENTIMENT">
