@@ -42,6 +42,29 @@ check("premium 選 deep → 保留 deep", gate("premium", "deep") == "deep")
 check("admin 選 simple → 保留 simple", gate("admin", "simple") == "simple")
 check("premium 選非法值 → standard", gate("premium", "xxx") == "standard")
 
+# 4. 真組 prompt 驗週末/週一 simple 確實砍新聞段、保留操作核心(monkeypatch 掉 LLM,離線)
+import analyzer
+_cap = {}
+analyzer._llm_generate = lambda prompt, prefer_strong=False: _cap.setdefault("p", prompt) or "<div class='tldr'><ul><li>x</li></ul></div>"
+analyzer._render_signal_cards_batched = lambda *a, **k: "<div class='signal-card'>x</div>"
+analyzer._postprocess_html = lambda raw, data: raw
+_data = {"date": "2026-06-08", "us_market": {}, "tw_market": {}, "us_news": [], "tw_news": [], "technicals": {}}
+
+def _probe(fn, depth):
+    _cap.clear()
+    try:
+        fn(_data, ["NVDA"], ["2330"], depth=depth)
+    except Exception as e:
+        return f"ERR {e}"
+    return _cap.get("p", "")
+
+for nm, fn in [("週末", analyzer.generate_weekend_report), ("週一", analyzer.generate_monday_report)]:
+    ps = _probe(fn, "simple"); pd = _probe(fn, "standard")
+    check(f"{nm} simple 無新聞回顧段", not ("本週回顧" in ps or "週末重點新聞" in ps or "下週看什麼" in ps))
+    check(f"{nm} simple 無催化劑清單", not ("本週催化劑" in ps or ("catalysts" in ps and "條列" in ps)))
+    check(f"{nm} simple 保留操作核心", ("stock-card" in ps or "SIGNAL_CARDS" in ps or "gap" in ps.lower()))
+    check(f"{nm} standard 仍有新聞段(baseline)", ("本週回顧" in pd or "週末重點新聞" in pd or "下週" in pd))
+
 print()
 if fails:
     print(f"FAIL {len(fails)} 項:", fails)

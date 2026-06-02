@@ -1405,6 +1405,39 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
     has_holdings = bool(holdings)
     is_beginner = len(holdings) <= 4
 
+    # 累加式深度:simple 只留 TLDR + 持股本週表現操作 + 週末思考;standard/deep 再加本週回顧新聞 + 下週 catalysts
+    if depth == "simple":
+        weekend_body = """【持股本週表現(純重點操作)】
+- 只針對用戶持股寫:本週走勢一句話 + 下週明確操作(買/抱/賣 + 價位條件)
+- 不要本週新聞回顧、不要下週 catalysts 清單、不要大盤長篇
+
+【週末投資思考(1 段)】
+- 給用戶一個本週末值得思考的問題或觀點(風險、配置、心態),簡短有力
+"""
+        weekend_format = """嚴格回傳純 HTML,沿用平日日報 CSS class(.tldr, .stock-card, .verdict.neutral 等),只要這幾塊(純重點,不要新聞回顧、不要 catalysts 清單):
+1. .tldr 區改成「📅 本週快訊」(3-4 條本週重點,有台股要至少 1 條台股)
+2. .section-label「持股本週表現」+ .stock-card 寫用戶 holdings 的本週走勢 + 下週明確操作(買/抱/賣 + 價位條件)
+3. .verdict.neutral 結尾的「週末思考」"""
+    else:
+        weekend_body = """【本週回顧(週一到週五已收盤)】
+- 寫 3-4 段 highlights:本週最大事件、本週贏家/輸家、用戶持股本週表現
+- 引用本週實際發生的新聞,連結原文
+
+【下週看什麼(catalysts)】
+- 從新聞中找出下週會發生的事件:財報日、Fed/央行講話、CPI/PPI 等經濟數據、地緣政治
+- 條列 5-8 個 catalysts,標明日期與影響
+- 如新聞中沒提到具體下週事件,寫「本週新聞中未明示下週重大事件,留意週一開盤反應」即可,不要捏造
+
+【週末投資思考(1 段)】
+- 給用戶一個本週末值得思考的問題或觀點(風險、配置、心態),簡短有力
+"""
+        weekend_format = """嚴格回傳純 HTML,沿用平日日報 CSS class(.tldr, .news-card, .stock-card, .verdict.neutral, .watch-list 等),內容主軸:
+1. .tldr 區改成「📅 本週快訊」(3-4 條本週重點)
+2. .section-label「本週回顧」+ 數張 .news-card 寫本週實際發生的大事
+3. .section-label「下週 catalysts」+ .watch-list 列下週要看的事件 + 日期
+4. .section-label「持股本週表現」+ .stock-card 寫用戶 holdings 的本週走勢
+5. .verdict.neutral 結尾的「週末思考」"""
+
     prompt = f"""你是這位用戶的專屬財經顧問。今天是**週六晨間**,美股週五已收盤、台股週五已收盤,週末兩天都不開盤。所以這份報告不講「今天大盤」,而是聚焦「本週發生了什麼 + 下週要看什麼」。
 
 【無幻覺原則 — 違反就廢稿】
@@ -1419,18 +1452,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 - 內容要圍繞他的持股做本週復盤 + 下週展望
 - 台股一律用公司名稱(可附代號),不要只報數字
 
-【本週回顧(週一到週五已收盤)】
-- 寫 3-4 段 highlights:本週最大事件、本週贏家/輸家、用戶持股本週表現
-- 引用本週實際發生的新聞,連結原文
-
-【下週看什麼(catalysts)】
-- 從新聞中找出下週會發生的事件:財報日、Fed/央行講話、CPI/PPI 等經濟數據、地緣政治
-- 條列 5-8 個 catalysts,標明日期與影響
-- 如新聞中沒提到具體下週事件,寫「本週新聞中未明示下週重大事件,留意週一開盤反應」即可,不要捏造
-
-【週末投資思考(1 段)】
-- 給用戶一個本週末值得思考的問題或觀點(風險、配置、心態),簡短有力
-
+{weekend_body}
 【日期】{date}(週六)
 
 【本週市場數據(以週五收盤為基準)】
@@ -1442,12 +1464,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 【本週台股新聞】
 {tw_news_text}
 
-【輸出格式】嚴格回傳純 HTML,沿用平日日報 CSS class(.tldr, .news-card, .stock-card, .verdict.neutral, .watch-list 等),但內容主軸換成:
-1. .tldr 區改成「📅 本週快訊」(3-4 條本週重點)
-2. .section-label「本週回顧」+ 數張 .news-card 寫本週實際發生的大事
-3. .section-label「下週 catalysts」+ .watch-list 列下週要看的事件 + 日期
-4. .section-label「持股本週表現」+ .stock-card 寫用戶 holdings 的本週走勢
-5. .verdict.neutral 結尾的「週末思考」
+【輸出格式】{weekend_format}
 
 不要 markdown ```、不要在 .stock-card 內塞當日資料(改成本週區間)、不要寫「今日」「盤中」這類週六不該出現的字眼。
 """
@@ -1525,13 +1542,39 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
     signal_skeleton = """
 <div class="signal-header">
   <div class="signal-header-title">💡 你的持股本週怎麼操作</div>
-  <div class="signal-header-subtitle">上週五收盤位置 + 週末新聞 + 本週催化劑 · 給出明確動詞</div>
+  <div class="signal-header-subtitle">上週五收盤位置 + 今早開盤策略 · 給出明確動詞</div>
 </div>
 <div class="signal-grid">
 <!--SIGNAL_CARDS-->
 </div>
 <div class="signal-disclaimer">⚠️ AI 分析僅供參考,不構成投資建議</div>
 ‼️ 上面這段「💡 你的持股本週怎麼操作」區塊**原樣保留**,尤其 <!--SIGNAL_CARDS--> 這行註解不要刪改、不要自己生成任何 signal-card,系統會自動填入每檔持股的操作卡。"""
+
+    # 累加式深度:simple 只留 TLDR + Gap 風險 playbook(操作核心)+ 操作卡 + 週一心法;
+    # standard/deep 再加週末新聞卡 + 上週五收盤回顧 + 本週催化劑
+    _simple = depth == "simple"
+    monday_catalyst_block = "" if _simple else """【本週催化劑(必須出現)】
+- 從新聞中找出本週會發生的事件:財報日、Fed 講話、CPI/PPI、台股除權息
+- 條列 5-8 個 catalysts,標明日期(週幾)與對哪些持股有影響
+- 如新聞中沒提到,寫「本週新聞中未明示具體事件,持續追蹤」即可,不要捏造
+"""
+    if _simple:
+        monday_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class,只要這幾塊(純重點操作,不要週末新聞卡、不要收盤回顧、不要催化劑清單):
+1. .tldr 區改成「📅 週一展望」標題,列 3-4 條:①今早 gap 方向 ②上週五收盤摘要(一句)③本週持股怎麼動
+2. .section-label「⚠️ 週一開盤 Gap 風險」+ 一張 .verdict.SENTIMENT 卡片,寫明開盤方向 + 具體 playbook(買/抱/賣 + 價位)
+3. 持股操作訊號卡區塊:**原樣輸出下方模板,不要自己生卡片**(卡片由系統填入 <!--SIGNAL_CARDS-->):
+{signal_skeleton}
+4. .verdict.neutral 結尾「週一心法」,提醒週一波動大、可觀察前 30 分鐘再進場"""
+    else:
+        monday_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class,順序如下:
+1. .tldr 區改成「📅 週一展望」標題,列 3-4 條:①週末最大事件 ②上週五收盤摘要 ③本週要看什麼 ④今早 gap 方向
+2. .section-label「📰 週末重點新聞」+ 數張 .news-card,標題明示「週末發生」,有影響個股就掛 impact-stock
+3. .section-label「📊 上週五收盤回顧」+ .market-summary,**所有數據敘述都要說「上週五」不可寫「今天」**
+4. .section-label「⚠️ 週一開盤 Gap 風險」+ 一張 .verdict.SENTIMENT 卡片,寫明開盤方向 + 具體 playbook
+5. .section-label「📅 本週催化劑」+ .watch-list 列出本週事件 + 日期
+6. 持股操作訊號卡區塊:**原樣輸出下方模板,不要自己生卡片**(卡片由系統填入 <!--SIGNAL_CARDS-->):
+{signal_skeleton}
+7. .verdict.neutral 結尾「週一心法」,提醒週一通常波動大、可觀察前 30 分鐘再進場"""
 
     prompt = f"""你是這位用戶的專屬財經顧問。今天是**週一晨間**,週六週日股市都沒開盤,所以這份報告的數據基準是「**上週五({last_friday})收盤**」,內容主軸是:
 1. 週末兩天累積的新聞(可能影響今早開盤)
@@ -1549,24 +1592,20 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 {_depth_directive(depth)}
 【個人化原則】
 - 用戶持倉:{', '.join(holdings) if has_holdings else '尚未設定持股,以大盤龍頭股為例'}
-- 內容圍繞他的持股做:上週五表現 + 週末新聞影響 + 本週催化劑 + 操作建議
+- {'內容只圍繞他的持股做:今早 gap 方向 + 每支持股本週操作建議(純重點,不寫新聞回顧/催化劑清單)' if _simple else '內容圍繞他的持股做:上週五表現 + 週末新聞影響 + 本週催化劑 + 操作建議'}
 - 台股一律用公司名稱(可附代號),不要只報數字
 
 【🚫 不要自己生持股操作卡】
 每檔持股的 signal-card(操作訊號卡)由系統另外分批生成並填入,**你不要輸出任何 <div class="signal-card"> 卡片**。
-你只負責 TLDR、週末新聞、上週五收盤回顧、Gap 風險、本週催化劑、週一心法這些區塊;遇到訊號卡區塊只原樣保留 <!--SIGNAL_CARDS--> 註解。
+你只負責 {'TLDR、Gap 風險、週一心法這些區塊' if _simple else 'TLDR、週末新聞、上週五收盤回顧、Gap 風險、本週催化劑、週一心法這些區塊'};遇到訊號卡區塊只原樣保留 <!--SIGNAL_CARDS--> 註解。
 
-【📅 週末新聞 + 週一 Gap 風險】
+【📅 {'今早開盤 Gap 風險' if _simple else '週末新聞 + 週一 Gap 風險'}】
 這是週一特有區塊,必須出現:
-- 整理週末兩天(週六週日)累積的關鍵新聞,標題明示「週末發生」
-- 根據週末新聞推估今早美股期貨/台股開盤偏多/偏空/中性的方向
+- 根據週末發生的事推估今早美股期貨/台股開盤偏多/偏空/中性的方向
 - 對應到具體 playbook:例如「若 NVDA 開盤跳空向上 >2% → 等回拉接;跳空向下 → 分批接 $XXX-XXX」
+{'' if _simple else '- 並整理週末兩天(週六週日)累積的關鍵新聞,標題明示「週末發生」'}
 
-【本週催化劑(必須出現)】
-- 從新聞中找出本週會發生的事件:財報日、Fed 講話、CPI/PPI、台股除權息
-- 條列 5-8 個 catalysts,標明日期(週幾)與對哪些持股有影響
-- 如新聞中沒提到,寫「本週新聞中未明示具體事件,持續追蹤」即可,不要捏造
-
+{monday_catalyst_block}
 【日期】{date}(週一,基準=上週五 {last_friday} 收盤)
 
 【上週五市場數據】
@@ -1578,15 +1617,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 【週末台股新聞(週六週日累積)】
 {tw_news_text}
 
-【輸出格式】嚴格回傳純 HTML,沿用平日日報 CSS class,順序如下:
-1. .tldr 區改成「📅 週一展望」標題,列 3-4 條:①週末最大事件 ②上週五收盤摘要 ③本週要看什麼 ④今早 gap 方向
-2. .section-label「📰 週末重點新聞」+ 數張 .news-card,標題明示「週末發生」,有影響個股就掛 impact-stock
-3. .section-label「📊 上週五收盤回顧」+ .market-summary,**所有數據敘述都要說「上週五」不可寫「今天」**
-4. .section-label「⚠️ 週一開盤 Gap 風險」+ 一張 .verdict.SENTIMENT 卡片,寫明開盤方向 + 具體 playbook
-5. .section-label「📅 本週催化劑」+ .watch-list 列出本週事件 + 日期
-6. 持股操作訊號卡區塊:**原樣輸出下方模板,不要自己生卡片**(卡片由系統填入 <!--SIGNAL_CARDS-->):
-{signal_skeleton}
-7. .verdict.neutral 結尾「週一心法」,提醒週一通常波動大、可觀察前 30 分鐘再進場
+【輸出格式】{monday_format}
 
 不要 markdown ```、不要寫「今天大盤」這類週一早上不該出現的字眼(因為現在還沒開盤),改用「上週五」「今早開盤前」「本週」。
 """
