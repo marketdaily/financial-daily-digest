@@ -711,6 +711,18 @@ def _fmt_num(n):
         return str(n)
 
 
+def _depth_directive(depth: str) -> str:
+    """日報深度客製(Premium 專屬)注入 prompt 的指令。simple=精簡 / deep=深入 / standard=不加。"""
+    if depth == "simple":
+        return ("【深度設定:精簡版】這位用戶選了「簡單看」—— 只要 TLDR + 每支持股的操作卡 + 最多 3 則跟他持倉直接相關的新聞。"
+                "不要長篇大盤分析、不要進階指標區塊。每支股票一兩句講重點:該買/抱/賣 + 條件(價位或事件),不鋪陳。")
+    if depth == "deep":
+        return ("【深度設定:深入版】這位用戶選了「看深入」—— 在標準內容之外,針對每支持股額外補充:"
+                "(1) 估值看法(便宜/合理/偏貴,可給合理價區間,但只能依提供的真實數據,不可臆測本益比或編造財務數字);"
+                "(2) 同產業或供應鏈關聯的個股;(3) 若新聞提到法人/機構/內部人動向要點出。分析可深一點,但仍要口語、每個建議都附價位或時間條件。")
+    return ""
+
+
 def _signal_card_format_rules(mkt_status: dict) -> str:
     """所有報告共用的 signal-card 格式規格(批次生成用)。"""
     tw_when = "今早 9:00 開盤後" if mkt_status.get("tw_will_open_today") else "下個台股交易日"
@@ -962,7 +974,7 @@ def _inject_signal_cards(raw: str, cards: str) -> str:
 
 
 def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                    email_safe: bool = False, prefer_strong: bool = False) -> str:
+                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard") -> str:
     # email 版：持倉太多時敘述只留變動最大的 N 支，避免信件過長被 Gmail 截斷（完整版見網頁）。
     # 但「操作訊號卡」仍覆蓋全部持股(_full_holdings),不丟任何一支。
     _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
@@ -1171,15 +1183,25 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 （根據今天美股動向，分析對台灣供應鏈的傳導影響。例如：NVDA 漲 → CoWoS 封裝需求 → 台積電/日月光受惠。只寫真正有關聯的，沒有就不寫。2-3 條 bullet，繁體中文）
 </div>"""
 
-    # 新手精簡模式：拿掉中階區塊（原始數據儀表板、板塊輪動、二階思考）
-    if is_beginner:
-        indicator_section = ""
-        sector_section = ""
-        second_order_section = ""
+    # 深度控制(Premium 客製):simple=最精簡 / standard=依新手判斷 / deep=全開
+    # 新手精簡模式本來就拿掉中階區塊(原始數據儀表板、板塊輪動、二階思考)
+    if depth == "deep":
+        show_advanced = True
+    elif depth == "simple":
+        show_advanced = False
     else:
+        show_advanced = not is_beginner
+    if show_advanced:
         indicator_section = indicator_block
         sector_section = sector_block
         second_order_section = second_order_block
+    else:
+        indicator_section = ""
+        sector_section = ""
+        second_order_section = ""
+    if depth == "simple":
+        mood_section = ""
+    depth_directive = _depth_directive(depth)
 
     prompt = f"""你是這位用戶的專屬財經顧問，說話生活化、直接、像朋友。這份報告是**專門為持有 {', '.join(all_holdings) if has_holdings else '各種股票的'} 的用戶客製化生成的**，不是通用報告。
 
@@ -1204,6 +1226,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 - 找不到對應的真實新聞時，就不要寫那張新聞卡 / stock-news-item，絕對不要為了湊數量而捏造
 - 如果某項資訊不足，就說「今日數據不足」，不要捏造
 
+{depth_directive}
 【個人化原則】
 - TLDR 30秒重點：**用戶有台股持股時，4 條至少 1 條必須是台股相關**（昨日收盤動向 / 今早 9:00 開盤怎麼操作 / 對某檔持股的明確建議），不可全部都美股。{f"⚠️ 這位用戶持有台股：{', '.join(watchlist_tw)} — TLDR 一定要有他的台股動向。" if watchlist_tw else ""}
 - 所有分析都圍繞用戶的持倉，大盤新聞只在跟他持倉有關時才詳細寫
@@ -1339,7 +1362,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 
 # ─── Weekend Recap(週六專用:本週回顧 + 下週預告)──────────────
 def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                            email_safe: bool = False, prefer_strong: bool = False) -> str:
+                            email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard") -> str:
     """週六晨間日報:不講當日大盤(已收),改聚焦『本週回顧 + 下週重點』。"""
     if email_safe:
         us0 = list(user_us_stocks or [])
@@ -1374,6 +1397,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 - 找不到對應真實新聞就不要硬寫
 - 如資訊不足,寫「本週資料不足」不要捏造
 
+{_depth_directive(depth)}
 【個人化原則】
 - 用戶持倉:{', '.join(holdings) if has_holdings else '尚未設定持股,以大盤龍頭股為例'}
 - 內容要圍繞他的持股做本週復盤 + 下週展望
@@ -1424,7 +1448,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 
 # ─── Monday Outlook(週一專用:上週五收盤 + 週末新聞 + 本週展望 + Gap 警示)──────────────
 def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                           email_safe: bool = False, prefer_strong: bool = False) -> str:
+                           email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard") -> str:
     """週一晨間日報:前兩天(週六、週日)沒開盤,所以基準是『上週五收盤』。
     重點:週末新聞累積 + 上週五收盤回顧 + 本週 catalysts + 週一開盤 gap 風險 +
     每檔持股仍給明確操作建議(買/抱/賣/觀望)。"""
@@ -1506,6 +1530,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 - 找不到對應真實新聞就不要硬寫
 - 「上週五收盤」價格直接引用下方市場數據,不可改動
 
+{_depth_directive(depth)}
 【個人化原則】
 - 用戶持倉:{', '.join(holdings) if has_holdings else '尚未設定持股,以大盤龍頭股為例'}
 - 內容圍繞他的持股做:上週五表現 + 週末新聞影響 + 本週催化劑 + 操作建議

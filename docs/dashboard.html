@@ -700,6 +700,47 @@ nav {
 
     <div class="save-status" id="save-status" onclick="doAutoSave()" data-i18n="save_status_idle">你的選擇會自動儲存,不需要按任何按鈕。</div>
 
+    <!-- 日報深度(Premium 專屬;免費鎖定標準) -->
+    <style>
+      .depth-opts{display:flex;gap:10px;margin-top:6px;}
+      .depth-opt{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 8px;border-radius:16px;cursor:pointer;font-family:inherit;
+        background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);transition:all .2s;}
+      .depth-opt:hover{border-color:rgba(129,140,248,0.5);transform:translateY(-2px);}
+      .depth-opt.active{background:linear-gradient(135deg,#6366f1,#4f46e5);border-color:#818cf8;color:#fff;box-shadow:0 8px 24px rgba(99,102,241,0.35);}
+      .depth-emoji{font-size:24px;}
+      .depth-name{font-size:14px;font-weight:800;}
+      .depth-sub{font-size:11px;opacity:.7;}
+      .depth-opts.locked .depth-opt{cursor:not-allowed;opacity:.55;}
+      .depth-opts.locked .depth-opt:hover{transform:none;border-color:rgba(255,255,255,0.1);}
+      .depth-opts.locked .depth-opt.active{opacity:1;}
+      @media(max-width:480px){.depth-opts{flex-direction:column;}}
+    </style>
+    <div class="card" id="digest-depth-card" style="margin-top:8px;display:none;">
+      <div class="card-title" data-i18n="depth_card_title">📬 你的日報長相</div>
+      <div class="card-desc" data-i18n="depth_card_desc">想看多深入?選一個就好,明天起的日報立刻套用。</div>
+      <div class="depth-opts" id="depth-opts">
+        <button type="button" class="depth-opt" data-depth="simple" onclick="selectDepth('simple')">
+          <span class="depth-emoji">📊</span>
+          <span class="depth-name" data-i18n="depth_simple">簡單看</span>
+          <span class="depth-sub" data-i18n="depth_simple_sub">重點操作</span>
+        </button>
+        <button type="button" class="depth-opt" data-depth="standard" onclick="selectDepth('standard')">
+          <span class="depth-emoji">📈</span>
+          <span class="depth-name" data-i18n="depth_standard">標準</span>
+          <span class="depth-sub" data-i18n="depth_standard_sub">新聞 + 技術</span>
+        </button>
+        <button type="button" class="depth-opt" data-depth="deep" onclick="selectDepth('deep')">
+          <span class="depth-emoji">🔬</span>
+          <span class="depth-name" data-i18n="depth_deep">看深入</span>
+          <span class="depth-sub" data-i18n="depth_deep_sub">估值 + 產業鏈</span>
+        </button>
+      </div>
+      <div id="depth-lock" style="display:none;margin-top:12px;font-size:13px;color:rgba(255,255,255,0.55);line-height:1.6;">
+        <span data-i18n="depth_lock">🔒 日報客製化是 Premium 專屬功能,免費方案固定為「標準」。</span>
+        <a href="pricing.html" style="color:#818cf8;font-weight:700;text-decoration:none;white-space:nowrap;" data-i18n="depth_lock_cta">升級 Premium →</a>
+      </div>
+    </div>
+
     <!-- Password confirm modal(綁定 / 解除綁定 LINE 等敏感操作) -->
     <div id="pwd-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(6,6,17,0.78);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px;">
       <div style="width:100%;max-width:380px;background:linear-gradient(160deg,#1a1a2e,#0f0c29);border:1px solid rgba(99,102,241,0.32);border-radius:22px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
@@ -935,6 +976,13 @@ const i18n = {
     tw_card_title: "🇹🇼 台股持倉",
     tw_card_desc: "搜尋代號或公司名稱（例如 2330、台積電），點擊加入清單",
     tw_tags_empty: "尚未選擇任何台股",
+    depth_card_title: "📬 你的日報長相",
+    depth_card_desc: "想看多深入?選一個就好,明天起的日報立刻套用。",
+    depth_simple: "簡單看", depth_simple_sub: "重點操作",
+    depth_standard: "標準", depth_standard_sub: "新聞 + 技術",
+    depth_deep: "看深入", depth_deep_sub: "估值 + 產業鏈",
+    depth_lock: "🔒 日報客製化是 Premium 專屬功能,免費方案固定為「標準」。",
+    depth_lock_cta: "升級 Premium →",
     tw_search_ph: "搜尋台股代號或名稱...",
     cap_count_zero: "已追蹤 0 檔",
     cap_upgrade: "升級可追蹤更多 →",
@@ -1129,6 +1177,13 @@ const i18n = {
     tw_card_title: "🇹🇼 TW Holdings",
     tw_card_desc: "Search by ticker or company name (e.g. 2330, TSMC), then click to add to your list.",
     tw_tags_empty: "No TW stocks selected yet",
+    depth_card_title: "📬 Your digest style",
+    depth_card_desc: "How deep do you want it? Pick one — applies from tomorrow's digest.",
+    depth_simple: "Simple", depth_simple_sub: "Key actions",
+    depth_standard: "Standard", depth_standard_sub: "News + technicals",
+    depth_deep: "In-depth", depth_deep_sub: "Valuation + supply chain",
+    depth_lock: "🔒 Digest customization is Premium-only. Free plan stays on Standard.",
+    depth_lock_cta: "Upgrade to Premium →",
     tw_search_ph: "Search TW ticker or name...",
     cap_count_zero: "0 stocks tracked",
     cap_upgrade: "Upgrade to track more →",
@@ -1323,6 +1378,7 @@ let US_STOCKS = [], TW_STOCKS = [];
 const selected = { us: [], tw: [] };
 let userCap = 3;
 let userPlan = "free";
+let selectedDepth = "standard";
 const hiIdx = { us: -1, tw: -1 };
 
 function search(q, db) {
@@ -1996,6 +2052,8 @@ async function loadPreferences(email) {
     const data = await res.json();
     userPlan = data.plan || "free";
     userCap = data.cap == null ? Infinity : data.cap;
+    selectedDepth = data.digest_depth || "standard";
+    setupDepthCard();
     selected.us = []; selected.tw = [];
     (data.us_stocks || []).forEach(sym => { const f = US_STOCKS.find(([s])=>s===sym); selected.us.push({ sym, name: f ? f[1] : sym }); });
     (data.tw_stocks || []).forEach(sym => { const f = TW_STOCKS.find(([s])=>s===sym); selected.tw.push({ sym, name: f ? f[1] : sym }); });
@@ -2714,7 +2772,34 @@ function curPayload() {
   const email = localStorage.getItem("md-email") || "";
   // 帶 password 給 /save-preferences (worker 需驗證,否則任何人能改別人偏好)
   const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
-  return JSON.stringify({ email, password, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym) });
+  return JSON.stringify({ email, password, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym), digest_depth: selectedDepth });
+}
+
+// 日報深度卡(Premium 專屬;免費鎖定標準 + 升級提示)
+function setupDepthCard() {
+  const card = document.getElementById("digest-depth-card");
+  if (!card) return;
+  card.style.display = "block";
+  const premium = userPlan === "premium" || userPlan === "admin";
+  const opts = document.getElementById("depth-opts");
+  document.getElementById("depth-lock").style.display = premium ? "none" : "block";
+  opts.classList.toggle("locked", !premium);
+  if (!premium) selectedDepth = "standard";
+  renderDepth();
+}
+
+function renderDepth() {
+  document.querySelectorAll("#depth-opts .depth-opt").forEach(b => {
+    b.classList.toggle("active", b.dataset.depth === selectedDepth);
+  });
+}
+
+function selectDepth(d) {
+  if (userPlan !== "premium" && userPlan !== "admin") return; // 免費鎖定
+  if (selectedDepth === d) return;
+  selectedDepth = d;
+  renderDepth();
+  scheduleSave();
 }
 
 // 去抖動:連續選股只在停手 0.65 秒後送一次。

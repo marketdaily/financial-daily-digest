@@ -376,10 +376,18 @@ def get_user_preferences(email: str) -> dict:
             last_status = res.status_code
             if res.ok:
                 d = res.json() or {}
+                plan = d.get("plan") or "free"
+                # 日報深度客製化是 Premium 專屬;免費/其他方案一律 standard(與 worker 端閘門一致,雙重保險)
+                depth = d.get("digest_depth") or "standard"
+                if plan not in ("premium", "admin"):
+                    depth = "standard"
+                if depth not in ("simple", "standard", "deep"):
+                    depth = "standard"
                 return {
                     "us_stocks": d.get("us_stocks") or [],
                     "tw_stocks": d.get("tw_stocks") or [],
-                    "plan": d.get("plan") or "free",
+                    "plan": plan,
+                    "digest_depth": depth,
                 }
         except Exception:
             pass
@@ -389,7 +397,7 @@ def get_user_preferences(email: str) -> dict:
     if last_status == 403:
         reason = "INTERNAL_TOKEN 未設" if not tok else "INTERNAL_TOKEN 與 worker env 不匹配"
         print(f"      → 原因：{reason}，server-to-server bypass 失效")
-    return {"us_stocks": [], "tw_stocks": [], "plan": "free", "_fetch_failed": True, "_status": last_status}
+    return {"us_stocks": [], "tw_stocks": [], "plan": "free", "digest_depth": "standard", "_fetch_failed": True, "_status": last_status}
 
 
 def save_hosted_digest(html: str, date: str = "") -> str:
@@ -533,6 +541,7 @@ def run():
         prefs = subscriber_prefs[email]
         us_stocks = prefs.get("us_stocks") or []
         tw_stocks = prefs.get("tw_stocks") or []
+        depth = prefs.get("digest_depth") or "standard"  # Premium 客製日報深度;免費已在 get_user_preferences 鎖回 standard
         total = len(us_stocks) + len(tw_stocks)
         exp_score, exp_tier = experience_tier(len(us_stocks), len(tw_stocks), prefs.get("plan"))
         tier_counts[exp_tier] = tier_counts.get(exp_tier, 0) + 1
@@ -545,7 +554,7 @@ def run():
             try:
                 if ai_calls > 0:
                     time.sleep(5)  # 輕度間隔，避免觸發 Gemini 免費層每分鐘上限
-                full_inner = _report_fn()(data, us_stocks or None, tw_stocks or None)
+                full_inner = _report_fn()(data, us_stocks or None, tw_stocks or None, depth=depth)
                 ai_calls += 1
                 full_inner = _inject_ai_banner(full_inner, data["date"])
                 # 完整版（含全部持倉）上傳網頁
@@ -553,7 +562,7 @@ def run():
                 # email 版：持倉超過上限時縮減，避免被 Gmail 截斷
                 if total > DIGEST_EMAIL_MAX_HOLDINGS:
                     time.sleep(5)
-                    inner = _report_fn()(data, us_stocks or None, tw_stocks or None, email_safe=True)
+                    inner = _report_fn()(data, us_stocks or None, tw_stocks or None, email_safe=True, depth=depth)
                     ai_calls += 1
                     inner = _inject_ai_banner(inner, data["date"])
                     shown = DIGEST_EMAIL_MAX_HOLDINGS
@@ -598,7 +607,7 @@ def run():
                 try:
                     time.sleep(5)
                     # retry 強制換更強模型(Claude/OpenAI 先於 Gemini),否則又從 Gemini 起跑 = 白 retry
-                    retry_inner = _report_fn()(data, us_stocks or None, tw_stocks or None, prefer_strong=True)
+                    retry_inner = _report_fn()(data, us_stocks or None, tw_stocks or None, prefer_strong=True, depth=depth)
                     ai_calls += 1
                     retry_inner = _inject_ai_banner(retry_inner, data["date"])
                     retry_html = build_email_html(data["date"], retry_inner)
