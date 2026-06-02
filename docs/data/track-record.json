@@ -1,15 +1,15 @@
 {
   "stats": {
-    "generated_at": "2026-05-31T18:55:56",
-    "days_covered": 2,
-    "total_records": 18,
-    "judged_records": 18,
-    "a_count": 18,
-    "a_wins": 15,
-    "a_rate": 83.3,
-    "c_count": 0,
-    "c_wins": 0,
-    "c_rate": 0.0,
+    "generated_at": "2026-06-02T13:01:04",
+    "days_covered": 4,
+    "total_records": 118,
+    "judged_records": 33,
+    "a_count": 30,
+    "a_wins": 20,
+    "a_rate": 66.7,
+    "c_count": 3,
+    "c_wins": 2,
+    "c_rate": 66.7,
     "public_only": {
       "a_count": 18,
       "a_wins": 15,
@@ -18,9 +18,105 @@
       "c_wins": 0,
       "c_rate": 0.0
     },
-    "personal_samples_added": 0
+    "personal_samples_added": 92
   },
   "records": [
+    {
+      "date": "2026-06-02",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "sell",
+      "verdict_text": "📉 BEARISH",
+      "reason": "特斯拉今日開盤後股價失守 MA20，且 60 日低價 337.24 附近為重要支撐，目前處於弱勢整理。暫不建議追價買進，若要承接，可參考 380-390 美元區間。",
+      "type": "C",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-02",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "輝達今日開盤後，股價強勢站穩 MA20，且 20 日高價 236.54 成為短期關鍵價位，若能突破此價位，預期將進一步上攻。建議在 225-230 美元區間擇機買進。",
+      "type": "A",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-02",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "微軟今日開盤後股價穩步上揚，已站穩 MA20，且 60 日高價 466.32 成為短期壓力。若能成功突破此價位，預期將有進一步上漲空間。建議在 455-460 美元區間伺機加碼。",
+      "type": "A",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-02",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "蘋果今日開盤後股價小幅回檔，但仍守在 MA20 價位之上，顯示多方力道並未完全消退。短期內股價可能在 300-315 美元區間震盪，建議續抱持有，待方向明朗。",
+      "type": "C",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-01",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "sell",
+      "verdict_text": "📉 BEARISH",
+      "reason": "① 上週五收盤位置：上週五下跌 1.43% 收在 $435.79，技術面跌破短期支撐。② 週末新聞影響：週末無重大有利特斯拉的新聞，且市場資金正高度集中於 AI 與半導體板塊，排擠非必需消費板塊。③ 本週催化劑：本週無直接利多催化劑，需靜待 7 月 22 日財報，短期缺乏資金關愛。④ 動作建議：建議減碼賣出。由於技術面轉弱且市場資金被 COMPUTEX 題材強烈吸納，特斯拉短期恐持續承壓，建議將部分資金轉移至強勢 AI 股，防守退守至 $420.00。",
+      "type": "C",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-01",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "① 上週五收盤位置：上週五微幅拉回 1.45% 收在 $211.14，回測短期均線。② 週末新聞影響：週末黃仁勳高調預告新晶片並宣示 PC 新時代，且今日即將召開 GTC 大會，對輝達屬極大重大利多。③ 本週催化劑：今日 GTC 大會發表 N1X 晶片，以及本週 COMPUTEX 展覽的全面造勢。④ 動作建議：建議買進加碼。上週五的拉回提供極佳的切入點，隨著今日 GTC 大會與 COMPUTEX 行情引爆，股價極易重啟攻勢，建議於 $210.00 附近分批加碼。",
+      "type": "A",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-01",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "① 上週五收盤位置：上週五單日暴漲 5.45% 收在 $450.24，強勢突破整理區間。② 週末新聞影響：週末輝達預告「PC新時代」，微軟作為 AI 軟體與 Copilot 的絕對龍頭，屬直接受益者。③ 本週催化劑：今日輝達 GTC 大會與週二 COMPUTEX 展，微軟與硬體廠的 AI PC 合作案將陸續曝光。④ 動作建議：建議抱緊持有。上週五多頭動能極強，且週末 AI 題材持續發酵，已持股者應續抱享受波段利潤，未持股者不建議在今日跳空時盲目追高。",
+      "type": "A",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-01",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "sell",
+      "verdict_text": "📉 BEARISH",
+      "reason": "① 上週五收盤位置：上週五微跌 0.14% 收在 $312.06，股價呈現高檔狹幅震盪。② 週末新聞影響：週末無關於蘋果的重大直接新聞，市場焦點完全被輝達與 COMPUTEX 搶走，資金面相對受壓制。③ 本週催化劑：本週二 COMPUTEX 開幕，市場聚焦對手群的 AI PC 布局，蘋果需等 7 月 30 日財報。④ 動作建議：建議今早觀望。因資金明顯向 AI 晶片及硬體端傾斜，蘋果短期缺乏上攻催化劑，建議今日先觀察 $310.00 關卡是否守穩，不急於此時加碼。",
+      "type": "C",
+      "source": "signal-card",
+      "outcome": null
+    },
     {
       "date": "2026-05-22",
       "name": "台積電 ADR TSMC",
