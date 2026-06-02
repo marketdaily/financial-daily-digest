@@ -354,22 +354,43 @@ def fetch_digest_html(date_str: str) -> str | None:
     return None
 
 
+_DATE_RE = re.compile(r"digest_(\d{4}-\d{2}-\d{2})\.html$")
+
+
 def discover_dates() -> list[str]:
-    """Get list of digest dates: local manifest first, then CDN manifest."""
+    """Discover digest dates from ACTUAL files on disk (source of truth),
+    unioned with manifest + CDN manifest. 不單信 manifest.json —— 它會漂移
+    (daily job 寫了 manifest 但沒 commit 回 origin → builder 看不到新日期,
+    戰績頁因此凍結。改成以實體檔為準,manifest 只作補充。"""
+    dates: set[str] = set()
+
+    # 1) 實體檔案(最可靠):docs/output/digest_YYYY-MM-DD.html(排除 *_personal_*)
+    for p in DIGEST_DIR.glob("digest_*.html"):
+        if "_personal_" in p.name:
+            continue
+        m = _DATE_RE.search(p.name)
+        if m:
+            dates.add(m.group(1))
+
+    # 2) 本機 manifest 補充
     manifest_local = DIGEST_DIR / "manifest.json"
     if manifest_local.exists():
         try:
-            return json.loads(manifest_local.read_text())["dates"]
+            dates.update(json.loads(manifest_local.read_text()).get("dates", []))
         except Exception:
             pass
-    url = f"{CDN_BASE}/manifest.json"
-    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=20) as resp:
-            return json.loads(resp.read().decode("utf-8"))["dates"]
-    except Exception as exc:
-        print(f"[warn] cdn manifest: {exc}", file=sys.stderr)
-        return []
+
+    # 3) 沒掃到任何實體檔時(乾淨 CI checkout 等)退回 CDN manifest
+    if not dates:
+        url = f"{CDN_BASE}/manifest.json"
+        req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                dates.update(json.loads(resp.read().decode("utf-8")).get("dates", []))
+        except Exception as exc:
+            print(f"[warn] cdn manifest: {exc}", file=sys.stderr)
+
+    return sorted(dates, reverse=True)
 
 
 def list_personal_digest_tokens(date_str: str) -> list[str]:
