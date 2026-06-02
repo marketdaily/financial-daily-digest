@@ -1550,8 +1550,8 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 <div class="signal-disclaimer">⚠️ AI 分析僅供參考,不構成投資建議</div>
 ‼️ 上面這段「💡 你的持股本週怎麼操作」區塊**原樣保留**,尤其 <!--SIGNAL_CARDS--> 這行註解不要刪改、不要自己生成任何 signal-card,系統會自動填入每檔持股的操作卡。"""
 
-    # 累加式深度:simple 只留 TLDR + Gap 風險 playbook(操作核心)+ 操作卡 + 週一心法;
-    # standard/deep 再加週末新聞卡 + 上週五收盤回顧 + 本週催化劑
+    # 累加式深度:週一 simple = TLDR + 週末新聞卡(週一開盤關鍵,必留)+ Gap 風險 + 操作卡 + 週一心法;
+    # standard/deep 再加上週五收盤回顧 + 本週催化劑。週末新聞是「決定今早怎麼動」的操作輸入,不可砍。
     _simple = depth == "simple"
     monday_catalyst_block = "" if _simple else """【本週催化劑(必須出現)】
 - 從新聞中找出本週會發生的事件:財報日、Fed 講話、CPI/PPI、台股除權息
@@ -1559,12 +1559,13 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 - 如新聞中沒提到,寫「本週新聞中未明示具體事件,持續追蹤」即可,不要捏造
 """
     if _simple:
-        monday_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class,只要這幾塊(純重點操作,不要週末新聞卡、不要收盤回顧、不要催化劑清單):
-1. .tldr 區改成「📅 週一展望」標題,列 3-4 條:①今早 gap 方向 ②上週五收盤摘要(一句)③本週持股怎麼動
-2. .section-label「⚠️ 週一開盤 Gap 風險」+ 一張 .verdict.SENTIMENT 卡片,寫明開盤方向 + 具體 playbook(買/抱/賣 + 價位)
-3. 持股操作訊號卡區塊:**原樣輸出下方模板,不要自己生卡片**(卡片由系統填入 <!--SIGNAL_CARDS-->):
+        monday_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class,只要這幾塊(純重點操作:保留週末新聞,但省略大盤收盤回顧段、省略本週事件預告清單):
+1. .tldr 區改成「📅 週一展望」標題,列 3-4 條:①週末最大事件 ②今早 gap 方向 ③本週持股怎麼動
+2. .section-label「📰 週末重點新聞」+ 數張 .news-card,標題明示「週末發生」,有影響個股就掛 impact-stock(這是週一開盤前最該知道的事)
+3. .section-label「⚠️ 週一開盤 Gap 風險」+ 一張 .verdict.SENTIMENT 卡片,寫明開盤方向 + 具體 playbook(買/抱/賣 + 價位)
+4. 持股操作訊號卡區塊:**原樣輸出下方模板,不要自己生卡片**(卡片由系統填入 <!--SIGNAL_CARDS-->):
 {signal_skeleton}
-4. .verdict.neutral 結尾「週一心法」,提醒週一波動大、可觀察前 30 分鐘再進場"""
+5. .verdict.neutral 結尾「週一心法」,提醒週一波動大、可觀察前 30 分鐘再進場"""
     else:
         monday_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class,順序如下:
 1. .tldr 區改成「📅 週一展望」標題,列 3-4 條:①週末最大事件 ②上週五收盤摘要 ③本週要看什麼 ④今早 gap 方向
@@ -1592,18 +1593,18 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 {_depth_directive(depth)}
 【個人化原則】
 - 用戶持倉:{', '.join(holdings) if has_holdings else '尚未設定持股,以大盤龍頭股為例'}
-- {'內容只圍繞他的持股做:今早 gap 方向 + 每支持股本週操作建議(純重點,不寫新聞回顧/催化劑清單)' if _simple else '內容圍繞他的持股做:上週五表現 + 週末新聞影響 + 本週催化劑 + 操作建議'}
+- {'內容圍繞他的持股做:週末新聞影響 + 今早 gap 方向 + 每支持股操作建議(純重點,省略大盤收盤回顧段與本週事件預告清單)' if _simple else '內容圍繞他的持股做:上週五表現 + 週末新聞影響 + 本週催化劑 + 操作建議'}
 - 台股一律用公司名稱(可附代號),不要只報數字
 
 【🚫 不要自己生持股操作卡】
 每檔持股的 signal-card(操作訊號卡)由系統另外分批生成並填入,**你不要輸出任何 <div class="signal-card"> 卡片**。
-你只負責 {'TLDR、Gap 風險、週一心法這些區塊' if _simple else 'TLDR、週末新聞、上週五收盤回顧、Gap 風險、本週催化劑、週一心法這些區塊'};遇到訊號卡區塊只原樣保留 <!--SIGNAL_CARDS--> 註解。
+你只負責 {'TLDR、週末新聞、Gap 風險、週一心法這些區塊' if _simple else 'TLDR、週末新聞、上週五收盤回顧、Gap 風險、本週催化劑、週一心法這些區塊'};遇到訊號卡區塊只原樣保留 <!--SIGNAL_CARDS--> 註解。
 
-【📅 {'今早開盤 Gap 風險' if _simple else '週末新聞 + 週一 Gap 風險'}】
+【📅 週末新聞 + 週一 Gap 風險】
 這是週一特有區塊,必須出現:
-- 根據週末發生的事推估今早美股期貨/台股開盤偏多/偏空/中性的方向
+- 整理週末兩天(週六週日)累積的關鍵新聞,標題明示「週末發生」(這是台股/美股週一開盤要反映的關鍵消息)
+- 根據週末新聞推估今早美股期貨/台股開盤偏多/偏空/中性的方向
 - 對應到具體 playbook:例如「若 NVDA 開盤跳空向上 >2% → 等回拉接;跳空向下 → 分批接 $XXX-XXX」
-{'' if _simple else '- 並整理週末兩天(週六週日)累積的關鍵新聞,標題明示「週末發生」'}
 
 {monday_catalyst_block}
 【日期】{date}(週一,基準=上週五 {last_friday} 收盤)

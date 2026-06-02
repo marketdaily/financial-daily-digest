@@ -58,12 +58,21 @@ def _probe(fn, depth):
         return f"ERR {e}"
     return _cap.get("p", "")
 
-for nm, fn in [("週末", analyzer.generate_weekend_report), ("週一", analyzer.generate_monday_report)]:
-    ps = _probe(fn, "simple"); pd = _probe(fn, "standard")
-    check(f"{nm} simple 無新聞回顧段", not ("本週回顧" in ps or "週末重點新聞" in ps or "下週看什麼" in ps))
-    check(f"{nm} simple 無催化劑清單", not ("本週催化劑" in ps or ("catalysts" in ps and "條列" in ps)))
-    check(f"{nm} simple 保留操作核心", ("stock-card" in ps or "SIGNAL_CARDS" in ps or "gap" in ps.lower()))
-    check(f"{nm} standard 仍有新聞段(baseline)", ("本週回顧" in pd or "週末重點新聞" in pd or "下週" in pd))
+# 週六 simple:無本週回顧新聞、無 catalysts(週六沒有即將開盤壓力)
+wk_s = _probe(analyzer.generate_weekend_report, "simple")
+wk_d = _probe(analyzer.generate_weekend_report, "standard")
+check("週六 simple 無本週回顧新聞", "本週回顧" not in wk_s and "下週看什麼" not in wk_s)
+check("週六 simple 保留操作核心", "stock-card" in wk_s)
+check("週六 standard 仍有本週回顧(baseline)", "本週回顧" in wk_d)
+
+# 週一 simple:**保留**週末新聞卡(週一開盤關鍵),但砍上週五收盤回顧 + 本週催化劑清單
+mo_s = _probe(analyzer.generate_monday_report, "simple")
+mo_d = _probe(analyzer.generate_monday_report, "standard")
+check("週一 simple 保留週末重點新聞(開盤關鍵)", "週末重點新聞" in mo_s)
+check("週一 simple 砍上週五收盤回顧大盤段", "上週五收盤回顧" not in mo_s)
+check("週一 simple 砍本週催化劑清單", "本週催化劑" not in mo_s)
+check("週一 simple 保留 Gap 風險操作核心", "Gap 風險" in mo_s and "SIGNAL_CARDS" in mo_s)
+check("週一 standard 仍有收盤回顧+催化劑(baseline)", "上週五收盤回顧" in mo_d and "本週催化劑" in mo_d)
 
 print()
 if fails:
