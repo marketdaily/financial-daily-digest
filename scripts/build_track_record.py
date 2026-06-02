@@ -287,6 +287,13 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
         sym = yf_symbol(ticker)
         cache_key = f"{sym}::history"
         hist_dict: dict[str, float] | None = cache.get(cache_key)
+        # 快取新鮮度:歷史快取一旦存就永不更新,跨日後窗口會凍結。
+        # 若快取最新日期沒晚於「最新一筆建議日」,該日就抓不到隔日收盤 → 永遠待結。
+        # 偵測到不夠新就丟棄重抓(根治 5/22 等舊建議卡在待結)。
+        if hist_dict:
+            latest_cached = max(hist_dict.keys()) if hist_dict else ""
+            if latest_cached <= max(dates):
+                hist_dict = None
         if hist_dict is None:
             start = (datetime.fromisoformat(min(dates)) - timedelta(days=5)).date()
             end = (datetime.fromisoformat(max(dates)) + timedelta(days=10)).date()
