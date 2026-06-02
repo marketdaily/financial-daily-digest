@@ -1,8 +1,9 @@
 name: 社群每日自動發文(日報衍生)
 
 on:
-  schedule:
-    - cron: "30 0 * * *"   # 00:30 UTC = 台灣 08:30,日報生成後
+  # 自動排程已停用(2026-06-02):日報原文未經校稿會發出個股明牌,改為僅手動觸發。
+  # schedule:
+  #   - cron: "30 0 * * *"   # 00:30 UTC = 台灣 08:30(已停用)
   workflow_dispatch:
 
 permissions:
