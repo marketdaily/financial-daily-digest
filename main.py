@@ -358,6 +358,64 @@ def _inject_ai_banner(inner_html: str, date: str) -> str:
     return inner_html
 
 
+def _inject_political_signals(inner_html: str, data: dict, user_holdings=None) -> str:
+    """把政壇市場訊號(Grok 抓的政治人物 X 貼文)組成卡片區塊,插在報告最前面。
+    純 deterministic 組裝(不經 LLM),缺資料時原樣返回 —— 不影響零錯誤防線。"""
+    import html as _html
+    signals = (data or {}).get("political_signals") or []
+    if not signals:
+        return inner_html
+    try:
+        names = (data or {}).get("tw_names_all") or {}
+        held = set(user_holdings or [])
+        dir_meta = {
+            "bullish": ("📈 偏多", "#1a6b30", "#e3f9e5"),
+            "bearish": ("📉 偏空", "#b3261e", "#fde8e6"),
+            "mixed":   ("↔️ 分歧", "#8a4500", "#fff4e0"),
+        }
+        cards = []
+        for s in signals:
+            label, color, bg = dir_meta.get(s.get("direction"), dir_meta["mixed"])
+            tags = []
+            for t in s.get("affected") or []:
+                disp = f"{t} {names[t]}" if t in names else t
+                star = "⭐" if t in held else ""
+                tags.append(
+                    f'<span style="display:inline-block;font-size:11px;font-weight:700;'
+                    f'color:#3730a3;background:#eef2ff;border-radius:6px;padding:2px 7px;'
+                    f'margin:2px 4px 0 0;">{star}{_html.escape(disp)}</span>'
+                )
+            tags_html = "".join(tags)
+            who = _html.escape(s.get("name_zh") or s.get("handle") or "政治人物")
+            headline = _html.escape(s.get("headline_zh") or "")
+            impact = _html.escape(s.get("impact_zh") or "")
+            url = _html.escape(s.get("post_url") or "https://x.com")
+            cards.append(
+                '<div class="news-card" style="border-color:#dfe3ff;">'
+                f'<span class="news-tag" style="background:{bg};color:{color};">🏛️ {who}｜{label}</span>'
+                f'<div class="news-headline">{headline}</div>'
+                + (f'<div class="news-why">{impact}</div>' if impact else "")
+                + (f'<div style="margin-top:8px;">{tags_html}</div>' if tags_html else "")
+                + f'<div style="margin-top:8px;font-size:11px;"><a href="{url}" '
+                'style="color:#5e5ce6;text-decoration:none;">🔗 看原文貼文 →</a></div>'
+                '</div>'
+            )
+        block = (
+            '<div class="section-label">🏛️ 政壇市場訊號</div>'
+            '<div style="margin:0 20px 6px;font-size:12px;color:#8a8a8e;">'
+            '川普 / 白宮 / 財政部 / Fed / 商務部等的即時發言,可能牽動關稅、利率與你的持股。</div>'
+            + "".join(cards)
+        )
+        marker = '<div class="section-label">'
+        idx = inner_html.find(marker)
+        if idx == -1:
+            return block + inner_html
+        return inner_html[:idx] + block + inner_html[idx:]
+    except Exception as e:
+        print(f"  [政壇訊號] 注入略過（{e}）")
+        return inner_html
+
+
 def get_user_preferences(email: str) -> dict:
     """讀取用戶在「我的專區」設定的持倉偏好。失敗會重試，確保日報依個人設定客製化。
     server-to-server 帶 INTERNAL_TOKEN 跳過 password gate（用戶已設密碼後 endpoint 預設拒絕匿名讀）。"""
@@ -468,6 +526,7 @@ def run():
         inner = _report_fn()(data)
         print("④ 生成 AI 市場情緒 Banner...")
         inner = _inject_ai_banner(inner, data["date"])
+        inner = _inject_political_signals(inner, data)
         print("⑤ 儲存本地預覽...")
         save_local(data["date"], inner)
         return
@@ -522,6 +581,7 @@ def run():
     print(f"④ 生成 AI 市場情緒 Banner（{variant_label}版）...")
     default_report = _report_fn()(data)
     default_report = _inject_ai_banner(default_report, data["date"])
+    default_report = _inject_political_signals(default_report, data)
     print("⑤ 儲存本地預覽（預設版）...")
     save_local(data["date"], default_report)
 
@@ -557,6 +617,8 @@ def run():
                 full_inner = _report_fn()(data, us_stocks or None, tw_stocks or None, depth=depth)
                 ai_calls += 1
                 full_inner = _inject_ai_banner(full_inner, data["date"])
+                if depth != "simple":
+                    full_inner = _inject_political_signals(full_inner, data, (us_stocks or []) + (tw_stocks or []))
                 # 完整版（含全部持倉）上傳網頁
                 web_url = save_hosted_digest(build_email_html(data["date"], full_inner), data["date"]) or default_web_url
                 # email 版：持倉超過上限時縮減，避免被 Gmail 截斷
@@ -565,6 +627,8 @@ def run():
                     inner = _report_fn()(data, us_stocks or None, tw_stocks or None, email_safe=True, depth=depth)
                     ai_calls += 1
                     inner = _inject_ai_banner(inner, data["date"])
+                    if depth != "simple":
+                        inner = _inject_political_signals(inner, data, (us_stocks or []) + (tw_stocks or []))
                     shown = DIGEST_EMAIL_MAX_HOLDINGS
                 else:
                     inner = full_inner
@@ -610,6 +674,8 @@ def run():
                     retry_inner = _report_fn()(data, us_stocks or None, tw_stocks or None, prefer_strong=True, depth=depth)
                     ai_calls += 1
                     retry_inner = _inject_ai_banner(retry_inner, data["date"])
+                    if depth != "simple":
+                        retry_inner = _inject_political_signals(retry_inner, data, (us_stocks or []) + (tw_stocks or []))
                     retry_html = build_email_html(data["date"], retry_inner)
                     retry_fails = audit_digest(retry_html, data["date"], us_stocks, tw_stocks, mkt)
                     if not any(f.get("severity") == "high" for f in retry_fails):

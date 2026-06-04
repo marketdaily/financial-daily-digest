@@ -586,6 +586,14 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
     except Exception as _e:
         print(f"[earnings_impact] skipped: {_e}")
 
+    # 政壇市場訊號(Grok 抓政治人物 X 貼文) — 無 XAI_API_KEY 時回 [],缺了不缺信
+    political_signals = []
+    try:
+        from grok_political import fetch_political_signals
+        political_signals = fetch_political_signals(window_hours=24)
+    except Exception as _e:
+        print(f"[political_signals] skipped: {_e}")
+
     return {
         "us_market": us_market,
         "tw_market": tw_market,
@@ -598,6 +606,7 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         "sectors": fetch_sector_performance(),
         "earnings": fetch_earnings_calendar(),
         "earnings_impact": earnings_impact,
+        "political_signals": political_signals,
         # 必用 TW 時區：GH Actions runner 在 UTC，06:55 TW 寄送時 UTC 還是前一天
         # 2026-05-27 出包過：runner UTC 22:55 (= TW 5/27 06:55) datetime.now()→5/26
         # 害 _market_status() 拿 5/26 算「昨晚」變成 5/25 Memorial Day 假，日報通篇寫錯
