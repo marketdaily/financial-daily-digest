@@ -1,26 +1,74 @@
 {
   "stats": {
-    "generated_at": "2026-06-03T15:57:04",
-    "days_covered": 5,
-    "total_records": 170,
+    "generated_at": "2026-06-04T10:50:23",
+    "days_covered": 6,
+    "total_records": 239,
     "judged_records": 118,
     "a_count": 73,
-    "a_wins": 35,
-    "a_rate": 47.9,
+    "a_wins": 37,
+    "a_rate": 50.7,
     "c_count": 45,
-    "c_wins": 23,
-    "c_rate": 51.1,
+    "c_wins": 24,
+    "c_rate": 53.3,
     "public_only": {
       "a_count": 22,
       "a_wins": 15,
       "a_rate": 68.2,
       "c_count": 4,
-      "c_wins": 1,
-      "c_rate": 25.0
+      "c_wins": 2,
+      "c_rate": 50.0
     },
-    "personal_samples_added": 140
+    "personal_samples_added": 205
   },
   "records": [
+    {
+      "date": "2026-06-04",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "😐 NEUTRAL",
+      "reason": "白話講「下一步」:今晚開盤後，股價處於 20 日均線 425.93 美元附近，多空不明。建議暫時觀望，待股價明確突破 430 美元或跌破 420 美元後再決定操作方向。",
+      "type": "C",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-04",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "白話講「下一步」:今晚開盤後，若股價能守穩 214.75 美元，並在 218.88 美元之上整理，則可視為短期強勢整理，可續抱。若跌破 214.75 美元，則需留意回測 20 日均線 218.88 美元的支撐。",
+      "type": "A",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-04",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "白話講「下一步」:今晚開盤後，若股價能守穩 427.34 美元，並在 422.08 美元之上盤整，則可視為強勢整理，建議續抱。若跌破 422.08 美元，則需留意回測 400.88 美元的支撐。",
+      "type": "A",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-04",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "白話講「下一步」:今晚開盤後，若股價能守穩 310.26 美元，並在 302.07 美元之上企穩，則可伺機買進加碼。若跌破 302.07 美元，則暫時觀望，待回測 281.07 美元支撐再評估。",
+      "type": "A",
+      "source": "signal-card",
+      "outcome": null
+    },
     {
       "date": "2026-06-03",
       "name": "特斯拉 Tesla",
@@ -79,7 +127,7 @@
       "reason": "特斯拉今日開盤後股價失守 MA20，且 60 日低價 337.24 附近為重要支撐，目前處於弱勢整理。暫不建議追價買進，若要承接，可參考 380-390 美元區間。",
       "type": "C",
       "source": "signal-card",
-      "outcome": "loss"
+      "outcome": "win"
     },
     {
       "date": "2026-06-02",
