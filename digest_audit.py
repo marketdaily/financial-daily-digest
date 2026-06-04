@@ -67,10 +67,15 @@ def audit_digest(
     us_holdings: List[str] = None,
     tw_holdings: List[str] = None,
     mkt_status: Dict = None,
+    market: str = "both",
 ) -> List[Dict]:
     """
     回傳 failures list,空 list 代表通過。
     每筆 failure: {"check": <name>, "severity": "high|med|low", "msg": <人話>}
+
+    market: "both"=台美合併(預設) / "tw"=早 7:00 台股盤前版 / "us"=晚 20:00 美股盤前版。
+            us 版台股已收盤,可寫「今日台股漲/跌」完成式 → 停用台股盤前時序檢查;
+            tw 版美股不是主軸 → 停用「今晚美股開盤動作」檢查。
     """
     us_holdings = us_holdings or []
     tw_holdings = tw_holdings or []
@@ -80,12 +85,14 @@ def audit_digest(
 
     # ───── 時序紀律 ─────
     # 1. 早上 7 點不可寫「今天台股已 X」(台股 9:00 才開盤)
-    if re.search(r"今天台股(已|正|超|大)?(漲|跌|狂|挫|爆|沖|噴)", text):
-        fails.append({"check": "tw_pre_market_tense", "severity": "high",
-                      "msg": "TW 早上 7 點台股還沒開盤,卻寫「今天台股漲/跌」"})
-    if re.search(r"今早台股(已|正)(漲|跌)", text):
-        fails.append({"check": "tw_pre_market_tense_zaoshen", "severity": "high",
-                      "msg": "「今早台股已漲/跌」— 9:00 前盤前不可能知道"})
+    # us 晚報例外:台股 13:30 已收盤,「今日台股漲/跌」是合法完成式,不檢查。
+    if market != "us":
+        if re.search(r"今天台股(已|正|超|大)?(漲|跌|狂|挫|爆|沖|噴)", text):
+            fails.append({"check": "tw_pre_market_tense", "severity": "high",
+                          "msg": "TW 早上 7 點台股還沒開盤,卻寫「今天台股漲/跌」"})
+        if re.search(r"今早台股(已|正)(漲|跌)", text):
+            fails.append({"check": "tw_pre_market_tense_zaoshen", "severity": "high",
+                          "msg": "「今早台股已漲/跌」— 9:00 前盤前不可能知道"})
 
     # 2. 美股休市日不可寫「今天美股漲/跌」「昨晚美股收紅/黑」
     if mkt_status.get("us_traded_last_session") is False:
@@ -93,8 +100,8 @@ def audit_digest(
             fails.append({"check": "us_holiday_tense", "severity": "high",
                           "msg": f"昨晚美股休市({mkt_status.get('us_last_trading_date')}),卻寫「昨晚美股漲/跌」"})
 
-    # 3. 台股休市日不可寫「今早 9:00 開盤」
-    if mkt_status.get("tw_will_open_today") is False:
+    # 3. 台股休市日不可寫「今早 9:00 開盤」(us 晚報台股已收盤、非主軸,不檢查)
+    if market != "us" and mkt_status.get("tw_will_open_today") is False:
         if re.search(r"今早.{0,4}開盤|今日早盤|9:?00.{0,4}開盤", text):
             fails.append({"check": "tw_holiday_open_tense", "severity": "high",
                           "msg": "今天台股休市,卻寫「今早 9:00 開盤」"})
@@ -109,12 +116,18 @@ def audit_digest(
     tldr = _section(html, "tldr")
     if tldr:
         tldr_text = _strip_html_to_text(tldr)
-        # 5. 用戶持有台股 → TLDR 至少要有一條提到台股關鍵字或台股代號
-        if tw_holdings:
+        # 5. 用戶持有台股 → TLDR 至少要有一條提到台股關鍵字或台股代號(us 晚報台股非主軸,不檢查)
+        if tw_holdings and market != "us":
             tw_keywords = tw_holdings + ["台股", "台積電", "聯發科", "鴻海", "加權"]
             if not any(k in tldr_text for k in tw_keywords):
                 fails.append({"check": "tldr_missing_tw", "severity": "high",
                               "msg": f"用戶持有台股 {tw_holdings} 但 TLDR 30 秒重點完全沒提到台股"})
+        # 5b. us 晚報:用戶持有美股 → TLDR 至少一條提到美股(盤前布局是主軸)
+        if us_holdings and market == "us":
+            us_keywords = us_holdings + ["美股", "標普", "S&P", "那斯達克", "道瓊", "費半", "盤前"]
+            if not any(k in tldr_text for k in us_keywords):
+                fails.append({"check": "tldr_missing_us", "severity": "high",
+                              "msg": f"美股晚報但 TLDR 30 秒重點完全沒提到美股(用戶持有 {us_holdings})"})
         # 6. TLDR 至少 3 條 bullet
         bullets = re.findall(r"<li[^>]*>", tldr)
         if len(bullets) < 3:
@@ -235,15 +248,15 @@ def audit_digest(
                       "msg": "AI 輸出疑似被截斷(token 超上限):" + " | ".join(truncation_signals)})
 
     # ───── 美股動作窗口對稱 ─────
-    # 14. 若今晚美股將開盤,signal-card 應該有「今晚」字眼至少一張
-    if mkt_status.get("us_will_open_tonight") and us_holdings and signal_cards:
+    # 14. 若今晚美股將開盤,signal-card 應該有「今晚」字眼至少一張(tw 早報美股非主軸,不檢查)
+    if market != "tw" and mkt_status.get("us_will_open_tonight") and us_holdings and signal_cards:
         signal_text = " ".join(signal_cards)
         if "今晚" not in signal_text and "盤後" not in signal_text:
             fails.append({"check": "us_tonight_action_missing", "severity": "med",
                           "msg": "今晚美股開盤,但 signal-card 沒有任何「今晚開盤後」動作指示"})
 
-    # 15. 若今早台股將開盤,signal-card 應該有「今早 / 開盤」字眼
-    if mkt_status.get("tw_will_open_today") and tw_holdings and signal_cards:
+    # 15. 若今早台股將開盤,signal-card 應該有「今早 / 開盤」字眼(us 晚報台股非主軸,不檢查)
+    if market != "us" and mkt_status.get("tw_will_open_today") and tw_holdings and signal_cards:
         signal_text = " ".join(signal_cards)
         if not re.search(r"今早|早盤|9.{0,2}開盤", signal_text):
             fails.append({"check": "tw_morning_action_missing", "severity": "med",

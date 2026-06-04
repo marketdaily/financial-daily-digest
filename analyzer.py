@@ -975,7 +975,10 @@ def _inject_signal_cards(raw: str, cards: str) -> str:
 
 
 def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard") -> str:
+                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
+                    market: str = "both") -> str:
+    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
+    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
     # email 版：持倉太多時敘述只留變動最大的 N 支，避免信件過長被 Gmail 截斷（完整版見網頁）。
     # 但「操作訊號卡」仍覆蓋全部持股(_full_holdings),不丟任何一支。
     _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
@@ -1204,6 +1207,65 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
         mood_section = ""
     depth_directive = _depth_directive(depth)
 
+    # ── 雙班次時序框架(market) ──
+    # tw=早 7:00 台股盤前主軸 / us=晚 20:00 美股盤前主軸。both=原合併版(預設)。
+    us_last_td = mkt_status.get("us_last_trading_date") or "上一個交易日"
+    if market == "us":
+        time_discipline_block = f"""【⏰ 時序紀律 — 違反 = 廢稿】
+**這份日報在台灣時間晚上 8:00 寄出,主軸是「今晚美股盤前布局」。**
+- 美股:今晚約台灣時間 21:30-22:30 開盤(看美國夏令時間),你現在是**盤前**。可寫「今晚開盤前」「美股盤前布局」「今晚開盤後若 $XXX 就 XXX」。要回顧昨夜美股請用完成式「昨夜美股({us_last_td})收 XXX」。
+- 台股:**今日 13:30 已收盤**,資料中的台股數字就是今日收盤,可用完成式「今日台股收 XXX」「台積電(2330)今日收 XXX 元」。台股今晚不再交易,只做**今日收盤回顧**,**禁止寫「今早 9:00 開盤」「明早早盤」這類盤前字眼**。
+- 本封以**美股盤前操作為主軸**:每張 signal-card 給「今晚開盤後該做什麼」。台股部分只在大盤/新聞區做今日收盤回顧,不需逐檔台股操作卡。
+
+【⚠️ 今晚的市場開盤狀態 — 絕對要遵守】
+今晚美股:{mkt_status['us_action_note']}
+昨夜美股:{mkt_status['us_note'] or f"昨夜({us_last_td})美股有開盤,可寫「昨夜美股收 XXX」。"}
+今日台股:已於 13:30 收盤,資料為今日收盤數據,做收盤回顧即可。
+"""
+        tldr_focus_note = "- TLDR 30秒重點:**4 條至少 1 條必須是美股相關**(昨夜收盤動向 / 今晚開盤前怎麼布局 / 對某檔持股的明確建議)。台股可放今日收盤回顧。"
+        tldr_li_hints = ['<li>（最重要的事,一句話,優先美股盤前布局或昨夜收盤動向）</li>',
+                         '<li>（第二重要的事,美股相關）</li>',
+                         '<li>（第三重要的事,可放台股今日收盤回顧）</li>',
+                         '<li>（第四重要的事,如有）</li>']
+    elif market == "tw":
+        time_discipline_block = f"""【⏰ 時序紀律 — 違反 = 廢稿】
+**這份日報在台灣時間早上 7:00 寄出,主軸是「今早台股開盤前布局」。那時台股還沒開盤(台股 9:00 開盤、13:30 收盤)。**
+- 台股:**數據是昨日收盤**,今天 9:00 才開盤。**絕對禁止寫「今天台股已漲/已跌/超狂/大跌」這類盤中口吻**。要寫:「昨日台股收 XXX」「今早 9:00 開盤後若 XXX 就 XXX」「今日早盤策略」。
+- 美股:昨晚剛收盤(台灣時間 04:00 收盤),可用「昨晚美股收紅/收黑」完成式做**昨夜回顧**。
+- 本封以**台股盤前操作為主軸**:每張 signal-card 給「今早 9:00 開盤後該做什麼」。美股部分只在大盤/新聞區做昨夜收盤回顧,不需逐檔美股操作卡。
+
+【⚠️ 今天的市場開盤狀態 — 絕對要遵守】
+昨晚美股:{mkt_status['us_note'] or "美股有開盤,數據是新鮮的,可寫「昨晚美股 XXX」做回顧。"}
+今天台股:{mkt_status['tw_note'] or "台股 9:00 將開盤,可寫「今早開盤」「今日早盤策略」。"}
+"""
+        tldr_focus_note = ("- TLDR 30秒重點:**用戶有台股持股時,4 條至少 1 條必須是台股相關**(昨日收盤動向 / 今早 9:00 開盤怎麼操作 / 對某檔持股的明確建議),不可全部都美股。"
+                           + (f"⚠️ 這位用戶持有台股:{', '.join(watchlist_tw)} — TLDR 一定要有他的台股動向。" if watchlist_tw else ""))
+        tldr_li_hints = [f'<li>（最重要的事,一句話。{"用戶有台股 → 這條或下一條必須講台股動向(昨日收盤 / 今早開盤策略),台股口吻不可用「今天台股已 XX」" if watchlist_tw else "一句話"}）</li>',
+                         f'<li>（第二重要的事{"。若上一條是美股,這條就要是台股" if watchlist_tw else ""}）</li>',
+                         '<li>（第三重要的事）</li>',
+                         '<li>（第四重要的事,如有）</li>']
+    else:
+        time_discipline_block = f"""【⏰ 時序紀律 — 違反 = 廢稿】
+**這份日報在台灣時間早上 7:00 寄出,那時台股還沒開盤（台股 9:00 開盤、13:30 收盤）。**
+- 美股：通常剛收盤不久（台灣時間 04:00 美股收盤），可以用「昨晚美股收紅/收黑」這類完成式口吻。
+- 台股：**數據是昨日收盤**，今天 9:00 才開盤。**絕對禁止寫「今天台股已漲/已跌/超狂/大跌」這類盤中口吻**。要寫就寫：「昨日台股收 XXX」「今早開盤可留意 XXX」「9:00 開盤後若 XXX 就 XXX」「今日早盤策略」。看到「{date}」這個日期 = 台股還沒開盤的一天。
+- 違反例：「今天台積電（2330）漲 3%！」← 廢稿（盤前不可能知道）
+- 正確例：「台積電（2330）昨日收 XXX 元」「今早 9:00 開盤後留意 XXX 元支撐」
+
+【⚠️ 今天的市場開盤狀態 — 絕對要遵守】
+昨晚美股:{mkt_status['us_note'] or f"美股有開盤,數據是新鮮的,可寫「昨晚美股 XXX」。"}
+今天台股:{mkt_status['tw_note'] or f"台股 9:00 將開盤,可寫「今早開盤」「今日早盤策略」。"}
+今晚美股:{mkt_status['us_action_note']}
+
+**雙市場動作對稱性:每張美股 signal-card 要給「今晚開盤後做什麼」(若今晚開盤),每張台股 signal-card 要給「今早 9:00 開盤後做什麼」(若今天開盤)。休市日只給「等下一個交易日 X」,不可寫「今晚/今早開盤」這類字眼。**
+**規則：休市日的市場,不可在「30 秒看完今天重點」「大盤怎麼了」「持股本日動向」這幾個區塊把舊收盤當「今天/昨晚」寫,務必點明休市。**"""
+        tldr_focus_note = ("- TLDR 30秒重點：**用戶有台股持股時，4 條至少 1 條必須是台股相關**（昨日收盤動向 / 今早 9:00 開盤怎麼操作 / 對某檔持股的明確建議），不可全部都美股。"
+                           + (f"⚠️ 這位用戶持有台股：{', '.join(watchlist_tw)} — TLDR 一定要有他的台股動向。" if watchlist_tw else ""))
+        tldr_li_hints = [f'<li>（最重要的事，一句話。{"用戶有台股 → 這條或下一條必須講台股動向（昨日收盤 / 今早開盤策略），台股口吻不可用「今天台股已 XX」" if watchlist_tw else "一句話"}）</li>',
+                         f'<li>（第二重要的事{"，若上一條是美股，這條就要是台股" if watchlist_tw else ""}）</li>',
+                         '<li>（第三重要的事）</li>',
+                         '<li>（第四重要的事，如有）</li>']
+
     # 累加式深度:simple=只有 TLDR + 操作卡(+結論);standard 在此之上加新聞;
     # 大盤/進階尾段 standard 也有,deep 全開,simple 全砍。
     news5_block = f"""<div class="section-label">🔥 今天最重要的 5 件事</div>
@@ -1275,20 +1337,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 
     prompt = f"""你是這位用戶的專屬財經顧問，說話生活化、直接、像朋友。這份報告是**專門為持有 {', '.join(all_holdings) if has_holdings else '各種股票的'} 的用戶客製化生成的**，不是通用報告。
 
-【⏰ 時序紀律 — 違反 = 廢稿】
-**這份日報在台灣時間早上 7:00 寄出，那時台股還沒開盤（台股 9:00 開盤、13:30 收盤）。**
-- 美股：通常剛收盤不久（台灣時間 04:00 美股收盤），可以用「昨晚美股收紅/收黑」這類完成式口吻。
-- 台股：**數據是昨日收盤**，今天 9:00 才開盤。**絕對禁止寫「今天台股已漲/已跌/超狂/大跌」這類盤中口吻**。要寫就寫：「昨日台股收 XXX」「今早開盤可留意 XXX」「9:00 開盤後若 XXX 就 XXX」「今日早盤策略」。看到「{date}」這個日期 = 台股還沒開盤的一天。
-- 違反例：「今天台積電（2330）漲 3%！」← 廢稿（盤前不可能知道）
-- 正確例：「台積電（2330）昨日收 XXX 元」「今早 9:00 開盤後留意 XXX 元支撐」
-
-【⚠️ 今天的市場開盤狀態 — 絕對要遵守】
-昨晚美股:{mkt_status['us_note'] or f"美股有開盤,數據是新鮮的,可寫「昨晚美股 XXX」。"}
-今天台股:{mkt_status['tw_note'] or f"台股 9:00 將開盤,可寫「今早開盤」「今日早盤策略」。"}
-今晚美股:{mkt_status['us_action_note']}
-
-**雙市場動作對稱性:每張美股 signal-card 要給「今晚開盤後做什麼」(若今晚開盤),每張台股 signal-card 要給「今早 9:00 開盤後做什麼」(若今天開盤)。休市日只給「等下一個交易日 X」,不可寫「今晚/今早開盤」這類字眼。**
-**規則：休市日的市場,不可在「30 秒看完今天重點」「大盤怎麼了」「持股本日動向」這幾個區塊把舊收盤當「今天/昨晚」寫,務必點明休市。**
+{time_discipline_block}
 
 【無幻覺原則 — 違反 = 廢稿】
 - 所有內容只能基於以下提供的真實數據和新聞，不得憑空補充或使用訓練資料臆測
@@ -1298,7 +1347,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 
 {depth_directive}
 【個人化原則】
-- TLDR 30秒重點：**用戶有台股持股時，4 條至少 1 條必須是台股相關**（昨日收盤動向 / 今早 9:00 開盤怎麼操作 / 對某檔持股的明確建議），不可全部都美股。{f"⚠️ 這位用戶持有台股：{', '.join(watchlist_tw)} — TLDR 一定要有他的台股動向。" if watchlist_tw else ""}
+{tldr_focus_note}
 - 所有分析都圍繞用戶的持倉，大盤新聞只在跟他持倉有關時才詳細寫
 - 給建議要明確：說「建議買進 $XXX 以下」「續抱直到 $XXX」「跌破 $XXX 停損」，**禁止只寫「先觀望」「先別動」「保守為上」這類沒附條件的虛詞**。要說「觀望」就必須附「等什麼價位/事件」（例：「先觀望，等跌到 $580 再分批接」「先觀望，等 6/1 財報出來再決定」）。
 - 口語化，像在 Line 傳訊息，不是寫報告
@@ -1328,10 +1377,10 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 <div class="tldr">
 <div class="tldr-title">☕ 30 秒看完今天重點</div>
 <ul>
-  <li>（最重要的事，一句話。{"用戶有台股 → 這條或下一條必須講台股動向（昨日收盤 / 今早開盤策略），台股口吻不可用「今天台股已 XX」" if watchlist_tw else "一句話"}）</li>
-  <li>（第二重要的事{"，若上一條是美股，這條就要是台股" if watchlist_tw else ""}）</li>
-  <li>（第三重要的事）</li>
-  <li>（第四重要的事，如有）</li>
+  {tldr_li_hints[0]}
+  {tldr_li_hints[1]}
+  {tldr_li_hints[2]}
+  {tldr_li_hints[3]}
 </ul>
 </div>
 
@@ -1378,7 +1427,10 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 
 # ─── Weekend Recap(週六專用:本週回顧 + 下週預告)──────────────
 def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                            email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard") -> str:
+                            email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
+                            market: str = "both") -> str:
+    # market 由雙班次 caller 傳入(週六台股早報走此函式);週末回顧本就是台股晨間語境,
+    # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週六晨間日報:不講當日大盤(已收),改聚焦『本週回顧 + 下週重點』。"""
     if email_safe:
         us0 = list(user_us_stocks or [])
@@ -1481,7 +1533,10 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 
 # ─── Monday Outlook(週一專用:上週五收盤 + 週末新聞 + 本週展望 + Gap 警示)──────────────
 def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                           email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard") -> str:
+                           email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
+                           market: str = "both") -> str:
+    # market 由雙班次 caller 傳入(週一台股早報走此函式);週一展望本就是台股晨間語境,
+    # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週一晨間日報:前兩天(週六、週日)沒開盤,所以基準是『上週五收盤』。
     重點:週末新聞累積 + 上週五收盤回顧 + 本週 catalysts + 週一開盤 gap 風險 +
     每檔持股仍給明確操作建議(買/抱/賣/觀望)。"""

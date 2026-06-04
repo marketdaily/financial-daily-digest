@@ -1,9 +1,17 @@
 name: 財經日報每日發布
 
 on:
-  # 每日寄送已改由本機 launchd（com.marketdaily.daily-digest，台灣 07:00）負責。
-  # GitHub Actions 的 schedule 觸發不準時（實測延遲約 12 小時），故移除排程，只保留手動觸發。
-  workflow_dispatch:       # 僅供手動測試
+  # 由 marketdaily-digest-cron Worker 雙班次派發:
+  #   早 06:55 TW(22:55 UTC) → market=tw 台股盤前;晚 20:00 TW(12:00 UTC) → market=us 美股盤前。
+  # 手動測試也可指定 market(預設 tw,沿用既有早報行為)。
+  workflow_dispatch:
+    inputs:
+      market:
+        description: "班次市場:tw(台股早報) / us(美股晚報) / both(合併,手動 fallback)"
+        required: false
+        default: "tw"
+        type: choice
+        options: ["tw", "us", "both"]
 
 permissions:
   contents: write          # 寄信後把當日公版日報 commit 回 main（不重寄、不部署）
@@ -37,6 +45,7 @@ jobs:
           SENDER_NAME: ${{ secrets.SENDER_NAME }}
           MARKETDAILY_INTERNAL_TOKEN: ${{ secrets.MARKETDAILY_INTERNAL_TOKEN }}
           MARKETDAILY_ALERT_TOKEN: ${{ secrets.MARKETDAILY_ALERT_TOKEN }}
+          MARKET: ${{ github.event.inputs.market || 'tw' }}
         run: python main.py
 
       # 寄信由上一步的 main.py 完成。這一步「只」把當日公版日報 + manifest commit 回 main,

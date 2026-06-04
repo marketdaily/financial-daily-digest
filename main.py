@@ -15,6 +15,22 @@ from analyzer import generate_report, generate_weekend_report, generate_monday_r
 from publisher import publish_to_brevo
 
 
+def _resolve_market() -> str:
+    """雙班次:tw=早 7:00 台股盤前 / us=晚 20:00 美股盤前 / both=合併(預設,手動 fallback)。
+    來源優先序:CLI --market=xx > 環境變數 MARKET > both。"""
+    import sys as __sys
+    for a in __sys.argv:
+        if a.startswith("--market="):
+            v = a.split("=", 1)[1].strip().lower()
+            if v in ("tw", "us", "both"):
+                return v
+    v = (os.environ.get("MARKET") or "both").strip().lower()
+    return v if v in ("tw", "us", "both") else "both"
+
+
+MARKET = _resolve_market()
+
+
 # 週六晨間(TWT)走 weekend recap、週一晨間走 monday outlook、其他平日走預設版
 def _is_saturday_tw() -> bool:
     tw_now = datetime.now(timezone.utc) + timedelta(hours=8)
@@ -27,6 +43,10 @@ def _is_monday_tw() -> bool:
 
 
 def _report_fn():
+    # us 晚報(美股盤前)一律走標準版:週末/週一框架是早報台股盤前語境,
+    # 美股當晚是自己的正常交易 session,不需要「週末 gap」那套。
+    if MARKET == "us":
+        return generate_report
     if _is_saturday_tw():
         return generate_weekend_report
     if _is_monday_tw():
@@ -35,6 +55,14 @@ def _report_fn():
 
 
 def _report_variant_label() -> str:
+    if MARKET == "us":
+        return "美股晚報"
+    if MARKET == "tw":
+        if _is_saturday_tw():
+            return "台股週末回顧"
+        if _is_monday_tw():
+            return "台股週一展望"
+        return "台股早報"
     if _is_saturday_tw():
         return "週末回顧"
     if _is_monday_tw():
@@ -265,10 +293,12 @@ def build_email_html(date: str, html_report: str) -> str:
         return full
 
 
-def save_local(date: str, html_report: str):
+def save_local(date: str, html_report: str, suffix: str = ""):
+    # suffix:us 晚報用 "_us" → 寫 digest_<date>_us.html,不進 manifest、
+    # 也不會被 track-record 的 digest_<date>.html 嚴格 regex 掃到(避免雙算/clobber 早報公版)。
     os.makedirs("output", exist_ok=True)
     os.makedirs("docs/output", exist_ok=True)
-    path = f"output/digest_{date}.html"
+    path = f"output/digest_{date}{suffix}.html"
     with open(path, "w", encoding="utf-8") as f:
         f.write(f"""<!DOCTYPE html>
 <html lang="zh-Hant">
@@ -316,8 +346,9 @@ def save_local(date: str, html_report: str):
 </body>
 </html>""")
     import shutil
-    shutil.copy(path, f"docs/output/digest_{date}.html")
-    _update_manifest(date)
+    shutil.copy(path, f"docs/output/digest_{date}{suffix}.html")
+    if not suffix:
+        _update_manifest(date)
     print(f"   本地預覽已儲存：{path}")
     return path
 
@@ -523,12 +554,12 @@ def run():
         data["us_news"] = filter_us_news(data["us_news"])
         data["tw_news"] = filter_tw_news(data["tw_news"])
         print(f"③ AI 生成報告（{_report_variant_label()}版）...")
-        inner = _report_fn()(data)
+        inner = _report_fn()(data, market=MARKET)
         print("④ 生成 AI 市場情緒 Banner...")
         inner = _inject_ai_banner(inner, data["date"])
         inner = _inject_political_signals(inner, data)
         print("⑤ 儲存本地預覽...")
-        save_local(data["date"], inner)
+        save_local(data["date"], inner, suffix=("_us" if MARKET == "us" else ""))
         return
 
     print("① 取得訂閱者名單與持倉偏好...")
@@ -577,13 +608,21 @@ def run():
     print(f"   美股新聞：{len(data['us_news'])} 則通過過濾")
     print(f"   台股新聞：{len(data['tw_news'])} 則通過過濾")
 
+    # 美股晚報遇美股休市夜(美國國定假日,worker 判不到的)→ 整輪不發,
+    # 純美股用戶不被「美股今晚沒開盤」的空版打擾。週末已由 worker 擋掉。
+    from analyzer import _market_status as _mkt_status_fn
+    if MARKET == "us" and _mkt_status_fn(data["date"]).get("us_will_open_tonight") is False:
+        print("🛑 MARKET=us 但今晚美股休市 → 跳過本輪美股晚報(不發信)")
+        return
+
+    local_suffix = "_us" if MARKET == "us" else ""
     variant_label = _report_variant_label()
     print(f"④ 生成 AI 市場情緒 Banner（{variant_label}版）...")
-    default_report = _report_fn()(data)
+    default_report = _report_fn()(data, market=MARKET)
     default_report = _inject_ai_banner(default_report, data["date"])
     default_report = _inject_political_signals(default_report, data)
     print("⑤ 儲存本地預覽（預設版）...")
-    save_local(data["date"], default_report)
+    save_local(data["date"], default_report, suffix=local_suffix)
 
     print("⑥ 上傳預設版網頁...")
     default_web_url = save_hosted_digest(build_email_html(data["date"], default_report), data["date"])
@@ -592,6 +631,7 @@ def run():
     from analyzer import get_personalized_subject
     from experience import experience_tier
     success_count = 0
+    processed = 0  # 本班次實際納入的收信者(分流後 < 總訂閱數)
     ai_calls = 0
     tier_counts = {"新手": 0, "一般": 0, "老手": 0}
     audit_failures_by_email = {}  # 寄送前的使用者視角 audit 結果,寄完彙總推給 admin
@@ -602,37 +642,54 @@ def run():
         us_stocks = prefs.get("us_stocks") or []
         tw_stocks = prefs.get("tw_stocks") or []
         depth = prefs.get("digest_depth") or "standard"  # Premium 客製日報深度;免費已在 get_user_preferences 鎖回 standard
-        total = len(us_stocks) + len(tw_stocks)
+
+        # ── 雙班次收信對象分流(按持股) ──
+        # tw 早報 = 持台股者 + 完全沒持股者(收台股大盤版);us 晚報 = 持美股者。
+        no_holdings = not us_stocks and not tw_stocks
+        if MARKET == "tw" and not (tw_stocks or no_holdings):
+            continue
+        if MARKET == "us" and not us_stocks:
+            continue
+        # 個人化只生成本班次市場的 signal-card;對面市場在新聞/大盤區做收盤回顧。
+        if MARKET == "tw":
+            gen_us, gen_tw = None, tw_stocks
+        elif MARKET == "us":
+            gen_us, gen_tw = us_stocks, None
+        else:
+            gen_us, gen_tw = us_stocks, tw_stocks
+
+        processed += 1
+        total = len(gen_us or []) + len(gen_tw or [])  # 本班次實際出卡的持股數
         exp_score, exp_tier = experience_tier(len(us_stocks), len(tw_stocks), prefs.get("plan"))
         tier_counts[exp_tier] = tier_counts.get(exp_tier, 0) + 1
 
         subject = None
         web_url = default_web_url
         shown = total
-        if us_stocks or tw_stocks:
-            print(f"   {email} → 個人化（美股:{len(us_stocks)}, 台股:{len(tw_stocks)}）· {exp_tier}（{exp_score}）")
+        if gen_us or gen_tw:
+            print(f"   {email} → 個人化（本班次 {MARKET}｜美股:{len(gen_us or [])}, 台股:{len(gen_tw or [])}）· {exp_tier}（{exp_score}）")
             try:
                 if ai_calls > 0:
                     time.sleep(5)  # 輕度間隔，避免觸發 Gemini 免費層每分鐘上限
-                full_inner = _report_fn()(data, us_stocks or None, tw_stocks or None, depth=depth)
+                full_inner = _report_fn()(data, gen_us or None, gen_tw or None, depth=depth, market=MARKET)
                 ai_calls += 1
                 full_inner = _inject_ai_banner(full_inner, data["date"])
                 if depth != "simple":
-                    full_inner = _inject_political_signals(full_inner, data, (us_stocks or []) + (tw_stocks or []))
+                    full_inner = _inject_political_signals(full_inner, data, (gen_us or []) + (gen_tw or []))
                 # 完整版（含全部持倉）上傳網頁
                 web_url = save_hosted_digest(build_email_html(data["date"], full_inner), data["date"]) or default_web_url
                 # email 版：持倉超過上限時縮減，避免被 Gmail 截斷
                 if total > DIGEST_EMAIL_MAX_HOLDINGS:
                     time.sleep(5)
-                    inner = _report_fn()(data, us_stocks or None, tw_stocks or None, email_safe=True, depth=depth)
+                    inner = _report_fn()(data, gen_us or None, gen_tw or None, email_safe=True, depth=depth, market=MARKET)
                     ai_calls += 1
                     inner = _inject_ai_banner(inner, data["date"])
                     if depth != "simple":
-                        inner = _inject_political_signals(inner, data, (us_stocks or []) + (tw_stocks or []))
+                        inner = _inject_political_signals(inner, data, (gen_us or []) + (gen_tw or []))
                     shown = DIGEST_EMAIL_MAX_HOLDINGS
                 else:
                     inner = full_inner
-                subject = get_personalized_subject(data, us_stocks, tw_stocks, data["date"])
+                subject = get_personalized_subject(data, gen_us or [], gen_tw or [], data["date"])
             except Exception as e:
                 print(f"   ⚠️ {email} 個人化失敗，改用預設版（{e}）")
                 # fallback 不能偷偷把通用版當個人化日報寄,用戶會以為自己的持股被忽略。
@@ -662,37 +719,37 @@ def run():
             from analyzer import _market_status, generate_deterministic_fallback
             mkt = _market_status(data["date"])
             try:
-                fails = audit_digest(html, data["date"], us_stocks, tw_stocks, mkt)
+                fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
             except Exception as e:
                 fails = []
                 print(f"   ⚠️ audit 異常: {e}")
-            if any(f.get("severity") == "high" for f in fails) and (us_stocks or tw_stocks):
+            if any(f.get("severity") == "high" for f in fails) and (gen_us or gen_tw):
                 print(f"   ⚠️ {email} HIGH audit fail,retry 一次")
                 try:
                     time.sleep(5)
                     # retry 強制換更強模型(Claude/OpenAI 先於 Gemini),否則又從 Gemini 起跑 = 白 retry
-                    retry_inner = _report_fn()(data, us_stocks or None, tw_stocks or None, prefer_strong=True, depth=depth)
+                    retry_inner = _report_fn()(data, gen_us or None, gen_tw or None, prefer_strong=True, depth=depth, market=MARKET)
                     ai_calls += 1
                     retry_inner = _inject_ai_banner(retry_inner, data["date"])
                     if depth != "simple":
-                        retry_inner = _inject_political_signals(retry_inner, data, (us_stocks or []) + (tw_stocks or []))
+                        retry_inner = _inject_political_signals(retry_inner, data, (gen_us or []) + (gen_tw or []))
                     retry_html = build_email_html(data["date"], retry_inner)
-                    retry_fails = audit_digest(retry_html, data["date"], us_stocks, tw_stocks, mkt)
+                    retry_fails = audit_digest(retry_html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
                     if not any(f.get("severity") == "high" for f in retry_fails):
                         print(f"   ✅ retry pass")
                         html = retry_html
                         fails = retry_fails
                     else:
                         print(f"   🛡️ retry 仍 HIGH fail → 切 deterministic fallback")
-                        det_inner = generate_deterministic_fallback(data, us_stocks, tw_stocks, mkt)
+                        det_inner = generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt)
                         html = build_email_html(data["date"], det_inner)
-                        fails = audit_digest(html, data["date"], us_stocks, tw_stocks, mkt)
+                        fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
                         deterministic_fallbacks.append(email)
                 except Exception as e:
                     print(f"   🛡️ retry 異常 → deterministic fallback ({e})")
-                    det_inner = generate_deterministic_fallback(data, us_stocks, tw_stocks, mkt)
+                    det_inner = generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt)
                     html = build_email_html(data["date"], det_inner)
-                    fails = audit_digest(html, data["date"], us_stocks, tw_stocks, mkt)
+                    fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
                     deterministic_fallbacks.append(email)
             if fails:
                 audit_failures_by_email[email] = fails
@@ -709,7 +766,7 @@ def run():
         else:
             print(f"   ❌ 發送失敗：{email}")
 
-    print(f"✅ 今日財經日報發送完成！成功 {success_count}/{len(subscribers)} 位")
+    print(f"✅ 今日財經日報發送完成（班次 {MARKET}）！成功 {success_count}/{processed} 位（總訂閱 {len(subscribers)}）")
     print(f"   經驗分布 → 🌱新手 {tier_counts['新手']} · 📈一般 {tier_counts['一般']} · 🎯老手 {tier_counts['老手']}")
 
     # 守門通知:deterministic fallback 或個人化失敗 → 即時 LINE 推 admin
