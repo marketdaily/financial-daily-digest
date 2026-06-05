@@ -189,7 +189,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .signal-score-block { display: flex; align-items: baseline; gap: 1px; }
 .signal-score { font-size: 20px; font-weight: 900; color: #1d1d1f; line-height: 1; }
 .signal-score-label { font-size: 11px; color: #8e8e93; }
-.signal-bias { font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; white-space: nowrap; }
+.signal-bias { display: none; font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; white-space: nowrap; }
 .signal-bias.bullish { background: #dcfce7; color: #166534; }
 .signal-bias.neutral { background: #fef3c7; color: #92400e; }
 .signal-bias.bearish { background: #ffe4e6; color: #9f1239; }
