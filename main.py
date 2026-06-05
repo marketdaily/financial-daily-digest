@@ -181,12 +181,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .signal-card.hold { background: #fffbeb; border-color: #fde68a; }
 .signal-card.sell { background: #fff1f2; border-color: #fecdd3; }
 .signal-card.wait { background: #f8fafc; border-color: #e2e8f0; }
-.signal-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.signal-card-top { display: flex; align-items: center; gap: 6px 8px; margin-bottom: 8px; flex-wrap: wrap; }
 .signal-day-move { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
 .signal-day-move.up { background: #dcfce7; color: #166534; }
 .signal-day-move.down { background: #ffe4e6; color: #9f1239; }
-.signal-ticker { font-size: 14px; font-weight: 800; color: #0a0a0a; font-family: "SF Mono", ui-monospace, monospace; }
-.signal-score-block { display: flex; align-items: baseline; gap: 1px; margin-left: auto; }
+.signal-ticker { font-size: 15px; font-weight: 800; color: #0a0a0a; font-family: "SF Mono", ui-monospace, monospace; flex: 1 0 100%; margin-bottom: 2px; }
+.signal-score-block { display: flex; align-items: baseline; gap: 1px; }
 .signal-score { font-size: 20px; font-weight: 900; color: #1d1d1f; line-height: 1; }
 .signal-score-label { font-size: 11px; color: #8e8e93; }
 .signal-bias { font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.5px; white-space: nowrap; }
