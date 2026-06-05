@@ -1427,33 +1427,36 @@ export default {
       };
       const results = await Promise.allSettled(raw.map(async (t) => {
         const isTW = /^\d{4,6}$/.test(t);
-        // US stocks: Finnhub real-time last-trade quote (subrequest cached 15s to stay under rate limit)
-        if (fh && !isTW) {
-          try {
-            const r = await fetch(
-              `https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(t)}&token=${fh}`,
-              { cf: { cacheTtl: 15, cacheEverything: true } }
-            );
-            if (r.ok) {
-              const d = await r.json();
-              if (d && typeof d.c === "number" && d.c > 0) {
-                return { symbol: t, name: t, price: d.c, change: typeof d.dp === "number" ? d.dp : null };
-              }
-            }
-          } catch {}
+        // 前收一律用 Yahoo range=1d(intraday)的 meta.chartPreviousClose:
+        //   - 1d range 下它就是「正確的前一交易日收盤」(reference 已驗證:1D range chartPreviousClose=昨收)。
+        //   - 不可用 5d 日線 closes[-2]:Yahoo 日線新鮮度不穩(常缺最新一天),closes[-2] 會取到大前天,
+        //     配上 Finnhub 即時價 → 漲跌幅錯位(2026-06-05 AAOI:日線缺 6/4 時前收誤取 6/2 202.37 → +0.26%,實際 +10.22%)。
+        //   - 也不信 Finnhub 的 dp/pc:盤後它的前收同樣會跳號錯位。
+        // 美股額外並行抓 Finnhub last-trade 當盤中即時 price(比 Yahoo 即時),前收與漲跌幅一律以 Yahoo 為準。
+        const fhQuote = (fh && !isTW)
+          ? fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(t)}&token=${fh}`, { cf: { cacheTtl: 15, cacheEverything: true } })
+              .then(r => r.ok ? r.json() : null).catch(() => null)
+          : Promise.resolve(null);
+        // Yahoo:台股(.TW 上市 / .TWO 上櫃 自動切換)
+        const [r, fd] = await Promise.all([
+          fetchYahooChart(t, isTW, "5m", "1d", yfHeaders, 15),
+          fhQuote
+        ]);
+        let price = null, prev = null, name = t;
+        if (r) {
+          const meta = r.meta;
+          const closes = (r.indicators?.quote?.[0]?.close || []).filter(c => c !== null && c !== undefined);
+          price = meta?.regularMarketPrice ?? (closes.length ? closes[closes.length - 1] : null);
+          prev = meta?.chartPreviousClose ?? null;
+          name = meta?.shortName || meta?.longName || t;
         }
-        // Yahoo:台股(.TW 上市 / .TWO 上櫃 自動切換)+ Finnhub 未設或失敗時的後援
-        const r = await fetchYahooChart(t, isTW, "1d", "5d", yfHeaders, 15);
-        if (!r) return { symbol: t, name: t, price: null, change: null };
-        const meta = r.meta;
-        // ⚠️ 用 chart close array 算「當日漲跌」,不可用 meta.chartPreviousClose:
-        // chartPreviousClose 是 range 起始前一天的收盤 → 5d range 它是 5 天前,
-        // 拿來算 change 會變成「5 日累計漲幅」而不是「當日漲跌」(2026-05-25 抓到的 bug)。
-        const closes = (r.indicators?.quote?.[0]?.close || []).filter(c => c !== null && c !== undefined);
-        const price = meta.regularMarketPrice ?? (closes.length ? closes[closes.length - 1] : null);
-        const prev = closes.length >= 2 ? closes[closes.length - 2] : (meta.chartPreviousClose ?? null);
-        const change = (price !== null && prev !== null && prev !== 0) ? ((price - prev) / prev * 100) : null;
-        return { symbol: t, name: meta.shortName || meta.longName || t, price, change };
+        if (fd && typeof fd.c === "number" && fd.c > 0) price = fd.c;  // Finnhub 即時價覆蓋(前收仍用 Yahoo)
+        let change = (price !== null && prev !== null && prev !== 0) ? ((price - prev) / prev * 100) : null;
+        // Yahoo 全掛的最終後援:退回 Finnhub 自己的 c/dp(次佳,前收可能錯位但聊勝於無)
+        if (price === null && fd && typeof fd.c === "number" && fd.c > 0) {
+          price = fd.c; change = typeof fd.dp === "number" ? fd.dp : null;
+        }
+        return { symbol: t, name, price, change };
       }));
       const quotes = results.map((r, i) => r.status === "fulfilled" ? r.value : { symbol: raw[i], name: raw[i], price: null, change: null });
       return new Response(JSON.stringify({ quotes }), {
@@ -1495,6 +1498,18 @@ export default {
         if (cfg.range !== "1d") {
           const validCloses = closes.filter(c => c !== null && c !== undefined);
           if (validCloses.length >= 2) prevClose = validCloses[validCloses.length - 2];
+          // Yahoo 日線(1d interval)偶發落後 intraday 一天:最新交易日的日 K 還沒補進序列,
+          // 1M/3M 圖最後一根會停在前一交易日(2026-06-05 抓到 IONQ/META/PLTR 等約 20 支卡 6/3)。
+          // 用 meta 即時報價補上缺的最新一根,並把前收線改成原序列最後一根。
+          const mt = r.meta?.regularMarketTime, mp = r.meta?.regularMarketPrice;
+          if (mt && mp != null && points.length) {
+            const lastDay = new Date(points[points.length - 1].t * 1000).toISOString().slice(0, 10);
+            const mtDay = new Date(mt * 1000).toISOString().slice(0, 10);
+            if (mtDay > lastDay) {
+              prevClose = points[points.length - 1].c;
+              points.push({ t: mt, c: mp });
+            }
+          }
         }
         return new Response(JSON.stringify({
           symbol: t,
