@@ -74,13 +74,13 @@ CSS = """
 :root { color-scheme: light dark; supported-color-schemes: light dark; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif; background: #f2f2f7; color: #1d1d1f; }
-.wrapper { max-width: 620px; margin: 0 auto; background: #fff; }
+.wrapper { max-width: 700px; margin: 0 auto; background: #fff; }
 
 .header { background: #ffffff; color: #1d1d1f; padding: 26px 24px 20px; border-bottom: 3px solid #6366f1; }
 .header-meta { font-size: 11px; color: #6b7280; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
 .header-tagline { font-size: 12px; color: #6b7280; margin-top: 4px; }
 
-.tldr { background: #fff9f0; border-left: 3px solid #ff9500; margin: 18px 20px 0; padding: 13px 15px; border-radius: 0 10px 10px 0; }
+.tldr { background: #fff9f0; border-left: 3px solid #ff9500; margin: 18px 12px 0; padding: 13px 15px; border-radius: 0 10px 10px 0; }
 .tldr-title { background: #fff9f0; font-size: 11px; font-weight: 700; color: #c25e00; margin-bottom: 8px; letter-spacing: 0.8px; text-transform: uppercase; }
 .tldr ul { background: #fff9f0; list-style: none; }
 .tldr ul li { background: #fff9f0; font-size: 14px; color: #3a3a3c; padding: 3px 0 3px 14px; position: relative; line-height: 1.6; }
@@ -90,12 +90,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .tldr-chip.bearish { background: #e11d48; color: #ffffff; }
 .tldr-chip.neutral { background: #f59e0b; color: #ffffff; }
 
-.section-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #8e8e93; padding: 20px 20px 9px; }
-.advanced-divider { margin: 26px 20px 8px; padding: 10px 14px; font-size: 11px; font-weight: 700; color: #8e8e93; background: #f7f7fa; border: 1px dashed #d8d8de; border-radius: 10px; line-height: 1.5; text-align: center; }
+.section-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #8e8e93; padding: 20px 12px 9px; }
+.advanced-divider { margin: 26px 12px 8px; padding: 10px 14px; font-size: 11px; font-weight: 700; color: #8e8e93; background: #f7f7fa; border: 1px dashed #d8d8de; border-radius: 10px; line-height: 1.5; text-align: center; }
 
-.market-summary { padding: 0 20px 14px; font-size: 14px; color: #3a3a3c; line-height: 1.75; }
+.market-summary { padding: 0 12px 14px; font-size: 14px; color: #3a3a3c; line-height: 1.75; }
 
-.news-card { margin: 0 20px 10px; padding: 13px 15px; border: 1px solid #e5e5ea; border-radius: 10px; background: #fff; }
+.news-card { margin: 0 12px 10px; padding: 13px 15px; border: 1px solid #e5e5ea; border-radius: 10px; background: #fff; }
 .news-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-bottom: 7px; letter-spacing: 0.3px; }
 .news-tag.verified { background: #e3f9e5; color: #1a6b30; }
 .news-tag.single { background: #fff4e0; color: #8a4500; }
@@ -110,29 +110,29 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .impact-stock.up { background: #dcfce7; color: #166534; }
 .impact-stock.down { background: #ffe4e6; color: #9f1239; }
 
-.stock-card { display: flex; align-items: flex-start; gap: 10px; margin: 0 20px 8px; padding: 11px 13px; border-radius: 10px; background: #f2f2f7; border: 1px solid #e5e5ea; }
+.stock-card { display: flex; align-items: flex-start; gap: 10px; margin: 0 12px 8px; padding: 11px 13px; border-radius: 10px; background: #f2f2f7; border: 1px solid #e5e5ea; }
 .ticker { font-size: 13px; font-weight: 800; color: #0a0a0a; min-width: 56px; padding-top: 2px; font-family: "SF Mono", ui-monospace, monospace; }
 .stock-move { font-size: 14px; font-weight: 700; min-width: 76px; padding-top: 2px; }
 .stock-move.up { color: #30d158; }
 .stock-move.down { color: #ff3b30; }
 .stock-comment { font-size: 13px; color: #48484a; line-height: 1.55; flex: 1; }
 
-.macro-list { padding: 0 20px 14px; }
+.macro-list { padding: 0 12px 14px; }
 .macro-item { font-size: 14px; color: #3a3a3c; padding: 6px 0; border-bottom: 1px solid #f2f2f7; line-height: 1.65; }
 
-.verdict { margin: 0 20px 12px; padding: 15px; border-radius: 12px; }
+.verdict { margin: 0 12px 12px; padding: 15px; border-radius: 12px; }
 .verdict.bullish { background: #f0fdf4; border: 1px solid #bbf7d0; }
 .verdict.bearish { background: #fff1f2; border: 1px solid #fecdd3; }
 .verdict.neutral { background: #f2f2f7; border: 1px solid #e5e5ea; }
 .verdict-emoji { font-size: 24px; margin-bottom: 8px; }
 .verdict-text { font-size: 14px; color: #3a3a3c; line-height: 1.75; }
 
-.watch-list { margin: 0 20px 22px; padding: 13px 15px; background: #f2f2f7; border-radius: 10px; }
+.watch-list { margin: 0 12px 22px; padding: 13px 15px; background: #f2f2f7; border-radius: 10px; }
 .watch-title { font-size: 10px; font-weight: 700; color: #8e8e93; margin-bottom: 8px; letter-spacing: 1.2px; text-transform: uppercase; }
 .watch-item { font-size: 13px; color: #3a3a3c; padding: 5px 0; border-bottom: 1px solid #e5e5ea; }
 .watch-item:last-child { border-bottom: none; }
 
-.indicator-bar { display: flex; gap: 8px; margin: 0 20px 14px; flex-wrap: wrap; }
+.indicator-bar { display: flex; gap: 8px; margin: 0 12px 14px; flex-wrap: wrap; }
 .indicator-item { flex: 0 0 calc(20% - 7px); min-width: 88px; padding: 11px 10px; background: #f2f2f7; border: 1px solid #e5e5ea; border-radius: 10px; text-align: center; }
 .indicator-label { font-size: 9px; font-weight: 700; color: #8e8e93; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 4px; }
 .indicator-value { font-size: 16px; font-weight: 800; color: #1d1d1f; }
@@ -141,9 +141,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .indicator-greed { color: #30d158; }
 .indicator-neutral { color: #ff9500; }
 
-.second-order { margin: 0 20px 14px; padding: 13px 15px; background: #f0f0ff; border-left: 3px solid #5e5ce6; border-radius: 0 10px 10px 0; font-size: 13px; color: #3a3a3c; line-height: 1.75; }
+.second-order { margin: 0 12px 14px; padding: 13px 15px; background: #f0f0ff; border-left: 3px solid #5e5ce6; border-radius: 0 10px 10px 0; font-size: 13px; color: #3a3a3c; line-height: 1.75; }
 
-.crypto-bar { display: flex; gap: 8px; margin: 0 20px 14px; }
+.crypto-bar { display: flex; gap: 8px; margin: 0 12px 14px; }
 .crypto-item { flex: 1; padding: 12px; background: #f2f2f7; border: 1px solid #e5e5ea; border-radius: 10px; text-align: center; }
 .crypto-name { font-size: 10px; font-weight: 700; color: #8e8e93; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
 .crypto-price { font-size: 17px; font-weight: 800; }
@@ -151,7 +151,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .crypto-price.down { color: #ff3b30; }
 .crypto-change { font-size: 11px; color: #8e8e93; margin-top: 2px; }
 
-.sector-bar { padding: 0 20px 14px; }
+.sector-bar { padding: 0 12px 14px; }
 .sector-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid #f2f2f7; }
 .sector-name { font-size: 13px; font-weight: 600; color: #1d1d1f; min-width: 110px; }
 .sector-move { font-size: 13px; font-weight: 700; min-width: 68px; }
@@ -159,23 +159,23 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .sector-move.down { color: #ff3b30; }
 .sector-comment { font-size: 12px; color: #8e8e93; flex: 1; }
 
-.earnings-list { padding: 0 20px 14px; }
+.earnings-list { padding: 0 12px 14px; }
 .earnings-item { display: flex; align-items: baseline; gap: 10px; padding: 7px 0; border-bottom: 1px solid #f2f2f7; }
 .earnings-ticker { font-size: 13px; font-weight: 800; color: #0a0a0a; min-width: 52px; font-family: "SF Mono", ui-monospace, monospace; }
 .earnings-date { font-size: 12px; color: #8e8e93; min-width: 80px; }
 .earnings-note { font-size: 13px; color: #48484a; flex: 1; }
 
-.stock-news-item { margin: 0 20px 10px; padding: 13px 15px; border: 1px solid #e0e0ff; border-radius: 10px; background: #f8f8ff; display: flex; gap: 12px; align-items: flex-start; }
+.stock-news-item { margin: 0 12px 10px; padding: 13px 15px; border: 1px solid #e0e0ff; border-radius: 10px; background: #f8f8ff; display: flex; gap: 12px; align-items: flex-start; }
 .stock-news-ticker { font-size: 12px; font-weight: 800; color: #5e5ce6; min-width: 52px; padding-top: 2px; font-family: "SF Mono", ui-monospace, monospace; }
 .stock-news-content { flex: 1; }
 .stock-news-headline { font-size: 14px; font-weight: 600; color: #1d1d1f; line-height: 1.4; margin-bottom: 6px; }
 .stock-news-impact { font-size: 13px; color: #48484a; background: #ebebff; padding: 6px 10px; border-radius: 8px; line-height: 1.55; }
-.stock-news-empty { margin: 0 20px 14px; font-size: 13px; color: #aeaeb2; padding: 8px 0; }
+.stock-news-empty { margin: 0 12px 14px; font-size: 13px; color: #aeaeb2; padding: 8px 0; }
 
-.signal-header { margin: 14px 20px 8px; padding: 14px 16px; background: #eef0ff; border: 1px solid #c7d2fe; border-radius: 12px; }
+.signal-header { margin: 14px 12px 8px; padding: 14px 16px; background: #eef0ff; border: 1px solid #c7d2fe; border-radius: 12px; }
 .signal-header-title { font-size: 11px; font-weight: 700; color: #4338ca; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 3px; }
 .signal-header-subtitle { font-size: 11px; color: #6366f1; }
-.signal-grid { padding: 0 20px 4px; }
+.signal-grid { padding: 0 12px 4px; }
 .signal-card { padding: 13px 14px; border-radius: 12px; border: 1px solid; margin-bottom: 10px; }
 .signal-card.buy { background: #f0fdf4; border-color: #bbf7d0; }
 .signal-card.hold { background: #fffbeb; border-color: #fde68a; }
@@ -185,7 +185,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .signal-day-move { font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 6px; white-space: nowrap; }
 .signal-day-move.up { background: #dcfce7; color: #166534; }
 .signal-day-move.down { background: #ffe4e6; color: #9f1239; }
-.signal-ticker { font-size: 15px; font-weight: 800; color: #0a0a0a; font-family: "SF Mono", ui-monospace, monospace; flex: 1 0 100%; margin-bottom: 2px; }
+.signal-ticker { font-size: 14px; font-weight: 800; color: #0a0a0a; font-family: "SF Mono", ui-monospace, monospace; }
 .signal-score-block { display: flex; align-items: baseline; gap: 1px; }
 .signal-score { font-size: 20px; font-weight: 900; color: #1d1d1f; line-height: 1; }
 .signal-score-label { font-size: 11px; color: #8e8e93; }
@@ -210,7 +210,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .signal-badge.wait { background: #f1f5f9; color: #475569; }
 .signal-confidence { font-size: 11px; color: #6b7280; }
 .signal-horizon { font-size: 11px; color: #6b7280; background: #f3f4f6; padding: 2px 8px; border-radius: 20px; }
-.signal-disclaimer { margin: 4px 20px 14px; font-size: 10px; color: #aeaeb2; text-align: center; line-height: 1.6; }
+.signal-disclaimer { margin: 4px 12px 14px; font-size: 10px; color: #aeaeb2; text-align: center; line-height: 1.6; }
 
 .signal-verdict-chip { font-size: 12px; font-weight: 900; padding: 4px 11px; border-radius: 20px; white-space: nowrap; }
 .signal-verdict-chip.buy { background: #16a34a; color: #ffffff; }
@@ -218,18 +218,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .signal-verdict-chip.sell { background: #e11d48; color: #ffffff; }
 .signal-verdict-chip.wait { background: #94a3b8; color: #ffffff; }
 
-.rookie-pick { margin: 0 20px 10px; padding: 14px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; }
+.rookie-pick { margin: 0 12px 10px; padding: 14px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; }
 .rookie-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 7px; }
 .rookie-name { font-size: 15px; font-weight: 800; color: #1d1d1f; }
 .rookie-verdict { margin-left: auto; font-size: 12px; font-weight: 900; padding: 4px 12px; border-radius: 20px; background: #16a34a; color: #ffffff; white-space: nowrap; }
 .rookie-why { font-size: 13px; color: #3a3a3c; line-height: 1.65; margin-bottom: 8px; }
 .rookie-tip { font-size: 12px; color: #6b7280; line-height: 1.6; background: rgba(255,255,255,0.7); padding: 8px 11px; border-radius: 8px; }
 
-.mood-box { margin: 0 20px 14px; padding: 14px 16px; background: #f0f6ff; border: 1px solid #c7d8fe; border-radius: 12px; }
+.mood-box { margin: 0 12px 14px; padding: 14px 16px; background: #f0f6ff; border: 1px solid #c7d8fe; border-radius: 12px; }
 .mood-emoji { font-size: 30px; line-height: 1; margin-bottom: 6px; }
 .mood-text { font-size: 14px; color: #1d1d1f; line-height: 1.65; font-weight: 600; }
 
-.rookie-guide { margin: 0 20px 14px; }
+.rookie-guide { margin: 0 12px 14px; }
 .rg-block { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; }
 .rg-head { font-size: 13px; font-weight: 800; color: #1d1d1f; margin-bottom: 9px; }
 .rg-step { font-size: 13px; color: #3a3a3c; line-height: 1.7; padding: 4px 0; }
@@ -270,7 +270,7 @@ def build_email_html(date: str, html_report: str) -> str:
   </div>
   {html_report}
 
-  <div style="margin:20px 20px 4px;background:#f0f0ff;border:1px solid #c7d2fe;border-radius:12px;padding:18px 20px;text-align:center;">
+  <div style="margin:20px 12px 4px;background:#f0f0ff;border:1px solid #c7d2fe;border-radius:12px;padding:18px 20px;text-align:center;">
     <p style="font-size:13px;font-weight:800;color:#4338ca;margin:0 0 6px;">📊 客製化你的每日日報</p>
     <p style="font-size:12px;color:#6b7280;line-height:1.7;margin:0 0 14px;">前往個人專區選擇你追蹤的美股 / 台股，<br>AI 每天只幫你分析你在乎的持倉動態。</p>
     <a href="https://marketdaily.ai/dashboard.html" style="display:inline-block;background:#6366f1;color:#fff;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;text-decoration:none;">⚙️ 前往設定我的股票偏好 →</a>
@@ -329,7 +329,7 @@ def save_local(date: str, html_report: str, suffix: str = ""):
   </div>
   {html_report}
 
-  <div style="margin:20px 20px 4px;background:#f0f0ff;border:1px solid #c7d2fe;border-radius:12px;padding:18px 20px;text-align:center;">
+  <div style="margin:20px 12px 4px;background:#f0f0ff;border:1px solid #c7d2fe;border-radius:12px;padding:18px 20px;text-align:center;">
     <p style="font-size:13px;font-weight:800;color:#4338ca;margin:0 0 6px;">📊 客製化你的每日日報</p>
     <p style="font-size:12px;color:#6b7280;line-height:1.7;margin:0 0 14px;">前往個人專區選擇你追蹤的美股 / 台股，<br>AI 每天只幫你分析你在乎的持倉動態。</p>
     <a href="https://marketdaily.ai/dashboard.html" style="display:inline-block;background:#6366f1;color:#fff;font-size:13px;font-weight:700;padding:10px 24px;border-radius:8px;text-decoration:none;">⚙️ 前往設定我的股票偏好 →</a>
@@ -433,7 +433,7 @@ def _inject_political_signals(inner_html: str, data: dict, user_holdings=None) -
             )
         block = (
             '<div class="section-label">🏛️ 政壇市場訊號</div>'
-            '<div style="margin:0 20px 6px;font-size:12px;color:#8a8a8e;">'
+            '<div style="margin:0 12px 6px;font-size:12px;color:#8a8a8e;">'
             '川普 / 白宮 / 財政部 / Fed / 商務部等的即時發言,可能牽動關稅、利率與你的持股。</div>'
             + "".join(cards)
         )
@@ -521,7 +521,7 @@ def _web_view_banner(url: str, total_holdings: int = 0, shown: int = 0) -> str:
             f'這封信顯示變動最大的 {shown} 支持倉；完整 {total_holdings} 支請看網頁版</div>'
         )
     return (
-        '<div style="margin:14px 20px 0;padding:13px 16px;background:#eef0ff;'
+        '<div style="margin:14px 12px 0;padding:13px 16px;background:#eef0ff;'
         'border:1px solid #c7d2fe;border-radius:12px;text-align:center;">'
         f'<a href="{url}" style="font-size:13px;font-weight:800;color:#4338ca;'
         'text-decoration:none;">📱 在網頁上看完整日報（不會被截斷、可分享）→</a>'
@@ -532,7 +532,7 @@ def _web_view_banner(url: str, total_holdings: int = 0, shown: int = 0) -> str:
 def _newbie_guide_footer() -> str:
     """新手等級的訂閱者:日報底部附新手教學連結。"""
     return (
-        '<div style="margin:18px 20px 4px;padding:14px 16px;background:#f6f7fb;'
+        '<div style="margin:18px 12px 4px;padding:14px 16px;background:#f6f7fb;'
         'border:1px solid #e2e8f0;border-radius:12px;text-align:center;">'
         '<div style="font-size:13px;color:#444;line-height:1.7;">'
         '剛開始用 MarketDaily？不熟悉怎麼操作？</div>'
