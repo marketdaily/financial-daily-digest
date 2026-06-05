@@ -5,6 +5,17 @@
     ]
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/delvin/Downloads/Delvin agent/.claude/hooks/session-context.sh'",
+            "statusMessage": "讀取跨視窗近況..."
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
