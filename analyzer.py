@@ -711,6 +711,47 @@ def _fmt_num(n):
         return str(n)
 
 
+def _near_term_levels(price, tech):
+    """近端(1-2 週視角)合理操作價位 —— 一律以 ATR14 / MA20 / 20 日高低錨定。
+    ‼️ 絕不直接拿 60 日高 / 60 日低當目標或停損:股票大漲後 60 日低可能離現價 30-60%,
+    當「止損賣價」完全失準(用戶看到 -7.74% 卻配一個 66% 以下的停損 = 不準)。
+    回傳 (support, target, stop):低接支撐 / 反彈壓力目標 / 停損,皆夾在現價約 ±15% 內。"""
+    try:
+        price = float(price)
+    except (TypeError, ValueError):
+        return None, None, None
+    if price <= 0:
+        return None, None, None
+    t = tech or {}
+
+    def _f(v):
+        try:
+            return float(v)
+        except (TypeError, ValueError):
+            return None
+
+    atr = _f(t.get("atr14")) or 0
+    if atr <= 0 or atr > price * 0.15:
+        atr = price * 0.03  # 無 ATR 或異常 → 退回現價 3% 估計
+    ma20, lo20, hi20 = _f(t.get("ma20")), _f(t.get("lo20")), _f(t.get("hi20"))
+    # 低接支撐:現價下方 1.5×ATR;若 MA20 / 20 日低更靠近現價(壓力先到)就改用它
+    support = price - 1.5 * atr
+    for lvl in (ma20, lo20):
+        if lvl and support < lvl < price:
+            support = lvl
+    # 反彈目標:現價上方 2×ATR;若 20 日高更近就用 20 日高
+    target = price + 2.0 * atr
+    if hi20 and price < hi20 < target:
+        target = hi20
+    # 停損:支撐再下方一個 ATR,且距現價最多 12%
+    stop = min(support - atr, price - 2.5 * atr)
+    stop = max(stop, price * 0.88)
+    # 夾邊界:任一價位離現價不得過遠
+    support = max(support, price * 0.90)
+    target = min(target, price * 1.15)
+    return round(support, 2), round(target, 2), round(stop, 2)
+
+
 def _depth_directive(depth: str) -> str:
     """日報深度客製(Premium 專屬)注入 prompt 的指令。simple=精簡 / deep=深入 / standard=不加。"""
     if depth == "simple":
@@ -759,6 +800,9 @@ def _signal_card_format_rules(mkt_status: dict) -> str:
 - 評分:8-10 強力買 / 6-7 偏多 / 4-5 觀望 / 2-3 偏空 / 0-1 賣出。**signal-bias、signal-badge、最外層 class 三者方向必須一致**(別 BULLISH 卻配賣出)
 - signal-bias 用 bullish/neutral/bearish;signal-badge 文字用「🟢 建議買入 / 🟡 續抱持有 / 🔴 建議賣出 / ⚪ 暫時觀望」
 - ‼️ **賣出 / 觀望卡不要給看似叫人現在買進的階梯**:sell 卡的「建議買價」改成「暫不建議買進,回補參考 $xxx」這種低接價,reason 要明說現在是減碼 / 不進場,不要自相矛盾
+- ‼️ **定價一律用每支附的「近端操作錨點」**(低接 / 反彈目標 / 停損)當建議買價、賺錢目標、止損賣價,可微調但不可大幅偏離。
+  **嚴禁拿「60日低 / 60日高」當停損或目標**——那是遠端區間參考,股票大漲後 60 日低常離現價 30-60%,當停損完全失準。
+  停損與現價距離不得超過約 12%、目標不得超過約 15%;所有價位夾在現價上下 15% 內。
 - 進場 / 目標 / 停損價位必須落在下方該股真實技術價位的合理範圍,美股美元、台股台幣,**嚴禁編造偏離現價的數字**"""
 
 
@@ -800,7 +844,10 @@ def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -
         t = tech.get(sym)
         if t:
             base += (f" | MA20 {_fmt_num(t.get('ma20'))} | 20日高 {_fmt_num(t.get('hi20'))}/低 {_fmt_num(t.get('lo20'))}"
-                     f" | 60日高 {_fmt_num(t.get('hi60'))}/低 {_fmt_num(t.get('lo60'))} | ATR14 {_fmt_num(t.get('atr14'))}")
+                     f" | 60日高 {_fmt_num(t.get('hi60'))}/低 {_fmt_num(t.get('lo60'))}(此為遠端區間參考,勿當停損/目標) | ATR14 {_fmt_num(t.get('atr14'))}")
+            sup, tgt, stp = _near_term_levels(t.get("price"), t)
+            if sup is not None:
+                base += f" ‖ 近端操作錨點(直接用這組設買賣價)→低接 {_fmt_num(sup)} / 反彈目標 {_fmt_num(tgt)} / 停損 {_fmt_num(stp)}"
             if depth == "deep":
                 adv = _adv_tech_str(t)
                 if adv:
@@ -849,15 +896,12 @@ def _deterministic_signal_card(sym: str, data: dict, mkt_status: dict) -> str:
     arrow = "▲" if chg >= 0 else "▼"
     bias = "bullish" if chg >= 0 else "bearish"
     bias_label = "📈 BULLISH" if chg >= 0 else "📉 BEARISH"
-    if tech:
-        buy_lo = tech.get("lo20") or round(price * 0.97, 2)
-        buy_hi = tech.get("ma20") or round(price * 0.99, 2)
-        target = tech.get("hi20") or tech.get("hi60") or round(price * 1.08, 2)
-        atr = tech.get("atr14") or 0
-        stop = tech.get("lo60") or round(price - 1.5 * atr, 2) if atr else round(price * 0.94, 2)
-    else:
-        buy_lo, buy_hi = round(price * 0.97, 2), round(price * 0.99, 2)
-        target, stop = round(price * 1.08, 2), round(price * 0.94, 2)
+    buy_lo, target, stop = _near_term_levels(price, tech)
+    if buy_lo is None:
+        buy_lo, target, stop = round(price * 0.97, 2), round(price * 1.08, 2), round(price * 0.94, 2)
+    buy_hi = round((buy_lo + price) / 2, 2)
+    if buy_hi <= buy_lo:
+        buy_hi = round(price * 0.99, 2)
     reason = (f'{name}({sym}) 收 ${_fmt_num(price)}{unit}({chg:+.2f}%)。'
               f'{when}後若回到 ${_fmt_num(buy_lo)}{unit} 附近並站穩可分批接,'
               f'跌破 ${_fmt_num(stop)}{unit} 先停損;本週留意 ${_fmt_num(target)}{unit} 壓力。')
@@ -1120,9 +1164,11 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
         nm = stock_names.display_name(sym, hint)
         ma50 = f" | MA50 {t['ma50']}" if t.get("ma50") else ""
         adv = f" | {_adv_tech_str(t)}" if depth == "deep" and _adv_tech_str(t) else ""
+        sup, tgt, stp = _near_term_levels(t.get("price"), t)
+        anchor = f" ‖ 近端錨點→低接 {_fmt_num(sup)} / 反彈目標 {_fmt_num(tgt)} / 停損 {_fmt_num(stp)}" if sup is not None else ""
         tech_rows.append(
             f"  {nm}（{sym}）: 現價 {t['price']} | MA20 {t['ma20']}{ma50} | "
-            f"20日高 {t['hi20']} / 20日低 {t['lo20']} | 60日高 {t['hi60']} / 60日低 {t['lo60']} | ATR14 {t['atr14']}{adv}"
+            f"20日高 {t['hi20']} / 20日低 {t['lo20']} | 60日高 {t['hi60']} / 60日低 {t['lo60']}(遠端區間,勿當停損/目標) | ATR14 {t['atr14']}{adv}{anchor}"
         )
     tech_block = ""
     if tech_rows:
@@ -1132,9 +1178,9 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
         tech_block = (
             "\n【各持股真實技術價位 — 進場/目標/停損價必須參考這些真實數字,嚴禁編造偏離現價的價位】\n"
             + "\n".join(tech_rows)
-            + "\n‼️ 定價規則:建議買價靠近 MA20 / 20日低 / 近期支撐;賺錢目標參考 20日高 / 60日高 壓力;"
-            "止損賣價設在跌破關鍵支撐(MA50 或 60日低)或現價 − 1.5~2×ATR。"
-            "所有價位都要落在上面真實數字的合理範圍內,美股用美元、台股用台幣,不可憑空捏造。"
+            + "\n‼️ 定價規則:直接用每支附的「近端錨點」(低接/反彈目標/停損)當建議買價、賺錢目標、止損賣價,可微調不可大幅偏離。"
+            "**嚴禁拿 60日低/60日高 當停損或目標**(遠端區間,大漲後常離現價 30-60%,當停損失準);"
+            "停損距現價 ≤約12%、目標 ≤約15%,所有價位夾在現價上下 15% 內,美股用美元、台股用台幣,不可憑空捏造。"
             + deep_rule + "\n"
         )
 
