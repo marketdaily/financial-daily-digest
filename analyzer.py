@@ -719,8 +719,10 @@ def _depth_directive(depth: str) -> str:
                 "每支股票一兩句講重點:該買/抱/賣 + 條件(價位或事件),不鋪陳。")
     if depth == "deep":
         return ("【深度設定:深入版 = 標準版全部再加碼】這位用戶選了「看深入」—— 保留標準版的一切(操作卡 + 新聞 + 技術 + 大盤),"
-                "並針對每支持股額外補充:(1) 估值看法(便宜/合理/偏貴,可給合理價區間,但只能依提供的真實數據,不可臆測本益比或編造財務數字);"
-                "(2) 同產業或供應鏈關聯的個股;(3) 若新聞提到法人/機構/內部人動向要點出。分析可深一點,但仍要口語、每個建議都附價位或時間條件。")
+                "並針對每支持股額外補充:(1) 進階技術判讀 —— 結合系統提供的 RSI/KD/MACD/布林通道/均線排列(多頭或空頭)/黃金或死亡交叉,"
+                "白話講這檔現在動能與超買超賣狀態、趨勢方向、關鍵技術訊號(只能引用提供的真實指標數字,嚴禁自行編造指標值);"
+                "(2) 估值看法(便宜/合理/偏貴,可給合理價區間,但只能依提供的真實數據,不可臆測本益比或編造財務數字);"
+                "(3) 同產業或供應鏈關聯的個股;(4) 若新聞提到法人/機構/內部人動向要點出。分析可深一點,但仍要口語、每個建議都附價位或時間條件。")
     return ""
 
 
@@ -760,7 +762,27 @@ def _signal_card_format_rules(mkt_status: dict) -> str:
 - 進場 / 目標 / 停損價位必須落在下方該股真實技術價位的合理範圍,美股美元、台股台幣,**嚴禁編造偏離現價的數字**"""
 
 
-def _chunk_market_tech_block(data: dict, chunk: list) -> str:
+def _adv_tech_str(t: dict) -> str:
+    """進階技術指標一行字(專業版/deep 用),只取有值的。"""
+    if not t:
+        return ""
+    parts = []
+    if t.get("rsi14") is not None:
+        parts.append(f"RSI14 {t['rsi14']}")
+    if t.get("k") is not None and t.get("d") is not None:
+        parts.append(f"KD {t['k']}/{t['d']}")
+    if t.get("macd_dif") is not None and t.get("macd_dea") is not None:
+        parts.append(f"MACD DIF {t['macd_dif']}/DEA {t['macd_dea']}/柱 {t.get('macd_hist')}")
+    if t.get("boll_up") is not None:
+        parts.append(f"布林 {t.get('boll_low')}–{t.get('boll_mid')}–{t.get('boll_up')}")
+    if t.get("trend"):
+        parts.append(t["trend"])
+    if t.get("cross"):
+        parts.append(t["cross"])
+    return " | ".join(parts)
+
+
+def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -> str:
     us_market = data.get("us_market", {})
     tw_market = data.get("tw_market", {})
     tech = data.get("technicals", {}) or {}
@@ -779,6 +801,10 @@ def _chunk_market_tech_block(data: dict, chunk: list) -> str:
         if t:
             base += (f" | MA20 {_fmt_num(t.get('ma20'))} | 20日高 {_fmt_num(t.get('hi20'))}/低 {_fmt_num(t.get('lo20'))}"
                      f" | 60日高 {_fmt_num(t.get('hi60'))}/低 {_fmt_num(t.get('lo60'))} | ATR14 {_fmt_num(t.get('atr14'))}")
+            if depth == "deep":
+                adv = _adv_tech_str(t)
+                if adv:
+                    base += " | " + adv
         a = impacts.get(sym)
         if a and a.get("is_event") and a.get("yoy") is not None:
             base += f" | 剛公布{a.get('kind','財報')} YoY {a['yoy']:+.1f}% {a.get('verdict','')}"
@@ -888,7 +914,7 @@ def _compact_overflow_card(sym: str, data: dict, mkt_status: dict) -> str:
             f'<div class="signal-body"><div class="signal-reason">{body}</div></div></div>')
 
 
-def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, full_limit: int = None, prefer_strong: bool = False) -> str:
+def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, full_limit: int = None, prefer_strong: bool = False, depth: str = "standard") -> str:
     """分批生成每檔持股的 signal-card,保證『使用者選的每一支都有下一步』。
     一次塞 30-50 檔給 LLM 會超出輸出上限被截斷 → 改成每 10 檔一批多次呼叫,
     任何一檔 LLM 失敗 / 不合格 → 用真實技術價位的 deterministic 卡補位。
@@ -906,11 +932,15 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
     CHUNK = 10
     for i in range(0, len(llm_stocks), CHUNK):
         chunk = llm_stocks[i:i + CHUNK]
-        block = _chunk_market_tech_block(data, chunk)
+        block = _chunk_market_tech_block(data, chunk, depth)
+        deep_tech_note = ("\n【專業版要求】這位用戶選了「看深入」,上面附了 RSI/KD/MACD/布林/均線排列/交叉等進階指標。"
+                          "每張卡的「下一步」說明要結合這些指標的判讀(例:RSI>70 過熱留意拉回、KD 低檔黃金交叉可偏多、"
+                          "MACD 柱由負轉正轉強、跌破布林下軌或站上中軌),用白話講,並對應到具體價位與動作。只能引用上面提供的真實數字,不可自行編造指標值。\n"
+                          if depth == "deep" else "")
         prompt = (
             f"你是這位用戶的專屬財經顧問。為以下每一支股票各生成一張 signal-card,給出明確「下一步」操作建議。\n"
             f"標的({len(chunk)} 支,一支都不能少、不能合併):{', '.join(chunk)}\n\n"
-            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n\n"
+            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}\n"
             f"{rules}\n\n"
             f"只輸出這 {len(chunk)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
             f"不要輸出 signal-grid 外框、不要任何說明文字、不要 markdown 反引號。"
@@ -1089,18 +1119,23 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
         hint = tw_market.get(sym, {}).get("name") if sym.isdigit() else None
         nm = stock_names.display_name(sym, hint)
         ma50 = f" | MA50 {t['ma50']}" if t.get("ma50") else ""
+        adv = f" | {_adv_tech_str(t)}" if depth == "deep" and _adv_tech_str(t) else ""
         tech_rows.append(
             f"  {nm}（{sym}）: 現價 {t['price']} | MA20 {t['ma20']}{ma50} | "
-            f"20日高 {t['hi20']} / 20日低 {t['lo20']} | 60日高 {t['hi60']} / 60日低 {t['lo60']} | ATR14 {t['atr14']}"
+            f"20日高 {t['hi20']} / 20日低 {t['lo20']} | 60日高 {t['hi60']} / 60日低 {t['lo60']} | ATR14 {t['atr14']}{adv}"
         )
     tech_block = ""
     if tech_rows:
+        deep_rule = ("\n‼️ 專業版進階技術判讀:RSI>70 偏過熱留意拉回、RSI<30 偏超賣可留意反彈;KD 低檔黃金交叉偏多、高檔死亡交叉偏空;"
+                     "MACD 柱由負轉正轉強、由正轉負轉弱;站上布林中軌偏多、跌破下軌弱勢、觸及上軌留意過熱。判讀只能用上面提供的真實指標值,不可編造。"
+                     if depth == "deep" else "")
         tech_block = (
             "\n【各持股真實技術價位 — 進場/目標/停損價必須參考這些真實數字,嚴禁編造偏離現價的價位】\n"
             + "\n".join(tech_rows)
             + "\n‼️ 定價規則:建議買價靠近 MA20 / 20日低 / 近期支撐;賺錢目標參考 20日高 / 60日高 壓力;"
             "止損賣價設在跌破關鍵支撐(MA50 或 60日低)或現價 − 1.5~2×ATR。"
-            "所有價位都要落在上面真實數字的合理範圍內,美股用美元、台股用台幣,不可憑空捏造。\n"
+            "所有價位都要落在上面真實數字的合理範圍內,美股用美元、台股用台幣,不可憑空捏造。"
+            + deep_rule + "\n"
         )
 
     # 訊號卡改由 _render_signal_cards_batched 分批生成(保證每支持股都有卡、不被截斷),
@@ -1417,7 +1452,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
         raw = re.sub(r'\n?```$', '', raw)
     cards = _render_signal_cards_batched(data, top_signal_stocks, mkt_status,
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
-                                         prefer_strong=prefer_strong)
+                                         prefer_strong=prefer_strong, depth=depth)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
@@ -1684,7 +1719,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
         raw = re.sub(r'\n?```$', '', raw)
     cards = _render_signal_cards_batched(data, signal_stocks, mkt_status,
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
-                                         prefer_strong=prefer_strong)
+                                         prefer_strong=prefer_strong, depth=depth)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:

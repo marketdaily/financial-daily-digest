@@ -311,18 +311,97 @@ def fetch_technicals(symbols: list) -> dict:
             prev = c.shift(1)
             tr = pd.concat([(hi - lo), (hi - prev).abs(), (lo - prev).abs()], axis=1).max(axis=1)
             atr = tr.rolling(14).mean().iloc[-1]
-            out[raw] = {
-                "price": round(float(c.iloc[-1]), 2),
-                "ma20": round(float(c.tail(20).mean()), 2),
-                "ma50": round(float(c.tail(50).mean()), 2) if len(c) >= 50 else None,
+            price = float(c.iloc[-1])
+            ma20 = round(float(c.tail(20).mean()), 2)
+            ma50 = round(float(c.tail(50).mean()), 2) if len(c) >= 50 else None
+            row = {
+                "price": round(price, 2),
+                "ma20": ma20,
+                "ma50": ma50,
                 "hi20": round(float(hi.tail(20).max()), 2),
                 "lo20": round(float(lo.tail(20).min()), 2),
                 "hi60": round(float(hi.tail(60).max()), 2),
                 "lo60": round(float(lo.tail(60).min()), 2),
                 "atr14": round(float(atr), 2),
             }
+            row.update(_advanced_indicators(c, hi, lo, price, ma20, ma50))
+            out[raw] = row
         except Exception:
             continue
+    return out
+
+
+def _advanced_indicators(c, hi, lo, price, ma20, ma50):
+    """進階技術指標(專業版/deep 用):RSI14 / MACD / KD / 布林 / MA5 / 交叉 / 排列。
+    全部從同一份 3 個月 OHLCV 算,失敗某項回 None,不拖垮整批。"""
+    import pandas as pd
+    out = {}
+    def _f(v, n=2):
+        try:
+            return round(float(v), n) if pd.notna(v) else None
+        except Exception:
+            return None
+    try:
+        delta = c.diff()
+        gain = delta.clip(lower=0).rolling(14).mean()
+        loss = (-delta.clip(upper=0)).rolling(14).mean()
+        rs = gain / loss.replace(0, pd.NA)
+        out["rsi14"] = _f(100 - 100 / (1 + rs.iloc[-1]), 1)
+    except Exception:
+        out["rsi14"] = None
+    try:
+        ema12 = c.ewm(span=12, adjust=False).mean()
+        ema26 = c.ewm(span=26, adjust=False).mean()
+        dif = ema12 - ema26
+        dea = dif.ewm(span=9, adjust=False).mean()
+        out["macd_dif"] = _f(dif.iloc[-1])
+        out["macd_dea"] = _f(dea.iloc[-1])
+        out["macd_hist"] = _f((dif.iloc[-1] - dea.iloc[-1]))
+    except Exception:
+        out["macd_dif"] = out["macd_dea"] = out["macd_hist"] = None
+    try:
+        low9 = lo.rolling(9).min()
+        high9 = hi.rolling(9).max()
+        rsv = ((c - low9) / (high9 - low9) * 100).fillna(50)
+        k = rsv.ewm(com=2, adjust=False).mean()
+        d = k.ewm(com=2, adjust=False).mean()
+        out["k"] = _f(k.iloc[-1], 1)
+        out["d"] = _f(d.iloc[-1], 1)
+    except Exception:
+        out["k"] = out["d"] = None
+    try:
+        mid = c.rolling(20).mean()
+        std = c.rolling(20).std()
+        out["boll_up"] = _f(mid.iloc[-1] + 2 * std.iloc[-1])
+        out["boll_mid"] = _f(mid.iloc[-1])
+        out["boll_low"] = _f(mid.iloc[-1] - 2 * std.iloc[-1])
+    except Exception:
+        out["boll_up"] = out["boll_mid"] = out["boll_low"] = None
+    try:
+        ma5 = float(c.tail(5).mean())
+        out["ma5"] = round(ma5, 2)
+        ma5s = c.rolling(5).mean()
+        ma20s = c.rolling(20).mean()
+        diff = (ma5s - ma20s).dropna()
+        cross = None
+        if len(diff) >= 3:
+            recent = diff.tail(3)
+            if recent.iloc[0] <= 0 and recent.iloc[-1] > 0:
+                cross = "黃金交叉"
+            elif recent.iloc[0] >= 0 and recent.iloc[-1] < 0:
+                cross = "死亡交叉"
+        out["cross"] = cross
+    except Exception:
+        out["ma5"] = out["cross"] = None
+    try:
+        if ma50 and price > ma20 > ma50:
+            out["trend"] = "多頭排列"
+        elif ma50 and price < ma20 < ma50:
+            out["trend"] = "空頭排列"
+        else:
+            out["trend"] = "盤整"
+    except Exception:
+        out["trend"] = None
     return out
 
 
