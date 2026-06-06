@@ -1,24 +1,24 @@
 {
   "stats": {
-    "generated_at": "2026-06-05T11:00:36",
+    "generated_at": "2026-06-06T08:07:34",
     "days_covered": 7,
-    "total_records": 286,
-    "judged_records": 170,
-    "a_count": 103,
+    "total_records": 295,
+    "judged_records": 239,
+    "a_count": 135,
     "a_wins": 55,
-    "a_rate": 53.4,
-    "c_count": 67,
-    "c_wins": 33,
-    "c_rate": 49.3,
+    "a_rate": 40.7,
+    "c_count": 104,
+    "c_wins": 68,
+    "c_rate": 65.4,
     "public_only": {
-      "a_count": 25,
+      "a_count": 28,
       "a_wins": 17,
-      "a_rate": 68.0,
-      "c_count": 5,
-      "c_wins": 3,
-      "c_rate": 60.0
+      "a_rate": 60.7,
+      "c_count": 6,
+      "c_wins": 4,
+      "c_rate": 66.7
     },
-    "personal_samples_added": 248
+    "personal_samples_added": 257
   },
   "records": [
     {
@@ -79,7 +79,7 @@
       "reason": "白話講「下一步」:今晚開盤後，股價處於 20 日均線 425.93 美元附近，多空不明。建議暫時觀望，待股價明確突破 430 美元或跌破 420 美元後再決定操作方向。",
       "type": "C",
       "source": "signal-card",
-      "outcome": null
+      "outcome": "win"
     },
     {
       "date": "2026-06-04",
@@ -91,7 +91,7 @@
       "reason": "白話講「下一步」:今晚開盤後，若股價能守穩 214.75 美元，並在 218.88 美元之上整理，則可視為短期強勢整理，可續抱。若跌破 214.75 美元，則需留意回測 20 日均線 218.88 美元的支撐。",
       "type": "A",
       "source": "signal-card",
-      "outcome": null
+      "outcome": "loss"
     },
     {
       "date": "2026-06-04",
@@ -103,7 +103,7 @@
       "reason": "白話講「下一步」:今晚開盤後，若股價能守穩 427.34 美元，並在 422.08 美元之上盤整，則可視為強勢整理，建議續抱。若跌破 422.08 美元，則需留意回測 400.88 美元的支撐。",
       "type": "A",
       "source": "signal-card",
-      "outcome": null
+      "outcome": "loss"
     },
     {
       "date": "2026-06-04",
@@ -115,7 +115,7 @@
       "reason": "白話講「下一步」:今晚開盤後，若股價能守穩 310.26 美元，並在 302.07 美元之上企穩，則可伺機買進加碼。若跌破 302.07 美元，則暫時觀望，待回測 281.07 美元支撐再評估。",
       "type": "A",
       "source": "signal-card",
-      "outcome": null
+      "outcome": "loss"
     },
     {
       "date": "2026-06-03",
