@@ -1188,9 +1188,16 @@ export default {
       const submitted = us.length + tw.length;
       [us, tw] = applyCap(us, tw, cap);
       const saved = us.length + tw.length;
+      // 日報深度:premium/admin 可選 simple/standard/deep,其餘鎖 standard;未帶則沿用既有值
+      const existingRaw = await env.USER_PREFS.get(email);
+      const existing = existingRaw ? JSON.parse(existingRaw) : {};
+      let digest_depth = body.digest_depth || existing.digest_depth || "standard";
+      if (!["simple", "standard", "deep"].includes(digest_depth)) digest_depth = "standard";
+      if (plan !== "premium" && plan !== "admin") digest_depth = "standard";
       const prefs = {
         us_stocks: us,
         tw_stocks: tw,
+        digest_depth,
         updated_at: new Date().toISOString(),
       };
       await env.USER_PREFS.put(email, JSON.stringify(prefs));
@@ -1238,6 +1245,7 @@ export default {
       return json({
         us_stocks: prefs.us_stocks || [],
         tw_stocks: prefs.tw_stocks || [],
+        digest_depth: prefs.digest_depth || "standard",
         plan,
         cap: cap === Infinity ? null : cap,
       });

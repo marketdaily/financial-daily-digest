@@ -2050,8 +2050,23 @@ async function loadPreferences(email) {
     const pwd = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
     const res = await fetch(WORKER_URL + "/get-preferences", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password: pwd }) });
     const data = await res.json();
-    userPlan = data.plan || "free";
-    userCap = data.cap == null ? Infinity : data.cap;
+    if (data && data.plan) {
+      // get-preferences 已過密碼驗證 → plan 是唯一權威來源,用它校正所有方案閘門。
+      // (修:LINE/chat 卡原本吃會過期的 localStorage md-plan;用戶升級 premium 後 md-plan 還停在 free → 卡片消失/深度鎖死)
+      userPlan = data.plan;
+      userCap = data.cap == null ? Infinity : data.cap;
+      localStorage.setItem("md-plan", data.plan);
+      const planBadge = document.getElementById("plan-badge");
+      if (planBadge) {
+        planBadge.textContent = data.plan === "admin" ? T('hdr_plan_admin') : data.plan === "free" ? T('hdr_plan_free') : T('hdr_plan_paid');
+        planBadge.classList.toggle("admin", data.plan === "admin");
+      }
+      setupLineCard(email, data.plan);
+      setupChatCard(email, data.plan);
+    } else {
+      // 密碼缺失 / 驗證失敗(403):不可靜默降級成 free —— 會讓 premium 用戶看起來像免費。沿用登入時的 plan。
+      userPlan = localStorage.getItem("md-plan") || "free";
+    }
     selectedDepth = data.digest_depth || "standard";
     setupDepthCard();
     selected.us = []; selected.tw = [];
