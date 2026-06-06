@@ -2045,11 +2045,32 @@ async function loadAdminStats() {
   } catch {}
 }
 
+// session 無可用密碼導致 get-preferences 驗證失敗時,送回登入頁重新輸入(保留 md-email/md-plan,不清身份)。
+// 不動 set-password/login/retry 既有流程,只重用既有登入畫面。
+function requireReauth(email) {
+  const dash = document.getElementById("dashboard");
+  const ls = document.getElementById("login-screen");
+  if (dash) dash.style.display = "none";
+  if (ls) ls.style.display = "flex";
+  const lf = document.getElementById("login-form"); if (lf) lf.style.display = "block";
+  const sf = document.getElementById("set-password-form"); if (sf) sf.style.display = "none";
+  const ei = document.getElementById("login-email"); if (ei) ei.value = email;
+  const pi = document.getElementById("login-password"); if (pi) { pi.value = ""; setTimeout(() => pi.focus(), 60); }
+  const err = document.getElementById("login-err");
+  if (err) { err.textContent = (currentLang === "en") ? "Session expired — please re-enter your password." : "登入逾時,請重新輸入密碼"; err.style.display = "block"; }
+}
+
 async function loadPreferences(email) {
   try {
     const pwd = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
     const res = await fetch(WORKER_URL + "/get-preferences", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password: pwd }) });
     const data = await res.json();
+    if (res.status === 403 || data.error === "auth") {
+      // session 密碼遺失/過期(sessionStorage 隨關瀏覽器清掉、又沒勾記住我)→ 無法載入用戶資料。
+      // 不可停在半殘 dashboard(股票空白/限時動態消失/存檔失敗),送回登入重新輸入密碼。
+      requireReauth(email);
+      return;
+    }
     if (data && data.plan) {
       // get-preferences 已過密碼驗證 → plan 是唯一權威來源,用它校正所有方案閘門。
       // (修:LINE/chat 卡原本吃會過期的 localStorage md-plan;用戶升級 premium 後 md-plan 還停在 free → 卡片消失/深度鎖死)
