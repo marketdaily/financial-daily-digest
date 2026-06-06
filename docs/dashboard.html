@@ -2074,16 +2074,18 @@ async function loadPreferences(email) {
     if (data && data.plan) {
       // get-preferences 已過密碼驗證 → plan 是唯一權威來源,用它校正所有方案閘門。
       // (修:LINE/chat 卡原本吃會過期的 localStorage md-plan;用戶升級 premium 後 md-plan 還停在 free → 卡片消失/深度鎖死)
-      userPlan = data.plan;
+      // ⚠️ admin 是 ADMIN_EMAILS 賦予,get-preferences 只回 KV plan(admin 帳號 KV 多半=premium)→ 不可被覆寫掉 admin。
+      const eff = localStorage.getItem("md-plan") === "admin" ? "admin" : data.plan;
+      userPlan = eff;
       userCap = data.cap == null ? Infinity : data.cap;
-      localStorage.setItem("md-plan", data.plan);
+      localStorage.setItem("md-plan", eff);
       const planBadge = document.getElementById("plan-badge");
       if (planBadge) {
-        planBadge.textContent = data.plan === "admin" ? T('hdr_plan_admin') : data.plan === "free" ? T('hdr_plan_free') : T('hdr_plan_paid');
-        planBadge.classList.toggle("admin", data.plan === "admin");
+        planBadge.textContent = eff === "admin" ? T('hdr_plan_admin') : eff === "free" ? T('hdr_plan_free') : T('hdr_plan_paid');
+        planBadge.classList.toggle("admin", eff === "admin");
       }
-      setupLineCard(email, data.plan);
-      setupChatCard(email, data.plan);
+      setupLineCard(email, eff);
+      setupChatCard(email, eff);
     } else {
       // 密碼缺失 / 驗證失敗(403):不可靜默降級成 free —— 會讓 premium 用戶看起來像免費。沿用登入時的 plan。
       userPlan = localStorage.getItem("md-plan") || "free";
