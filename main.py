@@ -71,7 +71,7 @@ def _report_variant_label() -> str:
 
 
 CSS = """
-:root { color-scheme: light dark; supported-color-schemes: light dark; }
+:root { color-scheme: light only; supported-color-schemes: light only; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif; background: #f2f2f7; color: #1d1d1f; }
 .wrapper { max-width: 700px; margin: 0 auto; background: #fff; }
@@ -236,7 +236,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 .rg-term { font-size: 12px; color: #48484a; line-height: 1.65; padding: 3px 0; }
 .rg-disclaimer { font-size: 10px; color: #aeaeb2; text-align: center; line-height: 1.5; padding: 2px 8px; }
 
-.footer { background: #0a0a0a; color: rgba(255,255,255,0.28); text-align: center; padding: 18px 20px; font-size: 11px; line-height: 2; }
+.footer { background: #f2f2f7; color: #8e8e93; text-align: center; padding: 18px 20px; font-size: 11px; line-height: 2; border-top: 1px solid #e5e5ea; }
 """
 
 
@@ -246,8 +246,8 @@ def build_email_html(date: str, html_report: str) -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
 <title>財經日報 {date}</title>
 <style>{CSS}</style>
 </head>
@@ -281,7 +281,7 @@ def build_email_html(date: str, html_report: str) -> str:
     ✅ 多源確認 = 2個以上白名單媒體報導 &nbsp;|&nbsp; ⚠️ 單一來源 = 請自行查證<br>
     本報告為 AI 生成，僅供參考，不構成投資建議<br><br>
     <a href="https://marketdaily.ai" style="color:#6366f1;text-decoration:none;font-weight:700;">🌐 marketdaily.ai</a> &nbsp;·&nbsp;
-    <a href="https://marketdaily.ai/dashboard.html" style="color:#a5b4fc;text-decoration:none;">⚙️ 我的專區</a>
+    <a href="https://marketdaily.ai/dashboard.html" style="color:#6366f1;text-decoration:none;">⚙️ 我的專區</a>
   </div>
 </div>
 </body>
@@ -305,8 +305,8 @@ def save_local(date: str, html_report: str, suffix: str = ""):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
 <title>財經日報 {date}</title>
 <style>{CSS}</style>
 </head>
@@ -340,7 +340,7 @@ def save_local(date: str, html_report: str, suffix: str = ""):
     ✅ 多源確認 = 2個以上白名單媒體報導 &nbsp;|&nbsp; ⚠️ 單一來源 = 請自行查證<br>
     本報告為 AI 生成，僅供參考，不構成投資建議<br><br>
     <a href="https://marketdaily.ai" style="color:#6366f1;text-decoration:none;font-weight:700;">🌐 marketdaily.ai</a> &nbsp;·&nbsp;
-    <a href="https://marketdaily.ai/dashboard.html" style="color:#a5b4fc;text-decoration:none;">⚙️ 我的專區</a>
+    <a href="https://marketdaily.ai/dashboard.html" style="color:#6366f1;text-decoration:none;">⚙️ 我的專區</a>
   </div>
 </div>
 </body>
