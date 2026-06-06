@@ -716,7 +716,7 @@ def run():
             # 使用者視角 audit:HIGH severity → retry 一次,仍 fail → deterministic fallback,
             # 絕不寄錯誤內容,也絕不讓用戶收不到信。MED/LOW 直接寄。
             from digest_audit import audit_digest
-            from analyzer import _market_status, generate_deterministic_fallback
+            from analyzer import _market_status, generate_deterministic_fallback, _postprocess_html
             mkt = _market_status(data["date"])
             try:
                 fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
@@ -741,13 +741,13 @@ def run():
                         fails = retry_fails
                     else:
                         print(f"   🛡️ retry 仍 HIGH fail → 切 deterministic fallback")
-                        det_inner = generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt)
+                        det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
                         html = build_email_html(data["date"], det_inner)
                         fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
                         deterministic_fallbacks.append(email)
                 except Exception as e:
                     print(f"   🛡️ retry 異常 → deterministic fallback ({e})")
-                    det_inner = generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt)
+                    det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
                     html = build_email_html(data["date"], det_inner)
                     fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
                     deterministic_fallbacks.append(email)

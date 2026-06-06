@@ -493,6 +493,10 @@ def _postprocess_html(html: str, data: dict) -> str:
         return f'{full}{chip}'
     html = _card_verdict_re.sub(_add_chip, html)
 
+    # 卡頭已有彩色 verdict-chip(建議買進/賣出),底部 signal-badge 是同一句重複 → 移除,
+    # 讓 signal-meta 只剩「信心 X% · 時間窗」,減少邊邊 chip 把卡片拉長。
+    html = _re.sub(r'<span class="signal-badge[^"]*">[^<]*</span>\s*', '', html)
+
     def _expand_ticker(m):
         cls, content = m.group(1), m.group(2)
         if "<" in content:
