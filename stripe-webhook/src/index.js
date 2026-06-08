@@ -1433,7 +1433,7 @@ export default {
         "Accept": "application/json",
         "Referer": "https://finance.yahoo.com/"
       };
-      const results = await Promise.allSettled(raw.map(async (t) => {
+      const fetchOne = async (t) => {
         const isTW = /^\d{4,6}$/.test(t);
         // 前收一律用 Yahoo range=1d(intraday)的 meta.chartPreviousClose:
         //   - 1d range 下它就是「正確的前一交易日收盤」(reference 已驗證:1D range chartPreviousClose=昨收)。
@@ -1465,8 +1465,17 @@ export default {
           price = fd.c; change = typeof fd.dp === "number" ? fd.dp : null;
         }
         return { symbol: t, name, price, change };
-      }));
-      const quotes = results.map((r, i) => r.status === "fulfilled" ? r.value : { symbol: raw[i], name: raw[i], price: null, change: null });
+      };
+      const settle = (arr) => arr.map((r, i) => r.status === "fulfilled" ? r.value : { symbol: raw[i], name: raw[i], price: null, change: null });
+      const quotes = settle(await Promise.allSettled(raw.map(fetchOne)));
+      // 持倉多時(如 10+ 檔)首發會對 Yahoo 同時開 N 條,部分被瞬間限流回 null → 前台固定「···」。
+      // 對「這次拿到 null 的少數檔」加抖動後單次補抓,讓同一個 request 自我修復,不必乾等前台 15s 刷新。
+      const misses = quotes.map((q, i) => q.price == null ? i : -1).filter(i => i >= 0);
+      if (misses.length && misses.length < quotes.length) {
+        await new Promise(rz => setTimeout(rz, 350 + Math.random() * 250));
+        const retried = settle(await Promise.allSettled(misses.map(i => fetchOne(raw[i]))));
+        retried.forEach((q, j) => { if (q.price != null) quotes[misses[j]] = q; });
+      }
       return new Response(JSON.stringify({ quotes }), {
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "max-age=15" }
       });
