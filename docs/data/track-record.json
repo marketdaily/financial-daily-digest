@@ -1,26 +1,122 @@
 {
   "stats": {
-    "generated_at": "2026-06-07T19:01:24",
-    "days_covered": 7,
-    "total_records": 295,
-    "judged_records": 239,
-    "a_count": 135,
-    "a_wins": 55,
-    "a_rate": 40.7,
-    "c_count": 104,
-    "c_wins": 68,
-    "c_rate": 65.4,
+    "generated_at": "2026-06-09T10:47:31",
+    "days_covered": 9,
+    "total_records": 429,
+    "judged_records": 310,
+    "a_count": 176,
+    "a_wins": 81,
+    "a_rate": 46.0,
+    "c_count": 134,
+    "c_wins": 77,
+    "c_rate": 57.5,
     "public_only": {
-      "a_count": 28,
-      "a_wins": 17,
-      "a_rate": 60.7,
-      "c_count": 6,
-      "c_wins": 4,
-      "c_rate": 66.7
+      "a_count": 30,
+      "a_wins": 18,
+      "a_rate": 60.0,
+      "c_count": 8,
+      "c_wins": 5,
+      "c_rate": 62.5
     },
-    "personal_samples_added": 257
+    "personal_samples_added": 383
   },
   "records": [
+    {
+      "date": "2026-06-09",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "特斯拉今日反彈 4.59%，突破 MA20(424.9) 仍需觀察，但價格已脫離短期低檔 388.59。建議今晚開盤後若回落至 $400-$410 區間，可分批低接作反彈布局，目標衝向 $439 附近的近端技術阻力。",
+      "type": "A",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-09",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "輝達小幅上漲 1.73%，但現價 $208.64 仍遠低於 MA20($218.78) 與 20 日高 $236.54，處於短期弱勢區間。建議今晚開盤後在 $204.33 低接點附近分批布局，目標推往 $225 反彈，若跌破 $204 則減碼。",
+      "type": "A",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-09",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "➡️ NEUTRAL",
+      "reason": "微軟下跌 1.18%，現價 $411.74 仍在 MA20($422.41) 下方，短期均線仍呈弱勢。建議今晚開盤後先抱緊手中持股不急著賣，若有新低至 $400.88 則適度加碼，目標反彈至 $438.26 時可逐步減碼獲利了結。",
+      "type": "C",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-09",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "➡️ NEUTRAL",
+      "reason": "蘋果小幅下跌 1.89%，現價 $301.54 位於 MA20($304.66) 下方，短期動能偏弱。建議今晚開盤後先不進場，待股價回落至 $291.82 低接點再評估介入，或等待 $314.5 反彈目標確認後才考慮加碼。",
+      "type": "C",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-08",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "sell",
+      "verdict_text": "📉 BEARISH",
+      "reason": "特斯拉股價跌破 MA20，且跌幅超過 6%，技術面轉弱。今晚開盤後，建議暫不進場，若股價回測至 388.59 元附近可考慮低接。",
+      "type": "C",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-08",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "sell",
+      "verdict_text": "📉 BEARISH",
+      "reason": "輝達股價大跌並跌破 MA20，技術指標顯示賣壓沉重。今晚開盤後，建議暫不進場，若股價回測至 204.33 元附近可考慮低接。",
+      "type": "C",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-08",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "😐 NEUTRAL",
+      "reason": "微軟股價小幅下跌，仍在 MA20 附近震盪，技術面暫無明顯方向。今晚開盤後，建議續抱持有，待股價明確突破或跌破關鍵價位再做決定。",
+      "type": "C",
+      "source": "signal-card",
+      "outcome": null
+    },
+    {
+      "date": "2026-06-08",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "蘋果股價小幅回調，但仍在 MA20 之上，顯示多頭結構仍穩固。今晚開盤後，建議逢低買進，以 304.25 元為主要進場點。",
+      "type": "A",
+      "source": "signal-card",
+      "outcome": null
+    },
     {
       "date": "2026-06-05",
       "name": "特斯拉 Tesla",
@@ -31,7 +127,7 @@
       "reason": "今晚開盤後，股價跌破 418.45 美元，且未能有效站回 MA20 (426.91 美元)之上，建議減碼出場，暫不建議買進，回補參考 60 日低點 337.24 美元。",
       "type": "C",
       "source": "signal-card",
-      "outcome": null
+      "outcome": "loss"
     },
     {
       "date": "2026-06-05",
@@ -43,7 +139,7 @@
       "reason": "今晚開盤後，若股價能守穩 218.66 美元，可視為短線買盤的初步表態，可考慮在 220-225 美元區間小幅加碼。",
       "type": "A",
       "source": "signal-card",
-      "outcome": null
+      "outcome": "win"
     },
     {
       "date": "2026-06-05",
@@ -55,7 +151,7 @@
       "reason": "今晚開盤後，股價在 MA20 (422.79 美元) 附近震盪，若能守穩此價位，可續抱持有，等待明確方向。",
       "type": "C",
       "source": "signal-card",
-      "outcome": null
+      "outcome": "win"
     },
     {
       "date": "2026-06-05",
@@ -67,7 +163,7 @@
       "reason": "今晚開盤後，若股價能守穩 311.23 美元，並在 315 美元附近出現買盤承接，可考慮在 312-315 美元區間分批買進。",
       "type": "A",
       "source": "signal-card",
-      "outcome": null
+      "outcome": "loss"
     },
     {
       "date": "2026-06-04",
