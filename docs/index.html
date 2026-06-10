@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MarketDaily — 台灣投資人的每日 AI 財經日報</title>
 <meta name="description" content="每天早上 7 點，AI 為你精選美股與台股市場簡報。假訊息全過濾，像聰明朋友傳訊息給你一樣好懂，30 秒掌握市場大事。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MarketDaily">
+<meta property="og:title" content="MarketDaily — 台灣投資人的每日 AI 財經日報">
+<meta property="og:description" content="每天早上 7 點，AI 為你精選美股與台股市場簡報。假訊息全過濾，像聰明朋友傳訊息給你一樣好懂，30 秒掌握市場大事。">
+<meta property="og:url" content="https://marketdaily.ai/">
+<meta property="og:image" content="https://marketdaily.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MarketDaily — 台灣投資人的每日 AI 財經日報">
+<meta name="twitter:description" content="每天早上 7 點，AI 為你精選美股與台股市場簡報。假訊息全過濾，像聰明朋友傳訊息給你一樣好懂，30 秒掌握市場大事。">
+<meta name="twitter:image" content="https://marketdaily.ai/assets/og.png">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#6366f1">
@@ -860,9 +872,23 @@ footer {
 
 <!-- Hero + Cards shared video background -->
 <div class="hero-section-wrap">
-<video class="hero-video" autoplay muted loop playsinline>
-  <source src="hero-bg.mp4" type="video/mp4">
+<video class="hero-video" autoplay muted loop playsinline poster="assets/hero-poster.jpg">
+  <source data-src="hero-bg.mp4?v=2" type="video/mp4">
 </video>
+<script>
+(function(){
+  var v = document.querySelector('.hero-video');
+  if (!v) return;
+  var wide = window.matchMedia('(min-width: 768px)').matches;
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (wide && !still) {
+    var s = v.querySelector('source');
+    s.src = s.getAttribute('data-src');
+    v.load();
+    var p = v.play(); if (p && p.catch) p.catch(function(){});
+  }
+})();
+</script>
 <div class="hero-video-overlay"></div>
 
 <!-- Hero -->
