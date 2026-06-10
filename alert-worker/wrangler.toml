@@ -2,9 +2,12 @@ name = "marketdaily-alert-worker"
 main = "src/index.js"
 compatibility_date = "2026-05-01"
 
-# 每 2 分鐘掃一次新聞,比對 Premium 用戶持股,重大則即時 LINE 推播。
+# 3 條 cron:
+#   */2  → 新聞掃描 → 比對 Premium 持股 → 重大即時 LINE 推播
+#   0 *  → 每小時 canary 驗 LINE token 健康(code 已有分支,toml 曾遺失,2026-06-10 補回)
+#   */15 → 政壇市場訊號(政治人物 X 貼文,Grok x_search;無 XAI_API_KEY 時 no-op)
 [triggers]
-crons = ["*/2 * * * *"]
+crons = ["*/2 * * * *", "0 * * * *", "*/15 * * * *"]
 
 # 與 marketdaily-webhook 共用同一個 KV namespace。
 [[kv_namespaces]]
@@ -13,6 +16,7 @@ id = "f5229c5bf86a4f8b88d71995005cd670"
 
 # Secret(用 `wrangler secret put` 設定,不寫進這裡):
 #   ANTHROPIC_API_KEY          — Claude 嚴重度判定
+#   XAI_API_KEY                — Grok x_search 政壇市場訊號(未設=該線 no-op)
 #   LINE_CHANNEL_ID            — Messaging API channel id(2010166664),動態換推播 token
 #   LINE_CHANNEL_SECRET        — Messaging API channel secret
 #   LINE_CHANNEL_ACCESS_TOKEN  — (選用)直接給長期 token,設了就不動態換

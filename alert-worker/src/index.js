@@ -4,6 +4,7 @@
 
 import { fetchNews } from "./news_source.js";
 import { displayName } from "./stock_names.js";
+import { fetchPoliticalSignals, formatPoliticalMsg } from "./political_source.js";
 
 const SEVERITY_THRESHOLD = 7;          // 已發生/已公告事件的推播門檻
 const SPECULATIVE_THRESHOLD = 9;       // 傳言/觀點/臆測文門檻拉高,避免「If…will…」評論文當 🚨重大消息 轟炸
@@ -589,13 +590,73 @@ async function runPipeline(env, { push, persist }) {
   return report;
 }
 
+// ── 政壇市場訊號管線(政治人物 X 貼文 → LINE)──────────────────────
+// 門檻沿用新聞管線同一套紀律:政策行動 ≥ SEVERITY_THRESHOLD(7)、
+// 言論/觀點 ≥ SPECULATIVE_THRESHOLD(9)且訊息掛「💬 言論觀點」標籤,不轟炸。
+// 無 XAI_API_KEY → 安靜 no-op;KV alert:political = "off" 可單獨關掉這條線。
+async function runPoliticalPipeline(env, { push }) {
+  const report = { ts: new Date().toISOString(), skipped: null, found: 0, qualified: 0, pushed: 0, fired: [], errors: [] };
+  // 不論結果如何都寫 laststatus heartbeat — 沒有它就無法證明 */15 cron 有在跑(可觀測性)
+  const done = async () => { await env.USER_PREFS.put("alert:pol_laststatus", JSON.stringify(report)); return report; };
+  if ((await env.USER_PREFS.get("alert:political")) === "off") {
+    report.skipped = "alert:political=off";
+    return done();
+  }
+  const res = await fetchPoliticalSignals(env, 2);
+  if (res.skipped) { report.skipped = res.skipped; return done(); }
+  if (res.error) { report.errors.push(res.error); return done(); }
+  report.found = res.signals.length;
+  if (!res.signals.length) return done();
+
+  let recipients = null;
+  for (const sig of res.signals) {
+    const threshold = sig.kind === "action" ? SEVERITY_THRESHOLD : SPECULATIVE_THRESHOLD;
+    if (sig.severity < threshold) continue;
+    // 去重:同一貼文(URL)48h 只推一次
+    const seenKey = "pol:seen:" + encodeURIComponent(sig.post_url || sig.headline_zh).slice(0, 480);
+    if (await env.USER_PREFS.get(seenKey)) continue;
+    // 每日上限(與新聞推播分開計),避免炸訊息
+    const capKey = "pol:count:" + new Date().toISOString().slice(0, 10);
+    const sent = parseInt((await env.USER_PREFS.get(capKey)) || "0", 10);
+    if (sent >= 4) { report.errors.push("daily political cap reached"); break; }
+
+    report.qualified++;
+    if (recipients === null) recipients = await premiumRecipients(env);
+    // 點名個股 → 推給持有者;severity ≥9 的大事 → 全體綁定 Premium 都推
+    const targets = recipients.filter(r =>
+      sig.severity >= 9 || !sig.affected.length || sig.affected.some(t => r.holdings.has(t)));
+    const msg = formatPoliticalMsg(sig, displayName);
+    const fired = { headline: sig.headline_zh, severity: sig.severity, kind: sig.kind, recipients: [] };
+    if (push && targets.length) {
+      const token = await lineToken(env);
+      for (const r of targets) {
+        const out = token ? await linePush(env, token, r.userId, msg) : { ok: false, status: "no-token" };
+        fired.recipients.push({ email: r.email, status: out.ok ? "pushed" : `fail:${out.status}` });
+        if (out.ok) report.pushed++;
+      }
+    } else {
+      for (const r of targets) fired.recipients.push({ email: r.email, status: "would-push" });
+    }
+    report.fired.push(fired);
+    await env.USER_PREFS.put(seenKey, "1", { expirationTtl: SEEN_TTL });
+    await env.USER_PREFS.put(capKey, String(sent + 1), { expirationTtl: COUNT_TTL });
+  }
+  return done();
+}
+
 export default {
   async scheduled(event, env, ctx) {
-    // 2 個 cron 分支:
-    //   "*/2 * * * *" → 主管線(抓新聞 → 比對 → 推播)
-    //   "0 * * * *"   → 每小時 canary,自動驗 token 健康度,失敗就 LINE 告 admin
+    // 3 個 cron 分支:
+    //   "*/2 * * * *"  → 主管線(抓新聞 → 比對 → 推播)
+    //   "0 * * * *"    → 每小時 canary,自動驗 token 健康度,失敗就 LINE 告 admin
+    //   "*/15 * * * *" → 政壇市場訊號(政治人物 X 貼文 → LINE,需 XAI_API_KEY)
     if (event.cron === "0 * * * *") {
       ctx.waitUntil(canaryCheck(env));
+      return;
+    }
+    if (event.cron === "*/15 * * * *") {
+      const enabled = (await env.USER_PREFS.get("alert:enabled")) === "true";
+      ctx.waitUntil(runPoliticalPipeline(env, { push: enabled }));
       return;
     }
     const enabled = (await env.USER_PREFS.get("alert:enabled")) === "true";
@@ -755,6 +816,20 @@ export default {
         return json(await runPipeline(env, { push: false, persist: false }));
       } catch (e) {
         // 不洩漏 stack;只回 generic message
+        return json({ ok: false, error: String(e.message || "error").slice(0, 200) }, 500);
+      }
+    }
+
+    // 政壇訊號 dry-run:抓 Grok 訊號+列「會推給誰」但不真推(消耗 xAI 額度,需 auth)。
+    // ?window=24 可拉長搜尋窗(預設 2h),設好 XAI_API_KEY 後用這支驗收。
+    if (url.pathname === "/political-dry") {
+      if (!authed()) return json({ error: "forbidden" }, 403);
+      try {
+        const w = Math.min(48, parseInt(url.searchParams.get("window") || "2", 10) || 2);
+        const sigs = await fetchPoliticalSignals(env, w);
+        const pipeline = await runPoliticalPipeline(env, { push: false });
+        return json({ raw_signals: sigs, pipeline });
+      } catch (e) {
         return json({ ok: false, error: String(e.message || "error").slice(0, 200) }, 500);
       }
     }
