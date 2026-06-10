@@ -2039,9 +2039,10 @@ async function loadAdminStats() {
     const subs = data.subscribers || [];
     let paid = 0, free = 0;
     for (const s of subs) { if (s.plan === "pro" || s.plan === "premium") paid++; else free++; }
-    document.getElementById("admin-total").textContent = total || "—";
-    document.getElementById("admin-free").textContent = free || "—";
-    document.getElementById("admin-paid").textContent = paid || "—";
+    // 0 是合法數字(例:全員付費時免費=0),不可被 || 當 falsy 吞成「—」
+    document.getElementById("admin-total").textContent = Number.isFinite(total) ? total : "—";
+    document.getElementById("admin-free").textContent = Number.isFinite(free) ? free : "—";
+    document.getElementById("admin-paid").textContent = Number.isFinite(paid) ? paid : "—";
   } catch {}
 }
 
@@ -2169,6 +2170,14 @@ async function refreshQuotes() {
       if (q.price == null && q.change == null && _stories[idx].price != null) return;
       _stories[idx].price = q.price;
       _stories[idx].change = q.change;
+      // 好報價寫回本機留底,供下次首屏與限流時段使用
+      if (q.price != null) {
+        try {
+          const qc = JSON.parse(localStorage.getItem("md-quote-cache") || "{}");
+          qc[q.symbol] = { price: q.price, change: q.change, ts: Date.now() };
+          localStorage.setItem("md-quote-cache", JSON.stringify(qc));
+        } catch {}
+      }
       // Update bubble
       const bubble = document.querySelector(`[data-sym="${q.symbol}"]`);
       if (bubble) {
@@ -2237,6 +2246,16 @@ async function loadStories(email) {
     if (!quotes.length) return;
     // Override with Chinese names from local prefs
     quotes.forEach(q => { if (nameMap[q.symbol]) q.name = nameMap[q.symbol]; });
+    // Yahoo 偶發限流抓不到時,用本機留底的上一筆好報價(24h 內)頂上,首屏不再「···」
+    try {
+      const qc = JSON.parse(localStorage.getItem("md-quote-cache") || "{}");
+      quotes.forEach(q => {
+        const c = qc[q.symbol];
+        if (q.price == null && c && Date.now() - c.ts < 86400e3) { q.price = c.price; q.change = c.change; }
+      });
+      quotes.forEach(q => { if (q.price != null) qc[q.symbol] = { price: q.price, change: q.change, ts: Date.now() }; });
+      localStorage.setItem("md-quote-cache", JSON.stringify(qc));
+    } catch {}
     _stories = quotes;
     if (_quotesRefreshTimer) clearInterval(_quotesRefreshTimer);
     _quotesRefreshTimer = setInterval(refreshQuotes, 15000);

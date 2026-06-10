@@ -1466,16 +1466,39 @@ export default {
         }
         return { symbol: t, name, price, change };
       };
-      const settle = (arr) => arr.map((r, i) => r.status === "fulfilled" ? r.value : { symbol: raw[i], name: raw[i], price: null, change: null });
-      const quotes = settle(await Promise.allSettled(raw.map(fetchOne)));
-      // 持倉多時(如 10+ 檔)首發會對 Yahoo 同時開 N 條,部分被瞬間限流回 null → 前台固定「···」。
-      // 對「這次拿到 null 的少數檔」加抖動後單次補抓,讓同一個 request 自我修復,不必乾等前台 15s 刷新。
+      const settleChunk = (arr, syms) => arr.map((r, i) => r.status === "fulfilled" ? r.value : { symbol: syms[i], name: syms[i], price: null, change: null });
+      // 持倉多時(10+ 檔)同時開 N 條會觸發 Yahoo burst 限流 → 改 4 檔一批、批間 120ms,
+      // 從源頭降低觸發機率(2026-06-10:6/8 的單次補抓在「持續限流窗口」下仍會 6/10 檔卡「···」)。
+      const quotes = [];
+      for (let i = 0; i < raw.length; i += 4) {
+        const chunk = raw.slice(i, i + 4);
+        quotes.push(...settleChunk(await Promise.allSettled(chunk.map(fetchOne)), chunk));
+        if (i + 4 < raw.length) await new Promise(rz => setTimeout(rz, 120));
+      }
+      // 仍有 miss → 加抖動後單次補抓,同一個 request 自我修復
       const misses = quotes.map((q, i) => q.price == null ? i : -1).filter(i => i >= 0);
       if (misses.length && misses.length < quotes.length) {
         await new Promise(rz => setTimeout(rz, 350 + Math.random() * 250));
-        const retried = settle(await Promise.allSettled(misses.map(i => fetchOne(raw[i]))));
+        const syms = misses.map(i => raw[i]);
+        const retried = settleChunk(await Promise.allSettled(syms.map(fetchOne)), syms);
         retried.forEach((q, j) => { if (q.price != null) quotes[misses[j]] = q; });
       }
+      // 最後防線:Yahoo 持續限流時,用同 PoP 快取的「上一筆好報價」(6h)頂上,
+      // 前台不再長時間卡「···」;新的好報價順手寫回快取。
+      const qcache = caches.default;
+      const qkey = (t) => new Request("https://quote-cache.marketdaily.internal/" + encodeURIComponent(t));
+      for (let i = 0; i < quotes.length; i++) {
+        if (quotes[i].price != null) continue;
+        try {
+          const hit = await qcache.match(qkey(quotes[i].symbol));
+          if (hit) quotes[i] = await hit.json();
+        } catch {}
+      }
+      ctx.waitUntil(Promise.all(quotes.filter(q => q.price != null).map(q =>
+        qcache.put(qkey(q.symbol), new Response(JSON.stringify(q), {
+          headers: { "Content-Type": "application/json", "Cache-Control": "max-age=21600" }
+        })).catch(() => {})
+      )));
       return new Response(JSON.stringify({ quotes }), {
         headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "max-age=15" }
       });
