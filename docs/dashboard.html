@@ -2157,12 +2157,21 @@ function startCountdown() {
   }, 1000);
 }
 
+// 追蹤超過 25 支時分批請求 quotes:worker 端有單請求支數上限
+// (2026-06-10 實鍋:34美股+22台股=56 支被 slice(0,50) 砍掉最後 6 支 → 那幾檔永遠「···」)
+async function fetchQuotesChunked(syms) {
+  const chunks = [];
+  for (let i = 0; i < syms.length; i += 25) chunks.push(syms.slice(i, i + 25));
+  const parts = await Promise.all(chunks.map(c =>
+    fetch(`${WORKER_URL}/stock-quotes?tickers=${c.join(",")}`).then(r => r.json()).catch(() => ({ quotes: [] }))
+  ));
+  return parts.flatMap(p => p.quotes || []);
+}
+
 async function refreshQuotes() {
   if (!_stories.length) return;
-  const tickers = _stories.map(s => s.symbol).join(",");
   try {
-    const res = await fetch(`${WORKER_URL}/stock-quotes?tickers=${tickers}`);
-    const { quotes } = await res.json();
+    const quotes = await fetchQuotesChunked(_stories.map(s => s.symbol));
     quotes.forEach(q => {
       const idx = _stories.findIndex(s => s.symbol === q.symbol);
       if (idx === -1) return;
@@ -2238,8 +2247,7 @@ async function loadStories(email) {
   allSelected.forEach(s => { nameMap[s.sym] = s.name; });
 
   try {
-    const res = await fetch(`${WORKER_URL}/stock-quotes?tickers=${tickers.join(",")}`);
-    const { quotes } = await res.json();
+    const quotes = await fetchQuotesChunked(tickers);
     // Ensure every selected ticker appears, fallback to null data if API missed any
     const returnedSyms = new Set(quotes.map(q => q.symbol));
     allSelected.forEach(s => { if (!returnedSyms.has(s.sym)) quotes.push({ symbol: s.sym, name: s.name, price: null, change: null }); });

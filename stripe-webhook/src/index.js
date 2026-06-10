@@ -1425,7 +1425,9 @@ export default {
 
     // Real-time stock quotes proxy (Yahoo Finance)
     if (url.pathname === "/stock-quotes" && request.method === "GET") {
-      const raw = (url.searchParams.get("tickers") || "").split(",").map(t => t.trim()).filter(Boolean).slice(0, 50);
+      // 上限 80:曾經 50 把用戶 56 支(34美股+22台股)的最後 6 支靜默砍掉 → 那幾檔永遠「···」
+      // (2026-06-10 實鍋,違反「禁止靜默砍資料」)。前端已改 25 支/批,這裡是第二道保險。
+      const raw = (url.searchParams.get("tickers") || "").split(",").map(t => t.trim()).filter(Boolean).slice(0, 80);
       if (!raw.length) return json({ quotes: [] });
       const fh = env.FINNHUB_API_KEY;
       const yfHeaders = {
