@@ -78,7 +78,7 @@
     var b = document.createElement("button");
     b.id = "md-tour-fab";
     b.type = "button";
-    b.innerHTML = "<span>❓</span> " + T("fab");
+    b.innerHTML = "<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.2' stroke-linecap='round' aria-hidden='true'><circle cx='12' cy='12' r='9.4' opacity='0.5'/><path d='M9.4 9.2a2.7 2.7 0 015.2 0.9c0 1.7-2.2 2.1-2.2 3.4'/><circle cx='12.3' cy='16.9' r='0.2' fill='currentColor'/></svg> " + T("fab");
     b.setAttribute("aria-label", T("fab"));
     b.addEventListener("click", start);
     document.body.appendChild(b);

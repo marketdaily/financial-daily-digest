@@ -209,7 +209,8 @@ main { position: relative; z-index: 1; }
 
 /* Starter */
 .tier-card.starter {
-  border-color: rgba(16,185,129,0.18);
+  border-color: rgba(16,185,129,0.2);
+  background: linear-gradient(165deg, rgba(16,185,129,0.05), rgba(255,255,255,0.025) 60%);
 }
 
 /* Pro — secondary tier */
@@ -221,9 +222,20 @@ main { position: relative; z-index: 1; }
 }
 
 /* Premium — highlighted */
+.tier-card.premium::before {
+  content: ''; position: absolute; inset: -3px; border-radius: inherit; z-index: -1;
+  background: linear-gradient(135deg, rgba(245,158,11,0.55), rgba(139,92,246,0.38) 50%, rgba(245,158,11,0.5));
+  filter: blur(16px);
+  animation: prem-breathe 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes prem-breathe {
+  0%, 100% { opacity: 0.38; }
+  50% { opacity: 0.72; }
+}
 .tier-card.premium {
   border: 1.5px solid rgba(245,158,11,0.5);
-  background: rgba(245,158,11,0.06);
+  background: linear-gradient(160deg, rgba(245,158,11,0.085), rgba(245,158,11,0.035) 55%, rgba(139,92,246,0.05));
   box-shadow:
     0 0 0 1px rgba(245,158,11,0.15),
     0 32px 72px rgba(245,158,11,0.18),
@@ -392,6 +404,8 @@ main { position: relative; z-index: 1; }
 .compare-row td.col-val.yes { color: var(--emerald); }
 .compare-row td.col-val.premium-yes { color: #fbbf24; }
 .compare-row td.col-val.no { color: var(--text-dim); }
+.compare-row { transition: background 0.15s ease; }
+.compare-row:hover td { background: rgba(99,102,241,0.05); }
 .v-check::before { content: '✓'; font-weight: 700; font-size: 14px; }
 .v-cross::before { content: '—'; }
 .v-val { font-weight: 600; color: var(--text); }
@@ -624,6 +638,7 @@ footer {
 }
 
 </style>
+<link rel="stylesheet" href="deepspace.css?v=20260611a">
 </head>
 <body>
 
@@ -642,7 +657,7 @@ footer {
   </a>
   <div class="nav-right">
     <a class="nav-link" href="index.html" data-i18n="nav_home">首頁</a>
-    <a class="nav-link" href="track-record.html" data-i18n="nav_record">📊 戰績</a>
+    <a class="nav-link" href="track-record.html" data-i18n="nav_record">戰績</a>
     <a class="nav-link" href="vs.html" data-i18n="nav_vs">vs 對手</a>
     <a class="nav-link active" href="pricing.html" data-i18n="nav_pricing">定價</a>
     <a class="nav-link" href="dashboard.html" data-i18n="nav_dashboard">我的專區</a>
@@ -994,7 +1009,7 @@ footer {
 const i18n = {
   en: {
     page_title: "Pricing · MarketDaily",
-    nav_home: "Home", nav_pricing: "Pricing", nav_dashboard: "My Account", nav_record: "📊 Record", nav_vs: "vs Rivals",
+    nav_home: "Home", nav_pricing: "Pricing", nav_dashboard: "My Account", nav_record: "Record", nav_vs: "vs Rivals",
     price_pill: "Plans & Pricing",
     price_h1: "Choose the plan that<br><span class=\"grad\">fits you best</span>",
     price_sub: "Start free, upgrade anytime. Cancel anytime, no hidden fees.",
@@ -1076,7 +1091,7 @@ const i18n = {
   },
   zh: {
     page_title: "定價方案 · MarketDaily",
-    nav_home: "首頁", nav_pricing: "定價", nav_dashboard: "我的專區", nav_record: "📊 戰績", nav_vs: "vs 對手",
+    nav_home: "首頁", nav_pricing: "定價", nav_dashboard: "我的專區", nav_record: "戰績", nav_vs: "vs 對手",
     price_pill: "方案與定價",
     price_h1: "選擇最適合你的<br><span class=\"grad\">方案</span>",
     price_sub: "從免費開始，隨時升級。取消隨時生效，沒有隱藏費用。",

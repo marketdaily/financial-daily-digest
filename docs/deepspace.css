@@ -1,0 +1,72 @@
+/* ── MarketDaily Deep-Space Layer (2026-06) ──
+   全站共用視覺底層:極光頂部光暈 + 星塵點 + 細節打磨。
+   只用 html::before/::after 與全域元素層級,不碰任何頁面內組件/流程。 */
+
+/* 背景搬到 html、body 透明,深空層(html::before/::after)才不會被 body 不透明底蓋住 */
+html { background: #060611; }
+body { background: transparent !important; }
+
+html::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 75% 55% at 50% -12%, rgba(99,102,241,0.16), transparent 60%),
+    radial-gradient(ellipse 40% 35% at 86% 4%, rgba(139,92,246,0.10), transparent 65%),
+    radial-gradient(ellipse 35% 30% at 10% 10%, rgba(56,189,248,0.07), transparent 65%),
+    radial-gradient(ellipse 60% 40% at 50% 108%, rgba(99,102,241,0.07), transparent 70%);
+}
+
+html::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 12% 22%, rgba(255,255,255,0.34) 50%, transparent 51%),
+    radial-gradient(1px 1px at 28% 64%, rgba(255,255,255,0.20) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 41% 12%, rgba(165,180,252,0.32) 50%, transparent 51%),
+    radial-gradient(1px 1px at 57% 45%, rgba(255,255,255,0.16) 50%, transparent 51%),
+    radial-gradient(1px 1px at 66% 80%, rgba(255,255,255,0.22) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 78% 28%, rgba(186,230,253,0.26) 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 62%, rgba(255,255,255,0.18) 50%, transparent 51%),
+    radial-gradient(1px 1px at 6% 84%, rgba(196,181,253,0.22) 50%, transparent 51%),
+    radial-gradient(1px 1px at 94% 90%, rgba(255,255,255,0.14) 50%, transparent 51%),
+    radial-gradient(1px 1px at 48% 94%, rgba(255,255,255,0.12) 50%, transparent 51%);
+  background-size: 220% 220%;
+  opacity: 0.55;
+  animation: md-stardrift 90s linear infinite alternate;
+}
+@keyframes md-stardrift {
+  from { background-position: 0% 0%; }
+  to   { background-position: 18% 26%; }
+}
+
+/* 內容永遠在深空層之上 */
+body { position: relative; z-index: 1; }
+
+/* 文字選取 / 焦點 / 捲軸 — 全站一致的品牌細節 */
+::selection { background: rgba(99,102,241,0.42); color: #fff; }
+
+:focus-visible {
+  outline: 2px solid rgba(129,140,248,0.85);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+* { scrollbar-width: thin; scrollbar-color: rgba(99,102,241,0.45) transparent; }
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(99,102,241,0.5), rgba(139,92,246,0.42));
+  border-radius: 8px;
+  border: 2px solid rgba(6,6,17,0.9);
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(129,140,248,0.7); }
+
+/* 動畫禮貌:使用者要求減少動態時關掉裝飾動畫 */
+@media (prefers-reduced-motion: reduce) {
+  html::after { animation: none; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -85,10 +85,15 @@ nav {
   position: sticky; top: 0; z-index: 100;
   display: flex; justify-content: space-between; align-items: center;
   padding: 0 40px; height: 62px;
-  background: rgba(6,6,17,0.75);
+  background: rgba(6,6,17,0.72);
   backdrop-filter: blur(28px) saturate(1.8);
   -webkit-backdrop-filter: blur(28px) saturate(1.8);
   border-bottom: 1px solid var(--border);
+}
+nav::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+  background: linear-gradient(90deg, transparent 5%, rgba(99,102,241,0.45), rgba(139,92,246,0.35), transparent 95%);
+  pointer-events: none;
 }
 .logo {
   display: flex; align-items: center; gap: 10px;
@@ -183,6 +188,7 @@ nav {
 
 .hero-pill {
   display: inline-flex; align-items: center; gap: 10px;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
   background: var(--primary-dim); border: 1px solid var(--primary-border);
   color: var(--primary-light); font-size: 12px; font-weight: 700;
   padding: 7px 18px; border-radius: 40px; letter-spacing: 0.5px;
@@ -221,6 +227,15 @@ nav {
   background: linear-gradient(135deg, #818cf8 0%, #a78bfa 45%, #38bdf8 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; display: inline-block;
+  filter: drop-shadow(0 0 28px rgba(129,140,248,0.36));
+}
+/* 字詞切割動畫會把文字包進 overflow:hidden 的 inline-block,
+   外層 background-clip:text 在 Chrome 不會穿透 → 漸層行整行隱形。
+   漸層必須同時套在最內層 .w-inner 才會畫出來。 */
+.hero h1 .gradient .w-inner {
+  background: linear-gradient(135deg, #818cf8 0%, #a78bfa 45%, #38bdf8 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 .hero-sub {
   font-size: 18px; color: var(--text-muted); max-width: 500px;
@@ -239,11 +254,12 @@ nav {
   display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px;
 }
 .subscribe-box input[type="email"] {
-  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.11);
-  color: #fff; font-size: 15px; font-family: inherit;
-  padding: 15px 22px; border-radius: var(--radius-sm); width: 300px; outline: none;
+  background: rgba(255,255,255,0.055); border: 1px solid rgba(255,255,255,0.13);
+  color: #fff; font-size: 16px; font-family: inherit;
+  padding: 17px 24px; border-radius: 14px; width: 330px; outline: none;
   transition: all 0.2s;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 8px rgba(0,0,0,0.2);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 18px rgba(0,0,0,0.28);
 }
 .subscribe-box input[type="email"]::placeholder { color: rgba(255,255,255,0.28); }
 .subscribe-box input[type="email"]:focus {
@@ -251,13 +267,13 @@ nav {
   box-shadow: 0 0 0 3px rgba(99,102,241,0.18), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 .subscribe-box button {
-  background: var(--primary); color: #fff;
-  font-size: 15px; font-weight: 700; font-family: inherit;
-  padding: 15px 28px; border-radius: var(--radius-sm); border: none;
-  cursor: pointer; transition: all 0.22s; white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(99,102,241,0.42), inset 0 1px 0 rgba(255,255,255,0.12);
+  background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
+  font-size: 16px; font-weight: 800; font-family: inherit;
+  padding: 17px 32px; border-radius: 14px; border: none;
+  cursor: pointer; transition: all 0.22s; white-space: nowrap; letter-spacing: 0.2px;
+  box-shadow: 0 6px 26px rgba(99,102,241,0.46), inset 0 1px 0 rgba(255,255,255,0.18);
 }
-.subscribe-box button:hover { background: #4f46e5; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,102,241,0.52); }
+.subscribe-box button:hover { filter: brightness(1.13); transform: translateY(-2px); box-shadow: 0 10px 34px rgba(99,102,241,0.58); }
 .subscribe-box button:active { transform: translateY(0); }
 
 .subscribe-note { font-size: 12px; color: var(--text-dim); margin-bottom: 16px; }
@@ -411,19 +427,25 @@ nav {
   width: 1px; background: linear-gradient(to bottom, transparent, var(--border), transparent);
 }
 .stat-num {
-  font-size: 44px; font-weight: 900; letter-spacing: -2.5px;
+  font-size: 54px; font-weight: 900; letter-spacing: -2.5px;
+  filter: drop-shadow(0 6px 22px rgba(99,102,241,0.32));
   background: linear-gradient(135deg, var(--primary-light) 0%, #c4b5fd 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   display: block; line-height: 1;
 }
-.stat-label { font-size: 12px; color: var(--text-dim); margin-top: 8px; letter-spacing: 0.5px; font-weight: 500; }
+.stat-label { font-size: 13px; color: rgba(255,255,255,0.52); margin-top: 10px; letter-spacing: 0.6px; font-weight: 600; }
 
 /* ── FEATURES ── */
 .section-head { text-align: center; margin-bottom: 56px; }
 .section-eyebrow {
-  display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 2px;
+  display: inline-flex; align-items: center; gap: 12px; font-size: 11px; font-weight: 800; letter-spacing: 2px;
   text-transform: uppercase; color: var(--primary-light); margin-bottom: 14px;
 }
+.section-eyebrow::before, .section-eyebrow::after {
+  content: ''; width: 28px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(129,140,248,0.6));
+}
+.section-eyebrow::after { background: linear-gradient(90deg, rgba(129,140,248,0.6), transparent); }
 .section-head h2 { font-size: 36px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 12px; }
 .section-head p { font-size: 16px; color: var(--text-muted); max-width: 460px; margin: 0 auto; line-height: 1.72; }
 
@@ -846,6 +868,7 @@ footer {
 }
 
 </style>
+<link rel="stylesheet" href="deepspace.css?v=20260611a">
 </head>
 <body>
 
@@ -863,7 +886,7 @@ footer {
     Market<em>Daily</em>
   </a>
   <div class="nav-right">
-    <a href="track-record.html" class="lang-btn" data-i18n="nav_record">📊 戰績</a>
+    <a href="track-record.html" class="lang-btn" data-i18n="nav_record">戰績</a>
     <a href="vs.html" class="lang-btn" data-i18n="nav_vs">vs 對手</a>
     <a href="pricing.html" class="lang-btn" data-i18n="nav_pricing">定價</a>
     <button class="lang-btn" id="lang-toggle" onclick="toggleLang()">中文</button>
@@ -900,7 +923,7 @@ footer {
   <div class="hero-inner">
     <div class="hero-pill">
       <span class="live-dot"></span>
-      <span data-i18n="pill">📊 AI-Curated · Fake-News Filtered · Daily 7AM</span>
+      <span data-i18n="pill">AI-Curated · Fake-News Filtered · Daily 7AM</span>
     </div>
     <h1 data-i18n-html="hero_h1">Your daily stock market<br><span class="gradient">briefing in 30 seconds</span></h1>
     <p class="hero-sub" data-i18n="hero_sub">
@@ -920,7 +943,7 @@ footer {
           <span data-i18n="remember_email">記住我的 Email</span>
         </label>
         <p class="subscribe-note" style="margin-top:8px;" data-i18n="sub_note_netflix">已訂閱？輸入你的 Email 直接登入</p>
-        <a href="dashboard.html" class="hero-my-account" data-i18n="hero_my_account" style="display:inline-block;margin-top:6px;font-size:13px;color:#a5b4fc;text-decoration:none;font-weight:600;transition:color .2s;" onmouseover="this.style.color='#c7d2fe'" onmouseout="this.style.color='#a5b4fc'">⚙️ 已有帳號？直接前往我的專區 →</a>
+        <a href="dashboard.html" class="hero-my-account" data-i18n="hero_my_account" style="display:inline-block;margin-top:6px;font-size:13px;color:#a5b4fc;text-decoration:none;font-weight:600;transition:color .2s;" onmouseover="this.style.color='#c7d2fe'" onmouseout="this.style.color='#a5b4fc'">已有帳號？直接前往我的專區 →</a>
         <div class="error-msg" id="error-email-msg" style="display:none;" data-i18n="error_email">Please enter a valid email address.</div>
       </div>
 
@@ -1215,11 +1238,11 @@ footer {
     <div class="tr-stats-row">
       <div class="tr-stat">
         <span class="tr-stat-num" id="tr-stat-c">—</span>
-        <div class="tr-stat-label" data-i18n="tr_s2">🛡️ 避坑勝率</div>
+        <div class="tr-stat-label" data-i18n="tr_s2">避坑勝率</div>
       </div>
       <div class="tr-stat">
         <span class="tr-stat-num indigo" id="tr-stat-a">—</span>
-        <div class="tr-stat-label" data-i18n="tr_s1">📈 看多勝率 · 公版可查證</div>
+        <div class="tr-stat-label" data-i18n="tr_s1">看多勝率 · 公版可查證</div>
       </div>
       <div class="tr-stat">
         <span class="tr-stat-num amber" id="tr-stat-total">—</span>
@@ -1893,7 +1916,7 @@ footer {
 <footer>
   <div class="footer-brand">Market<span style="color:#818cf8;">Daily</span></div>
   <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:18px;margin:18px 0 12px;font-size:13px;">
-    <a href="track-record.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_record">📊 戰績紀錄</a>
+    <a href="track-record.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_record">戰績紀錄</a>
     <a href="vs.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_vs">vs 對手比較</a>
     <a href="about.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_about">主編 · 編輯流程</a>
     <a href="pricing.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_pricing">定價</a>
@@ -1952,8 +1975,8 @@ function getAttrPayload() {
 
 const i18n = {
   en: {
-    nav_settings: "⚙️ My Account", nav_pricing: "Pricing", nav_guide: "📖 Getting Started", nav_record: "📊 Record", nav_vs: "vs Rivals",
-    hero_my_account: "⚙️ Already have an account? Go to My Account →",
+    nav_settings: "My Account", nav_pricing: "Pricing", nav_guide: "Getting Started", nav_record: "Record", nav_vs: "vs Rivals",
+    hero_my_account: "Already have an account? Go to My Account →",
     sp_heading: "🎉 Subscription confirmed! Set your password",
     sp_pwd_placeholder: "Set a password (at least 6 characters)",
     sp_pwd2_placeholder: "Re-enter password",
@@ -1962,7 +1985,7 @@ const i18n = {
     invite_has_code: "🎁 Someone sent you an invite? Claim it here",
     invite_code_hint: "Enter the code a friend gave you — unlock the daily briefing free",
     invite_placeholder: "Invite Code",
-    pill: "📊 AI-Curated · Fake-News Filtered · Daily 7AM",
+    pill: "AI-Curated · Fake-News Filtered · Daily 7AM",
     hero_h1: 'Your daily stock market<br><span class="gradient">briefing in 30 seconds</span>',
     hero_sub: "Every morning at 7AM Taiwan time — AI-curated US & Taiwan market news, fake-news filtered, written like a smart friend texting you.",
     placeholder_email: "your@email.com",
@@ -2071,8 +2094,8 @@ const i18n = {
     tr_title: "We don't talk up AI — we let the record talk",
     tr_sub: "Every stock the daily mentioned in the last 30 days — direction win-rate and avoid-the-bad-ones rate, fully public. Misses are listed too — 100% would be the fake number.",
     tr_cta: "See the full record →",
-    tr_s1: "📈 Long win-rate · verifiable",
-    tr_s2: "🛡️ Risk-avoidance rate",
+    tr_s1: "Long win-rate · verifiable",
+    tr_s2: "Risk-avoidance rate",
     tr_s3: "Stocks mentioned to date",
     refund_badge: "🛡️ 30-day no-questions refund",
     nocard_badge: "⭐ First month 40% off (NT$299)",
@@ -2115,14 +2138,14 @@ const i18n = {
     hp_chip1: "Public long win-rate · verifiable",
     hp_chip2_num: "No sponsors", hp_chip2: "No positions · corrections public",
     hp_chip3_num: "30 days", hp_chip3: "No-questions refund · cancel anytime",
-    footer_record: "📊 Track Record",
+    footer_record: "Track Record",
     footer_vs: "vs Rivals",
     footer_about: "Editor · Process",
     footer_pricing: "Pricing",
   },
   zh: {
-    nav_settings: "⚙️ 我的專區", nav_pricing: "定價", nav_guide: "📖 新手教學", nav_record: "📊 戰績", nav_vs: "vs 對手",
-    hero_my_account: "⚙️ 已有帳號？直接前往我的專區 →",
+    nav_settings: "我的專區", nav_pricing: "定價", nav_guide: "新手教學", nav_record: "戰績", nav_vs: "vs 對手",
+    hero_my_account: "已有帳號？直接前往我的專區 →",
     sp_heading: "🎉 訂閱確認！設定你的密碼",
     sp_pwd_placeholder: "設定密碼（至少 6 位）",
     sp_pwd2_placeholder: "再輸入一次",
@@ -2131,7 +2154,7 @@ const i18n = {
     invite_has_code: "🎁 有人送你邀請碼？點這裡領取",
     invite_code_hint: "輸入朋友送你的邀請碼，免費解鎖每日日報",
     invite_placeholder: "邀請碼",
-    pill: "📊 AI 精選 · 假訊息過濾 · 每天早上 7 點",
+    pill: "AI 精選 · 假訊息過濾 · 每天早上 7 點",
     hero_h1: '每天早上 7 點<br><span class="gradient">30 秒看完財經大事</span>',
     hero_sub: "每天早上 7 點準時送達，AI 精選美股 + 台股新聞，假訊息全過濾，像聰明朋友傳訊息給你一樣好懂。",
     placeholder_email: "你的Email",
@@ -2240,8 +2263,8 @@ const i18n = {
     tr_title: "不空談 AI 多強,讓紀錄說話",
     tr_sub: "過去 30 天,日報點到的個股「方向勝率」與「避坑勝率」全部公開。錯的我們也列出來——100% 才是假的。",
     tr_cta: "看完整紀錄表 →",
-    tr_s1: "📈 看多勝率 · 公版可查證",
-    tr_s2: "🛡️ 避坑勝率",
+    tr_s1: "看多勝率 · 公版可查證",
+    tr_s2: "避坑勝率",
     tr_s3: "累計提及個股",
     refund_badge: "🛡️ 30 天無理由退費",
     nocard_badge: "⭐ 試讀首月 6 折 NT$299",
@@ -2284,7 +2307,7 @@ const i18n = {
     hp_chip1: "公開看多勝率 · 可查證",
     hp_chip2_num: "不收業配", hp_chip2: "不持有提及個股 · 錯了公開更正",
     hp_chip3_num: "30 天", hp_chip3: "無理由退費 · 隨時取消",
-    footer_record: "📊 戰績紀錄",
+    footer_record: "戰績紀錄",
     footer_vs: "vs 對手比較",
     footer_about: "主編 · 編輯流程",
     footer_pricing: "定價",
@@ -2994,7 +3017,7 @@ function switchAbout(panel, btn) {
 })();
 </script>
 <!-- service worker 已移除 —— 純網路供應,避免快取導致看到舊版或跳轉失敗 -->
-<script src="onboarding-tour.js?v=20260610a"></script>
+<script src="onboarding-tour.js?v=20260611a"></script>
 <script>
 MDTour.mount([
   { selector: "#hero-email",

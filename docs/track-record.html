@@ -122,16 +122,26 @@ h1 {
   margin-bottom: 40px;
 }
 .stat-box {
-  background: rgba(255,255,255,0.025);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(170deg, rgba(255,255,255,0.045), rgba(255,255,255,0.015));
+  border: 1px solid rgba(255,255,255,0.09);
   border-radius: 18px;
-  padding: 22px 18px;
+  padding: 24px 18px 22px;
   text-align: center;
+  position: relative; overflow: hidden;
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  transition: transform 0.22s ease, border-color 0.22s ease;
+}
+.stat-box:hover { transform: translateY(-3px); border-color: rgba(129,140,248,0.3); }
+.stat-box::before {
+  content: ''; position: absolute; top: 0; left: 18%; right: 18%; height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, rgba(129,140,248,0.55), transparent);
 }
 .stat-box .num {
-  font-size: 36px; font-weight: 900;
-  line-height: 1; letter-spacing: -1px;
-  display: block; margin-bottom: 8px;
+  font-size: 42px; font-weight: 900;
+  line-height: 1; letter-spacing: -1.5px;
+  display: block; margin-bottom: 9px;
+  filter: drop-shadow(0 4px 16px rgba(99,102,241,0.25));
 }
 .stat-box .num.emerald { color: #6ee7b7; }
 .stat-box .num.indigo { color: #a5b4fc; }
@@ -375,6 +385,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 }
 
 </style>
+<link rel="stylesheet" href="deepspace.css?v=20260611a">
 </head>
 <body>
 
@@ -613,7 +624,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
 <footer>
   <div class="footer-links">
-    <a href="track-record.html">📊 戰績紀錄</a>
+    <a href="track-record.html">戰績紀錄</a>
     <a href="vs.html">vs 對手</a>
     <a href="about.html">主編</a>
     <a href="pricing.html">定價</a>

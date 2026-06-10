@@ -370,6 +370,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 }
 
 </style>
+<link rel="stylesheet" href="deepspace.css?v=20260611a">
 </head>
 <body>
 
@@ -386,7 +387,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     Market<em>Daily</em>
   </a>
   <div class="nav-right">
-    <a href="track-record.html" class="nav-back" data-i18n="nav_record">📊 戰績</a>
+    <a href="track-record.html" class="nav-back" data-i18n="nav_record">戰績</a>
     <a href="pricing.html" class="nav-back" data-i18n="nav_pricing">定價</a>
     <a href="dashboard.html" class="nav-back" data-i18n="nav_dash">我的專區</a>
     <a href="index.html" class="nav-back" data-i18n="nav_home">← 首頁</a>
@@ -642,7 +643,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
 <footer>
   <div class="footer-links">
-    <a href="track-record.html">📊 戰績紀錄</a>
+    <a href="track-record.html">戰績紀錄</a>
     <a href="vs.html">vs 對手</a>
     <a href="about.html">主編</a>
     <a href="pricing.html">定價</a>
@@ -679,8 +680,8 @@ function switchCat(cat, btn) {
 
 // 內容區大部分是中文寫死(這頁主要為台灣讀者比較本地對手),只切換 nav。
 const VS_I18N = {
-  zh: { nav_record: "📊 戰績", nav_pricing: "定價", nav_dash: "我的專區", nav_home: "← 首頁" },
-  en: { nav_record: "📊 Record", nav_pricing: "Pricing", nav_dash: "My Account", nav_home: "← Home" },
+  zh: { nav_record: "戰績", nav_pricing: "定價", nav_dash: "我的專區", nav_home: "← 首頁" },
+  en: { nav_record: "Record", nav_pricing: "Pricing", nav_dash: "My Account", nav_home: "← Home" },
 };
 
 function applyLang(lang) {
