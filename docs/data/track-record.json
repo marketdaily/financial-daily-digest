@@ -1,6 +1,6 @@
 {
   "stats": {
-    "generated_at": "2026-06-10T11:50:28",
+    "generated_at": "2026-06-10T12:00:15",
     "horizon": "5d",
     "days_covered": 10,
     "total_records": 489,
@@ -16,9 +16,67 @@
     "a_count": 73,
     "a_wins": 22,
     "a_rate": 30.1,
+    "a_ci95": [
+      20.8,
+      41.4
+    ],
     "c_count": 45,
     "c_wins": 39,
     "c_rate": 86.7,
+    "c_ci95": [
+      73.8,
+      93.7
+    ],
+    "calibration": {
+      "n": 60,
+      "brier": 0.513,
+      "coin_flip_brier": 0.25,
+      "bins": {
+        "51-60": {
+          "n": 1,
+          "hit_rate": 0.0
+        },
+        "61-70": {
+          "n": 18,
+          "hit_rate": 27.8
+        },
+        ">70": {
+          "n": 41,
+          "hit_rate": 17.1
+        }
+      }
+    },
+    "by_regime": {
+      "up": {
+        "a_count": 61,
+        "a_wins": 10,
+        "a_rate": 16.4,
+        "ci95": [
+          9.2,
+          27.6
+        ]
+      },
+      "down": {
+        "a_count": 12,
+        "a_wins": 12,
+        "a_rate": 100.0,
+        "ci95": [
+          75.7,
+          100.0
+        ]
+      }
+    },
+    "plan_sim": {
+      "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
+      "simulated": 174,
+      "no_fill": 38,
+      "pending": 57,
+      "hit_target": 2,
+      "hit_stop": 77,
+      "expired": 0,
+      "avg_ret_pct": -4.12,
+      "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
+    },
     "public_only": {
       "a_count": 22,
       "a_wins": 15,
@@ -40,6 +98,11 @@
       "reason": "特斯拉跌至20日低檔384.24美元附近,距20日均線422.49有明顯乖離。今晚開盤後若能站穩384.24美元,應分批承接,目標反彈430.12美元(接近MA20)。跌破354.88美元應止損。本股波動大(ATR14 16.72),耐心等待確認後再進場。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 68,
+      "entry_lo": 384.24,
+      "entry_hi": 395.0,
+      "target": 430.12,
+      "stop": 354.88,
       "outcome": null,
       "outcome_1d": null
     },
@@ -53,6 +116,11 @@
       "reason": "輝達跌幅最小,仍站在20日均線218.21附近,相對抗跌。今晚開盤後若回測20日低199.34美元,應分批買進;主要目標225.33美元(反彈幅度約13%),突破可往236.54美元追高。跌破186.76美元應止損。AI晶片需求強勁,中期趨勢仍偏多。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 70,
+      "entry_lo": 199.34,
+      "entry_hi": 210.0,
+      "target": 225.33,
+      "stop": 186.76,
       "outcome": null,
       "outcome_1d": null
     },
@@ -66,6 +134,11 @@
       "reason": "微軟跌至20日低398.48美元,已逼近短線底部。今晚開盤後若確認398.48美元支撐,應積極介入,目標反彈429.55美元(接近MA20 421.95)。跌破370.74美元應止損退場。本股技術面相對健康,反彈動能預期較強。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 75,
+      "entry_lo": 398.48,
+      "entry_hi": 407.0,
+      "target": 429.55,
+      "stop": 370.74,
       "outcome": null,
       "outcome_1d": null
     },
@@ -79,6 +152,11 @@
       "reason": "蘋果跌破20日均線(304.56),形成低接機會。今晚開盤後若回測287.78美元附近,應即刻分批買進,目標反彈至304.87美元(20日均線),突破後可望再上304-317區間。跌破272.65美元應止損出場。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 72,
+      "entry_lo": 287.78,
+      "entry_hi": 295.0,
+      "target": 304.87,
+      "stop": 272.65,
       "outcome": null,
       "outcome_1d": null
     },
@@ -92,6 +170,11 @@
       "reason": "特斯拉今日反彈 4.59%，突破 MA20(424.9) 仍需觀察，但價格已脫離短期低檔 388.59。建議今晚開盤後若回落至 $400-$410 區間，可分批低接作反彈布局，目標衝向 $439 附近的近端技術阻力。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 72,
+      "entry_lo": 400.0,
+      "entry_hi": 410.0,
+      "target": 439.83,
+      "stop": 370.35,
       "outcome": null,
       "outcome_1d": null
     },
@@ -105,6 +188,11 @@
       "reason": "輝達小幅上漲 1.73%，但現價 $208.64 仍遠低於 MA20($218.78) 與 20 日高 $236.54，處於短期弱勢區間。建議今晚開盤後在 $204.33 低接點附近分批布局，目標推往 $225 反彈，若跌破 $204 則減碼。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 64,
+      "entry_lo": 204.0,
+      "entry_hi": 210.0,
+      "target": 225.0,
+      "stop": 188.19,
       "outcome": null,
       "outcome_1d": null
     },
@@ -118,6 +206,11 @@
       "reason": "微軟下跌 1.18%，現價 $411.74 仍在 MA20($422.41) 下方，短期均線仍呈弱勢。建議今晚開盤後先抱緊手中持股不急著賣，若有新低至 $400.88 則適度加碼，目標反彈至 $438.26 時可逐步減碼獲利了結。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 65,
+      "entry_lo": 400.88,
+      "entry_hi": 410.0,
+      "target": 438.26,
+      "stop": 378.59,
       "outcome": null,
       "outcome_1d": null
     },
@@ -131,6 +224,11 @@
       "reason": "蘋果小幅下跌 1.89%，現價 $301.54 位於 MA20($304.66) 下方，短期動能偏弱。建議今晚開盤後先不進場，待股價回落至 $291.82 低接點再評估介入，或等待 $314.5 反彈目標確認後才考慮加碼。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 58,
+      "entry_lo": 291.82,
+      "entry_hi": 291.82,
+      "target": 314.5,
+      "stop": 285.34,
       "outcome": null,
       "outcome_1d": null
     },
@@ -144,6 +242,11 @@
       "reason": "特斯拉股價跌破 MA20，且跌幅超過 6%，技術面轉弱。今晚開盤後，建議暫不進場，若股價回測至 388.59 元附近可考慮低接。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 30,
+      "entry_lo": 388.59,
+      "entry_hi": 388.59,
+      "target": 421.16,
+      "stop": 353.3,
       "outcome": null,
       "outcome_1d": "win"
     },
@@ -157,6 +260,11 @@
       "reason": "輝達股價大跌並跌破 MA20，技術指標顯示賣壓沉重。今晚開盤後，建議暫不進場，若股價回測至 204.33 元附近可考慮低接。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 20,
+      "entry_lo": 204.33,
+      "entry_hi": 204.33,
+      "target": 222.34,
+      "stop": 183.55,
       "outcome": null,
       "outcome_1d": "win"
     },
@@ -170,6 +278,11 @@
       "reason": "微軟股價小幅下跌，仍在 MA20 附近震盪，技術面暫無明顯方向。今晚開盤後，建議續抱持有，待股價明確突破或跌破關鍵價位再做決定。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 50,
+      "entry_lo": 400.88,
+      "entry_hi": 400.88,
+      "target": 443.33,
+      "stop": 383.35,
       "outcome": null,
       "outcome_1d": "win"
     },
@@ -183,6 +296,11 @@
       "reason": "蘋果股價小幅回調，但仍在 MA20 之上，顯示多頭結構仍穩固。今晚開盤後，建議逢低買進，以 304.25 元為主要進場點。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 70,
+      "entry_lo": 304.25,
+      "entry_hi": 304.25,
+      "target": 316.94,
+      "stop": 293.01,
       "outcome": null,
       "outcome_1d": "loss"
     },
@@ -196,6 +314,11 @@
       "reason": "今晚開盤後，股價跌破 418.45 美元，且未能有效站回 MA20 (426.91 美元)之上，建議減碼出場，暫不建議買進，回補參考 60 日低點 337.24 美元。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 65,
+      "entry_lo": 337.24,
+      "entry_hi": 337.24,
+      "target": 453.4,
+      "stop": 393.63,
       "outcome": null,
       "outcome_1d": "loss"
     },
@@ -209,6 +332,11 @@
       "reason": "今晚開盤後，若股價能守穩 218.66 美元，可視為短線買盤的初步表態，可考慮在 220-225 美元區間小幅加碼。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 70,
+      "entry_lo": 220.0,
+      "entry_hi": 225.0,
+      "target": 236.54,
+      "stop": 206.5,
       "outcome": null,
       "outcome_1d": "win"
     },
@@ -222,6 +350,11 @@
       "reason": "今晚開盤後，股價在 MA20 (422.79 美元) 附近震盪，若能守穩此價位，可續抱持有，等待明確方向。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 60,
+      "entry_lo": 420.0,
+      "entry_hi": 425.0,
+      "target": 466.32,
+      "stop": 400.88,
       "outcome": null,
       "outcome_1d": "win"
     },
@@ -235,6 +368,11 @@
       "reason": "今晚開盤後，若股價能守穩 311.23 美元，並在 315 美元附近出現買盤承接，可考慮在 312-315 美元區間分批買進。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 80,
+      "entry_lo": 312.0,
+      "entry_hi": 315.0,
+      "target": 316.94,
+      "stop": 303.26,
       "outcome": null,
       "outcome_1d": "loss"
     },
@@ -248,6 +386,11 @@
       "reason": "白話講「下一步」:今晚開盤後，股價處於 20 日均線 425.93 美元附近，多空不明。建議暫時觀望，待股價明確突破 430 美元或跌破 420 美元後再決定操作方向。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 50,
+      "entry_lo": 400.0,
+      "entry_hi": 400.0,
+      "target": 453.4,
+      "stop": 410.0,
       "outcome": null,
       "outcome_1d": "win"
     },
@@ -261,6 +404,11 @@
       "reason": "白話講「下一步」:今晚開盤後，若股價能守穩 214.75 美元，並在 218.88 美元之上整理，則可視為短期強勢整理，可續抱。若跌破 214.75 美元，則需留意回測 20 日均線 218.88 美元的支撐。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 70,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 236.54,
+      "stop": 210.0,
       "outcome": null,
       "outcome_1d": "loss"
     },
@@ -274,6 +422,11 @@
       "reason": "白話講「下一步」:今晚開盤後，若股價能守穩 427.34 美元，並在 422.08 美元之上盤整，則可視為強勢整理，建議續抱。若跌破 422.08 美元，則需留意回測 400.88 美元的支撐。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 75,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 466.32,
+      "stop": 415.0,
       "outcome": null,
       "outcome_1d": "loss"
     },
@@ -287,6 +440,11 @@
       "reason": "白話講「下一步」:今晚開盤後，若股價能守穩 310.26 美元，並在 302.07 美元之上企穩，則可伺機買進加碼。若跌破 302.07 美元，則暫時觀望，待回測 281.07 美元支撐再評估。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 80,
+      "entry_lo": 305.0,
+      "entry_hi": 310.0,
+      "target": 316.94,
+      "stop": 295.0,
       "outcome": null,
       "outcome_1d": "loss"
     },
@@ -300,6 +458,11 @@
       "reason": "今晚開盤後請繼續抱緊持股。目前股價收在 423.74 美元，極度貼近 MA20 均線 424.21 美元，多空在此進行激烈攻防。只要今晚收盤未跌破 20日低點 384.02 美元，皆應維持續抱策略。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 80,
+      "entry_lo": 410.0,
+      "entry_hi": 420.0,
+      "target": 453.0,
+      "stop": 384.0,
       "outcome": null,
       "outcome_1d": "loss"
     },
@@ -313,6 +476,11 @@
       "reason": "今晚開盤後建議維持抱緊狀態。雖然昨日微幅修正 0.69%，但收盤價 222.82 美元仍穩守在 MA20 均線 217.97 美元之上，多頭格局未破，無須恐慌賣出，續抱看後續反彈。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 75,
+      "entry_lo": 218.0,
+      "entry_hi": 222.0,
+      "target": 236.0,
+      "stop": 209.0,
       "outcome": null,
       "outcome_1d": "win"
     },
@@ -326,6 +494,11 @@
       "reason": "今晚開盤後請先按兵不動。由於昨日重挫 4.17% 跌破短期均線，若今晚開盤後股價未能站穩 MA20 支撐位 421.28 美元，則不急於進場，靜待拉回至 20日低點 400.88 美元附近出現止跌訊號再行分批佈局。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 70,
+      "entry_lo": 401.0,
+      "entry_hi": 405.0,
+      "target": 441.0,
+      "stop": 388.0,
       "outcome": null,
       "outcome_1d": "win"
     },
@@ -339,6 +512,11 @@
       "reason": "今晚開盤後若股價開在 315.2 美元附近或小幅拉回，應立即執行買進加碼。目前技術面強勢噴出並創下 20日與 60日新高 315.45 美元，多頭排列明確，建議順勢進場做多。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 90,
+      "entry_lo": 312.0,
+      "entry_hi": 315.0,
+      "target": 330.0,
+      "stop": 300.0,
       "outcome": null,
       "outcome_1d": "win"
     },
@@ -352,6 +530,11 @@
       "reason": "特斯拉今日開盤後股價失守 MA20，且 60 日低價 337.24 附近為重要支撐，目前處於弱勢整理。暫不建議追價買進，若要承接，可參考 380-390 美元區間。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 85,
+      "entry_lo": 380.0,
+      "entry_hi": 390.0,
+      "target": 420.0,
+      "stop": 370.0,
       "outcome": "win",
       "outcome_1d": "win"
     },
@@ -365,6 +548,11 @@
       "reason": "輝達今日開盤後，股價強勢站穩 MA20，且 20 日高價 236.54 成為短期關鍵價位，若能突破此價位，預期將進一步上攻。建議在 225-230 美元區間擇機買進。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 90,
+      "entry_lo": 225.0,
+      "entry_hi": 230.0,
+      "target": 250.0,
+      "stop": 215.0,
       "outcome": "loss",
       "outcome_1d": "loss"
     },
@@ -378,6 +566,11 @@
       "reason": "微軟今日開盤後股價穩步上揚，已站穩 MA20，且 60 日高價 466.32 成為短期壓力。若能成功突破此價位，預期將有進一步上漲空間。建議在 455-460 美元區間伺機加碼。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 80,
+      "entry_lo": 455.0,
+      "entry_hi": 460.0,
+      "target": 480.0,
+      "stop": 445.0,
       "outcome": "loss",
       "outcome_1d": "loss"
     },
@@ -391,6 +584,11 @@
       "reason": "蘋果今日開盤後股價小幅回檔，但仍守在 MA20 價位之上，顯示多方力道並未完全消退。短期內股價可能在 300-315 美元區間震盪，建議續抱持有，待方向明朗。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 65,
+      "entry_lo": 295.0,
+      "entry_hi": 300.0,
+      "target": 320.0,
+      "stop": 290.0,
       "outcome": "win",
       "outcome_1d": "win"
     },
@@ -404,6 +602,11 @@
       "reason": "① 上週五收盤位置：上週五下跌 1.43% 收在 $435.79，技術面跌破短期支撐。② 週末新聞影響：週末無重大有利特斯拉的新聞，且市場資金正高度集中於 AI 與半導體板塊，排擠非必需消費板塊。③ 本週催化劑：本週無直接利多催化劑，需靜待 7 月 22 日財報，短期缺乏資金關愛。④ 動作建議：建議減碼賣出。由於技術面轉弱且市場資金被 COMPUTEX 題材強烈吸納，特斯拉短期恐持續承壓，建議將部分資金轉移至強勢 AI 股，防守退守至 $420.00。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 75,
+      "entry_lo": 415.0,
+      "entry_hi": 420.0,
+      "target": 450.0,
+      "stop": 410.0,
       "outcome": "win",
       "outcome_1d": "loss"
     },
@@ -417,6 +620,11 @@
       "reason": "① 上週五收盤位置：上週五微幅拉回 1.45% 收在 $211.14，回測短期均線。② 週末新聞影響：週末黃仁勳高調預告新晶片並宣示 PC 新時代，且今日即將召開 GTC 大會，對輝達屬極大重大利多。③ 本週催化劑：今日 GTC 大會發表 N1X 晶片，以及本週 COMPUTEX 展覽的全面造勢。④ 動作建議：建議買進加碼。上週五的拉回提供極佳的切入點，隨著今日 GTC 大會與 COMPUTEX 行情引爆，股價極易重啟攻勢，建議於 $210.00 附近分批加碼。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 90,
+      "entry_lo": 208.0,
+      "entry_hi": 212.0,
+      "target": 235.0,
+      "stop": 198.0,
       "outcome": "loss",
       "outcome_1d": "loss"
     },
@@ -430,6 +638,11 @@
       "reason": "① 上週五收盤位置：上週五單日暴漲 5.45% 收在 $450.24，強勢突破整理區間。② 週末新聞影響：週末輝達預告「PC新時代」，微軟作為 AI 軟體與 Copilot 的絕對龍頭，屬直接受益者。③ 本週催化劑：今日輝達 GTC 大會與週二 COMPUTEX 展，微軟與硬體廠的 AI PC 合作案將陸續曝光。④ 動作建議：建議抱緊持有。上週五多頭動能極強，且週末 AI 題材持續發酵，已持股者應續抱享受波段利潤，未持股者不建議在今日跳空時盲目追高。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 85,
+      "entry_lo": 440.0,
+      "entry_hi": 445.0,
+      "target": 475.0,
+      "stop": 430.0,
       "outcome": "loss",
       "outcome_1d": "loss"
     },
@@ -443,6 +656,11 @@
       "reason": "① 上週五收盤位置：上週五微跌 0.14% 收在 $312.06，股價呈現高檔狹幅震盪。② 週末新聞影響：週末無關於蘋果的重大直接新聞，市場焦點完全被輝達與 COMPUTEX 搶走，資金面相對受壓制。③ 本週催化劑：本週二 COMPUTEX 開幕，市場聚焦對手群的 AI PC 布局，蘋果需等 7 月 30 日財報。④ 動作建議：建議今早觀望。因資金明顯向 AI 晶片及硬體端傾斜，蘋果短期缺乏上攻催化劑，建議今日先觀察 $310.00 關卡是否守穩，不急於此時加碼。",
       "type": "C",
       "source": "signal-card",
+      "confidence": 70,
+      "entry_lo": 305.0,
+      "entry_hi": 308.0,
+      "target": 325.0,
+      "stop": 298.0,
       "outcome": "win",
       "outcome_1d": "loss"
     },
@@ -547,6 +765,11 @@
       "reason": "QUBT 今日上漲 3.69%，顯示市場對量子計算領域的熱情持續，可考慮順勢操作。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 75,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 10.5,
+      "stop": 8.8,
       "outcome": "win",
       "outcome_1d": "win"
     },
@@ -573,6 +796,11 @@
       "reason": "QBTS 作為量子計算相關概念股，今日跟隨板塊強勢上漲 6.10%，動能充足。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 80,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 22.0,
+      "stop": 17.0,
       "outcome": "win",
       "outcome_1d": "win"
     },
@@ -612,6 +840,11 @@
       "reason": "量子計算概念股今天表現強勁，IONQ 大漲 8.32%，顯示市場對其未來潛力有高度期待。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 85,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 58.0,
+      "stop": 48.0,
       "outcome": "win",
       "outcome_1d": "win"
     },
@@ -651,6 +884,11 @@
       "reason": "聯發科今天漲了 2.38%，在台股大盤上漲的帶動下表現不錯，可繼續持有。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 70,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 3350.0,
+      "stop": 3100.0,
       "outcome": "win",
       "outcome_1d": "win"
     },
@@ -664,6 +902,11 @@
       "reason": "瑞昱今天上漲 2.16%，半導體類股在台股表現不錯，可以持續觀察。",
       "type": "A",
       "source": "signal-card",
+      "confidence": 65,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 580.0,
+      "stop": 550.0,
       "outcome": "win",
       "outcome_1d": "win"
     },
