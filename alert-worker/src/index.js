@@ -4,7 +4,7 @@
 
 import { fetchNews } from "./news_source.js";
 import { displayName } from "./stock_names.js";
-import { fetchPoliticalSignals, formatPoliticalMsg } from "./political_source.js";
+import { fetchPoliticalSignals, formatPoliticalMsg, analyzePoliticalPosts } from "./political_source.js";
 
 const SEVERITY_THRESHOLD = 7;          // 已發生/已公告事件的推播門檻
 const SPECULATIVE_THRESHOLD = 9;       // 傳言/觀點/臆測文門檻拉高,避免「If…will…」評論文當 🚨重大消息 轟炸
@@ -609,17 +609,28 @@ async function runPipeline(env, { push, persist }) {
 // 門檻沿用新聞管線同一套紀律:政策行動 ≥ SEVERITY_THRESHOLD(7)、
 // 言論/觀點 ≥ SPECULATIVE_THRESHOLD(9)且訊息掛「💬 言論觀點」標籤,不轟炸。
 // 無 XAI_API_KEY → 安靜 no-op;KV alert:political = "off" 可單獨關掉這條線。
-async function runPoliticalPipeline(env, { push }) {
-  const report = { ts: new Date().toISOString(), skipped: null, found: 0, qualified: 0, pushed: 0, fired: [], errors: [] };
+// signals 可由兩個來源餵入:不傳=Grok x_search 直抓(需 XAI_API_KEY+credits);
+// 傳入=本機 Playwright 掃 X 後經 /political-ingest 送進來(零 xAI 成本路線)。
+async function runPoliticalPipeline(env, { push, signals = null, source = "grok" }) {
+  const report = { ts: new Date().toISOString(), source, skipped: null, found: 0, qualified: 0, pushed: 0, fired: [], errors: [] };
   // 不論結果如何都寫 laststatus heartbeat — 沒有它就無法證明 */15 cron 有在跑(可觀測性)
-  const done = async () => { await env.USER_PREFS.put("alert:pol_laststatus", JSON.stringify(report)); return report; };
+  const done = async () => {
+    const k = source === "grok" ? "alert:pol_laststatus" : "alert:pol_laststatus_x";
+    await env.USER_PREFS.put(k, JSON.stringify(report));
+    return report;
+  };
   if ((await env.USER_PREFS.get("alert:political")) === "off") {
     report.skipped = "alert:political=off";
     return done();
   }
-  const res = await fetchPoliticalSignals(env, 2);
-  if (res.skipped) { report.skipped = res.skipped; return done(); }
-  if (res.error) { report.errors.push(res.error); return done(); }
+  let sigList = signals;
+  if (sigList === null) {
+    const res = await fetchPoliticalSignals(env, 2);
+    if (res.skipped) { report.skipped = res.skipped; return done(); }
+    if (res.error) { report.errors.push(res.error); return done(); }
+    sigList = res.signals;
+  }
+  const res = { signals: sigList };
   report.found = res.signals.length;
   if (!res.signals.length) return done();
 
@@ -833,6 +844,36 @@ export default {
         // 不洩漏 stack;只回 generic message
         return json({ ok: false, error: String(e.message || "error").slice(0, 200) }, 500);
       }
+    }
+
+    // 本機 X 掃描器(political_watch/watch_x.py)送進原始貼文 → Claude 分析 → 推播。
+    // 零 xAI 成本路線。auth:POLITICAL_INGEST_TOKEN(timing-safe),fail-closed。
+    if (url.pathname === "/political-ingest" && request.method === "POST") {
+      const tok = env.POLITICAL_INGEST_TOKEN || "";
+      const got = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+      let ok = !!tok && got.length === tok.length;
+      if (ok) { let d = 0; for (let i = 0; i < got.length; i++) d |= got.charCodeAt(i) ^ tok.charCodeAt(i); ok = d === 0; }
+      if (!ok) return json({ error: "forbidden" }, 403);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad json" }, 400); }
+      const posts = (body.posts || []).filter(p => p && p.handle && p.text).slice(0, 30);
+      if (!posts.length) return json({ ok: true, analyzed: 0, note: "no posts" });
+      // 原始層去重(pre-AI,省 Claude):同一貼文 URL 只分析一次
+      const fresh = [];
+      for (const p of posts) {
+        const k = "pol:rawseen:" + encodeURIComponent(p.url || (p.handle + ":" + String(p.text).slice(0, 80))).slice(0, 480);
+        if (await env.USER_PREFS.get(k)) continue;
+        await env.USER_PREFS.put(k, "1", { expirationTtl: SEEN_TTL });
+        fresh.push(p);
+      }
+      if (!fresh.length) return json({ ok: true, analyzed: 0, note: "all seen" });
+      const ana = await analyzePoliticalPosts(env, fresh);
+      if (ana.error) return json({ ok: false, error: ana.error }, 502);
+      const enabled = (await env.USER_PREFS.get("alert:enabled")) === "true";
+      const report = await runPoliticalPipeline(env, {
+        push: enabled && !body.dry, signals: ana.signals, source: "x-scrape",
+      });
+      return json({ ok: true, analyzed: fresh.length, signals: ana.signals, report });
     }
 
     // 政壇訊號 dry-run:抓 Grok 訊號+列「會推給誰」但不真推(消耗 xAI 額度,需 auth)。
