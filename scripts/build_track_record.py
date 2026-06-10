@@ -252,7 +252,7 @@ def yahoo_chart(sym: str, _start_iso: str, _end_iso: str) -> dict[str, float] | 
     """
     # Strip .TW because worker auto-handles TW symbols when /^\d{4}$/
     base = sym.replace(".TW", "").replace(".TWO", "")
-    url = f"{WORKER}/stock-chart?ticker={urllib.parse.quote(base)}&range=1M"
+    url = f"{WORKER}/stock-chart?ticker={urllib.parse.quote(base)}&range=3M"
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
     last_err = None
     for attempt in range(3):
@@ -318,27 +318,37 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
             else:
                 ref_idx = sorted_dates.index(d)
             nxt = hist_dict[sorted_dates[ref_idx + 1]] if ref_idx + 1 < len(sorted_dates) else None
-            out[(ticker, d)] = {"close": today, "next_close": nxt}
+            c5 = hist_dict[sorted_dates[ref_idx + 5]] if ref_idx + 5 < len(sorted_dates) else None
+            out[(ticker, d)] = {"close": today, "next_close": nxt, "close_5d": c5}
     return out
 
 
-def judge(rec: dict, prices: dict) -> str | None:
+def judge(rec: dict, prices: dict, horizon: str = "5d") -> str | None:
+    """結算一筆建議。
+    horizon="5d"(主指標):建議日收盤 vs 5 個交易日後收盤 — 對齊卡片明寫的「短線 1-2 週視角」。
+      2026-06-10 修正:原本只看隔日一天,拿單日雜訊評 1-2 週的建議 = 量尺錯位,
+      量到的是「隔日漲跌擲銅板」不是建議品質。
+    horizon="1d"(輔助參考):隔日收盤,保留供對照。"""
     p = prices.get((rec["ticker"], rec["date"]))
-    if not p or p.get("next_close") is None:
+    if not p:
         return None
-    today, nxt = p["close"], p["next_close"]
-    chg = (nxt - today) / today
+    today = p["close"]
+    ref = p.get("close_5d") if horizon == "5d" else p.get("next_close")
+    if ref is None:
+        return None  # 尚未到結算日 → 待結
+    chg = (ref - today) / today
     vc = rec["verdict_class"]
     if vc == "buy":
-        return "win" if chg >= 0 else "loss"
+        return "win" if chg > 0 else "loss"
     if vc == "hold":
-        return "win" if abs(chg) <= 0.02 else "loss"
+        # hold = 「抱住沒事」,5 日緩衝 ±3%(1 日 ±2%)
+        return "win" if abs(chg) <= (0.03 if horizon == "5d" else 0.02) else "loss"
     if vc == "sell":
         # sell 是強信號,必須真跌才算對
         return "win" if chg < 0 else "loss"
     if vc == "wait":
-        # wait 是「中性偏空 / 暫時別進場」— 加 1% 緩衝,小漲不算錯
-        return "win" if chg < 0.01 else "loss"
+        # wait 是「中性偏空 / 暫時別進場」— 緩衝後小漲不算錯
+        return "win" if chg < (0.02 if horizon == "5d" else 0.01) else "loss"
     return None
 
 
@@ -481,11 +491,13 @@ def main() -> int:
 
     judged_public = []
     for r in all_records:
-        r["outcome"] = judge(r, prices)
+        r["outcome"] = judge(r, prices, "5d")
+        r["outcome_1d"] = judge(r, prices, "1d")
         judged_public.append(r)
     judged_personal = []
     for r in personal_records:
-        r["outcome"] = judge(r, prices)
+        r["outcome"] = judge(r, prices, "5d")
+        r["outcome_1d"] = judge(r, prices, "1d")
         judged_personal.append(r)
 
     # records 列表只放公版(隱私策略 A),personal 只進 stats
@@ -505,11 +517,24 @@ def main() -> int:
     a_pub_wins = sum(1 for r in a_pub if r["outcome"] == "win")
     c_pub_wins = sum(1 for r in c_pub if r["outcome"] == "win")
 
+    # 1 日視角輔助統計(對照用)
+    a1 = [r for r in judged_all if r["type"] == "A" and r.get("outcome_1d")]
+    c1 = [r for r in judged_all if r["type"] == "C" and r.get("outcome_1d")]
+    a1_wins = sum(1 for r in a1 if r["outcome_1d"] == "win")
+    c1_wins = sum(1 for r in c1 if r["outcome_1d"] == "win")
+
     stats = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
+        "horizon": "5d",
         "days_covered": len({r["date"] for r in judged_all}),
         "total_records": len(judged_all),
         "judged_records": len(a_recs) + len(c_recs),
+        "one_day": {
+            "a_count": len(a1), "a_wins": a1_wins,
+            "a_rate": round(a1_wins / len(a1) * 100, 1) if a1 else 0.0,
+            "c_count": len(c1), "c_wins": c1_wins,
+            "c_rate": round(c1_wins / len(c1) * 100, 1) if c1 else 0.0,
+        },
         "a_count": len(a_recs),
         "a_wins": a_wins,
         "a_rate": round(a_rate, 1),

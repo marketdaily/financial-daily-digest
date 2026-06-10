@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>戰績紀錄 — MarketDaily</title>
 <meta name="description" content="MarketDaily 過去 30 天日報點到的個股,公開方向勝率與避坑勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MarketDaily">
+<meta property="og:title" content="戰績紀錄 — MarketDaily">
+<meta property="og:description" content="MarketDaily 過去 30 天日報點到的個股,公開方向勝率與避坑勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。">
+<meta property="og:url" content="https://marketdaily.ai/track-record">
+<meta property="og:image" content="https://marketdaily.ai/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="戰績紀錄 — MarketDaily">
+<meta name="twitter:description" content="MarketDaily 過去 30 天日報點到的個股,公開方向勝率與避坑勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。">
+<meta name="twitter:image" content="https://marketdaily.ai/assets/og.png">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#6366f1">
 <link rel="apple-touch-icon" href="/logo-icon.svg">
@@ -427,13 +439,13 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     <div class="method-grid">
       <div class="method-box">
         <h3 data-i18n="ma_h">🟢 看多勝率</h3>
-        <p data-i18n="ma_p">日報判斷這支「可以買 / 繼續抱」(偏多)→ 隔日收盤往上走 = 贏。</p>
-        <code>例:「台積電留意 1080 支撐」→ 隔日收盤 ≥ 1080 算贏</code>
+        <p data-i18n="ma_p">日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後收盤往上走 = 贏(對齊卡片明寫的「短線 1-2 週視角」,2026-06-10 起;舊版只看隔日一天,單日雜訊太重)。</p>
+        <code>例:「台積電可分批接」→ 5 個交易日後收盤高於建議日 = 贏</code>
       </div>
       <div class="method-box">
         <h3 data-i18n="mc_h">🔴 看空勝率</h3>
-        <p data-i18n="mc_p">日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 隔日真的下跌 = 贏(成功避坑)。</p>
-        <code>例:「NVDA 短期過熱建議觀望」→ 隔日下跌算贏</code>
+        <p data-i18n="mc_p">日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 5 個交易日後真的沒漲(漲幅 <2%)= 贏(成功避坑)。</p>
+        <code>例:「NVDA 短期過熱建議觀望」→ 5 個交易日後沒漲算贏</code>
       </div>
     </div>
     <div style="margin-top:14px;font-size:12.5px;color:rgba(255,255,255,0.5);line-height:1.65;" data-i18n-html="method_note">
@@ -519,8 +531,8 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
         <span>🟢 看多 vs 🔴 看空 是什麼意思?</span><span class="chev">▾</span>
       </button>
       <div class="tr-faq-a"><div class="tr-faq-a-inner">
-        <strong>🟢 看多</strong>:日報判斷這支「可以買 / 繼續抱」(偏多)→ 隔天股價真的不跌就算贏。<br>
-        <strong>🔴 看空</strong>:日報示警這支「觀望 / 拉回 / 短期過熱」(偏空)→ 隔天股價真的下跌就算贏(代表我們幫你避開了一次坑)。<br><br>
+        <strong>🟢 看多</strong>:日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後股價真的往上就算贏。<br>
+        <strong>🔴 看空</strong>:日報示警這支「觀望 / 拉回 / 短期過熱」(偏空)→ 5 個交易日後股價真的沒漲就算贏(代表我們幫你避開了一次坑)。<br><br>
         簡單講:<code>看多看的是「跟對」</code>,<code>看空看的是「躲過」</code>。
       </div></div>
     </div>
@@ -562,7 +574,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
         <span>🔄 紀錄多久更新一次?資料怎麼來的?</span><span class="chev">▾</span>
       </button>
       <div class="tr-faq-a"><div class="tr-faq-a-inner">
-        <strong>每週自動更新</strong>:腳本從歷史日報抓出每一筆個股提及,自動分類為 A / C,並用 Yahoo Finance 拉隔日收盤價,計算贏輸。
+        <strong>每週自動更新</strong>:腳本從歷史日報抓出每一筆個股提及,自動分類為 A / C,並用 Yahoo Finance 拉 5 個交易日後的收盤價計算贏輸(建議的時間視角是 1-2 週,不拿單日雜訊評分)。最近 5 個交易日內的建議顯示「待結」。
         程式碼公開在 <code>scripts/build_track_record.py</code>。沒有任何人工後修——紀錄出來什麼就什麼。
       </div></div>
     </div>
@@ -805,9 +817,9 @@ const i18n = {
     s1: "看多勝率", s2: "看空勝率", s3: "累計提及個股", s4: "統計天數",
     method_ttl: "我們怎麼算勝率(沒任何模糊空間)",
     ma_h: "🟢 看多勝率",
-    ma_p: "日報判斷這支「可以買 / 繼續抱」(偏多)→ 隔日收盤往上走 = 贏。",
+    ma_p: "日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後收盤往上走 = 贏(對齊卡片明寫的「短線 1-2 週視角」,2026-06-10 起;舊版只看隔日一天,單日雜訊太重)。",
     mc_h: "🔴 看空勝率",
-    mc_p: "日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 隔日真的下跌 = 贏(成功避坑)。",
+    mc_p: "日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 5 個交易日後真的沒漲(漲幅 <2%)= 贏(成功避坑)。",
     f_us: "🇺🇸 美股", f_tw: "🇹🇼 台股", f_a: "🟢 看多", f_c: "🔴 看空",
     f_win: "✅ 贏", f_loss: "❌ 輸",
     th_date: "日期", th_tic: "個股", th_call: "日報原話", th_type: "類型", th_res: "結果",
@@ -832,7 +844,7 @@ const i18n = {
     s1: "Direction Hit (A)", s2: "Risk Avoid Hit (C)", s3: "Stocks Mentioned", s4: "Days Tracked",
     method_ttl: "How we score (no fuzziness)",
     ma_h: "A · Direction Hit",
-    ma_p: "Digest says \"bullish / bearish / watch X support\" → did next-day close go that way?",
+    ma_p: "Digest says \"bullish / bearish\" → did the close 5 trading days later go that way? (matches the stated 1-2 week horizon)",
     mc_h: "C · Risk Avoidance Hit",
     mc_p: "Digest warns \"wait / pull-back / overheated / risk\" → did stock actually retreat or sideways?",
     f_us: "🇺🇸 US", f_tw: "🇹🇼 TW", f_a: "📐 Direction (A)", f_c: "⚠️ Risk (C)",
