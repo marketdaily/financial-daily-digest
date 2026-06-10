@@ -60,12 +60,22 @@ const EVENT_RULES = [
     "data breach", "hacked", "outage", "strike", "production halt",
     "駭客", "資料外洩", "停工", "罷工", "斷鏈", "工安", "停產"
   ]},
+  // 政治/政策市場事件:川普等政治人物的市場級發言幾分鐘內就會變 Reuters/CNBC 頭條,
+  // 走既有新聞管線即可推,不依賴 xAI key(Grok x_search 直抓 X 的版本見 political_source.js)。
+  // 觀點/喊話類靠既有 speculative 降級門檻(9)把關,不會每條川普嘴砲都推。
+  { type: "political", kw: [
+    "trump", "white house", "tariff", "executive order", "export control", "export ban", "sanction",
+    "trade war", "trade deal", "rate decision", "rate cut", "rate hike", "fomc", "fed chair", "powell",
+    "treasury secretary", "chip ban", "chips act",
+    "川普", "白宮", "關稅", "行政命令", "出口管制", "禁令", "制裁", "貿易戰", "貿易協議",
+    "聯準會", "降息", "升息", "利率決議", "鮑爾", "晶片禁令"
+  ]},
 ];
 
 // 各事件類型的平均重大度權重 —— 規則預評分用,只擋明顯偏弱的,真正嚴重度仍交給 AI 判。
 const EVENT_WEIGHT = {
   distress: 95, mna: 88, guidance: 82, regulatory: 76, earnings: 72,
-  incident: 66, legal: 62, leadership: 56, rating: 48, trading: 46,
+  political: 70, incident: 66, legal: 62, leadership: 56, rating: 48, trading: 46,
 };
 
 function json(obj, status = 200) {
@@ -259,12 +269,12 @@ async function lineToken(env, { force = false } = {}) {
 
 function alertMessage(news, ticker, severity, reason, meta = {}) {
   const { speculative = false, stance = "", action = "" } = meta;
-  const name = displayName(ticker);
+  const name = ticker === "大盤" ? "大盤" : displayName(ticker);
   const head = speculative
     ? "💬 觀點／傳言"
     : (severity >= 9 ? "🚨 重大消息｜⚠️ 高度重大" : "🚨 重大消息");
   const lines = [
-    `${head}｜你的持股 ${name}`,
+    `${head}｜${ticker === "大盤" ? "影響整體市場(你的持倉)" : `你的持股 ${name}`}`,
     "",
     news.title,
     "",
@@ -419,7 +429,11 @@ async function runPipeline(env, { push, persist }) {
     }
 
     // 比對 Premium 持有者
-    const holders = recipients.filter((r) => news.tickers.some((t) => r.holdings.has(t)));
+    let holders = recipients.filter((r) => news.tickers.some((t) => r.holdings.has(t)));
+    // 政治/政策市場級事件(全面關稅、利率決議這類沒點名個股的)→ 影響所有人的持倉,
+    // 推給全體綁定者;雜訊防線=門檻加嚴到 8(點名個股的照常 7)。
+    const marketWide = eventType === "political" && !news.tickers.length;
+    if (!holders.length && marketWide) holders = recipients;
     if (!holders.length) {
       if (persist) await env.USER_PREFS.put(seenKey, report.ts, { expirationTtl: SEEN_TTL });
       report.candidates.push({
@@ -437,7 +451,8 @@ async function runPipeline(env, { push, persist }) {
     // 臆測/觀點:標題標記命中 或 AI 判 rumor/opinion → 門檻拉高 + 標籤改「觀點／傳言」。
     const speculative = isSpeculative(`${news.title} ${news.summary || ""}`)
       || category === "rumor" || category === "opinion";
-    const threshold = speculative ? SPECULATIVE_THRESHOLD : SEVERITY_THRESHOLD;
+    let threshold = speculative ? SPECULATIVE_THRESHOLD : SEVERITY_THRESHOLD;
+    if (marketWide) threshold = Math.max(threshold, 8);
     const cand = {
       title: news.title, source: news.source, url: news.url,
       tickers: news.tickers, eventType, preScore, severity, category, stance, action,
@@ -472,7 +487,7 @@ async function runPipeline(env, { push, persist }) {
       continue;
     }
     for (const h of holders) {
-      const hit = news.tickers.find((t) => h.holdings.has(t));
+      const hit = news.tickers.find((t) => h.holdings.has(t)) || (marketWide ? "大盤" : undefined);
       const cluster = `pushed:${h.email}:${clusterKey(hit, eventType, news.publishedAt)}`;
       if (await env.USER_PREFS.get(cluster)) {
         cand.recipients.push({ email: h.email, status: "skip:已收過此事件" });
