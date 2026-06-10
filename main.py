@@ -718,8 +718,10 @@ def run():
             from digest_audit import audit_digest
             from analyzer import _market_status, generate_deterministic_fallback, _postprocess_html
             mkt = _market_status(data["date"])
+            _earn_est = any((e or {}).get("eps_est") is not None for e in (data.get("earnings") or []))
             try:
-                fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
+                fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET,
+                                     earnings_estimates=_earn_est)
             except Exception as e:
                 fails = []
                 print(f"   ⚠️ audit 異常: {e}")
@@ -734,7 +736,7 @@ def run():
                     if depth != "simple":
                         retry_inner = _inject_political_signals(retry_inner, data, (gen_us or []) + (gen_tw or []))
                     retry_html = build_email_html(data["date"], retry_inner)
-                    retry_fails = audit_digest(retry_html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
+                    retry_fails = audit_digest(retry_html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est)
                     if not any(f.get("severity") == "high" for f in retry_fails):
                         print(f"   ✅ retry pass")
                         html = retry_html
@@ -743,13 +745,14 @@ def run():
                         print(f"   🛡️ retry 仍 HIGH fail → 切 deterministic fallback")
                         det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
                         html = build_email_html(data["date"], det_inner)
-                        fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
+                        fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est)
                         deterministic_fallbacks.append(email)
                 except Exception as e:
                     print(f"   🛡️ retry 異常 → deterministic fallback ({e})")
                     det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
                     html = build_email_html(data["date"], det_inner)
-                    fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET)
+                    fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET,
+                                         earnings_estimates=_earn_est)
                     deterministic_fallbacks.append(email)
             if fails:
                 audit_failures_by_email[email] = fails

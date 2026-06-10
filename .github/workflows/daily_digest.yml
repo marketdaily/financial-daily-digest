@@ -40,6 +40,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           SENDER_NAME: ${{ secrets.SENDER_NAME }}
@@ -63,6 +64,7 @@ jobs:
             git add "$f"
           done
           git add docs/output/manifest.json
+          python3 scripts/gen_sitemap.py && git add docs/sitemap.xml || echo "sitemap gen skipped"
           if git diff --cached --quiet; then
             echo "No new public digest to commit."
           else

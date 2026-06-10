@@ -300,6 +300,13 @@ def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks:
     tw = data.get("tw_market", {})
     ind = data.get("indicators", {})
 
+    regime = _market_regime(data)
+    regime_zh = {"risk_off": "風險偏空(指數下殺/恐慌升溫)", "risk_on": "風險偏多", "neutral": "中性"}
+    lines.append(f"【今日市場狀態判定:{regime_zh.get(regime['label'], '中性')}】")
+    if regime["label"] == "risk_off":
+        lines.append("  ‼️ TLDR、結論與每張操作卡的立場必須一致:今天偏防守。"
+                     "若結論寫「先觀望/等數據」,操作卡就不可同時喊「即刻買進」——買進只能以條件單形式出現(回到支撐、站穩、數據公布後)。")
+
     index_names = {
         "^GSPC": "S&P500", "^IXIC": "NASDAQ", "^DJI": "道瓊",
         "DX-Y.NYB": "美元指數", "^TWII": "台灣加權指數"
@@ -395,9 +402,20 @@ def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks:
 
     earnings = data.get("earnings", [])
     if earnings:
-        lines.append("\n【即將公布財報】")
+        has_est = any(e.get("eps_est") is not None for e in earnings)
+        if has_est:
+            lines.append("\n【即將公布財報(日期與預期數字已核實 — earnings-note 只能照寫這些數字,"
+                         "嚴禁自行補任何其他預期 EPS/營收/產品線臆測)】")
+        else:
+            lines.append("\n【即將公布財報(只有日期已核實 — earnings-note 只能寫中性的關注重點,"
+                         "‼️ 嚴禁編造任何「市場預期 EPS / 營收」數字或產品銷售臆測)】")
         for e in earnings[:6]:
-            lines.append(f"  {stock_names.display_name(e['symbol'])}（{e['symbol']}）: {e['date']}")
+            est = ""
+            if e.get("eps_est") is not None:
+                est += f" | 市場預期 EPS {e['eps_est']} 美元"
+            if e.get("rev_est"):
+                est += f"、營收約 {e['rev_est'] / 1e9:.1f}B 美元"
+            lines.append(f"  {stock_names.display_name(e['symbol'])}（{e['symbol']}）: {e['date']}{est}")
 
     # 財報/營收影響(事件日才喊話):只列「用戶持股 + is_event」的,數字已核實
     impacts = data.get("earnings_impact", {}) or {}
@@ -496,6 +514,56 @@ def _postprocess_html(html: str, data: dict) -> str:
     # 卡頭已有彩色 verdict-chip(建議買進/賣出),底部 signal-badge 是同一句重複 → 移除,
     # 讓 signal-meta 只剩「信心 X% · 時間窗」,減少邊邊 chip 把卡片拉長。
     html = _re.sub(r'<span class="signal-badge[^"]*">[^<]*</span>\s*', '', html)
+
+    # 信心校準夾限:公開戰績方向勝率約五成多,顯示 >65% 的信心 = 未校準的過度自信。
+    # LLM 已被要求寫 45-65,這裡是 deterministic 死防線(備援版/舊模板也吃得到)。
+    def _clamp_conf(m):
+        try:
+            v = int(m.group(1))
+        except ValueError:
+            return m.group(0)
+        return f"信心 {max(45, min(65, v))}%"
+
+    html = _re.sub(r"信心\s*(\d{1,3})\s*%", _clamp_conf, html)
+
+    # 「建議買入」chip 分流:建議買區整段低於現價(掛單等回檔)時,chip 改「回檔再買」,
+    # 避免新手只看綠 chip 就直接市價追高 — chip 與買價區間語意必須一致。
+    all_mkt = {**data.get("us_market", {}), **data.get("tw_market", {})}
+
+    def _requalify_buy(m):
+        block = m.group(0)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        try:
+            cur = float((all_mkt.get(hm.group(1)) or {}).get("price"))
+        except (TypeError, ValueError):
+            return block
+        bm = _re.search(r'建議買價</span><span class="battle-val">[^<]*?([\d,]+\.?\d*)\s*[–—~-]\s*\$?\s*([\d,]+\.?\d*)', block)
+        if not bm:
+            return block
+        try:
+            hi = float(bm.group(2).replace(",", ""))
+        except ValueError:
+            return block
+        if hi < cur * 0.985:
+            block = block.replace("🟢 建議買入", "🟢 回檔再買(現價勿追)")
+        return block
+
+    html = _re.sub(
+        r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _requalify_buy, html, flags=_re.DOTALL,
+    )
+
+    # 財報註記清洗:資料端沒有「已核實預期數字」時,earnings-note 出現任何預期 EPS/營收
+    # 都是 LLM 編的 → 換成中性句(deterministic 死防線,搭配 prompt 禁令與 audit)。
+    if not any((e or {}).get("eps_est") is not None for e in (data.get("earnings") or [])):
+        def _scrub_note(m):
+            if _re.search(r"預期\s*EPS|市場預期|每股盈餘|EPS\s*[\d.]|營收[約達成長]*\s*[\d.]+", m.group(2)):
+                return m.group(1) + "財報日將近,留意公布後對股價的影響" + m.group(3)
+            return m.group(0)
+
+        html = _re.sub(r'(<span class="earnings-note">)([^<]*)(</span>)', _scrub_note, html)
 
     def _expand_ticker(m):
         cls, content = m.group(1), m.group(2)
@@ -756,6 +824,55 @@ def _near_term_levels(price, tech):
     return round(support, 2), round(target, 2), round(stop, 2)
 
 
+_MACRO_EVENT_RE = re.compile(
+    r"CPI|PPI|FOMC|rate decision|nonfarm|payroll|jobs report|利率決議|非農|通膨數據|聯準會決議|央行決議",
+    re.I,
+)
+
+
+def _detect_macro_event(data: dict) -> bool:
+    """今日新聞是否出現重大總經數據/利率事件 — 是的話訊號卡必須寫成條件單,不可無條件喊進場。"""
+    arts = (data.get("us_news") or []) + (data.get("tw_news") or [])
+    return any(_MACRO_EVENT_RE.search(a.get("title", "") or "") for a in arts[:20])
+
+
+def _market_regime(data: dict) -> dict:
+    """大盤狀態粗分類:risk_on / neutral / risk_off(指數日變動 + VIX)。
+    目的:擋「全市場下殺日每支機械式喊低接買進」的同質性 — 歷史戰績顯示這種日子逆勢
+    買進勝率最差。訊號卡據此調整動詞分布與信心上限。"""
+    ind = data.get("indicators", {}) or {}
+    try:
+        vix = float(ind.get("vix") or 0)
+    except (TypeError, ValueError):
+        vix = 0.0
+
+    def _chg(d):
+        try:
+            return float((d or {}).get("change_pct") or 0)
+        except (TypeError, ValueError):
+            return 0.0
+
+    us = data.get("us_market", {}) or {}
+    tw = data.get("tw_market", {}) or {}
+    spx, ndx, twii = _chg(us.get("^GSPC")), _chg(us.get("^IXIC")), _chg(tw.get("^TWII"))
+    worst = min(spx, ndx)
+    score = 0
+    if worst <= -1.0:
+        score -= 2
+    elif worst <= -0.5:
+        score -= 1
+    elif worst >= 0.8:
+        score += 1
+    if vix >= 25:
+        score -= 2
+    elif vix >= 20:
+        score -= 1
+    elif 0 < vix < 16:
+        score += 1
+    label = "risk_off" if score <= -2 else ("risk_on" if score >= 2 else "neutral")
+    return {"label": label, "vix": vix, "spx_chg": spx, "ndx_chg": ndx, "twii_chg": twii}
+
+
 def _depth_directive(depth: str) -> str:
     """日報深度客製(Premium 專屬)注入 prompt 的指令。simple=精簡 / deep=深入 / standard=不加。"""
     if depth == "simple":
@@ -771,11 +888,30 @@ def _depth_directive(depth: str) -> str:
     return ""
 
 
-def _signal_card_format_rules(mkt_status: dict) -> str:
+def _signal_card_format_rules(mkt_status: dict, regime: dict = None, macro_event: bool = False) -> str:
     """所有報告共用的 signal-card 格式規格(批次生成用)。"""
     tw_when = "今早 9:00 開盤後" if mkt_status.get("tw_will_open_today") else "下個台股交易日"
     us_when = "今晚開盤後" if mkt_status.get("us_will_open_tonight") else "下個美股交易日"
-    return f"""每張卡格式(最外層 class 從 buy/hold/sell/wait 四選一,動詞:buy=買進加碼 / hold=抱緊 / sell=減碼賣出 / wait=觀望):
+    regime = regime or {}
+    regime_block = ""
+    if regime.get("label") == "risk_off":
+        regime_block = f"""
+【‼️ 今日市場狀態:風險偏空(指數下殺 / 恐慌升溫,S&P {regime.get('spx_chg', 0):+.2f}% / NASDAQ {regime.get('ndx_chg', 0):+.2f}% / VIX {regime.get('vix', 0):.1f})】
+- **嚴禁整批卡機械式全寫「低接買進」**。逐支區分:(a) 趨勢仍在 MA20 上、只是回檔 → 可給條件式低接;(b) 已跌破 MA20、動能轉弱、沒利多 → 給 hold/wait,寫「等止穩(收復 $XXX)再進」;(c) 有明確利空 → sell/減碼。整批至少要呈現這種差異,全多頭 = 廢稿。
+- 買進卡 reason 開頭必須講明「現價勿追」,只給支撐位條件單。
+- 本狀態下所有卡信心一律 ≤55%。"""
+    elif regime.get("label") == "risk_on":
+        regime_block = """
+【今日市場狀態:風險偏多】順勢為主,但漲多的標的要提醒「突破才追、不破不加」,不可每支都無條件追價。"""
+    else:
+        regime_block = """
+【今日市場狀態:中性】依個股自身技術與消息分別判斷,verdict 不可機械式整批同向。"""
+    macro_block = ""
+    if macro_event:
+        macro_block = """
+【‼️ 今天/近日有重大總經事件(CPI / FOMC / 非農之類,見新聞)】所有買進建議必須寫成**事件條件單**:「數據公布後若 XXX(優於預期/守住 $XXX)再進場」,嚴禁「即刻買進」「應積極介入」這種無條件動作 — 數據公布前進場 = 賭博不是策略。"""
+    return f"""{regime_block}{macro_block}
+每張卡格式(最外層 class 從 buy/hold/sell/wait 四選一,動詞:buy=買進加碼 / hold=抱緊 / sell=減碼賣出 / wait=觀望):
 <div class="signal-card buy">
   <div class="signal-card-top">
     <span class="signal-ticker">代號</span>
@@ -807,7 +943,9 @@ def _signal_card_format_rules(mkt_status: dict) -> str:
 - ‼️ **定價一律用每支附的「近端操作錨點」**(低接 / 反彈目標 / 停損)當建議買價、賺錢目標、止損賣價,可微調但不可大幅偏離。
   **嚴禁拿「60日低 / 60日高」當停損或目標**——那是遠端區間參考,股票大漲後 60 日低常離現價 30-60%,當停損完全失準。
   停損與現價距離不得超過約 12%、目標不得超過約 15%;所有價位夾在現價上下 15% 內。
-- 進場 / 目標 / 停損價位必須落在下方該股真實技術價位的合理範圍,美股美元、台股台幣,**嚴禁編造偏離現價的數字**"""
+- 進場 / 目標 / 停損價位必須落在下方該股真實技術價位的合理範圍,美股美元、台股台幣,**嚴禁編造偏離現價的數字**
+- ‼️ **信心校準**:我們的公開戰績統計顯示短線方向判斷準確率約五成多,信心欄位一律寫 45-65%(整批不可同一個數字),**禁止出現 >65% 的信心** — 印 75% 卻只對一半是在騙用戶
+- ‼️ **同質性禁令**:若整批標的多數同向漲跌,不可每支複製同一套「跌到 20 日低 → 低接買進反彈 MA20」模板;逐支看趨勢位置(站上/跌破 MA20)、動能與消息差異,verdict 與 reason 必須有真實差異"""
 
 
 def _adv_tech_str(t: dict) -> str:
@@ -975,7 +1113,8 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
     all_market = {**data.get("us_market", {}), **data.get("tw_market", {})}
     seen.sort(key=lambda s: abs((all_market.get(s) or {}).get("change_pct", 0) or 0), reverse=True)
     llm_stocks = seen[:full_limit] if full_limit else seen
-    rules = _signal_card_format_rules(mkt_status)
+    rules = _signal_card_format_rules(mkt_status, regime=_market_regime(data),
+                                      macro_event=_detect_macro_event(data))
     cards_by_sym = {}
     CHUNK = 10
     for i in range(0, len(llm_stocks), CHUNK):
@@ -1370,9 +1509,13 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 ‼️ news-impact 是強制要求：5 張新聞卡【每一張都必須】有 news-impact 區塊，且至少列 1 支 impact-stock。
 - impact-stock span 內只放純股票代號（例如 NVDA、AAPL、2330），不要放公司名，系統會自動補名稱與漲跌標示
 - class 用 up＝這則消息對該股是利多（可能漲）、down＝利空（可能跌）
+- ‼️ 每支 impact-stock 都必須在 news-why 裡講得出**具體傳導機制**（營收曝險、供應鏈、利率敏感度、同業競爭）。講不出機制的個股不要硬塞——「中東開戰→微軟看跌」這種無機制對映是廢稿
+- 利多用 up、利空用 down，**不可整版全部 down**：同一則新聞常有受惠方（油價漲→能源股 up、航空股 down），有受惠方就要列
 - 想不到具體個股時，就挑受影響產業的龍頭股：Fed 利率→JPM、GS；油價→XOM、CVX；AI/算力→NVDA、TSM；半導體→TSM、2330、2454；消費→AMZN、WMT
 - 優先列跟用戶持倉（{', '.join(all_holdings) if has_holdings else '主流科技股'}）相關的個股
-- 只有新聞完全與任何上市公司無關時（例如純政治事件）才可省略，且這種最多 1 張"""
+- 只有新聞完全與任何上市公司無關時（例如純政治事件）才可省略，且這種最多 1 張
+- ‼️ 標題與 news-why 的方向必須一致：標題寫「油價反彈」內文就不可寫「油價反而下跌」——寫之前對一次數據
+- ‼️ 禁止無來源的因果臆測：「可能與 XXX 有關」這種你自己腦補的歸因不可寫；新聞沒講原因就只描述現象與對持股的影響"""
 
     market_tail_block = f"""<div class="advanced-divider">📊 以下是大盤與進階分析 — 想深入再看，不看也不影響你上面的操作</div>
 
@@ -1402,11 +1545,11 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 
 <div class="section-label">📅 即將公布財報</div>
 <div class="earnings-list">
-（根據財報日曆，列出未來兩週內的財報，格式：
+（根據上方財報日曆，列出最近的財報，格式：
   <div class="earnings-item">
     <span class="earnings-ticker">（代號）</span>
     <span class="earnings-date">（日期）</span>
-    <span class="earnings-note">（一句話：市場預期什麼）</span>
+    <span class="earnings-note">（一句話。‼️ 只能使用上方財報日曆「已核實」的預期 EPS / 營收數字；日曆沒附預期數字時，這句只能寫中性關注重點（如「雲端業務動向是焦點」），嚴禁自行編造任何 EPS / 營收預估或產品銷售數字）</span>
   </div>
 若無資料則寫「近期無重大財報」）
 </div>"""

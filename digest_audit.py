@@ -68,6 +68,7 @@ def audit_digest(
     tw_holdings: List[str] = None,
     mkt_status: Dict = None,
     market: str = "both",
+    earnings_estimates: bool = False,
 ) -> List[Dict]:
     """
     回傳 failures list,空 list 代表通過。
@@ -229,6 +230,65 @@ def audit_digest(
     if placeholder_prices:
         fails.append({"check": "placeholder_prices", "severity": "high",
                       "msg": f"signal-card 留下 $XXX 沒填:{placeholder_prices[:3]}"})
+
+    # ───── 實質稽核(2026-06-10 起:不只查格式,還查內容自洽與編造)─────
+    # 13b. 財報區編造預期:資料端沒有「已核實預期數字」時,財報區出現預期 EPS/營收 = LLM 編的
+    # (6/10 實鍋:日報寫 AAPL 預期 EPS 3.60,真實 FMP 預期 1.86;還寫「iPhone 15 仍是重點」)
+    if not earnings_estimates:
+        earn_sec = _section(html, "earnings-list")
+        if earn_sec and re.search(r"預期\s*EPS|市場預期|EPS\s*[\d.]+\s*美元|營收\s*[\d.,]+\s*億",
+                                  _strip_html_to_text(earn_sec)):
+            fails.append({"check": "earnings_fabricated_estimates", "severity": "high",
+                          "msg": "財報區出現「預期 EPS/營收」但資料端沒有核實的預期數字 — LLM 編造"})
+
+    # 17. verdict 同質性:≥4 張真卡全部同向,且全文同時喊「先觀望/等數據」= 自相矛盾
+    # (6/10 實鍋:結論「普通人應該先觀望等 CPI」,四張卡全部「應即刻分批買進」)
+    biases = []
+    for card in signal_cards:
+        if re.search(r"備援|個人化生成異常|fallback|無即時報價|見網頁", card):
+            continue
+        if "signal-bias bullish" in card:
+            biases.append("bull")
+        elif "signal-bias bearish" in card:
+            biases.append("bear")
+        elif "signal-bias neutral" in card:
+            biases.append("neut")
+    if len(biases) >= 4 and len(set(biases)) == 1:
+        wait_tone = re.search(r"先觀望|等數據|等.{0,10}公布(再|後)|先別急", text)
+        fails.append({"check": "verdict_monoculture",
+                      "severity": "med" if wait_tone else "low",
+                      "msg": f"{len(biases)} 張操作卡全部同向({biases[0]})"
+                             + (",但 TLDR/結論同時喊「先觀望/等數據」— 卡片與結論自相矛盾" if wait_tone else
+                                " — 機械式同質模板,缺乏逐支差異")})
+
+    # 18. 信心過度自信:>65% 的信心顯示(postprocess 已夾限,出現代表防線破口)
+    over_conf = re.findall(r"信心\s*(6[6-9]|[7-9]\d|100)\s*%", text)
+    if over_conf:
+        fails.append({"check": "confidence_overclaim", "severity": "med",
+                      "msg": f"出現未校準的高信心數字:{over_conf[:3]}%(歷史方向勝率約五成,>65% = 騙人)"})
+
+    # 19. 臆測因果:「可能與 XXX 有關」這種無來源歸因
+    spec = re.findall(r"可能與[^。<]{2,30}有關", text)
+    if spec:
+        fails.append({"check": "speculative_causality", "severity": "low",
+                      "msg": f"無來源的因果臆測:{spec[:2]}"})
+
+    # 20. 新聞標題與內文方向矛盾(6/10 實鍋:標題「油價反彈 1.10%」內文「油價反而下跌」)
+    contradictions = []
+    for nc in _all_sections(html, "news-card"):
+        hm = re.search(r'<div class="news-headline"[^>]*>(.*?)</div>', nc, re.S)
+        wm = re.search(r'<div class="news-why"[^>]*>(.*?)</div>', nc, re.S)
+        if not (hm and wm):
+            continue
+        head = _strip_html_to_text(hm.group(1))
+        why = _strip_html_to_text(wm.group(1))
+        if re.search(r"反彈|上漲|大漲|漲\s*[\d.]", head) and re.search(r"反而(下跌|走跌|收黑)", why):
+            contradictions.append(head[:20])
+        elif re.search(r"下跌|大跌|重挫|跌\s*[\d.]", head) and re.search(r"反而(上漲|走揚|收紅)", why):
+            contradictions.append(head[:20])
+    if contradictions:
+        fails.append({"check": "news_headline_body_conflict", "severity": "med",
+                      "msg": f"新聞標題與內文方向矛盾:{contradictions[:2]}"})
 
     # ───── AI 輸出被截斷 ─────
     # 16. HTML 結尾不該是 unclosed tag / 半行字 (代表 LLM token 超出上限被切)

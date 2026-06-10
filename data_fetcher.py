@@ -615,8 +615,35 @@ def fetch_sector_performance() -> list:
 
 
 def fetch_earnings_calendar() -> list:
+    """財報日曆。優先用 FMP stable API(含已核實的市場預期 EPS / 營收),
+    拿不到再退回 yfinance(只有日期,不帶任何預期數字 — LLM 嚴禁自行補)。"""
+    import os
     events = []
     watchlist = ["AAPL", "MSFT", "NVDA", "GOOGL", "META", "AMZN", "TSLA", "AMD", "TSM"]
+    fmp_key = os.environ.get("FMP_API_KEY", "").strip()
+    if fmp_key:
+        try:
+            frm = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            to = (datetime.now(timezone.utc) + timedelta(days=120)).strftime("%Y-%m-%d")
+            resp = requests.get(
+                "https://financialmodelingprep.com/stable/earnings-calendar",
+                params={"from": frm, "to": to, "apikey": fmp_key}, timeout=20)
+            rows = resp.json()
+            if isinstance(rows, list):
+                by_sym: dict = {}
+                for r in rows:
+                    s = r.get("symbol")
+                    d = (r.get("date") or "")[:10]
+                    if s in watchlist and d and (s not in by_sym or d < by_sym[s]["date"]):
+                        by_sym[s] = {"symbol": s, "date": d,
+                                     "eps_est": r.get("epsEstimated"),
+                                     "rev_est": r.get("revenueEstimated")}
+                events = list(by_sym.values())
+        except Exception as e:
+            print(f"[earnings] FMP failed, fallback yfinance dates-only: {e}")
+    if events:
+        events.sort(key=lambda x: x["date"])
+        return events
     for symbol in watchlist:
         try:
             ticker = yf.Ticker(symbol)
