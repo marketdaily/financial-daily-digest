@@ -58,7 +58,7 @@
   border-radius: 4px;
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; overflow-x: clip; }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -1214,12 +1214,12 @@ footer {
     </div>
     <div class="tr-stats-row">
       <div class="tr-stat">
-        <span class="tr-stat-num" id="tr-stat-a">—</span>
-        <div class="tr-stat-label" data-i18n="tr_s1">🟢 看多勝率</div>
+        <span class="tr-stat-num" id="tr-stat-c">—</span>
+        <div class="tr-stat-label" data-i18n="tr_s2">🛡️ 避坑勝率</div>
       </div>
       <div class="tr-stat">
-        <span class="tr-stat-num red" id="tr-stat-c">—</span>
-        <div class="tr-stat-label" data-i18n="tr_s2">🔴 看空勝率</div>
+        <span class="tr-stat-num indigo" id="tr-stat-a">—</span>
+        <div class="tr-stat-label" data-i18n="tr_s1">📈 看多勝率 · 公版可查證</div>
       </div>
       <div class="tr-stat">
         <span class="tr-stat-num amber" id="tr-stat-total">—</span>
@@ -1245,7 +1245,10 @@ footer {
         if (n < MIN_N) return `累積中<br><span style="font-size:14px;opacity:0.7;">(${n}/${MIN_N})</span>`;
         return (typeof rate === 'number' ? rate.toFixed(1) : '—') + '%';
       };
-      if (a) a.innerHTML = fmt(d.stats.a_rate, d.stats.a_count);
+      // 看多用「公版可查證」口徑(與 /track-record 頁主數字一致,可逐筆對照紀錄表);
+      // 避坑用全用戶合計(戰績頁同樣有列)。沒有 public_only 時退回合計值。
+      const pub = d.stats.public_only || d.stats;
+      if (a) a.innerHTML = fmt(pub.a_rate, pub.a_count);
       if (c) c.innerHTML = fmt(d.stats.c_rate, d.stats.c_count);
       if (t && typeof d.stats.total_records === 'number') t.textContent = d.stats.total_records;
     })
@@ -2068,8 +2071,8 @@ const i18n = {
     tr_title: "We don't talk up AI — we let the record talk",
     tr_sub: "Every stock the daily mentioned in the last 30 days — direction win-rate and avoid-the-bad-ones rate, fully public. Misses are listed too — 100% would be the fake number.",
     tr_cta: "See the full record →",
-    tr_s1: "🟢 Long win-rate",
-    tr_s2: "🔴 Short win-rate",
+    tr_s1: "📈 Long win-rate · verifiable",
+    tr_s2: "🛡️ Risk-avoidance rate",
     tr_s3: "Stocks mentioned to date",
     refund_badge: "🛡️ 30-day no-questions refund",
     nocard_badge: "⭐ First month 40% off (NT$299)",
@@ -2237,8 +2240,8 @@ const i18n = {
     tr_title: "不空談 AI 多強,讓紀錄說話",
     tr_sub: "過去 30 天,日報點到的個股「方向勝率」與「避坑勝率」全部公開。錯的我們也列出來——100% 才是假的。",
     tr_cta: "看完整紀錄表 →",
-    tr_s1: "🟢 看多勝率",
-    tr_s2: "🔴 看空勝率",
+    tr_s1: "📈 看多勝率 · 公版可查證",
+    tr_s2: "🛡️ 避坑勝率",
     tr_s3: "累計提及個股",
     refund_badge: "🛡️ 30 天無理由退費",
     nocard_badge: "⭐ 試讀首月 6 折 NT$299",
@@ -2613,7 +2616,7 @@ async function subscribeInvite() {
 /* Scroll reveal — base + scene variants */
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("visible"); revealObserver.unobserve(e.target); } });
-}, { threshold: 0.08 });
+}, { threshold: 0.05, rootMargin: "0px 0px 90px 0px" });
 document.querySelectorAll(".reveal, .scene-reveal, .scene-from-left, .scene-from-right, .scene-zoom-in").forEach(el => revealObserver.observe(el));
 
 /* ── 3D SLIDER ── */
@@ -2873,7 +2876,7 @@ function switchAbout(panel, btn) {
 <!-- Meta Pixel: 設好 META_PIXEL_ID 才會載 fbevents.js,沒設整支 noop -->
 <script>window.META_PIXEL_ID = "1497334655104185";</script>
 <script src="meta-pixel.js"></script>
-<script src="ui-pro.js"></script>
+<script src="ui-pro.js?v=20260610a"></script>
 
 <!-- Financial 3D particle background -->
 <canvas id="fin-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
@@ -2991,7 +2994,7 @@ function switchAbout(panel, btn) {
 })();
 </script>
 <!-- service worker 已移除 —— 純網路供應,避免快取導致看到舊版或跳轉失敗 -->
-<script src="onboarding-tour.js?v=20260526b"></script>
+<script src="onboarding-tour.js?v=20260610a"></script>
 <script>
 MDTour.mount([
   { selector: "#hero-email",

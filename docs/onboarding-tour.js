@@ -37,7 +37,11 @@
     ".md-t-skip{display:block;width:100%;margin-top:12px;padding:6px;",
     "background:none;border:none;color:rgba(255,255,255,0.4);font-size:13px;",
     "cursor:pointer;font-family:inherit;}",
-    ".md-t-skip:hover{color:rgba(255,255,255,0.7);}"
+    ".md-t-skip:hover{color:rgba(255,255,255,0.7);}",
+    "@keyframes md-t-pulse{0%{box-shadow:0 8px 28px rgba(99,102,241,0.5);}",
+    "50%{box-shadow:0 8px 28px rgba(99,102,241,0.5),0 0 0 10px rgba(129,140,248,0.18);}",
+    "100%{box-shadow:0 8px 28px rgba(99,102,241,0.5);}}",
+    "#md-tour-fab.md-t-nudge{animation:md-t-pulse 1.6s ease-in-out 3;}"
   ].join("");
 
   var steps = [], idx = 0, tourId = "default", active = false;
@@ -101,9 +105,39 @@
     injectStyle();
     if (document.body) injectFab();
     else document.addEventListener("DOMContentLoaded", injectFab);
-    if (opts.auto && !tourDone(tourId)) {
-      setTimeout(function () { if (!active) start(); }, 700);
+    if (opts.auto && !tourDone(tourId)) scheduleAuto();
+  }
+
+  // auto 模式不再 0.7 秒硬攔:閒置 6 秒才開;用戶已自己開始操作(捲動/點擊/輸入)就不打擾,
+  // 改為脈衝提示右下角「新手教學」鈕,教學隨時可手動開。
+  function scheduleAuto() {
+    var engaged = false, startY = window.pageYOffset || 0;
+    function engage() { engaged = true; cleanup(); nudgeFab(); }
+    function onScroll() {
+      if (Math.abs((window.pageYOffset || 0) - startY) > 150) engage();
     }
+    function onPointer(e) {
+      var t = e.target;
+      if (t && t.id === "md-tour-fab") return;
+      engage();
+    }
+    function cleanup() {
+      window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("pointerdown", onPointer);
+      document.removeEventListener("keydown", engage);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("pointerdown", onPointer);
+    document.addEventListener("keydown", engage);
+    setTimeout(function () {
+      cleanup();
+      if (!engaged && !active && !tourDone(tourId)) start();
+    }, 6000);
+  }
+
+  function nudgeFab() {
+    var fab = document.getElementById("md-tour-fab");
+    if (fab) fab.classList.add("md-t-nudge");
   }
 
   function setFab(visible) {

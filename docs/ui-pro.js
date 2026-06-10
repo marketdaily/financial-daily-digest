@@ -111,7 +111,7 @@
           obs.unobserve(e.target);
         }
       });
-    }, { threshold: 0.07 });
+    }, { threshold: 0.05, rootMargin: '0px 0px 90px 0px' });
     document.querySelectorAll(
       '.reveal,.scene-reveal,.scene-from-left,.scene-from-right,.scene-zoom-in'
     ).forEach(function (el) { obs.observe(el); });

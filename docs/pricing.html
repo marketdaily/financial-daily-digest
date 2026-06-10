@@ -988,7 +988,7 @@ footer {
 
 <script>window.META_PIXEL_ID = "1497334655104185";</script>
 <script src="meta-pixel.js"></script>
-<script src="ui-pro.js"></script>
+<script src="ui-pro.js?v=20260610a"></script>
 <script>
 /* ── i18n ── */
 const i18n = {
@@ -1279,7 +1279,7 @@ const revealObserver = new IntersectionObserver((entries) => {
       revealObserver.unobserve(e.target);
     }
   });
-}, { threshold: 0.08 });
+}, { threshold: 0.05, rootMargin: '0px 0px 90px 0px' });
 
 document.querySelectorAll('.scene-reveal, .reveal').forEach(el => revealObserver.observe(el));
 
