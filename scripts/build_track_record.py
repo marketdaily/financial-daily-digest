@@ -165,6 +165,34 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
         if not ticker:
             continue
         name = _enrich_tw_name(name, ticker)
+
+        # 卡片宣稱的信心 %(供校準分析:說 70% 的那些實際對幾成 + Brier)
+        confidence = None
+        conf_span = card.select_one(".signal-confidence")
+        if conf_span:
+            cm = re.search(r"(\d{1,3})\s*%", conf_span.get_text())
+            if cm:
+                confidence = int(cm.group(1))
+
+        # 卡片寫的進出場價位(供 level-based 操作模擬:照建議做會賺還是賠)
+        levels: dict[str, float | None] = {"entry_lo": None, "entry_hi": None, "target": None, "stop": None}
+        for row in card.select(".battle-row"):
+            lbl = row.select_one(".battle-label")
+            val = row.select_one(".battle-val")
+            if not (lbl and val):
+                continue
+            nums = [float(x.replace(",", "")) for x in re.findall(r"\d[\d,]*\.?\d*", val.get_text())]
+            if not nums:
+                continue
+            t = lbl.get_text()
+            if "買價" in t or "回補" in t:
+                levels["entry_lo"] = min(nums)
+                levels["entry_hi"] = max(nums)
+            elif "目標" in t:
+                levels["target"] = nums[0]
+            elif "止損" in t or "停損" in t:
+                levels["stop"] = nums[0]
+
         maybe_add({
             "date": date_str,
             "name": name,
@@ -175,6 +203,8 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
             "reason": _clean(reason_div.get_text()),
             "type": rtype,
             "source": "signal-card",
+            "confidence": confidence,
+            **levels,
         })
 
     # ── stock-card (keyword NLP) ──
@@ -319,7 +349,92 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
                 ref_idx = sorted_dates.index(d)
             nxt = hist_dict[sorted_dates[ref_idx + 1]] if ref_idx + 1 < len(sorted_dates) else None
             c5 = hist_dict[sorted_dates[ref_idx + 5]] if ref_idx + 5 < len(sorted_dates) else None
-            out[(ticker, d)] = {"close": today, "next_close": nxt, "close_5d": c5}
+            path = [hist_dict[dd] for dd in sorted_dates[ref_idx + 1:ref_idx + 14]]
+            out[(ticker, d)] = {"close": today, "next_close": nxt, "close_5d": c5, "path": path}
+    return out
+
+
+def wilson_ci(wins: int, n: int, z: float = 1.96) -> tuple[float, float]:
+    """勝率的 Wilson 95% 信賴區間(%):小樣本紀律 — 只報點估計會把運氣當實力。
+    N ≈ 1/edge²:5% 的 edge 要數百筆才能跟運氣區分,別用 20 筆下結論。"""
+    if n == 0:
+        return (0.0, 0.0)
+    ph = wins / n
+    den = 1 + z * z / n
+    center = (ph + z * z / (2 * n)) / den
+    half = z * ((ph * (1 - ph) / n + z * z / (4 * n * n)) ** 0.5) / den
+    return (round((center - half) * 100, 1), round((center + half) * 100, 1))
+
+
+def calibration_stats(recs: list[dict]) -> dict | None:
+    """信心校準:卡片說「信心 X%」的那些,實際對幾成?
+    Brier = (1/N)·Σ(f−o)² — 0.25 = 丟銅板,< 0.25 才有預測力。
+    這是日報信心數字該不該被相信的唯一證據,每天自動累積。"""
+    pts = [(r["confidence"] / 100, 1 if r["outcome"] == "win" else 0)
+           for r in recs
+           if r.get("confidence") and r.get("outcome") in ("win", "loss")]
+    if not pts:
+        return None
+    brier = sum((f - o) ** 2 for f, o in pts) / len(pts)
+    bins: dict[str, list[int]] = {}
+    for f, o in pts:
+        b = "<=50" if f <= 0.50 else "51-60" if f <= 0.60 else "61-70" if f <= 0.70 else ">70"
+        bins.setdefault(b, []).append(o)
+    return {
+        "n": len(pts),
+        "brier": round(brier, 4),
+        "coin_flip_brier": 0.25,
+        "bins": {b: {"n": len(v), "hit_rate": round(sum(v) / len(v) * 100, 1)}
+                 for b, v in sorted(bins.items())},
+    }
+
+
+def simulate_plan(rec: dict, prices: dict) -> dict | None:
+    """level-based 操作模擬:不只問「方向對嗎」,問「照卡片寫的買價/目標/停損操作,結果如何」。
+    規則:建議日後 3 個交易日內收盤進入買區(≤ entry_hi)= 進場(以該日收盤為成本);
+    之後 10 個交易日內收盤先碰目標 = win、先碰停損 = loss;都沒碰 → 期滿以收盤對成本結算。
+    限制:只有日收盤、無盤中高低 — 目標與停損都會低估觸發,偏差雙向,結果偏保守但公平。"""
+    if rec.get("verdict_class") != "buy":
+        return None
+    hi, tgt, stp = rec.get("entry_hi"), rec.get("target"), rec.get("stop")
+    if not (hi and tgt and stp):
+        return None
+    p = prices.get((rec["ticker"], rec["date"]))
+    path = (p or {}).get("path") or []
+    if not path:
+        return None
+    entry = None
+    entry_i = -1
+    for i, c in enumerate(path[:3]):
+        if c <= hi:
+            entry, entry_i = c, i
+            break
+    if entry is None:
+        # 3 天內價格沒回到買區 → 單子沒成交(這不算錯,但要統計「建議常常掛不到」)
+        return {"result": "no_fill", "ret_pct": None}
+    rest = path[entry_i + 1:entry_i + 11]
+    for c in rest:
+        if c >= tgt:
+            return {"result": "win", "ret_pct": round((c - entry) / entry * 100, 2)}
+        if c <= stp:
+            return {"result": "loss", "ret_pct": round((c - entry) / entry * 100, 2)}
+    if len(rest) < 10:
+        return {"result": "pending", "ret_pct": None}
+    return {"result": "expired", "ret_pct": round((rest[-1] - entry) / entry * 100, 2)}
+
+
+def fetch_spx_regime() -> dict[str, str]:
+    """日期 → 大盤趨勢標記(SPX 收盤 vs 5 個交易日前:up/down)。
+    用來把勝率按 regime 拆開 — 驗證「下跌 regime 整批喊買 = 主要虧損源」假設,
+    並追蹤 2026-06-10 上線的 regime 閘門有沒有真的把 down-regime 勝率拉起來。"""
+    closes = yahoo_chart("^GSPC", "", "")
+    if not closes:
+        return {}
+    ds = sorted(closes)
+    out = {}
+    for i, d in enumerate(ds):
+        if i >= 5:
+            out[d] = "down" if closes[d] < closes[ds[i - 5]] else "up"
     return out
 
 
@@ -523,6 +638,41 @@ def main() -> int:
     a1_wins = sum(1 for r in a1 if r["outcome_1d"] == "win")
     c1_wins = sum(1 for r in c1 if r["outcome_1d"] == "win")
 
+    # ── 校準 / regime 拆解 / level-based 操作模擬(2026-06-10 自學三件套)──
+    calib = calibration_stats(a_recs)
+
+    regime_by_date = fetch_spx_regime()
+    by_regime = {}
+    for trend in ("up", "down"):
+        sub = [r for r in a_recs if regime_by_date.get(r["date"]) == trend]
+        w = sum(1 for r in sub if r["outcome"] == "win")
+        lo, hi_ci = wilson_ci(w, len(sub))
+        by_regime[trend] = {"a_count": len(sub), "a_wins": w,
+                            "a_rate": round(w / len(sub) * 100, 1) if sub else 0.0,
+                            "ci95": [lo, hi_ci]}
+
+    sims = []
+    for r in judged_all:
+        s = simulate_plan(r, prices)
+        if s:
+            sims.append(s)
+    sim_win = [s for s in sims if s["result"] == "win"]
+    sim_loss = [s for s in sims if s["result"] == "loss"]
+    sim_exp = [s for s in sims if s["result"] == "expired"]
+    closed = sim_win + sim_loss + sim_exp
+    rets = [s["ret_pct"] for s in closed if s.get("ret_pct") is not None]
+    plan_sim = {
+        "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
+        "simulated": len(sims),
+        "no_fill": sum(1 for s in sims if s["result"] == "no_fill"),
+        "pending": sum(1 for s in sims if s["result"] == "pending"),
+        "hit_target": len(sim_win),
+        "hit_stop": len(sim_loss),
+        "expired": len(sim_exp),
+        "avg_ret_pct": round(sum(rets) / len(rets), 2) if rets else None,
+        "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值",
+    }
+
     stats = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "horizon": "5d",
@@ -538,9 +688,14 @@ def main() -> int:
         "a_count": len(a_recs),
         "a_wins": a_wins,
         "a_rate": round(a_rate, 1),
+        "a_ci95": list(wilson_ci(a_wins, len(a_recs))),
         "c_count": len(c_recs),
         "c_wins": c_wins,
         "c_rate": round(c_rate, 1),
+        "c_ci95": list(wilson_ci(c_wins, len(c_recs))),
+        "calibration": calib,
+        "by_regime": by_regime,
+        "plan_sim": plan_sim,
         # 區分公版 / 個人化來源,讓前端可看到是否包含跨用戶聚合
         "public_only": {
             "a_count": len(a_pub),

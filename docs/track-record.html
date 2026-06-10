@@ -707,10 +707,20 @@ function renderRecords(filter) {
   const cw = c.filter(r => r.outcome === "win").length;
   // 樣本 < 20 視為統計上不可信,改顯示「樣本累積中 (X/20)」而非具體百分比
   const MIN_N = 20;
+  // Wilson 95% CI:樣本紀律 — 點估計不附區間會把運氣當實力
+  const wilsonCI = (w, n) => {
+    if (!n) return null;
+    const z = 1.96, p = w / n, d = 1 + z * z / n;
+    const ctr = (p + z * z / (2 * n)) / d;
+    const half = z * Math.sqrt(p * (1 - p) / n + z * z / (4 * n * n)) / d;
+    return [Math.max(0, (ctr - half) * 100).toFixed(0), Math.min(100, (ctr + half) * 100).toFixed(0)];
+  };
   const fmtRate = (wins, total) => {
     if (total === 0) return "—";
     if (total < MIN_N) return `樣本累積中<br><span style="font-size:13px;color:rgba(255,255,255,0.5);font-weight:600;">(${total}/${MIN_N})</span>`;
-    return ((wins / total) * 100).toFixed(1) + "%";
+    const ci = wilsonCI(wins, total);
+    return ((wins / total) * 100).toFixed(1) + "%" +
+      `<br><span style="font-size:11px;color:rgba(255,255,255,0.45);font-weight:600;">95% 區間 ${ci[0]}–${ci[1]}%</span>`;
   };
   const sd = document.getElementById("stat-direction");
   const sr = document.getElementById("stat-risk");
