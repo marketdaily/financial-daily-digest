@@ -106,6 +106,7 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 | `workflow` | 執行 MarketDaily 每日日報 Pipeline（tuna_pipeline → HTML → 部署） |
 | `antigravity` | 生成大膽動態的 AI 影片或反重力視覺效果網站/TikTok 內容 |
 | `claude-design` | 審查並統一 MarketDaily 所有頁面的設計系統一致性 |
+| `site-doctor` | MarketDaily 全站自動巡檢+自動修復:scan.py 掃用戶可見錯誤(報價卡···、0 變—、undefined/NaN、API 砍資料、戰績/日報過期、console error、資產回歸)→ 對照歷史病歷表診斷 → 直接修+部署+重掃驗證;網站重大改動後或用戶反映前台怪象時必跑 |
 | `email-marketing-bible` | Email 行銷聖經（68K字、908來源、19產業 playbook）：策略、自動化序列、送達率、文案、分群、合規、開信率優化 |
 | `growth-strategy` | 增長策略框架：北極星指標、AARRR 海盜指標、增長迴圈、實驗方法論、留存與降低 churn |
 | `referral-program` | 推薦計畫與病毒迴圈設計：雙邊/單邊獎勵、viral coefficient、推薦連結系統、大使計畫 |
