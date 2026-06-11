@@ -841,9 +841,10 @@ def _push_preflight_alert(date_str, high_fails, total_subscribers):
     import os, json as _json, urllib.request
     worker = os.environ.get("MARKETDAILY_ALERT_WORKER_URL",
                             "https://marketdaily-alert-worker.delvin-12345678.workers.dev")
-    tok = os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN")
+    tok = (os.environ.get("MARKETDAILY_ALERT_TOKEN")
+           or os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN"))
     if not tok:
-        print("   (skip preflight push:INTERNAL_TOKEN 未設)")
+        print("   (skip preflight push:MARKETDAILY_ALERT_TOKEN/INTERNAL_TOKEN 未設)")
         return
     lines = [f"🚨 [PRE-FLIGHT] 日報 {date_str} 有 HIGH 品質問題 — 寄信前必修"]
     lines.append(f"影響:{len(high_fails)}/{total_subscribers} 位訂閱者")

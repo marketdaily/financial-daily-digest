@@ -776,10 +776,12 @@ export default {
     }
 
     // 推 LINE 訊息給 admin(daily digest pipeline / audit 失分通知用)
-    // 認證:MARKETING_TARGETS_TOKEN 或 INTERNAL_TOKEN(timing-safe,跟 marketing-line-targets 同套)
+    // 認證:ADMIN_PUSH_TOKEN(daily pipeline 專用,GH secret MARKETDAILY_ALERT_TOKEN 同值)
+    // 或 MARKETING_TARGETS_TOKEN / INTERNAL_TOKEN(timing-safe)。
+    // 2026-06-11 修 admin LINE 403:GH 端舊值對不上;旋轉共用把會炸其他 caller,故加專用把。
     if (url.pathname === "/internal/admin-line-push" && request.method === "POST") {
       const got = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
-      const candidates = [env.MARKETING_TARGETS_TOKEN, env.INTERNAL_TOKEN].filter(Boolean);
+      const candidates = [env.ADMIN_PUSH_TOKEN, env.MARKETING_TARGETS_TOKEN, env.INTERNAL_TOKEN].filter(Boolean);
       let okAuth = false;
       for (const t of candidates) {
         if (got.length !== t.length) continue;

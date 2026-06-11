@@ -506,6 +506,17 @@ def _postprocess_html(html: str, data: dict) -> str:
         if isinstance(d, dict) and d.get("name"):
             tw_hint[code] = d["name"]
 
+    # 清掉 narrative LLM 私自夾帶的 signal-card:批次卡都有 <!--h:SYM--> 標記且過了
+    # _card_passes_audit,無標記卡 = 未把關的 rogue 卡(6/11 preflight 抓到 UMAC 虛詞卡
+    # + 無 ticker '?' 卡都是這來源,害整封掉 deterministic fallback)。批次卡已 100% 覆蓋
+    # 持股,rogue 卡純重複。備援版模板整份無標記 → 「存在標記卡才執行」保住它。
+    if "<!--h:" in html:
+        html = _re.sub(
+            r'<div class="signal-card[ "].*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer|<div class="section-label")',
+            lambda m: m.group(0) if "<!--h:" in m.group(0) else "",
+            html, flags=_re.DOTALL,
+        )
+
     # signal-card 內把買/賣 verdict 拉到代號旁邊,讓「一眼看懂」效果更好
     # (原本 action-board 總覽已移除,改成直接在每張卡頂端標明買賣)
     _verdict_inline = {

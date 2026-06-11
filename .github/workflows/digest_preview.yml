@@ -9,6 +9,9 @@ on:
   workflow_dispatch:    # 手動觸發測試
   # cron 由 marketdaily-preflight-cron worker 派發(GitHub schedule 延遲不準)
 
+permissions:
+  contents: write       # audit 報告 commit 回 main(2026-06-11 前缺這塊,push 一直 403)
+
 jobs:
   preflight:
     runs-on: ubuntu-latest
@@ -27,6 +30,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
           BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           SENDER_NAME: ${{ secrets.SENDER_NAME }}
