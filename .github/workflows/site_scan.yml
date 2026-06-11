@@ -95,7 +95,9 @@ jobs:
           fi
 
       - name: 部署 + push origin
-        if: steps.scan2.outputs.code == '0'
+        # 注意:skip 步驟的 output 是 null,null=='0' 會數字強轉成 true(6/11 實踩),
+        # 必須先驗 guard verdict 字串擋住
+        if: steps.guard.outputs.verdict == 'docs-only' && steps.scan2.outputs.code == '0'
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: a92082d84f08b1d4883facbf1a1dc445
@@ -105,9 +107,13 @@ jobs:
           git config user.name "marketdaily-bot"
           git config user.email "marketdailyhq@gmail.com"
           git add docs/
-          git commit -m "fix(site): auto-heal — 掃描抓到的前台問題自動修復 [skip ci]"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          if git diff --cached --quiet; then
+            echo "無 docs/ 變更可 commit"
+          else
+            git commit -m "fix(site): auto-heal — 掃描抓到的前台問題自動修復 [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
 
       - name: LINE 結果報告
         if: always() && steps.scan1.outputs.code != '0'
