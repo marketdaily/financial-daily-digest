@@ -1,0 +1,128 @@
+name: 全站健康掃描+自動修復
+
+# 由 digest-watchdog worker 每天 07:50 TW 派發(也可手動觸發)。
+# 流程:scan → 全過安靜結束;有 fail → LINE 通知 → Claude 按 playbook 自動修(只准動 docs/)
+# → guard 驗範圍 → 重掃必須全過 → 部署 Pages + push origin → LINE 結果報告。
+# 修不了(後端根因/重掃仍 fail)→ revert 一切改動,LINE 報「需人工」。
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: site-scan
+  cancel-in-progress: false
+
+jobs:
+  scan-and-heal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Playwright(頁面 console 掃描用)
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Scan
+        id: scan1
+        run: |
+          set +e
+          python scripts/site_scan.py --json > scan1.json
+          echo "code=$?" >> "$GITHUB_OUTPUT"
+          python scripts/site_scan.py || true
+
+      - name: LINE 通知(掃描有 fail)
+        if: steps.scan1.outputs.code != '0'
+        env:
+          MARKETDAILY_ALERT_TOKEN: ${{ secrets.MARKETDAILY_ALERT_TOKEN }}
+        run: |
+          python3 - <<'EOF'
+          import json, subprocess
+          fails = [r for r in json.load(open("scan1.json")) if not r["ok"]]
+          lines = ["🩺 全站掃描抓到問題,自動修復啟動中:"]
+          for f in fails[:8]:
+              lines.append(f"  🔴 [{f['check']}] {f['msg'][:90]}")
+          subprocess.run(["python3", "scripts/notify_line.py", "\n".join(lines)])
+          EOF
+
+      - name: Claude 自動修復(只准動 docs/)
+        if: steps.scan1.outputs.code != '0'
+        timeout-minutes: 20
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          claude -p "$(cat scripts/site_fix_playbook.md)
+
+          ## 本次掃描結果(JSON)
+          $(cat scan1.json)" --dangerously-skip-permissions || echo "claude fix step exited non-zero(繼續走 guard)"
+
+      - name: Guard:改動只能在 docs/
+        if: steps.scan1.outputs.code != '0'
+        id: guard
+        run: |
+          CHANGED=$(git diff --name-only)
+          echo "changed files:"; echo "$CHANGED"
+          if [ -z "$CHANGED" ]; then
+            echo "verdict=none" >> "$GITHUB_OUTPUT"
+          elif echo "$CHANGED" | grep -v '^docs/' | grep -q .; then
+            echo "⛔ docs/ 以外的改動,全部 revert"
+            git checkout -- .
+            echo "verdict=blocked" >> "$GITHUB_OUTPUT"
+          else
+            echo "verdict=docs-only" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Rescan(修復後必須全過)
+        if: steps.guard.outputs.verdict == 'docs-only'
+        id: scan2
+        run: |
+          set +e
+          python scripts/site_scan.py --json > scan2.json
+          code=$?
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          if [ "$code" != "0" ]; then
+            echo "重掃仍 fail → revert 改動"
+            git checkout -- .
+          fi
+
+      - name: 部署 + push origin
+        if: steps.scan2.outputs.code == '0'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: a92082d84f08b1d4883facbf1a1dc445
+        run: |
+          npx wrangler@latest pages deploy docs --project-name marketdaily \
+            --commit-dirty=true --commit-message "auto-heal site scan fixes"
+          git config user.name "marketdaily-bot"
+          git config user.email "marketdailyhq@gmail.com"
+          git add docs/
+          git commit -m "fix(site): auto-heal — 掃描抓到的前台問題自動修復 [skip ci]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: LINE 結果報告
+        if: always() && steps.scan1.outputs.code != '0'
+        env:
+          MARKETDAILY_ALERT_TOKEN: ${{ secrets.MARKETDAILY_ALERT_TOKEN }}
+        run: |
+          V="${{ steps.guard.outputs.verdict }}"
+          C2="${{ steps.scan2.outputs.code }}"
+          if [ "$V" = "docs-only" ] && [ "$C2" = "0" ]; then
+            MSG="✅ 自動修復完成:docs/ 範圍修復+重掃全過+已部署+push origin。Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          elif [ "$V" = "none" ]; then
+            MSG="🟡 掃描有 fail 但自動修復未改動(後端根因或無法穩定重現),需人工。詳見 Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          elif [ "$V" = "blocked" ]; then
+            MSG="🔴 自動修復試圖改 docs/ 以外的檔案,已全部 revert,需人工。Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          else
+            MSG="🔴 自動修復後重掃仍 fail,已 revert,需人工。Actions: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          fi
+          python3 scripts/notify_line.py "$MSG"

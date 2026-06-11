@@ -1,0 +1,26 @@
+name = "marketdaily-digest-watchdog"
+main = "src/index.js"
+compatibility_date = "2026-05-01"
+
+# 日報寄出守望 + 全站掃描派發(2026-06-11 建,源起 6/11 日報被 429 拖數小時無人知事故):
+#   "20 23 * * *" = 07:20 TW 早報第一檢(信該 07:00 寄出,20 分仍沒結果就有事)
+#   "0 0 * * *"   = 08:00 TW 早報第二檢(還卡著 → 砍掉重派)
+#   "20 12 * * *" = 20:20 TW 晚報第一檢
+#   "0 13 * * *"  = 21:00 TW 晚報第二檢
+#   "50 23 * * *" = 07:50 TW 派發全站掃描 site_scan.yml(掃描失敗會自動修+LINE)
+[triggers]
+crons = ["20 23 * * *", "0 0 * * *", "20 12 * * *", "0 13 * * *", "50 23 * * *"]
+
+# 與主 worker 共用 KV,只用 watchdog: 前綴(重派防重 guard)
+[[kv_namespaces]]
+binding = "USER_PREFS"
+id = "f5229c5bf86a4f8b88d71995005cd670"
+
+# LINE 推播走 service binding(workers.dev 同帳號互打被 1042 擋,2026-06-11 實測)
+[[services]]
+binding = "ALERT"
+service = "marketdaily-alert-worker"
+
+# secrets(wrangler secret put):
+#   GITHUB_TOKEN — 同 digest-cron 那把 PAT(Actions read/write)
+#   ALERT_TOKEN  — alert-worker /internal/admin-line-push 的 ADMIN_PUSH_TOKEN 同值
