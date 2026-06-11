@@ -10,25 +10,34 @@
 <meta property="og:description" content="Uber (UBER) 技術面 vs 基本面 — MarketDaily 整理。">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://marketdaily.ai/blog/uber-技術面-vs-基本面-202605.html">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
 <link rel="canonical" href="https://marketdaily.ai/blog/uber-技術面-vs-基本面-202605.html">
+<link rel="stylesheet" href="../deepspace.css?v=20260611a">
 <style>
 :root { color-scheme: dark; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background:#0a0a14; color:#e2e8f0; font-family:'Inter','PingFang TC',sans-serif; line-height:1.75; }
-.wrap { max-width:720px; margin:0 auto; padding:48px 24px 80px; }
-.topnav { position:sticky; top:0; background:rgba(10,10,20,0.85); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.08); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; z-index:10; }
-.topnav a { color:#a5b4fc; text-decoration:none; font-weight:700; }
-.crumb { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; letter-spacing:0.5px; text-transform:uppercase; }
-h1 { font-size:36px; font-weight:900; color:#fff; margin:6px 0 24px; letter-spacing:-0.5px; }
-h2 { font-size:24px; font-weight:800; color:#fff; margin:36px 0 14px; }
-h3 { font-size:18px; font-weight:700; color:#c7d2fe; margin:24px 0 10px; }
-p { font-size:16px; color:#cbd5e1; margin:0 0 16px; }
-ul, ol { margin:12px 0 20px 24px; }
-li { font-size:16px; color:#cbd5e1; margin:8px 0; }
+body { background:#0a0a14; color:#e2e8f0; font-family:'Inter','PingFang TC',sans-serif; line-height:1.75; -webkit-font-smoothing:antialiased; }
+.wrap { max-width:720px; margin:0 auto; padding:56px 24px 88px; }
+.topnav { position:sticky; top:0; background:rgba(8,8,18,0.78); backdrop-filter:blur(18px) saturate(1.6); -webkit-backdrop-filter:blur(18px) saturate(1.6); border-bottom:1px solid rgba(255,255,255,0.08); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; z-index:10; }
+.topnav::after { content:''; position:absolute; left:0; right:0; bottom:-1px; height:1px; background:linear-gradient(90deg,transparent,rgba(99,102,241,0.55),rgba(168,85,247,0.4),transparent); }
+.topnav a { color:#a5b4fc; text-decoration:none; font-weight:700; transition:color 0.15s; }
+.topnav a:hover { color:#fff; }
+.crumb { font-size:12px; color:#818cf8; margin-bottom:14px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; }
+h1 { font-size:clamp(30px,5.5vw,38px); font-weight:900; color:#fff; margin:6px 0 18px; letter-spacing:-1px; line-height:1.28; }
+h1 + p { font-size:18px; color:#e2e8f0; line-height:1.8; padding-bottom:22px; margin-bottom:28px; border-bottom:1px solid rgba(255,255,255,0.08); }
+h2 { font-size:24px; font-weight:800; color:#fff; margin:44px 0 16px; letter-spacing:-0.3px; position:relative; padding-left:16px; }
+h2::before { content:''; position:absolute; left:0; top:5px; bottom:5px; width:3px; border-radius:3px; background:linear-gradient(180deg,#6366f1,#a855f7); }
+h3 { font-size:18px; font-weight:700; color:#c7d2fe; margin:26px 0 10px; }
+p { font-size:16.5px; color:#cbd5e1; margin:0 0 17px; line-height:1.85; }
+a { color:#a5b4fc; }
+ul, ol { margin:12px 0 22px 24px; }
+li { font-size:16.5px; color:#cbd5e1; margin:9px 0; line-height:1.8; }
+li::marker { color:#818cf8; }
 strong { color:#fbbf24; font-weight:700; }
-.cta { background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.15)); border:1px solid rgba(99,102,241,0.35); border-radius:14px; padding:24px; margin:40px 0 0; text-align:center; }
-.cta a { display:inline-block; margin-top:14px; padding:14px 28px; background:linear-gradient(135deg,#6366f1,#a855f7); color:#fff; font-weight:800; text-decoration:none; border-radius:10px; }
-.disc { font-size:12px; color:rgba(255,255,255,0.4); margin-top:32px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
+.cta { background:linear-gradient(135deg,rgba(99,102,241,0.14),rgba(168,85,247,0.12)); border:1px solid rgba(99,102,241,0.35); border-radius:16px; padding:28px 24px; margin:48px 0 0; text-align:center; box-shadow:0 18px 48px rgba(99,102,241,0.10), inset 0 1px 0 rgba(255,255,255,0.06); }
+.cta a { display:inline-block; margin-top:14px; padding:14px 30px; background:linear-gradient(135deg,#6366f1,#a855f7); color:#fff; font-weight:800; text-decoration:none; border-radius:12px; box-shadow:0 6px 22px rgba(99,102,241,0.4); transition:transform 0.18s, box-shadow 0.18s; }
+.cta a:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(99,102,241,0.55); }
+.disc { font-size:12px; color:rgba(255,255,255,0.4); margin-top:36px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
 </style>
 </head>
 <body>
@@ -38,7 +47,6 @@ strong { color:#fbbf24; font-weight:700; }
 </div>
 <article class="wrap">
   <div class="crumb">MARKETDAILY · 個股分析 · 美股</div>
-  ```html
 <h1>Uber (UBER) 技術面 vs 基本面：2026 年投資人必讀分析</h1>
 
 <p>Uber 股價在 2025-2026 年波動劇烈，投資人往往在「技術面看漲、基本面看衰」的矛盾訊號中迷失。本文深入解析 UBER 的技術面趨勢與基本面數據，幫你理清投資邏輯。根據最新財報，Uber 年度營收超過 350 億美元，但虧損仍未徹底扭轉——究竟應該看圖表的買進訊號，還是聽基本面的警告聲？</p>
@@ -113,7 +121,6 @@ strong { color:#fbbf24; font-weight:700; }
 <p>在評估 UBER 時，建議定期追蹤季度營收、調整後 EBITDA、自由現金流三項指標，並將其與股價技術面的支撐位相互驗證。</p>
 
 <p><strong>想每天早上 7 點收到這類分析？免費訂閱 MarketDaily 早報 → marketdaily.ai</strong></p>
-```
   <div class="cta">
     <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">想每天早上 7 點收到這類分析?</p>
     <p style="font-size:14px;color:rgba(255,255,255,0.65);margin:6px 0 0;">免費訂閱 MarketDaily — 美股 + 台股 AI 過濾日報,30 秒讀完。</p>
