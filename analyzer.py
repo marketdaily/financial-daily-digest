@@ -466,6 +466,14 @@ def _format_news(articles: list, max_items: int = 8) -> str:
 
 
 def _postprocess_html(html: str, data: dict) -> str:
+    import re as _re
+    # LLM 偶爾違規輸出整頁 HTML 連自帶 <style>(Claude Haiku 尤其常見;2026-06-11 用戶截圖):
+    # premailer 會把它的 .signal-card{display:flex;flex-direction:column} 內聯進每張卡,
+    # Gmail 行動版支援 flex 但丟 flex-direction → 卡片變橫排、chip 拉成整卡高。
+    # 死防線:LLM 夾帶的 style 與文件骨架整塊剝掉,內文只能吃模板 CSS。
+    html = _re.sub(r'<style[^>]*>.*?</style>', '', html, flags=_re.S | _re.I)
+    html = _re.sub(r'<!DOCTYPE[^>]*>|</?(?:html|head|body)[^>]*>|<meta[^>]*>|<title[^>]*>.*?</title>', '', html, flags=_re.S | _re.I)
+
     ind = data.get("indicators", {})
 
     vix = ind.get("vix", 15)
