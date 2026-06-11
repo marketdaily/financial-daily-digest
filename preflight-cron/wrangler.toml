@@ -6,6 +6,6 @@ compatibility_date = "2026-05-01"
 # 派發 digest_preview.yml workflow (--dry-run),audit 跑完任何 HIGH fail
 # 會立刻 LINE 推 admin,admin 有 30 分鐘改 prompt + push 再讓主 cron 跑。
 [triggers]
-crons = ["25 22 * * *"]
+crons = ["30 21 * * *"]
 
 # Secret:GITHUB_TOKEN — 同 digest-cron 用同個 fine-grained PAT。

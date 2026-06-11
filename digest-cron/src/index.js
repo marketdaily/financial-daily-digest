@@ -1,8 +1,8 @@
 // MarketDaily 日報雲端排程觸發器(雙班次)
 //
 // Cloudflare Cron Triggers:
-//   "55 22 * * *" UTC = 台灣 06:55 → market=tw 台股早報(台股 09:00 開盤前)
-//   "0 12 * * *"  UTC = 台灣 20:00 → market=us 美股晚報(美股 21:30-22:30 開盤前)
+//   "20 22 * * *" UTC = 台灣 06:20 → market=tw 台股早報(生成 ~35 分,07:00 整點寄出)
+//   "25 11 * * *" UTC = 台灣 19:25 → market=us 美股晚報(生成 ~35 分,20:00 整點寄出)
 // 派發 daily_digest.yml workflow(帶 inputs.market),由 GitHub Actions 跑 main.py 寄送。
 // 全程在雲端,不依賴本機 Mac。觸發結果見 Cloudflare 的 Worker log(wrangler tail)。
 //
@@ -12,8 +12,8 @@ const REPO = "marketdaily/financial-daily-digest";
 const WORKFLOW = "daily_digest.yml";
 const BRANCH = "main";
 
-const CRON_TW = "55 22 * * *";  // 台灣 06:55 台股早報
-const CRON_US = "0 12 * * *";   // 台灣 20:00 美股晚報
+const CRON_TW = "20 22 * * *";  // 台灣 06:20 觸發生成,main.py 等到 07:00 整點寄出
+const CRON_US = "25 11 * * *";  // 台灣 19:25 觸發生成,main.py 等到 20:00 整點寄出
 
 function twDay(now = new Date()) {
   return new Date(now.getTime() + 8 * 3600 * 1000).getUTCDay();  // 0=日 1=一 ... 6=六
@@ -74,7 +74,7 @@ export default {
     return json({
       ok: true,
       service: "marketdaily-digest-cron",
-      crons: { tw: `${CRON_TW} (UTC) = 06:55 TW 台股早報`, us: `${CRON_US} (UTC) = 20:00 TW 美股晚報` },
+      crons: { tw: `${CRON_TW} (UTC) = 06:20 TW 觸發,07:00 寄出`, us: `${CRON_US} (UTC) = 19:25 TW 觸發,20:00 寄出` },
     });
   },
 };

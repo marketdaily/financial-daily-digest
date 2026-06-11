@@ -637,6 +637,7 @@ def run():
     audit_failures_by_email = {}  # 寄送前的使用者視角 audit 結果,寄完彙總推給 admin
     personalization_failures = []  # AI 個人化失敗的 (email, reason),寄完一起推給 admin
     deterministic_fallbacks = []  # retry 仍 HIGH fail → 用 deterministic 模板(無 LLM)寄出
+    outbox = []  # (email, html, subject):先全部生成,等班次整點一齊寄(修「日報固定遲到20分」)
     for email in subscribers:
         prefs = subscriber_prefs[email]
         us_stocks = prefs.get("us_stocks") or []
@@ -758,16 +759,27 @@ def run():
                 audit_failures_by_email[email] = fails
             if DRY_RUN:
                 print(f"   [DRY-RUN] 略過寄信 → {email}")
-                ok = True
+                success_count += 1
             else:
-                ok = send_transactional_email(email, data["date"], html, BREVO_API_KEY, subject=subject)
+                outbox.append((email, html, subject))
+                print(f"   📦 生成完成,進寄送佇列 → {email}")
         except Exception as e:
-            ok = False
-            print(f"   ❌ 發送異常：{email}（{e}）")
-        if ok:
-            success_count += 1
-        else:
-            print(f"   ❌ 發送失敗：{email}")
+            print(f"   ❌ 生成異常：{email}（{e}）")
+
+    # 全部生成完 → 等到班次整點(tw 07:00 / us 20:00 TW)一齊寄出。
+    # cron 已提早觸發(06:20/19:25)只為留生成時間;寄出時間釘在整點,不再固定遲到 20 分。
+    if outbox:
+        _hold_until_send_time(MARKET)
+        for email, html, subject in outbox:
+            try:
+                ok = send_transactional_email(email, data["date"], html, BREVO_API_KEY, subject=subject)
+            except Exception as e:
+                ok = False
+                print(f"   ❌ 發送異常：{email}（{e}）")
+            if ok:
+                success_count += 1
+            else:
+                print(f"   ❌ 發送失敗：{email}")
 
     print(f"✅ 今日財經日報發送完成（班次 {MARKET}）！成功 {success_count}/{processed} 位（總訂閱 {len(subscribers)}）")
     print(f"   經驗分布 → 🌱新手 {tier_counts['新手']} · 📈一般 {tier_counts['一般']} · 🎯老手 {tier_counts['老手']}")
@@ -834,6 +846,23 @@ def run():
             print(f"📋 audit 報告寫到 {report_path}")
         except Exception as e:
             print(f"   ⚠️ audit 報告寫檔失敗: {e}")
+
+
+def _hold_until_send_time(market):
+    """提早觸發只為先把日報生成好;寄出時間釘在班次整點(tw 07:00 TW=23:00 UTC / us 20:00 TW=12:00 UTC)。
+    生成若拖過整點 → 不等,立刻寄(遲到比不寄好)。both/手動班次不等。"""
+    from datetime import datetime, timezone
+    hm = {"tw": (23, 0), "us": (12, 0)}.get(market)
+    if not hm:
+        return
+    now = datetime.now(timezone.utc)
+    target = now.replace(hour=hm[0], minute=hm[1], second=0, microsecond=0)
+    wait = (target - now).total_seconds()
+    # 只在「距整點 60 分內」才等:>60 分 = 手動補發/異常時段,直接寄,不白等
+    if wait <= 0 or wait > 60 * 60:
+        return
+    print(f"⏸️ 全員生成完畢,等 {int(wait // 60)} 分 {int(wait % 60)} 秒到班次整點一齊寄出")
+    time.sleep(wait)
 
 
 def _push_preflight_alert(date_str, high_fails, total_subscribers):

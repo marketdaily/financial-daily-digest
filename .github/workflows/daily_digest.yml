@@ -2,7 +2,7 @@ name: 財經日報每日發布
 
 on:
   # 由 marketdaily-digest-cron Worker 雙班次派發:
-  #   早 06:55 TW(22:55 UTC) → market=tw 台股盤前;晚 20:00 TW(12:00 UTC) → market=us 美股盤前。
+  #   早 06:20 TW(22:20 UTC)觸發生成、07:00 整點寄出 → market=tw;晚 19:25 TW(11:25 UTC)觸發、20:00 寄出 → market=us。
   # 手動測試也可指定 market(預設 tw,沿用既有早報行為)。
   workflow_dispatch:
     inputs:

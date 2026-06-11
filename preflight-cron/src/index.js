@@ -1,7 +1,7 @@
 // MarketDaily 日報 Pre-Flight 預檢觸發器
 //
-// 主寄送 cron 在 22:55 UTC(TW 06:55)觸發 GitHub Actions 寄信。
-// 這個 preflight 提前 30 分鐘(22:25 UTC = TW 06:25)派發 digest_preview.yml,
+// 主寄送 cron 在 22:20 UTC(TW 06:20)觸發生成,07:00 整點寄出。
+// 這個 preflight 提前(21:30 UTC = TW 05:30)派發 digest_preview.yml,
 // 跑完整 pipeline 但 --dry-run 不寄信。任何 HIGH audit fail 立刻 LINE 推 admin,
 // admin 有 30 分鐘修 prompt + push 再讓主 cron 跑。
 // 用戶絕不會看到品質有問題的日報。
