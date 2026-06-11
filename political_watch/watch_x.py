@@ -1,0 +1,161 @@
+"""政壇市場訊號 — 本機 X 掃描器(零 xAI 成本路線)。
+
+用 Playwright + 用戶自己的 X 登入 session(持久 profile,登入一次即可),
+每 15 分鐘掃追蹤名單的新貼文,送 alert-worker /political-ingest:
+worker 端 Claude 判讀市場關聯與嚴重度 → 走既有 LINE 推播管線(去重/門檻/操作立場)。
+
+用法:
+  python3 watch_x.py --login   # 開視窗讓用戶手動登入 X 一次(session 存 profile)
+  python3 watch_x.py           # 掃一輪+上送(launchd 每 15 分鐘跑這個)
+  python3 watch_x.py --dry     # 掃+分析但不真推 LINE
+"""
+import json
+import os
+import sys
+import time
+import urllib.request
+from datetime import datetime, timezone, timedelta
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+PROFILE = Path.home() / ".political_watch_profile"
+STATE = HERE / "state.json"
+LOG = HERE / "watch.log"
+WORKER = "https://marketdaily-alert-worker.delvin-12345678.workers.dev"
+
+# 與 alert-worker/src/political_source.js、grok_political.py 同名單,改要三邊同步
+HANDLES = [
+    "realDonaldTrump", "WhiteHouse", "POTUS", "USTreasury", "scottbessent",
+    "CommerceGov", "USTradeRep", "federalreserve", "SECGov", "elonmusk",
+]
+
+MAX_AGE_MIN = 75  # 只送這麼新的貼文(cron 15 分鐘,留重疊餘裕;worker 端還有 48h 去重)
+
+
+def log(msg):
+    line = f"[{datetime.now().strftime('%m-%d %H:%M:%S')}] {msg}"
+    print(line)
+    with open(LOG, "a") as f:
+        f.write(line + "\n")
+
+
+def load_state():
+    try:
+        return json.loads(STATE.read_text())
+    except Exception:
+        return {"seen": {}}
+
+
+def save_state(st):
+    # seen 只留 3 天,別讓檔案無限長
+    cutoff = time.time() - 3 * 86400
+    st["seen"] = {k: v for k, v in st["seen"].items() if v > cutoff}
+    STATE.write_text(json.dumps(st))
+
+
+def scrape(login_mode=False):
+    from playwright.sync_api import sync_playwright
+    posts = []
+    with sync_playwright() as p:
+        ctx = p.chromium.launch_persistent_context(
+            str(PROFILE), headless=not login_mode,
+            viewport={"width": 1280, "height": 900},
+        )
+        pg = ctx.pages[0] if ctx.pages else ctx.new_page()
+        if login_mode:
+            pg.goto("https://x.com/login")
+            print("\n>>> 請在開啟的視窗登入你的 X 帳號(含兩步驟驗證)。")
+            print(">>> 登入完成、看到首頁時間軸後,直接關閉視窗即可。\n")
+            try:
+                pg.wait_for_event("close", timeout=600000)
+            except Exception:
+                pass
+            ctx.close()
+            return []
+        for h in HANDLES:
+            try:
+                pg.goto(f"https://x.com/{h}", wait_until="domcontentloaded", timeout=30000)
+                pg.wait_for_timeout(3500)
+                if "/login" in pg.url or "Log in" in pg.title():
+                    log(f"@{h}: 未登入(session 失效)→ 跑 python3 watch_x.py --login 重登")
+                    break
+                items = pg.evaluate("""() => {
+                    const out = [];
+                    for (const a of document.querySelectorAll('article')) {
+                        const t = a.querySelector('time');
+                        const link = t ? t.closest('a') : null;
+                        const txtEl = a.querySelector('[data-testid="tweetText"]');
+                        if (!t || !link || !txtEl) continue;
+                        // 置頂貼文可能是舊文,靠時間過濾;轉推跳過(socialContext 標記)
+                        if (a.querySelector('[data-testid="socialContext"]')) continue;
+                        out.push({ time: t.getAttribute('datetime'),
+                                   url: 'https://x.com' + link.getAttribute('href'),
+                                   text: txtEl.innerText });
+                        if (out.length >= 6) break;
+                    }
+                    return out;
+                }""")
+                fresh = 0
+                for it in items:
+                    try:
+                        ts = datetime.fromisoformat(it["time"].replace("Z", "+00:00"))
+                    except Exception:
+                        continue
+                    age = (datetime.now(timezone.utc) - ts).total_seconds() / 60
+                    if age > MAX_AGE_MIN:
+                        continue
+                    posts.append({"handle": h, "text": it["text"][:600],
+                                  "url": it["url"], "posted_at": it["time"]})
+                    fresh += 1
+                log(f"@{h}: 頁面 {len(items)} 則,{MAX_AGE_MIN}min 內 {fresh} 則")
+                pg.wait_for_timeout(800)
+            except Exception as e:
+                log(f"@{h}: 抓取失敗 {str(e)[:100]}")
+        ctx.close()
+    return posts
+
+
+def send(posts, dry=False):
+    tok = ""
+    for line in (HERE / ".env").read_text().splitlines():
+        if line.startswith("POLITICAL_INGEST_TOKEN="):
+            tok = line.split("=", 1)[1].strip()
+    if not tok:
+        log("缺 POLITICAL_INGEST_TOKEN,中止")
+        return
+    body = json.dumps({"posts": posts, "dry": dry}).encode()
+    req = urllib.request.Request(
+        f"{WORKER}/political-ingest", data=body, method="POST",
+        headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json",
+                 "User-Agent": "political-watch/1.0"},
+    )
+    with urllib.request.urlopen(req, timeout=120) as r:
+        out = json.loads(r.read().decode())
+    rep = out.get("report") or {}
+    log(f"上送 {len(posts)} 則 → 分析 {out.get('analyzed')} 則,訊號 {len(out.get('signals') or [])},"
+        f"達標 {rep.get('qualified', 0)},推播 {rep.get('pushed', 0)}{'(dry)' if dry else ''}")
+    if out.get("signals"):
+        for s in out["signals"]:
+            log(f"  · sev{s['severity']} [{s['kind']}] {s['name_zh']}:{s['headline_zh'][:50]}")
+
+
+def main():
+    if "--login" in sys.argv:
+        scrape(login_mode=True)
+        print("登入流程結束。之後直接跑 python3 watch_x.py 即可。")
+        return 0
+    st = load_state()
+    posts = scrape()
+    new = [p for p in posts if p["url"] not in st["seen"]]
+    for p in new:
+        st["seen"][p["url"]] = time.time()
+    save_state(st)
+    if not new:
+        log("本輪無新貼文")
+        return 0
+    send(new, dry="--dry" in sys.argv)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
