@@ -152,9 +152,14 @@ def _market_status(today_iso: str) -> dict:
     }
 
 
+_GEMINI_QUOTA_DEAD: set = set()
+
+
 def _call_gemini(prompt: str, model: str) -> str:
     if not GEMINI_API_KEY:
         raise RuntimeError("未設定 GEMINI_API_KEY")
+    if model in _GEMINI_QUOTA_DEAD:
+        raise RuntimeError(f"{model} 本輪 429 配額耗盡,熔斷跳過")
     payload = {
         "systemInstruction": {"parts": [{"text": _SYSTEM_PROMPT}]},
         "contents": [{"parts": [{"text": prompt}]}],
@@ -170,8 +175,16 @@ def _call_gemini(prompt: str, model: str) -> str:
     resp = None
     for attempt in range(4):
         resp = requests.post(url, json=payload, timeout=120)
-        if resp.status_code in (429, 500, 502, 503) and attempt < 3:
-            time.sleep(12 if resp.status_code == 429 else 6)
+        if resp.status_code == 429:
+            # 退避一次仍 429 = 日配額耗盡而非瞬間 RPM;熔斷該模型,
+            # 否則 6/11 事故重演:每次呼叫白燒 ~50s×2 模型,整班拖到數小時
+            if attempt >= 1:
+                _GEMINI_QUOTA_DEAD.add(model)
+                raise RuntimeError(f"{model} 連續 429,視為配額耗盡並熔斷")
+            time.sleep(12)
+            continue
+        if resp.status_code in (500, 502, 503) and attempt < 3:
+            time.sleep(6)
             continue
         resp.raise_for_status()
         break
