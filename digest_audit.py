@@ -261,11 +261,12 @@ def audit_digest(
                              + (",但 TLDR/結論同時喊「先觀望/等數據」— 卡片與結論自相矛盾" if wait_tone else
                                 " — 機械式同質模板,缺乏逐支差異")})
 
-    # 18. 信心過度自信:>65% 的信心顯示(postprocess 已夾限,出現代表防線破口)
-    over_conf = re.findall(r"信心\s*(6[6-9]|[7-9]\d|100)\s*%", text)
+    # 18. 信心過度自信:>75% 的信心顯示(postprocess 用歷史校準表覆寫,上限 75;
+    # 出現更高 = 校準防線破口)
+    over_conf = re.findall(r"信心\s*(7[6-9]|[8-9]\d|100)\s*%", text)
     if over_conf:
         fails.append({"check": "confidence_overclaim", "severity": "med",
-                      "msg": f"出現未校準的高信心數字:{over_conf[:3]}%(歷史方向勝率約五成,>65% = 騙人)"})
+                      "msg": f"出現超出校準上限的信心數字:{over_conf[:3]}%(校準覆寫上限 75,>75 = 防線破口)"})
 
     # 19. 臆測因果:「可能與 XXX 有關」這種無來源歸因
     spec = re.findall(r"可能與[^。<]{2,30}有關", text)

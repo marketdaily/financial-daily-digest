@@ -543,6 +543,26 @@ def _postprocess_html(html: str, data: dict) -> str:
         return f'{full}{chip}'
     html = _card_verdict_re.sub(_add_chip, html)
 
+    # 接刀閘門(deterministic):空頭結構(價<MA20<MA50)的個股若卡片還是「建議買入」,
+    # 強制降級為觀望條件單 — plan_sim 實證 77 掃停損 vs 2 達標的主要來源就是逆勢接刀,
+    # prompt 規則擋第一層,這裡是不靠 LLM 自覺的死防線。
+    _techs_gate = data.get("technicals", {}) or {}
+
+    def _demote_knife(m):
+        block = m.group(0)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm or _quant_prior(_techs_gate.get(hm.group(1))) != "bear":
+            return block
+        block = block.replace('class="signal-card buy"', 'class="signal-card wait"', 1)
+        block = block.replace('<span class="signal-verdict-chip buy">🟢 建議買入</span>',
+                              '<span class="signal-verdict-chip wait">⚪ 觀望·空頭結構(站回 MA20 再議)</span>', 1)
+        return block
+
+    html = _re.sub(
+        r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote_knife, html, flags=_re.DOTALL,
+    )
+
     # 卡頭已有彩色 verdict-chip(建議買進/賣出),底部 signal-badge 是同一句重複 → 移除,
     # 讓 signal-meta 只剩「信心 X% · 時間窗」,減少邊邊 chip 把卡片拉長。
     html = _re.sub(r'<span class="signal-badge[^"]*">[^<]*</span>\s*', '', html)
@@ -557,6 +577,24 @@ def _postprocess_html(html: str, data: dict) -> str:
         return f"信心 {max(45, min(65, v))}%"
 
     html = _re.sub(r"信心\s*(\d{1,3})\s*%", _clamp_conf, html)
+
+    # 信心改由歷史校準表反推:每張卡的信心用 track-record 實測命中率(依 verdict 桶+regime)覆寫,
+    # LLM 自填數字只在校準表讀不到時當後備(上面已夾限)。每日戰績更新,數字自動跟著校準。
+    _regime_label = _market_regime(data).get("label", "neutral")
+
+    def _recalibrate_card(m):
+        block, cls = m.group(0), m.group(1)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        cv = _calibrated_confidence(cls, _regime_label, hm.group(1) if hm else "")
+        if cv is not None:
+            block = _re.sub(r'(<span class="signal-confidence">)信心\s*\d{1,3}\s*%',
+                            lambda sm: f"{sm.group(1)}信心 {cv}%", block)
+        return block
+
+    html = _re.sub(
+        r'<div class="signal-card (buy|hold|sell|wait)">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _recalibrate_card, html, flags=_re.DOTALL,
+    )
 
     # 「建議買入」chip 分流:建議買區整段低於現價(掛單等回檔)時,chip 改「回檔再買」,
     # 避免新手只看綠 chip 就直接市價追高 — chip 與買價區間語意必須一致。
@@ -905,6 +943,83 @@ def _market_regime(data: dict) -> dict:
     return {"label": label, "vix": vix, "spx_chg": spx, "ndx_chg": ndx, "twii_chg": twii}
 
 
+def _quant_prior(t: dict) -> str:
+    """個股趨勢結構 prior:bull / bear / neutral。
+    篩選器回測(順勢 64% vs 逆勢負期望)+ plan_sim 實證(逆勢接刀 77 掃停損 vs 2 達標)
+    → 方向判斷不交給 LLM 自由發揮,先用價格 vs MA20/MA50 的結構當硬 prior。
+    只在完整空頭結構(價<MA20<MA50)才判 bear,資料不足一律 neutral(閘門寧鬆勿誤殺)。"""
+    if not t:
+        return "neutral"
+    try:
+        p = float(t.get("price") or 0)
+        ma20 = float(t.get("ma20") or 0)
+        ma50 = float(t.get("ma50") or 0)
+    except (TypeError, ValueError):
+        return "neutral"
+    if not (p and ma20 and ma50):
+        return "neutral"
+    if p > ma20 > ma50:
+        return "bull"
+    if p < ma20 < ma50:
+        return "bear"
+    return "neutral"
+
+
+_TRACK_STATS_CACHE = {"loaded": False, "stats": None}
+
+
+def _track_stats():
+    """讀 repo 內 docs/data/track-record.json 的 stats(daily workflow checkout 自帶,每日更新)。
+    讀不到回 None → 信心沿用夾限後備,不擋管線。"""
+    if not _TRACK_STATS_CACHE["loaded"]:
+        _TRACK_STATS_CACHE["loaded"] = True
+        try:
+            import os
+            import json
+            p = os.path.join(os.path.dirname(os.path.abspath(__file__)), "docs", "data", "track-record.json")
+            with open(p, encoding="utf-8") as f:
+                _TRACK_STATS_CACHE["stats"] = (json.load(f) or {}).get("stats") or None
+        except Exception:
+            _TRACK_STATS_CACHE["stats"] = None
+    return _TRACK_STATS_CACHE["stats"]
+
+
+def _calibrated_confidence(card_cls: str, regime_label: str, sym: str = ""):
+    """信心 = 歷史校準表反推,不採 LLM 自填(實測 LLM 自填信心 Brier 0.513、>70% 只對 17% = 反指標)。
+    桶:buy→A 看多命中率(依 regime 分桶)、sell→C 避坑命中率、hold/wait→50。
+    empirical 向 50% 收縮(K=20 偽樣本)抗小樣本噪音;±3 穩定抖動防整批同數字。無資料回 None。"""
+    s = _track_stats()
+    if not s:
+        return None
+    K = 20.0
+
+    def _shrunk(w, n):
+        try:
+            w, n = float(w), float(n)
+        except (TypeError, ValueError):
+            return None
+        if n <= 0:
+            return None
+        return (w + K * 0.5) / (n + K) * 100.0
+
+    v = None
+    if card_cls == "buy":
+        br = s.get("by_regime") or {}
+        bucket = br.get("up") if regime_label == "risk_on" else (br.get("down") if regime_label == "risk_off" else None)
+        if bucket:
+            v = _shrunk(bucket.get("a_wins"), bucket.get("a_count"))
+        if v is None:
+            v = _shrunk(s.get("a_wins"), s.get("a_count"))
+    elif card_cls == "sell":
+        v = _shrunk(s.get("c_wins"), s.get("c_count"))
+    else:
+        v = 50.0
+    if v is None:
+        return None
+    jitter = (sum(ord(ch) for ch in str(sym)) % 7) - 3
+    return int(max(35, min(75, round(v + jitter))))
+
+
 def _depth_directive(depth: str) -> str:
     """日報深度客製(Premium 專屬)注入 prompt 的指令。simple=精簡 / deep=深入 / standard=不加。"""
     if depth == "simple":
@@ -978,7 +1093,9 @@ def _signal_card_format_rules(mkt_status: dict, regime: dict = None, macro_event
 - 進場 / 目標 / 停損價位必須落在下方該股真實技術價位的合理範圍,美股美元、台股台幣,**嚴禁編造偏離現價的數字**
 - ‼️ **信心校準**:我們的公開戰績統計顯示短線方向判斷準確率約五成多,信心欄位一律寫 45-65%(整批不可同一個數字),**禁止出現 >65% 的信心** — 戰績實測「信心>70%」的卡實際只對 17%,高信心是反指標
 - ‼️ **進場必須有站穩確認(任何市場狀態都適用)**:買進條件一律寫「回測 $X 不破、收盤收復 $Y 再分批接」這種**確認式條件**,嚴禁「跌到 $X 就接」「回到買區即買進」— 操作模擬實測:照「跌入買區就接」執行,77 筆掃停損 vs 2 筆達標(期望值 -4.1%/筆),跌勢中價格進入買區正是刀還在掉的時候
-- ‼️ **同質性禁令**:若整批標的多數同向漲跌,不可每支複製同一套「跌到 20 日低 → 低接買進反彈 MA20」模板;逐支看趨勢位置(站上/跌破 MA20)、動能與消息差異,verdict 與 reason 必須有真實差異"""
+- ‼️ **同質性禁令**:若整批標的多數同向漲跌,不可每支複製同一套「跌到 20 日低 → 低接買進反彈 MA20」模板;逐支看趨勢位置(站上/跌破 MA20)、動能與消息差異,verdict 與 reason 必須有真實差異
+- ‼️ **趨勢結構鐵則(量化 prior,優先於你自己的方向判斷)**:技術行標「結構:空頭」的個股**禁止 buy verdict**——只能 wait/hold + 站回 MA20 之上的條件單(系統會強制改寫違規卡,別浪費字);標「結構:多頭」的不寫「跌到 X 低接」,改順勢條件(回測 MA20 不破續抱、突破前高加碼)。方向交給結構,你負責講清楚理由、風險與條件價位
+- 信心欄位照 45-65 填即可,系統會用歷史戰績校準表覆寫成實測命中率,你的數字只是版面占位"""
 
 
 def _adv_tech_str(t: dict) -> str:
@@ -1020,6 +1137,10 @@ def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -
         if t:
             base += (f" | MA20 {_fmt_num(t.get('ma20'))} | 20日高 {_fmt_num(t.get('hi20'))}/低 {_fmt_num(t.get('lo20'))}"
                      f" | 60日高 {_fmt_num(t.get('hi60'))}/低 {_fmt_num(t.get('lo60'))}(此為遠端區間參考,勿當停損/目標) | ATR14 {_fmt_num(t.get('atr14'))}")
+            _prior_txt = {"bull": "多頭結構(價>MA20>MA50,順勢操作,不寫逢低接)",
+                          "bear": "空頭結構(價<MA20<MA50,禁建議買入,最多站回MA20的觀望條件)",
+                          "neutral": "盤整(中性,逐支看消息與位置)"}[_quant_prior(t)]
+            base += f" | 結構:{_prior_txt}"
             sup, tgt, stp = _near_term_levels(t.get("price"), t)
             if sup is not None:
                 base += f" ‖ 近端操作錨點(直接用這組設買賣價)→低接 {_fmt_num(sup)} / 反彈目標 {_fmt_num(tgt)} / 停損 {_fmt_num(stp)}"
@@ -1077,9 +1198,15 @@ def _deterministic_signal_card(sym: str, data: dict, mkt_status: dict) -> str:
     buy_hi = round((buy_lo + price) / 2, 2)
     if buy_hi <= buy_lo:
         buy_hi = round(price * 0.99, 2)
-    reason = (f'{name}({sym}) 收 ${_fmt_num(price)}{unit}({chg:+.2f}%)。'
-              f'{when}後若回到 ${_fmt_num(buy_lo)}{unit} 附近並站穩可分批接,'
-              f'跌破 ${_fmt_num(stop)}{unit} 先停損;本週留意 ${_fmt_num(target)}{unit} 壓力。')
+    if _quant_prior(tech) == "bear":
+        ma20 = (tech or {}).get("ma20")
+        reclaim = _fmt_num(ma20) if ma20 else _fmt_num(buy_hi)
+        reason = (f'{name}({sym}) 收 ${_fmt_num(price)}{unit}({chg:+.2f}%),目前空頭結構(價<MA20<MA50),先不接。'
+                  f'{when}後站回 ${reclaim}{unit} 之上並收穩再評估分批;持有者跌破 ${_fmt_num(stop)}{unit} 先減碼控風險。')
+    else:
+        reason = (f'{name}({sym}) 收 ${_fmt_num(price)}{unit}({chg:+.2f}%)。'
+                  f'{when}後若回測 ${_fmt_num(buy_lo)}{unit} 不破、收盤收復 ${_fmt_num(buy_hi)}{unit} 再分批接,'
+                  f'跌破 ${_fmt_num(stop)}{unit} 先停損;本週留意 ${_fmt_num(target)}{unit} 壓力。')
     return (
         f'<div class="signal-card hold"><div class="signal-card-top">'
         f'<span class="signal-ticker">{sym}</span>'
@@ -1342,9 +1469,12 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
         adv = f" | {_adv_tech_str(t)}" if depth == "deep" and _adv_tech_str(t) else ""
         sup, tgt, stp = _near_term_levels(t.get("price"), t)
         anchor = f" ‖ 近端錨點→低接 {_fmt_num(sup)} / 反彈目標 {_fmt_num(tgt)} / 停損 {_fmt_num(stp)}" if sup is not None else ""
+        struct = {"bull": " | 結構:多頭(順勢操作,不寫逢低接)",
+                  "bear": " | 結構:空頭(禁建議買入,最多站回MA20的觀望條件)",
+                  "neutral": " | 結構:盤整(中性)"}[_quant_prior(t)]
         tech_rows.append(
             f"  {nm}（{sym}）: 現價 {t['price']} | MA20 {t['ma20']}{ma50} | "
-            f"20日高 {t['hi20']} / 20日低 {t['lo20']} | 60日高 {t['hi60']} / 60日低 {t['lo60']}(遠端區間,勿當停損/目標) | ATR14 {t['atr14']}{adv}{anchor}"
+            f"20日高 {t['hi20']} / 20日低 {t['lo20']} | 60日高 {t['hi60']} / 60日低 {t['lo60']}(遠端區間,勿當停損/目標) | ATR14 {t['atr14']}{adv}{anchor}{struct}"
         )
     tech_block = ""
     if tech_rows:
@@ -1609,6 +1739,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 {depth_directive}
 【個人化原則】
 {tldr_focus_note}
+- TLDR 必含一條「⚠️ 避坑」:點名今天最該避開的標的或最危險的行為(追高/接刀/重大數據前重倉),一句話講理由——避坑是我們實測最強的能力(避坑勝率 86.7% vs 看多 30%),每天都要交付;持股全無風險時改寫大盤層級的最大風險提醒
 - 所有分析都圍繞用戶的持倉，大盤新聞只在跟他持倉有關時才詳細寫
 - 給建議要明確：說「建議買進 $XXX 以下」「續抱直到 $XXX」「跌破 $XXX 停損」，**禁止只寫「先觀望」「先別動」「保守為上」這類沒附條件的虛詞**。要說「觀望」就必須附「等什麼價位/事件」（例：「先觀望，等跌到 $580 再分批接」「先觀望，等 6/1 財報出來再決定」）。
 - 口語化，像在 Line 傳訊息，不是寫報告
