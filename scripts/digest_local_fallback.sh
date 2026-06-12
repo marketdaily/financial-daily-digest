@@ -1,5 +1,8 @@
-#!/bin/bash
-# MarketDaily 日報本機備援 runner
+#!/bin/zsh
+# MarketDaily 日報本機備援 runner(bash/zsh 通用語法)
+# ⚠️ launchd 背景程序被 TCC 擋在 ~/Downloads 外(bash 126/zsh 127 Operation not permitted),
+# 所以 launchd 跑的是 ~/.marketdaily-fallback/repo(Downloads 外的獨立 clone)裡的本檔;
+# 腳本用自身位置定位 repo root,每輪先 git pull 同步最新管線碼。
 #
 # 背景:2026-06-12 GitHub 帳號被 flag(shadow-ban),Actions 全面停用,
 # 雲端管線(digest-cron worker → daily_digest.yml)斷線,日報寄不出去。
@@ -11,7 +14,8 @@
 
 set -u
 export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:$PATH"
-cd "/Users/delvin/Downloads/Delvin agent"
+if [ -n "${ZSH_VERSION:-}" ]; then SELF="${(%):-%x}"; else SELF="${BASH_SOURCE[0]}"; fi
+cd "$(dirname "$SELF")/.." || exit 1
 
 # launchd 每 10 分鐘喚醒一次(時區無關);只在台灣時間班次窗口內動工:
 #   早報窗 06:20-06:49(對齊 digest-cron 06:20)、晚報窗 19:25-19:54(對齊 19:25)
@@ -113,8 +117,9 @@ fi
 rm -f docs/output/*_personal_*.html
 git config user.name "marketdaily-bot"
 git config user.email "marketdailyhq@gmail.com"
-shopt -s nullglob
+if [ -n "${ZSH_VERSION:-}" ]; then setopt null_glob; else shopt -s nullglob 2>/dev/null; fi
 for f in docs/output/digest_*.html; do
+  [ -e "$f" ] || continue
   case "$f" in *_personal_*) continue;; esac
   git add "$f"
 done
