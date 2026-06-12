@@ -1,93 +1,165 @@
 {
   "stats": {
-    "generated_at": "2026-06-10T12:00:15",
+    "generated_at": "2026-06-13T09:03:51",
     "horizon": "5d",
-    "days_covered": 10,
-    "total_records": 489,
-    "judged_records": 118,
+    "days_covered": 11,
+    "total_records": 562,
+    "judged_records": 295,
     "one_day": {
-      "a_count": 200,
-      "a_wins": 86,
-      "a_rate": 43.0,
-      "c_count": 184,
-      "c_wins": 120,
-      "c_rate": 65.2
+      "a_count": 252,
+      "a_wins": 105,
+      "a_rate": 41.7,
+      "c_count": 310,
+      "c_wins": 188,
+      "c_rate": 60.6
     },
-    "a_count": 73,
-    "a_wins": 22,
-    "a_rate": 30.1,
+    "a_count": 166,
+    "a_wins": 37,
+    "a_rate": 22.3,
     "a_ci95": [
-      20.8,
-      41.4
+      16.6,
+      29.2
     ],
-    "c_count": 45,
-    "c_wins": 39,
-    "c_rate": 86.7,
+    "c_count": 129,
+    "c_wins": 104,
+    "c_rate": 80.6,
     "c_ci95": [
-      73.8,
-      93.7
+      73.0,
+      86.5
     ],
     "calibration": {
-      "n": 60,
-      "brier": 0.513,
+      "n": 153,
+      "brier": 0.5161,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
-          "n": 1,
+          "n": 4,
           "hit_rate": 0.0
         },
         "61-70": {
-          "n": 18,
-          "hit_rate": 27.8
+          "n": 41,
+          "hit_rate": 26.8
         },
         ">70": {
-          "n": 41,
-          "hit_rate": 17.1
+          "n": 108,
+          "hit_rate": 14.8
         }
       }
     },
     "by_regime": {
       "up": {
-        "a_count": 61,
-        "a_wins": 10,
-        "a_rate": 16.4,
+        "a_count": 123,
+        "a_wins": 15,
+        "a_rate": 12.2,
         "ci95": [
-          9.2,
-          27.6
+          7.5,
+          19.1
         ]
       },
       "down": {
-        "a_count": 12,
-        "a_wins": 12,
-        "a_rate": 100.0,
+        "a_count": 43,
+        "a_wins": 22,
+        "a_rate": 51.2,
         "ci95": [
-          75.7,
-          100.0
+          36.8,
+          65.4
         ]
       }
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 174,
-      "no_fill": 38,
-      "pending": 57,
-      "hit_target": 2,
-      "hit_stop": 77,
+      "simulated": 224,
+      "no_fill": 53,
+      "pending": 66,
+      "hit_target": 7,
+      "hit_stop": 98,
       "expired": 0,
-      "avg_ret_pct": -4.12,
+      "avg_ret_pct": -3.21,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
-      "a_count": 22,
-      "a_wins": 15,
-      "a_rate": 68.2,
-      "c_count": 4,
-      "c_wins": 4,
-      "c_rate": 100.0
+      "a_count": 30,
+      "a_wins": 16,
+      "a_rate": 53.3,
+      "c_count": 8,
+      "c_wins": 7,
+      "c_rate": 87.5
     },
-    "personal_samples_added": 439
+    "personal_samples_added": 508
   },
   "records": [
+    {
+      "date": "2026-06-11",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "⚪ NEUTRAL",
+      "reason": "今晚美股開盤後「切勿急著搶反彈」。目前股價已跌破 MA20 ($419.89) 且大盤偏空，今晚若開盤直接下殺，必須等待價格回測近端支撐 $380.15 且「連續兩小時不破」或「日 K 收盤確認收復 $385」才可啟動第一筆條件式試單，否則持續觀望。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 50,
+      "entry_lo": 380.15,
+      "entry_hi": 380.15,
+      "target": 415.55,
+      "stop": 339.14,
+      "outcome": null,
+      "outcome_1d": "loss"
+    },
+    {
+      "date": "2026-06-11",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "sell",
+      "verdict_text": "📉 BEARISH",
+      "reason": "今晚美股開盤後「應執行減碼或避險操作」。股價已連續走弱並跌破 MA20 ($217.2)，且逼近 20 日低點。若今晚開盤反彈無力、無法收復 $205，建議將現有部位適度減碼，保留現金，切勿在此處盲目攤平。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 55,
+      "entry_lo": 199.34,
+      "entry_hi": 199.34,
+      "target": 217.94,
+      "stop": 178.52,
+      "outcome": null,
+      "outcome_1d": "loss"
+    },
+    {
+      "date": "2026-06-11",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "⚪ NEUTRAL",
+      "reason": "今晚美股開盤後「保持觀望，不急於進場」。雖然跌幅較科技權值股輕微，但現價已低於 MA20 ($421.43)。今晚若開盤跌破 $397.18，恐引發技術性失望賣壓，必須等日 K 收盤確認守住 $397.18 且大盤止穩，再考慮分批布局。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 397.18,
+      "entry_hi": 397.18,
+      "target": 423.08,
+      "stop": 365.21,
+      "outcome": null,
+      "outcome_1d": "win"
+    },
+    {
+      "date": "2026-06-11",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "現價勿追。在市場大跌下逆勢收紅，表現相對抗跌。今晚美股開盤後，若盤中拉回測試近端支撐 $287.38 且「確認一小時 K 線收腳不破」，可利用限價單分批低接，博取重回 MA20 ($304.4) 的反彈機會。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 52,
+      "entry_lo": 287.38,
+      "entry_hi": 287.38,
+      "target": 306.28,
+      "stop": 273.2,
+      "outcome": null,
+      "outcome_1d": "loss"
+    },
     {
       "date": "2026-06-10",
       "name": "特斯拉 Tesla",
@@ -104,7 +176,7 @@
       "target": 430.12,
       "stop": 354.88,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-06-10",
@@ -122,7 +194,7 @@
       "target": 225.33,
       "stop": 186.76,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-06-10",
@@ -140,7 +212,7 @@
       "target": 429.55,
       "stop": 370.74,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-06-10",
@@ -158,7 +230,7 @@
       "target": 304.87,
       "stop": 272.65,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-06-09",
@@ -176,7 +248,7 @@
       "target": 439.83,
       "stop": 370.35,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-06-09",
@@ -194,7 +266,7 @@
       "target": 225.0,
       "stop": 188.19,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-06-09",
@@ -212,7 +284,7 @@
       "target": 438.26,
       "stop": 378.59,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-06-09",
@@ -230,7 +302,7 @@
       "target": 314.5,
       "stop": 285.34,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-06-08",
@@ -319,7 +391,7 @@
       "entry_hi": 337.24,
       "target": 453.4,
       "stop": 393.63,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss"
     },
     {
@@ -337,7 +409,7 @@
       "entry_hi": 225.0,
       "target": 236.54,
       "stop": 206.5,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win"
     },
     {
@@ -355,7 +427,7 @@
       "entry_hi": 425.0,
       "target": 466.32,
       "stop": 400.88,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win"
     },
     {
@@ -373,7 +445,7 @@
       "entry_hi": 315.0,
       "target": 316.94,
       "stop": 303.26,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss"
     },
     {
@@ -391,7 +463,7 @@
       "entry_hi": 400.0,
       "target": 453.4,
       "stop": 410.0,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win"
     },
     {
@@ -409,7 +481,7 @@
       "entry_hi": null,
       "target": 236.54,
       "stop": 210.0,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss"
     },
     {
@@ -427,7 +499,7 @@
       "entry_hi": null,
       "target": 466.32,
       "stop": 415.0,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss"
     },
     {
@@ -445,7 +517,7 @@
       "entry_hi": 310.0,
       "target": 316.94,
       "stop": 295.0,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss"
     },
     {
@@ -463,7 +535,7 @@
       "entry_hi": 420.0,
       "target": 453.0,
       "stop": 384.0,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss"
     },
     {
@@ -481,7 +553,7 @@
       "entry_hi": 222.0,
       "target": 236.0,
       "stop": 209.0,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win"
     },
     {
@@ -499,7 +571,7 @@
       "entry_hi": 405.0,
       "target": 441.0,
       "stop": 388.0,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win"
     },
     {
@@ -517,7 +589,7 @@
       "entry_hi": 315.0,
       "target": 330.0,
       "stop": 300.0,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win"
     },
     {
