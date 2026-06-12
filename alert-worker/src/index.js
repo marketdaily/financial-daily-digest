@@ -781,7 +781,8 @@ export default {
     // 2026-06-11 修 admin LINE 403:GH 端舊值對不上;旋轉共用把會炸其他 caller,故加專用把。
     if (url.pathname === "/internal/admin-line-push" && request.method === "POST") {
       const got = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
-      const candidates = [env.ADMIN_PUSH_TOKEN, env.MARKETING_TARGETS_TOKEN, env.INTERNAL_TOKEN].filter(Boolean);
+      // ADMIN_PUSH_TOKEN_2:2026-06-12 GitHub Actions 被停用時為本機備援 runner 加的第二把
+      const candidates = [env.ADMIN_PUSH_TOKEN, env.ADMIN_PUSH_TOKEN_2, env.MARKETING_TARGETS_TOKEN, env.INTERNAL_TOKEN].filter(Boolean);
       let okAuth = false;
       for (const t of candidates) {
         if (got.length !== t.length) continue;

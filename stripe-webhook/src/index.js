@@ -1210,6 +1210,19 @@ export default {
       });
     }
 
+    // 內部 token timing-safe 比對:接受 INTERNAL_TOKEN 或 INTERNAL_TOKEN_2。
+    // _2 是 2026-06-12 GitHub Actions 被停用時為本機備援 runner 加的第二把,舊把全 caller 不動。
+    const internalBearerOk = (auth) => {
+      for (const t of [env.INTERNAL_TOKEN, env.INTERNAL_TOKEN_2].filter(Boolean)) {
+        const expected = `Bearer ${t}`;
+        if ((auth || "").length !== expected.length) continue;
+        let diff = 0;
+        for (let i = 0; i < auth.length; i++) diff |= auth.charCodeAt(i) ^ expected.charCodeAt(i);
+        if (diff === 0) return true;
+      }
+      return false;
+    };
+
     // Get user preferences
     if (url.pathname === "/get-preferences" && request.method === "POST") {
       let body;
@@ -1220,14 +1233,7 @@ export default {
       if (!email) return json({ error: "invalid_email" }, 400);
       // Server-to-server bypass:daily digest job 帶 Bearer INTERNAL_TOKEN 可跳過 password gate。
       // 不能拿掉 password gate(否則 marketdaily.ai 任何人都能 enum 持股),但 digest job 也不能拿用戶密碼。
-      let internalOk = false;
-      const auth = request.headers.get("authorization") || "";
-      const expected = `Bearer ${env.INTERNAL_TOKEN || ""}`;
-      if (env.INTERNAL_TOKEN && auth.length === expected.length) {
-        let diff = 0;
-        for (let i = 0; i < auth.length; i++) diff |= auth.charCodeAt(i) ^ expected.charCodeAt(i);
-        if (diff === 0) internalOk = true;
-      }
+      const internalOk = internalBearerOk(request.headers.get("authorization") || "");
       // 身份驗證:若用戶已設密碼,read 必須帶正確密碼,否則任何人能查別人持股。
       if (!internalOk) {
         const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
@@ -1281,13 +1287,7 @@ export default {
     // 內部用:推 LINE 訊息給 admin(供 digest pipeline、audit 失分通知用)
     // 認證:Bearer header 比對 env.INTERNAL_TOKEN
     if (url.pathname === "/internal/admin-line-push" && request.method === "POST") {
-      const auth = request.headers.get("authorization") || "";
-      const expected = `Bearer ${env.INTERNAL_TOKEN || ""}`;
-      if (!env.INTERNAL_TOKEN) return json({ error: "unauthorized" }, 401);
-      if (auth.length !== expected.length) return json({ error: "unauthorized" }, 401);
-      let diff = 0;
-      for (let i = 0; i < auth.length; i++) diff |= auth.charCodeAt(i) ^ expected.charCodeAt(i);
-      if (diff !== 0) return json({ error: "unauthorized" }, 401);
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
       let body;
       try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
       const message = String(body.message || "").slice(0, 4900);
@@ -1299,14 +1299,7 @@ export default {
     // 內部用:列舉某日所有 digest tokens(供 track-record builder)
     // 認證:Bearer header 比對 env.INTERNAL_TOKEN
     if (url.pathname === "/internal/list-digests" && request.method === "GET") {
-      const auth = request.headers.get("authorization") || "";
-      const expected = `Bearer ${env.INTERNAL_TOKEN || ""}`;
-      // Timing-safe compare(避免 timing attack 推斷 INTERNAL_TOKEN)
-      if (!env.INTERNAL_TOKEN) return json({ error: "unauthorized" }, 401);
-      if (auth.length !== expected.length) return json({ error: "unauthorized" }, 401);
-      let diff = 0;
-      for (let i = 0; i < auth.length; i++) diff |= auth.charCodeAt(i) ^ expected.charCodeAt(i);
-      if (diff !== 0) return json({ error: "unauthorized" }, 401);
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
       const date = (url.searchParams.get("date") || "").trim();
       if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return json({ error: "invalid_date" }, 400);
       const tokens = [];

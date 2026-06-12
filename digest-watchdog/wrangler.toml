@@ -24,3 +24,7 @@ service = "marketdaily-alert-worker"
 # secrets(wrangler secret put):
 #   GITHUB_TOKEN — 同 digest-cron 那把 PAT(Actions read/write)
 #   ALERT_TOKEN  — alert-worker /internal/admin-line-push 的 ADMIN_PUSH_TOKEN 同值
+
+# 2026-06-12:查「cron 註冊了但 6/12 整天沒任何執行痕跡」開的持久 log
+[observability]
+enabled = true
