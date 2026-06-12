@@ -114,10 +114,10 @@ if [ "$rc" != "0" ]; then
 fi
 
 # 公版日報 archive commit(複製 daily_digest.yml 的 Persist 步驟;個人化版嚴格排除)
+if [ -n "${ZSH_VERSION:-}" ]; then setopt null_glob; else shopt -s nullglob 2>/dev/null; fi
 rm -f docs/output/*_personal_*.html
 git config user.name "marketdaily-bot"
 git config user.email "marketdailyhq@gmail.com"
-if [ -n "${ZSH_VERSION:-}" ]; then setopt null_glob; else shopt -s nullglob 2>/dev/null; fi
 for f in docs/output/digest_*.html; do
   [ -e "$f" ] || continue
   case "$f" in *_personal_*) continue;; esac
