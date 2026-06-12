@@ -80,7 +80,7 @@ for wait in 0 60 120; do
 done
 
 echo ">>> no cloud run, running digest locally (market=$MARKET)"
-git pull --rebase origin main || echo "git pull failed, run with local tree"
+git pull --rebase --autostash origin main || echo "git pull failed, run with local tree"
 MARKET="$MARKET" /usr/bin/python3 main.py
 rc=$?
 echo "main.py exit=$rc"
@@ -124,7 +124,7 @@ if git diff --cached --quiet; then
   echo "no new public digest to commit"
 else
   git commit -m "chore(digest): persist public archive $(date -u +%Y-%m-%d) (local fallback)"
-  git pull --rebase origin main && git push origin HEAD:main || echo "archive push failed"
+  git pull --rebase --autostash origin main && git push origin HEAD:main || echo "archive push failed"
 fi
 
 # 早班順帶補 weekly_track_record.yml 的活:刷戰績 + 部署 Pages(它的排程也被 Actions 停用波及)
@@ -134,7 +134,7 @@ if [ "$MARKET" = tw ]; then
   if [ -n "$(git status --short docs/data/track-record.json)" ]; then
     git add docs/data/track-record.json
     git commit -m "chore(track-record): auto-refresh $(date -u +%Y-%m-%d_%H%M)UTC (local fallback)"
-    git pull --rebase origin main && git push origin HEAD:main || echo "track record push failed"
+    git pull --rebase --autostash origin main && git push origin HEAD:main || echo "track record push failed"
   fi
   npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true \
     --commit-message "daily refresh (local fallback)" || echo "pages deploy failed"
