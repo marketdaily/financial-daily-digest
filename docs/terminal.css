@@ -109,4 +109,51 @@ nav em, .logo em, .nav-logo em, [class*="logo"] em { color:var(--amber) !importa
   background:linear-gradient(135deg,#FF8A3D 0%, #FFB000 50%, #4AF626 100%) !important;
   box-shadow:0 20px 60px rgba(255,176,0,.34), inset 0 0 0 1px rgba(255,255,255,.12) !important; }
 
+/* ============ 全站殘留 indigo 收尾 ============ */
+/* 主要 CTA 按鈕 → 琥珀填色 + 深字 */
+.bcta-btn, .submit-btn, .auth-btn, .login-btn, .cta-btn, .save-btn, .copy-btn,
+.bottom-cta .btn, .cta-bottom .btn, a.btn.primary, .btn.primary, .btn-pro,
+.pricing-btn.btn-pro, .plan-mini-btn.paid, .plan-mini-btn.premium, .share-cta-btn {
+  background:linear-gradient(135deg,#FFB000,#FF8A3D) !important; color:#1a1206 !important;
+  border-color:rgba(255,176,0,.5) !important;
+  box-shadow:0 6px 24px rgba(255,176,0,.38), inset 0 1px 0 rgba(255,255,255,.22) !important;
+}
+.bcta-btn:hover, .submit-btn:hover, .auth-btn:hover, .login-btn:hover, .cta-btn:hover,
+.save-btn:hover, .pricing-btn.btn-pro:hover, .plan-mini-btn.paid:hover, .plan-mini-btn.premium:hover {
+  filter:brightness(1.08) !important;
+}
+/* input focus 邊框 → 琥珀 */
+.form-row input:focus, .form-row textarea:focus, .auth-input:focus,
+.plan-mini-input:focus, .subscribe-box input:focus, input:focus, textarea:focus {
+  border-color:rgba(255,176,0,.55) !important;
+  box-shadow:0 0 0 3px rgba(255,176,0,.12) !important;
+}
+/* focus-visible 無障礙外框 → 琥珀 */
+:focus-visible { outline-color:#FFB000 !important; }
+/* 徽章/標籤 → 琥珀色調 */
+.page-badge, .plan-badge, .tag, .feat-proof-chip, .corner-tag, .hero-badge, .badge-popular {
+  background:rgba(255,176,0,.12) !important; color:#FFC74D !important;
+  border-color:rgba(255,176,0,.30) !important;
+}
+/* 精選價格卡高亮 → 琥珀邊 */
+.pricing-card.featured, .cta-card, .bottom-cta {
+  border-color:rgba(255,176,0,.36) !important;
+  box-shadow:0 0 0 1px rgba(255,176,0,.18), 0 20px 60px rgba(255,176,0,.10) !important;
+}
+/* hero 背景光球 orb → 暖光 */
+.orb-1 { background:radial-gradient(circle, rgba(255,176,0,.18), transparent 70%) !important; }
+.orb-2 { background:radial-gradient(circle, rgba(74,246,38,.12), transparent 70%) !important; }
+.orb-3 { background:radial-gradient(circle, rgba(255,138,61,.12), transparent 70%) !important; }
+/* feature icon indigo/violet 變體 → 琥珀/磷綠 */
+.fi-indigo { background:rgba(255,176,0,.16) !important; color:#FFC74D !important; }
+.fi-violet { background:rgba(74,246,38,.14) !important; color:#7dff5a !important; }
+/* feature tab 進度條/填色 → 琥珀 */
+.feat-tab-progress, .feat-tab-fill, .feat-tab-btn.active { background:#FFB000 !important; }
+/* 創辦人卡內裡漸層 → 暖光 */
+.founder-inner { background:linear-gradient(135deg, rgba(255,176,0,.10), rgba(74,246,38,.06)) !important; }
+/* nav active 態 → 琥珀 */
+.nav-item.active { color:#FFB000 !important; border-color:rgba(255,176,0,.4) !important; }
+/* FAQ 展開箭頭 → 磷綠 */
+.faq-item-acc.open .faq-chevron { color:#4AF626 !important; }
+
 :lang(en) .hero h1, html[data-lang="en"] .hero h1 { font-family:'Archivo Expanded','Inter',sans-serif; text-transform:uppercase; }
