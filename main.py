@@ -647,12 +647,17 @@ def run():
         # ── 雙班次收信對象分流(按持股) ──
         # tw 早報 = 持台股者 + 完全沒持股者(收台股大盤版);us 晚報 = 持美股者。
         no_holdings = not us_stocks and not tw_stocks
-        if MARKET == "tw" and not (tw_stocks or no_holdings):
+        # 週末回顧是「一週一封」跨雙市場總結(美台股皆已收盤),不套用平日盤前的單市場分流:
+        # 台股早班就要涵蓋用戶全部持股(含美股),否則本週回顧會缺美股、只持美股者甚至整封收不到。
+        weekly_recap = _is_saturday_tw() and MARKET in ("tw", "both")
+        if MARKET == "tw" and not (tw_stocks or no_holdings or (weekly_recap and us_stocks)):
             continue
         if MARKET == "us" and not us_stocks:
             continue
         # 個人化只生成本班次市場的 signal-card;對面市場在新聞/大盤區做收盤回顧。
-        if MARKET == "tw":
+        if weekly_recap:
+            gen_us, gen_tw = us_stocks, tw_stocks
+        elif MARKET == "tw":
             gen_us, gen_tw = None, tw_stocks
         elif MARKET == "us":
             gen_us, gen_tw = us_stocks, None
