@@ -1,0 +1,112 @@
+/* ============================================================
+   MarketDaily — Phosphor Terminal 共用調性層
+   掛在每頁 <head> 最後(deepspace.css 之後、各頁 inline <style> 之後)
+   近黑底 + 琥珀 #FFB000 + 磷綠 #4AF626 + CRT 掃描 + mono 終端機標籤
+   牛熊影片只在 index;此層只管色調與 chrome,不動結構/功能
+   ============================================================ */
+
+:root {
+  --amber:#FFB000; --phos:#4AF626;
+  --amber-dim:rgba(255,176,0,.12); --phos-dim:rgba(74,246,38,.12);
+  /* 覆寫各頁 indigo 變數 */
+  --bg:#0A0A08;
+  --primary:#FFB000; --primary-light:#FFC74D;
+  --primary-dim:rgba(255,176,0,.12); --primary-border:rgba(255,176,0,.30);
+  --border-hover:rgba(255,176,0,.42); --violet:#FF8A3D; --sky:#4AF626;
+}
+
+/* 底色近黑 + 光暈換琥珀/磷綠 */
+html { background:#0A0A08 !important; }
+html::before {
+  background:
+    radial-gradient(ellipse 75% 55% at 50% -12%, rgba(255,176,0,.10), transparent 60%),
+    radial-gradient(ellipse 40% 35% at 86% 4%, rgba(74,246,38,.06), transparent 65%),
+    radial-gradient(ellipse 35% 30% at 10% 10%, rgba(255,176,0,.05), transparent 65%),
+    radial-gradient(ellipse 60% 40% at 50% 108%, rgba(74,246,38,.05), transparent 70%) !important;
+}
+
+/* CRT 掃描線 + 暗角全頁覆蓋 */
+body::after {
+  content:''; position:fixed; inset:0; z-index:9998; pointer-events:none;
+  background:
+    repeating-linear-gradient(180deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,.16) 3px, rgba(0,0,0,0) 4px),
+    radial-gradient(ellipse 120% 90% at 50% 50%, transparent 62%, rgba(0,0,0,.45) 100%);
+  mix-blend-mode:multiply; opacity:.55;
+}
+@media (prefers-reduced-motion: reduce) { body::after { background:radial-gradient(ellipse 120% 90% at 50% 50%, transparent 62%, rgba(0,0,0,.4) 100%); } }
+
+/* 區塊 eyebrow → 終端機提示符 */
+.section-eyebrow {
+  font-family:'IBM Plex Mono',monospace !important;
+  font-size:12px !important; font-weight:500 !important; letter-spacing:.26em !important;
+  color:var(--amber) !important; opacity:.95; gap:8px !important;
+}
+.section-eyebrow::before { content:'>_' !important; width:auto !important; height:auto !important;
+  background:none !important; color:var(--phos) !important; font-family:'IBM Plex Mono',monospace; opacity:.85; }
+.section-eyebrow::after { display:none !important; }
+
+/* 區塊大標 → 磷綠游標句點 */
+.section-head h2::after, .section-title h2::after { content:'_'; color:var(--phos); animation:md-cursorblink 1.1s steps(1) infinite; }
+@keyframes md-cursorblink { 50%{opacity:0;} }
+
+/* 巨型粗野跑馬燈 */
+.acid-marquee { border-top:1px solid rgba(255,176,0,.16); border-bottom:1px solid rgba(255,176,0,.16);
+  background:#0A0A08; overflow:hidden; white-space:nowrap; padding:22px 0; }
+.acid-marquee .row { display:inline-block; animation:md-acidmarq 34s linear infinite; }
+.acid-marquee span { font-family:'Archivo Expanded','Inter',sans-serif; font-weight:900; font-size:clamp(30px,4.6vw,52px);
+  text-transform:uppercase; letter-spacing:-.01em; color:transparent; -webkit-text-stroke:1.4px #2a2a22; vertical-align:middle; }
+.acid-marquee b { color:var(--phos); -webkit-text-stroke:0; }
+.acid-marquee i { color:var(--amber); -webkit-text-stroke:0; font-style:normal; font-size:.6em; margin:0 24px; vertical-align:middle; }
+@keyframes md-acidmarq { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* 來源跑馬燈 → mono + 琥珀分隔 */
+.source-item { font-family:'IBM Plex Mono',monospace !important; letter-spacing:.12em; }
+.source-sep { background:var(--amber) !important; opacity:.55; }
+
+/* hero pill → 琥珀 mono */
+.hero-pill { background:var(--amber-dim) !important; border:1px solid rgba(255,176,0,.32) !important;
+  color:var(--amber) !important; font-family:'IBM Plex Mono',monospace !important; letter-spacing:.12em !important; }
+.live-dot { background:var(--phos) !important; box-shadow:0 0 8px var(--phos) !important; }
+
+/* hero/頁面標題漸層 → 磷綠 → 琥珀 */
+.hero h1 .gradient, .hero h1 .gradient .w-inner, .hero h1 .grad, .hero h1 .grad .w-inner {
+  background:linear-gradient(135deg, var(--phos) 0%, #b8e84a 46%, var(--amber) 100%) !important;
+  -webkit-background-clip:text !important; -webkit-text-fill-color:transparent !important; background-clip:text !important;
+}
+.hero h1 .gradient { filter:drop-shadow(0 0 26px rgba(255,176,0,.30)) !important; }
+
+/* 大數字 → 暖光漸層 */
+.stat-num {
+  filter:drop-shadow(0 6px 22px rgba(255,176,0,.28)) !important;
+  background:linear-gradient(135deg, #FFC74D 0%, #FF8A3D 100%) !important;
+  -webkit-background-clip:text !important; background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+}
+
+/* 常見 indigo 按鈕/元件 → 琥珀(各頁通用 class) */
+.subscribe-box button, .btn-primary, .cta-primary, .plan-mini-btn.paid, .feat-tab .feat-tab-btn.active {
+  background:linear-gradient(135deg, #FFB000, #FF8A3D) !important; color:#1a1206 !important;
+  box-shadow:0 6px 26px rgba(255,176,0,.40), inset 0 1px 0 rgba(255,255,255,.25) !important;
+}
+.about-tab-btn.active, .toggle-btn.active, .seg-btn.active { background:#FFB000 !important; color:#1a1206 !important;
+  box-shadow:0 4px 18px rgba(255,176,0,.38) !important; }
+.feat-tab-fill { background:#FFB000 !important; }
+#md-tour-fab { background:linear-gradient(135deg,#FFB000,#FF8A3D) !important; color:#1a1206 !important;
+  box-shadow:0 6px 24px rgba(255,176,0,.40) !important; }
+
+/* nav logo em(品牌色) → 琥珀(各頁 class 不一:.logo/.nav-logo…) */
+nav em, .logo em, .nav-logo em, [class*="logo"] em { color:var(--amber) !important; }
+/* nav 連結 hover 的 indigo → 琥珀 */
+.lang-btn:hover, .nav-back:hover { border-color:rgba(255,176,0,.30) !important; }
+
+/* logo 小圖示 / 頭像 / 主編卡 的 indigo 漸層 → 琥珀橘 */
+.logo-icon, .nav-logo-icon, .login-logo-icon {
+  background:linear-gradient(135deg,#FFB000,#FF8A3D) !important; }
+.dp-avatar, .founder-avatar, .tcard-avatar, .testi-avatar {
+  background:linear-gradient(135deg,#FFB000,#FF8A3D) !important;
+  box-shadow:0 4px 12px rgba(255,176,0,.4) !important; }
+.profile-avatar {
+  background:linear-gradient(135deg,#FF8A3D 0%, #FFB000 50%, #4AF626 100%) !important;
+  box-shadow:0 20px 60px rgba(255,176,0,.34), inset 0 0 0 1px rgba(255,255,255,.12) !important; }
+
+:lang(en) .hero h1, html[data-lang="en"] .hero h1 { font-family:'Archivo Expanded','Inter',sans-serif; text-transform:uppercase; }
