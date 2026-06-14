@@ -174,6 +174,138 @@
         "line"
       ],
       "caption": "MarketDaily 適合你嗎?\n\n✅ 適合: 持有美股或台股 / 上班族 / 想知道你持股的動態 / 不想花 1 小時掃新聞\n❌ 不適合: 完全不投資 / 純當沖技術派 / 想要喊單老師 (我們不喊單)\n\n如果上面 ✅ 你中了 2 個以上, 試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=faq_v01_who_for\n\n#財經日報 #投資 #美股 #台股 #理財"
+    },
+    {
+      "id": "dual_schedule_v01",
+      "caption": "美股開盤你在睡, 台股開盤你在忙。\n\nMarketDaily 一天兩班, 都在盤前:\n— 台股 07:00, 開盤前先讀\n— 美股 20:00, 美股盤前先讀\n\n只給跟你持股有關的, AI 中文寫好。免費讀一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=dual_schedule_v01\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+      "image": "dual_schedule_v01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 16
+    },
+    {
+      "id": "brand_v01_no_noise",
+      "caption": "我們長得不像市面上的財經內容。\n\n沒有喊單老師, 沒有業配, 沒有 80 則沒結論的快訊洗版。\n\nAI 跨多家可信媒體比對, 過濾雜訊, 只留下對你持股可能有影響的 —— 中文寫成 30 秒可讀。\n\nNO NOISE, JUST SIGNAL。試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=brand_v01_no_noise\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+      "image": "brand_v01_no_noise.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 17
+    },
+    {
+      "id": "pain_v01_overnight",
+      "caption": "美股的大事, 大多在你睡覺的時候發生。\n\n早上醒來帳戶已經變了, 你卻不知道昨晚到底發生什麼。\n\nMarketDaily 晚上 20:00 在美股盤前先幫你講清楚, 早上 07:00 再補台股 —— 兩邊盤前你都先就位。\n\n看一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=pain_v01_overnight\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+      "image": "pain_v01_overnight.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 18
+    },
+    {
+      "id": "proof_v01_open_record",
+      "caption": "大部分財經頻道只給你「賺到」的案例。\n\n我們做了一個公開的戰績頁:每天的看多 / 看空 / 觀望, 後續對錯都記下來。看對的貼出來, 看錯的也是。\n\n投資不是抽卡, 是看樣本累積夠不夠誠實。聲稱 100% 準的, 那才是假的。\n\n戰績頁長這樣: https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=proof_v01_open_record\n\n#戰績公開 #投資 #財經日報 #美股 #台股",
+      "image": "proof_v01_open_record.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 19
+    },
+    {
+      "id": "personalization_v01",
+      "caption": "市場每天上千條財經新聞。你真正需要的, 大概只有跟你持股有關的那幾條。\n\nMarketDaily 做的就是這件事:你設定持有的美股 + 台股, AI 每天早晚挑出跟你有關的, 中文寫給你。\n\n其他的, 它幫你過濾掉。試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=personalization_v01\n\n#個人化 #美股 #台股 #投資理財 #財經",
+      "image": "personalization_v01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 20
+    },
+    {
+      "id": "premium_v01_line_alert",
+      "caption": "不用整天刷盤等消息。\n\nMarketDaily Premium 會在重大新聞影響到你持股時, 即時推播 LINE 給你 —— 還能在 LINE 上雙向問 AI 「這對我的部位代表什麼」。\n\n日報看全局, 推播抓即時。了解 Premium: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=premium_v01_line_alert\n\n#LINE #即時推播 #美股 #台股 #財經日報",
+      "image": "premium_v01_line_alert.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 21
+    },
+    {
+      "id": "ai_human_v01",
+      "caption": "MarketDaily 的寫法不是新聞稿, 是「朋友傳給你的早報」。\n\n不是「投資人應審慎評估」這種廢話, 而是:你的台積電昨晚發生什麼、為什麼、今天可能要注意什麼。\n\n中文、口語、給你思考材料。試一份看對不對你口味: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=ai_human_v01\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+      "image": "ai_human_v01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 22
+    },
+    {
+      "id": "weekend_v01_recap",
+      "caption": "MarketDaily 的節奏:\n\n— 平日盤前, 台股 07:00、美股 20:00 各一封\n— 週六早上是「本週回顧 + 下週重點」特別版\n— 週日休息 (你也該休息)\n\n盤前讀完, 開盤前你已經知道今天的故事。週末不打擾。從下一封開始: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=weekend_v01_recap\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+      "image": "weekend_v01_recap.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 23
+    },
+    {
+      "id": "usecase_v01_busy",
+      "caption": "MarketDaily 適合你嗎?\n\n✅ 持有美股或台股\n✅ 上班 / 上課 / 創業, 很忙\n✅ 想知道自己持股的動態\n✅ 不想每天花一小時掃新聞\n\n中了 2 個以上, 試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=usecase_v01_busy\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+      "image": "usecase_v01_busy.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 24
+    },
+    {
+      "id": "editor_v01_discipline",
+      "caption": "MarketDaily 的編輯底線:\n\n1. 不收業配\n2. 日報提及的個股, 編輯不持有 (避免利益衝突)\n3. 不喊單 (給你思考材料, 不當你老師)\n4. 看錯了會列出來 (戰績頁公開)\n5. 永遠中文寫 (英文新聞 AI 翻好給你)\n\n我們把這五條當底線。看實際日報: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=editor_v01_discipline\n\n#編輯紀律 #媒體識讀 #財經 #投資 #台股",
+      "image": "editor_v01_discipline.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 25
+    },
+    {
+      "id": "vs_chatgpt_v02",
+      "caption": "用 ChatGPT 查財經?\n\n— 你要每天記得去問\n— 它可能引用過時資料\n— 它不知道你持有什麼\n\nMarketDaily 是相反設計:不用你問, 台股 07:00、美股 20:00 自己到 inbox, 標明來源, 只給跟你持股有關的。\n\n看一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=vs_chatgpt_v02\n\n#ChatGPT #AI #美股 #台股 #財經日報",
+      "image": "vs_chatgpt_v02.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 26
+    },
+    {
+      "id": "signal_noise_v02",
+      "caption": "投資的真功夫, 不是「知道更多」, 是「過濾更少」。\n\n資訊永遠夠多, 你的注意力才稀缺。\n\nMarketDaily 幫你做掉 80% 的過濾 —— AI 跨多家媒體比對、去掉廣告稿和點擊餌、只留對你持股可能有影響的。剩下 20% 留給你判斷。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=signal_noise_v02\n\n#投資思維 #媒體識讀 #財經 #理財 #台股",
+      "image": "signal_noise_v02.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "day": 27
     }
   ]
 }
