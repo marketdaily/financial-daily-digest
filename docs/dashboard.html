@@ -1877,11 +1877,30 @@ async function setupAlertsFeed(email, plan) {
   if (plan !== "premium" && plan !== "admin") { card.style.display = "none"; return; }
   card.style.display = "block";
   await loadAlertHistory();
-  // 從推播點進來(#alerts)→ 捲到提醒紀錄
-  if (location.hash === "#alerts") {
-    setTimeout(() => card.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
-  }
+  // 從推播點進來(#alerts)→ 直接捲到提醒紀錄
+  if (location.hash === "#alerts") scrollToAlerts();
 }
+
+// 可靠捲到提醒紀錄:其他卡片(股票/大盤)非同步載入會改變高度,
+// 故連續校正多次,蓋過版面跳動;並高亮一下讓人知道「到了」。
+function scrollToAlerts() {
+  const card = document.getElementById("alerts-feed-card");
+  if (!card || card.style.display === "none") return;
+  let tries = 0;
+  const tick = () => {
+    card.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (++tries < 5) setTimeout(tick, 420);
+  };
+  tick();
+  card.style.transition = "box-shadow .4s";
+  card.style.boxShadow = "0 0 0 2px rgba(255,176,0,.65)";
+  setTimeout(() => { card.style.boxShadow = ""; }, 2200);
+}
+
+// App/分頁已開著時點通知:只有 hash 變,init 不會重跑 → 監聽 hashchange 補捲
+window.addEventListener("hashchange", () => {
+  if (location.hash === "#alerts") { loadAlertHistory(true).then(scrollToAlerts); }
+});
 async function loadAlertHistory(force) {
   if (_alertsLoaded && !force) return;
   const listEl = document.getElementById("alerts-feed-list");
@@ -1915,10 +1934,10 @@ async function loadAlertHistory(force) {
           '<span style="font-size:13px;font-weight:800;color:#fff;">' + icon + " " + escapeHtml(a.name || a.ticker || "提醒") + (a.speculative ? ' <span style="font-size:11px;color:var(--text2);font-weight:600;">· 觀點/傳言</span>' : "") + '</span>' +
           '<span style="font-size:11px;color:var(--text2);white-space:nowrap;">' + timeAgo(a.ts) + '</span>' +
         '</div>' +
-        '<div style="font-size:13px;color:rgba(255,255,255,0.9);line-height:1.5;margin-bottom:' + (a.reason || a.action ? "6px" : "0") + ';">' + escapeHtml(a.title) + '</div>' +
-        (a.reason ? '<div style="font-size:12px;color:var(--text2);line-height:1.6;">💡 ' + escapeHtml(a.reason) + '</div>' : "") +
-        ((a.stance || a.action) ? '<div style="font-size:12px;color:#FFC74D;line-height:1.6;margin-top:4px;">📊 ' + escapeHtml([a.stance, a.action].filter(Boolean).join(" — ")) + '</div>' : "") +
-        (a.url && a.url.indexOf("dashboard.html") === -1 ? '<a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:12px;color:#FFC74D;font-weight:700;text-decoration:none;">🔗 看原文 →</a>' : "");
+        '<div style="font-size:13px;color:rgba(255,255,255,0.92);line-height:1.5;margin-bottom:' + (a.reason || a.stance || a.action ? "10px" : "0") + ';font-weight:600;">' + escapeHtml(a.title) + '</div>' +
+        (a.reason ? '<div style="font-size:12px;line-height:1.6;margin-bottom:6px;"><span style="font-weight:800;color:#4AF626;">💡 為什麼跟你有關</span><br><span style="color:var(--text2);">' + escapeHtml(a.reason) + '</span></div>' : "") +
+        ((a.stance || a.action) ? '<div style="font-size:12px;line-height:1.6;"><span style="font-weight:800;color:#FFC74D;">📊 對你的部位</span><br><span style="color:#FFD98A;">' + escapeHtml([a.stance, a.action].filter(Boolean).join(" — ")) + '</span></div>' : "") +
+        (a.url && a.url.indexOf("dashboard.html") === -1 ? '<a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;font-size:12px;color:#FFC74D;font-weight:700;text-decoration:none;">🔗 看原文 →</a>' : "");
       listEl.appendChild(item);
     }
   } catch (e) {

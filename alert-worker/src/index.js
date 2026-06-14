@@ -492,7 +492,7 @@ async function alertAdmin(env, summary) {
   if (await webPushAdmin(env, JSON.stringify({
     title: "🚨 MarketDaily Alert",
     body: summary.slice(0, 300),
-    url: "https://marketdaily.ai/dashboard.html",
+    url: "https://marketdaily.ai/dashboard.html#alerts",
   }))) delivered = true;
   // 2) LINE(備援,受 200/月額度限制)
   if (env.ADMIN_LINE_USER_ID) {
@@ -1022,7 +1022,7 @@ export default {
       let ok = false; const channels = []; let lineStatus = null;
       // 1) 自有 web push 到所有 admin 裝置(無額度限制,優先)
       if (await webPushAdmin(env, JSON.stringify({
-        title: "🔔 MarketDaily", body: message.slice(0, 300), url: "https://marketdaily.ai/dashboard.html",
+        title: "🔔 MarketDaily", body: message.slice(0, 300), url: "https://marketdaily.ai/dashboard.html#alerts",
       }))) { ok = true; channels.push("webpush"); }
       // 2) LINE 備援
       if (env.ADMIN_LINE_USER_ID) {
