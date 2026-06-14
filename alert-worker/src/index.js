@@ -747,6 +747,37 @@ export default {
       return json(result);
     }
 
+    // 診斷:查 LINE 官方月額度上限與已用量(回答「推播是否被額度卡住」)。
+    // 接受廣義 token 候選(含本機備援 _2 把),timing-safe。
+    if (url.pathname === "/quota") {
+      const got = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "")
+        || url.searchParams.get("token") || "";
+      const candidates = [env.ADMIN_TOKEN, env.INTERNAL_TOKEN, env.ADMIN_PUSH_TOKEN, env.ADMIN_PUSH_TOKEN_2, env.INTERNAL_TOKEN_2, env.MARKETING_TARGETS_TOKEN].filter(Boolean);
+      let okAuth = false;
+      for (const t of candidates) {
+        if (got.length !== t.length) continue;
+        let diff = 0;
+        for (let i = 0; i < got.length; i++) diff |= got.charCodeAt(i) ^ t.charCodeAt(i);
+        if (diff === 0) { okAuth = true; break; }
+      }
+      if (!okAuth) return json({ error: "forbidden" }, 403);
+      const token = await lineToken(env, { force: true });
+      if (!token) return json({ ok: false, reason: "line_token_unavailable" }, 503);
+      const h = { authorization: `Bearer ${token}` };
+      const qRes = await fetch("https://api.line.me/v2/bot/message/quota", { headers: h });
+      const cRes = await fetch("https://api.line.me/v2/bot/message/quota/consumption", { headers: h });
+      const quota = qRes.ok ? await qRes.json() : { status: qRes.status, body: (await qRes.text()).slice(0, 200) };
+      const consumption = cRes.ok ? await cRes.json() : { status: cRes.status, body: (await cRes.text()).slice(0, 200) };
+      let remaining = null, exhausted = null;
+      if (quota.type === "limited" && typeof quota.value === "number" && typeof consumption.totalUsage === "number") {
+        remaining = quota.value - consumption.totalUsage;
+        exhausted = remaining <= 0;
+      } else if (quota.type === "none") {
+        exhausted = false; // 無上限方案
+      }
+      return json({ ok: true, ts: new Date().toISOString(), quota, consumption, remaining, exhausted });
+    }
+
     // 診斷:驗證 LINE 動態 OAuth swap 是否能拿到有效 token(不洩漏 token 本身)
     if (url.pathname === "/token-test") {
       if (!authed()) return json({ error: "forbidden" }, 403);
