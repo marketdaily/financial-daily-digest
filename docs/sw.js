@@ -37,7 +37,10 @@ self.addEventListener("notificationclick", (event) => {
   event.waitUntil((async () => {
     const all = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
     for (const c of all) {
-      if (c.url.includes("marketdaily.ai") && "focus" in c) { await c.focus(); return; }
+      if (c.url.includes("marketdaily.ai")) {
+        try { if ("navigate" in c) await c.navigate(target); } catch {}
+        if ("focus" in c) { await c.focus(); return; }
+      }
     }
     if (self.clients.openWindow) await self.clients.openWindow(target);
   })());

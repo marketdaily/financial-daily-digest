@@ -378,7 +378,7 @@ function pushNotif(news, ticker, severity, reason) {
   return JSON.stringify({
     title: severity >= 9 ? `🚨 ${name}｜重大消息` : `📈 ${name}｜即時提醒`,
     body: (news.title || reason || "").slice(0, 160),
-    url: news.url || "https://marketdaily.ai/dashboard.html",
+    url: "https://marketdaily.ai/dashboard.html#alerts",
     tag: `md-${ticker}-${(news.publishedAt || "").slice(0, 13)}`,
   });
 }
@@ -409,6 +409,19 @@ async function deliverAlert(env, r, lineTok, text, notifStr) {
   }
   return { ok, channels, status: lastStatus };
 }
+// 寫入用戶的站內「提醒收件匣」(email-keyed,LINE+web push 用戶都記;dashboard feed 讀這個)。留 90 天、上限 50 則。
+async function recordAlertInbox(env, email, record) {
+  try {
+    const key = `alerthist:${email}`;
+    let list = [];
+    const raw = await env.USER_PREFS.get(key);
+    if (raw) { try { list = JSON.parse(raw); } catch {} }
+    list.push(record);
+    if (list.length > 50) list = list.slice(-50);
+    await env.USER_PREFS.put(key, JSON.stringify(list), { expirationTtl: 90 * 24 * 3600 });
+  } catch {}
+}
+
 // 對 admin 的所有裝置發 web push(讀 pushsub:${ADMIN_EMAIL} 陣列),回傳是否至少一台成功
 async function webPushAdmin(env, payloadStr) {
   if (!env.ADMIN_EMAIL) return false;
@@ -672,6 +685,13 @@ async function runPipeline(env, { push, persist }) {
         await env.USER_PREFS.put(countKey, String(count + 1), { expirationTtl: COUNT_TTL });
         report.counts.pushed++;
         cand.recipients.push({ email: h.email, ticker: hit, status: `pushed:${pushed.channels.join("+")}` });
+        // 站內提醒收件匣(dashboard feed 顯示用,LINE+web push 用戶都記)
+        await recordAlertInbox(env, h.email, {
+          ts: report.ts, kind: "news", ticker: hit,
+          name: hit === "大盤" ? "大盤" : displayName(hit),
+          title: news.title, url: news.url, reason, stance, action,
+          severity, category, speculative,
+        });
         // 把推播訊息同時寫進兩個 KV,讓 stripe-webhook 的 chat bot 認得「剛剛那則」:
         //  (A) linechat:${userId} —— 塞進對話歷史(role:assistant + [系統主動推播] 前綴)
         //  (B) alerthistory:${userId} —— per-user push 清單(結構化),chat bot 開場直接注入 system
@@ -815,13 +835,23 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
       const notif = JSON.stringify({
         title: `🏛️ 政壇影響｜${(sig.headline_zh || "").slice(0, 36)}`,
         body: (sig.headline_zh || "").slice(0, 160),
-        url: sig.post_url || "https://marketdaily.ai/dashboard.html",
+        url: "https://marketdaily.ai/dashboard.html#alerts",
         tag: `md-pol-${(sig.post_url || sig.headline_zh || "").slice(0, 40)}`,
       });
       for (const r of targets) {
         const out = await deliverAlert(env, r, token, msg, notif);
         fired.recipients.push({ email: r.email, status: out.ok ? `pushed:${out.channels.join("+")}` : `fail:${out.status}` });
-        if (out.ok) report.pushed++;
+        if (out.ok) {
+          report.pushed++;
+          await recordAlertInbox(env, r.email, {
+            ts: new Date().toISOString(), kind: "political",
+            ticker: (sig.affected && sig.affected[0]) || "大盤",
+            name: (sig.affected && sig.affected[0]) ? displayName(sig.affected[0]) : "政壇/大盤",
+            title: sig.headline_zh, url: sig.post_url || "https://marketdaily.ai/dashboard.html",
+            reason: sig.reason_zh || sig.why_zh || "", stance: sig.stance || "", action: sig.action || "",
+            severity: sig.severity, category: "political", speculative: sig.kind !== "action",
+          });
+        }
       }
     } else {
       for (const r of targets) fired.recipients.push({ email: r.email, status: "would-push" });

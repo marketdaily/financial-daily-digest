@@ -1223,6 +1223,24 @@ export default {
       return json({ subscribed: n > 0, devices: n });
     }
 
+    // 站內即時提醒收件匣:回傳 alerthist:${email}(alert-worker 推播成功時寫入)。需密碼驗證。
+    if (url.pathname === "/alerts/list" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
+      const email = (body.email || "").trim().toLowerCase();
+      if (!email) return json({ error: "invalid_email" }, 400);
+      const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
+      if (storedHash) {
+        const password = body.password || "";
+        if (!password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
+      }
+      let list = [];
+      const raw = await env.USER_PREFS.get(`alerthist:${email}`);
+      if (raw) { try { list = JSON.parse(raw); } catch {} }
+      list.sort((a, b) => (b.ts || "").localeCompare(a.ts || "")); // 最新在前
+      return json({ ok: true, alerts: list });
+    }
+
     if (url.pathname === "/save-preferences" && request.method === "POST") {
       let body;
       try { body = await request.json(); } catch {

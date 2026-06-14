@@ -806,6 +806,17 @@ nav::after {
       </div>
     </div>
 
+    <!-- 即時提醒紀錄 feed(Premium 專屬,可滑歷史) -->
+    <div class="card" id="alerts-feed-card" style="margin-top:8px;display:none;scroll-margin-top:80px;">
+      <div class="card-title">📬 即時提醒紀錄</div>
+      <div class="card-desc">你收到的所有重大新聞/政壇提醒都在這裡,最新在最上面,保留 90 天。點「原文」看完整新聞。</div>
+      <div id="alerts-feed-list" style="margin-top:14px;display:flex;flex-direction:column;gap:10px;max-height:560px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+        <div id="alerts-feed-empty" style="display:none;padding:28px 16px;text-align:center;color:var(--text2);font-size:13px;line-height:1.7;">還沒有收到任何即時提醒。<br>當重大新聞影響你追蹤的股票時,會即時推播並出現在這裡。</div>
+        <div id="alerts-feed-loading" style="padding:24px;text-align:center;color:var(--text2);font-size:13px;">載入中…</div>
+      </div>
+      <button onclick="loadAlertHistory(true)" style="margin-top:12px;width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--input-border);color:var(--text2);padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">↻ 重新整理</button>
+    </div>
+
     <!-- AI 投資助手(Premium 專屬) -->
     <div class="card" id="chat-card" style="margin-top:8px;display:none;">
       <div class="card-title" data-i18n="chat_card_title">💬 AI 投資助手</div>
@@ -1763,6 +1774,7 @@ async function showDashboard(email, plan) {
   }
   setupLineCard(email, plan);
   setupPushCard(email, plan);
+  setupAlertsFeed(email, plan);
   setupChatCard(email, plan);
   await loadPreferences(email);
   loadReferral(email);
@@ -1857,6 +1869,75 @@ async function enablePush() {
     btn.disabled = false; btn.textContent = "🔔 啟用即時推播";
   }
 }
+// ── 即時提醒紀錄 feed ──
+let _alertsLoaded = false;
+function timeAgo(ts) {
+  const d = new Date(ts); const s = (Date.now() - d.getTime()) / 1000;
+  if (s < 60) return "剛剛";
+  if (s < 3600) return Math.floor(s / 60) + " 分鐘前";
+  if (s < 86400) return Math.floor(s / 3600) + " 小時前";
+  if (s < 86400 * 7) return Math.floor(s / 86400) + " 天前";
+  return d.toLocaleDateString("zh-TW", { month: "numeric", day: "numeric" });
+}
+function escapeHtml(s) {
+  return String(s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+async function setupAlertsFeed(email, plan) {
+  const card = document.getElementById("alerts-feed-card");
+  if (!card) return;
+  if (plan !== "premium" && plan !== "admin") { card.style.display = "none"; return; }
+  card.style.display = "block";
+  await loadAlertHistory();
+  // 從推播點進來(#alerts)→ 捲到提醒紀錄
+  if (location.hash === "#alerts") {
+    setTimeout(() => card.scrollIntoView({ behavior: "smooth", block: "start" }), 300);
+  }
+}
+async function loadAlertHistory(force) {
+  if (_alertsLoaded && !force) return;
+  const listEl = document.getElementById("alerts-feed-list");
+  const loadingEl = document.getElementById("alerts-feed-loading");
+  const emptyEl = document.getElementById("alerts-feed-empty");
+  const email = localStorage.getItem("md-email");
+  const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
+  if (!email) return;
+  if (loadingEl) loadingEl.style.display = "block";
+  if (emptyEl) emptyEl.style.display = "none";
+  try {
+    const res = await fetch(`${WORKER_URL}/alerts/list`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+    _alertsLoaded = true;
+    // 清掉舊卡(保留 loading/empty 兩個固定節點)
+    [...listEl.querySelectorAll(".alert-item")].forEach((n) => n.remove());
+    if (loadingEl) loadingEl.style.display = "none";
+    const alerts = (data && data.alerts) || [];
+    if (!alerts.length) { if (emptyEl) emptyEl.style.display = "block"; return; }
+    for (const a of alerts) {
+      const sev = a.severity >= 9 ? "#f87171" : (a.kind === "political" ? "#a78bfa" : "#6366f1");
+      const icon = a.kind === "political" ? "🏛️" : (a.severity >= 9 ? "🚨" : "📈");
+      const item = document.createElement("div");
+      item.className = "alert-item";
+      item.style.cssText = "padding:13px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--input-border);border-left:3px solid " + sev + ";border-radius:12px;";
+      item.innerHTML =
+        '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">' +
+          '<span style="font-size:13px;font-weight:800;color:#fff;">' + icon + " " + escapeHtml(a.name || a.ticker || "提醒") + (a.speculative ? ' <span style="font-size:11px;color:var(--text2);font-weight:600;">· 觀點/傳言</span>' : "") + '</span>' +
+          '<span style="font-size:11px;color:var(--text2);white-space:nowrap;">' + timeAgo(a.ts) + '</span>' +
+        '</div>' +
+        '<div style="font-size:13px;color:rgba(255,255,255,0.9);line-height:1.5;margin-bottom:' + (a.reason || a.action ? "6px" : "0") + ';">' + escapeHtml(a.title) + '</div>' +
+        (a.reason ? '<div style="font-size:12px;color:var(--text2);line-height:1.6;">💡 ' + escapeHtml(a.reason) + '</div>' : "") +
+        ((a.stance || a.action) ? '<div style="font-size:12px;color:#c7d2fe;line-height:1.6;margin-top:4px;">📊 ' + escapeHtml([a.stance, a.action].filter(Boolean).join(" — ")) + '</div>' : "") +
+        (a.url && a.url.indexOf("dashboard.html") === -1 ? '<a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:12px;color:#818cf8;font-weight:700;text-decoration:none;">🔗 看原文 →</a>' : "");
+      listEl.appendChild(item);
+    }
+  } catch (e) {
+    if (loadingEl) loadingEl.style.display = "none";
+    if (emptyEl) { emptyEl.textContent = "載入失敗,請重新整理"; emptyEl.style.display = "block"; }
+  }
+}
+
 async function disablePush() {
   const email = localStorage.getItem("md-email");
   const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
