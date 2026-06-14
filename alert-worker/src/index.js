@@ -383,14 +383,15 @@ function pushNotif(news, ticker, severity, reason) {
   });
 }
 // 統一投遞:對單一收件者嘗試所有可用通道(LINE + 自有 web push),任一成功即算送達。
-async function deliverAlert(env, r, lineTok, text, notifStr) {
+// 聰明備援策略:web push 是所有人預設(免費無上限);
+// LINE push 只在「用戶沒開 web push(如沒裝 PWA 的 iPhone)」或「超重大 severity≥9」時才動用,
+// 把 LINE 200/月珍貴額度留給真正需要的人。LINE 聊天機器人(reply,免費)不受影響。
+async function deliverAlert(env, r, lineTok, text, notifStr, opts = {}) {
   let ok = false; const channels = []; let lastStatus = 0;
-  if (r.userId && lineTok) {
-    const lr = await linePush(env, lineTok, r.userId, text);
-    if (lr.ok) { ok = true; channels.push("line"); }
-    else { lastStatus = lr.status; if (lr.status === 400 || lr.status === 403) await env.USER_PREFS.put(`linestale:${r.email}`, new Date().toISOString()); }
-  }
-  if (r.pushSubs && r.pushSubs.length) {
+  const severity = opts.severity || 0;
+  const hasWebPush = !!(r.pushSubs && r.pushSubs.length);
+  // 1) web push —— 所有人預設通道
+  if (hasWebPush) {
     const dead = new Set();
     let sent = 0;
     for (const sub of r.pushSubs) {
@@ -406,6 +407,13 @@ async function deliverAlert(env, r, lineTok, text, notifStr) {
       if (alive.length) await env.USER_PREFS.put(`pushsub:${r.email}`, JSON.stringify(alive));
       else await env.USER_PREFS.delete(`pushsub:${r.email}`);
     }
+  }
+  // 2) LINE push —— 聰明備援:沒開 web push 或超重大才用
+  const lineEligible = r.userId && lineTok && (!hasWebPush || severity >= 9);
+  if (lineEligible) {
+    const lr = await linePush(env, lineTok, r.userId, text);
+    if (lr.ok) { ok = true; channels.push("line"); }
+    else { lastStatus = lr.status; if (lr.status === 400 || lr.status === 403) await env.USER_PREFS.put(`linestale:${r.email}`, new Date().toISOString()); }
   }
   return { ok, channels, status: lastStatus };
 }
@@ -679,7 +687,7 @@ async function runPipeline(env, { push, persist }) {
         continue;
       }
       const msg = alertMessage(news, hit, severity, reason, { speculative, stance, action });
-      const pushed = await deliverAlert(env, h, token, msg, pushNotif(news, hit, severity, reason));
+      const pushed = await deliverAlert(env, h, token, msg, pushNotif(news, hit, severity, reason), { severity });
       if (pushed.ok) {
         await env.USER_PREFS.put(cluster, report.ts, { expirationTtl: PUSHED_TTL });
         await env.USER_PREFS.put(countKey, String(count + 1), { expirationTtl: COUNT_TTL });
@@ -839,7 +847,7 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
         tag: `md-pol-${(sig.post_url || sig.headline_zh || "").slice(0, 40)}`,
       });
       for (const r of targets) {
-        const out = await deliverAlert(env, r, token, msg, notif);
+        const out = await deliverAlert(env, r, token, msg, notif, { severity: sig.severity });
         fired.recipients.push({ email: r.email, status: out.ok ? `pushed:${out.channels.join("+")}` : `fail:${out.status}` });
         if (out.ok) {
           report.pushed++;

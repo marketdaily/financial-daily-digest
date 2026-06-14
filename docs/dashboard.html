@@ -792,8 +792,8 @@ nav::after {
 
     <!-- LINE 即時提醒(Premium 專屬) -->
     <div class="card" id="line-alert-card" style="margin-top:8px;display:none;">
-      <div class="card-title" data-i18n="line_card_title">⚡ 即時 LINE 重大新聞提醒</div>
-      <div class="card-desc" data-i18n="line_card_desc">重大新聞影響到你的持股時,立刻用 LINE 通知你,不必等隔天日報。Premium 專屬功能。</div>
+      <div class="card-title" data-i18n="line_card_title">💬 LINE 綁定(AI 助手 + 備援提醒)</div>
+      <div class="card-desc" data-i18n="line_card_desc">綁定後可在 LINE 直接問 AI 你的持股、大盤。另外,若你沒開即時推播(或用 iPhone 沒裝到主畫面),重大新聞會改用 LINE 通知你當備援。Premium 專屬。</div>
       <div id="line-unbound-box" style="display:none;margin-top:14px;">
         <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:14px;padding:10px 13px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.22);border-radius:10px;" data-i18n="line_friend_notice">💡 綁定完成後會自動跳出「加 MarketDaily 好友」頁,請按「加入好友」才會收到推播。</div>
         <button class="save-btn" onclick="bindLine()" id="line-bind-btn" style="margin-top:0;background:#06C755;" data-i18n="line_bind_btn">綁定 LINE →</button>
@@ -802,7 +802,7 @@ nav::after {
         <div style="display:none;margin-top:12px;font-size:13px;color:#f87171;text-align:center;" id="line-err"></div>
       </div>
       <div id="line-bound-box" style="display:none;margin-top:14px;">
-        <div style="padding:12px 16px;background:rgba(6,199,85,0.1);border:1px solid rgba(6,199,85,0.3);color:#6ee7b7;font-size:13px;font-weight:600;border-radius:10px;margin-bottom:12px;" data-i18n="line_bound_notice">✓ LINE 已綁定 — 重大新聞會即時推播給你</div>
+        <div style="padding:12px 16px;background:rgba(6,199,85,0.1);border:1px solid rgba(6,199,85,0.3);color:#6ee7b7;font-size:13px;font-weight:600;border-radius:10px;margin-bottom:12px;" data-i18n="line_bound_notice">✓ LINE 已綁定 — 可在 LINE 問 AI 持股,並作為即時推播的備援通道</div>
         <button class="save-btn" onclick="unbindLine()" id="line-unbind-btn" style="margin-top:0;background:rgba(255,255,255,0.06);border:1px solid var(--input-border);" data-i18n="line_unbind_btn">解除綁定</button>
       </div>
     </div>
@@ -1026,11 +1026,11 @@ const i18n = {
     cpwd_submit: "確認修改 →",
     cpwd_ok: "✅ 密碼已更新！",
     cpwd_toggle: "修改密碼",
-    line_card_title: "⚡ 即時 LINE 重大新聞提醒",
-    line_card_desc: "重大新聞影響到你的持股時,立刻用 LINE 通知你,不必等隔天日報。Premium 專屬功能。",
+    line_card_title: "💬 LINE 綁定(AI 助手 + 備援提醒)",
+    line_card_desc: "綁定後可在 LINE 直接問 AI 你的持股、大盤。另外,若你沒開即時推播(或用 iPhone 沒裝到主畫面),重大新聞會改用 LINE 通知你當備援。Premium 專屬。",
     line_friend_notice: "💡 綁定完成後會自動跳出「加 MarketDaily 好友」頁,請按「加入好友」才會收到推播。",
     line_bind_btn: "綁定 LINE →",
-    line_bound_notice: "✓ LINE 已綁定 — 重大新聞會即時推播給你",
+    line_bound_notice: "✓ LINE 已綁定 — 可在 LINE 問 AI 持股,並作為即時推播的備援通道",
     line_unbind_btn: "解除綁定",
     ref_title: "邀請朋友,雙方都得 30 天 Premium",
     ref_subtitle: "分享你的專屬連結 · 朋友訂閱成功,你跟他各自獲得 30 天 Premium 免費",
@@ -1227,11 +1227,11 @@ const i18n = {
     cpwd_submit: "Confirm Change →",
     cpwd_ok: "✅ Password updated!",
     cpwd_toggle: "Change Password",
-    line_card_title: "⚡ Real-Time LINE Breaking-News Alerts",
-    line_card_desc: "When major news affects your holdings, we notify you instantly on LINE — no need to wait for the next day's digest. Premium-only feature.",
+    line_card_title: "💬 Connect LINE (AI Assistant + Backup Alerts)",
+    line_card_desc: "Once connected, ask the AI about your holdings right inside LINE. Also, if you haven't enabled web push (or you're on an iPhone without Add-to-Home-Screen), breaking news falls back to LINE. Premium-only.",
     line_friend_notice: "💡 After binding, the \"Add MarketDaily as friend\" page will open automatically. Tap \"Add friend\" to receive alerts.",
     line_bind_btn: "Bind LINE →",
-    line_bound_notice: "✓ LINE connected — breaking news will be pushed to you in real time.",
+    line_bound_notice: "✓ LINE connected — ask the AI about your holdings on LINE, and it serves as a backup channel for instant alerts.",
     line_unbind_btn: "Unbind",
     ref_title: "Invite friends — both get 30 days of Premium",
     ref_subtitle: "Share your link. When a friend subscribes, you each get 30 days of Premium free.",
