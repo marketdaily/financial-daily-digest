@@ -3363,7 +3363,7 @@ init();
   loop();
 })();
 </script>
-<script src="onboarding-tour.js?v=20260611a"></script>
+<script src="onboarding-tour.js?v=20260614c"></script>
 <script>
 MDTour.mount([
   { selector: "#login-email",
@@ -3377,14 +3377,36 @@ MDTour.mount([
     body: { zh: "按這個按鈕,就能進入你的個人專區。", en: "Click this button to enter your personal account area." } }
 ], { tourId: "dashboard-login", auto: true });
 window.mdStockTour = function () {
+  // 新手教學(登入後):依畫面由上到下逐項介紹功能。
+  // ⚙️ 要加新功能教學:在陣列加一個 { selector, title:{zh,en}, body:{zh,en} } 即可。
+  //    目標元素若隱藏/不存在(例如免費版鎖住的卡)會自動跳過,免費/付費共用同一份。
+  //    新增一批功能後,把 tourId 後面的版本號 +1,現有用戶就會自動再看一次新導覽。
   MDTour.mount([
     { selector: "#us-search",
-      title: { zh: "搜尋你的股票", en: "Search for your stocks" },
-      body: { zh: "在這裡打股票代號或公司名稱,例如「台積電」或「NVDA」,點一下就加入清單。", en: "Type a ticker or company name here — e.g. “TSMC” or “NVDA” — and click to add it to your list." } },
+      title: { zh: "① 搜尋你的股票", en: "1. Search your stocks" },
+      body: { zh: "打股票代號或公司名稱,例如「台積電」或「NVDA」,點一下就加入。日報就會分析這些股票。", en: "Type a ticker or company name — e.g. “TSMC” or “NVDA” — and click to add. Your digest will analyze these." } },
     { selector: "#save-status",
-      title: { zh: "自動儲存", en: "Auto-save" },
-      body: { zh: "你選好的股票會自動儲存,不用按任何按鈕 — 隨時改、隨時生效,明天起的報告就會分析你的股票。", en: "Your picks save automatically — no button needed. Change them anytime; tomorrow’s report will follow your latest list." } }
-  ], { tourId: "dashboard-stocks", auto: true });
+      title: { zh: "② 自動儲存", en: "2. Auto-save" },
+      body: { zh: "選好的股票自動儲存,不用按按鈕,隨時改隨時生效。", en: "Your picks save automatically — change anytime, takes effect immediately." } },
+    { selector: "#digest-depth-card",
+      title: { zh: "③ 你的日報長相", en: "3. Your digest depth" },
+      body: { zh: "選簡單看 / 標準看 / 深入看,明天起的日報就照你選的深度寫。", en: "Pick Simple / Standard / Deep — tomorrow’s digest follows the depth you choose." } },
+    { selector: "#push-alert-card",
+      title: { zh: "④ 開啟即時推播", en: "4. Turn on instant push" },
+      body: { zh: "按一次「啟用即時推播」,重大新聞影響你的持股時會直接彈到這台裝置(手機鎖屏也會跳),完全免費。", en: "Tap “Enable push” once — breaking news on your holdings pops up on this device (even on lock screen). Free." } },
+    { selector: "#alerts-feed-card",
+      title: { zh: "⑤ 即時提醒紀錄", en: "5. Your alert history" },
+      body: { zh: "收到的每則提醒都留在這裡,可上下滑看時間線,每則有「為什麼跟你有關」和「對你部位的建議」。", en: "Every alert you receive stays here — scroll the timeline; each shows why it matters and what it means for your position." } },
+    { selector: "#chat-fab",
+      title: { zh: "⑥ AI 投資助手", en: "6. AI assistant" },
+      body: { zh: "點右下角這顆泡泡,直接問 AI 你的持股、大盤、財經概念 —— 它知道你正在追蹤哪些股票。", en: "Tap this bubble (bottom-right) to ask the AI about your holdings, the market, anything — it knows your watchlist." } },
+    { selector: "#line-alert-card",
+      title: { zh: "⑦ 綁定 LINE(選用)", en: "7. Connect LINE (optional)" },
+      body: { zh: "想在 LINE 直接問 AI、或當即時推播的備援通道(例如 iPhone),可以綁定 LINE。", en: "Connect LINE to chat with the AI there, or as a backup channel for alerts (e.g. on iPhone)." } },
+    { selector: "#referral-section",
+      title: { zh: "⑧ 邀請朋友", en: "8. Invite friends" },
+      body: { zh: "把你的專屬連結分享給朋友,朋友訂閱成功,你跟他各得 30 天 Premium 免費。", en: "Share your link — when a friend subscribes, you both get 30 days of Premium free." } }
+  ], { tourId: "dashboard-v2-features", auto: true });
 };
 </script>
 
