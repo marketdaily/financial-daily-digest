@@ -325,7 +325,7 @@ nav::after {
 .save-status.error  { background: rgba(239,68,68,0.12); color: #f87171; border-color: rgba(239,68,68,0.25); cursor: pointer; }
 
 /* AI 投資助手 */
-#chat-messages { max-height: 340px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 2px; }
+#chat-messages { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 2px; }
 .chat-msg { max-width: 86%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; }
 .chat-msg.user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
 .chat-msg.ai { align-self: flex-start; background: rgba(255,255,255,0.06); border: 1px solid var(--input-border); color: var(--text); border-bottom-left-radius: 4px; }
@@ -338,6 +338,21 @@ nav::after {
 #chat-send { padding: 0 18px; background: var(--primary); color: #fff; border: none; border-radius: 10px; font-weight: 700; font-family: inherit; font-size: 14px; cursor: pointer; white-space: nowrap; }
 #chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
 #chat-meta { font-size: 11px; color: var(--text3); margin-top: 8px; text-align: right; }
+
+/* AI 助手浮動泡泡 */
+#chat-fab { position: fixed; right: 20px; bottom: 20px; width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg,#6366f1,#8b5cf6); border: none; color: #fff; font-size: 24px; cursor: pointer; box-shadow: 0 8px 28px rgba(99,102,241,.5); z-index: 900; display: none; align-items: center; justify-content: center; transition: transform .2s; }
+#chat-fab:hover { transform: scale(1.08); }
+#chat-popup { position: fixed; right: 20px; bottom: 88px; width: 380px; max-width: calc(100vw - 32px); height: 540px; max-height: calc(100vh - 130px); background: #0d0d18; border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.55); z-index: 901; display: none; flex-direction: column; overflow: hidden; }
+#chat-popup.open { display: flex; }
+#chat-popup-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+#chat-popup-header .t { font-size: 15px; font-weight: 800; color: var(--text); }
+#chat-popup-close { background: none; border: none; color: var(--text2); font-size: 24px; line-height: 1; cursor: pointer; padding: 0 4px; }
+#chat-popup-body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 14px 16px; overflow: hidden; }
+#chat-popup-body #chat-box { flex: 1; min-height: 0; flex-direction: column; }
+@media (max-width: 600px) {
+  #chat-popup { right: 12px; left: 12px; width: auto; bottom: 80px; height: 70vh; }
+  #chat-fab { right: 16px; bottom: 16px; }
+}
 
 /* Set password form */
 #set-password-form .login-label { margin-top: 0; }
@@ -810,55 +825,43 @@ nav::after {
     <div class="card" id="alerts-feed-card" style="margin-top:8px;display:none;scroll-margin-top:80px;">
       <div class="card-title">📬 即時提醒紀錄</div>
       <div class="card-desc">你收到的所有重大新聞/政壇提醒都在這裡,最新在最上面,保留 90 天。點「原文」看完整新聞。</div>
-      <div id="alerts-feed-list" style="margin-top:14px;display:flex;flex-direction:column;gap:10px;max-height:560px;overflow-y:auto;-webkit-overflow-scrolling:touch;">
+      <div id="alerts-feed-list" style="margin-top:14px;display:flex;flex-direction:column;gap:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:4px;">
         <div id="alerts-feed-empty" style="display:none;padding:28px 16px;text-align:center;color:var(--text2);font-size:13px;line-height:1.7;">還沒有收到任何即時提醒。<br>當重大新聞影響你追蹤的股票時,會即時推播並出現在這裡。</div>
         <div id="alerts-feed-loading" style="padding:24px;text-align:center;color:var(--text2);font-size:13px;">載入中…</div>
       </div>
       <button onclick="loadAlertHistory(true)" style="margin-top:12px;width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--input-border);color:var(--text2);padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">↻ 重新整理</button>
     </div>
 
-    <!-- AI 投資助手(Premium 專屬) -->
-    <div class="card" id="chat-card" style="margin-top:8px;display:none;">
-      <div class="card-title" data-i18n="chat_card_title">💬 AI 投資助手</div>
-      <div class="card-desc" data-i18n="chat_card_desc">問 AI 你的持股、大盤、財經概念 —— 它知道你正在追蹤的股票。Premium 專屬。</div>
-      <div id="chat-locked-box" style="display:none;margin-top:14px;">
-        <div style="font-size:12px;color:var(--text2);line-height:1.7;padding:10px 13px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.22);border-radius:10px;" data-i18n-html="chat_locked_notice">⚠️ AI 投資助手是 Premium 專屬功能。<a href="pricing.html" style="color:#fbbf24;font-weight:700;">升級 Premium →</a></div>
+    <!-- AI 投資助手(浮動泡泡,Premium 專屬) -->
+    <button id="chat-fab" onclick="toggleChatPopup()" title="AI 投資助手" aria-label="AI 投資助手">💬</button>
+    <div id="chat-popup">
+      <div id="chat-popup-header">
+        <span class="t" data-i18n="chat_card_title">💬 AI 投資助手</span>
+        <button id="chat-popup-close" onclick="toggleChatPopup(false)" aria-label="關閉">×</button>
       </div>
-      <div id="chat-box" style="display:none;margin-top:14px;">
-        <div id="chat-messages"></div>
-        <div class="chat-input-row">
-          <textarea id="chat-input" rows="1" data-i18n-placeholder="chat_input_ph" placeholder="問我你的持股、大盤…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
-          <button id="chat-send" onclick="sendChat()" data-i18n="chat_send_btn">送出</button>
+      <div id="chat-popup-body">
+        <div id="chat-locked-box" style="display:none;">
+          <div style="font-size:12px;color:var(--text2);line-height:1.7;padding:10px 13px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.22);border-radius:10px;" data-i18n-html="chat_locked_notice">⚠️ AI 投資助手是 Premium 專屬功能。<a href="pricing.html" style="color:#fbbf24;font-weight:700;">升級 Premium →</a></div>
         </div>
-        <div id="chat-meta"></div>
+        <div id="chat-box" style="display:none;">
+          <div id="chat-messages"></div>
+          <div class="chat-input-row">
+            <textarea id="chat-input" rows="1" data-i18n-placeholder="chat_input_ph" placeholder="問我你的持股、大盤…" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+            <button id="chat-send" onclick="sendChat()" data-i18n="chat_send_btn">送出</button>
+          </div>
+          <div id="chat-meta"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Referral Program -->
-    <div class="card referral-card scene-reveal scene-reveal-d1" id="referral-section">
+    <!-- Referral Program(精簡) -->
+    <div class="card referral-card" id="referral-section">
       <a id="referral" style="position:relative;top:-80px;visibility:hidden;"></a>
-      <div class="referral-header">
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
         <div class="referral-icon">🎁</div>
         <div>
-          <div class="referral-title" data-i18n="ref_title">邀請朋友,雙方都得 30 天 Premium</div>
-          <div class="referral-subtitle" data-i18n="ref_subtitle">分享你的專屬連結 · 朋友訂閱成功,你跟他各自獲得 30 天 Premium 免費</div>
-        </div>
-      </div>
-
-      <div id="ref-bonus-badge" style="display:none;margin-bottom:14px;padding:12px 16px;border-radius:12px;background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(99,102,241,.18));border:1px solid rgba(16,185,129,.35);color:#a7f3d0;font-size:14px;font-weight:700;text-align:center;"></div>
-
-      <div class="referral-stats">
-        <div class="referral-stat">
-          <div class="referral-stat-num" id="ref-signups">—</div>
-          <div class="referral-stat-label" data-i18n="ref_stat_signups">已邀請人數</div>
-        </div>
-        <div class="referral-stat">
-          <div class="referral-stat-num" id="ref-rewards">—</div>
-          <div class="referral-stat-label" data-i18n="ref_stat_rewards">已賺免費天數</div>
-        </div>
-        <div class="referral-stat">
-          <div class="referral-stat-num" id="ref-clicks">—</div>
-          <div class="referral-stat-label" data-i18n="ref_stat_clicks">連結點擊</div>
+          <div style="font-size:15px;font-weight:800;color:var(--text);line-height:1.3;" data-i18n="ref_title">邀請朋友,雙方都得 30 天 Premium</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">已邀請 <b id="ref-signups" style="color:var(--text);">—</b> 人 · 已賺 <b id="ref-rewards" style="color:var(--text);">—</b> 天免費</div>
         </div>
       </div>
 
@@ -867,30 +870,15 @@ nav::after {
         <button class="copy-btn" id="copy-ref-btn" onclick="copyRefLink()" data-i18n="ref_copy_btn">複製連結</button>
       </div>
 
-      <div class="referral-reward-info" data-i18n-html="ref_reward_info">
-        <strong>🎁 怎麼運作:</strong>朋友從你的專屬連結訂閱 → 系統自動記入 <strong>你 +30 天、朋友 +30 天 Premium 免費</strong>。已賺天數會自動累加在這個帳號上。
-      </div>
-
-      <div class="referral-share-btns">
-        <button class="share-btn line" onclick="shareToLine()">
+      <div style="display:flex;gap:8px;margin-top:10px;">
+        <button class="share-btn line" onclick="shareToLine()" style="flex:1;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
           <span data-i18n="ref_share_line">分享到 LINE</span>
         </button>
-        <button class="share-btn" onclick="shareToFacebook()" style="background:#1877f2;color:#fff;border-color:#1877f2;">
-          <span data-i18n="ref_share_fb">Facebook</span>
-        </button>
-        <button class="share-btn" onclick="shareToX()" style="background:#0f1419;color:#fff;border-color:#0f1419;">
-          <span data-i18n="ref_share_x">X / Twitter</span>
-        </button>
-        <button class="share-btn copy-link" onclick="copyRefLink()">
+        <button class="share-btn copy-link" onclick="copyRefLink()" style="flex:1;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           <span data-i18n="ref_copy_btn2">複製連結</span>
         </button>
-      </div>
-
-      <div style="margin-top:18px;">
-        <div style="font-size:12px;font-weight:700;color:var(--text2);letter-spacing:.5px;margin-bottom:6px;" data-i18n="ref_recent_title">最近邀請</div>
-        <div id="ref-recent-list"></div>
       </div>
     </div>
 
@@ -1962,10 +1950,10 @@ async function disablePush() {
 let _chatHistory = [], _chatRemaining = 30, _chatBusy = false, _chatErr = "";
 
 async function setupChatCard(email, plan) {
-  const card = document.getElementById("chat-card");
-  if (!card) return;
-  if (plan !== "premium" && plan !== "admin") { card.style.display = "none"; return; }
-  card.style.display = "block";
+  const fab = document.getElementById("chat-fab");
+  if (!fab) return;
+  if (plan !== "premium" && plan !== "admin") { fab.style.display = "none"; return; }
+  fab.style.display = "flex";
   let premium = false, remaining = 30;
   // 改 POST + password,worker 不會洩漏 plan 給未授權 caller
   const pwd = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
@@ -1977,9 +1965,23 @@ async function setupChatCard(email, plan) {
     });
     if (res.ok) { const d = await res.json(); premium = !!d.premium; remaining = d.remaining; }
   } catch {}
-  document.getElementById("chat-box").style.display = premium ? "block" : "none";
+  document.getElementById("chat-box").style.display = premium ? "flex" : "none";
   document.getElementById("chat-locked-box").style.display = premium ? "none" : "block";
   if (premium) { _chatRemaining = (typeof remaining === "number") ? remaining : 30; renderChat(); }
+}
+
+// AI 助手浮動彈窗開關
+function toggleChatPopup(force) {
+  const popup = document.getElementById("chat-popup");
+  const fab = document.getElementById("chat-fab");
+  if (!popup) return;
+  const open = (force === undefined) ? !popup.classList.contains("open") : force;
+  popup.classList.toggle("open", open);
+  if (fab) fab.textContent = open ? "✕" : "💬";
+  if (open) {
+    renderChat();
+    setTimeout(() => { const i = document.getElementById("chat-input"); if (i) i.focus(); }, 120);
+  }
 }
 
 function chatEsc(s) { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; }
@@ -3121,10 +3123,11 @@ async function loadReferral(email) {
     const data = await res.json();
     _refCode = data.code || "";
     _refLink = data.link || `https://marketdaily.ai/?ref=${_refCode}&utm_source=referral&utm_medium=user&utm_campaign=share`;
-    document.getElementById("ref-link-display").textContent = _refLink;
-    document.getElementById("ref-clicks").textContent = data.clicks ?? 0;
-    document.getElementById("ref-signups").textContent = data.total_referrals ?? 0;
-    document.getElementById("ref-rewards").textContent = data.total_bonus_days ?? 0;
+    const setTxt = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v; };
+    setTxt("ref-link-display", _refLink);
+    setTxt("ref-clicks", data.clicks ?? 0);
+    setTxt("ref-signups", data.total_referrals ?? 0);
+    setTxt("ref-rewards", data.total_bonus_days ?? 0);
     renderRecentReferrals(data.recent_referrals || []);
     renderBonusBadge(data.total_bonus_days || 0);
   } catch {}
