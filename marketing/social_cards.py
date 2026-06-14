@@ -8,12 +8,12 @@ import subprocess
 import tempfile
 from pathlib import Path
 
-BG = "#060611"
-INK = "#f1f5f9"
-BODY = "rgba(255,255,255,0.74)"
-INDIGO = "#6366f1"
-INDIGO_LIGHT = "#a5b4fc"
-GOLD = "#fde68a"
+BG = "#0A0A08"
+INK = "#F5E6C8"
+BODY = "rgba(245,230,200,0.74)"
+INDIGO = "#FFB000"
+INDIGO_LIGHT = "#FFC74D"
+GOLD = "#4AF626"
 FONT = "Inter, -apple-system, BlinkMacSystemFont, 'PingFang TC', 'Segoe UI', sans-serif"
 
 W, H = 1080, 1350  # IG 4:5，社群觸及最佳比例
@@ -51,11 +51,12 @@ def _icon(x, y, size):
     s = size / 48.0
     return (
         f'<g transform="translate({x},{y}) scale({s:.4f})">'
-        '<rect width="48" height="48" rx="12" fill="url(#mdg)"/>'
-        '<rect x="9" y="31" width="6" height="9" rx="2" fill="#fff" fill-opacity="0.45"/>'
-        '<rect x="19" y="23" width="6" height="17" rx="2" fill="#fff" fill-opacity="0.72"/>'
-        '<rect x="29" y="13" width="6" height="27" rx="2" fill="#fff"/>'
-        '<circle cx="42" cy="9" r="3" fill="#fde68a"/></g>'
+        '<rect width="48" height="48" rx="12" fill="#0A0A08"/>'
+        '<rect x="0.75" y="0.75" width="46.5" height="46.5" rx="11.5" fill="none" stroke="#FFB000" stroke-opacity="0.4" stroke-width="1.5"/>'
+        '<rect x="9" y="31" width="6" height="9" rx="2" fill="#A66E00"/>'
+        '<rect x="19" y="23" width="6" height="17" rx="2" fill="#FFB000"/>'
+        '<rect x="29" y="13" width="6" height="27" rx="2" fill="url(#mdg)"/>'
+        '<circle cx="42" cy="9" r="3" fill="#4AF626"/></g>'
     )
 
 
@@ -81,13 +82,15 @@ def _card_inner(spec, w, h):
 
     defs = (
         '<defs>'
-        '<linearGradient id="mdg" x1="0" y1="0" x2="1" y2="1">'
-        '<stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#6366f1"/>'
+        '<linearGradient id="mdg" x1="0" y1="1" x2="1" y2="0">'
+        '<stop offset="0%" stop-color="#FFB000"/><stop offset="55%" stop-color="#FFC74D"/><stop offset="100%" stop-color="#4AF626"/>'
         '</linearGradient>'
         '<radialGradient id="glow" cx="0.5" cy="0.16" r="0.85">'
-        '<stop offset="0%" stop-color="#6366f1" stop-opacity="0.24"/>'
-        '<stop offset="62%" stop-color="#6366f1" stop-opacity="0"/>'
+        '<stop offset="0%" stop-color="#FFB000" stop-opacity="0.20"/>'
+        '<stop offset="62%" stop-color="#FFB000" stop-opacity="0"/>'
         '</radialGradient>'
+        '<pattern id="scan" width="6" height="6" patternUnits="userSpaceOnUse">'
+        '<rect y="3" width="6" height="3" fill="#000" fill-opacity="0.18"/></pattern>'
         '</defs>'
     )
 
@@ -100,7 +103,7 @@ def _card_inner(spec, w, h):
         grid.append(f'<line x1="{gx}" y1="0" x2="{gx}" y2="{h}"/>')
     for gy in range(step, h, step):
         grid.append(f'<line x1="0" y1="{gy}" x2="{w}" y2="{gy}"/>')
-    p.append(f'<g stroke="#6366f1" stroke-opacity="0.05" stroke-width="1">{"".join(grid)}</g>')
+    p.append(f'<g stroke="#FFB000" stroke-opacity="0.05" stroke-width="1">{"".join(grid)}</g>')
 
     # 頂部品牌列
     p.append(_icon(pad, 88, 66))
@@ -150,8 +153,11 @@ def _card_inner(spec, w, h):
         p.append(f'<rect x="{cx:.0f}" y="{cy}" width="{ctw:.0f}" height="78" rx="39" fill="url(#mdg)"/>')
         p.append(
             f'<text x="{w / 2:.0f}" y="{cy + 50}" text-anchor="middle" font-family="{FONT}" '
-            f'font-size="33" font-weight="700" fill="#fff">{_esc(cta)}</text>'
+            f'font-size="33" font-weight="700" fill="#0A0A08">{_esc(cta)}</text>'
         )
+
+    # CRT 掃描線
+    p.append(f'<rect width="{w}" height="{h}" fill="url(#scan)"/>')
 
     # 頁尾
     p.append(

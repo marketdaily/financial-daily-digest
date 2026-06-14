@@ -8,11 +8,11 @@ from pathlib import Path
 
 from social_cards import make_card
 
-VIOLET = "#a855f7"
-SKY = "#38bdf8"
-EMERALD = "#10b981"
-GOLD = "#f5b942"
-ROSE = "#fb7185"
+VIOLET = "#4AF626"
+SKY = "#FFC74D"
+EMERALD = "#4AF626"
+GOLD = "#FFB000"
+ROSE = "#FF8A3D"
 
 OUT = Path(__file__).parent / "assets" / "posts" / "v2"
 
@@ -21,7 +21,7 @@ CARDS = [
         "file": "explainer_v01_30sec",
         "tag": "30 秒",
         "headline": "30 秒讀完\n你的財經早報",
-        "body": "美股 + 台股 · AI 寫成中文\n7AM 寄到你的 inbox",
+        "body": "美股 + 台股 · AI 寫成中文\n台股 07:00 · 美股 20:00 到你 inbox",
         "cta": "marketdaily.ai →",
     },
     {
@@ -108,7 +108,7 @@ CARDS = [
         "file": "vs_v02_vs_chatgpt",
         "tag": "vs ChatGPT",
         "accent": VIOLET,
-        "headline": "你不用問\n它自己 7AM 來",
+        "headline": "你不用問\n它自己送上門",
         "body": "ChatGPT 你要去問\n它不知道你持有什麼\nMarketDaily 知道 · 主動寄",
         "cta": "marketdaily.ai →",
     },
@@ -116,8 +116,8 @@ CARDS = [
         "file": "habit_v01_weekly",
         "tag": "節奏",
         "accent": GOLD,
-        "headline": "週一到週六\n早上 7:00\n週日休息",
-        "body": "盤前讀完\n開盤前你已經知道故事\n週末不打擾",
+        "headline": "台股 07:00\n美股 20:00\n週日休息",
+        "body": "週一到週六 · 盤前讀完\n開盤前你已經知道故事\n週末不打擾",
         "cta": "marketdaily.ai →",
     },
     {
