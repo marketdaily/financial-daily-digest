@@ -340,9 +340,10 @@ nav::after {
 #chat-meta { font-size: 11px; color: var(--text3); margin-top: 8px; text-align: right; }
 
 /* AI 助手浮動泡泡 */
-#chat-fab { position: fixed; right: 20px; bottom: 20px; width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg,#6366f1,#8b5cf6); border: none; color: #fff; font-size: 24px; cursor: pointer; box-shadow: 0 8px 28px rgba(99,102,241,.5); z-index: 900; display: none; align-items: center; justify-content: center; transition: transform .2s; }
+/* 疊在「新手教學」膠囊鈕(#md-tour-fab,right18/bottom18)上方,避免重疊 */
+#chat-fab { position: fixed; right: 18px; bottom: 84px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#10b981,#06b6d4); border: 1px solid rgba(255,255,255,.18); color: #fff; font-size: 23px; cursor: pointer; box-shadow: 0 8px 28px rgba(16,185,129,.45); z-index: 902; display: none; align-items: center; justify-content: center; transition: transform .2s; }
 #chat-fab:hover { transform: scale(1.08); }
-#chat-popup { position: fixed; right: 20px; bottom: 88px; width: 380px; max-width: calc(100vw - 32px); height: 540px; max-height: calc(100vh - 130px); background: #0d0d18; border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.55); z-index: 901; display: none; flex-direction: column; overflow: hidden; }
+#chat-popup { position: fixed; right: 18px; bottom: 150px; width: 380px; max-width: calc(100vw - 32px); height: 500px; max-height: calc(100vh - 180px); background: #0d0d18; border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.55); z-index: 903; display: none; flex-direction: column; overflow: hidden; }
 #chat-popup.open { display: flex; }
 #chat-popup-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 #chat-popup-header .t { font-size: 15px; font-weight: 800; color: var(--text); }
@@ -350,8 +351,8 @@ nav::after {
 #chat-popup-body { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 14px 16px; overflow: hidden; }
 #chat-popup-body #chat-box { flex: 1; min-height: 0; flex-direction: column; }
 @media (max-width: 600px) {
-  #chat-popup { right: 12px; left: 12px; width: auto; bottom: 80px; height: 70vh; }
-  #chat-fab { right: 16px; bottom: 16px; }
+  #chat-fab { right: 16px; bottom: 76px; width: 52px; height: 52px; font-size: 21px; }
+  #chat-popup { right: 12px; left: 12px; width: auto; bottom: 138px; height: auto; top: 70px; max-height: none; }
 }
 
 /* Set password form */
