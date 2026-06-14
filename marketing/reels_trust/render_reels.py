@@ -138,22 +138,22 @@ def render_frame_track_record(t):
         local = t - 2.0  # 0..2
         alpha = int(255 * ease_in_out(min(local / 0.8, 1.0)))
         bg = composite_text(bg, "但", H // 2 - 320, 140, (220, 220, 226), True, alpha)
-        bg = composite_text(bg, "沒人", H // 2 - 130, 230, (244, 63, 94), True, alpha)
+        bg = composite_text(bg, "沒人", H // 2 - 130, 230, (255, 138, 61), True, alpha)
         bg = composite_text(bg, "敢公開錯的紀錄", H // 2 + 160, 130, (220, 220, 226), True, alpha)
         return bg
 
     if t < 7.0:
-        bg = bg_gradient((6, 9, 25), (16, 20, 50))
+        bg = bg_gradient((12, 11, 8), (24, 19, 8))
         local = t - 4.0  # 0..3
         # three stats stagger in: 0.0, 0.5, 1.0
         stats = [
-            ("75.5%", "看多勝率", (52, 211, 153), 0.0),
-            ("42.9%", "看空勝率", (244, 114, 114), 0.5),
-            ("90", "累計個股", (251, 191, 36), 1.0),
+            ("看多", "每天標記方向", (74, 246, 38), 0.0),
+            ("看空", "後續對錯都記", (255, 138, 61), 0.5),
+            ("觀望", "公開隨你查證", (255, 176, 0), 1.0),
         ]
         ys = [380, 850, 1320]
         # title
-        bg = composite_text(bg, "真實戰績", 180, 90, (200, 210, 230), True, 255)
+        bg = composite_text(bg, "公開戰績", 180, 90, (200, 210, 230), True, 255)
         for i, (num, label, color, delay) in enumerate(stats):
             local_i = local - delay
             if local_i < 0:
@@ -161,8 +161,8 @@ def render_frame_track_record(t):
             alpha = int(255 * ease_in_out(min(local_i / 0.45, 1.0)))
             # subtle slide up: from +50 -> 0
             offset = int((1 - ease_in_out(min(local_i / 0.45, 1.0))) * 60)
-            bg = composite_text(bg, num, ys[i] - offset, 220, color, True, alpha)
-            bg = composite_text(bg, label, ys[i] + 200 - offset, 70, (200, 210, 230), False, alpha)
+            bg = composite_text(bg, num, ys[i] - offset, 180, color, True, alpha)
+            bg = composite_text(bg, label, ys[i] + 180 - offset, 64, (200, 210, 230), False, alpha)
         return bg
 
     if t < 10.0:
@@ -170,18 +170,18 @@ def render_frame_track_record(t):
         local = t - 7.0  # 0..3
         a1 = int(255 * ease_in_out(min(local / 0.7, 1.0)))
         a2 = int(255 * ease_in_out(min((local - 0.9) / 0.7, 1.0))) if local > 0.9 else 0
-        bg = composite_text(bg, "錯的", H // 2 - 360, 150, (244, 114, 114), True, a1)
+        bg = composite_text(bg, "錯的", H // 2 - 360, 150, (255, 138, 61), True, a1)
         bg = composite_text(bg, "我們也列出來", H // 2 - 160, 130, (220, 220, 226), True, a1)
-        bg = composite_text(bg, "100% 才是假的", H // 2 + 200, 110, (251, 191, 36), True, a2)
+        bg = composite_text(bg, "100% 才是假的", H // 2 + 200, 110, (255, 176, 0), True, a2)
         return bg
 
     # 10-12 CTA
-    bg = bg_gradient((10, 14, 35), (20, 28, 70))
+    bg = bg_gradient((12, 11, 8), (24, 19, 8))
     local = t - 10.0  # 0..2
     alpha = int(255 * ease_in_out(min(local / 0.6, 1.0)))
     bg = composite_text(bg, "查看公開戰績", H // 2 - 320, 110, (200, 210, 230), False, alpha)
     bg = composite_text(bg, "marketdaily.ai", H // 2 - 100, 130, (255, 255, 255), True, alpha)
-    bg = composite_text(bg, "/track-record", H // 2 + 50, 110, (160, 180, 240), True, alpha)
+    bg = composite_text(bg, "/track-record", H // 2 + 50, 110, (255, 199, 77), True, alpha)
     # blinking arrow
     blink = 0.6 + 0.4 * math.sin(local * 6.0)
     bg = draw_arrow_down(bg, W // 2, H // 2 + 340, 70, (255, 255, 255), int(255 * blink))
@@ -198,7 +198,7 @@ def render_frame_vs(t):
         bg = composite_text(bg, "為什麼", H // 2 - 360, 130, (200, 200, 208), True, alpha)
         bg = composite_text(bg, "不用", H // 2 - 200, 150, (220, 220, 226), True, alpha)
         a2 = int(255 * ease_in_out(min((local - 0.9) / 0.6, 1.0))) if local > 0.9 else 0
-        bg = composite_text(bg, "三竹 / TradingView ?", H // 2 + 40, 100, (244, 114, 114), True, a2)
+        bg = composite_text(bg, "三竹 / TradingView ?", H // 2 + 40, 100, (255, 138, 61), True, a2)
         return bg
 
     if t < 6.0:
@@ -219,14 +219,14 @@ def render_frame_vs(t):
             offset = int((1 - ease_in_out(min(li / 0.45, 1.0))) * 50)
             bg = composite_text(bg, name, ys[i] - offset, 110, (255, 255, 255), True, alpha)
             bg = composite_text(bg, desc, ys[i] + 140 - offset, 64, (180, 180, 200), False, alpha)
-            bg = draw_cross(bg, 180, ys[i] + 60 - offset, 55, (244, 63, 94), alpha)
+            bg = draw_cross(bg, 180, ys[i] + 60 - offset, 55, (255, 138, 61), alpha)
         return bg
 
     if t < 9.0:
         bg = bg_gradient((4, 30, 22), (8, 60, 45))
         local = t - 6.0  # 0..3
         title_a = int(255 * ease_in_out(min(local / 0.5, 1.0)))
-        bg = composite_text(bg, "MarketDaily", 250, 140, (52, 211, 153), True, title_a)
+        bg = composite_text(bg, "MarketDaily", 250, 140, (74, 246, 38), True, title_a)
         checks = [
             ("主動推送", 0.5),
             ("個人化內容", 0.95),
@@ -239,7 +239,7 @@ def render_frame_vs(t):
             if li < 0:
                 continue
             alpha = int(255 * ease_in_out(min(li / 0.3, 1.0)))
-            bg = draw_check(bg, 230, ys[i] + 40, 55, (52, 211, 153), alpha)
+            bg = draw_check(bg, 230, ys[i] + 40, 55, (74, 246, 38), alpha)
             layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
             ld = ImageDraw.Draw(layer)
             lf = font(90, True)
@@ -248,12 +248,12 @@ def render_frame_vs(t):
         return bg
 
     # 9-12 CTA
-    bg = bg_gradient((10, 14, 35), (20, 28, 70))
+    bg = bg_gradient((12, 11, 8), (24, 19, 8))
     local = t - 9.0  # 0..3
     alpha = int(255 * ease_in_out(min(local / 0.6, 1.0)))
     bg = composite_text(bg, "看完整對比", H // 2 - 360, 110, (200, 210, 230), False, alpha)
     bg = composite_text(bg, "marketdaily.ai", H // 2 - 140, 130, (255, 255, 255), True, alpha)
-    bg = composite_text(bg, "/vs", H // 2 + 10, 130, (160, 180, 240), True, alpha)
+    bg = composite_text(bg, "/vs", H // 2 + 10, 130, (255, 199, 77), True, alpha)
     blink = 0.6 + 0.4 * math.sin(local * 6.0)
     bg = draw_arrow_down(bg, W // 2, H // 2 + 320, 70, (255, 255, 255), int(255 * blink))
     return bg
