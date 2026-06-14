@@ -169,7 +169,7 @@ async function premiumRecipients(env) {
         }
       } catch {}
     }
-    const r = { email, userId: null, pushSub: null, holdings };
+    const r = { email, userId: null, pushSubs: [], holdings };
     map.set(email, r);
     return r;
   }
@@ -187,9 +187,9 @@ async function premiumRecipients(env) {
   }
   await scan("line:", async (r, key) => { r.userId = await env.USER_PREFS.get(key); });
   await scan("pushsub:", async (r, key) => {
-    try { r.pushSub = JSON.parse(await env.USER_PREFS.get(key)); } catch {}
+    try { const p = JSON.parse(await env.USER_PREFS.get(key)); r.pushSubs = Array.isArray(p) ? p : [p]; } catch {}
   });
-  return [...map.values()].filter((r) => r && (r.userId || r.pushSub));
+  return [...map.values()].filter((r) => r && (r.userId || (r.pushSubs && r.pushSubs.length)));
 }
 
 // Claude 嚴重度判定:輸入新聞 + 相關 ticker,輸出 {severity 0-10, reason}。
@@ -390,12 +390,37 @@ async function deliverAlert(env, r, lineTok, text, notifStr) {
     if (lr.ok) { ok = true; channels.push("line"); }
     else { lastStatus = lr.status; if (lr.status === 400 || lr.status === 403) await env.USER_PREFS.put(`linestale:${r.email}`, new Date().toISOString()); }
   }
-  if (r.pushSub) {
-    const wr = await webPush(env, r.pushSub, notifStr);
-    if (wr.ok) { ok = true; channels.push("webpush"); }
-    else { lastStatus = wr.status || lastStatus; if (wr.status === 404 || wr.status === 410) await env.USER_PREFS.delete(`pushsub:${r.email}`); }
+  if (r.pushSubs && r.pushSubs.length) {
+    const dead = new Set();
+    let sent = 0;
+    for (const sub of r.pushSubs) {
+      const wr = await webPush(env, sub, notifStr);
+      if (wr.ok) { sent++; }
+      else { lastStatus = wr.status || lastStatus; if (wr.status === 404 || wr.status === 410) dead.add(sub.endpoint); }
+    }
+    if (sent > 0) { ok = true; channels.push(`webpush×${sent}`); }
+    // 清除失效裝置訂閱(逐台,不影響其他裝置)
+    if (dead.size) {
+      const alive = r.pushSubs.filter((s) => !dead.has(s.endpoint));
+      r.pushSubs = alive;
+      if (alive.length) await env.USER_PREFS.put(`pushsub:${r.email}`, JSON.stringify(alive));
+      else await env.USER_PREFS.delete(`pushsub:${r.email}`);
+    }
   }
   return { ok, channels, status: lastStatus };
+}
+// 對 admin 的所有裝置發 web push(讀 pushsub:${ADMIN_EMAIL} 陣列),回傳是否至少一台成功
+async function webPushAdmin(env, payloadStr) {
+  if (!env.ADMIN_EMAIL) return false;
+  try {
+    const raw = await env.USER_PREFS.get(`pushsub:${env.ADMIN_EMAIL}`);
+    if (!raw) return false;
+    const p = JSON.parse(raw);
+    const subs = Array.isArray(p) ? p : [p];
+    let ok = false;
+    for (const sub of subs) { const wr = await webPush(env, sub, payloadStr); if (wr.ok) ok = true; }
+    return ok;
+  } catch { return false; }
 }
 
 function alertMessage(news, ticker, severity, reason, meta = {}) {
@@ -450,20 +475,12 @@ async function alertAdmin(env, summary) {
   const hourKey = `admin_alert:${new Date().toISOString().slice(0, 13)}`;
   if (await env.USER_PREFS.get(hourKey)) return;
   let delivered = false;
-  // 1) 自有 web push(無額度限制,優先)
-  if (env.ADMIN_EMAIL) {
-    try {
-      const raw = await env.USER_PREFS.get(`pushsub:${env.ADMIN_EMAIL}`);
-      if (raw) {
-        const wr = await webPush(env, JSON.parse(raw), JSON.stringify({
-          title: "🚨 MarketDaily Alert",
-          body: summary.slice(0, 300),
-          url: "https://marketdaily.ai/dashboard.html",
-        }));
-        if (wr.ok) delivered = true;
-      }
-    } catch {}
-  }
+  // 1) 自有 web push 到所有 admin 裝置(無額度限制,優先)
+  if (await webPushAdmin(env, JSON.stringify({
+    title: "🚨 MarketDaily Alert",
+    body: summary.slice(0, 300),
+    url: "https://marketdaily.ai/dashboard.html",
+  }))) delivered = true;
   // 2) LINE(備援,受 200/月額度限制)
   if (env.ADMIN_LINE_USER_ID) {
     const token = await lineToken(env, { force: true });
@@ -973,18 +990,10 @@ export default {
       const message = String(body.message || "").slice(0, 4900);
       if (!message) return json({ error: "empty_message" }, 400);
       let ok = false; const channels = []; let lineStatus = null;
-      // 1) 自有 web push(無額度限制,優先)
-      if (env.ADMIN_EMAIL) {
-        try {
-          const raw = await env.USER_PREFS.get(`pushsub:${env.ADMIN_EMAIL}`);
-          if (raw) {
-            const wr = await webPush(env, JSON.parse(raw), JSON.stringify({
-              title: "🔔 MarketDaily", body: message.slice(0, 300), url: "https://marketdaily.ai/dashboard.html",
-            }));
-            if (wr.ok) { ok = true; channels.push("webpush"); }
-          }
-        } catch {}
-      }
+      // 1) 自有 web push 到所有 admin 裝置(無額度限制,優先)
+      if (await webPushAdmin(env, JSON.stringify({
+        title: "🔔 MarketDaily", body: message.slice(0, 300), url: "https://marketdaily.ai/dashboard.html",
+      }))) { ok = true; channels.push("webpush"); }
       // 2) LINE 備援
       if (env.ADMIN_LINE_USER_ID) {
         const token = await lineToken(env, { force: true });

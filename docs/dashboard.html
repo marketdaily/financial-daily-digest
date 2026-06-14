@@ -1863,11 +1863,12 @@ async function disablePush() {
   const btn = document.getElementById("push-disable-btn");
   btn.disabled = true; btn.textContent = "關閉中…";
   try {
+    let endpoint = null;
     const reg = await navigator.serviceWorker.getRegistration();
-    if (reg) { const s = await reg.pushManager.getSubscription(); if (s) await s.unsubscribe(); }
+    if (reg) { const s = await reg.pushManager.getSubscription(); if (s) { endpoint = s.endpoint; await s.unsubscribe(); } }
     await fetch(`${WORKER_URL}/push/unsubscribe`, {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, endpoint }),
     });
     document.getElementById("push-bound-box").style.display = "none";
     document.getElementById("push-unbound-box").style.display = "block";

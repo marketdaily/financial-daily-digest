@@ -1179,12 +1179,16 @@ export default {
         const password = body.password || "";
         if (!password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
       }
-      await env.USER_PREFS.put(`pushsub:${email}`, JSON.stringify({
-        endpoint: sub.endpoint,
-        keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth },
-        ts: new Date().toISOString(),
-      }));
-      return json({ ok: true });
+      // 多裝置:存成陣列,以 endpoint 去重(手機/Mac/平板各一筆都保留)
+      let list = [];
+      const existing = await env.USER_PREFS.get(`pushsub:${email}`);
+      if (existing) { try { const p = JSON.parse(existing); list = Array.isArray(p) ? p : [p]; } catch {} }
+      const entry = { endpoint: sub.endpoint, keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth }, ts: new Date().toISOString() };
+      list = list.filter((s) => s && s.endpoint && s.endpoint !== sub.endpoint);
+      list.push(entry);
+      if (list.length > 10) list = list.slice(-10); // 上限 10 台
+      await env.USER_PREFS.put(`pushsub:${email}`, JSON.stringify(list));
+      return json({ ok: true, devices: list.length });
     }
     if (url.pathname === "/push/unsubscribe" && request.method === "POST") {
       let body;
@@ -1196,15 +1200,27 @@ export default {
         const password = body.password || "";
         if (!password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
       }
+      // 帶 endpoint → 只移除「這台」;不帶 → 全清(關閉所有裝置)
+      if (body.endpoint) {
+        let list = [];
+        const existing = await env.USER_PREFS.get(`pushsub:${email}`);
+        if (existing) { try { const p = JSON.parse(existing); list = Array.isArray(p) ? p : [p]; } catch {} }
+        list = list.filter((s) => s && s.endpoint && s.endpoint !== body.endpoint);
+        if (list.length) await env.USER_PREFS.put(`pushsub:${email}`, JSON.stringify(list));
+        else await env.USER_PREFS.delete(`pushsub:${email}`);
+        return json({ ok: true, devices: list.length });
+      }
       await env.USER_PREFS.delete(`pushsub:${email}`);
-      return json({ ok: true });
+      return json({ ok: true, devices: 0 });
     }
-    // 查詢是否已訂閱 web push(前端顯示狀態用,公開唯讀)
+    // 查詢已訂閱 web push 的裝置數(前端顯示狀態用,公開唯讀)
     if (url.pathname === "/push/status" && request.method === "GET") {
       const email = (url.searchParams.get("email") || "").trim().toLowerCase();
-      if (!email) return json({ subscribed: false });
+      if (!email) return json({ subscribed: false, devices: 0 });
       const raw = await env.USER_PREFS.get(`pushsub:${email}`);
-      return json({ subscribed: !!raw });
+      let n = 0;
+      if (raw) { try { const p = JSON.parse(raw); n = Array.isArray(p) ? p.length : 1; } catch { n = 1; } }
+      return json({ subscribed: n > 0, devices: n });
     }
 
     if (url.pathname === "/save-preferences" && request.method === "POST") {
