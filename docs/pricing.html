@@ -1364,8 +1364,8 @@ async function submitFree() {
       if (window.mdTrackLead) window.mdTrackLead({ plan: "free" });
       msg.style.color = '#6ee7b7';
       msg.innerHTML = zh
-        ? '✅ 訂閱成功！週一到週六早上 7 點寄到信箱(週日休息)。<br><a href="dashboard.html" style="color:#a5b4fc;">前往我的專區 →</a>'
-        : '✅ Subscribed! Daily digest Mon–Sat 7AM TWT (Sun off).<br><a href="dashboard.html" style="color:#a5b4fc;">Go to My Account →</a>';
+        ? '✅ 訂閱成功！台股早上 7 點、美股晚上 8 點寄到信箱,週一到週六(週日休息)。<br><a href="dashboard.html" style="color:#a5b4fc;">前往我的專區 →</a>'
+        : '✅ Subscribed! TW digest 7AM · US digest 8PM TWT, Mon–Sat (Sun off).<br><a href="dashboard.html" style="color:#a5b4fc;">Go to My Account →</a>';
       msg.style.display = 'block';
       btn.textContent = zh ? '已加入 ✓' : 'Joined ✓';
     } else {
