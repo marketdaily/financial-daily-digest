@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bgg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0E0E0A"/>
+      <stop offset="100%" stop-color="#070705"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="46%" r="60%">
+      <stop offset="0%" stop-color="#FFB000" stop-opacity="0.18"/>
+      <stop offset="55%" stop-color="#FFB000" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#FFB000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bar1" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#A66E00"/>
+      <stop offset="100%" stop-color="#FFB000"/>
+    </linearGradient>
+    <linearGradient id="bar2" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#FFB000"/>
+      <stop offset="100%" stop-color="#FFD166"/>
+    </linearGradient>
+    <linearGradient id="bar3" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#FFC74D"/>
+      <stop offset="55%" stop-color="#9FF03A"/>
+      <stop offset="100%" stop-color="#4AF626"/>
+    </linearGradient>
+    <pattern id="scan" width="6" height="6" patternUnits="userSpaceOnUse">
+      <rect width="6" height="3" fill="#000000" fill-opacity="0"/>
+      <rect y="3" width="6" height="3" fill="#000000" fill-opacity="0.22"/>
+    </pattern>
+    <filter id="soft" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="14"/>
+    </filter>
+  </defs>
+
+  <!-- background -->
+  <rect width="1024" height="1024" fill="url(#bgg)"/>
+  <rect width="1024" height="1024" fill="url(#glow)"/>
+
+  <!-- glow halo behind bars -->
+  <g filter="url(#soft)" opacity="0.55">
+    <rect x="300" y="560" width="96" height="150" rx="14" fill="#FFB000"/>
+    <rect x="464" y="430" width="96" height="280" rx="14" fill="#FFB000"/>
+    <rect x="628" y="300" width="96" height="410" rx="14" fill="#4AF626"/>
+  </g>
+
+  <!-- candlestick bars -->
+  <rect x="300" y="560" width="96" height="150" rx="14" fill="url(#bar1)"/>
+  <rect x="464" y="430" width="96" height="280" rx="14" fill="url(#bar2)"/>
+  <rect x="628" y="300" width="96" height="410" rx="14" fill="url(#bar3)"/>
+
+  <!-- wick on tallest bar -->
+  <rect x="671" y="214" width="10" height="92" rx="5" fill="#4AF626" fill-opacity="0.85"/>
+
+  <!-- signal spark -->
+  <circle cx="676" cy="196" r="34" fill="#4AF626" opacity="0.25" filter="url(#soft)"/>
+  <circle cx="676" cy="196" r="20" fill="#9FFF6B"/>
+  <circle cx="676" cy="196" r="20" fill="none" stroke="#4AF626" stroke-width="3"/>
+
+  <!-- baseline grid line -->
+  <rect x="280" y="724" width="464" height="3" rx="1.5" fill="#FFB000" fill-opacity="0.28"/>
+
+  <!-- terminal prompt mark -->
+  <text x="300" y="838" font-family="'IBM Plex Mono','SFMono-Regular',ui-monospace,monospace" font-size="92" font-weight="700" fill="#4AF626" letter-spacing="-2">&gt;_</text>
+
+  <!-- CRT scanlines -->
+  <rect width="1024" height="1024" fill="url(#scan)"/>
+  <!-- inner vignette -->
+  <rect x="6" y="6" width="1012" height="1012" rx="0" fill="none" stroke="#000000" stroke-opacity="0.35" stroke-width="12"/>
+</svg>
