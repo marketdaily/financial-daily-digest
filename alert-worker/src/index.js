@@ -152,33 +152,44 @@ function ruleScore(eventType, ageHours) {
   return Math.round(base * (1 - 0.4 * decay));
 }
 
-// 列出所有已綁定 LINE 且 plan=premium 的用戶與其持股。
+// 列出所有 plan=premium 且至少綁了一個推播通道(LINE 或 自有 web push)的用戶與持股。
 async function premiumRecipients(env) {
-  const recipients = [];
-  let cursor;
-  do {
-    const page = await env.USER_PREFS.list({ prefix: "line:", cursor });
-    for (const k of page.keys) {
-      const email = k.name.slice(5);
-      const plan = await env.USER_PREFS.get(`plan:${email}`);
-      if (plan !== "premium") continue;
-      const userId = await env.USER_PREFS.get(k.name);
-      if (!userId) continue;
-      let holdings = new Set();
-      const raw = await env.USER_PREFS.get(email);
-      if (raw) {
-        try {
-          const p = JSON.parse(raw);
-          for (const s of [...(p.us_stocks || []), ...(p.tw_stocks || [])]) {
-            holdings.add(String(s).trim().toUpperCase());
-          }
-        } catch {}
-      }
-      recipients.push({ email, userId, holdings });
+  const map = new Map(); // email -> {email, userId, pushSub, holdings}
+  async function ensure(email) {
+    if (map.has(email)) return map.get(email);
+    const plan = await env.USER_PREFS.get(`plan:${email}`);
+    if (plan !== "premium") { map.set(email, null); return null; }
+    let holdings = new Set();
+    const raw = await env.USER_PREFS.get(email);
+    if (raw) {
+      try {
+        const p = JSON.parse(raw);
+        for (const s of [...(p.us_stocks || []), ...(p.tw_stocks || [])]) {
+          holdings.add(String(s).trim().toUpperCase());
+        }
+      } catch {}
     }
-    cursor = page.list_complete ? null : page.cursor;
-  } while (cursor);
-  return recipients;
+    const r = { email, userId: null, pushSub: null, holdings };
+    map.set(email, r);
+    return r;
+  }
+  async function scan(prefix, apply) {
+    let cursor;
+    do {
+      const page = await env.USER_PREFS.list({ prefix, cursor });
+      for (const k of page.keys) {
+        const email = k.name.slice(prefix.length);
+        const r = await ensure(email);
+        if (r) await apply(r, k.name);
+      }
+      cursor = page.list_complete ? null : page.cursor;
+    } while (cursor);
+  }
+  await scan("line:", async (r, key) => { r.userId = await env.USER_PREFS.get(key); });
+  await scan("pushsub:", async (r, key) => {
+    try { r.pushSub = JSON.parse(await env.USER_PREFS.get(key)); } catch {}
+  });
+  return [...map.values()].filter((r) => r && (r.userId || r.pushSub));
 }
 
 // Claude 嚴重度判定:輸入新聞 + 相關 ticker,輸出 {severity 0-10, reason}。
@@ -267,6 +278,126 @@ async function lineToken(env, { force = false } = {}) {
   return data.access_token;
 }
 
+// ───────── 自有 Web Push 推播通道(VAPID + aes128gcm,零成本無上限,不經 LINE)─────────
+function b64urlToBytes(s) {
+  s = s.replace(/-/g, "+").replace(/_/g, "/");
+  while (s.length % 4) s += "=";
+  const bin = atob(s);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+function bytesToB64url(bytes) {
+  const b = new Uint8Array(bytes);
+  let bin = "";
+  for (let i = 0; i < b.length; i++) bin += String.fromCharCode(b[i]);
+  return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function concatBytes(...arrs) {
+  let len = 0;
+  for (const a of arrs) len += a.length;
+  const out = new Uint8Array(len);
+  let off = 0;
+  for (const a of arrs) { out.set(a, off); off += a.length; }
+  return out;
+}
+async function hkdf(salt, ikm, info, len) {
+  const key = await crypto.subtle.importKey("raw", ikm, "HKDF", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "HKDF", hash: "SHA-256", salt, info }, key, len * 8);
+  return new Uint8Array(bits);
+}
+async function vapidJwt(env, audience) {
+  const enc = new TextEncoder();
+  const header = bytesToB64url(enc.encode(JSON.stringify({ typ: "JWT", alg: "ES256" })));
+  const payload = bytesToB64url(enc.encode(JSON.stringify({
+    aud: audience,
+    exp: Math.floor(Date.now() / 1000) + 12 * 3600,
+    sub: env.VAPID_SUBJECT || "mailto:admin@marketdaily.ai",
+  })));
+  const unsigned = `${header}.${payload}`;
+  const pub = b64urlToBytes(env.VAPID_PUBLIC_KEY);
+  const jwk = {
+    kty: "EC", crv: "P-256",
+    x: bytesToB64url(pub.slice(1, 33)),
+    y: bytesToB64url(pub.slice(33, 65)),
+    d: env.VAPID_PRIVATE_KEY, ext: true,
+  };
+  const key = await crypto.subtle.importKey("jwk", jwk, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
+  const sig = await crypto.subtle.sign({ name: "ECDSA", hash: "SHA-256" }, key, enc.encode(unsigned));
+  return `${unsigned}.${bytesToB64url(sig)}`;
+}
+// RFC 8291 aes128gcm payload 加密。回傳完整 body(含 header)。
+async function encryptWebPush(subscription, plaintextStr) {
+  const enc = new TextEncoder();
+  const plaintext = enc.encode(plaintextStr);
+  const clientPub = b64urlToBytes(subscription.keys.p256dh);
+  const auth = b64urlToBytes(subscription.keys.auth);
+  const serverKeys = await crypto.subtle.generateKey({ name: "ECDH", namedCurve: "P-256" }, true, ["deriveBits"]);
+  const serverPubRaw = new Uint8Array(await crypto.subtle.exportKey("raw", serverKeys.publicKey));
+  const clientKey = await crypto.subtle.importKey("raw", clientPub, { name: "ECDH", namedCurve: "P-256" }, false, []);
+  const shared = new Uint8Array(await crypto.subtle.deriveBits({ name: "ECDH", public: clientKey }, serverKeys.privateKey, 256));
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const keyInfo = concatBytes(enc.encode("WebPush: info\0"), clientPub, serverPubRaw);
+  const ikm = await hkdf(auth, shared, keyInfo, 32);
+  const cek = await hkdf(salt, ikm, enc.encode("Content-Encoding: aes128gcm\0"), 16);
+  const nonce = await hkdf(salt, ikm, enc.encode("Content-Encoding: nonce\0"), 12);
+  const padded = concatBytes(plaintext, new Uint8Array([0x02]));
+  const aesKey = await crypto.subtle.importKey("raw", cek, { name: "AES-GCM" }, false, ["encrypt"]);
+  const ciphertext = new Uint8Array(await crypto.subtle.encrypt({ name: "AES-GCM", iv: nonce }, aesKey, padded));
+  const header = new Uint8Array(16 + 4 + 1 + serverPubRaw.length);
+  header.set(salt, 0);
+  new DataView(header.buffer).setUint32(16, 4096, false); // record size
+  header[20] = serverPubRaw.length;
+  header.set(serverPubRaw, 21);
+  return concatBytes(header, ciphertext);
+}
+async function webPush(env, subscription, payloadStr) {
+  if (!env.VAPID_PUBLIC_KEY || !env.VAPID_PRIVATE_KEY) return { ok: false, status: 0 };
+  try {
+    const u = new URL(subscription.endpoint);
+    const jwt = await vapidJwt(env, `${u.protocol}//${u.host}`);
+    const body = await encryptWebPush(subscription, payloadStr);
+    const res = await fetch(subscription.endpoint, {
+      method: "POST",
+      headers: {
+        TTL: "86400",
+        "Content-Encoding": "aes128gcm",
+        "Content-Type": "application/octet-stream",
+        Authorization: `vapid t=${jwt}, k=${env.VAPID_PUBLIC_KEY}`,
+      },
+      body,
+    });
+    return { ok: res.ok, status: res.status };
+  } catch (e) {
+    return { ok: false, status: 0, error: String(e).slice(0, 80) };
+  }
+}
+// 瀏覽器通知 payload(service worker 解析用)
+function pushNotif(news, ticker, severity, reason) {
+  const name = ticker === "大盤" ? "大盤" : displayName(ticker);
+  return JSON.stringify({
+    title: severity >= 9 ? `🚨 ${name}｜重大消息` : `📈 ${name}｜即時提醒`,
+    body: (news.title || reason || "").slice(0, 160),
+    url: news.url || "https://marketdaily.ai/dashboard.html",
+    tag: `md-${ticker}-${(news.publishedAt || "").slice(0, 13)}`,
+  });
+}
+// 統一投遞:對單一收件者嘗試所有可用通道(LINE + 自有 web push),任一成功即算送達。
+async function deliverAlert(env, r, lineTok, text, notifStr) {
+  let ok = false; const channels = []; let lastStatus = 0;
+  if (r.userId && lineTok) {
+    const lr = await linePush(env, lineTok, r.userId, text);
+    if (lr.ok) { ok = true; channels.push("line"); }
+    else { lastStatus = lr.status; if (lr.status === 400 || lr.status === 403) await env.USER_PREFS.put(`linestale:${r.email}`, new Date().toISOString()); }
+  }
+  if (r.pushSub) {
+    const wr = await webPush(env, r.pushSub, notifStr);
+    if (wr.ok) { ok = true; channels.push("webpush"); }
+    else { lastStatus = wr.status || lastStatus; if (wr.status === 404 || wr.status === 410) await env.USER_PREFS.delete(`pushsub:${r.email}`); }
+  }
+  return { ok, channels, status: lastStatus };
+}
+
 function alertMessage(news, ticker, severity, reason, meta = {}) {
   const { speculative = false, stance = "", action = "" } = meta;
   const name = ticker === "大盤" ? "大盤" : displayName(ticker);
@@ -316,30 +447,47 @@ async function linePush(env, token, userId, text) {
 // 主動告訴 admin(Delvin 的 LINE):推播 / canary 出狀況。
 // 節流:同小時最多 1 則,避免炸訊息;ADMIN_LINE_USER_ID 沒設就跳過。
 async function alertAdmin(env, summary) {
-  if (!env.ADMIN_LINE_USER_ID) return;
   const hourKey = `admin_alert:${new Date().toISOString().slice(0, 13)}`;
   if (await env.USER_PREFS.get(hourKey)) return;
-  const token = await lineToken(env, { force: true });
-  if (!token) {
-    // 連 token 都拿不到 → 換 secret 才有救,但至少留個 KV trail
-    await env.USER_PREFS.put(`admin_alert_failed:${Date.now()}`,
-      JSON.stringify({ summary, reason: "lineToken null" }),
-      { expirationTtl: 7 * 24 * 3600 });
-    return;
+  let delivered = false;
+  // 1) 自有 web push(無額度限制,優先)
+  if (env.ADMIN_EMAIL) {
+    try {
+      const raw = await env.USER_PREFS.get(`pushsub:${env.ADMIN_EMAIL}`);
+      if (raw) {
+        const wr = await webPush(env, JSON.parse(raw), JSON.stringify({
+          title: "🚨 MarketDaily Alert",
+          body: summary.slice(0, 300),
+          url: "https://marketdaily.ai/dashboard.html",
+        }));
+        if (wr.ok) delivered = true;
+      }
+    } catch {}
   }
-  try {
-    const res = await fetch(LINE_PUSH_URL, {
-      method: "POST",
-      headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-      body: JSON.stringify({
-        to: env.ADMIN_LINE_USER_ID,
-        messages: [{ type: "text", text: `🚨 MarketDaily Alert\n\n${summary}\n\n— alert-worker` }],
-      }),
-    });
-    if (res.ok) {
-      await env.USER_PREFS.put(hourKey, "1", { expirationTtl: 3700 });
+  // 2) LINE(備援,受 200/月額度限制)
+  if (env.ADMIN_LINE_USER_ID) {
+    const token = await lineToken(env, { force: true });
+    if (token) {
+      try {
+        const res = await fetch(LINE_PUSH_URL, {
+          method: "POST",
+          headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+          body: JSON.stringify({
+            to: env.ADMIN_LINE_USER_ID,
+            messages: [{ type: "text", text: `🚨 MarketDaily Alert\n\n${summary}\n\n— alert-worker` }],
+          }),
+        });
+        if (res.ok) delivered = true;
+      } catch {}
     }
-  } catch {}
+  }
+  if (delivered) {
+    await env.USER_PREFS.put(hourKey, "1", { expirationTtl: 3700 });
+  } else {
+    await env.USER_PREFS.put(`admin_alert_failed:${Date.now()}`,
+      JSON.stringify({ summary, reason: "all channels failed" }),
+      { expirationTtl: 7 * 24 * 3600 });
+  }
 }
 
 // Canary:不依賴真實事件,定期驗 token+LINE API 都活著。
@@ -481,11 +629,7 @@ async function runPipeline(env, { push, persist }) {
     // 通過門檻 → 逐持有者推播(去重 + 每日上限)
     const today = twDate();
     const token = push ? await lineToken(env) : null;
-    if (push && !token) {
-      report.errors.push("line:無推播 token");
-      report.candidates.push(cand);
-      continue;
-    }
+    if (push && !token) report.errors.push("line:無推播 token(web push 仍會嘗試)");
     for (const h of holders) {
       const hit = news.tickers.find((t) => h.holdings.has(t)) || (marketWide ? "大盤" : undefined);
       const cluster = `pushed:${h.email}:${clusterKey(hit, eventType, news.publishedAt)}`;
@@ -505,12 +649,12 @@ async function runPipeline(env, { push, persist }) {
         continue;
       }
       const msg = alertMessage(news, hit, severity, reason, { speculative, stance, action });
-      const pushed = await linePush(env, token, h.userId, msg);
+      const pushed = await deliverAlert(env, h, token, msg, pushNotif(news, hit, severity, reason));
       if (pushed.ok) {
         await env.USER_PREFS.put(cluster, report.ts, { expirationTtl: PUSHED_TTL });
         await env.USER_PREFS.put(countKey, String(count + 1), { expirationTtl: COUNT_TTL });
         report.counts.pushed++;
-        cand.recipients.push({ email: h.email, ticker: hit, status: "pushed" });
+        cand.recipients.push({ email: h.email, ticker: hit, status: `pushed:${pushed.channels.join("+")}` });
         // 把推播訊息同時寫進兩個 KV,讓 stripe-webhook 的 chat bot 認得「剛剛那則」:
         //  (A) linechat:${userId} —— 塞進對話歷史(role:assistant + [系統主動推播] 前綴)
         //  (B) alerthistory:${userId} —— per-user push 清單(結構化),chat bot 開場直接注入 system
@@ -553,12 +697,8 @@ async function runPipeline(env, { push, persist }) {
         } catch (e) {
           report.errors.push(`alert-history-write:${h.email}:${String(e).slice(0,80)}`);
         }
-      } else if (pushed.status === 400 || pushed.status === 403) {
-        // userId 失效 / 未加好友 → 標記 stale,提示重新綁定。
-        await env.USER_PREFS.put(`linestale:${h.email}`, report.ts);
-        cand.recipients.push({ email: h.email, status: `fail:${pushed.status} 已標記重新綁定` });
-        report.errors.push(`push:${h.email}:${pushed.status}`);
       } else {
+        // 所有通道都失敗(deliverAlert 已處理 stale/失效訂閱清除)
         cand.recipients.push({ email: h.email, status: `fail:${pushed.status}` });
         report.errors.push(`push:${h.email}:${pushed.status}`);
       }
@@ -655,9 +795,15 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
     const fired = { headline: sig.headline_zh, severity: sig.severity, kind: sig.kind, recipients: [] };
     if (push && targets.length) {
       const token = await lineToken(env);
+      const notif = JSON.stringify({
+        title: `🏛️ 政壇影響｜${(sig.headline_zh || "").slice(0, 36)}`,
+        body: (sig.headline_zh || "").slice(0, 160),
+        url: sig.post_url || "https://marketdaily.ai/dashboard.html",
+        tag: `md-pol-${(sig.post_url || sig.headline_zh || "").slice(0, 40)}`,
+      });
       for (const r of targets) {
-        const out = token ? await linePush(env, token, r.userId, msg) : { ok: false, status: "no-token" };
-        fired.recipients.push({ email: r.email, status: out.ok ? "pushed" : `fail:${out.status}` });
+        const out = await deliverAlert(env, r, token, msg, notif);
+        fired.recipients.push({ email: r.email, status: out.ok ? `pushed:${out.channels.join("+")}` : `fail:${out.status}` });
         if (out.ok) report.pushed++;
       }
     } else {
@@ -826,15 +972,33 @@ export default {
       try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
       const message = String(body.message || "").slice(0, 4900);
       if (!message) return json({ error: "empty_message" }, 400);
-      if (!env.ADMIN_LINE_USER_ID) return json({ error: "admin_line_not_configured" }, 503);
-      const token = await lineToken(env, { force: true });
-      if (!token) return json({ error: "line_token_unavailable" }, 503);
-      const res = await fetch(LINE_PUSH_URL, {
-        method: "POST",
-        headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-        body: JSON.stringify({ to: env.ADMIN_LINE_USER_ID, messages: [{ type: "text", text: message }] }),
-      });
-      return json({ ok: res.ok, status: res.status });
+      let ok = false; const channels = []; let lineStatus = null;
+      // 1) 自有 web push(無額度限制,優先)
+      if (env.ADMIN_EMAIL) {
+        try {
+          const raw = await env.USER_PREFS.get(`pushsub:${env.ADMIN_EMAIL}`);
+          if (raw) {
+            const wr = await webPush(env, JSON.parse(raw), JSON.stringify({
+              title: "🔔 MarketDaily", body: message.slice(0, 300), url: "https://marketdaily.ai/dashboard.html",
+            }));
+            if (wr.ok) { ok = true; channels.push("webpush"); }
+          }
+        } catch {}
+      }
+      // 2) LINE 備援
+      if (env.ADMIN_LINE_USER_ID) {
+        const token = await lineToken(env, { force: true });
+        if (token) {
+          const res = await fetch(LINE_PUSH_URL, {
+            method: "POST",
+            headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+            body: JSON.stringify({ to: env.ADMIN_LINE_USER_ID, messages: [{ type: "text", text: message }] }),
+          });
+          lineStatus = res.status;
+          if (res.ok) { ok = true; channels.push("line"); }
+        }
+      }
+      return json({ ok, channels, lineStatus });
     }
 
     // 行銷貼文 multicast 目標清單:列出所有綁過 LINE 但 plan != premium 的 userId。

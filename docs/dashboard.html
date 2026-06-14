@@ -791,6 +791,21 @@ nav::after {
       </div>
     </div>
 
+    <!-- 即時推播提醒(自有通道,免費無上限,Premium 專屬) -->
+    <div class="card" id="push-alert-card" style="margin-top:8px;display:none;">
+      <div class="card-title">🔔 即時推播提醒</div>
+      <div class="card-desc">重大新聞影響你的持股時,直接推播到這台裝置(鎖屏也會跳通知),不必裝 LINE、不必等隔天日報。完全免費。</div>
+      <div id="push-unbound-box" style="display:none;margin-top:14px;">
+        <button class="save-btn" onclick="enablePush()" id="push-enable-btn" style="margin-top:0;background:linear-gradient(135deg,#6366f1,#8b5cf6);">🔔 啟用即時推播</button>
+        <div id="push-ios-hint" style="display:none;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6;padding:10px 13px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.22);border-radius:10px;">💡 iPhone / iPad 用戶:請先點 Safari 分享鈕 → <b>加入主畫面</b>,再從主畫面打開本站才能啟用推播(Apple 限制)。</div>
+        <div style="display:none;margin-top:12px;font-size:13px;color:#f87171;text-align:center;" id="push-err"></div>
+      </div>
+      <div id="push-bound-box" style="display:none;margin-top:14px;">
+        <div style="padding:12px 16px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.32);color:#c7d2fe;font-size:13px;font-weight:600;border-radius:10px;margin-bottom:12px;">✓ 這台裝置已啟用即時推播</div>
+        <button class="save-btn" onclick="disablePush()" id="push-disable-btn" style="margin-top:0;background:rgba(255,255,255,0.06);border:1px solid var(--input-border);">關閉推播</button>
+      </div>
+    </div>
+
     <!-- AI 投資助手(Premium 專屬) -->
     <div class="card" id="chat-card" style="margin-top:8px;display:none;">
       <div class="card-title" data-i18n="chat_card_title">💬 AI 投資助手</div>
@@ -1747,6 +1762,7 @@ async function showDashboard(email, plan) {
     loadAdminStats();
   }
   setupLineCard(email, plan);
+  setupPushCard(email, plan);
   setupChatCard(email, plan);
   await loadPreferences(email);
   loadReferral(email);
@@ -1769,6 +1785,95 @@ async function setupLineCard(email, plan) {
   document.getElementById("line-unbound-box").style.display = bound ? "none" : "block";
   // 清除任何殘留的 pending flag(避免舊版本留下的副作用)
   sessionStorage.removeItem("md-pending-bindLine");
+}
+
+// ── 自有 Web Push 即時推播(免費無上限,不經 LINE)──
+const VAPID_PUBLIC_KEY = "BIP9LicS6GBRTJ0hwW6iihX6L5o41zY46xhoZ8c7PLIbWfUM3Gtb05BNN_Pn8k7zrd-w9LieG3WCnzbrAEn8uQ8";
+function urlB64ToUint8Array(b64) {
+  const pad = "=".repeat((4 - (b64.length % 4)) % 4);
+  const base64 = (b64 + pad).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  const out = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i);
+  return out;
+}
+function pushSupported() {
+  return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+}
+async function setupPushCard(email, plan) {
+  const card = document.getElementById("push-alert-card");
+  if (!card) return;
+  if (plan !== "premium" && plan !== "admin") { card.style.display = "none"; return; }
+  card.style.display = "block";
+  // iOS Safari:僅在「已加入主畫面(standalone)」時支援 web push
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
+  if (isIOS && !standalone) document.getElementById("push-ios-hint").style.display = "block";
+  if (!pushSupported()) {
+    document.getElementById("push-enable-btn").disabled = true;
+    document.getElementById("push-enable-btn").textContent = "此瀏覽器不支援推播";
+    document.getElementById("push-unbound-box").style.display = "block";
+    return;
+  }
+  let subscribed = false;
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (reg) { const s = await reg.pushManager.getSubscription(); subscribed = !!s; }
+  } catch {}
+  document.getElementById("push-bound-box").style.display = subscribed ? "block" : "none";
+  document.getElementById("push-unbound-box").style.display = subscribed ? "none" : "block";
+}
+async function enablePush() {
+  const email = localStorage.getItem("md-email");
+  const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
+  const errEl = document.getElementById("push-err");
+  const btn = document.getElementById("push-enable-btn");
+  errEl.style.display = "none";
+  if (!pushSupported()) { errEl.textContent = "此瀏覽器不支援推播"; errEl.style.display = "block"; return; }
+  btn.disabled = true; btn.textContent = "啟用中…";
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") { throw new Error("你拒絕了通知權限,請到瀏覽器設定開啟後再試"); }
+    const reg = await navigator.serviceWorker.register("/sw.js");
+    await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    }
+    const res = await fetch(`${WORKER_URL}/push/subscribe`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password, subscription: sub.toJSON() }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) throw new Error(data.error === "auth" ? "登入已過期,請重新登入後再試" : "儲存訂閱失敗,請稍後再試");
+    document.getElementById("push-bound-box").style.display = "block";
+    document.getElementById("push-unbound-box").style.display = "none";
+  } catch (e) {
+    errEl.textContent = e.message || "啟用失敗"; errEl.style.display = "block";
+  } finally {
+    btn.disabled = false; btn.textContent = "🔔 啟用即時推播";
+  }
+}
+async function disablePush() {
+  const email = localStorage.getItem("md-email");
+  const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
+  const btn = document.getElementById("push-disable-btn");
+  btn.disabled = true; btn.textContent = "關閉中…";
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (reg) { const s = await reg.pushManager.getSubscription(); if (s) await s.unsubscribe(); }
+    await fetch(`${WORKER_URL}/push/unsubscribe`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+    document.getElementById("push-bound-box").style.display = "none";
+    document.getElementById("push-unbound-box").style.display = "block";
+  } catch {} finally {
+    btn.disabled = false; btn.textContent = "關閉推播";
+  }
 }
 
 // ── AI 投資助手 ──

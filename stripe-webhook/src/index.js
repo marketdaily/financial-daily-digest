@@ -1164,6 +1164,49 @@ export default {
     }
 
     // Save user preferences
+    // 自有 Web Push 訂閱:存瀏覽器 push subscription,alert-worker 讀 pushsub:${email} 直接發(零成本無上限,不經 LINE)
+    if (url.pathname === "/push/subscribe" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
+      const email = (body.email || "").trim().toLowerCase();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "invalid_email" }, 400);
+      const sub = body.subscription;
+      if (!sub || !sub.endpoint || !sub.keys || !sub.keys.p256dh || !sub.keys.auth) {
+        return json({ error: "invalid_subscription" }, 400);
+      }
+      const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
+      if (storedHash) {
+        const password = body.password || "";
+        if (!password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
+      }
+      await env.USER_PREFS.put(`pushsub:${email}`, JSON.stringify({
+        endpoint: sub.endpoint,
+        keys: { p256dh: sub.keys.p256dh, auth: sub.keys.auth },
+        ts: new Date().toISOString(),
+      }));
+      return json({ ok: true });
+    }
+    if (url.pathname === "/push/unsubscribe" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
+      const email = (body.email || "").trim().toLowerCase();
+      if (!email) return json({ error: "invalid_email" }, 400);
+      const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
+      if (storedHash) {
+        const password = body.password || "";
+        if (!password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
+      }
+      await env.USER_PREFS.delete(`pushsub:${email}`);
+      return json({ ok: true });
+    }
+    // 查詢是否已訂閱 web push(前端顯示狀態用,公開唯讀)
+    if (url.pathname === "/push/status" && request.method === "GET") {
+      const email = (url.searchParams.get("email") || "").trim().toLowerCase();
+      if (!email) return json({ subscribed: false });
+      const raw = await env.USER_PREFS.get(`pushsub:${email}`);
+      return json({ subscribed: !!raw });
+    }
+
     if (url.pathname === "/save-preferences" && request.method === "POST") {
       let body;
       try { body = await request.json(); } catch {
