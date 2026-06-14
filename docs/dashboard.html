@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>訂閱者專區 · MarketDaily</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#6366f1">
+<meta name="theme-color" content="#FFB000">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -172,23 +172,23 @@ nav::after {
 
 /* Hero banner */
 .dash-hero {
-  background: linear-gradient(135deg, rgba(15,12,41,0.82) 0%, rgba(26,22,64,0.78) 50%, rgba(13,16,32,0.82) 100%);
+  background: linear-gradient(135deg, rgba(28,20,6,0.85) 0%, rgba(34,26,8,0.8) 50%, rgba(10,10,8,0.88) 100%);
   padding: 40px 32px 36px; position: relative; overflow: hidden;
   border-bottom: 1px solid var(--border);
 }
 .dash-hero::after {
   content: ''; position: absolute; inset: 0;
-  background: radial-gradient(ellipse 80% 100% at 80% 50%, rgba(99,102,241,0.14) 0%, transparent 70%);
+  background: radial-gradient(ellipse 80% 100% at 80% 50%, rgba(255,176,0,0.13) 0%, transparent 70%);
   pointer-events: none;
 }
 .dash-hero-inner { position: relative; z-index: 1; max-width: 800px; }
-.dash-hero-label { font-size: 11px; color: #a5b4fc; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
-.dash-hero-name { font-size: 26px; font-weight: 900; color: #fde68a; margin-bottom: 6px; letter-spacing: -0.5px; }
-.dash-hero-sub { font-size: 13px; color: #c4b5fd; line-height: 1.6; }
+.dash-hero-label { font-size: 11px; color: #4AF626; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; font-family: 'IBM Plex Mono', monospace; }
+.dash-hero-name { font-size: 26px; font-weight: 900; color: #FFC74D; margin-bottom: 6px; letter-spacing: -0.5px; }
+.dash-hero-sub { font-size: 13px; color: #b5ad9c; line-height: 1.6; }
 .plan-badge {
   display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(99,102,241,0.2); border: 1px solid rgba(99,102,241,0.35);
-  color: #a5b4fc; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 20px;
+  background: rgba(255,176,0,0.16); border: 1px solid rgba(255,176,0,0.35);
+  color: #FFC74D; font-size: 11px; font-weight: 800; padding: 4px 12px; border-radius: 20px;
 }
 .plan-badge.admin { background: rgba(245,158,11,0.18); border-color: rgba(245,158,11,0.38); color: #fde68a; }
 
@@ -341,7 +341,7 @@ nav::after {
 
 /* AI 助手浮動泡泡 */
 /* 疊在「新手教學」膠囊鈕(#md-tour-fab,right18/bottom18)上方,避免重疊 */
-#chat-fab { position: fixed; right: 18px; bottom: 84px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#10b981,#06b6d4); border: 1px solid rgba(255,255,255,.18); color: #fff; font-size: 23px; cursor: pointer; box-shadow: 0 8px 28px rgba(16,185,129,.45); z-index: 902; display: none; align-items: center; justify-content: center; transition: transform .2s; }
+#chat-fab { position: fixed; right: 18px; bottom: 84px; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#4AF626,#2fb81a); border: 1px solid rgba(74,246,38,.4); color: #0a0a08; font-size: 23px; cursor: pointer; box-shadow: 0 8px 28px rgba(74,246,38,.4); z-index: 902; display: none; align-items: center; justify-content: center; transition: transform .2s; }
 #chat-fab:hover { transform: scale(1.08); }
 #chat-popup { position: fixed; right: 18px; bottom: 150px; width: 380px; max-width: calc(100vw - 32px); height: 500px; max-height: calc(100vh - 180px); background: #0d0d18; border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 20px 60px rgba(0,0,0,.55); z-index: 903; display: none; flex-direction: column; overflow: hidden; }
 #chat-popup.open { display: flex; }
@@ -737,8 +737,8 @@ nav::after {
       .depth-opts{display:flex;gap:10px;margin-top:6px;}
       .depth-opt{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 8px;border-radius:16px;cursor:pointer;font-family:inherit;
         background:rgba(255,255,255,0.04);border:1.5px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.75);transition:all .2s;}
-      .depth-opt:hover{border-color:rgba(129,140,248,0.5);transform:translateY(-2px);}
-      .depth-opt.active{background:linear-gradient(135deg,#6366f1,#4f46e5);border-color:#818cf8;color:#fff;box-shadow:0 8px 24px rgba(99,102,241,0.35);}
+      .depth-opt:hover{border-color:rgba(255,176,0,0.5);transform:translateY(-2px);}
+      .depth-opt.active{background:linear-gradient(135deg,#FFB000,#FF8A3D);border-color:#FFB000;color:#1a1206;box-shadow:0 8px 24px rgba(255,176,0,0.35);}
       .depth-emoji{font-size:24px;}
       .depth-name{font-size:14px;font-weight:800;}
       .depth-sub{font-size:11px;opacity:.7;}
@@ -769,7 +769,7 @@ nav::after {
       </div>
       <div id="depth-lock" style="display:none;margin-top:12px;font-size:13px;color:rgba(255,255,255,0.55);line-height:1.6;">
         <span data-i18n="depth_lock">🔒 日報客製化是 Premium 專屬功能,免費方案固定為「標準」。</span>
-        <a href="pricing.html" style="color:#818cf8;font-weight:700;text-decoration:none;white-space:nowrap;" data-i18n="depth_lock_cta">升級 Premium →</a>
+        <a href="pricing.html" style="color:#FFC74D;font-weight:700;text-decoration:none;white-space:nowrap;" data-i18n="depth_lock_cta">升級 Premium →</a>
       </div>
     </div>
 
@@ -813,11 +813,11 @@ nav::after {
       <div class="card-desc">重大新聞影響你的持股時,直接推播到這台裝置(鎖屏也會跳通知),不必裝 LINE、不必等隔天日報。完全免費。</div>
       <div id="push-unbound-box" style="display:none;margin-top:14px;">
         <button class="save-btn" onclick="enablePush()" id="push-enable-btn" style="margin-top:0;background:linear-gradient(135deg,#6366f1,#8b5cf6);">🔔 啟用即時推播</button>
-        <div id="push-ios-hint" style="display:none;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6;padding:10px 13px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.22);border-radius:10px;">💡 iPhone / iPad 用戶:請先點 Safari 分享鈕 → <b>加入主畫面</b>,再從主畫面打開本站才能啟用推播(Apple 限制)。</div>
+        <div id="push-ios-hint" style="display:none;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6;padding:10px 13px;background:rgba(255,176,0,0.08);border:1px solid rgba(255,176,0,0.22);border-radius:10px;">💡 iPhone / iPad 用戶:請先點 Safari 分享鈕 → <b>加入主畫面</b>,再從主畫面打開本站才能啟用推播(Apple 限制)。</div>
         <div style="display:none;margin-top:12px;font-size:13px;color:#f87171;text-align:center;" id="push-err"></div>
       </div>
       <div id="push-bound-box" style="display:none;margin-top:14px;">
-        <div style="padding:12px 16px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.32);color:#c7d2fe;font-size:13px;font-weight:600;border-radius:10px;margin-bottom:12px;">✓ 這台裝置已啟用即時推播</div>
+        <div style="padding:12px 16px;background:rgba(255,176,0,0.12);border:1px solid rgba(255,176,0,0.32);color:#FFC74D;font-size:13px;font-weight:600;border-radius:10px;margin-bottom:12px;">✓ 這台裝置已啟用即時推播</div>
         <button class="save-btn" onclick="disablePush()" id="push-disable-btn" style="margin-top:0;background:rgba(255,255,255,0.06);border:1px solid var(--input-border);">關閉推播</button>
       </div>
     </div>
@@ -1905,7 +1905,7 @@ async function loadAlertHistory(force) {
     const alerts = (data && data.alerts) || [];
     if (!alerts.length) { if (emptyEl) emptyEl.style.display = "block"; return; }
     for (const a of alerts) {
-      const sev = a.severity >= 9 ? "#f87171" : (a.kind === "political" ? "#a78bfa" : "#6366f1");
+      const sev = a.severity >= 9 ? "#f87171" : (a.kind === "political" ? "#4AF626" : "#FFB000");
       const icon = a.kind === "political" ? "🏛️" : (a.severity >= 9 ? "🚨" : "📈");
       const item = document.createElement("div");
       item.className = "alert-item";
@@ -1917,8 +1917,8 @@ async function loadAlertHistory(force) {
         '</div>' +
         '<div style="font-size:13px;color:rgba(255,255,255,0.9);line-height:1.5;margin-bottom:' + (a.reason || a.action ? "6px" : "0") + ';">' + escapeHtml(a.title) + '</div>' +
         (a.reason ? '<div style="font-size:12px;color:var(--text2);line-height:1.6;">💡 ' + escapeHtml(a.reason) + '</div>' : "") +
-        ((a.stance || a.action) ? '<div style="font-size:12px;color:#c7d2fe;line-height:1.6;margin-top:4px;">📊 ' + escapeHtml([a.stance, a.action].filter(Boolean).join(" — ")) + '</div>' : "") +
-        (a.url && a.url.indexOf("dashboard.html") === -1 ? '<a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:12px;color:#818cf8;font-weight:700;text-decoration:none;">🔗 看原文 →</a>' : "");
+        ((a.stance || a.action) ? '<div style="font-size:12px;color:#FFC74D;line-height:1.6;margin-top:4px;">📊 ' + escapeHtml([a.stance, a.action].filter(Boolean).join(" — ")) + '</div>' : "") +
+        (a.url && a.url.indexOf("dashboard.html") === -1 ? '<a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-size:12px;color:#FFC74D;font-weight:700;text-decoration:none;">🔗 看原文 →</a>' : "");
       listEl.appendChild(item);
     }
   } catch (e) {
