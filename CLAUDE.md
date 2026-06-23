@@ -5,8 +5,9 @@
 - 主要開發語言：Python
 
 ## 開發環境
-- 平台：macOS
-- 終端機：Terminal
+- 平台：Windows（家用主機，WSL2 / Ubuntu）—— 原 macOS 已非主力機
+- 終端機：WSL bash
+- 語音輸入：Windows 內建 Win+H（需接麥克風；詳見 memory feedback_voice_dictation_terminal）
 
 ## 專案說明
 
@@ -129,6 +130,73 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 | `portfolio-optimization` | 投組權重配置：Markowitz 最小變異/最大 Sharpe 切點、風險平價（equal risk contribution）、1/N 基準;估計誤差為何讓最佳化脆弱（範本 quant_lab/portfolio_optimizer.py） |
 | `regime-detection` | 偵測市場狀態（趨勢/均值回歸/隨機漫步）：Hurst 指數、variance ratio、漂移vs動能差別、當策略進場閘門;含「過濾器不會無中生有 edge」的誠實教訓（範本 trading_bot/bot/regime.py） |
 | `order-execution` | 進場/下單執行的真學問：為何散戶贏不了延遲競賽（HFT 結構性現實:co-location/微波/FPGA）、maker vs taker、捕捉價差、滑價/市場衝擊、逆選擇、訊號時效;maker 是條件性成本優勢非必勝（範本 quant_lab/execution_cost.py） |
+
+### 邊際/量化進階技能（edge pipeline + 投資選股）
+| 技能 | 用途 |
+|------|------|
+| `edge-pipeline-orchestrator` | 串起完整 edge 研究管線：候選偵測→策略設計→匯整排名→postmortem |
+| `edge-signal-aggregator` | 匯整並排名多個 edge-finding skill 輸出的訊號，產出統一候選清單 |
+| `edge-strategy-designer` | 把抽象 edge 概念轉成策略草稿變體，可選匯出成可執行 ticket |
+| `signal-postmortem` | 記錄並分析 edge pipeline 等 skill 產生的訊號實際交易結果，回饋學習 |
+| `institutional-flow-tracker` | 追蹤機構投資人持股變動與資金流向（13F/持股異動） |
+| `macro-regime-detector` | 偵測結構性總經 regime 轉折（1-2 年視角），跨資產比率分析 |
+| `market-breadth-analyzer` | 用 TraderMonty 公開 CSV 量化市場廣度健康度，輸出 0-100 綜合分 |
+| `options-strategy-advisor` | 選擇權策略分析與模擬：理論定價、希臘字母、策略損益 |
+| `position-sizer` | 多單風險式部位大小計算（依停損距離與帳戶風險） |
+| `vcp-screener` | 篩 S&P 500 的 Minervini VCP 波動收縮型態 |
+| `stanley-druckenmiller-investment` | Druckenmiller 策略合成器：整合 8 個上游 skill 輸出（市場廣度/總經 regime 等）做投資決策 |
+
+### DeFi / 鏈上安全技能
+| 技能 | 用途 |
+|------|------|
+| `defi-amm-security` | Solidity AMM/流動性池/swap 安全檢查清單（重入、價格操縱等） |
+| `evm-token-decimals` | 防跨鏈 token decimals 靜默不一致 bug：runtime decimal 查詢、鏈別差異 |
+
+### AI / Agent 工程技能
+| 技能 | 用途 |
+|------|------|
+| `agentic-engineering` | 以 agentic engineer 模式運作：eval-first 執行、任務分解、成本感知 |
+| `ai-first-engineering` | AI agent 產出大量實作的團隊工程運作模型 |
+| `ai-regression-testing` | AI 輔助開發的回歸測試策略：sandbox-mode API 測試不污染 prod |
+| `agent-eval` | 多 coding agent（Claude Code/Aider/Codex 等）在自訂任務上的對打比較 |
+| `eval-harness` | Claude Code session 的正式評估框架，eval-driven 開發 |
+| `council` | 四聲音 council 處理模糊決策/取捨/go-no-go 判斷 |
+| `iterative-retrieval` | 漸進式精煉 context 檢索，解 subagent context 問題 |
+| `cost-aware-llm-pipeline` | LLM API 成本優化：依任務複雜度路由模型、預算控管 |
+| `context-budget` | 稽核 Claude Code context window 消耗（agent/skill/MCP/rules） |
+| `cost-tracking` | 追蹤並回報 Claude Code token 用量、花費、預算 |
+| `autonomous-loops` | 自主 Claude Code loop 的模式與架構（序列/管線/品質閘） |
+| `continuous-agent-loop` | 連續自主 agent loop：品質閘、eval、恢復條件 |
+| `continuous-learning-v2` | 本能式學習系統：經 hooks 觀察 session、產生原子 instinct |
+| `skill-creator` | 建立/修改/改善既有 skill，並量測 skill 效能 |
+| `mcp-builder` | 建構高品質 MCP server 的指南 |
+
+### 開發 / 工程實務技能
+| 技能 | 用途 |
+|------|------|
+| `api-connector-builder` | 依目標 repo 既有整合模式建立新 API connector/provider |
+| `browser-qa` | 用瀏覽器自動化做視覺測試與 UI 互動驗證 |
+| `click-path-audit` | 追蹤每個 user-facing 按鈕完整狀態變化序列找 bug |
+| `deployment-patterns` | 部署工作流：CI/CD、Docker 容器化、health check、rollback |
+| `error-handling` | TypeScript/Python/Go 穩健錯誤處理模式（typed errors 等） |
+| `data-scraper-agent` | 為任何公開來源建全自動 AI 資料收集 agent（職缺板等） |
+
+### 內容 / 研究 / 文件技能
+| 技能 | 用途 |
+|------|------|
+| `content-engine` | 為 X/LinkedIn/TikTok/YouTube/電子報建平台原生內容系統 |
+| `crosspost` | 跨平台內容分發（X/LinkedIn/Threads/Bluesky），自動適配各平台 |
+| `deep-research` | 用 firecrawl + exa MCP 做多來源深度研究與綜合（內建 /deep-research） |
+| `doc-coauthoring` | 結構化流程協作共筆文件 |
+| `knowledge-ops` | 知識庫管理：多儲存層的 ingestion/sync/retrieval |
+
+### Office 檔案處理技能（Anthropic 官方）
+| 技能 | 用途 |
+|------|------|
+| `docx` | 建立/讀取/編輯 Word 文件 |
+| `pptx` | 處理 .pptx 簡報（輸入/輸出皆可） |
+| `xlsx` | 處理試算表檔案 |
+| `pdf` | 處理 PDF 檔案（讀取/編輯/表單等） |
 
 ### 開發 / 技術技能（from github.com/obra + BehiSecc）
 | 技能 | 用途 |
