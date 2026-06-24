@@ -1,3 +1,4 @@
 .env
 state.json
 *.log
+auth_state.json

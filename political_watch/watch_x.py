@@ -1,12 +1,15 @@
-"""政壇市場訊號 — 本機 X 掃描器(零 xAI 成本路線)。
+"""政壇市場訊號 — X 掃描器(零 xAI 成本路線)。
 
-用 Playwright + 用戶自己的 X 登入 session(持久 profile,登入一次即可),
-每 15 分鐘掃追蹤名單的新貼文,送 alert-worker /political-ingest:
-worker 端 Claude 判讀市場關聯與嚴重度 → 走既有 LINE 推播管線(去重/門檻/操作立場)。
+用 Playwright + 用戶自己的 X 登入 session,每 15 分鐘掃追蹤名單的新貼文,
+送 alert-worker /political-ingest:worker 端 Claude 判讀市場關聯與嚴重度
+→ 走既有 LINE 推播管線(去重/門檻/操作立場)。
+
+登入 session 用 Playwright storage_state(明文 JSON,可跨機/跨平台搬):
+在有顯示器的機器(Mac)登入匯出一次,把 auth_state.json 搬到無頭機(winrig)即可。
 
 用法:
-  python3 watch_x.py --login   # 開視窗讓用戶手動登入 X 一次(session 存 profile)
-  python3 watch_x.py           # 掃一輪+上送(launchd 每 15 分鐘跑這個)
+  python3 watch_x.py --login   # 開視窗讓用戶手動登入 X 一次(session 存 auth_state.json)
+  python3 watch_x.py           # 掃一輪+上送(systemd timer / launchd 每 15 分鐘跑這個)
   python3 watch_x.py --dry     # 掃+分析但不真推 LINE
 """
 import json
@@ -18,7 +21,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-PROFILE = Path.home() / ".political_watch_profile"
+AUTH_STATE = Path(os.environ.get("POLITICAL_AUTH_STATE", HERE / "auth_state.json"))
 STATE = HERE / "state.json"
 LOG = HERE / "watch.log"
 WORKER = "https://marketdaily-alert-worker.delvin-12345678.workers.dev"
@@ -53,16 +56,23 @@ def save_state(st):
     STATE.write_text(json.dumps(st))
 
 
+def _launch(p, headless):
+    # winrig(ubuntu26.04)playwright chromium 下載被擋 → 用系統 google-chrome(channel)
+    # Mac 有 bundled chromium → fallback;兩邊同一份程式
+    try:
+        return p.chromium.launch(channel="chrome", headless=headless)
+    except Exception:
+        return p.chromium.launch(headless=headless)
+
+
 def scrape(login_mode=False):
     from playwright.sync_api import sync_playwright
     posts = []
     with sync_playwright() as p:
-        ctx = p.chromium.launch_persistent_context(
-            str(PROFILE), headless=not login_mode,
-            viewport={"width": 1280, "height": 900},
-        )
-        pg = ctx.pages[0] if ctx.pages else ctx.new_page()
+        browser = _launch(p, headless=not login_mode)
         if login_mode:
+            ctx = browser.new_context(viewport={"width": 1280, "height": 900})
+            pg = ctx.new_page()
             pg.goto("https://x.com/login")
             print("\n>>> 請在開啟的視窗登入你的 X 帳號(含兩步驟驗證)。")
             print(">>> 登入完成、看到首頁時間軸後,直接關閉視窗即可。\n")
@@ -70,8 +80,23 @@ def scrape(login_mode=False):
                 pg.wait_for_event("close", timeout=600000)
             except Exception:
                 pass
+            try:
+                ctx.storage_state(path=str(AUTH_STATE))
+                log(f"登入 session 已存 {AUTH_STATE}")
+            except Exception as e:
+                log(f"存 session 失敗:{str(e)[:120]}")
             ctx.close()
+            browser.close()
             return []
+        if not AUTH_STATE.exists():
+            log(f"缺 {AUTH_STATE},先跑 python3 watch_x.py --login 登入")
+            browser.close()
+            return []
+        ctx = browser.new_context(
+            storage_state=str(AUTH_STATE),
+            viewport={"width": 1280, "height": 900},
+        )
+        pg = ctx.new_page()
         for h in HANDLES:
             try:
                 pg.goto(f"https://x.com/{h}", wait_until="domcontentloaded", timeout=30000)
@@ -112,6 +137,7 @@ def scrape(login_mode=False):
             except Exception as e:
                 log(f"@{h}: 抓取失敗 {str(e)[:100]}")
         ctx.close()
+        browser.close()
     return posts
 
 
