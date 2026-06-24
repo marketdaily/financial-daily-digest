@@ -34,6 +34,9 @@ HANDLES = [
 
 MAX_AGE_MIN = 75  # 只送這麼新的貼文(cron 15 分鐘,留重疊餘裕;worker 端還有 48h 去重)
 
+# scrape 後回報 session 是否仍有效(撞到 X 登入牆=失效),main 用來通知 admin 重登
+STATUS = {"alive": True, "hit_login": False}
+
 
 def log(msg):
     line = f"[{datetime.now().strftime('%m-%d %H:%M:%S')}] {msg}"
@@ -103,6 +106,8 @@ def scrape(login_mode=False):
                 pg.wait_for_timeout(3500)
                 if "/login" in pg.url or "Log in" in pg.title():
                     log(f"@{h}: 未登入(session 失效)→ 跑 python3 watch_x.py --login 重登")
+                    STATUS["alive"] = False
+                    STATUS["hit_login"] = True
                     break
                 items = pg.evaluate("""() => {
                     const out = [];
@@ -165,6 +170,32 @@ def send(posts, dry=False):
             log(f"  · sev{s['severity']} [{s['kind']}] {s['name_zh']}:{s['headline_zh'][:50]}")
 
 
+def _read_token():
+    for line in (HERE / ".env").read_text().splitlines():
+        if line.startswith("POLITICAL_INGEST_TOKEN="):
+            return line.split("=", 1)[1].strip()
+    return ""
+
+
+def notify_session_dead():
+    """X session 失效時打 worker → alertAdmin(web push 優先,無 LINE 額度問題)。"""
+    tok = _read_token()
+    if not tok:
+        return
+    body = json.dumps({"session_dead": True}).encode()
+    req = urllib.request.Request(
+        f"{WORKER}/political-ingest", data=body, method="POST",
+        headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json",
+                 "User-Agent": "political-watch/1.0"},
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=60) as r:
+            r.read()
+        log("已通知 admin:X session 失效,請重登")
+    except Exception as e:
+        log(f"通知 admin 失敗:{str(e)[:100]}")
+
+
 def main():
     if "--login" in sys.argv:
         scrape(login_mode=True)
@@ -172,6 +203,14 @@ def main():
         return 0
     st = load_state()
     posts = scrape()
+    # session 健康度:撞登入牆=失效,通知 admin 一次(去重),恢復後重置旗標
+    if STATUS["hit_login"]:
+        if not st.get("dead_notified"):
+            notify_session_dead()
+            st["dead_notified"] = True
+    elif STATUS["alive"] and st.get("dead_notified"):
+        st.pop("dead_notified", None)
+        log("session 已恢復")
     new = [p for p in posts if p["url"] not in st["seen"]]
     for p in new:
         st["seen"][p["url"]] = time.time()

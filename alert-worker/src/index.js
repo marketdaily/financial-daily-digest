@@ -1101,6 +1101,11 @@ export default {
       if (!ok) return json({ error: "forbidden" }, 403);
       let body;
       try { body = await request.json(); } catch { return json({ error: "bad json" }, 400); }
+      // X 掃描器回報 session 失效 → 通知 admin 重登(web push 優先,alertAdmin 自帶每小時節流)
+      if (body.session_dead) {
+        await alertAdmin(env, "⚠️ 政壇 X 掃描器 session 失效，winrig 抓不到貼文。請在 Mac 跑 `python3 watch_x.py --login` 重登 X，再把 auth_state.json 搬回 winrig。");
+        return json({ ok: true, alerted: true });
+      }
       const posts = (body.posts || []).filter(p => p && p.handle && p.text).slice(0, 30);
       if (!posts.length) return json({ ok: true, analyzed: 0, note: "no posts" });
       // 原始層去重(pre-AI,省 Claude):同一貼文 URL 只分析一次
