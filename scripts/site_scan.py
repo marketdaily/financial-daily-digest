@@ -122,7 +122,10 @@ def probe_pages():
         return
     pages = ["/", "/pricing", "/track-record", "/guide", "/blog/"]
     with sync_playwright() as p:
-        b = p.chromium.launch()
+        try:
+            b = p.chromium.launch(channel="chrome")
+        except Exception:
+            b = p.chromium.launch()
         for path in pages:
             pg = b.new_page(viewport={"width": 1280, "height": 900})
             errs, bad_resp = [], []
