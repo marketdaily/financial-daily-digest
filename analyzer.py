@@ -1361,7 +1361,7 @@ def _inject_signal_cards(raw: str, cards: str) -> str:
 
 def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                     email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                    market: str = "both") -> str:
+                    market: str = "both", is_premium: bool = False) -> str:
     # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
     #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
     # email 版：持倉太多時敘述只留變動最大的 N 支，避免信件過長被 Gmail 截斷（完整版見網頁）。
@@ -1588,7 +1588,12 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
         show_advanced = True
     elif depth == "simple":
         show_advanced = False
+    elif is_premium:
+        # Premium 用戶「標準」是明確選擇 → 一律給完整標準版,不可被持股數(is_beginner)
+        # 偷偷降級成跟 simple 一樣的精簡版(2026-06-25 用戶反映:選 standard 卻收到 simple)。
+        show_advanced = True
     else:
+        # 免費/預設用戶才套新手友善裁切(持股 ≤4 不塞進階板塊)。
         show_advanced = not is_beginner
     if show_advanced:
         indicator_section = indicator_block

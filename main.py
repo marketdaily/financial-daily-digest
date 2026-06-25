@@ -643,6 +643,7 @@ def run():
         us_stocks = prefs.get("us_stocks") or []
         tw_stocks = prefs.get("tw_stocks") or []
         depth = prefs.get("digest_depth") or "standard"  # Premium 客製日報深度;免費已在 get_user_preferences 鎖回 standard
+        is_premium = prefs.get("plan") in ("premium", "admin")  # 明確選 depth 的付費用戶 → 深度選擇要被完整尊重,不可被持股數降級
 
         # ── 雙班次收信對象分流(按持股) ──
         # tw 早報 = 持台股者 + 完全沒持股者(收台股大盤版);us 晚報 = 持美股者。
@@ -677,7 +678,7 @@ def run():
             try:
                 if ai_calls > 0:
                     time.sleep(5)  # 輕度間隔，避免觸發 Gemini 免費層每分鐘上限
-                full_inner = _report_fn()(data, gen_us or None, gen_tw or None, depth=depth, market=MARKET)
+                full_inner = _report_fn()(data, gen_us or None, gen_tw or None, depth=depth, market=MARKET, is_premium=is_premium)
                 ai_calls += 1
                 full_inner = _inject_ai_banner(full_inner, data["date"])
                 if depth != "simple":
@@ -687,7 +688,7 @@ def run():
                 # email 版：持倉超過上限時縮減，避免被 Gmail 截斷
                 if total > DIGEST_EMAIL_MAX_HOLDINGS:
                     time.sleep(5)
-                    inner = _report_fn()(data, gen_us or None, gen_tw or None, email_safe=True, depth=depth, market=MARKET)
+                    inner = _report_fn()(data, gen_us or None, gen_tw or None, email_safe=True, depth=depth, market=MARKET, is_premium=is_premium)
                     ai_calls += 1
                     inner = _inject_ai_banner(inner, data["date"])
                     if depth != "simple":
@@ -736,7 +737,7 @@ def run():
                 try:
                     time.sleep(5)
                     # retry 強制換更強模型(Claude/OpenAI 先於 Gemini),否則又從 Gemini 起跑 = 白 retry
-                    retry_inner = _report_fn()(data, gen_us or None, gen_tw or None, prefer_strong=True, depth=depth, market=MARKET)
+                    retry_inner = _report_fn()(data, gen_us or None, gen_tw or None, prefer_strong=True, depth=depth, market=MARKET, is_premium=is_premium)
                     ai_calls += 1
                     retry_inner = _inject_ai_banner(retry_inner, data["date"])
                     if depth != "simple":
