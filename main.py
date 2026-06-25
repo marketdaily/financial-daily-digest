@@ -618,9 +618,19 @@ def run():
     local_suffix = "_us" if MARKET == "us" else ""
     variant_label = _report_variant_label()
     print(f"④ 生成 AI 市場情緒 Banner（{variant_label}版）...")
-    default_report = _report_fn()(data, market=MARKET)
-    default_report = _inject_ai_banner(default_report, data["date"])
-    default_report = _inject_political_signals(default_report, data)
+    try:
+        default_report = _report_fn()(data, market=MARKET)
+        default_report = _inject_ai_banner(default_report, data["date"])
+        default_report = _inject_political_signals(default_report, data)
+    except Exception as e:
+        # 死防線:全 LLM provider 同時失效(2026-06-25 美股晚報事故:Gemini 503 + Claude key 401
+        # + 無 OpenAI key)時,預設版生成會整個拋例外 → 原本害 main.py exit=1、一封都寄不出。
+        # 改用無 LLM 的 deterministic 版墊底,確保晚報照常寄出(絕不讓用戶缺信)。
+        print(f"   🛡️ 預設版 AI 生成全失敗,改用 deterministic 備援版:{e}")
+        from analyzer import _market_status, generate_deterministic_fallback, _postprocess_html
+        _mkt = _market_status(data["date"])
+        default_report = _postprocess_html(
+            generate_deterministic_fallback(data, [], [], _mkt), data)
     print("⑤ 儲存本地預覽（預設版）...")
     save_local(data["date"], default_report, suffix=local_suffix)
 
