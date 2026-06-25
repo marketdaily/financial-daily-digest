@@ -6,7 +6,13 @@ from config import GEMINI_API_KEY
 
 # 免費 LLM 引擎：Gemini Flash 系列（免費，無需付費）。
 # flash-latest 品質佳為主；flash-lite 免費層每日額度最高，作為備援確保不斷線。
-GEMINI_MODELS = ["gemini-flash-latest", "gemini-2.5-flash-lite"]
+# 2026-06-25:單一 Gemini key 是唯一活著的 LLM credential(Anthropic/OpenAI key 皆失效),
+# 所以盡量擴充 Gemini model fallback —— 最穩+最高品質的 2.5-flash 擺第一,
+# 再墊 lite + 2.0 世代(獨立配額桶,2.5 配額爆時頂上),flash-latest(別名,常 503)放最後。
+# 實測(本機 key,2026-06-25):2.5-flash/2.5-flash-lite=200、2.0-flash/lite=429(配額,會重置)、
+# flash-latest=503、1.5 系列=404 已下架。
+GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite",
+                 "gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-flash-latest"]
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
 _SYSTEM_PROMPT = (
