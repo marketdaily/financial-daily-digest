@@ -225,11 +225,12 @@ def audit_digest(
         fails.append({"check": "fake_urls", "severity": "high",
                       "msg": f"出現假網址:{fake_urls[:3]}"})
 
-    # 13. 價位 token 必須是真數字,不可是 XXX / YYY / $xxx
-    placeholder_prices = re.findall(r"\$X+|NT\$X+|\$\?+", html)
+    # 13. 價位/數字 token 必須是真數字,不可是 XXX / YYY / $xxx
+    #     (2026-06-25:新聞「為什麼重要」洩出「金額高達 XXX 億元」→ 擴大到任何 XXX 佔位符)
+    placeholder_prices = re.findall(r"\$X+|NT\$X+|\$\?+|[XＸ]{2,}\s*(?:億元|億|兆|萬元|美元|元|點|%|％)|(?<![A-Za-z])[XＸ]{3,}(?![A-Za-z])", html)
     if placeholder_prices:
         fails.append({"check": "placeholder_prices", "severity": "high",
-                      "msg": f"signal-card 留下 $XXX 沒填:{placeholder_prices[:3]}"})
+                      "msg": f"留下數字佔位符 XXX 沒填:{placeholder_prices[:3]}"})
 
     # ───── 實質稽核(2026-06-10 起:不只查格式,還查內容自洽與編造)─────
     # 13b. 財報區編造預期:資料端沒有「已核實預期數字」時,財報區出現預期 EPS/營收 = LLM 編的

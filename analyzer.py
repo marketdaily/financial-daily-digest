@@ -474,6 +474,14 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _re.sub(r'<style[^>]*>.*?</style>', '', html, flags=_re.S | _re.I)
     html = _re.sub(r'<!DOCTYPE[^>]*>|</?(?:html|head|body)[^>]*>|<meta[^>]*>|<title[^>]*>.*?</title>', '', html, flags=_re.S | _re.I)
 
+    # 死防線:LLM 不知道確切數字時偶爾寫成 XXX/XX 佔位符(2026-06-25 真兇:新聞「為什麼重要」
+    # 寫「賣超金額高達 XXX 億元」直接洩進公版)。用戶硬規則:任何數字佔位符不可外露給訂閱者。
+    # 先把含佔位符的整段子句(逗號分隔)整塊刪掉讓句子讀得通,再清落單的 X 佔位符。
+    html = _re.sub(r'[，、]\s*[^，、。；:\n<>]*?[XＸ]{2,}\s*(?:億元|億美元|億|兆|萬元|美元|元|點|%|％)[^，、。；\n<>]*', '', html)
+    html = _re.sub(r'\s*[XＸ]{2,}\s*(?:億元|億美元|億|兆|萬元|美元|元|點|%|％)', '', html)
+    html = _re.sub(r'(?:NT)?\$[XＸ]{2,}', '', html)
+    html = _re.sub(r'(?<![A-Za-z])[XＸ]{3,}(?![A-Za-z])', '', html)
+
     ind = data.get("indicators", {})
 
     vix = ind.get("vix", 15)
