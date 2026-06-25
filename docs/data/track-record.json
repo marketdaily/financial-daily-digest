@@ -1,10 +1,10 @@
 {
   "stats": {
-    "generated_at": "2026-06-25T08:02:19",
+    "generated_at": "2026-06-26T07:02:37",
     "horizon": "5d",
-    "days_covered": 14,
-    "total_records": 574,
-    "judged_records": 566,
+    "days_covered": 15,
+    "total_records": 578,
+    "judged_records": 570,
     "one_day": {
       "a_count": 255,
       "a_wins": 106,
@@ -13,28 +13,28 @@
       "c_wins": 190,
       "c_rate": 60.3
     },
-    "a_count": 254,
+    "a_count": 255,
     "a_wins": 91,
-    "a_rate": 35.8,
+    "a_rate": 35.7,
     "a_ci95": [
-      30.2,
-      41.9
+      30.1,
+      41.7
     ],
-    "c_count": 312,
-    "c_wins": 181,
-    "c_rate": 58.0,
+    "c_count": 315,
+    "c_wins": 184,
+    "c_rate": 58.4,
     "c_ci95": [
-      52.5,
-      63.4
+      52.9,
+      63.7
     ],
     "calibration": {
-      "n": 241,
-      "brier": 0.417,
+      "n": 242,
+      "brier": 0.4165,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
-          "n": 27,
-          "hit_rate": 51.9
+          "n": 28,
+          "hit_rate": 50.0
         },
         "61-70": {
           "n": 66,
@@ -52,12 +52,12 @@
     },
     "by_regime": {
       "up": {
-        "a_count": 125,
+        "a_count": 126,
         "a_wins": 15,
-        "a_rate": 12.0,
+        "a_rate": 11.9,
         "ci95": [
-          7.4,
-          18.9
+          7.3,
+          18.7
         ]
       },
       "down": {
@@ -74,24 +74,96 @@
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
       "simulated": 227,
       "no_fill": 55,
-      "pending": 18,
+      "pending": 14,
       "hit_target": 21,
-      "hit_stop": 120,
-      "expired": 13,
-      "avg_ret_pct": -1.76,
+      "hit_stop": 121,
+      "expired": 16,
+      "avg_ret_pct": -1.8,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
-      "a_count": 40,
+      "a_count": 41,
       "a_wins": 21,
-      "a_rate": 52.5,
-      "c_count": 18,
-      "c_wins": 13,
-      "c_rate": 72.2
+      "a_rate": 51.2,
+      "c_count": 21,
+      "c_wins": 16,
+      "c_rate": 76.2
     },
     "personal_samples_added": 508
   },
   "records": [
+    {
+      "date": "2026-06-26",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "sell",
+      "verdict_text": "📉 BEARISH",
+      "reason": "特斯拉目前處於空頭結構，股價低於 MA20。建議今晚開盤後，若股價能站回 MA20 (約 404.67 美元) 並收穩，方可考慮觀望。在站穩 MA20 之前，暫不建議買進，回補參考 371.22 美元。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 413.02,
+      "stop": 330.11,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-06-26",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "sell",
+      "verdict_text": "📉 BEARISH",
+      "reason": "輝達目前處於空頭結構，股價低於 MA20。建議今晚開盤後，若股價能站回 MA20 (約 208.85 美元) 並收穩，方可考慮觀望。在站穩 MA20 之前，暫不建議買進，回補參考 192.13 美元。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 50,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 210.6,
+      "stop": 177.17,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-06-26",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "sell",
+      "verdict_text": "📉 BEARISH",
+      "reason": "微軟目前處於空頭結構，股價遠低於 MA20。建議今晚開盤後，若股價能站回 MA20 (約 402.81 美元) 並收穩，方可考慮觀望或小幅佈局。在站穩 MA20 之前，暫不建議買進，回補參考 349.2 美元。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 53,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 376.73,
+      "stop": 322.95,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-06-26",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "⚪ NEUTRAL",
+      "reason": "蘋果目前處於盤整結構，股價跌破 MA20 後持續下探。建議今晚開盤後，若股價能站穩 273.75 美元，並在 273.75 美元上方收盤，可考慮分批低接。若未能站穩，則繼續觀望。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 53,
+      "entry_lo": 273.75,
+      "entry_hi": 275.0,
+      "target": 293.05,
+      "stop": 252.77,
+      "outcome": null,
+      "outcome_1d": null
+    },
     {
       "date": "2026-06-25",
       "name": "特斯拉 Tesla",
@@ -179,7 +251,7 @@
       "entry_hi": 380.15,
       "target": 440.24,
       "stop": 360.19,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss"
     },
     {
@@ -197,7 +269,7 @@
       "entry_hi": 199.34,
       "target": 224.13,
       "stop": 186.51,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss"
     },
     {
@@ -215,7 +287,7 @@
       "entry_hi": 382.27,
       "target": null,
       "stop": 359.7,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss"
     },
     {
@@ -233,7 +305,7 @@
       "entry_hi": 287.42,
       "target": 315.0,
       "stop": 279.54,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win"
     },
     {
