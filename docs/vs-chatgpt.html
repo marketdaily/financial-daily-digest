@@ -445,7 +445,7 @@ footer a:hover { color: var(--primary-light); }
         <tr>
           <td class="col-axis" data-i18n="comp_r3_axis">即時推播持股利空</td>
           <td class="hide-mobile"><span class="comp-x">✕</span> <span data-i18n="comp_r3_a">不會半夜戳你</span></td>
-          <td class="col-md"><span class="comp-check">✓</span> <span data-i18n="comp_r3_b">即時推播(手機/瀏覽器)+ LINE AI 對話</span></td>
+          <td class="col-md"><span class="comp-check">✓</span> <span data-i18n="comp_r3_b">即時推播(手機/瀏覽器)+ AI 助手對話</span></td>
         </tr>
         <tr>
           <td class="col-axis" data-i18n="comp_r4_axis">即時新聞數據</td>
@@ -502,8 +502,8 @@ footer a:hover { color: var(--primary-light); }
     </div>
     <div class="angle-card">
       <div class="angle-num">04</div>
-      <h3 data-i18n="a4_t">即時推播 + LINE 對話</h3>
-      <p data-i18n="a4_d">Premium 在持股出大事的當下推 LINE。免費版每天 07:00 定時送。ChatGPT 永遠等你問。</p>
+      <h3 data-i18n="a4_t">即時推播 + AI 對話</h3>
+      <p data-i18n="a4_d">Premium 在持股出大事的當下即時推播到你手機/瀏覽器。免費版每天 07:00 定時送。ChatGPT 永遠等你問。</p>
     </div>
     <div class="angle-card">
       <div class="angle-num">05</div>
@@ -530,7 +530,7 @@ footer a:hover { color: var(--primary-light); }
         <span data-i18n="faq_q1">那免費版到底夠不夠用？</span>
         <span class="faq-chev">▾</span>
       </button>
-      <div class="faq-a"><p data-i18n-html="faq_a1">夠用。免費版每天 07:00 送 AI 財經日報,<strong>已含個人化</strong>(綁你的持股篩新聞,免費上限 5 檔)、30 秒精華摘要、頭條摘要、市場情緒。<strong>Premium 加碼</strong>:無限追蹤股票數、即時推播到手機/瀏覽器(持股利空當下)、LINE Bot 雙向對話。先免費用一週覺得對胃口再升級。</p></div>
+      <div class="faq-a"><p data-i18n-html="faq_a1">夠用。免費版每天 07:00 送 AI 財經日報,<strong>已含個人化</strong>(綁你的持股篩新聞,免費上限 5 檔)、30 秒精華摘要、頭條摘要、市場情緒。<strong>Premium 加碼</strong>:無限追蹤股票數、即時推播到手機/瀏覽器(持股利空當下)、AI 助手雙向對話。先免費用一週覺得對胃口再升級。</p></div>
     </div>
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
@@ -601,7 +601,7 @@ const TR = {
     comp_axis: "差別在哪", comp_col_chatgpt: "ChatGPT Plus", comp_col_md: "MarketDaily Premium",
     comp_r1_axis: "早上 7 點主動推播", comp_r1_a: "不會主動", comp_r1_b: "每日定時送到信箱",
     comp_r2_axis: "記得你的持股", comp_r2_a: "每次都要重貼", comp_r2_b: "綁定你的偏好，自動篩相關新聞",
-    comp_r3_axis: "即時推播持股利空", comp_r3_a: "不會半夜戳你", comp_r3_b: "即時推播(手機/瀏覽器)+ LINE AI 對話",
+    comp_r3_axis: "即時推播持股利空", comp_r3_a: "不會半夜戳你", comp_r3_b: "即時推播(手機/瀏覽器)+ AI 助手對話",
     comp_r4_axis: "即時新聞數據", comp_r4_a: "有 cutoff，要自己 prompt", comp_r4_b: "5 分鐘前的 Reuters / Bloomberg",
     comp_r5_axis: "明確進出場建議", comp_r5_a: "長篇分析要自己整理", comp_r5_b: "每股直接給 買/賣/持有 + 信心 %",
     comp_r6_axis: "每週戰績公開", comp_r6_a: "沒有 track record", comp_r6_b: "公開戰績頁可查",
@@ -613,12 +613,12 @@ const TR = {
     a1_t: "紀律比資訊重要", a1_d: "你早上起床第一件事不會是打開 ChatGPT 貼 8 支持股問「今天該注意什麼」。但你會打開信箱。我們把這件「該做永遠不會做」的事自動化。",
     a2_t: "不用 prompt engineering", a2_d: "ChatGPT 是「會問才有用」。我們幫你把問題、框架、優先級全想好了，30 秒看完直接行動。",
     a3_t: "記得你抱什麼", a3_d: "ChatGPT 每次都要你重貼持股清單。我們綁你的偏好，新聞自動篩過、針對你的部位寫。",
-    a4_t: "即時推播 + LINE 對話", a4_d: "Premium 在持股出大事的當下即時推播到你手機/瀏覽器(LINE 可當備援)。免費版每天 07:00 定時送。ChatGPT 永遠等你問。",
+    a4_t: "即時推播 + AI 對話", a4_d: "Premium 在持股出大事的當下即時推播到你手機/瀏覽器。免費版每天 07:00 定時送。ChatGPT 永遠等你問。",
     a5_t: "每週公開戰績", a5_d: '<span>ChatGPT 沒有 track record。我們有 — 上週 AI 講過什麼、後來對不對，<a href="/track-record.html" style="color:#818cf8;text-decoration:underline;">隨時可查</a>。</span>',
     a6_t: "便宜一半，更專心", a6_d: "ChatGPT Plus NT$640/月做萬能助理；MarketDaily NT$299 起當你的專科主治。萬能樣樣不夠深，專科只做一件事但做透。",
     faq_eyebrow: "常見疑慮", faq_title: "你心裡在想的，我們先回答",
     faq_q1: "那免費版到底夠不夠用？",
-    faq_a1: '夠用。免費版每天 07:00 送 AI 財經日報,<strong>已含個人化</strong>(綁你的持股篩新聞,免費上限 5 檔)、30 秒精華摘要、頭條摘要、市場情緒。<strong>Premium 加碼</strong>:無限追蹤股票數、即時推播到手機/瀏覽器(持股利空當下)、LINE Bot 雙向對話。先免費用一週覺得對胃口再升級。',
+    faq_a1: '夠用。免費版每天 07:00 送 AI 財經日報,<strong>已含個人化</strong>(綁你的持股篩新聞,免費上限 5 檔)、30 秒精華摘要、頭條摘要、市場情緒。<strong>Premium 加碼</strong>:無限追蹤股票數、即時推播到手機/瀏覽器(持股利空當下)、AI 助手雙向對話。先免費用一週覺得對胃口再升級。',
     faq_q2: "那我問 ChatGPT「幫我每天 7 點分析我的持股」不就好？",
     faq_a2: 'ChatGPT <strong>不會主動執行</strong>。它沒有排程能力，沒辦法在你睡覺時自己上工。就算你架了個自動化（cron + API key + prompt + 抓新聞 + 寄信...），<strong>你就是在親手做我們做的事</strong>，只是更貴更難維護。',
     faq_q3: "你們的 AI 也會幻覺嗎？",
@@ -649,7 +649,7 @@ const TR = {
     comp_axis: "Difference", comp_col_chatgpt: "ChatGPT Plus", comp_col_md: "MarketDaily Premium",
     comp_r1_axis: "Pushes at 7AM", comp_r1_a: "Won't act on its own", comp_r1_b: "Daily, on schedule, to inbox",
     comp_r2_axis: "Remembers your holdings", comp_r2_a: "You re-paste every time", comp_r2_b: "Auto-filters news for your positions",
-    comp_r3_axis: "Real-time breaking-news alerts", comp_r3_a: "Won't wake you up", comp_r3_b: "App/browser push + LINE AI chat",
+    comp_r3_axis: "Real-time breaking-news alerts", comp_r3_a: "Won't wake you up", comp_r3_b: "App/browser push + AI chat",
     comp_r4_axis: "Real-time market data", comp_r4_a: "Has cutoff, you must prompt", comp_r4_b: "Reuters / Bloomberg, 5 min fresh",
     comp_r5_axis: "Clear trade signals", comp_r5_a: "Long-form analysis, you distill", comp_r5_b: "Buy/Sell/Hold + confidence % per stock",
     comp_r6_axis: "Public weekly track record", comp_r6_a: "No track record", comp_r6_b: "Public track record page",
@@ -661,12 +661,12 @@ const TR = {
     a1_t: "Discipline beats information", a1_d: "You won't wake up and open ChatGPT to paste 8 tickers and ask what to watch today. But you'll open your inbox. We automate the thing you know you should do but won't.",
     a2_t: "No prompt engineering", a2_d: "ChatGPT only works if you ask well. We did the question-design, framework, and priority work for you. 30 seconds to read, ready to act.",
     a3_t: "Remembers your portfolio", a3_d: "ChatGPT makes you re-paste every time. We bind your preferences and filter news against your actual positions.",
-    a4_t: "Real-time push + LINE chat", a4_d: "Premium pushes to your phone/browser the moment your holdings break (LINE as backup). Free version arrives every 07:00. ChatGPT always waits.",
+    a4_t: "Real-time push + AI chat", a4_d: "Premium pushes to your phone/browser the moment your holdings break. Free version arrives every 07:00. ChatGPT always waits.",
     a5_t: "Weekly public track record", a5_d: '<span>ChatGPT has no track record. We do — see what AI said last week and how it played out, <a href="/track-record.html" style="color:#818cf8;text-decoration:underline;">always live</a>.</span>',
     a6_t: "Half the price, fully focused", a6_d: "ChatGPT Plus is NT$640/mo as a generalist; MarketDaily NT$299+ is your specialist. Generalists go a mile wide; specialists go a mile deep.",
     faq_eyebrow: "Honest concerns", faq_title: "We answered the things in your head",
     faq_q1: "Is the free version actually enough?",
-    faq_a1: 'For many, yes. Free sends the daily AI brief at 07:00 — <strong>already personalized</strong> (filters by your positions, free cap 5 stocks), 30-sec TL;DR, top headlines, market sentiment. <strong>Premium adds</strong>: unlimited stocks, real-time breaking-news push (phone/browser), and two-way LINE Bot chat. Try free for a week first, upgrade if it clicks.',
+    faq_a1: 'For many, yes. Free sends the daily AI brief at 07:00 — <strong>already personalized</strong> (filters by your positions, free cap 5 stocks), 30-sec TL;DR, top headlines, market sentiment. <strong>Premium adds</strong>: unlimited stocks, real-time breaking-news push (phone/browser), and two-way AI assistant chat. Try free for a week first, upgrade if it clicks.',
     faq_q2: "Can't I just tell ChatGPT to do this every morning?",
     faq_a2: 'ChatGPT <strong>can\'t self-execute</strong>. No scheduler, no overnight worker. Even if you wire it up (cron + API key + prompt + news scraper + email...), <strong>you\'re manually rebuilding what we do</strong> — slower, costlier, and harder to maintain.',
     faq_q3: "Does your AI hallucinate too?",

@@ -744,7 +744,7 @@ footer {
         <div class="price-unit" data-i18n="price_per_month">/月</div>
       </div>
       <div class="price-annual-note" id="premium-price-note" data-i18n="premium_trial_note" style="color:#fde68a;font-size:13px;font-weight:600;">首月 NT$299 · 之後 NT$499/月 · 隨時取消</div>
-      <p class="tier-desc" data-i18n="tier_prem_desc">給高度投入的投資人。無限追蹤、即時警報、月度健檢、LINE Bot 雙向 AI 對話,全方位掌控投資組合。</p>
+      <p class="tier-desc" data-i18n="tier_prem_desc">給高度投入的投資人。無限追蹤、即時警報、月度健檢、AI 助手雙向對話,全方位掌控投資組合。</p>
       <a class="tier-btn btn-premium" href="#" onclick="goPremiumTrial(event)" id="premium-cta" data-i18n="tier_cta_btn">6 折試讀首月 →</a>
       <div class="tier-divider"></div>
       <ul class="feature-list">
@@ -758,7 +758,7 @@ footer {
         </li>
         <li class="feature-item included">
           <span class="feature-icon fi-check">✓</span>
-          <span data-i18n="pmf3">LINE Bot 雙向 AI 對話</span>
+          <span data-i18n="pmf3">AI 助手雙向對話</span>
         </li>
         <li class="feature-item included">
           <span class="feature-icon fi-check">✓</span>
@@ -770,7 +770,7 @@ footer {
         </li>
         <li class="feature-item included">
           <span class="feature-icon fi-check">✓</span>
-          <span data-i18n="pmf6">LINE 優先 1-1 專人客服</span>
+          <span data-i18n="pmf6">優先 1-1 專人客服</span>
         </li>
       </ul>
     </div>
@@ -876,7 +876,7 @@ footer {
           <tr class="compare-row">
             <td class="col-feature" data-i18n="cmp_r14">客服回覆</td>
             <td class="col-val"><span class="v-val" style="font-size:12px;color:var(--text-muted);" data-i18n="cmp_v_std">標準</span></td>
-            <td class="col-val premium-yes"><span class="v-val" style="font-size:12px;color:#fbbf24;" data-i18n="cmp_v_prio_line">LINE 1-1 專人</span></td>
+            <td class="col-val premium-yes"><span class="v-val" style="font-size:12px;color:#fbbf24;" data-i18n="cmp_v_prio_line">1-1 專人客服</span></td>
           </tr>
         </tbody>
       </table>
@@ -1037,13 +1037,13 @@ const i18n = {
     pmf1: "Everything in Free",
     premium_trial_note: "First month NT$299 · then NT$499/mo · cancel anytime",
     pmf2: "Unlimited stock tracking",
-    pmf3: "LINE Bot two-way AI chat",
+    pmf3: "Two-way AI chat",
     pmf3b: "Real-time breaking-news push (phone/browser)",
     free_submit_btn: "Submit →",
     placeholder_email: "your@email.com",
     pmf4: "Monthly portfolio health report",
     pmf5: "Custom watchlists (up to 5 themes)",
-    pmf6: "Priority 1-on-1 support on LINE",
+    pmf6: "Priority 1-on-1 support",
     annual_pro_note: "Annual billing NT$2,870 once",
     annual_prem_note: "Annual billing NT$4,788 once",
     cmp_label: "Side-by-Side",
@@ -1061,7 +1061,7 @@ const i18n = {
     cmp_r13: "Real-time breaking-news push", cmp_r14: "Customer support",
     cmp_v_free_stocks: "Up to 5", cmp_v_pro_stocks: "Up to 15", cmp_v_prem_stocks: "Unlimited",
     cmp_v_prem_watch: "Up to 5 themes",
-    cmp_v_std: "Standard", cmp_v_priority: "Priority", cmp_v_prio_line: "1-on-1 on LINE",
+    cmp_v_std: "Standard", cmp_v_priority: "Priority", cmp_v_prio_line: "1-on-1 support",
     faq_label: "FAQ", faq_title: "Common Questions",
     faq_q1: "Can I cancel anytime?",
     faq_a1: "Yes. After canceling, your plan stays active until the end of the current billing period. <strong>No cancellation fees, no hidden charges</strong> — cancel anytime in your account settings.",
@@ -1119,13 +1119,13 @@ const i18n = {
     pmf1: "免費版所有功能",
     premium_trial_note: "首月 NT$299 · 之後 NT$499/月 · 隨時取消",
     pmf2: "無限股票追蹤",
-    pmf3: "LINE Bot 雙向 AI 對話",
+    pmf3: "AI 助手雙向對話",
     pmf3b: "重大新聞即時推播(手機/瀏覽器)",
     free_submit_btn: "送出 →",
     placeholder_email: "your@email.com",
     pmf4: "月度投資組合健檢報告",
     pmf5: "客製化觀察清單（最多 5 主題）",
-    pmf6: "LINE 優先 1-1 專人客服",
+    pmf6: "優先 1-1 專人客服",
     annual_pro_note: "年付 NT$2,870 一次扣款",
     annual_prem_note: "年付 NT$4,788 一次扣款",
     cmp_label: "詳細比較",
@@ -1143,7 +1143,7 @@ const i18n = {
     cmp_r13: "重大新聞即時推播(手機/瀏覽器)", cmp_r14: "客服回覆",
     cmp_v_free_stocks: "最多 5 檔", cmp_v_pro_stocks: "最多 15 檔", cmp_v_prem_stocks: "無限",
     cmp_v_prem_watch: "最多 5 主題",
-    cmp_v_std: "標準", cmp_v_priority: "優先", cmp_v_prio_line: "LINE 1-1 專人",
+    cmp_v_std: "標準", cmp_v_priority: "優先", cmp_v_prio_line: "1-1 專人客服",
     faq_label: "常見問題", faq_title: "你可能想問的",
     faq_q1: "我可以隨時取消嗎？",
     faq_a1: "可以。取消訂閱後，你的方案在當前計費週期結束前仍然有效。<strong>沒有違約金，沒有任何隱藏費用</strong>，隨時在帳號設定裡一鍵取消。",

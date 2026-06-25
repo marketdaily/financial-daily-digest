@@ -773,7 +773,7 @@ nav::after {
       </div>
     </div>
 
-    <!-- Password confirm modal(綁定 / 解除綁定 LINE 等敏感操作) -->
+    <!-- Password confirm modal(敏感操作再次驗證密碼用) -->
     <div id="pwd-modal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(6,6,17,0.78);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:24px;">
       <div style="width:100%;max-width:380px;background:linear-gradient(160deg,#1a1a2e,#0f0c29);border:1px solid rgba(99,102,241,0.32);border-radius:22px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.5);">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
@@ -790,22 +790,6 @@ nav::after {
       </div>
     </div>
 
-    <!-- LINE 即時提醒(Premium 專屬) -->
-    <div class="card" id="line-alert-card" style="margin-top:8px;display:none;">
-      <div class="card-title" data-i18n="line_card_title">💬 LINE 綁定(AI 助手 + 備援提醒)</div>
-      <div class="card-desc" data-i18n="line_card_desc">綁定後可在 LINE 直接問 AI 你的持股、大盤。另外,若你沒開即時推播(或用 iPhone 沒裝到主畫面),重大新聞會改用 LINE 通知你當備援。Premium 專屬。</div>
-      <div id="line-unbound-box" style="display:none;margin-top:14px;">
-        <div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:14px;padding:10px 13px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.22);border-radius:10px;" data-i18n="line_friend_notice">💡 綁定完成後會自動跳出「加 MarketDaily 好友」頁,請按「加入好友」才會收到推播。</div>
-        <button class="save-btn" onclick="bindLine()" id="line-bind-btn" style="margin-top:0;background:#06C755;" data-i18n="line_bind_btn">綁定 LINE →</button>
-        <a id="line-open-app" href="#" style="display:none;margin-top:12px;text-decoration:none;background:#06C755;color:#fff;padding:14px 20px;border-radius:12px;font-weight:800;font-size:15px;text-align:center;letter-spacing:0.3px;box-shadow:0 8px 24px rgba(6,199,85,0.35);">📱 在 LINE App 開啟綁定 →</a>
-        <div id="line-open-hint" style="display:none;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6;text-align:center;">點上方按鈕,會直接打開 LINE App 完成綁定(不需要再輸入 LINE 帳密)。如果沒反應,代表手機沒裝 LINE,請改用 <a href="#" onclick="event.preventDefault();bindLineOAuth();" style="color:#6366f1;font-weight:700;">瀏覽器登入綁定</a>。</div>
-        <div style="display:none;margin-top:12px;font-size:13px;color:#f87171;text-align:center;" id="line-err"></div>
-      </div>
-      <div id="line-bound-box" style="display:none;margin-top:14px;">
-        <div style="padding:12px 16px;background:rgba(6,199,85,0.1);border:1px solid rgba(6,199,85,0.3);color:#6ee7b7;font-size:13px;font-weight:600;border-radius:10px;margin-bottom:12px;" data-i18n="line_bound_notice">✓ LINE 已綁定 — 可在 LINE 問 AI 持股,並作為即時推播的備援通道</div>
-        <button class="save-btn" onclick="unbindLine()" id="line-unbind-btn" style="margin-top:0;background:rgba(255,255,255,0.06);border:1px solid var(--input-border);" data-i18n="line_unbind_btn">解除綁定</button>
-      </div>
-    </div>
 
     <!-- 即時推播提醒(自有通道,免費無上限,Premium 專屬) -->
     <div class="card" id="push-alert-card" style="margin-top:8px;display:none;">
@@ -872,10 +856,6 @@ nav::after {
       </div>
 
       <div style="display:flex;gap:8px;margin-top:10px;">
-        <button class="share-btn line" onclick="shareToLine()" style="flex:1;">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63h2.386c.349 0 .63.285.63.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.349 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.281.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/></svg>
-          <span data-i18n="ref_share_line">分享到 LINE</span>
-        </button>
         <button class="share-btn copy-link" onclick="copyRefLink()" style="flex:1;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
           <span data-i18n="ref_copy_btn2">複製連結</span>
@@ -905,51 +885,8 @@ nav::after {
 </div>
 
 <script src="stocks.js?v=20260528"></script>
-<script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <script>
 const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
-const LIFF_ID = "2010167489-3x0AdJF2";
-let __liffReady = false;
-// LIFF init:純粹載入 SDK,絕不修改 localStorage / 不砍 URL,避免破壞 login / setpwd flow
-window.__pendingBindLine = false;
-(async function initLiffSafe(){
-  try {
-    if (!LIFF_ID || LIFF_ID === "__LIFF_ID__") return;
-    if (!window.liff) return;
-    await liff.init({ liffId: LIFF_ID });
-    __liffReady = true;
-    // Token 路徑:URL 帶 ?action=bindLine&token=xxx → 直接用 token 換綁定(完全不需要登入)
-    const qs = new URLSearchParams(window.location.search);
-    if (qs.get("action") === "bindLine" && qs.get("token") && liff.isInClient && liff.isInClient()) {
-      const token = qs.get("token");
-      history.replaceState(null, "", "dashboard.html");
-      const doTokenBind = async function(){
-        if (!liff.isLoggedIn || !liff.isLoggedIn()) {
-          try { liff.login({ redirectUri: location.href }); } catch {}
-          return;
-        }
-        const idToken = liff.getIDToken();
-        if (!idToken) { alert("LINE idToken 取得失敗,請重試。"); return; }
-        try {
-          const res = await fetch(WORKER_URL + "/line/bind-by-token", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ token, idToken }),
-          });
-          const data = await res.json();
-          if (data.ok) {
-            if (data.email) localStorage.setItem("md-email", data.email);
-            location.href = "?line=bound";
-          } else {
-            alert("綁定失敗:" + (data.error || "請重試"));
-          }
-        } catch (e) {
-          alert("綁定失敗,請檢查網路後重試。");
-        }
-      };
-      setTimeout(doTokenBind, 400);
-    }
-  } catch (e) { console.warn("LIFF init failed, fallback to OAuth", e); }
-})();
 
 /* ── i18n ── */
 const i18n = {
@@ -1026,12 +963,6 @@ const i18n = {
     cpwd_submit: "確認修改 →",
     cpwd_ok: "✅ 密碼已更新！",
     cpwd_toggle: "修改密碼",
-    line_card_title: "💬 LINE 綁定(AI 助手 + 備援提醒)",
-    line_card_desc: "綁定後可在 LINE 直接問 AI 你的持股、大盤。另外,若你沒開即時推播(或用 iPhone 沒裝到主畫面),重大新聞會改用 LINE 通知你當備援。Premium 專屬。",
-    line_friend_notice: "💡 綁定完成後會自動跳出「加 MarketDaily 好友」頁,請按「加入好友」才會收到推播。",
-    line_bind_btn: "綁定 LINE →",
-    line_bound_notice: "✓ LINE 已綁定 — 可在 LINE 問 AI 持股,並作為即時推播的備援通道",
-    line_unbind_btn: "解除綁定",
     ref_title: "邀請朋友,雙方都得 30 天 Premium",
     ref_subtitle: "分享你的專屬連結 · 朋友訂閱成功,你跟他各自獲得 30 天 Premium 免費",
     ref_stat_clicks: "連結點擊",
@@ -1041,7 +972,6 @@ const i18n = {
     ref_copy_btn: "複製連結",
     ref_copy_btn2: "複製連結",
     ref_reward_info: "<strong>🎁 怎麼運作:</strong>朋友從你的專屬連結訂閱 → 系統自動記入 <strong>你 +30 天、朋友 +30 天 Premium 免費</strong>。已賺天數會自動累加在這個帳號上。",
-    ref_share_line: "分享到 LINE",
     ref_share_fb: "Facebook",
     ref_share_x: "X / Twitter",
     ref_recent_title: "最近邀請",
@@ -1085,17 +1015,7 @@ const i18n = {
     save_net_err: "⚠️ 網路錯誤,點這裡重試",
     ref_copied: "✓ 已複製！",
     share_line_text: "我每天都在讀 MarketDaily 財經日報，30 秒看完今天所有市場動態！用我的連結一起加入 🎁",
-    line_relogin: "請重新登入",
-    line_prompt_pwd: "請輸入你的帳號密碼以綁定 LINE",
-    line_net_err: "網路錯誤,請稍後再試",
-    line_prompt_pwd_retry: "帳號密碼不正確,請重新輸入",
-    line_bind_failed: "綁定失敗,請稍後再試",
-    line_unbind_prompt: "解除綁定 — 請輸入你的密碼",
-    line_unbind_auth_err: "密碼錯誤",
-    line_unbind_failed: "解除失敗,請稍後再試",
-    line_processing: "處理中...",
-    line_bound_alert: "✅ LINE 綁定成功!重大新聞影響你的持股時會即時推播。",
-    line_error_alert: "⚠️ LINE 綁定失敗,請再試一次。",
+    chat_prompt_pwd: "請輸入你的帳號密碼",
     chart_loading: "載入中…",
     chart_no_data: "暫無圖表資料",
     chart_load_failed: "圖表載入失敗",
@@ -1227,12 +1147,6 @@ const i18n = {
     cpwd_submit: "Confirm Change →",
     cpwd_ok: "✅ Password updated!",
     cpwd_toggle: "Change Password",
-    line_card_title: "💬 Connect LINE (AI Assistant + Backup Alerts)",
-    line_card_desc: "Once connected, ask the AI about your holdings right inside LINE. Also, if you haven't enabled web push (or you're on an iPhone without Add-to-Home-Screen), breaking news falls back to LINE. Premium-only.",
-    line_friend_notice: "💡 After binding, the \"Add MarketDaily as friend\" page will open automatically. Tap \"Add friend\" to receive alerts.",
-    line_bind_btn: "Bind LINE →",
-    line_bound_notice: "✓ LINE connected — ask the AI about your holdings on LINE, and it serves as a backup channel for instant alerts.",
-    line_unbind_btn: "Unbind",
     ref_title: "Invite friends — both get 30 days of Premium",
     ref_subtitle: "Share your link. When a friend subscribes, you each get 30 days of Premium free.",
     ref_stat_clicks: "Link Clicks",
@@ -1248,7 +1162,6 @@ const i18n = {
     ref_copy_btn: "Copy Link",
     ref_copy_btn2: "Copy Link",
     ref_reward_info: "<strong>🎁 How it works:</strong> When a friend subscribes via your link, you both get <strong>30 days of Premium free</strong>. Days are credited to your account automatically.",
-    ref_share_line: "Share to LINE",
     // dynamic
     plan_free: "Free Plan",
     plan_paid: "Paid Plan",
@@ -1286,17 +1199,7 @@ const i18n = {
     save_net_err: "⚠️ Network error, click here to retry",
     ref_copied: "✓ Copied!",
     share_line_text: "I read the MarketDaily financial digest every day — all of today's market moves in 30 seconds! Join with my link 🎁",
-    line_relogin: "Please log in again",
-    line_prompt_pwd: "Enter your account password to bind LINE",
-    line_net_err: "Network error, please try again later",
-    line_prompt_pwd_retry: "Incorrect account or password, please re-enter",
-    line_bind_failed: "Binding failed, please try again later",
-    line_unbind_prompt: "Unbind — please enter your password",
-    line_unbind_auth_err: "Wrong password",
-    line_unbind_failed: "Unbind failed, please try again later",
-    line_processing: "Processing...",
-    line_bound_alert: "✅ LINE bound successfully! You'll get real-time alerts when major news affects your holdings.",
-    line_error_alert: "⚠️ LINE binding failed, please try again.",
+    chat_prompt_pwd: "Enter your account password",
     chart_loading: "Loading…",
     chart_no_data: "No chart data available",
     chart_load_failed: "Failed to load chart",
@@ -1761,7 +1664,6 @@ async function showDashboard(email, plan) {
     document.getElementById("admin-panel").style.display = "block";
     loadAdminStats();
   }
-  setupLineCard(email, plan);
   setupPushCard(email, plan);
   setupAlertsFeed(email, plan);
   setupChatCard(email, plan);
@@ -1769,23 +1671,6 @@ async function showDashboard(email, plan) {
   loadReferral(email);
   loadStories(email);
   loadMarketOverview();
-}
-
-// Premium 即時 LINE 提醒綁定卡(目前對 paid/admin 顯示;Premium 細分待 plan 標記完成後收斂)
-async function setupLineCard(email, plan) {
-  const card = document.getElementById("line-alert-card");
-  if (!card) return;
-  if (plan !== "premium" && plan !== "admin") { card.style.display = "none"; return; }
-  card.style.display = "block";
-  let bound = false;
-  try {
-    const res = await fetch(`${WORKER_URL}/line/status?email=${encodeURIComponent(email)}`);
-    if (res.ok) bound = (await res.json()).bound;
-  } catch {}
-  document.getElementById("line-bound-box").style.display = bound ? "block" : "none";
-  document.getElementById("line-unbound-box").style.display = bound ? "none" : "block";
-  // 清除任何殘留的 pending flag(避免舊版本留下的副作用)
-  sessionStorage.removeItem("md-pending-bindLine");
 }
 
 // ── 自有 Web Push 即時推播(免費無上限,不經 LINE)──
@@ -2043,7 +1928,7 @@ async function sendChat() {
   const email = localStorage.getItem("md-email");
   if (!email) return;
   let password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd");
-  if (!password) { password = prompt(T('line_prompt_pwd')); if (!password) return; }
+  if (!password) { password = prompt(T('chat_prompt_pwd')); if (!password) return; }
   _chatErr = "";
   _chatHistory.push({ role: "user", content: text });
   input.value = ""; input.style.height = "auto";
@@ -2108,148 +1993,6 @@ function askPassword(opts = {}) {
   });
 }
 
-function isLineInAppBrowser() {
-  return /\bLine\//i.test(navigator.userAgent || "");
-}
-
-async function bindLine(retryPwd, retryErr) {
-  const email = localStorage.getItem("md-email");
-  let password = retryPwd || sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd");
-  const errEl = document.getElementById("line-err");
-  const btn = document.getElementById("line-bind-btn");
-  if (errEl) errEl.style.display = "none";
-  if (!email) { if (errEl) { errEl.textContent = T('line_relogin'); errEl.style.display = "block"; } return; }
-  if (!password) {
-    password = await askPassword({
-      title: "綁定 LINE 帳號",
-      desc: "為了保護你的 LINE 不被別人綁走,需要再輸入一次密碼。",
-      errorText: retryErr,
-    });
-    if (!password) return;
-  }
-  btn.disabled = true; btn.textContent = T('line_processing');
-
-  // 路徑 A:已在 LIFF context(LINE App 內 + 透過 LIFF URL 開) — 真 0 跳轉
-  if (__liffReady && window.liff && liff.isInClient && liff.isInClient()) {
-    try {
-      if (!liff.isLoggedIn()) {
-        sessionStorage.setItem("md-pwd", password);
-        sessionStorage.setItem("md-line-resume", "1");
-        liff.login({ redirectUri: "https://marketdaily.ai/dashboard.html" });
-        return;
-      }
-      const idToken = liff.getIDToken();
-      if (!idToken) throw new Error("no_id_token");
-      const res = await fetch(WORKER_URL + "/line/liff-bind", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, idToken }),
-      });
-      const data = await res.json();
-      btn.disabled = false; btn.textContent = T('line_bind_btn');
-      if (data.ok) { sessionStorage.removeItem("md-pwd"); location.href = "?line=bound"; return; }
-      if (data.error === "auth") {
-        const p = await askPassword({ title: "密碼錯誤,請再試一次", desc: "看起來密碼不對。請再輸入一次,或點取消放棄綁定。", errorText: "❌ 密碼錯誤" });
-        if (p) bindLine(p); return;
-      }
-      errEl.textContent = T('line_bind_failed'); errEl.style.display = "block"; return;
-    } catch (e) {
-      console.warn("LIFF bind failed, fallback to OAuth", e);
-      // fallthrough
-    }
-  }
-
-  // 路徑 B:手機(非 LIFF)→ 拿一次性 token → 顯示「在 LINE App 開啟」按鈕讓使用者親手 tap
-  // 親手 tap <a> 才會被 iOS/Android 當 universal link → 直接喚起 LINE App(免再輸 LINE 帳密)
-  // JS location.href 會被當成普通 web navigation,常常卡在 LINE web login,所以改成顯示按鈕
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent || "");
-  if (isMobile && (!window.liff || !liff.isInClient || !liff.isInClient())) {
-    try {
-      const tokenRes = await fetch(WORKER_URL + "/line/bind-token", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
-      const tokenData = await tokenRes.json();
-      if (tokenData.error === "auth") {
-        btn.disabled = false; btn.textContent = T('line_bind_btn');
-        const p = await askPassword({ title: "密碼錯誤,請再試一次", desc: "看起來密碼不對。請再輸入一次,或點取消放棄綁定。", errorText: "❌ 密碼錯誤" });
-        if (p) bindLine(p); return;
-      }
-      if (!tokenData.token) throw new Error("no_token");
-      sessionStorage.setItem("md-pwd", password);
-      const liffTarget = "https://liff.line.me/" + LIFF_ID +
-        "?action=bindLine&token=" + encodeURIComponent(tokenData.token);
-      const openA = document.getElementById("line-open-app");
-      const openHint = document.getElementById("line-open-hint");
-      if (openA && openHint) {
-        openA.href = liffTarget;
-        openA.style.display = "block";
-        openHint.style.display = "block";
-        btn.style.display = "none";
-      } else {
-        location.href = liffTarget;
-      }
-      return;
-    } catch (e) {
-      btn.disabled = false; btn.textContent = T('line_bind_btn');
-      errEl.textContent = T('line_net_err'); errEl.style.display = "block"; return;
-    }
-  }
-
-  // 路徑 C:OAuth — desktop fallback 或手機沒裝 LINE 的退路(由「瀏覽器登入綁定」連結觸發)
-  return bindLineOAuth(email, password);
-}
-
-// 手機沒裝 LINE 的退路 — 走標準 LINE OAuth(會要 LINE 帳密,接受率低,只當 fallback)
-async function bindLineOAuth(email, password) {
-  const errEl = document.getElementById("line-err");
-  if (!email) email = localStorage.getItem("md-email");
-  if (!password) password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd");
-  if (!password) {
-    password = await askPassword({ title: "綁定 LINE 帳號", desc: "為了保護你的 LINE 不被別人綁走,需要再輸入一次密碼。" });
-    if (!password) return;
-  }
-  let data;
-  try {
-    const res = await fetch(WORKER_URL + "/line/login", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    data = await res.json();
-  } catch {
-    if (errEl) { errEl.textContent = T('line_net_err'); errEl.style.display = "block"; } return;
-  }
-  if (data.authUrl) { sessionStorage.setItem("md-pwd", password); window.location.href = data.authUrl; return; }
-  if (data.error === "auth") {
-    const p = await askPassword({ title: "密碼錯誤,請再試一次", desc: "看起來密碼不對。請再輸入一次,或點取消放棄綁定。", errorText: "❌ 密碼錯誤" });
-    if (p) bindLineOAuth(email, p);
-    return;
-  }
-  if (errEl) { errEl.textContent = T('line_bind_failed'); errEl.style.display = "block"; }
-}
-
-async function unbindLine() {
-  const email = localStorage.getItem("md-email");
-  let password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd");
-  if (!password) {
-    password = await askPassword({
-      title: "解除 LINE 綁定",
-      desc: "解除後將不再收到 LINE 即時提醒。確認你的身份後即可解除。",
-    });
-  }
-  if (!password) return;
-  try {
-    const res = await fetch(WORKER_URL + "/line/unbind", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-    if (data.ok) {
-      document.getElementById("line-bound-box").style.display = "none";
-      document.getElementById("line-unbound-box").style.display = "block";
-    } else { alert(data.error === "auth" ? T('line_unbind_auth_err') : T('line_unbind_failed')); }
-  } catch { alert(T('line_net_err')); }
-}
-
 async function loadAdminStats() {
   try {
     const email = localStorage.getItem("md-email");
@@ -2310,7 +2053,6 @@ async function loadPreferences(email) {
         planBadge.textContent = eff === "admin" ? T('hdr_plan_admin') : eff === "free" ? T('hdr_plan_free') : T('hdr_plan_paid');
         planBadge.classList.toggle("admin", eff === "admin");
       }
-      setupLineCard(email, eff);
       setupChatCard(email, eff);
     } else {
       // 密碼缺失 / 驗證失敗(403):不可靜默降級成 free —— 會讓 premium 用戶看起來像免費。沿用登入時的 plan。
@@ -3188,11 +2930,6 @@ function copyRefLink() {
   });
 }
 
-function shareToLine() {
-  if (!_refLink) return;
-  window.open(`https://line.me/R/msg/text/?${encodeURIComponent(shareText())}`, "_blank");
-}
-
 function shareToFacebook() {
   if (!_refLink) return;
   window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(_refLink)}&quote=${encodeURIComponent(shareText())}`, "_blank");
@@ -3207,9 +2944,6 @@ async function init() {
   applyLang(localStorage.getItem('md-lang-v2') || 'zh');
   US_STOCKS = typeof US_STOCKS_FULL !== 'undefined' ? US_STOCKS_FULL : [];
   TW_STOCKS = typeof TW_STOCKS_FULL !== 'undefined' ? TW_STOCKS_FULL : [];
-
-  // 先讀 action(因為下面會 replaceState 清 URL)
-  const initAction = new URLSearchParams(window.location.search).get("action");
 
   // 切換帳號偵測:URL ?email= 或 hero 剛輸的 email 跟舊 session 不同 → 清舊登入
   const urlEmail = (new URLSearchParams(window.location.search).get("email") || "").trim().toLowerCase();
@@ -3228,20 +2962,6 @@ async function init() {
   if (urlEmail && !savedEmail) { document.getElementById("login-email").value = urlEmail; document.getElementById("login-password").focus(); history.replaceState(null, "", "dashboard.html"); }
   const email = localStorage.getItem("md-email"); const plan = localStorage.getItem("md-plan") || "free";
   if (email) showDashboard(email, plan);
-  const lineParam = new URLSearchParams(window.location.search).get("line");
-  if (lineParam === "bound") {
-    history.replaceState(null, "", "dashboard.html");
-    alert(T('line_bound_alert') + "\n\n👉 接下來會自動跳到「加 MarketDaily 好友」頁,請按「加入好友」才會收到推播提醒。");
-    setTimeout(function(){ window.open("https://line.me/R/ti/p/@516nponm", "_blank"); }, 300);
-  }
-  else if (lineParam === "error") { alert(T('line_error_alert')); history.replaceState(null, "", "dashboard.html"); }
-
-  // action=bindLine 但「不在 LIFF 環境 + 沒帶 token」(LIFF token 流程由 LIFF init 處理,這裡跳過)
-  // 唯一還需要這裡接手的情境:LIFF 環境 + 用戶尚未登入 LIFF localStorage(罕見 fallback)
-  // 不設 sessionStorage flag,避免殘留在 desktop 引發非預期 auto-bind
-  if (initAction === "bindLine") {
-    history.replaceState(null, "", "dashboard.html");
-  }
 }
 init();
 </script>
@@ -3400,11 +3120,8 @@ window.mdStockTour = function () {
     { selector: "#chat-fab",
       title: { zh: "⑥ AI 投資助手", en: "6. AI assistant" },
       body: { zh: "點右下角這顆泡泡,直接問 AI 你的持股、大盤、財經概念 —— 它知道你正在追蹤哪些股票。", en: "Tap this bubble (bottom-right) to ask the AI about your holdings, the market, anything — it knows your watchlist." } },
-    { selector: "#line-alert-card",
-      title: { zh: "⑦ 綁定 LINE(選用)", en: "7. Connect LINE (optional)" },
-      body: { zh: "想在 LINE 直接問 AI、或當即時推播的備援通道(例如 iPhone),可以綁定 LINE。", en: "Connect LINE to chat with the AI there, or as a backup channel for alerts (e.g. on iPhone)." } },
     { selector: "#referral-section",
-      title: { zh: "⑧ 邀請朋友", en: "8. Invite friends" },
+      title: { zh: "⑦ 邀請朋友", en: "7. Invite friends" },
       body: { zh: "把你的專屬連結分享給朋友,朋友訂閱成功,你跟他各得 30 天 Premium 免費。", en: "Share your link — when a friend subscribes, you both get 30 days of Premium free." } }
   ], { tourId: "dashboard-v2-features", auto: true });
 };

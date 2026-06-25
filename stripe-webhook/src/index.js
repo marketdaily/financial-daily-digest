@@ -254,9 +254,6 @@ function generateRefCode(email) {
   return code;
 }
 
-// --- LINE Login(Premium 即時提醒綁定)---
-const LINE_LOGIN_CHANNEL_ID = "2010167489";
-const LINE_LOGIN_CALLBACK = "https://marketdaily-webhook.delvin-12345678.workers.dev/line/callback";
 const DASHBOARD_URL = "https://marketdaily.ai/dashboard.html";
 
 function b64urlEncode(bytes) {
@@ -573,159 +570,6 @@ export default {
       const newHash = await makePwdHash(newPassword);
       await env.USER_PREFS.put(`pwd:${email}`, newHash);
       return json({ ok: true });
-    }
-
-    // LINE 綁定:啟動 OAuth,回傳授權 URL
-    if (url.pathname === "/line/login" && request.method === "POST") {
-      let body;
-      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
-      const email = (body.email || "").trim().toLowerCase();
-      const password = body.password || "";
-      if (!email) return json({ error: "invalid_email" }, 400);
-      {
-        const g = await gatePassword(env, request, email, password);
-        if (!g.ok) return json({ error: g.error }, g.status);
-      }
-      const state = await signState({ email, exp: Date.now() + 600000 }, env.LINE_LOGIN_CHANNEL_SECRET);
-      const authUrl = "https://access.line.me/oauth2/v2.1/authorize?response_type=code"
-        + "&client_id=" + LINE_LOGIN_CHANNEL_ID
-        + "&redirect_uri=" + encodeURIComponent(LINE_LOGIN_CALLBACK)
-        + "&state=" + encodeURIComponent(state)
-        + "&scope=profile";
-      return json({ authUrl });
-    }
-
-    // LINE 綁定:Chrome → LIFF 一次性 token(免在 LIFF 重複輸密碼)
-    if (url.pathname === "/line/bind-token" && request.method === "POST") {
-      let body;
-      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
-      const email = (body.email || "").trim().toLowerCase();
-      const password = body.password || "";
-      if (!email) return json({ error: "invalid_email" }, 400);
-      {
-        const g = await gatePassword(env, request, email, password);
-        if (!g.ok) return json({ error: g.error }, g.status);
-      }
-      const token = await signState({ email, exp: Date.now() + 300000 }, env.LINE_LOGIN_CHANNEL_SECRET);
-      return json({ token });
-    }
-
-    // LINE 綁定:用一次性 token + LIFF idToken 換綁定(LIFF 內呼叫,無需密碼)
-    if (url.pathname === "/line/bind-by-token" && request.method === "POST") {
-      let body;
-      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
-      const token = body.token || "";
-      const idToken = body.idToken || "";
-      if (!token || !idToken) return json({ error: "invalid_request" }, 400);
-      const payload = await verifyState(token, env.LINE_LOGIN_CHANNEL_SECRET);
-      if (!payload || !payload.email) return json({ error: "token_invalid" }, 400);
-      const email = payload.email;
-      const verifyRes = await fetch("https://api.line.me/oauth2/v2.1/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ id_token: idToken, client_id: LINE_LOGIN_CHANNEL_ID }),
-      });
-      if (!verifyRes.ok) return json({ error: "idtoken_invalid" }, 400);
-      const tokPayload = await verifyRes.json();
-      const userId = tokPayload.sub;
-      if (!userId) return json({ error: "no_user_id" }, 400);
-      await env.USER_PREFS.put(`line:${email}`, userId);
-      await env.USER_PREFS.put(`linemap:${userId}`, email);
-      return json({ ok: true, email });
-    }
-
-    // LINE 綁定:LIFF 路徑(0 跳轉,LIFF 內直接拿 idToken)
-    if (url.pathname === "/line/liff-bind" && request.method === "POST") {
-      let body;
-      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
-      const email = (body.email || "").trim().toLowerCase();
-      const password = body.password || "";
-      const idToken = body.idToken || "";
-      if (!email || !idToken) return json({ error: "invalid_request" }, 400);
-      {
-        const g = await gatePassword(env, request, email, password);
-        if (!g.ok) return json({ error: g.error }, g.status);
-      }
-      const verifyRes = await fetch("https://api.line.me/oauth2/v2.1/verify", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({ id_token: idToken, client_id: LINE_LOGIN_CHANNEL_ID }),
-      });
-      if (!verifyRes.ok) return json({ error: "idtoken_invalid" }, 400);
-      const payload = await verifyRes.json();
-      const userId = payload.sub;
-      if (!userId) return json({ error: "no_user_id" }, 400);
-      await env.USER_PREFS.put(`line:${email}`, userId);
-      await env.USER_PREFS.put(`linemap:${userId}`, email);
-      return json({ ok: true });
-    }
-
-    // LINE 綁定:OAuth 回呼
-    if (url.pathname === "/line/callback" && request.method === "GET") {
-      const code = url.searchParams.get("code");
-      const payload = await verifyState(url.searchParams.get("state"), env.LINE_LOGIN_CHANNEL_SECRET);
-      if (!code || !payload) return Response.redirect(DASHBOARD_URL + "?line=error", 302);
-      const tokenRes = await fetch("https://api.line.me/oauth2/v2.1/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams({
-          grant_type: "authorization_code", code,
-          redirect_uri: LINE_LOGIN_CALLBACK,
-          client_id: LINE_LOGIN_CHANNEL_ID,
-          client_secret: env.LINE_LOGIN_CHANNEL_SECRET,
-        }),
-      });
-      if (!tokenRes.ok) return Response.redirect(DASHBOARD_URL + "?line=error", 302);
-      const tok = await tokenRes.json();
-      const profRes = await fetch("https://api.line.me/v2/profile", {
-        headers: { "Authorization": "Bearer " + tok.access_token },
-      });
-      if (!profRes.ok) return Response.redirect(DASHBOARD_URL + "?line=error", 302);
-      const prof = await profRes.json();
-      if (!prof.userId) return Response.redirect(DASHBOARD_URL + "?line=error", 302);
-      await env.USER_PREFS.put(`line:${payload.email}`, prof.userId);
-      await env.USER_PREFS.put(`linemap:${prof.userId}`, payload.email);
-      return Response.redirect(DASHBOARD_URL + "?line=bound", 302);
-    }
-
-    // LINE 綁定:解除
-    if (url.pathname === "/line/unbind" && request.method === "POST") {
-      let body;
-      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
-      const email = (body.email || "").trim().toLowerCase();
-      {
-        const g = await gatePassword(env, request, email, body.password || "");
-        if (!g.ok) return json({ error: g.error }, g.status);
-      }
-      const userId = await env.USER_PREFS.get(`line:${email}`);
-      if (userId) await env.USER_PREFS.delete(`linemap:${userId}`);
-      await env.USER_PREFS.delete(`line:${email}`);
-      return json({ ok: true });
-    }
-
-    // LINE 綁定:查詢狀態
-    if (url.pathname === "/line/status" && request.method === "GET") {
-      const email = (url.searchParams.get("email") || "").trim().toLowerCase();
-      return json({ bound: !!email && !!(await env.USER_PREFS.get(`line:${email}`)) });
-    }
-
-    // LINE Bot Messaging API webhook:接收訊息 → AI Q&A → reply
-    if (url.pathname === "/line/webhook" && request.method === "POST") {
-      const bodyText = await request.text();
-      let payload;
-      try { payload = JSON.parse(bodyText); } catch { return new Response("OK", { status: 200 }); }
-      const events = payload.events || [];
-      // LINE Console 的 Verify 按鈕送空 events 連通性測試 — 不驗簽,直接 200
-      if (events.length === 0) return new Response("OK", { status: 200 });
-      // 真實事件:嚴格驗 HMAC-SHA256 簽名
-      const sig = request.headers.get("x-line-signature");
-      const channelSecret = env.LINE_MESSAGING_CHANNEL_SECRET || env.LINE_CHANNEL_SECRET;
-      if (!await verifyLineSignature(bodyText, sig, channelSecret)) {
-        console.log("line webhook signature mismatch");
-        return new Response("Bad signature", { status: 401 });
-      }
-      ctx.waitUntil(processLineEvents(events, env));
-      return new Response("OK", { status: 200 });
     }
 
     // AI 投資助手:聊天(Premium 專屬)
@@ -1092,7 +936,7 @@ export default {
       return json({ items });
     }
 
-    // Admin:通過 hot take → 發 LINE broadcast + Threads
+    // Admin:通過 hot take → 發 Threads
     if (url.pathname === "/admin/reactive-approve" && request.method === "POST") {
       let body;
       try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
@@ -1119,12 +963,9 @@ export default {
         `⚡ Hot Take | ${item.ai.headline}\n\n${item.ai.body}\n\n` +
         `來源:${item.source_url}\n\n#美股 #台股 #財經`;
 
-      const results = { line: null, threads: null };
+      const results = { threads: null };
       // 開發階段:發送先 mock 成 log,避免誤推訂戶。設 env.REACTIVE_LIVE_SEND="1" 才真寄。
       const live = env.REACTIVE_LIVE_SEND === "1";
-      try {
-        results.line = await sendLineBroadcast(env, caption, live);
-      } catch (e) { results.line = { ok: false, error: String(e) }; }
       try {
         results.threads = await sendThreadsPost(env, caption, live);
       } catch (e) { results.threads = { ok: false, error: String(e) }; }
@@ -1140,7 +981,7 @@ export default {
       }), { expirationTtl: 86400 * 7 });
       await env.USER_PREFS.delete(`reactive:pending:${id}`);
 
-      const anyFail = (results.line && results.line.ok === false) || (results.threads && results.threads.ok === false);
+      const anyFail = (results.threads && results.threads.ok === false);
       if (anyFail) {
         await env.USER_PREFS.put(`reactive:failed:${id}`, JSON.stringify(results),
           { expirationTtl: 86400 * 14 });
@@ -1933,7 +1774,7 @@ export default {
       if (email) {
         const tier = TIER_BY_AMOUNT[session.amount_total] || "付費";
         await addToBrevo(email, env.BREVO_API_KEY, listId, { PAID: true, PLAN: "paid", PLAN_TIER: tier });
-        // Pro 改為「Premium 試讀首月」定位 — Pro 購買者立即享 Premium 全功能(LINE 推播 + AI Q&A 等)
+        // Pro 改為「Premium 試讀首月」定位 — Pro 購買者立即享 Premium 全功能(即時推播 + AI Q&A 等)
         await env.USER_PREFS.put(`plan:${email}`, "premium");
         // 標記試讀者,給後續續訂提醒 / 帳務追蹤用
         if (tier === "Pro") {
@@ -2073,17 +1914,6 @@ async function runLifecycleSweep(env) {
           }
         }
 
-        // Premium 但未綁 LINE → 寄一次提醒(任何 ≥ 3 天的舊用戶都會吃到,但 KV flag 防止重寄)。
-        // 用戶 2026-05-25 指令:Premium 沒綁 LINE 就寄信通知。
-        if (days >= 3) {
-          const plan = (await env.USER_PREFS.get(`plan:${email}`)) || "free";
-          const linked = await env.USER_PREFS.get(`line:${email}`);
-          if (plan === "premium" && !linked && !(await env.USER_PREFS.get(`lc_line_reminder_sent:${email}`))) {
-            await sendLineBindReminderEmail(email, env.BREVO_API_KEY, env);
-            await env.USER_PREFS.put(`lc_line_reminder_sent:${email}`, String(Date.now()));
-            sent.line_reminder = (sent.line_reminder || 0) + 1;
-          }
-        }
       } catch (e) {
         errors++;
         console.log("lifecycle sweep error for", email, String(e));
@@ -2693,7 +2523,7 @@ async function sendD7Email(email, apiKey, env) {
         </tr>
         <tr>
           <td width="38" valign="top"><div style="width:30px;height:30px;border-radius:50%;background:#6366f1;color:#fff;font-size:14px;font-weight:800;text-align:center;line-height:30px;">2</div></td>
-          <td style="padding-bottom:14px;font-size:14px;color:#333;line-height:1.7;"><strong>LINE 即時推播</strong><br><span style="color:#666;">影響你持股的重大新聞,5 分鐘內推到你 LINE。</span></td>
+          <td style="padding-bottom:14px;font-size:14px;color:#333;line-height:1.7;"><strong>即時推播</strong><br><span style="color:#666;">影響你持股的重大新聞,5 分鐘內推到你的裝置。</span></td>
         </tr>
         <tr>
           <td width="38" valign="top"><div style="width:30px;height:30px;border-radius:50%;background:#6366f1;color:#fff;font-size:14px;font-weight:800;text-align:center;line-height:30px;">3</div></td>
@@ -2768,7 +2598,7 @@ async function sendD14Email(email, apiKey, env) {
         雙方各得 <span style="color:#6366f1;">30 天 Premium</span>
       </p>
       <p style="margin:0;font-size:13px;color:#666;line-height:1.7;">
-        朋友點你的連結訂閱後,你和他的帳號都自動延長 30 天 Premium —— 包含 AI 投資助手、LINE 即時推播、深度分析。
+        朋友點你的連結訂閱後,你和他的帳號都自動延長 30 天 Premium —— 包含 AI 投資助手、即時推播、深度分析。
       </p>
     </div>
     <div style="background:#f6f7fb;border:1px dashed #cbd5e1;border-radius:12px;padding:14px 18px;margin-bottom:18px;">
@@ -2816,8 +2646,8 @@ async function sendD21Email(email, apiKey, env) {
       <ul style="margin:0;padding-left:18px;font-size:14px;color:#444;line-height:1.95;">
         <li><strong>個人化日報</strong>(無限持股追蹤,免費版只 5 支)</li>
         <li><strong>個股深度分析</strong>(每支 3-5 段,不只是 1 句 verdict)</li>
-        <li><strong>LINE Bot 雙向 AI 對話</strong>(盤中可直接問你的持股)</li>
-        <li><strong>重大新聞 LINE 即時推播</strong>(5 分鐘內到)</li>
+        <li><strong>AI 投資助手雙向對話</strong>(盤中可直接問你的持股)</li>
+        <li><strong>重大新聞即時推播</strong>(5 分鐘內到)</li>
       </ul>
     </div>
     <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:18px;">
@@ -2858,8 +2688,8 @@ async function sendD45Email(email, apiKey, env) {
         因為你已經養成讀日報的習慣 —— 表示你真的在意自己的投資組合。
       </p>
       <p style="margin:0;font-size:14px;color:#666;line-height:1.8;">
-        Premium 的核心價值是 <strong>盤中即時對話</strong>(LINE Bot)。<br>
-        早上 7 點看完 → 白天有突發狀況 → 直接 LINE 問 AI 「我的 NVDA 現在怎樣?」<br>
+        Premium 的核心價值是 <strong>盤中即時對話</strong>(AI 投資助手)。<br>
+        早上 7 點看完 → 白天有突發狀況 → 直接在 dashboard 問 AI 「我的 NVDA 現在怎樣?」<br>
         5 秒給你答案,不用自己滑 PTT。
       </p>
     </div>
@@ -2883,43 +2713,6 @@ async function sendD45Email(email, apiKey, env) {
     badge: "Day 45 · 最後提醒",
     headerTitle: "⏰ 最後一次主動跟你聊升級",
     headerSub: "45 天了,該決定要不要 Premium",
-    bodyHtml: body,
-  });
-  return sendLifecycleEmail(email, apiKey, subject, html);
-}
-
-// Premium 但沒綁 LINE → 提醒這個 plan 還有「即時 LINE 推播」沒啟用,引導去 dashboard 綁定。
-async function sendLineBindReminderEmail(email, apiKey, env) {
-  const subject = "⚡ 你的 Premium 還沒啟用 LINE 即時推播";
-  const bindLink = `https://marketdaily.ai/dashboard?utm_source=lifecycle&utm_campaign=line_reminder&email=${encodeURIComponent(email)}`;
-  const body = `
-    <p style="font-size:17px;font-weight:800;color:#1a1a1a;margin:0 0 14px;">嗨!想跟你說一件事 👋</p>
-    <p style="font-size:15px;color:#444;line-height:1.8;margin:0 0 20px;">
-      你已經是 <strong>Premium 訂閱者</strong>,但目前還沒把 LINE 綁定 MarketDaily。<br>
-      Premium 最重要的功能之一是<strong>「重大新聞即時推播」</strong>—— 你持股有什麼大事,我們會在第一時間用 LINE 通知你,而不是等到隔天早上日報。
-    </p>
-    <div style="background:rgba(6,199,85,0.08);border:1px solid rgba(6,199,85,0.30);border-radius:14px;padding:20px 22px;margin-bottom:22px;">
-      <p style="margin:0 0 10px;font-size:13px;color:#047857;font-weight:800;letter-spacing:1px;">📲 綁定 LINE 之後,你會收到:</p>
-      <ul style="margin:0;padding-left:20px;font-size:14px;color:#1a1a1a;line-height:1.85;">
-        <li>🚨 持股利空 / 利多即時推播(盤中也會)</li>
-        <li>💬 LINE Bot 雙向對話 — 直接問 AI「我的 NVDA 現在怎樣?」</li>
-        <li>⚡ 30 秒內回應 — 不必開電腦、不必滑 PTT</li>
-      </ul>
-    </div>
-    <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:18px;">
-      <tr>
-        <td align="center">
-          <a href="${bindLink}" style="display:block;padding:17px 24px;background:linear-gradient(135deg,#06C755,#10b981);color:#fff;font-size:17px;font-weight:800;text-decoration:none;border-radius:12px;">前往 Dashboard 綁定 LINE →</a>
-        </td>
-      </tr>
-    </table>
-    <p style="font-size:13px;color:#666;line-height:1.7;margin:0;text-align:center;">
-      綁定後立即生效,以後重大消息直接 LINE 通知你 ⚡
-    </p>`;
-  const html = lifecycleShell({
-    badge: "Premium · LINE 提醒",
-    headerTitle: "⚡ 啟用即時 LINE 推播",
-    headerSub: "你的 Premium 功能還沒用滿",
     bodyHtml: body,
   });
   return sendLifecycleEmail(email, apiKey, subject, html);
@@ -3158,29 +2951,6 @@ async function sendLineAdminPush(env, message) {
   } catch (e) { return { ok: false, error: String(e) }; }
 }
 
-// LINE broadcast(全訂戶)— live=false 預設只 log,避免開發階段誤推
-async function sendLineBroadcast(env, message, live) {
-  if (!live) {
-    console.log("[mock] LINE broadcast:", message.slice(0, 100));
-    return { ok: true, mocked: true };
-  }
-  const body = JSON.stringify({ messages: [{ type: "text", text: message.slice(0, 4900) }] });
-  const tryOnce = (t) => fetch("https://api.line.me/v2/bot/message/broadcast", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "Authorization": "Bearer " + t },
-    body,
-  });
-  let token = await lineToken(env);
-  if (!token) return { ok: false, error: "missing_token" };
-  let res = await tryOnce(token);
-  if (res.status === 401) {
-    await env.USER_PREFS.delete("alert:linetoken");
-    const fresh = await lineToken(env, { force: true });
-    if (fresh && fresh !== token) res = await tryOnce(fresh);
-  }
-  return { ok: res.ok, status: res.status };
-}
-
 // Threads:create container → publish。live=false 只 log。
 async function sendThreadsPost(env, message, live) {
   if (!live) {
@@ -3211,28 +2981,9 @@ async function sendThreadsPost(env, message, live) {
   return { ok: pubRes.ok, step: "publish", status: pubRes.status, container_id: containerId };
 }
 
-// ─── LINE Bot 雙向 Q&A ──────────────────────────────────────────────
-
-async function verifyLineSignature(bodyText, sigHeader, secret) {
-  if (!sigHeader || !secret) return false;
-  const key = await crypto.subtle.importKey(
-    "raw", new TextEncoder().encode(secret),
-    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]
-  );
-  const mac = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(bodyText));
-  let expected = "";
-  for (const b of new Uint8Array(mac)) expected += String.fromCharCode(b);
-  const expectedB64 = btoa(expected);
-  // Timing-safe comparison(同 Stripe webhook,避免 timing attack 推斷 channel secret)
-  if (expectedB64.length !== sigHeader.length) return false;
-  let diff = 0;
-  for (let i = 0; i < expectedB64.length; i++) diff |= expectedB64.charCodeAt(i) ^ sigHeader.charCodeAt(i);
-  return diff === 0;
-}
-
 // LINE Messaging API token:KV cache(alert:linetoken,跟 alert-worker 共用)
 // → static env LINE_CHANNEL_ACCESS_TOKEN → 動態 OAuth(client_credentials)。
-// force=true 跳過 cache 和 static,lineReply 收 401 時呼叫。
+// force=true 跳過 cache 和 static,admin 告警推 LINE 收 401 時呼叫。
 async function lineToken(env, { force = false } = {}) {
   if (!force) {
     const cached = await env.USER_PREFS.get("alert:linetoken");
@@ -3254,225 +3005,4 @@ async function lineToken(env, { force = false } = {}) {
   if (!data.access_token) return null;
   await env.USER_PREFS.put("alert:linetoken", data.access_token, { expirationTtl: 24 * 24 * 3600 });
   return data.access_token;
-}
-
-async function lineReply(env, replyToken, text) {
-  const msg = (text || "").slice(0, 4900);
-  if (!msg) return;
-  const tryOnce = (t) => fetch("https://api.line.me/v2/bot/message/reply", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${t}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ replyToken, messages: [{ type: "text", text: msg }] }),
-  });
-  let token = await lineToken(env);
-  if (!token) {
-    console.log("lineReply: no token available");
-    return;
-  }
-  let res = await tryOnce(token);
-  if (res.status === 401) {
-    await env.USER_PREFS.delete("alert:linetoken");
-    const fresh = await lineToken(env, { force: true });
-    if (fresh && fresh !== token) {
-      res = await tryOnce(fresh);
-    }
-  }
-  if (!res.ok) {
-    console.log(`lineReply failed status=${res.status}`);
-    // 主動告 admin:lineReply 壞掉沒有人會發現(用戶看不到回覆,以為 AI 沒理他),
-    // 5/25 才被用戶察覺,加同小時節流(共用 alert-worker 的 admin_alert KV 命名)。
-    try {
-      if (env.ADMIN_LINE_USER_ID && res.status !== 401) {
-        const hourKey = `admin_alert:${new Date().toISOString().slice(0, 13)}`;
-        if (!(await env.USER_PREFS.get(hourKey))) {
-          await sendLineAdminPush(env,
-            `🚨 lineReply 失敗 status=${res.status}\nuser 訊息沒收到 AI 回覆,請查 wrangler tail.\n— stripe-webhook`);
-          await env.USER_PREFS.put(hourKey, "1", { expirationTtl: 3700 });
-        }
-      }
-    } catch {}
-  }
-  return res;
-}
-
-async function processLineEvents(events, env) {
-  for (const ev of events) {
-    try {
-      if (ev.type === "follow") {
-        await lineReply(env, ev.replyToken,
-          "嗨!👋 歡迎加入 MarketDaily 官方 LINE。\n\n" +
-          "✅ 已訂閱者:登入 marketdaily.ai/dashboard 綁定 LINE,Premium 戶可在這裡直接問 AI 投資助手。\n\n" +
-          "✨ 還沒訂閱:免費版直接加入(週一到週六早上 7 點寄)→ marketdaily.ai");
-        continue;
-      }
-      if (ev.type !== "message") continue;
-      const userId = ev.source?.userId;
-      const replyToken = ev.replyToken;
-      if (!userId || !replyToken) continue;
-      if (ev.message?.type !== "text") {
-        await lineReply(env, replyToken,
-          "我只能讀文字訊息。直接打你想問的吧 👇\n例如:「NVDA 現在能追嗎?」「我手上 TSM 該停損嗎?」");
-        continue;
-      }
-      const text = (ev.message.text || "").trim();
-      if (!text) continue;
-      await handleLineQuery(env, userId, text, replyToken);
-    } catch (e) {
-      console.log("line webhook error:", String(e));
-    }
-  }
-}
-
-async function handleLineQuery(env, userId, text, replyToken) {
-  const email = await env.USER_PREFS.get(`linemap:${userId}`);
-  if (!email) {
-    return lineReply(env, replyToken,
-      "👋 還沒看到你的 MarketDaily 帳號跟這個 LINE 綁定。\n\n" +
-      "請到 marketdaily.ai/dashboard 登入,在「⚡ 即時 LINE 提醒」綁定後,就能在這裡用 AI 投資助手。\n\n" +
-      "(綁定是 Premium 專屬功能)");
-  }
-
-  const isAdmin = ADMIN_EMAILS.includes(email);
-  const plan = await env.USER_PREFS.get(`plan:${email}`);
-  if (!isAdmin && plan !== "premium") {
-    return lineReply(env, replyToken,
-      "嗨!AI 投資助手是 Premium 專屬功能。\n\n" +
-      "升級 Premium 解鎖:\n" +
-      "• 即時個股 AI 對話(就在這 LINE 對話框)\n" +
-      "• 重大新聞 LINE 即時推播\n" +
-      "• 個人化深度分析\n\n" +
-      "升級 → marketdaily.ai/pricing");
-  }
-
-  const day = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
-  const countKey = `chatcount:${email}:${day}`;
-  const used = parseInt((await env.USER_PREFS.get(countKey)) || "0", 10);
-  if (used >= 30) {
-    return lineReply(env, replyToken,
-      "今天的 AI 對話額度已用完(30 次/天),明天早上 7 點重置。\n\n" +
-      "若需要更高額度,可寄信給主編 marketdailyhq@gmail.com");
-  }
-
-  // Holdings context
-  let holdings = "";
-  const prefRaw = await env.USER_PREFS.get(email);
-  if (prefRaw) {
-    try {
-      const p = JSON.parse(prefRaw);
-      const us = (p.us_stocks || []).join("、");
-      const tw = (p.tw_stocks || []).join("、");
-      const parts = [us && `美股:${us}`, tw && `台股:${tw}`].filter(Boolean);
-      if (parts.length) holdings = parts.join(";");
-    } catch {}
-  }
-  if (!holdings) holdings = "(尚未設定持股)";
-
-  // Session history(LINE 沒 conversation context,我們自己維護)
-  const sessKey = `linechat:${userId}`;
-  let history = [];
-  const sessRaw = await env.USER_PREFS.get(sessKey);
-  if (sessRaw) {
-    try { history = JSON.parse(sessRaw); } catch {}
-  }
-  history.push({ role: "user", content: text.slice(0, 1000) });
-  // 只保留最近 10 輪,避免 token 暴漲
-  if (history.length > 20) history = history.slice(-20);
-
-  // 反 anchoring:當用戶在問「剛剛/這個/那則/你傳的」這類指代詞時,
-  // 如果 history 中先前 assistant 曾錯誤回答「我沒推過/沒看到/沒傳過」,
-  // 直接把這些被污染的 assistant 回應從 history 移除,避免新一輪 follow 舊立場。
-  const refersToPush = /剛(剛|才)|你.{0,4}(傳|推).{0,4}(消息|新聞|那則)|這(個|則|條).{0,4}(消息|新聞|要)|那則|剛才的|剛推的|傳給我/.test(text);
-  if (refersToPush) {
-    const beforeLen = history.length;
-    history = history.filter(m => {
-      if (m.role !== "assistant") return true;
-      const bad = /(沒|未).{0,5}(傳|推|主動推|看到|收到).{0,12}(消息|新聞|那則|這個|推播)|我.{0,6}沒.{0,4}推過|我.{0,4}沒.{0,4}主動推|沒有.{0,5}傳.{0,5}消息|搞不清楚.{0,5}這個|找不到.{0,5}你.{0,5}(說|指)的/.test(m.content);
-      return !bad;
-    });
-    if (history.length !== beforeLen) {
-      console.log(`[handleLineQuery] anti-anchor: dropped ${beforeLen - history.length} polluted assistant turns for ${email}`);
-    }
-  }
-
-  // 結構化的近期主動推播清單(per-user, 24h, 最多 8 則),
-  // alert-worker push 時寫進 alerthistory:${userId},這邊讀來注入 system prompt,
-  // 不再依賴 chat history(history 可能被擠掉,或部署前推的 push 根本沒寫進去)。
-  let recentAlertsContext = "";
-  try {
-    const alertHistRaw = await env.USER_PREFS.get(`alerthistory:${userId}`);
-    if (alertHistRaw) {
-      const list = JSON.parse(alertHistRaw);
-      if (Array.isArray(list) && list.length) {
-        const lines = list.slice(-5).reverse().map((a, i) => {
-          let timeStr = "";
-          try {
-            timeStr = a.ts ? new Date(a.ts).toLocaleString("zh-TW",
-              { timeZone: "Asia/Taipei", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "";
-          } catch {}
-          const num = i + 1;
-          return `${num}. [${timeStr}] ${a.ticker || "?"} — ${a.title || ""}\n   為什麼跟用戶有關:${a.reason || "(無)"}\n   原文:${a.url || ""}`;
-        });
-        recentAlertsContext =
-          "\n\n**過去 24 小時內你主動推播給「這位用戶」的重大消息(最新在前):**\n" +
-          lines.join("\n\n") +
-          "\n\n→ 當用戶說「這個」「剛剛你傳的」「剛剛那則」「你推給我的消息」時,**幾乎都是指上面第 1 則(最新)**;若用戶在訊息中引用了標題的關鍵字(如「谷歌」「Berkshire」),對照清單找出他指的那則,直接基於該則新聞分析。**絕對不要說「我沒推過」「我沒看到」**,這份清單就是你推過的所有訊息。";
-      }
-    }
-  } catch {}
-
-  const system = `你是 MarketDaily 的 AI 投資助手,透過 LINE 跟用戶對話。MarketDaily 是給台灣投資人的每日財經 AI 日報平台。
-
-LINE 對話規則:
-- **回應要短**,LINE 是手機介面,2-4 段最舒服。盡量 200 字以內,絕對不超過 500 字。
-- 一律繁體中文。
-- 不用 markdown(LINE 不支援);要分隔用空行或 emoji 開頭。
-- 涉及買賣判斷時結尾加「⚠️ 僅供參考,非投資建議」。
-- 沒有即時報價時誠實說「我不知道現在的盤中價」,建議用戶看券商 App 確認價位。
-- 提到台股一律用公司名稱(可附代號,如「台積電 2330」),不要只報代號。
-- 與投資、財經、用戶持股無關的閒聊,簡短禮貌帶過,引導回投資主題。
-
-**重要:處理「主動推播」的上下文**
-- 對話歷史中以 \`[系統主動推播]\` 開頭的 assistant 訊息,**是你主動推給用戶的「重大消息」LINE 提醒**(不是用戶問你的回覆)。
-- 當用戶說「這個」「剛剛你傳的」「剛剛那則消息」「剛剛推的」「你說的這個新聞」等指代詞,**幾乎都是指最近那則 [系統主動推播]**,要往前翻歷史找到它,直接基於那條新聞回答,**不要說「我沒看到你說的是什麼」或「我沒傳過消息」**。
-- 找不到指代對象時(歷史裡真的沒有 push),才禮貌地請用戶補上具體股票或新聞標題。
-
-這位用戶目前在 MarketDaily 追蹤的持股:${holdings}${recentAlertsContext}`;
-
-  let aiRes;
-  try {
-    aiRes = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 700,
-        system,
-        messages: history,
-      }),
-    });
-  } catch {
-    return lineReply(env, replyToken, "⚠️ AI 暫時連不上,稍等 1 分鐘再試。");
-  }
-  if (!aiRes.ok) {
-    return lineReply(env, replyToken, "⚠️ AI 回應失敗,稍等 1 分鐘再試。");
-  }
-  const data = await aiRes.json();
-  const reply = (data.content || []).map(c => c.text || "").join("").trim();
-  if (!reply) {
-    return lineReply(env, replyToken, "⚠️ AI 沒給回應,換個方式問問看?");
-  }
-
-  // 留 session 給下次對話用
-  history.push({ role: "assistant", content: reply });
-  await env.USER_PREFS.put(sessKey, JSON.stringify(history.slice(-20)),
-    { expirationTtl: 24 * 3600 });
-  // 計數共用 web /chat 配額(同一用戶 LINE / web 加總 30 次/天)
-  await env.USER_PREFS.put(countKey, String(used + 1),
-    { expirationTtl: 26 * 3600 });
-
-  return lineReply(env, replyToken, reply);
 }

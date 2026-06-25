@@ -152,9 +152,9 @@ function ruleScore(eventType, ageHours) {
   return Math.round(base * (1 - 0.4 * decay));
 }
 
-// 列出所有 plan=premium 且至少綁了一個推播通道(LINE 或 自有 web push)的用戶與持股。
+// 列出所有 plan=premium 且至少開了 web push 的用戶與持股。(訂閱者 LINE 推播已移除,通道只剩 web push)
 async function premiumRecipients(env) {
-  const map = new Map(); // email -> {email, userId, pushSub, holdings}
+  const map = new Map(); // email -> {email, pushSubs, holdings}
   async function ensure(email) {
     if (map.has(email)) return map.get(email);
     const plan = await env.USER_PREFS.get(`plan:${email}`);
@@ -169,7 +169,7 @@ async function premiumRecipients(env) {
         }
       } catch {}
     }
-    const r = { email, userId: null, pushSubs: [], holdings };
+    const r = { email, pushSubs: [], holdings };
     map.set(email, r);
     return r;
   }
@@ -185,11 +185,10 @@ async function premiumRecipients(env) {
       cursor = page.list_complete ? null : page.cursor;
     } while (cursor);
   }
-  await scan("line:", async (r, key) => { r.userId = await env.USER_PREFS.get(key); });
   await scan("pushsub:", async (r, key) => {
     try { const p = JSON.parse(await env.USER_PREFS.get(key)); r.pushSubs = Array.isArray(p) ? p : [p]; } catch {}
   });
-  return [...map.values()].filter((r) => r && (r.userId || (r.pushSubs && r.pushSubs.length)));
+  return [...map.values()].filter((r) => r && r.pushSubs && r.pushSubs.length);
 }
 
 // Claude 嚴重度判定:輸入新聞 + 相關 ticker,輸出 {severity 0-10, reason}。
@@ -254,7 +253,7 @@ async function aiSeverity(env, news, tickers) {
 // 取 LINE Messaging API 推播 token。
 // 預設順序:KV cache(alert:linetoken,動態 OAuth 結果)→ static env LINE_CHANNEL_ACCESS_TOKEN
 // → 動態 OAuth swap(client_credentials)。force=true 跳過 cache 和 static,
-// 直接動態換(linePush 收 401 時用)。
+// 直接動態換(alertAdmin 推 admin LINE 收 401 時用)。
 async function lineToken(env, { force = false } = {}) {
   if (!force) {
     const cached = await env.USER_PREFS.get("alert:linetoken");
@@ -386,7 +385,7 @@ function pushNotif(news, ticker, severity, reason) {
 // 聰明備援策略:web push 是所有人預設(免費無上限);
 // LINE push 只在「用戶沒開 web push(如沒裝 PWA 的 iPhone)」或「超重大 severity≥9」時才動用,
 // 把 LINE 200/月珍貴額度留給真正需要的人。LINE 聊天機器人(reply,免費)不受影響。
-async function deliverAlert(env, r, lineTok, text, notifStr, opts = {}) {
+async function deliverAlert(env, r, notifStr, opts = {}) {
   let ok = false; const channels = []; let lastStatus = 0;
   const severity = opts.severity || 0;
   const hasWebPush = !!(r.pushSubs && r.pushSubs.length);
@@ -408,13 +407,7 @@ async function deliverAlert(env, r, lineTok, text, notifStr, opts = {}) {
       else await env.USER_PREFS.delete(`pushsub:${r.email}`);
     }
   }
-  // 2) LINE push —— 聰明備援:沒開 web push 或超重大才用
-  const lineEligible = r.userId && lineTok && (!hasWebPush || severity >= 9);
-  if (lineEligible) {
-    const lr = await linePush(env, lineTok, r.userId, text);
-    if (lr.ok) { ok = true; channels.push("line"); }
-    else { lastStatus = lr.status; if (lr.status === 400 || lr.status === 403) await env.USER_PREFS.put(`linestale:${r.email}`, new Date().toISOString()); }
-  }
+  // 訂閱者通道只剩 web push(LINE 推播已移除;admin 內部告警的 LINE 走 alertAdmin,不經這裡)
   return { ok, channels, status: lastStatus };
 }
 // 寫入用戶的站內「提醒收件匣」(email-keyed,LINE+web push 用戶都記;dashboard feed 讀這個)。留 90 天、上限 50 則。
@@ -469,26 +462,6 @@ function alertMessage(news, ticker, severity, reason, meta = {}) {
   return lines.join("\n");
 }
 
-async function linePush(env, token, userId, text) {
-  const tryOnce = (t) => fetch(LINE_PUSH_URL, {
-    method: "POST",
-    headers: { authorization: `Bearer ${t}`, "content-type": "application/json" },
-    body: JSON.stringify({ to: userId, messages: [{ type: "text", text }] }),
-  });
-  let res = await tryOnce(token);
-  // 401 = token 失效(過期或被 LINE 撤銷)。清 cache、強制動態換,重試一次。
-  // 2026-05-24 17:54 UTC 起 static LINE_CHANNEL_ACCESS_TOKEN 失效,28 筆推播全炸,
-  // 因此加 self-healing fallback。
-  if (res.status === 401) {
-    await env.USER_PREFS.delete("alert:linetoken");
-    const fresh = await lineToken(env, { force: true });
-    if (fresh && fresh !== token) {
-      res = await tryOnce(fresh);
-    }
-  }
-  if (res.ok) return { ok: true };
-  return { ok: false, status: res.status, body: (await res.text()).slice(0, 300) };
-}
 
 // 主動告訴 admin(Delvin 的 LINE):推播 / canary 出狀況。
 // 節流:同小時最多 1 則,避免炸訊息;ADMIN_LINE_USER_ID 沒設就跳過。
@@ -664,10 +637,8 @@ async function runPipeline(env, { push, persist }) {
       continue;
     }
 
-    // 通過門檻 → 逐持有者推播(去重 + 每日上限)
+    // 通過門檻 → 逐持有者推播(去重 + 每日上限)。訂閱者只走 web push
     const today = twDate();
-    const token = push ? await lineToken(env) : null;
-    if (push && !token) report.errors.push("line:無推播 token(web push 仍會嘗試)");
     for (const h of holders) {
       const hit = news.tickers.find((t) => h.holdings.has(t)) || (marketWide ? "大盤" : undefined);
       const cluster = `pushed:${h.email}:${clusterKey(hit, eventType, news.publishedAt)}`;
@@ -686,62 +657,19 @@ async function runPipeline(env, { push, persist }) {
         cand.recipients.push({ email: h.email, ticker: hit, status: "would-push" });
         continue;
       }
-      const msg = alertMessage(news, hit, severity, reason, { speculative, stance, action });
-      const pushed = await deliverAlert(env, h, token, msg, pushNotif(news, hit, severity, reason), { severity });
+      const pushed = await deliverAlert(env, h, pushNotif(news, hit, severity, reason), { severity });
       if (pushed.ok) {
         await env.USER_PREFS.put(cluster, report.ts, { expirationTtl: PUSHED_TTL });
         await env.USER_PREFS.put(countKey, String(count + 1), { expirationTtl: COUNT_TTL });
         report.counts.pushed++;
         cand.recipients.push({ email: h.email, ticker: hit, status: `pushed:${pushed.channels.join("+")}` });
-        // 站內提醒收件匣(dashboard feed 顯示用,LINE+web push 用戶都記)
+        // 站內提醒收件匣(dashboard feed 顯示用)
         await recordAlertInbox(env, h.email, {
           ts: report.ts, kind: "news", ticker: hit,
           name: hit === "大盤" ? "大盤" : displayName(hit),
           title: news.title, url: news.url, reason, stance, action,
           severity, category, speculative,
         });
-        // 把推播訊息同時寫進兩個 KV,讓 stripe-webhook 的 chat bot 認得「剛剛那則」:
-        //  (A) linechat:${userId} —— 塞進對話歷史(role:assistant + [系統主動推播] 前綴)
-        //  (B) alerthistory:${userId} —— per-user push 清單(結構化),chat bot 開場直接注入 system
-        // 雙保險:即使 chat history 滿 20 輪被擠掉,alerthistory 仍獨立留 24h。
-        try {
-          const chatKey = `linechat:${h.userId}`;
-          let history = [];
-          const raw = await env.USER_PREFS.get(chatKey);
-          if (raw) { try { history = JSON.parse(raw); } catch {} }
-          history.push({
-            role: "assistant",
-            content: `[系統主動推播] ${msg}`,
-          });
-          if (history.length > 20) history = history.slice(-20);
-          await env.USER_PREFS.put(chatKey, JSON.stringify(history),
-            { expirationTtl: 24 * 3600 });
-        } catch (e) {
-          report.errors.push(`chat-session-write:${h.email}:${String(e).slice(0,80)}`);
-        }
-        try {
-          const alertHistKey = `alerthistory:${h.userId}`;
-          let alertList = [];
-          const raw = await env.USER_PREFS.get(alertHistKey);
-          if (raw) { try { alertList = JSON.parse(raw); } catch {} }
-          alertList.push({
-            ts: report.ts,
-            ticker: hit,
-            title: news.title,
-            url: news.url,
-            reason: reason,
-            stance: stance,
-            action: action,
-            category: category,
-            severity: severity,
-            body: msg.slice(0, 1200),
-          });
-          if (alertList.length > 8) alertList = alertList.slice(-8);
-          await env.USER_PREFS.put(alertHistKey, JSON.stringify(alertList),
-            { expirationTtl: 24 * 3600 });
-        } catch (e) {
-          report.errors.push(`alert-history-write:${h.email}:${String(e).slice(0,80)}`);
-        }
       } else {
         // 所有通道都失敗(deliverAlert 已處理 stale/失效訂閱清除)
         cand.recipients.push({ email: h.email, status: `fail:${pushed.status}` });
@@ -836,10 +764,8 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
     // 點名個股 → 推給持有者;severity ≥9 的大事 → 全體綁定 Premium 都推
     const targets = recipients.filter(r =>
       sig.severity >= 9 || !sig.affected.length || sig.affected.some(t => r.holdings.has(t)));
-    const msg = formatPoliticalMsg(sig, displayName);
     const fired = { headline: sig.headline_zh, severity: sig.severity, kind: sig.kind, recipients: [] };
     if (push && targets.length) {
-      const token = await lineToken(env);
       const notif = JSON.stringify({
         title: `🏛️ 政壇影響｜${(sig.headline_zh || "").slice(0, 36)}`,
         body: (sig.headline_zh || "").slice(0, 160),
@@ -847,7 +773,7 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
         tag: `md-pol-${(sig.post_url || sig.headline_zh || "").slice(0, 40)}`,
       });
       for (const r of targets) {
-        const out = await deliverAlert(env, r, token, msg, notif, { severity: sig.severity });
+        const out = await deliverAlert(env, r, notif, { severity: sig.severity });
         fired.recipients.push({ email: r.email, status: out.ok ? `pushed:${out.channels.join("+")}` : `fail:${out.status}` });
         if (out.ok) {
           report.pushed++;

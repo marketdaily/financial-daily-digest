@@ -59,7 +59,7 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
 <div class="page-wrap">
   <div class="page-badge">隱私權政策</div>
   <h1>我們如何處理你的資料</h1>
-  <p class="lead">短版:你的 Email 用來寄日報,你的股票偏好用來客製日報內容,LINE userId 用來推即時提醒。我們不賣資料、不共享給第三方廣告商、不追蹤你瀏覽其他網站。</p>
+  <p class="lead">短版:你的 Email 用來寄日報,你的股票偏好用來客製日報內容,瀏覽器推播訂閱用來推即時提醒。我們不賣資料、不共享給第三方廣告商、不追蹤你瀏覽其他網站。</p>
   <p class="updated">最後更新:2026-05-23</p>
 
   <h2>1. 我們蒐集哪些資料</h2>
@@ -67,7 +67,7 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
   <ul>
     <li><strong>必要資料</strong>:Email、密碼(雜湊儲存,我們看不到原文)、訂閱方案(免費 / Pro / Premium)、訂閱起始時間</li>
     <li><strong>個人化用資料</strong>:你在後台設定的美股 / 台股股票偏好</li>
-    <li><strong>選用資料</strong>:LINE userId(只有你主動「綁定 LINE」時才取得,用於推送即時提醒)</li>
+    <li><strong>選用資料</strong>:瀏覽器推播訂閱(只有你主動「啟用即時推播」時才取得,用於推送即時提醒到你的裝置)</li>
     <li><strong>系統資料</strong>:來源 UTM 標籤、頁面點擊、註冊裝置粗略地理位置(僅國家層級)</li>
     <li><strong>金流資料</strong>:付費訂閱透過 Stripe 處理,我們不接觸你的信用卡資料,只收到 Stripe 回傳的訂閱狀態</li>
   </ul>
@@ -76,7 +76,7 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
   <ul>
     <li>Email:寄送你訂閱的每日財經日報、帳號通知、付款收據</li>
     <li>股票偏好:讓日報只分析你關心的個股,不是給所有人一樣的內容</li>
-    <li>LINE userId:當重大新聞影響你的持股時即時推播(Premium 功能,需你主動綁定才會用到)</li>
+    <li>瀏覽器推播訂閱:當重大新聞影響你的持股時即時推播到你的裝置(Premium 功能,需你主動啟用才會用到)</li>
     <li>UTM / 行銷分析:了解哪個來源的訂戶最多,優化我們的內容</li>
   </ul>
 
@@ -102,8 +102,8 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
   <h2>6. Cookie / 本機儲存</h2>
   <p>MarketDaily 使用 <strong>localStorage / sessionStorage</strong>(不是傳統 cookie)儲存:你的登入 Email、語言偏好、UTM 來源標籤、推薦碼。這些資料只存在你的瀏覽器,我們不會主動讀取,也不會跨網站追蹤。</p>
 
-  <h2>7. LINE 綁定(選用)</h2>
-  <p>當你在 dashboard 點「綁定 LINE」,我們會帶你到 LINE Login OAuth 頁面。授權後我們只取得你的 <strong>LINE userId</strong>(一串匿名字串),不取得你的 LINE 好友清單、訊息內容、Profile 照片。userId 僅用於 LINE Bot 推播即時提醒給你個人。你可在 dashboard「解除綁定」隨時撤銷。</p>
+  <h2>7. 即時推播(選用)</h2>
+  <p>當你在 dashboard 點「啟用即時推播」,瀏覽器會產生一組推播訂閱(Web Push Subscription)交給我們,僅用於在重大新聞影響你持股時即時推播到你的裝置。我們不會藉此讀取你的瀏覽紀錄或其他網站資料。你可在瀏覽器設定或 dashboard 隨時關閉推播。</p>
 
   <h2>8. 兒少保護</h2>
   <p>本服務不對 13 歲以下用戶提供服務。若你發現有未滿 13 歲用戶提供個資給我們,請通知主編,我們會在 48 小時內刪除其資料。</p>
