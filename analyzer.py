@@ -198,7 +198,9 @@ def _call_gemini(prompt: str, model: str) -> str:
 
 
 def _call_claude(prompt: str) -> str:
-    """Claude Haiku 4.5 作為付費後援(Gemini 全掛時用)。需要 ANTHROPIC_API_KEY。"""
+    """Claude Sonnet 4.6 作為付費後援(Gemini 全掛 / audit retry 時用)。需要 ANTHROPIC_API_KEY。
+    2026-06-25 從 Haiku 升 Sonnet:備援只在 Gemini 失敗時觸發,正好是最需要拉高品質的時刻,
+    Sonnet 比 Haiku 強很多、又只 Opus 約 1/5 成本,救援 CP 值最高。"""
     import os
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
@@ -208,7 +210,7 @@ def _call_claude(prompt: str) -> str:
         headers={"x-api-key": api_key, "anthropic-version": "2023-06-01",
                  "content-type": "application/json"},
         json={
-            "model": "claude-haiku-4-5-20251001",
+            "model": "claude-sonnet-4-6",
             "max_tokens": 16000,
             "system": _SYSTEM_PROMPT,
             "messages": [{"role": "user", "content": prompt}],
@@ -255,7 +257,7 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     不破壞「永不掉 deterministic」保證。"""
     last_err = None
     gemini = [(f"gemini:{m}", lambda p, mm=m: _call_gemini(p, mm)) for m in GEMINI_MODELS]
-    strong = [("claude:haiku-4.5", _call_claude), ("openai:gpt-4o-mini", _call_openai)]
+    strong = [("claude:sonnet-4.6", _call_claude), ("openai:gpt-4o-mini", _call_openai)]
     providers = (strong + gemini) if prefer_strong else (gemini + strong)
     for name, fn in providers:
         try:
