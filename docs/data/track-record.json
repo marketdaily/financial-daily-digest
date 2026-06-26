@@ -1,17 +1,17 @@
 {
   "stats": {
-    "generated_at": "2026-06-26T08:02:23",
+    "generated_at": "2026-06-27T07:03:17",
     "horizon": "5d",
     "days_covered": 15,
-    "total_records": 578,
+    "total_records": 619,
     "judged_records": 570,
     "one_day": {
       "a_count": 255,
       "a_wins": 106,
       "a_rate": 41.6,
-      "c_count": 315,
-      "c_wins": 190,
-      "c_rate": 60.3
+      "c_count": 319,
+      "c_wins": 191,
+      "c_rate": 59.9
     },
     "a_count": 255,
     "a_wins": 91,
@@ -74,11 +74,11 @@
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
       "simulated": 227,
       "no_fill": 55,
-      "pending": 14,
-      "hit_target": 21,
-      "hit_stop": 121,
-      "expired": 16,
-      "avg_ret_pct": -1.8,
+      "pending": 2,
+      "hit_target": 22,
+      "hit_stop": 123,
+      "expired": 25,
+      "avg_ret_pct": -1.5,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
@@ -89,7 +89,7 @@
       "c_wins": 16,
       "c_rate": 76.2
     },
-    "personal_samples_added": 508
+    "personal_samples_added": 549
   },
   "records": [
     {
@@ -180,7 +180,7 @@
       "target": 413.61,
       "stop": 330.47,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-06-25",
@@ -198,7 +198,7 @@
       "target": 214.14,
       "stop": 180.07,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-06-25",
@@ -216,7 +216,7 @@
       "target": 388.44,
       "stop": 336.73,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-06-25",
@@ -234,7 +234,7 @@
       "target": 308.78,
       "stop": 273.45,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-06-17",
