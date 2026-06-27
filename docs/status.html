@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>MarketDaily 系統狀態</title>
+<style>
+  :root{--bg:#0a0e1a;--card:rgba(255,255,255,.04);--bd:rgba(255,255,255,.08);
+        --ok:#22c55e;--warn:#f59e0b;--bad:#ef4444;--muted:#94a3b8;--ink:#e2e8f0;--indigo:#818cf8}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#1e1b4b 0%,var(--bg) 55%);
+       color:var(--ink);font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans TC",sans-serif;
+       min-height:100vh;padding:32px 16px}
+  .wrap{max-width:640px;margin:0 auto}
+  h1{font-size:22px;font-weight:700;margin:0 0 4px;letter-spacing:.5px}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 24px}
+  .overall{display:flex;align-items:center;gap:12px;padding:18px 20px;border-radius:16px;
+           background:var(--card);border:1px solid var(--bd);margin-bottom:18px}
+  .overall .dot{width:14px;height:14px;border-radius:50%}
+  .overall b{font-size:17px}
+  .card{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;
+        background:var(--card);border:1px solid var(--bd);margin-bottom:10px}
+  .dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 10px currentColor}
+  .dot.ok{background:var(--ok);color:var(--ok)} .dot.warn{background:var(--warn);color:var(--warn)}
+  .dot.bad{background:var(--bad);color:var(--bad)} .dot.pend{background:var(--muted);color:var(--muted)}
+  .meta{flex:1;min-width:0}
+  .meta .name{font-size:15px;font-weight:600}
+  .meta .desc{font-size:12px;color:var(--muted);margin-top:2px}
+  .st{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+  .st.ok{color:var(--ok)} .st.warn{color:var(--warn)} .st.bad{color:var(--bad)} .st.pend{color:var(--muted)}
+  .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
+  a{color:var(--indigo);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🩺 MarketDaily 系統狀態</h1>
+  <p class="sub">前台用戶可見的核心管線即時健康度 · 每 60 秒自動更新</p>
+  <div class="overall" id="overall">
+    <span class="dot pend" id="ov-dot"></span>
+    <b id="ov-text">檢查中…</b>
+  </div>
+  <div id="cards"></div>
+  <div class="foot">最後檢查:<span id="ts">—</span> · <a href="/">回首頁</a></div>
+</div>
+<script>
+const WORKER = "https://marketdaily-webhook.delvin-12345678.workers.dev";
+const pad = n => String(n).padStart(2,"0");
+function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
+
+const CHECKS = [
+  { name:"網站前台", desc:"marketdaily.ai 可正常載入",
+    run: async () => ({state:"ok", note:"頁面已載入"}) },
+  { name:"即時報價 API", desc:"美股 + 台股報價回傳",
+    run: async () => {
+      const r = await fetch(`${WORKER}/stock-quotes?tickers=2330,AAPL`,{cache:"no-store"});
+      const j = await r.json();
+      const q = (j.quotes||[]).filter(x=>x && (x.price>0));
+      if(q.length>=2) return {state:"ok", note:`${q.length}/2 支有報價`};
+      if(q.length===1) return {state:"warn", note:"僅 1 支有報價"};
+      return {state:"bad", note:"報價無回傳"};
+    } },
+  { name:"戰績資料", desc:"track-record.json 持續刷新",
+    run: async () => {
+      const r = await fetch(`/data/track-record.json?t=${Date.now()}`,{cache:"no-store"});
+      const j = await r.json();
+      const g = j.generated_at || j.generatedAt;
+      if(!g) return {state:"warn", note:"無更新時間戳"};
+      const hrs = (Date.now() - new Date(g).getTime())/3.6e6;
+      const when = `${Math.round(hrs)}h 前`;
+      if(hrs<36) return {state:"ok", note:`更新於 ${when}`};
+      if(hrs<60) return {state:"warn", note:`偏舊(${when})`};
+      return {state:"bad", note:`過期(${when})`};
+    } },
+  { name:"公版日報存檔", desc:"每日日報網頁版產出",
+    run: async () => {
+      const today = new Date(), y = new Date(Date.now()-864e5);
+      for(const d of [today,y]){
+        const r = await fetch(`/output/digest_${ymd(d)}.html`,{method:"HEAD",cache:"no-store"});
+        if(r.ok) return {state:"ok", note:`最新 ${ymd(d)}`};
+      }
+      return {state:"warn", note:"近 2 日無存檔"};
+    } },
+];
+
+const order = {ok:0, warn:1, bad:2, pend:3};
+async function runAll(){
+  const box = document.getElementById("cards");
+  box.innerHTML = "";
+  const cards = CHECKS.map(c=>{
+    const el = document.createElement("div"); el.className="card";
+    el.innerHTML = `<span class="dot pend"></span><div class="meta">
+      <div class="name">${c.name}</div><div class="desc">${c.desc}</div></div>
+      <span class="st pend">檢查中</span>`;
+    box.appendChild(el); return el;
+  });
+  const results = await Promise.all(CHECKS.map(async (c,i)=>{
+    let res; try{ res = await c.run(); }catch(e){ res={state:"bad", note:"檢查失敗"}; }
+    const el = cards[i];
+    el.querySelector(".dot").className = "dot "+res.state;
+    const st = el.querySelector(".st"); st.className="st "+res.state;
+    st.textContent = ({ok:"正常",warn:"注意",bad:"異常"})[res.state]||"—";
+    el.querySelector(".desc").textContent = res.note;
+    return res.state;
+  }));
+  const worst = results.reduce((a,b)=> order[b]>order[a]?b:a, "ok");
+  const ov = {ok:["ok","🟢 全部系統正常"],warn:["warn","🟡 部分系統需注意"],bad:["bad","🔴 偵測到系統異常"]}[worst];
+  document.getElementById("ov-dot").className = "dot "+ov[0];
+  document.getElementById("ov-text").textContent = ov[1];
+  const d = new Date();
+  document.getElementById("ts").textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+runAll(); setInterval(runAll, 60000);
+</script>
+</body>
+</html>

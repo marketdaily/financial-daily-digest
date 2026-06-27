@@ -941,11 +941,14 @@ def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails, dry_run=False):
     req = urllib.request.Request(
         f"{worker.rstrip('/')}/internal/admin-line-push",
         data=_json.dumps({"message": msg}).encode("utf-8"),
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"},
+        # User-Agent 不可省:預設 Python-urllib 會被 Cloudflare WAF/bot 規則擋成 403,
+        # 告警永遠送不出(2026-06-27 查出的「admin 推播 403」真兇)。
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}",
+                 "User-Agent": "md-digest-alert/1.0"},
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=10) as resp:
-        print(f"   admin LINE push status={resp.status}")
+        print(f"   admin push status={resp.status}")
 
 
 import sys as _sys
