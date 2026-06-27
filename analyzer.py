@@ -1841,7 +1841,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 # ─── Weekend Recap(週六專用:本週回顧 + 下週預告)──────────────
 def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                             email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                            market: str = "both") -> str:
+                            market: str = "both", is_premium: bool = False) -> str:
     # market 由雙班次 caller 傳入(週六台股早報走此函式);週末回顧本就是台股晨間語境,
     # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週六晨間日報:不講當日大盤(已收),改聚焦『本週回顧 + 下週重點』。"""
@@ -1947,7 +1947,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 # ─── Monday Outlook(週一專用:上週五收盤 + 週末新聞 + 本週展望 + Gap 警示)──────────────
 def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                            email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                           market: str = "both") -> str:
+                           market: str = "both", is_premium: bool = False) -> str:
     # market 由雙班次 caller 傳入(週一台股早報走此函式);週一展望本就是台股晨間語境,
     # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週一晨間日報:前兩天(週六、週日)沒開盤,所以基準是『上週五收盤』。
