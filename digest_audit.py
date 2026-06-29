@@ -324,6 +324,30 @@ def audit_digest(
             fails.append({"check": "tw_morning_action_missing", "severity": "med",
                           "msg": "今早台股將開盤,但 signal-card 沒有「今早開盤後」動作指示"})
 
+    # ───── 版型守門:未定義 CSS class(2026-06-29 事故防線) ─────
+    # LLM 內容層偶爾會自創 class 名(如 news-card-title / market-summary-item),
+    # 若 <style> 沒對應規則 → 該區塊整個沒上樣式 = 版型跑掉。
+    # 此 check 直接比對「body 用到的 class」vs「<style> 定義的 class」,
+    # 命中 high severity → 走既有 retry→deterministic fallback,絕不寄壞版。
+    # 注意:只有當 html 仍含 <style> 區塊時才檢查(premailer inline 化後 class 仍在,
+    #       但若樣式被完全 inline、<style> 被移除,跳過以免誤判)。
+    style_m = re.search(r"<style[^>]*>(.*?)</style>", html, re.I | re.S)
+    if style_m:
+        style_block = style_m.group(1)
+        defined_classes = set(re.findall(r"\.([A-Za-z_][\w-]*)", style_block))
+        body_start = html.lower().find("<body")
+        body_html = html[body_start:] if body_start != -1 else html
+        used_classes = set()
+        for attr in re.findall(r'class\s*=\s*"([^"]*)"', body_html):
+            for c in attr.split():
+                used_classes.add(c)
+        undefined = sorted(used_classes - defined_classes)
+        if undefined:
+            preview = ", ".join("." + c for c in undefined[:8])
+            more = f" 等 {len(undefined)} 個" if len(undefined) > 8 else ""
+            fails.append({"check": "undefined_css_class", "severity": "high",
+                          "msg": f"版型跑掉:body 用到未定義 class（{preview}{more}）— <style> 無對應規則,該區塊不會上樣式"})
+
     return fails
 
 
