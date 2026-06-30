@@ -7,8 +7,9 @@ from config import GEMINI_API_KEY
 
 # 免費 LLM 引擎：Gemini Flash 系列（免費，無需付費）。
 # flash-latest 品質佳為主；flash-lite 免費層每日額度最高，作為備援確保不斷線。
-# 2026-06-25:單一 Gemini key 是唯一活著的 LLM credential(Anthropic/OpenAI key 皆失效),
-# 所以盡量擴充 Gemini model fallback —— 最穩+最高品質的 2.5-flash 擺第一,
+# 2026-06-30 更正:Anthropic key 實測正常(sonnet/haiku 皆 200),Claude 為可用付費後援+council 席次;
+# OpenAI 純因 .env 未設 key 而停用(補 key 即恢復)。Gemini 仍是免費主力,故擴充 model fallback ——
+# 最穩+最高品質的 2.5-flash 擺第一,
 # 再墊 lite + 2.0 世代(獨立配額桶,2.5 配額爆時頂上),flash-latest(別名,常 503)放最後。
 # 實測(本機 key,2026-06-25):2.5-flash/2.5-flash-lite=200、2.0-flash/lite=429(配額,會重置)、
 # flash-latest=503、1.5 系列=404 已下架。
@@ -162,13 +163,13 @@ def _market_status(today_iso: str) -> dict:
 _GEMINI_QUOTA_DEAD: set = set()
 
 
-def _call_gemini(prompt: str, model: str) -> str:
+def _call_gemini(prompt: str, model: str, system: str = None) -> str:
     if not GEMINI_API_KEY:
         raise RuntimeError("未設定 GEMINI_API_KEY")
     if model in _GEMINI_QUOTA_DEAD:
         raise RuntimeError(f"{model} 本輪 429 配額耗盡,熔斷跳過")
     payload = {
-        "systemInstruction": {"parts": [{"text": _SYSTEM_PROMPT}]},
+        "systemInstruction": {"parts": [{"text": system or _SYSTEM_PROMPT}]},
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {
             "temperature": 0.4,
@@ -198,10 +199,11 @@ def _call_gemini(prompt: str, model: str) -> str:
     return resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
 
 
-def _call_claude(prompt: str) -> str:
-    """Claude Sonnet 4.6 作為付費後援(Gemini 全掛 / audit retry 時用)。需要 ANTHROPIC_API_KEY。
+def _call_claude(prompt: str, system: str = None, model: str = "claude-sonnet-4-6") -> str:
+    """Claude 作為付費後援(Gemini 全掛 / audit retry 時用)。需要 ANTHROPIC_API_KEY。
     2026-06-25 從 Haiku 升 Sonnet:備援只在 Gemini 失敗時觸發,正好是最需要拉高品質的時刻,
-    Sonnet 比 Haiku 強很多、又只 Opus 約 1/5 成本,救援 CP 值最高。"""
+    Sonnet 比 Haiku 強很多、又只 Opus 約 1/5 成本,救援 CP 值最高。
+    council 席次改傳 model=haiku + 乾淨 system,省錢且不被 HTML system prompt 帶歪成吐 HTML。"""
     import os
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
@@ -211,9 +213,9 @@ def _call_claude(prompt: str) -> str:
         headers={"x-api-key": api_key, "anthropic-version": "2023-06-01",
                  "content-type": "application/json"},
         json={
-            "model": "claude-sonnet-4-6",
+            "model": model,
             "max_tokens": 16000,
-            "system": _SYSTEM_PROMPT,
+            "system": system or _SYSTEM_PROMPT,
             "messages": [{"role": "user", "content": prompt}],
         },
         timeout=180,
@@ -223,8 +225,9 @@ def _call_claude(prompt: str) -> str:
     return "".join(b.get("text", "") for b in data.get("content", [])).strip()
 
 
-def _call_openai(prompt: str) -> str:
-    """OpenAI gpt-4o-mini 作為最終付費後援(Claude 也掛時用)。需要 OPENAI_API_KEY。"""
+def _call_openai(prompt: str, system: str = None) -> str:
+    """OpenAI gpt-4o-mini 作為最終付費後援(Claude 也掛時用)。需要 OPENAI_API_KEY。
+    .env 目前未設此 key → 此 caller 直接 raise,council/fallback 自動跳過(非錯誤)。"""
     import os
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
@@ -238,7 +241,7 @@ def _call_openai(prompt: str) -> str:
             "max_tokens": 16000,
             "temperature": 0.4,
             "messages": [
-                {"role": "system", "content": _SYSTEM_PROMPT},
+                {"role": "system", "content": system or _SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
         },
@@ -1047,20 +1050,26 @@ def _calibrated_confidence(card_cls: str, regime_label: str, sym: str = ""):
 # 死防線不變:方向仍由結構 prior(_quant_prior)鎖死、信心仍由 track-record 校準;
 # council 只在「論點 / 反向風險 / 結構容許範圍內的傾向」這層運作,並把三模型「分歧度」
 # 回饋給信心(分歧大→信心再往下壓)。每支股票一輪只跑一次,跨用戶共用 _COUNCIL_CACHE。
-# 2026-06-25 起 Anthropic/OpenAI key 皆失效 → 席次先用不同 Gemini 模型(獨立配額桶,
-# 仍是真.多模型辯論);claude/openai 席次保留,key 一復活自動升級成跨廠商 council。
-# 配額保護:席次用 lite/2.0(獨立桶),把 2.5-flash 留給用戶可見的卡片生成,避免 council
-# 吃爆配額害卡片掉備援版;每輪上限 _COUNCIL_MAX 支,超過記 log(不靜默砍)。
+# 席次 = 真.跨廠商多模型:Gemini(2.5-lite/2.0,各自獨立配額桶)+ Claude Haiku。
+# 2026-06-30 實測:ANTHROPIC_API_KEY 正常(sonnet/haiku 皆 200),所以 Claude 是真席次;
+# OpenAI 純因 .env 未設 key → _call_openai raise 自動跳過(非錯誤),補上 key 即多一席。
+# 配額保護:Gemini 席次用 lite/2.0(獨立桶),把 2.5-flash 留給用戶可見的卡片生成,避免
+# council 吃爆配額害卡片掉備援版;Claude 席次/裁判用便宜的 Haiku;每輪上限 _COUNCIL_MAX 支。
+# 席次/裁判一律傳乾淨的分析師 system(_COUNCIL_SYS),不沿用 HTML 生成器 system 以免被帶歪。
 _COUNCIL_CACHE: dict = {}
 _COUNCIL_ENABLED = os.environ.get("DIGEST_COUNCIL", "1") != "0"
 _COUNCIL_MAX = int(os.environ.get("DIGEST_COUNCIL_MAX", "40") or "40")
+_COUNCIL_SYS = "你是嚴謹務實的台美股短線分析師。只輸出被要求的 JSON,不寫任何多餘文字、不要 HTML、不要 markdown。"
+_COUNCIL_HAIKU = "claude-haiku-4-5-20251001"
 _COUNCIL_SEATS = [
-    ("gemini:2.5-lite", lambda p: _call_gemini(p, "gemini-2.5-flash-lite")),
-    ("gemini:2.0-flash", lambda p: _call_gemini(p, "gemini-2.0-flash")),
-    ("claude", _call_claude),
-    ("openai", _call_openai),
+    ("gemini:2.5-lite", lambda p: _call_gemini(p, "gemini-2.5-flash-lite", system=_COUNCIL_SYS)),
+    ("gemini:2.0-flash", lambda p: _call_gemini(p, "gemini-2.0-flash", system=_COUNCIL_SYS)),
+    ("claude:haiku", lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)),
+    # Sonnet 當第二把 Claude 聲音:Gemini 全 429 時仍湊得到 ≥2 席,council 不會整個熄火
+    ("claude:sonnet", lambda p: _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")),
+    ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
-_COUNCIL_JUDGE = lambda p: _call_gemini(p, "gemini-2.5-flash-lite")
+_COUNCIL_JUDGE = lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)
 
 
 def _council_json(fn, prompt: str) -> dict:
