@@ -1134,11 +1134,38 @@ def _adv_tech_str(t: dict) -> str:
     return " | ".join(parts)
 
 
+def _macro_backdrop_note(data: dict) -> str:
+    """大盤宏觀背景一句(標準+看深入注入個股 prompt 當連動參考)。只取有值的真實數字。"""
+    ind = (data or {}).get("indicators") or {}
+    parts = []
+    fg = ind.get("fear_greed") or {}
+    if fg.get("rating"):
+        parts.append(f"市場情緒 {fg['rating']}(VIX {_fmt_num(ind.get('vix'))})")
+    if ind.get("us10y") is not None:
+        parts.append(f"美10年債殖利率 {_fmt_num(ind.get('us10y'))}%")
+    oil = ind.get("oil") or {}
+    if oil.get("price") is not None:
+        parts.append(f"原油 {_fmt_num(oil.get('price'))}({(oil.get('change_pct') or 0):+.1f}%)")
+    gold = ind.get("gold") or {}
+    if gold.get("price") is not None:
+        parts.append(f"黃金 {_fmt_num(gold.get('price'))}({(gold.get('change_pct') or 0):+.1f}%)")
+    twd = ind.get("usdtwd") or {}
+    if twd.get("rate") is not None:
+        parts.append(f"美元台幣 {_fmt_num(twd.get('rate'))}")
+    return " ｜ ".join(parts)
+
+
 def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -> str:
     us_market = data.get("us_market", {})
     tw_market = data.get("tw_market", {})
     tech = data.get("technicals", {}) or {}
     impacts = data.get("earnings_impact", {}) or {}
+    # 政治訊號回饋:把被點名個股對映到該則訊號(標準+看深入用,簡單看不注入)
+    pol_by_tk = {}
+    if depth != "simple":
+        for s in (data.get("political_signals") or []):
+            for tk in (s.get("affected") or []):
+                pol_by_tk.setdefault(str(tk).upper(), s)
     lines = []
     for sym in chunk:
         is_tw = str(sym).isdigit()
@@ -1167,6 +1194,23 @@ def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -
         a = impacts.get(sym)
         if a and a.get("is_event") and a.get("yoy") is not None:
             base += f" | 剛公布{a.get('kind','財報')} YoY {a['yoy']:+.1f}% {a.get('verdict','')}"
+        elif a and depth != "simple":
+            # 非事件日基本面脈絡:連續成長 / 累計 YoY / 近期 YoY(標準+看深入,當背景非喊話)
+            g = []
+            if a.get("streak", 0) >= 2:
+                g.append(f"營收連{a['streak']}月正成長")
+            if a.get("cum_yoy") is not None:
+                g.append(f"累計YoY {a['cum_yoy']:+.1f}%")
+            elif a.get("yoy") is not None:
+                g.append(f"近期YoY {a['yoy']:+.1f}%")
+            if a.get("eps_yoy") is not None:
+                g.append(f"EPS YoY {a['eps_yoy']:+.1f}%")
+            if g:
+                base += f" | 基本面背景:{'、'.join(g)}"
+        ps = pol_by_tk.get(str(sym).upper())
+        if ps:
+            _dir = {"bullish": "偏多", "bearish": "偏空", "mixed": "分歧"}.get(ps.get("direction"), "分歧")
+            base += f" | ⚡政壇訊號({_dir}/強度{ps.get('severity','?')}):{str(ps.get('headline_zh') or '')[:38]}"
         lines.append("  " + base)
     return "\n".join(lines)
 
@@ -1300,10 +1344,23 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                           "每張卡的「下一步」說明要結合這些指標的判讀(例:RSI>70 過熱留意拉回、KD 低檔黃金交叉可偏多、"
                           "MACD 柱由負轉正轉強、跌破布林下軌或站上中軌),用白話講,並對應到具體價位與動作。只能引用上面提供的真實數字,不可自行編造指標值。\n"
                           if depth == "deep" else "")
+        macro_note = ""
+        if depth != "simple":
+            _mb = _macro_backdrop_note(data)
+            macro_note = (
+                f"\n【今日宏觀背景(真實數據)】{_mb}\n" if _mb else "\n"
+            ) + (
+                "【新資料用法 — 只補強理由與觀察,不得改寫方向/價位/信心】\n"
+                "- 標到「⚡政壇訊號」的個股:在該卡 signal-reason 或 signal-watch 點出這則訊號對它的影響(關稅/利率/補貼等),"
+                "把它列為「該盯的事」;但 verdict 方向仍以技術結構為準,政壇訊號只調整語氣與觀察重點,不可單憑一則貼文就翻多翻空。\n"
+                "- 標到「基本面背景」(連續成長/累計YoY/EPS YoY)的個股:當作這檔體質的背景脈絡寫進 reason(例:基本面撐腰、回檔較有支撐),"
+                "不要當成今日進場理由,也不可編造任何沒列出的財務數字。\n"
+                "- 宏觀背景只對「真的敏感」的持股連動(利率↑→金融/高估值成長股、油價→能源/航運、避險情緒→防禦vs風險),講不出機制的就別硬扯。\n"
+            )
         prompt = (
             f"你是這位用戶的專屬財經顧問。為以下每一支股票各生成一張 signal-card,給出明確「下一步」操作建議。\n"
             f"標的({len(chunk)} 支,一支都不能少、不能合併):{', '.join(chunk)}\n\n"
-            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}\n"
+            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}\n"
             f"{rules}\n\n"
             f"只輸出這 {len(chunk)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
             f"不要輸出 signal-grid 外框、不要任何說明文字、不要 markdown 反引號。"
