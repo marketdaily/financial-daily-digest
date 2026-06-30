@@ -663,6 +663,38 @@ nav::after {
     </div>
   </div>
 
+  <!-- 看盤台:自選股即時列 + 真.AI 一句註解 -->
+  <style>
+    .watchboard-section{max-width:760px;margin:8px auto 0;padding:0 16px;}
+    .watchboard-list{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
+    .wb-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:14px;cursor:pointer;transition:background .15s,border-color .15s;}
+    .wb-row:hover{background:rgba(255,255,255,0.05);border-color:rgba(255,176,0,0.35);}
+    .wb-id{flex:0 0 96px;min-width:96px;}
+    .wb-name{font-size:14px;font-weight:700;color:#f1f5f9;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .wb-sym{font-size:11px;color:rgba(148,163,184,0.7);font-family:"SF Mono",ui-monospace,monospace;}
+    .wb-price{flex:0 0 84px;text-align:right;}
+    .wb-px{font-size:15px;font-weight:800;color:#f8fafc;font-variant-numeric:tabular-nums;}
+    .wb-chg{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;}
+    .wb-chg.up,.wb-px-wrap .up{color:#4ade80;} .wb-chg.down{color:#f87171;} .wb-chg.neutral{color:rgba(148,163,184,0.8);}
+    .wb-ai{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px;}
+    .wb-chip{align-self:flex-start;font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:20px;letter-spacing:.3px;}
+    .wb-chip.buy{background:rgba(74,222,128,0.14);color:#4ade80;border:1px solid rgba(74,222,128,0.3);}
+    .wb-chip.sell{background:rgba(248,113,113,0.14);color:#f87171;border:1px solid rgba(248,113,113,0.3);}
+    .wb-chip.hold{background:rgba(251,191,36,0.13);color:#fbbf24;border:1px solid rgba(251,191,36,0.28);}
+    .wb-chip.wait{background:rgba(148,163,184,0.13);color:#cbd5e1;border:1px solid rgba(148,163,184,0.25);}
+    .wb-reason{font-size:12.5px;line-height:1.45;color:rgba(203,213,225,0.92);}
+    .wb-reason.muted{color:rgba(148,163,184,0.6);font-style:italic;}
+    .watchboard-asof{font-size:11px;color:rgba(148,163,184,0.6);}
+    @media(max-width:520px){.wb-id{flex-basis:78px;min-width:78px;}.wb-price{flex-basis:70px;}.wb-name{font-size:13px;}}
+  </style>
+  <div class="watchboard-section" id="watchboard-section" style="display:none;">
+    <div class="stories-label-row">
+      <div class="stories-label" data-i18n="watchboard_label">📈 我的看盤台</div>
+      <div class="watchboard-asof" id="watchboard-asof"></div>
+    </div>
+    <div class="watchboard-list" id="watchboard-list"></div>
+  </div>
+
   <!-- Market Overview -->
   <div class="market-overview-section" id="market-overview-section" style="display:none;">
     <div class="stories-label" data-i18n="market_label">🌐 今日大盤</div>
@@ -956,6 +988,9 @@ const i18n = {
     stories_label: "📊 持倉即時動態",
     sync_suffix: "s 後同步",
     market_label: "🌐 今日大盤",
+    watchboard_label: "📈 我的看盤台",
+    watchboard_asof_prefix: "AI 分析 ",
+    watchboard_no_ai: "點開看走勢圖與進出場關卡",
     admin_panel_title: "👑 管理員面板",
     admin_enter_console: "進入後台 →",
     admin_stat_total: "總訂閱人數",
@@ -1140,6 +1175,9 @@ const i18n = {
     stories_label: "📊 Live Portfolio Updates",
     sync_suffix: "s to sync",
     market_label: "🌐 Today's Markets",
+    watchboard_label: "📈 My Watchboard",
+    watchboard_asof_prefix: "AI as of ",
+    watchboard_no_ai: "Tap for chart & entry/exit levels",
     admin_panel_title: "👑 Admin Panel",
     admin_enter_console: "Open Console →",
     admin_stat_total: "Total Subscribers",
@@ -1334,6 +1372,7 @@ function refreshDynamicLang() {
     if (badge) badge.textContent = plan === "admin" ? T('hdr_plan_admin') : plan === "free" ? T('hdr_plan_free') : T('hdr_plan_paid');
     renderTags("us"); renderTags("tw"); updateStats();
     if (typeof renderQuickRow === 'function') { renderQuickRow('us'); renderQuickRow('tw'); }
+    if (typeof renderWatchboard === 'function') renderWatchboard();
   }
 }
 
@@ -1700,6 +1739,7 @@ async function showDashboard(email, plan) {
   loadReferral(email);
   loadStories(email);
   loadMarketOverview();
+  loadAnnotations();
 }
 
 // ── 自有 Web Push 即時推播(免費無上限,不經 LINE)──
@@ -2136,6 +2176,65 @@ let _stories = [];
 let _storyIdx = 0;
 let _quotesRefreshTimer = null;
 let _countdownTimer = null;
+let _annotations = {};   // 看盤台:{sym:{verdict,reason}} 來自日報引擎(/annotations)
+
+// 看盤台:抓每檔個股的真.AI 一句註解(日報 pipeline 算好的 verdict/reason,非機械日內公式)
+async function loadAnnotations() {
+  try {
+    const res = await fetch(`${WORKER_URL}/annotations`);
+    if (!res.ok) return;
+    const data = await res.json();
+    _annotations = data.annotations || {};
+    const asofEl = document.getElementById("watchboard-asof");
+    if (asofEl && data.asof) {
+      const d = new Date(data.asof);
+      if (!isNaN(d)) asofEl.textContent = `${T('watchboard_asof_prefix')}${d.getMonth() + 1}/${d.getDate()}`;
+    }
+    renderWatchboard();
+  } catch {}
+}
+
+const _WB_CHIP = {
+  buy:  { cls: "buy",  zh: "🟢 建議買進", en: "🟢 Buy" },
+  sell: { cls: "sell", zh: "🔴 建議賣出", en: "🔴 Sell" },
+  hold: { cls: "hold", zh: "🟡 續抱持有", en: "🟡 Hold" },
+  wait: { cls: "wait", zh: "⚪ 觀望",     en: "⚪ Wait" },
+};
+
+function renderWatchboard() {
+  const sec = document.getElementById("watchboard-section");
+  const list = document.getElementById("watchboard-list");
+  if (!sec || !list || !_stories.length) return;
+  const zh = currentLang !== "en";
+  list.innerHTML = _stories.map((q, i) => {
+    const isTW = /^\d{4,6}$/.test(String(q.symbol || ""));
+    const ccy = isTW ? "" : "$";
+    const fp = (v) => v >= 100 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : v.toFixed(2);
+    const priceStr = q.price != null ? `${ccy}${fp(q.price)}` : "···";
+    let { dir, label: chg } = fmtChange(q.change, q.symbol);
+    if (q.price == null && q.change == null) { chg = ""; dir = "neutral"; }
+    const ann = _annotations[q.symbol];
+    let aiHtml;
+    if (ann && ann.reason) {
+      const chip = _WB_CHIP[ann.verdict] || _WB_CHIP.wait;
+      aiHtml = `<span class="wb-chip ${chip.cls}">${zh ? chip.zh : chip.en}</span>`
+             + `<span class="wb-reason">${escapeHtml(ann.reason)}</span>`;
+    } else {
+      aiHtml = `<span class="wb-reason muted">${T('watchboard_no_ai')}</span>`;
+    }
+    const name = q.name || q.symbol;
+    return `<div class="wb-row" onclick="openStory(${i})">
+      <div class="wb-id"><div class="wb-name">${escapeHtml(name)}</div><div class="wb-sym">${escapeHtml(q.symbol)}</div></div>
+      <div class="wb-price"><div class="wb-px">${priceStr}</div><div class="wb-chg ${dir}">${chg}</div></div>
+      <div class="wb-ai">${aiHtml}</div>
+    </div>`;
+  }).join("");
+  sec.style.display = "block";
+}
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
 let _countdownVal = 60;
 
 function startCountdown() {
@@ -2206,6 +2305,7 @@ async function refreshQuotes() {
         document.getElementById("sc-price").textContent = q.price !== null ? `${ccy}${fp(q.price)}` : "";
       }
     }
+    renderWatchboard();
   } catch {}
   startCountdown();
 }
@@ -2285,6 +2385,7 @@ async function loadStories(email) {
     section.style.display = "block";
     initStoriesScroller();
     requestAnimationFrame(updateStoriesNav);
+    renderWatchboard();
   } catch {}
 }
 

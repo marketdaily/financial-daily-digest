@@ -1187,6 +1187,34 @@ export default {
       });
     }
 
+    // AI 看盤台:每檔個股的「真.AI 一句註解」(verdict/reason/levels),由日報 pipeline 寫入。
+    // 純 ticker 級、無個資,public 可讀。前端把它疊到自選股即時列上,取代假機械 signal。
+    if (url.pathname === "/annotations" && request.method === "GET") {
+      const raw = await env.USER_PREFS.get("annot:latest");
+      let data = {};
+      if (raw) { try { data = JSON.parse(raw); } catch {} }
+      return json(
+        { ok: true, asof: data.asof || null, annotations: data.annotations || {} },
+        200,
+        { "Cache-Control": "max-age=300" }
+      );
+    }
+
+    // 寫入個股 AI 註解(internal token 限定;日報 pipeline 每次生成後呼叫)。
+    if (url.pathname === "/save-annotations" && request.method === "POST") {
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "auth" }, 403);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
+      const annotations = (body.annotations && typeof body.annotations === "object" && !Array.isArray(body.annotations))
+        ? body.annotations : null;
+      if (!annotations) return json({ error: "invalid_annotations" }, 400);
+      const payload = { asof: body.asof || new Date().toISOString(), annotations };
+      const s = JSON.stringify(payload);
+      if (s.length > 2000000) return json({ error: "too_large" }, 400);
+      await env.USER_PREFS.put("annot:latest", s, { expirationTtl: 86400 * 7 });
+      return json({ ok: true, count: Object.keys(annotations).length });
+    }
+
     // Save a personalized digest HTML; returns a shareable web URL.
     // 可選 date 欄位 → 同步寫索引 digest_idx:{date}:{token},供 track-record builder 列舉
     if (url.pathname === "/save-digest" && request.method === "POST") {
@@ -1936,10 +1964,10 @@ async function runLifecycleSweep(env) {
   console.log("lifecycle sweep done:", JSON.stringify({ scanned, sent, errors }));
 }
 
-function json(data, status = 200) {
+function json(data, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json", ...extraHeaders },
   });
 }
 

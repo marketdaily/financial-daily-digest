@@ -1542,6 +1542,35 @@ def _deterministic_signal_card(sym: str, data: dict, mkt_status: dict) -> str:
     )
 
 
+def extract_annotations(html: str) -> dict:
+    """從已生成的日報 HTML 反解析每張 signal-card → {sym: {verdict, reason}}。
+    供 AI 看盤台即時列疊真.AI 一句註解(零額外 LLM 成本,key 用卡尾 <!--h:SYM--> 純代號)。
+    跳過備援/無資料卡,不把『AI 分析異常』之類字樣當成註解外露。"""
+    import re as _re
+    out = {}
+    _skip = ("AI 分析異常", "無報價數據", "備援", "生成異常")
+    for m in _re.finditer(
+        r'<div class="signal-card (buy|hold|sell|wait)">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer|$)',
+        html, flags=_re.DOTALL,
+    ):
+        block, verdict = m.group(0), m.group(1)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            continue
+        sym = hm.group(1).split(".")[0]  # 2330.TW → 2330,對齊前端 q.symbol
+        rm = _re.search(r'<div class="signal-reason">(.*?)</div>', block, flags=_re.DOTALL)
+        reason = _re.sub(r"<[^>]+>", "", rm.group(1)) if rm else ""
+        reason = _re.sub(r"\s+", " ", reason).strip()
+        if not reason or any(k in reason for k in _skip):
+            continue
+        prev = out.get(sym)
+        # 同代號跨用戶 union:方向卡(buy/sell)優先於中性卡(hold/wait)
+        if prev and prev["verdict"] in ("buy", "sell") and verdict in ("hold", "wait"):
+            continue
+        out[sym] = {"verdict": verdict, "reason": reason[:160]}
+    return out
+
+
 def _mark_card(card: str, sym: str) -> str:
     """在卡片**結尾前**塞一個隱形註解帶純代號 — 讓 audit 的 holdings_uncovered 找得到,
     因為 _postprocess_html 會把 signal-ticker 展開成公司名(台股甚至不留代號)。

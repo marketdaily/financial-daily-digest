@@ -11,7 +11,7 @@ cssutils.log.setLevel(logging.CRITICAL)
 from datetime import datetime, timezone, timedelta
 from data_fetcher import fetch_all
 from fake_news_filter import filter_us_news, filter_tw_news
-from analyzer import generate_report, generate_weekend_report, generate_monday_report, DIGEST_EMAIL_MAX_HOLDINGS
+from analyzer import generate_report, generate_weekend_report, generate_monday_report, DIGEST_EMAIL_MAX_HOLDINGS, extract_annotations
 from publisher import publish_to_brevo
 
 
@@ -536,6 +536,32 @@ def save_hosted_digest(html: str, date: str = "") -> str:
     return None
 
 
+def save_annotations(annotations: dict) -> bool:
+    """把本班次彙整的個股 AI 一句註解上傳 Worker KV(annot:latest),供 AI 看盤台即時列顯示。
+    需 INTERNAL_TOKEN;失敗只記 log 不影響寄信。"""
+    if not annotations:
+        return False
+    import requests
+    tok = os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN") or ""
+    if not tok:
+        print("   (skip 看盤台註解上傳:INTERNAL_TOKEN 未設)")
+        return False
+    try:
+        res = requests.post(
+            f"{WORKER_URL}/save-annotations",
+            json={"annotations": annotations, "asof": datetime.now(timezone.utc).isoformat()},
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"},
+            timeout=20,
+        )
+        if res.ok:
+            print(f"   📈 看盤台 AI 註解上傳 {res.json().get('count', len(annotations))} 檔")
+            return True
+        print(f"   ⚠️ 看盤台註解上傳失敗（HTTP {res.status_code}）")
+    except Exception as e:
+        print(f"   ⚠️ 看盤台註解上傳失敗（{e}）")
+    return False
+
+
 def _web_view_banner(url: str, total_holdings: int = 0, shown: int = 0) -> str:
     """email 頂部的「看網頁完整版」按鈕。"""
     note = ""
@@ -672,6 +698,7 @@ def run():
     personalization_failures = []  # AI 個人化失敗的 (email, reason),寄完一起推給 admin
     deterministic_fallbacks = []  # retry 仍 HIGH fail → 用 deterministic 模板(無 LLM)寄出
     outbox = []  # (email, html, subject):先全部生成,等班次整點一齊寄(修「日報固定遲到20分」)
+    watch_annotations = {}  # AI 看盤台:本班次所有日報 signal-card union 出的 {sym:{verdict,reason}}
     for email in subscribers:
         prefs = subscriber_prefs[email]
         us_stocks = prefs.get("us_stocks") or []
@@ -797,6 +824,14 @@ def run():
                     deterministic_fallbacks.append(email)
             if fails:
                 audit_failures_by_email[email] = fails
+            try:
+                for _sym, _ann in extract_annotations(html).items():
+                    _prev = watch_annotations.get(_sym)
+                    if _prev and _prev["verdict"] in ("buy", "sell") and _ann["verdict"] in ("hold", "wait"):
+                        continue
+                    watch_annotations[_sym] = _ann
+            except Exception:
+                pass
             if DRY_RUN:
                 print(f"   [DRY-RUN] 略過寄信 → {email}")
                 success_count += 1
@@ -805,6 +840,9 @@ def run():
                 print(f"   📦 生成完成,進寄送佇列 → {email}")
         except Exception as e:
             print(f"   ❌ 生成異常：{email}（{e}）")
+
+    # AI 看盤台:本班次彙整的個股 AI 一句註解上傳(寄送前,html 尚未被寄送迴圈重綁)
+    save_annotations(watch_annotations)
 
     # 全部生成完 → 等到班次整點(tw 07:00 / us 20:00 TW)一齊寄出。
     # cron 已提早觸發(06:20/19:25)只為留生成時間;寄出時間釘在整點,不再固定遲到 20 分。
