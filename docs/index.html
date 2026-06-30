@@ -339,12 +339,10 @@ nav::after {
 /* ── 3D FLOATING CARDS ── */
 .cards-3d-section {
   padding: 0 24px 64px; display: flex; justify-content: center;
-  perspective: 1200px; position: relative; z-index: 1;
+  position: relative; z-index: 1;
 }
 .cards-3d-row {
   display: flex; gap: 20px; align-items: flex-start;
-  transform: rotateX(6deg) rotateY(-4deg);
-  transform-style: preserve-3d;
   filter: drop-shadow(0 40px 80px rgba(0,0,0,0.6));
 }
 
@@ -354,8 +352,7 @@ nav::after {
   background: linear-gradient(160deg, rgba(99,102,241,0.16) 0%, rgba(10,10,23,0.96) 60%);
   border: 1px solid rgba(99,102,241,0.30);
   box-shadow: 0 24px 48px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.10);
-  backdrop-filter: blur(22px); -webkit-backdrop-filter: blur(22px);
-  animation: hp-float-a 7s ease-in-out infinite;
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
 }
 .dp-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); }
 .dp-from { display: flex; align-items: center; gap: 11px; }
@@ -382,10 +379,7 @@ nav::after {
 
 /* ── Floating trust chips ── */
 .chips { display: flex; flex-direction: column; gap: 14px; margin-top: 30px; }
-.chip { display: flex; align-items: center; gap: 10px; background: linear-gradient(145deg,rgba(255,255,255,0.07),rgba(10,10,23,0.9)); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 13px 16px; min-width: 200px; box-shadow: 0 16px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-.chip-a { animation: hp-float-b 6s ease-in-out infinite 0.5s; }
-.chip-b { animation: hp-float-c 6.5s ease-in-out infinite 1.1s; }
-.chip-c { animation: hp-float-a 5.8s ease-in-out infinite 0.8s; }
+.chip { display: flex; align-items: center; gap: 10px; background: linear-gradient(145deg,rgba(255,255,255,0.07),rgba(10,10,23,0.9)); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 13px 16px; min-width: 200px; box-shadow: 0 16px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
 .chip-ico { width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 17px; }
 .chip-num { font-size: 17px; font-weight: 900; letter-spacing: -0.5px; line-height: 1; }
 .chip-txt { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 3px; font-weight: 600; }
