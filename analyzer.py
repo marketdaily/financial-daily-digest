@@ -1777,7 +1777,15 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
     tw_pref = list(dict.fromkeys(user_tw_stocks or []))
     signal_stocks = list(dict.fromkeys(us_pref + tw_pref))
     if not signal_stocks:
-        signal_stocks = ["AAPL", "MSFT", "NVDA", "TSLA"]
+        # 公版(無持股)預設關注股。tw 早報 = 台股權值 + 美股權值(早報的 digest_<date>.html 是
+        # track-record 唯一解析來源,必須同時含台股美股,戰績才有台股又不丟美股);
+        # us 晚報只給訂閱者看美股(_us 檔不進 track-record)。原本公版只有美股 → 台股戰績長期空白。
+        TW_CORE = ["2330", "2454", "2317"]
+        US_CORE = ["AAPL", "MSFT", "NVDA", "TSLA"]
+        if market == "us":
+            signal_stocks = US_CORE
+        else:  # tw 早報 / both / 手動:台股 + 美股都出
+            signal_stocks = TW_CORE + US_CORE
 
     us_market = data.get("us_market", {})
     tw_market = data.get("tw_market", {})
@@ -1791,7 +1799,8 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
     if _full_holdings:
         top_signal_stocks = sorted(_full_holdings, key=_abs_change, reverse=True)
     else:
-        top_signal_stocks = sorted(signal_stocks, key=_abs_change, reverse=True)[:5]
+        # 公版關注股全出(台股權值+美股權值最多 7 檔),不切,確保 track-record 每天都收到台股與美股
+        top_signal_stocks = sorted(signal_stocks, key=_abs_change, reverse=True)
 
     technicals = data.get("technicals", {})
     tech_rows = []
@@ -2325,7 +2334,11 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
     if _full_holdings:
         signal_stocks = sorted(_full_holdings, key=_abs_change, reverse=True)
     else:
-        signal_stocks = ["AAPL", "MSFT", "NVDA", "TSLA"]
+        # 公版(無持股):週一台股早報同時出台股權值+美股權值,讓 track-record 收進台股戰績
+        if market == "us":
+            signal_stocks = ["AAPL", "MSFT", "NVDA", "TSLA"]
+        else:
+            signal_stocks = ["2330", "2454", "2317", "AAPL", "MSFT", "NVDA", "TSLA"]
 
     # 訊號卡改由 _render_signal_cards_batched 分批生成(每支持股都有卡、不被截斷),
     # 這裡只放區塊外框 + 佔位註解,生成後用 _inject_signal_cards 填入。

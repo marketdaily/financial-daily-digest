@@ -766,7 +766,8 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         if missing_tw:
             tw_market.update(fetch_custom_stocks(missing_tw))
 
-    tech_syms = (extra_us_stocks or []) + (extra_tw_stocks or []) + ["AAPL", "MSFT", "NVDA", "TSLA"]
+    # 公版預設關注股(無持股用戶/公版日報用):美股 + 台股權值,確保公版 signal-card 有真實技術價位
+    tech_syms = (extra_us_stocks or []) + (extra_tw_stocks or []) + ["AAPL", "MSFT", "NVDA", "TSLA", "2330", "2454", "2317"]
     technicals = fetch_technicals(tech_syms)
 
     the_date = (datetime.now(timezone.utc) + timedelta(hours=8)).strftime("%Y-%m-%d")
