@@ -303,6 +303,7 @@ h1 {
 .rec-cell.result.win { color: #6ee7b7; }
 .rec-cell.result.loss { color: #fca5a5; }
 .rec-cell.result.neut { color: rgba(255,255,255,0.45); }
+.rec-cell.result .prog { display:block; font-size:.7em; opacity:.65; margin-top:1px; font-variant-numeric:tabular-nums; }
 
 @media (max-width: 720px) {
   .rec-row { grid-template-columns: 80px 1.4fr 70px 60px; }
@@ -587,7 +588,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
         <span>🔄 紀錄多久更新一次?資料怎麼來的?</span><span class="chev">▾</span>
       </button>
       <div class="tr-faq-a"><div class="tr-faq-a-inner">
-        <strong>每週自動更新</strong>:腳本從歷史日報抓出每一筆個股提及,自動分類為 A / C,並用 Yahoo Finance 拉 5 個交易日後的收盤價計算贏輸(建議的時間視角是 1-2 週,不拿單日雜訊評分)。最近 5 個交易日內的建議顯示「待結」。
+        <strong>每週自動更新</strong>:腳本從歷史日報抓出每一筆個股提及,自動分類為 A / C,並用 Yahoo Finance 拉 5 個交易日後的收盤價計算贏輸(建議的時間視角是 1-2 週,不拿單日雜訊評分)。因此最近 5 個交易日內的建議會顯示「結算中(第 N/5 日)」——尚未走完 5 日視窗、還在累積資料,並非卡住;滿 5 日後自動翻成贏/輸。
         程式碼公開在 <code>scripts/build_track_record.py</code>。沒有任何人工後修——紀錄出來什麼就什麼。
       </div></div>
     </div>
@@ -656,6 +657,24 @@ function normalize(r) {
 
 let NORMALIZED = [];
 
+// 結算進度:從建議日到今天經過幾個交易日(近似:只數週一~週五,不計美股假日)。
+// 5 日結算視窗下,最近 5 個交易日的建議本來就還沒判定;顯示進度讓人看出「在跑」而非凍結。
+function tradingDaysSince(dateStr) {
+  if (!dateStr) return 0;
+  const start = new Date(dateStr + "T00:00:00");
+  const now = new Date();
+  if (isNaN(start)) return 0;
+  let n = 0;
+  const d = new Date(start);
+  d.setDate(d.getDate() + 1);
+  while (d <= now) {
+    const wd = d.getDay();
+    if (wd !== 0 && wd !== 6) n++;
+    d.setDate(d.getDate() + 1);
+  }
+  return n;
+}
+
 function renderRecords(filter) {
   const table = document.getElementById("rec-table");
   const header = table.querySelector(".rec-row.header");
@@ -700,9 +719,16 @@ function renderRecords(filter) {
       : (isTW ? (TW_NAMES_FALLBACK[r.ticker] || r.ticker) : r.ticker);
     const tagClass = r.type === "A" ? "tag-a" : "tag-c";
     const tagText = r.type === "A" ? "🟢 看多" : "🔴 看空";
-    let resClass = "neut", resText = "⏳ 待結";
+    let resClass = "neut", resText = "⏳ 結算中";
     if (r.outcome === "win") { resClass = "win"; resText = "✅ 贏"; }
     else if (r.outcome === "loss") { resClass = "loss"; resText = "❌ 輸"; }
+    else {
+      // 待結:顯示 5 日結算進度(第 N/5 日),讓人看出在跑而非凍結
+      const td = Math.min(5, tradingDaysSince(r.date));
+      resText = td < 5
+        ? `⏳ 結算中<span class="prog">第 ${td}/5 日</span>`
+        : `⏳ 結算中`;
+    }
     row.innerHTML = `
       <div class="rec-cell date">${r.date}</div>
       <div class="rec-cell ticker">${displayName}<span class="market">${marketBadge}</span></div>
