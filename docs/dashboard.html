@@ -405,8 +405,16 @@ nav::after {
 .sync-countdown { font-size: 10px; font-weight: 600; color: rgba(255,255,255,0.25); display: flex; align-items: center; gap: 5px; }
 .sync-dot { width: 5px; height: 5px; border-radius: 50%; background: #10b981; animation: syncpulse 1s ease-in-out infinite; flex-shrink: 0; }
 @keyframes syncpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
-.stories-row { display: flex; gap: 18px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+.stories-scroller { position: relative; }
+.stories-row { display: flex; gap: 18px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; scroll-behavior: smooth; }
 .stories-row::-webkit-scrollbar { display: none; }
+.stories-row.dragging { scroll-behavior: auto; cursor: grabbing; user-select: none; }
+.stories-nav { display: none; position: absolute; top: 33px; transform: translateY(-50%); z-index: 5; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.14); background: rgba(13,13,32,0.86); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; align-items: center; justify-content: center; box-shadow: 0 6px 18px rgba(0,0,0,0.45); transition: opacity .18s, transform .18s; }
+.stories-nav:hover { background: rgba(99,102,241,0.9); transform: translateY(-50%) scale(1.08); }
+.stories-nav.prev { left: -6px; }
+.stories-nav.next { right: -6px; }
+.stories-nav[hidden] { opacity: 0; pointer-events: none; }
+@media (hover: hover) and (pointer: fine) { .stories-scroller.scrollable .stories-nav { display: flex; } }
 .story-bubble { display: flex; flex-direction: column; align-items: center; gap: 7px; cursor: pointer; flex-shrink: 0; }
 .story-ring { width: 66px; height: 66px; border-radius: 50%; padding: 2.5px; background: conic-gradient(#ef4444, #f97316, #ef4444); transition: transform 0.18s; }
 .story-ring.down { background: conic-gradient(#10b981, #06b6d4, #10b981); }
@@ -631,7 +639,11 @@ nav::after {
         <span id="sync-counter">60</span><span data-i18n="sync_suffix">s 後同步</span>
       </div>
     </div>
-    <div class="stories-row" id="stories-row"></div>
+    <div class="stories-scroller">
+      <button type="button" class="stories-nav prev" id="stories-nav-prev" aria-label="向左" onclick="scrollStories(-1)">‹</button>
+      <div class="stories-row" id="stories-row"></div>
+      <button type="button" class="stories-nav next" id="stories-nav-next" aria-label="向右" onclick="scrollStories(1)">›</button>
+    </div>
   </div>
 
   <!-- Market Overview -->
@@ -2254,10 +2266,76 @@ async function loadStories(email) {
       </div>`;
     }).join("");
     section.style.display = "block";
+    initStoriesScroller();
+    requestAnimationFrame(updateStoriesNav);
   } catch {}
 }
 
+var _storiesScrollerInit = false;
+var _storiesDragged = false;
+
+function updateStoriesNav() {
+  const row = document.getElementById("stories-row");
+  const scroller = row && row.closest(".stories-scroller");
+  if (!row || !scroller) return;
+  const max = row.scrollWidth - row.clientWidth;
+  const overflow = max > 8;
+  scroller.classList.toggle("scrollable", overflow);
+  const prev = document.getElementById("stories-nav-prev");
+  const next = document.getElementById("stories-nav-next");
+  if (prev) prev.hidden = !overflow || row.scrollLeft <= 4;
+  if (next) next.hidden = !overflow || row.scrollLeft >= max - 4;
+}
+
+function scrollStories(dir) {
+  const row = document.getElementById("stories-row");
+  if (!row) return;
+  row.scrollBy({ left: dir * Math.max(220, row.clientWidth * 0.7), behavior: "smooth" });
+}
+
+function initStoriesScroller() {
+  if (_storiesScrollerInit) return;
+  const row = document.getElementById("stories-row");
+  if (!row) return;
+  _storiesScrollerInit = true;
+
+  row.addEventListener("wheel", (e) => {
+    const max = row.scrollWidth - row.clientWidth;
+    if (max <= 0) return;
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if (!d) return;
+    e.preventDefault();
+    row.scrollLeft += d;
+  }, { passive: false });
+
+  let down = false, startX = 0, startLeft = 0;
+  row.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "touch") return;
+    down = true; startX = e.clientX; startLeft = row.scrollLeft; _storiesDragged = false;
+    try { row.setPointerCapture(e.pointerId); } catch {}
+  });
+  row.addEventListener("pointermove", (e) => {
+    if (!down) return;
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 4) { row.classList.add("dragging"); _storiesDragged = true; }
+    row.scrollLeft = startLeft - dx;
+  });
+  const endDrag = (e) => {
+    if (!down) return;
+    down = false;
+    row.classList.remove("dragging");
+    try { row.releasePointerCapture(e.pointerId); } catch {}
+    setTimeout(() => { _storiesDragged = false; }, 0);
+  };
+  row.addEventListener("pointerup", endDrag);
+  row.addEventListener("pointercancel", endDrag);
+
+  row.addEventListener("scroll", updateStoriesNav, { passive: true });
+  window.addEventListener("resize", updateStoriesNav);
+}
+
 function openStory(idx) {
+  if (_storiesDragged) return;
   _storyIdx = idx;
   const overlay = document.getElementById("story-overlay");
   overlay.classList.add("open");
