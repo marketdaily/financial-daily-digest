@@ -470,6 +470,23 @@ nav::after {
 .sc-chip-crit { font-size: 9.5px; color: rgba(248,113,113,0.85); }
 .sc-none { font-size: 11.5px; color: rgba(226,232,240,0.3); }
 .sc-disclaimer { font-size: 10px; color: rgba(226,232,240,0.35); margin-top: 10px; text-align: center; }
+.sc-section-label { font-size: 11px; font-weight: 800; letter-spacing: .5px; margin: 13px 0 8px; }
+.sc-up-label { color: rgba(96,165,250,0.95); }
+.sc-down-label { color: rgba(251,146,60,0.95); }
+.sc-items { display: flex; flex-direction: column; gap: 7px; }
+.sc-item { position: relative; padding: 9px 11px 9px 13px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.07); border-radius: 11px; border-left: 3px solid rgba(255,255,255,0.15); }
+.sc-item.up { border-left-color: #3b82f6; }
+.sc-item.down { border-left-color: #f97316; }
+.sc-item-top { display: flex; align-items: center; gap: 7px; }
+.sc-item-name { font-size: 12.5px; font-weight: 800; color: #f1f5f9; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-item-tk { font-size: 10px; font-weight: 700; color: #a5b4fc; background: rgba(99,102,241,0.14); padding: 1px 6px; border-radius: 6px; flex-shrink: 0; }
+.sc-item-crit { margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 7px; white-space: nowrap; flex-shrink: 0; }
+.sc-item-crit.crit-vh { color: #fca5a5; background: rgba(239,68,68,0.14); border: 1px solid rgba(239,68,68,0.3); }
+.sc-item-crit.crit-h { color: #fdba74; background: rgba(249,115,22,0.13); border: 1px solid rgba(249,115,22,0.28); }
+.sc-item-crit.crit-m { color: #fcd34d; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.26); }
+.sc-item-crit.crit-l { color: rgba(226,232,240,0.6); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+.sc-item-role { font-size: 11.5px; line-height: 1.5; color: rgba(226,232,240,0.74); margin-top: 4px; }
+.sc-item-role b { color: rgba(226,232,240,0.95); font-weight: 700; }
 .story-bubble.loading .story-ring { background: rgba(255,255,255,0.08); animation: story-pulse 1.4s ease-in-out infinite; }
 @keyframes story-pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 0.9; } }
 
@@ -2494,18 +2511,37 @@ async function loadSupplyChain(sym) {
   el.innerHTML = renderSupplyChain(data, sym);
 }
 
-function _scChip(p) {
+function _scCritClass(c) {
+  const s = String(c || "");
+  if (s.includes("極高") || /very ?high/i.test(s)) return "crit-vh";
+  if (s.includes("高") || /\bhigh\b/i.test(s)) return "crit-h";
+  if (s.includes("中") || /\bmed/i.test(s)) return "crit-m";
+  return "crit-l";
+}
+
+function _esc(s) {
+  return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function _scItem(p, side) {
   const lang = (localStorage.getItem("md-lang-v2") || "zh");
-  const name = lang === "en" ? (p.name_en || p.name_zh) : (p.name_zh || p.name_en);
-  const tk = p.ticker ? `<span class="sc-chip-tk">${p.ticker}</span>` : "";
-  const crit = p.criticality ? `<span class="sc-chip-crit">${p.criticality}</span>` : "";
-  return `<span class="sc-chip" title="${(p.role||p.category||'').replace(/"/g,'')}">${name}${tk}${crit}</span>`;
+  const name = _esc(lang === "en" ? (p.name_en || p.name_zh) : (p.name_zh || p.name_en));
+  const tk = p.ticker ? `<span class="sc-item-tk">${_esc(p.ticker)}</span>` : "";
+  const crit = p.criticality ? `<span class="sc-item-crit ${_scCritClass(p.criticality)}">${_esc(p.criticality)}</span>` : "";
+  const cat = p.category ? `<b>${_esc(p.category)}</b>` : "";
+  const role = p.role ? _esc(p.role) : "";
+  const detail = [cat, role].filter(Boolean).join(" · ");
+  return `<div class="sc-item ${side}">
+    <div class="sc-item-top"><span class="sc-item-name">${name}</span>${tk}${crit}</div>
+    ${detail ? `<div class="sc-item-role">${detail}</div>` : ""}
+  </div>`;
 }
 
 function renderSupplyChain(d, sym) {
-  const up = (d.upstream || []).map(_scChip).join("") || `<span class="sc-none">${T('sc_none')}</span>`;
-  const down = (d.downstream || []).map(_scChip).join("") || `<span class="sc-none">${T('sc_none')}</span>`;
-  const industry = d.industry ? `<span class="sc-industry">${d.industry}</span>` : "";
+  const upArr = d.upstream || [], downArr = d.downstream || [];
+  const up = upArr.length ? `<div class="sc-items">${upArr.map(p => _scItem(p, "up")).join("")}</div>` : `<div class="sc-none">${T('sc_none')}</div>`;
+  const down = downArr.length ? `<div class="sc-items">${downArr.map(p => _scItem(p, "down")).join("")}</div>` : `<div class="sc-none">${T('sc_none')}</div>`;
+  const industry = d.industry ? `<span class="sc-industry">${_esc(d.industry)}</span>` : "";
   const srcLabel = d.source === "verified"
     ? `<span class="sc-src sc-src-ok">${T('sc_verified')}</span>`
     : `<span class="sc-src sc-src-ai">${T('sc_ai')}</span>`;
@@ -2513,17 +2549,11 @@ function renderSupplyChain(d, sym) {
     <div class="sc-head">
       <span class="sc-title">${T('sc_heading')}</span>${industry}${srcLabel}
     </div>
-    ${d.mid?.desc ? `<div class="sc-bizmodel">${d.mid.desc}</div>` : ""}
-    <div class="sc-chain">
-      <div class="sc-row sc-up">
-        <div class="sc-row-label">▲ ${T('sc_upstream')}</div>
-        <div class="sc-chips">${up}</div>
-      </div>
-      <div class="sc-row sc-down">
-        <div class="sc-row-label">▼ ${T('sc_downstream')}</div>
-        <div class="sc-chips">${down}</div>
-      </div>
-    </div>
+    ${d.mid?.desc ? `<div class="sc-bizmodel">${_esc(d.mid.desc)}</div>` : ""}
+    <div class="sc-section-label sc-up-label">▲ ${T('sc_upstream')}</div>
+    ${up}
+    <div class="sc-section-label sc-down-label">▼ ${T('sc_downstream')}</div>
+    ${down}
     <div class="sc-disclaimer">${T('sc_disclaimer')}</div>`;
 }
 

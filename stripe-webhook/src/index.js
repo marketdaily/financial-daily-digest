@@ -67,6 +67,18 @@ const AUTH_FAIL_WINDOW_SEC = 900;
 function clientIp(request) {
   return request.headers.get("cf-connecting-ip") || request.headers.get("x-real-ip") || "unknown";
 }
+function _scStr(v, max) { return (typeof v === "string" ? v : "").trim().slice(0, max || 80); }
+function _scNormList(arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr.slice(0, 10).map(p => (p && typeof p === "object") ? {
+    name_zh: _scStr(p.name_zh || p.name_en, 60),
+    name_en: _scStr(p.name_en || p.name_zh, 60),
+    ticker: (typeof p.ticker === "string" && /^[A-Za-z0-9.\-]{1,12}$/.test(p.ticker.trim())) ? p.ticker.trim().toUpperCase() : null,
+    category: _scStr(p.category, 40),
+    role: _scStr(p.role, 120),
+    criticality: _scStr(p.criticality, 40),
+  } : null).filter(p => p && (p.name_zh || p.name_en));
+}
 function authFailKey(email, request) {
   return `auth_fail:${(email || "anon").toLowerCase()}:${clientIp(request)}`;
 }
@@ -1485,7 +1497,7 @@ export default {
       const givenName = (url.searchParams.get("name") || "").trim().slice(0, 40);
 
       // cache key 含公司名:台股裸代號 AI 會猜錯公司,帶名才準,故名也納入 key
-      const cacheKey = `sc:v2:${ticker}:${givenName}`;
+      const cacheKey = `sc:v3:${ticker}:${givenName}`;
       const cached = await env.USER_PREFS.get(cacheKey);
       if (cached) {
         try { return json(JSON.parse(cached)); } catch {}
@@ -1499,19 +1511,19 @@ export default {
       ctx.waitUntil(env.USER_PREFS.put(rlKey, String(rlCount + 1), { expirationTtl: 60 }));
 
       const isTW = /^\d{4,6}$/.test(ticker);
-      const sysPrompt = `你是財經產業鏈分析助手。針對給定的股票代號,輸出這家公司的產業鏈資料。
+      const sysPrompt = `你是財經產業鏈分析助手。針對給定的股票,輸出這家公司「詳細」的產業鏈資料。
 
 嚴格規則:
 - 若提供了公司名稱,以「公司名稱」為準辨識這家公司,不要從代號數字臆測;若公司名稱與你認知的代號不符,以公司名稱為準。
 - 只列「真實、公認」的供應鏈關係。不確定就回空陣列,絕不亂掰、絕不臆測。
 - 關聯公司的 ticker 只在你確定它是上市公司時才填,否則填 null。
-- mid.desc 用一句話說明這家公司做什麼(繁體中文)。
+- mid.desc 用 1~2 句繁體中文說明:這家公司做什麼 + 它在產業鏈的位置與競爭優勢(市佔、技術門檻或護城河)。
 - industry 填「大產業 › 細分」格式(如「半導體 › 晶圓代工」),不確定填空字串。
-- upstream = 它的上游供應商/原材料/設備;downstream = 它的下游客戶/應用。
-- 每個關聯公司物件:{ "name_zh", "name_en", "ticker"(或 null), "role" }。
+- upstream = 它的上游供應商/原材料/設備;downstream = 它的下游客戶/應用。各盡量列 4~8 個關鍵環節,由最關鍵排到次要,別只給一兩個。
+- 每個關聯公司物件:{ "name_zh", "name_en", "ticker"(或 null), "category"(這個環節的類別,如「曝光機」「矽晶圓」「AI 伺服器」,沒有填空字串), "role"(具體說明它供應什麼或被如何使用,要具體,例如「EUV 微影機 全球獨家」而非只寫「設備」), "criticality"(對這家公司的重要程度,只能是 極高/高/中/低 其一,可加極短理由如「極高 — 無替代」) }。
 
 只輸出 JSON,不要任何其他文字,格式:
-{"ticker":"${ticker}","source":"ai","company_zh":"","industry":"","mid":{"name":"","desc":""},"upstream":[],"downstream":[]}`;
+{"ticker":"${ticker}","source":"ai","company_zh":"","industry":"","mid":{"name":"","desc":""},"upstream":[{"name_zh":"","name_en":"","ticker":null,"category":"","role":"","criticality":""}],"downstream":[{"name_zh":"","name_en":"","ticker":null,"category":"","role":"","criticality":""}]}`;
 
       let aiRes;
       try {
@@ -1524,7 +1536,7 @@ export default {
           },
           body: JSON.stringify({
             model: "claude-haiku-4-5-20251001",
-            max_tokens: 1200,
+            max_tokens: 2000,
             system: sysPrompt,
             messages: [{ role: "user", content: `${givenName ? `公司名稱:${givenName}、` : ""}股票代號:${ticker}${isTW ? "(台股)" : "(美股)"}。輸出它的產業鏈 JSON。` }],
           }),
@@ -1554,8 +1566,8 @@ export default {
           name: parsed.mid?.name || parsed.company_zh || ticker,
           desc: parsed.mid?.desc || "",
         },
-        upstream: Array.isArray(parsed.upstream) ? parsed.upstream.slice(0, 10) : [],
-        downstream: Array.isArray(parsed.downstream) ? parsed.downstream.slice(0, 10) : [],
+        upstream: _scNormList(parsed.upstream),
+        downstream: _scNormList(parsed.downstream),
       };
       if (!out.mid.desc && !out.upstream.length && !out.downstream.length) {
         return json({ error: "no_data" }, 404);
