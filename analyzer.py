@@ -302,12 +302,15 @@ def get_personalized_subject(data: dict, us_stocks: list, tw_stocks: list, date:
             if pct > biggest_pct and _plausible(chg, True):
                 biggest_pct = pct
                 biggest_sym = (sym, chg)
+    # 主旨裡的個股:台股一律用中文名(不可露代碼)、美股用「中文 代號」
+    def _subj_label(s):
+        return stock_names.label_with_code(s, tw_market.get(s, {}).get("name")) if s in tw_market else s
     if weekday == 0:
         # 週一:基準是上週五收盤,主旨明寫「上週五」避免誤導
         if biggest_sym and biggest_pct >= 2:
             sym, pct = biggest_sym
             direction = "漲" if pct > 0 else "跌"
-            return f"📅 上週五 {sym} {direction} {abs(pct):.1f}%+週一展望｜MarketDaily {date}"
+            return f"📅 上週五 {_subj_label(sym)} {direction} {abs(pct):.1f}%+週一展望｜MarketDaily {date}"
         return f"📅 週末重點 + 週一展望｜MarketDaily {date}"
     if biggest_sym and biggest_pct >= 2:
         sym, pct = biggest_sym
@@ -315,7 +318,7 @@ def get_personalized_subject(data: dict, us_stocks: list, tw_stocks: list, date:
         # 台股早上 7 點還沒開盤,主旨要寫「昨日」;美股剛收盤可寫「今天」
         is_tw = sym in tw_market
         when = "昨日" if is_tw else "今天"
-        return f"📊 你的 {sym} {when}{direction}了 {abs(pct):.1f}%｜財經日報 {date}"
+        return f"📊 你的 {_subj_label(sym)} {when}{direction}了 {abs(pct):.1f}%｜財經日報 {date}"
     return f"📊 財經日報 {date} — AI 精選美股 + 台股"
 
 
@@ -686,6 +689,13 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<span class="impact-stock (up|down)">([^<]*)</span>',
         _expand_impact, html
     )
+
+    # 台股一律只露中文名,不留代碼:清掉內文 LLM 寫的「名稱（2330）」括號代碼。
+    # 用名稱表比對只清「真實台股代號」→ 不誤傷年份/價位;美股 ticker 是字母,本規則不碰。
+    _tw_codes = set(tw_hint.keys())
+    def _strip_tw_paren_code(m):
+        return "" if m.group(1) in _tw_codes else m.group(0)
+    html = _re.sub(r'[ 　]?[（(]\s*([0-9]{4})\s*[）)]', _strip_tw_paren_code, html)
 
     # 沒有任何個股的空「影響個股」區塊直接移除
     def _strip_empty_impact(m):
@@ -1967,8 +1977,8 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 **這份日報在台灣時間早上 7:00 寄出,那時台股還沒開盤（台股 9:00 開盤、13:30 收盤）。**
 - 美股：通常剛收盤不久（台灣時間 04:00 美股收盤），可以用「昨晚美股收紅/收黑」這類完成式口吻。
 - 台股：**數據是昨日收盤**，今天 9:00 才開盤。**絕對禁止寫「今天台股已漲/已跌/超狂/大跌」這類盤中口吻**。要寫就寫：「昨日台股收 XXX」「今早開盤可留意 XXX」「9:00 開盤後若 XXX 就 XXX」「今日早盤策略」。看到「{date}」這個日期 = 台股還沒開盤的一天。
-- 違反例：「今天台積電（2330）漲 3%！」← 廢稿（盤前不可能知道）
-- 正確例：「台積電（2330）昨日收 XXX 元」「今早 9:00 開盤後留意 XXX 元支撐」
+- 違反例：「今天台積電漲 3%！」← 廢稿（盤前不可能知道）
+- 正確例：「台積電昨日收 XXX 元」「今早 9:00 開盤後留意 XXX 元支撐」（台股只寫中文名、不帶代碼）
 
 【⚠️ 今天的市場開盤狀態 — 絕對要遵守】
 昨晚美股:{mkt_status['us_note'] or f"美股有開盤,數據是新鮮的,可寫「昨晚美股 XXX」。"}
@@ -2082,7 +2092,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 - 數字要具體（不說「大幅上漲」，要說「漲了 3.2%」）
 - 每個重點一兩句話說清楚，不廢話
 - 繁體中文
-- 內文提到個股時用「中文名（代號）」，例如「輝達（NVDA）」「台積電（2330）」，不要只寫代號
+- 內文提到個股：美股用「中文名（代號）」例如「輝達（NVDA）」；**台股只用中文名、不加代碼**，例如「台積電」「聯發科」（不可寫成「台積電（2330）」），更不可只寫代號
 {few_stocks_note}
 日期：{date}
 
