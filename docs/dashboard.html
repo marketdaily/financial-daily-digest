@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MarketDaily">
-<link rel="apple-touch-icon" href="/logo-icon.svg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3358,5 +3358,49 @@ window.mdStockTour = function () {
   </div>
 </div>
 <script src="terminal.js?v=1"></script>
+<script>
+// PWA:全域註冊純推播 SW(無 fetch handler,不攔導覽)+「加到主畫面」安裝提示。
+(function () {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js").catch(() => {});
+    });
+  }
+  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+  if (isStandalone) return;
+  let deferred = null;
+  const mkBtn = () => {
+    if (document.getElementById("pwa-install-btn")) return document.getElementById("pwa-install-btn");
+    const b = document.createElement("button");
+    b.id = "pwa-install-btn";
+    b.type = "button";
+    const en = (localStorage.getItem("md-lang-v2") || "zh") === "en";
+    b.textContent = en ? "📲 Install App" : "📲 加到主畫面";
+    b.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9999;" +
+      "background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;font-size:13px;font-weight:800;" +
+      "padding:11px 20px;border-radius:30px;box-shadow:0 8px 28px rgba(99,102,241,0.45);cursor:pointer;" +
+      "letter-spacing:.3px;transition:transform .15s,box-shadow .15s;";
+    b.onmouseenter = () => { b.style.transform = "translateX(-50%) translateY(-2px)"; };
+    b.onmouseleave = () => { b.style.transform = "translateX(-50%)"; };
+    document.body.appendChild(b);
+    return b;
+  };
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferred = e;
+    const b = mkBtn();
+    b.onclick = async () => {
+      b.style.display = "none";
+      try { deferred.prompt(); await deferred.userChoice; } catch {}
+      deferred = null;
+    };
+  });
+  window.addEventListener("appinstalled", () => {
+    const b = document.getElementById("pwa-install-btn");
+    if (b) b.remove();
+    deferred = null;
+  });
+})();
+</script>
 </body>
 </html>
