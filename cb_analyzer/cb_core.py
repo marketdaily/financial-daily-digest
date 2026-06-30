@@ -1,0 +1,234 @@
+"""CB 拆解(CBAS)量化核心。
+CB = 債券底 + (100/轉換價) 張轉換選擇權。
+拆解後投資人把債券底賣斷給銀行，只留選擇權當部位 → 權利金當本金、parity 當曝險 → 槓桿。
+所有假設參數集中在 ASSUMPTIONS，可由呼叫端覆寫。"""
+import math
+
+# ── 可調假設 ──────────────────────────────────────────────
+ASSUMPTIONS = {
+    "rf": 0.013,            # 台幣無風險利率(10Y 公債約 1.2~1.5%)
+    "asset_swap_spread": 0.020,  # 拆解資產交換 銀行收的年化融資 spread(TCRI5~6 約 1.5~2.5%)
+    "vol_window": 60,       # 歷史波動率取樣交易日數
+    # TCRI 信用評等 → 折現用的年化信用利差(疊在 rf 上),用來算債券底
+    "tcri_spread": {1: 0.008, 2: 0.010, 3: 0.015, 4: 0.020, 5: 0.028,
+                    6: 0.038, 7: 0.052, 8: 0.066, 9: 0.082},
+    "default_tcri": 6,
+}
+
+SQRT2 = math.sqrt(2.0)
+
+
+def _norm_cdf(x):
+    return 0.5 * (1.0 + math.erf(x / SQRT2))
+
+
+def bs_call(S, K, T, sigma, r):
+    """單股 Black-Scholes 買權，回 (price, delta, gamma, vega)。"""
+    if S <= 0 or K <= 0 or T <= 0 or sigma <= 0:
+        intrinsic = max(S - K, 0.0)
+        return intrinsic, (1.0 if S > K else 0.0), 0.0, 0.0
+    vt = sigma * math.sqrt(T)
+    d1 = (math.log(S / K) + (r + 0.5 * sigma * sigma) * T) / vt
+    d2 = d1 - vt
+    price = S * _norm_cdf(d1) - K * math.exp(-r * T) * _norm_cdf(d2)
+    delta = _norm_cdf(d1)
+    pdf = math.exp(-0.5 * d1 * d1) / math.sqrt(2 * math.pi)
+    gamma = pdf / (S * vt)
+    vega = S * pdf * math.sqrt(T)
+    return price, delta, gamma, vega
+
+
+def credit_rate(tcri, a=ASSUMPTIONS):
+    spread = a["tcri_spread"].get(tcri or a["default_tcri"], a["tcri_spread"][a["default_tcri"]])
+    return a["rf"] + spread
+
+
+def redemption_value(put):
+    """賣回/到期金額(面額100):YTP(n)=(y%) → 100*(1+y)^n;沒資料當 100。"""
+    if not put or put.get("year") is None:
+        return 100.0, 3
+    y = (put.get("y_mid") or 0.0) / 100.0
+    n = put["year"]
+    return 100.0 * ((1.0 + y) ** n), n
+
+
+def bond_floor(item, a=ASSUMPTIONS):
+    """債券底 = 賣回/到期金額 按 (rf+信用利差) 折現到今天。"""
+    redeem, n = redemption_value(item.get("put"))
+    r = credit_rate(item.get("tcri"), a)
+    return redeem / ((1.0 + r) ** n)
+
+
+def conv_price(item):
+    """轉換價:優先用表上的;沒有就用『訂價參考股價 × 溢價率』反推(參考股價需另給)。"""
+    return item.get("conv_price")
+
+
+def analyze(item, spot, hist_vol, a=ASSUMPTIONS):
+    """核心分析。spot=現股價, hist_vol=年化歷史波動率(小數)。回 dict。"""
+    K = conv_price(item)
+    if not K or not spot:
+        return {"ok": False, "reason": "缺轉換價或現股價"}
+
+    T = float(item.get("tenor_year") or 3)
+    put = item.get("put") or {}
+    # 拆解部位真正存續到賣回日(YTP)較貼近現實;沒有就用年期
+    T_opt = float(put.get("year") or item.get("tenor_year") or 3)
+    r = ASSUMPTIONS["rf"]
+    shares = 100.0 / K                       # 每張 CB(面額100)可換股數
+    parity = spot / K * 100.0                # 轉換價值
+
+    floor = bond_floor(item, a)
+    call_px, delta, gamma, vega = bs_call(spot, K, T_opt, hist_vol, r)
+    opt_value = shares * call_px             # 每張 CB 的轉換選擇權價值
+    theo = floor + opt_value                 # 理論 CB 價
+
+    issue = item.get("issue_price") or 100.0
+    # 隱含波動率:解 σ 使 floor + shares*BS(σ) = 發行價
+    iv = implied_vol(spot, K, T_opt, r, shares, floor, issue)
+
+    # ── CBAS 拆解經濟學 ──
+    # 拆解後權利金 ≈ 發行價 - 賣斷給銀行拿回的債券價(以債券底計) + 持有期融資成本
+    swap_proceeds = floor
+    financing = swap_proceeds * a["asset_swap_spread"] * T_opt   # 期間融資成本(粗估)
+    premium = max(issue - swap_proceeds + financing, opt_value * 0.5)  # 權利金成本下限防呆
+    leverage = parity / premium if premium > 0 else None
+    eff_delta = shares * delta               # 每張 CB 對股價的 delta(張數×單股delta)
+    # 損益槓桿:股價漲 1% → parity 漲 parity*1%,選擇權漲 ≈ eff_delta*spot*1%
+    moneyness = spot / K                     # >1 價內
+
+    scen = scenarios(item, spot, K, T_opt, hist_vol, r, shares, floor, premium, issue)
+
+    vol_edge = (hist_vol - iv) if iv else None
+    score, reasons = score_cb(item, dict(parity=parity, theo=theo, issue=issue,
+                                         iv=iv, vol_edge=vol_edge, hist_vol=hist_vol,
+                                         delta=delta, leverage=leverage,
+                                         moneyness=moneyness), a)
+
+    return {
+        "ok": True,
+        "spot": spot, "conv_price": K, "shares": shares, "parity": parity,
+        "moneyness": moneyness, "premium_at_issue": item.get("premium_mid"),
+        "tenor": T, "T_opt": T_opt,
+        "bond_floor": floor, "credit_rate": credit_rate(item.get("tcri"), a),
+        "option_value": opt_value, "theoretical": theo, "issue_price": issue,
+        "edge_theo": theo - issue,
+        "hist_vol": hist_vol, "implied_vol": iv,
+        "vol_edge": (hist_vol - iv) if iv else None,
+        "delta": delta, "eff_delta": eff_delta, "gamma": gamma, "vega": vega,
+        "cbas_premium": premium, "leverage": leverage,
+        "max_loss_pct": 1.0,                 # 下檔最多賠光權利金 → 100%(但有限額)
+        "scenarios": scen,
+        "score": score, "score_reasons": reasons,
+    }
+
+
+def implied_vol(S, K, T, r, shares, floor, target_price, lo=0.05, hi=2.5):
+    """二分法解隱含波動率,使 floor + shares*BS_call(σ) = target_price。"""
+    target_opt = (target_price - floor) / shares
+    if target_opt <= 0:
+        return None
+    f = lambda s: bs_call(S, K, T, s, r)[0] - target_opt
+    flo, fhi = f(lo), f(hi)
+    if flo > 0:        # 連最低波動都比目標貴 → 選擇權被高估,回最低
+        return lo
+    if fhi < 0:
+        return hi
+    for _ in range(80):
+        mid = (lo + hi) / 2
+        fm = f(mid)
+        if abs(fm) < 1e-6:
+            return mid
+        if fm > 0:
+            hi = mid
+        else:
+            lo = mid
+    return (lo + hi) / 2
+
+
+def scenarios(item, spot, K, T, vol, r, shares, floor, premium, issue,
+              moves=(-0.30, -0.20, -0.10, 0.0, 0.10, 0.20, 0.30)):
+    """股價情境 → 拆解部位(權利金本金)損益。
+    持有部位 = 選擇權;到期前用 BS 重算選擇權市值,報酬 = (新選擇權值-權利金)/權利金。"""
+    out = []
+    # 假設情境是『短期內』股價變動,時間價值少掉一點(用 0.8*T 近似持有半年到一年後)
+    T2 = max(T * 0.6, 0.25)
+    base_opt = shares * bs_call(spot, K, T2, vol, r)[0]
+    for m in moves:
+        s2 = spot * (1 + m)
+        opt2 = shares * bs_call(s2, K, T2, vol, r)[0]
+        # 拆解部位損益:選擇權市值變化 / 權利金(下檔以權利金為限)
+        pnl = opt2 - base_opt
+        ret_on_prem = pnl / premium if premium > 0 else None
+        # 若選擇權歸零,最大損失 = 權利金
+        floored = max(opt2 - base_opt, -premium)
+        out.append({
+            "move": m, "spot": s2,
+            "parity": s2 / K * 100.0,
+            "option_value": opt2,
+            "pnl_per_cb": floored,
+            "return_on_premium": (floored / premium) if premium > 0 else None,
+        })
+    return out
+
+
+def score_cb(item, m, a=ASSUMPTIONS):
+    """0~100 拆解吸引力評分。權重:波動率價差30 + 理論edge20 + moneyness20 + 信用15 + 流動性10 + 可拆解日5。"""
+    reasons = []
+    score = 0.0
+
+    # 1) 波動率價差(歷史 - 隱含):選擇權便宜 = 好  [30]
+    ve = m.get("vol_edge")
+    if ve is not None:
+        s = max(0, min(30, 15 + ve * 100))   # +0.15 vol edge → 滿分
+        score += s
+        reasons.append(f"波動率價差 {ve*100:+.1f}pt → {s:.0f}/30")
+    else:
+        score += 12
+        reasons.append("波動率價差無法估(發行價未知)→ 12/30")
+
+    # 2) 理論 vs 發行 edge  [20]
+    issue = m["issue"] or 100
+    edge_pct = (m["theo"] - issue) / issue
+    s = max(0, min(20, 10 + edge_pct * 200))  # +5% edge → 滿分
+    score += s
+    reasons.append(f"理論價較發行 {edge_pct*100:+.1f}% → {s:.0f}/20")
+
+    # 3) moneyness 甜蜜點(delta 0.4~0.7 最佳)  [20]
+    d = m["delta"]
+    if 0.4 <= d <= 0.7:
+        s = 20
+    elif 0.25 <= d < 0.4 or 0.7 < d <= 0.85:
+        s = 14
+    elif d < 0.25:
+        s = max(0, 10 * d / 0.25)             # 太價外 delta 小
+    else:
+        s = 10                                 # 太價內 像股票少了槓桿
+    score += s
+    reasons.append(f"Delta {d:.2f}(甜蜜點0.4~0.7)→ {s:.0f}/20")
+
+    # 4) 信用 TCRI(低=好,易拆解)  [15]
+    t = item.get("tcri") or 6
+    s = max(0, min(15, (9 - t) / 8 * 15 + 2))
+    score += s
+    reasons.append(f"TCRI {t} → {s:.0f}/15")
+
+    # 5) 流動性 / 發行量  [10]
+    size = item.get("size_yi") or 0
+    s = min(10, math.log10(max(size, 1) + 1) / math.log10(31) * 10)
+    score += s
+    reasons.append(f"發行量 {size}億 → {s:.0f}/10")
+
+    # 6) 槓桿合理性(過高=過度價外風險,4~10x 佳)  [5]
+    lev = m.get("leverage")
+    if lev:
+        if 4 <= lev <= 12:
+            s = 5
+        elif lev < 4:
+            s = 3
+        else:
+            s = 2
+        score += s
+        reasons.append(f"槓桿 {lev:.1f}x → {s:.0f}/5")
+
+    return round(score, 1), reasons
