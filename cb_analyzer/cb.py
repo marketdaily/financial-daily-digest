@@ -56,12 +56,13 @@ def report(item):
               f"備註:{item['note']}{C['x']}")
         return None
 
-    sd = cb_data.get_stock(code)
+    sd = cb_data.get_stock(code, vol_weights=(cb_core.ASSUMPTIONS["vol_w_short"],
+                                              cb_core.ASSUMPTIONS["vol_w_long"]))
     if not sd:
         print(f"{C['r']}✗ 抓不到 {code} 現股資料(可能停牌/代碼異常),跳過。{C['x']}")
         return None
 
-    a = cb_core.analyze(item, sd["spot"], sd["hist_vol"])
+    a = cb_core.analyze(item, sd["spot"], sd["vol_blend"])
     if not a["ok"]:
         print(f"{C['r']}✗ {a['reason']}{C['x']}")
         return None
@@ -73,16 +74,28 @@ def report(item):
     print(f"  轉換價值 parity = {C['bold']}{a['parity']:.1f}{C['x']}  "
           f"（價內外 {a['moneyness']:.3f}×，{'價內' if a['moneyness']>1 else '價外'}）  "
           f"發行溢價率 {item['premium_mid']}%")
+    vd = sd["vols"]
+    vstr = "  ".join(f"{k}={v*100:.0f}%" for k, v in
+                     [("20日", vd['v20']), ("60日", vd['v60']),
+                      ("120日", vd['v120']), ("EWMA", vd['ewma'])] if v)
+    print(f"  {C['d']}波動率 {vstr} → 前瞻估計 {C['x']}{a['hist_vol']*100:.0f}%"
+          f"{C['d']}（短{cb_core.ASSUMPTIONS['vol_w_short']:.0%}/長{cb_core.ASSUMPTIONS['vol_w_long']:.0%}加權）{C['x']}")
+    am = ""
+    if a.get("auction_low"):
+        am = f"，競拍區間 {a['auction_low']}~{a['auction_high']}"
+    flag = "" if a["clearing_known"] else f" {C['y']}(未定，暫用面額100){C['x']}"
+    print(f"  {C['bold']}真實清算價 {a['issue_price']:.2f}{C['x']}"
+          f"（{a.get('pricing_method') or '—'}{am}）{flag}")
 
     print(f"\n  {C['bold']}── 拆解定價 ──{C['x']}")
     print(f"  債券底       {a['bond_floor']:6.2f}   (折現率 {a['credit_rate']*100:.2f}% = rf+TCRI利差)")
     print(f"  轉換選擇權   {a['option_value']:6.2f}   (Δ {a['delta']:.2f}, Γ {a['gamma']:.4f})")
-    print(f"  理論 CB 價   {C['bold']}{a['theoretical']:6.2f}{C['x']}   vs 發行價 {a['issue_price']:.2f}"
+    print(f"  理論 CB 價   {C['bold']}{a['theoretical']:6.2f}{C['x']}   vs 清算價 {a['issue_price']:.2f}"
           f"  → 理論edge {g(a['edge_theo'])}")
     if a["implied_vol"]:
         ve = a["vol_edge"]
         col = C['g'] if ve and ve > 0 else C['y']
-        print(f"  隱含波動率   {a['implied_vol']*100:5.1f}%   歷史波動率 {a['hist_vol']*100:.1f}%"
+        print(f"  發行隱含波動 {a['implied_vol']*100:5.1f}%   前瞻波動 {a['hist_vol']*100:.1f}%"
               f"  → {col}價差 {ve*100:+.1f}pt（{'選擇權便宜' if ve>0 else '選擇權偏貴'}）{C['x']}")
 
     print(f"\n  {C['bold']}── 拆解槓桿 ──{C['x']}")
@@ -125,14 +138,15 @@ def verdict(s):
 def rank(db):
     print(f"\n{C['bold']}{C['b']}═══ 全表 CB 拆解吸引力排序 ═══{C['x']}  "
           f"{C['d']}(來源 {db['source_file']}, {db.get('parsed_at','')}){C['x']}\n")
+    vw = (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
     results = []
     for item in db["items"]:
         if not item.get("conv_price") or not item.get("premium_mid"):
             continue
-        sd = cb_data.get_stock(item["stock_code"])
+        sd = cb_data.get_stock(item["stock_code"], vol_weights=vw)
         if not sd:
             continue
-        a = cb_core.analyze(item, sd["spot"], sd["hist_vol"])
+        a = cb_core.analyze(item, sd["spot"], sd["vol_blend"])
         if a["ok"]:
             results.append((item, sd, a))
     results.sort(key=lambda x: x[2]["score"], reverse=True)
@@ -156,9 +170,10 @@ def print_assumptions():
     a = cb_core.ASSUMPTIONS
     print(f"\n{C['d']}── 假設參數(可在 cb_core.ASSUMPTIONS 調整)──")
     print(f"  無風險利率 rf={a['rf']*100:.1f}% · 資產交換 spread={a['asset_swap_spread']*100:.1f}% · "
-          f"波動率取樣 {a['vol_window']}日")
+          f"前瞻波動加權 短{a['vol_w_short']:.0%}/長{a['vol_w_long']:.0%}")
     print(f"  TCRI 信用利差: " + ", ".join(f"{k}→{v*100:.1f}%" for k, v in a['tcri_spread'].items()))
-    print(f"  ⚠ 模型用『歷史波動率』近似定價,實際發行隱含波動由市場詢圈決定;融資/稅費未精算,僅供排序篩選。{C['x']}")
+    print(f"  ⚠ 隱含波動由真實承銷/競拍價反解;前瞻波動=EWMA(短)與120日(長)加權(均值回歸)。")
+    print(f"     融資/稅費/賣回時點/流動性折價未精算,評分供篩選排序,進場前仍須人工核對承銷與資產交換報價。{C['x']}")
 
 
 def list_all(db):
@@ -174,17 +189,58 @@ def list_all(db):
               f"{str(i['size_yi'])+'億':<6} 溢{i.get('premium_mid') or '—'} {cp} {i['put']['raw']}")
 
 
+CONFIG_PATH = os.path.join(HERE, "cb_config.json")
+
+
+def load_config():
+    """讀 cb_config.json 覆寫假設參數;不存在就用內建預設。"""
+    if os.path.exists(CONFIG_PATH):
+        try:
+            with open(CONFIG_PATH, encoding="utf-8") as f:
+                cb_core.set_config(**json.load(f))
+        except Exception as e:
+            print(f"{C['y']}config 讀取失敗,用預設:{e}{C['x']}")
+
+
+def pop_flag(args, name, cast=float):
+    """從 args 取出 --name value,回 value 或 None,並原地移除。"""
+    if name in args:
+        i = args.index(name)
+        try:
+            val = cast(args[i + 1])
+            del args[i:i + 2]
+            return val
+        except (IndexError, ValueError):
+            del args[i:i + 1]
+    return None
+
+
 def main():
     args = sys.argv[1:]
     if not args:
         print(__doc__)
         return
-    if args[0] == "--update":
+    load_config()
+    # CLI 旗標覆寫(優先於 config 檔)
+    swap = pop_flag(args, "--swap")
+    rf = pop_flag(args, "--rf")
+    ws = pop_flag(args, "--vol-short")
+    wl = pop_flag(args, "--vol-long")
+    want_html = "--html" in args
+    if "--html" in args:
+        args.remove("--html")
+    cb_core.set_config(asset_swap_spread=swap, rf=rf, vol_w_short=ws, vol_w_long=wl)
+
+    if args and args[0] == "--update":
         rebuild(args[1] if len(args) > 1 else DEFAULT_XLSX)
         return
     db = load_db()
-    if args[0] == "--rank":
-        rank(db)
+    if not args or args[0] == "--rank":
+        results = rank(db)
+        if want_html:
+            import cb_report
+            path = cb_report.write_report(db, results)
+            print(f"\n{C['g']}HTML 報告已輸出 → {path}{C['x']}")
     elif args[0] == "--list":
         list_all(db)
     else:

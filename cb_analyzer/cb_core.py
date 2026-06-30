@@ -13,7 +13,21 @@ ASSUMPTIONS = {
     "tcri_spread": {1: 0.008, 2: 0.010, 3: 0.015, 4: 0.020, 5: 0.028,
                     6: 0.038, 7: 0.052, 8: 0.066, 9: 0.082},
     "default_tcri": 6,
+    "vol_w_short": 0.35,    # 前瞻波動:短期(EWMA)權重
+    "vol_w_long": 0.65,     # 長期(120d)權重
 }
+
+
+def set_config(**kw):
+    """覆寫假設參數(rf / asset_swap_spread / vol_w_short / vol_w_long / tcri_spread)。"""
+    for k, v in kw.items():
+        if v is None:
+            continue
+        if k == "tcri_spread" and isinstance(v, dict):
+            ASSUMPTIONS["tcri_spread"].update({int(kk): vv for kk, vv in v.items()})
+        elif k in ASSUMPTIONS:
+            ASSUMPTIONS[k] = v
+    return ASSUMPTIONS
 
 SQRT2 = math.sqrt(2.0)
 
@@ -83,8 +97,10 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS):
     opt_value = shares * call_px             # 每張 CB 的轉換選擇權價值
     theo = floor + opt_value                 # 理論 CB 價
 
-    issue = item.get("issue_price") or 100.0
-    # 隱含波動率:解 σ 使 floor + shares*BS(σ) = 發行價
+    clearing = item.get("clearing_price")
+    issue = clearing or 100.0   # 真實承銷/競拍清算價;未定時用面額 100 佔位
+    clearing_known = clearing is not None
+    # 隱含波動率:解 σ 使 floor + shares*BS(σ) = 真實清算價(回填市場真隱波)
     iv = implied_vol(spot, K, T_opt, r, shares, floor, issue)
 
     # ── CBAS 拆解經濟學 ──
@@ -112,6 +128,8 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS):
         "tenor": T, "T_opt": T_opt,
         "bond_floor": floor, "credit_rate": credit_rate(item.get("tcri"), a),
         "option_value": opt_value, "theoretical": theo, "issue_price": issue,
+        "clearing_known": clearing_known, "pricing_method": item.get("pricing_method"),
+        "auction_low": item.get("auction_low"), "auction_high": item.get("auction_high"),
         "edge_theo": theo - issue,
         "hist_vol": hist_vol, "implied_vol": iv,
         "vol_edge": (hist_vol - iv) if iv else None,

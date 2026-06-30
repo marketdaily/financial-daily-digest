@@ -84,14 +84,38 @@ def _parse_split_date(raw):
     return f"{int(m.group(1)):04d}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
 
 
-def _parse_issue_price(note):
-    """從備註抓發行價（佔面額%），如 '依票面金額100.2%發行' → 100.2；找不到回 None。"""
-    m = re.search(r"(\d{2,3}(?:\.\d+)?)\s*%", note or "")
+def _parse_clearing(note):
+    """從備註抓真實清算價(佔面額100):
+      競拍 → 承銷價X(最準);沒有就用(低標+高標)/2。
+      詢圈/固定 → '依票面金額之N%發行' 的 N。
+    回傳 dict: clearing(最佳估計), auction_low, auction_high, method, fixed_pct。"""
+    note = (note or "").replace("，", ",")
+    low = high = sold = fixed = None
+    m = re.search(r"承銷價\s*(\d{2,3}(?:\.\d+)?)", note)
+    if m:
+        sold = _num(m.group(1))
+    m = re.search(r"低標\s*(\d{2,3}(?:\.\d+)?)", note)
+    if m:
+        low = _num(m.group(1))
+    m = re.search(r"高標\s*(\d{2,3}(?:\.\d+)?)", note)
+    if m:
+        high = _num(m.group(1))
+    # 詢圈/固定發行:依(票面金額|面額)之 N% 發行
+    m = re.search(r"(?:票面金額|面額)[之]?\s*(\d{2,3}(?:\.\d+)?)\s*%", note)
     if m:
         v = _num(m.group(1))
-        if v and 90 <= v <= 130:
-            return v
-    return None
+        if v and 90 <= v <= 200:
+            fixed = v
+    if sold:
+        clearing, method = sold, "競拍承銷價"
+    elif low and high:
+        clearing, method = (low + high) / 2, "競拍中值"
+    elif fixed:
+        clearing, method = fixed, "固定發行"
+    else:
+        clearing, method = None, "未定"
+    return {"clearing": clearing, "auction_low": low, "auction_high": high,
+            "fixed_pct": fixed, "method": method}
 
 
 def parse(xlsx_path):
@@ -112,6 +136,7 @@ def parse(xlsx_path):
         rating, coll, secured = _parse_tcri(_s(r[4]))
         put = _parse_put(_s(r[15]))
         note = _s(r[17])
+        clr = _parse_clearing(note)
         out.append({
             "section": section,
             "stock_code": code,
@@ -133,7 +158,11 @@ def parse(xlsx_path):
             "split_date": _parse_split_date(_s(r[14])),  # 可拆解日
             "put": put,
             "tenor_year": _parse_year(_s(r[16])),
-            "issue_price": _parse_issue_price(note),
+            "clearing_price": clr["clearing"],     # 真實清算/承銷價(競拍或固定)
+            "auction_low": clr["auction_low"],
+            "auction_high": clr["auction_high"],
+            "pricing_method": clr["method"],
+            "issue_price": clr["clearing"],         # 相容舊欄位
             "note": note,
         })
     return out
