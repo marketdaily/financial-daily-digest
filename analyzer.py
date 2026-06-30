@@ -1155,6 +1155,79 @@ def _macro_backdrop_note(data: dict) -> str:
     return " ｜ ".join(parts)
 
 
+def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -> str:
+    """組合透視(看深入專屬):純計算整個持股的集中度與最大組合風險,缺料/持股太少不談。
+    只用既有資料(結構 prior / 政壇訊號 / 估值 / 籌碼),不編造、不經 LLM。"""
+    if depth != "deep":
+        return ""
+    holds = list(dict.fromkeys([h for h in (holdings or []) if h]))
+    if len(holds) < 3:
+        return ""
+    tech = data.get("technicals", {}) or {}
+    allm = {**(data.get("us_market") or {}), **(data.get("tw_market") or {})}
+    fund = data.get("fundamentals") or {}
+    n = len(holds)
+    bull = bear = neu = up = down = 0
+    for h in holds:
+        p = _quant_prior(tech.get(h))
+        bull += p == "bull"; bear += p == "bear"; neu += p == "neutral"
+        chg = (allm.get(h) or {}).get("change_pct")
+        if chg is not None:
+            up += chg >= 0; down += chg < 0
+    tw_n = sum(1 for h in holds if str(h).isdigit())
+    us_n = n - tw_n
+    pol_tks = set()
+    for s in (data.get("political_signals") or []):
+        for t in (s.get("affected") or []):
+            pol_tks.add(str(t).upper())
+    pol_hit = [h for h in holds if str(h).upper() in pol_tks]
+    rich = [h for h in holds if (fund.get(h) or {}).get("val_class") == "rich"]
+    sell_chips = [h for h in holds if (fund.get(h) or {}).get("chip_class") == "sell"]
+
+    rows = [f"<b>結構分佈</b>:多頭 {bull} / 盤整 {neu} / 空頭 {bear}（共 {n} 檔）"]
+    if us_n and tw_n:
+        rows.append(f"<b>市場配置</b>:美股 {us_n} 檔、台股 {tw_n} 檔")
+    elif tw_n:
+        rows.append(f"<b>市場配置</b>:全部 {tw_n} 檔台股(單一市場)")
+    else:
+        rows.append(f"<b>市場配置</b>:全部 {us_n} 檔美股(單一市場)")
+    if rich:
+        rows.append(f"<b>估值偏貴</b>:{', '.join(rich[:5])}（追高風險集中)")
+    if sell_chips:
+        rows.append(f"<b>法人/內部人偏賣</b>:{', '.join(sell_chips[:5])}")
+    if pol_hit:
+        rows.append(f"<b>政策面曝險</b>:{', '.join(pol_hit[:5])} 同受今日政壇訊號波及")
+
+    half = max(2, round(n * 0.5))
+    if bear >= half:
+        risk = f"{bear}/{n} 檔處於空頭結構,組合同向下行風險高 —— 別整批低接,優先減碼最弱、保留現金等止穩。"
+    elif len(rich) >= max(2, round(n * 0.4)):
+        risk = f"{len(rich)} 檔估值偏貴,追高風險集中在高估值族群 —— 高檔不加碼,等回檔再評估。"
+    elif len(pol_hit) >= 2:
+        risk = f"{len(pol_hit)} 檔同受今日政壇/政策訊號波及,政策面是這組持股的共同變數 —— 盯後續政策確認再決定加減碼。"
+    elif (us_n == 0) ^ (tw_n == 0):
+        risk = "持股集中單一市場,缺乏跨市場分散 —— 該市場若系統性回檔,整組一起受傷。"
+    elif bull >= half:
+        risk = f"{bull}/{n} 檔多頭結構,順勢但同向 —— 大盤一旦轉弱會一起拉回,設好整組停利紀律。"
+    else:
+        risk = "持股結構分散、無單一面向過度集中,維持現有紀律即可。"
+
+    rows_html = "".join(
+        f'<div style="font-size:13px;color:#3a3a3c;margin:4px 0;line-height:1.55;">• {r}</div>' for r in rows
+    )
+    return (
+        '<div class="section-label">🧭 你的組合透視（看深入專屬）</div>'
+        '<div class="news-card" style="border-color:#dfe3ff;">'
+        '<div style="font-size:12px;color:#8e8e93;margin-bottom:7px;line-height:1.5;">'
+        '把你整組持股放在一起看 —— 不只逐支,而是集中度與最大共同風險。</div>'
+        f'{rows_html}'
+        f'<div style="margin-top:9px;padding:8px 11px;background:#fff4e0;'
+        f'border-left:3px solid #f59e0b;border-radius:8px;font-size:13px;color:#8a4500;line-height:1.55;">'
+        f'⚠️ <b>最大組合風險</b>:{risk}</div>'
+        '</div>'
+    )
+
+
 def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -> str:
     us_market = data.get("us_market", {})
     tw_market = data.get("tw_market", {})
@@ -1352,6 +1425,8 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                           "- 估值:把「估值」那句(本益比/百分位/PEG)寫進 reason 當體質判斷——偏貴→提醒追高風險、別在高檔重壓;相對便宜→回檔較有撐。"
                           "**估值只影響語氣與部位心態,不可拿來改寫技術面的進場/目標/停損價位(價位一律照近端錨點)**。\n"
                           "- 籌碼:把「籌碼」那句(外資/投信買賣超、內部人動向)寫進 signal-watch 當該盯的事;法人連續賣超是警訊、連續買超是支撐,但仍以技術結構定方向。\n"
+                          "- 雙情境(看深入加值):signal-reason 結尾用一句講兩條路——「若站上/跌破 $X 則偏多看 $A;若失守/突破不過 $Y 則轉弱看 $B」,用真實技術價位,給用戶條件分支而非單點。\n"
+                          "- 反方風險:signal-watch 除了該盯的事,再點一句「什麼會推翻這個判斷」(例:跌破 $X 多頭結構就破功、財報不如預期、外資轉賣),讓用戶知道自己可能錯在哪。\n"
                           "只能引用上面提供的真實數字,沒附的指標/估值/籌碼就不要提,嚴禁自行編造任何數字。\n"
                           if depth == "deep" else "")
         macro_note = ""
@@ -1898,6 +1973,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
     cards = _render_signal_cards_batched(data, top_signal_stocks, mkt_status,
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
                                          prefer_strong=prefer_strong, depth=depth)
+    cards += _portfolio_lens_block(data, all_holdings, depth)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
@@ -2165,6 +2241,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
     cards = _render_signal_cards_batched(data, signal_stocks, mkt_status,
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
                                          prefer_strong=prefer_strong, depth=depth)
+    cards += _portfolio_lens_block(data, all_holdings, depth)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
