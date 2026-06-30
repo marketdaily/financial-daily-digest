@@ -110,10 +110,21 @@ def _get_cached_price(symbol: str) -> dict:
 # TWSE OpenAPI — 一次取全部台股收盤，官方數據無 rate limit
 _TWSE_CACHE: dict = {}
 _TWSE_CACHE_TIME: datetime = None
+_TWSE_DATA_DATE: str = None  # 這批 TWSE 收盤資料實際對應的交易日(ISO),用來判新鮮度
+
+
+def _roc_to_iso(roc: str) -> str:
+    """TWSE Date 欄位 '1150629'(民國) → '2026-06-29'。失敗回 None。"""
+    try:
+        roc = str(roc).strip()
+        return f"{int(roc[:-4]) + 1911:04d}-{roc[-4:-2]}-{roc[-2:]}"
+    except Exception:
+        return None
+
 
 def _fetch_twse_all() -> dict:
     """Return {stock_code: {name, price, change_pct}} for all TWSE listed stocks"""
-    global _TWSE_CACHE, _TWSE_CACHE_TIME
+    global _TWSE_CACHE, _TWSE_CACHE_TIME, _TWSE_DATA_DATE
     now = datetime.now()
     if _TWSE_CACHE and _TWSE_CACHE_TIME and (now - _TWSE_CACHE_TIME).seconds < 3600:
         return _TWSE_CACHE
@@ -124,10 +135,13 @@ def _fetch_twse_all() -> dict:
         )
         data = resp.json()
         result = {}
+        data_date = None
         for row in data:
             code = row.get("Code", "")
             if not code.isdigit():
                 continue
+            if data_date is None and row.get("Date"):
+                data_date = _roc_to_iso(row["Date"])
             try:
                 close = float(row["ClosingPrice"])
                 change = float(row["Change"])
@@ -142,9 +156,72 @@ def _fetch_twse_all() -> dict:
                 continue
         _TWSE_CACHE = result
         _TWSE_CACHE_TIME = now
+        _TWSE_DATA_DATE = data_date
         return result
     except Exception:
         return _TWSE_CACHE
+
+
+def _expected_tw_session_date() -> str:
+    """目前 TW 時間下,台股「應該已有收盤數據」的最近交易日(ISO)。
+    台股 13:30 收盤,實務上 14:00 後就該有當日全市場收盤;故 TW 時間 ≥14:00 且今天是交易日
+    → 期望今日;否則期望最近的過去交易日。給 _twse_is_stale 比對用。"""
+    try:
+        from analyzer import _TW_HOLIDAYS as holidays
+    except Exception:
+        holidays = set()
+    tw_now = datetime.now(timezone.utc) + timedelta(hours=8)
+
+    def _is_trading(d):
+        return d.weekday() < 5 and d.strftime("%Y-%m-%d") not in holidays
+
+    d = tw_now.date()
+    if not (_is_trading(d) and tw_now.hour >= 14):
+        d = d - timedelta(days=1)
+        for _ in range(10):
+            if _is_trading(d):
+                break
+            d = d - timedelta(days=1)
+    return d.strftime("%Y-%m-%d")
+
+
+def _twse_is_stale() -> bool:
+    """TWSE STOCK_DAY_ALL 端點偶爾延遲更新(尤其晚班 20:00 生成時仍停在上一交易日),
+    導致個股收盤是舊的、卻和即時的加權指數(Yahoo)併在同一封信 → 日期打架。
+    必須先呼叫過 _fetch_twse_all()。資料日 < 期望交易日即判定過期。"""
+    if not _TWSE_DATA_DATE:
+        return False
+    return _TWSE_DATA_DATE < _expected_tw_session_date()
+
+
+def _tw_stocks_via_yahoo(codes: list, twse: dict, tpex: dict) -> dict:
+    """TWSE 過期時改用 Yahoo 抓指定台股收盤(與加權指數同源同日,消除日期打架)。
+    回 {code: {name, price, change_pct}};名稱沿用 TWSE/TPEx 既有對照。
+    上市用 .TW、上櫃用 .TWO;不確定者(兩個官方源都過期/查無)兩種後綴都試,避免上櫃股漏掉。"""
+    codes = [c for c in (codes or []) if c and c.isdigit()]
+    if not codes:
+        return {}
+    tpex = tpex or {}
+    out = {}
+
+    def _label(c, p):
+        nm = (twse.get(c) or {}).get("name") or (tpex.get(c) or {}).get("name") or c
+        out[c] = {"name": nm, "price": p["price"], "change_pct": p["change_pct"]}
+
+    ymap = {c: _yahoo_symbol(c, twse, tpex) for c in codes}
+    prices = _batch_prices(list(ymap.values()))
+    for c, ysym in ymap.items():
+        if prices.get(ysym):
+            _label(c, prices[ysym])
+    # 第一輪沒中的,改用另一個後綴重試(.TW↔.TWO),救官方源過期時無法判市別的上櫃股
+    miss = [c for c in codes if c not in out]
+    if miss:
+        alt = {c: (f"{c}.TWO" if ymap[c].endswith(".TW") else f"{c}.TW") for c in miss}
+        alt_prices = _batch_prices(list(alt.values()))
+        for c, ysym in alt.items():
+            if alt_prices.get(ysym):
+                _label(c, alt_prices[ysym])
+    return out
 
 
 # TPEx OpenAPI — 上櫃股票收盤(含群聯 8299、精測 6510 等),官方數據無 rate limit
@@ -241,9 +318,13 @@ def fetch_tw_market():
     d = _get_cached_price("^TWII")
     if d:
         result["^TWII"] = d
-    for stock in get_tw_stocks():
-        code = stock["symbol"] if isinstance(stock, dict) else stock
-        if code in twse:
+    codes = [s["symbol"] if isinstance(s, dict) else s for s in get_tw_stocks()]
+    # TWSE 端點延遲(晚班常見)→ 個股改走 Yahoo,與上方加權指數同日,避免日期打架
+    yahoo_tw = _tw_stocks_via_yahoo(codes, twse, tpex) if _twse_is_stale() else {}
+    for code in codes:
+        if code in yahoo_tw:
+            result[code] = yahoo_tw[code]
+        elif code in twse:
             result[code] = twse[code]
         elif code in tpex:
             result[code] = tpex[code]
@@ -254,9 +335,16 @@ def fetch_custom_stocks(symbols: list) -> dict:
     twse = _fetch_twse_all()
     tpex = None
     result = {}
+    tw_codes = [s for s in symbols if s.isdigit()]
+    yahoo_tw = {}
+    if tw_codes and _twse_is_stale():
+        tpex = _fetch_tpex_all()
+        yahoo_tw = _tw_stocks_via_yahoo(tw_codes, twse, tpex)
     for sym in symbols:
         if sym.isdigit():
-            if sym in twse:
+            if sym in yahoo_tw:
+                result[sym] = yahoo_tw[sym]
+            elif sym in twse:
                 result[sym] = twse[sym]
             else:
                 if tpex is None:
