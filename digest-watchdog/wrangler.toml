@@ -2,14 +2,15 @@ name = "marketdaily-digest-watchdog"
 main = "src/index.js"
 compatibility_date = "2026-05-01"
 
-# 日報寄出守望 + 全站掃描派發(2026-06-11 建,源起 6/11 日報被 429 拖數小時無人知事故):
-#   "20 23 * * *" = 07:20 TW 早報第一檢(信該 07:00 寄出,20 分仍沒結果就有事)
-#   "0 0 * * *"   = 08:00 TW 早報第二檢(還卡著 → 砍掉重派)
-#   "20 12 * * *" = 20:20 TW 晚報第一檢
-#   "0 13 * * *"  = 21:00 TW 晚報第二檢
-#   "50 23 * * *" = 07:50 TW 派發全站掃描 site_scan.yml(掃描失敗會自動修+LINE)
+# 2026-06-30 停用(crons 清空):這隻 watchdog 整個綁死 GitHub Actions —— 查 Actions run、用
+# Actions /dispatches 重派。但 6/11 起 GitHub 帳號被 flag、Actions 停用,日報早搬去 winrig cron。
+# 結果它每班都找不到 Actions run → 誤判「cron 沒觸發」→ 想用已死的 Actions 重派 → 422 →
+# 每天誤報「守望犬已代派(失敗)」。真正的日報成敗監看已由 winrig heartbeat.sh 接手
+# (過 07:45/20:45 檢查 log 有無「發送完成」,沒有就 web push + 桌面告 admin,通道實測活著)。
+# 故清空 crons 止血。GitHub 解封、日報搬回 Actions 時再恢復;或改寫成「查公版日報新鮮度」的
+# 外部 dead-man 監看(補 winrig 整台掛掉的盲區)。詳見 memory project_github_account_flagged。
 [triggers]
-crons = ["20 23 * * *", "0 0 * * *", "20 12 * * *", "0 13 * * *", "50 23 * * *"]
+crons = []
 
 # 與主 worker 共用 KV,只用 watchdog: 前綴(重派防重 guard)
 [[kv_namespaces]]
