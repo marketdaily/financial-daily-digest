@@ -663,38 +663,6 @@ nav::after {
     </div>
   </div>
 
-  <!-- 看盤台:自選股即時列 + 真.AI 一句註解 -->
-  <style>
-    .watchboard-section{max-width:760px;margin:8px auto 0;padding:0 16px;}
-    .watchboard-list{display:flex;flex-direction:column;gap:8px;margin-top:10px;}
-    .wb-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:14px;cursor:pointer;transition:background .15s,border-color .15s;}
-    .wb-row:hover{background:rgba(255,255,255,0.05);border-color:rgba(255,176,0,0.35);}
-    .wb-id{flex:0 0 96px;min-width:96px;}
-    .wb-name{font-size:14px;font-weight:700;color:#f1f5f9;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .wb-sym{font-size:11px;color:rgba(148,163,184,0.7);font-family:"SF Mono",ui-monospace,monospace;}
-    .wb-price{flex:0 0 84px;text-align:right;}
-    .wb-px{font-size:15px;font-weight:800;color:#f8fafc;font-variant-numeric:tabular-nums;}
-    .wb-chg{font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;}
-    .wb-chg.up,.wb-px-wrap .up{color:#4ade80;} .wb-chg.down{color:#f87171;} .wb-chg.neutral{color:rgba(148,163,184,0.8);}
-    .wb-ai{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px;}
-    .wb-chip{align-self:flex-start;font-size:10.5px;font-weight:800;padding:2px 9px;border-radius:20px;letter-spacing:.3px;}
-    .wb-chip.buy{background:rgba(74,222,128,0.14);color:#4ade80;border:1px solid rgba(74,222,128,0.3);}
-    .wb-chip.sell{background:rgba(248,113,113,0.14);color:#f87171;border:1px solid rgba(248,113,113,0.3);}
-    .wb-chip.hold{background:rgba(251,191,36,0.13);color:#fbbf24;border:1px solid rgba(251,191,36,0.28);}
-    .wb-chip.wait{background:rgba(148,163,184,0.13);color:#cbd5e1;border:1px solid rgba(148,163,184,0.25);}
-    .wb-reason{font-size:12.5px;line-height:1.45;color:rgba(203,213,225,0.92);}
-    .wb-reason.muted{color:rgba(148,163,184,0.6);font-style:italic;}
-    .watchboard-asof{font-size:11px;color:rgba(148,163,184,0.6);}
-    @media(max-width:520px){.wb-id{flex-basis:78px;min-width:78px;}.wb-price{flex-basis:70px;}.wb-name{font-size:13px;}}
-  </style>
-  <div class="watchboard-section" id="watchboard-section" style="display:none;">
-    <div class="stories-label-row">
-      <div class="stories-label" data-i18n="watchboard_label">📈 我的看盤台</div>
-      <div class="watchboard-asof" id="watchboard-asof"></div>
-    </div>
-    <div class="watchboard-list" id="watchboard-list"></div>
-  </div>
-
   <!-- Market Overview -->
   <div class="market-overview-section" id="market-overview-section" style="display:none;">
     <div class="stories-label" data-i18n="market_label">🌐 今日大盤</div>
@@ -1372,7 +1340,6 @@ function refreshDynamicLang() {
     if (badge) badge.textContent = plan === "admin" ? T('hdr_plan_admin') : plan === "free" ? T('hdr_plan_free') : T('hdr_plan_paid');
     renderTags("us"); renderTags("tw"); updateStats();
     if (typeof renderQuickRow === 'function') { renderQuickRow('us'); renderQuickRow('tw'); }
-    if (typeof renderWatchboard === 'function') renderWatchboard();
   }
 }
 
@@ -2185,12 +2152,10 @@ async function loadAnnotations() {
     if (!res.ok) return;
     const data = await res.json();
     _annotations = data.annotations || {};
-    const asofEl = document.getElementById("watchboard-asof");
-    if (asofEl && data.asof) {
-      const d = new Date(data.asof);
-      if (!isNaN(d)) asofEl.textContent = `${T('watchboard_asof_prefix')}${d.getMonth() + 1}/${d.getDate()}`;
+    // overlay 正開著就即時重繪,讓真 AI 註解一抓到就補上
+    if (document.getElementById("story-overlay")?.classList.contains("open")) {
+      try { renderStoryCard(); } catch {}
     }
-    renderWatchboard();
   } catch {}
 }
 
@@ -2200,37 +2165,6 @@ const _WB_CHIP = {
   hold: { cls: "hold", zh: "🟡 續抱持有", en: "🟡 Hold" },
   wait: { cls: "wait", zh: "⚪ 觀望",     en: "⚪ Wait" },
 };
-
-function renderWatchboard() {
-  const sec = document.getElementById("watchboard-section");
-  const list = document.getElementById("watchboard-list");
-  if (!sec || !list || !_stories.length) return;
-  const zh = currentLang !== "en";
-  list.innerHTML = _stories.map((q, i) => {
-    const isTW = /^\d{4,6}$/.test(String(q.symbol || ""));
-    const ccy = isTW ? "" : "$";
-    const fp = (v) => v >= 100 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : v.toFixed(2);
-    const priceStr = q.price != null ? `${ccy}${fp(q.price)}` : "···";
-    let { dir, label: chg } = fmtChange(q.change, q.symbol);
-    if (q.price == null && q.change == null) { chg = ""; dir = "neutral"; }
-    const ann = _annotations[q.symbol];
-    let aiHtml;
-    if (ann && ann.reason) {
-      const chip = _WB_CHIP[ann.verdict] || _WB_CHIP.wait;
-      aiHtml = `<span class="wb-chip ${chip.cls}">${zh ? chip.zh : chip.en}</span>`
-             + `<span class="wb-reason">${escapeHtml(ann.reason)}</span>`;
-    } else {
-      aiHtml = `<span class="wb-reason muted">${T('watchboard_no_ai')}</span>`;
-    }
-    const name = q.name || q.symbol;
-    return `<div class="wb-row" onclick="openStory(${i})">
-      <div class="wb-id"><div class="wb-name">${escapeHtml(name)}</div><div class="wb-sym">${escapeHtml(q.symbol)}</div></div>
-      <div class="wb-price"><div class="wb-px">${priceStr}</div><div class="wb-chg ${dir}">${chg}</div></div>
-      <div class="wb-ai">${aiHtml}</div>
-    </div>`;
-  }).join("");
-  sec.style.display = "block";
-}
 
 function escapeHtml(s) {
   return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -2305,7 +2239,6 @@ async function refreshQuotes() {
         document.getElementById("sc-price").textContent = q.price !== null ? `${ccy}${fp(q.price)}` : "";
       }
     }
-    renderWatchboard();
   } catch {}
   startCountdown();
 }
@@ -2385,7 +2318,6 @@ async function loadStories(email) {
     section.style.display = "block";
     initStoriesScroller();
     requestAnimationFrame(updateStoriesNav);
-    renderWatchboard();
   } catch {}
 }
 
@@ -2486,12 +2418,23 @@ function renderStoryCard() {
   document.getElementById("sc-change").className = `story-card-change ${dir}`;
   document.getElementById("sc-price").textContent = priceStr;
 
-  // Signal + score (invest-skill style)
+  // Signal + score:有日報引擎的真.AI 註解就用它,沒有才退回日內漲跌機械版(誠實不掰)
   const sig = storySignal(changeVal);
+  const ann = _annotations[q.symbol];
   const badge = document.getElementById("sc-sig-badge");
-  badge.textContent = sig.label;
-  badge.className = `sc-sig-badge ${sig.cls}`;
-  document.getElementById("sc-sig-score").textContent = `${sig.score}/10`;
+  const scoreEl = document.getElementById("sc-sig-score");
+  if (ann && ann.reason) {
+    const zh = currentLang !== "en";
+    const chip = _WB_CHIP[ann.verdict] || _WB_CHIP.wait;
+    const badgeCls = ann.verdict === "buy" ? "bull" : ann.verdict === "sell" ? "bear" : "neutral";
+    badge.textContent = zh ? chip.zh : chip.en;
+    badge.className = `sc-sig-badge ${badgeCls}`;
+    scoreEl.textContent = zh ? "AI 分析" : "AI view";
+  } else {
+    badge.textContent = sig.label;
+    badge.className = `sc-sig-badge ${sig.cls}`;
+    scoreEl.textContent = `${sig.score}/10`;
+  }
 
   // Key levels: prev close (support) + target (含貨幣符號,跟價格區一致)
   const levelsEl = document.getElementById("sc-levels");
@@ -2505,7 +2448,7 @@ function renderStoryCard() {
     levelsEl.innerHTML = "";
   }
 
-  document.getElementById("sc-verdict").textContent = storyVerdict(changeVal);
+  document.getElementById("sc-verdict").textContent = (ann && ann.reason) ? ann.reason : storyVerdict(changeVal);
 
   // Progress dots
   const progRow = document.getElementById("story-progress-row");
