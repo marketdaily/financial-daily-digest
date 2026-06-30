@@ -2308,24 +2308,32 @@ function initStoriesScroller() {
     row.scrollLeft += d;
   }, { passive: false });
 
-  let down = false, startX = 0, startLeft = 0;
+  let down = false, dragging = false, startX = 0, startLeft = 0, pid = null;
   row.addEventListener("pointerdown", (e) => {
     if (e.pointerType === "touch") return;
-    down = true; startX = e.clientX; startLeft = row.scrollLeft; _storiesDragged = false;
-    try { row.setPointerCapture(e.pointerId); } catch {}
+    down = true; dragging = false; startX = e.clientX; startLeft = row.scrollLeft; pid = e.pointerId;
+    _storiesDragged = false;
   });
   row.addEventListener("pointermove", (e) => {
     if (!down) return;
     const dx = e.clientX - startX;
-    if (Math.abs(dx) > 4) { row.classList.add("dragging"); _storiesDragged = true; }
+    if (!dragging) {
+      if (Math.abs(dx) <= 6) return; // 還沒超過門檻 = 視為單純點擊,不攔截
+      dragging = true; _storiesDragged = true;
+      row.classList.add("dragging");
+      try { row.setPointerCapture(pid); } catch {}
+    }
     row.scrollLeft = startLeft - dx;
   });
-  const endDrag = (e) => {
+  const endDrag = () => {
     if (!down) return;
     down = false;
-    row.classList.remove("dragging");
-    try { row.releasePointerCapture(e.pointerId); } catch {}
-    setTimeout(() => { _storiesDragged = false; }, 0);
+    if (dragging) {
+      row.classList.remove("dragging");
+      try { row.releasePointerCapture(pid); } catch {}
+      setTimeout(() => { _storiesDragged = false; }, 0);
+    }
+    dragging = false;
   };
   row.addEventListener("pointerup", endDrag);
   row.addEventListener("pointercancel", endDrag);
