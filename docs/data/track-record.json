@@ -1,17 +1,17 @@
 {
   "stats": {
-    "generated_at": "2026-06-29T08:03:08",
+    "generated_at": "2026-06-30T08:03:09",
     "horizon": "5d",
-    "days_covered": 16,
-    "total_records": 623,
+    "days_covered": 17,
+    "total_records": 667,
     "judged_records": 570,
     "one_day": {
-      "a_count": 255,
-      "a_wins": 106,
-      "a_rate": 41.6,
-      "c_count": 319,
-      "c_wins": 191,
-      "c_rate": 59.9
+      "a_count": 270,
+      "a_wins": 120,
+      "a_rate": 44.4,
+      "c_count": 349,
+      "c_wins": 199,
+      "c_rate": 57.0
     },
     "a_count": 255,
     "a_wins": 91,
@@ -72,13 +72,13 @@
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 227,
-      "no_fill": 55,
-      "pending": 2,
+      "simulated": 242,
+      "no_fill": 65,
+      "pending": 6,
       "hit_target": 22,
       "hit_stop": 123,
-      "expired": 25,
-      "avg_ret_pct": -1.5,
+      "expired": 26,
+      "avg_ret_pct": -1.51,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
@@ -89,9 +89,81 @@
       "c_wins": 16,
       "c_rate": 76.2
     },
-    "personal_samples_added": 549
+    "personal_samples_added": 589
   },
   "records": [
+    {
+      "date": "2026-06-30",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "今晚開盤後，若股價能穩守在 $400.36 以上，顯示市場對此價位的支撐力道強勁，可考慮分批買進加碼。此為盤整結構中的低接機會，目標看向反彈至 $433.6。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 35,
+      "entry_lo": 400.36,
+      "entry_hi": 405.0,
+      "target": 433.6,
+      "stop": 365.34,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-06-30",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "今晚開盤後，NVDA 仍處於空頭結構，暫不建議買入。應觀望股價能否有效站回 MA20 ($206.96) 以上，若能收復此關鍵價位，再考慮重新評估進場機會。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 50,
+      "entry_lo": 206.96,
+      "entry_hi": 206.96,
+      "target": 208.57,
+      "stop": 177.97,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-06-30",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "今晚開盤後，MSFT 處於空頭結構，暫時不建議買入。應觀望股價能否在 $349.2 附近獲得支撐，並等待其站回 MA20 ($396.02) 以上，才能考慮重新評估。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 53,
+      "entry_lo": 396.02,
+      "entry_hi": 396.02,
+      "target": 394.57,
+      "stop": 336.07,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-06-30",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "今晚開盤後，AAPL 處於盤整結構，若已持有，可繼續抱緊。若未持有，可觀察股價回測 $273.75 不破後，再考慮分批低接，目標看向反彈至 $299.08。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 53,
+      "entry_lo": 273.75,
+      "entry_hi": 278.0,
+      "target": 299.08,
+      "stop": 260.06,
+      "outcome": null,
+      "outcome_1d": null
+    },
     {
       "date": "2026-06-29",
       "name": "特斯拉 Tesla",
@@ -180,7 +252,7 @@
       "target": 413.02,
       "stop": 330.11,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-06-26",
@@ -198,7 +270,7 @@
       "target": 210.6,
       "stop": 177.17,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-06-26",
@@ -216,7 +288,7 @@
       "target": 376.73,
       "stop": 322.95,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-06-26",
@@ -234,7 +306,7 @@
       "target": 293.05,
       "stop": 252.77,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-06-25",
