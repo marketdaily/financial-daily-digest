@@ -56,6 +56,7 @@ body {
   border-radius: 22px;
   padding: 44px 40px;
   width: 380px;
+  max-width: calc(100vw - 32px);
   box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 80px rgba(0,0,0,0.6);
 }
 .auth-logo {
@@ -86,6 +87,7 @@ body {
 
 /* ── Admin Shell ── */
 #admin-shell { display: none; min-height: 100vh; }
+#sb-scrim { display: none; }
 
 /* ── Sidebar ── */
 #sidebar {
@@ -96,6 +98,7 @@ body {
   display: flex; flex-direction: column;
   padding: 28px 0 24px;
   z-index: 100;
+  transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
 }
 .sb-logo {
   padding: 0 22px 28px;
@@ -104,8 +107,9 @@ body {
 .sb-logo em { color: var(--banana); font-style: normal; }
 .sb-logo small { display: block; font-size: 11px; font-weight: 500; color: var(--text3); margin-top: 2px; letter-spacing: 0.5px; text-transform: uppercase; }
 
+.sb-nav { flex: 1; overflow-y: auto; }
 .sb-section { padding: 0 12px; margin-bottom: 4px; }
-.sb-section-label { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 1.5px; text-transform: uppercase; padding: 0 10px; margin-bottom: 6px; }
+.sb-section-label { font-size: 10px; font-weight: 700; color: var(--text3); letter-spacing: 1.5px; text-transform: uppercase; padding: 0 10px; margin-bottom: 6px; margin-top: 14px; }
 .sb-item {
   display: flex; align-items: center; gap: 10px;
   padding: 9px 12px; border-radius: 10px;
@@ -119,12 +123,14 @@ body {
 .sb-badge {
   margin-left: auto; background: var(--banana); color: #0a0a0a;
   font-size: 10px; font-weight: 800; padding: 1px 7px; border-radius: 20px;
+  display: none;
 }
+.sb-badge.show { display: inline-block; }
 
 .sb-divider { height: 1px; background: var(--border); margin: 12px 22px; }
 
 .sb-user {
-  margin-top: auto; padding: 0 14px;
+  margin-top: auto; padding: 12px 14px 0;
   display: flex; align-items: center; gap: 10px;
 }
 .sb-avatar {
@@ -147,27 +153,37 @@ body {
 }
 
 .topbar {
-  padding: 20px 32px;
+  padding: 18px 32px;
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 50;
   background: rgba(7,7,14,0.85);
   backdrop-filter: blur(20px);
+  gap: 12px;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.hamburger {
+  display: none; background: var(--surface2); border: 1px solid var(--border2);
+  color: var(--text); width: 38px; height: 38px; border-radius: 10px;
+  font-size: 17px; cursor: pointer; flex-shrink: 0;
 }
 .topbar-title { font-size: 17px; font-weight: 800; letter-spacing: -0.5px; }
-.topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; }
-.topbar-actions { display: flex; align-items: center; gap: 10px; }
+.topbar-sub { font-size: 12px; color: var(--text2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); display: inline-block; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
 
-.page-content { padding: 32px; }
+.page-content { padding: 32px; max-width: 1240px; }
 
 /* ── Section ── */
 .section { display: none; }
-.section.active { display: block; }
-.section-header { margin-bottom: 24px; }
+.section.active { display: block; animation: fadein 0.3s ease; }
+@keyframes fadein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.section-header { margin-bottom: 24px; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 .section-title { font-size: 22px; font-weight: 900; letter-spacing: -0.5px; }
 .section-desc { font-size: 13px; color: var(--text2); margin-top: 4px; }
 
-/* ── Antigravity Card ── */
+/* ── Card ── */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -176,7 +192,7 @@ body {
   box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 8px 32px rgba(0,0,0,0.35);
   transition: box-shadow 0.2s, transform 0.2s;
 }
-.card:hover {
+.card.hoverable:hover {
   box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 16px 48px rgba(0,0,0,0.5);
   transform: translateY(-1px);
 }
@@ -189,12 +205,14 @@ body {
   width: 6px; height: 6px; border-radius: 50%;
   background: var(--banana); display: inline-block;
 }
+.card-title .right { margin-left: auto; font-size: 11px; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--text3); }
 
 /* ── Grid ── */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .gap-16 { display: flex; flex-direction: column; gap: 16px; }
+.mb-16 { margin-bottom: 16px; }
 
 /* ── Stat Tile ── */
 .stat-tile {
@@ -206,97 +224,97 @@ body {
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .stat-tile:hover { transform: translateY(-2px); box-shadow: 0 0 0 1px rgba(255,255,255,0.05), 0 20px 40px rgba(0,0,0,0.5); }
+.stat-top { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.stat-ic { width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 15px; background: var(--surface2); border: 1px solid var(--border2); }
 .stat-value { font-size: 30px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
 .stat-label { font-size: 11.5px; color: var(--text2); font-weight: 600; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
 .stat-sub { font-size: 12px; color: var(--text3); margin-top: 10px; }
-.stat-tile.banana { border-color: rgba(245,158,11,0.2); }
+.stat-tile.banana .stat-ic { color: var(--banana); border-color: rgba(245,158,11,0.25); }
 .stat-tile.banana .stat-value { color: var(--banana); }
+.stat-tile.indigo .stat-ic { color: #a5b4fc; }
 .stat-tile.indigo .stat-value { color: var(--indigo); }
+.stat-tile.green .stat-ic { color: var(--green); }
 .stat-tile.green .stat-value { color: var(--green); }
+.stat-tile.blue .stat-ic { color: var(--blue); }
 .stat-tile.blue .stat-value { color: var(--blue); }
 
-/* ── Pipeline ── */
-.pipeline {
-  display: flex; align-items: center; gap: 0;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 20px 24px; margin-bottom: 16px;
-  overflow-x: auto;
+/* ── Segment bar (plan distribution) ── */
+.segbar { display: flex; height: 12px; border-radius: 8px; overflow: hidden; background: var(--surface2); }
+.segbar span { display: block; height: 100%; transition: width 0.5s cubic-bezier(0.16,1,0.3,1); }
+.seg-premium { background: var(--banana); }
+.seg-pro { background: var(--indigo); }
+.seg-free { background: rgba(255,255,255,0.18); }
+.seg-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 14px; }
+.seg-leg { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text2); }
+.seg-leg .sw { width: 10px; height: 10px; border-radius: 3px; }
+.seg-leg b { color: var(--text); font-weight: 800; }
+
+/* ── Bar chart (30d trend) ── */
+.chart { display: flex; align-items: flex-end; gap: 3px; height: 130px; padding-top: 8px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
+.bar {
+  width: 100%; max-width: 18px; background: linear-gradient(180deg, var(--indigo), var(--indigo-d));
+  border-radius: 4px 4px 2px 2px; min-height: 2px; transition: height 0.5s cubic-bezier(0.16,1,0.3,1);
+  cursor: default;
 }
-.pipe-step {
-  display: flex; flex-direction: column; align-items: center;
-  flex: 1; min-width: 90px; position: relative;
+.bar:hover { filter: brightness(1.25); }
+.bar.zero { background: var(--surface2); }
+.bar-x { font-size: 9px; color: var(--text3); white-space: nowrap; }
+.chart-empty { color: var(--text3); font-size: 13px; text-align: center; padding: 40px 0; }
+
+/* ── Data table ── */
+.dtable { width: 100%; border-collapse: collapse; font-size: 13px; }
+.dtable th {
+  text-align: left; font-size: 10.5px; font-weight: 700; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.8px; padding: 8px 12px;
+  border-bottom: 1px solid var(--border2); white-space: nowrap;
 }
-.pipe-step:not(:last-child)::after {
-  content: ""; position: absolute; right: 0; top: 18px;
-  width: 50%; height: 1px; background: var(--border2);
-}
-.pipe-icon {
-  width: 40px; height: 40px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; margin-bottom: 8px;
-  background: var(--surface2); border: 1px solid var(--border2);
-  position: relative; z-index: 1;
-}
-.pipe-step.active .pipe-icon { background: rgba(99,102,241,0.2); border-color: rgba(99,102,241,0.4); }
-.pipe-label { font-size: 11px; font-weight: 700; color: var(--text2); text-align: center; }
-.pipe-sub { font-size: 10px; color: var(--text3); text-align: center; margin-top: 2px; }
+.dtable td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--text2); vertical-align: middle; }
+.dtable tr:last-child td { border-bottom: none; }
+.dtable tr:hover td { background: rgba(255,255,255,0.02); }
+.dtable .mono { font-family: ui-monospace, monospace; color: var(--text); }
+.dtable .num { text-align: right; font-variant-numeric: tabular-nums; color: var(--text); font-weight: 700; }
+.tbl-wrap { overflow-x: auto; }
+
+/* mini inline bar inside table */
+.minibar { height: 6px; border-radius: 4px; background: var(--surface2); overflow: hidden; min-width: 60px; }
+.minibar span { display: block; height: 100%; background: var(--indigo); }
 
 /* ── Buttons ── */
 .btn {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 9px 18px; border-radius: 10px;
   font-size: 13px; font-weight: 700; cursor: pointer;
-  border: none; transition: all 0.15s; white-space: nowrap;
+  border: none; transition: all 0.15s; white-space: nowrap; font-family: inherit;
 }
 .btn:active { transform: scale(0.97); }
+.btn:disabled { opacity: 0.45; cursor: default; }
 .btn-primary { background: var(--indigo); color: #fff; }
-.btn-primary:hover { background: var(--indigo-d); }
+.btn-primary:hover:not(:disabled) { background: var(--indigo-d); }
 .btn-banana { background: var(--banana); color: #0a0a0a; }
-.btn-banana:hover { background: var(--banana-d); }
+.btn-banana:hover:not(:disabled) { background: var(--banana-d); }
 .btn-ghost { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
-.btn-ghost:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+.btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,0.1); color: var(--text); }
 .btn-danger { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.25); }
-.btn-danger:hover { background: rgba(239,68,68,0.25); }
+.btn-danger:hover:not(:disabled) { background: rgba(239,68,68,0.25); }
+.btn-green { background: rgba(16,185,129,0.16); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.3); }
+.btn-green:hover:not(:disabled) { background: rgba(16,185,129,0.26); }
 .btn-sm { padding: 6px 13px; font-size: 12px; }
 .btn-icon { padding: 8px; min-width: auto; }
 
 /* ── Search Input ── */
-.search-wrap { position: relative; }
+.search-wrap { position: relative; max-width: 320px; flex: 1; }
 .search-input {
   width: 100%; padding: 10px 14px 10px 38px;
   background: var(--surface2); border: 1px solid var(--border2);
   border-radius: 10px; color: var(--text); font-size: 13.5px; outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s; font-family: inherit;
 }
 .search-input:focus { border-color: var(--indigo); }
 .search-icon {
   position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
   color: var(--text3); font-size: 14px; pointer-events: none;
 }
-.search-clear {
-  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-  color: var(--text3); font-size: 18px; cursor: pointer; line-height: 1;
-  display: none;
-}
-.search-clear.show { display: block; }
-
-/* ── Dropdown ── */
-.dropdown {
-  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
-  background: #1a1a2e; border: 1px solid var(--border2); border-radius: 12px;
-  box-shadow: 0 20px 48px rgba(0,0,0,0.7); z-index: 200;
-  max-height: 260px; overflow-y: auto; display: none;
-}
-.dropdown.open { display: block; }
-.dd-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 14px; cursor: pointer; transition: background 0.1s;
-}
-.dd-item:hover, .dd-item.hi { background: rgba(99,102,241,0.15); }
-.dd-sym { font-size: 13px; font-weight: 800; color: var(--text); font-family: ui-monospace, monospace; min-width: 55px; }
-.dd-name { font-size: 12.5px; color: var(--text2); flex: 1; }
-.dd-add { font-size: 11px; color: var(--indigo); font-weight: 700; }
-.dd-empty { padding: 14px; font-size: 13px; color: var(--text3); text-align: center; }
 
 /* ── Tags ── */
 .tags-wrap { display: flex; flex-wrap: wrap; gap: 7px; min-height: 36px; }
@@ -313,13 +331,23 @@ body {
   transition: color 0.1s;
 }
 .tag-x:hover { color: var(--red); }
-.tags-empty { font-size: 12.5px; color: var(--text3); align-self: center; }
+
+/* ── Filter chips ── */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  padding: 6px 14px; border-radius: 20px; font-size: 12.5px; font-weight: 700;
+  cursor: pointer; border: 1px solid var(--border2); background: var(--surface2);
+  color: var(--text2); transition: all 0.15s; font-family: inherit;
+}
+.chip.active { background: var(--indigo); border-color: var(--indigo); color: #fff; }
+.chip:hover:not(.active) { color: var(--text); border-color: var(--border2); }
+.chip .ct { opacity: 0.65; margin-left: 4px; font-weight: 800; }
 
 /* ── Tab Bar ── */
-.tabs { display: flex; gap: 2px; background: var(--surface2); padding: 4px; border-radius: 11px; width: fit-content; margin-bottom: 20px; }
+.tabs { display: flex; gap: 2px; background: var(--surface2); padding: 4px; border-radius: 11px; width: fit-content; margin-bottom: 20px; flex-wrap: wrap; }
 .tab {
   padding: 7px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
-  cursor: pointer; color: var(--text2); transition: all 0.15s; border: none; background: none;
+  cursor: pointer; color: var(--text2); transition: all 0.15s; border: none; background: none; font-family: inherit;
 }
 .tab.active { background: var(--indigo); color: #fff; }
 
@@ -364,24 +392,36 @@ body {
 .feed-info { flex: 1; min-width: 0; }
 .feed-domain { font-size: 13px; font-weight: 700; }
 .feed-url { font-size: 11px; color: var(--text3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
-.feed-actions { display: flex; gap: 6px; }
+.feed-actions { display: flex; gap: 6px; align-items: center; }
 
-/* ── Log Terminal ── */
-.terminal {
-  background: #050508; border: 1px solid var(--border);
-  border-radius: 12px; padding: 20px;
-  font-family: ui-monospace, "SF Mono", monospace;
-  font-size: 12.5px; line-height: 1.7;
-  max-height: 320px; overflow-y: auto;
+/* ── Health rows ── */
+.hrow { display: flex; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.hrow:last-child { border-bottom: none; }
+.hdot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px currentColor; }
+.hdot.ok { background: var(--green); color: var(--green); }
+.hdot.warn { background: var(--banana); color: var(--banana); }
+.hdot.bad { background: var(--red); color: var(--red); }
+.hdot.pend { background: var(--text3); color: var(--text3); animation: pulse 1.5s infinite; }
+.hinfo { flex: 1; min-width: 0; }
+.hname { font-size: 13.5px; font-weight: 600; }
+.hdesc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.hst { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.hst.ok { color: var(--green); } .hst.warn { color: var(--banana); } .hst.bad { color: var(--red); } .hst.pend { color: var(--text3); }
+
+/* ── Reactive card ── */
+.rx-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; margin-bottom: 12px; }
+.rx-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+.rx-time { font-size: 11px; color: var(--text3); margin-left: auto; }
+.rx-field { margin-bottom: 10px; }
+.rx-field label { display: block; font-size: 10.5px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 5px; }
+.rx-input, .rx-textarea {
+  width: 100%; padding: 9px 12px; background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border2); border-radius: 8px; color: var(--text);
+  font-size: 13px; outline: none; font-family: inherit; resize: vertical;
 }
-.log-line { margin-bottom: 2px; }
-.log-ts { color: var(--text3); margin-right: 8px; }
-.log-ok { color: var(--green); }
-.log-err { color: var(--red); }
-.log-info { color: var(--blue); }
-.log-warn { color: var(--banana); }
-.log-cursor { display: inline-block; width: 8px; height: 14px; background: var(--text2); vertical-align: middle; animation: blink 1s step-end infinite; }
-@keyframes blink { 50% { opacity: 0; } }
+.rx-input:focus, .rx-textarea:focus { border-color: var(--indigo); }
+.rx-src { font-size: 12px; color: var(--blue); word-break: break-all; }
+.rx-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 
 /* ── Badge ── */
 .badge {
@@ -392,20 +432,14 @@ body {
 .badge-red { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.22); }
 .badge-banana { background: rgba(245,158,11,0.12); color: var(--banana); border: 1px solid rgba(245,158,11,0.25); }
 .badge-indigo { background: rgba(99,102,241,0.12); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.25); }
+.badge-gray { background: var(--surface2); color: var(--text2); border: 1px solid var(--border2); }
 
-/* ── Subscriber Row ── */
-.sub-row {
-  display: flex; align-items: center; gap: 14px;
-  padding: 11px 0; border-bottom: 1px solid var(--border);
-}
-.sub-row:last-child { border-bottom: none; }
-.sub-av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #38bdf8); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
-.sub-email { font-size: 13px; color: var(--text); flex: 1; }
-.sub-joined { font-size: 11.5px; color: var(--text3); }
+/* ── Subscriber / plan ── */
+.sub-av { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #38bdf8); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; flex-shrink: 0; }
 .plan-select {
   padding: 5px 9px; background: var(--surface2); border: 1px solid var(--border2);
   border-radius: 8px; color: var(--text); font-size: 12px; font-weight: 700;
-  outline: none; cursor: pointer; transition: border-color 0.2s, background 0.2s;
+  outline: none; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-family: inherit;
 }
 .plan-select.ok  { border-color: var(--green); background: rgba(16,185,129,0.14); }
 .plan-select.bad { border-color: var(--red);   background: rgba(239,68,68,0.14); }
@@ -420,23 +454,21 @@ body {
 .plan-apply.ready:hover { filter: brightness(1.12); }
 
 /* ── Inline field ── */
-.inline-add {
-  display: flex; gap: 8px; margin-top: 14px;
-}
+.inline-add { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 .inline-input {
-  flex: 1; padding: 9px 13px;
+  flex: 1; min-width: 140px; padding: 9px 13px;
   background: var(--surface2); border: 1px solid var(--border2);
   border-radius: 9px; color: var(--text); font-size: 13px; outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s; font-family: inherit;
 }
 .inline-input:focus { border-color: var(--indigo); }
 
 /* ── Scrollbar ── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 
-/* ── Notification Toast ── */
+/* ── Toast ── */
 #toast {
   position: fixed; bottom: 32px; right: 32px;
   background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3);
@@ -445,45 +477,52 @@ body {
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   transform: translateY(80px); opacity: 0;
   transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  z-index: 9999; pointer-events: none;
+  z-index: 9999; pointer-events: none; max-width: calc(100vw - 64px);
 }
 #toast.show { transform: translateY(0); opacity: 1; }
 #toast.err { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.25); color: #fca5a5; }
 
-/* ── Empty state ── */
+/* ── Empty / skeleton ── */
 .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 13px; }
 .empty-state .emoji { font-size: 32px; margin-bottom: 10px; }
+.skel { background: linear-gradient(90deg, var(--surface2) 25%, rgba(255,255,255,0.09) 37%, var(--surface2) 63%); background-size: 400% 100%; animation: shimmer 1.3s infinite; border-radius: 8px; }
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+.skel-line { height: 14px; margin-bottom: 10px; }
 
 /* ── Divider ── */
 .divider { height: 1px; background: var(--border); margin: 20px 0; }
 
-/* ── Settings row ── */
-.settings-row { padding: 16px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.settings-row:last-child { border-bottom: none; }
-.settings-label { font-size: 14px; font-weight: 600; }
-.settings-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
-.settings-control { flex-shrink: 0; }
-.settings-select {
-  padding: 8px 12px; background: var(--surface2); border: 1px solid var(--border2);
-  border-radius: 9px; color: var(--text); font-size: 13px; outline: none; cursor: pointer;
+/* ── Code viewer ── */
+.codebox {
+  background: #050508; border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 18px; font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 12px; line-height: 1.6; color: #9ca3af; max-height: 320px;
+  overflow: auto; white-space: pre; tab-size: 2;
 }
 
 /* ── Scene Reveal ── */
-.scene-reveal, .scene-from-left, .scene-from-right, .scene-zoom-in, .reveal {
-  opacity: 0; transition: opacity 0.75s cubic-bezier(0.16,1,0.3,1), transform 0.75s cubic-bezier(0.16,1,0.3,1);
+.scene-zoom-in, .reveal { opacity: 0; transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+.scene-zoom-in { transform: scale(0.92) translateY(20px); }
+.reveal { transform: translateY(26px); }
+.scene-zoom-in.visible, .reveal.visible { opacity: 1; transform: none; }
+.reveal-d1 { transition-delay: 0.06s; } .reveal-d2 { transition-delay: 0.12s; } .reveal-d3 { transition-delay: 0.18s; } .reveal-d4 { transition-delay: 0.24s; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  #sidebar { transform: translateX(-100%); box-shadow: 0 0 60px rgba(0,0,0,0.7); }
+  #sidebar.open { transform: translateX(0); }
+  #sb-scrim.show { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 90; }
+  #main { margin-left: 0; }
+  .hamburger { display: flex; align-items: center; justify-content: center; }
+  .topbar { padding: 14px 18px; }
+  .page-content { padding: 20px 16px; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
 }
-.scene-reveal { transform: perspective(1200px) rotateX(10deg) translateY(45px) scale(0.97); }
-.scene-from-left { transform: translateX(-48px); }
-.scene-from-right { transform: translateX(48px); }
-.scene-zoom-in { transform: scale(0.9) translateY(20px); }
-.reveal { transform: translateY(30px); }
-.scene-reveal.visible, .scene-from-left.visible, .scene-from-right.visible,
-.scene-zoom-in.visible, .reveal.visible {
-  opacity: 1; transform: none;
+@media (max-width: 560px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .topbar-actions .label-hide { display: none; }
+  #toast { right: 16px; left: 16px; bottom: 16px; }
 }
-.reveal-d1 { transition-delay: 0.08s; }
-.reveal-d2 { transition-delay: 0.16s; }
-.reveal-d3 { transition-delay: 0.24s; }
 </style>
 </head>
 <body>
@@ -512,6 +551,7 @@ body {
 
 <!-- ── Admin Shell ── -->
 <div id="admin-shell">
+  <div id="sb-scrim" onclick="closeSidebar()"></div>
 
   <!-- Sidebar -->
   <aside id="sidebar">
@@ -520,28 +560,39 @@ body {
       <small>Admin Console</small>
     </div>
 
-    <div class="sb-section">
-      <div class="sb-section-label">監控</div>
-      <button class="sb-item active" onclick="nav('overview',this)">
-        <span class="sb-icon">▦</span> 總覽
-      </button>
-    </div>
+    <div class="sb-nav">
+      <div class="sb-section">
+        <div class="sb-section-label">監控</div>
+        <button class="sb-item active" onclick="nav('overview',this)">
+          <span class="sb-icon">▦</span> 總覽
+        </button>
+        <button class="sb-item" onclick="nav('analytics',this)">
+          <span class="sb-icon">◔</span> 數據分析
+        </button>
+      </div>
 
-    <div class="sb-section">
-      <div class="sb-section-label">設定</div>
-      <button class="sb-item" onclick="nav('news',this)">
-        <span class="sb-icon">◎</span> 新聞源
-      </button>
-      <button class="sb-item" onclick="nav('settings',this)">
-        <span class="sb-icon">◈</span> 系統設定
-      </button>
-    </div>
+      <div class="sb-section">
+        <div class="sb-section-label">營運</div>
+        <button class="sb-item" onclick="nav('subscribers',this)">
+          <span class="sb-icon">◻</span> 訂閱者 <span class="sb-badge" id="badge-subs"></span>
+        </button>
+        <button class="sb-item" onclick="nav('reactive',this)">
+          <span class="sb-icon">⚡</span> 內容審核 <span class="sb-badge" id="badge-rx"></span>
+        </button>
+      </div>
 
-    <div class="sb-section">
-      <div class="sb-section-label">操作</div>
-      <button class="sb-item" onclick="nav('subscribers',this)">
-        <span class="sb-icon">◻</span> 訂閱者
-      </button>
+      <div class="sb-section">
+        <div class="sb-section-label">設定</div>
+        <button class="sb-item" onclick="nav('news',this)">
+          <span class="sb-icon">◎</span> 新聞源
+        </button>
+        <button class="sb-item" onclick="nav('settings',this)">
+          <span class="sb-icon">◈</span> 系統設定
+        </button>
+        <button class="sb-item" onclick="nav('tools',this)">
+          <span class="sb-icon">⚙</span> 工具
+        </button>
+      </div>
     </div>
 
     <div class="sb-divider"></div>
@@ -561,12 +612,17 @@ body {
 
     <!-- Topbar -->
     <div class="topbar">
-      <div>
-        <div class="topbar-title" id="topbar-title">總覽</div>
-        <div class="topbar-sub" id="topbar-sub">MarketDaily 後台管理系統</div>
+      <div class="topbar-left">
+        <button class="hamburger" onclick="openSidebar()" aria-label="選單">☰</button>
+        <div style="min-width:0">
+          <div class="topbar-title" id="topbar-title">總覽</div>
+          <div class="topbar-sub" id="topbar-sub">MarketDaily 後台管理系統</div>
+        </div>
       </div>
       <div class="topbar-actions">
-        <button class="btn btn-ghost btn-sm" onclick="saveAll()">💾 儲存設定</button>
+        <span class="badge badge-green" style="gap:6px"><span class="live-dot"></span><span class="label-hide">即時</span></span>
+        <button class="btn btn-ghost btn-sm" onclick="refreshAll()" title="重新整理">↻ <span class="label-hide">重新整理</span></button>
+        <button class="btn btn-banana btn-sm" onclick="saveAll()">💾 <span class="label-hide">儲存設定</span></button>
       </div>
     </div>
 
@@ -575,31 +631,154 @@ body {
       <!-- ── Overview ── -->
       <div id="sec-overview" class="section active">
         <div class="section-header">
-          <div class="section-title">系統總覽</div>
-          <div class="section-desc">今天是 <span id="ov-date">-</span>，報告狀態一目瞭然</div>
-        </div>
-
-        <!-- Stats -->
-        <div class="grid-2" style="margin-bottom:16px">
-          <div class="stat-tile green reveal reveal-d1">
-            <div class="stat-value" id="ov-feeds">16</div>
-            <div class="stat-label">新聞來源</div>
-            <div class="stat-sub">RSS + NewsAPI + Ticker</div>
-          </div>
-          <div class="stat-tile blue reveal reveal-d2">
-            <div class="stat-value" id="ov-subs">—</div>
-            <div class="stat-label">訂閱人數</div>
-            <div class="stat-sub">Brevo 列表</div>
+          <div>
+            <div class="section-title">系統總覽</div>
+            <div class="section-desc">今天是 <span id="ov-date">-</span> · 全平台關鍵指標一覽（資料即時取自 Cloudflare Worker / Brevo / KV）</div>
           </div>
         </div>
 
+        <!-- KPI tiles -->
+        <div class="grid-4 mb-16">
+          <div class="stat-tile blue reveal reveal-d1">
+            <div class="stat-top"><span class="stat-ic">◻</span></div>
+            <div class="stat-value" id="kpi-subs">—</div>
+            <div class="stat-label">訂閱總數</div>
+            <div class="stat-sub" id="kpi-subs-sub">Brevo 聯絡人列表</div>
+          </div>
+          <div class="stat-tile banana reveal reveal-d2">
+            <div class="stat-top"><span class="stat-ic">★</span></div>
+            <div class="stat-value" id="kpi-paid">—</div>
+            <div class="stat-label">付費會員</div>
+            <div class="stat-sub" id="kpi-paid-sub">Premium 方案</div>
+          </div>
+          <div class="stat-tile indigo reveal reveal-d3">
+            <div class="stat-top"><span class="stat-ic">◔</span></div>
+            <div class="stat-value" id="kpi-events">—</div>
+            <div class="stat-label">30 日歸因事件</div>
+            <div class="stat-sub" id="kpi-events-sub">UTM 追蹤總量</div>
+          </div>
+          <div class="stat-tile green reveal reveal-d4">
+            <div class="stat-top"><span class="stat-ic">◎</span></div>
+            <div class="stat-value" id="kpi-feeds">—</div>
+            <div class="stat-label">啟用新聞源</div>
+            <div class="stat-sub">RSS（美股 + 台股）</div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-16">
+          <!-- Plan distribution -->
+          <div class="card reveal">
+            <div class="card-title"><span class="dot"></span>方案分佈 <span class="right" id="plan-total"></span></div>
+            <div class="segbar" id="plan-segbar"><span class="seg-free" style="width:100%"></span></div>
+            <div class="seg-legend" id="plan-legend">
+              <div class="seg-leg"><span class="sw seg-premium"></span>Premium <b id="leg-premium">—</b></div>
+              <div class="seg-leg"><span class="sw seg-pro"></span>Pro <b id="leg-pro">—</b></div>
+              <div class="seg-leg"><span class="sw seg-free"></span>免費 <b id="leg-free">—</b></div>
+            </div>
+          </div>
+          <!-- System health -->
+          <div class="card reveal reveal-d1">
+            <div class="card-title"><span class="dot"></span>系統健康 <span class="right" id="health-overall">檢查中…</span></div>
+            <div id="health-rows"></div>
+          </div>
+        </div>
+
+        <!-- 30d trend -->
+        <div class="card reveal mb-16">
+          <div class="card-title"><span class="dot"></span>近 30 日歸因事件趨勢 <span class="right" id="trend-peak"></span></div>
+          <div class="chart" id="ov-chart"><div class="chart-empty">載入中…</div></div>
+        </div>
+
+        <!-- Recent conversions -->
+        <div class="card reveal">
+          <div class="card-title"><span class="dot"></span>最近轉換 <span class="right">最新 8 筆</span></div>
+          <div class="tbl-wrap" id="ov-recent"><div class="empty-state">載入中…</div></div>
+        </div>
+      </div>
+
+      <!-- ── Analytics ── -->
+      <div id="sec-analytics" class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">數據分析</div>
+            <div class="section-desc">近 30 日 UTM 歸因（來源 / 事件 / 轉換）· 資料來自 /admin/analytics-summary</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadAnalytics(true)">↻ 重新整理</button>
+        </div>
+
+        <div class="grid-2 mb-16">
+          <div class="card">
+            <div class="card-title"><span class="dot"></span>流量來源 Top（30 日）</div>
+            <div class="tbl-wrap" id="an-sources"><div class="empty-state">載入中…</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot"></span>事件類型（30 日）</div>
+            <div class="tbl-wrap" id="an-events"><div class="empty-state">載入中…</div></div>
+          </div>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-title"><span class="dot"></span>每日事件量 <span class="right" id="an-peak"></span></div>
+          <div class="chart" id="an-chart"><div class="chart-empty">載入中…</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><span class="dot"></span>最近轉換明細 <span class="right">最新 50 筆</span></div>
+          <div class="tbl-wrap" id="an-recent"><div class="empty-state">載入中…</div></div>
+        </div>
+      </div>
+
+      <!-- ── Subscribers ── -->
+      <div id="sec-subscribers" class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">訂閱者管理</div>
+            <div class="section-desc">調整方案：先選好下拉，再按「套用」才會寫入 KV（避免誤觸）</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="exportSubsCSV()">⬇ 匯出 CSV</button>
+        </div>
+
+        <div class="card mb-16" style="padding:16px 20px">
+          <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+            <div class="search-wrap">
+              <span class="search-icon">⌕</span>
+              <input class="search-input" id="sub-search" placeholder="搜尋 email…" oninput="renderSubs()" aria-label="搜尋訂閱者">
+            </div>
+            <div class="chips" id="sub-chips">
+              <button class="chip active" data-plan="all" onclick="setSubFilter('all',this)">全部 <span class="ct" id="ct-all">0</span></button>
+              <button class="chip" data-plan="premium" onclick="setSubFilter('premium',this)">Premium <span class="ct" id="ct-premium">0</span></button>
+              <button class="chip" data-plan="pro" onclick="setSubFilter('pro',this)">Pro <span class="ct" id="ct-pro">0</span></button>
+              <button class="chip" data-plan="free" onclick="setSubFilter('free',this)">免費 <span class="ct" id="ct-free">0</span></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="tbl-wrap" id="subs-content">
+            <div class="empty-state"><div class="emoji">📋</div>載入訂閱者資料中…</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Reactive content ── -->
+      <div id="sec-reactive" class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">內容審核佇列</div>
+            <div class="section-desc">AI 生成的即時市場 Hot Take，人工核可後才發佈到社群（approve 預設為 mock，不會誤推訂戶）</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadReactive(true)">↻ 重新整理</button>
+        </div>
+        <div id="rx-list"><div class="empty-state">載入中…</div></div>
       </div>
 
       <!-- ── News ── -->
       <div id="sec-news" class="section">
         <div class="section-header">
-          <div class="section-title">新聞源管理</div>
-          <div class="section-desc">控制哪些 RSS 和 API 域名參與每日報告</div>
+          <div>
+            <div class="section-title">新聞源管理</div>
+            <div class="section-desc">控制哪些 RSS 和 API 域名參與每日報告 · 改完記得按右上「儲存設定」寫入 KV</div>
+          </div>
         </div>
 
         <div class="tabs">
@@ -608,7 +787,6 @@ body {
           <button class="tab" onclick="switchNewsTab('domains',this)">🔒 域名白名單</button>
         </div>
 
-        <!-- US RSS -->
         <div id="news-tab-us">
           <div id="us-feeds-list"></div>
           <div class="inline-add">
@@ -618,7 +796,6 @@ body {
           </div>
         </div>
 
-        <!-- TW RSS -->
         <div id="news-tab-tw" style="display:none">
           <div id="tw-feeds-list"></div>
           <div class="inline-add">
@@ -628,7 +805,6 @@ body {
           </div>
         </div>
 
-        <!-- Domains -->
         <div id="news-tab-domains" style="display:none">
           <div class="card">
             <div class="card-title"><span class="dot"></span>NewsAPI 域名白名單</div>
@@ -644,54 +820,71 @@ body {
       <!-- ── Settings ── -->
       <div id="sec-settings" class="section">
         <div class="section-header">
-          <div class="section-title">系統設定</div>
-          <div class="section-desc">API 金鑰與服務狀態</div>
+          <div>
+            <div class="section-title">系統設定</div>
+            <div class="section-desc">API 金鑰、即時健康與全域設定</div>
+          </div>
         </div>
+
+        <div class="grid-2 mb-16">
+          <div class="card">
+            <div class="card-title"><span class="dot"></span>API 金鑰狀態</div>
+            <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Groq / Gemini API</div><div class="toggle-sub">AI 報告生成</div></div><span class="badge badge-green">● 已設定</span></div>
+            <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">Brevo API</div><div class="toggle-sub">Email 發送服務</div></div><span class="badge badge-green">● 已設定</span></div>
+            <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">NewsAPI</div><div class="toggle-sub">英文新聞 API</div></div><span class="badge badge-green">● 已設定</span></div>
+            <div class="toggle-row"><div class="toggle-info"><div class="toggle-label">TWSE OpenAPI</div><div class="toggle-sub">台灣證交所（免費，無需 Key）</div></div><span class="badge badge-green">● 公開 API</span></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot"></span>即時健康探針 <span class="right" id="settings-health-ts"></span></div>
+            <div id="settings-health-rows"></div>
+          </div>
+        </div>
+
         <div class="card">
-          <div class="card-title"><span class="dot"></span>API 金鑰狀態</div>
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <div class="toggle-label">Groq API</div>
-              <div class="toggle-sub">AI 報告生成</div>
-            </div>
-            <span class="badge badge-green">● 已設定</span>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <div class="toggle-label">Brevo API</div>
-              <div class="toggle-sub">Email 發送服務</div>
-            </div>
-            <span class="badge badge-green">● 已設定</span>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <div class="toggle-label">NewsAPI</div>
-              <div class="toggle-sub">英文新聞 API</div>
-            </div>
-            <span class="badge badge-green">● 已設定</span>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-info">
-              <div class="toggle-label">TWSE OpenAPI</div>
-              <div class="toggle-sub">台灣證交所（免費，無需 Key）</div>
-            </div>
-            <span class="badge badge-green">● 公開 API</span>
-          </div>
+          <div class="card-title"><span class="dot"></span>全域設定（KV：admin:global-config） <span class="right" id="cfg-updated">—</span></div>
+          <div class="codebox" id="cfg-json">載入中…</div>
         </div>
       </div>
 
-      <!-- ── Subscribers ── -->
-      <div id="sec-subscribers" class="section">
+      <!-- ── Tools ── -->
+      <div id="sec-tools" class="section">
         <div class="section-header">
-          <div class="section-title">訂閱者管理</div>
-          <div class="section-desc">調整方案:先選好下拉(免費 / Pro / Premium),再按「套用」才會生效</div>
+          <div>
+            <div class="section-title">維運工具</div>
+            <div class="section-desc">後台維運操作 · 危險操作需二次確認</div>
+          </div>
         </div>
-        <div class="card">
-          <div id="subs-content">
-            <div class="empty-state">
-              <div class="emoji">📋</div>
-              載入訂閱者資料中...
+
+        <div class="gap-16">
+          <div class="card">
+            <div class="card-title"><span class="dot"></span>同步 Brevo 方案屬性</div>
+            <div class="settings-row" style="border:none;padding:0">
+              <div><div class="settings-label">把 KV 內所有 plan:* 推到 Brevo</div><div class="settings-desc" style="font-size:12px;color:var(--text2);margin-top:3px">修補手動改 KV 後 Brevo 屬性沒跟上的情況（不寄信，只更新 contact 屬性）</div></div>
+              <button class="btn btn-primary btn-sm" onclick="syncBrevo(this)">▶ 執行同步</button>
             </div>
+            <div id="sync-result" style="margin-top:12px;font-size:12.5px;color:var(--text2)"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-title"><span class="dot"></span>生命週期信測試</div>
+            <div class="inline-add" style="margin-top:0">
+              <input class="inline-input" id="lc-email" placeholder="收件 email（測試用，建議寄給自己）" aria-label="測試收件 email">
+              <select class="plan-select" id="lc-type" style="padding:9px 12px">
+                <option value="d1">D1 歡迎</option><option value="d7">D7</option><option value="d14">D14</option><option value="d21">D21</option><option value="d45">D45</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="lifecycleTest(this)">寄出測試</button>
+            </div>
+            <div class="settings-desc" style="font-size:12px;color:var(--text3);margin-top:10px">⚠️ 會真的寄一封 lifecycle email 到指定信箱，請寄給自己驗證樣式即可。</div>
+          </div>
+
+          <div class="card" style="border-color:rgba(239,68,68,0.2)">
+            <div class="card-title"><span class="dot" style="background:var(--red)"></span>清除測試聯絡人（危險）</div>
+            <div class="inline-add" style="margin-top:0">
+              <input class="inline-input" id="purge-pattern" placeholder="email 片段（≥5 字，如 @example.com）" aria-label="清除 pattern">
+              <button class="btn btn-danger btn-sm" onclick="purgeContacts(this)">清除符合者</button>
+            </div>
+            <div class="settings-desc" style="font-size:12px;color:var(--text3);margin-top:10px">⚠️ Brevo + KV 一併刪除。系統會擋下過於寬泛的 pattern（gmail.com 等）防誤刪真實用戶。</div>
+            <div id="purge-result" style="margin-top:10px;font-size:12.5px;color:var(--text2)"></div>
           </div>
         </div>
       </div>
@@ -739,6 +932,27 @@ let cfg = {
     "businessinsider.com","forbes.com","barrons.com","thestreet.com","benzinga.com"
   ]
 };
+let SUBS = [];         // [{email, plan, since}]
+let SUB_FILTER = "all";
+let ANALYTICS = null;  // {days, totals, recent}
+let RX_ITEMS = [];
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+// ── API helper ──
+async function api(path, extra = {}) {
+  const res = await fetch(WORKER_URL + path, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      email: localStorage.getItem("md-admin-email"),
+      password: sessionStorage.getItem("md-admin-pwd") || "",
+      ...extra
+    })
+  });
+  let d = {}; try { d = await res.json(); } catch {}
+  if (!res.ok) throw Object.assign(new Error(d.error || "request_failed"), { status: res.status, body: d });
+  return d;
+}
 
 // ── Auth ──
 async function doLogin() {
@@ -778,14 +992,17 @@ function bootAdmin(email) {
   document.getElementById("admin-shell").style.display = "block";
   document.getElementById("sb-email").textContent = email;
   document.getElementById("sb-avatar").textContent = email[0].toUpperCase();
-  document.getElementById("ov-date").textContent = new Date().toLocaleDateString("zh-TW");
+  document.getElementById("ov-date").textContent = new Date().toLocaleDateString("zh-TW", {weekday:"long", year:"numeric", month:"long", day:"numeric"});
 
   loadSavedCfg();
-  renderOverview();
   renderFeedLists();
   renderDomains();
-  fetchAdminStats();
-  loadFromWorker();
+  renderOverviewStatic();
+  loadFromWorker();      // global config (feeds/domains/updated_at)
+  loadSubscribers();     // subs → KPI + plan dist + table
+  loadAnalytics();       // analytics → KPI events + charts
+  runHealth();           // health probes (overview + settings)
+  loadReactive();        // reactive queue → badge
 }
 
 function logout() {
@@ -796,12 +1013,24 @@ function logout() {
   location.reload();
 }
 
+function refreshAll() {
+  toast("重新整理中…");
+  loadFromWorker(); loadSubscribers(); loadAnalytics(true); runHealth(); loadReactive(true);
+}
+
+// ── Sidebar (mobile) ──
+function openSidebar(){ document.getElementById("sidebar").classList.add("open"); document.getElementById("sb-scrim").classList.add("show"); }
+function closeSidebar(){ document.getElementById("sidebar").classList.remove("open"); document.getElementById("sb-scrim").classList.remove("show"); }
+
 // ── Navigation ──
 const SECTION_TITLES = {
-  overview: ["總覽","系統狀態監控"],
-  news:     ["新聞源管理","RSS Feeds 與域名白名單"],
-  settings: ["系統設定","報告排程與 API 狀態"],
-  subscribers:["訂閱者","Brevo 訂閱列表"],
+  overview:    ["總覽","全平台關鍵指標監控"],
+  analytics:   ["數據分析","30 日 UTM 歸因分析"],
+  subscribers: ["訂閱者","Brevo 訂閱列表與方案管理"],
+  reactive:    ["內容審核","Hot Take 發佈佇列"],
+  news:        ["新聞源管理","RSS Feeds 與域名白名單"],
+  settings:    ["系統設定","API 狀態與全域設定"],
+  tools:       ["維運工具","Brevo 同步 / 信件測試 / 資料清理"],
 };
 
 function nav(id, btn) {
@@ -809,69 +1038,56 @@ function nav(id, btn) {
   document.getElementById("sec-" + id)?.classList.add("active");
   document.querySelectorAll(".sb-item").forEach(b => b.classList.remove("active"));
   if (btn) btn.classList.add("active");
-  else document.querySelectorAll(".sb-item").forEach(b => {
-    if (b.getAttribute("onclick")?.includes(`'${id}'`)) b.classList.add("active");
-  });
   const [title, sub] = SECTION_TITLES[id] || [id, ""];
   document.getElementById("topbar-title").textContent = title;
   document.getElementById("topbar-sub").textContent = sub;
-  if (id === "subscribers") loadSubscribers();
+  closeSidebar();
+  window.scrollTo(0, 0);
+  if (id === "subscribers") renderSubs();
+  if (id === "analytics") renderAnalytics();
+  if (id === "reactive") renderReactive();
 }
 
 // ── Load / Save Config ──
 function loadSavedCfg() {
   const saved = localStorage.getItem("md-admin-cfg");
-  if (saved) {
-    try { Object.assign(cfg, JSON.parse(saved)); } catch {}
-  }
+  if (saved) { try { Object.assign(cfg, JSON.parse(saved)); } catch {} }
 }
 
 async function loadFromWorker() {
   try {
-    const res = await fetch(WORKER_URL + "/admin/get-config", {
-      method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({email: localStorage.getItem("md-admin-email"), password: sessionStorage.getItem("md-admin-pwd") || ""})
-    });
-    const d = await res.json();
+    const d = await api("/admin/get-config");
     if (d.config) {
       Object.assign(cfg, d.config);
       localStorage.setItem("md-admin-cfg", JSON.stringify(cfg));
-      renderFeedLists(); renderDomains(); renderOverview();
-      toast("已從 Cloudflare KV 同步設定 ✓");
+      renderFeedLists(); renderDomains(); renderOverviewStatic();
+      document.getElementById("cfg-updated").textContent =
+        cfg.updated_at ? "更新於 " + new Date(cfg.updated_at).toLocaleString("zh-TW") : "—";
+      document.getElementById("cfg-json").textContent = JSON.stringify(cfg, null, 2);
     }
-  } catch {}
+  } catch (e) { /* keep local cfg */ }
 }
 
 async function saveAll() {
   localStorage.setItem("md-admin-cfg", JSON.stringify(cfg));
-  renderOverview();
+  renderOverviewStatic();
   try {
-    const res = await fetch(WORKER_URL + "/admin/save-config", {
-      method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({email: localStorage.getItem("md-admin-email"), password: sessionStorage.getItem("md-admin-pwd") || "", config: cfg})
-    });
-    const d = await res.json();
-    if (d.ok) toast("已儲存至 Cloudflare KV ✓ — Python 下次執行自動生效");
-    else toast("本地已儲存，但 Worker 同步失敗", true);
-  } catch {
-    toast("本地已儲存（離線模式）");
-  }
+    const d = await api("/admin/save-config", { config: cfg });
+    if (d.ok) {
+      toast("已儲存至 Cloudflare KV ✓ — Python 下次執行自動生效");
+      document.getElementById("cfg-updated").textContent = "更新於 " + new Date(d.updated_at).toLocaleString("zh-TW");
+      document.getElementById("cfg-json").textContent = JSON.stringify(cfg, null, 2);
+    } else toast("本地已儲存，但 Worker 同步失敗", true);
+  } catch { toast("本地已儲存（離線模式）"); }
 }
 
-// ── Tab Switch ──
+// ── News tabs / feeds / domains ──
 function switchNewsTab(tab, btn) {
-  ["us","tw","domains"].forEach(t => {
-    document.getElementById("news-tab-" + t).style.display = t === tab ? "block" : "none";
-  });
+  ["us","tw","domains"].forEach(t => { document.getElementById("news-tab-" + t).style.display = t === tab ? "block" : "none"; });
   document.querySelectorAll("#sec-news .tab").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
 }
-
-// ── Feeds ──
-function renderFeedLists() {
-  renderFeeds("us"); renderFeeds("tw");
-}
-
+function renderFeedLists() { renderFeeds("us"); renderFeeds("tw"); }
 function renderFeeds(market) {
   const list = market === "us" ? cfg.us_feeds : cfg.tw_feeds;
   const el = document.getElementById(market + "-feeds-list");
@@ -879,8 +1095,8 @@ function renderFeeds(market) {
     <div class="feed-card ${f.on ? "" : "off"}" id="feed-${market}-${i}">
       <div class="feed-dot"></div>
       <div class="feed-info">
-        <div class="feed-domain">${f.domain}</div>
-        <div class="feed-url">${f.url}</div>
+        <div class="feed-domain">${esc(f.domain)}</div>
+        <div class="feed-url">${esc(f.url)}</div>
       </div>
       <div class="feed-actions">
         <label class="toggle" style="margin-left:0">
@@ -890,108 +1106,135 @@ function renderFeeds(market) {
         </label>
         <button class="btn btn-danger btn-sm btn-icon" onclick="removeFeed('${market}',${i})" title="刪除">×</button>
       </div>
-    </div>
-  `).join("");
+    </div>`).join("");
 }
-
 function toggleFeed(market, i, on) {
   const list = market === "us" ? cfg.us_feeds : cfg.tw_feeds;
   list[i].on = on;
   document.getElementById(`feed-${market}-${i}`).classList.toggle("off", !on);
+  renderOverviewStatic();
 }
-
 function removeFeed(market, i) {
-  if (market === "us") cfg.us_feeds.splice(i, 1);
-  else cfg.tw_feeds.splice(i, 1);
-  renderFeeds(market);
+  if (market === "us") cfg.us_feeds.splice(i, 1); else cfg.tw_feeds.splice(i, 1);
+  renderFeeds(market); renderOverviewStatic();
 }
-
 function addFeed(market) {
   const domain = document.getElementById(`${market}-feed-domain`).value.trim();
   const url    = document.getElementById(`${market}-feed-url`).value.trim();
   if (!domain || !url) { toast("請填寫 domain 和 URL", true); return; }
-  if (market === "us") cfg.us_feeds.push({domain, url, on: true});
-  else cfg.tw_feeds.push({domain, url, on: true});
+  if (market === "us") cfg.us_feeds.push({domain, url, on: true}); else cfg.tw_feeds.push({domain, url, on: true});
   document.getElementById(`${market}-feed-domain`).value = "";
   document.getElementById(`${market}-feed-url`).value = "";
-  renderFeeds(market);
-  toast("新聞源已新增");
+  renderFeeds(market); renderOverviewStatic(); toast("新聞源已新增（記得按儲存設定）");
 }
-
-// ── Domains ──
 function renderDomains() {
-  const el = document.getElementById("domain-tags");
-  el.innerHTML = cfg.domains.map(d =>
-    `<div class="tag">${d} <span class="tag-x" onclick="removeDomain('${d}')">×</span></div>`
-  ).join("");
+  document.getElementById("domain-tags").innerHTML = cfg.domains.map(d =>
+    `<div class="tag">${esc(d)} <span class="tag-x" onclick="removeDomain('${esc(d)}')">×</span></div>`).join("");
 }
-
 function addDomain() {
   const val = document.getElementById("domain-input").value.trim().toLowerCase();
   if (!val) return;
   if (!cfg.domains.includes(val)) { cfg.domains.push(val); renderDomains(); }
   document.getElementById("domain-input").value = "";
 }
+function removeDomain(d) { cfg.domains = cfg.domains.filter(x => x !== d); renderDomains(); }
 
-function removeDomain(d) {
-  cfg.domains = cfg.domains.filter(x => x !== d);
-  renderDomains();
+// ── Overview (config-derived) ──
+function renderOverviewStatic() {
+  const on = cfg.us_feeds.filter(f=>f.on).length + cfg.tw_feeds.filter(f=>f.on).length;
+  document.getElementById("kpi-feeds").textContent = on;
 }
 
-// ── Overview ──
-function renderOverview() {
-  document.getElementById("ov-feeds").textContent = cfg.us_feeds.filter(f=>f.on).length + cfg.tw_feeds.filter(f=>f.on).length;
-}
-
-// ── Admin Stats via Worker ──
-async function fetchAdminStats() {
-  try {
-    const res = await fetch(WORKER_URL + "/admin-stats", {
-      method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({email: localStorage.getItem("md-admin-email"), password: sessionStorage.getItem("md-admin-pwd") || ""})
-    });
-    const d = await res.json();
-    if (d.totalSubscribers != null)
-      document.getElementById("ov-subs").textContent = d.totalSubscribers;
-  } catch {}
-}
-
+// ── Subscribers ──
 async function loadSubscribers() {
-  const el = document.getElementById("subs-content");
   try {
-    const res = await fetch(WORKER_URL + "/admin-stats", {
-      method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({email: localStorage.getItem("md-admin-email"), password: sessionStorage.getItem("md-admin-pwd") || ""})
-    });
-    const d = await res.json();
-    const subs = d.subscribers || [];
-    if (!subs.length) {
-      el.innerHTML = `<div class="empty-state"><div class="emoji">📭</div>尚無訂閱者資料</div>`;
-      return;
-    }
-    el.innerHTML = subs.map(s => {
-      const plan = s.plan || "free";
-      const email = (s.email || "").replace(/"/g, "&quot;");
-      const opt = (v, label) => `<option value="${v}"${plan === v ? " selected" : ""}>${label}</option>`;
-      return `
-      <div class="sub-row">
-        <div class="sub-av">${(s.email||"?")[0].toUpperCase()}</div>
-        <div class="sub-email">${s.email||"-"}</div>
-        <div class="sub-joined">${s.since ? new Date(s.since).toLocaleDateString("zh-TW") : "-"}</div>
-        <select class="plan-select" data-email="${email}" data-prev="${plan}" onchange="stagePlan(this)" aria-label="方案">
-          ${opt("free","免費")}${opt("pro","Pro")}${opt("premium","Premium")}
-        </select>
-        <button class="plan-apply" onclick="applyPlan(this)" disabled>套用</button>
-      </div>`;
-    }).join("");
-  } catch {
-    el.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>無法連線至 Cloudflare Worker</div>`;
+    const d = await api("/admin-stats");
+    SUBS = (d.subscribers || []).map(s => ({ email: s.email || "", plan: (s.plan || "free").toLowerCase(), since: s.since || null }));
+    const total = d.totalSubscribers != null ? d.totalSubscribers : SUBS.length;
+    document.getElementById("kpi-subs").textContent = total.toLocaleString();
+    renderPlanDist();
+    renderSubs();
+    const badge = document.getElementById("badge-subs");
+    badge.textContent = total; badge.classList.add("show");
+  } catch (e) {
+    document.getElementById("subs-content").innerHTML =
+      `<div class="empty-state"><div class="emoji">⚠️</div>無法連線至 Worker（${esc(e.message)}）</div>`;
   }
 }
 
-// 改下拉只是「選好」,要按「套用」才真的寫入 —— 避免誤觸
+function planCounts() {
+  const c = { premium: 0, pro: 0, free: 0 };
+  SUBS.forEach(s => { c[s.plan] != null ? c[s.plan]++ : c.free++; });
+  return c;
+}
+
+function renderPlanDist() {
+  const c = planCounts(), t = SUBS.length || 1;
+  const pct = n => (n / t * 100).toFixed(1) + "%";
+  document.getElementById("plan-segbar").innerHTML =
+    `<span class="seg-premium" style="width:${pct(c.premium)}"></span>` +
+    `<span class="seg-pro" style="width:${pct(c.pro)}"></span>` +
+    `<span class="seg-free" style="width:${pct(c.free)}"></span>`;
+  document.getElementById("leg-premium").textContent = c.premium;
+  document.getElementById("leg-pro").textContent = c.pro;
+  document.getElementById("leg-free").textContent = c.free;
+  document.getElementById("plan-total").textContent = SUBS.length + " 位（取樣）";
+  document.getElementById("kpi-paid").textContent = (c.premium + c.pro).toLocaleString();
+  document.getElementById("kpi-paid-sub").textContent = `Premium ${c.premium} · Pro ${c.pro}`;
+  // chips
+  document.getElementById("ct-all").textContent = SUBS.length;
+  document.getElementById("ct-premium").textContent = c.premium;
+  document.getElementById("ct-pro").textContent = c.pro;
+  document.getElementById("ct-free").textContent = c.free;
+}
+
+function setSubFilter(p, btn) {
+  SUB_FILTER = p;
+  document.querySelectorAll("#sub-chips .chip").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderSubs();
+}
+
+function renderSubs() {
+  const el = document.getElementById("subs-content");
+  if (!SUBS.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">📭</div>尚無訂閱者資料</div>`; return; }
+  const q = (document.getElementById("sub-search")?.value || "").trim().toLowerCase();
+  let rows = SUBS.filter(s => SUB_FILTER === "all" || s.plan === SUB_FILTER);
+  if (q) rows = rows.filter(s => s.email.toLowerCase().includes(q));
+  if (!rows.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">🔍</div>沒有符合的訂閱者</div>`; return; }
+  const planLabel = { premium: "Premium", pro: "Pro", free: "免費" };
+  const opt = (cur, v, label) => `<option value="${v}"${cur === v ? " selected" : ""}>${label}</option>`;
+  el.innerHTML = `<table class="dtable"><thead><tr>
+      <th>訂閱者</th><th>加入時間</th><th>方案</th><th></th></tr></thead><tbody>` +
+    rows.map(s => {
+      const email = esc(s.email);
+      return `<tr>
+        <td><div style="display:flex;align-items:center;gap:10px"><div class="sub-av">${esc((s.email||"?")[0].toUpperCase())}</div><span class="mono">${email}</span></div></td>
+        <td>${s.since ? new Date(s.since).toLocaleDateString("zh-TW") : "—"}</td>
+        <td>
+          <select class="plan-select" data-email="${email}" data-prev="${s.plan}" onchange="stagePlan(this)" aria-label="方案">
+            ${opt(s.plan,"free","免費")}${opt(s.plan,"pro","Pro")}${opt(s.plan,"premium","Premium")}
+          </select>
+        </td>
+        <td style="text-align:right"><button class="plan-apply" onclick="applyPlan(this)" disabled>套用</button></td>
+      </tr>`;
+    }).join("") + `</tbody></table>`;
+}
+
+function exportSubsCSV() {
+  if (!SUBS.length) { toast("無資料可匯出", true); return; }
+  const rows = [["email","plan","since"], ...SUBS.map(s => [s.email, s.plan, s.since || ""])];
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `marketdaily-subscribers-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast(`已匯出 ${SUBS.length} 筆 CSV ✓`);
+}
+
 function stagePlan(sel) {
-  const btn = sel.nextElementSibling;
+  const btn = sel.closest("tr").querySelector(".plan-apply");
   if (!btn) return;
   const changed = sel.value !== sel.dataset.prev;
   btn.disabled = !changed;
@@ -999,43 +1242,286 @@ function stagePlan(sel) {
   sel.classList.remove("ok", "bad");
 }
 
-// 按下「套用」才呼叫 worker 寫入 KV plan:${email}
 async function applyPlan(btn) {
-  const sel = btn.previousElementSibling;
+  const sel = btn.closest("tr").querySelector(".plan-select");
   if (!sel) return;
-  const target = sel.dataset.email;
-  const plan = sel.value;
-  const prev = sel.dataset.prev || plan;
+  const target = sel.dataset.email, plan = sel.value, prev = sel.dataset.prev || plan;
   if (!target || plan === prev) return;
-  btn.disabled = true; sel.disabled = true;
-  btn.textContent = "…";
-  sel.classList.remove("ok", "bad");
+  btn.disabled = true; sel.disabled = true; btn.textContent = "…"; sel.classList.remove("ok","bad");
   try {
-    const res = await fetch(WORKER_URL + "/admin/set-plan", {
-      method: "POST", headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({ email: localStorage.getItem("md-admin-email"), password: sessionStorage.getItem("md-admin-pwd") || "", target, plan })
-    });
-    const d = await res.json();
+    const d = await api("/admin/set-plan", { target, plan });
     if (d.ok) {
-      sel.dataset.prev = plan;
-      sel.classList.add("ok");
-      btn.classList.remove("ready");
-      btn.textContent = "已套用";
+      sel.dataset.prev = plan; sel.classList.add("ok"); btn.classList.remove("ready"); btn.textContent = "已套用";
+      const sub = SUBS.find(s => s.email === target); if (sub) sub.plan = plan;
+      renderPlanDist();
       setTimeout(() => { btn.textContent = "套用"; }, 1600);
-    } else {
-      sel.classList.add("bad");
-      btn.textContent = "失敗";
-      btn.disabled = false;
-      setTimeout(() => { btn.textContent = "套用"; }, 1600);
-    }
+    } else throw new Error("fail");
   } catch {
-    sel.classList.add("bad");
-    btn.textContent = "失敗";
-    btn.disabled = false;
+    sel.classList.add("bad"); btn.textContent = "失敗"; btn.disabled = false;
     setTimeout(() => { btn.textContent = "套用"; }, 1600);
   }
   sel.disabled = false;
-  setTimeout(() => sel.classList.remove("ok", "bad"), 1600);
+  setTimeout(() => sel.classList.remove("ok","bad"), 1600);
+}
+
+// ── Analytics ──
+async function loadAnalytics(force) {
+  if (ANALYTICS && !force) { renderAnalytics(); return; }
+  try {
+    ANALYTICS = await api("/admin/analytics-summary");
+    document.getElementById("kpi-events").textContent = (ANALYTICS.totals?.total || 0).toLocaleString();
+    renderOverviewCharts();
+    renderAnalytics();
+  } catch (e) {
+    document.getElementById("kpi-events").textContent = "—";
+    ["an-sources","an-events","an-recent"].forEach(id => {
+      const el = document.getElementById(id); if (el) el.innerHTML = `<div class="empty-state">無法載入分析資料</div>`;
+    });
+  }
+}
+
+function barChart(days, elId, peakId) {
+  const el = document.getElementById(elId);
+  const max = Math.max(1, ...days.map(d => d.total || 0));
+  const series = [...days].reverse(); // oldest → newest
+  el.innerHTML = series.map((d, i) => {
+    const v = d.total || 0;
+    const h = Math.round(v / max * 110);
+    const lbl = (i % 5 === 0 || i === series.length - 1) ? d.date.slice(5) : "";
+    return `<div class="bar-col"><div class="bar ${v?"":"zero"}" style="height:${Math.max(2,h)}px" title="${d.date}: ${v}"></div><div class="bar-x">${lbl}</div></div>`;
+  }).join("");
+  if (peakId) {
+    const peak = days.reduce((a,b)=> (b.total||0)>(a.total||0)?b:a, days[0]||{total:0});
+    document.getElementById(peakId).textContent = `尖峰 ${peak.total||0}（${peak.date?peak.date.slice(5):"—"}）`;
+  }
+}
+
+function renderOverviewCharts() {
+  if (!ANALYTICS) return;
+  barChart(ANALYTICS.days || [], "ov-chart", "trend-peak");
+  renderRecentTable(ANALYTICS.recent || [], "ov-recent", 8);
+}
+
+function breakdownTable(obj, elId) {
+  const el = document.getElementById(elId);
+  const entries = Object.entries(obj || {}).sort((a,b)=>b[1]-a[1]);
+  if (!entries.length) { el.innerHTML = `<div class="empty-state">近 30 日無資料</div>`; return; }
+  const max = Math.max(...entries.map(e=>e[1]));
+  const total = entries.reduce((a,e)=>a+e[1],0);
+  el.innerHTML = `<table class="dtable"><tbody>` + entries.map(([k,v]) =>
+    `<tr><td class="mono" style="max-width:160px;overflow:hidden;text-overflow:ellipsis">${esc(k||"(直接)")}</td>
+      <td style="width:45%"><div class="minibar"><span style="width:${Math.round(v/max*100)}%"></span></div></td>
+      <td class="num">${v.toLocaleString()}</td>
+      <td class="num" style="color:var(--text3);font-weight:600">${(v/total*100).toFixed(0)}%</td></tr>`).join("") + `</tbody></table>`;
+}
+
+function renderRecentTable(recent, elId, limit) {
+  const el = document.getElementById(elId);
+  const rows = (recent || []).slice(0, limit || 50);
+  if (!rows.length) { el.innerHTML = `<div class="empty-state">尚無轉換紀錄</div>`; return; }
+  const cell = (r, ...keys) => { for (const k of keys) if (r[k]) return r[k]; return ""; };
+  el.innerHTML = `<table class="dtable"><thead><tr>
+      <th>時間</th><th>來源 / 媒介</th><th>活動</th><th>事件</th></tr></thead><tbody>` +
+    rows.map(r => {
+      const ts = r.ts || r.created_at || r.time || r.timestamp;
+      const when = ts ? new Date(typeof ts === "number" ? (ts < 2e12 ? ts*1000 : ts) : ts).toLocaleString("zh-TW", {month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : "—";
+      const src = esc(cell(r,"utm_source","source") || "(直接)");
+      const med = esc(cell(r,"utm_medium","medium"));
+      const camp = esc(cell(r,"utm_campaign","campaign") || "—");
+      const ev = esc(cell(r,"event","type","action") || "convert");
+      return `<tr><td>${when}</td><td><span class="mono">${src}</span>${med?` <span style="color:var(--text3)">/ ${med}</span>`:""}</td><td>${camp}</td><td><span class="badge badge-indigo">${ev}</span></td></tr>`;
+    }).join("") + `</tbody></table>`;
+}
+
+function renderAnalytics() {
+  if (!ANALYTICS) return;
+  breakdownTable(ANALYTICS.totals?.by_source, "an-sources");
+  breakdownTable(ANALYTICS.totals?.by_event, "an-events");
+  barChart(ANALYTICS.days || [], "an-chart", "an-peak");
+  renderRecentTable(ANALYTICS.recent || [], "an-recent", 50);
+}
+
+// ── System health ──
+const HEALTH_CHECKS = [
+  { name:"即時報價 API", desc:"美股 + 台股報價回傳", run: async () => {
+      const r = await fetch(`${WORKER_URL}/stock-quotes?tickers=2330,AAPL`,{cache:"no-store"});
+      const j = await r.json(); const q = (j.quotes||[]).filter(x=>x && x.price>0);
+      if (q.length>=2) return {state:"ok", note:`${q.length}/2 支有報價`};
+      if (q.length===1) return {state:"warn", note:"僅 1 支有報價"};
+      return {state:"bad", note:"報價無回傳"}; } },
+  { name:"戰績資料", desc:"track-record.json 持續刷新", run: async () => {
+      const r = await fetch(`/data/track-record.json?t=${Date.now()}`,{cache:"no-store"});
+      const j = await r.json(); const g = j.generated_at || j.generatedAt;
+      if (!g) return {state:"warn", note:"無更新時間戳"};
+      const hrs = (Date.now() - new Date(g).getTime())/3.6e6, when = `${Math.round(hrs)}h 前`;
+      if (hrs<36) return {state:"ok", note:`更新於 ${when}`};
+      if (hrs<60) return {state:"warn", note:`偏舊（${when}）`};
+      return {state:"bad", note:`過期（${when}）`}; } },
+  { name:"公版日報存檔", desc:"每日日報網頁版產出", run: async () => {
+      const pad=n=>String(n).padStart(2,"0"), ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+      for (const d of [new Date(), new Date(Date.now()-864e5)]) {
+        const r = await fetch(`/output/digest_${ymd(d)}.html`,{method:"HEAD",cache:"no-store"});
+        if (r.ok) return {state:"ok", note:`最新 ${ymd(d)}`}; }
+      return {state:"warn", note:"近 2 日無存檔"}; } },
+  { name:"Worker / KV", desc:"管理 API + KV 連線", run: async () => {
+      await api("/admin/get-config"); return {state:"ok", note:"管理 API 正常回應"}; } },
+];
+const H_ORDER = {ok:0,warn:1,bad:2,pend:3};
+
+async function runHealth() {
+  const targets = ["health-rows","settings-health-rows"];
+  targets.forEach(id => {
+    const box = document.getElementById(id); if (!box) return;
+    box.innerHTML = HEALTH_CHECKS.map(c => `<div class="hrow"><span class="hdot pend"></span>
+      <div class="hinfo"><div class="hname">${c.name}</div><div class="hdesc">${c.desc}</div></div>
+      <span class="hst pend">檢查中</span></div>`).join("");
+  });
+  const results = await Promise.all(HEALTH_CHECKS.map(async c => {
+    try { return await c.run(); } catch { return {state:"bad", note:"檢查失敗"}; }
+  }));
+  targets.forEach(id => {
+    const box = document.getElementById(id); if (!box) return;
+    [...box.querySelectorAll(".hrow")].forEach((row, i) => {
+      const res = results[i];
+      row.querySelector(".hdot").className = "hdot " + res.state;
+      const st = row.querySelector(".hst"); st.className = "hst " + res.state;
+      st.textContent = ({ok:"正常",warn:"注意",bad:"異常"})[res.state] || "—";
+      row.querySelector(".hdesc").textContent = res.note;
+    });
+  });
+  const worst = results.reduce((a,b)=> H_ORDER[b.state]>H_ORDER[a]?b.state:a, "ok");
+  const txt = {ok:"🟢 全部正常",warn:"🟡 部分需注意",bad:"🔴 偵測到異常"}[worst];
+  document.getElementById("health-overall").textContent = txt;
+  const t = new Date();
+  document.getElementById("settings-health-ts").textContent = `${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`;
+}
+
+// ── Reactive content ──
+async function loadReactive(force) {
+  try {
+    const d = await api("/admin/reactive-list");
+    RX_ITEMS = d.items || [];
+    const badge = document.getElementById("badge-rx");
+    if (RX_ITEMS.length) { badge.textContent = RX_ITEMS.length; badge.classList.add("show"); }
+    else badge.classList.remove("show");
+    renderReactive();
+  } catch (e) {
+    document.getElementById("rx-list").innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>無法載入審核佇列</div>`;
+  }
+}
+
+function renderReactive() {
+  const el = document.getElementById("rx-list");
+  if (!RX_ITEMS.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">✓</div>佇列已清空，沒有待審核的 Hot Take</div>`; return; }
+  const biasBadge = { bullish:"badge-green", bearish:"badge-red", neutral:"badge-gray" };
+  const biasLabel = { bullish:"看多", bearish:"看空", neutral:"中性" };
+  el.innerHTML = RX_ITEMS.map(it => {
+    const ai = it.ai || {}; const id = esc(it.id);
+    const bias = (ai.bias || "neutral");
+    const tickers = (ai.tickers || []).map(t => `<span class="badge badge-indigo">${esc(t)}</span>`).join(" ");
+    const when = it.ts ? new Date(it.ts).toLocaleString("zh-TW") : "";
+    return `<div class="rx-card" id="rx-${id}">
+      <div class="rx-head">
+        <span class="badge ${biasBadge[bias]||"badge-gray"}" id="rxbias-${id}">${biasLabel[bias]||bias}</span>
+        ${tickers}
+        <span class="rx-time">${when}</span>
+      </div>
+      <div class="rx-field"><label>標題</label><input class="rx-input" id="rxh-${id}" value="${esc(ai.headline||"")}"></div>
+      <div class="rx-field"><label>內文</label><textarea class="rx-textarea" id="rxb-${id}" rows="3">${esc(ai.body||"")}</textarea></div>
+      <div class="rx-field"><label>立場</label>
+        <select class="plan-select" id="rxbsel-${id}" style="padding:8px 12px" onchange="rxBiasPreview('${id}',this.value)">
+          <option value="bullish"${bias==="bullish"?" selected":""}>看多</option>
+          <option value="bearish"${bias==="bearish"?" selected":""}>看空</option>
+          <option value="neutral"${bias==="neutral"?" selected":""}>中性</option>
+        </select></div>
+      ${it.source_url?`<div class="rx-field"><label>來源</label><a class="rx-src" href="${esc(it.source_url)}" target="_blank" rel="noopener">${esc(it.source_url)}</a></div>`:""}
+      <div class="rx-actions">
+        <button class="btn btn-green btn-sm" onclick="rxApprove('${id}',this)">✓ 核可發佈</button>
+        <button class="btn btn-danger btn-sm" onclick="rxReject('${id}',this)">✕ 拒絕</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function rxBiasPreview(id, val) {
+  const b = document.getElementById(`rxbias-${id}`);
+  const cls = { bullish:"badge-green", bearish:"badge-red", neutral:"badge-gray" }[val] || "badge-gray";
+  const lbl = { bullish:"看多", bearish:"看空", neutral:"中性" }[val] || val;
+  b.className = "badge " + cls; b.textContent = lbl;
+}
+
+async function rxApprove(id, btn) {
+  btn.disabled = true; btn.textContent = "發佈中…";
+  try {
+    const d = await api("/admin/reactive-approve", {
+      id,
+      headline: document.getElementById(`rxh-${id}`).value,
+      body: document.getElementById(`rxb-${id}`).value,
+      bias: document.getElementById(`rxbsel-${id}`).value,
+    });
+    if (d.ok) {
+      toast(d.live ? "已核可並發佈到社群 ✓" : "已核可（mock 模式，未真寄）✓");
+      document.getElementById(`rx-${id}`).remove();
+      RX_ITEMS = RX_ITEMS.filter(x => x.id !== id);
+      loadReactive(true);
+    } else throw new Error();
+  } catch { btn.disabled = false; btn.textContent = "✓ 核可發佈"; toast("核可失敗", true); }
+}
+
+async function rxReject(id, btn) {
+  btn.disabled = true; btn.textContent = "…";
+  try {
+    const d = await api("/admin/reactive-reject", { id });
+    if (d.ok) {
+      toast("已拒絕");
+      document.getElementById(`rx-${id}`).remove();
+      RX_ITEMS = RX_ITEMS.filter(x => x.id !== id);
+      loadReactive(true);
+    } else throw new Error();
+  } catch { btn.disabled = false; btn.textContent = "✕ 拒絕"; toast("操作失敗", true); }
+}
+
+// ── Tools ──
+async function syncBrevo(btn) {
+  if (!confirm("確定要把 KV 內所有方案推到 Brevo？此操作不寄信，只更新聯絡人屬性。")) return;
+  btn.disabled = true; btn.textContent = "同步中…";
+  const out = document.getElementById("sync-result");
+  try {
+    const d = await api("/admin/sync-brevo-plans");
+    const byPlan = Object.entries(d.by_plan || {}).map(([k,v]) => `${k}:${v}`).join(" · ");
+    out.innerHTML = `<span class="badge badge-green">完成</span> 成功 ${d.ok||0} · 失敗 ${d.fail||0}${byPlan?` · ${esc(byPlan)}`:""}`;
+    toast("Brevo 同步完成 ✓");
+  } catch (e) { out.innerHTML = `<span class="badge badge-red">失敗</span> ${esc(e.message)}`; }
+  btn.disabled = false; btn.textContent = "▶ 執行同步";
+}
+
+async function lifecycleTest(btn) {
+  const target = document.getElementById("lc-email").value.trim();
+  const type = document.getElementById("lc-type").value;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target)) { toast("請輸入有效 email", true); return; }
+  if (!confirm(`確定寄出 ${type.toUpperCase()} 測試信給 ${target}？`)) return;
+  btn.disabled = true; btn.textContent = "寄送中…";
+  try {
+    const d = await api("/admin/lifecycle-test", { target, type });
+    if (d.ok) toast(`已寄出 ${type.toUpperCase()} 測試信 → ${target} ✓`);
+    else throw new Error(d.error || "fail");
+  } catch (e) { toast("寄送失敗：" + esc(e.message), true); }
+  btn.disabled = false; btn.textContent = "寄出測試";
+}
+
+async function purgeContacts(btn) {
+  const pattern = document.getElementById("purge-pattern").value.trim();
+  if (pattern.length < 5) { toast("pattern 至少 5 字", true); return; }
+  if (!confirm(`⚠️ 確定刪除所有 email 含「${pattern}」的聯絡人？\nBrevo + KV 將一併刪除，無法復原。`)) return;
+  btn.disabled = true; btn.textContent = "清除中…";
+  const out = document.getElementById("purge-result");
+  try {
+    const d = await api("/admin/purge-contacts", { pattern });
+    out.innerHTML = `<span class="badge badge-green">完成</span> ${esc(JSON.stringify(d))}`;
+    toast("清除完成 ✓");
+    loadSubscribers();
+  } catch (e) { out.innerHTML = `<span class="badge badge-red">失敗</span> ${esc(e.message)}`; }
+  btn.disabled = false; btn.textContent = "清除符合者";
 }
 
 // ── Toast ──
@@ -1053,15 +1539,13 @@ function toast(msg, isErr = false) {
   // 密碼來源:本次 session,或「記住密碼」存在 localStorage 的;有就回填 session 供端點使用。
   const pwd = sessionStorage.getItem("md-admin-pwd") || localStorage.getItem("md-admin-pwd-saved") || "";
   if (pwd) sessionStorage.setItem("md-admin-pwd", pwd);
-  // 必須有密碼才自動進後台:admin 端點(admin-stats 等)需密碼,
-  // 否則自動進去但密碼空 → 一律 403 → 列表全空。沒密碼就回登入頁重打。
+  // 必須有密碼才自動進後台:admin 端點需密碼,否則自動進去但密碼空 → 一律 403 → 列表全空。
   if (email === ADMIN_EMAIL && pwd) {
     bootAdmin(email);
   } else {
     document.getElementById("auth-screen").style.display = "flex";
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      const card = document.querySelector(".auth-card");
-      if (card) card.classList.add("visible");
+      const card = document.querySelector(".auth-card"); if (card) card.classList.add("visible");
     }));
     const savedAdminEmail = localStorage.getItem("md-admin-email-saved") || (email === ADMIN_EMAIL ? email : "");
     if (savedAdminEmail) {
