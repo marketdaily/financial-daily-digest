@@ -1211,6 +1211,12 @@ def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -
         if ps:
             _dir = {"bullish": "偏多", "bearish": "偏空", "mixed": "分歧"}.get(ps.get("direction"), "分歧")
             base += f" | ⚡政壇訊號({_dir}/強度{ps.get('severity','?')}):{str(ps.get('headline_zh') or '')[:38]}"
+        if depth == "deep":
+            f = (data.get("fundamentals") or {}).get(sym) or {}
+            if f.get("valuation"):
+                base += f" | 估值:{f['valuation']}"
+            if f.get("chips"):
+                base += f" | 籌碼:{f['chips']}"
         lines.append("  " + base)
     return "\n".join(lines)
 
@@ -1340,9 +1346,13 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
     for i in range(0, len(llm_stocks), CHUNK):
         chunk = llm_stocks[i:i + CHUNK]
         block = _chunk_market_tech_block(data, chunk, depth)
-        deep_tech_note = ("\n【專業版要求】這位用戶選了「看深入」,上面附了 RSI/KD/MACD/布林/均線排列/交叉等進階指標。"
-                          "每張卡的「下一步」說明要結合這些指標的判讀(例:RSI>70 過熱留意拉回、KD 低檔黃金交叉可偏多、"
-                          "MACD 柱由負轉正轉強、跌破布林下軌或站上中軌),用白話講,並對應到具體價位與動作。只能引用上面提供的真實數字,不可自行編造指標值。\n"
+        deep_tech_note = ("\n【專業版要求】這位用戶選了「看深入」,上面可能附了 RSI/KD/MACD/布林/均線排列/交叉等進階指標,以及「估值」「籌碼」。"
+                          "每張卡的「下一步」說明要結合這些判讀:\n"
+                          "- 進階指標:RSI>70 過熱留意拉回、KD 低檔黃金交叉可偏多、MACD 柱由負轉正轉強、跌破布林下軌或站上中軌,用白話講並對應具體價位。\n"
+                          "- 估值:把「估值」那句(本益比/百分位/PEG)寫進 reason 當體質判斷——偏貴→提醒追高風險、別在高檔重壓;相對便宜→回檔較有撐。"
+                          "**估值只影響語氣與部位心態,不可拿來改寫技術面的進場/目標/停損價位(價位一律照近端錨點)**。\n"
+                          "- 籌碼:把「籌碼」那句(外資/投信買賣超、內部人動向)寫進 signal-watch 當該盯的事;法人連續賣超是警訊、連續買超是支撐,但仍以技術結構定方向。\n"
+                          "只能引用上面提供的真實數字,沒附的指標/估值/籌碼就不要提,嚴禁自行編造任何數字。\n"
                           if depth == "deep" else "")
         macro_note = ""
         if depth != "simple":

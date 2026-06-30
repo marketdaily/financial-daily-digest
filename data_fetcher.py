@@ -780,6 +780,16 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
     except Exception as _e:
         print(f"[earnings_impact] skipped: {_e}")
 
+    # 估值帶 + 籌碼/法人(看深入專屬) — 缺料 / 無 key 一律跳過,絕不拖垮日報
+    fundamentals = {}
+    try:
+        import datetime as _dt2
+        from valuation.fundamentals import compute_fundamentals
+        fundamentals = compute_fundamentals(extra_us_stocks, extra_tw_stocks,
+                                            _dt2.date.fromisoformat(the_date), earnings_impact)
+    except Exception as _e:
+        print(f"[fundamentals] skipped: {_e}")
+
     # 政壇市場訊號(Grok 抓政治人物 X 貼文) — 無 XAI_API_KEY 時回 [],缺了不缺信
     political_signals = []
     try:
@@ -789,6 +799,7 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         print(f"[political_signals] skipped: {_e}")
 
     return {
+        "fundamentals": fundamentals,
         "us_market": us_market,
         "tw_market": tw_market,
         "technicals": technicals,
