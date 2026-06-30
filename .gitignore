@@ -28,3 +28,6 @@ docs/output/*_personal_*.html
 # 跨視窗本機工作紀錄(SessionStart hook 讀取,不進 git 以免並行視窗衝突/被 reset 洗掉)
 WORKLOG.md
 .venv/
+
+# 本機暫存截圖/草稿(不入版控)
+.scratch/

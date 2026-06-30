@@ -1,3 +1,4 @@
+import os
 import re
 import time
 import requests
@@ -601,8 +602,13 @@ def _postprocess_html(html: str, data: dict) -> str:
     def _recalibrate_card(m):
         block, cls = m.group(0), m.group(1)
         hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
-        cv = _calibrated_confidence(cls, _regime_label, hm.group(1) if hm else "")
+        sym = hm.group(1) if hm else ""
+        cv = _calibrated_confidence(cls, _regime_label, sym)
         if cv is not None:
+            # AI 委員會分歧度回饋:三方意見分歧越大,信心再往下壓(分歧=真實不確定性)
+            cverd = _COUNCIL_CACHE.get(sym)
+            if cverd and cverd.get("dissent"):
+                cv = max(35, cv - cverd["dissent"] * 5)
             block = _re.sub(r'(<span class="signal-confidence">)信心\s*\d{1,3}\s*%',
                             lambda sm: f"{sm.group(1)}信心 {cv}%", block)
         return block
@@ -1036,6 +1042,158 @@ def _calibrated_confidence(card_cls: str, regime_label: str, sym: str = ""):
     return int(max(35, min(75, round(v + jitter))))
 
 
+# ── AI 投資委員會(multi-model council)──────────────────────────────────
+# 用戶要的不是「fallback(一個模型講了算,其餘只當備援)」,而是「多個 AI 一起辯論再下決策」。
+# 死防線不變:方向仍由結構 prior(_quant_prior)鎖死、信心仍由 track-record 校準;
+# council 只在「論點 / 反向風險 / 結構容許範圍內的傾向」這層運作,並把三模型「分歧度」
+# 回饋給信心(分歧大→信心再往下壓)。每支股票一輪只跑一次,跨用戶共用 _COUNCIL_CACHE。
+# 2026-06-25 起 Anthropic/OpenAI key 皆失效 → 席次先用不同 Gemini 模型(獨立配額桶,
+# 仍是真.多模型辯論);claude/openai 席次保留,key 一復活自動升級成跨廠商 council。
+# 配額保護:席次用 lite/2.0(獨立桶),把 2.5-flash 留給用戶可見的卡片生成,避免 council
+# 吃爆配額害卡片掉備援版;每輪上限 _COUNCIL_MAX 支,超過記 log(不靜默砍)。
+_COUNCIL_CACHE: dict = {}
+_COUNCIL_ENABLED = os.environ.get("DIGEST_COUNCIL", "1") != "0"
+_COUNCIL_MAX = int(os.environ.get("DIGEST_COUNCIL_MAX", "40") or "40")
+_COUNCIL_SEATS = [
+    ("gemini:2.5-lite", lambda p: _call_gemini(p, "gemini-2.5-flash-lite")),
+    ("gemini:2.0-flash", lambda p: _call_gemini(p, "gemini-2.0-flash")),
+    ("claude", _call_claude),
+    ("openai", _call_openai),
+]
+_COUNCIL_JUDGE = lambda p: _call_gemini(p, "gemini-2.5-flash-lite")
+
+
+def _council_json(fn, prompt: str) -> dict:
+    import json
+    raw = fn(prompt)
+    if raw.startswith("```"):
+        raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
+        raw = re.sub(r'\n?```$', '', raw)
+    s, e = raw.find("{"), raw.rfind("}")
+    if s < 0 or e < 0:
+        raise ValueError("no json")
+    return json.loads(raw[s:e + 1])
+
+
+def _council_one(sym: str, name_zh: str, block_line: str, prior: str):
+    """3 模型各給傾向+論點+風險 → 裁判綜合。回 verdict dict 或 None(不足成會)。"""
+    import json
+    prior_txt = {
+        "bull": "多頭結構(價>MA20>MA50)——傾向只能 long 或 neutral,禁止 short",
+        "bear": "空頭結構(價<MA20<MA50)——傾向只能 short 或 neutral,禁止 long",
+        "neutral": "盤整——long/short/neutral 皆可,依數據判斷",
+    }.get(prior, "盤整——依數據判斷")
+    seat_prompt = (
+        f"你是台美股短線分析委員之一,獨立判斷 {name_zh}({sym}) 未來 1-2 週傾向。只看數據,不要客套。\n"
+        f"【真實數據】{block_line}\n"
+        f"【結構硬約束】{prior_txt}。\n"
+        f"只輸出 JSON,不要其他字:"
+        f'{{"lean":"long|short|neutral","conviction":1-5,'
+        f'"thesis":"<=35字 為何是這傾向","key_risk":"<=25字 什麼會推翻它"}}'
+    )
+    opinions = []
+    for nm, fn in _COUNCIL_SEATS:
+        try:
+            o = _council_json(fn, seat_prompt)
+        except Exception as ex:
+            print(f"  [council] {sym} 席次 {nm} 失敗({str(ex)[:60]})")
+            continue
+        lean = str(o.get("lean", "")).lower()
+        if lean not in ("long", "short", "neutral"):
+            lean = "neutral"
+        # 結構硬約束:違反方向的傾向降為 neutral(死防線,席次不可翻方向)
+        if prior == "bull" and lean == "short":
+            lean = "neutral"
+        if prior == "bear" and lean == "long":
+            lean = "neutral"
+        try:
+            conv = max(1, min(5, int(o.get("conviction") or 3)))
+        except (TypeError, ValueError):
+            conv = 3
+        opinions.append({"seat": nm, "lean": lean, "conviction": conv,
+                         "thesis": str(o.get("thesis") or "")[:120],
+                         "key_risk": str(o.get("key_risk") or "")[:90]})
+    if len(opinions) < 2:
+        return None
+    leans = [o["lean"] for o in opinions]
+    uniq = set(leans)
+    if len(uniq) == 1:
+        dissent = 0
+    elif "long" in uniq and "short" in uniq:
+        dissent = 2
+    else:
+        dissent = 1
+    thesis = key_risk = ""
+    judge_prompt = (
+        f"你是首席分析師,裁判 {name_zh}({sym}) 委員會三方意見,產出最終卡片用論點。\n"
+        f"【結構約束】{prior_txt}\n【三方意見】{json.dumps(opinions, ensure_ascii=False)}\n"
+        f"綜合共識與分歧(不要只抄一家)。只輸出 JSON:"
+        f'{{"thesis":"<=45字 口語最終論點","key_risk":"<=30字 最該盯的反向風險"}}'
+    )
+    try:
+        j = _council_json(_COUNCIL_JUDGE, judge_prompt)
+        thesis = str(j.get("thesis") or "")[:140]
+        key_risk = str(j.get("key_risk") or "")[:100]
+    except Exception as ex:
+        print(f"  [council] {sym} 裁判失敗,改用最高信念席次({str(ex)[:60]})")
+    if not thesis:
+        top = max(opinions, key=lambda o: o["conviction"])
+        thesis, key_risk = top["thesis"], top["key_risk"]
+    return {"sym": sym, "prior": prior, "thesis": thesis, "key_risk": key_risk,
+            "dissent": dissent, "n": len(opinions), "leans": leans}
+
+
+def build_council(data: dict, stocks: list, depth: str = "standard") -> dict:
+    """為這批持股建立 AI 委員會共識(每支一輪只跑一次,跨用戶共用快取)。
+    fail-safe:停用 / 任何失敗 → 回傳當下已有的結果(可能空),絕不擋管線。"""
+    if not _COUNCIL_ENABLED:
+        return {}
+    tech = data.get("technicals", {}) or {}
+    all_m = {**(data.get("us_market", {}) or {}), **(data.get("tw_market", {}) or {})}
+    seen = [s for s in dict.fromkeys([x for x in (stocks or []) if x])]
+    todo = [s for s in seen if s not in _COUNCIL_CACHE]
+    capped = todo[:_COUNCIL_MAX]
+    if len(todo) > _COUNCIL_MAX:
+        print(f"  [council] 本輪 {len(todo)} 支新標的超過上限 {_COUNCIL_MAX},只跑前 {_COUNCIL_MAX} 支(其餘走原單模型路徑)")
+    for sym in capped:
+        try:
+            block = _chunk_market_tech_block(data, [sym], depth).strip()
+            prior = _quant_prior(tech.get(sym))
+            nm = stock_names.display_name(sym, (all_m.get(sym) or {}).get("name"))
+            v = _council_one(sym, nm, block, prior)
+        except Exception as ex:
+            print(f"  [council] {sym} 整體失敗({str(ex)[:60]})")
+            v = None
+        if v:
+            _COUNCIL_CACHE[sym] = v
+            print(f"  [council] {sym} 共識 dissent={v['dissent']} ({v['n']}席): {v['thesis'][:30]}")
+        time.sleep(1)
+    return {s: _COUNCIL_CACHE[s] for s in seen if s in _COUNCIL_CACHE}
+
+
+def _council_prompt_block(council: dict, chunk: list) -> str:
+    """把委員會共識組成注入卡片 prompt 的文字塊。"""
+    if not council:
+        return ""
+    lines = []
+    for s in chunk:
+        v = council.get(s)
+        if not v:
+            continue
+        tag = ("(三方分歧大,語氣需保守)" if v["dissent"] >= 2
+               else ("(三方略有分歧)" if v["dissent"] == 1 else ""))
+        line = f"  {s}:論點—{v['thesis']}"
+        if v.get("key_risk"):
+            line += f";反向風險—{v['key_risk']}"
+        lines.append(line + tag)
+    if not lines:
+        return ""
+    return ("\n【AI 投資委員會共識(多模型辯論+裁判綜合;方向已由技術結構鎖定,以下是論點與風險)】\n"
+            "把每支對應的「論點」融進該卡 signal-reason、「反向風險」寫進 signal-watch;"
+            "不可自創與委員會相反的論點;標『分歧大』的那幾支語氣要保守、別給高信心口吻。\n"
+            + "\n".join(lines) + "\n")
+
+
 def _depth_directive(depth: str) -> str:
     """日報深度客製(Premium 專屬)注入 prompt 的指令。simple=精簡 / deep=深入 / standard=不加。"""
     if depth == "simple":
@@ -1414,6 +1572,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
     llm_stocks = seen[:full_limit] if full_limit else seen
     rules = _signal_card_format_rules(mkt_status, regime=_market_regime(data),
                                       macro_event=_detect_macro_event(data))
+    council = build_council(data, llm_stocks, depth)
     cards_by_sym = {}
     CHUNK = 10
     for i in range(0, len(llm_stocks), CHUNK):
@@ -1445,7 +1604,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
         prompt = (
             f"你是這位用戶的專屬財經顧問。為以下每一支股票各生成一張 signal-card,給出明確「下一步」操作建議。\n"
             f"標的({len(chunk)} 支,一支都不能少、不能合併):{', '.join(chunk)}\n\n"
-            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}\n"
+            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{_council_prompt_block(council, chunk)}\n"
             f"{rules}\n\n"
             f"只輸出這 {len(chunk)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
             f"不要輸出 signal-grid 外框、不要任何說明文字、不要 markdown 反引號。"
