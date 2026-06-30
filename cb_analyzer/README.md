@@ -13,6 +13,7 @@ python3 cb.py --rank          # 所有已定價 CB → 拆解吸引力排序(看
 python3 cb.py --rank --html   # 同上,並輸出 report.html 玻璃卡片儀表板(瀏覽器打開)
 python3 cb.py --list          # 列出資料庫全部案件(● 已定價 / ○ 條件未定)
 python3 cb.py --update 新檔.xlsx   # 老闆給新一期 Excel,重建資料庫
+python3 cb.py 8112 --live     # 額外抓 CB 次級市場成交價,改用「市場隱波」(更即時)
 
 # 臨時覆寫假設(優先於 cb_config.json):
 python3 cb.py --rank --swap 0.025 --rf 0.015 --vol-short 0.2 --vol-long 0.8
@@ -49,11 +50,24 @@ python3 cb.py --rank --swap 0.025 --rf 0.015 --vol-short 0.2 --vol-long 0.8
 - 評分當**篩選排序**用,不是直接下單訊號。融資、交易稅、賣回時點、流動性折價未精算。
 - 最終進場前仍要人工核對承銷條件與資產交換報價。
 
+## CB 次級市場價(`--live`)
+
+台股**個別 CB 收盤價沒有穩定免費來源**(FinMind CB dataset 要 token、TPEx OpenAPI 只有 CBAS 餘額/券商彙總、議價板多為空)。`cb_market.py` 依序嘗試:
+
+1. **FinMind CB dataset** —— 設環境變數 `FINMIND_TOKEN`(到 finmindtrade.com 免費註冊取得)即解鎖
+2. **TPEx 議價揭示板** —— 當日有報價才有
+
+抓得到 → 用**市場隱波**(比承銷價更即時);抓不到 → 透明退回承銷價隱波(不影響其餘分析)。
+不帶 `--live` 預設不抓(快)。
+
 ## 檔案
 
 | 檔 | 功能 |
 |----|------|
 | `parse_excel.py` | Excel → `cb_database.json` |
 | `cb_core.py` | 量化核心(BS / 債券底 / 隱含波動 / 拆解 / 評分),假設參數在此 |
-| `cb_data.py` | FinMind 抓現股價 + 歷史波動率(免 token) |
+| `cb_data.py` | FinMind 抓現股價 + 多窗口/EWMA 前瞻波動率(免 token) |
+| `cb_market.py` | CB 次級市場成交價(可插拔,`--live` 用;FinMind token/TPEx) |
+| `cb_report.py` | HTML 玻璃卡片儀表板生成 |
+| `cb_config.json` | 假設參數(改這裡不用動程式) |
 | `cb.py` | CLI 主程式 + 報告 |

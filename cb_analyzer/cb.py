@@ -9,6 +9,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import cb_core
 import cb_data
+import cb_market
 from parse_excel import parse, DB_PATH, DEFAULT_XLSX
 
 C = {"g": "\033[92m", "r": "\033[91m", "y": "\033[93m", "b": "\033[96m",
@@ -45,7 +46,7 @@ def _bar(label, val, maxv, width=18):
     return f"{label} {'█'*n}{'░'*(width-n)} {val:.0f}/{maxv:.0f}"
 
 
-def report(item):
+def report(item, live=False):
     code = item["stock_code"]
     print(f"\n{C['bold']}{C['b']}━━ {item['name']}  (股 {code} / 債 {item['bond_code']}){C['x']}")
     print(f"{C['d']}{item['section']} · {item['underwriter']} · 發行 {item['size_yi']}億 · "
@@ -62,7 +63,9 @@ def report(item):
         print(f"{C['r']}✗ 抓不到 {code} 現股資料(可能停牌/代碼異常),跳過。{C['x']}")
         return None
 
-    a = cb_core.analyze(item, sd["spot"], sd["vol_blend"])
+    mp = cb_market.get_cb_price(item["bond_code"]) if live else None
+    a = cb_core.analyze(item, sd["spot"], sd["vol_blend"],
+                        market_price=(mp["price"] if mp else None))
     if not a["ok"]:
         print(f"{C['r']}✗ {a['reason']}{C['x']}")
         return None
@@ -92,10 +95,14 @@ def report(item):
     print(f"  轉換選擇權   {a['option_value']:6.2f}   (Δ {a['delta']:.2f}, Γ {a['gamma']:.4f})")
     print(f"  理論 CB 價   {C['bold']}{a['theoretical']:6.2f}{C['x']}   vs 清算價 {a['issue_price']:.2f}"
           f"  → 理論edge {g(a['edge_theo'])}")
+    if mp:
+        print(f"  {C['g']}次級市場成交價 {mp['price']:.2f}（{mp['date']}，{mp['src']}）{C['x']}")
+    elif live:
+        print(f"  {C['d']}次級市場:無成交/無報價,退回承銷價隱波（設 FINMIND_TOKEN 可解鎖 CB 行情）{C['x']}")
     if a["implied_vol"]:
         ve = a["vol_edge"]
         col = C['g'] if ve and ve > 0 else C['y']
-        print(f"  發行隱含波動 {a['implied_vol']*100:5.1f}%   前瞻波動 {a['hist_vol']*100:.1f}%"
+        print(f"  隱含波動({a['iv_source']}) {a['implied_vol']*100:5.1f}%   前瞻波動 {a['hist_vol']*100:.1f}%"
               f"  → {col}價差 {ve*100:+.1f}pt（{'選擇權便宜' if ve>0 else '選擇權偏貴'}）{C['x']}")
 
     print(f"\n  {C['bold']}── 拆解槓桿 ──{C['x']}")
@@ -135,7 +142,7 @@ def verdict(s):
     return f"{C['r']}吸引力低,暫不建議拆解{C['x']}"
 
 
-def rank(db):
+def rank(db, live=False):
     print(f"\n{C['bold']}{C['b']}═══ 全表 CB 拆解吸引力排序 ═══{C['x']}  "
           f"{C['d']}(來源 {db['source_file']}, {db.get('parsed_at','')}){C['x']}\n")
     vw = (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
@@ -146,7 +153,9 @@ def rank(db):
         sd = cb_data.get_stock(item["stock_code"], vol_weights=vw)
         if not sd:
             continue
-        a = cb_core.analyze(item, sd["spot"], sd["vol_blend"])
+        mp = cb_market.get_cb_price(item["bond_code"]) if live else None
+        a = cb_core.analyze(item, sd["spot"], sd["vol_blend"],
+                            market_price=(mp["price"] if mp else None))
         if a["ok"]:
             results.append((item, sd, a))
     results.sort(key=lambda x: x[2]["score"], reverse=True)
@@ -229,6 +238,9 @@ def main():
     want_html = "--html" in args
     if "--html" in args:
         args.remove("--html")
+    live = "--live" in args
+    if "--live" in args:
+        args.remove("--live")
     cb_core.set_config(asset_swap_spread=swap, rf=rf, vol_w_short=ws, vol_w_long=wl)
 
     if args and args[0] == "--update":
@@ -236,7 +248,7 @@ def main():
         return
     db = load_db()
     if not args or args[0] == "--rank":
-        results = rank(db)
+        results = rank(db, live=live)
         if want_html:
             import cb_report
             path = cb_report.write_report(db, results)
@@ -249,7 +261,7 @@ def main():
             print(f"找不到「{args[0]}」。試 python cb.py --list 看全表。")
             return
         for item in hits:
-            report(item)
+            report(item, live=live)
         print_assumptions()
 
 
