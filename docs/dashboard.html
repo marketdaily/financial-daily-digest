@@ -10,7 +10,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MarketDaily">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="apple-touch-icon" href="/logo-icon.svg">
 <link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -956,9 +956,6 @@ const i18n = {
     stories_label: "📊 持倉即時動態",
     sync_suffix: "s 後同步",
     market_label: "🌐 今日大盤",
-    watchboard_label: "📈 我的看盤台",
-    watchboard_asof_prefix: "AI 分析 ",
-    watchboard_no_ai: "點開看走勢圖與進出場關卡",
     admin_panel_title: "👑 管理員面板",
     admin_enter_console: "進入後台 →",
     admin_stat_total: "總訂閱人數",
@@ -1143,9 +1140,6 @@ const i18n = {
     stories_label: "📊 Live Portfolio Updates",
     sync_suffix: "s to sync",
     market_label: "🌐 Today's Markets",
-    watchboard_label: "📈 My Watchboard",
-    watchboard_asof_prefix: "AI as of ",
-    watchboard_no_ai: "Tap for chart & entry/exit levels",
     admin_panel_title: "👑 Admin Panel",
     admin_enter_console: "Open Console →",
     admin_stat_total: "Total Subscribers",
@@ -1706,7 +1700,6 @@ async function showDashboard(email, plan) {
   loadReferral(email);
   loadStories(email);
   loadMarketOverview();
-  loadAnnotations();
 }
 
 // ── 自有 Web Push 即時推播(免費無上限,不經 LINE)──
@@ -2143,34 +2136,6 @@ let _stories = [];
 let _storyIdx = 0;
 let _quotesRefreshTimer = null;
 let _countdownTimer = null;
-let _annotations = {};   // 看盤台:{sym:{verdict,reason}} 來自日報引擎(/annotations)
-let _annotationsAsof = null;   // 註解生成時間(日報班次),誠實標示非即時
-
-// 看盤台:抓每檔個股的真.AI 一句註解(日報 pipeline 算好的 verdict/reason,非機械日內公式)
-async function loadAnnotations() {
-  try {
-    const res = await fetch(`${WORKER_URL}/annotations`);
-    if (!res.ok) return;
-    const data = await res.json();
-    _annotations = data.annotations || {};
-    _annotationsAsof = data.asof || null;
-    // overlay 正開著就即時重繪,讓真 AI 註解一抓到就補上
-    if (document.getElementById("story-overlay")?.classList.contains("open")) {
-      try { renderStoryCard(); } catch {}
-    }
-  } catch {}
-}
-
-const _WB_CHIP = {
-  buy:  { cls: "buy",  zh: "🟢 建議買進", en: "🟢 Buy" },
-  sell: { cls: "sell", zh: "🔴 建議賣出", en: "🔴 Sell" },
-  hold: { cls: "hold", zh: "🟡 續抱持有", en: "🟡 Hold" },
-  wait: { cls: "wait", zh: "⚪ 觀望",     en: "⚪ Wait" },
-};
-
-function escapeHtml(s) {
-  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-}
 let _countdownVal = 60;
 
 function startCountdown() {
@@ -2420,25 +2385,12 @@ function renderStoryCard() {
   document.getElementById("sc-change").className = `story-card-change ${dir}`;
   document.getElementById("sc-price").textContent = priceStr;
 
-  // Signal + score:有日報引擎的真.AI 註解就用它,沒有才退回日內漲跌機械版(誠實不掰)
+  // Signal + score (invest-skill style)
   const sig = storySignal(changeVal);
-  const ann = _annotations[q.symbol];
   const badge = document.getElementById("sc-sig-badge");
-  const scoreEl = document.getElementById("sc-sig-score");
-  if (ann && ann.reason) {
-    const zh = currentLang !== "en";
-    const chip = _WB_CHIP[ann.verdict] || _WB_CHIP.wait;
-    const badgeCls = ann.verdict === "buy" ? "bull" : ann.verdict === "sell" ? "bear" : "neutral";
-    badge.textContent = zh ? chip.zh : chip.en;
-    badge.className = `sc-sig-badge ${badgeCls}`;
-    let dstr = "";
-    if (_annotationsAsof) { const dd = new Date(_annotationsAsof); if (!isNaN(dd)) dstr = ` · ${dd.getMonth() + 1}/${dd.getDate()}`; }
-    scoreEl.textContent = (zh ? "AI 分析" : "AI view") + dstr;
-  } else {
-    badge.textContent = sig.label;
-    badge.className = `sc-sig-badge ${sig.cls}`;
-    scoreEl.textContent = `${sig.score}/10`;
-  }
+  badge.textContent = sig.label;
+  badge.className = `sc-sig-badge ${sig.cls}`;
+  document.getElementById("sc-sig-score").textContent = `${sig.score}/10`;
 
   // Key levels: prev close (support) + target (含貨幣符號,跟價格區一致)
   const levelsEl = document.getElementById("sc-levels");
@@ -2452,7 +2404,7 @@ function renderStoryCard() {
     levelsEl.innerHTML = "";
   }
 
-  document.getElementById("sc-verdict").textContent = (ann && ann.reason) ? ann.reason : storyVerdict(changeVal);
+  document.getElementById("sc-verdict").textContent = storyVerdict(changeVal);
 
   // Progress dots
   const progRow = document.getElementById("story-progress-row");
@@ -3305,49 +3257,5 @@ window.mdStockTour = function () {
   </div>
 </div>
 <script src="terminal.js?v=1"></script>
-<script>
-// PWA:全域註冊純推播 SW(無 fetch handler,不攔導覽)+「加到主畫面」安裝提示。
-(function () {
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/sw.js").catch(() => {});
-    });
-  }
-  const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
-  if (isStandalone) return;
-  let deferred = null;
-  const mkBtn = () => {
-    if (document.getElementById("pwa-install-btn")) return document.getElementById("pwa-install-btn");
-    const b = document.createElement("button");
-    b.id = "pwa-install-btn";
-    b.type = "button";
-    const en = (localStorage.getItem("md-lang-v2") || "zh") === "en";
-    b.textContent = en ? "📲 Install App" : "📲 加到主畫面";
-    b.style.cssText = "position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:9999;" +
-      "background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;font-size:13px;font-weight:800;" +
-      "padding:11px 20px;border-radius:30px;box-shadow:0 8px 28px rgba(99,102,241,0.45);cursor:pointer;" +
-      "letter-spacing:.3px;transition:transform .15s,box-shadow .15s;";
-    b.onmouseenter = () => { b.style.transform = "translateX(-50%) translateY(-2px)"; };
-    b.onmouseleave = () => { b.style.transform = "translateX(-50%)"; };
-    document.body.appendChild(b);
-    return b;
-  };
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferred = e;
-    const b = mkBtn();
-    b.onclick = async () => {
-      b.style.display = "none";
-      try { deferred.prompt(); await deferred.userChoice; } catch {}
-      deferred = null;
-    };
-  });
-  window.addEventListener("appinstalled", () => {
-    const b = document.getElementById("pwa-install-btn");
-    if (b) b.remove();
-    deferred = null;
-  });
-})();
-</script>
 </body>
 </html>

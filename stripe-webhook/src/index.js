@@ -760,6 +760,7 @@ export default {
       if (!config || typeof config !== "object") return json({ error: "no config" }, 400);
       config.updated_at = new Date().toISOString();
       await env.USER_PREFS.put("admin:global-config", JSON.stringify(config));
+      ctx.waitUntil(logAudit(env, (body.email || "admin").toLowerCase(), "save-config", {}));
       return json({ ok: true, updated_at: config.updated_at });
     }
 
@@ -778,6 +779,7 @@ export default {
       const isPaid = plan !== "free";
       ctx.waitUntil(addToBrevo(target, env.BREVO_API_KEY, listId,
         { PAID: isPaid, PLAN: isPaid ? "paid" : "free", PLAN_TIER: plan }));
+      ctx.waitUntil(logAudit(env, (body.email || "admin").toLowerCase(), "set-plan", { target, plan }));
       return json({ ok: true, target, plan });
     }
 
@@ -840,6 +842,7 @@ export default {
           try { await env.USER_PREFS.delete(key); result.kv_deleted++; } catch {}
         }
       }
+      ctx.waitUntil(logAudit(env, (body.email || "admin").toLowerCase(), "purge-contacts", { pattern, matched: result.matched, brevo_deleted: result.brevo_deleted }));
       return json(result);
     }
 
@@ -855,6 +858,7 @@ export default {
       if (!handlers[type]) return json({ error: "invalid_type" }, 400);
       try {
         await handlers[type](target, env.BREVO_API_KEY, env);
+        ctx.waitUntil(logAudit(env, (body.email || "admin").toLowerCase(), "lifecycle-test", { target, type }));
         return json({ ok: true, target, type });
       } catch (e) {
         return json({ error: "send_failed", detail: String(e) }, 502);
@@ -941,6 +945,158 @@ export default {
         }
       }
       return json({ days, totals, recent });
+    }
+
+    // Admin:營運監控 — 今日/昨日已產生的個人化日報數(digest_idx 索引)+ 看盤台註解數
+    if (url.pathname === "/admin/ops-status" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      const twDay = (off = 0) => new Date(Date.now() + 8 * 3600 * 1000 - off * 86400 * 1000).toISOString().slice(0, 10);
+      const countIdx = async (date) => {
+        let cursor, n = 0;
+        for (let i = 0; i < 10; i++) {
+          const r = await env.USER_PREFS.list({ prefix: `digest_idx:${date}:`, cursor });
+          n += r.keys.length;
+          if (r.list_complete) break;
+          cursor = r.cursor;
+        }
+        return n;
+      };
+      const today = twDay(0), yest = twDay(1);
+      const [todayN, yestN] = await Promise.all([countIdx(today), countIdx(yest)]);
+      let annotN = 0;
+      try { const a = await env.USER_PREFS.get("annot:latest"); if (a) annotN = Object.keys(JSON.parse(a)).length; } catch {}
+      return json({ today, yesterday: yest, digests_today: todayN, digests_yesterday: yestN, annotations: annotN });
+    }
+
+    // Admin:寄信成效 — Brevo 近 30 日彙總報告(送達/開信/點擊/退信率)
+    if (url.pathname === "/admin/email-stats" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      try {
+        const r = await fetch("https://api.brevo.com/v3/smtp/statistics/aggregatedReport?days=30", {
+          headers: { "api-key": env.BREVO_API_KEY, "accept": "application/json" }
+        });
+        const d = await r.json();
+        if (!r.ok) return json({ error: "brevo_failed", status: r.status, detail: d }, 502);
+        const requests = d.requests || 0, delivered = d.delivered || 0;
+        const opens = (d.uniqueOpens != null ? d.uniqueOpens : d.opens) || 0;
+        const clicks = (d.uniqueClicks != null ? d.uniqueClicks : d.clicks) || 0;
+        const softB = d.softBounces || 0, hardB = d.hardBounces || 0;
+        const unsub = d.unsubscribed || 0, blocked = d.blocked || 0, spam = d.spamReports || 0;
+        const rate = (n, base) => base > 0 ? +(n / base * 100).toFixed(1) : 0;
+        const base = requests || delivered;
+        return json({
+          days: 30, requests, delivered, opens, clicks,
+          softBounces: softB, hardBounces: hardB, unsubscribed: unsub, blocked, spam,
+          deliveryRate: rate(delivered, base), openRate: rate(opens, delivered),
+          clickRate: rate(clicks, delivered), bounceRate: rate(softB + hardB, base)
+        });
+      } catch (e) { return json({ error: "exception", detail: String(e) }, 502); }
+    }
+
+    // Admin:營收 — Stripe 訂閱聚合 MRR/ARR + 各狀態計數
+    if (url.pathname === "/admin/revenue" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      if (!env.STRIPE_SECRET_KEY) return json({ error: "missing_stripe_key" }, 500);
+      // Stripe 對非零小數幣別(含 TWD)以「分」計價,主單位需 /100;僅零小數幣別直接用整數。
+      const ZERO_DEC = new Set(["bif","clp","djf","gnf","jpy","kmf","krw","mga","pyg","rwf","ugx","vnd","vuv","xaf","xof","xpf"]);
+      const toMajor = (amt, cur) => ZERO_DEC.has((cur || "").toLowerCase()) ? amt : amt / 100;
+      try {
+        const auth = { "Authorization": "Bearer " + env.STRIPE_SECRET_KEY };
+        let mrr = 0, active = 0, trialing = 0, pastDue = 0, canceled = 0, currency = null;
+        const monthStart = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 7);
+        let newThisMonth = 0, starting_after = null;
+        for (let page = 0; page < 10; page++) {
+          const u = new URL("https://api.stripe.com/v1/subscriptions");
+          u.searchParams.set("status", "all");
+          u.searchParams.set("limit", "100");
+          if (starting_after) u.searchParams.set("starting_after", starting_after);
+          const r = await fetch(u.toString(), { headers: auth });
+          const d = await r.json();
+          if (!r.ok) return json({ error: "stripe_failed", status: r.status, detail: d }, 502);
+          for (const s of d.data || []) {
+            if (s.created && new Date(s.created * 1000 + 8 * 3600 * 1000).toISOString().slice(0, 7) === monthStart) newThisMonth++;
+            if (s.status === "active" || s.status === "trialing") {
+              if (s.status === "trialing") trialing++; else active++;
+              for (const it of (s.items && s.items.data) || []) {
+                const price = it.price || {};
+                if (!currency) currency = price.currency || null;
+                const amt = (price.unit_amount || 0) * (it.quantity || 1);
+                const iv = (price.recurring && price.recurring.interval) || "month";
+                const ic = (price.recurring && price.recurring.interval_count) || 1;
+                let monthly = amt / ic;
+                if (iv === "year") monthly = amt / 12 / ic;
+                else if (iv === "week") monthly = amt * 52 / 12 / ic;
+                else if (iv === "day") monthly = amt * 365 / 12 / ic;
+                mrr += monthly;
+              }
+            } else if (s.status === "past_due" || s.status === "unpaid") pastDue++;
+            else if (s.status === "canceled") canceled++;
+          }
+          if (!d.has_more) break;
+          starting_after = d.data[d.data.length - 1].id;
+        }
+        const mrrMajor = toMajor(mrr, currency);
+        return json({
+          currency: (currency || "twd").toUpperCase(),
+          mrr: Math.round(mrrMajor), arr: Math.round(mrrMajor * 12),
+          active, trialing, pastDue, canceled, newThisMonth
+        });
+      } catch (e) { return json({ error: "exception", detail: String(e) }, 502); }
+    }
+
+    // Admin:單一用戶詳情(方案/密碼/偏好/註冊日/Brevo)
+    if (url.pathname === "/admin/user-detail" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      const target = (body.target || "").trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target)) return json({ error: "invalid_target" }, 400);
+      const [plan, pwd, prefsRaw, lineRaw, signupRaw] = await Promise.all([
+        env.USER_PREFS.get(`plan:${target}`),
+        env.USER_PREFS.get(`pwd:${target}`),
+        env.USER_PREFS.get(target),
+        env.USER_PREFS.get(`line:${target}`),
+        env.USER_PREFS.get(`signup:${target}`),
+      ]);
+      let prefs = null; try { if (prefsRaw) prefs = JSON.parse(prefsRaw); } catch {}
+      let signup = null; try { if (signupRaw) signup = JSON.parse(signupRaw); } catch {}
+      let brevo = null;
+      try {
+        const r = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(target)}`, {
+          headers: { "api-key": env.BREVO_API_KEY, "accept": "application/json" }
+        });
+        if (r.ok) { const d = await r.json(); brevo = { createdAt: d.createdAt, attributes: d.attributes || {} }; }
+      } catch {}
+      return json({
+        email: target,
+        plan: plan || "free",
+        hasPassword: !!pwd,
+        lineBound: lineRaw ? true : null,          // 只在 KV 有正記錄時報 true;無記錄回 null(無法確認,不謊報未綁定)
+        signup,
+        prefs: prefs ? { us_stocks: prefs.us_stocks || [], tw_stocks: prefs.tw_stocks || [], digest_depth: prefs.digest_depth || "standard", updated_at: prefs.updated_at || null } : null,
+        brevo,
+      });
+    }
+
+    // Admin:稽核記錄(最新 100 筆管理員異動)
+    if (url.pathname === "/admin/audit-log" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      const list = await env.USER_PREFS.list({ prefix: "audit:", limit: 1000 });
+      const keys = list.keys.map(k => k.name).sort().reverse().slice(0, 100);
+      const items = [];
+      for (const k of keys) {
+        const raw = await env.USER_PREFS.get(k);
+        if (raw) { try { items.push(JSON.parse(raw)); } catch {} }
+      }
+      return json({ items });
     }
 
     // === Reactive Content MVP ===
@@ -1198,34 +1354,6 @@ export default {
         plan,
         cap: cap === Infinity ? null : cap,
       });
-    }
-
-    // AI 看盤台:每檔個股的「真.AI 一句註解」(verdict/reason/levels),由日報 pipeline 寫入。
-    // 純 ticker 級、無個資,public 可讀。前端把它疊到自選股即時列上,取代假機械 signal。
-    if (url.pathname === "/annotations" && request.method === "GET") {
-      const raw = await env.USER_PREFS.get("annot:latest");
-      let data = {};
-      if (raw) { try { data = JSON.parse(raw); } catch {} }
-      return json(
-        { ok: true, asof: data.asof || null, annotations: data.annotations || {} },
-        200,
-        { "Cache-Control": "max-age=300" }
-      );
-    }
-
-    // 寫入個股 AI 註解(internal token 限定;日報 pipeline 每次生成後呼叫)。
-    if (url.pathname === "/save-annotations" && request.method === "POST") {
-      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "auth" }, 403);
-      let body;
-      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
-      const annotations = (body.annotations && typeof body.annotations === "object" && !Array.isArray(body.annotations))
-        ? body.annotations : null;
-      if (!annotations) return json({ error: "invalid_annotations" }, 400);
-      const payload = { asof: body.asof || new Date().toISOString(), annotations };
-      const s = JSON.stringify(payload);
-      if (s.length > 2000000) return json({ error: "too_large" }, 400);
-      await env.USER_PREFS.put("annot:latest", s, { expirationTtl: 86400 * 7 });
-      return json({ ok: true, count: Object.keys(annotations).length });
     }
 
     // Save a personalized digest HTML; returns a shareable web URL.
@@ -1978,10 +2106,10 @@ async function runLifecycleSweep(env) {
   console.log("lifecycle sweep done:", JSON.stringify({ scanned, sent, errors }));
 }
 
-function json(data, status = 200, extraHeaders = {}) {
+function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
     status,
-    headers: { ...CORS_HEADERS, "Content-Type": "application/json", ...extraHeaders },
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
   });
 }
 
@@ -2073,6 +2201,19 @@ async function sendTodayDigestToOne(email, apiKey, kv) {
       htmlContent: digestHtml,
     }),
   });
+}
+
+// 稽核記錄:管理員每次異動寫一筆,供 /admin/audit-log 檢視。180 天 TTL。永不因失敗中斷主流程。
+async function logAudit(env, actor, action, detail) {
+  try {
+    const ts = Date.now();
+    const rec = { ts, iso: new Date(ts).toISOString(), actor: actor || "admin", action, detail: detail || {} };
+    await env.USER_PREFS.put(
+      `audit:${ts}_${Math.random().toString(36).slice(2, 8)}`,
+      JSON.stringify(rec),
+      { expirationTtl: 86400 * 180 }
+    );
+  } catch {}
 }
 
 async function addToBrevo(email, apiKey, listId, attributes) {
