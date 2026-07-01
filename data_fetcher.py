@@ -1,3 +1,4 @@
+import re
 import yfinance as yf
 from yahooquery import Ticker as YQTicker
 import requests
@@ -122,6 +123,24 @@ def _roc_to_iso(roc: str) -> str:
         return None
 
 
+def _parse_tw_change(raw) -> float:
+    """台股除權息日 TWSE/TPEx 的 Change 欄位常是文字('除息'/'除權'/'除權息',可能夾帶數字)。
+    直接 float() 會 ValueError 導致整支股票被丟棄(除息日報價消失)。
+    這裡:純數字直接轉;夾帶數字抽數字;純文字(如'除息')回 0(當平盤,保留收盤價不丟股)。"""
+    s = str(raw).strip()
+    try:
+        return float(s)
+    except ValueError:
+        pass
+    m = re.search(r"[-+]?\d+(?:\.\d+)?", s)
+    if m:
+        try:
+            return float(m.group())
+        except ValueError:
+            pass
+    return 0.0
+
+
 def _fetch_twse_all() -> dict:
     """Return {stock_code: {name, price, change_pct}} for all TWSE listed stocks"""
     global _TWSE_CACHE, _TWSE_CACHE_TIME, _TWSE_DATA_DATE
@@ -144,7 +163,7 @@ def _fetch_twse_all() -> dict:
                 data_date = _roc_to_iso(row["Date"])
             try:
                 close = float(row["ClosingPrice"])
-                change = float(row["Change"])
+                change = _parse_tw_change(row["Change"])
                 prev = close - change
                 change_pct = (change / prev * 100) if prev != 0 else 0
                 result[code] = {
@@ -247,7 +266,7 @@ def _fetch_tpex_all() -> dict:
                     continue
                 try:
                     close = float(str(row["Close"]).strip())
-                    change = float(str(row["Change"]).strip())
+                    change = _parse_tw_change(row["Change"])
                     prev = close - change
                     change_pct = (change / prev * 100) if prev != 0 else 0
                     result[code] = {
