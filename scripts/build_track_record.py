@@ -20,7 +20,7 @@ from pathlib import Path
 import urllib.request
 import urllib.error
 import urllib.parse
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Comment
 
 ROOT = Path(__file__).resolve().parent.parent
 DIGEST_DIR = ROOT / "docs" / "output"
@@ -162,6 +162,16 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
         else:
             continue
         name, ticker = _extract_name_ticker(ticker_span)
+        # 台股卡經 _postprocess 後 signal-ticker 只剩中文名(不露代號),抓不到真代碼 →
+        # 用 _mark_card 塞在卡尾的隱形 <!--h:代號--> 標記補回(美股 ticker 是字母不受影響)。
+        if not re.fullmatch(r"[A-Za-z0-9.]{1,6}", ticker or ""):
+            for c in card.find_all(string=lambda t: isinstance(t, Comment)):
+                mm = re.match(r"\s*h:\s*([0-9A-Za-z.]+)\s*$", str(c))
+                if mm:
+                    if not name or name == ticker:
+                        name = _clean(ticker_span.get_text())
+                    ticker = mm.group(1)
+                    break
         if not ticker:
             continue
         name = _enrich_tw_name(name, ticker)
