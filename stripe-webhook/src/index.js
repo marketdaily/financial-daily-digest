@@ -1057,15 +1057,16 @@ export default {
       if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
       const target = (body.target || "").trim().toLowerCase();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target)) return json({ error: "invalid_target" }, 400);
-      const [plan, pwd, prefsRaw, lineRaw, signupRaw] = await Promise.all([
+      const [plan, pwd, prefsRaw, pushRaw, signupRaw] = await Promise.all([
         env.USER_PREFS.get(`plan:${target}`),
         env.USER_PREFS.get(`pwd:${target}`),
         env.USER_PREFS.get(target),
-        env.USER_PREFS.get(`line:${target}`),
+        env.USER_PREFS.get(`pushsub:${target}`),   // Web Push 訂閱(LINE 已全退役,通道改自有 Web Push)
         env.USER_PREFS.get(`signup:${target}`),
       ]);
       let prefs = null; try { if (prefsRaw) prefs = JSON.parse(prefsRaw); } catch {}
       let signup = null; try { if (signupRaw) signup = JSON.parse(signupRaw); } catch {}
+      let pushCount = 0; try { const l = pushRaw ? JSON.parse(pushRaw) : []; pushCount = Array.isArray(l) ? l.length : 0; } catch {}
       let brevo = null;
       try {
         const r = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(target)}`, {
@@ -1077,7 +1078,7 @@ export default {
         email: target,
         plan: plan || "free",
         hasPassword: !!pwd,
-        lineBound: lineRaw ? true : null,          // 只在 KV 有正記錄時報 true;無記錄回 null(無法確認,不謊報未綁定)
+        pushDevices: pushCount,                    // 已訂閱 Web Push 的裝置數(0 = 未開推播)
         signup,
         prefs: prefs ? { us_stocks: prefs.us_stocks || [], tw_stocks: prefs.tw_stocks || [], digest_depth: prefs.digest_depth || "standard", updated_at: prefs.updated_at || null } : null,
         brevo,

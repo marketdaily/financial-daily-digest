@@ -1782,7 +1782,7 @@ async function openUserDetail(email) {
       </div>
       ${row("註冊日", esc(since))}
       ${row("已設密碼", d.hasPassword?"✓ 是":"✗ 否")}
-      ${row("LINE 綁定", d.lineBound===true?"✓ 已綁定":"—（無法確認）")}
+      ${row("Web Push 推播", d.pushDevices>0?`✓ ${d.pushDevices} 台裝置`:"— 未開啟")}
       ${row("日報深度", esc(d.prefs?.digest_depth||"standard"))}
       ${row("美股自選", us.length?esc(us.join("、")):"—")}
       ${row("台股自選", tw.length?esc(tw.join("、")):"—")}
