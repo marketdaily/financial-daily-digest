@@ -1,0 +1,137 @@
+{
+  "_comment": "MarketDaily v3 organic draft — 2026-07-01 Marketing Agents 5-skill chain (spy → extractor → bulk-creative → ads-score → organic package). 16 variants generated, top 12 kept (avg 88/100, 0 compliance flags). ORGANIC ONLY. No win% cited (points to public track record). Only Premium tier. Prices verbatim from ground-truth. Image cards to be built later via social_cards.py. Platforms: IG/FB/Threads (skip line/x). DRAFT — do not merge into social_posts.json until reviewed.",
+  "posts": [
+    {
+      "id": "v3_noise_filter_01",
+      "day": 1,
+      "image": "v3_noise_filter_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "別的看盤 App 比誰報價更齊、圖表更多、通知更響。\nMarketDaily 反過來做:把每天上千條財經新聞, 刪到只剩跟你有關的重點。\n\nAI 先過濾假消息, 再幫你整理成 30 秒讀完的中文早報 —— 美股 + 台股, 附上該想的操作方向, 不是 80 則沒結論的快訊。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#美股 #台股 #投資理財 #財經早報 #理財"
+    },
+    {
+      "id": "v3_time_30sec_01",
+      "day": 2,
+      "image": "v3_time_30sec_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "早上通勤那 30 秒, 夠讀完一份財經早報了。\n不用滑 20 個新聞 App、不用一支一支查你手上的股票。\n\nMarketDaily 幫你把美股 + 台股整理成一封中文早報:重點、風險、可以想的操作方向, 一次到位。\n台股 07:00、美股 20:00, 準時送進你的 inbox。\n\n免費試一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經早報 #美股 #台股 #通勤 #投資"
+    },
+    {
+      "id": "v3_personalized_01",
+      "day": 3,
+      "image": "v3_personalized_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "市場每天上千條新聞, 真正跟你有關的可能只有 5 條。\n問題是 —— 哪 5 條?\n\nMarketDaily 讓你設定自己的持股, AI 每天早上只挑跟你有關的那幾條, 中文寫給你看。\n不是泛泛的大盤, 是你的美股 + 台股。\n\n設定你的持股, 先讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#個人化投資 #美股 #台股 #財經 #理財"
+    },
+    {
+      "id": "v3_bilingual_niche_01",
+      "day": 4,
+      "image": "v3_bilingual_niche_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "如果你是「人在台灣、手上有美股」的那種投資人 —— 這封早報是寫給你的。\n\n台股看得懂, 美股卻常常隔一層英文和時差。等你早上醒來, 美股早就收盤, 新聞還是一堆英文標題。\n\nMarketDaily 把美股 + 台股都用中文整理好:美股早報 20:00、台股早報 07:00, 兩邊都不漏。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#美股 #台股 #海外投資 #財經早報 #中文"
+    },
+    {
+      "id": "v3_conclusion_01",
+      "day": 5,
+      "image": "v3_conclusion_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "你不缺新聞, 你缺的是「所以呢?」\n\nFed 講話、台積電又漲、AI 再一輪、誰買超誰賣超…… 看完 80 則, 還是不知道:那我手上的股票, 今天該怎麼想?\n\nMarketDaily 每天只給你消化過的重點 + 該想的操作方向, 不是把快訊倒給你自己拼。\n\n30 秒看懂, 先讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經 #投資理財 #美股 #台股 #早報"
+    },
+    {
+      "id": "v3_track_record_01",
+      "day": 6,
+      "image": "v3_track_record_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "財經內容最怕一件事:講得頭頭是道, 但沒人回頭對帳。\n\nMarketDaily 的每日方向判斷會留下紀錄, 戰績公開可查 —— 對的錯的都在頁面上, 自己去看, 不用聽我們一張嘴。\n\n先免費讀一份, 順便看看戰績頁 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#投資理財 #財經 #美股 #台股 #透明"
+    },
+    {
+      "id": "v3_last_to_know_01",
+      "day": 7,
+      "image": "v3_last_to_know_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "重大新聞發生的時候, 你通常是第幾個知道的?\n\n如果答案是「最後一個」, 那多半是因為你在等自己有空滑新聞。\n\nMarketDaily 幫你顧著:美股 + 台股的關鍵消息, AI 過濾掉雜訊和假消息後, 整理成中文早報準時送到。Premium 還有即時警報, 重要的事第一時間提醒你。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#美股 #台股 #財經 #即時 #投資"
+    },
+    {
+      "id": "v3_english_cost_01",
+      "day": 8,
+      "image": "v3_english_cost_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "想認真看財經, 選項好像只有兩種:\n一種太貴又是英文(Bloomberg、WSJ), 一種免費但雜訊爆炸。\n\nMarketDaily 想給你第三種:中文寫的美股 + 台股早報, AI 過濾假消息, 30 秒讀完重點。\n免費就能開始; 試讀首月 NT$299 解鎖 Premium 全部功能, 之後 NT$499/月, 隨時取消。\n\n先讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#美股 #台股 #財經 #理財 #投資"
+    },
+    {
+      "id": "v3_schedule_01",
+      "day": 9,
+      "image": "v3_schedule_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "好的資訊習慣, 是不用「特別安排時間」的。\n\n台股早報 07:00 —— 開盤前配早餐讀完。\n美股早報 20:00 —— 晚上收心的時候看一眼。\n\nMarketDaily 卡在你本來就會停下來的兩個時間點, 美股 + 台股中文整理好, 你只要讀。\n\n免費試一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經早報 #美股 #台股 #投資日常 #理財"
+    },
+    {
+      "id": "v3_ai_assistant_01",
+      "day": 10,
+      "image": "v3_ai_assistant_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "讀完早報還有問題, 可以直接問。\n\nMarketDaily 的 AI 助手支援雙向對話 —— 「這則新聞對我的持股影響大嗎?」「這兩支怎麼比?」你問, 它用你的持股脈絡回答。\n這是 Premium 的功能, 搭配無限股票追蹤、即時警報、月度投組健檢。\n\n先免費讀一份, 想升級再說 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#AI投資 #美股 #台股 #財經 #理財"
+    },
+    {
+      "id": "v3_premium_value_01",
+      "day": 11,
+      "image": "v3_premium_value_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "Premium 一個月 NT$499, 你拿到的是:\n・無限追蹤你的美股 + 台股\n・重要變化即時警報\n・每月一次投組健檢\n・AI 助手雙向對話, 用你的持股回答\n\n想省一點就年繳, 平均 NT$399/月(省 20%); 想先試水溫, 首月 NT$299。\n\n看方案 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#投資理財 #美股 #台股 #財經 #Premium"
+    },
+    {
+      "id": "v3_weekend_rest_01",
+      "day": 12,
+      "image": "v3_weekend_rest_01.png",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads"
+      ],
+      "caption": "我們的早報, 週末不吵你。\n\n市場休市的時候, 你的手機不需要再多一則推播。MarketDaily 跟著開盤節奏走:有盤的日子, 美股 + 台股中文早報準時送到; 沒盤的日子, 讓你好好休息。\n\n去雜訊, 也包含「不製造雜訊」。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經早報 #美股 #台股 #投資 #生活"
+    }
+  ]
+}
