@@ -448,7 +448,9 @@ async function doSim(){{
 }}
 document.getElementById('scode').addEventListener('keydown',e=>{{if(e.key==='Enter')doAnalyze();}});
 document.getElementById('scap').addEventListener('keydown',e=>{{if(e.key==='Enter')doSim();}});
-(function(){{const p=new URLSearchParams(location.search);const q=p.get('q');
+(function(){{const p=new URLSearchParams(location.search);
+  if(p.get('doc'))document.querySelectorAll('details.gloss').forEach(d=>d.open=true);
+  const q=p.get('q');
   if(q){{document.getElementById('scode').value=q;
     if(p.get('t'))document.getElementById('stcri').value=p.get('t');
     if(p.get('cap')){{document.getElementById('scap').value=p.get('cap');doSim();}}else{{doAnalyze();}}}}}})();
