@@ -251,8 +251,43 @@ def _call_openai(prompt: str, system: str = None) -> str:
     return resp.json()["choices"][0]["message"]["content"].strip()
 
 
+def _call_groq(prompt: str, system: str = None,
+               model: str = "llama-3.3-70b-versatile") -> str:
+    """Groq(Llama 70B)免費後援。OpenAI 相容 API、速度快,免費層有獨立配額桶。
+    定位:Gemini 免費配額耗盡、Claude 又瞬斷時的『免費第三張網』,接住原本會掉
+    deterministic 的班次(2026-07-01 事故:Gemini 429+Claude DNS 抖→3 chunk 掉備援)。
+    GROQ_API_KEY 已在 .env;沒設則 raise,鏈/席次自動跳過(非錯誤)。"""
+    import os
+    api_key = os.environ.get("GROQ_API_KEY")
+    if not api_key:
+        raise RuntimeError("未設定 GROQ_API_KEY")
+    resp = None
+    for attempt in range(2):
+        resp = requests.post(
+            "https://api.groq.com/openai/v1/chat/completions",
+            headers={"Authorization": f"Bearer {api_key}",
+                     "Content-Type": "application/json"},
+            json={
+                "model": model,
+                "max_tokens": 8000,
+                "temperature": 0.4,
+                "messages": [
+                    {"role": "system", "content": system or _SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt},
+                ],
+            },
+            timeout=120,
+        )
+        if resp.status_code == 429 and attempt < 1:
+            time.sleep(8)
+            continue
+        break
+    resp.raise_for_status()
+    return resp.json()["choices"][0]["message"]["content"].strip()
+
+
 def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
-    """多 provider LLM 鏈:Gemini Flash → Gemini Lite → Claude Haiku → OpenAI gpt-4o-mini。
+    """多 provider LLM 鏈:Gemini(多 model)→ Claude Sonnet → Groq Llama70B(免費)→ OpenAI。
     四層 LLM,任一可用就成功 — deterministic fallback 在現實中應該永遠跑不到。
     2026-05-26:用戶要求不能有「最差情況」,LLM 路徑必須近 100%。
     prefer_strong=True:把 Claude/OpenAI 排到 Gemini 前面。retry 專用 —
@@ -261,7 +296,10 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     不破壞「永不掉 deterministic」保證。"""
     last_err = None
     gemini = [(f"gemini:{m}", lambda p, mm=m: _call_gemini(p, mm)) for m in GEMINI_MODELS]
-    strong = [("claude:sonnet-4.6", _call_claude), ("openai:gpt-4o-mini", _call_openai)]
+    # Groq(Llama70B,免費)排在付費 OpenAI 前:Gemini 配額死 + Claude 抖時的免費接手層。
+    strong = [("claude:sonnet-4.6", _call_claude),
+              ("groq:llama-70b", lambda p: _call_groq(p)),
+              ("openai:gpt-4o-mini", _call_openai)]
     providers = (strong + gemini) if prefer_strong else (gemini + strong)
     for name, fn in providers:
         try:
@@ -1074,6 +1112,8 @@ _COUNCIL_HAIKU = "claude-haiku-4-5-20251001"
 _COUNCIL_SEATS = [
     ("gemini:2.5-lite", lambda p: _call_gemini(p, "gemini-2.5-flash-lite", system=_COUNCIL_SYS)),
     ("gemini:2.0-flash", lambda p: _call_gemini(p, "gemini-2.0-flash", system=_COUNCIL_SYS)),
+    # Groq Llama70B:免費且獨立配額桶,Gemini 席次全 429 時仍能湊到跨廠商第二把免費聲音
+    ("groq:llama-70b", lambda p: _call_groq(p, system=_COUNCIL_SYS)),
     ("claude:haiku", lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)),
     # Sonnet 當第二把 Claude 聲音:Gemini 全 429 時仍湊得到 ≥2 席,council 不會整個熄火
     ("claude:sonnet", lambda p: _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")),
