@@ -1,9 +1,18 @@
-"""把 rank() 結果輸出成自包含 HTML 報告(深色玻璃卡片風)。"""
-import os, html, datetime
+"""把 rank() 結果輸出成自包含 HTML 報告(深色玻璃卡片風)+ 內建互動資金模擬器。"""
+import os, html, json, datetime
 import cb_core
 import cb_profiles
+import cb_intel
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def _intel_html(code, spot=None):
+    lines = cb_intel.intel_lines(code, spot)
+    if not lines:
+        return ""
+    items = "".join(f'<div class="iline">{html.escape(ln)}</div>' for ln in lines)
+    return f'<div class="intel"><div class="ihead">📊 市場情報</div>{items}</div>'
 
 
 def _profile_html(code):
@@ -105,6 +114,7 @@ def _card(item, sd, a):
       </div>
       <div class="scen"><div class="scl">股價情境 → 對權利金本金報酬</div>{_scen_bar(a['scenarios'])}</div>
       {_profile_html(item['stock_code'])}
+      {_intel_html(item['stock_code'], sd.get('spot'))}
       <div class="reasons">{''.join(f'<span>{html.escape(r)}</span>' for r in a['score_reasons'])}</div>
     </div>"""
     return rows
@@ -126,6 +136,7 @@ def _watch_card(item):
         <span>{html.escape(item['section'])}</span><span>{html.escape(item['underwriter'])}</span>
       </div>
       {_profile_html(item['stock_code'])}
+      {_intel_html(item['stock_code'])}
       <div class="pnote2">條件未定,承銷價/轉換價出來後即可拆解定價分析。</div>
     </div>"""
 
@@ -232,9 +243,50 @@ tr.er td{{background:rgba(52,211,153,.05)}}
 .pnote2{{color:#8b95a7;margin-top:10px;font-size:11.5px;font-style:italic}}
 .watch-card .wtag{{font-size:12px;font-weight:700;color:#a5b4fc;background:rgba(165,180,252,.14);
 padding:3px 10px;border-radius:20px;height:fit-content}}
+.intel{{margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.06)}}
+.ihead{{color:#7dd3fc;font-weight:700;font-size:12px;margin-bottom:3px}}
+.iline{{color:#b7c0d0;font-size:11.5px;line-height:1.55;margin:1px 0}}
+.search{{position:sticky;top:0;z-index:20;background:rgba(10,14,26,.92);backdrop-filter:blur(10px);
+padding:16px 0;margin-bottom:8px;border-bottom:1px solid var(--bd)}}
+.search h2{{font-size:15px;margin:0 0 8px;color:#a5b4fc}}
+.sbar{{display:flex;gap:8px;flex-wrap:wrap}}
+.sbar input{{flex:1;min-width:180px;background:rgba(255,255,255,.06);border:1px solid var(--bd);
+border-radius:10px;padding:11px 14px;color:#e6e9f0;font-size:15px}}
+.sbar input::placeholder{{color:#6b7688}}
+.sbar button{{background:linear-gradient(90deg,#6366f1,#818cf8);border:0;border-radius:10px;
+padding:11px 20px;color:#fff;font-weight:700;font-size:14px;cursor:pointer}}
+.sbar button:active{{transform:scale(.97)}}
+.sbar .cap{{max-width:130px;flex:0 0 auto}}
+.shint{{color:var(--mut);font-size:11.5px;margin-top:6px}}
+#sresult{{margin:14px 0}}
+#sresult .cards{{margin-top:0}}
+.serr{{color:#f87171;font-size:13px;padding:10px}}
+.sloading{{color:#a5b4fc;font-size:13px;padding:10px}}
+.simbox{{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px;margin-top:14px}}
+.simbox h3{{margin:0 0 10px;font-size:15px;color:#34d399}}
+.simrow{{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin:4px 0}}
+.simrow b{{color:#e6e9f0}}
+.simwhy{{font-size:12.5px;color:#b7c0d0;line-height:1.6;margin:8px 0}}
+.simwhy .gg{{color:#34d399;font-weight:700}}.simwhy .yy{{color:#fbbf24;font-weight:700}}
+.simwhy .rr{{color:#f87171;font-weight:700}}
+.simtab{{width:100%;font-size:12.5px;margin-top:8px;border-collapse:collapse}}
+.simtab td,.simtab th{{padding:5px 8px;text-align:right;border-bottom:1px solid rgba(255,255,255,.05)}}
+.simtab th{{color:var(--mut)}}
 </style></head><body><div class="wrap">
 <h1>台股 CB 拆解吸引力分析</h1>
 <div class="sub">來源 {html.escape(db['source_file'])} · 產出 {today} · 已定價 {len(results)} 檔 / 全表 {db['count']} 檔</div>
+<div class="search">
+  <h2>🔎 輸入代碼即時分析(股票碼 5289 / 債券碼 52892 / 現有CB 11011 / 公司名)</h2>
+  <div class="sbar">
+    <input id="scode" placeholder="輸入代碼或名稱,例如 5289、11011、宜鼎、台泥" autocomplete="off">
+    <input id="stcri" class="cap" type="number" min="1" max="9" placeholder="TCRI(選填)">
+    <button onclick="doAnalyze()">分析</button>
+    <input id="scap" class="cap" placeholder="本金(如 50萬)">
+    <button onclick="doSim()" style="background:linear-gradient(90deg,#10b981,#34d399)">資金模擬</button>
+  </div>
+  <div class="shint">現有可轉債缺 TCRI 可填欄位;資金模擬會用輸入的代碼(留空=用符合準則者)。</div>
+  <div id="sresult"></div>
+</div>
 <div class="crit">📏 <b>老闆拆解準則(硬門檻)</b>:TCRI 須為 <b>3 或 4</b>(銀行才肯承做資產交換)且
 發行量 <b>≥ 雙位數億(10億)</b>(流動性足)。兩條同時滿足才值得拆解 —— 本期已定價
 <b>{len(elig)}</b> 檔符合({len(other)} 檔不符已略過)。</div>
@@ -254,7 +306,41 @@ padding:3px 10px;border-radius:20px;height:fit-content}}
 前瞻波動加權 短{A['vol_w_short']:.0%}/長{A['vol_w_long']:.0%} · TCRI 信用利差 {tcri_str}<br>
 <span class="warn">⚠ 隱含波動由真實承銷/競拍價反解;前瞻波動 = EWMA(短) 與 120日(長)加權(均值回歸)。
 模型未精算交易稅/賣回時點/流動性折價,評分供篩選排序,進場前仍須人工核對承銷條件與資產交換報價。</span>
-</div></div></body></html>"""
+</div></div>
+<script>
+const R=document.getElementById('sresult');
+function busy(m){{R.innerHTML='<div class="sloading">'+m+'…</div>';}}
+function err(m){{R.innerHTML='<div class="serr">'+m+'</div>';}}
+async function call(u){{
+  const r=await fetch(u); const t=await r.text();
+  if(!r.ok) throw new Error(t||('HTTP '+r.status));
+  return t;
+}}
+async function doAnalyze(){{
+  const c=document.getElementById('scode').value.trim();
+  if(!c){{err('請先輸入代碼或名稱');return;}}
+  const t=document.getElementById('stcri').value.trim();
+  busy('分析 '+c+' 中');
+  try{{ R.innerHTML=await call('/api/analyze?code='+encodeURIComponent(c)+(t?'&tcri='+t:'')); }}
+  catch(e){{ err('分析失敗:'+e.message); }}
+}}
+async function doSim(){{
+  const cap=document.getElementById('scap').value.trim();
+  if(!cap){{err('請先輸入本金,例如 50萬 或 1000萬');return;}}
+  const c=document.getElementById('scode').value.trim();
+  const t=document.getElementById('stcri').value.trim();
+  busy('蒙地卡羅模擬中');
+  try{{ R.innerHTML=await call('/api/sim?capital='+encodeURIComponent(cap)+(c?'&code='+encodeURIComponent(c):'')+(t?'&tcri='+t:'')); }}
+  catch(e){{ err('模擬失敗:'+e.message); }}
+}}
+document.getElementById('scode').addEventListener('keydown',e=>{{if(e.key==='Enter')doAnalyze();}});
+document.getElementById('scap').addEventListener('keydown',e=>{{if(e.key==='Enter')doSim();}});
+(function(){{const p=new URLSearchParams(location.search);const q=p.get('q');
+  if(q){{document.getElementById('scode').value=q;
+    if(p.get('t'))document.getElementById('stcri').value=p.get('t');
+    if(p.get('cap')){{document.getElementById('scap').value=p.get('cap');doSim();}}else{{doAnalyze();}}}}}})();
+</script>
+</body></html>"""
     with open(path, "w", encoding="utf-8") as f:
         f.write(doc)
     return path
