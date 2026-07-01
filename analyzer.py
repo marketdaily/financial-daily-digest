@@ -1606,6 +1606,9 @@ def _deterministic_signal_card(sym: str, data: dict, mkt_status: dict) -> str:
         reason = (f'{name}({sym}) 收 ${_fmt_num(price)}{unit}({chg:+.2f}%)。'
                   f'{when}後若回測 ${_fmt_num(buy_lo)}{unit} 不破、收盤收復 ${_fmt_num(buy_hi)}{unit} 再分批接,'
                   f'跌破 ${_fmt_num(stop)}{unit} 先停損;本週留意 ${_fmt_num(target)}{unit} 壓力。')
+    # 備援卡 reason 含字面「價<MA20<MA50」,< 會被瀏覽器當 HTML 標籤吃掉→文字斷在「(價」+版型變形。
+    # 轉全形保證渲染不破(備援路徑必須零失敗)。
+    reason = reason.replace("<", "＜").replace(">", "＞")
     return (
         f'<div class="signal-card hold"><div class="signal-card-top">'
         f'<span class="signal-ticker">{sym}</span>'
