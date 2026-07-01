@@ -2144,6 +2144,7 @@ let _storyIdx = 0;
 let _quotesRefreshTimer = null;
 let _countdownTimer = null;
 let _annotations = {};   // 看盤台:{sym:{verdict,reason}} 來自日報引擎(/annotations)
+let _annotationsAsof = null;   // 註解生成時間(日報班次),誠實標示非即時
 
 // 看盤台:抓每檔個股的真.AI 一句註解(日報 pipeline 算好的 verdict/reason,非機械日內公式)
 async function loadAnnotations() {
@@ -2152,6 +2153,7 @@ async function loadAnnotations() {
     if (!res.ok) return;
     const data = await res.json();
     _annotations = data.annotations || {};
+    _annotationsAsof = data.asof || null;
     // overlay 正開著就即時重繪,讓真 AI 註解一抓到就補上
     if (document.getElementById("story-overlay")?.classList.contains("open")) {
       try { renderStoryCard(); } catch {}
@@ -2429,7 +2431,9 @@ function renderStoryCard() {
     const badgeCls = ann.verdict === "buy" ? "bull" : ann.verdict === "sell" ? "bear" : "neutral";
     badge.textContent = zh ? chip.zh : chip.en;
     badge.className = `sc-sig-badge ${badgeCls}`;
-    scoreEl.textContent = zh ? "AI 分析" : "AI view";
+    let dstr = "";
+    if (_annotationsAsof) { const dd = new Date(_annotationsAsof); if (!isNaN(dd)) dstr = ` · ${dd.getMonth() + 1}/${dd.getDate()}`; }
+    scoreEl.textContent = (zh ? "AI 分析" : "AI view") + dstr;
   } else {
     badge.textContent = sig.label;
     badge.className = `sc-sig-badge ${sig.cls}`;
