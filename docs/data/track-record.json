@@ -1,84 +1,84 @@
 {
   "stats": {
-    "generated_at": "2026-07-01T08:03:29",
+    "generated_at": "2026-07-01T19:04:59",
     "horizon": "5d",
     "days_covered": 18,
-    "total_records": 712,
-    "judged_records": 570,
+    "total_records": 1278,
+    "judged_records": 1012,
     "one_day": {
-      "a_count": 278,
-      "a_wins": 126,
-      "a_rate": 45.3,
-      "c_count": 385,
-      "c_wins": 212,
-      "c_rate": 55.1
+      "a_count": 533,
+      "a_wins": 248,
+      "a_rate": 46.5,
+      "c_count": 675,
+      "c_wins": 370,
+      "c_rate": 54.8
     },
-    "a_count": 255,
-    "a_wins": 91,
-    "a_rate": 35.7,
+    "a_count": 477,
+    "a_wins": 192,
+    "a_rate": 40.3,
     "a_ci95": [
-      30.1,
-      41.7
+      35.9,
+      44.7
     ],
-    "c_count": 315,
-    "c_wins": 184,
-    "c_rate": 58.4,
+    "c_count": 535,
+    "c_wins": 311,
+    "c_rate": 58.1,
     "c_ci95": [
-      52.9,
-      63.7
+      53.9,
+      62.2
     ],
     "calibration": {
-      "n": 242,
-      "brier": 0.4165,
+      "n": 464,
+      "brier": 0.3906,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
-          "n": 28,
-          "hit_rate": 50.0
+          "n": 59,
+          "hit_rate": 59.3
         },
         "61-70": {
-          "n": 66,
-          "hit_rate": 39.4
+          "n": 110,
+          "hit_rate": 39.1
         },
         "<=50": {
-          "n": 1,
-          "hit_rate": 0.0
+          "n": 27,
+          "hit_rate": 70.4
         },
         ">70": {
-          "n": 147,
-          "hit_rate": 27.9
+          "n": 268,
+          "hit_rate": 31.7
         }
       }
     },
     "by_regime": {
       "up": {
-        "a_count": 126,
-        "a_wins": 15,
-        "a_rate": 11.9,
+        "a_count": 229,
+        "a_wins": 46,
+        "a_rate": 20.1,
         "ci95": [
-          7.3,
-          18.7
+          15.4,
+          25.8
         ]
       },
       "down": {
-        "a_count": 129,
-        "a_wins": 76,
+        "a_count": 248,
+        "a_wins": 146,
         "a_rate": 58.9,
         "ci95": [
-          50.3,
-          67.0
+          52.7,
+          64.8
         ]
       }
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 250,
-      "no_fill": 73,
-      "pending": 6,
-      "hit_target": 22,
-      "hit_stop": 123,
-      "expired": 26,
-      "avg_ret_pct": -1.51,
+      "simulated": 501,
+      "no_fill": 176,
+      "pending": 14,
+      "hit_target": 50,
+      "hit_stop": 215,
+      "expired": 46,
+      "avg_ret_pct": -0.87,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
@@ -89,7 +89,7 @@
       "c_wins": 16,
       "c_rate": 76.2
     },
-    "personal_samples_added": 630
+    "personal_samples_added": 1193
   },
   "records": [
     {
@@ -161,6 +161,60 @@
       "entry_hi": 276.85,
       "target": 306.04,
       "stop": 268.51,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-01",
+      "name": "聯發科",
+      "ticker": "2454",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "⚪ NEUTRAL",
+      "reason": "聯發科目前股價在盤整區間中，雖有反彈跡象，但基本面累計YoY疲弱，且未能站穩MA20上方。建議今早開盤後觀望，待股價回測 NT$3825 不破並確認站穩，再考慮分批低接。若能突破 MA20 (NT$4313.75) 則反彈動能將更明確。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 46,
+      "entry_lo": 3825.0,
+      "entry_hi": 3825.0,
+      "target": 4810.0,
+      "stop": 3735.6,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-01",
+      "name": "台積電",
+      "ticker": "2330",
+      "market": "tw",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "台積電目前處於多頭結構，營收連29月正成長，MA20支撐有效。建議今早開盤後可考慮買進加碼，若股價回測 MA20 (NT$2372) 不破並確認站穩，可分批進場，目標挑戰 NT$2535。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 38,
+      "entry_lo": 2372.0,
+      "entry_hi": 2372.0,
+      "target": 2535.0,
+      "stop": 2252.85,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-01",
+      "name": "鴻海",
+      "ticker": "2317",
+      "market": "tw",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "鴻海股價在盤整區間中，246元支撐穩固，且基本面營收連27月正成長，累計YoY表現亮眼。建議今早開盤後可續抱持有，若股價回測 NT$246 不破，可考慮分批低接，目標反彈至 NT$268.36。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 44,
+      "entry_lo": 246.0,
+      "entry_hi": 246.0,
+      "target": 268.36,
+      "stop": 229.3,
       "outcome": null,
       "outcome_1d": null
     },
