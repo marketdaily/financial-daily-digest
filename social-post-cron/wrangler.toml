@@ -2,13 +2,11 @@ name = "marketdaily-social-post-cron"
 main = "src/index.js"
 compatibility_date = "2026-05-01"
 
-# 每天 06:00 UTC = 台灣 14:00 觸發 social_post.yml,GitHub Actions 跑 daily_run.py 發下一篇貼文。
-# 取代本機 launchd com.marketdaily.socialpost(Mac 睡眠 missed firing 導致時間亂掉)。
-#
-# 2026-05-26: cron 開回 —— v2 backlog 15 篇已就位 (commit 6c6bed3),
-# 圖卡已 deploy 到 prod (docs/social/*.jpg)。手動觸發走 /trigger?token=<INTERNAL_TOKEN>。
+# 2026-07-01: cron 停用(crons=[])。GitHub 帳號 6/12 被 flag 後 Actions 全停,此 Worker 的
+# workflow_dispatch 觸發路徑已死;社群發文改由 winrig cron(~/.marketdaily-fallback/social_post_runner.sh,
+# 14:00 TW)single-source 執行。保留此 Worker 但關 cron,防 GitHub 解封後 Actions 復活造成與 winrig 雙發。
 [triggers]
-crons = ["0 6 * * *"]
+crons = []
 
 # Secret(用 `wrangler secret put GITHUB_TOKEN` 設定):
 #   GITHUB_TOKEN — fine-grained PAT,對 marketdaily/financial-daily-digest 有 Actions: Read and write
