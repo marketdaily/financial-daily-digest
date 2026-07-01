@@ -252,8 +252,10 @@ def _call_openai(prompt: str, system: str = None) -> str:
 
 
 def _call_groq(prompt: str, system: str = None,
-               model: str = "llama-3.3-70b-versatile") -> str:
-    """Groq(Llama 70B)免費後援。OpenAI 相容 API、速度快,免費層有獨立配額桶。
+               model: str = "openai/gpt-oss-120b") -> str:
+    """Groq(GPT-OSS 120B)免費後援。OpenAI 相容 API、速度快,免費層有獨立配額桶。
+    注:Groq 於 2026-07-01 通知 llama-3.3-70b-versatile deprecate、2026-08-16 停用,
+    官方建議替換為 openai/gpt-oss-120b,已切換避免停用後掉回 deterministic。
     定位:Gemini 免費配額耗盡、Claude 又瞬斷時的『免費第三張網』,接住原本會掉
     deterministic 的班次(2026-07-01 事故:Gemini 429+Claude DNS 抖→3 chunk 掉備援)。
     GROQ_API_KEY 已在 .env;沒設則 raise,鏈/席次自動跳過(非錯誤)。"""
@@ -310,7 +312,7 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     gemini = [(f"gemini:{m}", lambda p, mm=m: _call_gemini(p, mm)) for m in GEMINI_MODELS]
     # Groq(Llama70B,免費)排在付費 OpenAI 前:Gemini 配額死 + Claude 抖時的免費接手層。
     strong = [("claude:sonnet-4.6", _call_claude),
-              ("groq:llama-70b", lambda p: _call_groq(p)),
+              ("groq:gpt-oss-120b", lambda p: _call_groq(p)),
               ("openai:gpt-4o-mini", _call_openai)]
     providers = (strong + gemini) if prefer_strong else (gemini + strong)
     last_err = None
@@ -1156,7 +1158,7 @@ _COUNCIL_SEATS = [
     ("gemini:2.5-lite", lambda p: _call_gemini(p, "gemini-2.5-flash-lite", system=_COUNCIL_SYS)),
     ("gemini:2.0-flash", lambda p: _call_gemini(p, "gemini-2.0-flash", system=_COUNCIL_SYS)),
     # Groq Llama70B:免費且獨立配額桶,Gemini 席次全 429 時仍能湊到跨廠商第二把免費聲音
-    ("groq:llama-70b", lambda p: _call_groq(p, system=_COUNCIL_SYS)),
+    ("groq:gpt-oss-120b", lambda p: _call_groq(p, system=_COUNCIL_SYS)),
     ("claude:haiku", lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)),
     # Sonnet 當第二把 Claude 聲音:Gemini 全 429 時仍湊得到 ≥2 席,council 不會整個熄火
     ("claude:sonnet", lambda p: _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")),
