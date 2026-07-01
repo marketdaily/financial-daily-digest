@@ -243,6 +243,26 @@ def _tw_stocks_via_yahoo(codes: list, twse: dict, tpex: dict) -> dict:
     return out
 
 
+# 本班次「主源查無、連 Yahoo 都救不回」的台股代號(去重),run 尾端由 main.py 推 admin。
+_LAST_TW_MISSING: list = []
+
+def _rescue_missing_tw(codes: list, resolved: dict, twse: dict, tpex: dict) -> None:
+    """覆蓋率守門+自我修復:任何要求的台股代號在主源(TWSE/TPEx)查無報價,
+    改用 Yahoo(.TW/.TWO 都試)救回,就地補進 resolved。
+    連 Yahoo 都救不回的才記進 _LAST_TW_MISSING,由 main.py 推 admin(web push)。"""
+    want = [c for c in (codes or []) if isinstance(c, str) and c.isdigit()]
+    missing = [c for c in want if c not in resolved]
+    if not missing:
+        return
+    rescued = _tw_stocks_via_yahoo(missing, twse or {}, tpex or {})
+    for c in missing:
+        if c in rescued:
+            resolved[c] = rescued[c]
+    for c in missing:
+        if c not in resolved and c not in _LAST_TW_MISSING:
+            _LAST_TW_MISSING.append(c)
+
+
 # TPEx OpenAPI — 上櫃股票收盤(含群聯 8299、精測 6510 等),官方數據無 rate limit
 _TPEX_CACHE: dict = {}
 _TPEX_CACHE_TIME: datetime = None
@@ -347,6 +367,7 @@ def fetch_tw_market():
             result[code] = twse[code]
         elif code in tpex:
             result[code] = tpex[code]
+    _rescue_missing_tw(codes, result, twse, tpex)
     return result
 
 
@@ -374,6 +395,10 @@ def fetch_custom_stocks(symbols: list) -> dict:
             d = _get_cached_price(sym)
             if d:
                 result[sym] = d
+    if tw_codes:
+        if tpex is None:
+            tpex = _fetch_tpex_all()
+        _rescue_missing_tw(tw_codes, result, twse, tpex)
     return result
 
 

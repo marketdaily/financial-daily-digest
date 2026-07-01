@@ -871,6 +871,15 @@ def run():
         except Exception as e:
             print(f"   ⚠️ admin LINE 推失敗:{e}")
 
+    # 覆蓋率守門:主源+Yahoo 都救不回的台股(除權息文字欄、下市、端點漏)→ 推 admin(web push)
+    try:
+        import data_fetcher as _df
+        if _df._LAST_TW_MISSING:
+            print(f"🕳️ {len(_df._LAST_TW_MISSING)} 支台股無報價救不回:{_df._LAST_TW_MISSING}")
+            _push_admin_coverage_alert(data["date"], _df._LAST_TW_MISSING, dry_run=DRY_RUN)
+    except Exception as e:
+        print(f"   ⚠️ 覆蓋率告警推失敗:{e}")
+
     # Pre-flight 額外:任何 HIGH audit fail 即時 LINE 推 admin(寄信前 30 分跑時用),
     # 讓 admin 有時間在真實 cron 跑前修 prompt。
     if DRY_RUN:
@@ -1011,6 +1020,40 @@ def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails, dry_run=False):
     )
     with urllib.request.urlopen(req, timeout=10) as resp:
         print(f"   admin push status={resp.status}")
+
+
+def _push_admin_coverage_alert(date_str, missing_codes, dry_run=False):
+    """持股覆蓋率告警:某些台股主源+Yahoo 都抓不到報價(除權息文字欄殘留、下市、端點漏),
+    日報那張卡會缺。推 admin(alert-worker 優先 web push)去查,不是只默默少一張卡。"""
+    import os, json as _json, urllib.request
+    worker = os.environ.get("MARKETDAILY_ALERT_WORKER_URL",
+                            "https://marketdaily-alert-worker.delvin-12345678.workers.dev")
+    tok = (os.environ.get("MARKETDAILY_ALERT_TOKEN")
+           or os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN"))
+    if not tok:
+        print("   (skip 覆蓋率告警:token 未設)")
+        return
+    try:
+        import data_fetcher as _df
+        names = _df.tw_name_map()
+    except Exception:
+        names = {}
+    prefix = "🧪 [PRE-FLIGHT]" if dry_run else "🕳️"
+    lines = [f"{prefix} MarketDaily 台股報價缺漏 {date_str}",
+             f"以下 {len(missing_codes)} 支主源+Yahoo 都抓不到,日報卡片會缺,請查:"]
+    for c in missing_codes[:20]:
+        nm = names.get(c, "")
+        lines.append(f"  • {c} {nm}".rstrip())
+    msg = "\n".join(lines)[:4900]
+    req = urllib.request.Request(
+        f"{worker.rstrip('/')}/internal/admin-line-push",
+        data=_json.dumps({"message": msg}).encode("utf-8"),
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}",
+                 "User-Agent": "md-digest-alert/1.0"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=10) as resp:
+        print(f"   coverage push status={resp.status}")
 
 
 import sys as _sys
