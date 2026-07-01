@@ -1050,9 +1050,11 @@ const i18n = {
     chart_load_failed: "圖表載入失敗",
     dd_not_found: q => `找不到「${q}」，可直接按 Enter 加入自訂代號`,
     dd_add: "+ 加入",
-    sig_neutral: "NEUTRAL",
+    sig_neutral: "中性",
     sig_bull_slight: "偏多",
     sig_bear_slight: "偏空",
+    sig_bullish: "看多",
+    sig_bearish: "看空",
     verdict_no_data: "暫無資料",
     verdict_strong_up: "🚀 強勢大漲！動能強勁，短線偏多，可追高但注意位置。",
     verdict_up: "📈 穩步走高，買盤持續湧入，建議持有，設好停利點。",
@@ -1237,6 +1239,8 @@ const i18n = {
     sig_neutral: "NEUTRAL",
     sig_bull_slight: "Slightly Bullish",
     sig_bear_slight: "Slightly Bearish",
+    sig_bullish: "BULLISH",
+    sig_bearish: "BEARISH",
     verdict_no_data: "No data available",
     verdict_strong_up: "🚀 Strong rally! Powerful momentum, short-term bullish — you can chase, but watch your entry.",
     verdict_up: "📈 Steady climb, buying keeps flowing in. Hold, and set a take-profit level.",
@@ -2212,13 +2216,13 @@ async function refreshQuotes() {
 
 function storySignal(change) {
   if (change === null) return { label: T('sig_neutral'), cls: "neutral", score: "5.0", targetPct: 3 };
-  if (change >= 5)   return { label: "BULLISH",  cls: "bull",    score: (Math.min(9.5, 5 + change * 0.7)).toFixed(1), targetPct: 8 };
-  if (change >= 2)   return { label: "BULLISH",  cls: "bull",    score: (5 + change * 0.7).toFixed(1), targetPct: 5 };
+  if (change >= 5)   return { label: T('sig_bullish'),  cls: "bull",    score: (Math.min(9.5, 5 + change * 0.7)).toFixed(1), targetPct: 8 };
+  if (change >= 2)   return { label: T('sig_bullish'),  cls: "bull",    score: (5 + change * 0.7).toFixed(1), targetPct: 5 };
   if (change >= 0.5) return { label: T('sig_bull_slight'), cls: "bull",    score: (5 + change * 0.7).toFixed(1), targetPct: 3 };
   if (change >= -0.5) return { label: T('sig_neutral'),  cls: "neutral", score: "5.0", targetPct: 3 };
   if (change >= -2)  return { label: T('sig_bear_slight'), cls: "bear",    score: (5 + change * 0.7).toFixed(1), targetPct: -3 };
-  if (change >= -5)  return { label: "BEARISH",   cls: "bear",    score: (Math.max(1.5, 5 + change * 0.7)).toFixed(1), targetPct: -5 };
-  return { label: "BEARISH", cls: "bear", score: "1.5", targetPct: -8 };
+  if (change >= -5)  return { label: T('sig_bearish'),   cls: "bear",    score: (Math.max(1.5, 5 + change * 0.7)).toFixed(1), targetPct: -5 };
+  return { label: T('sig_bearish'), cls: "bear", score: "1.5", targetPct: -8 };
 }
 
 function storyVerdict(change) {
