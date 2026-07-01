@@ -181,9 +181,11 @@ def us_dcf(symbol):
         return None
     beta = _f(p.get("beta")) or 1.0
     b0 = bs[0]
-    debt = (_f(b0.get("totalDebt")) or 0.0)
-    cash = (_f(b0.get("cashAndShortTermInvestments")) or _f(b0.get("cashAndCashEquivalents")) or 0.0)
-    net_debt = debt - cash
+    net_debt = _f(b0.get("netDebt"))          # FMP 直接給,優先用
+    if net_debt is None:
+        debt = (_f(b0.get("totalDebt")) or 0.0)
+        cash = (_f(b0.get("cashAndShortTermInvestments")) or _f(b0.get("cashAndCashEquivalents")) or 0.0)
+        net_debt = debt - cash
     wacc_mid = US_RF + max(0.6, min(1.8, beta)) * ERP
     grid = _fair_value_grid(base_fcf, g1, wacc_mid, net_debt, shares)
     if not grid:

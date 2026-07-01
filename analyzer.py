@@ -1306,7 +1306,9 @@ def _depth_directive(depth: str) -> str:
         return ("【深度設定:深入版 = 標準版全部再加碼】這位用戶選了「看深入」—— 保留標準版的一切(操作卡 + 新聞 + 技術 + 大盤),"
                 "並針對每支持股額外補充:(1) 進階技術判讀 —— 結合系統提供的 RSI/KD/MACD/布林通道/均線排列(多頭或空頭)/黃金或死亡交叉,"
                 "白話講這檔現在動能與超買超賣狀態、趨勢方向、關鍵技術訊號(只能引用提供的真實指標數字,嚴禁自行編造指標值);"
-                "(2) 估值看法(便宜/合理/偏貴,可給合理價區間,但只能依提供的真實數據,不可臆測本益比或編造財務數字);"
+                "(2) 估值看法(便宜/合理/偏貴,只能依提供的真實數據,不可臆測本益比或編造財務數字);若系統提供了「DCF 合理價區間」,"
+                "務必拿現價跟區間比對,白話講是低於下緣(潛在低估、較有安全邊際)、落在區間內(合理)、還是高於上緣(潛在高估、追高要留意),"
+                "並提醒 DCF 對成長與折現率假設敏感、區間是參考非精準目標價;本益比法與 DCF 若一個喊貴一個喊便宜,要並陳兩個角度別只報一邊;"
                 "(3) 同產業或供應鏈關聯的個股;(4) 若新聞提到法人/機構/內部人動向要點出。分析可深一點,但仍要口語、每個建議都附價位或時間條件。")
     return ""
 
@@ -1456,6 +1458,13 @@ def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -
     pol_hit = [h for h in holds if str(h).upper() in pol_tks]
     rich = [h for h in holds if (fund.get(h) or {}).get("val_class") == "rich"]
     sell_chips = [h for h in holds if (fund.get(h) or {}).get("chip_class") == "sell"]
+    dcf_over = []
+    for h in holds:
+        hi = (fund.get(h) or {}).get("dcf_high")
+        px = (allm.get(h) or {}).get("price")
+        if hi and px and px > hi:
+            dcf_over.append(h)
+    overvalued = [h for h in holds if h in rich or h in dcf_over]  # 本益比或DCF任一偏貴
 
     rows = [f"<b>結構分佈</b>:多頭 {bull} / 盤整 {neu} / 空頭 {bear}（共 {n} 檔）"]
     if us_n and tw_n:
@@ -1466,6 +1475,8 @@ def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -
         rows.append(f"<b>市場配置</b>:全部 {us_n} 檔美股(單一市場)")
     if rich:
         rows.append(f"<b>估值偏貴</b>:{', '.join(rich[:5])}（追高風險集中)")
+    if dcf_over:
+        rows.append(f"<b>DCF 內在價值偏貴</b>:{', '.join(dcf_over[:5])}（現價高於折現合理區間上緣)")
     if sell_chips:
         rows.append(f"<b>法人/內部人偏賣</b>:{', '.join(sell_chips[:5])}")
     if pol_hit:
@@ -1474,8 +1485,8 @@ def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -
     half = max(2, round(n * 0.5))
     if bear >= half:
         risk = f"{bear}/{n} 檔處於空頭結構,組合同向下行風險高 —— 別整批低接,優先減碼最弱、保留現金等止穩。"
-    elif len(rich) >= max(2, round(n * 0.4)):
-        risk = f"{len(rich)} 檔估值偏貴,追高風險集中在高估值族群 —— 高檔不加碼,等回檔再評估。"
+    elif len(overvalued) >= max(2, round(n * 0.4)):
+        risk = f"{len(overvalued)} 檔估值偏貴(本益比或 DCF 內在價值),追高風險集中在高估值族群 —— 高檔不加碼,等回檔再評估。"
     elif len(pol_hit) >= 2:
         risk = f"{len(pol_hit)} 檔同受今日政壇/政策訊號波及,政策面是這組持股的共同變數 —— 盯後續政策確認再決定加減碼。"
     elif (us_n == 0) ^ (tw_n == 0):
