@@ -1,8 +1,33 @@
 """把 rank() 結果輸出成自包含 HTML 報告(深色玻璃卡片風)。"""
 import os, html, datetime
 import cb_core
+import cb_profiles
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def _profile_html(code):
+    """公司營運區塊:產業/主營/產品/上下游/客戶/合作。"""
+    p = cb_profiles.get_profile(code)
+    ind = p.get("industry") or "—"
+    if not p.get("curated"):
+        return (f'<div class="prof"><div class="pind">🏢 {html.escape(ind)}'
+                f'<span class="uncur">產業分類(FinMind);詳細營運待補</span></div></div>')
+    rows = []
+    if p.get("business"):
+        rows.append(f'<div class="pbiz">{html.escape(p["business"])}</div>')
+    prods = "、".join(p.get("products") or [])
+    if prods:
+        rows.append(f'<div class="pline"><b>產品</b>{html.escape(prods)}</div>')
+    for label, key in [("上游", "upstream"), ("下游", "downstream"),
+                       ("客戶", "customers"), ("合作", "partners")]:
+        v = p.get(key)
+        if v:
+            rows.append(f'<div class="pline"><b>{label}</b>{html.escape(v)}</div>')
+    if p.get("note"):
+        rows.append(f'<div class="pnote">💡 {html.escape(p["note"])}</div>')
+    return (f'<div class="prof"><div class="pind">🏢 {html.escape(ind)}</div>'
+            + "".join(rows) + "</div>")
 
 
 def _pct(v, d=1):
@@ -79,9 +104,30 @@ def _card(item, sd, a):
         <span class="lossnote">下檔最多賠權利金 {a['cbas_premium']:.1f}</span>
       </div>
       <div class="scen"><div class="scl">股價情境 → 對權利金本金報酬</div>{_scen_bar(a['scenarios'])}</div>
+      {_profile_html(item['stock_code'])}
       <div class="reasons">{''.join(f'<span>{html.escape(r)}</span>' for r in a['score_reasons'])}</div>
     </div>"""
     return rows
+
+
+def _watch_card(item):
+    """待定價觀察卡:條件未定沒有定價分析,只放合格標記+公司營運。"""
+    return f"""
+    <div class="card elig-card watch-card">
+      <div class="chead">
+        <div><span class="nm">{html.escape(item['name'])}</span>
+          <span class="elig ok">✅ 符合準則</span>
+          <span class="cd">股 {item['stock_code']} · 債 {item['bond_code']}</span></div>
+        <div class="wtag">待定價</div>
+      </div>
+      <div class="tags">
+        <span>TCRI{item['tcri']}/{html.escape(item['collateral'])}</span>
+        <span>{item['size_yi']}億</span><span>{item['tenor_year']}年</span>
+        <span>{html.escape(item['section'])}</span><span>{html.escape(item['underwriter'])}</span>
+      </div>
+      {_profile_html(item['stock_code'])}
+      <div class="pnote2">條件未定,承銷價/轉換價出來後即可拆解定價分析。</div>
+    </div>"""
 
 
 def write_report(db, results, path=None):
@@ -105,7 +151,7 @@ def write_report(db, results, path=None):
                 f'<td>{a["leverage"]:.1f}×</td><td style="color:{vc}">{vt}</td></tr>')
         return out
     elig_rows = _rows(elig) or '<tr><td colspan="14" style="text-align:center;color:#8b95a7">本期已定價案件無一符合</td></tr>'
-    cards = "".join(_card(*r) for r in (elig + other))
+    cards = "".join(_card(*r) for r in elig)
     tcri_str = " · ".join(f"{k}:{v*100:.1f}%" for k, v in A["tcri_spread"].items())
 
     watch = [i for i in db["items"]
@@ -117,6 +163,7 @@ def write_report(db, results, path=None):
         f'<td>TCRI{i["tcri"]}</td><td>{i["size_yi"]}億</td><td>{i["tenor_year"]}年</td>'
         f'<td>{html.escape(i["section"])}</td><td>{html.escape(i["underwriter"])}</td></tr>'
         for i in watch)
+    watch_cards = "".join(_watch_card(i) for i in watch)
 
     doc = f"""<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -175,25 +222,33 @@ border-radius:12px;padding:12px 16px;margin:0 0 20px;font-size:13.5px}}
 .elig-card{{border-color:rgba(52,211,153,.35);box-shadow:0 0 0 1px rgba(52,211,153,.12)}}
 .dim-card{{opacity:.62}}
 tr.er td{{background:rgba(52,211,153,.05)}}
+.prof{{margin-top:12px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);font-size:12px}}
+.pind{{color:#a5b4fc;font-weight:700;margin-bottom:4px}}
+.uncur{{color:#8b95a7;font-weight:400;margin-left:6px;font-size:11px}}
+.pbiz{{color:#e6e9f0;margin-bottom:5px;line-height:1.45}}
+.pline{{color:#b7c0d0;margin:2px 0;line-height:1.5}}
+.pline b{{color:#8b95a7;font-weight:600;margin-right:6px;font-size:11px}}
+.pnote{{color:#fbbf24;margin-top:5px;font-size:11.5px}}
+.pnote2{{color:#8b95a7;margin-top:10px;font-size:11.5px;font-style:italic}}
+.watch-card .wtag{{font-size:12px;font-weight:700;color:#a5b4fc;background:rgba(165,180,252,.14);
+padding:3px 10px;border-radius:20px;height:fit-content}}
 </style></head><body><div class="wrap">
 <h1>台股 CB 拆解吸引力分析</h1>
 <div class="sub">來源 {html.escape(db['source_file'])} · 產出 {today} · 已定價 {len(results)} 檔 / 全表 {db['count']} 檔</div>
 <div class="crit">📏 <b>老闆拆解準則(硬門檻)</b>:TCRI 須為 <b>3 或 4</b>(銀行才肯承做資產交換)且
-發行量 <b>≥ 雙位數億(10億)</b>(流動性足)。兩條同時滿足才值得拆解 —— 本期已定價僅
-<b>{len(elig)}</b> 檔符合。</div>
+發行量 <b>≥ 雙位數億(10億)</b>(流動性足)。兩條同時滿足才值得拆解 —— 本期已定價
+<b>{len(elig)}</b> 檔符合({len(other)} 檔不符已略過)。</div>
 <div class="sec ok">✅ 符合準則 · 值得拆解</div>
 <table><thead><tr><th>#</th><th>評分</th><th>名稱</th><th>代碼</th><th>評等</th><th>量</th><th>現價</th><th>parity</th>
 <th>清算價</th><th>理論</th><th>隱波</th><th>前瞻波</th><th>槓桿</th><th>結論</th></tr></thead>
 <tbody>{elig_rows}</tbody></table>
-<div class="sec no">⚠ 不符準則 · 老闆說不值得拆(TCRI 非3-4 或 未達雙位數億)</div>
-<table><thead><tr><th>#</th><th>評分</th><th>名稱</th><th>代碼</th><th>評等</th><th>量</th><th>現價</th><th>parity</th>
-<th>清算價</th><th>理論</th><th>隱波</th><th>前瞻波</th><th>槓桿</th><th>結論</th></tr></thead>
-<tbody>{_rows(other)}</tbody></table>
 <div class="sec watch">👀 待定價觀察清單 · 符合準則但條件未定(盯著等承銷價)</div>
 <table><thead><tr><th>名稱</th><th>代碼</th><th>評等</th><th>量</th><th>年期</th><th>階段</th><th>主辦</th></tr></thead>
 <tbody>{watch_rows}</tbody></table>
-<div class="sec ok">📇 個案卡(符合準則者綠框在前)</div>
+<div class="sec ok">📇 可拆解個案卡(已定價)</div>
 <div class="cards">{cards}</div>
+<div class="sec watch">🏢 待定價觀察 · 公司個案卡</div>
+<div class="cards">{watch_cards}</div>
 <div class="foot">
 <b>假設參數</b>:rf {A['rf']*100:.1f}% · 資產交換 spread {A['asset_swap_spread']*100:.1f}% ·
 前瞻波動加權 短{A['vol_w_short']:.0%}/長{A['vol_w_long']:.0%} · TCRI 信用利差 {tcri_str}<br>

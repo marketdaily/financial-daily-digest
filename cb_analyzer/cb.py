@@ -10,6 +10,7 @@ sys.path.insert(0, HERE)
 import cb_core
 import cb_data
 import cb_market
+import cb_profiles
 from parse_excel import parse, DB_PATH, DEFAULT_XLSX
 
 C = {"g": "\033[92m", "r": "\033[91m", "y": "\033[93m", "b": "\033[96m",
@@ -131,7 +132,27 @@ def report(item, live=False):
     for rr in a["score_reasons"]:
         print(f"    · {rr}")
     print(f"  {C['bold']}結論:{verdict(a['score'])}{C['x']}")
+    _print_profile(code)
     return a
+
+
+def _print_profile(code):
+    p = cb_profiles.get_profile(code)
+    ind = p.get("industry") or "—"
+    print(f"\n  {C['bold']}── 🏢 公司 ──{C['x']}  {C['b']}{ind}{C['x']}")
+    if not p.get("curated"):
+        print(f"  {C['d']}(產業分類 FinMind;詳細營運待補進 company_profiles.json){C['x']}")
+        return
+    if p.get("business"):
+        print(f"  {p['business']}")
+    if p.get("products"):
+        print(f"  {C['d']}產品:{C['x']}{'、'.join(p['products'])}")
+    for label, key in [("上游", "upstream"), ("下游", "downstream"),
+                       ("客戶", "customers"), ("合作", "partners")]:
+        if p.get(key):
+            print(f"  {C['d']}{label}:{C['x']}{p[key]}")
+    if p.get("note"):
+        print(f"  {C['y']}💡 {p['note']}{C['x']}")
 
 
 def _score_color(s):
@@ -188,16 +209,11 @@ def rank(db, live=False):
     else:
         print(f"  {C['y']}(本期已定價案件無一符合){C['x']}")
 
-    print(f"\n{C['d']}{C['bold']}⚠ 不符準則(TCRI 非3-4 或 未達雙位數億)— 老闆說不值得拆{C['x']}")
-    print(hdr)
-    for n, (item, sd, a) in enumerate(other, 1):
-        _row(n, item, sd, a)
-
     _watchlist(db)
-    print(f"\n  {C['d']}共 {len(results)} 檔已定價;符合準則 {len(elig)} 檔。"
-          f"另 {db['count']-len(results)} 檔條件未定或抓不到股價。{C['x']}")
+    print(f"\n  {C['d']}已定價符合準則 {len(elig)} 檔"
+          f"(另 {len(other)} 檔不符準則已略過、{db['count']-len(results)} 檔條件未定/無股價)。{C['x']}")
     print_assumptions()
-    return elig + other
+    return elig
 
 
 def _watchlist(db):
@@ -212,8 +228,9 @@ def _watchlist(db):
     watch.sort(key=lambda i: -(i.get("size_yi") or 0))
     print(f"\n{C['b']}{C['bold']}👀 待定價觀察清單(符合準則但條件未定,盯著等承銷價){C['x']}")
     for i in watch:
+        ind = cb_profiles.get_profile(i["stock_code"]).get("industry") or ""
         print(f"  · {i['name']:<12} {i['stock_code']:<6} TCRI{i['tcri']} "
-              f"{str(i['size_yi'])+'億':<6} {i['tenor_year']}年 · {i['section']} · {i['underwriter']}")
+              f"{str(i['size_yi'])+'億':<6} {i['tenor_year']}年 · {C['d']}{ind}{C['x']}")
 
 
 def print_assumptions():

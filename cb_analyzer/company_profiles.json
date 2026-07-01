@@ -1,0 +1,80 @@
+{
+  "_說明": "公司營運 curated 檔(web 查證)。新增公司照此格式補;查不到的欄位留空不要編。confidence=查證把握。",
+  "5289": {
+    "industry": "工業級記憶體與儲存模組(工控 SSD／DRAM 模組)",
+    "business": "設計銷售工業級嵌入式儲存與 DRAM 記憶體模組,並做 AIoT 邊緣運算方案",
+    "products": ["工業級 SSD／嵌入式儲存(eMMC、記憶卡)", "工業級 DRAM 模組", "AIoT／邊緣運算方案(含擴充卡)"],
+    "upstream": "NAND Flash／DRAM 晶圓原廠(三星、美光、SK海力士、Kioxia;長期配合,未逐一官方揭露)",
+    "downstream": "工業電腦、工廠自動化、智慧交通、POS、安防監控、醫療、數位看板、博弈/航太國防",
+    "customers": "Intel、Microsoft、NVIDIA、鈊象電子(報導提及,全名單非公開)",
+    "partners": "轉投資子公司 安提國際 Aetina(工控顯卡／GPGPU、AI 邊緣運算)",
+    "note": "2024 工控 SSD 全球市占第一、DRAM 模組全球約第八;受記憶體漲價+AI 邊緣題材帶動",
+    "confidence": "high"
+  },
+  "2303": {
+    "industry": "半導體晶圓代工(Foundry)",
+    "business": "台灣首家專業晶圓代工廠、全球第四大,專注成熟與特殊製程(14nm~0.6μm)",
+    "products": ["CMOS 邏輯/混合信號晶圓", "22/28nm 顯示驅動IC(DDIC)與高壓製程", "嵌入式非揮發記憶體 eNVM／RF CMOS", "影像感測 CIS／高壓IC"],
+    "upstream": "矽晶圓(環球晶、日本 SUMCO、信越)、設備(ASML、Applied Materials)、光罩/特殊氣體化學品",
+    "downstream": "通訊約42%、消費電子約31%、電腦約13%;應用含面板 DDIC、IoT、車用、PMIC、感測",
+    "customers": "IC 設計佔約85%、IDM 約15%;含聯發科、聯詠、瑞昱",
+    "partners": "與 Intel 結盟共開發 12nm(2027 量產);聯發科/聯詠源自聯電分割;轉投資聯芯(廈門)、日本 USJC",
+    "note": "28nm 小尺寸面板 DDIC 市佔逾90%,走成熟／特殊製程差異化",
+    "confidence": "high"
+  },
+  "2451": {
+    "industry": "半導體／記憶體模組(DRAM 模組、Flash 儲存)",
+    "business": "自有品牌 Transcend 設計銷售記憶體模組與 Flash 儲存,橫跨消費與工業級",
+    "products": ["DRAM 記憶體模組", "SSD(內接/外接、工業級)", "記憶卡與 USB 隨身碟", "讀卡機/多媒體周邊"],
+    "upstream": "DRAM／NAND Flash 顆粒原廠(三星、美光、SK海力士、Kioxia;簽長期供應協議 LTA,未官方逐一指名)",
+    "downstream": "醫療、智慧監控、5G 通訊、工業自動化、交通運輸、數位娛樂;消費端 PC/行動升級與零售通路",
+    "customers": "",
+    "partners": "Transcend 自有品牌行銷 130+ 國,設美/德/日/中等海外子公司",
+    "note": "1989 成立、2001 上市,台灣品牌記憶體模組指標廠;工控+海外通路為兩大支撐",
+    "confidence": "medium"
+  },
+  "8155": {
+    "industry": "電子零組件(印刷電路板 PCB,上櫃)",
+    "business": "利基型 PCB 廠,做高層數多層板、厚銅板、高頻高速板",
+    "products": ["伺服器/AI 伺服器高階多層板與背板(backplane)", "工業電腦(IPC)板", "厚銅板、高頻高速板", "網通/5G 基地台與電動車用板"],
+    "upstream": "銅箔基板 CCL(占製造成本約40-50%,最主要原料)、銅箔、玻纖布/膠片 prepreg",
+    "downstream": "AI 伺服器/資料中心、雲端大廠、網通設備、電動車、5G 基地台、工業電腦/醫療儀器",
+    "customers": "官方保密未具名(部分報導提及 Google/AWS 屬第三方推測,未經公司證實)",
+    "partners": "",
+    "note": "官方名 博智電子(Allied Circuit),1997 成立、2012 上櫃、桃園龍潭。⚠做『裸 PCB/伺服器板、背板』非組裝主機板系統廠",
+    "confidence": "medium"
+  },
+  "3583": {
+    "industry": "半導體設備",
+    "business": "半導體/光電先進製程設備商,兼自製設備、國際原廠代理與 12 吋晶圓再生",
+    "products": ["自製濕製程設備(批次 Wet Bench WS、單晶圓 Polar 系列)", "先進封裝暫時性貼合剝離設備(與 3M 合作 Pyxis,應用 CoWoS/UBM/晶圓薄化)", "12 吋晶圓再生服務", "代理國際原廠設備(擴散/薄膜/蝕刻/微影/檢測)"],
+    "upstream": "代理國際半導體設備原廠;與 3M 合作 Pyxis 系列;上游為設備零組件與化學材料",
+    "downstream": "半導體先進封裝(CoWoS、面板級 PLP)、晶圓薄化、背面研磨金屬化、先進晶圓廠;另 LED/太陽能/封測",
+    "customers": "",
+    "partners": "與美國 3M 策略合作(Pyxis 暫時性貼合/剝離);設上海分公司、美/歐子公司",
+    "note": "1979 成立,國內 12 吋再生晶圓領導廠,LED 前段濕製程機台國內市佔逾50%",
+    "confidence": "medium"
+  },
+  "5536": {
+    "industry": "無塵室/廠務統包工程(機電工程,營建工程類)",
+    "business": "高科技廠房 EPCM 統包,設計建造無塵室與機電/製程設施;1979 創立、台中",
+    "products": ["高端無塵室整合工程", "機電/空調/恆溫恆濕工程", "化學供應系統 CDS 與製程設施", "生技醫療潔淨室、環境工程與維保"],
+    "upstream": "機電/空調設備、配管、鋼構、電控/自動化、潔淨室材料(官網未逐項揭露,為業務推論)",
+    "downstream": "半導體/IC、光電面板、電子精密製造、生技醫藥、傳產與綠能廠房",
+    "customers": "台積電、聯電、日月光、鴻海富士康、X-FAB(依官網實績與報導)",
+    "partners": "轉投資 朋億(6613,水氣化學品供應系統,與廠務統包互補);越南/泰/馬/印/中設海外據點",
+    "note": "受惠先進製程+封裝建廠潮與供應鏈南向,在手訂單龐大",
+    "confidence": "high"
+  },
+  "1560": {
+    "industry": "半導體材料／研磨工具(電子零組件、半導體耗材)",
+    "business": "砂輪、CMP 鑽石碟(研磨修整器)及再生晶圓的研磨材料大廠",
+    "products": ["CMP 鑽石碟(Diamond Disk／Pad Conditioner)", "再生晶圓(8吋/12吋 Reclaimed Wafer)", "傳統砂輪與切割/刀具"],
+    "upstream": "工業鑽石顆粒、金屬/陶瓷結合劑、矽晶圓基材、電鍍/樹脂等原材料",
+    "downstream": "半導體晶圓製造(CMP 製程)、面板、金屬加工、汽車與一般工業研磨切削",
+    "customers": "台積電(3nm 製程鑽石碟供應商)、美光、聯電、Intel、AMD、Sony、富士通、NEC、友達",
+    "partners": "與 Applied Materials 合作供應 CMP pad conditioner;新北鶯歌,品牌 KINIK",
+    "note": "CMP 鑽石碟全球市佔第一、再生晶圓全球約第三;2022 營收再生晶圓48%/鑽石碟30%/砂輪刀具22%",
+    "confidence": "high"
+  }
+}
