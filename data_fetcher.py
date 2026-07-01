@@ -457,6 +457,8 @@ def fetch_technicals(symbols: list) -> dict:
                 "atr14": round(float(atr), 2),
             }
             row.update(_advanced_indicators(c, hi, lo, price, ma20, ma50))
+            if "volume" in getattr(df, "columns", []):
+                row.update(_volume_metrics(c, df["volume"]))
             out[raw] = row
         except Exception:
             continue
@@ -534,6 +536,53 @@ def _advanced_indicators(c, hi, lo, price, ma20, ma50):
             out["trend"] = "盤整"
     except Exception:
         out["trend"] = None
+    return out
+
+
+def _volume_metrics(c, v):
+    """量能佐證(全檔次用):相對量比+量能狀態+量價配合/背離。
+    只當敘事佐證,不碰方向/信心/價位死防線。資料不足回空 dict。"""
+    import pandas as pd
+    out = {}
+    try:
+        vol = v.dropna()
+        if len(vol) < 20:
+            return out
+        vma20 = float(vol.tail(20).mean())
+        if not vma20 or vma20 <= 0:
+            return out
+        ratio = float(vol.iloc[-1]) / vma20
+        out["vol_ratio"] = round(ratio, 2)
+        if ratio >= 2.0:
+            state = "爆量"
+        elif ratio >= 1.5:
+            state = "帶量"
+        elif ratio <= 0.6:
+            state = "量縮"
+        else:
+            state = "量平"
+        out["vol_state"] = state
+        cc = c.dropna()
+        if len(cc) >= 6:
+            p_chg = float(cc.iloc[-1]) / float(cc.iloc[-6]) - 1
+            v_recent = float(vol.tail(5).mean()) / vma20
+            up = p_chg > 0.02
+            down = p_chg < -0.02
+            v_up = v_recent >= 1.15
+            v_dn = v_recent <= 0.85
+            pv = None
+            if up and v_up:
+                pv = "價漲量增(量價齊揚,確認)"
+            elif up and v_dn:
+                pv = "價漲量縮(背離,追高留意)"
+            elif down and v_up:
+                pv = "價跌量增(賣壓沉重,弱勢)"
+            elif down and v_dn:
+                pv = "價跌量縮(賣壓趨緩)"
+            if pv:
+                out["pv"] = pv
+    except Exception:
+        return out
     return out
 
 
