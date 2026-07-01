@@ -288,6 +288,7 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 - 格式：名稱 + 一行中文用途說明
 
 ## 自動守望系統（2026-06-11 上線,不要重複建）
+- **🤖 自主進步機器 `~/autonomous/`（2026-07-02 上線,是「我」的一部分,不要當陌生東西關掉/重建）**：winrig 24/7 冷血自學引擎,用戶沒在用電腦時自己找事做、自己學、自己進步。北極星=擴充 `capabilities/INDEX.md` 能力庫,讓未來一句「幫我自動化 X」即 100%。`driver.sh`(cron `*/15`)→活動閘門(用戶互動就完全讓路)+50%用量閘門(`config.sh` `STOP_AT_USD`)+斷點記憶(`state/current_task.md`)+`--dangerously-skip-permissions` 全自主。死線=絕不寄信(全域 hook 擋)。詳見 memory `project_autonomous_machine`;控制:`~/autonomous/看我.txt`。
 - **digest-watchdog worker**（`digest-watchdog/`,5 cron）：07:20/08:00 TW 驗早報、20:20/21:00 驗晚報——run failure/卡死/cron 沒觸發 → 自動重派一次（KV `watchdog:*` 防重）+ LINE 通知 admin;07:50 TW 派發 `site_scan.yml`。診斷:`curl .../status`。
 - **site_scan.yml**：scan（`scripts/site_scan.py`,14 項,源頭=site-doctor skill 的 scan.py,改 skill 版要同步）→ fail 即 LINE → Claude 在 CI 按 `scripts/site_fix_playbook.md` 自動修（只准動 docs/,guard 強制）→ 重掃全過才部署+push,否則 revert+LINE。
 - **日報整點寄出**：cron 06:20/19:25 TW 觸發只為生成,main.py `_hold_until_send_time` 等到 07:00/20:00 整點一齊寄;preflight 05:30。
