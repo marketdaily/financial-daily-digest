@@ -88,22 +88,29 @@ def implied_drift(code, spot):
 
 
 def intel_lines(code, spot=None):
-    """給報告用的情報行 list(法人流向 + 研究快取重點)。"""
+    """給報告用的情報行 list(法人流向 + 研究快取重點)。上檔空間依現價動態計算。"""
     lines = []
     fn = flow_narrative(code)
     if fn:
         lines.append(fn)
     r = research(code)
     if r:
-        if r.get("target_price"):
-            up = r.get("target_upside_pct")
-            lines.append(f"外資目標價:{r['target_price']}"
-                         + (f"(隱含上檔 {up:+.0f}%" + (f",{r['broker']}" if r.get('broker') else "") + ")" if up is not None else "")
-                         + (f",約 {r.get('target_horizon_year',1)} 年" if r.get('target_horizon_year') else ""))
+        tp = r.get("target_price")
+        if tp:
+            up = (tp / spot - 1) * 100 if spot else None
+            seg = f"券商目標價 {tp}"
+            if r.get("broker"):
+                seg += f"({r['broker']})"
+            if up is not None:
+                seg += (f",隱含上檔 {up:+.0f}%" if up > 0
+                        else f",⚠現價已超越目標價 {abs(up):.0f}%(目標偏保守/落後)")
+            lines.append(seg)
         if r.get("conference_date"):
             lines.append(f"最近法說會:{r['conference_date']}")
         for t in (r.get("takeaways") or [])[:3]:
             lines.append(f"法說重點:{t}")
-        for c in (r.get("catalysts") or [])[:3]:
+        for c in (r.get("catalysts") or [])[:2]:
             lines.append(f"催化劑:{c}")
+        if r.get("note"):
+            lines.append(f"⚠ {r['note']}")
     return lines

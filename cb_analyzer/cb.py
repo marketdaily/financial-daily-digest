@@ -335,6 +335,12 @@ def sim_report(db, capital, codes=None, drift=0.07):
         print(f"    {C['y']}⏳ 為什麼要等:{C['x']}現價距轉換價 {oob:+.0f}%({pos});"
               f"要獲利股票需漲到 {L['be_S']:.1f}(+{L['be_move']*100:.0f}%);"
               f"以前瞻波動 {L['vol']*100:.0f}% 估,中位數{bey}才到回本點")
+        r = cb_intel.research(it["stock_code"])
+        if r and r.get("target_price"):
+            tup = (r["target_price"] / L["spot"] - 1) * 100
+            if tup < L["be_move"] * 100:
+                print(f"    {C['r']}⚠ 現實檢查:券商目標價僅隱含 {tup:+.0f}%,<回本所需 +{L['be_move']*100:.0f}%"
+                      f" → 即使達標仍回不了本,這檔不適合單押,宜換近價平標的{C['x']}")
         print(f"    {C['b']}⌛ 預期回本期間:{C['x']}"
               f"{('約 '+format(L['be_years'],'.1f')+' 年') if L['be_years'] else '需靠波動,非中位數'}"
               f"(部位可抱到 {L['T']:.1f} 年到期);"
