@@ -70,13 +70,41 @@ const EVENT_RULES = [
     "川普", "白宮", "關稅", "行政命令", "出口管制", "禁令", "制裁", "貿易戰", "貿易協議",
     "聯準會", "降息", "升息", "利率決議", "鮑爾", "晶片禁令"
   ]},
+  // AI / 半導體 產業級題材:多半不會點名某支持股,但透過供應鏈(晶圓代工/封測/設備/IP)
+  // 傳導到台美股一大票標的 → 走第二層(second-order)AI 比對推給真正被波及的持有者。
+  { type: "ai_tech", kw: [
+    "artificial intelligence", "generative ai", "large language model", "nvidia", "gpu", "accelerator",
+    "semiconductor", "chip", "chipmaker", "foundry", "wafer", "node", "euv", "data center", "data centre",
+    "cloud capex", "openai", "anthropic", "tsmc", "hbm", "advanced packaging",
+    "人工智慧", "生成式", "半導體", "晶片", "晶圓", "代工", "先進製程", "封測", "設備廠", "資料中心",
+    "算力", "輝達", "台積電", "記憶體", "伺服器", "先進封裝"
+  ]},
+  // 總經 / 大盤級:利率、通膨、原物料、匯率、就業、景氣 —— 影響所有人的持倉方向。
+  { type: "macro", kw: [
+    "inflation", "cpi", "ppi", "gdp", "recession", "jobs report", "payrolls", "unemployment",
+    "yield", "treasury yield", "dollar index", "crude", "oil price", "opec", "gold price",
+    "consumer confidence", "soft landing", "hard landing",
+    "通膨", "通貨膨脹", "消費者物價", "景氣", "衰退", "非農", "就業數據", "失業率",
+    "公債殖利率", "美元指數", "油價", "原油", "金價", "軟著陸", "硬著陸"
+  ]},
+  // 供應鏈事件:缺貨、斷鏈、產能、天災/地緣中斷 —— 透過上下游打到持股。
+  { type: "supply_chain", kw: [
+    "shortage", "supply chain", "supply disruption", "capacity", "production cut", "output cut",
+    "backlog", "lead time", "raw material", "component shortage", "logistics",
+    "缺貨", "供應鏈", "斷鏈", "產能", "減產", "缺料", "料況", "交期", "原物料", "物流中斷"
+  ]},
 ];
 
 // 各事件類型的平均重大度權重 —— 規則預評分用,只擋明顯偏弱的,真正嚴重度仍交給 AI 判。
 const EVENT_WEIGHT = {
   distress: 95, mna: 88, guidance: 82, regulatory: 76, earnings: 72,
-  political: 70, incident: 66, legal: 62, leadership: 56, rating: 48, trading: 46,
+  political: 70, ai_tech: 68, macro: 66, incident: 66, supply_chain: 64,
+  legal: 62, leadership: 56, rating: 48, trading: 46,
 };
+
+// 廣域衝擊類型:多半不直接點名個股,但會透過產業鏈/供應鏈/總經傳導打到持股。
+// 這幾類若沒有直接持有者 → 走第二層 AI 比對(拿用戶持股清單判斷誰被波及),而不是直接丟掉。
+const BROAD_TYPES = new Set(["political", "ai_tech", "macro", "supply_chain", "regulatory"]);
 
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj, null, 2), {
@@ -110,6 +138,14 @@ function classify(text) {
     if (m.re.test(t)) return m.type;
   }
   return null;
+}
+
+// 是否為「廣域衝擊」新聞 —— 獨立於 classify() 的單一 first-match 判定:
+// 只要文字命中任一 BROAD_TYPES 規則(AI/晶片/總經/政策/供應鏈)就算,
+// 避免「油價飆漲」被 trading 先接走、失去第二層傳導比對(2026-07-01 修)。
+function matchesBroad(text) {
+  const t = text || "";
+  return EVENT_MATCHERS.some((m) => BROAD_TYPES.has(m.type) && m.re.test(t));
 }
 
 // 臆測/觀點標記:標題出現條件式(If…will…)、傳言或評論語氣 → 視為「非已發生事件」,
@@ -192,9 +228,19 @@ async function premiumRecipients(env) {
 }
 
 // Claude 嚴重度判定:輸入新聞 + 相關 ticker,輸出 {severity 0-10, reason}。
-async function aiSeverity(env, news, tickers) {
+async function aiSeverity(env, news, tickers, universe = null) {
   if (!env.ANTHROPIC_API_KEY) return { severity: null, reason: "AI 未設定", skipped: true };
-  const names = tickers.map((t) => `${t}(${displayName(t)})`).join("、");
+  const names = tickers.length
+    ? tickers.map((t) => `${t}(${displayName(t)})`).join("、")
+    : "台股/美股投資人的持股";
+  // 第二層傳導:給 AI 一份「訂閱者持股清單」,請它判斷這則新聞會直接或經產業鏈/供應鏈/
+  // 同產業/總經傳導打到清單裡的哪幾檔 → 回傳 affected,讓管線推給真正被波及的持有者。
+  const uniList = Array.isArray(universe) && universe.length
+    ? universe.map((t) => `${t}(${displayName(t)})`).join("、")
+    : null;
+  const affectedInstr = uniList ? `
+- affected:從下面這份「訂閱者持股清單」中,挑出會被這則新聞【直接點名,或透過產業鏈/供應鏈(晶圓代工/封測/設備/IP)、同產業競合、總經(利率/匯率/原物料)傳導】而受影響的代碼,回傳陣列(沒有就給空陣列 [],寧缺勿濫、只放關聯明確的)。清單:${uniList}` : "";
+  const affectedField = uniList ? `, "affected": ["<清單中被波及的代碼>", ...]` : "";
   const prompt = `你是財經新聞嚴重度評分員。判斷這則新聞對「持有 ${names} 的投資人」有多重大。
 
 標題:${news.title}
@@ -207,12 +253,12 @@ async function aiSeverity(env, news, tickers) {
 - 4-6:一般財經報導、分析師例行評論、影響有限。
 - 0-3:無實質影響、舊聞、與該公司關聯薄弱。
 
-另外判斷三件事:
+另外判斷:
 - category:這則屬於「event」(已發生或已正式公告的事實)、「rumor」(未經證實的傳言/小道消息)、還是「opinion」(評論、分析、假設推演,例如「如果…將會…」「為什麼…」)。臆測與評論不是事件,即使聳動也不應給高分。
-- stance:對持有 ${names} 的投資人,你的操作傾向,從「加碼/續抱/觀望/減碼/賣出」擇一。
-- action:一句繁體中文,說明此刻具體該怎麼做與理由。若 category 是 rumor 或 opinion,務必明說「尚未證實/僅為推測,對基本面無立即影響」,不要建議因此追高或殺低,可提示真正該盯的下一個事件(財報/官方說法等)。
+- stance:對受影響的投資人,你的操作傾向,從「加碼/續抱/觀望/減碼/賣出」擇一。
+- action:一句繁體中文,說明此刻具體該怎麼做與理由。若 category 是 rumor 或 opinion,務必明說「尚未證實/僅為推測,對基本面無立即影響」,不要建議因此追高或殺低,可提示真正該盯的下一個事件(財報/官方說法等)。${affectedInstr}
 
-只輸出 JSON,格式:{"severity": <0-10 整數>, "category": "event|rumor|opinion", "stance": "加碼|續抱|觀望|減碼|賣出", "reason": "<一句:為何跟投資人有關>", "action": "<一句:此刻該怎麼做與理由>"}`;
+只輸出 JSON,格式:{"severity": <0-10 整數>, "category": "event|rumor|opinion", "stance": "加碼|續抱|觀望|減碼|賣出", "reason": "<一句:為何跟投資人有關>", "action": "<一句:此刻該怎麼做與理由>"${affectedField}}`;
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -238,12 +284,19 @@ async function aiSeverity(env, news, tickers) {
     const cat = ["event", "rumor", "opinion"].includes(parsed.category) ? parsed.category : "event";
     const stanceSet = ["加碼", "續抱", "觀望", "減碼", "賣出"];
     const stance = stanceSet.includes(parsed.stance) ? parsed.stance : "";
+    // 第二層 affected:只保留確實在持股清單(universe)裡的代碼,防 AI 幻覺出清單外標的。
+    let affected = [];
+    if (Array.isArray(universe) && universe.length && Array.isArray(parsed.affected)) {
+      const uni = new Set(universe.map((t) => String(t).trim().toUpperCase()));
+      affected = [...new Set(parsed.affected.map((t) => String(t).trim().toUpperCase()).filter((t) => uni.has(t)))];
+    }
     return {
       severity: Math.max(0, Math.min(10, sev)),
       category: cat,
       stance,
       reason: String(parsed.reason || "").slice(0, 200),
       action: String(parsed.action || "").slice(0, 200),
+      affected,
     };
   } catch (e) {
     return { severity: null, reason: `AI 例外:${e.message}`, error: true };
@@ -587,13 +640,19 @@ async function runPipeline(env, { push, persist }) {
       continue;
     }
 
-    // 比對 Premium 持有者
-    let holders = recipients.filter((r) => news.tickers.some((t) => r.holdings.has(t)));
-    // 政治/政策市場級事件(全面關稅、利率決議這類沒點名個股的)→ 影響所有人的持倉,
-    // 推給全體綁定者;雜訊防線=門檻加嚴到 8(點名個股的照常 7)。
-    const marketWide = eventType === "political" && !news.tickers.length;
-    if (!holders.length && marketWide) holders = recipients;
-    if (!holders.length) {
+    // ── 比對 Premium 持有者(含第二層產業鏈/供應鏈/總經傳導)──────────
+    // broadImpact 用 matchesBroad(全文)判,不綁 classify 的單一 first-match,
+    // 免得「油價飆漲」被 trading 接走就漏掉總經第二層傳導。
+    const broadImpact = matchesBroad(`${news.title} ${news.summary || ""}`);
+    const directHolders = recipients.filter((r) => news.tickers.some((t) => r.holdings.has(t)));
+    // 廣域衝擊類型(AI/晶片/總經/政策/供應鏈)→ 拿全體持股清單給 AI 判「第二層被波及標的」;
+    // 一般公司級新聞只走直接點名,不多花 AI。
+    const universe = broadImpact
+      ? [...new Set(recipients.flatMap((r) => [...r.holdings]))]
+      : null;
+
+    // 沒有直接持有者、又不是廣域衝擊類型(或無任何持股可比對)→ 與持股無關,跳過(不花 AI)。
+    if (!directHolders.length && (!broadImpact || !universe.length)) {
       if (persist) await env.USER_PREFS.put(seenKey, report.ts, { expirationTtl: SEEN_TTL });
       report.candidates.push({
         title: news.title, source: news.source, url: news.url,
@@ -604,18 +663,36 @@ async function runPipeline(env, { push, persist }) {
     }
     report.counts.premiumMatched++;
 
-    // AI 嚴重度
-    const { severity, reason, category, stance, action, skipped, error } = await aiSeverity(env, news, news.tickers);
+    // AI 嚴重度 + 第二層被波及標的(broadImpact 才傳 universe)
+    const { severity, reason, category, stance, action, affected = [], skipped, error } =
+      await aiSeverity(env, news, news.tickers, universe);
     if (!skipped) report.counts.aiEvaluated++;
     // 臆測/觀點:標題標記命中 或 AI 判 rumor/opinion → 門檻拉高 + 標籤改「觀點／傳言」。
     const speculative = isSpeculative(`${news.title} ${news.summary || ""}`)
       || category === "rumor" || category === "opinion";
-    let threshold = speculative ? SPECULATIVE_THRESHOLD : SEVERITY_THRESHOLD;
-    if (marketWide) threshold = Math.max(threshold, 8);
+    const baseNeed = speculative ? SPECULATIVE_THRESHOLD : SEVERITY_THRESHOLD;
+
+    // 逐用戶決定命中標的與所需門檻:直接點名 → 7;第二層傳導 / 大盤級 → 8(臆測一律 9)。
+    const secondSet = new Set(affected);
+    // 大盤級廣播(推全體)只保留給「總經/政策」型且沒點名個股、AI 也沒挑出特定持股時;
+    // 同樣不綁單一 eventType,直接測 macro/political matcher,免得被 trading 先接走。
+    const macroOrPolicy = EVENT_MATCHERS.some((m) =>
+      (m.type === "macro" || m.type === "political") && m.re.test(`${news.title} ${news.summary || ""}`));
+    const indexWide = broadImpact && !news.tickers.length && !secondSet.size && macroOrPolicy;
+    const targets = [];
+    for (const r of recipients) {
+      const direct = news.tickers.find((t) => r.holdings.has(t));
+      if (direct) { targets.push({ h: r, hit: direct, via: "direct", need: baseNeed }); continue; }
+      const sec = [...r.holdings].find((t) => secondSet.has(t));
+      if (sec) { targets.push({ h: r, hit: sec, via: "second", need: Math.max(baseNeed, 8) }); continue; }
+      if (indexWide) targets.push({ h: r, hit: "大盤", via: "index", need: Math.max(baseNeed, 8) });
+    }
+    const minNeed = targets.length ? Math.min(...targets.map((t) => t.need)) : baseNeed;
+
     const cand = {
       title: news.title, source: news.source, url: news.url,
       tickers: news.tickers, eventType, preScore, severity, category, stance, action,
-      speculative, threshold, reason,
+      speculative, threshold: minNeed, affected, reason,
       recipients: [],
     };
 
@@ -630,17 +707,29 @@ async function runPipeline(env, { push, persist }) {
       report.candidates.push(cand);
       continue;
     }
-    if (severity < threshold) {
+    if (!targets.length) {
+      // AI 判定沒有任何持股被直接或間接波及 → 不推。
       if (persist) await env.USER_PREFS.put(seenKey, report.ts, { expirationTtl: SEEN_TTL });
-      if (speculative) cand.reason = `${cand.reason || ""}(傳言/觀點,需 severity≥${threshold} 才推,本則 ${severity})`.trim();
+      cand.reason = `${cand.reason || ""}(AI 判定無持股被直接/間接波及)`.trim();
+      report.candidates.push(cand);
+      continue;
+    }
+    if (severity < minNeed) {
+      if (persist) await env.USER_PREFS.put(seenKey, report.ts, { expirationTtl: SEEN_TTL });
+      cand.reason = `${cand.reason || ""}(需 severity≥${minNeed} 才推,本則 ${severity})`.trim();
       report.candidates.push(cand);
       continue;
     }
 
     // 通過門檻 → 逐持有者推播(去重 + 每日上限)。訂閱者只走 web push
     const today = twDate();
-    for (const h of holders) {
-      const hit = news.tickers.find((t) => h.holdings.has(t)) || (marketWide ? "大盤" : undefined);
+    for (const { h, hit, via, need } of targets) {
+      if (severity < need) {
+        cand.recipients.push({ email: h.email, ticker: hit, status: `skip:未達門檻(需 ${need},本則 ${severity})` });
+        continue;
+      }
+      // 第二層傳導在提醒理由前面標「間接影響」,誠實區分直接點名 vs 產業鏈/總經波及。
+      const dispReason = via === "direct" ? reason : `【間接影響】${reason}`;
       const cluster = `pushed:${h.email}:${clusterKey(hit, eventType, news.publishedAt)}`;
       if (await env.USER_PREFS.get(cluster)) {
         cand.recipients.push({ email: h.email, status: "skip:已收過此事件" });
@@ -657,7 +746,7 @@ async function runPipeline(env, { push, persist }) {
         cand.recipients.push({ email: h.email, ticker: hit, status: "would-push" });
         continue;
       }
-      const pushed = await deliverAlert(env, h, pushNotif(news, hit, severity, reason), { severity });
+      const pushed = await deliverAlert(env, h, pushNotif(news, hit, severity, dispReason), { severity });
       if (pushed.ok) {
         await env.USER_PREFS.put(cluster, report.ts, { expirationTtl: PUSHED_TTL });
         await env.USER_PREFS.put(countKey, String(count + 1), { expirationTtl: COUNT_TTL });
@@ -667,7 +756,7 @@ async function runPipeline(env, { push, persist }) {
         await recordAlertInbox(env, h.email, {
           ts: report.ts, kind: "news", ticker: hit,
           name: hit === "大盤" ? "大盤" : displayName(hit),
-          title: news.title, url: news.url, reason, stance, action,
+          title: news.title, url: news.url, reason: dispReason, stance, action,
           severity, category, speculative,
         });
       } else {
