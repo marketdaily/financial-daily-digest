@@ -17,6 +17,7 @@ import cb_market
 import cb_profiles
 import cb_existing
 import cb_simulate
+import cb_intel
 from parse_excel import parse, DB_PATH, DEFAULT_XLSX
 
 C = {"g": "\033[92m", "r": "\033[91m", "y": "\033[93m", "b": "\033[96m",
@@ -286,18 +287,21 @@ def _analyzed_candidates(db, codes=None):
     return out
 
 
-def _why_grow(code):
+def _why_grow(code, spot=None):
     p = cb_profiles.get_profile(code)
-    if not p.get("curated"):
-        return f"產業:{p.get('industry') or '—'}(詳細營運待補)"
     bits = []
-    if p.get("business"):
-        bits.append(p["business"])
-    if p.get("downstream"):
-        bits.append(f"下游需求:{p['downstream']}")
-    if p.get("note"):
-        bits.append(f"題材/地位:{p['note']}")
-    return "  ".join(bits)
+    if p.get("curated"):
+        if p.get("business"):
+            bits.append(p["business"])
+        if p.get("downstream"):
+            bits.append(f"下游需求:{p['downstream']}")
+        if p.get("note"):
+            bits.append(f"題材/地位:{p['note']}")
+    else:
+        bits.append(f"產業:{p.get('industry') or '—'}(詳細營運待補)")
+    lines = [f"      · {ln}" for ln in cb_intel.intel_lines(code, spot)]
+    base = "  ".join(bits)
+    return base + ("\n" + "\n".join(lines) if lines else "")
 
 
 def sim_report(db, capital, codes=None, drift=0.07):
@@ -323,7 +327,7 @@ def sim_report(db, capital, codes=None, drift=0.07):
         print(f"\n  {C['bold']}▶ 買進 {it['name']}(股 {it['stock_code']} / 債 {it['bond_code']}){C['x']}")
         print(f"    投入 {C['bold']}{L['units']} 口{C['x']}(每口權利金 NT${L['unit_cap']:,.0f})"
               f" = NT${L['deployed']:,.0f}  現股價 {L['spot']:.1f} / 轉換價 {L['K']}")
-        print(f"    {C['g']}📈 為什麼會漲:{C['x']}{_why_grow(it['stock_code'])}")
+        print(f"    {C['g']}📈 為什麼會漲:{C['x']}{_why_grow(it['stock_code'], L['spot'])}")
         # 為什麼要等(量化)
         oob = (L['spot']/L['K'] - 1)*100
         pos = "價內" if oob >= 0 else "價外"
