@@ -51,6 +51,12 @@ def report(item, live=False):
     print(f"\n{C['bold']}{C['b']}━━ {item['name']}  (股 {code} / 債 {item['bond_code']}){C['x']}")
     print(f"{C['d']}{item['section']} · {item['underwriter']} · 發行 {item['size_yi']}億 · "
           f"TCRI{item['tcri']}/{item['collateral']} · {item['tenor_year']}年 · {item['put']['raw']}{C['x']}")
+    elig, ereasons = cb_core.eligibility(item)
+    if elig:
+        print(f"  {C['g']}{C['bold']}✅ 符合老闆準則(TCRI 3-4 + 雙位數億)→ 值得拆解{C['x']}")
+    else:
+        print(f"  {C['r']}{C['bold']}❌ 不符老闆準則,不值得拆解{C['x']}{C['r']} — "
+              f"{'；'.join(ereasons)}{C['x']}")
 
     if not item.get("conv_price") or not item.get("premium_mid"):
         print(f"{C['y']}⚠ 此案條件未定(無轉換價/溢價率),尚無法拆解定價分析。"
@@ -159,20 +165,55 @@ def rank(db, live=False):
         if a["ok"]:
             results.append((item, sd, a))
     results.sort(key=lambda x: x[2]["score"], reverse=True)
-    print(f"  {'#':>2} {'評分':>4} {'名稱':<10} {'代碼':<6} {'現價':>7} {'parity':>7} "
-          f"{'理論':>6} {'發行':>5} {'隱波':>5} {'歷波':>5} {'槓桿':>5} {'結論'}")
-    for n, (item, sd, a) in enumerate(results, 1):
+    elig = [r for r in results if r[2]["eligible"]]
+    other = [r for r in results if not r[2]["eligible"]]
+
+    def _row(n, item, sd, a):
         iv = f"{a['implied_vol']*100:.0f}%" if a['implied_vol'] else "—"
         lev = f"{a['leverage']:.1f}x" if a['leverage'] else "—"
         col = _score_color(a['score'])
         v = "買" if a['score'] >= 58 else ("觀望" if a['score'] >= 48 else "避")
         print(f"  {n:>2} {col}{a['score']:>4.0f}{C['x']} {item['name']:<10} {item['stock_code']:<6} "
-              f"{sd['spot']:>7.1f} {a['parity']:>7.1f} {a['theoretical']:>6.1f} "
-              f"{a['issue_price']:>5.0f} {iv:>5} {a['hist_vol']*100:>4.0f}% {lev:>5} {col}{v}{C['x']}")
-    print(f"\n  {C['d']}共 {len(results)} 檔已定價可分析;另 "
-          f"{db['count']-len(results)} 檔條件未定或抓不到股價。{C['x']}")
+              f"TCRI{item['tcri']} {str(item['size_yi'])+'億':<6} "
+              f"{sd['spot']:>7.1f} {a['parity']:>6.1f} {a['issue_price']:>5.0f} "
+              f"{iv:>5} {a['hist_vol']*100:>4.0f}% {lev:>5} {col}{v}{C['x']}")
+
+    hdr = (f"  {'#':>2} {'評分':>4} {'名稱':<10} {'代碼':<6} {'評等':<5} {'量':<6} "
+           f"{'現價':>7} {'parity':>6} {'清算':>5} {'隱波':>5} {'歷波':>5} {'槓桿':>5} {'結論'}")
+    print(f"{C['g']}{C['bold']}✅ 符合老闆準則(TCRI 3-4 + 雙位數億)= 值得拆解{C['x']}")
+    if elig:
+        print(hdr)
+        for n, (item, sd, a) in enumerate(elig, 1):
+            _row(n, item, sd, a)
+    else:
+        print(f"  {C['y']}(本期已定價案件無一符合){C['x']}")
+
+    print(f"\n{C['d']}{C['bold']}⚠ 不符準則(TCRI 非3-4 或 未達雙位數億)— 老闆說不值得拆{C['x']}")
+    print(hdr)
+    for n, (item, sd, a) in enumerate(other, 1):
+        _row(n, item, sd, a)
+
+    _watchlist(db)
+    print(f"\n  {C['d']}共 {len(results)} 檔已定價;符合準則 {len(elig)} 檔。"
+          f"另 {db['count']-len(results)} 檔條件未定或抓不到股價。{C['x']}")
     print_assumptions()
-    return results
+    return elig + other
+
+
+def _watchlist(db):
+    """未定價但已符合老闆 TCRI+量 準則的管線案件 → 值得盯著等定價。"""
+    a = cb_core.ASSUMPTIONS
+    watch = [i for i in db["items"]
+             if (not i.get("conv_price") or not i.get("premium_mid"))
+             and i.get("tcri") in a["elig_tcri"]
+             and (i.get("size_yi") or 0) >= a["elig_min_size"]]
+    if not watch:
+        return
+    watch.sort(key=lambda i: -(i.get("size_yi") or 0))
+    print(f"\n{C['b']}{C['bold']}👀 待定價觀察清單(符合準則但條件未定,盯著等承銷價){C['x']}")
+    for i in watch:
+        print(f"  · {i['name']:<12} {i['stock_code']:<6} TCRI{i['tcri']} "
+              f"{str(i['size_yi'])+'億':<6} {i['tenor_year']}年 · {i['section']} · {i['underwriter']}")
 
 
 def print_assumptions():

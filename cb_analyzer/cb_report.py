@@ -38,14 +38,20 @@ def _scen_bar(scen):
 def _card(item, sd, a):
     vt, vc = _verdict(a["score"])
     g = lambda v: ("#34d399" if v >= 0 else "#f87171")
+    if a.get("eligible"):
+        elig_badge = '<span class="elig ok">✅ 可拆解</span>'
+    else:
+        why = "；".join(a.get("elig_reasons", []))
+        elig_badge = f'<span class="elig no" title="{html.escape(why)}">❌ 不符準則</span>'
     ve = a.get("vol_edge")
     auction = ""
     if a.get("auction_low"):
         auction = f"競拍 {a['auction_low']}~{a['auction_high']}"
+    cardcls = "card elig-card" if a.get("eligible") else "card dim-card"
     rows = f"""
-    <div class="card">
+    <div class="{cardcls}">
       <div class="chead">
-        <div><span class="nm">{html.escape(item['name'])}</span>
+        <div><span class="nm">{html.escape(item['name'])}</span> {elig_badge}
           <span class="cd">股 {item['stock_code']} · 債 {item['bond_code']}</span></div>
         <div class="score" style="--c:{vc}">{a['score']:.0f}<small>/100</small></div>
       </div>
@@ -82,18 +88,35 @@ def write_report(db, results, path=None):
     path = path or os.path.join(HERE, "report.html")
     A = cb_core.ASSUMPTIONS
     today = datetime.date.today().isoformat()
-    rank_rows = ""
-    for n, (item, sd, a) in enumerate(results, 1):
-        vt, vc = _verdict(a["score"])
-        rank_rows += (
-            f'<tr><td>{n}</td><td class="sc" style="color:{vc}">{a["score"]:.0f}</td>'
-            f'<td>{html.escape(item["name"])}</td><td>{item["stock_code"]}</td>'
-            f'<td>{sd["spot"]:.1f}</td><td>{a["parity"]:.0f}</td>'
-            f'<td>{a["issue_price"]:.0f}</td><td>{a["theoretical"]:.0f}</td>'
-            f'<td>{_pct(a["implied_vol"],0)}</td><td>{_pct(a["hist_vol"],0)}</td>'
-            f'<td>{a["leverage"]:.1f}×</td><td style="color:{vc}">{vt}</td></tr>')
-    cards = "".join(_card(*r) for r in results)
+    elig = [r for r in results if r[2].get("eligible")]
+    other = [r for r in results if not r[2].get("eligible")]
+
+    def _rows(rs):
+        out = ""
+        for n, (item, sd, a) in enumerate(rs, 1):
+            vt, vc = _verdict(a["score"])
+            out += (
+                f'<tr><td>{n}</td><td class="sc" style="color:{vc}">{a["score"]:.0f}</td>'
+                f'<td>{html.escape(item["name"])}</td><td>{item["stock_code"]}</td>'
+                f'<td>TCRI{item["tcri"]}</td><td>{item["size_yi"]}億</td>'
+                f'<td>{sd["spot"]:.1f}</td><td>{a["parity"]:.0f}</td>'
+                f'<td>{a["issue_price"]:.0f}</td><td>{a["theoretical"]:.0f}</td>'
+                f'<td>{_pct(a["implied_vol"],0)}</td><td>{_pct(a["hist_vol"],0)}</td>'
+                f'<td>{a["leverage"]:.1f}×</td><td style="color:{vc}">{vt}</td></tr>')
+        return out
+    elig_rows = _rows(elig) or '<tr><td colspan="14" style="text-align:center;color:#8b95a7">本期已定價案件無一符合</td></tr>'
+    cards = "".join(_card(*r) for r in (elig + other))
     tcri_str = " · ".join(f"{k}:{v*100:.1f}%" for k, v in A["tcri_spread"].items())
+
+    watch = [i for i in db["items"]
+             if (not i.get("conv_price") or not i.get("premium_mid"))
+             and i.get("tcri") in A["elig_tcri"] and (i.get("size_yi") or 0) >= A["elig_min_size"]]
+    watch.sort(key=lambda i: -(i.get("size_yi") or 0))
+    watch_rows = "".join(
+        f'<tr><td>{html.escape(i["name"])}</td><td>{i["stock_code"]}</td>'
+        f'<td>TCRI{i["tcri"]}</td><td>{i["size_yi"]}億</td><td>{i["tenor_year"]}年</td>'
+        f'<td>{html.escape(i["section"])}</td><td>{html.escape(i["underwriter"])}</td></tr>'
+        for i in watch)
 
     doc = f"""<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -141,12 +164,35 @@ padding:10px 0;border-top:1px solid rgba(255,255,255,.06)}}
 .reasons span{{font-size:10px;color:var(--mut);background:rgba(255,255,255,.03);padding:2px 7px;border-radius:6px}}
 .foot{{margin-top:34px;color:var(--mut);font-size:11.5px;border-top:1px solid var(--bd);padding-top:16px}}
 .warn{{color:#fbbf24}}
+.crit{{background:linear-gradient(90deg,rgba(52,211,153,.14),transparent);border:1px solid rgba(52,211,153,.3);
+border-radius:12px;padding:12px 16px;margin:0 0 20px;font-size:13.5px}}
+.crit b{{color:#34d399}}
+.sec{{font-size:15px;font-weight:700;margin:26px 0 10px;display:flex;align-items:center;gap:8px}}
+.sec.ok{{color:#34d399}}.sec.no{{color:#8b95a7}}.sec.watch{{color:#a5b4fc}}
+.elig{{font-size:11px;font-weight:700;padding:1px 8px;border-radius:20px;vertical-align:middle}}
+.elig.ok{{background:rgba(52,211,153,.16);color:#34d399}}
+.elig.no{{background:rgba(248,113,113,.14);color:#f87171}}
+.elig-card{{border-color:rgba(52,211,153,.35);box-shadow:0 0 0 1px rgba(52,211,153,.12)}}
+.dim-card{{opacity:.62}}
+tr.er td{{background:rgba(52,211,153,.05)}}
 </style></head><body><div class="wrap">
 <h1>台股 CB 拆解吸引力分析</h1>
 <div class="sub">來源 {html.escape(db['source_file'])} · 產出 {today} · 已定價 {len(results)} 檔 / 全表 {db['count']} 檔</div>
-<table><thead><tr><th>#</th><th>評分</th><th>名稱</th><th>代碼</th><th>現價</th><th>parity</th>
+<div class="crit">📏 <b>老闆拆解準則(硬門檻)</b>:TCRI 須為 <b>3 或 4</b>(銀行才肯承做資產交換)且
+發行量 <b>≥ 雙位數億(10億)</b>(流動性足)。兩條同時滿足才值得拆解 —— 本期已定價僅
+<b>{len(elig)}</b> 檔符合。</div>
+<div class="sec ok">✅ 符合準則 · 值得拆解</div>
+<table><thead><tr><th>#</th><th>評分</th><th>名稱</th><th>代碼</th><th>評等</th><th>量</th><th>現價</th><th>parity</th>
 <th>清算價</th><th>理論</th><th>隱波</th><th>前瞻波</th><th>槓桿</th><th>結論</th></tr></thead>
-<tbody>{rank_rows}</tbody></table>
+<tbody>{elig_rows}</tbody></table>
+<div class="sec no">⚠ 不符準則 · 老闆說不值得拆(TCRI 非3-4 或 未達雙位數億)</div>
+<table><thead><tr><th>#</th><th>評分</th><th>名稱</th><th>代碼</th><th>評等</th><th>量</th><th>現價</th><th>parity</th>
+<th>清算價</th><th>理論</th><th>隱波</th><th>前瞻波</th><th>槓桿</th><th>結論</th></tr></thead>
+<tbody>{_rows(other)}</tbody></table>
+<div class="sec watch">👀 待定價觀察清單 · 符合準則但條件未定(盯著等承銷價)</div>
+<table><thead><tr><th>名稱</th><th>代碼</th><th>評等</th><th>量</th><th>年期</th><th>階段</th><th>主辦</th></tr></thead>
+<tbody>{watch_rows}</tbody></table>
+<div class="sec ok">📇 個案卡(符合準則者綠框在前)</div>
 <div class="cards">{cards}</div>
 <div class="foot">
 <b>假設參數</b>:rf {A['rf']*100:.1f}% · 資產交換 spread {A['asset_swap_spread']*100:.1f}% ·

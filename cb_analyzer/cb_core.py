@@ -15,7 +15,24 @@ ASSUMPTIONS = {
     "default_tcri": 6,
     "vol_w_short": 0.35,    # 前瞻波動:短期(EWMA)權重
     "vol_w_long": 0.65,     # 長期(120d)權重
+    # 老闆的拆解硬門檻(不是加分,是及格線;任一不過直接淘汰)
+    "elig_tcri": [3, 4],    # TCRI 須為 3 或 4 → 銀行才肯承做資產交換
+    "elig_min_size": 10,    # 發行量 ≥ 雙位數億 → 有流動性、資產交換台吃得下
 }
+
+
+def eligible(item, a=ASSUMPTIONS):
+    """老闆準則:TCRI∈{3,4} 且 發行量≥10億。回 (是否合格, 原因list)。"""
+    reasons = []
+    tcri = item.get("tcri")
+    size = item.get("size_yi")
+    ok_tcri = tcri in a["elig_tcri"]
+    ok_size = (size is not None) and (size >= a["elig_min_size"])
+    if not ok_tcri:
+        reasons.append(f"TCRI {tcri} 不在 {a['elig_tcri']}(銀行難承做資產交換)")
+    if not ok_size:
+        reasons.append(f"發行量 {size}億 < {a['elig_min_size']}億(流動性不足)")
+    return (ok_tcri and ok_size), reasons
 
 
 def set_config(**kw):
@@ -28,6 +45,10 @@ def set_config(**kw):
         elif k in ASSUMPTIONS:
             ASSUMPTIONS[k] = v
     return ASSUMPTIONS
+
+
+def eligibility(item):
+    return eligible(item, ASSUMPTIONS)
 
 SQRT2 = math.sqrt(2.0)
 
@@ -126,8 +147,10 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None):
                                          delta=delta, leverage=leverage,
                                          moneyness=moneyness), a)
 
+    elig, elig_reasons = eligible(item, a)
     return {
         "ok": True,
+        "eligible": elig, "elig_reasons": elig_reasons,
         "spot": spot, "conv_price": K, "shares": shares, "parity": parity,
         "moneyness": moneyness, "premium_at_issue": item.get("premium_mid"),
         "tenor": T, "T_opt": T_opt,
