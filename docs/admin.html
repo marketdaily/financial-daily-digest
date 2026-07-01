@@ -565,8 +565,21 @@ body {
         <button class="sb-item active" onclick="nav('overview',this)">
           <span class="sb-icon">▦</span> 總覽
         </button>
+        <button class="sb-item" onclick="nav('ops',this)">
+          <span class="sb-icon">◉</span> 營運監控 <span class="sb-badge" id="badge-ops"></span>
+        </button>
         <button class="sb-item" onclick="nav('analytics',this)">
           <span class="sb-icon">◔</span> 數據分析
+        </button>
+      </div>
+
+      <div class="sb-section">
+        <div class="sb-section-label">商業</div>
+        <button class="sb-item" onclick="nav('revenue',this)">
+          <span class="sb-icon">$</span> 營收 MRR
+        </button>
+        <button class="sb-item" onclick="nav('email',this)">
+          <span class="sb-icon">✉</span> 寄信成效
         </button>
       </div>
 
@@ -587,6 +600,9 @@ body {
         </button>
         <button class="sb-item" onclick="nav('settings',this)">
           <span class="sb-icon">◈</span> 系統設定
+        </button>
+        <button class="sb-item" onclick="nav('audit',this)">
+          <span class="sb-icon">☷</span> 稽核記錄
         </button>
         <button class="sb-item" onclick="nav('tools',this)">
           <span class="sb-icon">⚙</span> 工具
@@ -723,6 +739,151 @@ body {
         <div class="card">
           <div class="card-title"><span class="dot"></span>最近轉換明細 <span class="right">最新 50 筆</span></div>
           <div class="tbl-wrap" id="an-recent"><div class="empty-state">載入中…</div></div>
+        </div>
+      </div>
+
+      <!-- ── Ops monitor ── -->
+      <div id="sec-ops" class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">營運監控</div>
+            <div class="section-desc">今日日報產生數 · 早晚報排程 run 狀態 · 系統健康 —— 每天最該看的一頁</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadOps(true)">↻ 重新整理</button>
+        </div>
+
+        <div class="grid-4 mb-16">
+          <div class="stat-tile blue">
+            <div class="stat-top"><span class="stat-ic">✉</span></div>
+            <div class="stat-value" id="ops-today">—</div>
+            <div class="stat-label">今日日報產生數</div>
+            <div class="stat-sub" id="ops-today-sub">個人化 digest</div>
+          </div>
+          <div class="stat-tile indigo">
+            <div class="stat-top"><span class="stat-ic">✉</span></div>
+            <div class="stat-value" id="ops-yest">—</div>
+            <div class="stat-label">昨日日報產生數</div>
+            <div class="stat-sub">對照基準</div>
+          </div>
+          <div class="stat-tile banana">
+            <div class="stat-top"><span class="stat-ic">◉</span></div>
+            <div class="stat-value" id="ops-annot">—</div>
+            <div class="stat-label">看盤台 AI 註解</div>
+            <div class="stat-sub">最新一批</div>
+          </div>
+          <div class="stat-tile green">
+            <div class="stat-top"><span class="stat-ic">◈</span></div>
+            <div class="stat-value" id="ops-runhealth">—</div>
+            <div class="stat-label">今日排程</div>
+            <div class="stat-sub">早報 + 晚報</div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-16">
+          <div class="card">
+            <div class="card-title"><span class="dot"></span>日報排程 Run 狀態 <span class="right" id="ops-runts"></span></div>
+            <div id="ops-runs"><div class="empty-state">載入中…</div></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><span class="dot"></span>系統健康 <span class="right" id="ops-health-overall">檢查中…</span></div>
+            <div id="ops-health-rows"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Revenue ── -->
+      <div id="sec-revenue" class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">營收 MRR</div>
+            <div class="section-desc">即時取自 Stripe 訂閱 —— 月經常性收入、年化、各狀態訂閱數</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadRevenue(true)">↻ 重新整理</button>
+        </div>
+        <div class="grid-4 mb-16">
+          <div class="stat-tile green">
+            <div class="stat-top"><span class="stat-ic">$</span></div>
+            <div class="stat-value" id="rev-mrr">—</div>
+            <div class="stat-label">MRR 月經常收入</div>
+            <div class="stat-sub" id="rev-cur">—</div>
+          </div>
+          <div class="stat-tile banana">
+            <div class="stat-top"><span class="stat-ic">$</span></div>
+            <div class="stat-value" id="rev-arr">—</div>
+            <div class="stat-label">ARR 年化</div>
+            <div class="stat-sub">MRR × 12</div>
+          </div>
+          <div class="stat-tile blue">
+            <div class="stat-top"><span class="stat-ic">★</span></div>
+            <div class="stat-value" id="rev-active">—</div>
+            <div class="stat-label">有效訂閱</div>
+            <div class="stat-sub" id="rev-trial">—</div>
+          </div>
+          <div class="stat-tile indigo">
+            <div class="stat-top"><span class="stat-ic">◔</span></div>
+            <div class="stat-value" id="rev-new">—</div>
+            <div class="stat-label">本月新訂閱</div>
+            <div class="stat-sub" id="rev-churn">—</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot"></span>訂閱狀態分佈</div>
+          <div id="rev-breakdown"><div class="empty-state">載入中…</div></div>
+        </div>
+      </div>
+
+      <!-- ── Email deliverability ── -->
+      <div id="sec-email" class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">寄信成效</div>
+            <div class="section-desc">Brevo 近 30 日彙總 —— 送達率 / 開信率 / 點擊率 / 退信率</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadEmailStats(true)">↻ 重新整理</button>
+        </div>
+        <div class="grid-4 mb-16">
+          <div class="stat-tile green">
+            <div class="stat-top"><span class="stat-ic">✓</span></div>
+            <div class="stat-value" id="em-delivery">—</div>
+            <div class="stat-label">送達率</div>
+            <div class="stat-sub" id="em-delivery-sub">delivered / requests</div>
+          </div>
+          <div class="stat-tile blue">
+            <div class="stat-top"><span class="stat-ic">◉</span></div>
+            <div class="stat-value" id="em-open">—</div>
+            <div class="stat-label">開信率</div>
+            <div class="stat-sub" id="em-open-sub">unique opens</div>
+          </div>
+          <div class="stat-tile banana">
+            <div class="stat-top"><span class="stat-ic">➔</span></div>
+            <div class="stat-value" id="em-click">—</div>
+            <div class="stat-label">點擊率</div>
+            <div class="stat-sub" id="em-click-sub">unique clicks</div>
+          </div>
+          <div class="stat-tile indigo">
+            <div class="stat-top"><span class="stat-ic">⚠</span></div>
+            <div class="stat-value" id="em-bounce">—</div>
+            <div class="stat-label">退信率</div>
+            <div class="stat-sub" id="em-bounce-sub">soft + hard</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><span class="dot"></span>近 30 日寄送明細</div>
+          <div class="tbl-wrap" id="em-detail"><div class="empty-state">載入中…</div></div>
+        </div>
+      </div>
+
+      <!-- ── Audit log ── -->
+      <div id="sec-audit" class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">稽核記錄</div>
+            <div class="section-desc">管理員異動軌跡（改方案 / 清資料 / 存設定 / 測試信）—— 最新 100 筆，保留 180 天</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadAudit(true)">↻ 重新整理</button>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap" id="audit-content"><div class="empty-state">載入中…</div></div>
         </div>
       </div>
 
@@ -890,6 +1051,16 @@ body {
   </div><!-- main -->
 </div><!-- admin-shell -->
 
+<!-- User detail drawer -->
+<div id="ud-scrim" onclick="closeUserDetail()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:120;backdrop-filter:blur(3px)"></div>
+<aside id="ud-drawer" style="display:none;position:fixed;top:0;right:0;height:100%;width:min(440px,92vw);z-index:121;background:#0f1218;border-left:1px solid rgba(255,255,255,.08);box-shadow:-20px 0 60px rgba(0,0,0,.6);overflow-y:auto;padding:24px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div style="font-size:15px;font-weight:700">用戶詳情</div>
+    <button class="btn btn-ghost btn-sm" onclick="closeUserDetail()">✕ 關閉</button>
+  </div>
+  <div id="ud-body"><div class="empty-state">載入中…</div></div>
+</div>
+
 <!-- Toast -->
 <div id="toast"></div>
 
@@ -1000,6 +1171,7 @@ function bootAdmin(email) {
   loadAnalytics();       // analytics → KPI events + charts
   runHealth();           // health probes (overview + settings)
   loadReactive();        // reactive queue → badge
+  loadOps();             // ops badge (今日日報數) + 排程狀態
 }
 
 function logout() {
@@ -1012,7 +1184,7 @@ function logout() {
 
 function refreshAll() {
   toast("重新整理中…");
-  loadFromWorker(); loadSubscribers(); loadAnalytics(true); runHealth(); loadReactive(true);
+  loadFromWorker(); loadSubscribers(); loadAnalytics(true); runHealth(); loadReactive(true); loadOps(true);
 }
 
 // ── Sidebar (mobile) ──
@@ -1022,6 +1194,10 @@ function closeSidebar(){ document.getElementById("sidebar").classList.remove("op
 // ── Navigation ──
 const SECTION_TITLES = {
   overview:    ["總覽","全平台關鍵指標監控"],
+  ops:         ["營運監控","日報產生數 / 排程狀態 / 系統健康"],
+  revenue:     ["營收 MRR","Stripe 訂閱月經常收入"],
+  email:       ["寄信成效","Brevo 送達 / 開信 / 退信"],
+  audit:       ["稽核記錄","管理員操作軌跡"],
   analytics:   ["數據分析","30 日 UTM 歸因分析"],
   subscribers: ["訂閱者","Brevo 訂閱列表與方案管理"],
   reactive:    ["內容審核","Hot Take 發佈佇列"],
@@ -1043,6 +1219,10 @@ function nav(id, btn) {
   if (id === "subscribers") renderSubs();
   if (id === "analytics") renderAnalytics();
   if (id === "reactive") renderReactive();
+  if (id === "ops") loadOps();
+  if (id === "revenue") loadRevenue();
+  if (id === "email") loadEmailStats();
+  if (id === "audit") loadAudit();
 }
 
 // ── Load / Save Config ──
@@ -1203,7 +1383,7 @@ function renderSubs() {
     rows.map(s => {
       const email = esc(s.email);
       return `<tr>
-        <td><div style="display:flex;align-items:center;gap:10px"><div class="sub-av">${esc((s.email||"?")[0].toUpperCase())}</div><span class="mono">${email}</span></div></td>
+        <td><div style="display:flex;align-items:center;gap:10px"><div class="sub-av">${esc((s.email||"?")[0].toUpperCase())}</div><span class="mono" style="cursor:pointer;border-bottom:1px dotted rgba(255,255,255,.3)" onclick="openUserDetail('${email}')" title="查看詳情">${email}</span></div></td>
         <td>${s.since ? new Date(s.since).toLocaleDateString("zh-TW") : "—"}</td>
         <td>
           <select class="plan-select" data-email="${email}" data-prev="${s.plan}" onchange="stagePlan(this)" aria-label="方案">
@@ -1388,6 +1568,170 @@ async function runHealth() {
   document.getElementById("health-overall").textContent = txt;
   const t = new Date();
   document.getElementById("settings-health-ts").textContent = `${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`;
+}
+
+// 把既有健康探針渲染到指定容器(供營運監控分頁用,不干擾 overview/settings 既有版)
+async function runHealthInto(rowsId, overallId) {
+  const box = document.getElementById(rowsId); if (!box) return;
+  box.innerHTML = HEALTH_CHECKS.map(c => `<div class="hrow"><span class="hdot pend"></span><div class="hinfo"><div class="hname">${c.name}</div><div class="hdesc">${c.desc}</div></div><span class="hst pend">檢查中</span></div>`).join("");
+  const results = await Promise.all(HEALTH_CHECKS.map(async c => { try { return await c.run(); } catch { return {state:"bad",note:"檢查失敗"}; } }));
+  [...box.querySelectorAll(".hrow")].forEach((row,i)=>{ const res=results[i]; row.querySelector(".hdot").className="hdot "+res.state; const st=row.querySelector(".hst"); st.className="hst "+res.state; st.textContent=({ok:"正常",warn:"注意",bad:"異常"})[res.state]||"—"; row.querySelector(".hdesc").textContent=res.note; });
+  const worst = results.reduce((a,b)=> H_ORDER[b.state]>H_ORDER[a]?b.state:a, "ok");
+  const ov = document.getElementById(overallId); if (ov) ov.textContent = {ok:"🟢 全部正常",warn:"🟡 部分需注意",bad:"🔴 偵測到異常"}[worst];
+}
+
+// ── Ops monitor ──
+const WATCHDOG_URL = "https://marketdaily-digest-watchdog.delvin-12345678.workers.dev";
+async function loadOps(force) {
+  try {
+    const d = await api("/admin/ops-status");
+    document.getElementById("ops-today").textContent = d.digests_today ?? "—";
+    document.getElementById("ops-today-sub").textContent = d.today || "個人化 digest";
+    document.getElementById("ops-yest").textContent = d.digests_yesterday ?? "—";
+    document.getElementById("ops-annot").textContent = d.annotations ?? "—";
+    const badge = document.getElementById("badge-ops");
+    if (badge) { if (d.digests_today > 0) { badge.textContent = d.digests_today; badge.classList.add("show"); } else badge.classList.remove("show"); }
+  } catch { document.getElementById("ops-today").textContent = "—"; }
+
+  const box = document.getElementById("ops-runs");
+  try {
+    const r = await fetch(`${WATCHDOG_URL}/status`, { cache: "no-store" });
+    const s = await r.json();
+    const shiftRow = (key, label) => {
+      const v = s[key];
+      if (!v) return `<div class="hrow"><span class="hdot warn"></span><div class="hinfo"><div class="hname">${label}</div><div class="hdesc">今日尚無 run 記錄（未到時間或未觸發）</div></div><span class="hst warn">待觸發</span></div>`;
+      const concl = v.conclusion || v.status || "";
+      const ok = concl === "success", running = v.status === "in_progress" || v.status === "queued";
+      const state = ok ? "ok" : running ? "warn" : "bad";
+      const stt = ok ? "成功" : running ? "執行中" : "失敗";
+      const when = v.created ? new Date(v.created).toLocaleString("zh-TW", {hour:"2-digit",minute:"2-digit",month:"numeric",day:"numeric"}) : "";
+      const link = v.url ? ` · <a href="${esc(v.url)}" target="_blank" style="color:#7aa2ff">GH</a>` : "";
+      return `<div class="hrow"><span class="hdot ${state}"></span><div class="hinfo"><div class="hname">${label}</div><div class="hdesc">${esc(concl||v.status||"")} · ${when}${link}</div></div><span class="hst ${state}">${stt}</span></div>`;
+    };
+    box.innerHTML = shiftRow("tw","台股早報 (07:00)") + shiftRow("us","美股晚報 (20:00)");
+    const vals = [s.tw, s.us].filter(Boolean);
+    const allOk = vals.length && vals.every(v => (v.conclusion||v.status) === "success");
+    document.getElementById("ops-runhealth").textContent = vals.length ? (allOk ? "✓" : (vals.some(v=>v.status==="in_progress")?"…":"⚠")) : "待觸發";
+  } catch {
+    box.innerHTML = `<div class="empty-state">無法讀取排程狀態</div>`;
+    document.getElementById("ops-runhealth").textContent = "—";
+  }
+  const t = new Date();
+  document.getElementById("ops-runts").textContent = `${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`;
+  runHealthInto("ops-health-rows","ops-health-overall");
+}
+
+function breakdownRows(pairs) {
+  return `<table class="dtable"><tbody>` + pairs.map(([k,v])=>`<tr><td>${esc(k)}</td><td style="text-align:right"><b>${v??0}</b></td></tr>`).join("") + `</tbody></table>`;
+}
+
+// ── Revenue (Stripe MRR) ──
+async function loadRevenue(force) {
+  const set = (id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
+  try {
+    const d = await api("/admin/revenue");
+    if (d.error) throw Object.assign(new Error(d.error), {code:d.error});
+    const cur = d.currency || "TWD";
+    const fmt = n => (cur==="TWD"?"NT$":cur+" ") + (n||0).toLocaleString();
+    set("rev-mrr", fmt(d.mrr)); set("rev-cur", cur + " · 月");
+    set("rev-arr", fmt(d.arr));
+    set("rev-active", d.active ?? "—"); set("rev-trial", (d.trialing?`+${d.trialing} 試用`:"付費中"));
+    set("rev-new", d.newThisMonth ?? "—"); set("rev-churn", (d.canceled?`${d.canceled} 累計取消`:"—"));
+    document.getElementById("rev-breakdown").innerHTML = breakdownRows([
+      ["有效訂閱 active", d.active], ["試用中 trialing", d.trialing],
+      ["逾期 past_due", d.pastDue], ["已取消 canceled", d.canceled],
+    ]);
+  } catch (e) {
+    ["rev-mrr","rev-arr","rev-active","rev-new"].forEach(id=>set(id,"—"));
+    document.getElementById("rev-breakdown").innerHTML = `<div class="empty-state"><div class="emoji">💳</div>${e.code==="missing_stripe_key"?"Stripe 金鑰未設定":"無法讀取 Stripe 訂閱資料"}</div>`;
+  }
+}
+
+// ── Email deliverability ──
+async function loadEmailStats(force) {
+  const set = (id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
+  try {
+    const d = await api("/admin/email-stats");
+    if (d.error) throw new Error(d.error);
+    set("em-delivery", (d.deliveryRate??0)+"%"); set("em-delivery-sub", `${d.delivered||0} / ${d.requests||0}`);
+    set("em-open", (d.openRate??0)+"%"); set("em-open-sub", `${d.opens||0} 次開信`);
+    set("em-click", (d.clickRate??0)+"%"); set("em-click-sub", `${d.clicks||0} 次點擊`);
+    set("em-bounce", (d.bounceRate??0)+"%"); set("em-bounce-sub", `軟 ${d.softBounces||0} · 硬 ${d.hardBounces||0}`);
+    document.getElementById("em-detail").innerHTML = breakdownRows([
+      ["寄送請求 requests", d.requests], ["成功送達 delivered", d.delivered],
+      ["開信 opens", d.opens], ["點擊 clicks", d.clicks],
+      ["軟退信 softBounces", d.softBounces], ["硬退信 hardBounces", d.hardBounces],
+      ["退訂 unsubscribed", d.unsubscribed], ["封鎖 blocked", d.blocked],
+      ["垃圾申訴 spam", d.spam],
+    ]);
+  } catch (e) {
+    ["em-delivery","em-open","em-click","em-bounce"].forEach(id=>set(id,"—"));
+    document.getElementById("em-detail").innerHTML = `<div class="empty-state"><div class="emoji">✉️</div>無法讀取 Brevo 統計</div>`;
+  }
+}
+
+// ── Audit log ──
+async function loadAudit(force) {
+  const el = document.getElementById("audit-content");
+  try {
+    const d = await api("/admin/audit-log");
+    const items = d.items || [];
+    if (!items.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">🗂</div>尚無稽核記錄（部署後的新操作才會記錄）</div>`; return; }
+    const label = { "set-plan":"改方案","purge-contacts":"清除聯絡人","save-config":"儲存設定","lifecycle-test":"測試信" };
+    el.innerHTML = `<table class="dtable"><thead><tr><th>時間</th><th>操作</th><th>對象 / 內容</th><th>管理員</th></tr></thead><tbody>` +
+      items.map(it => {
+        const when = it.iso ? new Date(it.iso).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
+        const det = it.detail || {};
+        const detStr = det.target ? `${esc(det.target)}${det.plan?" → "+esc(det.plan):""}${det.type?" ("+esc(det.type)+")":""}` : (det.pattern?`pattern: ${esc(det.pattern)} · ${det.matched||0} 筆`:"—");
+        return `<tr><td class="mono">${when}</td><td><span class="badge">${esc(label[it.action]||it.action)}</span></td><td>${detStr}</td><td class="mono" style="opacity:.7">${esc((it.actor||"").split("@")[0])}</td></tr>`;
+      }).join("") + `</tbody></table>`;
+  } catch {
+    el.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>無法載入稽核記錄</div>`;
+  }
+}
+
+// ── User detail drawer ──
+async function openUserDetail(email) {
+  document.getElementById("ud-scrim").style.display = "block";
+  document.getElementById("ud-drawer").style.display = "block";
+  const body = document.getElementById("ud-body");
+  body.innerHTML = `<div class="empty-state">載入中…</div>`;
+  try {
+    const d = await api("/admin/user-detail", { target: email });
+    const since = d.signup?.iso ? new Date(d.signup.iso).toLocaleDateString("zh-TW") : (d.brevo?.createdAt ? new Date(d.brevo.createdAt).toLocaleDateString("zh-TW") : "—");
+    const us = d.prefs?.us_stocks || [], tw = (d.prefs?.tw_stocks||[]).map(t=>typeof t==="object"?(t.name||t.symbol):t);
+    const row = (k,v)=>`<div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="opacity:.6">${k}</span><span style="text-align:right;max-width:60%">${v}</span></div>`;
+    const today = new Date().toISOString().slice(0,10);
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="sub-av" style="width:44px;height:44px;font-size:18px">${esc((email[0]||"?").toUpperCase())}</div>
+        <div style="min-width:0"><div class="mono" style="font-weight:600;word-break:break-all">${esc(email)}</div>
+        <div style="margin-top:4px"><span class="badge ${d.plan==="premium"?"badge-green":""}">${d.plan==="premium"?"Premium":"免費"}</span></div></div>
+      </div>
+      ${row("註冊日", esc(since))}
+      ${row("已設密碼", d.hasPassword?"✓ 是":"✗ 否")}
+      ${row("LINE 綁定", d.lineBound===true?"✓ 已綁定":"—（無法確認）")}
+      ${row("日報深度", esc(d.prefs?.digest_depth||"standard"))}
+      ${row("美股自選", us.length?esc(us.join("、")):"—")}
+      ${row("台股自選", tw.length?esc(tw.join("、")):"—")}
+      ${row("偏好更新", d.prefs?.updated_at?new Date(d.prefs.updated_at).toLocaleDateString("zh-TW"):"—")}
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px">
+        <button class="btn btn-primary btn-sm" onclick="copyDigestLink()">📋 複製今日日報連結給此用戶</button>
+        <div style="font-size:11px;opacity:.5;line-height:1.5">「重寄」採複製連結而非自動寄信 —— 遵守「日報只由排程自動寄」硬規則。複製後可自行貼給用戶。連結為 ${today} 公版日報。</div>
+      </div>`;
+  } catch (e) {
+    body.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>${e.status===400?"Email 格式錯誤":"無法載入用戶詳情"}</div>`;
+  }
+}
+function closeUserDetail() {
+  document.getElementById("ud-scrim").style.display = "none";
+  document.getElementById("ud-drawer").style.display = "none";
+}
+function copyDigestLink() {
+  const today = new Date().toISOString().slice(0,10);
+  const link = `https://marketdaily.ai/output/digest_${today}.html`;
+  if (navigator.clipboard?.writeText) navigator.clipboard.writeText(link).then(()=>toast("已複製今日公版日報連結 ✓")).catch(()=>toast(link));
+  else toast(link);
 }
 
 // ── Reactive content ──
