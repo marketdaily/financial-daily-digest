@@ -13,6 +13,36 @@ DB = cb.load_db()
 VW = lambda: (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
 
 
+def _plain_summary(it, a):
+    """一句白話結論給老闆秒懂。"""
+    elig, reasons = cb_core.eligibility(it)
+    mv = (a["moneyness"] - 1) * 100
+    where = f"價內 {mv:+.0f}%" if mv >= 0 else f"價外 {mv:.0f}%"
+    lev = f"{a['leverage']:.1f} 倍" if a.get("leverage") else "—"
+    if not elig:
+        col, tag = "#f87171", "❌ 不建議拆解"
+        msg = "不符老闆準則(" + "；".join(reasons) + ")"
+    elif mv < -18:
+        col, tag = "#fbbf24", "⚠️ 觀望"
+        msg = (f"符合準則,但現價深度{where}——要股票大漲(約 +{abs(mv)+8:.0f}% 以上)才划算,"
+               f"目前像樂透型單押。適合等回檔、或改挑接近價平(parity 近 100)的標的。")
+    elif a["score"] >= 65 and mv >= -8:
+        col, tag = "#34d399", "✅ 值得拆解"
+        msg = f"符合準則、吸引力高。現價{where}、槓桿約{lev},下檔最多賠光權利金、上檔跟著股票漲。"
+    elif a["score"] >= 58:
+        col, tag = "#34d399", "✅ 可拆解(可議價)"
+        msg = f"符合準則、條件不錯。現價{where}、槓桿約{lev},可等好價位進場。"
+    else:
+        col, tag = "#fbbf24", "⚠️ 中性"
+        msg = f"符合準則但吸引力普通(現價{where})。需更好進場價或更高波動才划算。"
+    return (f'<div style="background:rgba(255,255,255,.04);border:1px solid {col}44;'
+            f'border-left:3px solid {col};border-radius:12px;padding:12px 16px;margin-bottom:12px">'
+            f'<span style="color:{col};font-weight:800;font-size:15px">{tag}</span>'
+            f'<span style="color:#8b95a7;font-size:12px;margin-left:8px">評分 {a["score"]:.0f}/100</span>'
+            f'<div style="color:#e6e9f0;font-size:13px;margin-top:5px;line-height:1.55">'
+            f'{html.escape(it["name"])}({it["stock_code"]}/{it["bond_code"]}):{html.escape(msg)}</div></div>')
+
+
 def analyze_fragment(code, tcri=None):
     hits = cb.find(DB, code)
     if tcri:
@@ -32,7 +62,7 @@ def analyze_fragment(code, tcri=None):
             continue
         a = cb_core.analyze(it, sd["spot"], sd["vol_blend"])
         if a.get("ok"):
-            cards.append(cb_report._card(it, sd, a))
+            cards.append(_plain_summary(it, a) + cb_report._card(it, sd, a))
     return '<div class="cards">' + "".join(cards) + "</div>"
 
 
