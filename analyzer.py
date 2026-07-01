@@ -813,6 +813,26 @@ def _postprocess_html(html: str, data: dict) -> str:
     # LLM 偶爾吐 markdown 粗體 **xxx**,轉成 <strong>,別讓星號直接露在卡片上
     html = _re.sub(r'\*\*([^*\n<]+?)\*\*', r'<strong>\1</strong>', html)
 
+    # 孤立觀望詞修補:audit(isolated_wait_phrase)同款判定 —— 觀望詞後 60 字內無
+    # 價位/事件/日期條件 → 自動補上條件式尾巴,讓「觀望」永遠帶「等什麼」,不留裸虛詞。
+    _BARE_WAIT_FIX = {
+        "先觀望": "先觀望,等關鍵支撐站穩或利空消化再進場",
+        "先別動": "先別動,等站回均線、方向確認再說",
+        "保守為上": "保守為上,等站上 MA20 再加碼",
+        "靜觀其變": "靜觀其變,等下一個關鍵價位或消息明朗再動",
+        "按兵不動": "按兵不動,等突破確認或回測支撐再出手",
+    }
+
+    def _fix_bare_wait(h):
+        def _repl(m):
+            ctx = h[m.start(): m.start() + 60]
+            if _re.search(r"\$\d|NT\$?\d|\d+\s*(元|美元|塊|點)|(等|直到).{0,12}(再|才|後)|財報|FOMC|\d+月\d+", ctx):
+                return m.group(1)
+            return _BARE_WAIT_FIX[m.group(1)]
+        return _re.sub(r"(先觀望|先別動|保守為上|靜觀其變|按兵不動)", _repl, h)
+
+    html = _fix_bare_wait(html)
+
     return html
 
 
