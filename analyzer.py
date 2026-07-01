@@ -286,6 +286,17 @@ def _call_groq(prompt: str, system: str = None,
     return resp.json()["choices"][0]["message"]["content"].strip()
 
 
+def _is_transient_dns_error(e) -> bool:
+    """WSL2 的 DNS 全走 Windows 主機轉發(nameserver 10.255.255.254),主機網路瞬抖時
+    整台 WSL 有幾秒解不到任何網域(NameResolutionError / Temporary failure in name
+    resolution / Failed to resolve)。這種是暫時性、幾秒就過 → 值得等一下整輪重試;
+    配額 429 / 認證錯不是這種,不該重試。2026-07-01 事故:一次 DNS 瞬斷讓 Gemini+Claude
+    +Groq(全走同條 DNS)同時解析失敗 → 3 chunk 掉 deterministic。"""
+    s = str(e).lower()
+    return ("nameresolutionerror" in s or "failed to resolve" in s
+            or "temporary failure in name resolution" in s)
+
+
 def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     """多 provider LLM 鏈:Gemini(多 model)→ Claude Sonnet → Groq Llama70B(免費)→ OpenAI。
     四層 LLM,任一可用就成功 — deterministic fallback 在現實中應該永遠跑不到。
@@ -293,22 +304,34 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     prefer_strong=True:把 Claude/OpenAI 排到 Gemini 前面。retry 專用 —
     第一次 Gemini 在配額壓力下回的弱內容會過 _llm_generate 但 audit HIGH fail,
     retry 若還從 Gemini 起跑等於白做;換更強模型才有意義。Gemini 仍留最後一層,
-    不破壞「永不掉 deterministic」保證。"""
-    last_err = None
+    不破壞「永不掉 deterministic」保證。
+    2026-07-01:全鏈失敗且屬 DNS 瞬斷(整台 WSL 幾秒解不到,連 Groq 也救不了,因走同條
+    Windows DNS)→ 等 8s 讓瞬斷過去、重試整輪一次(Gemini 已熔斷的維持快跳過不再撞 429)。"""
     gemini = [(f"gemini:{m}", lambda p, mm=m: _call_gemini(p, mm)) for m in GEMINI_MODELS]
     # Groq(Llama70B,免費)排在付費 OpenAI 前:Gemini 配額死 + Claude 抖時的免費接手層。
     strong = [("claude:sonnet-4.6", _call_claude),
               ("groq:llama-70b", lambda p: _call_groq(p)),
               ("openai:gpt-4o-mini", _call_openai)]
     providers = (strong + gemini) if prefer_strong else (gemini + strong)
-    for name, fn in providers:
-        try:
-            out = fn(prompt)
-            print(f"  [LLM] 使用 {name}{' (retry強化)' if prefer_strong else ''}")
-            return out
-        except Exception as e:
-            last_err = e
-            print(f"  [LLM] {name} 失敗({str(e)[:120]})")
+    last_err = None
+    for rnd in range(2):
+        dns_blip = False
+        for name, fn in providers:
+            try:
+                out = fn(prompt)
+                print(f"  [LLM] 使用 {name}{' (retry強化)' if prefer_strong else ''}{' (DNS重試後)' if rnd else ''}")
+                return out
+            except Exception as e:
+                last_err = e
+                if _is_transient_dns_error(e):
+                    dns_blip = True
+                print(f"  [LLM] {name} 失敗({str(e)[:120]})")
+        # 全 provider 失敗:只有『疑似 DNS 瞬斷』才值得等 8s 重試整輪(配額/認證錯重試也沒用)
+        if dns_blip and rnd == 0:
+            print("  [LLM] 全鏈失敗且疑似 DNS 瞬斷(WSL→Windows DNS 抖),等 8s 重試整輪")
+            time.sleep(8)
+            continue
+        break
     raise RuntimeError(f"所有 LLM provider 都失敗:{last_err}")
 
 
