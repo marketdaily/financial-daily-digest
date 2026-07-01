@@ -242,7 +242,6 @@ body {
 .segbar { display: flex; height: 12px; border-radius: 8px; overflow: hidden; background: var(--surface2); }
 .segbar span { display: block; height: 100%; transition: width 0.5s cubic-bezier(0.16,1,0.3,1); }
 .seg-premium { background: var(--banana); }
-.seg-pro { background: var(--indigo); }
 .seg-free { background: rgba(255,255,255,0.18); }
 .seg-legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 14px; }
 .seg-leg { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--text2); }
@@ -672,7 +671,6 @@ body {
             <div class="segbar" id="plan-segbar"><span class="seg-free" style="width:100%"></span></div>
             <div class="seg-legend" id="plan-legend">
               <div class="seg-leg"><span class="sw seg-premium"></span>Premium <b id="leg-premium">—</b></div>
-              <div class="seg-leg"><span class="sw seg-pro"></span>Pro <b id="leg-pro">—</b></div>
               <div class="seg-leg"><span class="sw seg-free"></span>免費 <b id="leg-free">—</b></div>
             </div>
           </div>
@@ -747,7 +745,6 @@ body {
             <div class="chips" id="sub-chips">
               <button class="chip active" data-plan="all" onclick="setSubFilter('all',this)">全部 <span class="ct" id="ct-all">0</span></button>
               <button class="chip" data-plan="premium" onclick="setSubFilter('premium',this)">Premium <span class="ct" id="ct-premium">0</span></button>
-              <button class="chip" data-plan="pro" onclick="setSubFilter('pro',this)">Pro <span class="ct" id="ct-pro">0</span></button>
               <button class="chip" data-plan="free" onclick="setSubFilter('free',this)">免費 <span class="ct" id="ct-free">0</span></button>
             </div>
           </div>
@@ -1163,7 +1160,7 @@ async function loadSubscribers() {
 }
 
 function planCounts() {
-  const c = { premium: 0, pro: 0, free: 0 };
+  const c = { premium: 0, free: 0 };
   SUBS.forEach(s => { c[s.plan] != null ? c[s.plan]++ : c.free++; });
   return c;
 }
@@ -1173,18 +1170,15 @@ function renderPlanDist() {
   const pct = n => (n / t * 100).toFixed(1) + "%";
   document.getElementById("plan-segbar").innerHTML =
     `<span class="seg-premium" style="width:${pct(c.premium)}"></span>` +
-    `<span class="seg-pro" style="width:${pct(c.pro)}"></span>` +
     `<span class="seg-free" style="width:${pct(c.free)}"></span>`;
   document.getElementById("leg-premium").textContent = c.premium;
-  document.getElementById("leg-pro").textContent = c.pro;
   document.getElementById("leg-free").textContent = c.free;
   document.getElementById("plan-total").textContent = SUBS.length + " 位（取樣）";
-  document.getElementById("kpi-paid").textContent = (c.premium + c.pro).toLocaleString();
-  document.getElementById("kpi-paid-sub").textContent = `Premium ${c.premium} · Pro ${c.pro}`;
+  document.getElementById("kpi-paid").textContent = c.premium.toLocaleString();
+  document.getElementById("kpi-paid-sub").textContent = `Premium ${c.premium}`;
   // chips
   document.getElementById("ct-all").textContent = SUBS.length;
   document.getElementById("ct-premium").textContent = c.premium;
-  document.getElementById("ct-pro").textContent = c.pro;
   document.getElementById("ct-free").textContent = c.free;
 }
 
@@ -1202,7 +1196,7 @@ function renderSubs() {
   let rows = SUBS.filter(s => SUB_FILTER === "all" || s.plan === SUB_FILTER);
   if (q) rows = rows.filter(s => s.email.toLowerCase().includes(q));
   if (!rows.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">🔍</div>沒有符合的訂閱者</div>`; return; }
-  const planLabel = { premium: "Premium", pro: "Pro", free: "免費" };
+  const planLabel = { premium: "Premium", free: "免費" };
   const opt = (cur, v, label) => `<option value="${v}"${cur === v ? " selected" : ""}>${label}</option>`;
   el.innerHTML = `<table class="dtable"><thead><tr>
       <th>訂閱者</th><th>加入時間</th><th>方案</th><th></th></tr></thead><tbody>` +
@@ -1213,7 +1207,7 @@ function renderSubs() {
         <td>${s.since ? new Date(s.since).toLocaleDateString("zh-TW") : "—"}</td>
         <td>
           <select class="plan-select" data-email="${email}" data-prev="${s.plan}" onchange="stagePlan(this)" aria-label="方案">
-            ${opt(s.plan,"free","免費")}${opt(s.plan,"pro","Pro")}${opt(s.plan,"premium","Premium")}
+            ${opt(s.plan,"free","免費")}${opt(s.plan,"premium","Premium")}
           </select>
         </td>
         <td style="text-align:right"><button class="plan-apply" onclick="applyPlan(this)" disabled>套用</button></td>
