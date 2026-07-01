@@ -1565,6 +1565,16 @@ def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -
             f = (data.get("fundamentals") or {}).get(sym) or {}
             if f.get("valuation"):
                 base += f" | 估值:{f['valuation']}"
+            if f.get("dcf"):
+                base += f" | {f['dcf']}"
+                price, lo, hi = m.get("price"), f.get("dcf_low"), f.get("dcf_high")
+                if price and lo and hi:
+                    if price < lo:
+                        base += f"(現價 {_fmt_num(price)} 低於區間下緣,潛在低估)"
+                    elif price > hi:
+                        base += f"(現價 {_fmt_num(price)} 高於區間上緣,潛在高估、留意追高)"
+                    else:
+                        base += f"(現價 {_fmt_num(price)} 落在合理區間內)"
             if f.get("chips"):
                 base += f" | 籌碼:{f['chips']}"
         lines.append("  " + base)

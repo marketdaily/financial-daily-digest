@@ -190,6 +190,10 @@ def us_chips(symbol):
 def compute_fundamentals(us_syms, tw_syms, today, earnings_impact=None):
     """回傳 {sym: {valuation, val_class, chips, chip_class, ...}}。任何單檔失敗只跳過該檔。"""
     ei = earnings_impact or {}
+    try:
+        from valuation.dcf import compute_dcf
+    except Exception:
+        compute_dcf = None
     out = {}
     for sym in (tw_syms or []):
         rec = {}
@@ -205,6 +209,13 @@ def compute_fundamentals(us_syms, tw_syms, today, earnings_impact=None):
                 rec.update(c)
         except Exception:
             pass
+        if compute_dcf:
+            try:
+                d = compute_dcf(sym, today)
+                if d:
+                    rec.update(d)
+            except Exception:
+                pass
         if rec:
             out[sym] = rec
     for sym in (us_syms or []):
@@ -225,6 +236,13 @@ def compute_fundamentals(us_syms, tw_syms, today, earnings_impact=None):
                 rec.update(c)
         except Exception:
             pass
+        if compute_dcf:
+            try:
+                d = compute_dcf(sym, today)
+                if d:
+                    rec.update(d)
+            except Exception:
+                pass
         if rec:
             out[sym] = rec
     return out
