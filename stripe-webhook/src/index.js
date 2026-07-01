@@ -67,7 +67,20 @@ const AUTH_FAIL_WINDOW_SEC = 900;
 function clientIp(request) {
   return request.headers.get("cf-connecting-ip") || request.headers.get("x-real-ip") || "unknown";
 }
-function _scStr(v, max) { return (typeof v === "string" ? v : "").trim().slice(0, max || 80); }
+// 台灣用語修正網:Haiku 偶爾漏字吐中國大陸慣用語,這裡確定性轉回台灣說法(保險層,不靠 prompt 100%)
+const _TW_TERMS = [
+  ["光刻机", "微影機"], ["光刻機", "微影機"], ["卡脖子", "難以替代"],
+  ["芯片", "晶片"], ["激光", "雷射"], ["内存", "記憶體"], ["软件", "軟體"],
+  ["硬件", "硬體"], ["顶尖", "頂尖"], ["供应商", "供應商"], ["设备", "設備"],
+  ["镜头", "鏡頭"], ["制造商", "製造商"], ["制造", "製造"], ["信息", "資訊"],
+  ["网络", "網路"], ["数据", "數據"], ["优势", "優勢"], ["领先", "領先"],
+];
+function _twFix(s) {
+  if (typeof s !== "string" || !s) return s;
+  for (const [a, b] of _TW_TERMS) if (s.includes(a)) s = s.split(a).join(b);
+  return s;
+}
+function _scStr(v, max) { return _twFix((typeof v === "string" ? v : "").trim()).slice(0, max || 80); }
 function _scNormList(arr) {
   if (!Array.isArray(arr)) return [];
   return arr.slice(0, 10).map(p => (p && typeof p === "object") ? {
@@ -1525,7 +1538,7 @@ export default {
       const givenName = (url.searchParams.get("name") || "").trim().slice(0, 40);
 
       // cache key 含公司名:台股裸代號 AI 會猜錯公司,帶名才準,故名也納入 key
-      const cacheKey = `sc:v3:${ticker}:${givenName}`;
+      const cacheKey = `sc:v5:${ticker}:${givenName}`;
       const cached = await env.USER_PREFS.get(cacheKey);
       if (cached) {
         try { return json(JSON.parse(cached)); } catch {}
@@ -1542,6 +1555,7 @@ export default {
       const sysPrompt = `你是財經產業鏈分析助手。針對給定的股票,輸出這家公司「詳細」的產業鏈資料。
 
 嚴格規則:
+- 語言:所有文字欄位(company_zh / industry / mid.desc / name_zh / category / role / criticality)一律使用「台灣繁體中文」的用字與用語,嚴禁任何簡體字,嚴禁中國大陸慣用語。半導體/科技用語一律用台灣說法:晶片(非「芯片」)、微影機或曝光機(非「光刻机」)、關鍵/命脈/難以替代(非「卡脖子」)、記憶體(非「内存」)、軟體(非「软件」)、頂尖(非「顶尖」)、供應商(非「供应商」)、設備(非「设备」)、鏡頭(非「镜头」)、製造(非「制造」)、矽晶圓、封裝測試。若不確定某詞的台灣寫法,用最通用的繁體中文。
 - 若提供了公司名稱,以「公司名稱」為準辨識這家公司,不要從代號數字臆測;若公司名稱與你認知的代號不符,以公司名稱為準。
 - 只列「真實、公認」的供應鏈關係。不確定就回空陣列,絕不亂掰、絕不臆測。
 - 關聯公司的 ticker 只在你確定它是上市公司時才填,否則填 null。
@@ -1588,11 +1602,11 @@ export default {
       const out = {
         ticker,
         source: "ai",
-        company_zh: typeof parsed.company_zh === "string" ? parsed.company_zh : "",
-        industry: typeof parsed.industry === "string" ? parsed.industry : "",
+        company_zh: _twFix(typeof parsed.company_zh === "string" ? parsed.company_zh : ""),
+        industry: _twFix(typeof parsed.industry === "string" ? parsed.industry : ""),
         mid: {
-          name: parsed.mid?.name || parsed.company_zh || ticker,
-          desc: parsed.mid?.desc || "",
+          name: _twFix(parsed.mid?.name || parsed.company_zh || ticker),
+          desc: _twFix(parsed.mid?.desc || ""),
         },
         upstream: _scNormList(parsed.upstream),
         downstream: _scNormList(parsed.downstream),
