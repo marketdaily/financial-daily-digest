@@ -13,34 +13,82 @@ DB = cb.load_db()
 VW = lambda: (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
 
 
-def _plain_summary(it, a):
-    """一句白話結論給老闆秒懂。"""
+def _verdict_parts(it, a, be_move=None):
+    """回 (tag, 顏色, 一句話, 怎麼做)。be_move=真實回本所需漲幅(小數)。"""
     elig, reasons = cb_core.eligibility(it)
     mv = (a["moneyness"] - 1) * 100
-    where = f"價內 {mv:+.0f}%" if mv >= 0 else f"價外 {mv:.0f}%"
-    lev = f"{a['leverage']:.1f} 倍" if a.get("leverage") else "—"
+    where = f"價內 {mv:+.0f}%" if mv >= 0 else f"價外 {abs(mv):.0f}%"
+    need = (be_move * 100) if be_move is not None else (abs(mv) + 8)
     if not elig:
-        col, tag = "#f87171", "❌ 不建議拆解"
-        msg = "不符老闆準則(" + "；".join(reasons) + ")"
-    elif mv < -18:
-        col, tag = "#fbbf24", "⚠️ 觀望"
-        msg = (f"符合準則,但現價深度{where}——要股票大漲(約 +{abs(mv)+8:.0f}% 以上)才划算,"
-               f"目前像樂透型單押。適合等回檔、或改挑接近價平(parity 近 100)的標的。")
-    elif a["score"] >= 65 and mv >= -8:
-        col, tag = "#34d399", "✅ 值得拆解"
-        msg = f"符合準則、吸引力高。現價{where}、槓桿約{lev},下檔最多賠光權利金、上檔跟著股票漲。"
-    elif a["score"] >= 58:
-        col, tag = "#34d399", "✅ 可拆解(可議價)"
-        msg = f"符合準則、條件不錯。現價{where}、槓桿約{lev},可等好價位進場。"
+        return ("❌ 不要碰", "#f87171",
+                "不符我們的進場準則(" + "、".join(reasons) + "),這檔不做。",
+                "跳過這檔,看清單裡標「✅」的。")
+    if mv < -18 or need > 45:
+        return ("⚠️ 先別急,再等等", "#fbbf24",
+                f"股價離轉換價還很遠({where}),要漲大約 +{need:.0f}% 才開始賺,現在買比較像賭運氣。",
+                "先觀望。等股價漲上來一點、或改挑「現價貼近轉換價」的 CB(股票漲一點就開始賺)。")
+    if a["score"] >= 65 and mv >= -8:
+        return ("✅ 可以拆解", "#34d399",
+                f"條件不錯({where}),用一小筆權利金放大股票漲幅,而且最多就賠這筆權利金。",
+                "可以進場。單一部位別壓太重(建議 ≤ 總資金兩三成),記得這是抱到到期的部位。")
+    if a["score"] >= 58:
+        return ("✅ 可以拆解(等好價)", "#34d399",
+                f"符合準則、條件 OK({where})。",
+                "可以進場,但盡量等好一點的價位再出手。")
+    return ("⚠️ 普通,可觀察", "#fbbf24",
+            f"有符合準則但沒特別便宜({where})。",
+            "先放觀察名單,等更便宜的價格或股票波動變大再考慮。")
+
+
+def _human_card(it, sd, a):
+    """白話卡:先結論、白話重點、怎麼做;技術數字收進 <details>。"""
+    prem = a["cbas_premium"]
+    strike, _ = cb_core.redemption_value(it.get("put"))
+    K, spot = it["conv_price"], a["spot"]
+    be_S = K * (strike + prem) / 100.0
+    be_move = be_S / spot - 1
+    T = a["T_opt"]
+    tag, col, oneliner, action = _verdict_parts(it, a, be_move)
+    # 抱到到期賺錢機率(GBM 解析,基準漂移 7%)
+    import math
+    vol, drift = a["hist_vol"], 0.07
+    if be_S <= spot:
+        prob = 0.85
     else:
-        col, tag = "#fbbf24", "⚠️ 中性"
-        msg = f"符合準則但吸引力普通(現價{where})。需更好進場價或更高波動才划算。"
-    return (f'<div style="background:rgba(255,255,255,.04);border:1px solid {col}44;'
-            f'border-left:3px solid {col};border-radius:12px;padding:12px 16px;margin-bottom:12px">'
-            f'<span style="color:{col};font-weight:800;font-size:15px">{tag}</span>'
-            f'<span style="color:#8b95a7;font-size:12px;margin-left:8px">評分 {a["score"]:.0f}/100</span>'
-            f'<div style="color:#e6e9f0;font-size:13px;margin-top:5px;line-height:1.55">'
-            f'{html.escape(it["name"])}({it["stock_code"]}/{it["bond_code"]}):{html.escape(msg)}</div></div>')
+        d = (math.log(spot / be_S) + (drift - 0.5 * vol * vol) * T) / (vol * math.sqrt(T))
+        prob = cb_core._norm_cdf(d)
+    lev = a.get("leverage") or 0
+    src = a["buy_source"]
+    price_note = "(已用你帶入的 CB 現價,零誤差)" if a.get("market_price") else \
+                 ("(用承銷價估,想精準就帶入 CB 現價)" if src.startswith("承銷") else "(用面額100估,建議帶入 CB 現價)")
+
+    bullets = [
+        ("買一張要付", f'<b>約 NT${prem*1000:,.0f}</b>(這就是你的成本,也是<b>最多會賠的錢</b>){price_note}'),
+        ("最多賠", f'NT${prem*1000:,.0f}／張(不會賠更多——債券部分已賣給銀行扛)'),
+        ("要開始賺", f'股票要從 {spot:.1f} 漲到 <b>{be_S:.1f}</b>(約 <b>{be_move*100:+.0f}%</b>)'),
+        ("抱到期賺錢機率", f'<b>約 {prob*100:.0f}%</b>(抱 {T:.1f} 年到期,用一般年報酬 7% 估)'),
+        ("槓桿", f'用 NT${prem*1000:,.0f} 控制約 NT${a["parity"]*1000:,.0f} 的股票曝險(約 {lev:.1f} 倍)'),
+    ]
+    fn = cb_intel.flow_narrative(it["stock_code"])
+    if fn:
+        bullets.append(("法人現在", fn.replace("法人流向:", "")))
+    r = cb_intel.research(it["stock_code"])
+    if r and r.get("target_price"):
+        up = (r["target_price"] / spot - 1) * 100
+        bullets.append(("券商看", f'目標價 {r["target_price"]}'
+                        + (f'(還有 +{up:.0f}% 空間)' if up > 0 else f'(已超過目標 {abs(up):.0f}%)')))
+
+    lis = "".join(f'<li><span class="k">{k}</span><span class="v">{v}</span></li>' for k, v in bullets)
+    return (
+        f'<div class="hcard">'
+        f'<span class="hname">{html.escape(it["name"])}</span>'
+        f'<span class="hcode">股 {it["stock_code"]} · 債 {it["bond_code"]} · {it.get("collateral","")}</span>'
+        f'<div class="verdict" style="color:{col};background:{col}1e;border:1px solid {col}55">{tag}</div>'
+        f'<div class="hone">{html.escape(oneliner)}</div>'
+        f'<ul class="hbul">{lis}</ul>'
+        f'<div class="haction"><b>怎麼做:</b>{html.escape(action)}</div>'
+        f'<details class="tech"><summary></summary><div class="cards">{cb_report._card(it, sd, a)}</div></details>'
+        f'</div>')
 
 
 def analyze_fragment(code, tcri=None):
@@ -62,8 +110,8 @@ def analyze_fragment(code, tcri=None):
             continue
         a = cb_core.analyze(it, sd["spot"], sd["vol_blend"])
         if a.get("ok"):
-            cards.append(_plain_summary(it, a) + cb_report._card(it, sd, a))
-    return '<div class="cards">' + "".join(cards) + "</div>"
+            cards.append(_human_card(it, sd, a))
+    return "".join(cards)
 
 
 def _why_grow_html(code, spot):

@@ -264,6 +264,25 @@ padding:11px 20px;color:#fff;font-weight:700;font-size:14px;cursor:pointer}}
 #sresult .cards{{margin-top:0}}
 .serr{{color:#f87171;font-size:13px;padding:10px}}
 .sloading{{color:#a5b4fc;font-size:13px;padding:10px}}
+.hcard{{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px 20px;margin-bottom:14px}}
+.hcard .hname{{font-size:19px;font-weight:800;color:#fff}}
+.hcard .hcode{{color:#8b95a7;font-size:12px;margin-left:8px}}
+.verdict{{display:inline-block;font-size:17px;font-weight:800;padding:6px 16px;border-radius:12px;margin:12px 0 6px}}
+.hone{{font-size:14.5px;color:#e6e9f0;line-height:1.6;margin-bottom:12px}}
+.hbul{{list-style:none;padding:0;margin:0}}
+.hbul li{{display:flex;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.06);font-size:13.5px;color:#d1d5db;line-height:1.5}}
+.hbul li .k{{color:#8b95a7;min-width:96px;flex:0 0 96px}}
+.hbul li .v{{color:#e6e9f0}} .hbul li b{{color:#fff}}
+.haction{{margin-top:14px;padding:12px 14px;border-radius:12px;background:rgba(99,102,241,.12);
+border:1px solid rgba(129,140,248,.28);font-size:14px;color:#c7d2fe;line-height:1.6}}
+.haction b{{color:#fff}}
+details.tech{{margin-top:12px}} details.tech summary{{cursor:pointer;color:#7dd3fc;font-size:13px;
+font-weight:700;list-style:none;padding:6px 0}}
+details.tech summary::-webkit-details-marker{{display:none}}
+details.tech summary::before{{content:"▸ 看完整技術數字（給懂的人）";}}
+details.tech[open] summary::before{{content:"▾ 收起技術數字";}}
+.emptyhint{{color:#8b95a7;font-size:13.5px;padding:12px 4px;line-height:1.7}}
+.emptyhint b{{color:#a5b4fc}}
 .simbox{{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px;margin-top:14px}}
 .simbox h3{{margin:0 0 10px;font-size:15px;color:#34d399}}
 .simrow{{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin:4px 0}}
@@ -344,7 +363,7 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
     <span class="chip" onclick="quickSim('1000萬')">💰 模擬 1000萬</span>
   </div>
   <div class="shint">現有可轉債(如 11011)若沒 TCRI,填一下右邊 TCRI 欄位判準則會更準;資金模擬留空代碼=用目前符合準則的標的。</div>
-  <div id="sresult"></div>
+  <div id="sresult"><div class="emptyhint">👆 在上面輸入一個代碼按「<b>分析這一檔</b>」,系統會用<b>白話</b>告訴你:這檔能不能拆、買一張要多少、最多賠多少、要漲多少才賺、多久回本。<br>不知道打什麼?直接點下面的例子 👇</div></div>
 </div>
 
 <div class="portbox">
@@ -428,8 +447,8 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
 發行量 <b>≥ 雙位數億(10億)</b>(流動性足)。兩條同時滿足才值得拆解 —— 本期已定價
 <b>{len(elig)}</b> 檔符合({len(other)} 檔不符已略過)。</div>
 <div class="sec ok">✅ 符合準則 · 值得拆解　<span style="font-size:11px;color:#8b95a7;font-weight:400">(點任一列看完整分析)</span></div>
-<div class="twrap"><table><thead><tr><th>#</th><th>評分</th><th>名稱</th><th>代碼</th><th>評等</th><th>量</th><th>現價</th><th>parity</th>
-<th>清算價</th><th>理論</th><th>隱波</th><th>前瞻波</th><th>槓桿</th><th>結論</th></tr></thead>
+<div class="twrap"><table><thead><tr><th>#</th><th>評分</th><th>名稱</th><th>代碼</th><th>信用</th><th>發行量</th><th>現股價</th><th title="現在換成股票值多少(面額100)">換股值</th>
+<th title="買這張CB的價格基準">買價</th><th title="合理理論價,高於買價=便宜">理論價</th><th title="市場定價反推的波動">市場波動</th><th title="用歷史股價估的波動">估計波動</th><th>槓桿</th><th>建議</th></tr></thead>
 <tbody>{elig_rows}</tbody></table></div>
 <div class="sec watch">👀 待定價觀察清單 · 符合準則但條件未定(盯著等承銷價)　<span style="font-size:11px;color:#8b95a7;font-weight:400">(點任一列看公司分析)</span></div>
 <div class="twrap"><table><thead><tr><th>名稱</th><th>代碼</th><th>評等</th><th>量</th><th>年期</th><th>階段</th><th>主辦</th></tr></thead>
