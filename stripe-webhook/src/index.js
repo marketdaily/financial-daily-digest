@@ -1099,6 +1099,61 @@ export default {
       return json({ items });
     }
 
+    // Admin:即時推播記錄 — alert-worker 與此共用同一 KV,直接讀 alert:recent(免跨 worker 打,避 1042)
+    if (url.pathname === "/admin/alerts" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      let recent = [], last = null;
+      try { const r = await env.USER_PREFS.get("alert:recent"); if (r) recent = JSON.parse(r); } catch {}
+      try { const l = await env.USER_PREFS.get("alert:laststatus"); if (l) last = JSON.parse(l); } catch {}
+      // 隱私:對外只回推播對象「數量」,不回訂閱者 email 明細
+      const items = recent.slice(0, 40).map(a => ({
+        ts: a.ts, title: a.title, url: a.url, source: a.source,
+        severity: a.severity, reason: a.reason, tickers: a.tickers || [],
+        eventType: a.eventType, recipients: Array.isArray(a.recipients) ? a.recipients.length : 0
+      }));
+      return json({ items, last });
+    }
+
+    // Admin:訂閱者成長 — 依 Brevo createdAt 分日聚合,回近 90 日累計曲線
+    if (url.pathname === "/admin/growth" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      const listId = parseInt(env.BREVO_LIST_ID) || 2;
+      const days = [];
+      let offset = 0;
+      try {
+        for (let p = 0; p < 6; p++) {
+          const res = await fetch(`https://api.brevo.com/v3/contacts/lists/${listId}/contacts?limit=500&offset=${offset}`, {
+            headers: { "api-key": env.BREVO_API_KEY, "accept": "application/json" }
+          });
+          if (!res.ok) break;
+          const data = await res.json();
+          const cs = data.contacts || [];
+          for (const c of cs) { if (c.createdAt) days.push(String(c.createdAt).slice(0, 10)); }
+          if (cs.length < 500) break;
+          offset += 500;
+        }
+      } catch {}
+      const total = days.length;
+      const byDay = {};
+      for (const d of days) byDay[d] = (byDay[d] || 0) + 1;
+      const windowDays = 90;
+      const today = new Date(Date.now() + 8 * 3600 * 1000);
+      const startDate = new Date(today.getTime() - (windowDays - 1) * 86400 * 1000).toISOString().slice(0, 10);
+      let cum = days.filter(d => d < startDate).length;   // 視窗前累計
+      const series = [];
+      for (let i = windowDays - 1; i >= 0; i--) {
+        const d = new Date(today.getTime() - i * 86400 * 1000).toISOString().slice(0, 10);
+        const n = byDay[d] || 0;
+        cum += n;
+        series.push({ date: d, added: n, cumulative: cum });
+      }
+      return json({ total, series });
+    }
+
     // === Reactive Content MVP ===
 
     // Admin:列出所有 pending hot take(最新在前)

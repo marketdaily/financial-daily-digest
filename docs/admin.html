@@ -789,6 +789,11 @@ body {
             <div id="ops-health-rows"></div>
           </div>
         </div>
+
+        <div class="card">
+          <div class="card-title"><span class="dot"></span>近期即時推播 <span class="right" id="ops-alerts-meta">最新推播記錄</span></div>
+          <div class="tbl-wrap" id="ops-alerts"><div class="empty-state">載入中…</div></div>
+        </div>
       </div>
 
       <!-- ── Revenue ── -->
@@ -895,6 +900,11 @@ body {
             <div class="section-desc">調整方案：先選好下拉，再按「套用」才會寫入 KV（避免誤觸）</div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="exportSubsCSV()">⬇ 匯出 CSV</button>
+        </div>
+
+        <div class="card mb-16">
+          <div class="card-title"><span class="dot"></span>訂閱者成長（累計 · 近 90 日） <span class="right" id="growth-total"></span></div>
+          <div id="growth-chart" class="chart"><div class="chart-empty">載入中…</div></div>
         </div>
 
         <div class="card mb-16" style="padding:16px 20px">
@@ -1333,6 +1343,7 @@ async function loadSubscribers() {
     renderSubs();
     const badge = document.getElementById("badge-subs");
     badge.textContent = total; badge.classList.add("show");
+    loadGrowth();
   } catch (e) {
     document.getElementById("subs-content").innerHTML =
       `<div class="empty-state"><div class="emoji">⚠️</div>無法連線至 Worker（${esc(e.message)}）</div>`;
@@ -1619,6 +1630,67 @@ async function loadOps(force) {
   const t = new Date();
   document.getElementById("ops-runts").textContent = `${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`;
   runHealthInto("ops-health-rows","ops-health-overall");
+  loadAlerts();
+}
+
+// 近期即時推播記錄(alert-worker 寫入共用 KV,worker 端代讀)
+async function loadAlerts() {
+  const el = document.getElementById("ops-alerts");
+  try {
+    const d = await api("/admin/alerts");
+    const items = d.items || [];
+    const meta = document.getElementById("ops-alerts-meta");
+    if (meta && d.last?.ts) meta.textContent = "最後掃描 " + new Date(d.last.ts).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"});
+    if (!items.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">🔔</div>近期無達標推播（severity≥7）</div>`; return; }
+    el.innerHTML = `<table class="dtable"><thead><tr><th>時間</th><th>標題</th><th>強度</th><th>個股</th><th>推送</th></tr></thead><tbody>` +
+      items.map(a => {
+        const when = a.ts ? new Date(a.ts).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
+        const tk = (a.tickers||[]).slice(0,4).join("、");
+        const sev = a.severity>=9?"badge-red":a.severity>=8?"badge-banana":"";
+        const link = a.url ? `<a href="${esc(a.url)}" target="_blank" style="color:#7aa2ff">${esc((a.title||"").slice(0,44))}</a>` : esc((a.title||"").slice(0,44));
+        return `<tr><td class="mono">${when}</td><td>${link}</td><td><span class="badge ${sev}">${a.severity??"—"}</span></td><td>${esc(tk)||"—"}</td><td style="text-align:right">${a.recipients||0} 人</td></tr>`;
+      }).join("") + `</tbody></table>`;
+  } catch {
+    el.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>無法載入推播記錄</div>`;
+  }
+}
+
+// 訂閱者成長累計曲線(SVG area)
+async function loadGrowth() {
+  const box = document.getElementById("growth-chart");
+  if (!box) return;
+  try {
+    const d = await api("/admin/growth");
+    const s = d.series || [];
+    const totalEl = document.getElementById("growth-total");
+    if (totalEl) totalEl.textContent = `總計 ${d.total ?? "—"} 人`;
+    if (!s.length) { box.innerHTML = `<div class="chart-empty">尚無資料</div>`; return; }
+    growthChart(s, box);
+  } catch {
+    box.innerHTML = `<div class="chart-empty">無法載入成長資料</div>`;
+  }
+}
+function growthChart(series, box) {
+  const W = 800, H = 200, pad = 28;
+  const ys = series.map(p => p.cumulative);
+  const maxY = Math.max(...ys, 1), minY = Math.min(...ys, 0);
+  const span = (maxY - minY) || 1;
+  const x = i => pad + i * (W - pad*2) / Math.max(series.length-1, 1);
+  const y = v => H - pad - (v - minY) * (H - pad*2) / span;
+  const line = series.map((p,i) => `${i?"L":"M"}${x(i).toFixed(1)},${y(p.cumulative).toFixed(1)}`).join(" ");
+  const area = `${line} L${x(series.length-1).toFixed(1)},${H-pad} L${x(0).toFixed(1)},${H-pad} Z`;
+  const first = series[0].date.slice(5), last = series[series.length-1].date.slice(5);
+  const addedTotal = series.reduce((a,p)=>a+p.added,0);
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">
+    <defs><linearGradient id="gg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6366f1" stop-opacity="0.35"/><stop offset="1" stop-color="#6366f1" stop-opacity="0"/>
+    </linearGradient></defs>
+    <path d="${area}" fill="url(#gg)"/>
+    <path d="${line}" fill="none" stroke="#818cf8" stroke-width="2"/>
+    <text x="${pad}" y="16" fill="#9aa4b2" font-size="11">累計 ${maxY} 人</text>
+    <text x="${W-pad}" y="${H-8}" fill="#6b7280" font-size="11" text-anchor="end">${last}</text>
+    <text x="${pad}" y="${H-8}" fill="#6b7280" font-size="11">${first}（近 90 日 +${addedTotal}）</text>
+  </svg>`;
 }
 
 function breakdownRows(pairs) {
