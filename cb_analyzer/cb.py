@@ -16,6 +16,7 @@ import cb_data
 import cb_market
 import cb_profiles
 import cb_existing
+import cb_simulate
 from parse_excel import parse, DB_PATH, DEFAULT_XLSX
 
 C = {"g": "\033[92m", "r": "\033[91m", "y": "\033[93m", "b": "\033[96m",
@@ -251,6 +252,108 @@ def _watchlist(db):
               f"{str(i['size_yi'])+'億':<6} {i['tenor_year']}年 · {C['d']}{ind}{C['x']}")
 
 
+def _parse_capital(s):
+    s = str(s).strip().replace(",", "").replace("$", "").replace("NT", "")
+    mult = 1
+    if s.endswith("億"):
+        mult, s = 1e8, s[:-1]
+    elif s.endswith("萬"):
+        mult, s = 1e4, s[:-1]
+    try:
+        return float(s) * mult
+    except ValueError:
+        return None
+
+
+def _analyzed_candidates(db, codes=None):
+    """回 [(item, a)] 可模擬標的。codes 有指定就用(含現有CB),否則用老闆Excel符合準則+已定價。"""
+    vw = (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
+    items = []
+    if codes:
+        for c in codes:
+            items += find(db, c)
+    else:
+        items = [i for i in db["items"]
+                 if i.get("conv_price") and i.get("premium_mid") and cb_core.eligibility(i)[0]]
+    out = []
+    for it in items:
+        sd = cb_data.get_stock(it["stock_code"], vol_weights=vw)
+        if not sd:
+            continue
+        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"])
+        if a.get("ok"):
+            out.append((it, a))
+    return out
+
+
+def _why_grow(code):
+    p = cb_profiles.get_profile(code)
+    if not p.get("curated"):
+        return f"產業:{p.get('industry') or '—'}(詳細營運待補)"
+    bits = []
+    if p.get("business"):
+        bits.append(p["business"])
+    if p.get("downstream"):
+        bits.append(f"下游需求:{p['downstream']}")
+    if p.get("note"):
+        bits.append(f"題材/地位:{p['note']}")
+    return "  ".join(bits)
+
+
+def sim_report(db, capital, codes=None, drift=0.07):
+    cands = _analyzed_candidates(db, codes)
+    if not cands:
+        print(f"{C['r']}找不到可模擬標的(符合準則且已定價,或用 --sim 本金 代碼… 指定現有CB){C['x']}")
+        return
+    single = capital < 1_000_000 or len(cands) == 1
+    print(f"\n{C['bold']}{C['b']}💰 資金模擬  本金 NT${capital:,.0f}{C['x']}  "
+          f"{C['d']}({'小資單押' if single else '分散投組'}模式,標的池 {len(cands)} 檔){C['x']}")
+
+    # 小資單押:挑評分最高一檔
+    if single:
+        cands = sorted(cands, key=lambda x: x[1]["score"], reverse=True)[:1]
+    scen = cb_simulate.multi_drift(cands, capital, base_drift=drift)
+    base = next((r for r in scen if r["ok"] and abs(r["drift"] - drift) < 1e-9), None)
+    if not base or not base["ok"]:
+        print(f"{C['r']}✗ {(base or {}).get('reason','本金不足買進任一口(每口權利金×1000)')}{C['x']}")
+        return
+
+    for L in base["legs"]:
+        it, a = L["item"], L["a"]
+        print(f"\n  {C['bold']}▶ 買進 {it['name']}(股 {it['stock_code']} / 債 {it['bond_code']}){C['x']}")
+        print(f"    投入 {C['bold']}{L['units']} 口{C['x']}(每口權利金 NT${L['unit_cap']:,.0f})"
+              f" = NT${L['deployed']:,.0f}  現股價 {L['spot']:.1f} / 轉換價 {L['K']}")
+        print(f"    {C['g']}📈 為什麼會漲:{C['x']}{_why_grow(it['stock_code'])}")
+        # 為什麼要等(量化)
+        oob = (L['spot']/L['K'] - 1)*100
+        pos = "價內" if oob >= 0 else "價外"
+        bey = ("約 %.1f 年" % L['be_years']) if L['be_years'] else "抱到期中位數到不了(需高於預期漲勢)"
+        print(f"    {C['y']}⏳ 為什麼要等:{C['x']}現價距轉換價 {oob:+.0f}%({pos});"
+              f"要獲利股票需漲到 {L['be_S']:.1f}(+{L['be_move']*100:.0f}%);"
+              f"以前瞻波動 {L['vol']*100:.0f}% 估,中位數{bey}才到回本點")
+        print(f"    {C['b']}⌛ 預期回本期間:{C['x']}"
+              f"{('約 '+format(L['be_years'],'.1f')+' 年') if L['be_years'] else '需靠波動,非中位數'}"
+              f"(部位可抱到 {L['T']:.1f} 年到期);"
+              f"抱到期獲利機率 {C['bold']}{L['prob_profit']*100:.0f}%{C['x']}")
+        print(f"    下檔:最多賠光權利金 NT${L['deployed']:,.0f}(債券底已賣斷給銀行,不會賠更多)")
+
+    print(f"\n  {C['bold']}── 蒙地卡羅結果({base['n']:,}次模擬,抱到期 {base['horizon']:.1f}年)──{C['x']}")
+    print(f"    投入本金 NT${base['deployed']:,.0f}  剩現金 NT${base['cash_left']:,.0f}")
+    print(f"    {'情境(股票年報酬)':<18}{'預期賺賠':>14}{'年化':>8}{'賺錢機率':>9}")
+    for r in scen:
+        if not r["ok"]:
+            continue
+        col = C['g'] if r['exp_pnl'] > 0 else C['r']
+        print(f"    {r['drift_label']+'('+format(r['drift']*100,'.0f')+'%)':<18}"
+              f"{col}NT${r['exp_pnl']:>+12,.0f}{C['x']}{r['ann_return']*100:>7.0f}%"
+              f"{r['prob_profit']*100:>8.0f}%")
+    b = base
+    print(f"\n    基準情境分佈:悲觀(P5) NT${b['p5']:+,.0f} · 中位 NT${b['p50']:+,.0f} · "
+          f"樂觀(P95) NT${b['p95']:+,.0f}")
+    print(f"  {C['d']}假設:GBM 股價路徑、前瞻波動、標的相關性 ρ={b['rho']}、下檔封頂於權利金。"
+          f"漂移是關鍵假設(用 --drift 調);未計稅費/資產交換利差變動/提前贖回。{C['x']}")
+
+
 def print_assumptions():
     a = cb_core.ASSUMPTIONS
     print(f"\n{C['d']}── 假設參數(可在 cb_core.ASSUMPTIONS 調整)──")
@@ -318,12 +421,20 @@ def main():
     if "--live" in args:
         args.remove("--live")
     tcri_override = pop_flag(args, "--tcri", int)
+    drift = pop_flag(args, "--drift")
     cb_core.set_config(asset_swap_spread=swap, rf=rf, vol_w_short=ws, vol_w_long=wl)
 
     if args and args[0] == "--update":
         rebuild(args[1] if len(args) > 1 else DEFAULT_XLSX)
         return
     db = load_db()
+    if args and args[0] == "--sim":
+        cap = _parse_capital(args[1]) if len(args) > 1 else None
+        if not cap:
+            print("用法:python cb.py --sim 1000萬  或  --sim 500000 [代碼…] [--drift 0.07]")
+            return
+        sim_report(db, cap, codes=args[2:] or None, drift=(drift if drift is not None else 0.07))
+        return
     if not args or args[0] == "--rank":
         results = rank(db, live=live)
         if want_html:
