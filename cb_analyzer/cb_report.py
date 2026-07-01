@@ -294,6 +294,18 @@ details.gloss[open] summary::before{{content:"▾ "}}
 tbody tr.clk{{cursor:pointer}}
 tbody tr.clk:hover td{{background:rgba(129,140,248,.10)}}
 .twrap{{overflow-x:auto;-webkit-overflow-scrolling:touch}}
+.portbox{{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:14px 18px;margin:0 0 16px}}
+.portbox h2{{font-size:14px;margin:0 0 8px;color:#34d399}}
+.portbox input{{background:rgba(255,255,255,.06);border:1px solid var(--bd);border-radius:9px;
+padding:9px 11px;color:#e6e9f0;font-size:14px}}
+.portbox .w1{{width:130px}} .portbox .w2{{width:78px}}
+.portbox button{{background:linear-gradient(90deg,#6366f1,#818cf8);border:0;border-radius:9px;
+padding:9px 16px;color:#fff;font-weight:700;font-size:13px;cursor:pointer}}
+#plist{{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}}
+.pleg{{background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);border-radius:20px;
+padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-items:center;gap:8px}}
+.pleg b{{color:#fff}} .pleg span{{cursor:pointer;color:#f87171;font-weight:800}}
+@media(max-width:640px){{.portbox input{{flex:1 1 44%}} .portbox .w1,.portbox .w2{{width:auto}}}}
 @media(max-width:640px){{
   .wrap{{padding:18px 12px 60px}} h1{{font-size:20px}}
   .sbar input{{min-width:100%;flex:1 1 100%}} .sbar .cap{{max-width:none;flex:1 1 46%}}
@@ -320,6 +332,7 @@ tbody tr.clk:hover td{{background:rgba(129,140,248,.10)}}
     <input id="scode" placeholder="例如:5289、11011、宜鼎、台泥" autocomplete="off">
     <input id="stcri" class="cap" type="number" min="1" max="9" placeholder="TCRI(選填)" title="現有可轉債查不到 TCRI 時可手動填 1-9">
     <button onclick="doAnalyze()">分析這一檔</button>
+    <button onclick="doPrice()" style="background:linear-gradient(90deg,#0ea5e9,#38bdf8)">查現價</button>
     <input id="scap" class="cap" placeholder="本金 如 50萬">
     <button onclick="doSim()" style="background:linear-gradient(90deg,#10b981,#34d399)">資金模擬</button>
   </div>
@@ -332,6 +345,20 @@ tbody tr.clk:hover td{{background:rgba(129,140,248,.10)}}
   </div>
   <div class="shint">現有可轉債(如 11011)若沒 TCRI,填一下右邊 TCRI 欄位判準則會更準;資金模擬留空代碼=用目前符合準則的標的。</div>
   <div id="sresult"></div>
+</div>
+
+<div class="portbox">
+  <h2>💼 組合模擬 · 自己指定每檔買幾張(填 CB 現價=零誤差)</h2>
+  <div class="sbar">
+    <input id="pcode" class="w1" placeholder="代碼 如 5289" autocomplete="off">
+    <input id="punits" class="w2" type="number" min="1" placeholder="張數">
+    <input id="pcbp" class="w2" placeholder="CB現價">
+    <input id="ptcri" class="w2" type="number" min="1" max="9" placeholder="TCRI">
+    <button onclick="addLeg()">＋ 加入</button>
+    <button onclick="runPort()" style="background:linear-gradient(90deg,#10b981,#34d399)">模擬組合</button>
+  </div>
+  <div id="plist"></div>
+  <div class="shint">例:5289 買 3 張 + 11011 買 5 張。「CB現價」填你券商看到的可轉債報價(面額100),填了那一檔就用真價算、零誤差;沒填則用承銷/面額估。結果顯示在上方。</div>
 </div>
 
 <details class="gloss"><summary>名詞白話解釋(點開)</summary>
@@ -429,6 +456,39 @@ async function call(u){{
 }}
 function quick(c){{document.getElementById('scode').value=c;document.getElementById('scap').value='';doAnalyze();}}
 function quickSim(cap){{document.getElementById('scap').value=cap;doSim();}}
+async function doPrice(){{
+  const c=document.getElementById('scode').value.trim();
+  if(!c){{err('請先輸入代碼');return;}}
+  const t=document.getElementById('stcri').value.trim();
+  busy('查 '+c+' 現價中');
+  try{{ R.innerHTML=await call('/api/price?code='+encodeURIComponent(c)+(t?'&tcri='+t:''));seeR(); }}
+  catch(e){{ err('查詢失敗:'+e.message); }}
+}}
+let PLEGS=[];
+function renderLegs(){{
+  document.getElementById('plist').innerHTML=PLEGS.map((l,i)=>
+    '<span class="pleg"><b>'+l.code+'</b> '+l.units+'張'+(l.cbp?' @'+l.cbp:'')+(l.tcri?' T'+l.tcri:'')+
+    ' <span onclick="rmLeg('+i+')">✕</span></span>').join('');
+}}
+function addLeg(){{
+  const code=document.getElementById('pcode').value.trim();
+  const units=parseInt(document.getElementById('punits').value);
+  if(!code||!(units>0)){{err('組合:請填代碼與張數');return;}}
+  PLEGS.push({{code:code,units:units,
+    cbp:document.getElementById('pcbp').value.trim(),
+    tcri:document.getElementById('ptcri').value.trim()}});
+  document.getElementById('pcode').value='';document.getElementById('punits').value='';
+  document.getElementById('pcbp').value='';document.getElementById('ptcri').value='';
+  renderLegs();
+}}
+function rmLeg(i){{PLEGS.splice(i,1);renderLegs();}}
+async function runPort(){{
+  if(!PLEGS.length){{err('組合是空的,先「＋加入」幾檔');return;}}
+  const s=PLEGS.map(l=>l.code+':'+l.units+':'+(l.cbp||'')+':'+(l.tcri||'')).join(',');
+  busy('組合蒙地卡羅模擬中');
+  try{{ R.innerHTML=await call('/api/portfolio?legs='+encodeURIComponent(s));seeR(); }}
+  catch(e){{ err('組合模擬失敗:'+e.message); }}
+}}
 async function doAnalyze(){{
   const c=document.getElementById('scode').value.trim();
   if(!c){{err('請先輸入代碼或名稱');return;}}

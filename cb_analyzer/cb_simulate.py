@@ -56,28 +56,34 @@ def simulate_portfolio(candidates, capital, drift=0.07, rho=0.35, n=20000,
 
     legs = []
     for (it, a), w in zip(cands, weights):
-        premium = a["cbas_premium"]
-        unit_cap = premium * 1000.0                # 每口權利金 NT$
-        alloc = capital * w
-        units = int(alloc // unit_cap)
-        if units < 1:
-            units = 0
-        strike, _ = cb_core.redemption_value(it.get("put"))
-        be_S, be_move, be_t, reach = breakeven(it, a, strike, drift)
-        legs.append({
-            "item": it, "a": a, "weight": w, "units": units,
-            "premium": premium, "unit_cap": unit_cap,
-            "deployed": units * unit_cap, "strike": strike,
-            "T": a["T_opt"], "vol": a["hist_vol"], "K": it["conv_price"],
-            "spot": a["spot"], "shares": a["shares"],
-            "be_S": be_S, "be_move": be_move, "be_years": be_t, "be_reach": reach,
-            "leg_pnls": [],
-        })
-    legs = [L for L in legs if L["units"] > 0]
+        unit_cap = a["cbas_premium"] * 1000.0
+        units = int((capital * w) // unit_cap)
+        if units >= 1:
+            legs.append(_make_leg(it, a, units, drift))
     if not legs:
         return {"ok": False, "reason": "本金不足以買進任一口(權利金 × 1000/口)"}
+    return _run_mc(legs, drift, rho, n, seed, capital=capital)
 
+
+def _make_leg(it, a, units, drift):
+    strike, _ = cb_core.redemption_value(it.get("put"))
+    be_S, be_move, be_t, reach = breakeven(it, a, strike, drift)
+    premium = a["cbas_premium"]
+    return {
+        "item": it, "a": a, "units": units, "premium": premium,
+        "unit_cap": premium * 1000.0, "deployed": units * premium * 1000.0,
+        "strike": strike, "T": a["T_opt"], "vol": a["hist_vol"],
+        "K": it["conv_price"], "spot": a["spot"], "shares": a["shares"],
+        "be_S": be_S, "be_move": be_move, "be_years": be_t, "be_reach": reach,
+        "leg_pnls": [],
+    }
+
+
+def _run_mc(legs, drift, rho, n, seed=20260702, capital=None):
+    random.seed(seed)
     deployed = sum(L["deployed"] for L in legs)
+    if deployed <= 0:
+        return {"ok": False, "reason": "組合投入為 0"}
     port_pnls = []
     for _ in range(n):
         zm = random.gauss(0, 1)                    # 共同市場因子(相關性)
@@ -87,37 +93,50 @@ def simulate_portfolio(candidates, capital, drift=0.07, rho=0.35, n=20000,
             z = math.sqrt(rho) * zm + math.sqrt(1 - rho) * eps
             S_T = _gbm_terminal(L["spot"], drift, L["vol"], L["T"], z)
             parity_T = 100.0 * S_T / L["K"]
-            payoff = max(parity_T - L["strike"], 0.0)          # 每100面額選擇權到期值
-            pnl = (payoff - L["premium"]) * 1000.0 * L["units"]  # 該腿 NT$ 損益
+            payoff = max(parity_T - L["strike"], 0.0)
+            pnl = (payoff - L["premium"]) * 1000.0 * L["units"]
             L["leg_pnls"].append(pnl)
             total += pnl
         port_pnls.append(total)
-
     port_pnls.sort()
     exp_pnl = sum(port_pnls) / n
-    prob_profit = sum(1 for x in port_pnls if x > 0) / n
-    horizon = sum(L["deployed"] * L["T"] for L in legs) / deployed   # 資金加權平均年限
+    horizon = sum(L["deployed"] * L["T"] for L in legs) / deployed
     exp_final = deployed + exp_pnl
     ann = (exp_final / deployed) ** (1 / horizon) - 1 if exp_final > 0 else -1.0
-
     for L in legs:
         lp = sorted(L["leg_pnls"])
         L["exp_pnl"] = sum(lp) / len(lp)
         L["prob_profit"] = sum(1 for x in lp if x > 0) / len(lp)
-        L["leg_pnls"] = None                       # 釋放
-
+        L["leg_pnls"] = None
     return {
-        "ok": True, "capital": capital, "deployed": deployed,
-        "cash_left": capital - deployed, "horizon": horizon,
-        "drift": drift, "rho": rho, "n": n,
+        "ok": True, "capital": capital if capital is not None else deployed,
+        "deployed": deployed, "cash_left": (capital - deployed) if capital else 0,
+        "horizon": horizon, "drift": drift, "rho": rho, "n": n,
         "exp_pnl": exp_pnl, "exp_final": exp_final,
         "exp_return": exp_pnl / deployed, "ann_return": ann,
-        "prob_profit": prob_profit,
-        "p5": _pct(port_pnls, 0.05), "p50": _pct(port_pnls, 0.50),
-        "p95": _pct(port_pnls, 0.95),
-        "max_loss": -deployed,                     # 下檔封頂=賠光全部權利金
-        "legs": legs,
+        "prob_profit": sum(1 for x in port_pnls if x > 0) / n,
+        "p5": _pct(port_pnls, 0.05), "p50": _pct(port_pnls, 0.50), "p95": _pct(port_pnls, 0.95),
+        "max_loss": -deployed, "legs": legs,
     }
+
+
+def simulate_explicit(triples, drift=0.07, rho=0.35, n=20000, seed=20260702):
+    """指定張數的組合模擬。triples=[(item, a, units), …]。回同 _run_mc 結果。"""
+    legs = [_make_leg(it, a, int(u), drift) for it, a, u in triples if int(u) > 0 and a.get("ok")]
+    if not legs:
+        return {"ok": False, "reason": "組合為空或張數為 0"}
+    return _run_mc(legs, drift, rho, n, seed)
+
+
+def multi_drift_explicit(triples, base_drift=0.07, **kw):
+    drifts = [(0.0, "保守/零漂移"), (base_drift, "基準"), (max(base_drift * 2, 0.15), "樂觀")]
+    out = []
+    for d, label in drifts:
+        r = simulate_explicit(triples, drift=d, **kw)
+        r["drift"] = d
+        r["drift_label"] = label
+        out.append(r)
+    return out
 
 
 def multi_drift(candidates, capital, base_drift=0.07, **kw):

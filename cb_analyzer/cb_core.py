@@ -127,20 +127,23 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None):
     theo = floor + opt_value                 # 理論 CB 價
 
     clearing = item.get("clearing_price")
-    issue = clearing or 100.0   # 真實承銷/競拍清算價;未定時用面額 100 佔位
     clearing_known = clearing is not None
+    # 買價基準:優先用『你券商看到的 CB 現價』(零誤差)→ 其次承銷/競拍價 → 最後面額100佔位
+    buy_price = market_price or clearing or 100.0
+    buy_source = "CB現價" if market_price else ("承銷價" if clearing_known else "面額100(估)")
+    issue = buy_price
     # 隱含波動率:解 σ 使 floor + shares*BS(σ) = 價格基準
-    # 只在有『真實價格基準』(承銷價或市價)時才反推;現有 CB 無市價不拿面額100 硬解(會產生假隱波)
-    iv_clearing = implied_vol(spot, K, T_opt, r, shares, floor, issue) if clearing_known else None
+    # 只在有『真實價格基準』(承銷價或市價)時才反推;無真實價不拿面額100 硬解(會產生假隱波)
+    iv_clearing = implied_vol(spot, K, T_opt, r, shares, floor, clearing) if clearing_known else None
     iv_market = implied_vol(spot, K, T_opt, r, shares, floor, market_price) if market_price else None
     iv = iv_market if iv_market else iv_clearing
     iv_source = "市場價" if iv_market else ("承銷價" if clearing_known else "—")
 
     # ── CBAS 拆解經濟學 ──
-    # 拆解後權利金 ≈ 發行價 - 賣斷給銀行拿回的債券價(以債券底計) + 持有期融資成本
+    # 拆解後權利金 ≈ 買價 - 賣斷給銀行拿回的債券價(以債券底計) + 持有期融資成本
     swap_proceeds = floor
     financing = swap_proceeds * a["asset_swap_spread"] * T_opt   # 期間融資成本(粗估)
-    premium = max(issue - swap_proceeds + financing, opt_value * 0.5)  # 權利金成本下限防呆
+    premium = max(buy_price - swap_proceeds + financing, opt_value * 0.5)  # 權利金成本下限防呆
     leverage = parity / premium if premium > 0 else None
     eff_delta = shares * delta               # 每張 CB 對股價的 delta(張數×單股delta)
     # 損益槓桿:股價漲 1% → parity 漲 parity*1%,選擇權漲 ≈ eff_delta*spot*1%
@@ -163,6 +166,7 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None):
         "tenor": T, "T_opt": T_opt,
         "bond_floor": floor, "credit_rate": credit_rate(item.get("tcri"), a),
         "option_value": opt_value, "theoretical": theo, "issue_price": issue,
+        "buy_price": buy_price, "buy_source": buy_source,
         "clearing_known": clearing_known, "pricing_method": item.get("pricing_method"),
         "auction_low": item.get("auction_low"), "auction_high": item.get("auction_high"),
         "edge_theo": theo - issue,

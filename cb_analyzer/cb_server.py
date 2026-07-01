@@ -162,6 +162,124 @@ def sim_fragment(capital, code=None, tcri=None, drift=0.07):
     return "".join(o)
 
 
+def _resolve(code, tcri=None, cbprice=None):
+    """代碼 → (item, sd, a)。cbprice=你券商看到的 CB 現價(零誤差用)。找不到回 None+原因。"""
+    hits = cb.find(DB, code)
+    it = next((h for h in hits if h.get("conv_price")), None)
+    if not it:
+        return None, "找不到或條件未定"
+    if tcri:
+        it["tcri"] = tcri
+    sd = cb_data.get_stock(it["stock_code"], vol_weights=VW())
+    if not sd:
+        return None, "抓不到現股報價"
+    a = cb_core.analyze(it, sd["spot"], sd["vol_blend"], market_price=cbprice)
+    return (it, sd, a), None
+
+
+def price_fragment(code, tcri=None, cbprice=None):
+    r, e = _resolve(code, tcri, cbprice)
+    if not r:
+        return '<div class="serr">%s:%s</div>' % (html.escape(code), e)
+    it, sd, a = r
+    src = a["buy_source"]
+    prem = a["cbas_premium"]
+    return (
+        '<div class="simbox"><h3>📈 %s(股%s/債%s)現價與拆解基準</h3>'
+        '<div class="simrow"><b>現股價 %.2f</b>(%s,即時)　轉換價 %s　'
+        '<b>parity %.1f</b>(%s)</div>'
+        '<div class="simrow">債券底 %.1f　理論價 %.1f　權利金/張 <b>%.1f</b>(NT$%s)　槓桿 %.1f×</div>'
+        '<div class="iline">買價基準:<b>%s</b>%s</div>'
+        '<div class="iline" style="color:#7dd3fc">要零誤差:把你券商看到的「CB 現價」填進搜尋框的 CB現價 欄(或組合裡),'
+        '權利金與報酬就用真價算。</div></div>'
+        % (html.escape(it["name"]), it["stock_code"], it["bond_code"],
+           sd["spot"], sd["date"], it["conv_price"],
+           a["parity"], "價內" if a["moneyness"] > 1 else "價外",
+           a["bond_floor"], a["theoretical"], prem, f"{prem*1000:,.0f}", a["leverage"] or 0,
+           src, ("(你帶入 %.1f)" % cbprice) if cbprice else "(未帶 CB 現價,為估計值)"))
+
+
+def _parse_legs(s):
+    """'5289:3:126:3,11011:5::4' → [(code, units, cbprice|None, tcri|None)]。欄位:代碼:張數:CB現價:TCRI。"""
+    out = []
+    for part in s.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        f = (part.split(":") + ["", "", ""])[:4]
+        code = f[0].strip()
+        try:
+            units = int(float(f[1])) if f[1].strip() else 0
+        except ValueError:
+            units = 0
+        cbp = float(f[2]) if f[2].strip() else None
+        tc = int(f[3]) if f[3].strip() else None
+        if code and units > 0:
+            out.append((code, units, cbp, tc))
+    return out
+
+
+def portfolio_fragment(legs_str, drift=0.07):
+    legs = _parse_legs(legs_str or "")
+    if not legs:
+        return '<div class="serr">組合是空的。格式:代碼:張數(可加 CB現價、TCRI)。</div>'
+    triples, rows, bad = [], [], []
+    for code, units, cbp, tc in legs:
+        r, e = _resolve(code, tc, cbp)
+        if not r:
+            bad.append("%s(%s)" % (code, e))
+            continue
+        it, sd, a = r
+        triples.append((it, a, units))
+        rows.append((it, sd, a, units, cbp))
+    if not triples:
+        return '<div class="serr">組合都查不到:%s</div>' % html.escape("、".join(bad))
+    scen = cb_simulate.multi_drift_explicit(triples, base_drift=drift)
+    base = next((x for x in scen if x["ok"] and abs(x["drift"] - drift) < 1e-9), None)
+    if not base or not base["ok"]:
+        return '<div class="serr">%s</div>' % html.escape((base or {}).get("reason", "模擬失敗"))
+    pm = {id(L["item"]): L for L in base["legs"]}
+
+    o = ['<div class="simbox"><h3>💼 組合模擬(你指定張數)</h3>']
+    o.append('<table class="simtab"><tr><th style="text-align:left">標的</th><th>張數</th>'
+             '<th>買價基準</th><th>權利金/張</th><th>投入</th><th>獲利機率</th><th>預期損益</th></tr>')
+    for it, sd, a, units, cbp in rows:
+        L = pm.get(id(it))
+        exp = f"{L['exp_pnl']:+,.0f}" if L else "—"
+        pp = f"{L['prob_profit']*100:.0f}%" if L else "—"
+        col = "#34d399" if (L and L["exp_pnl"] > 0) else "#f87171"
+        o.append('<tr><td style="text-align:left">%s<br><span style="color:#8b95a7;font-size:11px">股%s/債%s</span></td>'
+                 '<td>%d</td><td>%s%s</td><td>%.1f</td><td>NT$%s</td><td>%s</td>'
+                 '<td style="color:%s">NT$%s</td></tr>'
+                 % (html.escape(it["name"]), it["stock_code"], it["bond_code"], units,
+                    a["buy_source"], ("=%.1f" % cbp) if cbp else "", a["cbas_premium"],
+                    f"{L['deployed']:,.0f}" if L else "—", pp, col, exp))
+    o.append("</table>")
+    if bad:
+        o.append('<div class="iline" style="color:#f87171">略過查不到的:%s</div>' % html.escape("、".join(bad)))
+
+    o.append('<div class="simrow" style="margin-top:10px"><b>組合合計投入 NT$%s</b>　'
+             '抱到期約 %.1f 年　整體獲利機率 <b>%.0f%%</b></div>'
+             % (f"{base['deployed']:,.0f}", base["horizon"], base["prob_profit"] * 100))
+    o.append('<table class="simtab"><tr><th style="text-align:left">情境(股票年報酬)</th>'
+             '<th>整組預期損益</th><th>年化</th><th>獲利機率</th></tr>')
+    for rr in scen:
+        if not rr["ok"]:
+            continue
+        col = "#34d399" if rr["exp_pnl"] > 0 else "#f87171"
+        o.append('<tr><td style="text-align:left">%s(%.0f%%)</td><td style="color:%s">NT$%s</td>'
+                 '<td>%.0f%%</td><td>%.0f%%</td></tr>'
+                 % (rr["drift_label"], rr["drift"] * 100, col, f"{rr['exp_pnl']:+,.0f}",
+                    rr["ann_return"] * 100, rr["prob_profit"] * 100))
+    o.append("</table>")
+    o.append('<div class="iline" style="margin-top:8px">基準分佈:悲觀(P5) NT$%s · 中位 NT$%s · 樂觀(P95) NT$%s｜'
+             '下檔封頂於權利金合計 NT$%s(債券底已賣給銀行)。填了「CB現價」的腿=零誤差,未填=以承銷/面額估。</div>'
+             % (f"{base['p5']:+,.0f}", f"{base['p50']:+,.0f}", f"{base['p95']:+,.0f}",
+                f"{base['deployed']:,.0f}"))
+    o.append("</div>")
+    return "".join(o)
+
+
 class H(BaseHTTPRequestHandler):
     def log_message(self, *a):
         pass
@@ -189,6 +307,14 @@ class H(BaseHTTPRequestHandler):
                 tc = g("tcri")
                 return self._send(200, sim_fragment(g("capital") or "", g("code"),
                                                     int(tc) if tc else None))
+            if u.path == "/api/price":
+                tc = g("tcri"); cp = g("cbprice")
+                return self._send(200, price_fragment(g("code") or "", int(tc) if tc else None,
+                                                      float(cp) if cp else None))
+            if u.path == "/api/portfolio":
+                dr = g("drift")
+                return self._send(200, portfolio_fragment(g("legs") or "",
+                                                          float(dr) if dr else 0.07))
             # 其他:當靜態檔(report.html 等)
             p = os.path.join(HERE, u.path.lstrip("/"))
             if os.path.isfile(p) and os.path.realpath(p).startswith(HERE):
