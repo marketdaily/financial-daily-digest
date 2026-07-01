@@ -1,0 +1,8 @@
+{
+  "name": "marketdaily-deploy",
+  "private": true,
+  "description": "winrig-local wrangler for docs pages deploy (node_modules gitignored)",
+  "devDependencies": {
+    "wrangler": "^4"
+  }
+}
