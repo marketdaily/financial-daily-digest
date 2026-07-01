@@ -76,5 +76,16 @@ if [ -f "$REPO/WORKLOG.md" ]; then
   tail -n 25 "$REPO/WORKLOG.md" 2>/dev/null || true
 fi
 
+# --- 🤖 自主進步機器近況(只在 winrig 有 ~/autonomous) ---
+AUTO="$HOME/autonomous"
+if [ -d "$AUTO" ]; then
+  CAPS=$(grep -cE '^- 建立：[0-9]' "$AUTO/capabilities/INDEX.md" 2>/dev/null || echo 0)
+  CYC=$(grep -cE '^\- \[' "$AUTO/autonomous_log.md" 2>/dev/null || echo 0)
+  echo "--- 🤖 自主機器近況 ---"
+  echo "能力庫 ${CAPS} 積木 · 累計 ${CYC} 輪值班。最近做的:"
+  grep -E '^\- \[' "$AUTO/autonomous_log.md" 2>/dev/null | tail -n 2 | sed 's/^/  /' | cut -c1-160
+  echo "  ⓘ 用戶問「你(昨天/上次到現在)學了什麼」→ 跑 \`bash ~/autonomous/report.sh\` 給①增量②累計兩層報告。"
+fi
+
 echo "=== 規則:做非小事先在 WORKLOG.md 寫一條(日期+在做什麼);改完立刻 commit,別留 working tree 被別的視窗洗掉 ==="
 exit 0
