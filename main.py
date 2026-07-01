@@ -264,7 +264,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
 """
 
 
+# 日報 inner 內容合法會用到的標籤白名單。凡是 < 後面不接白名單標籤(開/閉)、
+# 也不是註解/DOCTYPE(<!) 的,一律視為 LLM 文字裡的裸「小於號」(如「價<MA20」「殖利率<3%」),
+# 轉成 &lt; 才不會被瀏覽器當標籤吞掉→整張卡之後的 markup 連環被喀掉(反覆咬人的老 bug)。
+_ALLOWED_INNER_TAGS = (
+    "div|span|a|b|i|u|s|em|strong|br|hr|p|small|sup|sub|mark|"
+    "ul|ol|li|table|thead|tbody|tfoot|tr|td|th|img|h[1-6]|font|"
+    "style|section|article|header|footer|figure|figcaption|caption|colgroup|col"
+)
+_STRAY_LT_RE = re.compile(r"<(?!/?(?:" + _ALLOWED_INNER_TAGS + r")(?=[\s/>])|!)")
+
+
+def _escape_stray_lt(html_report: str) -> str:
+    """把 inner 報告文字裡的裸 < 跳脫(白名單標籤與註解不動),防止 LLM 生成的
+    「價<MA20」之類把後續卡片 HTML 吃掉。只處理 inner,不碰外層固定 wrapper/CSS。"""
+    return _STRAY_LT_RE.sub("&lt;", html_report)
+
+
 def build_email_html(date: str, html_report: str) -> str:
+    html_report = _escape_stray_lt(html_report)
     full = f"""<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
