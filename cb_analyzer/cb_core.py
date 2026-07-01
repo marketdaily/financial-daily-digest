@@ -22,14 +22,19 @@ ASSUMPTIONS = {
 
 
 def eligible(item, a=ASSUMPTIONS):
-    """老闆準則:TCRI∈{3,4} 且 發行量≥10億。回 (是否合格, 原因list)。"""
+    """老闆準則:TCRI∈{3,4} 且 發行量≥10億。回 (是否合格, 原因list)。
+    TCRI 未知(現有 CB 無 TEJ 評等)時該條無法判定,以 --tcri 帶入。"""
     reasons = []
     tcri = item.get("tcri")
     size = item.get("size_yi")
-    ok_tcri = tcri in a["elig_tcri"]
     ok_size = (size is not None) and (size >= a["elig_min_size"])
-    if not ok_tcri:
-        reasons.append(f"TCRI {tcri} 不在 {a['elig_tcri']}(銀行難承做資產交換)")
+    if tcri is None:
+        reasons.append("TCRI 未知(TEJ 專有;用 --tcri N 帶入判定)")
+        ok_tcri = False
+    else:
+        ok_tcri = tcri in a["elig_tcri"]
+        if not ok_tcri:
+            reasons.append(f"TCRI {tcri} 不在 {a['elig_tcri']}(銀行難承做資產交換)")
     if not ok_size:
         reasons.append(f"發行量 {size}億 < {a['elig_min_size']}億(流動性不足)")
     return (ok_tcri and ok_size), reasons
@@ -79,11 +84,13 @@ def credit_rate(tcri, a=ASSUMPTIONS):
 
 
 def redemption_value(put):
-    """賣回/到期金額(面額100):YTP(n)=(y%) → 100*(1+y)^n;沒資料當 100。"""
+    """賣回/到期金額(面額100):優先用實際賣回價 redeem_price;否則 YTP(n)=(y%) → 100*(1+y)^n;沒資料當 100。"""
     if not put or put.get("year") is None:
         return 100.0, 3
-    y = (put.get("y_mid") or 0.0) / 100.0
     n = put["year"]
+    if put.get("redeem_price"):
+        return float(put["redeem_price"]), n
+    y = (put.get("y_mid") or 0.0) / 100.0
     return 100.0 * ((1.0 + y) ** n), n
 
 
@@ -123,11 +130,11 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None):
     issue = clearing or 100.0   # 真實承銷/競拍清算價;未定時用面額 100 佔位
     clearing_known = clearing is not None
     # 隱含波動率:解 σ 使 floor + shares*BS(σ) = 價格基準
-    iv_clearing = implied_vol(spot, K, T_opt, r, shares, floor, issue)
+    # 只在有『真實價格基準』(承銷價或市價)時才反推;現有 CB 無市價不拿面額100 硬解(會產生假隱波)
+    iv_clearing = implied_vol(spot, K, T_opt, r, shares, floor, issue) if clearing_known else None
     iv_market = implied_vol(spot, K, T_opt, r, shares, floor, market_price) if market_price else None
-    # 有市場價就用市場隱波算 vol_edge(更即時),否則退回承銷價隱波
     iv = iv_market if iv_market else iv_clearing
-    iv_source = "市場價" if iv_market else ("承銷價" if clearing_known else "面額100")
+    iv_source = "市場價" if iv_market else ("承銷價" if clearing_known else "—")
 
     # ── CBAS 拆解經濟學 ──
     # 拆解後權利金 ≈ 發行價 - 賣斷給銀行拿回的債券價(以債券底計) + 持有期融資成本

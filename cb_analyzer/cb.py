@@ -1,9 +1,13 @@
 """台股 CB 拆解分析系統 — CLI。
-  python cb.py 8112          單檔全套分析(可給股票代碼或債券代碼或公司名)
-  python cb.py --rank        把所有已定價 CB 算過一輪 → 拆解吸引力排序
-  python cb.py --list        列出資料庫所有案件
+  python cb.py 8112          單檔全套分析(老闆 Excel 管線;股票/債券代碼/公司名)
+  python cb.py 11011         現有可轉債(找不到就自動查全市場 TPEx,如台泥一永 11011)
+  python cb.py 11011 --tcri 4    現有 CB 帶入 TCRI 判定老闆準則
+  python cb.py 11011 --live      額外抓次級市價算市場隱波(需 FINMIND_TOKEN)
+  python cb.py --rank        老闆 Excel 已定價 CB → 拆解吸引力排序(三區)
+  python cb.py --rank --html     另出玻璃卡片儀表板 report.html
+  python cb.py --list        列出老闆 Excel 所有案件
   python cb.py --update x.xlsx   換新 Excel 重建資料庫
-所有量化假設在 cb_core.ASSUMPTIONS,報告底部會印出來。"""
+現有 CB 資料源=TPEx OpenAPI(免token);缺 TCRI 用 --tcri 帶入。假設在 cb_core.ASSUMPTIONS。"""
 import sys, os, json, datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -11,6 +15,7 @@ import cb_core
 import cb_data
 import cb_market
 import cb_profiles
+import cb_existing
 from parse_excel import parse, DB_PATH, DEFAULT_XLSX
 
 C = {"g": "\033[92m", "r": "\033[91m", "y": "\033[93m", "b": "\033[96m",
@@ -36,10 +41,19 @@ def rebuild(xlsx):
 
 
 def find(db, key):
+    """先找老闆 Excel 管線;找不到再查全市場現有可轉債(TPEx)。"""
     key = key.strip()
     hits = [i for i in db["items"]
             if key in (i["stock_code"], i["bond_code"]) or key in i["name"]]
-    return hits
+    if hits:
+        return hits
+    ex = cb_existing.lookup(key)
+    for it in ex:
+        if it.get("tcri") is None:      # 現有 CB 無 TCRI → 沿用同股票在 Excel 的評等
+            same = [d for d in db["items"] if d["stock_code"] == it["stock_code"] and d.get("tcri")]
+            if same:
+                it["tcri"] = same[0]["tcri"]
+    return ex
 
 
 def _bar(label, val, maxv, width=18):
@@ -49,9 +63,10 @@ def _bar(label, val, maxv, width=18):
 
 def report(item, live=False):
     code = item["stock_code"]
+    tcri_s = f"TCRI{item['tcri']}" if item.get("tcri") else "TCRI?"
     print(f"\n{C['bold']}{C['b']}━━ {item['name']}  (股 {code} / 債 {item['bond_code']}){C['x']}")
     print(f"{C['d']}{item['section']} · {item['underwriter']} · 發行 {item['size_yi']}億 · "
-          f"TCRI{item['tcri']}/{item['collateral']} · {item['tenor_year']}年 · {item['put']['raw']}{C['x']}")
+          f"{tcri_s}/{item['collateral']} · 剩 {item['tenor_year']}年 · {item['put']['raw']}{C['x']}")
     elig, ereasons = cb_core.eligibility(item)
     if elig:
         print(f"  {C['g']}{C['bold']}✅ 符合老闆準則(TCRI 3-4 + 雙位數億)→ 值得拆解{C['x']}")
@@ -59,10 +74,13 @@ def report(item, live=False):
         print(f"  {C['r']}{C['bold']}❌ 不符老闆準則,不值得拆解{C['x']}{C['r']} — "
               f"{'；'.join(ereasons)}{C['x']}")
 
-    if not item.get("conv_price") or not item.get("premium_mid"):
-        print(f"{C['y']}⚠ 此案條件未定(無轉換價/溢價率),尚無法拆解定價分析。"
+    if not item.get("conv_price"):
+        print(f"{C['y']}⚠ 此案條件未定(無轉換價),尚無法拆解定價分析。"
               f"備註:{item['note']}{C['x']}")
         return None
+    if item.get("is_existing"):
+        print(f"  {C['d']}現有 CB:用剩餘年限計價;轉換價為發行時價可能已調整;"
+              f"買進分析請加 --live 或以現價比對(次級市價需 FINMIND_TOKEN)。{C['x']}")
 
     sd = cb_data.get_stock(code, vol_weights=(cb_core.ASSUMPTIONS["vol_w_short"],
                                               cb_core.ASSUMPTIONS["vol_w_long"]))
@@ -81,9 +99,9 @@ def report(item, live=False):
     print(f"\n  現股價 {C['bold']}{sd['spot']:.2f}{C['x']}（{sd['date']}，近20日 "
           f"{g((sd['ret_20d'] or 0)*100)}%）  轉換價 {item['conv_price']}  "
           f"換股 {a['shares']:.2f}張/CB")
+    prem = f"發行溢價率 {item['premium_mid']}%" if item.get("premium_mid") else ""
     print(f"  轉換價值 parity = {C['bold']}{a['parity']:.1f}{C['x']}  "
-          f"（價內外 {a['moneyness']:.3f}×，{'價內' if a['moneyness']>1 else '價外'}）  "
-          f"發行溢價率 {item['premium_mid']}%")
+          f"（價內外 {a['moneyness']:.3f}×，{'價內' if a['moneyness']>1 else '價外'}）  {prem}")
     vd = sd["vols"]
     vstr = "  ".join(f"{k}={v*100:.0f}%" for k, v in
                      [("20日", vd['v20']), ("60日", vd['v60']),
@@ -299,6 +317,7 @@ def main():
     live = "--live" in args
     if "--live" in args:
         args.remove("--live")
+    tcri_override = pop_flag(args, "--tcri", int)
     cb_core.set_config(asset_swap_spread=swap, rf=rf, vol_w_short=ws, vol_w_long=wl)
 
     if args and args[0] == "--update":
@@ -316,8 +335,11 @@ def main():
     else:
         hits = find(db, args[0])
         if not hits:
-            print(f"找不到「{args[0]}」。試 python cb.py --list 看全表。")
+            print(f"找不到「{args[0]}」。試 python cb.py --list 看全表,或確認代碼(現有CB用債券代碼如 11011)。")
             return
+        if tcri_override:
+            for it in hits:
+                it["tcri"] = tcri_override
         for item in hits:
             report(item, live=live)
         print_assumptions()
