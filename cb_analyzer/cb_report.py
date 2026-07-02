@@ -248,8 +248,8 @@ padding:3px 10px;border-radius:20px;height:fit-content}}
 .intel{{margin-top:10px;padding-top:9px;border-top:1px solid rgba(255,255,255,.06)}}
 .ihead{{color:#7dd3fc;font-weight:700;font-size:12px;margin-bottom:3px}}
 .iline{{color:#b7c0d0;font-size:11.5px;line-height:1.55;margin:1px 0}}
-.search{{position:sticky;top:0;z-index:20;background:rgba(10,14,26,.92);backdrop-filter:blur(10px);
-padding:16px 0;margin-bottom:8px;border-bottom:1px solid var(--bd)}}
+.search{{background:var(--card);border:1px solid var(--bd);border-radius:14px;
+padding:14px 18px;margin:0 0 14px}}
 .search h2{{font-size:15px;margin:0 0 8px;color:#a5b4fc}}
 .sbar{{display:flex;gap:8px;flex-wrap:wrap}}
 .sbar input{{flex:1;min-width:180px;background:rgba(255,255,255,.06);border:1px solid var(--bd);
@@ -377,8 +377,9 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
     <span class="chip" onclick="quickSim('1000萬')">💰 模擬 1000萬</span>
   </div>
   <div class="shint">現有可轉債(如 11011)若沒 TCRI,填一下右邊 TCRI 欄位判準則會更準;資金模擬留空代碼=用目前符合準則的標的。</div>
-  <div id="sresult"><div class="emptyhint">👆 在上面輸入一個代碼按「<b>分析這一檔</b>」,系統會用<b>白話</b>告訴你:這檔能不能拆、買一張要多少、最多賠多少、要漲多少才賺、多久回本。<br>不知道打什麼?直接點下面的例子 👇</div></div>
 </div>
+
+<div id="sresult"><div class="emptyhint">👆 在上面輸入一個代碼按「<b>分析這一檔</b>」,系統會用<b>白話</b>告訴你:這檔能不能拆、買一張要多少、最多賠多少、要漲多少才賺、多久回本。不知道打什麼?直接點搜尋框下的例子。</div></div>
 
 <div class="portbox">
   <h2>💼 組合模擬 · 自己指定每檔買幾張(填 CB 現價=零誤差)</h2>
