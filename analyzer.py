@@ -1744,10 +1744,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
     council = build_council(data, llm_stocks, depth)
     cards_by_sym = {}
     CHUNK = 10
-    for i in range(0, len(llm_stocks), CHUNK):
-        chunk = llm_stocks[i:i + CHUNK]
-        block = _chunk_market_tech_block(data, chunk, depth)
-        deep_tech_note = ("\n【專業版要求】這位用戶選了「看深入」,上面可能附了 RSI/KD/MACD/布林/均線排列/交叉等進階指標,以及「估值」「籌碼」。"
+    deep_tech_note = ("\n【專業版要求】這位用戶選了「看深入」,上面可能附了 RSI/KD/MACD/布林/均線排列/交叉等進階指標,以及「估值」「籌碼」。"
                           "每張卡的「下一步」說明要結合這些判讀:\n"
                           "- 進階指標:RSI>70 過熱留意拉回、KD 低檔黃金交叉可偏多、MACD 柱由負轉正轉強、跌破布林下軌或站上中軌,用白話講並對應具體價位。\n"
                           "- 估值:把「估值」那句(本益比/百分位/PEG)寫進 reason 當體質判斷——偏貴→提醒追高風險、別在高檔重壓;相對便宜→回檔較有撐。"
@@ -1757,12 +1754,12 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                           "- 反方風險:signal-watch 除了該盯的事,再點一句「什麼會推翻這個判斷」(例:跌破 $X 多頭結構就破功、財報不如預期、外資轉賣),讓用戶知道自己可能錯在哪。\n"
                           "只能引用上面提供的真實數字,沒附的指標/估值/籌碼就不要提,嚴禁自行編造任何數字。\n"
                           if depth == "deep" else "")
-        macro_note = ""
-        if depth != "simple":
-            _mb = _macro_backdrop_note(data)
-            macro_note = (
-                f"\n【今日宏觀背景(真實數據)】{_mb}\n" if _mb else "\n"
-            ) + (
+    macro_note = ""
+    if depth != "simple":
+        _mb = _macro_backdrop_note(data)
+        macro_note = (
+            f"\n【今日宏觀背景(真實數據)】{_mb}\n" if _mb else "\n"
+        ) + (
                 "【新資料用法 — 只補強理由與觀察,不得改寫方向/價位/信心】\n"
                 "- 標到「⚡政壇訊號」的個股:在該卡 signal-reason 或 signal-watch 點出這則訊號對它的影響(關稅/利率/補貼等),"
                 "把它列為「該盯的事」;但 verdict 方向仍以技術結構為準,政壇訊號只調整語氣與觀察重點,不可單憑一則貼文就翻多翻空。\n"
@@ -1770,19 +1767,18 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                 "不要當成今日進場理由,也不可編造任何沒列出的財務數字。\n"
                 "- 宏觀背景只對「真的敏感」的持股連動(利率↑→金融/高估值成長股、油價→能源/航運、避險情緒→防禦vs風險),講不出機制的就別硬扯。\n"
             )
-        prompt = (
+    def _mk_prompt(sub: list) -> str:
+        block = _chunk_market_tech_block(data, sub, depth)
+        return (
             f"你是這位用戶的專屬財經顧問。為以下每一支股票各生成一張 signal-card,給出明確「下一步」操作建議。\n"
-            f"標的({len(chunk)} 支,一支都不能少、不能合併):{', '.join(chunk)}\n\n"
-            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{_council_prompt_block(council, chunk)}\n"
+            f"標的({len(sub)} 支,一支都不能少、不能合併):{', '.join(sub)}\n\n"
+            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{_council_prompt_block(council, sub)}\n"
             f"{rules}\n\n"
-            f"只輸出這 {len(chunk)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
+            f"只輸出這 {len(sub)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
             f"不要輸出 signal-grid 外框、不要任何說明文字、不要 markdown 反引號。"
         )
-        raw = ""
-        try:
-            raw = _llm_generate(prompt, prefer_strong)
-        except Exception as e:
-            print(f"  [signal-batch] chunk {i//CHUNK+1} LLM 全失敗,改 deterministic({str(e)[:80]})")
+
+    def _collect(raw: str, sub: list):
         if raw.startswith("```"):
             raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
             raw = re.sub(r'\n?```$', '', raw)
@@ -1800,9 +1796,33 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             if not tm:
                 continue
             tk = tm.group(1).strip()
-            match = next((cs for cs in chunk if cs == tk or cs in tk or tk in cs), None)
+            match = next((cs for cs in sub if cs == tk or cs in tk or tk in cs), None)
             if match and match not in cards_by_sym and _card_passes_audit(card):
                 cards_by_sym[match] = card
+
+    for i in range(0, len(llm_stocks), CHUNK):
+        chunk = llm_stocks[i:i + CHUNK]
+        try:
+            _collect(_llm_generate(_mk_prompt(chunk), prefer_strong), chunk)
+        except Exception as e:
+            # chunk(10支)全鏈失敗 → 先拆單支重試再認輸:大 prompt 是 Groq 免費層
+            # 8000 TPM 放不下的(gpt-oss-120b),單支小 prompt 那張免費網就接得住;
+            # 連 2 支單支也失敗才判定全鏈真的死了,剩餘走 deterministic(省時間)。
+            print(f"  [signal-batch] chunk {i//CHUNK+1} LLM 全失敗({str(e)[:80]}),拆單支重試")
+            misses = 0
+            for s in chunk:
+                if s in cards_by_sym:
+                    continue
+                if misses >= 2:
+                    print(f"  [signal-batch] 連 {misses} 支單支重試也失敗,本 chunk 其餘改 deterministic")
+                    break
+                try:
+                    _collect(_llm_generate(_mk_prompt([s]), prefer_strong), [s])
+                    misses = 0
+                except Exception as e2:
+                    misses += 1
+                    print(f"  [signal-batch] 單支 {s} 重試仍失敗({str(e2)[:60]})")
+                time.sleep(1)
         if i + CHUNK < len(llm_stocks):
             time.sleep(2)
     overflow = set(seen[full_limit:]) if full_limit else set()
