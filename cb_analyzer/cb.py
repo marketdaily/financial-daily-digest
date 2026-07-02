@@ -42,6 +42,16 @@ def rebuild(xlsx):
     return db
 
 
+def _tcri_overrides():
+    """tcri_overrides.json:免費資料查不到 TEJ TCRI 時的人工/推定評等
+    (例:銀行已實際承作該檔拆解 → 信用達標反推)。"""
+    try:
+        with open(os.path.join(HERE, "tcri_overrides.json"), encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
 def find(db, key):
     """先找老闆 Excel 管線;找不到再查全市場現有可轉債(TPEx)。"""
     key = key.strip()
@@ -50,11 +60,17 @@ def find(db, key):
     if hits:
         return hits
     ex = cb_existing.lookup(key)
+    ov = _tcri_overrides()
     for it in ex:
         if it.get("tcri") is None:      # 現有 CB 無 TCRI → 沿用同股票在 Excel 的評等
             same = [d for d in db["items"] if d["stock_code"] == it["stock_code"] and d.get("tcri")]
             if same:
                 it["tcri"] = same[0]["tcri"]
+        if it.get("tcri") is None and it["stock_code"] in ov:   # 再查人工/推定 override
+            o = ov[it["stock_code"]]
+            it["tcri"] = o.get("tcri")
+            it["tcri_src"] = "override"
+            it["tcri_note"] = o.get("note", "")
     return ex
 
 

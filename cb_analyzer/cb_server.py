@@ -3,7 +3,7 @@
   GET /api/analyze?code=&tcri=   → 該代碼完整分析卡(HTML 片段)
   GET /api/sim?capital=&code=&tcri= → 資金模擬結果(HTML 片段)
 啟動:python3 cb_server.py [port]   預設 8911。"""
-import os, sys, html, math, datetime, urllib.parse
+import os, sys, html, json, math, datetime, urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import cb_core, cb_data, cb_profiles, cb_intel, cb_simulate, cb_report
 import cb
@@ -41,6 +41,13 @@ def _verdict_parts(it, a, be_move=None, p_touch=None, p_term=None):
     where = f"價內 {mv:+.0f}%" if mv >= 0 else f"價外 {abs(mv):.0f}%"
     need = (be_move * 100) if be_move is not None else (abs(mv) + 8)
     if not elig:
+        # 「查不到評等」≠「股票不好」:資料缺一格就補一格,不能講成不要碰
+        size_ok = (it.get("size_yi") or 0) >= cb_core.ASSUMPTIONS["elig_min_size"]
+        if it.get("tcri") is None and size_ok:
+            return ("❓ 只缺信用評等(其他條件已過)", "#a5b4fc",
+                    "免費資料查不到這檔的 TEJ TCRI 評等——這是資料缺一格,不是股票不好。"
+                    "而且:若券商已經對這檔報過拆解權利金(老闆有在做)=銀行肯承作=信用事實上已達標。",
+                    "把 TCRI 填進搜尋框旁的欄位再按一次分析;或跟我說評等,我記住以後就不用再填。下面的數字分析照樣能看。")
         return ("❌ 不要碰", "#f87171",
                 "不符我們的進場準則(" + "、".join(reasons) + "),這檔不做。",
                 "跳過這檔,看清單裡標「✅」的。")
@@ -72,6 +79,77 @@ def _verdict_parts(it, a, be_move=None, p_touch=None, p_term=None):
             "先放觀察名單,等更便宜的權利金或股票波動變大再考慮。")
 
 
+def _exit_plan(it, a, be_S, be_move):
+    """出場劇本:分年觸及機率 + 出場價位表(股價→權利金約值→報酬→動作)+ 機械紀律 + 訊息差用法。"""
+    K, spot, vol, T = it["conv_price"], a["spot"], a["hist_vol"], a["T_opt"]
+    rf = cb_core.ASSUMPTIONS["rf"]
+    prem, shares = a["cbas_premium"], a["shares"]
+    T2 = max(T * 0.6, 0.5)                       # 假設中段持有,剩餘時間價值
+
+    def mtm(S):
+        return shares * cb_core.bs_call(S, K, T2, vol, rf)[0]
+
+    # 權利金翻倍點(選擇權市值=2×成本的股價,二分求解)
+    dbl = None
+    lo, hi = spot, spot * 5
+    if mtm(hi) >= 2 * prem:
+        for _ in range(60):
+            mid = (lo + hi) / 2
+            if mtm(mid) >= 2 * prem:
+                hi = mid
+            else:
+                lo = mid
+        dbl = hi
+    rows = []
+
+    def add(name, S, act):
+        v = mtm(S)
+        rows.append((name, S, v, (v / prem - 1) if prem > 0 else 0, act))
+
+    if dbl:
+        add("權利金翻倍點", dbl, "賣一半——本金全部收回,剩下的部位零成本抱")
+    add("回本點", be_S, "至少出一半,剩下改用移動停利(跌回 15% 就走)")
+    r = cb_intel.research(it["stock_code"])
+    tp = (r or {}).get("target_price")
+    if tp and tp > spot:
+        add("券商目標價", tp, "全出、或最多留 1/3——市場共識的頂到了")
+    rows.sort(key=lambda x: x[1])
+    trs = "".join(
+        '<tr><td style="text-align:left">%s</td><td>%.0f(%+.0f%%)</td><td>%.1f</td>'
+        '<td style="color:%s">%+.0f%%</td><td style="text-align:left">%s</td></tr>'
+        % (n, S, (S / spot - 1) * 100, v, "#34d399" if pr >= 0 else "#f87171", pr * 100, act)
+        for n, S, v, pr, act in rows)
+
+    # 分年觸及機率(72% 那個數字拆成時間軸)
+    yrs, seen = [], set()
+    for y in (1.0, 2.0, T):
+        y = min(y, T)
+        k = round(y, 1)
+        if k in seen:
+            continue
+        seen.add(k)
+        yrs.append((k, cb_core.touch_prob(spot, be_S, y, vol, 0.07)))
+    ytxt = " → ".join(f"{y:.1f}年內 <b>{p*100:.0f}%</b>" for y, p in yrs)
+
+    return (
+        '<div class="simwhy" style="margin-top:12px;border-top:1px solid rgba(255,255,255,.08);padding-top:10px">'
+        '<span class="gg">🎯 出場劇本(什麼時候賣、賣多少)</span>'
+        f'<div class="iline">碰到回本點的機率照時間拆:{ytxt}(波動大的股票,前段就有不小機會)</div>'
+        '<table class="simtab"><tr><th style="text-align:left">賣點</th><th>股價(距現價)</th>'
+        '<th>權利金約值</th><th>報酬</th><th style="text-align:left">建議動作</th></tr>'
+        + trs + "</table>"
+        '<div class="iline" style="margin-top:6px"><b>機械紀律(進場當天就寫死,不靠感覺):</b>'
+        '①權利金市值翻倍→先賣一半收回本金 '
+        '②股價碰回本點→至少出一半 '
+        f'③到期/賣回日前 6 個月股價仍低於轉換價 8 折→全部出場(時間價值會加速歸零) '
+        '④外資+投信同步連賣 10 日以上或公司下修展望→提前減碼</div>'
+        '<div class="iline" style="color:#7dd3fc"><b>訊息差怎麼用:</b>'
+        '每月 10 日前的月營收、法說會、財報是波動事件——「碰到回本點」最常發生在這些日子前後,'
+        '事件前一週把出場單價位掛好;本卡的「法人現在」每天更新,翻買=先行訊號、連賣=提前減碼訊號。'
+        '把持倉寫進 holdings.json,首頁「今日結論」就會每天自動盯這些出場條件。</div>'
+        '</div>')
+
+
 def _human_card(it, sd, a):
     """白話卡:先結論、白話重點、怎麼做;技術數字收進 <details>。"""
     prem = a["cbas_premium"]
@@ -92,11 +170,17 @@ def _human_card(it, sd, a):
 
     fp = _fair_premium(a)
     fp_gap = fp - prem
-    fair_txt = (f'券商權利金報到 <b>{fp:.1f} 以內</b>(約 NT${fp*1000:,.0f}/張)才划算'
-                f'(=選擇權理論值+融資成本)。'
-                + (f'目前 {prem:.1f} 比上限便宜 {fp_gap:.1f} ✓'
-                   if fp_gap >= 0 else
-                   f'目前 {prem:.1f} <b style="color:#f87171">貴了 {abs(fp_gap):.1f}</b>——殺價,殺不動就不做'))
+    if src.startswith("面額"):
+        # 推估基準=面額100 時,「便宜 X」是失真比較,不給貴俗判定
+        fair_txt = (f'券商權利金報到 <b>{fp:.1f} 以內</b>(約 NT${fp*1000:,.0f}/張)才划算'
+                    f'(=選擇權理論值+融資成本)。目前顯示的 {prem:.1f} 是<b>面額100推估、非真實報價</b>'
+                    f'——拿到券商報價填進「權利金報價」欄再比貴俗')
+    else:
+        fair_txt = (f'券商權利金報到 <b>{fp:.1f} 以內</b>(約 NT${fp*1000:,.0f}/張)才划算'
+                    f'(=選擇權理論值+融資成本)。'
+                    + (f'目前 {prem:.1f} 比上限便宜 {fp_gap:.1f} ✓'
+                       if fp_gap >= 0 else
+                       f'目前 {prem:.1f} <b style="color:#f87171">貴了 {abs(fp_gap):.1f}</b>——殺價,殺不動就不做'))
     bullets = [
         ("買一張要付", f'<b>約 NT${prem*1000:,.0f}</b>(這就是你的成本,也是<b>最多會賠的錢</b>){price_note}'),
         ("最多賠", f'NT${prem*1000:,.0f}／張(不會賠更多——債券部分已賣給銀行扛)'),
@@ -107,6 +191,8 @@ def _human_card(it, sd, a):
         ("死抱到期仍賺", f'約 {p_term*100:.0f}%(抱滿 {T:.1f} 年、只算轉換價值的保守下限)'),
         ("槓桿", f'用 NT${prem*1000:,.0f} 控制約 NT${a["parity"]*1000:,.0f} 的股票曝險(約 {lev:.1f} 倍)'),
     ]
+    if it.get("tcri_src") == "override":
+        bullets.append(("信用評等", f'TCRI {it["tcri"]}(推定)——{html.escape(it.get("tcri_note", ""))}'))
     fn = cb_intel.flow_narrative(it["stock_code"])
     if fn:
         bullets.append(("法人現在", fn.replace("法人流向:", "")))
@@ -125,8 +211,60 @@ def _human_card(it, sd, a):
         f'<div class="hone">{html.escape(oneliner)}</div>'
         f'<ul class="hbul">{lis}</ul>'
         f'<div class="haction"><b>怎麼做:</b>{html.escape(action)}</div>'
+        f'{_exit_plan(it, a, be_S, be_move)}'
         f'<details class="tech"><summary></summary><div class="cards">{cb_report._card(it, sd, a)}</div></details>'
         f'</div>')
+
+
+def _holdings():
+    try:
+        with open(os.path.join(HERE, "holdings.json"), encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return []
+
+
+def _holdings_section():
+    """持倉監控:每檔算現估值+檢查出場條件,觸發就亮警示。"""
+    hold = _holdings()
+    if not hold:
+        return ('<div class="bone" style="margin-top:10px">💼 想讓系統每天盯「什麼時候賣」:'
+                '把持倉寫進 cb_analyzer/<b>holdings.json</b>(格式見 holdings.example.json),'
+                '這裡就會自動顯示每檔的出場警示(翻倍賣半/碰回本點/時間價值臨界/法人轉賣)。</div>')
+    out = ['<div class="bhead" style="margin-top:14px">💼 持倉監控(每天自動盯出場條件)</div>']
+    for h in hold:
+        r, e = _resolve(str(h.get("code", "")), h.get("tcri"))
+        if not r:
+            out.append(f'<div class="bone">⚠ {html.escape(str(h.get("code")))}:{html.escape(e)}</div>')
+            continue
+        it, sd, a = r
+        prem_paid = h.get("prem_paid")
+        units = h.get("units") or 0
+        mtm = a["option_value"]                       # 理論市值(per100)近似
+        alerts = []
+        pr_txt = ""
+        if prem_paid:
+            pr = mtm / prem_paid - 1
+            pr_txt = f'成本 {prem_paid} → 現估 {mtm:.1f}(<b style="color:{"#34d399" if pr>=0 else "#f87171"}">{pr*100:+.0f}%</b>)'
+            strike, _ = cb_core.redemption_value(it.get("put"))
+            be_entry = it["conv_price"] * (strike + prem_paid) / 100.0
+            if mtm >= 2 * prem_paid:
+                alerts.append("🔔 權利金已約翻倍 → 賣一半收回本金")
+            if a["spot"] >= be_entry:
+                alerts.append(f"🔔 已碰你的回本點({be_entry:.0f})→ 至少出一半")
+        if a["T_opt"] < 0.5 and a["moneyness"] < 0.8:
+            alerts.append("🔔 剩不到半年仍深價外 → 出場,別讓時間價值歸零")
+        fn = cb_intel.flow_narrative(it["stock_code"]) or ""
+        if "賣超" in fn:
+            alerts.append("⚠ 法人賣超中 → 留意,連賣拉長就減碼")
+        status = "、".join(alerts) if alerts else "✅ 續抱,未觸發出場條件"
+        scolor = "#f87171" if any(x.startswith("🔔") for x in alerts) else ("#fbbf24" if alerts else "#34d399")
+        out.append(
+            '<div class="brow" onclick="quick(\'%s\')">'
+            '<span class="bnm">%s</span><span class="bfair">%d 張 %s</span>'
+            '<span class="bone" style="color:%s">%s</span></div>'
+            % (it["bond_code"], html.escape(it["name"]), units, pr_txt, scolor, html.escape(status)))
+    return "".join(out)
 
 
 def brief_fragment():
@@ -188,8 +326,8 @@ def brief_fragment():
                  f'{wnames} —— 定價一公布,輸入代碼馬上出結論。')
     return (
         '<div class="bhead">📌 今日結論　<span class="bsub">報價日 %s · 產生於 %s · 準則:TCRI 3-4 且 ≥10億</span></div>'
-        '<div class="blead">%s</div>%s'
-        % (qdate or "—", now, head, "".join(rows)))
+        '<div class="blead">%s</div>%s%s'
+        % (qdate or "—", now, head, "".join(rows), _holdings_section()))
 
 
 def _sim_verdict(base):

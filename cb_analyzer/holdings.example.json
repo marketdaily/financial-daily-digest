@@ -1,0 +1,4 @@
+[
+  {"code": "82993", "units": 10, "prem_paid": 21.8, "tcri": 4, "date": "2026-06-15",
+   "_說明": "code=債券代碼;units=張數;prem_paid=你實際付的權利金(per100);tcri=評等(現有CB查不到時);date=進場日。把這檔案另存成 holdings.json 即啟用持倉監控。"}
+]
