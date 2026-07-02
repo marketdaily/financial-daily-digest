@@ -288,6 +288,24 @@ def _call_groq(prompt: str, system: str = None,
     return resp.json()["choices"][0]["message"]["content"].strip()
 
 
+def _call_cf_ai(prompt: str, system: str = None,
+                model: str = "@cf/meta/llama-3.3-70b-instruct-fp8-fast", max_tokens: int = 600) -> str:
+    """Cloudflare Workers AI(免費層 10k neurons/日),經自家 md-ai-proxy worker(Bearer 驗證)。
+    獨立配額桶+獨立網路路徑(CF edge),與 Gemini/Groq/Anthropic 都不同廠商。
+    沒設 CF_AI_PROXY_TOKEN → raise,鏈/席次自動跳過(非錯誤)。"""
+    tok = os.environ.get("CF_AI_PROXY_TOKEN")
+    url = os.environ.get("CF_AI_PROXY_URL")
+    if not tok or not url:
+        raise RuntimeError("未設定 CF_AI_PROXY_TOKEN")
+    r = requests.post(url, headers={"Authorization": f"Bearer {tok}"},
+                      json={"model": model, "max_tokens": max_tokens,
+                            "messages": [{"role": "system", "content": system or _SYSTEM_PROMPT},
+                                         {"role": "user", "content": prompt}]},
+                      timeout=120)
+    r.raise_for_status()
+    return str(r.json()["response"]).strip()
+
+
 def _call_ollama(prompt: str, system: str = None,
                  model: str = "qwen2.5:14b-instruct-q4_K_M", max_tokens: int = 600) -> str:
     """winrig 本地 5080 GPU(Ollama)。零配額、零 429、不吃網路 —— 全雲端 LLM 斷線
@@ -1190,6 +1208,8 @@ _COUNCIL_SEATS = [
     # winrig 本地 5080(零配額零429):清晨 Gemini 必空桶時保底的第三把獨立聲音;
     # 雲端 CI 環境連不上 localhost → 席次熔斷自動停用,不影響
     ("local:qwen2.5-14b", lambda p: _call_ollama(p, system=_COUNCIL_SYS, max_tokens=300)),
+    # Cloudflare Workers AI(免費 10k neurons/日,經 md-ai-proxy):第四家獨立廠商聲音
+    ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, system=_COUNCIL_SYS, max_tokens=300)),
     ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
 _COUNCIL_JUDGE = lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)
