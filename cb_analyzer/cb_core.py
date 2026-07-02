@@ -62,6 +62,21 @@ def _norm_cdf(x):
     return 0.5 * (1.0 + math.erf(x / SQRT2))
 
 
+def touch_prob(S, b, T, sigma, drift):
+    """GBM 期間內曾觸及上方水位 b 的機率(反射原理)。
+    這是專業口徑:CBAS 下檔封頂,期間內碰到回本點即可帶時間價值獲利出場,
+    所以『曾觸及機率』遠比『抱到期終值機率』貼近實戰。"""
+    if b <= S:
+        return 1.0
+    if T <= 0 or sigma <= 0:
+        return 0.0
+    a = math.log(b / S)
+    nu = drift - 0.5 * sigma * sigma
+    st = sigma * math.sqrt(T)
+    return (_norm_cdf((-a + nu * T) / st)
+            + math.exp(2.0 * nu * a / (sigma * sigma)) * _norm_cdf((-a - nu * T) / st))
+
+
 def bs_call(S, K, T, sigma, r):
     """單股 Black-Scholes 買權，回 (price, delta, gamma, vega)。"""
     if S <= 0 or K <= 0 or T <= 0 or sigma <= 0:

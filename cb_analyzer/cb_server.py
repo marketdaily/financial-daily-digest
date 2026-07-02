@@ -19,8 +19,23 @@ def _fair_premium(a):
     return a["option_value"] + fin
 
 
-def _verdict_parts(it, a, be_move=None):
-    """回 (tag, 顏色, 一句話, 怎麼做)。be_move=真實回本所需漲幅(小數)。"""
+def _outlook(it, a, drift=0.07):
+    """回 (be_S, be_move, p_touch, p_term):回本點、所需漲幅、期間內曾觸及機率(專業口徑)、抱到期仍過機率(保守下限)。"""
+    strike, _ = cb_core.redemption_value(it.get("put"))
+    K, spot, T, vol = it["conv_price"], a["spot"], a["T_opt"], a["hist_vol"]
+    be_S = K * (strike + a["cbas_premium"]) / 100.0
+    be_move = be_S / spot - 1
+    p_touch = cb_core.touch_prob(spot, be_S, T, vol, drift)
+    if be_S <= spot:
+        p_term = 0.85
+    else:
+        d = (math.log(spot / be_S) + (drift - 0.5 * vol * vol) * T) / (vol * math.sqrt(T))
+        p_term = cb_core._norm_cdf(d)
+    return be_S, be_move, p_touch, p_term
+
+
+def _verdict_parts(it, a, be_move=None, p_touch=None, p_term=None):
+    """回 (tag, 顏色, 一句話, 怎麼做)。be_move=回本所需漲幅;p_touch/p_term=_outlook 的兩種機率。"""
     elig, reasons = cb_core.eligibility(it)
     mv = (a["moneyness"] - 1) * 100
     where = f"價內 {mv:+.0f}%" if mv >= 0 else f"價外 {abs(mv):.0f}%"
@@ -30,38 +45,40 @@ def _verdict_parts(it, a, be_move=None):
                 "不符我們的進場準則(" + "、".join(reasons) + "),這檔不做。",
                 "跳過這檔,看清單裡標「✅」的。")
     if mv < -18 or need > 45:
+        # 深價外≠不能做:權利金合理+波動夠大 → 專業的「風險封頂選擇權注」,論組合注不論單壓
+        fp = _fair_premium(a)
+        if p_touch and p_touch >= 0.35 and a["cbas_premium"] <= fp * 1.03:
+            return ("🟡 組合可配一注(單壓不行)", "#fbbf24",
+                    f"股價還在{where},死抱到期只有約 {(p_term or 0)*100:.0f}% 機率賺;"
+                    f"但波動夠大,期間內有約 {p_touch*100:.0f}% 機率碰到回本點(+{need:.0f}%)——"
+                    f"碰到就能帶著剩餘時間價值獲利出場,權利金也在合理值內、下檔封頂。"
+                    f"這是專業的『風險封頂選擇權注』。",
+                    f"組合裡配一小注(單檔 ≤10~15% 資金),進場同時設好出場紀律"
+                    f"(股價接近回本點或權利金翻倍就走);想單壓全部資金的人跳過這檔。")
         return ("⚠️ 先別急,再等等", "#fbbf24",
-                f"股價離轉換價還很遠({where}),要漲大約 +{need:.0f}% 才開始賺,現在買比較像賭運氣。",
-                "先觀望。等股價漲上來一點、或改挑「現價貼近轉換價」的 CB(股票漲一點就開始賺)。")
+                f"股價離轉換價很遠({where})、要漲約 +{need:.0f}% 才回本,"
+                f"而且現在權利金報價偏貴或波動不夠大,勝算撐不起這個價。",
+                "先觀望,或跟券商殺權利金;等股價靠近轉換價、或報價回到合理值再進。")
     if a["score"] >= 65 and mv >= -8:
         return ("✅ 可以拆解", "#34d399",
                 f"條件不錯({where}),用一小筆權利金放大股票漲幅,而且最多就賠這筆權利金。",
-                "可以進場。單一部位別壓太重(建議 ≤ 總資金兩三成),記得這是抱到到期的部位。")
+                "可以進場。單一部位別壓太重(建議 ≤ 總資金兩三成),進場同時定好出場紀律。")
     if a["score"] >= 58:
         return ("✅ 可以拆解(等好價)", "#34d399",
                 f"符合準則、條件 OK({where})。",
                 "可以進場,但盡量等好一點的價位再出手。")
     return ("⚠️ 普通,可觀察", "#fbbf24",
             f"有符合準則但沒特別便宜({where})。",
-            "先放觀察名單,等更便宜的價格或股票波動變大再考慮。")
+            "先放觀察名單,等更便宜的權利金或股票波動變大再考慮。")
 
 
 def _human_card(it, sd, a):
     """白話卡:先結論、白話重點、怎麼做;技術數字收進 <details>。"""
     prem = a["cbas_premium"]
-    strike, _ = cb_core.redemption_value(it.get("put"))
-    K, spot = it["conv_price"], a["spot"]
-    be_S = K * (strike + prem) / 100.0
-    be_move = be_S / spot - 1
+    spot = a["spot"]
     T = a["T_opt"]
-    tag, col, oneliner, action = _verdict_parts(it, a, be_move)
-    # 抱到到期賺錢機率(GBM 解析,基準漂移 7%)
-    vol, drift = a["hist_vol"], 0.07
-    if be_S <= spot:
-        prob = 0.85
-    else:
-        d = (math.log(spot / be_S) + (drift - 0.5 * vol * vol) * T) / (vol * math.sqrt(T))
-        prob = cb_core._norm_cdf(d)
+    be_S, be_move, p_touch, p_term = _outlook(it, a)
+    tag, col, oneliner, action = _verdict_parts(it, a, be_move, p_touch, p_term)
     lev = a.get("leverage") or 0
     src = a["buy_source"]
     if a.get("premium_quote"):
@@ -85,7 +102,9 @@ def _human_card(it, sd, a):
         ("最多賠", f'NT${prem*1000:,.0f}／張(不會賠更多——債券部分已賣給銀行扛)'),
         ("出價上限", fair_txt),
         ("要開始賺", f'股票要從 {spot:.1f} 漲到 <b>{be_S:.1f}</b>(約 <b>{be_move*100:+.0f}%</b>)'),
-        ("抱到期賺錢機率", f'<b>約 {prob*100:.0f}%</b>(抱 {T:.1f} 年到期,用一般年報酬 7% 估)'),
+        ("中途獲利機率", f'<b>約 {p_touch*100:.0f}%</b> —— {T:.1f} 年內股價<b>曾經碰到</b>回本點的機率;'
+                        f'碰到時還帶剩餘時間價值,可獲利出場。<b>實戰看這個</b>(我們不是死抱到期)'),
+        ("死抱到期仍賺", f'約 {p_term*100:.0f}%(抱滿 {T:.1f} 年、只算轉換價值的保守下限)'),
         ("槓桿", f'用 NT${prem*1000:,.0f} 控制約 NT${a["parity"]*1000:,.0f} 的股票曝險(約 {lev:.1f} 倍)'),
     ]
     fn = cb_intel.flow_narrative(it["stock_code"])
@@ -114,7 +133,7 @@ def brief_fragment():
     """今日結論:老闆一打開就看到——哪幾檔能拆、出價上限多少、哪幾檔在等定價。"""
     A = cb_core.ASSUMPTIONS
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
-    go, wait, rows = 0, 0, []
+    go, mix, wait, rows = 0, 0, 0, []
     qdate = ""
     for it in DB["items"]:
         if not (it.get("conv_price") and it.get("premium_mid")):
@@ -128,12 +147,12 @@ def brief_fragment():
         a = cb_core.analyze(it, sd["spot"], sd["vol_blend"])
         if not a.get("ok"):
             continue
-        strike, _ = cb_core.redemption_value(it.get("put"))
-        be_S = it["conv_price"] * (strike + a["cbas_premium"]) / 100.0
-        be_move = be_S / a["spot"] - 1
-        tag, col, one, _act = _verdict_parts(it, a, be_move)
+        be_S, be_move, p_touch, p_term = _outlook(it, a)
+        tag, col, one, _act = _verdict_parts(it, a, be_move, p_touch, p_term)
         if tag.startswith("✅"):
             go += 1
+        elif tag.startswith("🟡"):
+            mix += 1
         else:
             wait += 1
         rows.append(
@@ -152,7 +171,13 @@ def brief_fragment():
     wnames = "、".join(f'{html.escape(i["name"])}({i["stock_code"]})' for i in watch)
     if go:
         head = f'今天有 <b style="color:#34d399">{go} 檔可以進場拆解</b>'
+        if mix:
+            head += f',{mix} 檔可用組合小注參與'
         head += f',另外 {wait} 檔建議再等。' if wait else '。'
+    elif mix:
+        head = (f'今天有 <b style="color:#fbbf24">{mix} 檔可以用「組合配一小注」的方式參與</b>'
+                f'(權利金合理、期間內碰回本點機率夠;單壓全部資金不行,見下)'
+                + (f',另外 {wait} 檔建議再等。' if wait else '。'))
     elif rows:
         head = (f'今天<b>沒有建議直接進場的標的</b>——{wait} 檔符合準則但時機不對(見下),'
                 f'先不動作也是一種決定。')
@@ -290,9 +315,12 @@ def sim_fragment(capital, code=None, tcri=None, drift=0.07):
                         '→ 即使達標仍回不了本,不適合單押,宜換近價平標的</span></div>' % (tup, L["be_move"] * 100))
         why += '</div>'
         o.append(why)
-        o.append('<div class="simrow"><span class="yy">⌛ 抱到期 %.1f 年　獲利機率 <b>%.0f%%</b></span>　'
+        o.append('<div class="simrow"><span class="yy">⌛ 死抱到期 %.1f 年　獲利機率 <b>%.0f%%</b>(保守下限)</span>　'
                  '下檔最多賠光權利金 NT$%s</div>'
                  % (L["T"], L["prob_profit"] * 100, f"{L['deployed']:,.0f}"))
+        pt_leg = cb_core.touch_prob(L["spot"], L["be_S"], L["T"], L["vol"], drift)
+        o.append('<div class="simrow"><span class="gg">⚡ 實戰口徑:</span>期間內股價<b>曾碰到</b>回本點的機率約 '
+                 '<b>%.0f%%</b>——碰到就能帶著剩餘時間價值獲利出場,不必等到期(專業做法)</div>' % (pt_leg * 100))
 
     o.append('<table class="simtab"><tr><th>情境(股票年報酬)</th><th>預期賺賠</th><th>年化</th><th>賺錢機率</th></tr>')
     for rr in scen:
@@ -305,7 +333,9 @@ def sim_fragment(capital, code=None, tcri=None, drift=0.07):
                     rr["ann_return"] * 100, rr["prob_profit"] * 100))
     o.append("</table>")
     o.append('<div class="iline" style="margin-top:8px">基準分佈:悲觀(P5) NT$%s · 中位 NT$%s · 樂觀(P95) NT$%s｜'
-             '假設 GBM+前瞻波動+相關ρ%.2f,下檔封頂權利金,未計稅費。</div>'
+             '假設 GBM+前瞻波動+相關ρ%.2f,下檔封頂權利金,未計稅費。'
+             '注意:表格全部是「死抱到期」的保守口徑;實戰可在期間內碰到回本點時獲利出場(機率見各檔⚡),'
+             '且台灣 CB 發行方常有把股價推過轉換價的動機(轉股免還債),隨機漫步假設整體偏保守。</div>'
              % (f"{base['p5']:+,.0f}", f"{base['p50']:+,.0f}", f"{base['p95']:+,.0f}", base["rho"]))
     o.append("</div>")
     return "".join(o)
@@ -401,18 +431,24 @@ def portfolio_fragment(legs_str, drift=0.07):
              % (f"{base['deployed']:,.0f}", base["horizon"],
                 f"{base['p95']:+,.0f}", f"{base['deployed']:,.0f}", base["prob_profit"] * 100))
     o.append('<table class="simtab"><tr><th style="text-align:left">標的</th><th>張數</th>'
-             '<th>買價基準</th><th>權利金/張</th><th>投入</th><th>獲利機率</th><th>預期損益</th></tr>')
+             '<th>買價基準</th><th>權利金/張</th><th>投入</th>'
+             '<th title="死抱到期的保守下限">到期獲利機率</th>'
+             '<th title="期間內曾碰到回本點=可帶時間價值提前獲利出場;實戰看這個">中途獲利機率</th>'
+             '<th>預期損益(到期)</th></tr>')
     for it, sd, a, units, cbp in rows:
         L = pm.get(id(it))
         exp = f"{L['exp_pnl']:+,.0f}" if L else "—"
         pp = f"{L['prob_profit']*100:.0f}%" if L else "—"
+        pt = (f"{cb_core.touch_prob(L['spot'], L['be_S'], L['T'], L['vol'], drift)*100:.0f}%"
+              if L else "—")
         col = "#34d399" if (L and L["exp_pnl"] > 0) else "#f87171"
         o.append('<tr><td style="text-align:left">%s<br><span style="color:#8b95a7;font-size:11px">股%s/債%s</span></td>'
                  '<td>%d</td><td>%s%s</td><td>%.1f</td><td>NT$%s</td><td>%s</td>'
+                 '<td style="color:#34d399;font-weight:700">%s</td>'
                  '<td style="color:%s">NT$%s</td></tr>'
                  % (html.escape(it["name"]), it["stock_code"], it["bond_code"], units,
                     a["buy_source"], ("=%.1f" % cbp) if cbp else "", a["cbas_premium"],
-                    f"{L['deployed']:,.0f}" if L else "—", pp, col, exp))
+                    f"{L['deployed']:,.0f}" if L else "—", pp, pt, col, exp))
     o.append("</table>")
     if bad:
         o.append('<div class="iline" style="color:#f87171">略過查不到的:%s</div>' % html.escape("、".join(bad)))
@@ -432,7 +468,8 @@ def portfolio_fragment(legs_str, drift=0.07):
                     rr["ann_return"] * 100, rr["prob_profit"] * 100))
     o.append("</table>")
     o.append('<div class="iline" style="margin-top:8px">基準分佈:悲觀(P5) NT$%s · 中位 NT$%s · 樂觀(P95) NT$%s｜'
-             '下檔封頂於權利金合計 NT$%s(債券底歸銀行)。填了「權利金報價」的腿=零誤差(CB現價次之),未填=以承銷/面額推估。</div>'
+             '下檔封頂於權利金合計 NT$%s(債券底歸銀行)。填了「權利金報價」的腿=零誤差(CB現價次之),未填=以承銷/面額推估。'
+             '表格為「死抱到期」保守口徑;實戰可在期間內碰到回本點時帶時間價值獲利出場,真實勝率高於表列。</div>'
              % (f"{base['p5']:+,.0f}", f"{base['p50']:+,.0f}", f"{base['p95']:+,.0f}",
                 f"{base['deployed']:,.0f}"))
     o.append("</div>")
