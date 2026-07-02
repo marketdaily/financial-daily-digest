@@ -288,6 +288,26 @@ def _call_groq(prompt: str, system: str = None,
     return resp.json()["choices"][0]["message"]["content"].strip()
 
 
+def _call_ollama(prompt: str, system: str = None,
+                 model: str = "qwen2.5:14b-instruct-q4_K_M", max_tokens: int = 600) -> str:
+    """winrig 本地 5080 GPU(Ollama)。零配額、零 429、不吃網路 —— 全雲端 LLM 斷線
+    (如 7/1 WSL DNS 瞬斷,Gemini/Claude/Groq 同時解析失敗)時唯一還活著的席次/備援。
+    只在 winrig 上有效;雲端 CI 環境連不上 localhost 會立刻 raise,鏈/席次自動跳過。
+    num_ctx 16384:卡片生成 prompt(10支+新聞+規則)可達 6-10k tokens,預設 ctx 會靜默截斷。"""
+    try:
+        r = requests.post("http://localhost:11434/api/chat", json={
+            "model": model,
+            "messages": [{"role": "system", "content": system or _SYSTEM_PROMPT},
+                         {"role": "user", "content": prompt}],
+            "stream": False, "keep_alive": "30m",
+            "options": {"temperature": 0.4, "num_predict": max_tokens, "num_ctx": 16384},
+        }, timeout=600)
+        r.raise_for_status()
+        return r.json()["message"]["content"].strip()
+    except requests.exceptions.ConnectionError:
+        raise RuntimeError("ollama 連不上(非 winrig 環境或服務沒起)")
+
+
 def _is_transient_dns_error(e) -> bool:
     """WSL2 的 DNS 全走 Windows 主機轉發(nameserver 10.255.255.254),主機網路瞬抖時
     整台 WSL 有幾秒解不到任何網域(NameResolutionError / Temporary failure in name
@@ -314,7 +334,10 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     strong = [("claude:sonnet-4.6", _call_claude),
               ("groq:gpt-oss-120b", lambda p: _call_groq(p)),
               ("openai:gpt-4o-mini", _call_openai)]
-    providers = (strong + gemini) if prefer_strong else (gemini + strong)
+    # 本地 GPU 永遠排最後一張網:品質不如雲端大模型(有 audit 閘門把關),
+    # 但零配額且不吃網路,全雲端斷線(DNS 瞬斷/配額同時死)時是唯一活口。
+    local = [("local:qwen2.5-14b", lambda p: _call_ollama(p, max_tokens=9000))]
+    providers = ((strong + gemini) if prefer_strong else (gemini + strong)) + local
     last_err = None
     for rnd in range(2):
         dns_blip = False
@@ -1164,6 +1187,9 @@ _COUNCIL_SEATS = [
     ("claude:haiku", lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)),
     # Sonnet 當第二把 Claude 聲音:Gemini 全 429 時仍湊得到 ≥2 席,council 不會整個熄火
     ("claude:sonnet", lambda p: _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")),
+    # winrig 本地 5080(零配額零429):清晨 Gemini 必空桶時保底的第三把獨立聲音;
+    # 雲端 CI 環境連不上 localhost → 席次熔斷自動停用,不影響
+    ("local:qwen2.5-14b", lambda p: _call_ollama(p, system=_COUNCIL_SYS, max_tokens=300)),
     ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
 _COUNCIL_JUDGE = lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)
@@ -1172,7 +1198,7 @@ _COUNCIL_JUDGE = lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_H
 # council_check 的 q429 門檻天天爆表誤判紅色(2026-07-02 用戶反映的洗版根因)。
 _COUNCIL_SEAT_DEAD: dict = {}
 _COUNCIL_SEAT_FAILS: dict = {}
-_COUNCIL_DEAD_MARKERS = ("熔斷", "未設定", "配額耗盡", "413")
+_COUNCIL_DEAD_MARKERS = ("熔斷", "未設定", "配額耗盡", "413", "連不上")
 
 
 def _council_seat_call(nm, fn, prompt: str):
