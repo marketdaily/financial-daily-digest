@@ -372,9 +372,11 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
   </div>
   <div class="sbar" style="margin-top:8px">
     <input id="scap" class="cap" placeholder="本金 如 50萬">
+    <input id="sbuy" class="cap" placeholder="CB買入價 如 103" title="你實際買得到的 CB 價格(面額100計)。市場上常要 103、104 才買得到——填真實價,權利金和報酬全用它算">
     <button onclick="doSim()" style="background:linear-gradient(90deg,#10b981,#34d399)">💰 資金模擬</button>
     <button onclick="doPrice()" style="background:linear-gradient(90deg,#0ea5e9,#38bdf8)">查現價</button>
   </div>
+  <div class="shint">模擬有指定代碼時,「CB買入價」填你實際買得到的價(不是面額100);券商直接報權利金的話填「進階選填」的權利金報價,優先採用。</div>
   <div class="chips">
     <span class="chip" onclick="quick('82993')">群聯三 82993</span>
     <span class="chip" onclick="quick('5289')">宜鼎二 5289</span>
@@ -521,8 +523,9 @@ async function doPrice(){{
   if(!c){{err('請先輸入代碼');return;}}
   const t=document.getElementById('stcri').value.trim();
   const pr=document.getElementById('sprem').value.trim();
+  const bp=document.getElementById('sbuy').value.trim();
   busy('查 '+c+' 現價中');
-  try{{ R.innerHTML=await call('/api/price?code='+encodeURIComponent(c)+(t?'&tcri='+t:'')+(pr?'&prem='+pr:''));seeR(); }}
+  try{{ R.innerHTML=await call('/api/price?code='+encodeURIComponent(c)+(t?'&tcri='+t:'')+(pr?'&prem='+pr:'')+(bp?'&cbprice='+bp:''));seeR(); }}
   catch(e){{ err('查詢失敗:'+e.message); }}
 }}
 let PLEGS=[];
@@ -557,8 +560,9 @@ async function doAnalyze(){{
   if(!c){{err('請先輸入代碼或名稱');return;}}
   const t=document.getElementById('stcri').value.trim();
   const pr=document.getElementById('sprem').value.trim();
+  const bp=document.getElementById('sbuy').value.trim();
   busy('分析 '+c+' 中');
-  try{{ R.innerHTML=await call('/api/analyze?code='+encodeURIComponent(c)+(t?'&tcri='+t:'')+(pr?'&prem='+pr:''));seeR(); }}
+  try{{ R.innerHTML=await call('/api/analyze?code='+encodeURIComponent(c)+(t?'&tcri='+t:'')+(pr?'&prem='+pr:'')+(bp?'&cbprice='+bp:''));seeR(); }}
   catch(e){{ err('分析失敗:'+e.message); }}
 }}
 async function doSim(){{
@@ -566,8 +570,11 @@ async function doSim(){{
   if(!cap){{err('請先輸入本金,例如 50萬 或 1000萬');return;}}
   const c=document.getElementById('scode').value.trim();
   const t=document.getElementById('stcri').value.trim();
+  const bp=document.getElementById('sbuy').value.trim();
+  const pr=document.getElementById('sprem').value.trim();
+  if((bp||pr)&&!c){{err('填了 CB買入價/權利金報價 就要指定代碼(一個價格只能對一檔)');return;}}
   busy('蒙地卡羅模擬中');
-  try{{ R.innerHTML=await call('/api/sim?capital='+encodeURIComponent(cap)+(c?'&code='+encodeURIComponent(c):'')+(t?'&tcri='+t:''));seeR(); }}
+  try{{ R.innerHTML=await call('/api/sim?capital='+encodeURIComponent(cap)+(c?'&code='+encodeURIComponent(c):'')+(t?'&tcri='+t:'')+(bp?'&cbprice='+bp:'')+(pr?'&prem='+pr:''));seeR(); }}
   catch(e){{ err('模擬失敗:'+e.message); }}
 }}
 document.getElementById('scode').addEventListener('keydown',e=>{{if(e.key==='Enter')doAnalyze();}});

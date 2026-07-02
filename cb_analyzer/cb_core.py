@@ -163,11 +163,14 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None, premium_quot
     iv_source = "市場價" if iv_market else ("承銷價" if clearing_known else "—")
 
     # ── CBAS 拆解經濟學 ──
-    # 權利金:券商有直接報就用報價(零誤差);否則 ≈ 買價 - 債券底 + 持有期融資(推估)
+    # 權利金:券商有直接報就用報價(零誤差);有真實買價(市價/承銷價)→ 真實計算;
+    # 只有面額100佔位的推估才套「選擇權值一半」下限防呆(防止假便宜),不可蓋掉真實價差
     if premium_quote:
         premium = premium_quote
+    elif market_price is not None or clearing_known:
+        premium = max(buy_price - floor + financing, 0.1)
     else:
-        premium = max(buy_price - floor + financing, opt_value * 0.5)  # 推估+下限防呆
+        premium = max(buy_price - floor + financing, opt_value * 0.5)
     leverage = parity / premium if premium > 0 else None
     eff_delta = shares * delta               # 每張 CB 對股價的 delta(張數×單股delta)
     # 損益槓桿:股價漲 1% → parity 漲 parity*1%,選擇權漲 ≈ eff_delta*spot*1%

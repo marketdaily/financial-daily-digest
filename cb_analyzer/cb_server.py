@@ -343,7 +343,7 @@ def _sim_verdict(base):
             f"可以等更好的價位或標的。")
 
 
-def analyze_fragment(code, tcri=None, prem=None):
+def analyze_fragment(code, tcri=None, prem=None, cbprice=None):
     hits = cb.find(DB, code)
     if tcri:
         for it in hits:
@@ -360,7 +360,8 @@ def analyze_fragment(code, tcri=None, prem=None):
             cards.append('<div class="serr">%s(%s):抓不到現股報價,略過。</div>'
                          % (html.escape(it["name"]), it["stock_code"]))
             continue
-        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"], premium_quote=prem)
+        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"],
+                            market_price=cbprice, premium_quote=prem)
         if a.get("ok"):
             cards.append(_human_card(it, sd, a))
     return "".join(cards)
@@ -384,7 +385,9 @@ def _why_grow_html(code, spot):
     return out + "</div>"
 
 
-def sim_fragment(capital, code=None, tcri=None, drift=0.07):
+def sim_fragment(capital, code=None, tcri=None, drift=0.07, cbprice=None, prem=None):
+    """cbprice=你實際能買到的 CB 價(常是 103、104,不會是 100);prem=券商權利金報價。
+    兩者只在有指定代碼時套用(全市場掃描不能一價套全部)。"""
     cap = cb._parse_capital(capital)
     if not cap:
         return '<div class="serr">本金格式看不懂,例如 50萬、1000萬、5000000。</div>'
@@ -406,7 +409,9 @@ def sim_fragment(capital, code=None, tcri=None, drift=0.07):
         sd = cb_data.get_stock(it["stock_code"], vol_weights=VW())
         if not sd:
             continue
-        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"])
+        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"],
+                            market_price=cbprice if code else None,
+                            premium_quote=prem if code else None)
         if a.get("ok"):
             cands.append((it, a))
     if not cands:
@@ -433,9 +438,12 @@ def sim_fragment(capital, code=None, tcri=None, drift=0.07):
         it = L["item"]
         oob = (L["spot"] / L["K"] - 1) * 100
         bey = ("約 %.1f 年" % L["be_years"]) if L["be_years"] else "中位數到不了(需高於預期漲勢)"
-        o.append('<div class="simrow"><b>▶ 買進 %s(股%s/債%s)</b>　%d 口 = NT$%s　現價 %.1f / 轉換價 %s</div>'
+        la = L["a"]
+        o.append('<div class="simrow"><b>▶ 買進 %s(股%s/債%s)</b>　%d 口 = NT$%s　現價 %.1f / 轉換價 %s　'
+                 'CB 買價 <b>%.1f</b>(%s)→ 權利金 %.1f/張</div>'
                  % (html.escape(it["name"]), it["stock_code"], it["bond_code"],
-                    L["units"], f"{L['deployed']:,.0f}", L["spot"], L["K"]))
+                    L["units"], f"{L['deployed']:,.0f}", L["spot"], L["K"],
+                    la["buy_price"], la["buy_source"], L["premium"]))
         o.append(_why_grow_html(it["stock_code"], L["spot"]))
         why = ('<div class="simwhy"><span class="yy">⏳ 為什麼要等:</span>現價距轉換價 %+.0f%%;'
                '要獲利股票需漲 +%.0f%%(到 %.1f);以前瞻波動 %.0f%% 估,%s才到回本點' %
@@ -632,13 +640,16 @@ class H(BaseHTTPRequestHandler):
             if u.path == "/api/brief":
                 return self._send(200, brief_fragment())
             if u.path == "/api/analyze":
-                tc = g("tcri"); pr = g("prem")
+                tc = g("tcri"); pr = g("prem"); cp = g("cbprice")
                 return self._send(200, analyze_fragment(g("code") or "", int(tc) if tc else None,
-                                                        float(pr) if pr else None))
+                                                        float(pr) if pr else None,
+                                                        float(cp) if cp else None))
             if u.path == "/api/sim":
-                tc = g("tcri")
+                tc = g("tcri"); cp = g("cbprice"); pr = g("prem")
                 return self._send(200, sim_fragment(g("capital") or "", g("code"),
-                                                    int(tc) if tc else None))
+                                                    int(tc) if tc else None,
+                                                    cbprice=float(cp) if cp else None,
+                                                    prem=float(pr) if pr else None))
             if u.path == "/api/price":
                 tc = g("tcri"); cp = g("cbprice"); pr = g("prem")
                 return self._send(200, price_fragment(g("code") or "", int(tc) if tc else None,
