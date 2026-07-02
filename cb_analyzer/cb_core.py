@@ -106,9 +106,11 @@ def conv_price(item):
     return item.get("conv_price")
 
 
-def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None):
+def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None, premium_quote=None):
     """核心分析。spot=現股價, hist_vol=年化歷史波動率(小數)。
-    market_price=CB 次級市場成交價(有就用市場隱波,更即時)。回 dict。"""
+    market_price=CB 次級市場成交價(有就用市場隱波,更即時)。
+    premium_quote=券商拆解後直接報給你的 CBAS 權利金(per100)——我們實際買的就是這端,
+    有帶就完全以它為準(零誤差),並反推等效 CB 價算隱波。回 dict。"""
     K = conv_price(item)
     if not K or not spot:
         return {"ok": False, "reason": "缺轉換價或現股價"}
@@ -126,11 +128,17 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None):
     opt_value = shares * call_px             # 每張 CB 的轉換選擇權價值
     theo = floor + opt_value                 # 理論 CB 價
 
+    financing = floor * a["asset_swap_spread"] * T_opt   # 期間融資成本(粗估)
+    # 券商直接報權利金(我們實際買的拆解後選擇權端)→ 反推等效 CB 價,全鏈路以報價為準
+    if premium_quote and not market_price:
+        market_price = floor + premium_quote - financing
+
     clearing = item.get("clearing_price")
     clearing_known = clearing is not None
-    # 買價基準:優先用『你券商看到的 CB 現價』(零誤差)→ 其次承銷/競拍價 → 最後面額100佔位
+    # 買價基準:權利金報價 > CB 現價 > 承銷/競拍價 > 面額100佔位
     buy_price = market_price or clearing or 100.0
-    buy_source = "CB現價" if market_price else ("承銷價" if clearing_known else "面額100(估)")
+    buy_source = ("權利金報價" if premium_quote else
+                  ("CB現價" if market_price else ("承銷價" if clearing_known else "面額100(估)")))
     issue = buy_price
     # 隱含波動率:解 σ 使 floor + shares*BS(σ) = 價格基準
     # 只在有『真實價格基準』(承銷價或市價)時才反推;無真實價不拿面額100 硬解(會產生假隱波)
@@ -140,10 +148,11 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None):
     iv_source = "市場價" if iv_market else ("承銷價" if clearing_known else "—")
 
     # ── CBAS 拆解經濟學 ──
-    # 拆解後權利金 ≈ 買價 - 賣斷給銀行拿回的債券價(以債券底計) + 持有期融資成本
-    swap_proceeds = floor
-    financing = swap_proceeds * a["asset_swap_spread"] * T_opt   # 期間融資成本(粗估)
-    premium = max(buy_price - swap_proceeds + financing, opt_value * 0.5)  # 權利金成本下限防呆
+    # 權利金:券商有直接報就用報價(零誤差);否則 ≈ 買價 - 債券底 + 持有期融資(推估)
+    if premium_quote:
+        premium = premium_quote
+    else:
+        premium = max(buy_price - floor + financing, opt_value * 0.5)  # 推估+下限防呆
     leverage = parity / premium if premium > 0 else None
     eff_delta = shares * delta               # 每張 CB 對股價的 delta(張數×單股delta)
     # 損益槓桿:股價漲 1% → parity 漲 parity*1%,選擇權漲 ≈ eff_delta*spot*1%
@@ -172,7 +181,7 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None):
         "edge_theo": theo - issue,
         "hist_vol": hist_vol, "implied_vol": iv,
         "iv_clearing": iv_clearing, "iv_market": iv_market, "iv_source": iv_source,
-        "market_price": market_price,
+        "market_price": market_price, "premium_quote": premium_quote,
         "vol_edge": (hist_vol - iv) if iv else None,
         "delta": delta, "eff_delta": eff_delta, "gamma": gamma, "vega": vega,
         "cbas_premium": premium, "leverage": leverage,

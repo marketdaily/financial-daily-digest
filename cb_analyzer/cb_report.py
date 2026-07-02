@@ -350,7 +350,7 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
 <div id="brief" class="brief"><div class="sloading">正在產生今日結論(抓最新報價)…</div></div>
 
 <div class="intro">
-  <div class="lead">輸入一個代碼,系統自動抓報價與條件,算出這檔 CB 拆解(CBAS)後的<b>權利金成本、槓桿倍數、下檔風險、抱到期的預期報酬</b>,並判斷是否符合我們的進場準則。也能輸入本金,模擬「該買什麼、多久回本、賺賠機率」。</div>
+  <div class="lead">我們買的是<b>拆解(CBAS)後的權利金端</b>:券商/銀行把 CB 拆開,債券底歸銀行,轉換選擇權報「權利金」賣給我們——所以要等券商拆好、而且銀行只肯拆信用好的(這就是 TCRI 3-4 門檻的由來)。輸入代碼,系統自動抓報價與條件,算出<b>權利金合理值、槓桿倍數、下檔風險、抱到期的預期報酬</b>;拿到券商的權利金報價後填入,全套改用真實報價、零誤差。</div>
   <div class="steps">
     <div class="step"><b>① 查一檔</b><br>上方搜尋框輸入代碼(股票/債券/現有CB)或公司名 → 按「分析」</div>
     <div class="step"><b>② 看能不能買</b><br>看綠色「✅ 可拆解」標記與白話結論;紅色代表不符準則或不划算</div>
@@ -364,6 +364,7 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
   <div class="sbar">
     <input id="scode" placeholder="例如:5289、11011、宜鼎、台泥" autocomplete="off">
     <input id="stcri" class="cap" type="number" min="1" max="9" placeholder="TCRI(選填)" title="現有可轉債查不到 TCRI 時可手動填 1-9">
+    <input id="sprem" class="cap" placeholder="權利金報價(選填)" title="券商拆解後報給你的權利金(面額100計),填了整套用真實報價算、零誤差">
     <button onclick="doAnalyze()">分析這一檔</button>
     <button onclick="doPrice()" style="background:linear-gradient(90deg,#0ea5e9,#38bdf8)">查現價</button>
     <input id="scap" class="cap" placeholder="本金 如 50萬">
@@ -376,27 +377,28 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
     <span class="chip" onclick="quickSim('50萬')">💰 模擬 50萬</span>
     <span class="chip" onclick="quickSim('1000萬')">💰 模擬 1000萬</span>
   </div>
-  <div class="shint">現有可轉債(如 11011)若沒 TCRI,填一下右邊 TCRI 欄位判準則會更準;資金模擬留空代碼=用目前符合準則的標的。</div>
+  <div class="shint">「權利金報價」=券商拆解後報給你的價(我們實際買的就是這端),填了就零誤差;沒填系統先推估。現有可轉債(如 11011)若沒 TCRI,填 TCRI 欄判準則更準;資金模擬留空代碼=用符合準則的標的。</div>
 </div>
 
 <div id="sresult"><div class="emptyhint">👆 在上面輸入一個代碼按「<b>分析這一檔</b>」,系統會用<b>白話</b>告訴你:這檔能不能拆、買一張要多少、最多賠多少、要漲多少才賺、多久回本。不知道打什麼?直接點搜尋框下的例子。</div></div>
 
 <div class="portbox">
-  <h2>💼 組合模擬 · 自己指定每檔買幾張(填 CB 現價=零誤差)</h2>
+  <h2>💼 組合模擬 · 自己指定每檔買幾張(填券商權利金報價=零誤差)</h2>
   <div class="sbar">
     <input id="pcode" class="w1" placeholder="代碼 如 5289" autocomplete="off">
     <input id="punits" class="w2" type="number" min="1" placeholder="張數">
-    <input id="pcbp" class="w2" placeholder="CB現價">
+    <input id="pprem" class="w2" placeholder="權利金" title="券商拆解後報給你的權利金(面額100計),我們實際買的就是這端">
+    <input id="pcbp" class="w2" placeholder="CB現價" title="沒有權利金報價時,可改填 CB 市價讓系統反推">
     <input id="ptcri" class="w2" type="number" min="1" max="9" placeholder="TCRI">
     <button onclick="addLeg()">＋ 加入</button>
     <button onclick="runPort()" style="background:linear-gradient(90deg,#10b981,#34d399)">模擬組合</button>
   </div>
   <div id="plist"></div>
-  <div class="shint">例:5289 買 3 張 + 11011 買 5 張。「CB現價」填你券商看到的可轉債報價(面額100),填了那一檔就用真價算、零誤差;沒填則用承銷/面額估。結果顯示在上方。</div>
+  <div class="shint">例:5289 買 3 張 + 11011 買 5 張。「權利金」填券商拆解後報給你的價(我們實際買的),該檔即零誤差;沒有的話可填「CB現價」反推,兩者都沒填則用承銷/面額推估。結果顯示在上方結果區。</div>
 </div>
 
 <details class="gloss"><summary>名詞白話解釋(點開)</summary>
-  <div class="gitem"><b>拆解 / CBAS</b>:買進可轉債後,把「債券本金」賣斷給銀行(資產交換),自己只留「可轉股的權利」。等於用一小筆權利金,控制一大筆股票漲幅——下檔最多賠光權利金,上檔跟著股票漲。</div>
+  <div class="gitem"><b>拆解 / CBAS</b>:券商/銀行把可轉債拆成兩塊——「債券本金」銀行留下(資產交換),「可轉股的權利」報一個<b>權利金</b>賣給我們。我們買的就是這端:用一小筆權利金,控制一大筆股票漲幅——下檔最多賠光權利金,上檔跟著股票漲。因為要銀行肯承作才有得買,所以 TCRI 3-4(信用好)是先決條件。</div>
   <div class="gitem"><b>轉換價值 parity</b>:現在把 CB 換成股票值多少(以面額 100 計)。parity &gt; 100 代表已價內、換股就賺。</div>
   <div class="gitem"><b>債券底</b>:CB 當純債券、抱到賣回/到期能拿回多少(折現後)。這塊拆解時賣給銀行,是下檔保護。</div>
   <div class="gitem"><b>權利金</b>:拆解後你實際要付的本金(≈ 買價 − 債券底 + 融資)。也是最大可能虧損。</div>
@@ -436,8 +438,9 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
 
   <div class="gitem"><b>7. 理論價 & 拆解槓桿</b><br>
     理論 CB 價 = 債券底 + 選擇權值;高於買價 = 便宜。<br>
-    權利金(拆解實付本金)≈ 買價 − 債券底 + 期間融資(資產交換 spread × 年數)。<br>
-    槓桿 = parity ÷ 權利金。下檔:選擇權最差歸零,最多賠光權利金(債券底已賣給銀行)。</div>
+    權利金(拆解實付本金)≈ 買價 − 債券底 + 期間融資(資產交換 spread × 年數)——這是<b>推估</b>;
+    實務上我們買的是券商拆解後直接報的權利金,拿到報價填入「權利金報價」欄,系統即以真實報價為準(零誤差)。<br>
+    槓桿 = parity ÷ 權利金。下檔:選擇權最差歸零,最多賠光權利金(債券底歸銀行)。</div>
 
   <div class="gitem"><b>8. 綜合評分 0–100(六維加權)</b><br>
     波動率價差 30 分(選擇權便不便宜)+ 理論 vs 買價 20 分 + Delta 甜蜜點 0.4–0.7 共 20 分 + 信用 TCRI 15 分 + 流動性/發行量 10 分 + 槓桿合理性 5 分。</div>
@@ -494,14 +497,15 @@ async function doPrice(){{
   const c=document.getElementById('scode').value.trim();
   if(!c){{err('請先輸入代碼');return;}}
   const t=document.getElementById('stcri').value.trim();
+  const pr=document.getElementById('sprem').value.trim();
   busy('查 '+c+' 現價中');
-  try{{ R.innerHTML=await call('/api/price?code='+encodeURIComponent(c)+(t?'&tcri='+t:''));seeR(); }}
+  try{{ R.innerHTML=await call('/api/price?code='+encodeURIComponent(c)+(t?'&tcri='+t:'')+(pr?'&prem='+pr:''));seeR(); }}
   catch(e){{ err('查詢失敗:'+e.message); }}
 }}
 let PLEGS=[];
 function renderLegs(){{
   document.getElementById('plist').innerHTML=PLEGS.map((l,i)=>
-    '<span class="pleg"><b>'+l.code+'</b> '+l.units+'張'+(l.cbp?' @'+l.cbp:'')+(l.tcri?' T'+l.tcri:'')+
+    '<span class="pleg"><b>'+l.code+'</b> '+l.units+'張'+(l.prem?' 權利金'+l.prem:'')+(l.cbp?' @'+l.cbp:'')+(l.tcri?' T'+l.tcri:'')+
     ' <span onclick="rmLeg('+i+')">✕</span></span>').join('');
 }}
 function addLeg(){{
@@ -509,16 +513,18 @@ function addLeg(){{
   const units=parseInt(document.getElementById('punits').value);
   if(!code||!(units>0)){{err('組合:請填代碼與張數');return;}}
   PLEGS.push({{code:code,units:units,
+    prem:document.getElementById('pprem').value.trim(),
     cbp:document.getElementById('pcbp').value.trim(),
     tcri:document.getElementById('ptcri').value.trim()}});
   document.getElementById('pcode').value='';document.getElementById('punits').value='';
-  document.getElementById('pcbp').value='';document.getElementById('ptcri').value='';
+  document.getElementById('pprem').value='';document.getElementById('pcbp').value='';
+  document.getElementById('ptcri').value='';
   renderLegs();
 }}
 function rmLeg(i){{PLEGS.splice(i,1);renderLegs();}}
 async function runPort(){{
   if(!PLEGS.length){{err('組合是空的,先「＋加入」幾檔');return;}}
-  const s=PLEGS.map(l=>l.code+':'+l.units+':'+(l.cbp||'')+':'+(l.tcri||'')).join(',');
+  const s=PLEGS.map(l=>l.code+':'+l.units+':'+(l.cbp||'')+':'+(l.tcri||'')+':'+(l.prem||'')).join(',');
   busy('組合蒙地卡羅模擬中');
   try{{ R.innerHTML=await call('/api/portfolio?legs='+encodeURIComponent(s));seeR(); }}
   catch(e){{ err('組合模擬失敗:'+e.message); }}
@@ -527,8 +533,9 @@ async function doAnalyze(){{
   const c=document.getElementById('scode').value.trim();
   if(!c){{err('請先輸入代碼或名稱');return;}}
   const t=document.getElementById('stcri').value.trim();
+  const pr=document.getElementById('sprem').value.trim();
   busy('分析 '+c+' 中');
-  try{{ R.innerHTML=await call('/api/analyze?code='+encodeURIComponent(c)+(t?'&tcri='+t:''));seeR(); }}
+  try{{ R.innerHTML=await call('/api/analyze?code='+encodeURIComponent(c)+(t?'&tcri='+t:'')+(pr?'&prem='+pr:''));seeR(); }}
   catch(e){{ err('分析失敗:'+e.message); }}
 }}
 async function doSim(){{

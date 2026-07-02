@@ -13,6 +13,12 @@ DB = cb.load_db()
 VW = lambda: (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
 
 
+def _fair_premium(a):
+    """權利金合理上限 = 選擇權理論值 + 期間融資(=CB買在理論價時的權利金)。"""
+    fin = a["bond_floor"] * cb_core.ASSUMPTIONS["asset_swap_spread"] * a["T_opt"]
+    return a["option_value"] + fin
+
+
 def _verdict_parts(it, a, be_move=None):
     """回 (tag, 顏色, 一句話, 怎麼做)。be_move=真實回本所需漲幅(小數)。"""
     elig, reasons = cb_core.eligibility(it)
@@ -58,15 +64,22 @@ def _human_card(it, sd, a):
         prob = cb_core._norm_cdf(d)
     lev = a.get("leverage") or 0
     src = a["buy_source"]
-    price_note = "(已用你帶入的 CB 現價,零誤差)" if a.get("market_price") else \
-                 ("(用承銷價估,想精準就帶入 CB 現價)" if src.startswith("承銷") else "(用面額100估,建議帶入 CB 現價)")
+    if a.get("premium_quote"):
+        price_note = "(已用券商報你的權利金,零誤差)"
+    elif a.get("market_price"):
+        price_note = "(已用你帶入的 CB 現價,零誤差)"
+    elif src.startswith("承銷"):
+        price_note = "(推估值;券商報權利金後填「權利金報價」欄=零誤差)"
+    else:
+        price_note = "(用面額100推估;拿到券商權利金報價再填入=零誤差)"
 
-    fair = a["theoretical"]
-    fair_gap = fair - a["buy_price"]
-    fair_txt = (f'CB 價 <b>{fair:.1f} 以下</b>才算便宜(合理價=債券底+選擇權值)。'
-                + (f'目前基準 {a["buy_price"]:.1f} 比合理價便宜 {fair_gap:.1f} 元 ✓'
-                   if fair_gap >= 0 else
-                   f'目前基準 {a["buy_price"]:.1f} <b style="color:#f87171">貴了 {abs(fair_gap):.1f} 元</b>,別追'))
+    fp = _fair_premium(a)
+    fp_gap = fp - prem
+    fair_txt = (f'券商權利金報到 <b>{fp:.1f} 以內</b>(約 NT${fp*1000:,.0f}/張)才划算'
+                f'(=選擇權理論值+融資成本)。'
+                + (f'目前 {prem:.1f} 比上限便宜 {fp_gap:.1f} ✓'
+                   if fp_gap >= 0 else
+                   f'目前 {prem:.1f} <b style="color:#f87171">貴了 {abs(fp_gap):.1f}</b>——殺價,殺不動就不做'))
     bullets = [
         ("買一張要付", f'<b>約 NT${prem*1000:,.0f}</b>(這就是你的成本,也是<b>最多會賠的錢</b>){price_note}'),
         ("最多賠", f'NT${prem*1000:,.0f}／張(不會賠更多——債券部分已賣給銀行扛)'),
@@ -127,11 +140,11 @@ def brief_fragment():
             '<div class="brow" onclick="quick(\'%s\')" title="點我看完整分析">'
             '<span class="btag" style="color:%s;background:%s1a;border-color:%s55">%s</span>'
             '<span class="bnm">%s</span>'
-            '<span class="bfair">出價上限 <b>%.1f</b>(合理價)· 權利金約 NT$%s/張</span>'
+            '<span class="bfair">權利金上限 <b>%.1f</b>(約 NT$%s/張)——券商報這以內才接</span>'
             '<span class="bone">%s</span></div>'
             % (it["bond_code"], col, col, col, html.escape(tag),
-               html.escape(it["name"]), a["theoretical"],
-               f"{a['cbas_premium']*1000:,.0f}", html.escape(one)))
+               html.escape(it["name"]), _fair_premium(a),
+               f"{_fair_premium(a)*1000:,.0f}", html.escape(one)))
     watch = [i for i in DB["items"]
              if (not i.get("conv_price") or not i.get("premium_mid"))
              and i.get("tcri") in A["elig_tcri"] and (i.get("size_yi") or 0) >= A["elig_min_size"]]
@@ -172,7 +185,7 @@ def _sim_verdict(base):
             f"可以等更好的價位或標的。")
 
 
-def analyze_fragment(code, tcri=None):
+def analyze_fragment(code, tcri=None, prem=None):
     hits = cb.find(DB, code)
     if tcri:
         for it in hits:
@@ -189,7 +202,7 @@ def analyze_fragment(code, tcri=None):
             cards.append('<div class="serr">%s(%s):抓不到現股報價,略過。</div>'
                          % (html.escape(it["name"]), it["stock_code"]))
             continue
-        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"])
+        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"], premium_quote=prem)
         if a.get("ok"):
             cards.append(_human_card(it, sd, a))
     return "".join(cards)
@@ -298,8 +311,8 @@ def sim_fragment(capital, code=None, tcri=None, drift=0.07):
     return "".join(o)
 
 
-def _resolve(code, tcri=None, cbprice=None):
-    """代碼 → (item, sd, a)。cbprice=你券商看到的 CB 現價(零誤差用)。找不到回 None+原因。"""
+def _resolve(code, tcri=None, cbprice=None, prem=None):
+    """代碼 → (item, sd, a)。cbprice=CB 現價;prem=券商報的拆解後權利金(我們實際買的,優先)。"""
     hits = cb.find(DB, code)
     it = next((h for h in hits if h.get("conv_price")), None)
     if not it:
@@ -309,12 +322,12 @@ def _resolve(code, tcri=None, cbprice=None):
     sd = cb_data.get_stock(it["stock_code"], vol_weights=VW())
     if not sd:
         return None, "抓不到現股報價"
-    a = cb_core.analyze(it, sd["spot"], sd["vol_blend"], market_price=cbprice)
+    a = cb_core.analyze(it, sd["spot"], sd["vol_blend"], market_price=cbprice, premium_quote=prem)
     return (it, sd, a), None
 
 
-def price_fragment(code, tcri=None, cbprice=None):
-    r, e = _resolve(code, tcri, cbprice)
+def price_fragment(code, tcri=None, cbprice=None, prem_q=None):
+    r, e = _resolve(code, tcri, cbprice, prem_q)
     if not r:
         return '<div class="serr">%s:%s</div>' % (html.escape(code), e)
     it, sd, a = r
@@ -324,25 +337,27 @@ def price_fragment(code, tcri=None, cbprice=None):
         '<div class="simbox"><h3>📈 %s(股%s/債%s)現價與拆解基準</h3>'
         '<div class="simrow"><b>現股價 %.2f</b>(%s,即時)　轉換價 %s　'
         '<b>parity %.1f</b>(%s)</div>'
-        '<div class="simrow">債券底 %.1f　<b>出價上限(合理價)%.1f</b>——CB 買在這以下才划算　權利金/張 <b>%.1f</b>(NT$%s)　槓桿 %.1f×</div>'
+        '<div class="simrow">債券底 %.1f　CB 合理價 %.1f　<b>權利金上限 %.1f</b>——券商報這以內才接　目前權利金 <b>%.1f</b>(NT$%s)　槓桿 %.1f×</div>'
         '<div class="iline">買價基準:<b>%s</b>%s</div>'
-        '<div class="iline" style="color:#7dd3fc">要零誤差:把你券商看到的「CB 現價」填進搜尋框的 CB現價 欄(或組合裡),'
-        '權利金與報酬就用真價算。</div></div>'
+        '<div class="iline" style="color:#7dd3fc">要零誤差:我們買的是拆解後的權利金端——券商報權利金給你時,'
+        '填進「權利金報價」欄(組合的每檔也可以填),整套就用真實報價算。</div></div>'
         % (html.escape(it["name"]), it["stock_code"], it["bond_code"],
            sd["spot"], sd["date"], it["conv_price"],
            a["parity"], "價內" if a["moneyness"] > 1 else "價外",
-           a["bond_floor"], a["theoretical"], prem, f"{prem*1000:,.0f}", a["leverage"] or 0,
-           src, ("(你帶入 %.1f)" % cbprice) if cbprice else "(未帶 CB 現價,為估計值)"))
+           a["bond_floor"], a["theoretical"], _fair_premium(a), prem, f"{prem*1000:,.0f}",
+           a["leverage"] or 0,
+           src, ("(券商權利金 %.1f)" % prem_q) if prem_q else
+                (("(你帶入 %.1f)" % cbprice) if cbprice else "(未帶報價,為估計值)")))
 
 
 def _parse_legs(s):
-    """'5289:3:126:3,11011:5::4' → [(code, units, cbprice|None, tcri|None)]。欄位:代碼:張數:CB現價:TCRI。"""
+    """'5289:3:126:3:39,…' → [(code, units, cbprice, tcri, prem)]。欄位:代碼:張數:CB現價:TCRI:權利金報價。"""
     out = []
     for part in s.split(","):
         part = part.strip()
         if not part:
             continue
-        f = (part.split(":") + ["", "", ""])[:4]
+        f = (part.split(":") + ["", "", "", ""])[:5]
         code = f[0].strip()
         try:
             units = int(float(f[1])) if f[1].strip() else 0
@@ -350,8 +365,9 @@ def _parse_legs(s):
             units = 0
         cbp = float(f[2]) if f[2].strip() else None
         tc = int(f[3]) if f[3].strip() else None
+        pr = float(f[4]) if f[4].strip() else None
         if code and units > 0:
-            out.append((code, units, cbp, tc))
+            out.append((code, units, cbp, tc, pr))
     return out
 
 
@@ -360,8 +376,8 @@ def portfolio_fragment(legs_str, drift=0.07):
     if not legs:
         return '<div class="serr">組合是空的。格式:代碼:張數(可加 CB現價、TCRI)。</div>'
     triples, rows, bad = [], [], []
-    for code, units, cbp, tc in legs:
-        r, e = _resolve(code, tc, cbp)
+    for code, units, cbp, tc, pr in legs:
+        r, e = _resolve(code, tc, cbp, pr)
         if not r:
             bad.append("%s(%s)" % (code, e))
             continue
@@ -416,7 +432,7 @@ def portfolio_fragment(legs_str, drift=0.07):
                     rr["ann_return"] * 100, rr["prob_profit"] * 100))
     o.append("</table>")
     o.append('<div class="iline" style="margin-top:8px">基準分佈:悲觀(P5) NT$%s · 中位 NT$%s · 樂觀(P95) NT$%s｜'
-             '下檔封頂於權利金合計 NT$%s(債券底已賣給銀行)。填了「CB現價」的腿=零誤差,未填=以承銷/面額估。</div>'
+             '下檔封頂於權利金合計 NT$%s(債券底歸銀行)。填了「權利金報價」的腿=零誤差(CB現價次之),未填=以承銷/面額推估。</div>'
              % (f"{base['p5']:+,.0f}", f"{base['p50']:+,.0f}", f"{base['p95']:+,.0f}",
                 f"{base['deployed']:,.0f}"))
     o.append("</div>")
@@ -446,16 +462,18 @@ class H(BaseHTTPRequestHandler):
             if u.path == "/api/brief":
                 return self._send(200, brief_fragment())
             if u.path == "/api/analyze":
-                tc = g("tcri")
-                return self._send(200, analyze_fragment(g("code") or "", int(tc) if tc else None))
+                tc = g("tcri"); pr = g("prem")
+                return self._send(200, analyze_fragment(g("code") or "", int(tc) if tc else None,
+                                                        float(pr) if pr else None))
             if u.path == "/api/sim":
                 tc = g("tcri")
                 return self._send(200, sim_fragment(g("capital") or "", g("code"),
                                                     int(tc) if tc else None))
             if u.path == "/api/price":
-                tc = g("tcri"); cp = g("cbprice")
+                tc = g("tcri"); cp = g("cbprice"); pr = g("prem")
                 return self._send(200, price_fragment(g("code") or "", int(tc) if tc else None,
-                                                      float(cp) if cp else None))
+                                                      float(cp) if cp else None,
+                                                      float(pr) if pr else None))
             if u.path == "/api/portfolio":
                 dr = g("drift")
                 return self._send(200, portfolio_fragment(g("legs") or "",
