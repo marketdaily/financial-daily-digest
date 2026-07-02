@@ -20,23 +20,29 @@ def _fair_premium(a):
 
 
 def _outlook(it, a, drift=0.07):
-    """回 (be_S, be_move, p_touch, p_term):回本點、所需漲幅、期間內曾觸及機率(專業口徑)、抱到期仍過機率(保守下限)。"""
+    """回 (be_S, be_move, p_touch, p_term, cal):回本點、所需漲幅、期間內曾觸及機率
+    (v4 歷史校準點估計,cal 內含七年 regime 區間與判定下限)、抱到期仍過機率(保守下限)。"""
     strike, _ = cb_core.redemption_value(it.get("put"))
     K, spot, T, vol = it["conv_price"], a["spot"], a["T_opt"], a["hist_vol"]
     be_S = K * (strike + a["cbas_premium"]) / 100.0
     be_move = be_S / spot - 1
-    p_touch = cb_ledger.apply_calibration(cb_core.touch_prob(spot, be_S, T, vol, drift))
+    p_raw = cb_core.touch_prob(spot, be_S, T, vol, drift)
+    cal = cb_ledger.calibrate_touch(p_raw, spot, be_S, T, vol)
+    p_touch = cal["p"]
     if be_S <= spot:
         p_term = 0.85
     else:
         d = (math.log(spot / be_S) + (drift - 0.5 * vol * vol) * T) / (vol * math.sqrt(T))
         p_term = cb_core._norm_cdf(d)
-    cb_ledger.record(it, a, be_S, p_touch, p_term)
-    return be_S, be_move, p_touch, p_term
+    cb_ledger.record(it, a, be_S, p_touch, p_term,
+                     extra={"p_touch_raw": p_raw, "p_lo": cal["lo"], "p_hi": cal["hi"],
+                            "p_floor": cal["floor"], "calib": cal["method"]})
+    return be_S, be_move, p_touch, p_term, cal
 
 
-def _verdict_parts(it, a, be_move=None, p_touch=None, p_term=None):
-    """回 (tag, 顏色, 一句話, 怎麼做)。be_move=回本所需漲幅;p_touch/p_term=_outlook 的兩種機率。"""
+def _verdict_parts(it, a, be_move=None, p_touch=None, p_term=None, cal=None):
+    """回 (tag, 顏色, 一句話, 怎麼做)。be_move=回本所需漲幅;p_touch/p_term=_outlook 的兩種機率;
+    cal=v4 校準 dict——閘門一律用 floor(最差年份下限),不用點估計(回測鐵則:下限絕不高估)。"""
     elig, reasons = cb_core.eligibility(it)
     mv = (a["moneyness"] - 1) * 100
     where = f"價內 {mv:+.0f}%" if mv >= 0 else f"價外 {abs(mv):.0f}%"
@@ -55,7 +61,8 @@ def _verdict_parts(it, a, be_move=None, p_touch=None, p_term=None):
     if mv < -18 or need > 45:
         # 深價外≠不能做:權利金合理+波動夠大 → 專業的「風險封頂選擇權注」,論組合注不論單壓
         fp = _fair_premium(a)
-        if p_touch and p_touch >= 0.35 and a["cbas_premium"] <= fp * 1.03:
+        p_gate = (cal or {}).get("floor") or p_touch  # 閘門用最差年份下限,寧可保守
+        if p_gate and p_gate >= 0.35 and a["cbas_premium"] <= fp * 1.03:
             return ("🟡 組合可配一注(單壓不行)", "#fbbf24",
                     f"股價還在{where},死抱到期只有約 {(p_term or 0)*100:.0f}% 機率賺;"
                     f"但波動夠大,期間內有約 {p_touch*100:.0f}% 機率碰到回本點(+{need:.0f}%)——"
@@ -129,7 +136,9 @@ def _exit_plan(it, a, be_S, be_move):
         if k in seen:
             continue
         seen.add(k)
-        yrs.append((k, cb_core.touch_prob(spot, be_S, y, vol, 0.07)))
+        py = cb_ledger.calibrate_touch(cb_core.touch_prob(spot, be_S, y, vol, 0.07),
+                                       spot, be_S, y, vol)["p"]
+        yrs.append((k, py))
     ytxt = " → ".join(f"{y:.1f}年內 <b>{p*100:.0f}%</b>" for y, p in yrs)
 
     return (
@@ -156,8 +165,8 @@ def _human_card(it, sd, a):
     prem = a["cbas_premium"]
     spot = a["spot"]
     T = a["T_opt"]
-    be_S, be_move, p_touch, p_term = _outlook(it, a)
-    tag, col, oneliner, action = _verdict_parts(it, a, be_move, p_touch, p_term)
+    be_S, be_move, p_touch, p_term, cal = _outlook(it, a)
+    tag, col, oneliner, action = _verdict_parts(it, a, be_move, p_touch, p_term, cal)
     lev = a.get("leverage") or 0
     src = a["buy_source"]
     if a.get("premium_quote"):
@@ -182,7 +191,12 @@ def _human_card(it, sd, a):
         ("買一張要付", f'<b>約 NT${prem*1000:,.0f}</b>——這也是<b>最多賠的錢</b>,不會賠更多(債券部分銀行扛){price_note}'),
         ("出價上限", fair_txt),
         ("要開始賺", f'股票要從 {spot:.1f} 漲到 <b>{be_S:.1f}</b>(約 <b>{be_move*100:+.0f}%</b>)'),
-        ("中途獲利機率", f'<b>約 {p_touch*100:.0f}%</b>——{T:.1f} 年內股價碰到回本點就能獲利出場。<b>實戰看這個</b>'),
+        ("中途獲利機率", f'<b>約 {p_touch*100:.0f}%</b>'
+         + (f'(市況好壞年份約 {cal["lo"]*100:.0f}~{cal["hi"]*100:.0f}%,判定用保守下限 {cal["floor"]*100:.0f}%)'
+            if cal.get("lo") else "")
+         + f'——{T:.1f} 年內股價碰到回本點就能獲利出場。<b>實戰看這個</b>'
+         + ('<br><span style="color:#94a3b8;font-size:11px">已用 2019-25 台股 CB 族群 6.6 萬筆歷史回測校準'
+            '(舊版公式全期系統性低估)</span>' if cal.get("method") == "empirical_band_v4" else "")),
         ("死抱到期仍賺", f'約 {p_term*100:.0f}%(死抱不動的保守下限)'),
         ("槓桿", f'用 NT${prem*1000:,.0f} 控制約 NT${a["parity"]*1000:,.0f} 的股票曝險(約 {lev:.1f} 倍)'),
     ]
@@ -280,8 +294,8 @@ def brief_fragment():
         a = cb_core.analyze(it, sd["spot"], sd["vol_blend"])
         if not a.get("ok"):
             continue
-        be_S, be_move, p_touch, p_term = _outlook(it, a)
-        tag, col, one, _act = _verdict_parts(it, a, be_move, p_touch, p_term)
+        be_S, be_move, p_touch, p_term, cal = _outlook(it, a)
+        tag, col, one, _act = _verdict_parts(it, a, be_move, p_touch, p_term, cal)
         if tag.startswith("✅"):
             go += 1
         elif tag.startswith("🟡"):
@@ -459,9 +473,14 @@ def sim_fragment(capital, code=None, tcri=None, drift=0.07, cbprice=None, prem=N
         o.append('<div class="simrow"><span class="yy">⌛ 死抱到期 %.1f 年　獲利機率 <b>%.0f%%</b>(保守下限)</span>　'
                  '下檔最多賠光權利金 NT$%s</div>'
                  % (L["T"], L["prob_profit"] * 100, f"{L['deployed']:,.0f}"))
-        pt_leg = cb_core.touch_prob(L["spot"], L["be_S"], L["T"], L["vol"], drift)
+        cal_leg = cb_ledger.calibrate_touch(
+            cb_core.touch_prob(L["spot"], L["be_S"], L["T"], L["vol"], drift),
+            L["spot"], L["be_S"], L["T"], L["vol"])
+        band_txt = ("(好壞年份 %.0f~%.0f%%)" % (cal_leg["lo"] * 100, cal_leg["hi"] * 100)
+                    if cal_leg.get("lo") else "")
         o.append('<div class="simrow"><span class="gg">⚡ 實戰口徑:</span>期間內股價<b>曾碰到</b>回本點的機率約 '
-                 '<b>%.0f%%</b>——碰到就能帶著剩餘時間價值獲利出場,不必等到期(專業做法)</div>' % (pt_leg * 100))
+                 '<b>%.0f%%</b>%s——碰到就能帶著剩餘時間價值獲利出場,不必等到期(專業做法)</div>'
+                 % (cal_leg["p"] * 100, band_txt))
 
     o.append('<table class="simtab"><tr><th>情境(股票年報酬)</th><th>預期賺賠</th><th>年化</th><th>賺錢機率</th></tr>')
     for rr in scen:
@@ -580,7 +599,7 @@ def portfolio_fragment(legs_str, drift=0.07):
         L = pm.get(id(it))
         exp = f"{L['exp_pnl']:+,.0f}" if L else "—"
         pp = f"{L['prob_profit']*100:.0f}%" if L else "—"
-        pt = (f"{cb_core.touch_prob(L['spot'], L['be_S'], L['T'], L['vol'], drift)*100:.0f}%"
+        pt = (f"{cb_ledger.calibrate_touch(cb_core.touch_prob(L['spot'], L['be_S'], L['T'], L['vol'], drift), L['spot'], L['be_S'], L['T'], L['vol'])['p']*100:.0f}%"
               if L else "—")
         col = "#34d399" if (L and L["exp_pnl"] > 0) else "#f87171"
         o.append('<tr><td style="text-align:left">%s<br><span style="color:#8b95a7;font-size:11px">股%s/債%s</span></td>'

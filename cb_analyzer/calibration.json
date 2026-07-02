@@ -3,5 +3,102 @@
  "n_rows": 17,
  "n_interim": 0,
  "n_final": 0,
- "details": []
+ "details": [],
+ "model": "empirical_band_v4",
+ "lam": 0.8,
+ "drift": 0.07,
+ "clamp": [
+  0.02,
+  0.95
+ ],
+ "floor_margin": 0.111,
+ "w_pooled": [
+  2.553047,
+  -2.971385,
+  0.293049,
+  1.41712,
+  1.454508
+ ],
+ "w_years": {
+  "2019": [
+   2.511439,
+   -3.166021,
+   0.233377,
+   1.333525,
+   1.342589
+  ],
+  "2020": [
+   3.128955,
+   -3.206176,
+   0.357055,
+   0.437295,
+   1.355193
+  ],
+  "2021": [
+   2.596109,
+   -3.305546,
+   0.330029,
+   1.493232,
+   2.195767
+  ],
+  "2022": [
+   2.565147,
+   -3.528667,
+   0.315222,
+   1.47251,
+   2.90517
+  ],
+  "2023": [
+   2.927449,
+   -2.798373,
+   0.217066,
+   2.23334,
+   1.531452
+  ],
+  "2024": [
+   2.124292,
+   -2.67019,
+   0.314669,
+   1.068485,
+   1.218519
+  ],
+  "2025": [
+   1.816751,
+   -2.08205,
+   0.217504,
+   -1.986591,
+   1.010837
+  ]
+ },
+ "features": "x=[1, z, z², m, z·m]; z=ln(b)/(σ√T), m=(drift−σ²/2)√T/σ; point: logit=(1−λ)·logit(p_gbm)+λ·(w_pooled·x); floor: sigmoid(w_pooled·x)−floor_margin; band顯示: min/max over w_years",
+ "domain": {
+  "z": [
+   0.05,
+   3.0
+  ],
+  "T": [
+   0.4,
+   3.2
+  ],
+  "sigma": [
+   0.15,
+   1.0
+  ],
+  "note": "出界→回傳原始 GBM+標記不可信"
+ },
+ "provenance": {
+  "source": "walk-forward 2019-02..2025-06, 55 CB issuers, 66380 forecasts, barriers 1.05-1.5 × horizons 0.5-3y, div-adjusted intraday-high touch",
+  "finding": "GBM(歷史vol)七年全期系統性低估觸及率(-10.7pp,月cluster CI[-12.9,-8.6]);遠尾非平穩→單點精度上限=年間散佈±10pp→改交付 點+regime區間+下限",
+  "gates": {
+   "G1_brier": {
+    "oos_brier_raw": 0.1946,
+    "oos_brier_cal": 0.175,
+    "oos_brier_base": 0.2091
+   },
+   "G2_floor_buckets": "30/30",
+   "G3_deploy_dev": 0.1068,
+   "G4_monotone": true
+  },
+  "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);live 帳本 predictions.jsonl 持續對答案"
+ }
 }

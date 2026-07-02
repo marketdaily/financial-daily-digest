@@ -1196,6 +1196,11 @@ def _calibrated_confidence(card_cls: str, regime_label: str, sym: str = ""):
     s = _track_stats()
     if not s:
         return None
+    # 2026-07-03 回測診斷修復:只吃「現行模型世代」(6/12 起,stats["era"])的桶,不吃全期混算——
+    # 舊世代(LLM 自填信心)實測是反指標,混算會把舊毒回饋進今日信心,形成永遠洗不掉的自我迴圈
+    # (實例:全期 up-regime 桶 20.1% 把 risk_on 買進卡信心壓到 35,而新世代同桶實際 ~61%)。
+    # era 桶樣本小沒關係,K=20 收縮自然拉向 50 = 誠實的「還不知道」。
+    src = s.get("era") if (s.get("era") or {}).get("a_count") else s
     K = 20.0
 
     def _shrunk(w, n):
@@ -1209,14 +1214,14 @@ def _calibrated_confidence(card_cls: str, regime_label: str, sym: str = ""):
 
     v = None
     if card_cls == "buy":
-        br = s.get("by_regime") or {}
+        br = src.get("by_regime") or {}
         bucket = br.get("up") if regime_label == "risk_on" else (br.get("down") if regime_label == "risk_off" else None)
         if bucket:
             v = _shrunk(bucket.get("a_wins"), bucket.get("a_count"))
         if v is None:
-            v = _shrunk(s.get("a_wins"), s.get("a_count"))
+            v = _shrunk(src.get("a_wins"), src.get("a_count"))
     elif card_cls == "sell":
-        v = _shrunk(s.get("c_wins"), s.get("c_count"))
+        v = _shrunk(src.get("c_wins"), src.get("c_count"))
     else:
         v = 50.0
     if v is None:

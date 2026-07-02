@@ -97,8 +97,17 @@ def score():
         out["final_hit_rate"] = round(sum(o for _, o in finals) / len(finals), 4)
         out["final_avg_pred"] = round(sum(p for p, _ in finals) / len(finals), 4)
     out["details"] = details[-40:]
+    # 合併寫入:v4 歷史校準參數(w_pooled/w_years/lam…)是另一個 producer(backtest/fit_v4_band.py)
+    # 的資產,這裡只更新 live 帳本記分欄位,絕不整檔覆蓋(兩 writer 一檔=互洗事故根源)
+    try:
+        with open(CALIB, encoding="utf-8") as f:
+            merged = json.load(f)
+    except Exception:
+        merged = {}
+    merged.update(out)
     with open(CALIB, "w", encoding="utf-8") as f:
-        json.dump(out, f, ensure_ascii=False, indent=1)
+        json.dump(merged, f, ensure_ascii=False, indent=1)
+    out = merged
     print(json.dumps({k: v for k, v in out.items() if k != "details"}, ensure_ascii=False, indent=1))
     return out
 

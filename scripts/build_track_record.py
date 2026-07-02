@@ -368,6 +368,33 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
     return out
 
 
+# 現行模型世代起點:2026-06-11 部署「結構 prior 鎖方向 + 信心由 track-record 校準表覆寫」,
+# 6/12 起的日報才是新制輸出(之前 = LLM 自填信心舊世代,實測為反指標)
+MODEL_ERA_START = "2026-06-12"
+
+
+def day_cluster_ci(recs: list[dict], nboot: int = 2000) -> list[float] | None:
+    """按「日期」cluster bootstrap 的勝率 95% CI。
+    同日記錄吃同一段市場走勢,高度相關;Wilson 假設獨立會給假窄 CI(有效樣本≈天數,非筆數)。"""
+    by_day: dict[str, list[int]] = {}
+    for r in recs:
+        by_day.setdefault(r["date"], []).append(1 if r["outcome"] == "win" else 0)
+    days = list(by_day)
+    if len(days) < 2:
+        return None
+    import random
+    rng = random.Random(7)
+    rates = []
+    for _ in range(nboot):
+        vals: list[int] = []
+        for _ in days:
+            vals.extend(by_day[rng.choice(days)])
+        if vals:
+            rates.append(sum(vals) / len(vals) * 100)
+    rates.sort()
+    return [round(rates[int(0.025 * len(rates))], 1), round(rates[int(0.975 * len(rates))], 1)]
+
+
 def wilson_ci(wins: int, n: int, z: float = 1.96) -> tuple[float, float]:
     """勝率的 Wilson 95% 信賴區間(%):小樣本紀律 — 只報點估計會把運氣當實力。
     N ≈ 1/edge²:5% 的 edge 要數百筆才能跟運氣區分,別用 20 筆下結論。"""
@@ -754,6 +781,36 @@ def main() -> int:
                             "a_rate": round(w / len(sub) * 100, 1) if sub else 0.0,
                             "ci95": [lo, hi_ci]}
 
+    # ── 世代切分(2026-07-03 回測診斷修復)──
+    # 6/11 上線「結構 prior 鎖方向 + 信心由校準表覆寫」= 新模型;之前的記錄是 LLM 自填信心的舊世代
+    # (實測舊世代信心>70 的 988 筆只中 34.5% = 反指標)。混算會讓舊毒回饋進今日信心
+    # (_calibrated_confidence 讀 by_regime 反推),新模型永遠洗不乾淨 → 校準/regime 桶必須只吃新世代。
+    # 另:同日記錄高度相關(每天 ~50 筆同一市況),Wilson CI 假獨立會假窄 → 補日 cluster bootstrap CI。
+    era_a = [r for r in a_recs if r["date"] >= MODEL_ERA_START]
+    era_c = [r for r in c_recs if r["date"] >= MODEL_ERA_START]
+    era_a_wins = sum(1 for r in era_a if r["outcome"] == "win")
+    era_c_wins = sum(1 for r in era_c if r["outcome"] == "win")
+    era_by_regime = {}
+    for trend in ("up", "down"):
+        sub = [r for r in era_a if regime_by_date.get(r["date"]) == trend]
+        w = sum(1 for r in sub if r["outcome"] == "win")
+        era_by_regime[trend] = {"a_count": len(sub), "a_wins": w,
+                                "a_rate": round(w / len(sub) * 100, 1) if sub else 0.0}
+    era = {
+        "note": f"僅計 {MODEL_ERA_START} 起(結構prior+校準信心上線後)的現行模型;"
+                "信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
+        "since": MODEL_ERA_START,
+        "a_count": len(era_a), "a_wins": era_a_wins,
+        "a_rate": round(era_a_wins / len(era_a) * 100, 1) if era_a else 0.0,
+        "a_ci95_day_cluster": day_cluster_ci(era_a),
+        "c_count": len(era_c), "c_wins": era_c_wins,
+        "c_rate": round(era_c_wins / len(era_c) * 100, 1) if era_c else 0.0,
+        "c_ci95_day_cluster": day_cluster_ci(era_c),
+        "by_regime": era_by_regime,
+        "calibration": calibration_stats(era_a),
+        "days": len({r["date"] for r in era_a + era_c}),
+    }
+
     sims = []
     for r in judged_all:
         s = simulate_plan(r, prices)
@@ -806,6 +863,7 @@ def main() -> int:
         "c_ci95": list(wilson_ci(c_wins, len(c_recs))),
         "calibration": calib,
         "by_regime": by_regime,
+        "era": era,
         "plan_sim": plan_sim,
         # 區分公版 / 個人化來源,讓前端可看到是否包含跨用戶聚合
         "public_only": {
