@@ -1,17 +1,17 @@
 {
   "stats": {
-    "generated_at": "2026-07-01T19:04:59",
+    "generated_at": "2026-07-02T08:04:02",
     "horizon": "5d",
-    "days_covered": 18,
-    "total_records": 1278,
+    "days_covered": 19,
+    "total_records": 1361,
     "judged_records": 1012,
     "one_day": {
-      "a_count": 533,
-      "a_wins": 248,
-      "a_rate": 46.5,
-      "c_count": 675,
-      "c_wins": 370,
-      "c_rate": 54.8
+      "a_count": 549,
+      "a_wins": 252,
+      "a_rate": 45.9,
+      "c_count": 704,
+      "c_wins": 385,
+      "c_rate": 54.7
     },
     "a_count": 477,
     "a_wins": 192,
@@ -72,13 +72,13 @@
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 501,
-      "no_fill": 176,
-      "pending": 14,
+      "simulated": 517,
+      "no_fill": 185,
+      "pending": 19,
       "hit_target": 50,
-      "hit_stop": 215,
+      "hit_stop": 217,
       "expired": 46,
-      "avg_ret_pct": -0.87,
+      "avg_ret_pct": -0.9,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
@@ -89,9 +89,135 @@
       "c_wins": 16,
       "c_rate": 76.2
     },
-    "personal_samples_added": 1193
+    "personal_samples_added": 1269
   },
   "records": [
+    {
+      "date": "2026-07-02",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "neutral",
+      "reason": "特斯拉目前處於盤整結構，股價站穩MA20支撐，基本面近期YoY +15.8%、EPS YoY +11.9%提供正增長。建議今晚開盤後，若股價能守穩 400.67 美元，可續抱持有，突破 433.6 美元才有上升動能。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 400.67,
+      "entry_hi": 400.67,
+      "target": 433.6,
+      "stop": 382.0,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-02",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "neutral",
+      "reason": "輝達目前處於空頭結構，股價低於MA20，量能疲弱難以反彈。建議今晚開盤後，等待股價跌破 182.01 美元或帶量站穩MA20 (204.48美元) 之上，才有新的進場訊號，否則暫時觀望。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 45,
+      "entry_lo": 189.8,
+      "entry_hi": 189.8,
+      "target": 210.04,
+      "stop": 182.01,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-02",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "neutral",
+      "reason": "微軟目前處於空頭結構，股價低於MA20。儘管今日價漲量增，暗示反彈力道，但仍需觀察能否站穩MA20。建議今晚開盤後，若股價能帶量站回 388.8 美元之上，再考慮觀望或小幅佈局，否則暫時觀望。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 364.01,
+      "entry_hi": 364.01,
+      "target": 411.3,
+      "stop": 350.5,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-02",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "neutral",
+      "reason": "蘋果目前處於盤整結構，股價在MA20附近震盪。基本面近期YoY +16.6%、EPS YoY +21.8%提供支撐。建議今晚開盤後，若股價回測 281.86 美元區域不破並確認止穩，可考慮分批進場觀望。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 281.86,
+      "entry_hi": 281.86,
+      "target": 311.08,
+      "stop": 273.5,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-02",
+      "name": "聯發科",
+      "ticker": "2454",
+      "market": "tw",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "聯發科多頭結構完整，股價守於MA20之上。反彈挑戰 4785 元有望，但需留意量能是否配合。基本面累計YoY -1.6%是隱憂。建議今早 9:00 開盤後，若股價能守穩 4304.25 元，可續抱持有。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 51,
+      "entry_lo": 4304.25,
+      "entry_hi": 4304.25,
+      "target": 4785.0,
+      "stop": 3814.8,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-02",
+      "name": "台積電",
+      "ticker": "2330",
+      "market": "tw",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "台積電目前處於多頭結構，股價站穩MA20，基本面營收連29月正成長，累計YoY +30.0%提供強勁支撐。建議今早 9:00 開盤後，若股價回測 2405.89 元不破並站穩，可考慮分批買進。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 42,
+      "entry_lo": 2405.89,
+      "entry_hi": 2405.89,
+      "target": 2535.0,
+      "stop": 2339.82,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-02",
+      "name": "鴻海",
+      "ticker": "2317",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "neutral",
+      "reason": "鴻海目前處於盤整結構，量縮止穩於 246 元低檔，基本面營收連27月正成長提供撐底。建議今早 9:00 開盤後，若股價能守穩 246 元，可續抱持有，短線反彈目標 264.28 元。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 49,
+      "entry_lo": 246.0,
+      "entry_hi": 246.0,
+      "target": 264.28,
+      "stop": 227.65,
+      "outcome": null,
+      "outcome_1d": null
+    },
     {
       "date": "2026-07-01",
       "name": "特斯拉 Tesla",
@@ -234,7 +360,7 @@
       "target": 433.6,
       "stop": 365.34,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-06-30",
@@ -252,7 +378,7 @@
       "target": 208.57,
       "stop": 177.97,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-06-30",
@@ -270,7 +396,7 @@
       "target": 394.57,
       "stop": 336.07,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-06-30",
@@ -288,7 +414,7 @@
       "target": 299.08,
       "stop": 260.06,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-06-29",
