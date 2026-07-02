@@ -43,4 +43,5 @@ cb_analyzer/*.png
 cb_analyzer/search_result.png
 intel/.inst_cache.json
 intel/.rev_cache.json
+intel/.margin_cache.json
 cb_analyzer/.score_price_cache.json
