@@ -10,8 +10,11 @@ const INVITE_CODES = [
 
 const TIER_BY_AMOUNT = { 19900: "Pro", 190800: "Pro", 29900: "Pro", 287000: "Pro", 49900: "Premium", 478800: "Premium" };
 
-const PLAN_CAPS = { free: 5, pro: 15, premium: Infinity };
-function planCap(plan) { return PLAN_CAPS[plan] || PLAN_CAPS.free; }
+// 合規結構(COMPLIANCE_STRUCTURE.md):個股分析內容不得與付費產生對價,
+// 持股追蹤數為純技術上限,所有方案一律相同,禁止依 plan 分級。
+const UNIFORM_STOCK_CAP = 80;
+const PLAN_CAPS = { free: UNIFORM_STOCK_CAP, pro: UNIFORM_STOCK_CAP, premium: UNIFORM_STOCK_CAP };
+function planCap(plan) { return PLAN_CAPS[plan] || UNIFORM_STOCK_CAP; }
 function applyCap(us, tw, cap) {
   if (cap === Infinity || us.length + tw.length <= cap) return [us, tw];
   if (us.length >= cap) return [us.slice(0, cap), []];
@@ -611,9 +614,7 @@ export default {
         const g = await gatePassword(env, request, email, password);
         if (!g.ok) return json({ error: g.error }, g.status);
       }
-      const plan = await env.USER_PREFS.get(`plan:${email}`);
-      if (!isAdmin && plan !== "premium") return json({ error: "not_premium" }, 403);
-
+      // 合規結構:AI 投資助手對全體登入用戶開放(涉個股分析,不得付費限定);每日 30 則一體適用。
       const day = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
       const countKey = `chatcount:${email}:${day}`;
       const used = parseInt((await env.USER_PREFS.get(countKey)) || "0", 10);
@@ -700,19 +701,20 @@ export default {
       } else {
         email = (url.searchParams.get("email") || "").trim().toLowerCase();
       }
-      if (!email) return json({ premium: false, remaining: 0 });
+      // 合規結構:chat 對全體用戶開放(available 恆為 true);remaining 屬個人資料仍要 password。
+      if (!email) return json({ available: true, premium: false, remaining: 0 });
       const isAdmin = ADMIN_EMAILS.includes(email);
       // password 驗證 — GET (無 pwd) 或 pwd 錯時不洩漏 plan。
       // admin 也必驗,否則攻擊者能透過回應差異(generic vs 真實 plan)列舉 admin 名單。
       const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
       if (!storedHash || !password || !(await verifyPwd(password, storedHash))) {
-        return json({ premium: false, remaining: 0 });
+        return json({ available: true, premium: false, remaining: 0 });
       }
       const plan = await env.USER_PREFS.get(`plan:${email}`);
       const premium = isAdmin || plan === "premium";
       const day = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
       const used = parseInt((await env.USER_PREFS.get(`chatcount:${email}:${day}`)) || "0", 10);
-      return json({ premium, remaining: Math.max(0, 30 - used) });
+      return json({ available: true, premium, remaining: Math.max(0, 30 - used) });
     }
 
     // Admin stats
@@ -1343,12 +1345,11 @@ export default {
       const submitted = us.length + tw.length;
       [us, tw] = applyCap(us, tw, cap);
       const saved = us.length + tw.length;
-      // 日報深度:premium/admin 可選 simple/standard/deep,其餘鎖 standard;未帶則沿用既有值
+      // 日報深度:全體用戶皆可選 simple/standard/deep(合規結構:深度屬個股分析內容,不得依付費分級);未帶則沿用既有值
       const existingRaw = await env.USER_PREFS.get(email);
       const existing = existingRaw ? JSON.parse(existingRaw) : {};
       let digest_depth = body.digest_depth || existing.digest_depth || "standard";
       if (!["simple", "standard", "deep"].includes(digest_depth)) digest_depth = "standard";
-      if (plan !== "premium" && plan !== "admin") digest_depth = "standard";
       const prefs = {
         us_stocks: us,
         tw_stocks: tw,
@@ -1523,7 +1524,7 @@ export default {
       if (!usedBy) {
         await env.USER_PREFS.put(usedKey, email);
       }
-      // 邀請碼註冊者 = 免費方案(5 檔上限);Premium 需付費升級或管理員手動開通
+      // 邀請碼註冊者 = 免費方案;Premium(支持者方案)需付費升級或管理員手動開通
       await env.USER_PREFS.put(`plan:${email}`, "free");
       // 歡迎信、補寄日報、推薦轉換全部背景化 —— 任一失敗都不影響「註冊成功」的回應
       ctx.waitUntil(postSignupTasks(email, body.ref, env));
@@ -2444,8 +2445,8 @@ async function generateSupportResponse(name, topic, message, apiKey) {
 - 來源：Reuters、CNBC、Bloomberg、FT 等可信媒體
 
 【方案】
-- 免費方案：留 Email 即可訂閱,完全免費（不需邀請碼）
-- Premium 方案：NT$500/月，隨時可取消
+- 免費方案：留 Email 即可訂閱,完全免費（不需邀請碼）,包含完整功能（個人化日報、AI 助手、即時推播）
+- Premium 支持者方案：NT$499/月，隨時可取消;所有分析內容與免費版完全相同,Premium 提供的是支持獨立營運、優先客服與非分析類新功能搶先體驗
 
 【常見問題處理】
 - 帳號/訂閱問題：請用戶聯繫 support@marketdaily.ai
@@ -2849,7 +2850,7 @@ async function sendD14Email(email, apiKey, env) {
         雙方各得 <span style="color:#6366f1;">30 天 Premium</span>
       </p>
       <p style="margin:0;font-size:13px;color:#666;line-height:1.7;">
-        朋友點你的連結訂閱後,你和他的帳號都自動延長 30 天 Premium —— 包含 AI 投資助手、即時推播、深度分析。
+        朋友點你的連結訂閱後,你和他的帳號都自動獲得 30 天 Premium 支持者方案(1-1 優先客服+新功能搶先體驗)。
       </p>
     </div>
     <div style="background:#f6f7fb;border:1px dashed #cbd5e1;border-radius:12px;padding:14px 18px;margin-bottom:18px;">
@@ -2880,26 +2881,27 @@ async function sendD14Email(email, apiKey, env) {
 }
 
 async function sendD21Email(email, apiKey, env) {
-  const subject = "📊 你已經養成早晨財經習慣了 — 要不要升級 Premium 試讀首月 NT$299?";
+  const subject = "☕ 三週了 — 如果日報對你有價值,可以用 Premium 支持我們";
   const upgradeLink = `https://marketdaily.ai/pricing?utm_source=lifecycle&utm_campaign=d21_premium&email=${encodeURIComponent(email)}`;
   const body = `
     <p style="font-size:17px;font-weight:800;color:#1a1a1a;margin:0 0 12px;">三週了 ☕</p>
     <p style="font-size:15px;color:#444;line-height:1.8;margin:0 0 22px;">
       你已經連讀 ~18 封 MarketDaily 日報 —— 早晨財經習慣養成了。<br>
-      接下來,要不要試試 <strong>Premium 全功能</strong>?
+      先說清楚:<strong>日報、AI 助手、即時推播等所有分析功能,對免費和付費用戶完全相同</strong>,升不升級都不影響你收到的內容。<br>
+      如果這個產品對你有價值,<strong>Premium 支持者方案</strong>是你支持我們繼續獨立營運的方式。
     </p>
     <div style="background:linear-gradient(135deg,rgba(168,85,247,0.10),rgba(99,102,241,0.10));border:1px solid rgba(168,85,247,0.30);border-radius:14px;padding:22px 24px;margin-bottom:22px;">
-      <p style="margin:0 0 14px;font-size:14px;color:#7e22ce;font-weight:800;letter-spacing:1px;">PREMIUM 試讀</p>
+      <p style="margin:0 0 14px;font-size:14px;color:#7e22ce;font-weight:800;letter-spacing:1px;">PREMIUM 支持者方案</p>
       <p style="margin:0 0 6px;font-size:26px;font-weight:900;color:#1a1a1a;">
         首月 NT$299 <span style="font-size:18px;color:rgba(0,0,0,0.4);text-decoration:line-through;font-weight:700;margin-left:8px;">NT$499</span>
       </p>
       <p style="margin:0 0 16px;font-size:13px;color:#666;">之後 NT$499/月,隨時取消,30 天無理由退費</p>
       <ul style="margin:0;padding-left:18px;font-size:14px;color:#444;line-height:1.95;">
-        <li><strong>個人化日報</strong>(無限持股追蹤,免費版只 5 支)</li>
-        <li><strong>個股深度分析</strong>(每支 3-5 段,不只是 1 句 verdict)</li>
-        <li><strong>AI 投資助手雙向對話</strong>(盤中可直接問你的持股)</li>
-        <li><strong>重大新聞即時推播</strong>(5 分鐘內到)</li>
+        <li><strong>支持獨立營運</strong>(不接廣告、不賣明牌、不賣你的資料)</li>
+        <li><strong>1-1 優先客服</strong>(來信優先回覆)</li>
+        <li><strong>非分析類新功能搶先體驗</strong>(總經數據儀表板等,陸續推出)</li>
       </ul>
+      <p style="margin:14px 0 0;font-size:12px;color:#888;line-height:1.7;">Premium 不包含任何額外的個股分析或投資建議內容 —— 所有分析內容全體用戶免費且相同。</p>
     </div>
     <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:18px;">
       <tr>
@@ -2934,14 +2936,14 @@ async function sendD45Email(email, apiKey, env) {
       之後我們不會再寄升級信,免費版會繼續陪你。
     </p>
     <div style="background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.32);border-radius:14px;padding:20px 22px;margin-bottom:22px;">
-      <p style="margin:0 0 10px;font-size:13px;color:#b45309;font-weight:800;letter-spacing:1px;">⚡ 為什麼我推薦你升級</p>
+      <p style="margin:0 0 10px;font-size:13px;color:#b45309;font-weight:800;letter-spacing:1px;">⚡ 為什麼值得考慮 Premium</p>
       <p style="margin:0 0 14px;font-size:15px;color:#1a1a1a;font-weight:700;line-height:1.6;">
-        因為你已經養成讀日報的習慣 —— 表示你真的在意自己的投資組合。
+        因為你已經養成讀日報的習慣 —— 而這個產品能不能繼續獨立營運,靠的是支持者。
       </p>
       <p style="margin:0;font-size:14px;color:#666;line-height:1.8;">
-        Premium 的核心價值是 <strong>盤中即時對話</strong>(AI 投資助手)。<br>
-        早上 7 點看完 → 白天有突發狀況 → 直接在 dashboard 問 AI 「我的 NVDA 現在怎樣?」<br>
-        5 秒給你答案,不用自己滑 PTT。
+        Premium 是<strong>支持者方案</strong>:支持我們不接廣告、不賣明牌、不賣資料,<br>
+        並獲得 1-1 優先客服與非分析類新功能搶先體驗。<br>
+        <strong>所有分析內容(日報/AI 助手/推播)免費與付費完全相同</strong>,這點升級前先讓你知道。
       </p>
     </div>
     <div style="background:linear-gradient(135deg,rgba(168,85,247,0.10),rgba(99,102,241,0.10));border:1px solid rgba(168,85,247,0.30);border-radius:14px;padding:22px 24px;margin-bottom:22px;text-align:center;">

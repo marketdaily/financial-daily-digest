@@ -321,7 +321,7 @@ def build_email_html(date: str, html_report: str) -> str:
   <div class="footer">
     財經日報 · AI 精選 · 假訊息過濾<br>
     ✅ 多源確認 = 2個以上白名單媒體報導 &nbsp;|&nbsp; ⚠️ 單一來源 = 請自行查證<br>
-    本報告為 AI 生成，僅供參考，不構成投資建議<br><br>
+    本報告為 AI 生成之一般性資訊整理，僅供參考，不構成投資建議；MarketDaily 非證券投資顧問事業<br>所有分析內容對免費與付費用戶完全相同，不因付費而異；投資有風險，決策請自行判斷<br><br>
     <a href="https://marketdaily.ai" style="color:#6366f1;text-decoration:none;font-weight:700;">🌐 marketdaily.ai</a> &nbsp;·&nbsp;
     <a href="https://marketdaily.ai/dashboard.html" style="color:#6366f1;text-decoration:none;">⚙️ 我的專區</a>
   </div>
@@ -380,7 +380,7 @@ def save_local(date: str, html_report: str, suffix: str = ""):
   <div class="footer">
     財經日報 · AI 精選 · 假訊息過濾<br>
     ✅ 多源確認 = 2個以上白名單媒體報導 &nbsp;|&nbsp; ⚠️ 單一來源 = 請自行查證<br>
-    本報告為 AI 生成，僅供參考，不構成投資建議<br><br>
+    本報告為 AI 生成之一般性資訊整理，僅供參考，不構成投資建議；MarketDaily 非證券投資顧問事業<br>所有分析內容對免費與付費用戶完全相同，不因付費而異；投資有風險，決策請自行判斷<br><br>
     <a href="https://marketdaily.ai" style="color:#6366f1;text-decoration:none;font-weight:700;">🌐 marketdaily.ai</a> &nbsp;·&nbsp;
     <a href="https://marketdaily.ai/dashboard.html" style="color:#6366f1;text-decoration:none;">⚙️ 我的專區</a>
   </div>
@@ -508,10 +508,8 @@ def get_user_preferences(email: str) -> dict:
             if res.ok:
                 d = res.json() or {}
                 plan = d.get("plan") or "free"
-                # 日報深度客製化是 Premium 專屬;免費/其他方案一律 standard(與 worker 端閘門一致,雙重保險)
+                # 日報深度全體用戶可選(合規結構 COMPLIANCE_STRUCTURE.md:個股分析內容不得依付費分級)
                 depth = d.get("digest_depth") or "standard"
-                if plan not in ("premium", "admin"):
-                    depth = "standard"
                 if depth not in ("simple", "standard", "deep"):
                     depth = "standard"
                 return {
@@ -694,8 +692,8 @@ def run():
         prefs = subscriber_prefs[email]
         us_stocks = prefs.get("us_stocks") or []
         tw_stocks = prefs.get("tw_stocks") or []
-        depth = prefs.get("digest_depth") or "standard"  # Premium 客製日報深度;免費已在 get_user_preferences 鎖回 standard
-        is_premium = prefs.get("plan") in ("premium", "admin")  # 明確選 depth 的付費用戶 → 深度選擇要被完整尊重,不可被持股數降級
+        depth = prefs.get("digest_depth") or "standard"  # 日報深度全體用戶可選(合規結構:不依付費分級)
+        is_premium = prefs.get("plan") in ("premium", "admin")  # 僅供統計/tier 標籤;禁止用來分級日報內容(COMPLIANCE_STRUCTURE.md)
 
         # ── 雙班次收信對象分流(按持股) ──
         # tw 早報 = 持台股者 + 完全沒持股者(收台股大盤版);us 晚報 = 持美股者。

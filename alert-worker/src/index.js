@@ -188,13 +188,13 @@ function ruleScore(eventType, ageHours) {
   return Math.round(base * (1 - 0.4 * decay));
 }
 
-// 列出所有 plan=premium 且至少開了 web push 的用戶與持股。(訂閱者 LINE 推播已移除,通道只剩 web push)
+// 列出所有開了 web push 的用戶與持股。(訂閱者 LINE 推播已移除,通道只剩 web push)
+// 合規結構(COMPLIANCE_STRUCTURE.md):推播含個股操作傾向=個股分析內容,不得付費限定,
+// 對全體 push 用戶開放;函數名保留 premiumRecipients 免動所有 call site,語意=全體收件人。
 async function premiumRecipients(env) {
   const map = new Map(); // email -> {email, pushSubs, holdings}
   async function ensure(email) {
     if (map.has(email)) return map.get(email);
-    const plan = await env.USER_PREFS.get(`plan:${email}`);
-    if (plan !== "premium") { map.set(email, null); return null; }
     let holdings = new Set();
     const raw = await env.USER_PREFS.get(email);
     if (raw) {

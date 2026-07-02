@@ -725,11 +725,23 @@ footer {
         </li>
         <li class="feature-item included">
           <span class="feature-icon fi-check">✓</span>
-          <span data-i18n="sf5">個人化持倉分析（最多 5 檔）</span>
+          <span data-i18n="sf5">個人化持倉分析（最多 80 檔）</span>
         </li>
-        <li class="feature-item">
-          <span class="feature-icon fi-cross">—</span>
+        <li class="feature-item included">
+          <span class="feature-icon fi-check">✓</span>
           <span data-i18n="sf6">即將公布財報提醒</span>
+        </li>
+        <li class="feature-item included">
+          <span class="feature-icon fi-check">✓</span>
+          <span data-i18n="sf8">日報深度自選（簡單看 / 標準 / 看深入）</span>
+        </li>
+        <li class="feature-item included">
+          <span class="feature-icon fi-check">✓</span>
+          <span data-i18n="sf9">AI 投資助手（每日 30 則）</span>
+        </li>
+        <li class="feature-item included">
+          <span class="feature-icon fi-check">✓</span>
+          <span data-i18n="sf10">重大新聞即時推播（手機 / 瀏覽器）</span>
         </li>
       </ul>
     </div>
@@ -744,35 +756,28 @@ footer {
         <div class="price-unit" data-i18n="price_per_month">/月</div>
       </div>
       <div class="price-annual-note" id="premium-price-note" data-i18n="premium_trial_note" style="color:#fde68a;font-size:13px;font-weight:600;">首月 NT$299 · 之後 NT$499/月 · 隨時取消</div>
-      <p class="tier-desc" data-i18n="tier_prem_desc">給高度投入的投資人。無限追蹤、即時警報、月度健檢、AI 助手雙向對話,全方位掌控投資組合。</p>
+      <p class="tier-desc" data-i18n="tier_prem_desc">支持者方案。所有分析功能免費版已全部包含 — Premium 是你支持 MarketDaily 獨立營運的方式。</p>
       <a class="tier-btn btn-premium" href="#" onclick="goPremiumTrial(event)" id="premium-cta" data-i18n="tier_cta_btn">6 折試讀首月 →</a>
       <div class="tier-divider"></div>
       <ul class="feature-list">
         <li class="feature-item included" style="font-weight:600;">
           <span class="feature-icon fi-check">✓</span>
-          <span data-i18n="pmf1">免費版所有功能</span>
+          <span data-i18n="pmf1">免費版所有功能（分析內容完全相同）</span>
         </li>
         <li class="feature-item included">
           <span class="feature-icon fi-check">✓</span>
-          <span data-i18n="pmf2">個人化持倉分析(無限追蹤)</span>
-        </li>
-        <li class="feature-item included">
-          <span class="feature-icon fi-check">✓</span>
-          <span data-i18n="pmf3">AI 助手雙向對話</span>
-        </li>
-        <li class="feature-item included">
-          <span class="feature-icon fi-check">✓</span>
-          <span data-i18n="pmf3b">重大新聞即時推播(手機/瀏覽器)</span>
-        </li>
-        <li class="feature-item included">
-          <span class="feature-icon fi-check">✓</span>
-          <span data-i18n="pmf4">月度投資組合健檢報告</span>
+          <span data-i18n="pmf2">支持獨立營運（不接廣告、不賣明牌）</span>
         </li>
         <li class="feature-item included">
           <span class="feature-icon fi-check">✓</span>
           <span data-i18n="pmf6">優先 1-1 專人客服</span>
         </li>
+        <li class="feature-item included">
+          <span class="feature-icon fi-check">✓</span>
+          <span data-i18n="pmf4">非分析類新功能搶先體驗（陸續推出）</span>
+        </li>
       </ul>
+      <p style="margin:14px 0 0;font-size:11.5px;color:rgba(255,255,255,0.45);line-height:1.7;" data-i18n="prem_equal_note">Premium 不包含任何額外的個股分析或投資建議內容 — 所有分析內容對全體用戶免費且相同。</p>
     </div>
 
   </div>
@@ -820,18 +825,18 @@ footer {
             <td class="col-val yes"><span class="v-check"></span></td>
           </tr>
           <tr class="compare-row">
-            <td class="col-feature" data-i18n="cmp_r5">美股深度追蹤</td>
-            <td class="col-val no"><span class="v-cross"></span></td>
+            <td class="col-feature" data-i18n="cmp_r5">個人化持股訊號卡（美股 + 台股）</td>
+            <td class="col-val yes"><span class="v-check"></span></td>
             <td class="col-val yes"><span class="v-check"></span></td>
           </tr>
           <tr class="compare-row">
-            <td class="col-feature" data-i18n="cmp_r6">台股深度追蹤</td>
-            <td class="col-val no"><span class="v-cross"></span></td>
+            <td class="col-feature" data-i18n="cmp_r6">日報深度自選（簡單 / 標準 / 深入）</td>
+            <td class="col-val yes"><span class="v-check"></span></td>
             <td class="col-val yes"><span class="v-check"></span></td>
           </tr>
           <tr class="compare-row">
-            <td class="col-feature" data-i18n="cmp_r7">二階思考分析</td>
-            <td class="col-val no"><span class="v-cross"></span></td>
+            <td class="col-feature" data-i18n="cmp_r7">AI 投資助手（每日 30 則）</td>
+            <td class="col-val yes"><span class="v-check"></span></td>
             <td class="col-val yes"><span class="v-check"></span></td>
           </tr>
 
@@ -839,35 +844,20 @@ footer {
           <tr class="compare-group-head"><td colspan="3" data-i18n="cmp_g_personal">個人化</td></tr>
           <tr class="compare-row">
             <td class="col-feature" data-i18n="cmp_r8">股票追蹤數量</td>
-            <td class="col-val"><span class="v-val" data-i18n="cmp_v_free_stocks">最多 5 檔</span></td>
-            <td class="col-val premium-yes"><span class="v-val" style="color:#fbbf24;" data-i18n="cmp_v_prem_stocks">無限</span></td>
-          </tr>
-          <tr class="compare-row">
-            <td class="col-feature" data-i18n="cmp_r9">持倉損益追蹤</td>
-            <td class="col-val no"><span class="v-cross"></span></td>
-            <td class="col-val yes"><span class="v-check"></span></td>
-          </tr>
-          <tr class="compare-row">
-            <td class="col-feature" data-i18n="cmp_r10">客製化觀察清單</td>
-            <td class="col-val no"><span class="v-cross"></span></td>
-            <td class="col-val premium-yes"><span class="v-val" style="color:#fbbf24;" data-i18n="cmp_v_prem_watch">最多 5 主題</span></td>
-          </tr>
-          <tr class="compare-row">
-            <td class="col-feature" data-i18n="cmp_r11">月度投組健檢</td>
-            <td class="col-val no"><span class="v-cross"></span></td>
-            <td class="col-val yes"><span class="v-check"></span></td>
+            <td class="col-val"><span class="v-val" data-i18n="cmp_v_free_stocks">80 檔</span></td>
+            <td class="col-val"><span class="v-val" data-i18n="cmp_v_prem_stocks">80 檔（相同）</span></td>
           </tr>
 
           <!-- 提醒 -->
           <tr class="compare-group-head"><td colspan="3" data-i18n="cmp_g_alert">提醒</td></tr>
           <tr class="compare-row">
             <td class="col-feature" data-i18n="cmp_r12">財報提醒</td>
-            <td class="col-val no"><span class="v-cross"></span></td>
+            <td class="col-val yes"><span class="v-check"></span></td>
             <td class="col-val yes"><span class="v-check"></span></td>
           </tr>
           <tr class="compare-row">
             <td class="col-feature" data-i18n="cmp_r13">重大新聞即時推播(手機/瀏覽器)</td>
-            <td class="col-val no"><span class="v-cross"></span></td>
+            <td class="col-val yes"><span class="v-check"></span></td>
             <td class="col-val yes"><span class="v-check"></span></td>
           </tr>
 
@@ -878,8 +868,19 @@ footer {
             <td class="col-val"><span class="v-val" style="font-size:12px;color:var(--text-muted);" data-i18n="cmp_v_std">標準</span></td>
             <td class="col-val premium-yes"><span class="v-val" style="font-size:12px;color:#fbbf24;" data-i18n="cmp_v_prio_line">1-1 專人客服</span></td>
           </tr>
+          <tr class="compare-row">
+            <td class="col-feature" data-i18n="cmp_r15">支持獨立營運（不接廣告、不賣明牌）</td>
+            <td class="col-val no"><span class="v-cross"></span></td>
+            <td class="col-val yes"><span class="v-check"></span></td>
+          </tr>
+          <tr class="compare-row">
+            <td class="col-feature" data-i18n="cmp_r16">非分析類新功能搶先體驗</td>
+            <td class="col-val no"><span class="v-cross"></span></td>
+            <td class="col-val yes"><span class="v-check"></span></td>
+          </tr>
         </tbody>
       </table>
+      <p style="margin:16px 4px 0;font-size:12.5px;color:rgba(255,255,255,0.5);line-height:1.8;text-align:center;" data-i18n="cmp_equal_note">所有投資分析內容（日報、持股訊號卡、AI 助手、即時推播）對免費與付費用戶完全相同，不因付費而異。</p>
     </div>
   </div>
 </section>
@@ -923,7 +924,7 @@ footer {
       </div>
       <div class="faq-body">
         <div class="faq-body-inner" data-i18n-html="faq_a3">
-          免費版提供每日大盤概覽、新聞精選，以及最多 5 檔的個人化持倉分析。<strong>Premium 直接無限追蹤</strong>——你設定多少支股票都行,AI 就針對你的完整投資組合分析今天的新聞如何影響你,而不是泛泛的市場報導。
+          <strong>投資分析內容零差異</strong>——日報、持股訊號卡、AI 助手、即時推播對免費與付費用戶完全相同。Premium 是支持者方案：支持 MarketDaily 獨立營運（不接廣告、不賣明牌），並獲得 1-1 優先客服與非分析類新功能搶先體驗。
         </div>
       </div>
     </div>
@@ -935,7 +936,19 @@ footer {
       </div>
       <div class="faq-body">
         <div class="faq-body-inner" data-i18n-html="faq_a4">
-          MarketDaily 目前以邀請制推出免費版，確保服務品質。<strong>邀請碼可透過現有訂閱者分享</strong>，或在 Instagram / X 追蹤官方帳號參加不定期抽選活動取得。Premium 方案不需要邀請碼，可直接訂閱。
+          <strong>不需要邀請碼也能免費訂閱</strong>——留下 Email 就能開始收日報。邀請碼是推廣活動用的機制，透過現有訂閱者分享或官方帳號抽選取得，兌換後同樣是免費方案。
+        </div>
+      </div>
+    </div>
+
+    <div class="faq-item scene-reveal scene-reveal-d2">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span data-i18n="faq_q7">為什麼所有分析內容都免費？</span>
+        <div class="faq-arrow">&#9660;</div>
+      </div>
+      <div class="faq-body">
+        <div class="faq-body-inner" data-i18n-html="faq_a7">
+          MarketDaily 未領有證券投資顧問執照，因此我們把所有 AI 分析內容（日報、持股訊號卡、AI 助手、即時推播）<strong>免費提供給全體用戶，且不與任何付費掛鉤</strong>。付費的 Premium 是支持者方案，不包含任何分析內容。所有內容為 AI 生成之一般性資訊整理，僅供參考、不構成投資建議，投資決策請自行判斷。
         </div>
       </div>
     </div>
@@ -997,6 +1010,7 @@ footer {
 <footer>
   <div class="footer-brand">© 2026 MarketDaily</div>
   <div class="footer-note" data-i18n="footer_note">每日早上 7 點 · 台灣投資人的 AI 財經日報</div>
+  <div class="footer-note" style="max-width:640px;margin:10px auto 0;font-size:11px;line-height:1.8;opacity:0.75;" data-i18n="footer_compliance">MarketDaily 非證券投資顧問事業。所有內容為 AI 生成之一般性資訊整理，僅供參考、不構成投資建議；所有分析內容對免費與付費用戶完全相同。投資有風險，決策請自行判斷。</div>
 </footer>
 
 <script>window.META_PIXEL_ID = "1497334655104185";</script>
@@ -1010,18 +1024,21 @@ const i18n = {
     nav_home: "Home", nav_pricing: "Pricing", nav_dashboard: "My Account", nav_record: "Record", nav_vs: "vs Rivals",
     price_pill: "Plans & Pricing",
     price_h1: "Choose the plan that<br><span class=\"grad\">fits you best</span>",
-    price_sub: "Start free, upgrade anytime. Cancel anytime, no hidden fees.",
+    price_sub: "Every feature is free. Premium is a supporter plan — analysis content never differs by payment.",
     bill_monthly: "Monthly", bill_annual: "Annual", bill_save: "Save 20%",
     tier_free_name: "Free · Starter",
-    tier_free_desc: "Market briefing to your inbox Mon–Sat at 7AM TWT (Sun off). Perfect for new investors.",
+    tier_free_desc: "The full product, free. Personalized holdings digest, AI assistant and real-time push — Mon–Sat at 7AM TWT.",
     tier_free_btn: "Start Free",
     sf1: "Daily market summary (US + TW)",
     sf2: "Top 5 news picks (fake news filtered)",
     sf3: "Crypto trends (BTC / ETH / SOL)",
     sf4: "Sector rotation overview",
-    sf5: "Personalized portfolio analysis (up to 5 stocks)",
+    sf5: "Personalized portfolio analysis (up to 80 stocks)",
     sf6: "Earnings report reminders",
     sf7: "Invite code required",
+    sf8: "Digest depth of your choice (Simple / Standard / Deep)",
+    sf9: "AI investment assistant (30 messages/day)",
+    sf10: "Real-time breaking-news push (phone/browser)",
     badge_popular: "Best Value",
     price_per_month: "/mo",
     tier_pro_desc: "For active investors tracking their holdings — every digest is tailored to your portfolio.",
@@ -1033,17 +1050,15 @@ const i18n = {
     pf5: "Earnings report reminders",
     pf6: "Portfolio P&L tracking",
     pf7: "Priority customer support",
-    tier_prem_desc: "For serious investors. Unlimited tracking, real-time alerts, monthly portfolio health checks.",
-    pmf1: "Everything in Free",
+    tier_prem_desc: "The supporter plan. Every analysis feature is already free — Premium is how you keep MarketDaily independent.",
+    pmf1: "Everything in Free (identical analysis content)",
     premium_trial_note: "First month NT$299 · then NT$499/mo · cancel anytime",
-    pmf2: "Unlimited stock tracking",
-    pmf3: "Two-way AI chat",
-    pmf3b: "Real-time breaking-news push (phone/browser)",
+    pmf2: "Support independent operations (no ads, no stock tips for sale)",
     free_submit_btn: "Submit →",
     placeholder_email: "your@email.com",
-    pmf4: "Monthly portfolio health report",
-    pmf5: "Custom watchlists (up to 5 themes)",
+    pmf4: "Early access to non-analysis features (rolling out)",
     pmf6: "Priority 1-on-1 support",
+    prem_equal_note: "Premium includes no additional stock analysis or investment advice — all analysis content is free and identical for every user.",
     annual_pro_note: "Annual billing NT$2,870 once",
     annual_prem_note: "Annual billing NT$4,788 once",
     cmp_label: "Side-by-Side",
@@ -1054,23 +1069,25 @@ const i18n = {
     cmp_g_alert: "Alerts", cmp_g_support: "Support",
     cmp_r1: "Daily market summary", cmp_r2: "Top 5 news picks",
     cmp_r3: "Crypto trends", cmp_r4: "Sector rotation",
-    cmp_r5: "US stocks deep tracking", cmp_r6: "TW stocks deep tracking",
-    cmp_r7: "2nd-order thinking", cmp_r8: "Stocks tracked",
-    cmp_r9: "Portfolio P&L tracking", cmp_r10: "Custom watchlists",
-    cmp_r11: "Monthly portfolio health check", cmp_r12: "Earnings reminders",
+    cmp_r5: "Personalized stock signal cards (US + TW)", cmp_r6: "Digest depth of your choice",
+    cmp_r7: "AI investment assistant (30/day)", cmp_r8: "Stocks tracked",
+    cmp_r12: "Earnings reminders",
     cmp_r13: "Real-time breaking-news push", cmp_r14: "Customer support",
-    cmp_v_free_stocks: "Up to 5", cmp_v_pro_stocks: "Up to 15", cmp_v_prem_stocks: "Unlimited",
-    cmp_v_prem_watch: "Up to 5 themes",
+    cmp_r15: "Support independent operations", cmp_r16: "Early access to non-analysis features",
+    cmp_v_free_stocks: "80", cmp_v_prem_stocks: "80 (same)",
     cmp_v_std: "Standard", cmp_v_priority: "Priority", cmp_v_prio_line: "1-on-1 support",
+    cmp_equal_note: "All investment analysis content (digest, signal cards, AI assistant, push alerts) is identical for free and paid users.",
     faq_label: "FAQ", faq_title: "Common Questions",
     faq_q1: "Can I cancel anytime?",
     faq_a1: "Yes. After canceling, your plan stays active until the end of the current billing period. <strong>No cancellation fees, no hidden charges</strong> — cancel anytime in your account settings.",
     faq_q2: "How does annual billing work?",
     faq_a2: "Premium's annual plan is 20% cheaper per month: <strong>NT$499/mo monthly, NT$399/mo annually (billed NT$4,788 once)</strong>. The first-month NT$299 trial discount applies to the monthly plan only.",
     faq_q3: "What's the difference between Free and Premium?",
-    faq_a3: "Free gives you daily market overviews, top news, and personalized analysis for up to 5 stocks. <strong>Premium unlocks unlimited tracking</strong> — you set as many stocks as you want and the AI analyzes today's news for your full portfolio specifically.",
+    faq_a3: "<strong>Zero difference in analysis content</strong> — the digest, signal cards, AI assistant and push alerts are identical for free and paid users. Premium is a supporter plan: you back independent operations (no ads, no stock tips for sale) and get priority 1-on-1 support plus early access to non-analysis features.",
     faq_q4: "What is an invite code?",
-    faq_a4: "MarketDaily's free tier currently launches by invitation to ensure quality. <strong>Invite codes are shared by existing subscribers</strong> or distributed via giveaways on Instagram / X. The Premium plan does not require an invite code and can be subscribed to directly.",
+    faq_a4: "<strong>No invite code is needed</strong> — leave your email and start receiving the digest for free. Invite codes are a promo mechanism shared by subscribers or via official giveaways; redeeming one gives the same free plan.",
+    faq_q7: "Why is all the analysis free?",
+    faq_a7: "MarketDaily does not hold a securities investment consulting licence, so all AI analysis content (digest, signal cards, AI assistant, push alerts) is <strong>free for every user and never tied to payment</strong>. The paid Premium tier is a supporter plan containing no analysis content. Everything is AI-generated general information — not investment advice; investment decisions are your own.",
     faq_q5: "How does billing work after I subscribe?",
     faq_a5: "After choosing Premium, payment is <strong>processed immediately by Stripe</strong> and your billing period begins, renewing automatically each month or year. You can <strong>cancel anytime in your account settings</strong> — your plan stays active until the end of the current period, with no further charges.",
     faq_q6: "What payment methods are supported?",
@@ -1085,25 +1102,29 @@ const i18n = {
     cta_monthly_note: "Monthly plan, cancel anytime",
     cta_btn: "Subscribe to Premium",
     cta_guarantee: "Cancel Anytime", cta_no_card: "No Hidden Fees", cta_cancel: "Secure Stripe Checkout",
-    footer_note: "Every morning at 7AM · AI financial digest for investors"
+    footer_note: "Every morning at 7AM · AI financial digest for investors",
+    footer_compliance: "MarketDaily is not a licensed securities investment consulting enterprise. All content is AI-generated general information for reference only — not investment advice; all analysis content is identical for free and paid users. Investing involves risk; decisions are your own."
   },
   zh: {
     page_title: "定價方案 · MarketDaily",
     nav_home: "首頁", nav_pricing: "定價", nav_dashboard: "我的專區", nav_record: "戰績", nav_vs: "vs 對手",
     price_pill: "方案與定價",
     price_h1: "選擇最適合你的<br><span class=\"grad\">方案</span>",
-    price_sub: "從免費開始，隨時升級。取消隨時生效，沒有隱藏費用。",
+    price_sub: "完整功能全部免費。Premium 是支持者方案 — 分析內容不因付費而異。",
     bill_monthly: "月付", bill_annual: "年付", bill_save: "省 20%",
     tier_free_name: "免費版 · Starter",
-    tier_free_desc: "週一到週六早上 7 點,基礎版市場快訊直送信箱(週日休息一天)。適合剛入門的投資人。",
+    tier_free_desc: "完整產品,全部免費。個人化持股日報、AI 助手、即時推播,週一到週六早上 7 點直送信箱。",
     tier_free_btn: "免費開始",
     sf1: "每日大盤摘要（美股 + 台股）",
     sf2: "5 大新聞精選（假訊息過濾）",
     sf3: "加密貨幣動向（BTC / ETH / SOL）",
     sf4: "板塊輪動概覽",
-    sf5: "個人化持倉分析（最多 5 檔）",
+    sf5: "個人化持倉分析（最多 80 檔）",
     sf6: "即將公布財報提醒",
     sf7: "需邀請碼",
+    sf8: "日報深度自選（簡單看 / 標準 / 看深入）",
+    sf9: "AI 投資助手（每日 30 則）",
+    sf10: "重大新聞即時推播（手機 / 瀏覽器）",
     badge_popular: "最超值",
     price_per_month: "/月",
     tier_pro_desc: "適合積極追蹤持股的投資人，個人化分析讓每封日報都跟你的投資組合直接掛鉤。",
@@ -1115,17 +1136,15 @@ const i18n = {
     pf5: "即將公布財報提醒",
     pf6: "持倉損益追蹤",
     pf7: "優先客服回覆",
-    tier_prem_desc: "給高度投入的投資人。無限追蹤、即時警報、月度健檢，全方位掌控投資組合。",
-    pmf1: "免費版所有功能",
+    tier_prem_desc: "支持者方案。所有分析功能免費版已全部包含 — Premium 是你支持 MarketDaily 獨立營運的方式。",
+    pmf1: "免費版所有功能（分析內容完全相同）",
     premium_trial_note: "首月 NT$299 · 之後 NT$499/月 · 隨時取消",
-    pmf2: "無限股票追蹤",
-    pmf3: "AI 助手雙向對話",
-    pmf3b: "重大新聞即時推播(手機/瀏覽器)",
+    pmf2: "支持獨立營運（不接廣告、不賣明牌）",
     free_submit_btn: "送出 →",
     placeholder_email: "your@email.com",
-    pmf4: "月度投資組合健檢報告",
-    pmf5: "客製化觀察清單（最多 5 主題）",
+    pmf4: "非分析類新功能搶先體驗（陸續推出）",
     pmf6: "優先 1-1 專人客服",
+    prem_equal_note: "Premium 不包含任何額外的個股分析或投資建議內容 — 所有分析內容對全體用戶免費且相同。",
     annual_pro_note: "年付 NT$2,870 一次扣款",
     annual_prem_note: "年付 NT$4,788 一次扣款",
     cmp_label: "詳細比較",
@@ -1136,23 +1155,25 @@ const i18n = {
     cmp_g_alert: "提醒", cmp_g_support: "支援",
     cmp_r1: "每日大盤摘要", cmp_r2: "5 大新聞精選",
     cmp_r3: "加密貨幣動向", cmp_r4: "板塊輪動概覽",
-    cmp_r5: "美股深度追蹤", cmp_r6: "台股深度追蹤",
-    cmp_r7: "二階思考分析", cmp_r8: "股票追蹤數量",
-    cmp_r9: "持倉損益追蹤", cmp_r10: "客製化觀察清單",
-    cmp_r11: "月度投組健檢", cmp_r12: "財報提醒",
+    cmp_r5: "個人化持股訊號卡（美股 + 台股）", cmp_r6: "日報深度自選（簡單 / 標準 / 深入）",
+    cmp_r7: "AI 投資助手（每日 30 則）", cmp_r8: "股票追蹤數量",
+    cmp_r12: "財報提醒",
     cmp_r13: "重大新聞即時推播(手機/瀏覽器)", cmp_r14: "客服回覆",
-    cmp_v_free_stocks: "最多 5 檔", cmp_v_pro_stocks: "最多 15 檔", cmp_v_prem_stocks: "無限",
-    cmp_v_prem_watch: "最多 5 主題",
+    cmp_r15: "支持獨立營運（不接廣告、不賣明牌）", cmp_r16: "非分析類新功能搶先體驗",
+    cmp_v_free_stocks: "80 檔", cmp_v_prem_stocks: "80 檔（相同）",
     cmp_v_std: "標準", cmp_v_priority: "優先", cmp_v_prio_line: "1-1 專人客服",
+    cmp_equal_note: "所有投資分析內容（日報、持股訊號卡、AI 助手、即時推播）對免費與付費用戶完全相同，不因付費而異。",
     faq_label: "常見問題", faq_title: "你可能想問的",
     faq_q1: "我可以隨時取消嗎？",
     faq_a1: "可以。取消訂閱後，你的方案在當前計費週期結束前仍然有效。<strong>沒有違約金，沒有任何隱藏費用</strong>，隨時在帳號設定裡一鍵取消。",
     faq_q2: "年付方案怎麼算？",
     faq_a2: "Premium 年付方案每月費用比月付便宜 20%：<strong>月付 NT$499/月，年付則是 NT$399/月（一次扣款 NT$4,788）</strong>。首月試讀 NT$299 折扣只適用於月付方案。",
     faq_q3: "免費版跟 Premium 差在哪？",
-    faq_a3: "免費版提供每日大盤概覽、新聞精選，以及最多 5 檔的個人化持倉分析。<strong>Premium 直接無限追蹤</strong>——你設定多少支股票都行,AI 就針對你的完整投資組合分析今天的新聞如何影響你,而不是泛泛的市場報導。",
+    faq_a3: "<strong>投資分析內容零差異</strong>——日報、持股訊號卡、AI 助手、即時推播對免費與付費用戶完全相同。Premium 是支持者方案：支持 MarketDaily 獨立營運（不接廣告、不賣明牌），並獲得 1-1 優先客服與非分析類新功能搶先體驗。",
     faq_q4: "什麼是邀請碼？",
-    faq_a4: "MarketDaily 目前以邀請制推出免費版，確保服務品質。<strong>邀請碼可透過現有訂閱者分享</strong>，或在 Instagram / X 追蹤官方帳號參加不定期抽選活動取得。Premium 方案不需要邀請碼，可直接訂閱。",
+    faq_a4: "<strong>不需要邀請碼也能免費訂閱</strong>——留下 Email 就能開始收日報。邀請碼是推廣活動用的機制，透過現有訂閱者分享或官方帳號抽選取得，兌換後同樣是免費方案。",
+    faq_q7: "為什麼所有分析內容都免費？",
+    faq_a7: "MarketDaily 未領有證券投資顧問執照，因此我們把所有 AI 分析內容（日報、持股訊號卡、AI 助手、即時推播）<strong>免費提供給全體用戶，且不與任何付費掛鉤</strong>。付費的 Premium 是支持者方案，不包含任何分析內容。所有內容為 AI 生成之一般性資訊整理，僅供參考、不構成投資建議，投資決策請自行判斷。",
     faq_q5: "訂閱後是怎麼計費的？",
     faq_a5: "選擇 Premium 後，款項由 <strong>Stripe 立即處理</strong>並開始當期計費，之後按月（或按年）自動續訂。你可以<strong>隨時在帳號設定取消</strong>，取消後方案維持到當期結束，不會再扣款。",
     faq_q6: "支援哪些付款方式？",
@@ -1167,7 +1188,8 @@ const i18n = {
     cta_monthly_note: "月付方案，隨時取消",
     cta_btn: "立即訂閱 Premium",
     cta_guarantee: "隨時取消", cta_no_card: "沒有隱藏費用", cta_cancel: "Stripe 安全付款",
-    footer_note: "每日早上 7 點 · 台灣投資人的 AI 財經日報"
+    footer_note: "每日早上 7 點 · 台灣投資人的 AI 財經日報",
+    footer_compliance: "MarketDaily 非證券投資顧問事業。所有內容為 AI 生成之一般性資訊整理，僅供參考、不構成投資建議；所有分析內容對免費與付費用戶完全相同。投資有風險，決策請自行判斷。"
   }
 };
 

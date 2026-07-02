@@ -761,7 +761,7 @@ nav::after {
 
     <div class="save-status" id="save-status" onclick="doAutoSave()" data-i18n="save_status_idle">你的選擇會自動儲存,不需要按任何按鈕。</div>
 
-    <!-- 日報深度(Premium 專屬;免費鎖定標準) -->
+    <!-- 日報深度(全體用戶可選) -->
     <style>
       .depth-opts{display:flex;gap:10px;margin-top:6px;}
       .depth-opt{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 8px;border-radius:16px;cursor:pointer;font-family:inherit;
@@ -796,10 +796,7 @@ nav::after {
           <span class="depth-sub" data-i18n="depth_deep_sub">估值 + 產業鏈</span>
         </button>
       </div>
-      <div id="depth-lock" style="display:none;margin-top:12px;font-size:13px;color:rgba(255,255,255,0.55);line-height:1.6;">
-        <span data-i18n="depth_lock">🔒 日報客製化是 Premium 專屬功能,免費方案固定為「標準」。</span>
-        <a href="pricing.html" style="color:#FFC74D;font-weight:700;text-decoration:none;white-space:nowrap;" data-i18n="depth_lock_cta">升級 Premium →</a>
-      </div>
+      <div id="depth-lock" style="display:none;"></div>
     </div>
 
     <!-- Password confirm modal(敏感操作再次驗證密碼用) -->
@@ -820,7 +817,7 @@ nav::after {
     </div>
 
 
-    <!-- 即時推播提醒(自有通道,免費無上限,Premium 專屬) -->
+    <!-- 即時推播提醒(自有通道,全體用戶) -->
     <div class="card" id="push-alert-card" style="margin-top:8px;display:none;">
       <div class="card-title">🔔 即時推播提醒</div>
       <div class="card-desc">重大新聞影響你的持股時,直接推播到這台裝置(鎖屏也會跳通知),不必裝 LINE、不必等隔天日報。完全免費。</div>
@@ -835,7 +832,7 @@ nav::after {
       </div>
     </div>
 
-    <!-- 即時提醒紀錄 feed(Premium 專屬,可滑歷史) -->
+    <!-- 即時提醒紀錄 feed(全體用戶,可滑歷史) -->
     <div class="card" id="alerts-feed-card" style="margin-top:8px;display:none;scroll-margin-top:80px;">
       <div class="card-title">📬 即時提醒紀錄</div>
       <div class="card-desc">你收到的所有重大新聞/政壇提醒都在這裡,最新在最上面,保留 90 天。點「原文」看完整新聞。</div>
@@ -846,7 +843,7 @@ nav::after {
       <button onclick="loadAlertHistory(true)" style="margin-top:12px;width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--input-border);color:var(--text2);padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">↻ 重新整理</button>
     </div>
 
-    <!-- AI 投資助手(浮動泡泡,Premium 專屬) -->
+    <!-- AI 投資助手(浮動泡泡,全體用戶) -->
     <button id="chat-fab" onclick="toggleChatPopup()" title="AI 投資助手" aria-label="AI 投資助手">💬</button>
     <div id="chat-popup">
       <div id="chat-popup-header">
@@ -854,9 +851,7 @@ nav::after {
         <button id="chat-popup-close" onclick="toggleChatPopup(false)" aria-label="關閉">×</button>
       </div>
       <div id="chat-popup-body">
-        <div id="chat-locked-box" style="display:none;">
-          <div style="font-size:12px;color:var(--text2);line-height:1.7;padding:10px 13px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.22);border-radius:10px;" data-i18n-html="chat_locked_notice">⚠️ AI 投資助手是 Premium 專屬功能。<a href="pricing.html" style="color:#fbbf24;font-weight:700;">升級 Premium →</a></div>
-        </div>
+        <div id="chat-locked-box" style="display:none;"></div>
         <div id="chat-box" style="display:none;">
           <div id="chat-messages"></div>
           <div class="chat-input-row">
@@ -925,8 +920,7 @@ const i18n = {
     hdr_plan_paid: "⭐ 付費方案",
     hdr_plan_free: "免費版",
     chat_card_title: "💬 AI 投資助手",
-    chat_card_desc: "問 AI 你的持股、大盤、財經概念 —— 它知道你正在追蹤的股票。Premium 專屬。",
-    chat_locked_notice: "⚠️ AI 投資助手是 Premium 專屬功能。<a href=\"pricing.html\" style=\"color:#fbbf24;font-weight:700;\">升級 Premium →</a>",
+    chat_card_desc: "問 AI 你的持股、大盤、財經概念 —— 它知道你正在追蹤的股票。全體用戶每日 30 則。",
     chat_input_ph: "問我你的持股、大盤…",
     chat_send_btn: "送出",
     chat_greeting: "嗨 👋 我是你的 MarketDaily AI 投資助手。可以問我你追蹤的股票、大盤走勢,或任何財經問題 —— 我知道你的持股清單。",
@@ -935,7 +929,7 @@ const i18n = {
     chat_err_generic: "出了點問題,請稍後再試。",
     chat_err_limit: "今日對話次數已用完(每日上限 30 則),明天再來 🌙",
     chat_err_auth: "登入狀態過期,請重新登入後再試。",
-    chat_err_premium: "AI 投資助手是 Premium 專屬功能。",
+    chat_err_premium: "AI 投資助手暫時無法使用,請稍後再試。",
     login_sub: "訂閱者專區 · 輸入你的 Email 進入",
     login_email_label: "訂閱 Email",
     login_pwd_label: "密碼",
@@ -978,11 +972,8 @@ const i18n = {
     depth_simple: "簡單看", depth_simple_sub: "重點操作",
     depth_standard: "標準", depth_standard_sub: "重點操作 + 新聞 + 技術",
     depth_deep: "看深入", depth_deep_sub: "重點操作 + 新聞 + 技術 + 估值 + 產業鏈",
-    depth_lock: "🔒 日報客製化是 Premium 專屬功能,免費方案固定為「標準」。",
-    depth_lock_cta: "升級 Premium →",
     tw_search_ph: "搜尋台股代號或名稱...",
     cap_count_zero: "已追蹤 0 檔",
-    cap_upgrade: "升級可追蹤更多 →",
     save_status_idle: "你的選擇會自動儲存,不需要按任何按鈕。",
     cpwd_card_title: "🔒 修改密碼",
     cpwd_card_desc: "修改你的帳號登入密碼",
@@ -1099,11 +1090,11 @@ const i18n = {
     bulk_added: n => `✅ 已加入 ${n} 檔`,
     bulk_dupe: n => `已追蹤 ${n} 檔`,
     bulk_unknown: n => `找不到 ${n} 檔`,
-    bulk_capped: n => `${n} 檔因免費方案上限未加入,升級可解鎖`,
+    bulk_capped: n => `${n} 檔超過追蹤上限未加入`,
     bulk_nothing: "沒有解析到任何股票,請檢查輸入內容",
     bundle_added: n => `✅ 已加入 ${n} 檔`,
     bundle_all_have: "你已經追蹤這組所有股票",
-    bundle_capped: (a, c) => `已加入 ${a} 檔;${c} 檔因免費方案上限未加入,升級可解鎖`
+    bundle_capped: (a, c) => `已加入 ${a} 檔;${c} 檔超過追蹤上限未加入`
   },
   en: {
     page_title: "Subscriber Area · MarketDaily",
@@ -1111,8 +1102,7 @@ const i18n = {
     hdr_plan_paid: "⭐ Paid",
     hdr_plan_free: "Free",
     chat_card_title: "💬 AI Investment Assistant",
-    chat_card_desc: "Ask AI about your holdings, the market and finance — it knows the stocks you track. Premium-only.",
-    chat_locked_notice: "⚠️ The AI Investment Assistant is a Premium-only feature. <a href=\"pricing.html\" style=\"color:#fbbf24;font-weight:700;\">Upgrade to Premium →</a>",
+    chat_card_desc: "Ask AI about your holdings, the market and finance — it knows the stocks you track. 30 messages/day for all users.",
     chat_input_ph: "Ask about your holdings, the market…",
     chat_send_btn: "Send",
     chat_greeting: "Hi 👋 I'm your MarketDaily AI investment assistant. Ask me about the stocks you track, market trends, or any finance question — I know your holdings.",
@@ -1121,7 +1111,7 @@ const i18n = {
     chat_err_generic: "Something went wrong. Please try again.",
     chat_err_limit: "You've used today's 30 messages. Come back tomorrow 🌙",
     chat_err_auth: "Your session expired. Please log in again.",
-    chat_err_premium: "The AI assistant is a Premium-only feature.",
+    chat_err_premium: "The AI assistant is temporarily unavailable. Please try again later.",
     login_sub: "Subscriber Area · Enter your email to continue",
     login_email_label: "Subscription Email",
     login_pwd_label: "Password",
@@ -1164,11 +1154,8 @@ const i18n = {
     depth_simple: "Simple", depth_simple_sub: "Key actions",
     depth_standard: "Standard", depth_standard_sub: "Key actions + News + Technicals",
     depth_deep: "In-depth", depth_deep_sub: "Key actions + News + Technicals + Valuation + Supply chain",
-    depth_lock: "🔒 Digest customization is Premium-only. Free plan stays on Standard.",
-    depth_lock_cta: "Upgrade to Premium →",
     tw_search_ph: "Search TW ticker or name...",
     cap_count_zero: "0 stocks tracked",
-    cap_upgrade: "Upgrade to track more →",
     save_status_idle: "Your selections save automatically — no button needed.",
     cpwd_card_title: "🔒 Change Password",
     cpwd_card_desc: "Change your account login password.",
@@ -1285,11 +1272,11 @@ const i18n = {
     bulk_added: n => `✅ Added ${n} stocks`,
     bulk_dupe: n => `${n} already tracked`,
     bulk_unknown: n => `${n} not found`,
-    bulk_capped: n => `${n} skipped — free plan cap reached. Upgrade to unlock.`,
+    bulk_capped: n => `${n} skipped — tracking cap reached`,
     bulk_nothing: "Nothing parsed — please check your input",
     bundle_added: n => `✅ Added ${n} stocks`,
     bundle_all_have: "You already track every stock in this bundle",
-    bundle_capped: (a, c) => `Added ${a}; ${c} skipped due to free plan cap — upgrade to unlock`
+    bundle_capped: (a, c) => `Added ${a}; ${c} skipped — tracking cap reached`
   }
 };
 
@@ -1720,9 +1707,9 @@ function pushSupported() {
   return "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
 }
 async function setupPushCard(email, plan) {
+  // 合規結構:即時推播(含個股操作傾向)對全體用戶開放,不得付費限定。
   const card = document.getElementById("push-alert-card");
   if (!card) return;
-  if (plan !== "premium" && plan !== "admin") { card.style.display = "none"; return; }
   card.style.display = "block";
   // iOS Safari:僅在「已加入主畫面(standalone)」時支援 web push
   const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -1792,7 +1779,6 @@ function escapeHtml(s) {
 async function setupAlertsFeed(email, plan) {
   const card = document.getElementById("alerts-feed-card");
   if (!card) return;
-  if (plan !== "premium" && plan !== "admin") { card.style.display = "none"; return; }
   card.style.display = "block";
   await loadAlertHistory();
   // 從推播點進來(#alerts)→ 直接捲到提醒紀錄
@@ -1888,12 +1874,12 @@ async function disablePush() {
 let _chatHistory = [], _chatRemaining = 30, _chatBusy = false, _chatErr = "";
 
 async function setupChatCard(email, plan) {
+  // 合規結構:AI 投資助手對全體登入用戶開放(每日 30 則一體適用),不得付費限定。
   const fab = document.getElementById("chat-fab");
   if (!fab) return;
-  if (plan !== "premium" && plan !== "admin") { fab.style.display = "none"; return; }
   fab.style.display = "flex";
-  let premium = false, remaining = 30;
-  // 改 POST + password,worker 不會洩漏 plan 給未授權 caller
+  let remaining = 30;
+  // POST + password 取個人剩餘額度(worker 不洩漏 plan 給未授權 caller)
   const pwd = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
   try {
     const res = await fetch(`${WORKER_URL}/chat-status`, {
@@ -1901,11 +1887,13 @@ async function setupChatCard(email, plan) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password: pwd }),
     });
-    if (res.ok) { const d = await res.json(); premium = !!d.premium; remaining = d.remaining; }
+    if (res.ok) { const d = await res.json(); if (typeof d.remaining === "number" && pwd) remaining = d.remaining; }
   } catch {}
-  document.getElementById("chat-box").style.display = premium ? "flex" : "none";
-  document.getElementById("chat-locked-box").style.display = premium ? "none" : "block";
-  if (premium) { _chatRemaining = (typeof remaining === "number") ? remaining : 30; renderChat(); }
+  document.getElementById("chat-box").style.display = "flex";
+  const locked = document.getElementById("chat-locked-box");
+  if (locked) locked.style.display = "none";
+  _chatRemaining = remaining;
+  renderChat();
 }
 
 // AI 助手浮動彈窗開關
@@ -2927,16 +2915,14 @@ function curPayload() {
   return JSON.stringify({ email, password, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym), digest_depth: selectedDepth });
 }
 
-// 日報深度卡(Premium 專屬;免費鎖定標準 + 升級提示)
+// 日報深度卡(全體用戶可選;合規結構 COMPLIANCE_STRUCTURE.md:個股分析內容不得依付費分級)
 function setupDepthCard() {
   const card = document.getElementById("digest-depth-card");
   if (!card) return;
   card.style.display = "block";
-  const premium = userPlan === "premium" || userPlan === "admin";
-  const opts = document.getElementById("depth-opts");
-  document.getElementById("depth-lock").style.display = premium ? "none" : "block";
-  opts.classList.toggle("locked", !premium);
-  if (!premium) selectedDepth = "standard";
+  const lock = document.getElementById("depth-lock");
+  if (lock) lock.style.display = "none";
+  document.getElementById("depth-opts").classList.remove("locked");
   renderDepth();
 }
 
@@ -2947,7 +2933,6 @@ function renderDepth() {
 }
 
 function selectDepth(d) {
-  if (userPlan !== "premium" && userPlan !== "admin") return; // 免費鎖定
   if (selectedDepth === d) return;
   selectedDepth = d;
   renderDepth();
@@ -2977,7 +2962,7 @@ async function doAutoSave() {
       _lastSaved = payload;
       if (data.dropped > 0) {
         setSaveStatus("error", currentLang === 'zh'
-          ? `⚠️ 免費方案上限 ${data.cap} 檔,超過的 ${data.dropped} 檔未儲存`
+          ? `⚠️ 已達追蹤上限 ${data.cap} 檔,超過的 ${data.dropped} 檔未儲存`
           : `⚠️ Free plan allows ${data.cap} stocks — ${data.dropped} not saved`);
       } else {
         setSaveStatus("saved", T('save_saved_long'));

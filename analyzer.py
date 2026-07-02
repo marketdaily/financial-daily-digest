@@ -1369,7 +1369,7 @@ def _council_prompt_block(council: dict, chunk: list) -> str:
 
 
 def _depth_directive(depth: str) -> str:
-    """日報深度客製(Premium 專屬)注入 prompt 的指令。simple=精簡 / deep=深入 / standard=不加。"""
+    """日報深度客製(全體用戶可選)注入 prompt 的指令。simple=精簡 / deep=深入 / standard=不加。"""
     if depth == "simple":
         return ("【深度設定:精簡版 = 純重點操作】這位用戶選了「簡單看」—— 只輸出 TLDR(30秒重點)+ 每支持股的操作卡 + 今天的結論。"
                 "完全不要新聞區塊(不要『今天最重要的5件事』、不要『持倉深度追蹤』)、不要大盤/加密/財報/板塊/進階指標。"
@@ -2135,19 +2135,11 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 （根據今天美股動向，分析對台灣供應鏈的傳導影響。例如：NVDA 漲 → CoWoS 封裝需求 → 台積電/日月光受惠。只寫真正有關聯的，沒有就不寫。2-3 條 bullet，繁體中文）
 </div>"""
 
-    # 深度控制(Premium 客製):simple=最精簡 / standard=依新手判斷 / deep=全開
-    # 新手精簡模式本來就拿掉中階區塊(原始數據儀表板、板塊輪動、二階思考)
-    if depth == "deep":
-        show_advanced = True
-    elif depth == "simple":
-        show_advanced = False
-    elif is_premium:
-        # Premium 用戶「標準」是明確選擇 → 一律給完整標準版,不可被持股數(is_beginner)
-        # 偷偷降級成跟 simple 一樣的精簡版(2026-06-25 用戶反映:選 standard 卻收到 simple)。
-        show_advanced = True
-    else:
-        # 免費/預設用戶才套新手友善裁切(持股 ≤4 不塞進階板塊)。
-        show_advanced = not is_beginner
+    # 深度控制(全體用戶可選,合規結構 COMPLIANCE_STRUCTURE.md:內容不得依付費分級):
+    # simple=最精簡 / standard 與 deep=含中階區塊(原始數據儀表板、板塊輪動、二階思考)。
+    # standard 一律完整,不因付費或持股數偷降級(2026-06-25 用戶反映:選 standard 卻收到 simple);
+    # 想要精簡的用戶選「簡單看」。is_premium 禁止用於任何內容分級。
+    show_advanced = depth != "simple"
     if show_advanced:
         indicator_section = indicator_block
         sector_section = sector_block
