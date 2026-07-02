@@ -1172,7 +1172,7 @@ _COUNCIL_JUDGE = lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_H
 # council_check 的 q429 門檻天天爆表誤判紅色(2026-07-02 用戶反映的洗版根因)。
 _COUNCIL_SEAT_DEAD: dict = {}
 _COUNCIL_SEAT_FAILS: dict = {}
-_COUNCIL_DEAD_MARKERS = ("熔斷", "未設定", "配額耗盡")
+_COUNCIL_DEAD_MARKERS = ("熔斷", "未設定", "配額耗盡", "413")
 
 
 def _council_seat_call(nm, fn, prompt: str):
