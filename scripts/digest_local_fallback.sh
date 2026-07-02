@@ -17,6 +17,15 @@ export PATH="/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin:$PATH"
 if [ -n "${ZSH_VERSION:-}" ]; then SELF="${(%):-%x}"; else SELF="${BASH_SOURCE[0]}"; fi
 cd "$(dirname "$SELF")/.." || exit 1
 
+# safe_pull：取代裸 `git pull --autostash`。只在 tracked 檔案完全乾淨(不含 untracked ??)時
+# 才 pull --rebase，有殘留別人的未 commit 修改就跳過，絕不 autostash 動別人的工作
+# (同 scripts/lib_cron_runner.sh::cron_safe_pull 的邏輯，這支腳本是 bash/zsh 通用檔獨立實作)。
+safe_pull() {
+  if ! git status --porcelain 2>/dev/null | grep -qv '^??'; then
+    git pull --rebase origin main 2>/dev/null
+  fi
+}
+
 # launchd 每 10 分鐘喚醒一次(時區無關);只在台灣時間班次窗口內動工:
 #   早報窗 06:20-06:49(對齊 digest-cron 06:20)、晚報窗 19:25-19:54(對齊 19:25)
 TWH=$((10#$(TZ=Asia/Taipei date +%H)))
@@ -84,7 +93,7 @@ for wait in 0 60 120; do
 done
 
 echo ">>> no cloud run, running digest locally (market=$MARKET)"
-git pull --rebase --autostash origin main || echo "git pull failed, run with local tree"
+safe_pull
 MARKET="$MARKET" /usr/bin/python3 main.py
 rc=$?
 echo "main.py exit=$rc"
@@ -129,7 +138,8 @@ if git diff --cached --quiet; then
   echo "no new public digest to commit"
 else
   git commit -m "chore(digest): persist public archive $(date -u +%Y-%m-%d) (local fallback)"
-  git pull --rebase --autostash origin main && git push origin HEAD:main || echo "archive push failed"
+  safe_pull
+  git push origin HEAD:main || echo "archive push failed"
 fi
 
 # 早班順帶補 weekly_track_record.yml 的活:刷戰績 + 部署 Pages(它的排程也被 Actions 停用波及)
@@ -139,7 +149,8 @@ if [ "$MARKET" = tw ]; then
   if [ -n "$(git status --short docs/data/track-record.json)" ]; then
     git add docs/data/track-record.json
     git commit -m "chore(track-record): auto-refresh $(date -u +%Y-%m-%d_%H%M)UTC (local fallback)"
-    git pull --rebase --autostash origin main && git push origin HEAD:main || echo "track record push failed"
+    safe_pull
+    git push origin HEAD:main || echo "track record push failed"
   fi
   npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true \
     --commit-message "daily refresh (local fallback)" || echo "pages deploy failed"

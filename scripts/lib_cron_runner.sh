@@ -84,3 +84,26 @@ cron_git_persist() {
     git push origin HEAD:main 2>/dev/null
   ) || true
 }
+
+# cron_safe_pull  取代裸 `git pull --autostash origin main`。只在 tracked 檔案完全乾淨
+# (不含 untracked ??)時才 pull --rebase；有殘留別人的未 commit 修改就靜默跳過，絕不 autostash。
+# 用在「開工前先同步最新」的場景（commit 不是重點，只是想拿到 origin 最新）。
+cron_safe_pull() {
+  ( cd "$CRON_LIB_REPO" || exit 0
+    if ! git status --porcelain 2>/dev/null | grep -qv '^??'; then
+      git pull --rebase origin main 2>/dev/null
+    fi
+  ) || true
+}
+
+# cron_abort_if_dirty  若 repo 已有 tracked 未 commit 修改（不含 untracked ??），
+# 直接讓呼叫腳本 exit 0（靜默略過整輪）。給任何後面會做 `git checkout -- .` /
+# `git reset --hard` 這類整樹操作的腳本在動手前守門用 — 保證流程走到那一步時，
+# 樹在腳本自己開始改動之前就是乾淨的，後續的 revert 只會碰到腳本自己造成的變動，
+# 不會誤傷別人的 WIP。呼叫點必須在任何 git 操作之前。
+cron_abort_if_dirty() {
+  if ( cd "$CRON_LIB_REPO" && git status --porcelain 2>/dev/null | grep -qv '^??' ); then
+    echo "[cron_abort_if_dirty] repo 有未 commit 修改(可能是別視窗 WIP)，本輪略過保護"
+    exit 0
+  fi
+}
