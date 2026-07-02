@@ -11,7 +11,7 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl
+from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders
 
 
 def _load_json(path, default):
@@ -86,6 +86,7 @@ def run():
     us_insider_sigs = us_insider.todays_signals(days=2)
     marg = tw_margin.scan(codes)
     sbl_data = tw_sbl.scan(codes)
+    holder_data = tw_holders.scan(codes)
 
     snap = _cb_snapshot()
     snap_ok = snap.returncode == 0 and "snapshot ok" in (snap.stdout or "")
@@ -126,10 +127,16 @@ def run():
             continue
         line = f"{wl[c]}({c}):{s['signal']}"
         (red if s["level"] == "red" else yellow).append(line)
+    for c in codes:
+        h = holder_data.get(c)
+        if not h or h["level"] == "plain":
+            continue
+        line = f"{wl[c]}({c}):{h['signal']}"
+        (red if h["level"] == "red" else yellow).append(line)
 
     os.makedirs(BRIEFS, exist_ok=True)
     md = [f"# 信息差簡報 {today}", ""]
-    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔")
+    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔")
     md.append("")
     md.append("## 🔴 行動級訊號" if red else "## 🔴 行動級訊號:今日無")
     md += [f"- {x}" for x in red]
