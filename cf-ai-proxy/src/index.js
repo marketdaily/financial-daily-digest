@@ -27,7 +27,7 @@ export default {
     const model = ALLOWED.includes(body.model) ? body.model : ALLOWED[0];
     const out = await env.AI.run(model, {
       messages: body.messages || [],
-      max_tokens: Math.min(body.max_tokens || 1000, 4096),
+      max_tokens: Math.min(body.max_tokens || 1000, 8192),
       temperature: body.temperature ?? 0.4,
     });
     const text = typeof out.response === "string" ? out.response : JSON.stringify(out.response);

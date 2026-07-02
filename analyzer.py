@@ -306,6 +306,43 @@ def _call_cf_ai(prompt: str, system: str = None,
     return str(r.json()["response"]).strip()
 
 
+def _call_openrouter(prompt: str, system: str = None,
+                     model: str = "meta-llama/llama-3.3-70b-instruct:free", max_tokens: int = 600) -> str:
+    """OpenRouter 免費層(:free 模型每日額度)。OpenAI 相容 API、獨立廠商聚合器。
+    預接線:沒設 OPENROUTER_API_KEY → raise,席次/鏈自動跳過。用戶自行註冊拿 key
+    (Cloudflare Turnstile 擋自動註冊)後填進 .env 即自動啟用一席,不需改程式。"""
+    key = os.environ.get("OPENROUTER_API_KEY")
+    if not key:
+        raise RuntimeError("未設定 OPENROUTER_API_KEY")
+    r = requests.post("https://openrouter.ai/api/v1/chat/completions",
+                      headers={"Authorization": f"Bearer {key}",
+                               "HTTP-Referer": "https://marketdaily.ai", "X-Title": "MarketDaily"},
+                      json={"model": model, "max_tokens": max_tokens, "temperature": 0.4,
+                            "messages": [{"role": "system", "content": system or _SYSTEM_PROMPT},
+                                         {"role": "user", "content": prompt}]},
+                      timeout=120)
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"].strip()
+
+
+def _call_cerebras(prompt: str, system: str = None,
+                   model: str = "llama-3.3-70b", max_tokens: int = 600) -> str:
+    """Cerebras 免費層(晶圓級引擎,推理極快)。OpenAI 相容 API、獨立廠商。
+    預接線:沒設 CEREBRAS_API_KEY → raise,席次/鏈自動跳過。用戶自行註冊拿 key
+    (reCAPTCHA 擋自動註冊)後填進 .env 即自動啟用一席。"""
+    key = os.environ.get("CEREBRAS_API_KEY")
+    if not key:
+        raise RuntimeError("未設定 CEREBRAS_API_KEY")
+    r = requests.post("https://api.cerebras.ai/v1/chat/completions",
+                      headers={"Authorization": f"Bearer {key}"},
+                      json={"model": model, "max_tokens": max_tokens, "temperature": 0.4,
+                            "messages": [{"role": "system", "content": system or _SYSTEM_PROMPT},
+                                         {"role": "user", "content": prompt}]},
+                      timeout=120)
+    r.raise_for_status()
+    return r.json()["choices"][0]["message"]["content"].strip()
+
+
 def _call_ollama(prompt: str, system: str = None,
                  model: str = "qwen2.5:14b-instruct-q4_K_M", max_tokens: int = 600) -> str:
     """winrig 本地 5080 GPU(Ollama)。零配額、零 429、不吃網路 —— 全雲端 LLM 斷線
@@ -351,6 +388,11 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     # Groq(Llama70B,免費)排在付費 OpenAI 前:Gemini 配額死 + Claude 抖時的免費接手層。
     strong = [("claude:sonnet-4.6", _call_claude),
               ("groq:gpt-oss-120b", lambda p: _call_groq(p)),
+              # 免費雲端 70B 層(獨立廠商/網路路徑):CF Workers AI 一定在;
+              # OpenRouter/Cerebras 沒 key 時 raise 自動跳過,填 key 即自動補進鏈。
+              ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000)),
+              ("openrouter:llama-70b", lambda p: _call_openrouter(p, max_tokens=8000)),
+              ("cerebras:llama-70b", lambda p: _call_cerebras(p, max_tokens=8000)),
               ("openai:gpt-4o-mini", _call_openai)]
     # 本地 GPU 永遠排最後一張網:品質不如雲端大模型(有 audit 閘門把關),
     # 但零配額且不吃網路,全雲端斷線(DNS 瞬斷/配額同時死)時是唯一活口。
@@ -1210,6 +1252,9 @@ _COUNCIL_SEATS = [
     ("local:qwen2.5-14b", lambda p: _call_ollama(p, system=_COUNCIL_SYS, max_tokens=300)),
     # Cloudflare Workers AI(免費 10k neurons/日,經 md-ai-proxy):第四家獨立廠商聲音
     ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, system=_COUNCIL_SYS, max_tokens=300)),
+    # 預接線:沒 key raise→席次自動停用;用戶註冊後填 .env 即多一席,不需改程式
+    ("openrouter:llama-70b", lambda p: _call_openrouter(p, system=_COUNCIL_SYS, max_tokens=300)),
+    ("cerebras:llama-70b", lambda p: _call_cerebras(p, system=_COUNCIL_SYS, max_tokens=300)),
     ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
 _COUNCIL_JUDGE = lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)
