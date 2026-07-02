@@ -10,6 +10,7 @@ Each mention is classified A (direction) or C (risk-avoidance).
 yfinance gives next-trading-day close → win / loss.
 """
 from __future__ import annotations
+import hashlib
 import json
 import re
 import sys
@@ -27,6 +28,9 @@ DIGEST_DIR = ROOT / "docs" / "output"
 OUT_DIR = ROOT / "docs" / "data"
 OUT_FILE = OUT_DIR / "track-record.json"
 CACHE_FILE = ROOT / "scripts" / ".price_cache.json"
+# 匿名化逐筆帳本(修5):不進 docs/(不對外部署),只給機器自己稽核用
+LEDGER_FILE = ROOT / "scripts" / "personal_ledger.jsonl"
+LEDGER_AUDIT_FILE = ROOT / "scripts" / "personal_ledger_audit.json"
 
 # When local digest files are missing (e.g., on CI runners), pull from CDN.
 CDN_BASE = "https://marketdaily.ai/output"
@@ -566,6 +570,87 @@ def fetch_personal_digest_html(token: str) -> str | None:
         return None
 
 
+def _personal_ledger_entries(judged_personal: list[dict], personal_sims: dict[int, dict],
+                              regime_by_date: dict[str, str]) -> list[dict]:
+    """匿名化個人化建議→帳本欄位(修5)。只留 user token 的雜湊,不留 token/姓名/持股原文
+    ——夠讓 edge_audit 稽核方向/信心/期望值,不夠反推是哪個人。"""
+    entries = []
+    for r in judged_personal:
+        outcome = r.get("outcome")
+        if outcome not in ("win", "loss"):
+            continue
+        tok = r.get("_user_token") or ""
+        user_hash = hashlib.sha256(tok.encode()).hexdigest()[:12] if tok else "unknown"
+        sim = personal_sims.get(id(r))
+        entries.append({
+            "date": r["date"],
+            "ticker": r["ticker"],
+            "market": r.get("market"),
+            "type": r.get("type"),
+            "verdict_class": r.get("verdict_class"),
+            "label": outcome,
+            "prob": round(r["confidence"] / 100, 4) if r.get("confidence") else None,
+            "regime": regime_by_date.get(r["date"]),
+            "ret": sim["ret_pct"] if sim else None,
+            "user_hash": user_hash,
+        })
+    return entries
+
+
+def append_personal_ledger(entries: list[dict]) -> int:
+    """append-only、跨日重跑 idempotent(同 date+ticker+type+verdict+user_hash 不重複寫入,
+    因為 build_track_record 每次都重新走訪全部歷史日期)。"""
+    existing_keys: set[tuple] = set()
+    if LEDGER_FILE.exists():
+        for line in LEDGER_FILE.read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                e = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            existing_keys.add((e.get("date"), e.get("ticker"), e.get("type"),
+                               e.get("verdict_class"), e.get("user_hash")))
+    new_lines = []
+    for e in entries:
+        key = (e["date"], e["ticker"], e["type"], e["verdict_class"], e["user_hash"])
+        if key in existing_keys:
+            continue
+        existing_keys.add(key)
+        new_lines.append(json.dumps(e, ensure_ascii=False))
+    if new_lines:
+        with open(LEDGER_FILE, "a", encoding="utf-8") as f:
+            f.write("\n".join(new_lines) + "\n")
+    return len(new_lines)
+
+
+def run_ledger_edge_audit() -> None:
+    """對匿名帳本跑通用 edge_audit 稽核器,結果寫檔供 ~/autonomous/kpi_pull.py 讀進 kpi.md
+    (修5 解鎖驗收:沒有這個就不知道未來的信心/regime/幾何修法有沒有讓 edge 變正)。
+    best-effort:非 winrig 環境(沒有 ~/autonomous)就安靜跳過,不影響 track-record 主流程。"""
+    if not LEDGER_FILE.exists():
+        return
+    audit_dir = Path.home() / "autonomous" / "capabilities" / "edge_audit"
+    if not (audit_dir / "audit.py").exists():
+        return
+    try:
+        sys.path.insert(0, str(audit_dir))
+        import audit as edge_audit  # type: ignore
+
+        records = [json.loads(l) for l in LEDGER_FILE.read_text(encoding="utf-8").splitlines() if l.strip()]
+        out = {
+            "generated_at": datetime.now().isoformat(timespec="seconds"),
+            "n_total": len(records),
+            "a": edge_audit.audit_records([r for r in records if r.get("type") == "A"], group_by="market"),
+            "c": edge_audit.audit_records([r for r in records if r.get("type") == "C"], group_by="market"),
+        }
+        LEDGER_AUDIT_FILE.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"[ledger-audit] n={len(records)} -> {LEDGER_AUDIT_FILE}")
+    except Exception as exc:
+        print(f"[warn] ledger edge_audit failed: {exc}", file=sys.stderr)
+
+
 def main() -> int:
     dates = discover_dates()
     if not dates:
@@ -603,6 +688,7 @@ def main() -> int:
                             continue
                         seen_keys.add(key)
                         pr["source_scope"] = "personal"  # 標記不寫入公開 records
+                        pr["_user_token"] = tok  # 內部欄位:只供匿名帳本雜湊,絕不寫入任何輸出檔
                         personal_records.append(pr)
                         added += 1
                     time.sleep(0.1)  # 對 worker 客氣點
@@ -624,6 +710,13 @@ def main() -> int:
         r["outcome"] = judge(r, prices, "5d")
         r["outcome_1d"] = judge(r, prices, "1d")
         judged_personal.append(r)
+
+    # 個人化逐筆模擬報酬(供匿名帳本用;獨立於下面 judged_all 的聚合 sims 迴圈,不影響既有 plan_sim 統計)
+    personal_sims: dict[int, dict] = {}
+    for r in judged_personal:
+        s = simulate_plan(r, prices)
+        if s:
+            personal_sims[id(r)] = s
 
     # records 列表只放公版(隱私策略 A),personal 只進 stats
     judged_public.sort(key=lambda x: (x["date"], x["ticker"]), reverse=True)
@@ -682,6 +775,14 @@ def main() -> int:
         "avg_ret_pct": round(sum(rets) / len(rets), 2) if rets else None,
         "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值",
     }
+
+    # 匿名化逐筆帳本(修5):只有個人化 token 資料時才有內容;沒 INTERNAL_TOKEN 時 personal_records
+    # 為空,entries 也是空,append/audit 都是安全 no-op。
+    ledger_entries = _personal_ledger_entries(judged_personal, personal_sims, regime_by_date)
+    ledger_added = append_personal_ledger(ledger_entries)
+    if ledger_added:
+        print(f"[ledger] +{ledger_added} new personal ledger rows (candidates={len(ledger_entries)})")
+    run_ledger_edge_audit()
 
     stats = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
