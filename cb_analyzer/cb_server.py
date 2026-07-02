@@ -3,7 +3,7 @@
   GET /api/analyze?code=&tcri=   → 該代碼完整分析卡(HTML 片段)
   GET /api/sim?capital=&code=&tcri= → 資金模擬結果(HTML 片段)
 啟動:python3 cb_server.py [port]   預設 8911。"""
-import os, sys, html, urllib.parse
+import os, sys, html, math, datetime, urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import cb_core, cb_data, cb_profiles, cb_intel, cb_simulate, cb_report
 import cb
@@ -50,7 +50,6 @@ def _human_card(it, sd, a):
     T = a["T_opt"]
     tag, col, oneliner, action = _verdict_parts(it, a, be_move)
     # 抱到到期賺錢機率(GBM 解析,基準漂移 7%)
-    import math
     vol, drift = a["hist_vol"], 0.07
     if be_S <= spot:
         prob = 0.85
@@ -62,9 +61,16 @@ def _human_card(it, sd, a):
     price_note = "(已用你帶入的 CB 現價,零誤差)" if a.get("market_price") else \
                  ("(用承銷價估,想精準就帶入 CB 現價)" if src.startswith("承銷") else "(用面額100估,建議帶入 CB 現價)")
 
+    fair = a["theoretical"]
+    fair_gap = fair - a["buy_price"]
+    fair_txt = (f'CB 價 <b>{fair:.1f} 以下</b>才算便宜(合理價=債券底+選擇權值)。'
+                + (f'目前基準 {a["buy_price"]:.1f} 比合理價便宜 {fair_gap:.1f} 元 ✓'
+                   if fair_gap >= 0 else
+                   f'目前基準 {a["buy_price"]:.1f} <b style="color:#f87171">貴了 {abs(fair_gap):.1f} 元</b>,別追'))
     bullets = [
         ("買一張要付", f'<b>約 NT${prem*1000:,.0f}</b>(這就是你的成本,也是<b>最多會賠的錢</b>){price_note}'),
         ("最多賠", f'NT${prem*1000:,.0f}／張(不會賠更多——債券部分已賣給銀行扛)'),
+        ("出價上限", fair_txt),
         ("要開始賺", f'股票要從 {spot:.1f} 漲到 <b>{be_S:.1f}</b>(約 <b>{be_move*100:+.0f}%</b>)'),
         ("抱到期賺錢機率", f'<b>約 {prob*100:.0f}%</b>(抱 {T:.1f} 年到期,用一般年報酬 7% 估)'),
         ("槓桿", f'用 NT${prem*1000:,.0f} 控制約 NT${a["parity"]*1000:,.0f} 的股票曝險(約 {lev:.1f} 倍)'),
@@ -82,13 +88,88 @@ def _human_card(it, sd, a):
     return (
         f'<div class="hcard">'
         f'<span class="hname">{html.escape(it["name"])}</span>'
-        f'<span class="hcode">股 {it["stock_code"]} · 債 {it["bond_code"]} · {it.get("collateral","")}</span>'
+        f'<span class="hcode">股 {it["stock_code"]} · 債 {it["bond_code"]} · {it.get("collateral","")} · 報價 {sd.get("date","")}</span>'
         f'<div class="verdict" style="color:{col};background:{col}1e;border:1px solid {col}55">{tag}</div>'
         f'<div class="hone">{html.escape(oneliner)}</div>'
         f'<ul class="hbul">{lis}</ul>'
         f'<div class="haction"><b>怎麼做:</b>{html.escape(action)}</div>'
         f'<details class="tech"><summary></summary><div class="cards">{cb_report._card(it, sd, a)}</div></details>'
         f'</div>')
+
+
+def brief_fragment():
+    """今日結論:老闆一打開就看到——哪幾檔能拆、出價上限多少、哪幾檔在等定價。"""
+    A = cb_core.ASSUMPTIONS
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    go, wait, rows = 0, 0, []
+    qdate = ""
+    for it in DB["items"]:
+        if not (it.get("conv_price") and it.get("premium_mid")):
+            continue
+        if not cb_core.eligibility(it)[0]:
+            continue
+        sd = cb_data.get_stock(it["stock_code"], vol_weights=VW())
+        if not sd:
+            continue
+        qdate = sd.get("date") or qdate
+        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"])
+        if not a.get("ok"):
+            continue
+        strike, _ = cb_core.redemption_value(it.get("put"))
+        be_S = it["conv_price"] * (strike + a["cbas_premium"]) / 100.0
+        be_move = be_S / a["spot"] - 1
+        tag, col, one, _act = _verdict_parts(it, a, be_move)
+        if tag.startswith("✅"):
+            go += 1
+        else:
+            wait += 1
+        rows.append(
+            '<div class="brow" onclick="quick(\'%s\')" title="點我看完整分析">'
+            '<span class="btag" style="color:%s;background:%s1a;border-color:%s55">%s</span>'
+            '<span class="bnm">%s</span>'
+            '<span class="bfair">出價上限 <b>%.1f</b>(合理價)· 權利金約 NT$%s/張</span>'
+            '<span class="bone">%s</span></div>'
+            % (it["bond_code"], col, col, col, html.escape(tag),
+               html.escape(it["name"]), a["theoretical"],
+               f"{a['cbas_premium']*1000:,.0f}", html.escape(one)))
+    watch = [i for i in DB["items"]
+             if (not i.get("conv_price") or not i.get("premium_mid"))
+             and i.get("tcri") in A["elig_tcri"] and (i.get("size_yi") or 0) >= A["elig_min_size"]]
+    watch.sort(key=lambda i: -(i.get("size_yi") or 0))
+    wnames = "、".join(f'{html.escape(i["name"])}({i["stock_code"]})' for i in watch)
+    if go:
+        head = f'今天有 <b style="color:#34d399">{go} 檔可以進場拆解</b>'
+        head += f',另外 {wait} 檔建議再等。' if wait else '。'
+    elif rows:
+        head = (f'今天<b>沒有建議直接進場的標的</b>——{wait} 檔符合準則但時機不對(見下),'
+                f'先不動作也是一種決定。')
+    else:
+        head = '目前沒有已定價且符合準則的案件。'
+    if watch:
+        head += (f' 另有 <b style="color:#a5b4fc">{len(watch)} 檔符合準則、正在等承銷定價</b>:'
+                 f'{wnames} —— 定價一公布,輸入代碼馬上出結論。')
+    return (
+        '<div class="bhead">📌 今日結論　<span class="bsub">報價日 %s · 產生於 %s · 準則:TCRI 3-4 且 ≥10億</span></div>'
+        '<div class="blead">%s</div>%s'
+        % (qdate or "—", now, head, "".join(rows)))
+
+
+def _sim_verdict(base):
+    """(tag, color, 一句白話) — 資金/組合模擬共用的先結論。"""
+    pp = base["prob_profit"]
+    p50 = base["p50"]
+    dep = base["deployed"]
+    if pp < 0.25:
+        return ("❌ 不建議這樣買", "#f87171",
+                f"最可能的結果(中位數)是 NT${p50:+,.0f},賺錢機率只有 {pp*100:.0f}%——"
+                f"這樣配比較像賭運氣,不像投資。")
+    if base["exp_pnl"] > 0 and pp >= 0.45:
+        return ("✅ 這樣買可以", "#34d399",
+                f"賺錢機率 {pp*100:.0f}%、預期賺 NT${base['exp_pnl']:+,.0f},"
+                f"最壞情況也只賠投入的 NT${dep:,.0f}(權利金),風險有底。")
+    return ("⚠️ 普通,想清楚再進", "#fbbf24",
+            f"賺錢機率 {pp*100:.0f}%、最可能結果 NT${p50:+,.0f}——不算差但也不便宜,"
+            f"可以等更好的價位或標的。")
 
 
 def analyze_fragment(code, tcri=None):
@@ -170,6 +251,13 @@ def sim_fragment(capital, code=None, tcri=None, drift=0.07):
 
     o = ['<div class="simbox"><h3>💰 資金模擬　本金 NT$%s　(%s)</h3>'
          % (f"{cap:,.0f}", "小資單押" if single else "分散投組")]
+    vt, vc, vone = _sim_verdict(base)
+    o.append('<div class="verdict" style="color:%s;background:%s1e;border:1px solid %s55">%s</div>'
+             '<div class="hone">%s</div>' % (vc, vc, vc, html.escape(vt), html.escape(vone)))
+    o.append('<div class="simrow">白話總結:拿出 <b>NT$%s</b>(剩 NT$%s 現金)→ 抱約 <b>%.1f 年</b> → '
+             '最好賺 NT$%s(前5%%)、最壞賠光投入的 NT$%s、賺錢機率 <b>%.0f%%</b>。</div>'
+             % (f"{base['deployed']:,.0f}", f"{max(base['cash_left'],0):,.0f}", base["horizon"],
+                f"{base['p95']:+,.0f}", f"{base['deployed']:,.0f}", base["prob_profit"] * 100))
     for L in base["legs"]:
         it = L["item"]
         oob = (L["spot"] / L["K"] - 1) * 100
@@ -236,7 +324,7 @@ def price_fragment(code, tcri=None, cbprice=None):
         '<div class="simbox"><h3>📈 %s(股%s/債%s)現價與拆解基準</h3>'
         '<div class="simrow"><b>現股價 %.2f</b>(%s,即時)　轉換價 %s　'
         '<b>parity %.1f</b>(%s)</div>'
-        '<div class="simrow">債券底 %.1f　理論價 %.1f　權利金/張 <b>%.1f</b>(NT$%s)　槓桿 %.1f×</div>'
+        '<div class="simrow">債券底 %.1f　<b>出價上限(合理價)%.1f</b>——CB 買在這以下才划算　權利金/張 <b>%.1f</b>(NT$%s)　槓桿 %.1f×</div>'
         '<div class="iline">買價基準:<b>%s</b>%s</div>'
         '<div class="iline" style="color:#7dd3fc">要零誤差:把你券商看到的「CB 現價」填進搜尋框的 CB現價 欄(或組合裡),'
         '權利金與報酬就用真價算。</div></div>'
@@ -289,6 +377,13 @@ def portfolio_fragment(legs_str, drift=0.07):
     pm = {id(L["item"]): L for L in base["legs"]}
 
     o = ['<div class="simbox"><h3>💼 組合模擬(你指定張數)</h3>']
+    vt, vc, vone = _sim_verdict(base)
+    o.append('<div class="verdict" style="color:%s;background:%s1e;border:1px solid %s55">%s</div>'
+             '<div class="hone">%s</div>' % (vc, vc, vc, html.escape(vt), html.escape(vone)))
+    o.append('<div class="simrow">白話總結:這組要拿出 <b>NT$%s</b> → 抱約 <b>%.1f 年</b> → '
+             '最好賺 NT$%s(前5%%)、最壞賠光 NT$%s、賺錢機率 <b>%.0f%%</b>。</div>'
+             % (f"{base['deployed']:,.0f}", base["horizon"],
+                f"{base['p95']:+,.0f}", f"{base['deployed']:,.0f}", base["prob_profit"] * 100))
     o.append('<table class="simtab"><tr><th style="text-align:left">標的</th><th>張數</th>'
              '<th>買價基準</th><th>權利金/張</th><th>投入</th><th>獲利機率</th><th>預期損益</th></tr>')
     for it, sd, a, units, cbp in rows:
@@ -348,6 +443,8 @@ class H(BaseHTTPRequestHandler):
             if u.path in ("/", "/index.html"):
                 with open(os.path.join(HERE, "index.html"), encoding="utf-8") as f:
                     return self._send(200, f.read())
+            if u.path == "/api/brief":
+                return self._send(200, brief_fragment())
             if u.path == "/api/analyze":
                 tc = g("tcri")
                 return self._send(200, analyze_fragment(g("code") or "", int(tc) if tc else None))

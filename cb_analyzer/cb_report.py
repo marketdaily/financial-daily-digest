@@ -283,6 +283,18 @@ details.tech summary::before{{content:"▸ 看完整技術數字（給懂的人�
 details.tech[open] summary::before{{content:"▾ 收起技術數字";}}
 .emptyhint{{color:#8b95a7;font-size:13.5px;padding:12px 4px;line-height:1.7}}
 .emptyhint b{{color:#a5b4fc}}
+.brief{{background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(255,255,255,.03));
+border:1px solid rgba(129,140,248,.35);border-radius:16px;padding:16px 20px;margin:0 0 18px}}
+.bhead{{font-size:16px;font-weight:800;color:#fff}}
+.bsub{{font-size:11.5px;font-weight:400;color:#8b95a7}}
+.blead{{font-size:14px;color:#e6e9f0;line-height:1.7;margin:8px 0 4px}}
+.brow{{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px;margin-top:8px;
+background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;cursor:pointer}}
+.brow:hover{{background:rgba(129,140,248,.10)}}
+.btag{{font-size:13px;font-weight:800;padding:3px 10px;border-radius:10px;border:1px solid}}
+.bnm{{font-size:15px;font-weight:700;color:#fff}}
+.bfair{{font-size:12.5px;color:#7dd3fc}} .bfair b{{font-size:14px}}
+.bone{{flex-basis:100%;font-size:12.5px;color:#b7c0d0;line-height:1.55}}
 .simbox{{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:18px;margin-top:14px}}
 .simbox h3{{margin:0 0 10px;font-size:15px;color:#34d399}}
 .simrow{{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;margin:4px 0}}
@@ -334,6 +346,8 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
 </style></head><body><div class="wrap">
 <h1>台股 CB 拆解分析台</h1>
 <div class="sub">來源 {html.escape(db['source_file'])} · 產出 {today} · 已定價 {len(results)} 檔 / 全市場現有可轉債 380+ 檔可查</div>
+
+<div id="brief" class="brief"><div class="sloading">正在產生今日結論(抓最新報價)…</div></div>
 
 <div class="intro">
   <div class="lead">輸入一個代碼,系統自動抓報價與條件,算出這檔 CB 拆解(CBAS)後的<b>權利金成本、槓桿倍數、下檔風險、抱到期的預期報酬</b>,並判斷是否符合我們的進場準則。也能輸入本金,模擬「該買什麼、多久回本、賺賠機率」。</div>
@@ -527,6 +541,9 @@ async function doSim(){{
 }}
 document.getElementById('scode').addEventListener('keydown',e=>{{if(e.key==='Enter')doAnalyze();}});
 document.getElementById('scap').addEventListener('keydown',e=>{{if(e.key==='Enter')doSim();}});
+(async function(){{const B=document.getElementById('brief');
+  try{{B.innerHTML=await call('/api/brief');}}
+  catch(e){{B.style.display='none';}}}})();
 (function(){{const p=new URLSearchParams(location.search);
   if(p.get('doc'))document.querySelectorAll('details.gloss').forEach(d=>d.open=true);
   const q=p.get('q');
