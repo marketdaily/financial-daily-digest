@@ -315,6 +315,11 @@ background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-r
 border:1px solid rgba(129,140,248,.25);cursor:pointer;user-select:none}}
 .chip:hover{{background:rgba(129,140,248,.26)}}
 .slabels{{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;color:var(--mut);margin-bottom:5px}}
+details.adv{{margin-top:10px}}
+details.adv summary{{cursor:pointer;color:#8b95a7;font-size:12px;list-style:none}}
+details.adv summary::-webkit-details-marker{{display:none}}
+details.adv summary::before{{content:"▸ ";color:#818cf8}}
+details.adv[open] summary::before{{content:"▾ "}}
 details.gloss{{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:0 16px;margin:0 0 16px}}
 details.gloss summary{{cursor:pointer;padding:12px 0;color:#a5b4fc;font-weight:700;font-size:13.5px;list-style:none}}
 details.gloss summary::-webkit-details-marker{{display:none}}
@@ -350,34 +355,39 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
 <div id="brief" class="brief"><div class="sloading">正在產生今日結論(抓最新報價)…</div></div>
 
 <div class="intro">
-  <div class="lead">我們買的是<b>拆解(CBAS)後的權利金端</b>:券商/銀行把 CB 拆開,債券底歸銀行,轉換選擇權報「權利金」賣給我們——所以要等券商拆好、而且銀行只肯拆信用好的(這就是 TCRI 3-4 門檻的由來)。輸入代碼,系統自動抓報價與條件,算出<b>權利金合理值、槓桿倍數、下檔風險、抱到期的預期報酬</b>;拿到券商的權利金報價後填入,全套改用真實報價、零誤差。</div>
+  <div class="lead">這個系統回答三個問題:<b>能不能買、權利金多少以內買、什麼時候賣</b>。輸入代碼就有答案,全部用白話講。</div>
   <div class="steps">
-    <div class="step"><b>① 查一檔</b><br>上方搜尋框輸入代碼(股票/債券/現有CB)或公司名 → 按「分析」</div>
-    <div class="step"><b>② 看能不能買</b><br>看綠色「✅ 可拆解」標記與白話結論;紅色代表不符準則或不划算</div>
-    <div class="step"><b>③ 試算資金</b><br>填本金(如 50萬)按「資金模擬」→ 看預期賺賠、回本時間、機率</div>
+    <div class="step"><b>① 查一檔</b><br>輸入代碼或公司名 → 按「分析這一檔」</div>
+    <div class="step"><b>② 看結論</b><br>✅ 可以買 · 🟡 有條件 · ❌ 不要——卡片直接寫買多少錢以內、什麼價位賣</div>
+    <div class="step"><b>③ 試算</b><br>填本金按「資金模擬」→ 預期賺賠、機率、要等多久</div>
   </div>
 </div>
 
 <div class="search">
-  <h2>🔎 輸入代碼即時分析</h2>
-  <div class="slabels"><span>代碼 / 公司名</span></div>
+  <h2>🔎 輸入代碼,馬上有答案</h2>
   <div class="sbar">
-    <input id="scode" placeholder="例如:5289、11011、宜鼎、台泥" autocomplete="off">
-    <input id="stcri" class="cap" type="number" min="1" max="9" placeholder="TCRI(選填)" title="現有可轉債查不到 TCRI 時可手動填 1-9">
-    <input id="sprem" class="cap" placeholder="權利金報價(選填)" title="券商拆解後報給你的權利金(面額100計),填了整套用真實報價算、零誤差">
+    <input id="scode" placeholder="輸入代碼或公司名,例如:82993、5289、群聯" autocomplete="off">
     <button onclick="doAnalyze()">分析這一檔</button>
-    <button onclick="doPrice()" style="background:linear-gradient(90deg,#0ea5e9,#38bdf8)">查現價</button>
+  </div>
+  <div class="sbar" style="margin-top:8px">
     <input id="scap" class="cap" placeholder="本金 如 50萬">
-    <button onclick="doSim()" style="background:linear-gradient(90deg,#10b981,#34d399)">資金模擬</button>
+    <button onclick="doSim()" style="background:linear-gradient(90deg,#10b981,#34d399)">💰 資金模擬</button>
+    <button onclick="doPrice()" style="background:linear-gradient(90deg,#0ea5e9,#38bdf8)">查現價</button>
   </div>
   <div class="chips">
+    <span class="chip" onclick="quick('82993')">群聯三 82993</span>
     <span class="chip" onclick="quick('5289')">宜鼎二 5289</span>
-    <span class="chip" onclick="quick('2303')">聯電 2303</span>
     <span class="chip" onclick="quick('11011')">台泥一永 11011</span>
     <span class="chip" onclick="quickSim('50萬')">💰 模擬 50萬</span>
     <span class="chip" onclick="quickSim('1000萬')">💰 模擬 1000萬</span>
   </div>
-  <div class="shint">「權利金報價」=券商拆解後報給你的價(我們實際買的就是這端),填了就零誤差;沒填系統先推估。現有可轉債(如 11011)若沒 TCRI,填 TCRI 欄判準則更準;資金模擬留空代碼=用符合準則的標的。</div>
+  <details class="adv"><summary>進階選填:TCRI 評等、券商權利金報價(要零誤差再填)</summary>
+    <div class="sbar" style="margin-top:8px">
+      <input id="stcri" class="cap" type="number" min="1" max="9" placeholder="TCRI(選填)" title="現有可轉債查不到 TCRI 時可手動填 1-9">
+      <input id="sprem" class="cap" placeholder="權利金報價(選填)" title="券商拆解後報給你的權利金(面額100計),填了整套用真實報價算、零誤差">
+    </div>
+    <div class="shint">「權利金報價」=券商拆解後報給你的價(我們實際買的就是這端),填了就零誤差;沒填系統先推估。現有可轉債查不到 TCRI 時填 TCRI 欄,判準則更準(常用的我已內建,如群聯)。</div>
+  </details>
 </div>
 
 <div id="sresult"><div class="emptyhint">👆 在上面輸入一個代碼按「<b>分析這一檔</b>」,系統會用<b>白話</b>告訴你:這檔能不能拆、買一張要多少、最多賠多少、要漲多少才賺、多久回本。不知道打什麼?直接點搜尋框下的例子。</div></div>
@@ -473,17 +483,20 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
 <div class="crit">📏 <b>老闆拆解準則(硬門檻)</b>:TCRI 須為 <b>3 或 4</b>(銀行才肯承做資產交換)且
 發行量 <b>≥ 雙位數億(10億)</b>(流動性足)。兩條同時滿足才值得拆解 —— 本期已定價
 <b>{len(elig)}</b> 檔符合({len(other)} 檔不符已略過)。</div>
-<div class="sec ok">✅ 符合準則 · 值得拆解　<span style="font-size:11px;color:#8b95a7;font-weight:400">(點任一列看完整分析)</span></div>
-<div class="twrap"><table><thead><tr><th>#</th><th>評分</th><th>名稱</th><th>代碼</th><th>信用</th><th>發行量</th><th>現股價</th><th title="現在換成股票值多少(面額100)">換股值</th>
+<details class="gloss"><summary>📊 已定價案件排序表(本期符合準則 {len(elig)} 檔——結論已在最上面「今日結論」)</summary>
+<div class="twrap" style="margin:10px 0"><table><thead><tr><th>#</th><th>評分</th><th>名稱</th><th>代碼</th><th>信用</th><th>發行量</th><th>現股價</th><th title="現在換成股票值多少(面額100)">換股值</th>
 <th title="買這張CB的價格基準">買價</th><th title="合理理論價,高於買價=便宜">理論價</th><th title="市場定價反推的波動">市場波動</th><th title="用歷史股價估的波動">估計波動</th><th>槓桿</th><th>建議</th></tr></thead>
 <tbody>{elig_rows}</tbody></table></div>
-<div class="sec watch">👀 待定價觀察清單 · 符合準則但條件未定(盯著等承銷價)　<span style="font-size:11px;color:#8b95a7;font-weight:400">(點任一列看公司分析)</span></div>
-<div class="twrap"><table><thead><tr><th>名稱</th><th>代碼</th><th>評等</th><th>量</th><th>年期</th><th>階段</th><th>主辦</th></tr></thead>
+<div class="shint">點任一列直接看完整分析。</div></details>
+<details class="gloss"><summary>👀 等承銷定價的觀察名單({len(watch)} 檔)——定價一出,輸入代碼馬上出結論</summary>
+<div class="twrap" style="margin:10px 0"><table><thead><tr><th>名稱</th><th>代碼</th><th>評等</th><th>量</th><th>年期</th><th>階段</th><th>主辦</th></tr></thead>
 <tbody>{watch_rows}</tbody></table></div>
-<div class="sec ok">📇 可拆解個案卡(已定價)</div>
+<div class="shint">點任一列看公司分析。</div></details>
+<details class="gloss"><summary>📇 公司個案卡:每家在做什麼、上下游、法人動向(點開)</summary>
+<div class="sec ok" style="margin-top:12px">可拆解(已定價)</div>
 <div class="cards">{cards}</div>
-<div class="sec watch">🏢 待定價觀察 · 公司個案卡</div>
-<div class="cards">{watch_cards}</div>
+<div class="sec watch">等定價中</div>
+<div class="cards">{watch_cards}</div></details>
 <div class="foot">
 <b>假設參數</b>:rf {A['rf']*100:.1f}% · 資產交換 spread {A['asset_swap_spread']*100:.1f}% ·
 前瞻波動加權 短{A['vol_w_short']:.0%}/長{A['vol_w_long']:.0%} · TCRI 信用利差 {tcri_str}<br>
