@@ -252,7 +252,7 @@ def _call_openai(prompt: str, system: str = None) -> str:
 
 
 def _call_groq(prompt: str, system: str = None,
-               model: str = "openai/gpt-oss-120b") -> str:
+               model: str = "openai/gpt-oss-120b", max_tokens: int = 8000) -> str:
     """Groq(GPT-OSS 120B)免費後援。OpenAI 相容 API、速度快,免費層有獨立配額桶。
     注:Groq 於 2026-07-01 通知 llama-3.3-70b-versatile deprecate、2026-08-16 停用,
     官方建議替換為 openai/gpt-oss-120b,已切換避免停用後掉回 deterministic。
@@ -271,7 +271,7 @@ def _call_groq(prompt: str, system: str = None,
                      "Content-Type": "application/json"},
             json={
                 "model": model,
-                "max_tokens": 8000,
+                "max_tokens": max_tokens,
                 "temperature": 0.4,
                 "messages": [
                     {"role": "system", "content": system or _SYSTEM_PROMPT},
@@ -1157,14 +1157,40 @@ _COUNCIL_HAIKU = "claude-haiku-4-5-20251001"
 _COUNCIL_SEATS = [
     ("gemini:2.5-lite", lambda p: _call_gemini(p, "gemini-2.5-flash-lite", system=_COUNCIL_SYS)),
     ("gemini:2.0-flash", lambda p: _call_gemini(p, "gemini-2.0-flash", system=_COUNCIL_SYS)),
-    # Groq Llama70B:免費且獨立配額桶,Gemini 席次全 429 時仍能湊到跨廠商第二把免費聲音
-    ("groq:gpt-oss-120b", lambda p: _call_groq(p, system=_COUNCIL_SYS)),
+    # Groq:免費且獨立配額桶。gpt-oss-120b 免費層 TPM 只有 8000,席次回應是小 JSON,
+    # max_tokens 必須壓小,否則 prompt+max_tokens 超過每分鐘 token 預算 → 全數 413
+    # (2026-07-01 換模型後連兩天 36/36 全滅的根因)
+    ("groq:gpt-oss-120b", lambda p: _call_groq(p, system=_COUNCIL_SYS, max_tokens=1000)),
     ("claude:haiku", lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)),
     # Sonnet 當第二把 Claude 聲音:Gemini 全 429 時仍湊得到 ≥2 席,council 不會整個熄火
     ("claude:sonnet", lambda p: _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")),
     ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
 _COUNCIL_JUDGE = lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)
+# 席次級熔斷:某席配額耗盡/沒 key/連敗 3 次 → 本輪剩餘標的直接跳過該席,
+# 只在停用當下印一行。否則 36 支持股 × 3 個死席 = 百餘行失敗 log,
+# council_check 的 q429 門檻天天爆表誤判紅色(2026-07-02 用戶反映的洗版根因)。
+_COUNCIL_SEAT_DEAD: dict = {}
+_COUNCIL_SEAT_FAILS: dict = {}
+_COUNCIL_DEAD_MARKERS = ("熔斷", "未設定", "配額耗盡")
+
+
+def _council_seat_call(nm, fn, prompt: str):
+    if nm in _COUNCIL_SEAT_DEAD:
+        return None
+    try:
+        o = _council_json(fn, prompt)
+        _COUNCIL_SEAT_FAILS[nm] = 0
+        return o
+    except Exception as ex:
+        msg = str(ex)
+        _COUNCIL_SEAT_FAILS[nm] = _COUNCIL_SEAT_FAILS.get(nm, 0) + 1
+        if any(k in msg for k in _COUNCIL_DEAD_MARKERS) or _COUNCIL_SEAT_FAILS[nm] >= 3:
+            _COUNCIL_SEAT_DEAD[nm] = msg[:60]
+            print(f"  [council] 席次 {nm} 本輪停用({msg[:60]})")
+        else:
+            print(f"  [council] 席次 {nm} 失敗({msg[:60]})")
+        return None
 
 
 def _council_json(fn, prompt: str) -> dict:
@@ -1197,10 +1223,8 @@ def _council_one(sym: str, name_zh: str, block_line: str, prior: str):
     )
     opinions = []
     for nm, fn in _COUNCIL_SEATS:
-        try:
-            o = _council_json(fn, seat_prompt)
-        except Exception as ex:
-            print(f"  [council] {sym} 席次 {nm} 失敗({str(ex)[:60]})")
+        o = _council_seat_call(nm, fn, seat_prompt)
+        if o is None:
             continue
         lean = str(o.get("lean", "")).lower()
         if lean not in ("long", "short", "neutral"):
