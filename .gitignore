@@ -41,3 +41,6 @@ cb_analyzer/.existing_cb_cache.json
 cb_analyzer/.flow_cache.json
 cb_analyzer/*.png
 cb_analyzer/search_result.png
+intel/.inst_cache.json
+intel/.rev_cache.json
+cb_analyzer/.score_price_cache.json

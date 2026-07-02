@@ -5,7 +5,7 @@
 啟動:python3 cb_server.py [port]   預設 8911。"""
 import os, sys, html, json, math, datetime, urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-import cb_core, cb_data, cb_profiles, cb_intel, cb_simulate, cb_report
+import cb_core, cb_data, cb_profiles, cb_intel, cb_simulate, cb_report, cb_ledger
 import cb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -25,12 +25,13 @@ def _outlook(it, a, drift=0.07):
     K, spot, T, vol = it["conv_price"], a["spot"], a["T_opt"], a["hist_vol"]
     be_S = K * (strike + a["cbas_premium"]) / 100.0
     be_move = be_S / spot - 1
-    p_touch = cb_core.touch_prob(spot, be_S, T, vol, drift)
+    p_touch = cb_ledger.apply_calibration(cb_core.touch_prob(spot, be_S, T, vol, drift))
     if be_S <= spot:
         p_term = 0.85
     else:
         d = (math.log(spot / be_S) + (drift - 0.5 * vol * vol) * T) / (vol * math.sqrt(T))
         p_term = cb_core._norm_cdf(d)
+    cb_ledger.record(it, a, be_S, p_touch, p_term)
     return be_S, be_move, p_touch, p_term
 
 
