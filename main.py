@@ -569,6 +569,43 @@ def _web_view_banner(url: str, total_holdings: int = 0, shown: int = 0) -> str:
     )
 
 
+def _picks_display_names(data: dict, market: str, syms: list) -> list:
+    """精選標的顯示名:台股用中文名(主旨/文案不可露裸代號),美股用 ticker。"""
+    if market == "us":
+        return list(syms or [])
+    tw = data.get("tw_market", {}) or {}
+    names_all = data.get("tw_names_all", {}) or {}
+    return [((tw.get(s) or {}).get("name") or names_all.get(s) or s) for s in (syms or [])]
+
+
+def _picks_intro_banner(market: str, names: list) -> str:
+    """精選模式信件頂部說明卡:講清楚這是 AI 委員會公版精選、非用戶持股。"""
+    label = "美股" if market == "us" else "台股"
+    return (
+        '<div style="background:linear-gradient(135deg,#eef2ff,#f5f3ff);border:1px solid #c7d2fe;'
+        'border-radius:12px;padding:16px 18px;margin:0 0 16px;">'
+        f'<div style="font-size:15px;font-weight:800;color:#3730a3;margin-bottom:6px;">🤖 AI 委員會今日精選{label}</div>'
+        f'<div style="font-size:13px;color:#4338ca;line-height:1.7;">你還沒設定{label}持股偏好,'
+        f'今天由多個 AI 模型組成的投資委員會投票,選出目前最有潛力的 {len(names)} 檔{label}:'
+        f'<b>{"、".join(names)}</b>。完整分析在下方,推薦你研究看看。'
+        '想改收自己持股的專屬分析,到 <a href="https://marketdaily.ai/dashboard.html" '
+        'style="color:#6366f1;font-weight:700;">我的專區</a> 設定股票就行。</div></div>'
+    )
+
+
+def _picks_subject(market: str, names: list, date: str) -> str:
+    label = "美股" if market == "us" else "台股"
+    return f"🤖 AI 精選{label}:{'、'.join(names)}｜MarketDaily {date}"
+
+
+def _sanitize_picks_wording(html: str) -> str:
+    """精選模式安全網:LLM/備援模板若仍把精選標的寫成持股,後處理統一改口。"""
+    return (html.replace("你的持股", "AI 精選標的")
+                .replace("你的部位", "AI 精選標的")
+                .replace("持倉深度追蹤", "精選標的深度追蹤")
+                .replace("你的組合透視", "精選組合透視"))
+
+
 def _newbie_guide_footer() -> str:
     """新手等級的訂閱者:日報底部附新手教學連結。"""
     return (
@@ -688,6 +725,18 @@ def run():
     personalization_failures = []  # AI 個人化失敗的 (email, reason),寄完一起推給 admin
     deterministic_fallbacks = []  # retry 仍 HIGH fail → 用 deterministic 模板(無 LLM)寄出
     outbox = []  # (email, html, subject):先全部生成,等班次整點一齊寄(修「日報固定遲到20分」)
+
+    # AI 委員會公版精選:沒選本班次市場持股的用戶,改收委員會投票選出的今日最有潛力標的。
+    # council_top_picks 內部有快取(每輪只投一次票)+動能保底,絕不拋例外。
+    def _get_picks(mk: str) -> list:
+        try:
+            from analyzer import council_top_picks
+            return council_top_picks(data, mk, n=3)
+        except Exception as e:
+            print(f"   ⚠️ AI 精選選股失敗({e}),該用戶改收預設版")
+            return []
+
+    picks_email_cache = {}  # (depth, exp_tier) -> (html, subject):精選版全用戶內容相同,共用生成結果
     for email in subscribers:
         prefs = subscriber_prefs[email]
         us_stocks = prefs.get("us_stocks") or []
@@ -695,58 +744,95 @@ def run():
         depth = prefs.get("digest_depth") or "standard"  # 日報深度全體用戶可選(合規結構:不依付費分級)
         is_premium = prefs.get("plan") in ("premium", "admin")  # 僅供統計/tier 標籤;禁止用來分級日報內容(COMPLIANCE_STRUCTURE.md)
 
-        # ── 雙班次收信對象分流(按持股) ──
-        # tw 早報 = 持台股者 + 完全沒持股者(收台股大盤版);us 晚報 = 持美股者。
+        # ── 雙班次收信對象(按持股決定內容,但每天保證兩封、絕不跳過任何訂閱者) ──
+        # 沒選本班次市場持股的用戶 → 改收「AI 委員會今日精選」公版推薦
+        # (所有用戶內容完全相同且免費,合規:個股內容不依付費/偏好差異化)。
         no_holdings = not us_stocks and not tw_stocks
-        # 週末回顧是「一週一封」跨雙市場總結(美台股皆已收盤),不套用平日盤前的單市場分流:
-        # 台股早班就要涵蓋用戶全部持股(含美股),否則本週回顧會缺美股、只持美股者甚至整封收不到。
+        # 週末回顧是「一週一封」跨雙市場總結(美台股皆已收盤),涵蓋用戶全部持股。
         weekly_recap = _is_saturday_tw() and MARKET in ("tw", "both")
-        if MARKET == "tw" and not (tw_stocks or no_holdings or (weekly_recap and us_stocks)):
-            continue
-        if MARKET == "us" and not us_stocks:
-            continue
         # 個人化只生成本班次市場的 signal-card;對面市場在新聞/大盤區做收盤回顧。
+        picks_mode = False
         if weekly_recap:
             gen_us, gen_tw = us_stocks, tw_stocks
+            if no_holdings:
+                gen_tw = _get_picks("tw")
+                picks_mode = bool(gen_tw)
         elif MARKET == "tw":
-            gen_us, gen_tw = None, tw_stocks
+            if tw_stocks:
+                gen_us, gen_tw = None, tw_stocks
+            else:
+                gen_us, gen_tw = None, _get_picks("tw")
+                picks_mode = bool(gen_tw)
         elif MARKET == "us":
-            gen_us, gen_tw = us_stocks, None
+            if us_stocks:
+                gen_us, gen_tw = us_stocks, None
+            else:
+                gen_us, gen_tw = _get_picks("us"), None
+                picks_mode = bool(gen_us)
         else:
             gen_us, gen_tw = us_stocks, tw_stocks
+            if no_holdings:
+                gen_tw = _get_picks("tw")
+                picks_mode = bool(gen_tw)
+        picks_market = "us" if MARKET == "us" else "tw"
+        picks_banner = ""
+        if picks_mode:
+            _pk_names = _picks_display_names(data, picks_market, (gen_us or []) + (gen_tw or []))
+            picks_banner = _picks_intro_banner(picks_market, _pk_names)
 
         processed += 1
         total = len(gen_us or []) + len(gen_tw or [])  # 本班次實際出卡的持股數
         exp_score, exp_tier = experience_tier(len(us_stocks), len(tw_stocks), prefs.get("plan"))
         tier_counts[exp_tier] = tier_counts.get(exp_tier, 0) + 1
 
+        # 精選版對所有用戶內容完全相同 → 同(深度,tier)共用同一封,不重複燒 LLM
+        picks_key = (depth, exp_tier) if picks_mode else None
+        if picks_key and picks_key in picks_email_cache:
+            html, subject = picks_email_cache[picks_key]
+            print(f"   {email} → AI 精選版(共用今日精選,快取)")
+            if DRY_RUN:
+                print(f"   [DRY-RUN] 略過寄信 → {email}")
+                success_count += 1
+            else:
+                outbox.append((email, html, subject))
+                print(f"   📦 生成完成,進寄送佇列 → {email}")
+            continue
+
         subject = None
         web_url = default_web_url
         shown = total
         if gen_us or gen_tw:
-            print(f"   {email} → 個人化（本班次 {MARKET}｜美股:{len(gen_us or [])}, 台股:{len(gen_tw or [])}）· {exp_tier}（{exp_score}）")
+            mode_tag = "AI 精選" if picks_mode else "個人化"
+            print(f"   {email} → {mode_tag}（本班次 {MARKET}｜美股:{len(gen_us or [])}, 台股:{len(gen_tw or [])}）· {exp_tier}（{exp_score}）")
             try:
                 if ai_calls > 0:
                     time.sleep(5)  # 輕度間隔，避免觸發 Gemini 免費層每分鐘上限
-                full_inner = _report_fn()(data, gen_us or None, gen_tw or None, depth=depth, market=MARKET, is_premium=is_premium)
+                full_inner = _report_fn()(data, gen_us or None, gen_tw or None, depth=depth, market=MARKET, is_premium=is_premium, picks_mode=picks_mode)
                 ai_calls += 1
                 full_inner = _inject_ai_banner(full_inner, data["date"])
                 if depth != "simple":
                     full_inner = _inject_political_signals(full_inner, data, (gen_us or []) + (gen_tw or []))
+                if picks_mode:
+                    full_inner = picks_banner + _sanitize_picks_wording(full_inner)
                 # 完整版（含全部持倉）上傳網頁
                 web_url = save_hosted_digest(build_email_html(data["date"], full_inner), data["date"]) or default_web_url
                 # email 版：持倉超過上限時縮減，避免被 Gmail 截斷
                 if total > DIGEST_EMAIL_MAX_HOLDINGS:
                     time.sleep(5)
-                    inner = _report_fn()(data, gen_us or None, gen_tw or None, email_safe=True, depth=depth, market=MARKET, is_premium=is_premium)
+                    inner = _report_fn()(data, gen_us or None, gen_tw or None, email_safe=True, depth=depth, market=MARKET, is_premium=is_premium, picks_mode=picks_mode)
                     ai_calls += 1
                     inner = _inject_ai_banner(inner, data["date"])
                     if depth != "simple":
                         inner = _inject_political_signals(inner, data, (gen_us or []) + (gen_tw or []))
+                    if picks_mode:
+                        inner = picks_banner + _sanitize_picks_wording(inner)
                     shown = DIGEST_EMAIL_MAX_HOLDINGS
                 else:
                     inner = full_inner
-                subject = get_personalized_subject(data, gen_us or [], gen_tw or [], data["date"])
+                if picks_mode:
+                    subject = _picks_subject(picks_market, _pk_names, data["date"])
+                else:
+                    subject = get_personalized_subject(data, gen_us or [], gen_tw or [], data["date"])
             except Exception as e:
                 print(f"   ⚠️ {email} 個人化失敗，改用預設版（{e}）")
                 # fallback 不能偷偷把通用版當個人化日報寄,用戶會以為自己的持股被忽略。
@@ -787,11 +873,13 @@ def run():
                 try:
                     time.sleep(5)
                     # retry 強制換更強模型(Claude/OpenAI 先於 Gemini),否則又從 Gemini 起跑 = 白 retry
-                    retry_inner = _report_fn()(data, gen_us or None, gen_tw or None, prefer_strong=True, depth=depth, market=MARKET, is_premium=is_premium)
+                    retry_inner = _report_fn()(data, gen_us or None, gen_tw or None, prefer_strong=True, depth=depth, market=MARKET, is_premium=is_premium, picks_mode=picks_mode)
                     ai_calls += 1
                     retry_inner = _inject_ai_banner(retry_inner, data["date"])
                     if depth != "simple":
                         retry_inner = _inject_political_signals(retry_inner, data, (gen_us or []) + (gen_tw or []))
+                    if picks_mode:
+                        retry_inner = picks_banner + _sanitize_picks_wording(retry_inner)
                     retry_html = build_email_html(data["date"], retry_inner)
                     retry_fails = audit_digest(retry_html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est)
                     if not any(f.get("severity") == "high" for f in retry_fails):
@@ -801,18 +889,25 @@ def run():
                     else:
                         print(f"   🛡️ retry 仍 HIGH fail → 切 deterministic fallback")
                         det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
+                        if picks_mode:
+                            det_inner = picks_banner + _sanitize_picks_wording(det_inner)
                         html = build_email_html(data["date"], det_inner)
                         fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est)
                         deterministic_fallbacks.append(email)
                 except Exception as e:
                     print(f"   🛡️ retry 異常 → deterministic fallback ({e})")
                     det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
+                    if picks_mode:
+                        det_inner = picks_banner + _sanitize_picks_wording(det_inner)
                     html = build_email_html(data["date"], det_inner)
                     fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET,
                                          earnings_estimates=_earn_est)
                     deterministic_fallbacks.append(email)
             if fails:
                 audit_failures_by_email[email] = fails
+            # 只快取成功生成的精選版(subject=None 表示走了個人化失敗 fallback,別讓一人失敗全體共用)
+            if picks_key and subject:
+                picks_email_cache[picks_key] = (html, subject)
             if DRY_RUN:
                 print(f"   [DRY-RUN] 略過寄信 → {email}")
                 success_count += 1

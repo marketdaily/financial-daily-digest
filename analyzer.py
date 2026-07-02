@@ -651,6 +651,10 @@ def _postprocess_html(html: str, data: dict) -> str:
     fg = ind.get("fear_greed") or {}
     fg_score = fg.get("score", 50)
     html = html.replace("indicator-FGCLASS", "indicator-fear" if fg_score < 45 else "indicator-greed" if fg_score > 55 else "indicator-neutral")
+    # LLM 偶發把 indicator-VIXCLASS/FGCLASS 整個 token 換成裸 fear/greed/neutral(CSS 只定義
+    # indicator-*),audit undefined_css_class 判 HIGH → 整封白白 retry;後處理直接補正
+    html = _re.sub(r'class="indicator-value (fear|greed|neutral)"',
+                   r'class="indicator-value indicator-\1"', html)
 
     crypto = data.get("crypto", {})
     btc_dir = "up" if (crypto.get("btc") or {}).get("change_pct", 0) >= 0 else "down"
@@ -1413,6 +1417,100 @@ def _council_prompt_block(council: dict, chunk: list) -> str:
             + "\n".join(lines) + "\n")
 
 
+# ── AI 委員會公版精選(給沒選該市場持股的用戶,每天保證兩封信)────────────
+# 合規(COMPLIANCE_STRUCTURE.md):精選對所有用戶完全相同、免費全開,不依付費差異化。
+_PICKS_CACHE: dict = {}
+
+
+def _momentum_picks(data: dict, market: str, n: int, exclude: set = None) -> list:
+    """無 LLM 的保底選股:多頭結構(價>MA20>MA50)優先,其次當日動能。"""
+    exclude = exclude or set()
+    mkt = (data.get("us_market") if market == "us" else data.get("tw_market")) or {}
+    tech = data.get("technicals", {}) or {}
+    cands = [s for s in mkt if not s.startswith("^") and s not in exclude
+             and (mkt.get(s) or {}).get("price") is not None]
+
+    def _key(s):
+        prior = _quant_prior(tech.get(s))
+        chg = (mkt.get(s) or {}).get("change_pct", 0) or 0
+        return (1 if prior == "bull" else 0, chg)
+
+    return sorted(cands, key=_key, reverse=True)[:n]
+
+
+def council_top_picks(data: dict, market: str, n: int = 3) -> list:
+    """AI 委員會投票選出「今日最有潛力」的 n 支公版精選。
+    每輪只跑一次(快取),所有用戶共用同一份結果。
+    fail-safe:席次不足 / 全失敗 → 動能保底選股;絕不拋例外、絕不擋寄信。"""
+    key = (market, n)
+    if key in _PICKS_CACHE:
+        return _PICKS_CACHE[key]
+    picks: list = []
+    try:
+        mkt = (data.get("us_market") if market == "us" else data.get("tw_market")) or {}
+        tech = data.get("technicals", {}) or {}
+        cands = [s for s in mkt if not s.startswith("^")
+                 and (mkt.get(s) or {}).get("price") is not None]
+        # 有技術數據者優先(卡片能錨真實價位),再按當日波動排序;候選壓 20 支內控 prompt 長度
+        cands.sort(key=lambda s: (s in tech, abs((mkt.get(s) or {}).get("change_pct", 0) or 0)), reverse=True)
+        cands = cands[:20]
+        if len(cands) <= n:
+            picks = list(cands)
+        else:
+            lines = []
+            for s in cands:
+                m = mkt.get(s) or {}
+                nm = stock_names.display_name(s, m.get("name"))
+                prior = {"bull": "多頭", "bear": "空頭"}.get(_quant_prior(tech.get(s)), "盤整")
+                lines.append(f"{nm}({s}) 現價{m.get('price')} 今日{(m.get('change_pct') or 0):+.2f}% 結構:{prior}")
+            label = "美股" if market == "us" else "台股"
+            seat_prompt = (
+                f"你是投資委員會委員之一,獨立判斷、不要客套。從下列{label}候選(皆為真實今日數據)中,"
+                f"選出未來 1-2 週最有潛力的 {n} 支,優先多頭結構、有明確題材或動能者。\n"
+                + "\n".join(lines) + "\n"
+                f'只輸出 JSON,不要其他字:{{"picks":["代號","代號","代號"]}}'
+                f"(依看好程度排序,代號必須來自上面候選清單)"
+            )
+            scores: dict = {}
+            voters = 0
+            for nm_, fn in _COUNCIL_SEATS:
+                o = _council_seat_call(nm_, fn, seat_prompt)
+                if not o:
+                    continue
+                got = False
+                for rank, p in enumerate([str(x).upper().strip() for x in (o.get("picks") or []) if x][:n]):
+                    hit = next((c for c in cands if c == p or c in p), None)
+                    if hit:
+                        scores[hit] = scores.get(hit, 0) + (n - rank)
+                        got = True
+                if got:
+                    voters += 1
+            if voters >= 2 and scores:
+                picks = sorted(scores, key=lambda s: -scores[s])[:n]
+                print(f"  [picks] {market} 委員會 {voters} 席投票 → {picks}")
+            else:
+                print(f"  [picks] {market} 委員會席次不足({voters} 席) → 動能保底選股")
+        if len(picks) < n:
+            picks += _momentum_picks(data, market, n - len(picks), exclude=set(picks))
+    except Exception as ex:
+        print(f"  [picks] {market} 選股整體失敗({str(ex)[:80]}) → 動能保底")
+        try:
+            picks = _momentum_picks(data, market, n)
+        except Exception:
+            picks = []
+    _PICKS_CACHE[key] = picks
+    return picks
+
+
+# 精選模式 prompt 口吻鐵則(三個報告變體共用):標的非用戶持有,不可寫成「你的持股」
+_PICKS_PROMPT_NOTE = (
+    "【重要口吻鐵則:這位用戶尚未設定本班次市場的持股,報告裡的個股是系統 AI 委員會今日公版精選"
+    "(推薦研究用,用戶並未持有)。所有個股卡片與敘述一律用「值得關注/建議研究/若要進場可看 $X」"
+    "的推薦口吻,嚴禁出現「你的持股/你持有/你的部位/加碼/減碼/續抱」這類已持有措辭"
+    "(操作動詞用 買進/觀望/先別進場)。結構與格式照常。】\n\n"
+)
+
+
 def _depth_directive(depth: str) -> str:
     """日報深度客製(全體用戶可選)注入 prompt 的指令。simple=精簡 / deep=深入 / standard=不加。"""
     if depth == "simple":
@@ -1817,7 +1915,7 @@ def _compact_overflow_card(sym: str, data: dict, mkt_status: dict) -> str:
             f'<div class="signal-body"><div class="signal-reason">{body}</div></div></div>')
 
 
-def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, full_limit: int = None, prefer_strong: bool = False, depth: str = "standard") -> str:
+def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, full_limit: int = None, prefer_strong: bool = False, depth: str = "standard", picks_mode: bool = False) -> str:
     """分批生成每檔持股的 signal-card,保證『使用者選的每一支都有下一步』。
     一次塞 30-50 檔給 LLM 會超出輸出上限被截斷 → 改成每 10 檔一批多次呼叫,
     任何一檔 LLM 失敗 / 不合格 → 用真實技術價位的 deterministic 卡補位。
@@ -1860,8 +1958,12 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             )
     def _mk_prompt(sub: list) -> str:
         block = _chunk_market_tech_block(data, sub, depth)
+        lead = ("你是財經顧問。以下是 AI 委員會今日精選標的(用戶並未持有,推薦研究用)。為每一支各生成一張 signal-card,"
+                "用「值得關注/若要進場可看 $X/先觀望」的推薦口吻,嚴禁「你的持股/加碼/減碼/續抱」等已持有措辭。\n"
+                if picks_mode else
+                "你是這位用戶的專屬財經顧問。為以下每一支股票各生成一張 signal-card,給出明確「下一步」操作建議。\n")
         return (
-            f"你是這位用戶的專屬財經顧問。為以下每一支股票各生成一張 signal-card,給出明確「下一步」操作建議。\n"
+            lead +
             f"標的({len(sub)} 支,一支都不能少、不能合併):{', '.join(sub)}\n\n"
             f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{_council_prompt_block(council, sub)}\n"
             f"{rules}\n\n"
@@ -1950,7 +2052,7 @@ def _inject_signal_cards(raw: str, cards: str) -> str:
 
 def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                     email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                    market: str = "both", is_premium: bool = False) -> str:
+                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
     # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
     #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
     # email 版：持倉太多時敘述只留變動最大的 N 支，避免信件過長被 Gmail 截斷（完整版見網頁）。
@@ -2004,11 +2106,14 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
                 d = tw_market[sym]
                 portfolio_lines.append(f"  {stock_names.display_name(sym, d.get('name'))}（{sym}）: {d['change_pct']:+.2f}% (${d['price']})")
 
-    watchlist_section = f"【用戶持倉清單（這份報告的核心主角）】\n美股：{', '.join(watchlist_us)}"
+    if picks_mode:
+        watchlist_section = f"【AI 委員會今日精選標的(用戶未持有——這份報告的核心主角)】\n美股：{', '.join(watchlist_us)}"
+    else:
+        watchlist_section = f"【用戶持倉清單（這份報告的核心主角）】\n美股：{', '.join(watchlist_us)}"
     if watchlist_tw:
         watchlist_section += f"\n台股：{', '.join(watchlist_tw)}"
     if portfolio_lines:
-        watchlist_section += "\n\n【持倉今日漲跌摘要】\n" + "\n".join(portfolio_lines)
+        watchlist_section += ("\n\n【精選標的今日漲跌摘要】\n" if picks_mode else "\n\n【持倉今日漲跌摘要】\n") + "\n".join(portfolio_lines)
 
     few_stocks_note = ""
     if has_holdings and len(all_holdings) < 3:
@@ -2407,13 +2512,15 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 - signal-ticker、ticker、stock-news-ticker、earnings-ticker、impact-stock 這些 span 內一律只放純股票代號，系統會自動補上公司中英文名稱
 """
 
+    if picks_mode:
+        prompt = _PICKS_PROMPT_NOTE + prompt
     raw = _llm_generate(prompt, prefer_strong)
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
     cards = _render_signal_cards_batched(data, top_signal_stocks, mkt_status,
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
-                                         prefer_strong=prefer_strong, depth=depth)
+                                         prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode)
     cards += _portfolio_lens_block(data, all_holdings, depth)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
@@ -2425,7 +2532,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 # ─── Weekend Recap(週六專用:本週回顧 + 下週預告)──────────────
 def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                             email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                            market: str = "both", is_premium: bool = False) -> str:
+                            market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
     # market 由雙班次 caller 傳入(週六台股早報走此函式);週末回顧本就是台股晨間語境,
     # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週六晨間日報:不講當日大盤(已收),改聚焦『本週回顧 + 下週重點』。"""
@@ -2518,6 +2625,8 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 不要 markdown ```、不要在 .stock-card 內塞當日資料(改成本週區間)、不要寫「今日」「盤中」這類週六不該出現的字眼。
 """
 
+    if picks_mode:
+        prompt = _PICKS_PROMPT_NOTE + prompt
     raw = _llm_generate(prompt, prefer_strong)
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
@@ -2531,7 +2640,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 # ─── Monday Outlook(週一專用:上週五收盤 + 週末新聞 + 本週展望 + Gap 警示)──────────────
 def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                            email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                           market: str = "both", is_premium: bool = False) -> str:
+                           market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
     # market 由雙班次 caller 傳入(週一台股早報走此函式);週一展望本就是台股晨間語境,
     # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週一晨間日報:前兩天(週六、週日)沒開盤,所以基準是『上週五收盤』。
@@ -2679,13 +2788,15 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 不要 markdown ```、不要寫「今天大盤」這類週一早上不該出現的字眼(因為現在還沒開盤),改用「上週五」「今早開盤前」「本週」。
 """
 
+    if picks_mode:
+        prompt = _PICKS_PROMPT_NOTE + prompt
     raw = _llm_generate(prompt, prefer_strong)
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
     cards = _render_signal_cards_batched(data, signal_stocks, mkt_status,
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
-                                         prefer_strong=prefer_strong, depth=depth)
+                                         prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode)
     cards += _portfolio_lens_block(data, all_holdings, depth)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
