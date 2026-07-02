@@ -7,3 +7,11 @@
 {"date": "2026-07-02", "bond_code": "80962", "stock_code": "8096", "name": "擎亞二", "spot": 152.5, "be_S": 187.96, "T": 2.0, "vol": 0.7329, "drift": 0.07, "p_touch": 0.7694, "p_term": 0.2793, "cbas_premium": 18.96}
 {"date": "2026-07-02", "bond_code": "80963", "stock_code": "8096", "name": "擎亞三", "spot": 152.5, "be_S": 185.4, "T": 2.0, "vol": 0.7329, "drift": 0.07, "p_touch": 0.7834, "p_term": 0.2838, "cbas_premium": 19.61}
 {"date": "2026-07-02", "bond_code": "811211", "stock_code": "8112", "name": "至上11", "spot": 89.7, "be_S": 113.63, "T": 3.0, "vol": 0.5536, "drift": 0.07, "p_touch": 0.7507, "p_term": 0.3061, "cbas_premium": 19.23}
+{"date": "2026-07-03", "bond_code": "41904", "stock_code": "4190", "name": "佐登四KY", "spot": 25.35, "be_S": 30.73, "T": 2.0, "vol": 0.2964, "drift": 0.07, "p_touch": 0.6827, "p_term": 0.369, "cbas_premium": 14.51}
+{"date": "2026-07-03", "bond_code": "52892", "stock_code": "5289", "name": "宜鼎二", "spot": 1715.0, "be_S": 3033.77, "T": 3.0, "vol": 0.8571, "drift": 0.07, "p_touch": 0.5314, "p_term": 0.1623, "cbas_premium": 39.16}
+{"date": "2026-07-03", "bond_code": "61876", "stock_code": "6187", "name": "萬潤六", "spot": 1005.0, "be_S": 1804.18, "T": 3.0, "vol": 0.8914, "drift": 0.07, "p_touch": 0.5265, "p_term": 0.1551, "cbas_premium": 56.88}
+{"date": "2026-07-03", "bond_code": "65463", "stock_code": "6546", "name": "正基三", "spot": 69.8, "be_S": 101.17, "T": 2.0, "vol": 0.5103, "drift": 0.07, "p_touch": 0.5546, "p_term": 0.2479, "cbas_premium": 24.13}
+{"date": "2026-07-03", "bond_code": "65843", "stock_code": "6584", "name": "南俊國際三", "spot": 743.0, "be_S": 776.47, "T": 2.0, "vol": 0.8161, "drift": 0.07, "p_touch": 0.9499, "p_term": 0.3107, "cbas_premium": 11.34}
+{"date": "2026-07-03", "bond_code": "80962", "stock_code": "8096", "name": "擎亞二", "spot": 153.0, "be_S": 180.26, "T": 2.0, "vol": 0.725, "drift": 0.07, "p_touch": 0.8152, "p_term": 0.296, "cbas_premium": 14.09}
+{"date": "2026-07-03", "bond_code": "80963", "stock_code": "8096", "name": "擎亞三", "spot": 153.0, "be_S": 175.29, "T": 2.0, "vol": 0.725, "drift": 0.07, "p_touch": 0.845, "p_term": 0.3055, "cbas_premium": 13.09}
+{"date": "2026-07-03", "bond_code": "811211", "stock_code": "8112", "name": "至上11", "spot": 89.0, "be_S": 113.63, "T": 3.0, "vol": 0.5485, "drift": 0.07, "p_touch": 0.7423, "p_term": 0.3046, "cbas_premium": 19.23}

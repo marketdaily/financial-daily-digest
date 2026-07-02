@@ -11,7 +11,7 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch
+from intel import tw_institutional, mops_watch, us_analyst
 
 
 def _load_json(path, default):
@@ -82,6 +82,7 @@ def run():
     inst = tw_institutional.scan(codes)
     news = mops_watch.major_news(codes, days=3)
     revs = mops_watch.revenue_updates(codes)
+    us_sigs = us_analyst.todays_signals(days=2)
 
     snap = _cb_snapshot()
     snap_ok = snap.returncode == 0 and "snapshot ok" in (snap.stdout or "")
@@ -104,10 +105,13 @@ def run():
     for r in revs:
         line = f"{r['name']}({r['code']}):{r['signal']}"
         (red if r["level"] == "red" else yellow).append(line)
+    for s in us_sigs:
+        line = us_analyst.format_line(s)
+        (red if s["level"] == "red" else yellow).append(line)
 
     os.makedirs(BRIEFS, exist_ok=True)
     md = [f"# 信息差簡報 {today}", ""]
-    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔")
+    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則")
     md.append("")
     md.append("## 🔴 行動級訊號" if red else "## 🔴 行動級訊號:今日無")
     md += [f"- {x}" for x in red]

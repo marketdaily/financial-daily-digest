@@ -68,13 +68,19 @@ ${tail_msg}" >/dev/null 2>&1
 }
 
 # cron_git_persist "commit message" file1 [file2 ...]  best-effort 持久化,絕不因失敗中斷主流程。
+# 安全鐵則:絕不 --autostash(會把別視窗未 commit 的工作偷塞進 stash 再賭它 pop 得回來)。
+# 只在「我們自己這批 commit 完之後,tracked 檔案已完全乾淨」時才 pull --rebase;
+# 只要還殘留任何別人的未 commit 修改(M/A/D/R,不含 untracked ??),就跳過 pull 只試 push——
+# push 若因落後遠端被拒會安靜失敗,commit 留在本機等下次乾淨時再補推,絕不去動別人的檔案。
 cron_git_persist() {
   local msg="$1"; shift
   ( cd "$CRON_LIB_REPO" || exit 0
     git add "$@" 2>/dev/null
     git diff --staged --quiet 2>/dev/null && exit 0
     git -c user.name=winrig -c user.email=winrig@marketdaily commit -m "$msg" 2>/dev/null
-    git pull --rebase --autostash origin main 2>/dev/null
+    if ! git status --porcelain 2>/dev/null | grep -qv '^??'; then
+      git pull --rebase origin main 2>/dev/null
+    fi
     git push origin HEAD:main 2>/dev/null
   ) || true
 }
