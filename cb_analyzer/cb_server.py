@@ -572,7 +572,7 @@ def portfolio_fragment(legs_str, drift=0.07):
              % (f"{base['deployed']:,.0f}", base["horizon"],
                 f"{base['p95']:+,.0f}", f"{base['deployed']:,.0f}", base["prob_profit"] * 100))
     o.append('<table class="simtab"><tr><th style="text-align:left">標的</th><th>張數</th>'
-             '<th>買價基準</th><th>權利金/張</th><th>投入</th>'
+             '<th title="你填的實際買入價;未填=推估">買入價</th><th>權利金/張</th><th>投入</th>'
              '<th title="死抱到期的保守下限">到期獲利機率</th>'
              '<th title="期間內曾碰到回本點=可帶時間價值提前獲利出場;實戰看這個">中途獲利機率</th>'
              '<th>預期損益(到期)</th></tr>')
@@ -588,7 +588,8 @@ def portfolio_fragment(legs_str, drift=0.07):
                  '<td style="color:#34d399;font-weight:700">%s</td>'
                  '<td style="color:%s">NT$%s</td></tr>'
                  % (html.escape(it["name"]), it["stock_code"], it["bond_code"], units,
-                    a["buy_source"], ("=%.1f" % cbp) if cbp else "", a["cbas_premium"],
+                    ("%.1f" % cbp) if cbp else a["buy_source"], "",
+                    a["cbas_premium"],
                     f"{L['deployed']:,.0f}" if L else "—", pp, pt, col, exp))
     o.append("</table>")
     if bad:

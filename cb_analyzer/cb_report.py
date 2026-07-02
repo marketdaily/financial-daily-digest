@@ -396,18 +396,18 @@ padding:5px 10px 5px 12px;font-size:12.5px;color:#d1fae5;display:flex;align-item
 <div id="sresult"><div class="emptyhint">👆 在上面輸入一個代碼按「<b>分析這一檔</b>」,系統會用<b>白話</b>告訴你:這檔能不能拆、買一張要多少、最多賠多少、要漲多少才賺、多久回本。不知道打什麼?直接點搜尋框下的例子。</div></div>
 
 <div class="portbox">
-  <h2>💼 組合模擬 · 自己指定每檔買幾張(填券商權利金報價=零誤差)</h2>
+  <h2>💼 組合模擬 · 每檔填買幾張、買在多少</h2>
   <div class="sbar">
-    <input id="pcode" class="w1" placeholder="代碼 如 5289" autocomplete="off">
+    <input id="pcode" class="w1" placeholder="代碼 如 82993" autocomplete="off">
     <input id="punits" class="w2" type="number" min="1" placeholder="張數">
-    <input id="pprem" class="w2" placeholder="權利金" title="券商拆解後報給你的權利金(面額100計),我們實際買的就是這端">
-    <input id="pcbp" class="w2" placeholder="CB現價" title="沒有權利金報價時,可改填 CB 市價讓系統反推">
+    <input id="pcbp" class="w2" placeholder="買入價 如 103" title="你實際成交(或掛得到)的 CB 價格,面額100計——市場上常要 103、104 才買得到,照實填">
+    <input id="pprem" class="w2" placeholder="權利金(選)" title="券商直接報權利金的話填這格,優先採用、零誤差">
     <input id="ptcri" class="w2" type="number" min="1" max="9" placeholder="TCRI">
     <button onclick="addLeg()">＋ 加入</button>
     <button onclick="runPort()" style="background:linear-gradient(90deg,#10b981,#34d399)">模擬組合</button>
   </div>
   <div id="plist"></div>
-  <div class="shint">例:5289 買 3 張 + 11011 買 5 張。「權利金」填券商拆解後報給你的價(我們實際買的),該檔即零誤差;沒有的話可填「CB現價」反推,兩者都沒填則用承銷/面額推估。結果顯示在上方結果區。</div>
+  <div class="shint">例:群聯三 82993 買 5 張在 103 + 台泥一永 11011 買 5 張在 101。「買入價」=你實際買到的 CB 價(不是面額100),多付的每一塊都是權利金成本,系統照實算;券商有直接報權利金就填「權利金」欄,優先採用。結果顯示在上方結果區。</div>
 </div>
 
 <details class="gloss"><summary>名詞白話解釋(點開)</summary>
@@ -531,7 +531,7 @@ async function doPrice(){{
 let PLEGS=[];
 function renderLegs(){{
   document.getElementById('plist').innerHTML=PLEGS.map((l,i)=>
-    '<span class="pleg"><b>'+l.code+'</b> '+l.units+'張'+(l.prem?' 權利金'+l.prem:'')+(l.cbp?' @'+l.cbp:'')+(l.tcri?' T'+l.tcri:'')+
+    '<span class="pleg"><b>'+l.code+'</b> '+l.units+'張'+(l.cbp?' 買@'+l.cbp:'')+(l.prem?' 權利金'+l.prem:'')+(l.tcri?' T'+l.tcri:'')+
     ' <span onclick="rmLeg('+i+')">✕</span></span>').join('');
 }}
 function addLeg(){{
