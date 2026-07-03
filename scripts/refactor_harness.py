@@ -381,7 +381,8 @@ def _run_smoke():
     publisher.get_list_id = lambda: 1
     publisher.check_subscriber_count = lambda lid: 3
     publisher.get_all_subscribers = lambda lid: [
-        "tw-user@test.local", "us-user@test.local", "nohold-user@test.local"]
+        "tw-user@test.local", "us-user@test.local", "nohold-user@test.local",
+        "nohold2-user@test.local"]  # 與 nohold 同(depth,tier)→覆蓋精選版快取命中路徑
     sent = []
 
     def _fake_send(email, date, html, key, subject=None):
@@ -398,6 +399,8 @@ def _run_smoke():
                                "digest_depth": "deep", "plan": "premium"},
         "nohold-user@test.local": {"us_stocks": [], "tw_stocks": [],
                                    "digest_depth": "simple", "plan": "free"},
+        "nohold2-user@test.local": {"us_stocks": [], "tw_stocks": [],
+                                    "digest_depth": "simple", "plan": "free"},
     }
     main.get_user_preferences = lambda email: dict(prefs_map[email])
     analyzer.council_top_picks = lambda d, mk, n=3: ["2330", "2317"]

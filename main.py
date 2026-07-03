@@ -451,31 +451,25 @@ def _newbie_guide_footer() -> str:
     )
 
 
-def run():
-    from config import BREVO_API_KEY
-    from publisher import get_list_id, check_subscriber_count, get_all_subscribers, send_transactional_email
+def _run_no_brevo_preview():
+    """無 BREVO_API_KEY(本地開發)→ 只產公版預覽,不碰訂閱者。"""
+    print("① 抓取市場數據與新聞...")
+    data = fetch_all()
+    print("② 過濾假訊息...")
+    data["us_news"] = filter_us_news(data["us_news"])
+    data["tw_news"] = filter_tw_news(data["tw_news"])
+    print(f"③ AI 生成報告（{_report_variant_label()}版）...")
+    inner = _report_fn()(data, market=MARKET)
+    print("④ 生成 AI 市場情緒 Banner...")
+    inner = _inject_ai_banner(inner, data["date"])
+    inner = _inject_political_signals(inner, data)
+    print("⑤ 儲存本地預覽...")
+    save_local(data["date"], inner, suffix=("_us" if MARKET == "us" else ""))
 
-    if not BREVO_API_KEY:
-        print("① 抓取市場數據與新聞...")
-        data = fetch_all()
-        print("② 過濾假訊息...")
-        data["us_news"] = filter_us_news(data["us_news"])
-        data["tw_news"] = filter_tw_news(data["tw_news"])
-        print(f"③ AI 生成報告（{_report_variant_label()}版）...")
-        inner = _report_fn()(data, market=MARKET)
-        print("④ 生成 AI 市場情緒 Banner...")
-        inner = _inject_ai_banner(inner, data["date"])
-        inner = _inject_political_signals(inner, data)
-        print("⑤ 儲存本地預覽...")
-        save_local(data["date"], inner, suffix=("_us" if MARKET == "us" else ""))
-        return
 
-    print("① 取得訂閱者名單與持倉偏好...")
-    list_id = get_list_id()
-    check_subscriber_count(list_id)
-    subscribers = get_all_subscribers(list_id)
-    print(f"   共 {len(subscribers)} 位訂閱者")
-
+def _load_subscriber_prefs(subscribers):
+    """抓每位訂閱者偏好;附 zero-error gate(抓取失敗 ≥30% → 推 admin 告警)。
+    回傳 (subscriber_prefs, all_us_extra, all_tw_extra)。"""
     subscriber_prefs = {}
     all_us_extra, all_tw_extra = set(), set()
     for email in subscribers:
@@ -503,7 +497,11 @@ def run():
                                    dry_run=DRY_RUN)
         except Exception as e:
             print(f"   (admin alert push 失敗：{e})")
+    return subscriber_prefs, all_us_extra, all_tw_extra
 
+
+def _fetch_and_filter_data(all_us_extra, all_tw_extra):
+    """抓市場數據+過濾假訊息;美股晚報遇休市夜回傳 None(整輪不發)。"""
     print(f"② 抓取市場數據（含用戶個股：美股 +{len(all_us_extra)}，台股 +{len(all_tw_extra)}）...")
     data = fetch_all(
         extra_us_stocks=list(all_us_extra) if all_us_extra else None,
@@ -521,8 +519,14 @@ def run():
     from analyzer import _market_status as _mkt_status_fn
     if MARKET == "us" and _mkt_status_fn(data["date"]).get("us_will_open_tonight") is False:
         print("🛑 MARKET=us 但今晚美股休市 → 跳過本輪美股晚報(不發信)")
-        return
+        return None
+    return data
 
+
+def _build_default_report(data):
+    """公版報告:生成→banner/政壇注入→本地存檔→上傳網頁。
+    死防線:全 LLM 失效改 deterministic 版,絕不拋例外(絕不讓用戶缺信)。
+    回傳 (default_report, default_web_url)。"""
     local_suffix = "_us" if MARKET == "us" else ""
     variant_label = _report_variant_label()
     print(f"④ 生成 AI 市場情緒 Banner（{variant_label}版）...")
@@ -544,6 +548,30 @@ def run():
 
     print("⑥ 上傳預設版網頁...")
     default_web_url = save_hosted_digest(build_email_html(data["date"], default_report), data["date"])
+    return default_report, default_web_url
+
+
+def run():
+    from config import BREVO_API_KEY
+    from publisher import get_list_id, check_subscriber_count, get_all_subscribers, send_transactional_email
+
+    if not BREVO_API_KEY:
+        _run_no_brevo_preview()
+        return
+
+    print("① 取得訂閱者名單與持倉偏好...")
+    list_id = get_list_id()
+    check_subscriber_count(list_id)
+    subscribers = get_all_subscribers(list_id)
+    print(f"   共 {len(subscribers)} 位訂閱者")
+
+    subscriber_prefs, all_us_extra, all_tw_extra = _load_subscriber_prefs(subscribers)
+
+    data = _fetch_and_filter_data(all_us_extra, all_tw_extra)
+    if data is None:
+        return
+
+    default_report, default_web_url = _build_default_report(data)
 
     print("⑦ 個人化發送...")
     from analyzer import get_personalized_subject
