@@ -282,7 +282,7 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 - 保持程式碼簡潔
 - **機密一律 `.env`**（已在 .gitignore）：key/token 絕不硬編碼進程式或 commit；新增 secret 先確認 .gitignore 擋得住，git 只放 `.env.example`
 - **前後端分離**：`docs/` 只放前端；Workers / Python pipeline 不產頁面 markup（email HTML 模板例外）。改前端任務不碰後端目錄，反之亦然
-- **關注點分離**：新代碼按 data / logic / render 分層寫；既有大檔（tuna_pipeline main.py、docs 內嵌 JS）的抽離要開獨立任務做，禁止順手夾帶（見 scope-lock 規則）
+- **關注點分離**：新代碼按 data / logic / render 分層寫；既有大檔（根目錄 main.py / analyzer.py、docs 內嵌 JS）的抽離要開獨立任務做，禁止順手夾帶（見 scope-lock 規則）；抽離計畫見 `~/autonomous/research/2026-07-03_clean_code_audit_extraction_plan.md`
 - **新的獨立產品不再塞進本 repo**，另開 repo；本 repo 已有的歷史產品目錄（fortune-ai / ganla-app / youtube_space 等）維持現狀不搬
 - 詳細背景：memory `feedback_engineer_structure_review`（2026-07-03 工程師 7 點體檢）
 
