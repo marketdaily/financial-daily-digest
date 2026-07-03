@@ -9,6 +9,7 @@ import cssutils
 cssutils.log.setLevel(logging.CRITICAL)
 
 from datetime import datetime, timezone, timedelta
+from config_loader import WORKER_URL
 from data_fetcher import fetch_all
 from fake_news_filter import filter_us_news, filter_tw_news
 from analyzer import generate_report, generate_weekend_report, generate_monday_report, DIGEST_EMAIL_MAX_HOLDINGS
@@ -408,9 +409,6 @@ def _update_manifest(date: str):
         manifest["dates"] = manifest["dates"][:30]
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump(manifest, f)
-
-
-WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev"
 
 
 def _extract_sentiment(inner_html: str) -> str:

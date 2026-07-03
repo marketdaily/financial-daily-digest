@@ -17,6 +17,17 @@ GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite",
                  "gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-flash-latest"]
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
+# ── 近端價位錨定參數(_near_term_levels / _postprocess_html 買點分流共用)──
+NEAR_HIGH_RATIO = 0.985      # 建議買區上緣低於現價 1.5% 以上 → chip 改「回檔再買」
+ATR_MAX_RATIO = 0.15         # ATR 超過現價 15% 視為異常
+ATR_FALLBACK_RATIO = 0.03    # 無 ATR / 異常時退回現價 3% 估計
+SUPPORT_ATR_MULT = 1.5       # 低接支撐:現價下方 1.5×ATR
+TARGET_ATR_MULT = 2.0        # 反彈目標:現價上方 2×ATR
+STOP_MAX_ATR_MULT = 2.5      # 停損距現價至多 2.5×ATR
+STOP_FLOOR_RATIO = 0.88      # 停損不得低於現價 -12%
+SUPPORT_FLOOR_RATIO = 0.90   # 支撐不得低於現價 -10%
+TARGET_CAP_RATIO = 1.15      # 目標不得高於現價 +15%
+
 _SYSTEM_PROMPT = (
     "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，"
     "凡是標示「必填、強制、每一張都要」的內容一律不可省略。"
@@ -819,7 +830,7 @@ def _postprocess_html(html: str, data: dict) -> str:
             hi = float(bm.group(2).replace(",", ""))
         except ValueError:
             return block
-        if hi < cur * 0.985:
+        if hi < cur * NEAR_HIGH_RATIO:
             block = block.replace("🟢 建議買入", "🟢 回檔再買(現價勿追)")
         return block
 
@@ -1103,24 +1114,24 @@ def _near_term_levels(price, tech):
             return None
 
     atr = _f(t.get("atr14")) or 0
-    if atr <= 0 or atr > price * 0.15:
-        atr = price * 0.03  # 無 ATR 或異常 → 退回現價 3% 估計
+    if atr <= 0 or atr > price * ATR_MAX_RATIO:
+        atr = price * ATR_FALLBACK_RATIO  # 無 ATR 或異常 → 退回現價估計
     ma20, lo20, hi20 = _f(t.get("ma20")), _f(t.get("lo20")), _f(t.get("hi20"))
-    # 低接支撐:現價下方 1.5×ATR;若 MA20 / 20 日低更靠近現價(壓力先到)就改用它
-    support = price - 1.5 * atr
+    # 低接支撐:現價下方 SUPPORT_ATR_MULT×ATR;若 MA20 / 20 日低更靠近現價(壓力先到)就改用它
+    support = price - SUPPORT_ATR_MULT * atr
     for lvl in (ma20, lo20):
         if lvl and support < lvl < price:
             support = lvl
-    # 反彈目標:現價上方 2×ATR;若 20 日高更近就用 20 日高
-    target = price + 2.0 * atr
+    # 反彈目標:現價上方 TARGET_ATR_MULT×ATR;若 20 日高更近就用 20 日高
+    target = price + TARGET_ATR_MULT * atr
     if hi20 and price < hi20 < target:
         target = hi20
-    # 停損:支撐再下方一個 ATR,且距現價最多 12%
-    stop = min(support - atr, price - 2.5 * atr)
-    stop = max(stop, price * 0.88)
+    # 停損:支撐再下方一個 ATR,且不得超出 STOP 邊界
+    stop = min(support - atr, price - STOP_MAX_ATR_MULT * atr)
+    stop = max(stop, price * STOP_FLOOR_RATIO)
     # 夾邊界:任一價位離現價不得過遠
-    support = max(support, price * 0.90)
-    target = min(target, price * 1.15)
+    support = max(support, price * SUPPORT_FLOOR_RATIO)
+    target = min(target, price * TARGET_CAP_RATIO)
     return round(support, 2), round(target, 2), round(stop, 2)
 
 
