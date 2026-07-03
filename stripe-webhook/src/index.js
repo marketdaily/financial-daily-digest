@@ -1526,7 +1526,7 @@ export default {
       }
       // 邀請碼註冊者 = 免費方案;Premium(支持者方案)需付費升級或管理員手動開通
       await env.USER_PREFS.put(`plan:${email}`, "free");
-      // 歡迎信、補寄日報、推薦轉換全部背景化 —— 任一失敗都不影響「註冊成功」的回應
+      // 歡迎信、推薦轉換全部背景化 —— 任一失敗都不影響「註冊成功」的回應
       ctx.waitUntil(postSignupTasks(email, body.ref, env));
       ctx.waitUntil(recordConvert(env, {
         email, event: "invite_used",
@@ -2024,7 +2024,7 @@ export default {
           }));
         }
         if (session.customer) await env.USER_PREFS.put(`stripe-cust:${session.customer}`, email);
-        // 歡迎信與補寄日報背景化 —— webhook 快速回 200,避免 Stripe 因逾時重送
+        // 歡迎信背景化 —— webhook 快速回 200,避免 Stripe 因逾時重送
         ctx.waitUntil((async () => {
           // 付費用戶也記 signup_ts,讓 lifecycle email 系統涵蓋他們(D7 會自動跳過 paid)
           try {
@@ -2041,8 +2041,6 @@ export default {
           } catch (e) { console.log("stripe signup ts error:", String(e)); }
           try { await sendWelcomeEmail(email, env.BREVO_API_KEY, true, tier); }
           catch (e) { console.log("stripe welcome error:", String(e)); }
-          try { await sendTodayDigestToOne(email, env.BREVO_API_KEY, env.USER_PREFS); }
-          catch (e) { console.log("stripe digest error:", String(e)); }
         })());
         // Attribution: Stripe Checkout 透過 session.metadata 帶 visit_id / utm / ref
         const md = session.metadata || {};
@@ -2215,51 +2213,6 @@ async function verifyStripeSignature(payload, sigHeader, secret) {
   return diff === 0;
 }
 
-function getTaiwanDate() {
-  const now = new Date();
-  return new Date(now.getTime() + 8 * 60 * 60 * 1000).toISOString().split("T")[0];
-}
-
-// 補寄今日日報給「單一新訂閱者」—— 只寄本人,不碰其他訂閱者。
-// 每日全名單廣播由每日 pipeline(main.py)負責,這裡絕不群發。
-async function sendTodayDigestToOne(email, apiKey, kv) {
-  const today = getTaiwanDate();
-
-  // 同一位用戶當天最多補寄一次
-  const sentKey = `digest_sent:${today}:${email}`;
-  if (await kv.get(sentKey)) return;
-
-  // 確認今天有 digest（讀 manifest）
-  try {
-    const manifestRes = await fetch(`https://marketdaily.ai/output/manifest.json?t=${Date.now()}`);
-    if (!manifestRes.ok) return;
-    const manifest = await manifestRes.json();
-    if (!(manifest.dates || []).includes(today)) return; // 今天還沒有日報
-  } catch { return; }
-
-  // 抓今天的 digest HTML
-  let digestHtml;
-  try {
-    const res = await fetch(`https://marketdaily.ai/output/digest_${today}.html`);
-    if (!res.ok) return;
-    digestHtml = await res.text();
-    if (!digestHtml.includes('財經日報')) return; // SPA fallback guard
-  } catch { return; }
-
-  await kv.put(sentKey, "1", { expirationTtl: 86400 * 3 });
-
-  await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: { "api-key": apiKey, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      sender: { name: "MarketDaily 財經日報", email: "hello@marketdaily.ai" },
-      to: [{ email }],
-      subject: `📈 財經日報 ${today} — 今日市場速覽`,
-      htmlContent: digestHtml,
-    }),
-  });
-}
-
 // 稽核記錄:管理員每次異動寫一筆,供 /admin/audit-log 檢視。180 天 TTL。永不因失敗中斷主流程。
 async function logAudit(env, actor, action, detail) {
   try {
@@ -2297,7 +2250,7 @@ async function addToBrevo(email, apiKey, listId, attributes) {
   return false;
 }
 
-// 註冊成功後的背景工作:推薦轉換 + 歡迎信 + 補寄今日日報。
+// 註冊成功後的背景工作:推薦轉換 + 歡迎信。日報不補寄,等隔日排程首發。
 // 每項各自 try/catch —— 任一失敗都不影響「註冊已成功」這個結果。
 async function postSignupTasks(email, refCode, env, isPaid = false, tier = "") {
   // signup_ts 是 lifecycle email 系統的時間錨點;只在第一次寫入,避免重訂閱重置 D1/D7/D14。
@@ -2318,9 +2271,6 @@ async function postSignupTasks(email, refCode, env, isPaid = false, tier = "") {
   try {
     await sendWelcomeEmail(email, env.BREVO_API_KEY, isPaid, tier);
   } catch (e) { console.log("postSignup welcome error:", String(e)); }
-  try {
-    await sendTodayDigestToOne(email, env.BREVO_API_KEY, env.USER_PREFS);
-  } catch (e) { console.log("postSignup digest error:", String(e)); }
 }
 
 // Meta Conversions API — server-side Purchase fire(配 client-side pixel 雙寫,Meta 用 eventID 自動 dedupe)
