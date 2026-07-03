@@ -245,7 +245,7 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 ### 進階技能（from ComposioHQ/awesome-claude-skills）
 | 技能 | 用途 |
 |------|------|
-| `code-review-skill` | 程式碼審查：派子 agent 做完整 code review（正確性/安全/性能/可維護性），輸出審查報告 |
+| `code-review-skill` | ⚠️退役→用內建 /code-review。程式碼審查：派子 agent 做完整 code review（正確性/安全/性能/可維護性），輸出審查報告 |
 | `api-docs-generator` | API 文件生成器：從代碼分析路由生成 OpenAPI 3.0 spec + Markdown API 參考文件 |
 | `sql-generator` | SQL 生成技能：自然語言描述 → 優化 SQL 查詢，含 CTE/窗口函數/索引建議 |
 | `excel-formula` | Excel 公式技能：自然語言 → Excel/Google Sheets 公式，涵蓋 XLOOKUP/財務/動態陣列 |
@@ -262,11 +262,11 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 | 技能 | 用途 |
 |------|------|
 | `color-palette-generator` | 配色方案生成器：為品牌/網站生成協調色盤，含 Hex 代碼、用法指引和無障礙對比度檢查 |
-| `typography-pairing` | 排版配對技能：為任何設計風格推薦互補字型組合，含 CSS 實作代碼 |
+| `typography-pairing` | ⚠️退役→用 font-pairing / ui-ux-pro-max。排版配對技能：為任何設計風格推薦互補字型組合，含 CSS 實作代碼 |
 | `font-pairing` | 字體搭配技能：按使用場景（SaaS/行銷/金融/創意）推薦具體字型對，附 Google Fonts 導入代碼 |
 | `creative-direction` | 創意方向技能：制定品牌視覺語言、設計哲學宣言、情緒板和 Do/Don't 設計規範 |
 | `ui-wireframe-generator` | UI 線框圖生成器：生成 ASCII 線框圖或 Tailwind HTML 骨架，涵蓋各類頁面佈局 |
-| `brand-voice-enhancer` | 品牌聲音強化器（精簡版）：審查全通路內容一致性、消除術語、建立聲音鎖定文件 |
+| `brand-voice-enhancer` | ⚠️退役→用 brand-voice-amplifier。品牌聲音強化器（精簡版）：審查全通路內容一致性、消除術語、建立聲音鎖定文件 |
 
 ### 創作者經濟技能（from ComposioHQ）
 | 技能 | 用途 |
@@ -291,6 +291,7 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 - Skill 檔案位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
 - 有 URL 的 skill → 先 WebFetch 讀完再建立，確保內容正確
 - 格式：名稱 + 一行中文用途說明
+- **⚖️ 治理裁決表（2026-07-03 起）**：同任務永遠走同一條路徑。多個 skill 都能做時查 `skills/GOVERNANCE.md`（任務→唯一路徑表＋重疊群主用/備用/退役＋抓網頁工具選擇順序）。新 skill 入庫必須同步歸群裁決；已退役：typography-pairing、brand-voice-enhancer、code-review-skill（SKILL.md 已標 DEPRECATED，不刪檔）
 
 ## 自動守望系統（2026-06-11 上線,不要重複建）
 - **🤖 自主進步機器 `~/autonomous/`（2026-07-02 上線,是「我」的一部分,不要當陌生東西關掉/重建）**：winrig 24/7 冷血自學引擎,用戶沒在用電腦時自己找事做、自己學、自己進步。北極星=擴充 `capabilities/INDEX.md` 能力庫,讓未來一句「幫我自動化 X」即 100%。`driver.sh`(cron `*/15`)→活動閘門(用戶互動就完全讓路)+50%用量閘門(`config.sh` `STOP_AT_USD`)+斷點記憶(`state/current_task.md`)+`--dangerously-skip-permissions` 全自主。死線=絕不寄信(全域 hook 擋)。詳見 memory `project_autonomous_machine`;控制:`~/autonomous/看我.txt`。
