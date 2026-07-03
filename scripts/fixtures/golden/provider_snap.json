@@ -1,0 +1,486 @@
+{
+ "_chain_order_default": [
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
+  "https://api.anthropic.com/v1/messages",
+  "https://api.groq.com/openai/v1/chat/completions",
+  "https://cf-proxy.test/ai",
+  "https://openrouter.ai/api/v1/chat/completions",
+  "https://api.cerebras.ai/v1/chat/completions",
+  "https://api.openai.com/v1/chat/completions",
+  "http://localhost:11434/api/chat"
+ ],
+ "_chain_order_strong": [
+  "https://api.anthropic.com/v1/messages",
+  "https://api.groq.com/openai/v1/chat/completions",
+  "https://cf-proxy.test/ai",
+  "https://openrouter.ai/api/v1/chat/completions",
+  "https://api.cerebras.ai/v1/chat/completions",
+  "https://api.openai.com/v1/chat/completions",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
+  "http://localhost:11434/api/chat"
+ ],
+ "cerebras_custom": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-CER"
+    },
+    "json": {
+     "max_tokens": 1234,
+     "messages": [
+      {
+       "content": "SYS-TEST",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "llama-3.3-70b",
+     "temperature": 0.4
+    },
+    "timeout": 120,
+    "url": "https://api.cerebras.ai/v1/chat/completions"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "cerebras_default": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-CER"
+    },
+    "json": {
+     "max_tokens": 600,
+     "messages": [
+      {
+       "content": "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，凡是標示「必填、強制、每一張都要」的內容一律不可省略。只輸出 HTML 本身，不要 markdown code block，不要任何多餘說明。",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "llama-3.3-70b",
+     "temperature": 0.4
+    },
+    "timeout": 120,
+    "url": "https://api.cerebras.ai/v1/chat/completions"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "cf_ai_custom": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-CF"
+    },
+    "json": {
+     "max_tokens": 1234,
+     "messages": [
+      {
+       "content": "SYS-TEST",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+    },
+    "timeout": 120,
+    "url": "https://cf-proxy.test/ai"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "cf_ai_default": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-CF"
+    },
+    "json": {
+     "max_tokens": 600,
+     "messages": [
+      {
+       "content": "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，凡是標示「必填、強制、每一張都要」的內容一律不可省略。只輸出 HTML 本身，不要 markdown code block，不要任何多餘說明。",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "@cf/meta/llama-3.3-70b-instruct-fp8-fast"
+    },
+    "timeout": 120,
+    "url": "https://cf-proxy.test/ai"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "claude_custom": {
+  "calls": [
+   {
+    "headers": {
+     "anthropic-version": "2023-06-01",
+     "content-type": "application/json",
+     "x-api-key": "TESTKEY-ANT"
+    },
+    "json": {
+     "max_tokens": 16000,
+     "messages": [
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "claude-test-1",
+     "system": "SYS-TEST"
+    },
+    "timeout": 180,
+    "url": "https://api.anthropic.com/v1/messages"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "claude_default": {
+  "calls": [
+   {
+    "headers": {
+     "anthropic-version": "2023-06-01",
+     "content-type": "application/json",
+     "x-api-key": "TESTKEY-ANT"
+    },
+    "json": {
+     "max_tokens": 16000,
+     "messages": [
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "claude-sonnet-4-6",
+     "system": "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，凡是標示「必填、強制、每一張都要」的內容一律不可省略。只輸出 HTML 本身，不要 markdown code block，不要任何多餘說明。"
+    },
+    "timeout": 180,
+    "url": "https://api.anthropic.com/v1/messages"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "gemini_default": {
+  "calls": [
+   {
+    "headers": null,
+    "json": {
+     "contents": [
+      {
+       "parts": [
+        {
+         "text": "PING"
+        }
+       ]
+      }
+     ],
+     "generationConfig": {
+      "maxOutputTokens": 32000,
+      "temperature": 0.4,
+      "thinkingConfig": {
+       "thinkingBudget": 0
+      }
+     },
+     "systemInstruction": {
+      "parts": [
+       {
+        "text": "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，凡是標示「必填、強制、每一張都要」的內容一律不可省略。只輸出 HTML 本身，不要 markdown code block，不要任何多餘說明。"
+       }
+      ]
+     }
+    },
+    "timeout": 120,
+    "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=TESTKEY-GEM"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "gemini_sys": {
+  "calls": [
+   {
+    "headers": null,
+    "json": {
+     "contents": [
+      {
+       "parts": [
+        {
+         "text": "PING"
+        }
+       ]
+      }
+     ],
+     "generationConfig": {
+      "maxOutputTokens": 32000,
+      "temperature": 0.4,
+      "thinkingConfig": {
+       "thinkingBudget": 0
+      }
+     },
+     "systemInstruction": {
+      "parts": [
+       {
+        "text": "SYS-TEST"
+       }
+      ]
+     }
+    },
+    "timeout": 120,
+    "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=TESTKEY-GEM"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "groq_custom": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-GROQ",
+     "Content-Type": "application/json"
+    },
+    "json": {
+     "max_tokens": 1234,
+     "messages": [
+      {
+       "content": "SYS-TEST",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "m-test",
+     "temperature": 0.4
+    },
+    "timeout": 120,
+    "url": "https://api.groq.com/openai/v1/chat/completions"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "groq_default": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-GROQ",
+     "Content-Type": "application/json"
+    },
+    "json": {
+     "max_tokens": 8000,
+     "messages": [
+      {
+       "content": "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，凡是標示「必填、強制、每一張都要」的內容一律不可省略。只輸出 HTML 本身，不要 markdown code block，不要任何多餘說明。",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "openai/gpt-oss-120b",
+     "temperature": 0.4
+    },
+    "timeout": 120,
+    "url": "https://api.groq.com/openai/v1/chat/completions"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "ollama_custom": {
+  "calls": [
+   {
+    "headers": null,
+    "json": {
+     "keep_alive": "30m",
+     "messages": [
+      {
+       "content": "SYS-TEST",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "m-test",
+     "options": {
+      "num_ctx": 16384,
+      "num_predict": 1234,
+      "temperature": 0.4
+     },
+     "stream": false
+    },
+    "timeout": 600,
+    "url": "http://localhost:11434/api/chat"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "ollama_default": {
+  "calls": [
+   {
+    "headers": null,
+    "json": {
+     "keep_alive": "30m",
+     "messages": [
+      {
+       "content": "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，凡是標示「必填、強制、每一張都要」的內容一律不可省略。只輸出 HTML 本身，不要 markdown code block，不要任何多餘說明。",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "qwen2.5:14b-instruct-q4_K_M",
+     "options": {
+      "num_ctx": 16384,
+      "num_predict": 600,
+      "temperature": 0.4
+     },
+     "stream": false
+    },
+    "timeout": 600,
+    "url": "http://localhost:11434/api/chat"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "openai_default": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-OAI",
+     "Content-Type": "application/json"
+    },
+    "json": {
+     "max_tokens": 16000,
+     "messages": [
+      {
+       "content": "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，凡是標示「必填、強制、每一張都要」的內容一律不可省略。只輸出 HTML 本身，不要 markdown code block，不要任何多餘說明。",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "gpt-4o-mini",
+     "temperature": 0.4
+    },
+    "timeout": 180,
+    "url": "https://api.openai.com/v1/chat/completions"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "openai_sys": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-OAI",
+     "Content-Type": "application/json"
+    },
+    "json": {
+     "max_tokens": 16000,
+     "messages": [
+      {
+       "content": "SYS-TEST",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "gpt-4o-mini",
+     "temperature": 0.4
+    },
+    "timeout": 180,
+    "url": "https://api.openai.com/v1/chat/completions"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "openrouter_custom": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-OR",
+     "HTTP-Referer": "https://marketdaily.ai",
+     "X-Title": "MarketDaily"
+    },
+    "json": {
+     "max_tokens": 1234,
+     "messages": [
+      {
+       "content": "SYS-TEST",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "meta-llama/llama-3.3-70b-instruct:free",
+     "temperature": 0.4
+    },
+    "timeout": 120,
+    "url": "https://openrouter.ai/api/v1/chat/completions"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "openrouter_default": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-OR",
+     "HTTP-Referer": "https://marketdaily.ai",
+     "X-Title": "MarketDaily"
+    },
+    "json": {
+     "max_tokens": 600,
+     "messages": [
+      {
+       "content": "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，凡是標示「必填、強制、每一張都要」的內容一律不可省略。只輸出 HTML 本身，不要 markdown code block，不要任何多餘說明。",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "meta-llama/llama-3.3-70b-instruct:free",
+     "temperature": 0.4
+    },
+    "timeout": 120,
+    "url": "https://openrouter.ai/api/v1/chat/completions"
+   }
+  ],
+  "parsed": "PONG"
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "tw_last_trading_date": "YYYY-MM-DD",
+ "tw_note": "",
+ "tw_will_open_today": true,
+ "us_action_note": "⚠️ **今晚(YYYY-MM-DD)美股休市,不會開盤。下次開盤是 YYYY-MM-DD。**美股部分只寫「持有觀察 / 等 YYYY-MM-DD 開盤後 X」,不可寫「今晚開盤」這類字眼。",
+ "us_last_trading_date": "YYYY-MM-DD",
+ "us_next_trading_date": "YYYY-MM-DD",
+ "us_note": "",
+ "us_traded_last_session": true,
+ "us_will_open_tonight": false
+}
