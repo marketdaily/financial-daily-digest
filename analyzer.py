@@ -2109,10 +2109,15 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             )
     def _mk_prompt(sub: list) -> str:
         block = _chunk_market_tech_block(data, sub, depth)
-        lead = ("你是財經顧問。以下是 AI 委員會今日精選標的(用戶並未持有,推薦研究用)。為每一支各生成一張 signal-card,"
-                "用「值得關注/若要進場可看 $X/先觀望」的推薦口吻,嚴禁「你的持股/加碼/減碼/續抱」等已持有措辭。\n"
-                if picks_mode else
-                "你是這位用戶的專屬財經顧問。為以下每一支股票各生成一張 signal-card,給出明確「下一步」操作建議。\n")
+        if picks_mode:
+            _tw_open = "今早 9:00 開盤後" if mkt_status.get("tw_will_open_today") else "下個台股交易日"
+            _us_open = "今晚開盤後" if mkt_status.get("us_will_open_tonight") else "下個美股交易日"
+            lead = ("你是財經顧問。以下是 AI 委員會今日精選標的(用戶並未持有,推薦研究用)。為每一支各生成一張 signal-card,"
+                    "用「值得關注/若要進場可看 $X/先觀望」的推薦口吻,嚴禁「你的持股/加碼/減碼/續抱」等已持有措辭。"
+                    f"signal-reason 仍要點出明確時機字眼(台股標的寫「{_tw_open}」、美股標的寫「{_us_open}」),"
+                    "不可只寫「值得關注/保持觀望」這種沒有時間點的空話。\n")
+        else:
+            lead = "你是這位用戶的專屬財經顧問。為以下每一支股票各生成一張 signal-card,給出明確「下一步」操作建議。\n"
         return (
             lead +
             f"標的({len(sub)} 支,一支都不能少、不能合併):{', '.join(sub)}\n\n"
