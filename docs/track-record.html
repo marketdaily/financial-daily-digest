@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>戰績紀錄 — MarketDaily</title>
-<meta name="description" content="MarketDaily 過去 30 天日報點到的個股,公開方向勝率與避坑勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。">
+<meta name="description" content="MarketDaily 過去 30 天日報點到的個股,公開避坑勝率與方向勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MarketDaily">
 <meta property="og:title" content="戰績紀錄 — MarketDaily">
-<meta property="og:description" content="MarketDaily 過去 30 天日報點到的個股,公開方向勝率與避坑勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。">
+<meta property="og:description" content="MarketDaily 過去 30 天日報點到的個股,公開避坑勝率與方向勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。">
 <meta property="og:url" content="https://marketdaily.ai/track-record">
 <meta property="og:image" content="https://marketdaily.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="戰績紀錄 — MarketDaily">
-<meta name="twitter:description" content="MarketDaily 過去 30 天日報點到的個股,公開方向勝率與避坑勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。">
+<meta name="twitter:description" content="MarketDaily 過去 30 天日報點到的個股,公開避坑勝率與方向勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。">
 <meta name="twitter:image" content="https://marketdaily.ai/assets/og.png">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#6366f1">
@@ -421,17 +421,17 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     錯的我們也列出來。樣本小的時候,勝率波動會比較大,別只看數字看樣本。
   </p>
 
-  <!-- Headline stats -->
+  <!-- Headline stats（避坑勝率帶頭:CI 站得住的真 edge,見 backlog P1.5 修4） -->
   <div class="stats-hero">
     <div class="stat-box">
-      <span class="num emerald" id="stat-direction">—</span>
-      <div class="lbl" data-i18n="s1">看多勝率</div>
-      <div class="sub-rate combined" id="stat-direction-combined"></div>
-    </div>
-    <div class="stat-box">
-      <span class="num red" id="stat-risk">—</span>
+      <span class="num emerald" id="stat-risk">—</span>
       <div class="lbl" data-i18n="s2">看空勝率</div>
       <div class="sub-rate combined" id="stat-risk-combined"></div>
+    </div>
+    <div class="stat-box">
+      <span class="num indigo" id="stat-direction">—</span>
+      <div class="lbl" data-i18n="s1">看多勝率</div>
+      <div class="sub-rate combined" id="stat-direction-combined"></div>
     </div>
     <div class="stat-box">
       <span class="num amber" id="stat-total">—</span>

@@ -1067,8 +1067,8 @@ footer {
       <div class="chip chip-a">
         <div class="chip-ico" style="background:rgba(16,185,129,0.16);">📈</div>
         <div>
-          <div class="chip-num" style="color:#6ee7b7;">18 / 20</div>
-          <div class="chip-txt" data-i18n="hp_chip1">公開看多勝率 · 可查證</div>
+          <div class="chip-num" id="hp-chip1-num" style="color:#6ee7b7;">—</div>
+          <div class="chip-txt" data-i18n="hp_chip1">公開避坑勝率 · 可查證</div>
         </div>
       </div>
       <div class="chip chip-b">
@@ -1264,6 +1264,7 @@ footer {
       const a = document.getElementById('tr-stat-a');
       const c = document.getElementById('tr-stat-c');
       const t = document.getElementById('tr-stat-total');
+      const heroChip = document.getElementById('hp-chip1-num');
       // 樣本 < 20 顯示「樣本累積中」,跟戰績頁口徑一致
       const MIN_N = 20;
       const fmt = (rate, n) => {
@@ -1277,6 +1278,11 @@ footer {
       if (a) a.innerHTML = fmt(pub.a_rate, pub.a_count);
       if (c) c.innerHTML = fmt(d.stats.c_rate, d.stats.c_count);
       if (t && typeof d.stats.total_records === 'number') t.textContent = d.stats.total_records;
+      // Hero chip 帶頭數字:避坑勝率(公版可查證口徑,與買進負edge區隔——見 backlog P1.5 修4)
+      if (heroChip) {
+        const raw = fmt(pub.c_rate, pub.c_count);
+        heroChip.textContent = raw.startsWith('累積中') ? '累積中' : raw;
+      }
     })
     .catch(() => {});
 })();
@@ -2103,7 +2109,7 @@ const i18n = {
     hp_tw: "TSMC", hp_holding_signal: "Hold · watch the open",
     hp_sources: "Sources: Reuters · Bloomberg · CNA — each cross-checked",
     hp_foot: "AI-generated sample · informational only, not financial advice",
-    hp_chip1: "Public long win-rate · verifiable",
+    hp_chip1: "Public avoid-the-bad-ones rate · verifiable",
     hp_chip2_num: "No sponsors", hp_chip2: "No positions · corrections public",
     hp_chip3_num: "30 days", hp_chip3: "No-questions refund · cancel anytime",
     footer_record: "Track Record",
@@ -2272,7 +2278,7 @@ const i18n = {
     hp_tw: "台積電", hp_holding_signal: "持有 · 觀望開盤",
     hp_sources: "來源：Reuters · Bloomberg · 經濟日報 — 每則交叉比對",
     hp_foot: "AI 生成範例 · 僅供參考，不構成投資建議",
-    hp_chip1: "公開看多勝率 · 可查證",
+    hp_chip1: "公開避坑勝率 · 可查證",
     hp_chip2_num: "不收業配", hp_chip2: "不持有提及個股 · 錯了公開更正",
     hp_chip3_num: "30 天", hp_chip3: "無理由退費 · 隨時取消",
     footer_record: "戰績紀錄",
