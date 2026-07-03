@@ -75,8 +75,16 @@ def _cb_score():
 LV = {"red": "🔴", "yellow": "🟡", "plain": "⚪"}
 
 
+def _red_pairs(by_code):
+    """{(code, source)} 集合,只取 red 級——用來跟前一次巡邏結果比對「有沒有新的行動級訊號」。"""
+    return {(code, item["source"]) for code, items in (by_code or {}).items()
+            for item in items if item.get("level") == "red"}
+
+
 def run():
     today = datetime.date.today().isoformat()
+    prev_latest = _load_json(os.path.join(BRIEFS, "latest.json"), {})
+    prev_red_pairs = _red_pairs(prev_latest.get("by_code"))
     wl = build_watchlist()
     codes = sorted(wl)
     print(f"watchlist {len(codes)} 檔,開掃…")
@@ -186,13 +194,20 @@ def run():
     path = os.path.join(BRIEFS, f"{today}.md")
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(md) + "\n")
+    new_pairs = _red_pairs(by_code) - prev_red_pairs
+    new_red_lines = sorted({item["signal"] for code, items in by_code.items() for item in items
+                             if item.get("level") == "red" and (code, item["source"]) in new_pairs})[:10]
+
     latest = {"date": today, "red": red, "yellow": yellow,
               "calibration": {k: v for k, v in calib.items() if k != "details"},
-              "watchlist_n": len(codes), "by_code": by_code}
+              "watchlist_n": len(codes), "by_code": by_code,
+              "new_red_since_last_run": new_red_lines, "new_red_count": len(new_pairs)}
     with open(os.path.join(BRIEFS, "latest.json"), "w", encoding="utf-8") as f:
         json.dump(latest, f, ensure_ascii=False, indent=1)
     print("\n".join(md))
     print(f"\n→ {path}")
+    if new_pairs:
+        print(f"\n⚡ 較上次巡邏新增 {len(new_pairs)} 則行動級(紅燈)訊號")
     return latest
 
 
