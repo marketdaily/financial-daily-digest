@@ -2223,29 +2223,9 @@ def _trim_holdings_for_email(data: dict, user_us_stocks, user_tw_stocks):
     return [s for s, k in ranked if k == "us"], [s for s, k in ranked if k == "tw"]
 
 
-def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
-    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
-    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
-    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
-    if email_safe:
-        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
-
-    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
-    us_news_text = _format_news(data.get("us_news", []), max_items=6)
-    tw_news_text = _format_news(data.get("tw_news", []), max_items=5)
-    date = data.get("date", "")
-    mkt_status = _market_status(date)
-
-    has_holdings = bool(user_us_stocks or user_tw_stocks)
-    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
-    is_beginner = user_holding_count <= 4
-    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
-    watchlist_us = user_us_stocks if user_us_stocks else default_us
-    watchlist_tw = user_tw_stocks if user_tw_stocks else []
-    all_holdings = watchlist_us + watchlist_tw
-
+def _gr_watchlist_section(data: dict, user_us_stocks: list, user_tw_stocks: list,
+                          watchlist_us: list, watchlist_tw: list, has_holdings: bool,
+                          picks_mode: bool) -> str:
     # Portfolio performance summary for prompt context
     us_market = data.get("us_market", {})
     tw_market = data.get("tw_market", {})
@@ -2270,6 +2250,34 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
         watchlist_section += f"\n台股：{', '.join(watchlist_tw)}"
     if portfolio_lines:
         watchlist_section += ("\n\n【精選標的今日漲跌摘要】\n" if picks_mode else "\n\n【持倉今日漲跌摘要】\n") + "\n".join(portfolio_lines)
+    return watchlist_section
+
+
+def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
+                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
+                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
+    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
+    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
+    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
+    if email_safe:
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
+
+    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
+    us_news_text = _format_news(data.get("us_news", []), max_items=6)
+    tw_news_text = _format_news(data.get("tw_news", []), max_items=5)
+    date = data.get("date", "")
+    mkt_status = _market_status(date)
+
+    has_holdings = bool(user_us_stocks or user_tw_stocks)
+    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
+    is_beginner = user_holding_count <= 4
+    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
+    watchlist_us = user_us_stocks if user_us_stocks else default_us
+    watchlist_tw = user_tw_stocks if user_tw_stocks else []
+    all_holdings = watchlist_us + watchlist_tw
+
+    watchlist_section = _gr_watchlist_section(data, user_us_stocks, user_tw_stocks,
+                                              watchlist_us, watchlist_tw, has_holdings, picks_mode)
 
     few_stocks_note = ""
     if has_holdings and len(all_holdings) < 3:
