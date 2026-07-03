@@ -155,12 +155,30 @@ def probe_pages():
         b.close()
 
 
+# ── 6. 已知捏造內容不可復活 ──────────────────────────────────────────
+# 出處 2026-07-03:testimonials.html/index.html 藏了 2026-05-23 launch 占位假見證
+# (Jason L./Claire W./Alex K./林大哥/張先生/Michael C.)超過一個月沒人發現,見
+# memory project_fake_testimonials_removed.md。防同款地雷用不同文案復活。
+FABRICATED_MARKERS = ["Jason L.", "Claire W.", "Alex K.", "Michael C.",
+                       "省了快 6 萬", "省 NT$6 萬", "退掉兩個月費"]
+
+
+def probe_fabricated_content():
+    for path in ["/", "/testimonials"]:
+        html = subprocess.run(["curl", "-s", "-L", "-A", UA, f"{BASE}{path}"],
+                              capture_output=True, text=True).stdout
+        hits = [m for m in FABRICATED_MARKERS if m in html]
+        check(f"no_fake_testimonials{path}", not hits,
+              f"發現已知捏造見證關鍵字復活:{hits}" if hits else "OK")
+
+
 def main():
     probe_quotes()
     probe_track_record()
     probe_digest_archive()
     probe_assets()
     probe_pages()
+    probe_fabricated_content()
     fails = [r for r in RESULTS if not r["ok"]]
     if "--json" in sys.argv:
         print(json.dumps(RESULTS, ensure_ascii=False, indent=1))
