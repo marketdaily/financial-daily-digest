@@ -15,6 +15,7 @@ import hmac
 import json
 import os
 import secrets
+import shutil
 import subprocess
 import sys
 import time
@@ -487,16 +488,49 @@ def cmd_check(env):
         print("  TikTok:       ⏸️ 未設定(見 TIKTOK_SETUP.md)")
 
 
+def _png_dimensions(png_path):
+    """讀 PNG IHDR chunk 拿 width/height,不依賴 PIL。"""
+    with open(png_path, "rb") as f:
+        f.seek(16)
+        data = f.read(8)
+    return int.from_bytes(data[0:4], "big"), int.from_bytes(data[4:8], "big")
+
+
+def _png_to_jpg_playwright(png_path, jpg_path, quality=92):
+    """跨平台 fallback(winrig 無 sips 時用):headless Chrome 把 PNG 重繪成 JPEG。"""
+    from playwright.sync_api import sync_playwright
+
+    w, h = _png_dimensions(png_path)
+    b64 = base64.b64encode(Path(png_path).read_bytes()).decode("ascii")
+    html = (
+        f'<!DOCTYPE html><html><head><style>*{{margin:0;padding:0}}'
+        f'body{{width:{w}px;height:{h}px}}img{{display:block;width:{w}px;height:{h}px}}'
+        f'</style></head><body><img src="data:image/png;base64,{b64}"></body></html>'
+    )
+    with sync_playwright() as p:
+        browser = p.chromium.launch(channel="chrome", headless=True)
+        try:
+            page = browser.new_page(viewport={"width": w, "height": h})
+            page.set_content(html, wait_until="load")
+            page.screenshot(path=str(jpg_path), type="jpeg", quality=quality)
+        finally:
+            browser.close()
+
+
 def cmd_stage(env):
     src, dst = HERE / "assets" / "posts", ROOT / "docs" / "social"
     dst.mkdir(parents=True, exist_ok=True)
     pngs = sorted(src.glob("*.png"))
     if not pngs:
         sys.exit("assets/posts/ 沒有圖檔")
+    have_sips = shutil.which("sips") is not None
     for png in pngs:
         jpg = dst / (png.stem + ".jpg")
-        subprocess.run(["sips", "-s", "format", "jpeg", "-s", "formatOptions", "92",
-                        str(png), "--out", str(jpg)], capture_output=True, check=True)
+        if have_sips:
+            subprocess.run(["sips", "-s", "format", "jpeg", "-s", "formatOptions", "92",
+                            str(png), "--out", str(jpg)], capture_output=True, check=True)
+        else:
+            _png_to_jpg_playwright(png, jpg)
         print(f"  ✓ {jpg.name}")
     print("\n部署 docs/ 中...")
     subprocess.run(["npx", "wrangler", "pages", "deploy", "docs",

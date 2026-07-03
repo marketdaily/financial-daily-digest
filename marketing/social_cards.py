@@ -176,19 +176,42 @@ def render_card(spec, w=W, h=H):
     )
 
 
+def _render_with_playwright(spec, out_path, w, h):
+    """跨平台 fallback(winrig 無 rsvg-convert/qlmanage 時用):headless Chrome 直接screenshot inline SVG。"""
+    from playwright.sync_api import sync_playwright
+
+    svg = render_card(spec, w, h)
+    html = (
+        f'<!DOCTYPE html><html><head><meta charset="utf-8"><style>'
+        f'*{{margin:0;padding:0}}body{{width:{w}px;height:{h}px;overflow:hidden}}'
+        f'</style></head><body>{svg}</body></html>'
+    )
+    with sync_playwright() as p:
+        browser = p.chromium.launch(channel="chrome", headless=True)
+        try:
+            page = browser.new_page(viewport={"width": w, "height": h})
+            page.set_content(html, wait_until="load")
+            page.screenshot(path=str(out_path))
+        finally:
+            browser.close()
+    return out_path
+
+
 def make_card(spec, out_path, w=W, h=H):
-    """spec → PNG。優先用 rsvg-convert(跨平台),退回 macOS qlmanage。"""
+    """spec → PNG。優先用 rsvg-convert(跨平台),退回 macOS qlmanage,再退回 Playwright headless Chrome(跨平台)。"""
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory() as td:
-        if shutil.which("rsvg-convert"):
+    if shutil.which("rsvg-convert"):
+        with tempfile.TemporaryDirectory() as td:
             svg_p = Path(td) / "card.svg"
             svg_p.write_text(render_card(spec, w, h), encoding="utf-8")
             subprocess.run(
                 ["rsvg-convert", "-w", str(w), "-h", str(h), str(svg_p), "-o", str(out_path)],
                 check=True, capture_output=True,
             )
-        else:
+        return out_path
+    if shutil.which("qlmanage"):
+        with tempfile.TemporaryDirectory() as td:
             side = max(w, h)
             ox, oy = (side - w) // 2, (side - h) // 2
             square = (
@@ -211,4 +234,5 @@ def make_card(spec, out_path, w=W, h=H):
                 ["sips", "-c", str(h), str(w), str(big), "--out", str(out_path)],
                 capture_output=True, check=True,
             )
-    return out_path
+        return out_path
+    return _render_with_playwright(spec, out_path, w, h)
