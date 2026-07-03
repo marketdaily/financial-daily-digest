@@ -8,7 +8,7 @@
 美股:FMP cash-flow / balance-sheet / profile(需 FMP_API_KEY)。
 CLI: python3 valuation/dcf.py 2330 NVDA
 """
-import os, sys, json, urllib.request, datetime
+import os, sys, json, urllib.request, urllib.error, datetime
 
 FINMIND = "https://api.finmindtrade.com/api/v4/data"
 FMP = "https://financialmodelingprep.com/stable"
@@ -159,7 +159,11 @@ def us_dcf(symbol):
         cf = _http_json(f"{FMP}/cash-flow-statement?symbol={symbol}&period=annual&limit=6&apikey={FMP_KEY}")
         prof = _http_json(f"{FMP}/profile?symbol={symbol}&apikey={FMP_KEY}")
         bs = _http_json(f"{FMP}/balance-sheet-statement?symbol={symbol}&period=annual&limit=1&apikey={FMP_KEY}")
-    except Exception:
+    except urllib.error.HTTPError as e:
+        print(f"[dcf] {symbol} skipped: HTTP {e.code} (FMP quota/rate-limit suspect)")
+        return None
+    except Exception as e:
+        print(f"[dcf] {symbol} skipped: {e}")
         return None
     if not (isinstance(cf, list) and cf and isinstance(prof, list) and prof and isinstance(bs, list) and bs):
         return None
