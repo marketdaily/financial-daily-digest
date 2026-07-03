@@ -736,6 +736,33 @@ def _postprocess_html(html: str, data: dict) -> str:
         _demote_knife, html, flags=_re.DOTALL,
     )
 
+    # regime 閘門(deterministic):風險偏多市況 + 個股本身已漲多(RSI14≥70 或站上布林上緣),
+    # buy/hold 卡片一律加「漲多勿追/漲多可減」提示 — 2026-06-10 版只靠 prompt 軟性提醒
+    # (「漲多的標的要提醒突破才追」),個人化抱單常常沒咬到;這裡補一道不靠 LLM 自覺的死防線,
+    # 跟 _demote_knife(逆勢接刀)對稱,但只換 chip 文字不動 reason 段落(避免規則式改寫自然語言出錯)。
+    _regime_label = _market_regime(data).get("label", "neutral")
+
+    def _demote_extended(m):
+        block, cls = m.group(0), m.group(1)
+        if _regime_label != "risk_on" or cls not in ("buy", "hold"):
+            return block
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        t = _techs_gate.get(hm.group(1))
+        if _quant_prior(t) != "bull" or not _is_extended(t):
+            return block
+        if cls == "buy":
+            return _re.sub(r'<span class="signal-verdict-chip buy">[^<]*</span>',
+                           '<span class="signal-verdict-chip buy">🟢 買入·漲多勿追高</span>', block, count=1)
+        return _re.sub(r'<span class="signal-verdict-chip hold">[^<]*</span>',
+                       '<span class="signal-verdict-chip hold">🟡 續抱·漲多可減</span>', block, count=1)
+
+    html = _re.sub(
+        r'<div class="signal-card (buy|hold)">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote_extended, html, flags=_re.DOTALL,
+    )
+
     # 卡頭已有彩色 verdict-chip(建議買進/賣出),底部 signal-badge 是同一句重複 → 移除,
     # 讓 signal-meta 只剩「信心 X% · 時間窗」,減少邊邊 chip 把卡片拉長。
     html = _re.sub(r'<span class="signal-badge[^"]*">[^<]*</span>\s*', '', html)
@@ -753,8 +780,6 @@ def _postprocess_html(html: str, data: dict) -> str:
 
     # 信心改由歷史校準表反推:每張卡的信心用 track-record 實測命中率(依 verdict 桶+regime)覆寫,
     # LLM 自填數字只在校準表讀不到時當後備(上面已夾限)。每日戰績更新,數字自動跟著校準。
-    _regime_label = _market_regime(data).get("label", "neutral")
-
     def _recalibrate_card(m):
         block, cls = m.group(0), m.group(1)
         hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
@@ -1168,6 +1193,32 @@ def _quant_prior(t: dict) -> str:
     if p < ma20 < ma50:
         return "bear"
     return "neutral"
+
+
+def _is_extended(t: dict) -> bool:
+    """個股短線是否「漲多」(RSI14≥70 過熱,或站上布林上緣)——標準技術門檻,不靠 LLM 自覺判斷。
+    資料不足一律 False(跟 _quant_prior 同哲學:寧鬆勿誤殺)。"""
+    if not t:
+        return False
+    rsi = t.get("rsi14")
+    if rsi is not None:
+        try:
+            if float(rsi) >= 70:
+                return True
+        except (TypeError, ValueError):
+            pass
+    try:
+        price = float(t.get("price") or 0)
+        boll_up = t.get("boll_up")
+    except (TypeError, ValueError):
+        return False
+    if price and boll_up is not None:
+        try:
+            if price >= float(boll_up):
+                return True
+        except (TypeError, ValueError):
+            pass
+    return False
 
 
 _TRACK_STATS_CACHE = {"loaded": False, "stats": None}
