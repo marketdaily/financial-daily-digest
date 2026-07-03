@@ -18,6 +18,7 @@
 - **前端**：`docs/` 資料夾（靜態 HTML/CSS/JS），部署在 Cloudflare Pages
 - **後端**：Cloudflare Workers + KV 儲存（tuna_pipeline / stripe-webhook）
 - **AI 產圖**：`image_generator.py`、`opengenai_client.py`
+- **子目錄就地規範**：`docs/CLAUDE.md`（前端鐵則）、`marketing/CLAUDE.md`（發文鐵則）——動該目錄先讀
 
 ### 關鍵檔案
 | 檔案 | 說明 |
@@ -90,191 +91,19 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 | `review` | 審查 Pull Request |
 | `security-review` | 執行安全性審查 |
 
-### 自訂技能（Delvin Custom Skills）
-位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/`
+### 自訂技能（Delvin Custom Skills）— 127 個
+位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
+**完整目錄（每個 skill 一行中文用途）→ 同目錄 `CATALOG.md`；重疊裁決/任務唯一路徑 → `GOVERNANCE.md`（挑 skill 前先查）**
 
-| 技能 | 用途 |
-|------|------|
-| `ui-ux-pro-max` | 全方位 UI/UX 設計智能（50+ 樣式、161 色板、57 字型配對、99 UX 規範、25 圖表類型，涵蓋 React/Next.js/Vue/Svelte/SwiftUI/React Native/Flutter/Tailwind/shadcn/HTML）；同時包含 MarketDaily 品牌設計系統（深色玻璃卡片、indigo 漸層、Inter 字體、scene-reveal 動畫） |
-| `spy` | 競品廣告偵察:抓 Meta Ad Library / TikTok Creative Center / Google Ads Transparency 上競品在跑什麼廣告,找 hook / promo / whitespace |
-| `competitive-ads-extractor` | 從 /spy 抓到的競品廣告中拆出可複製骨架:hook pattern、pain framing、social proof、CTA、視覺 grid |
-| `bulk-creative` | 批量產 10-30 套廣告 variant(headline × body × CTA × 視覺),強制多樣性(hook 類型、pain framing、視覺方向)|
-| `ads-score` | 對廣告 variants 5 維打分(hook / CTA / value / target / risk),自動 flag 法規違規(保證/穩賺)直接 kill |
-| `ads-meta` | 把 top creative 包成完整 Meta Ads Campaign / Ad Set / Ad spec(audience, budget, schedule, UTM, conversion event),手動或 API 模式 |
-| **Marketing Agents 串聯** | 用戶說「Marketing Agents」= 5 個工具按序跑:`/spy` → `/competitive-ads-extractor` → `/bulk-creative` → `/ads-score` → `/ads-meta` |
-| `nano-banana-pro` | 快速生成 AI 影片概念或網站，單一想法直接輸出 |
-| `open-generative-ai` | 使用 OpenAI / DALL-E 生成圖片或內容（opengenai_client.py / image_generator.py） |
-| `workflow` | 執行 MarketDaily 每日日報 Pipeline（tuna_pipeline → HTML → 部署） |
-| `antigravity` | 生成大膽動態的 AI 影片或反重力視覺效果網站/TikTok 內容 |
-| `claude-design` | 審查並統一 MarketDaily 所有頁面的設計系統一致性 |
-| `site-doctor` | MarketDaily 全站自動巡檢+自動修復:scan.py 掃用戶可見錯誤(報價卡···、0 變—、undefined/NaN、API 砍資料、戰績/日報過期、console error、資產回歸)→ 對照歷史病歷表診斷 → 直接修+部署+重掃驗證;網站重大改動後或用戶反映前台怪象時必跑 |
-| `email-marketing-bible` | Email 行銷聖經（68K字、908來源、19產業 playbook）：策略、自動化序列、送達率、文案、分群、合規、開信率優化 |
-| `growth-strategy` | 增長策略框架：北極星指標、AARRR 海盜指標、增長迴圈、實驗方法論、留存與降低 churn |
-| `referral-program` | 推薦計畫與病毒迴圈設計：雙邊/單邊獎勵、viral coefficient、推薦連結系統、大使計畫 |
-| `pricing-strategy` | 定價策略與定價頁優化：Freemium/試用/分級/用量計費、定價心理學、錨定效應、SaaS 定價最佳實踐 |
-| `stock-analyzer` | 美股/中港股技術+情緒分析：單股/多股/大盤復盤，輸出核心結論+進出場作戰計畫+風控清單 |
-| `tw-financial-analysis` | 台股三維財務分析：從 Goodinfo.tw 抓財報，生成互動式 HTML 儀表板（經營/獲利/財務健全度），含三層驗證 |
-| `ai-trader` | AI 交易訊號平台（ai4trade.ai）：發布訊號、跟單、管理美股/加密貨幣/Polymarket 模擬部位 |
-| `tw-stock-agent` | 台股即時數據 MCP Server：TWSE/TPEx 報價、技術分析四點信號、基本面與市值 |
-| `invest-skill` | 美股 AI 投資分析 21 框架：DCF 估值、財報解讀、內部人交易、機構持股、選擇權策略、競爭分析 |
-| `tw-stock-scraper` | 台股盤後數據爬蟲：TWSE/OTC 歷史數據、K線圖（5/10/20/60MA）、三大法人買賣超視覺化 |
-| `trading-skills-pro` | A股量化交易 CLI（Tushare Pro）：7大模組含期貨/外匯/Alpha因子/概念板塊，50+查詢工具 |
-| `trade-bot` | 多平台自動交易機器人框架（`trading_bot/`）：回測、模擬交易、實盤（ccxt 100+ 交易所）、風控/緊急停損、Polymarket 錯價掃描；預設 paper 模式 |
-| `tradingagents` | TradingAgents 多代理 LLM 交易框架：分析師/多空辯論/交易員/風控協作做交易決策，支援 Claude/GPT/Gemini/Grok 等多模型 |
-| `ccxt` | CCXT 加密貨幣交易所統一函式庫：一套 API 接 100+ 交易所，行情/下單/餘額/websocket/testnet，含金鑰安全規範 |
-| `finrobot` | FinRobot 開源金融 AI 代理平台：多代理做市場預測、財報/SEC 分析、股票投研報告、演算法交易 |
-| `quant-math` | 交易/決策核心數學：機率與貝氏、期望值與 edge、校準（Brier/log loss）、Kelly 下注、波動拖累、Sharpe/回撤、統計顯著性、套利與投組相關性；任何下注/風險/績效計算前必算 |
-| `backtest-validation` | 判斷交易策略回測 edge 是真實還是過度擬合：walk-forward 樣本外測試、參數敏感度（平台 vs 尖峰）、N≈1/edge² 樣本量、多重檢定/Deflated Sharpe、真實成本建模、regime 覆蓋；策略上實盤前必驗（範本 trading_bot/analyze_robustness.py） |
-| `pm-mispricing` | 預測市場結構性錯價：二元 Dutch book 套利（YES+NO<$1）、多結果 under/overround、favorite-longshot bias（冷門高估）；扣費利潤+Kelly 下注（範本 quant_lab/pm_mispricing.py） |
-| `dcf-valuation` | 折現現金流估值：兩階段 FCF 投影、CAPM 求股東權益成本、WACC、Gordon 永續終值、每股合理價、WACC×終值成長敏感度網格（範本 quant_lab/dcf_valuation.py） |
-| `portfolio-optimization` | 投組權重配置：Markowitz 最小變異/最大 Sharpe 切點、風險平價（equal risk contribution）、1/N 基準;估計誤差為何讓最佳化脆弱（範本 quant_lab/portfolio_optimizer.py） |
-| `regime-detection` | 偵測市場狀態（趨勢/均值回歸/隨機漫步）：Hurst 指數、variance ratio、漂移vs動能差別、當策略進場閘門;含「過濾器不會無中生有 edge」的誠實教訓（範本 trading_bot/bot/regime.py） |
-| `order-execution` | 進場/下單執行的真學問：為何散戶贏不了延遲競賽（HFT 結構性現實:co-location/微波/FPGA）、maker vs taker、捕捉價差、滑價/市場衝擊、逆選擇、訊號時效;maker 是條件性成本優勢非必勝（範本 quant_lab/execution_cost.py） |
-
-### 邊際/量化進階技能（edge pipeline + 投資選股）
-| 技能 | 用途 |
-|------|------|
-| `edge-pipeline-orchestrator` | 串起完整 edge 研究管線：候選偵測→策略設計→匯整排名→postmortem |
-| `edge-signal-aggregator` | 匯整並排名多個 edge-finding skill 輸出的訊號，產出統一候選清單 |
-| `edge-strategy-designer` | 把抽象 edge 概念轉成策略草稿變體，可選匯出成可執行 ticket |
-| `signal-postmortem` | 記錄並分析 edge pipeline 等 skill 產生的訊號實際交易結果，回饋學習 |
-| `institutional-flow-tracker` | 追蹤機構投資人持股變動與資金流向（13F/持股異動） |
-| `macro-regime-detector` | 偵測結構性總經 regime 轉折（1-2 年視角），跨資產比率分析 |
-| `market-breadth-analyzer` | 用 TraderMonty 公開 CSV 量化市場廣度健康度，輸出 0-100 綜合分 |
-| `options-strategy-advisor` | 選擇權策略分析與模擬：理論定價、希臘字母、策略損益 |
-| `position-sizer` | 多單風險式部位大小計算（依停損距離與帳戶風險） |
-| `vcp-screener` | 篩 S&P 500 的 Minervini VCP 波動收縮型態 |
-| `stanley-druckenmiller-investment` | Druckenmiller 策略合成器：整合 8 個上游 skill 輸出（市場廣度/總經 regime 等）做投資決策 |
-
-### DeFi / 鏈上安全技能
-| 技能 | 用途 |
-|------|------|
-| `defi-amm-security` | Solidity AMM/流動性池/swap 安全檢查清單（重入、價格操縱等） |
-| `evm-token-decimals` | 防跨鏈 token decimals 靜默不一致 bug：runtime decimal 查詢、鏈別差異 |
-
-### AI / Agent 工程技能
-| 技能 | 用途 |
-|------|------|
-| `agentic-engineering` | 以 agentic engineer 模式運作：eval-first 執行、任務分解、成本感知 |
-| `ai-first-engineering` | AI agent 產出大量實作的團隊工程運作模型 |
-| `ai-regression-testing` | AI 輔助開發的回歸測試策略：sandbox-mode API 測試不污染 prod |
-| `agent-eval` | 多 coding agent（Claude Code/Aider/Codex 等）在自訂任務上的對打比較 |
-| `eval-harness` | Claude Code session 的正式評估框架，eval-driven 開發 |
-| `council` | 四聲音 council 處理模糊決策/取捨/go-no-go 判斷 |
-| `iterative-retrieval` | 漸進式精煉 context 檢索，解 subagent context 問題 |
-| `cost-aware-llm-pipeline` | LLM API 成本優化：依任務複雜度路由模型、預算控管 |
-| `context-budget` | 稽核 Claude Code context window 消耗（agent/skill/MCP/rules） |
-| `cost-tracking` | 追蹤並回報 Claude Code token 用量、花費、預算 |
-| `autonomous-loops` | 自主 Claude Code loop 的模式與架構（序列/管線/品質閘） |
-| `continuous-agent-loop` | 連續自主 agent loop：品質閘、eval、恢復條件 |
-| `continuous-learning-v2` | 本能式學習系統：經 hooks 觀察 session、產生原子 instinct |
-| `skill-creator` | 建立/修改/改善既有 skill，並量測 skill 效能 |
-| `mcp-builder` | 建構高品質 MCP server 的指南 |
-
-### 開發 / 工程實務技能
-| 技能 | 用途 |
-|------|------|
-| `api-connector-builder` | 依目標 repo 既有整合模式建立新 API connector/provider |
-| `browser-qa` | 用瀏覽器自動化做視覺測試與 UI 互動驗證 |
-| `click-path-audit` | 追蹤每個 user-facing 按鈕完整狀態變化序列找 bug |
-| `deployment-patterns` | 部署工作流：CI/CD、Docker 容器化、health check、rollback |
-| `error-handling` | TypeScript/Python/Go 穩健錯誤處理模式（typed errors 等） |
-| `data-scraper-agent` | 為任何公開來源建全自動 AI 資料收集 agent（職缺板等） |
-
-### 內容 / 研究 / 文件技能
-| 技能 | 用途 |
-|------|------|
-| `content-engine` | 為 X/LinkedIn/TikTok/YouTube/電子報建平台原生內容系統 |
-| `crosspost` | 跨平台內容分發（X/LinkedIn/Threads/Bluesky），自動適配各平台 |
-| `deep-research` | 用 firecrawl + exa MCP 做多來源深度研究與綜合（內建 /deep-research） |
-| `doc-coauthoring` | 結構化流程協作共筆文件 |
-| `knowledge-ops` | 知識庫管理：多儲存層的 ingestion/sync/retrieval |
-
-### Office 檔案處理技能（Anthropic 官方）
-| 技能 | 用途 |
-|------|------|
-| `docx` | 建立/讀取/編輯 Word 文件 |
-| `pptx` | 處理 .pptx 簡報（輸入/輸出皆可） |
-| `xlsx` | 處理試算表檔案 |
-| `pdf` | 處理 PDF 檔案（讀取/編輯/表單等） |
-
-### 開發 / 技術技能（from github.com/obra + BehiSecc）
-| 技能 | 用途 |
-|------|------|
-| `superpowers` | 多步驟執行、調試全框架：任何回應前先找 skill，強制根因分析+TDD+驗證 |
-| `superpowers-lab` | 實驗性高級工作流：mcp-cli、tmux互動CLI、Slack訊息、Windows VM、語意重複偵測 |
-| `skill-seekers` | 將任何文件網站/代碼自動轉換為 Claude AI skill，數分鐘完成打包 |
-| `tdd-workflow` | 先寫測試再開發：強制 RED-GREEN-REFACTOR，禁止在測試失敗前寫產品代碼 |
-| `systematic-debugging` | 系統性除錯：4階段根本原因分析（調查→假設→修復→驗證），禁止猜測修復 |
-| `root-cause-tracing` | 根因追蹤：從錯誤症狀逆向追蹤多層呼叫鏈到真正的錯誤起源 |
-| `finish-branch` | 完成開發分支：測試通過後引導選擇合併/PR/保留/捨棄並執行清理 |
-| `pypict` | PyPict 組合測試：用 PICT 方法設計全面測試案例，最少測試組合達最大覆蓋率 |
-| `playwright-testing` | 劇本測試：用 Playwright 自動化測試本地 Web 應用，截圖、驗證 UI 行為 |
-| `fuzz-security` | Fuzz 安全測試：整合 ffuf 模糊測試器進行漏洞偵測（需授權的滲透測試/CTF）|
-| `defense-in-depth` | 深度防禦：多層安全編碼規範防範 IDOR/XSS/CSRF/SQL注入，以 bug hunter 視角審查 |
-
-### 研究 / 知識技能（from michalparkola + ComposioHQ）
-| 技能 | 用途 |
-|------|------|
-| `tapestry` | 從多個來源構建知識圖譜：連結相關文件、找出共識與衝突、輸出結構化知識網絡 |
-| `youtube-summarizer` | YouTube 摘要：下載字幕並生成結構化摘要（TL;DR + 要點 + 詳細說明）|
-| `article-extractor` | 文章提取器：從 URL 萃取乾淨正文（去除廣告/導覽），存為可讀文字檔 |
-| `research-indexer` | 深度研究索引：分層來源（Tier 1-3），追蹤引用，支援 PhD 級研究深度 |
-| `content-research-writer` | 內容研究寫手：協作撰寫高品質文章，加入引用、改善鉤子、逐段回饋，保留作者聲音 |
-| `academic-analyzer` | 學術文獻分析：解析 EPUB/PDF 學術書籍，輸出論文主旨/方法論/發現/限制 |
-
-### 生產力 / 自動化技能（from ComposioHQ）
-| 技能 | 用途 |
-|------|------|
-| `invoice-organizer` | 發票整理器：自動整理收據/發票以備稅務申報，標準化命名 + 分類資料夾 + 匯出 CSV |
-| `file-organizer` | 文件整理器：智慧整理混亂資料夾，找出重複檔案，建議分類結構並自動執行 |
-| `web-artifacts-builder` | 網頁資產生成器：用 React+TypeScript+shadcn/ui 建立精緻 HTML artifacts，打包為單一檔案 |
-
-### Claude 程式碼 / 自動化 Hooks（from hesreallyhim）
-| 技能 | 用途 |
-|------|------|
-| `cc-hooks-python` | CC Hooks Python SDK：輕量 Python API 撰寫 Claude Code hooks，支援攔截/放行/封鎖工具呼叫 |
-| `cc-notify` | 桌面通知：任務完成或錯誤時觸發 macOS 系統通知（osascript）|
-| `claude-hooks-sdk` | Claude Hooks SDK：Laravel 風格的結構化 hooks 框架，含 middleware pipeline 和 DI |
-| `claudio` | Claudio 語音提醒：用 macOS `say` 指令讓 Claude Code 任務完成時開口說話 |
-| `discord-notifier` | Discord/Slack 通知器：透過 webhook 發送 Claude Code 活動到團隊頻道 |
-| `activity-tracker` | 活躍度追蹤器：記錄 Claude Code 使用統計並發送每日報告到 Slack |
-| `code-quality-hooks` | Code Quality Hooks：自動 lint/format + 攔截 hardcoded secrets + 強制代碼風格 |
-| `typescript-quality-hooks` | TypeScript 質量 Hooks：寫入後自動 tsc 型別檢查 + ESLint fix + Prettier 格式化 |
-
-### 進階技能（from ComposioHQ/awesome-claude-skills）
-| 技能 | 用途 |
-|------|------|
-| `code-review-skill` | ⚠️退役→用內建 /code-review。程式碼審查：派子 agent 做完整 code review（正確性/安全/性能/可維護性），輸出審查報告 |
-| `api-docs-generator` | API 文件生成器：從代碼分析路由生成 OpenAPI 3.0 spec + Markdown API 參考文件 |
-| `sql-generator` | SQL 生成技能：自然語言描述 → 優化 SQL 查詢，含 CTE/窗口函數/索引建議 |
-| `excel-formula` | Excel 公式技能：自然語言 → Excel/Google Sheets 公式，涵蓋 XLOOKUP/財務/動態陣列 |
-| `dashboard-builder` | 儀表板技能：CSV/JSON → 互動式視覺化儀表板，支援 D3.js 和 Python matplotlib |
-| `ab-test-analyzer` | A/B 測試分析器：計算統計顯著性、置信區間、相對提升和業務影響，給出 SHIP/HOLD 建議 |
-| `landing-page-copy` | 落地頁複製技能：生成高轉換率的落地頁文案（標題/價值主張/社交證明/CTA）|
-| `content-repurposing` | 內容再利用：一篇文章 → Twitter 串文 + LinkedIn + Email + 短影片腳本 + Instagram |
-| `content-refresh` | 內容重組技能：更新過時數據、改善結構、強化 SEO、現代化語氣，讓舊內容重獲流量 |
-| `sales-funnel-planner` | 銷售漏斗規劃器：設計完整 TOFU/MOFU/BOFU 漏斗策略、引流機制和轉換路徑 |
-| `sales-funnel-optimizer` | 銷售漏斗優化器：找出最大流失點、競品分析、按優先順序排列 A/B 測試實驗 |
-| `brand-voice-amplifier` | 品牌聲音強化器：定義聲音屬性、建立風格指南、將內容重寫為一致的品牌語氣 |
-
-### 創意 / 設計技能（from ComposioHQ）
-| 技能 | 用途 |
-|------|------|
-| `color-palette-generator` | 配色方案生成器：為品牌/網站生成協調色盤，含 Hex 代碼、用法指引和無障礙對比度檢查 |
-| `typography-pairing` | ⚠️退役→用 font-pairing / ui-ux-pro-max。排版配對技能：為任何設計風格推薦互補字型組合，含 CSS 實作代碼 |
-| `font-pairing` | 字體搭配技能：按使用場景（SaaS/行銷/金融/創意）推薦具體字型對，附 Google Fonts 導入代碼 |
-| `creative-direction` | 創意方向技能：制定品牌視覺語言、設計哲學宣言、情緒板和 Do/Don't 設計規範 |
-| `ui-wireframe-generator` | UI 線框圖生成器：生成 ASCII 線框圖或 Tailwind HTML 骨架，涵蓋各類頁面佈局 |
-| `brand-voice-enhancer` | ⚠️退役→用 brand-voice-amplifier。品牌聲音強化器（精簡版）：審查全通路內容一致性、消除術語、建立聲音鎖定文件 |
-
-### 創作者經濟技能（from ComposioHQ）
-| 技能 | 用途 |
-|------|------|
-| `podcast-outline` | 播客大綱技能：生成完整節目結構（單人/訪談/圓桌），含問題弧線、時間戳和 show notes |
-| `video-style` | 視頻風格技能：分析和複製特定創作者的剪輯風格（節奏/色調/文字/音效）|
-| `video-editing` | 視頻剪輯技能：短影片 ffmpeg 指令 + TikTok 腳本模板 + 字幕生成 + 剪輯清單 |
-| `story-script` | 故事腳本技能：用英雄旅程/問題解決/品牌起源框架撰寫敘事腳本和案例研究 |
+分類速查（只列名，說明見 CATALOG.md；⚠️=退役或 Mac-only）：
+- **MarketDaily 營運**：workflow（日報pipeline）、site-doctor（全站巡檢必跑）、ui-ux-pro-max（含品牌設計系統）、claude-design、email-marketing-bible、growth-strategy、referral-program、pricing-strategy、landing-page-copy、ab-test-analyzer、sales-funnel-planner、sales-funnel-optimizer
+- **行銷鏈（「Marketing Agents」＝五連跑，順序不可跳）**：spy → competitive-ads-extractor → bulk-creative → ads-score → ads-meta
+- **內容/創作**：content-engine、crosspost、content-repurposing、content-refresh、content-research-writer、brand-voice-amplifier（⚠️enhancer 退役）、podcast-outline、video-style、video-editing、story-script、youtube-summarizer、article-extractor
+- **交易/量化**：quant-math（下注前必算）、backtest-validation（上實盤前必驗）、stock-analyzer、invest-skill、dcf-valuation、tw-financial-analysis、tw-stock-agent、tw-stock-scraper、trading-skills-pro、trade-bot、tradingagents、ccxt、finrobot（參考）、pm-mispricing、portfolio-optimization、regime-detection、order-execution、options-strategy-advisor、position-sizer、vcp-screener、market-breadth-analyzer、macro-regime-detector、institutional-flow-tracker、stanley-druckenmiller-investment、ai-trader；edge 鏈：edge-pipeline-orchestrator → edge-signal-aggregator → edge-strategy-designer → signal-postmortem
+- **AI/Agent 工程**：agentic-engineering、ai-first-engineering、ai-regression-testing、agent-eval、eval-harness、council、iterative-retrieval、cost-aware-llm-pipeline、context-budget、cost-tracking、autonomous-loops、continuous-agent-loop、continuous-learning-v2、skill-creator、skill-seekers、mcp-builder
+- **開發紀律/測試/hooks**：superpowers、superpowers-lab、tdd-workflow、systematic-debugging、root-cause-tracing、finish-branch、pypict、playwright-testing、browser-qa、click-path-audit、fuzz-security、defense-in-depth、deployment-patterns、error-handling、api-connector-builder、data-scraper-agent、code-quality-hooks、typescript-quality-hooks、cc-hooks-python、claude-hooks-sdk（備用）、cc-notify（⚠️Mac-only）、claudio（⚠️Mac-only）、discord-notifier、activity-tracker、code-review-skill（⚠️退役→內建 /code-review）
+- **研究/知識**：deep-research、tapestry、research-indexer、academic-analyzer、knowledge-ops、doc-coauthoring
+- **產能/雜項**：docx、pptx、xlsx、pdf、invoice-organizer、file-organizer、web-artifacts-builder、dashboard-builder、sql-generator、excel-formula、api-docs-generator、nano-banana-pro、antigravity、open-generative-ai、ui-wireframe-generator、creative-direction、color-palette-generator、font-pairing（⚠️typography-pairing 退役）、defi-amm-security、evm-token-decimals
 
 ## 編碼規範
 - 使用 Python 開發
@@ -287,10 +116,9 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 - 詳細背景：memory `feedback_engineer_structure_review`（2026-07-03 工程師 7 點體檢）
 
 ## Skill 管理規則
-- **每次用戶分享或要求建立新 skill，必須立刻更新下方自訂技能表**
+- **每次用戶分享或要求建立新 skill，必須同步更新三處**：`skills/CATALOG.md`（完整表：名稱＋一行中文用途）＋ 上方分類速查（列名）＋ `skills/GOVERNANCE.md`（歸群裁決）
 - Skill 檔案位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
 - 有 URL 的 skill → 先 WebFetch 讀完再建立，確保內容正確
-- 格式：名稱 + 一行中文用途說明
 - **⚖️ 治理裁決表（2026-07-03 起）**：同任務永遠走同一條路徑。多個 skill 都能做時查 `skills/GOVERNANCE.md`（任務→唯一路徑表＋重疊群主用/備用/退役＋抓網頁工具選擇順序）。新 skill 入庫必須同步歸群裁決；已退役：typography-pairing、brand-voice-enhancer、code-review-skill（SKILL.md 已標 DEPRECATED，不刪檔）
 
 ## 自動守望系統（2026-06-11 上線,不要重複建）
