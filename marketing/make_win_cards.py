@@ -42,7 +42,7 @@ def spec_for(candidate: dict) -> dict:
     accent = EMERALD if candidate["verdict_class"] in AVOIDANCE_CLASSES else GOLD
     return {
         "tag": f"戰績對帳 · {candidate['verdict_label']}",
-        "headline": f"{candidate['name']}({candidate['ticker']})\n5個交易日後{direction} {pct:+.2f}%",
+        "headline": f"{candidate['name']}({candidate['ticker']})\n5個交易日後{direction} {abs(pct):.2f}%",
         "body": f"{candidate['date']} 建議{candidate['verdict_label']},判斷正確。",
         "cta": "完整對帳 marketdaily.ai/track-record →",
         "accent": accent,
