@@ -2280,34 +2280,8 @@ def _gr_personalized_news(has_holdings: bool, all_holdings: list):
     return few_stocks_note, personalized_news_instruction
 
 
-def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
-    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
-    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
-    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
-    if email_safe:
-        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
-
-    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
-    us_news_text = _format_news(data.get("us_news", []), max_items=6)
-    tw_news_text = _format_news(data.get("tw_news", []), max_items=5)
-    date = data.get("date", "")
-    mkt_status = _market_status(date)
-
-    has_holdings = bool(user_us_stocks or user_tw_stocks)
-    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
-    is_beginner = user_holding_count <= 4
-    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
-    watchlist_us = user_us_stocks if user_us_stocks else default_us
-    watchlist_tw = user_tw_stocks if user_tw_stocks else []
-    all_holdings = watchlist_us + watchlist_tw
-
-    watchlist_section = _gr_watchlist_section(data, user_us_stocks, user_tw_stocks,
-                                              watchlist_us, watchlist_tw, has_holdings, picks_mode)
-
-    few_stocks_note, personalized_news_instruction = _gr_personalized_news(has_holdings, all_holdings)
-
+def _gr_signal_stocks_tech(data: dict, user_us_stocks: list, user_tw_stocks: list,
+                           market: str, _full_holdings: list, depth: str):
     us_pref = list(dict.fromkeys(user_us_stocks or []))
     tw_pref = list(dict.fromkeys(user_tw_stocks or []))
     signal_stocks = list(dict.fromkeys(us_pref + tw_pref))
@@ -2369,6 +2343,39 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
             "停損距現價 ≤約12%、目標 ≤約15%,所有價位夾在現價上下 15% 內,美股用美元、台股用台幣,不可憑空捏造。"
             + deep_rule + "\n"
         )
+    return top_signal_stocks, tech_block
+
+
+def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
+                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
+                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
+    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
+    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
+    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
+    if email_safe:
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
+
+    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
+    us_news_text = _format_news(data.get("us_news", []), max_items=6)
+    tw_news_text = _format_news(data.get("tw_news", []), max_items=5)
+    date = data.get("date", "")
+    mkt_status = _market_status(date)
+
+    has_holdings = bool(user_us_stocks or user_tw_stocks)
+    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
+    is_beginner = user_holding_count <= 4
+    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
+    watchlist_us = user_us_stocks if user_us_stocks else default_us
+    watchlist_tw = user_tw_stocks if user_tw_stocks else []
+    all_holdings = watchlist_us + watchlist_tw
+
+    watchlist_section = _gr_watchlist_section(data, user_us_stocks, user_tw_stocks,
+                                              watchlist_us, watchlist_tw, has_holdings, picks_mode)
+
+    few_stocks_note, personalized_news_instruction = _gr_personalized_news(has_holdings, all_holdings)
+
+    top_signal_stocks, tech_block = _gr_signal_stocks_tech(data, user_us_stocks, user_tw_stocks,
+                                                           market, _full_holdings, depth)
 
     # 訊號卡改由 _render_signal_cards_batched 分批生成(保證每支持股都有卡、不被截斷),
     # 這裡只放區塊外框 + 佔位註解,生成後用 _inject_signal_cards 填入。
