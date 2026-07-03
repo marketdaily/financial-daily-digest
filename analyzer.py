@@ -1335,6 +1335,24 @@ def _track_stats():
     return _TRACK_STATS_CACHE["stats"]
 
 
+def _tldr_avoid_edge_note() -> str:
+    """避坑/看多勝率動態帶入 TLDR prompt(取代舊版寫死「避坑勝率 86.7% vs 看多 30%」——
+    對不上任何真實稽核數字,恐被 LLM 原樣抄進用戶信件,踩禁止虛假數字)。
+    優先用 era 桶(現行模型世代,同 _calibrated_confidence 邏輯),n<20 樣本太小就不掛數字只講方向。"""
+    s = _track_stats()
+    if not s:
+        return "避坑是我們實測最強的能力,每天都要交付"
+    era = s.get("era") or {}
+    src = era if era.get("c_count") else s
+    a_n, c_n = src.get("a_count") or 0, src.get("c_count") or 0
+    a_rate, c_rate = src.get("a_rate"), src.get("c_rate")
+    if c_rate is not None and c_n >= 20 and a_rate is not None and a_n >= 20:
+        return f"避坑是我們實測最強的能力(避坑勝率 {c_rate:.1f}% vs 看多 {a_rate:.1f}%),每天都要交付"
+    if c_rate is not None and c_n >= 20:
+        return f"避坑是我們實測最強的能力(避坑勝率 {c_rate:.1f}%),每天都要交付"
+    return "避坑是我們實測最強的能力,每天都要交付"
+
+
 def _calibrated_confidence(card_cls: str, regime_label: str, sym: str = ""):
     """信心 = 歷史校準表反推,不採 LLM 自填(實測 LLM 自填信心 Brier 0.513、>70% 只對 17% = 反指標)。
     桶:buy→A 看多命中率(依 regime 分桶)、sell→C 避坑命中率、hold/wait→50。
@@ -2616,7 +2634,7 @@ def _gr_build_prompt(date: str, all_holdings: list, has_holdings: bool,
 {depth_directive}
 【個人化原則】
 {tldr_focus_note}
-- TLDR 必含一條「⚠️ 避坑」:點名今天最該避開的標的或最危險的行為(追高/接刀/重大數據前重倉),一句話講理由——避坑是我們實測最強的能力(避坑勝率 86.7% vs 看多 30%),每天都要交付;持股全無風險時改寫大盤層級的最大風險提醒
+- TLDR 必含一條「⚠️ 避坑」:點名今天最該避開的標的或最危險的行為(追高/接刀/重大數據前重倉),一句話講理由——{_tldr_avoid_edge_note()};持股全無風險時改寫大盤層級的最大風險提醒
 - 所有分析都圍繞用戶的持倉，大盤新聞只在跟他持倉有關時才詳細寫
 - 給建議要明確：說「建議買進 $XXX 以下」「續抱直到 $XXX」「跌破 $XXX 停損」，**禁止只寫「先觀望」「先別動」「保守為上」這類沒附條件的虛詞**。要說「觀望」就必須附「等什麼價位/事件」（例：「先觀望，等跌到 $580 再分批接」「先觀望，等 6/1 財報出來再決定」）。
 - 口語化，像在 Line 傳訊息，不是寫報告
