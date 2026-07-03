@@ -1,0 +1,26 @@
+# report-only(工程師體檢④後續,backlog P2)——先觀察一週噪音量再決定要不要當 commit 閘。
+# 只對 MarketDaily 主線 Python 生效,歷史產品目錄(fortune-ai/ganla-app/youtube_space 等)與
+# 備份目錄不掃,見 CLAUDE.md「新的獨立產品不再塞進本 repo,歷史產品目錄維持現狀」。
+target-version = "py311"
+line-length = 120
+extend-exclude = [
+    "_bak",
+    "fortune-ai",
+    "ganla-app",
+    "ganla-rooms",
+    "ai_trading_course",
+    "ai_trading_practical",
+    "finance_master_course",
+    "youtube_space",
+    "tiktok_cat",
+    "superpowers",
+    "guides",
+    "specs",
+    "node_modules",
+]
+
+[lint]
+select = ["E", "F"]
+ignore = [
+    "E501",  # 行長交給 line-length 顯示,不硬擋(舊碼長行多,先不追溯)
+]
