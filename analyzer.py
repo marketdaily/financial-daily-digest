@@ -2117,31 +2117,36 @@ def _inject_signal_cards(raw: str, cards: str) -> str:
     return section + raw
 
 
+def _trim_holdings_for_email(data: dict, user_us_stocks, user_tw_stocks):
+    """email 版持股裁切:總數超過 DIGEST_EMAIL_MAX_HOLDINGS 時,敘述只留單日變動最大的 N 支
+    (避免信件過長被 Gmail 截斷;操作訊號卡另以 _full_holdings 覆蓋全部持股,不受此裁切影響)。
+    低於上限時原樣回傳(保留 None/原引用語意)。三版報告(平日/週末/週一)共用。"""
+    us0 = list(user_us_stocks or [])
+    tw0 = list(user_tw_stocks or [])
+    if len(us0) + len(tw0) <= DIGEST_EMAIL_MAX_HOLDINGS:
+        return user_us_stocks, user_tw_stocks
+    um = data.get("us_market", {})
+    tm = data.get("tw_market", {})
+
+    def _mv(sym, mkt):
+        return abs((mkt.get(sym) or {}).get("change_pct", 0) or 0)
+
+    ranked = sorted(
+        [(s, "us") for s in us0] + [(s, "tw") for s in tw0],
+        key=lambda x: _mv(x[0], um if x[1] == "us" else tm),
+        reverse=True,
+    )[:DIGEST_EMAIL_MAX_HOLDINGS]
+    return [s for s, k in ranked if k == "us"], [s for s, k in ranked if k == "tw"]
+
+
 def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                     email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
                     market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
     # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
     #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
-    # email 版：持倉太多時敘述只留變動最大的 N 支，避免信件過長被 Gmail 截斷（完整版見網頁）。
-    # 但「操作訊號卡」仍覆蓋全部持股(_full_holdings),不丟任何一支。
     _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
     if email_safe:
-        us0 = list(user_us_stocks or [])
-        tw0 = list(user_tw_stocks or [])
-        if len(us0) + len(tw0) > DIGEST_EMAIL_MAX_HOLDINGS:
-            um = data.get("us_market", {})
-            tm = data.get("tw_market", {})
-
-            def _mv(sym, mkt):
-                return abs((mkt.get(sym) or {}).get("change_pct", 0) or 0)
-
-            ranked = sorted(
-                [(s, "us") for s in us0] + [(s, "tw") for s in tw0],
-                key=lambda x: _mv(x[0], um if x[1] == "us" else tm),
-                reverse=True,
-            )[:DIGEST_EMAIL_MAX_HOLDINGS]
-            user_us_stocks = [s for s, k in ranked if k == "us"]
-            user_tw_stocks = [s for s, k in ranked if k == "tw"]
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
 
     market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
     us_news_text = _format_news(data.get("us_news", []), max_items=6)
@@ -2604,20 +2609,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
     # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週六晨間日報:不講當日大盤(已收),改聚焦『本週回顧 + 下週重點』。"""
     if email_safe:
-        us0 = list(user_us_stocks or [])
-        tw0 = list(user_tw_stocks or [])
-        if len(us0) + len(tw0) > DIGEST_EMAIL_MAX_HOLDINGS:
-            um = data.get("us_market", {})
-            tm = data.get("tw_market", {})
-            def _mv(sym, mkt):
-                return abs((mkt.get(sym) or {}).get("change_pct", 0) or 0)
-            ranked = sorted(
-                [(s, "us") for s in us0] + [(s, "tw") for s in tw0],
-                key=lambda x: _mv(x[0], um if x[1] == "us" else tm),
-                reverse=True,
-            )[:DIGEST_EMAIL_MAX_HOLDINGS]
-            user_us_stocks = [s for s, k in ranked if k == "us"]
-            user_tw_stocks = [s for s, k in ranked if k == "tw"]
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
 
     market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
     us_news_text = _format_news(data.get("us_news", []), max_items=10)
@@ -2716,20 +2708,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
     # email 版敘述只聚焦波動最大的 30 檔,但「操作訊號卡」仍覆蓋全部持股(全列在 _full_holdings)。
     _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
     if email_safe:
-        us0 = list(user_us_stocks or [])
-        tw0 = list(user_tw_stocks or [])
-        if len(us0) + len(tw0) > DIGEST_EMAIL_MAX_HOLDINGS:
-            um = data.get("us_market", {})
-            tm = data.get("tw_market", {})
-            def _mv(sym, mkt):
-                return abs((mkt.get(sym) or {}).get("change_pct", 0) or 0)
-            ranked = sorted(
-                [(s, "us") for s in us0] + [(s, "tw") for s in tw0],
-                key=lambda x: _mv(x[0], um if x[1] == "us" else tm),
-                reverse=True,
-            )[:DIGEST_EMAIL_MAX_HOLDINGS]
-            user_us_stocks = [s for s, k in ranked if k == "us"]
-            user_tw_stocks = [s for s, k in ranked if k == "tw"]
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
 
     market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
     us_news_text = _format_news(data.get("us_news", []), max_items=10)
