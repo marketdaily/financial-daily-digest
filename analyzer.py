@@ -17,6 +17,17 @@ GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite",
                  "gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-flash-latest"]
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
+# ── 近端價位錨定參數(_near_term_levels / _postprocess_html 買點分流共用)──
+NEAR_HIGH_RATIO = 0.985      # 建議買區上緣低於現價 1.5% 以上 → chip 改「回檔再買」
+ATR_MAX_RATIO = 0.15         # ATR 超過現價 15% 視為異常
+ATR_FALLBACK_RATIO = 0.03    # 無 ATR / 異常時退回現價 3% 估計
+SUPPORT_ATR_MULT = 1.5       # 低接支撐:現價下方 1.5×ATR
+TARGET_ATR_MULT = 2.0        # 反彈目標:現價上方 2×ATR
+STOP_MAX_ATR_MULT = 2.5      # 停損距現價至多 2.5×ATR
+STOP_FLOOR_RATIO = 0.88      # 停損不得低於現價 -12%
+SUPPORT_FLOOR_RATIO = 0.90   # 支撐不得低於現價 -10%
+TARGET_CAP_RATIO = 1.15      # 目標不得高於現價 +15%
+
 _SYSTEM_PROMPT = (
     "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，"
     "凡是標示「必填、強制、每一張都要」的內容一律不可省略。"
@@ -225,30 +236,51 @@ def _call_claude(prompt: str, system: str = None, model: str = "claude-sonnet-4-
     return "".join(b.get("text", "") for b in data.get("content", [])).strip()
 
 
+LLM_TEMPERATURE = 0.4  # 全 OpenAI 相容 provider 共用(gemini 另在自家 payload 帶同值)
+
+
+def _call_openai_style(url: str, key_env: str, prompt: str, system: str, model: str,
+                       max_tokens: int, extra_headers: dict = None, content_type: bool = False,
+                       retry_429_once: bool = False, timeout: int = 120) -> str:
+    """openai / groq / openrouter / cerebras 四家共用的 chat-completions 轉接
+    (原本四份逐字複製的樣板,2026-07-03 P2 收斂)。headers 順序、payload 欄位、
+    重試行為逐家凍結於 refactor_harness 的 provider 快照 —— 改這裡必先過快照 diff。
+    gemini / claude / cf_ai / ollama 的線路形狀真的不同,不硬塞進來。"""
+    key = os.environ.get(key_env)
+    if not key:
+        raise RuntimeError(f"未設定 {key_env}")
+    headers = {"Authorization": f"Bearer {key}"}
+    if content_type:
+        headers["Content-Type"] = "application/json"
+    if extra_headers:
+        headers.update(extra_headers)
+    payload = {
+        "model": model,
+        "max_tokens": max_tokens,
+        "temperature": LLM_TEMPERATURE,
+        "messages": [
+            {"role": "system", "content": system or _SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
+    }
+    resp = None
+    for attempt in range(2 if retry_429_once else 1):
+        resp = requests.post(url, headers=headers, json=payload, timeout=timeout)
+        if retry_429_once and resp.status_code == 429 and attempt < 1:
+            time.sleep(8)
+            continue
+        break
+    resp.raise_for_status()
+    return resp.json()["choices"][0]["message"]["content"].strip()
+
+
 def _call_openai(prompt: str, system: str = None) -> str:
     """OpenAI gpt-4o-mini 作為最終付費後援(Claude 也掛時用)。需要 OPENAI_API_KEY。
     .env 目前未設此 key → 此 caller 直接 raise,council/fallback 自動跳過(非錯誤)。"""
-    import os
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        raise RuntimeError("未設定 OPENAI_API_KEY")
-    resp = requests.post(
-        "https://api.openai.com/v1/chat/completions",
-        headers={"Authorization": f"Bearer {api_key}",
-                 "Content-Type": "application/json"},
-        json={
-            "model": "gpt-4o-mini",
-            "max_tokens": 16000,
-            "temperature": 0.4,
-            "messages": [
-                {"role": "system", "content": system or _SYSTEM_PROMPT},
-                {"role": "user", "content": prompt},
-            ],
-        },
-        timeout=180,
-    )
-    resp.raise_for_status()
-    return resp.json()["choices"][0]["message"]["content"].strip()
+    return _call_openai_style(
+        "https://api.openai.com/v1/chat/completions", "OPENAI_API_KEY",
+        prompt, system, model="gpt-4o-mini", max_tokens=16000,
+        content_type=True, timeout=180)
 
 
 def _call_groq(prompt: str, system: str = None,
@@ -259,33 +291,10 @@ def _call_groq(prompt: str, system: str = None,
     定位:Gemini 免費配額耗盡、Claude 又瞬斷時的『免費第三張網』,接住原本會掉
     deterministic 的班次(2026-07-01 事故:Gemini 429+Claude DNS 抖→3 chunk 掉備援)。
     GROQ_API_KEY 已在 .env;沒設則 raise,鏈/席次自動跳過(非錯誤)。"""
-    import os
-    api_key = os.environ.get("GROQ_API_KEY")
-    if not api_key:
-        raise RuntimeError("未設定 GROQ_API_KEY")
-    resp = None
-    for attempt in range(2):
-        resp = requests.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}",
-                     "Content-Type": "application/json"},
-            json={
-                "model": model,
-                "max_tokens": max_tokens,
-                "temperature": 0.4,
-                "messages": [
-                    {"role": "system", "content": system or _SYSTEM_PROMPT},
-                    {"role": "user", "content": prompt},
-                ],
-            },
-            timeout=120,
-        )
-        if resp.status_code == 429 and attempt < 1:
-            time.sleep(8)
-            continue
-        break
-    resp.raise_for_status()
-    return resp.json()["choices"][0]["message"]["content"].strip()
+    return _call_openai_style(
+        "https://api.groq.com/openai/v1/chat/completions", "GROQ_API_KEY",
+        prompt, system, model=model, max_tokens=max_tokens,
+        content_type=True, retry_429_once=True)
 
 
 def _call_cf_ai(prompt: str, system: str = None,
@@ -311,18 +320,10 @@ def _call_openrouter(prompt: str, system: str = None,
     """OpenRouter 免費層(:free 模型每日額度)。OpenAI 相容 API、獨立廠商聚合器。
     預接線:沒設 OPENROUTER_API_KEY → raise,席次/鏈自動跳過。用戶自行註冊拿 key
     (Cloudflare Turnstile 擋自動註冊)後填進 .env 即自動啟用一席,不需改程式。"""
-    key = os.environ.get("OPENROUTER_API_KEY")
-    if not key:
-        raise RuntimeError("未設定 OPENROUTER_API_KEY")
-    r = requests.post("https://openrouter.ai/api/v1/chat/completions",
-                      headers={"Authorization": f"Bearer {key}",
-                               "HTTP-Referer": "https://marketdaily.ai", "X-Title": "MarketDaily"},
-                      json={"model": model, "max_tokens": max_tokens, "temperature": 0.4,
-                            "messages": [{"role": "system", "content": system or _SYSTEM_PROMPT},
-                                         {"role": "user", "content": prompt}]},
-                      timeout=120)
-    r.raise_for_status()
-    return r.json()["choices"][0]["message"]["content"].strip()
+    return _call_openai_style(
+        "https://openrouter.ai/api/v1/chat/completions", "OPENROUTER_API_KEY",
+        prompt, system, model=model, max_tokens=max_tokens,
+        extra_headers={"HTTP-Referer": "https://marketdaily.ai", "X-Title": "MarketDaily"})
 
 
 def _call_cerebras(prompt: str, system: str = None,
@@ -330,17 +331,9 @@ def _call_cerebras(prompt: str, system: str = None,
     """Cerebras 免費層(晶圓級引擎,推理極快)。OpenAI 相容 API、獨立廠商。
     預接線:沒設 CEREBRAS_API_KEY → raise,席次/鏈自動跳過。用戶自行註冊拿 key
     (reCAPTCHA 擋自動註冊)後填進 .env 即自動啟用一席。"""
-    key = os.environ.get("CEREBRAS_API_KEY")
-    if not key:
-        raise RuntimeError("未設定 CEREBRAS_API_KEY")
-    r = requests.post("https://api.cerebras.ai/v1/chat/completions",
-                      headers={"Authorization": f"Bearer {key}"},
-                      json={"model": model, "max_tokens": max_tokens, "temperature": 0.4,
-                            "messages": [{"role": "system", "content": system or _SYSTEM_PROMPT},
-                                         {"role": "user", "content": prompt}]},
-                      timeout=120)
-    r.raise_for_status()
-    return r.json()["choices"][0]["message"]["content"].strip()
+    return _call_openai_style(
+        "https://api.cerebras.ai/v1/chat/completions", "CEREBRAS_API_KEY",
+        prompt, system, model=model, max_tokens=max_tokens)
 
 
 def _call_ollama(prompt: str, system: str = None,
@@ -626,7 +619,7 @@ def _format_news(articles: list, max_items: int = 8) -> str:
     return "\n".join(lines)
 
 
-def _postprocess_html(html: str, data: dict) -> str:
+def _pp_strip_llm_style(html: str) -> str:
     import re as _re
     # LLM 偶爾違規輸出整頁 HTML 連自帶 <style>(Claude Haiku 尤其常見;2026-06-11 用戶截圖):
     # premailer 會把它的 .signal-card{display:flex;flex-direction:column} 內聯進每張卡,
@@ -634,7 +627,11 @@ def _postprocess_html(html: str, data: dict) -> str:
     # 死防線:LLM 夾帶的 style 與文件骨架整塊剝掉,內文只能吃模板 CSS。
     html = _re.sub(r'<style[^>]*>.*?</style>', '', html, flags=_re.S | _re.I)
     html = _re.sub(r'<!DOCTYPE[^>]*>|</?(?:html|head|body)[^>]*>|<meta[^>]*>|<title[^>]*>.*?</title>', '', html, flags=_re.S | _re.I)
+    return html
 
+
+def _pp_clear_placeholders(html: str) -> str:
+    import re as _re
     # 死防線:LLM 不知道確切數字時偶爾寫成 XXX/XX 佔位符(2026-06-25 真兇:新聞「為什麼重要」
     # 寫「賣超金額高達 XXX 億元」直接洩進公版)。用戶硬規則:任何數字佔位符不可外露給訂閱者。
     # 先把含佔位符的整段子句(逗號分隔)整塊刪掉讓句子讀得通,再清落單的 X 佔位符。
@@ -642,7 +639,11 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _re.sub(r'\s*[XＸ]{2,}\s*(?:億元|億美元|億|兆|萬元|美元|元|點|%|％)', '', html)
     html = _re.sub(r'(?:NT)?\$[XＸ]{2,}', '', html)
     html = _re.sub(r'(?<![A-Za-z])[XＸ]{3,}(?![A-Za-z])', '', html)
+    return html
 
+
+def _pp_indicator_class(html: str, data: dict) -> str:
+    import re as _re
     ind = data.get("indicators", {})
 
     vix = ind.get("vix", 15)
@@ -655,7 +656,10 @@ def _postprocess_html(html: str, data: dict) -> str:
     # indicator-*),audit undefined_css_class 判 HIGH → 整封白白 retry;後處理直接補正
     html = _re.sub(r'class="indicator-value (fear|greed|neutral)"',
                    r'class="indicator-value indicator-\1"', html)
+    return html
 
+
+def _pp_crypto_dir(html: str, data: dict) -> str:
     crypto = data.get("crypto", {})
     btc_dir = "up" if (crypto.get("btc") or {}).get("change_pct", 0) >= 0 else "down"
     eth_dir = "up" if (crypto.get("eth") or {}).get("change_pct", 0) >= 0 else "down"
@@ -664,7 +668,11 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _re.sub(r'\bETHDIR(?:\s+(?:up|down))?\b', eth_dir, html)
 
     html = _re.sub(r'class="verdict SENTIMENT"', 'class="verdict neutral"', html)
+    return html
 
+
+def _pp_strip_fake_links(html: str, data: dict) -> str:
+    import re as _re
     # 移除幻覺網址：read-more 的 href 必須是今日真實新聞 URL，否則整個連結拿掉
     real_urls = set()
     for a in data.get("us_news", []) + data.get("tw_news", []):
@@ -679,14 +687,21 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<a class="read-more"[^>]*href="([^"]*)"[^>]*>.*?</a>',
         _strip_fake_link, html, flags=_re.DOTALL
     )
+    return html
 
+
+def _pp_tw_hint(data: dict) -> dict:
     # 代號 → 公司中英文名：把 ticker 類 span 內的純代號展開成「公司名 + 小灰代號」
     # 完整上市+上櫃名稱表打底,再用持股報價的名稱覆蓋,確保任何台股代號都能展開成中文名
     tw_hint = dict(data.get("tw_names_all", {}))
     for code, d in data.get("tw_market", {}).items():
         if isinstance(d, dict) and d.get("name"):
             tw_hint[code] = d["name"]
+    return tw_hint
 
+
+def _pp_strip_rogue_cards(html: str) -> str:
+    import re as _re
     # 清掉 narrative LLM 私自夾帶的 signal-card:批次卡都有 <!--h:SYM--> 標記且過了
     # _card_passes_audit,無標記卡 = 未把關的 rogue 卡(6/11 preflight 抓到 UMAC 虛詞卡
     # + 無 ticker '?' 卡都是這來源,害整封掉 deterministic fallback)。批次卡已 100% 覆蓋
@@ -697,7 +712,11 @@ def _postprocess_html(html: str, data: dict) -> str:
             lambda m: m.group(0) if "<!--h:" in m.group(0) else "",
             html, flags=_re.DOTALL,
         )
+    return html
 
+
+def _pp_verdict_chip(html: str) -> str:
+    import re as _re
     # signal-card 內把買/賣 verdict 拉到代號旁邊,讓「一眼看懂」效果更好
     # (原本 action-board 總覽已移除,改成直接在每張卡頂端標明買賣)
     _verdict_inline = {
@@ -715,11 +734,14 @@ def _postprocess_html(html: str, data: dict) -> str:
         chip = f'<span class="signal-verdict-chip {verdict}">{label}</span>'
         return f'{full}{chip}'
     html = _card_verdict_re.sub(_add_chip, html)
+    return html
 
+
+def _pp_knife_gate(html: str, _techs_gate: dict) -> str:
+    import re as _re
     # 接刀閘門(deterministic):空頭結構(價<MA20<MA50)的個股若卡片還是「建議買入」,
     # 強制降級為觀望條件單 — plan_sim 實證 77 掃停損 vs 2 達標的主要來源就是逆勢接刀,
     # prompt 規則擋第一層,這裡是不靠 LLM 自覺的死防線。
-    _techs_gate = data.get("technicals", {}) or {}
 
     def _demote_knife(m):
         block = m.group(0)
@@ -735,12 +757,15 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
         _demote_knife, html, flags=_re.DOTALL,
     )
+    return html
 
+
+def _pp_extended_gate(html: str, _techs_gate: dict, _regime_label: str) -> str:
+    import re as _re
     # regime 閘門(deterministic):風險偏多市況 + 個股本身已漲多(RSI14≥70 或站上布林上緣),
     # buy/hold 卡片一律加「漲多勿追/漲多可減」提示 — 2026-06-10 版只靠 prompt 軟性提醒
     # (「漲多的標的要提醒突破才追」),個人化抱單常常沒咬到;這裡補一道不靠 LLM 自覺的死防線,
     # 跟 _demote_knife(逆勢接刀)對稱,但只換 chip 文字不動 reason 段落(避免規則式改寫自然語言出錯)。
-    _regime_label = _market_regime(data).get("label", "neutral")
 
     def _demote_extended(m):
         block, cls = m.group(0), m.group(1)
@@ -762,11 +787,19 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<div class="signal-card (buy|hold)">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
         _demote_extended, html, flags=_re.DOTALL,
     )
+    return html
 
+
+def _pp_strip_badges(html: str) -> str:
+    import re as _re
     # 卡頭已有彩色 verdict-chip(建議買進/賣出),底部 signal-badge 是同一句重複 → 移除,
     # 讓 signal-meta 只剩「信心 X% · 時間窗」,減少邊邊 chip 把卡片拉長。
     html = _re.sub(r'<span class="signal-badge[^"]*">[^<]*</span>\s*', '', html)
+    return html
 
+
+def _pp_clamp_confidence(html: str) -> str:
+    import re as _re
     # 信心校準夾限:公開戰績方向勝率約五成多,顯示 >65% 的信心 = 未校準的過度自信。
     # LLM 已被要求寫 45-65,這裡是 deterministic 死防線(備援版/舊模板也吃得到)。
     def _clamp_conf(m):
@@ -777,7 +810,11 @@ def _postprocess_html(html: str, data: dict) -> str:
         return f"信心 {max(45, min(65, v))}%"
 
     html = _re.sub(r"信心\s*(\d{1,3})\s*%", _clamp_conf, html)
+    return html
 
+
+def _pp_recalibrate_confidence(html: str, _regime_label: str) -> str:
+    import re as _re
     # 信心改由歷史校準表反推:每張卡的信心用 track-record 實測命中率(依 verdict 桶+regime)覆寫,
     # LLM 自填數字只在校準表讀不到時當後備(上面已夾限)。每日戰績更新,數字自動跟著校準。
     def _recalibrate_card(m):
@@ -798,7 +835,11 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<div class="signal-card (buy|hold|sell|wait)">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
         _recalibrate_card, html, flags=_re.DOTALL,
     )
+    return html
 
+
+def _pp_requalify_buy(html: str, data: dict) -> str:
+    import re as _re
     # 「建議買入」chip 分流:建議買區整段低於現價(掛單等回檔)時,chip 改「回檔再買」,
     # 避免新手只看綠 chip 就直接市價追高 — chip 與買價區間語意必須一致。
     all_mkt = {**data.get("us_market", {}), **data.get("tw_market", {})}
@@ -819,7 +860,7 @@ def _postprocess_html(html: str, data: dict) -> str:
             hi = float(bm.group(2).replace(",", ""))
         except ValueError:
             return block
-        if hi < cur * 0.985:
+        if hi < cur * NEAR_HIGH_RATIO:
             block = block.replace("🟢 建議買入", "🟢 回檔再買(現價勿追)")
         return block
 
@@ -827,7 +868,11 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
         _requalify_buy, html, flags=_re.DOTALL,
     )
+    return html
 
+
+def _pp_scrub_earnings_notes(html: str, data: dict) -> str:
+    import re as _re
     # 財報註記清洗:資料端沒有「已核實預期數字」時,earnings-note 出現任何預期 EPS/營收
     # 都是 LLM 編的 → 換成中性句(deterministic 死防線,搭配 prompt 禁令與 audit)。
     if not any((e or {}).get("eps_est") is not None for e in (data.get("earnings") or [])):
@@ -837,7 +882,11 @@ def _postprocess_html(html: str, data: dict) -> str:
             return m.group(0)
 
         html = _re.sub(r'(<span class="earnings-note">)([^<]*)(</span>)', _scrub_note, html)
+    return html
 
+
+def _pp_expand_tickers(html: str, tw_hint: dict) -> str:
+    import re as _re
     def _expand_ticker(m):
         cls, content = m.group(1), m.group(2)
         if "<" in content:
@@ -871,7 +920,11 @@ def _postprocess_html(html: str, data: dict) -> str:
     def _strip_tw_paren_code(m):
         return "" if m.group(1) in _tw_codes else m.group(0)
     html = _re.sub(r'[ 　]?[（(]\s*([0-9]{4})\s*[）)]', _strip_tw_paren_code, html)
+    return html
 
+
+def _pp_strip_empty_impact(html: str) -> str:
+    import re as _re
     # 沒有任何個股的空「影響個股」區塊直接移除
     def _strip_empty_impact(m):
         return m.group(0) if "impact-stock" in m.group(0) else ""
@@ -880,7 +933,11 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<div class="news-impact">.*?</div>',
         _strip_empty_impact, html, flags=_re.DOTALL
     )
+    return html
 
+
+def _pp_drop_empty_sections(html: str) -> str:
+    import re as _re
     # 空區塊自動隱藏:沒有實質內容的 section 整塊移除,不留空標題洗版
     def _drop_empty_sections(h):
         parts = _re.split(r'(<div class="section-label">)', h)
@@ -901,7 +958,11 @@ def _postprocess_html(html: str, data: dict) -> str:
         return "".join(out)
 
     html = _drop_empty_sections(html)
+    return html
 
+
+def _pp_hoist_verdict_chip(html: str) -> str:
+    import re as _re
     # 結論情緒 chip 提前:把今天偏多/偏空標籤抓到 TLDR 標題,讓用戶第一眼就掃到結論
     def _hoist_verdict_chip(h):
         vm = _re.search(
@@ -923,10 +984,18 @@ def _postprocess_html(html: str, data: dict) -> str:
         return h2 if n else h
 
     html = _hoist_verdict_chip(html)
+    return html
 
+
+def _pp_markdown_bold(html: str) -> str:
+    import re as _re
     # LLM 偶爾吐 markdown 粗體 **xxx**,轉成 <strong>,別讓星號直接露在卡片上
     html = _re.sub(r'\*\*([^*\n<]+?)\*\*', r'<strong>\1</strong>', html)
+    return html
 
+
+def _pp_fix_bare_wait(html: str) -> str:
+    import re as _re
     # 孤立觀望詞修補:audit(isolated_wait_phrase)同款判定 —— 觀望詞後 60 字內無
     # 價位/事件/日期條件 → 自動補上條件式尾巴,讓「觀望」永遠帶「等什麼」,不留裸虛詞。
     _BARE_WAIT_FIX = {
@@ -946,7 +1015,33 @@ def _postprocess_html(html: str, data: dict) -> str:
         return _re.sub(r"(先觀望|先別動|保守為上|靜觀其變|按兵不動)", _repl, h)
 
     html = _fix_bare_wait(html)
+    return html
 
+
+def _postprocess_html(html: str, data: dict) -> str:
+    html = _pp_strip_llm_style(html)
+    html = _pp_clear_placeholders(html)
+    html = _pp_indicator_class(html, data)
+    html = _pp_crypto_dir(html, data)
+    html = _pp_strip_fake_links(html, data)
+    tw_hint = _pp_tw_hint(data)
+    html = _pp_strip_rogue_cards(html)
+    html = _pp_verdict_chip(html)
+    _techs_gate = data.get("technicals", {}) or {}
+    html = _pp_knife_gate(html, _techs_gate)
+    _regime_label = _market_regime(data).get("label", "neutral")
+    html = _pp_extended_gate(html, _techs_gate, _regime_label)
+    html = _pp_strip_badges(html)
+    html = _pp_clamp_confidence(html)
+    html = _pp_recalibrate_confidence(html, _regime_label)
+    html = _pp_requalify_buy(html, data)
+    html = _pp_scrub_earnings_notes(html, data)
+    html = _pp_expand_tickers(html, tw_hint)
+    html = _pp_strip_empty_impact(html)
+    html = _pp_drop_empty_sections(html)
+    html = _pp_hoist_verdict_chip(html)
+    html = _pp_markdown_bold(html)
+    html = _pp_fix_bare_wait(html)
     return html
 
 
@@ -1103,24 +1198,24 @@ def _near_term_levels(price, tech):
             return None
 
     atr = _f(t.get("atr14")) or 0
-    if atr <= 0 or atr > price * 0.15:
-        atr = price * 0.03  # 無 ATR 或異常 → 退回現價 3% 估計
+    if atr <= 0 or atr > price * ATR_MAX_RATIO:
+        atr = price * ATR_FALLBACK_RATIO  # 無 ATR 或異常 → 退回現價估計
     ma20, lo20, hi20 = _f(t.get("ma20")), _f(t.get("lo20")), _f(t.get("hi20"))
-    # 低接支撐:現價下方 1.5×ATR;若 MA20 / 20 日低更靠近現價(壓力先到)就改用它
-    support = price - 1.5 * atr
+    # 低接支撐:現價下方 SUPPORT_ATR_MULT×ATR;若 MA20 / 20 日低更靠近現價(壓力先到)就改用它
+    support = price - SUPPORT_ATR_MULT * atr
     for lvl in (ma20, lo20):
         if lvl and support < lvl < price:
             support = lvl
-    # 反彈目標:現價上方 2×ATR;若 20 日高更近就用 20 日高
-    target = price + 2.0 * atr
+    # 反彈目標:現價上方 TARGET_ATR_MULT×ATR;若 20 日高更近就用 20 日高
+    target = price + TARGET_ATR_MULT * atr
     if hi20 and price < hi20 < target:
         target = hi20
-    # 停損:支撐再下方一個 ATR,且距現價最多 12%
-    stop = min(support - atr, price - 2.5 * atr)
-    stop = max(stop, price * 0.88)
+    # 停損:支撐再下方一個 ATR,且不得超出 STOP 邊界
+    stop = min(support - atr, price - STOP_MAX_ATR_MULT * atr)
+    stop = max(stop, price * STOP_FLOOR_RATIO)
     # 夾邊界:任一價位離現價不得過遠
-    support = max(support, price * 0.90)
-    target = min(target, price * 1.15)
+    support = max(support, price * SUPPORT_FLOOR_RATIO)
+    target = min(target, price * TARGET_CAP_RATIO)
     return round(support, 2), round(target, 2), round(stop, 2)
 
 
@@ -2106,46 +2201,31 @@ def _inject_signal_cards(raw: str, cards: str) -> str:
     return section + raw
 
 
-def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
-    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
-    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
-    # email 版：持倉太多時敘述只留變動最大的 N 支，避免信件過長被 Gmail 截斷（完整版見網頁）。
-    # 但「操作訊號卡」仍覆蓋全部持股(_full_holdings),不丟任何一支。
-    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
-    if email_safe:
-        us0 = list(user_us_stocks or [])
-        tw0 = list(user_tw_stocks or [])
-        if len(us0) + len(tw0) > DIGEST_EMAIL_MAX_HOLDINGS:
-            um = data.get("us_market", {})
-            tm = data.get("tw_market", {})
+def _trim_holdings_for_email(data: dict, user_us_stocks, user_tw_stocks):
+    """email 版持股裁切:總數超過 DIGEST_EMAIL_MAX_HOLDINGS 時,敘述只留單日變動最大的 N 支
+    (避免信件過長被 Gmail 截斷;操作訊號卡另以 _full_holdings 覆蓋全部持股,不受此裁切影響)。
+    低於上限時原樣回傳(保留 None/原引用語意)。三版報告(平日/週末/週一)共用。"""
+    us0 = list(user_us_stocks or [])
+    tw0 = list(user_tw_stocks or [])
+    if len(us0) + len(tw0) <= DIGEST_EMAIL_MAX_HOLDINGS:
+        return user_us_stocks, user_tw_stocks
+    um = data.get("us_market", {})
+    tm = data.get("tw_market", {})
 
-            def _mv(sym, mkt):
-                return abs((mkt.get(sym) or {}).get("change_pct", 0) or 0)
+    def _mv(sym, mkt):
+        return abs((mkt.get(sym) or {}).get("change_pct", 0) or 0)
 
-            ranked = sorted(
-                [(s, "us") for s in us0] + [(s, "tw") for s in tw0],
-                key=lambda x: _mv(x[0], um if x[1] == "us" else tm),
-                reverse=True,
-            )[:DIGEST_EMAIL_MAX_HOLDINGS]
-            user_us_stocks = [s for s, k in ranked if k == "us"]
-            user_tw_stocks = [s for s, k in ranked if k == "tw"]
+    ranked = sorted(
+        [(s, "us") for s in us0] + [(s, "tw") for s in tw0],
+        key=lambda x: _mv(x[0], um if x[1] == "us" else tm),
+        reverse=True,
+    )[:DIGEST_EMAIL_MAX_HOLDINGS]
+    return [s for s, k in ranked if k == "us"], [s for s, k in ranked if k == "tw"]
 
-    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
-    us_news_text = _format_news(data.get("us_news", []), max_items=6)
-    tw_news_text = _format_news(data.get("tw_news", []), max_items=5)
-    date = data.get("date", "")
-    mkt_status = _market_status(date)
 
-    has_holdings = bool(user_us_stocks or user_tw_stocks)
-    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
-    is_beginner = user_holding_count <= 4
-    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
-    watchlist_us = user_us_stocks if user_us_stocks else default_us
-    watchlist_tw = user_tw_stocks if user_tw_stocks else []
-    all_holdings = watchlist_us + watchlist_tw
-
+def _gr_watchlist_section(data: dict, user_us_stocks: list, user_tw_stocks: list,
+                          watchlist_us: list, watchlist_tw: list, has_holdings: bool,
+                          picks_mode: bool) -> str:
     # Portfolio performance summary for prompt context
     us_market = data.get("us_market", {})
     tw_market = data.get("tw_market", {})
@@ -2170,7 +2250,10 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
         watchlist_section += f"\n台股：{', '.join(watchlist_tw)}"
     if portfolio_lines:
         watchlist_section += ("\n\n【精選標的今日漲跌摘要】\n" if picks_mode else "\n\n【持倉今日漲跌摘要】\n") + "\n".join(portfolio_lines)
+    return watchlist_section
 
+
+def _gr_personalized_news(has_holdings: bool, all_holdings: list):
     few_stocks_note = ""
     if has_holdings and len(all_holdings) < 3:
         few_stocks_note = f"""
@@ -2194,7 +2277,11 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
 </div>
 {f"持倉不多，請也推薦 2-3 支相關股票的 stock-news-item，ticker 後面加上「推薦關注」字樣" if few_stocks_note else ""}
 如果沒有任何持倉相關新聞，寫：<div class="stock-news-empty">今日無持倉相關重大新聞</div>）"""
+    return few_stocks_note, personalized_news_instruction
 
+
+def _gr_signal_stocks_tech(data: dict, user_us_stocks: list, user_tw_stocks: list,
+                           market: str, _full_holdings: list, depth: str):
     us_pref = list(dict.fromkeys(user_us_stocks or []))
     tw_pref = list(dict.fromkeys(user_tw_stocks or []))
     signal_stocks = list(dict.fromkeys(us_pref + tw_pref))
@@ -2256,7 +2343,10 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
             "停損距現價 ≤約12%、目標 ≤約15%,所有價位夾在現價上下 15% 內,美股用美元、台股用台幣,不可憑空捏造。"
             + deep_rule + "\n"
         )
+    return top_signal_stocks, tech_block
 
+
+def _gr_prompt_blocks(depth: str, is_beginner: bool):
     # 訊號卡改由 _render_signal_cards_batched 分批生成(保證每支持股都有卡、不被截斷),
     # 這裡只放區塊外框 + 佔位註解,生成後用 _inject_signal_cards 填入。
     signal_instruction = """
@@ -2357,7 +2447,11 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
     if depth == "simple":
         mood_section = ""
     depth_directive = _depth_directive(depth)
+    return (signal_instruction, rookie_section, mood_section,
+            indicator_section, sector_section, second_order_section, depth_directive)
 
+
+def _gr_time_discipline(market: str, mkt_status: dict, watchlist_tw: list, date: str):
     # ── 雙班次時序框架(market) ──
     # tw=早 7:00 台股盤前主軸 / us=晚 20:00 美股盤前主軸。both=原合併版(預設)。
     us_last_td = mkt_status.get("us_last_trading_date") or "上一個交易日"
@@ -2416,7 +2510,12 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
                          f'<li>（第二重要的事{"，若上一條是美股，這條就要是台股" if watchlist_tw else ""}）</li>',
                          '<li>（第三重要的事）</li>',
                          '<li>（第四重要的事，如有）</li>']
+    return time_discipline_block, tldr_focus_note, tldr_li_hints
 
+
+def _gr_depth_sections(depth: str, has_holdings: bool, all_holdings: list,
+                       personalized_news_instruction: str, mood_section: str,
+                       indicator_section: str, sector_section: str, second_order_section: str):
     # 累加式深度:simple=只有 TLDR + 操作卡(+結論);standard 在此之上加新聞;
     # 大盤/進階尾段 standard 也有,deep 全開,simple 全砍。
     news5_block = f"""<div class="section-label">🔥 今天最重要的 5 件事</div>
@@ -2490,7 +2589,15 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
     else:
         news5_section = news5_block
         market_tail_section = market_tail_block
+    return personalized_news_instruction, news5_section, market_tail_section
 
+
+def _gr_build_prompt(date: str, all_holdings: list, has_holdings: bool,
+                     time_discipline_block: str, depth_directive: str, tldr_focus_note: str,
+                     few_stocks_note: str, watchlist_section: str, market_text: str,
+                     us_news_text: str, tw_news_text: str, tldr_li_hints: list,
+                     signal_instruction: str, personalized_news_instruction: str,
+                     rookie_section: str, news5_section: str, market_tail_section: str) -> str:
     prompt = f"""你是這位用戶的專屬財經顧問，說話生活化、直接、像朋友。這份報告是**專門為持有 {', '.join(all_holdings) if has_holdings else '各種股票的'} 的用戶客製化生成的**，不是通用報告。
 
 {time_discipline_block}
@@ -2567,6 +2674,56 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
 - BTCDIR/ETHDIR 換成 up（漲）或 down（跌）
 - signal-ticker、ticker、stock-news-ticker、earnings-ticker、impact-stock 這些 span 內一律只放純股票代號，系統會自動補上公司中英文名稱
 """
+    return prompt
+
+
+def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
+                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
+                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
+    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
+    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
+    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
+    if email_safe:
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
+
+    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
+    us_news_text = _format_news(data.get("us_news", []), max_items=6)
+    tw_news_text = _format_news(data.get("tw_news", []), max_items=5)
+    date = data.get("date", "")
+    mkt_status = _market_status(date)
+
+    has_holdings = bool(user_us_stocks or user_tw_stocks)
+    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
+    is_beginner = user_holding_count <= 4
+    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
+    watchlist_us = user_us_stocks if user_us_stocks else default_us
+    watchlist_tw = user_tw_stocks if user_tw_stocks else []
+    all_holdings = watchlist_us + watchlist_tw
+
+    watchlist_section = _gr_watchlist_section(data, user_us_stocks, user_tw_stocks,
+                                              watchlist_us, watchlist_tw, has_holdings, picks_mode)
+
+    few_stocks_note, personalized_news_instruction = _gr_personalized_news(has_holdings, all_holdings)
+
+    top_signal_stocks, tech_block = _gr_signal_stocks_tech(data, user_us_stocks, user_tw_stocks,
+                                                           market, _full_holdings, depth)
+
+    (signal_instruction, rookie_section, mood_section, indicator_section,
+     sector_section, second_order_section, depth_directive) = _gr_prompt_blocks(depth, is_beginner)
+
+    time_discipline_block, tldr_focus_note, tldr_li_hints = _gr_time_discipline(
+        market, mkt_status, watchlist_tw, date)
+
+    personalized_news_instruction, news5_section, market_tail_section = _gr_depth_sections(
+        depth, has_holdings, all_holdings, personalized_news_instruction,
+        mood_section, indicator_section, sector_section, second_order_section)
+
+    prompt = _gr_build_prompt(date, all_holdings, has_holdings,
+                              time_discipline_block, depth_directive, tldr_focus_note,
+                              few_stocks_note, watchlist_section, market_text,
+                              us_news_text, tw_news_text, tldr_li_hints,
+                              signal_instruction, personalized_news_instruction,
+                              rookie_section, news5_section, market_tail_section)
 
     if picks_mode:
         prompt = _PICKS_PROMPT_NOTE + prompt
@@ -2593,20 +2750,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
     # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週六晨間日報:不講當日大盤(已收),改聚焦『本週回顧 + 下週重點』。"""
     if email_safe:
-        us0 = list(user_us_stocks or [])
-        tw0 = list(user_tw_stocks or [])
-        if len(us0) + len(tw0) > DIGEST_EMAIL_MAX_HOLDINGS:
-            um = data.get("us_market", {})
-            tm = data.get("tw_market", {})
-            def _mv(sym, mkt):
-                return abs((mkt.get(sym) or {}).get("change_pct", 0) or 0)
-            ranked = sorted(
-                [(s, "us") for s in us0] + [(s, "tw") for s in tw0],
-                key=lambda x: _mv(x[0], um if x[1] == "us" else tm),
-                reverse=True,
-            )[:DIGEST_EMAIL_MAX_HOLDINGS]
-            user_us_stocks = [s for s, k in ranked if k == "us"]
-            user_tw_stocks = [s for s, k in ranked if k == "tw"]
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
 
     market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
     us_news_text = _format_news(data.get("us_news", []), max_items=10)
@@ -2705,20 +2849,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
     # email 版敘述只聚焦波動最大的 30 檔,但「操作訊號卡」仍覆蓋全部持股(全列在 _full_holdings)。
     _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
     if email_safe:
-        us0 = list(user_us_stocks or [])
-        tw0 = list(user_tw_stocks or [])
-        if len(us0) + len(tw0) > DIGEST_EMAIL_MAX_HOLDINGS:
-            um = data.get("us_market", {})
-            tm = data.get("tw_market", {})
-            def _mv(sym, mkt):
-                return abs((mkt.get(sym) or {}).get("change_pct", 0) or 0)
-            ranked = sorted(
-                [(s, "us") for s in us0] + [(s, "tw") for s in tw0],
-                key=lambda x: _mv(x[0], um if x[1] == "us" else tm),
-                reverse=True,
-            )[:DIGEST_EMAIL_MAX_HOLDINGS]
-            user_us_stocks = [s for s, k in ranked if k == "us"]
-            user_tw_stocks = [s for s, k in ranked if k == "tw"]
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
 
     market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
     us_news_text = _format_news(data.get("us_news", []), max_items=10)
