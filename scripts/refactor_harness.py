@@ -358,6 +358,89 @@ def cmd_provider(mode):
     print("✅ provider 快照一致(payload/解析/鏈序凍結成立)")
 
 
+def _run_smoke():
+    """run() 的 characterization:mock 全部網路出口,3 個合成用戶跑完整 run(),
+    回傳 normalized(stdout + 寄件清單含每封 html 雜湊 + audit 報告)。"""
+    import io
+    import contextlib
+    data = _fixture()
+    analyzer, main = _load_modules()
+    import publisher
+    import data_fetcher
+
+    main.MARKET = "tw"
+    main.DRY_RUN = False
+    main.fetch_all = lambda **kw: data
+    main.filter_us_news = lambda x: x
+    main.filter_tw_news = lambda x: x
+    main._hold_until_send_time = lambda mk: None
+    main.save_hosted_digest = lambda html, date="": "https://hosted.test/digest"
+    main._push_admin_halt_alert = lambda *a, **k: None
+    main._push_admin_coverage_alert = lambda *a, **k: None
+    main._push_preflight_alert = lambda *a, **k: None
+    publisher.get_list_id = lambda: 1
+    publisher.check_subscriber_count = lambda lid: 3
+    publisher.get_all_subscribers = lambda lid: [
+        "tw-user@test.local", "us-user@test.local", "nohold-user@test.local"]
+    sent = []
+
+    def _fake_send(email, date, html, key, subject=None):
+        sent.append({"email": email, "subject": subject,
+                     "html_sha": hashlib.sha256(_norm(html).encode()).hexdigest(),
+                     "html_len": len(_norm(html))})
+        return True
+
+    publisher.send_transactional_email = _fake_send
+    prefs_map = {
+        "tw-user@test.local": {"us_stocks": [], "tw_stocks": TW_H,
+                               "digest_depth": "standard", "plan": "free"},
+        "us-user@test.local": {"us_stocks": US_H, "tw_stocks": [],
+                               "digest_depth": "deep", "plan": "premium"},
+        "nohold-user@test.local": {"us_stocks": [], "tw_stocks": [],
+                                   "digest_depth": "simple", "plan": "free"},
+    }
+    main.get_user_preferences = lambda email: dict(prefs_map[email])
+    analyzer.council_top_picks = lambda d, mk, n=3: ["2330", "2317"]
+    data_fetcher._LAST_TW_MISSING = []
+
+    buf = io.StringIO()
+    with tempfile.TemporaryDirectory() as td:
+        with _Chdir(td):
+            with contextlib.redirect_stdout(buf):
+                main.run()
+            audit = ""
+            ap = os.path.join(td, "output", f"digest_audit_{data.get('date')}.json")
+            if os.path.exists(ap):
+                with open(ap, encoding="utf-8") as f:
+                    audit = f.read()
+    out = ("=== STDOUT ===\n" + _norm(buf.getvalue())
+           + "\n=== SENT ===\n" + json.dumps(sent, ensure_ascii=False, indent=1, sort_keys=True)
+           + "\n=== AUDIT ===\n" + _norm(audit))
+    return out
+
+
+def cmd_run(mode):
+    os.makedirs(GOLD_DIR, exist_ok=True)
+    out = _run_smoke()
+    _leak_guard(out, "run_smoke")
+    gp = os.path.join(GOLD_DIR, "run_smoke.golden")
+    if mode == "golden":
+        with open(gp, "w", encoding="utf-8") as f:
+            f.write(out)
+        print(f"✅ run() smoke 黃金基線 → {gp} ({len(out)} chars)")
+        return
+    with open(gp, encoding="utf-8") as f:
+        gold = f.read()
+    if out != gold:
+        diff = list(difflib.unified_diff(
+            gold.splitlines(), out.splitlines(),
+            fromfile="golden/run_smoke", tofile="current", lineterm=""))[:50]
+        print("\n".join(diff))
+        print("🔴 run() smoke 與黃金基線不符")
+        sys.exit(1)
+    print("✅ run() smoke 一致(run() 編排行為凍結成立)")
+
+
 if __name__ == "__main__":
     args = sys.argv[1:]
     if args == ["golden"]:
@@ -366,6 +449,8 @@ if __name__ == "__main__":
         cmd_diff()
     elif args[:1] == ["provider"] and args[1:2] and args[1] in ("golden", "diff"):
         cmd_provider(args[1])
+    elif args[:1] == ["run"] and args[1:2] and args[1] in ("golden", "diff"):
+        cmd_run(args[1])
     else:
         print(__doc__)
         sys.exit(64)

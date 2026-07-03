@@ -1,0 +1,73 @@
+=== STDOUT ===
+① 取得訂閱者名單與持倉偏好...
+   共 3 位訂閱者
+② 抓取市場數據（含用戶個股：美股 +3，台股 +3）...
+③ 過濾假訊息...
+   美股新聞：59 則通過過濾
+   台股新聞：32 則通過過濾
+④ 生成 AI 市場情緒 Banner（台股早報版）...
+  [council] 席次 gemini:2.5-lite 失敗(no json)
+  [council] 席次 gemini:2.0-flash 失敗(no json)
+  [council] 席次 groq:gpt-oss-120b 失敗(no json)
+  [council] 席次 claude:haiku 失敗(no json)
+  [council] 席次 claude:sonnet 失敗(no json)
+  [council] 席次 local:qwen2.5-14b 失敗(no json)
+  [council] 席次 cf:llama-3.3-70b 失敗(no json)
+  [council] 席次 openrouter:llama-70b 失敗(no json)
+  [council] 席次 cerebras:llama-70b 失敗(no json)
+  [council] 席次 openai 失敗(no json)
+  [council] 席次 gemini:2.5-lite 失敗(no json)
+  [council] 席次 gemini:2.0-flash 失敗(no json)
+  [council] 席次 groq:gpt-oss-120b 失敗(no json)
+  [council] 席次 claude:haiku 失敗(no json)
+  [council] 席次 claude:sonnet 失敗(no json)
+  [council] 席次 local:qwen2.5-14b 失敗(no json)
+  [council] 席次 cf:llama-3.3-70b 失敗(no json)
+  [council] 席次 openrouter:llama-70b 失敗(no json)
+  [council] 席次 cerebras:llama-70b 失敗(no json)
+  [council] 席次 openai 失敗(no json)
+  [council] 席次 gemini:2.5-lite 本輪停用(no json)
+  [council] 席次 gemini:2.0-flash 本輪停用(no json)
+  [council] 席次 groq:gpt-oss-120b 本輪停用(no json)
+  [council] 席次 claude:haiku 本輪停用(no json)
+  [council] 席次 claude:sonnet 本輪停用(no json)
+  [council] 席次 local:qwen2.5-14b 本輪停用(no json)
+  [council] 席次 cf:llama-3.3-70b 本輪停用(no json)
+  [council] 席次 openrouter:llama-70b 本輪停用(no json)
+  [council] 席次 cerebras:llama-70b 本輪停用(no json)
+  [council] 席次 openai 本輪停用(no json)
+⑤ 儲存本地預覽（預設版）...
+   本地預覽已儲存：output/digest_YYYY-MM-DD.html
+⑥ 上傳預設版網頁...
+⑦ 個人化發送...
+   tw-user@test.local → 個人化（本班次 tw｜美股:0, 台股:3）· 新手（17.4）
+   📦 生成完成,進寄送佇列 → tw-user@test.local
+   us-user@test.local → AI 精選（本班次 tw｜美股:0, 台股:2）· 一般（47.4）
+   📦 生成完成,進寄送佇列 → us-user@test.local
+   nohold-user@test.local → AI 精選（本班次 tw｜美股:0, 台股:2）· 新手（0.0）
+   📦 生成完成,進寄送佇列 → nohold-user@test.local
+✅ 今日財經日報發送完成（班次 tw）！成功 3/3 位（總訂閱 3）
+   經驗分布 → 🌱新手 2 · 📈一般 1 · 🎯老手 0
+
+=== SENT ===
+[
+ {
+  "email": "tw-user@test.local",
+  "html_len": 23096,
+  "html_sha": "081294d7f206995028996c993e9a5fbabd3a961a0b9f5761a75204b9f46b3752",
+  "subject": "📊 你的 聯發科 昨日跌了 3.5%｜財經日報 2026-07-03"
+ },
+ {
+  "email": "us-user@test.local",
+  "html_len": 22975,
+  "html_sha": "684f2de2251e51ac70e9e0a8f1130d6307ed1596b386db489c0e9d712a965c4b",
+  "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
+ },
+ {
+  "email": "nohold-user@test.local",
+  "html_len": 22382,
+  "html_sha": "b9d3cf0eb5bc80f9b11124507dab2a41f48ad12c379880318c945889d77b18c7",
+  "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
+ }
+]
+=== AUDIT ===
