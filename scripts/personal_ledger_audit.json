@@ -1,0 +1,232 @@
+{
+  "generated_at": "2026-07-03T08:04:12",
+  "n_total": 953,
+  "a": {
+    "total": 438,
+    "hit_rate": {
+      "n": 438,
+      "wins": 172,
+      "rate_pct": 39.3,
+      "ci95": [
+        34.8,
+        43.9
+      ],
+      "baseline_pct": 50.0,
+      "verdict": "negative_edge",
+      "edge_pct": 10.7,
+      "n_needed_for_edge": 86,
+      "distinct_days": 12
+    },
+    "calibration": {
+      "n": 438,
+      "brier": 0.3911,
+      "coin_flip_brier": 0.25,
+      "worse_than_coin_flip": true,
+      "bins": {
+        "<=50": {
+          "n": 28,
+          "hit_pct": 71.4
+        },
+        "51-60": {
+          "n": 56,
+          "hit_pct": 60.7
+        },
+        "61-70": {
+          "n": 102,
+          "hit_pct": 37.3
+        },
+        ">70": {
+          "n": 252,
+          "hit_pct": 31.7
+        }
+      },
+      "inverted": true
+    },
+    "expectancy": {
+      "n": 294,
+      "avg_ret_pct": -0.688,
+      "avg_win_pct": 10.37,
+      "avg_loss_pct": -6.16,
+      "win_loss_count": [
+        97,
+        196
+      ],
+      "profit_factor": 0.83,
+      "positive_expectancy": false
+    },
+    "by_regime": {
+      "down": {
+        "n": 228,
+        "wins": 129,
+        "rate_pct": 56.6,
+        "ci95": [
+          50.1,
+          62.9
+        ],
+        "baseline_pct": 50.0,
+        "verdict": "real_edge",
+        "edge_pct": 6.6,
+        "n_needed_for_edge": 231,
+        "distinct_days": 6
+      },
+      "up": {
+        "n": 210,
+        "wins": 43,
+        "rate_pct": 20.5,
+        "ci95": [
+          15.6,
+          26.4
+        ],
+        "baseline_pct": 50.0,
+        "verdict": "negative_edge",
+        "edge_pct": 29.5,
+        "n_needed_for_edge": 11,
+        "distinct_days": 6
+      }
+    },
+    "by_group": {
+      "tw": {
+        "n": 246,
+        "wins": 110,
+        "rate_pct": 44.7,
+        "ci95": [
+          38.6,
+          51.0
+        ],
+        "baseline_pct": 50.0,
+        "verdict": "inconclusive",
+        "edge_pct": 5.3,
+        "n_needed_for_edge": 358,
+        "distinct_days": 12
+      },
+      "us": {
+        "n": 192,
+        "wins": 62,
+        "rate_pct": 32.3,
+        "ci95": [
+          26.1,
+          39.2
+        ],
+        "baseline_pct": 50.0,
+        "verdict": "negative_edge",
+        "edge_pct": 17.7,
+        "n_needed_for_edge": 31,
+        "distinct_days": 9
+      }
+    },
+    "verdict": [
+      "🔴 方向負 edge:39.3%（CI [34.8, 43.9] 整段 < 50.0%）— 反著做勝率更高，n=438",
+      "⚠️ 樣本相關:438 筆只來自 12 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
+      "🔴 信心反向:Brier 0.3911 > 0.25，宣稱越高信心實際命中越低 — 信心數字指錯方向，該移除或重新校準",
+      "🔴 負期望值:每筆平均 -0.688%（勝率高也可能賠）— profit factor 0.83，盈97/虧196"
+    ]
+  },
+  "c": {
+    "total": 515,
+    "hit_rate": {
+      "n": 515,
+      "wins": 295,
+      "rate_pct": 57.3,
+      "ci95": [
+        53.0,
+        61.5
+      ],
+      "baseline_pct": 50.0,
+      "verdict": "real_edge",
+      "edge_pct": 7.3,
+      "n_needed_for_edge": 188,
+      "distinct_days": 12
+    },
+    "calibration": {
+      "n": 515,
+      "brier": 0.2373,
+      "coin_flip_brier": 0.25,
+      "worse_than_coin_flip": false,
+      "bins": {
+        "<=50": {
+          "n": 212,
+          "hit_pct": 50.5
+        },
+        "51-60": {
+          "n": 123,
+          "hit_pct": 48.0
+        },
+        "61-70": {
+          "n": 112,
+          "hit_pct": 75.0
+        },
+        ">70": {
+          "n": 68,
+          "hit_pct": 66.2
+        }
+      },
+      "inverted": false
+    },
+    "expectancy": null,
+    "by_regime": {
+      "down": {
+        "n": 323,
+        "wins": 145,
+        "rate_pct": 44.9,
+        "ci95": [
+          39.6,
+          50.3
+        ],
+        "baseline_pct": 50.0,
+        "verdict": "inconclusive",
+        "edge_pct": 5.1,
+        "n_needed_for_edge": 383,
+        "distinct_days": 6
+      },
+      "up": {
+        "n": 192,
+        "wins": 150,
+        "rate_pct": 78.1,
+        "ci95": [
+          71.8,
+          83.4
+        ],
+        "baseline_pct": 50.0,
+        "verdict": "real_edge",
+        "edge_pct": 28.1,
+        "n_needed_for_edge": 12,
+        "distinct_days": 6
+      }
+    },
+    "by_group": {
+      "tw": {
+        "n": 229,
+        "wins": 131,
+        "rate_pct": 57.2,
+        "ci95": [
+          50.7,
+          63.4
+        ],
+        "baseline_pct": 50.0,
+        "verdict": "real_edge",
+        "edge_pct": 7.2,
+        "n_needed_for_edge": 192,
+        "distinct_days": 12
+      },
+      "us": {
+        "n": 286,
+        "wins": 164,
+        "rate_pct": 57.3,
+        "ci95": [
+          51.6,
+          62.9
+        ],
+        "baseline_pct": 50.0,
+        "verdict": "real_edge",
+        "edge_pct": 7.3,
+        "n_needed_for_edge": 185,
+        "distinct_days": 9
+      }
+    },
+    "verdict": [
+      "✅ 方向有真 edge:57.3%（CI [53.0, 61.5] 整段 > 50.0%，n=515）",
+      "⚠️ 樣本相關:515 筆只來自 12 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
+      "✅ 信心有用:Brier 0.2373 < 0.25"
+    ]
+  }
+}
