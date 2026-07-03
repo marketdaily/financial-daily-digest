@@ -24,6 +24,8 @@ tuna_pipeline/debug_*.png
 /output/
 # 個人化日報含訂閱者持股,一律不進 git(隱私)。公版 docs/output/digest_YYYY-MM-DD.html 才版控。
 docs/output/*_personal_*.html
+# Churn Sniper 草稿含訂閱者 email,一律不進 git(隱私)
+marketing/churn_drafts.json
 
 # 跨視窗本機工作紀錄(SessionStart hook 讀取,不進 git 以免並行視窗衝突/被 reset 洗掉)
 WORKLOG.md
