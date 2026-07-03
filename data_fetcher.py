@@ -896,6 +896,17 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
     except Exception as _e:
         print(f"[political_signals] skipped: {_e}")
 
+    # 信息差引擎夜間簡報(法人/融資融券/借券/集保大戶/法說會/美股分析師+內部人) — 依代號查表,
+    # intel/patrol.py 每晚 21:30 產出,latest.json 缺檔或格式異動一律回 {},缺了不缺信
+    intel_signals = {}
+    try:
+        import json as _json, os as _os
+        _intel_path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "intel", "briefs", "latest.json")
+        with open(_intel_path, encoding="utf-8") as _f:
+            intel_signals = _json.load(_f).get("by_code") or {}
+    except Exception as _e:
+        print(f"[intel_signals] skipped: {_e}")
+
     return {
         "fundamentals": fundamentals,
         "us_market": us_market,
@@ -910,6 +921,7 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         "earnings": fetch_earnings_calendar(),
         "earnings_impact": earnings_impact,
         "political_signals": political_signals,
+        "intel_signals": intel_signals,
         # 必用 TW 時區：GH Actions runner 在 UTC，06:55 TW 寄送時 UTC 還是前一天
         # 2026-05-27 出包過：runner UTC 22:55 (= TW 5/27 06:55) datetime.now()→5/26
         # 害 _market_status() 拿 5/26 算「昨晚」變成 5/25 Memorial Day 假，日報通篇寫錯

@@ -489,6 +489,61 @@ def _inject_political_signals(inner_html: str, data: dict, user_holdings=None) -
         return inner_html
 
 
+def _inject_intel_signals(inner_html: str, data: dict, user_holdings=None) -> str:
+    """把信息差引擎夜間簡報(法人/融資融券/借券/集保大戶/法說會/美股分析師+內部人)裡跟這位
+    用戶「實際持股」相符的訊號組成卡片,插在報告最前面。純 deterministic 查表(不經 LLM),
+    只顯示紅/黃兩種行動級訊號(plain 略過);沒有持股命中就原樣返回 —— 不影響零錯誤防線。"""
+    import html as _html
+    by_code = (data or {}).get("intel_signals") or {}
+    held = list(dict.fromkeys([str(h).upper() for h in (user_holdings or []) if h]))
+    if not by_code or not held:
+        return inner_html
+    try:
+        names = (data or {}).get("tw_names_all") or {}
+        rows = []
+        for tk in held:
+            entries = [e for e in (by_code.get(tk) or []) if e.get("level") in ("red", "yellow")]
+            if not entries:
+                continue
+            # 同一來源(如美股內部人在 2 天窗口內多筆例行申報)只留最嚴重一則,
+            # 避免重訊股每天洗版式重複——一個 source 一句話,信息密度優先於覆蓋率
+            best_by_source = {}
+            for e in entries:
+                src = e.get("source") or ""
+                cur = best_by_source.get(src)
+                if cur is None or (e["level"] == "red" and cur["level"] != "red"):
+                    best_by_source[src] = e
+            entries = list(best_by_source.values())
+            disp = f"{tk} {names[tk]}" if tk in names else tk
+            for e in entries:
+                color, bg = ("#b3261e", "#fde8e6") if e["level"] == "red" else ("#8a4500", "#fff4e0")
+                dot = "🔴" if e["level"] == "red" else "🟡"
+                sig = _html.escape(str(e.get("signal") or ""))
+                rows.append(
+                    '<div class="news-card" style="border-color:#dfe3ff;">'
+                    f'<span class="news-tag" style="background:{bg};color:{color};">{dot} {_html.escape(disp)}</span>'
+                    f'<div class="news-headline">{sig}</div>'
+                    '</div>'
+                )
+        if not rows:
+            return inner_html
+        block = (
+            '<div class="section-label">🔎 你的持股籌碼情報</div>'
+            '<div style="margin:0 12px 6px;font-size:12px;color:#8a8a8e;">'
+            '法人動向 / 融資融券 / 借券賣出 / 集保大戶 / 法說會排程等信息差引擎夜間巡邏訊號,'
+            '只列出你有持股的標的。</div>'
+            + "".join(rows)
+        )
+        marker = '<div class="section-label">'
+        idx = inner_html.find(marker)
+        if idx == -1:
+            return block + inner_html
+        return inner_html[:idx] + block + inner_html[idx:]
+    except Exception as e:
+        print(f"  [持股籌碼情報] 注入略過（{e}）")
+        return inner_html
+
+
 def get_user_preferences(email: str) -> dict:
     """讀取用戶在「我的專區」設定的持倉偏好。失敗會重試，確保日報依個人設定客製化。
     server-to-server 帶 INTERNAL_TOKEN 跳過 password gate（用戶已設密碼後 endpoint 預設拒絕匿名讀）。"""
@@ -812,6 +867,8 @@ def run():
                 full_inner = _inject_ai_banner(full_inner, data["date"])
                 if depth != "simple":
                     full_inner = _inject_political_signals(full_inner, data, (gen_us or []) + (gen_tw or []))
+                    if not picks_mode:
+                        full_inner = _inject_intel_signals(full_inner, data, (gen_us or []) + (gen_tw or []))
                 if picks_mode:
                     full_inner = picks_banner + _sanitize_picks_wording(full_inner)
                 # 完整版（含全部持倉）上傳網頁
@@ -824,6 +881,8 @@ def run():
                     inner = _inject_ai_banner(inner, data["date"])
                     if depth != "simple":
                         inner = _inject_political_signals(inner, data, (gen_us or []) + (gen_tw or []))
+                        if not picks_mode:
+                            inner = _inject_intel_signals(inner, data, (gen_us or []) + (gen_tw or []))
                     if picks_mode:
                         inner = picks_banner + _sanitize_picks_wording(inner)
                     shown = DIGEST_EMAIL_MAX_HOLDINGS
@@ -878,6 +937,8 @@ def run():
                     retry_inner = _inject_ai_banner(retry_inner, data["date"])
                     if depth != "simple":
                         retry_inner = _inject_political_signals(retry_inner, data, (gen_us or []) + (gen_tw or []))
+                        if not picks_mode:
+                            retry_inner = _inject_intel_signals(retry_inner, data, (gen_us or []) + (gen_tw or []))
                     if picks_mode:
                         retry_inner = picks_banner + _sanitize_picks_wording(retry_inner)
                     retry_html = build_email_html(data["date"], retry_inner)

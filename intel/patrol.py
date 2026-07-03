@@ -94,7 +94,14 @@ def run():
     sc = _cb_score()
     calib = _load_json(os.path.join(CBDIR, "calibration.json"), {})
 
-    red, yellow = [], []
+    red, yellow, by_code = [], [], {}
+
+    def _emit(code, level, line, source):
+        (red if level == "red" else yellow).append(line)
+        if code:
+            by_code.setdefault(str(code).upper(), []).append(
+                {"source": source, "level": level, "signal": line})
+
     for c in codes:
         f = inst.get(c)
         if not f:
@@ -104,42 +111,44 @@ def run():
             red.append(line)
         elif f["level"] == "yellow":
             yellow.append(line)
+        if f["level"] in ("red", "yellow"):
+            by_code.setdefault(c, []).append({"source": "institutional", "level": f["level"], "signal": line})
     for n in news:
         line = f"{n['name']}({n['code']}) 重訊[{n['date']}]:{n['subject'][:60]}"
-        (red if n["level"] == "red" else yellow).append(line)
+        _emit(n["code"], n["level"], line, "mops_news")
     for r in revs:
         line = f"{r['name']}({r['code']}):{r['signal']}"
-        (red if r["level"] == "red" else yellow).append(line)
+        _emit(r["code"], r["level"], line, "revenue")
     for s in us_sigs:
         line = us_analyst.format_line(s)
-        (red if s["level"] == "red" else yellow).append(line)
+        _emit(s["symbol"], s["level"], line, "us_analyst")
     for s in us_insider_sigs:
         line = us_insider.format_line(s)
-        (red if s["level"] == "red" else yellow).append(line)
+        _emit(s["symbol"], s["level"], line, "us_insider")
     for c in codes:
         m = marg.get(c)
         if not m or m["level"] == "plain":
             continue
         line = f"{wl[c]}({c}):{m['signal']}"
-        (red if m["level"] == "red" else yellow).append(line)
+        _emit(c, m["level"], line, "margin")
     for c in codes:
         s = sbl_data.get(c)
         if not s or s["level"] == "plain":
             continue
         line = f"{wl[c]}({c}):{s['signal']}"
-        (red if s["level"] == "red" else yellow).append(line)
+        _emit(c, s["level"], line, "sbl")
     for c in codes:
         h = holder_data.get(c)
         if not h or h["level"] == "plain":
             continue
         line = f"{wl[c]}({c}):{h['signal']}"
-        (red if h["level"] == "red" else yellow).append(line)
+        _emit(c, h["level"], line, "holders")
     for c in codes:
         f2 = conf_data.get(c)
         if not f2 or f2["level"] == "plain":
             continue
         line = f"{wl[c]}({c}):{f2['signal']}"
-        (red if f2["level"] == "red" else yellow).append(line)
+        _emit(c, f2["level"], line, "investor_conf")
 
     os.makedirs(BRIEFS, exist_ok=True)
     md = [f"# 信息差簡報 {today}", ""]
@@ -168,7 +177,7 @@ def run():
         f.write("\n".join(md) + "\n")
     latest = {"date": today, "red": red, "yellow": yellow,
               "calibration": {k: v for k, v in calib.items() if k != "details"},
-              "watchlist_n": len(codes)}
+              "watchlist_n": len(codes), "by_code": by_code}
     with open(os.path.join(BRIEFS, "latest.json"), "w", encoding="utf-8") as f:
         json.dump(latest, f, ensure_ascii=False, indent=1)
     print("\n".join(md))

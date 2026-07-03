@@ -15,7 +15,6 @@
   "正達(3149) 重訊[2026-07-02]:公告本公司現金增資認股基準日及相關事宜",
   "佐登-KY(4190) 重訊[2026-07-02]:公告本公司中華民國境內第四次有擔保轉換公司債之發行， 已依中國證監會發布之『境內企業境外發行證券和上市管理試行 辦法』進",
   "增你強(3028) 重訊[2026-07-02]:公告本公司訂定115年現金增資認股基準日等相關事宜",
-  "智崴(5263) 重訊[2026-07-01]:公告本公司訂定115年現金增資 認股基準日等相關事宜(更正內容)",
   "🇺🇸 TSLA 目標價⬆️+10.0%→$430(Truist Financial)",
   "🇺🇸 BRK-B 內部人買進:O'Sullivan Michael J. 536股 均價$467.4355(分2筆執行)(約$250,545)",
   "🇺🇸 TSM 內部人買進:Tien Bor-Zen[VP] 1,000股 均價$76.64(約$76,640)",
@@ -77,10 +76,6 @@
   "世紀鋼九(9958):法人 20 日淨賣超 -9,403 張(未成連續型態)",
   "中砂(1560) 重訊[2026-07-02]:(更正7/1公告)公告本公司調整配息率",
   "雙鍵(4764) 重訊[2026-07-02]:代子公司雙鍵化工(上海)有限公司公告董事會決議盈餘分配案",
-  "青雲(5386) 重訊[2026-07-01]:本公司高階主管因伺服器晶片遭羈押乙事，將配合司法單位調查",
-  "青雲(5386) 重訊[2026-07-01]:本公司並無從事伺服器晶片交易， 高階主管遭羈押乙事將配合司法單位調查",
-  "青雲(5386) 重訊[2026-07-01]:本公司發言人、代理發言人異動",
-  "青雲(5386) 重訊[2026-07-01]:本公司總經理職務暫由邱陳振為代理總經理",
   "🇺🇸 AAPL 內部人賣出:LEVINSON ARTHUR D 50,000股 均價$311.02(約$15,551,000)",
   "🇺🇸 AAPL 內部人賣出:Borders Ben 1,274股 均價$290.0(約$369,460)",
   "🇺🇸 AAPL 內部人賣出:LEVINSON ARTHUR D 250,000股 均價$284.7589(分2筆執行)(約$71,189,725)",
@@ -151,7 +146,910 @@
   "updated": "2026-07-03",
   "n_rows": 17,
   "n_interim": 0,
-  "n_final": 0
+  "n_final": 0,
+  "model": "empirical_band_v4",
+  "lam": 0.8,
+  "drift": 0.07,
+  "clamp": [
+   0.02,
+   0.95
+  ],
+  "floor_margin": 0.111,
+  "w_pooled": [
+   2.553047,
+   -2.971385,
+   0.293049,
+   1.41712,
+   1.454508
+  ],
+  "w_years": {
+   "2019": [
+    2.511439,
+    -3.166021,
+    0.233377,
+    1.333525,
+    1.342589
+   ],
+   "2020": [
+    3.128955,
+    -3.206176,
+    0.357055,
+    0.437295,
+    1.355193
+   ],
+   "2021": [
+    2.596109,
+    -3.305546,
+    0.330029,
+    1.493232,
+    2.195767
+   ],
+   "2022": [
+    2.565147,
+    -3.528667,
+    0.315222,
+    1.47251,
+    2.90517
+   ],
+   "2023": [
+    2.927449,
+    -2.798373,
+    0.217066,
+    2.23334,
+    1.531452
+   ],
+   "2024": [
+    2.124292,
+    -2.67019,
+    0.314669,
+    1.068485,
+    1.218519
+   ],
+   "2025": [
+    1.816751,
+    -2.08205,
+    0.217504,
+    -1.986591,
+    1.010837
+   ]
+  },
+  "features": "x=[1, z, z², m, z·m]; z=ln(b)/(σ√T), m=(drift−σ²/2)√T/σ; point: logit=(1−λ)·logit(p_gbm)+λ·(w_pooled·x); floor: sigmoid(w_pooled·x)−floor_margin; band顯示: min/max over w_years",
+  "domain": {
+   "z": [
+    0.05,
+    3.0
+   ],
+   "T": [
+    0.4,
+    3.2
+   ],
+   "sigma": [
+    0.15,
+    1.0
+   ],
+   "note": "出界→回傳原始 GBM+標記不可信"
+  },
+  "provenance": {
+   "source": "walk-forward 2019-02..2025-06, 55 CB issuers, 66380 forecasts, barriers 1.05-1.5 × horizons 0.5-3y, div-adjusted intraday-high touch",
+   "finding": "GBM(歷史vol)七年全期系統性低估觸及率(-10.7pp,月cluster CI[-12.9,-8.6]);遠尾非平穩→單點精度上限=年間散佈±10pp→改交付 點+regime區間+下限",
+   "gates": {
+    "G1_brier": {
+     "oos_brier_raw": 0.1946,
+     "oos_brier_cal": 0.175,
+     "oos_brier_base": 0.2091
+    },
+    "G2_floor_buckets": "30/30",
+    "G3_deploy_dev": 0.1068,
+    "G4_monotone": true
+   },
+   "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);live 帳本 predictions.jsonl 持續對答案"
+  }
  },
- "watchlist_n": 56
+ "watchlist_n": 56,
+ "by_code": {
+  "1560": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "中砂二(1560):投信連 5 日買超(認養訊號,20日淨買 +1,375 張)"
+   },
+   {
+    "source": "mops_news",
+    "level": "plain",
+    "signal": "中砂(1560) 重訊[2026-07-02]:(更正7/1公告)公告本公司調整配息率"
+   }
+  ],
+  "2109": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "華豐二(2109):法人 20 日淨賣超 -242 張(未成連續型態)"
+   }
+  ],
+  "2303": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "聯電一(2303):投信連 9 日賣超(棄養警訊,20日淨賣 -582,232 張)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "聯電一(2303):千張大戶持股比週增0.57個百分點(溫和加碼)"
+   }
+  ],
+  "2451": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "創見二(2451):法人 20 日淨賣超 -25,095 張(未成連續型態)"
+   },
+   {
+    "source": "sbl",
+    "level": "red",
+    "signal": "創見二(2451):機構借券賣出5日遽增21.0%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)"
+   }
+  ],
+  "2464": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "盟立三(2464):法人 20 日淨賣超 -3,549 張(未成連續型態)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "盟立三(2464):千張大戶持股比週減-3.64個百分點(大戶出脫,籌碼鬆動)"
+   }
+  ],
+  "2486": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "一詮七(2486):法人 20 日淨賣超 -7,445 張(未成連續型態)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "一詮七(2486):千張大戶持股比週增0.50個百分點(溫和加碼)"
+   }
+  ],
+  "2530": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "華建五(2530):法人 20 日淨賣超 -296 張(未成連續型態)"
+   }
+  ],
+  "2646": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "星宇航空一(2646):法人 20 日淨買超 +6,903 張(未成連續型態)"
+   }
+  ],
+  "3006": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "晶豪科二(3006):法人 20 日淨買超 +1,099 張(未成連續型態)"
+   },
+   {
+    "source": "holders",
+    "level": "red",
+    "signal": "晶豪科二(3006):千張大戶持股比週增1.38個百分點(大戶顯著加碼,且戶數減少1戶(籌碼更集中在更少大戶手中))"
+   }
+  ],
+  "3028": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "增你強五(3028):投信連 8 日買超(認養訊號,20日淨買 +258 張)"
+   },
+   {
+    "source": "mops_news",
+    "level": "red",
+    "signal": "增你強(3028) 重訊[2026-07-02]:公告本公司訂定115年現金增資認股基準日等相關事宜"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "增你強五(3028):千張大戶持股比週增0.56個百分點(溫和加碼)"
+   }
+  ],
+  "3081": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "聯亞一(3081):投信連 4 日賣超(棄養警訊,20日淨賣 -3,257 張)"
+   },
+   {
+    "source": "sbl",
+    "level": "red",
+    "signal": "聯亞一(3081):機構借券賣出5日遽增65.8%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)"
+   }
+  ],
+  "3128": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "昇銳三(3128):法人 20 日淨賣超 -394 張(未成連續型態)"
+   }
+  ],
+  "3141": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "晶宏四(3141):法人 20 日淨買超 +1,129 張(未成連續型態)"
+   }
+  ],
+  "3149": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "正達四(3149):法人 20 日淨賣超 -7,989 張(未成連續型態)"
+   },
+   {
+    "source": "mops_news",
+    "level": "red",
+    "signal": "正達(3149) 重訊[2026-07-02]:公告本公司現金增資認股基準日及相關事宜"
+   },
+   {
+    "source": "sbl",
+    "level": "red",
+    "signal": "正達四(3149):機構借券賣出5日遽增33.6%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "正達四(3149):千張大戶持股比週減-4.40個百分點(大戶出脫,籌碼鬆動)"
+   }
+  ],
+  "3583": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "辛耘三(3583):外資連 5 日買超(5日淨買 +1,774 張)"
+   }
+  ],
+  "3605": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "宏致四(3605):法人 20 日淨買超 +12,593 張(未成連續型態)"
+   },
+   {
+    "source": "margin",
+    "level": "yellow",
+    "signal": "宏致四(3605):融資5日暴增33.6%(散戶追高過熱)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "宏致四(3605):千張大戶持股比週增0.93個百分點(溫和加碼)"
+   }
+  ],
+  "3701": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "大眾控三(3701):法人 20 日淨買超 +994 張(未成連續型態)"
+   }
+  ],
+  "4541": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "晟田五(4541):法人 20 日淨買超 +4,464 張(未成連續型態)"
+   },
+   {
+    "source": "margin",
+    "level": "yellow",
+    "signal": "晟田五(4541):融資5日暴增20.6%(散戶追高過熱)"
+   },
+   {
+    "source": "sbl",
+    "level": "yellow",
+    "signal": "晟田五(4541):機構借券賣出5日遽減-20.9%(回補潮,空頭力道減弱)"
+   },
+   {
+    "source": "holders",
+    "level": "red",
+    "signal": "晟田五(4541):千張大戶持股比週增2.54個百分點(大戶顯著加碼)"
+   }
+  ],
+  "4764": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "雙鍵二(4764):法人 20 日淨買超 +2,894 張(未成連續型態)"
+   },
+   {
+    "source": "mops_news",
+    "level": "plain",
+    "signal": "雙鍵(4764) 重訊[2026-07-02]:代子公司雙鍵化工(上海)有限公司公告董事會決議盈餘分配案"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "雙鍵二(4764):千張大戶持股比週增0.75個百分點(溫和加碼)"
+   }
+  ],
+  "4967": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "十銓五(4967):法人 20 日淨賣超 -7,080 張(未成連續型態)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "十銓五(4967):千張大戶持股比週減-1.82個百分點(大戶出脫,籌碼鬆動)"
+   }
+  ],
+  "4973": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "廣穎電通一(4973):法人 20 日淨賣超 -2,703 張(未成連續型態)"
+   }
+  ],
+  "5263": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "智崴六(5263):法人 20 日淨買超 +285 張(未成連續型態)"
+   }
+  ],
+  "5289": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "宜鼎二(5289):法人 20 日淨賣超 -2,773 張(未成連續型態)"
+   },
+   {
+    "source": "sbl",
+    "level": "yellow",
+    "signal": "宜鼎二(5289):機構借券賣出5日增14.3%(溫和加碼放空)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "宜鼎二(5289):千張大戶持股比週增0.95個百分點(溫和加碼)"
+   }
+  ],
+  "5291": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "邑昇二(5291):法人 20 日淨賣超 -404 張(未成連續型態)"
+   },
+   {
+    "source": "sbl",
+    "level": "red",
+    "signal": "邑昇二(5291):機構借券賣出5日遽增124.3%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)"
+   }
+  ],
+  "5536": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "聖暉二(5536):投信連 5 日賣超(棄養警訊,20日淨賣 -331 張)"
+   },
+   {
+    "source": "holders",
+    "level": "red",
+    "signal": "聖暉二(5536):千張大戶持股比週增1.15個百分點(大戶顯著加碼)"
+   }
+  ],
+  "6134": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "萬旭三(6134):法人 20 日淨賣超 -1,835 張(未成連續型態)"
+   }
+  ],
+  "6187": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "萬潤六(6187):投信連 4 日賣超(棄養警訊,20日淨賣 +405 張)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "萬潤六(6187):千張大戶持股比週減-1.06個百分點(大戶出脫,籌碼鬆動)"
+   }
+  ],
+  "6546": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "正基三(6546):法人 20 日淨賣超 -383 張(未成連續型態)"
+   },
+   {
+    "source": "sbl",
+    "level": "yellow",
+    "signal": "正基三(6546):機構借券賣出5日遽減-21.0%(回補潮,空頭力道減弱)"
+   }
+  ],
+  "6584": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "南俊國際三(6584):法人 20 日淨買超 +208 張(未成連續型態)"
+   },
+   {
+    "source": "sbl",
+    "level": "yellow",
+    "signal": "南俊國際三(6584):機構借券賣出5日遽減-29.1%(回補潮,空頭力道減弱)"
+   }
+  ],
+  "6683": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "雍智科技一(6683):法人 20 日淨賣超 -539 張(未成連續型態)"
+   }
+  ],
+  "6693": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "廣閎科一(6693):法人 20 日淨買超 +940 張(未成連續型態)"
+   }
+  ],
+  "6869": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "雲豹能源二(6869):法人 20 日淨賣超 -716 張(未成連續型態)"
+   }
+  ],
+  "6903": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "巨漢一(6903):法人 20 日淨買超 +561 張(未成連續型態)"
+   },
+   {
+    "source": "sbl",
+    "level": "yellow",
+    "signal": "巨漢一(6903):機構借券賣出5日增18.9%(溫和加碼放空)"
+   }
+  ],
+  "7738": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "東聯互動一(7738):外資連 5 日賣超(5日淨賣 -16 張)"
+   }
+  ],
+  "8054": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "安國一(8054):外資連 6 日賣超(5日淨賣 -3,662 張)"
+   },
+   {
+    "source": "holders",
+    "level": "red",
+    "signal": "安國一(8054):千張大戶持股比週增5.08個百分點(大戶顯著加碼)"
+   }
+  ],
+  "8096": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "擎亞二(8096):法人 20 日淨買超 +4,499 張(未成連續型態)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "擎亞二(8096):千張大戶持股比週減-1.20個百分點(大戶出脫,籌碼鬆動)"
+   }
+  ],
+  "8112": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "至上11(8112):投信連 5 日買超(認養訊號,20日淨買 +11,895 張)"
+   },
+   {
+    "source": "sbl",
+    "level": "red",
+    "signal": "至上11(8112):機構借券賣出5日遽增23.2%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)"
+   }
+  ],
+  "8155": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "博智二(8155):法人 20 日淨賣超 -699 張(未成連續型態)"
+   },
+   {
+    "source": "holders",
+    "level": "red",
+    "signal": "博智二(8155):千張大戶持股比週增1.61個百分點(大戶顯著加碼)"
+   }
+  ],
+  "8299": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "群聯(8299):法人 20 日淨賣超 -3,409 張(未成連續型態)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "群聯(8299):千張大戶持股比週增0.98個百分點(溫和加碼)"
+   }
+  ],
+  "8438": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "昶昕一(8438):法人 20 日淨買超 +978 張(未成連續型態)"
+   },
+   {
+    "source": "holders",
+    "level": "red",
+    "signal": "昶昕一(8438):千張大戶持股比週增1.87個百分點(大戶顯著加碼)"
+   }
+  ],
+  "8442": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "威宏三KY(8442):法人 20 日淨買超 +329 張(未成連續型態)"
+   }
+  ],
+  "8936": [
+   {
+    "source": "institutional",
+    "level": "red",
+    "signal": "國統五(8936):投信連 3 日賣超(棄養警訊,20日淨賣 -97 張)"
+   }
+  ],
+  "9935": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "慶豐富四(9935):法人 20 日淨買超 +1,575 張(未成連續型態)"
+   }
+  ],
+  "9958": [
+   {
+    "source": "institutional",
+    "level": "yellow",
+    "signal": "世紀鋼九(9958):法人 20 日淨賣超 -9,403 張(未成連續型態)"
+   }
+  ],
+  "4190": [
+   {
+    "source": "mops_news",
+    "level": "red",
+    "signal": "佐登-KY(4190) 重訊[2026-07-02]:公告本公司中華民國境內第四次有擔保轉換公司債之發行， 已依中國證監會發布之『境內企業境外發行證券和上市管理試行 辦法』進"
+   }
+  ],
+  "TSLA": [
+   {
+    "source": "us_analyst",
+    "level": "red",
+    "signal": "🇺🇸 TSLA 目標價⬆️+10.0%→$430(Truist Financial)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 TSLA 內部人賣出:Taneja Vaibhav[Chief Financial Officer] 2,605股 均價$402.197(約$1,047,924)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 TSLA 內部人賣出:Taneja Vaibhav[Chief Financial Officer] 3,000股 均價$450.0(約$1,350,000)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 TSLA 內部人賣出:Wilson-Thompson Kathleen[董事] 26,409股 均價$378.1056(分16筆執行)(約$9,985,391)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 TSLA 內部人賣出:Wilson-Thompson Kathleen[董事] 25,809股 均價$359.3277(分15筆執行)(約$9,273,889)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 TSLA 內部人賣出:Taneja Vaibhav[Chief Financial Officer] 2,264股 均價$397.031(約$899,077)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 TSLA 內部人賣出:Wilson-Thompson Kathleen[董事] 25,731股 均價$415.5615(分7筆執行)(約$10,692,813)"
+   }
+  ],
+  "AAPL": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AAPL 內部人賣出:LEVINSON ARTHUR D 50,000股 均價$311.02(約$15,551,000)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AAPL 內部人賣出:Borders Ben 1,274股 均價$290.0(約$369,460)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AAPL 內部人賣出:LEVINSON ARTHUR D 250,000股 均價$284.7589(分2筆執行)(約$71,189,725)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AAPL 內部人賣出:Parekh Kevan 1,534股 均價$275.0(約$421,850)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AAPL 內部人賣出:O'BRIEN DEIRDRE 30,002股 均價$255.3455(分2筆執行)(約$7,660,876)"
+   }
+  ],
+  "AMD": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMD 內部人賣出:Papermaster Mark D[Chief Technology Officer & EVP] 6,000股 均價$536.33(約$3,217,980)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMD 內部人賣出:Su Lisa T[董事、Chair, President & CEO] 125,000股 均價$460.6857(分27筆執行)(約$57,585,712)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMD 內部人賣出:Denzel Nora[董事] 1,821股 均價$522.0(約$950,562)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMD 內部人賣出:Denzel Nora[董事] 8,626股 均價$522.0(約$4,502,772)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMD 內部人賣出:Norrod Forrest Eugene[EVP & GM DESG] 19,487股 均價$431.4047(分9筆執行)(約$8,406,783)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMD 內部人賣出:Papermaster Mark D[Chief Technology Officer & EVP] 6,000股 均價$433.79(約$2,602,740)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMD 內部人賣出:Su Lisa T[董事、Chair, President & CEO] 125,000股 均價$445.5069(分22筆執行)(約$55,688,362)"
+   }
+  ],
+  "ARM": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Bartels Laura Kathleen[Chief Accounting Officer] 11,306股 均價$392.7(約$4,439,866)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Abbey William[Chief Commercial Officer] 6,566股 均價$402.7188(分2筆執行)(約$2,644,252)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Abbey William[Chief Commercial Officer] 4,200股 均價$343.81(約$1,444,002)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Abbey William[Chief Commercial Officer] 2,300股 均價$305.82(約$703,386)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Abbey William[Chief Commercial Officer] 4,655股 均價$287.03(約$1,336,125)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Eaton Charlotte Claire[Chief People Officer] 7,805股 均價$290.009(分2筆執行)(約$2,263,520)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Collins Spencer[Chief Legal Officer] 40,941股 均價$215.0(約$8,802,315)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Abbey William[Chief Commercial Officer] 10,887股 均價$224.14(約$2,440,212)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Abbey William[Chief Commercial Officer] 5,069股 均價$257.18(約$1,303,645)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Child Jason[Chief Financial Officer] 31,920股 均價$226.54(約$7,231,157)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Eaton Charlotte Claire[Chief People Officer] 3,100股 均價$252.25(約$781,975)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Eaton Charlotte Claire[Chief People Officer] 4,000股 均價$282.77(約$1,131,080)"
+   }
+  ],
+  "BRK-B": [
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 BRK-B 內部人買進:O'Sullivan Michael J. 536股 均價$467.4355(分2筆執行)(約$250,545)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 BRK-B 內部人賣出:BERKSHIRE HATHAWAY INC 1,220,376股 均價$149.8429(約$182,864,679)"
+   }
+  ],
+  "GOOGL": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 GOOGL 內部人賣出:WALKER JOHN KENT 8,998股 均價$349.2905(分8筆執行)(約$3,142,916)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 GOOGL 內部人賣出:Saraci Marsida 449股 均價$341.72(約$153,432)"
+   }
+  ],
+  "NVDA": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 NVDA 內部人賣出:STEVENS MARK A[董事] 885,000股 均價$210.1694(分2筆執行)(約$185,999,919)"
+   }
+  ],
+  "TSM": [
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 內部人買進:Tien Bor-Zen[VP] 1,000股 均價$76.64(約$76,640)"
+   },
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 內部人買進:Tien Bor-Zen[VP] 1,000股 均價$75.7(約$75,700)"
+   },
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 內部人買進:Yuan Lipen[VP] 1,000股 均價$79.19(約$79,190)"
+   },
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 內部人買進:Yuan Lipen[VP] 1,000股 均價$75.26(約$75,260)"
+   },
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 內部人買進:Zhang Kevin Xiaoqiang[SVP and Deputy Co-COO] 62股 均價$76.01(約$4,713)"
+   },
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 內部人買進:Wu Yi-Huang[VP] 40股 均價$76.01(約$3,040)"
+   },
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 內部人買進:Yuan Lipen[VP] 42股 均價$76.01(約$3,192)"
+   },
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 內部人買進:Yeap Choh Fei[SVP] 55股 均價$76.01(約$4,181)"
+   },
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 內部人買進:Yoo Chue-San[VP] 53股 均價$76.01(約$4,029)"
+   },
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 內部人買進:Wang Ying-Lang[SVP] 56股 均價$76.01(約$4,257)"
+   },
+   {
+    "source": "us_insider",
+    "level": "red",
+    "signal": "🇺🇸 TSM 群聚買進:7 位內部人 10 天內同時買進(Tien Bor-Zen、Wang Ying-Lang、Wu Yi-Huang)"
+   }
+  ],
+  "AMZN": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMZN 內部人賣出:Herrington Douglas J[CEO Worldwide Amazon Stores] 1,000股 均價$266.19(約$266,190)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMZN 內部人賣出:Jassy Andrew R[董事、President and CEO] 20,000股 均價$263.4171(分5筆執行)(約$5,268,342)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMZN 內部人賣出:Garman Matthew S[CEO Amazon Web Services] 15,467股 均價$263.3967(分5筆執行)(約$4,073,957)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMZN 內部人賣出:Herrington Douglas J[CEO Worldwide Amazon Stores] 6,370股 均價$262.3923(分3筆執行)(約$1,671,439)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMZN 內部人賣出:Zapolsky David[Senior Vice President] 6,180股 均價$263.427(分5筆執行)(約$1,627,979)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMZN 內部人賣出:Zapolsky David[Senior Vice President] 9,270股 均價$268.53(約$2,489,273)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMZN 內部人賣出:Reynolds Shelley[Vice President] 2,363股 均價$262.3797(分3筆執行)(約$620,003)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AMZN 內部人賣出:Garman Matthew S[CEO Amazon Web Services] 11,475股 均價$262.6556(分3筆執行)(約$3,013,973)"
+   }
+  ],
+  "2762": [
+   {
+    "source": "sbl",
+    "level": "yellow",
+    "signal": "世界健身一KY(2762):機構借券賣出5日增17.3%(溫和加碼放空)"
+   }
+  ],
+  "3512": [
+   {
+    "source": "sbl",
+    "level": "yellow",
+    "signal": "皇龍二(3512):機構借券賣出5日遽減-26.5%(回補潮,空頭力道減弱)"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "皇龍二(3512):千張大戶持股比週增0.87個百分點(溫和加碼)"
+   }
+  ],
+  "8222": [
+   {
+    "source": "sbl",
+    "level": "yellow",
+    "signal": "寶一一(8222):機構借券賣出5日增16.9%(溫和加碼放空)"
+   }
+  ]
+ }
 }
