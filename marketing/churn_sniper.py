@@ -14,11 +14,12 @@ import json
 import re
 import urllib.request
 import urllib.error
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT_PATH = Path(__file__).parent / "churn_drafts.json"
+HISTORY_PATH = Path(__file__).parent / "churn_summary_history.jsonl"  # 不含 PII,可進 git,供 KPI 趨勢追蹤
 
 # 排除非日報類信件(內部告警測試/邀請碼確認等),只算真正的財經日報寄送
 EXCLUDE_SUBJECT_PATTERNS = re.compile(r"Agent Team|告警系統|邀請碼確認|系統測試")
@@ -136,6 +137,33 @@ def score_contact(history):
     }
 
 
+def append_summary_history(summary, path=HISTORY_PATH):
+    """同一天(台灣時間)只留一筆(用最新一次覆蓋),避免同日重跑汙染趨勢線。不含 email 等 PII。"""
+    date = summary["tw_date"]
+    rows = []
+    if path.exists():
+        for line in path.read_text().splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rows.append(json.loads(line))
+            except Exception:
+                continue
+    rows = [r for r in rows if r.get("date") != date]
+    rows.append({
+        "date": date,
+        "total_contacts": summary.get("total_contacts"),
+        "too_new": summary.get("too_new"),
+        "engaged": summary.get("engaged"),
+        "at_risk": summary.get("at_risk"),
+        "never_opened_at_risk": summary.get("never_opened_at_risk"),
+    })
+    rows.sort(key=lambda r: r["date"])
+    path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n")
+    return rows
+
+
 def draft_winback(email, score):
     if score["never_opened"]:
         body = (
@@ -191,11 +219,14 @@ def run():
 
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
+        "tw_date": datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d"),
         "total_contacts": len(results),
         "too_new": sum(1 for r in results if r.get("status") == "too_new"),
         "engaged": sum(1 for r in results if r.get("status") == "engaged"),
         "at_risk": sum(1 for r in results if r.get("status") == "at_risk"),
+        "never_opened_at_risk": sum(1 for d in drafts if d.get("never_opened")),
     }
+    append_summary_history(summary)
     out = {
         "_comment": (
             "Brevo 開信熱度稽核(P2.5打法5 Churn Sniper)。drafts 含訂閱者 email,禁止進 git"
