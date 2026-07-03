@@ -69,6 +69,7 @@ def audit_digest(
     mkt_status: Dict = None,
     market: str = "both",
     earnings_estimates: bool = False,
+    base_css: str = "",
 ) -> List[Dict]:
     """
     回傳 failures list,空 list 代表通過。
@@ -77,6 +78,11 @@ def audit_digest(
     market: "both"=台美合併(預設) / "tw"=早 7:00 台股盤前版 / "us"=晚 20:00 美股盤前版。
             us 版台股已收盤,可寫「今日台股漲/跌」完成式 → 停用台股盤前時序檢查;
             tw 版美股不是主軸 → 停用「今晚美股開盤動作」檢查。
+    base_css: 未經 premailer 內聯前的原始樣板 CSS(main.py 的 CSS 常數)。premailer 會把
+            成功內聯的 class 規則從最終 <style> 移除(只留 ::before/:hover/@media 等無法
+            內聯的),undefined_css_class 若只看最終 html 的殘留 <style> 會把這些正常
+            內聯過的 class 誤判成「未定義」。傳入原始樣板 CSS 一起比對,才能分清楚
+            「LLM 自創的假 class」與「premailer 內聯後從 <style> 消失的真 class」。
     """
     us_holdings = us_holdings or []
     tw_holdings = tw_holdings or []
@@ -335,6 +341,8 @@ def audit_digest(
     if style_m:
         style_block = style_m.group(1)
         defined_classes = set(re.findall(r"\.([A-Za-z_][\w-]*)", style_block))
+        if base_css:
+            defined_classes |= set(re.findall(r"\.([A-Za-z_][\w-]*)", base_css))
         body_start = html.lower().find("<body")
         body_html = html[body_start:] if body_start != -1 else html
         used_classes = set()

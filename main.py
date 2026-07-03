@@ -71,10 +71,12 @@ def _report_variant_label() -> str:
     return "預設"
 
 
-# ⚠️ email_digest.css 第 13288 byte 附近有一個 0x11 控制字元(歷史 bug:Python 把
-# content:"\2192" 的 \21 吃成八進位跳脫)。它讓 premailer 的 lxml 一直 ValueError →
-# build_email_html 靜默走「不內聯」路徑 —— 這是現行 prod 行為,行為凍結原則下先忠實保留。
-# 修復(改回合法 \2192 並「啟用」premailer 內聯)= 獨立工單,要專門驗各家 email client 渲染。
+# 2026-07-04 修復:email_digest.css 曾有一個 0x11 控制字元(歷史 bug:Python 把
+# content:"\2192" 的 \21 吃成八進位跳脫),讓 premailer 的 lxml 一直 ValueError →
+# build_email_html 靜默走「不內聯」路徑,premailer 從未真的內聯過任何一封信。
+# 已改回字面箭頭字元 "→"(同檔 .tldr ul li::before 既有寫法)修復,premailer 現在正常運作;
+# 同時修 digest_audit.undefined_css_class 誤判(見 digest_audit.py base_css 參數) ——
+# premailer 會把成功內聯的 class 規則從 <style> 移除,審查需比對原始樣板 CSS 才不會誤判。
 _CSS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                          "templates", "email_digest.css")
 with open(_CSS_PATH, encoding="utf-8") as _f:
@@ -668,7 +670,7 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
     _earn_est = any((e or {}).get("eps_est") is not None for e in (data.get("earnings") or []))
     try:
         fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET,
-                             earnings_estimates=_earn_est)
+                             earnings_estimates=_earn_est, base_css=CSS)
     except Exception as e:
         fails = []
         print(f"   ⚠️ audit 異常: {e}")
@@ -687,7 +689,7 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
             if picks_mode:
                 retry_inner = picks_banner + _sanitize_picks_wording(retry_inner)
             retry_html = build_email_html(data["date"], retry_inner)
-            retry_fails = audit_digest(retry_html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est)
+            retry_fails = audit_digest(retry_html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est, base_css=CSS)
             if not any(f.get("severity") == "high" for f in retry_fails):
                 print(f"   ✅ retry pass")
                 html = retry_html
@@ -698,7 +700,7 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
                 if picks_mode:
                     det_inner = picks_banner + _sanitize_picks_wording(det_inner)
                 html = build_email_html(data["date"], det_inner)
-                fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est)
+                fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est, base_css=CSS)
                 deterministic_fallbacks.append(email)
         except Exception as e:
             print(f"   🛡️ retry 異常 → deterministic fallback ({e})")
@@ -707,7 +709,7 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
                 det_inner = picks_banner + _sanitize_picks_wording(det_inner)
             html = build_email_html(data["date"], det_inner)
             fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET,
-                                 earnings_estimates=_earn_est)
+                                 earnings_estimates=_earn_est, base_css=CSS)
             deterministic_fallbacks.append(email)
     return html, fails, ai_calls
 

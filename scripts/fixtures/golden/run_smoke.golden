@@ -55,26 +55,26 @@
 [
  {
   "email": "tw-user@test.local",
-  "html_len": 23096,
-  "html_sha": "081294d7f206995028996c993e9a5fbabd3a961a0b9f5761a75204b9f46b3752",
+  "html_len": 16985,
+  "html_sha": "b59b5626047e243b0a67d7fb3fefe00e8854040250c76653ecc26c34d06f4028",
   "subject": "📊 你的 聯發科 昨日跌了 3.5%｜財經日報 2026-07-03"
  },
  {
   "email": "us-user@test.local",
-  "html_len": 22975,
-  "html_sha": "684f2de2251e51ac70e9e0a8f1130d6307ed1596b386db489c0e9d712a965c4b",
+  "html_len": 15014,
+  "html_sha": "fbd4fe95ca0fd03c8f99d562c44b48ae0f56a14804ebfcd929be81255ba5eaea",
   "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
  },
  {
   "email": "nohold-user@test.local",
-  "html_len": 22382,
-  "html_sha": "b9d3cf0eb5bc80f9b11124507dab2a41f48ad12c379880318c945889d77b18c7",
+  "html_len": 14194,
+  "html_sha": "ef2c1533460e04dbf568b225fc9f629fc30fe65551574d7b4327047b8fec8577",
   "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
  },
  {
   "email": "nohold2-user@test.local",
-  "html_len": 22382,
-  "html_sha": "b9d3cf0eb5bc80f9b11124507dab2a41f48ad12c379880318c945889d77b18c7",
+  "html_len": 14194,
+  "html_sha": "ef2c1533460e04dbf568b225fc9f629fc30fe65551574d7b4327047b8fec8577",
   "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
  }
 ]
