@@ -1090,7 +1090,7 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
                 arrow = "▲" if chg >= 0 else "▼"
                 name = stock_names.display_name(sym)
                 action = "等今晚開盤觀察價量" if mkt_status.get("us_will_open_tonight") else "等下個交易日"
-                parts.append(
+                parts.append(_mark_card(
                     f'<div class="signal-card hold">'
                     f'<div class="signal-card-top">'
                     f'<span class="signal-ticker">{sym}</span>'
@@ -1099,15 +1099,15 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
                     f'<div class="signal-body">'
                     f'<div class="signal-reason">{name}({sym}) 昨晚收 ${d.get("price","?")} ,'
                     f'{action}。{_impact_note(sym)}今日 AI 分析異常,主編將於 24 小時內修復並重發完整版。</div>'
-                    f'</div></div>'
-                )
+                    f'</div></div>', sym
+                ))
             else:
-                parts.append(
+                parts.append(_mark_card(
                     f'<div class="signal-card wait">'
                     f'<div class="signal-card-top"><span class="signal-ticker">{sym}</span></div>'
                     f'<div class="signal-body"><div class="signal-reason">'
-                    f'{stock_names.display_name(sym)}({sym}) 今日無報價數據</div></div></div>'
-                )
+                    f'{stock_names.display_name(sym)}({sym}) 今日無報價數據</div></div></div>', sym
+                ))
         parts.append('</div>')
     if tw_stocks:
         parts.append('<div class="signal-grid">')
@@ -1119,7 +1119,7 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
                 arrow = "▲" if chg >= 0 else "▼"
                 name = stock_names.display_name(sym, d.get("name"))
                 action = "等今早 9:00 開盤觀察價量" if mkt_status.get("tw_will_open_today") else "今天台股休市"
-                parts.append(
+                parts.append(_mark_card(
                     f'<div class="signal-card hold">'
                     f'<div class="signal-card-top">'
                     f'<span class="signal-ticker">{sym}</span>'
@@ -1128,15 +1128,15 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
                     f'<div class="signal-body">'
                     f'<div class="signal-reason">{name}({sym}) 昨日收 ${d.get("price","?")} 元,'
                     f'{action}。{_impact_note(sym)}今日 AI 分析異常,主編將於 24 小時內修復並重發完整版。</div>'
-                    f'</div></div>'
-                )
+                    f'</div></div>', sym
+                ))
             else:
-                parts.append(
+                parts.append(_mark_card(
                     f'<div class="signal-card wait">'
                     f'<div class="signal-card-top"><span class="signal-ticker">{sym}</span></div>'
                     f'<div class="signal-body"><div class="signal-reason">'
-                    f'{stock_names.display_name(sym, d.get("name") if d else None)}({sym}) 今日無報價數據</div></div></div>'
-                )
+                    f'{stock_names.display_name(sym, d.get("name") if d else None)}({sym}) 今日無報價數據</div></div></div>', sym
+                ))
         parts.append('</div>')
     parts.append('<div class="signal-disclaimer">⚠️ 備援版本,僅為基本資料整理。主編已收到通知將盡速修復個人化分析。</div>')
     return "\n".join(parts)
@@ -2772,6 +2772,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
     # market 由雙班次 caller 傳入(週六台股早報走此函式);週末回顧本就是台股晨間語境,
     # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週六晨間日報:不講當日大盤(已收),改聚焦『本週回顧 + 下週重點』。"""
+    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
     if email_safe:
         user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
 
@@ -2779,10 +2780,23 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
     us_news_text = _format_news(data.get("us_news", []), max_items=10)
     tw_news_text = _format_news(data.get("tw_news", []), max_items=8)
     date = data.get("date", "")
+    mkt_status = _market_status(date)
 
     holdings = (user_us_stocks or []) + (user_tw_stocks or [])
     has_holdings = bool(holdings)
     is_beginner = len(holdings) <= 4
+
+    # 操作訊號卡股票清單(用 _full_holdings 保證不受 email 裁切影響,每支持股都要有「下一步」)。
+    us_market = data.get("us_market", {})
+    tw_market = data.get("tw_market", {})
+    all_market = {**us_market, **tw_market}
+    def _abs_change(sym):
+        d = all_market.get(sym, {})
+        return abs(d.get("change_pct", 0))
+    if _full_holdings:
+        signal_stocks = sorted(_full_holdings, key=_abs_change, reverse=True)
+    else:
+        signal_stocks = ["2330", "2454", "2317", "AAPL", "MSFT", "NVDA", "TSLA"]
 
     # 累加式深度:simple 只留 TLDR + 持股本週表現操作 + 週末思考;standard/deep 再加本週回顧新聞 + 下週 catalysts
     if depth == "simple":
@@ -2854,6 +2868,14 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
+    # 訊號卡另外分批生成填入,保證每支持股都有「下一步」——不依賴 LLM 自己寫的敘述性 .stock-card。
+    # 2026-07-04 發現:本函式先前從未產生 signal-card,持股用戶必觸發 audit holdings_uncovered,
+    # retry 同樣必敗,只能靠 deterministic fallback 頂住(見 _mark_card 呼叫處註解)。
+    cards = _render_signal_cards_batched(data, signal_stocks, mkt_status,
+                                         full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
+                                         prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode)
+    cards += _portfolio_lens_block(data, signal_stocks, depth)
+    raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
         result += ROOKIE_GUIDE_HTML
