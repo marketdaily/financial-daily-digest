@@ -2451,40 +2451,7 @@ rookie-name span 內只放純代號，系統會自動補公司名。最多 2 張
             indicator_section, sector_section, second_order_section, depth_directive)
 
 
-def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
-    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
-    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
-    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
-    if email_safe:
-        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
-
-    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
-    us_news_text = _format_news(data.get("us_news", []), max_items=6)
-    tw_news_text = _format_news(data.get("tw_news", []), max_items=5)
-    date = data.get("date", "")
-    mkt_status = _market_status(date)
-
-    has_holdings = bool(user_us_stocks or user_tw_stocks)
-    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
-    is_beginner = user_holding_count <= 4
-    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
-    watchlist_us = user_us_stocks if user_us_stocks else default_us
-    watchlist_tw = user_tw_stocks if user_tw_stocks else []
-    all_holdings = watchlist_us + watchlist_tw
-
-    watchlist_section = _gr_watchlist_section(data, user_us_stocks, user_tw_stocks,
-                                              watchlist_us, watchlist_tw, has_holdings, picks_mode)
-
-    few_stocks_note, personalized_news_instruction = _gr_personalized_news(has_holdings, all_holdings)
-
-    top_signal_stocks, tech_block = _gr_signal_stocks_tech(data, user_us_stocks, user_tw_stocks,
-                                                           market, _full_holdings, depth)
-
-    (signal_instruction, rookie_section, mood_section, indicator_section,
-     sector_section, second_order_section, depth_directive) = _gr_prompt_blocks(depth, is_beginner)
-
+def _gr_time_discipline(market: str, mkt_status: dict, watchlist_tw: list, date: str):
     # ── 雙班次時序框架(market) ──
     # tw=早 7:00 台股盤前主軸 / us=晚 20:00 美股盤前主軸。both=原合併版(預設)。
     us_last_td = mkt_status.get("us_last_trading_date") or "上一個交易日"
@@ -2543,6 +2510,45 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
                          f'<li>（第二重要的事{"，若上一條是美股，這條就要是台股" if watchlist_tw else ""}）</li>',
                          '<li>（第三重要的事）</li>',
                          '<li>（第四重要的事，如有）</li>']
+    return time_discipline_block, tldr_focus_note, tldr_li_hints
+
+
+def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
+                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
+                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
+    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
+    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
+    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
+    if email_safe:
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
+
+    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
+    us_news_text = _format_news(data.get("us_news", []), max_items=6)
+    tw_news_text = _format_news(data.get("tw_news", []), max_items=5)
+    date = data.get("date", "")
+    mkt_status = _market_status(date)
+
+    has_holdings = bool(user_us_stocks or user_tw_stocks)
+    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
+    is_beginner = user_holding_count <= 4
+    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
+    watchlist_us = user_us_stocks if user_us_stocks else default_us
+    watchlist_tw = user_tw_stocks if user_tw_stocks else []
+    all_holdings = watchlist_us + watchlist_tw
+
+    watchlist_section = _gr_watchlist_section(data, user_us_stocks, user_tw_stocks,
+                                              watchlist_us, watchlist_tw, has_holdings, picks_mode)
+
+    few_stocks_note, personalized_news_instruction = _gr_personalized_news(has_holdings, all_holdings)
+
+    top_signal_stocks, tech_block = _gr_signal_stocks_tech(data, user_us_stocks, user_tw_stocks,
+                                                           market, _full_holdings, depth)
+
+    (signal_instruction, rookie_section, mood_section, indicator_section,
+     sector_section, second_order_section, depth_directive) = _gr_prompt_blocks(depth, is_beginner)
+
+    time_discipline_block, tldr_focus_note, tldr_li_hints = _gr_time_discipline(
+        market, mkt_status, watchlist_tw, date)
 
     # 累加式深度:simple=只有 TLDR + 操作卡(+結論);standard 在此之上加新聞;
     # 大盤/進階尾段 standard 也有,deep 全開,simple 全砍。
