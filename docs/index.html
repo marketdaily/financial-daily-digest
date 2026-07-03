@@ -1831,41 +1831,11 @@ footer {
   <div class="section-head scene-reveal">
     <div class="section-eyebrow" data-i18n="testimonials_eyebrow">Early Users · 早期訂戶</div>
     <h2 data-i18n="testimonials_title">用過的人說什麼</h2>
-    <p style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:8px;" data-i18n-html="testimonials_disclaimer">所有見證皆為早期訂戶經本人同意公開。匿名版收錄於 <a href="testimonials.html" style="color:#a5b4fc;text-decoration:none;">完整見證頁</a>。</p>
+    <p style="font-size:13px;color:rgba(255,255,255,0.45);margin-top:8px;" data-i18n-html="testimonials_disclaimer">我們訂閱者還很少,還沒有累積到可公開分享的真實見證——比起端出故事撐場面,我們選擇誠實留白。真正的實力看 <a href="track-record.html" style="color:#a5b4fc;text-decoration:none;">100% 可查證的公開戰績</a>。</p>
   </div>
   <div class="testimonials-grid">
-    <div class="tcard scene-from-left">
-      <div class="tcard-stars">★★★★★</div>
-      <p class="tcard-text" data-i18n="t1_text">「上週 NVDA 法說會前一晚,日報就標了『短期過熱建議觀望』,結果隔天真的回 3%。我那天沒追,省了快 6 萬。一個月訂閱費賺回來。」</p>
-      <div class="tcard-author">
-        <div class="tcard-avatar" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">J</div>
-        <div>
-          <div class="tcard-name" data-i18n="t1_name">Jason L.</div>
-          <div class="tcard-role" data-i18n="t1_role">軟體工程師 · 台北 · 持有 NVDA / TSLA / 台積電</div>
-        </div>
-      </div>
-    </div>
-    <div class="tcard scene-reveal" style="transition-delay:0.1s;">
-      <div class="tcard-stars">★★★★★</div>
-      <p class="tcard-text" data-i18n="t2_text">「我本來覺得 AI 寫的能看嗎,結果發現它每天清晨真的會被主編改稿。錯了會在下一封更正——這比某些老師訂閱負責一百倍。」</p>
-      <div class="tcard-author">
-        <div class="tcard-avatar" style="background:linear-gradient(135deg,#10b981,#06b6d4);">C</div>
-        <div>
-          <div class="tcard-name" data-i18n="t2_name">Claire W.</div>
-          <div class="tcard-role" data-i18n="t2_role">金融業 · 高雄 · 美股長期投資 5+ 年</div>
-        </div>
-      </div>
-    </div>
-    <div class="tcard scene-from-right">
-      <div class="tcard-stars">★★★★★</div>
-      <p class="tcard-text" data-i18n="t3_text">「以前早上滑 1 小時 PTT/X 還是不知道該動哪一支,現在通勤前 30 秒掃完信箱就知道今天大概要看誰。我太太也訂了——她以前都問我,現在她比我先讀完。」</p>
-      <div class="tcard-author">
-        <div class="tcard-avatar" style="background:linear-gradient(135deg,#f59e0b,#ef4444);">A</div>
-        <div>
-          <div class="tcard-name" data-i18n="t3_name">Alex K.</div>
-          <div class="tcard-role" data-i18n="t3_role">創業者 · 新竹 · 追美股科技 + 台股半導體</div>
-        </div>
-      </div>
+    <div class="tcard scene-reveal" style="grid-column:1/-1;text-align:center;">
+      <p class="tcard-text" data-i18n-html="testimonials_empty" style="flex:none;">我們才剛起步,還沒有足夠的公開見證可以放上來。想成為第一位分享真實使用心得的訂戶?<a href="testimonials.html" style="color:#a5b4fc;">前往提交 →</a></p>
     </div>
   </div>
   <div style="text-align:center;margin-top:32px;">
@@ -2042,12 +2012,7 @@ const i18n = {
     founder_text: "I used to spend an hour every morning reading Bloomberg, CNBC, and PTT — just to figure out what happened overnight to my stocks. Half the news was noise. Some of it was flat-out wrong. I built MarketDaily because I was tired of doing that work myself. Now it just shows up in my inbox, already filtered, already personalized. I haven't opened a financial news app in months.",
     founder_name: "The Founder", founder_role: "Investor · Engineer · Built this for himself first",
     testimonials_eyebrow: "Early Users", testimonials_title: "What people are saying",
-    t1_text: "\"I used to spend an hour on financial news every morning. Now I skim it in five minutes — and it only covers the stocks I actually own. Game changer.\"",
-    t1_name: "Jason L.", t1_role: "Software Engineer · NVDA / TSLA / TSMC",
-    t2_text: "\"The fake news filter is what got me. Half the things I read on Reddit and PTT turned out to be wrong. Every article here has a source label. I actually trust it.\"",
-    t2_name: "Claire W.", t2_role: "Finance professional · Long-term US investor",
-    t3_text: "\"I thought it would be like ChatGPT. It's not. It shows up before you even think to ask. It already knows what you care about. Completely different experience.\"",
-    t3_name: "Alex K.", t3_role: "Entrepreneur · Tracking US tech stocks",
+    testimonials_empty: "We're just getting started and don't have enough public testimonials yet. Want to be the first to share your experience? <a href=\"testimonials.html\" style=\"color:#a5b4fc;\">Submit yours →</a>",
     prev_bar: "📩 MarketDaily · 2026-05-20 Morning Briefing",
     prev_date: "Wednesday · May 20, 2026",
     prev_title: "📈 Morning Briefing · US & Taiwan Markets",
@@ -2097,7 +2062,7 @@ const i18n = {
     vs_r4c2: "Takes commission", vs_r4c3: "Renewal pressure",
     vs_r5c1: "30 min+", vs_r5c2: "30 min+", vs_r5c3: "1hr livestream", vs_r5c4: "30 sec",
     vs_r6c1: "Free (but risky)", vs_r6c2: "Free", vs_r6c3: "NT$3-5K+", vs_r6c4: "Trial NT$299",
-    testimonials_disclaimer: "All testimonials are from early subscribers, shared with their consent. Anonymized versions are on the <a href=\"testimonials.html\" style=\"color:#a5b4fc;text-decoration:none;\">full testimonials page</a>.",
+    testimonials_disclaimer: "We're an early-stage product and don't have enough real subscribers yet to share verified testimonials — rather than fake it, we're being upfront. See our track record instead: <a href=\"track-record.html\" style=\"color:#a5b4fc;text-decoration:none;\">100% verifiable results</a>.",
     testimonials_share_cta: "Want to share your experience? Become the next testimonial →",
     vs_mini_cta: "Full comparison (incl. SanChu / TradingView / Futu) →",
     hp_sender: "MarketDaily Morning Brief", hp_meta: "Thu, May 29 · Delivered 7:00 AM",
@@ -2211,12 +2176,7 @@ const i18n = {
     founder_text: "我以前每天早上花一個小時讀 Bloomberg、CNBC 還有 PTT，就只是為了搞清楚昨晚我持倉的股票發生了什麼事。一半的新聞是雜訊，有些根本是假的。我做 MarketDaily，是因為我不想再自己做這件事。現在它每天早上在信箱等我，已經過濾好了，已經個人化好了。我幾個月沒打開任何財經 App 了。",
     founder_name: "創辦人", founder_role: "投資者 · 工程師 · 先為自己打造這個工具",
     testimonials_eyebrow: "早期用戶", testimonials_title: "用過的人說什麼",
-    t1_text: "「以前每天花一小時看財經新聞，現在五分鐘看完重點。最重要的是它只分析我自己的持倉，不是在講跟我無關的股票。」",
-    t1_name: "Jason L.", t1_role: "軟體工程師，持有 NVDA / TSLA / 台積電",
-    t2_text: "「假訊息過濾這個功能讓我最有感。之前在 PTT 看到的消息一半是假的，現在收到的每則新聞都有來源標記，安心很多。」",
-    t2_name: "Claire W.", t2_role: "金融業，美股長期投資者",
-    t3_text: "「一開始以為跟 ChatGPT 差不多，試了才知道差很多。它主動送到你面前，還知道你在乎哪幾支。完全不一樣的體驗。」",
-    t3_name: "Alex K.", t3_role: "創業者，追蹤美股科技板塊",
+    testimonials_empty: "我們才剛起步,還沒有足夠的公開見證可以放上來。想成為第一位分享真實使用心得的訂戶?<a href=\"testimonials.html\" style=\"color:#a5b4fc;\">前往提交 →</a>",
     prev_bar: "📩 財經日報 · 2026-05-20 早晨簡報",
     prev_date: "星期三 · 2026年5月20日",
     prev_title: "📈 早晨財經簡報 · 美股 & 台股",
@@ -2266,7 +2226,7 @@ const i18n = {
     vs_r4c2: "收手續費", vs_r4c3: "續訂壓力",
     vs_r5c1: "30 分+", vs_r5c2: "30 分+", vs_r5c3: "看直播 1hr", vs_r5c4: "30 秒",
     vs_r6c1: "免費(但風險)", vs_r6c2: "免費", vs_r6c3: "NT$3-5K+", vs_r6c4: "試讀 NT$299",
-    testimonials_disclaimer: "所有見證皆為早期訂戶經本人同意公開。匿名版收錄於 <a href=\"testimonials.html\" style=\"color:#a5b4fc;text-decoration:none;\">完整見證頁</a>。",
+    testimonials_disclaimer: "我們訂閱者還很少,還沒有累積到可公開分享的真實見證——比起端出故事撐場面,我們選擇誠實留白。真正的實力看 <a href=\"track-record.html\" style=\"color:#a5b4fc;text-decoration:none;\">100% 可查證的公開戰績</a>。",
     testimonials_share_cta: "想分享你的使用心得?成為下一則見證 →",
     vs_mini_cta: "看完整對比(含三竹/TradingView/富途) →",
     hp_sender: "MarketDaily 每日早報", hp_meta: "5月29日 週四 · 早上 7:00 送達",
