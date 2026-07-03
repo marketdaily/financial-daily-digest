@@ -2253,6 +2253,33 @@ def _gr_watchlist_section(data: dict, user_us_stocks: list, user_tw_stocks: list
     return watchlist_section
 
 
+def _gr_personalized_news(has_holdings: bool, all_holdings: list):
+    few_stocks_note = ""
+    if has_holdings and len(all_holdings) < 3:
+        few_stocks_note = f"""
+【用戶持倉不多（只有 {len(all_holdings)} 支），請主動做到以下事情】
+1. 在「持倉深度追蹤」區塊中，除了追蹤現有持倉，還要主動推薦 2-3 支「相關股票」，說明為什麼值得關注
+2. 在「今天的結論」後面，加一個「💡 你可能也感興趣」區塊，推薦 2-3 支跟用戶持倉同產業或有關聯的股票，附上今日表現和一句話說明理由
+3. TLDR 的最後一條改成：「建議你也關注：XXX（理由一句話）」"""
+
+    personalized_news_instruction = f"""
+<div class="section-label">🔍 持倉深度追蹤</div>
+（只從上方「今日新聞」清單裡，找出真實存在、且確實提到以下持倉的新聞：{', '.join(all_holdings)}
+‼️ 嚴禁編造新聞標題或網址；找不到對應新聞的持倉就跳過不寫。
+每個有相關新聞的股票寫一個 stock-news-item，格式：
+<div class="stock-news-item">
+  <span class="stock-news-ticker">（代號）</span>
+  <div class="stock-news-content">
+    <div class="stock-news-headline">（相關新聞標題，口語化改寫，不超過 25 字）</div>
+    <div class="stock-news-impact">📊 影響分析：（這則消息對這支股票代表什麼？要買/持有/賣/觀望？給出明確建議，一句話）</div>
+    <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
+  </div>
+</div>
+{f"持倉不多，請也推薦 2-3 支相關股票的 stock-news-item，ticker 後面加上「推薦關注」字樣" if few_stocks_note else ""}
+如果沒有任何持倉相關新聞，寫：<div class="stock-news-empty">今日無持倉相關重大新聞</div>）"""
+    return few_stocks_note, personalized_news_instruction
+
+
 def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                     email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
                     market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
@@ -2279,29 +2306,7 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
     watchlist_section = _gr_watchlist_section(data, user_us_stocks, user_tw_stocks,
                                               watchlist_us, watchlist_tw, has_holdings, picks_mode)
 
-    few_stocks_note = ""
-    if has_holdings and len(all_holdings) < 3:
-        few_stocks_note = f"""
-【用戶持倉不多（只有 {len(all_holdings)} 支），請主動做到以下事情】
-1. 在「持倉深度追蹤」區塊中，除了追蹤現有持倉，還要主動推薦 2-3 支「相關股票」，說明為什麼值得關注
-2. 在「今天的結論」後面，加一個「💡 你可能也感興趣」區塊，推薦 2-3 支跟用戶持倉同產業或有關聯的股票，附上今日表現和一句話說明理由
-3. TLDR 的最後一條改成：「建議你也關注：XXX（理由一句話）」"""
-
-    personalized_news_instruction = f"""
-<div class="section-label">🔍 持倉深度追蹤</div>
-（只從上方「今日新聞」清單裡，找出真實存在、且確實提到以下持倉的新聞：{', '.join(all_holdings)}
-‼️ 嚴禁編造新聞標題或網址；找不到對應新聞的持倉就跳過不寫。
-每個有相關新聞的股票寫一個 stock-news-item，格式：
-<div class="stock-news-item">
-  <span class="stock-news-ticker">（代號）</span>
-  <div class="stock-news-content">
-    <div class="stock-news-headline">（相關新聞標題，口語化改寫，不超過 25 字）</div>
-    <div class="stock-news-impact">📊 影響分析：（這則消息對這支股票代表什麼？要買/持有/賣/觀望？給出明確建議，一句話）</div>
-    <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
-  </div>
-</div>
-{f"持倉不多，請也推薦 2-3 支相關股票的 stock-news-item，ticker 後面加上「推薦關注」字樣" if few_stocks_note else ""}
-如果沒有任何持倉相關新聞，寫：<div class="stock-news-empty">今日無持倉相關重大新聞</div>）"""
+    few_stocks_note, personalized_news_instruction = _gr_personalized_news(has_holdings, all_holdings)
 
     us_pref = list(dict.fromkeys(user_us_stocks or []))
     tw_pref = list(dict.fromkeys(user_tw_stocks or []))
