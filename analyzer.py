@@ -2592,47 +2592,12 @@ def _gr_depth_sections(depth: str, has_holdings: bool, all_holdings: list,
     return personalized_news_instruction, news5_section, market_tail_section
 
 
-def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
-                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
-    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
-    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
-    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
-    if email_safe:
-        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
-
-    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
-    us_news_text = _format_news(data.get("us_news", []), max_items=6)
-    tw_news_text = _format_news(data.get("tw_news", []), max_items=5)
-    date = data.get("date", "")
-    mkt_status = _market_status(date)
-
-    has_holdings = bool(user_us_stocks or user_tw_stocks)
-    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
-    is_beginner = user_holding_count <= 4
-    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
-    watchlist_us = user_us_stocks if user_us_stocks else default_us
-    watchlist_tw = user_tw_stocks if user_tw_stocks else []
-    all_holdings = watchlist_us + watchlist_tw
-
-    watchlist_section = _gr_watchlist_section(data, user_us_stocks, user_tw_stocks,
-                                              watchlist_us, watchlist_tw, has_holdings, picks_mode)
-
-    few_stocks_note, personalized_news_instruction = _gr_personalized_news(has_holdings, all_holdings)
-
-    top_signal_stocks, tech_block = _gr_signal_stocks_tech(data, user_us_stocks, user_tw_stocks,
-                                                           market, _full_holdings, depth)
-
-    (signal_instruction, rookie_section, mood_section, indicator_section,
-     sector_section, second_order_section, depth_directive) = _gr_prompt_blocks(depth, is_beginner)
-
-    time_discipline_block, tldr_focus_note, tldr_li_hints = _gr_time_discipline(
-        market, mkt_status, watchlist_tw, date)
-
-    personalized_news_instruction, news5_section, market_tail_section = _gr_depth_sections(
-        depth, has_holdings, all_holdings, personalized_news_instruction,
-        mood_section, indicator_section, sector_section, second_order_section)
-
+def _gr_build_prompt(date: str, all_holdings: list, has_holdings: bool,
+                     time_discipline_block: str, depth_directive: str, tldr_focus_note: str,
+                     few_stocks_note: str, watchlist_section: str, market_text: str,
+                     us_news_text: str, tw_news_text: str, tldr_li_hints: list,
+                     signal_instruction: str, personalized_news_instruction: str,
+                     rookie_section: str, news5_section: str, market_tail_section: str) -> str:
     prompt = f"""你是這位用戶的專屬財經顧問，說話生活化、直接、像朋友。這份報告是**專門為持有 {', '.join(all_holdings) if has_holdings else '各種股票的'} 的用戶客製化生成的**，不是通用報告。
 
 {time_discipline_block}
@@ -2709,6 +2674,56 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
 - BTCDIR/ETHDIR 換成 up（漲）或 down（跌）
 - signal-ticker、ticker、stock-news-ticker、earnings-ticker、impact-stock 這些 span 內一律只放純股票代號，系統會自動補上公司中英文名稱
 """
+    return prompt
+
+
+def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
+                    email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
+                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
+    # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
+    #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
+    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
+    if email_safe:
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
+
+    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
+    us_news_text = _format_news(data.get("us_news", []), max_items=6)
+    tw_news_text = _format_news(data.get("tw_news", []), max_items=5)
+    date = data.get("date", "")
+    mkt_status = _market_status(date)
+
+    has_holdings = bool(user_us_stocks or user_tw_stocks)
+    user_holding_count = len(user_us_stocks or []) + len(user_tw_stocks or [])
+    is_beginner = user_holding_count <= 4
+    default_us = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "NVDA", "TSLA", "AMD", "TSM", "JPM"]
+    watchlist_us = user_us_stocks if user_us_stocks else default_us
+    watchlist_tw = user_tw_stocks if user_tw_stocks else []
+    all_holdings = watchlist_us + watchlist_tw
+
+    watchlist_section = _gr_watchlist_section(data, user_us_stocks, user_tw_stocks,
+                                              watchlist_us, watchlist_tw, has_holdings, picks_mode)
+
+    few_stocks_note, personalized_news_instruction = _gr_personalized_news(has_holdings, all_holdings)
+
+    top_signal_stocks, tech_block = _gr_signal_stocks_tech(data, user_us_stocks, user_tw_stocks,
+                                                           market, _full_holdings, depth)
+
+    (signal_instruction, rookie_section, mood_section, indicator_section,
+     sector_section, second_order_section, depth_directive) = _gr_prompt_blocks(depth, is_beginner)
+
+    time_discipline_block, tldr_focus_note, tldr_li_hints = _gr_time_discipline(
+        market, mkt_status, watchlist_tw, date)
+
+    personalized_news_instruction, news5_section, market_tail_section = _gr_depth_sections(
+        depth, has_holdings, all_holdings, personalized_news_instruction,
+        mood_section, indicator_section, sector_section, second_order_section)
+
+    prompt = _gr_build_prompt(date, all_holdings, has_holdings,
+                              time_discipline_block, depth_directive, tldr_focus_note,
+                              few_stocks_note, watchlist_section, market_text,
+                              us_news_text, tw_news_text, tldr_li_hints,
+                              signal_instruction, personalized_news_instruction,
+                              rookie_section, news5_section, market_tail_section)
 
     if picks_mode:
         prompt = _PICKS_PROMPT_NOTE + prompt
