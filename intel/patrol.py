@@ -11,7 +11,9 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders, tw_investor_conf
+from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials
+
+MAX_MATERIALS_PER_RUN = 5  # 法說會簡報下載+Ollama摘要較耗時,單次巡邏封頂避免跑太久
 
 
 def _load_json(path, default):
@@ -143,11 +145,20 @@ def run():
             continue
         line = f"{wl[c]}({c}):{h['signal']}"
         _emit(c, h["level"], line, "holders")
+    materials_fetched = 0
     for c in codes:
         f2 = conf_data.get(c)
         if not f2 or f2["level"] == "plain":
             continue
         line = f"{wl[c]}({c}):{f2['signal']}"
+        if materials_fetched < MAX_MATERIALS_PER_RUN and (f2.get("pdf_zh") or f2.get("pdf_en")):
+            try:
+                summ = tw_investor_materials.fetch_materials(c, wl[c], f2)
+            except Exception:
+                summ = None
+            materials_fetched += 1
+            if summ and summ.get("highlights"):
+                line += "|簡報摘要:" + "、".join(summ["highlights"][:3])
         _emit(c, f2["level"], line, "investor_conf")
 
     os.makedirs(BRIEFS, exist_ok=True)

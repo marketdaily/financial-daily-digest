@@ -37,10 +37,28 @@ ROW_RE = re.compile(r"<tr class='(?:even|odd)' data-type='body' ?>(.*?)</tr>", r
 CELL_RE = re.compile(r"<td[^>]*>(.*?)</td>", re.S)
 TAG_RE = re.compile(r"<[^>]+>")
 DATE_RE = re.compile(r"(\d{3})/(\d{2})/(\d{2})")
+FILENAME_RE = re.compile(r"fileName\.value=[\"']([^\"']+\.pdf)[\"']", re.I)
+HREF_RE = re.compile(r"href=[\"']([^\"']+)[\"']")
 
 
 def _clean(cell):
     return re.sub(r"\s+", " ", TAG_RE.sub("", cell)).strip()
+
+
+def _pdf_filename(cell):
+    """cells[6]/[7](簡報 PDF 欄)→ fileName 或 None。無材料時該欄是純文字(如「無」)。"""
+    m = FILENAME_RE.search(cell or "")
+    return m.group(1) if m else None
+
+
+def _video_urls(cell):
+    """cells[9](影音連結欄)→ list[str],可能 0-2 個(VOD portal + 直接 mp4)。去重保序。"""
+    urls, seen = [], set()
+    for u in HREF_RE.findall(cell or ""):
+        if u not in seen and u not in ("#",):
+            seen.add(u)
+            urls.append(u)
+    return urls
 
 
 def _fetch_month(typek, year_roc, month):
@@ -81,12 +99,21 @@ def _parse_rows(html):
         date_start, date_end = _roc_date_range(_clean(cells[2]))
         if not code or not date_start:
             continue
-        out.append({
+        entry = {
             "code": code, "name": name,
             "date_start": date_start, "date_end": date_end,
             "time": _clean(cells[3]), "location": _clean(cells[4]),
             "subject": _clean(cells[5]),
-        })
+        }
+        # cells[6]/[7]=簡報PDF(中/英)、cells[9]=影音連結;無材料時是純文字非連結,-> None/[]。
+        if len(cells) >= 10:
+            entry["pdf_zh"] = _pdf_filename(cells[6])
+            entry["pdf_en"] = _pdf_filename(cells[7])
+            entry["video_urls"] = _video_urls(cells[9])
+        else:
+            entry["pdf_zh"] = entry["pdf_en"] = None
+            entry["video_urls"] = []
+        out.append(entry)
     return out
 
 
