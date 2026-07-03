@@ -619,7 +619,7 @@ def _format_news(articles: list, max_items: int = 8) -> str:
     return "\n".join(lines)
 
 
-def _postprocess_html(html: str, data: dict) -> str:
+def _pp_strip_llm_style(html: str) -> str:
     import re as _re
     # LLM 偶爾違規輸出整頁 HTML 連自帶 <style>(Claude Haiku 尤其常見;2026-06-11 用戶截圖):
     # premailer 會把它的 .signal-card{display:flex;flex-direction:column} 內聯進每張卡,
@@ -627,7 +627,11 @@ def _postprocess_html(html: str, data: dict) -> str:
     # 死防線:LLM 夾帶的 style 與文件骨架整塊剝掉,內文只能吃模板 CSS。
     html = _re.sub(r'<style[^>]*>.*?</style>', '', html, flags=_re.S | _re.I)
     html = _re.sub(r'<!DOCTYPE[^>]*>|</?(?:html|head|body)[^>]*>|<meta[^>]*>|<title[^>]*>.*?</title>', '', html, flags=_re.S | _re.I)
+    return html
 
+
+def _pp_clear_placeholders(html: str) -> str:
+    import re as _re
     # 死防線:LLM 不知道確切數字時偶爾寫成 XXX/XX 佔位符(2026-06-25 真兇:新聞「為什麼重要」
     # 寫「賣超金額高達 XXX 億元」直接洩進公版)。用戶硬規則:任何數字佔位符不可外露給訂閱者。
     # 先把含佔位符的整段子句(逗號分隔)整塊刪掉讓句子讀得通,再清落單的 X 佔位符。
@@ -635,7 +639,11 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _re.sub(r'\s*[XＸ]{2,}\s*(?:億元|億美元|億|兆|萬元|美元|元|點|%|％)', '', html)
     html = _re.sub(r'(?:NT)?\$[XＸ]{2,}', '', html)
     html = _re.sub(r'(?<![A-Za-z])[XＸ]{3,}(?![A-Za-z])', '', html)
+    return html
 
+
+def _pp_indicator_class(html: str, data: dict) -> str:
+    import re as _re
     ind = data.get("indicators", {})
 
     vix = ind.get("vix", 15)
@@ -648,7 +656,10 @@ def _postprocess_html(html: str, data: dict) -> str:
     # indicator-*),audit undefined_css_class 判 HIGH → 整封白白 retry;後處理直接補正
     html = _re.sub(r'class="indicator-value (fear|greed|neutral)"',
                    r'class="indicator-value indicator-\1"', html)
+    return html
 
+
+def _pp_crypto_dir(html: str, data: dict) -> str:
     crypto = data.get("crypto", {})
     btc_dir = "up" if (crypto.get("btc") or {}).get("change_pct", 0) >= 0 else "down"
     eth_dir = "up" if (crypto.get("eth") or {}).get("change_pct", 0) >= 0 else "down"
@@ -657,7 +668,11 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _re.sub(r'\bETHDIR(?:\s+(?:up|down))?\b', eth_dir, html)
 
     html = _re.sub(r'class="verdict SENTIMENT"', 'class="verdict neutral"', html)
+    return html
 
+
+def _pp_strip_fake_links(html: str, data: dict) -> str:
+    import re as _re
     # 移除幻覺網址：read-more 的 href 必須是今日真實新聞 URL，否則整個連結拿掉
     real_urls = set()
     for a in data.get("us_news", []) + data.get("tw_news", []):
@@ -672,14 +687,21 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<a class="read-more"[^>]*href="([^"]*)"[^>]*>.*?</a>',
         _strip_fake_link, html, flags=_re.DOTALL
     )
+    return html
 
+
+def _pp_tw_hint(data: dict) -> dict:
     # 代號 → 公司中英文名：把 ticker 類 span 內的純代號展開成「公司名 + 小灰代號」
     # 完整上市+上櫃名稱表打底,再用持股報價的名稱覆蓋,確保任何台股代號都能展開成中文名
     tw_hint = dict(data.get("tw_names_all", {}))
     for code, d in data.get("tw_market", {}).items():
         if isinstance(d, dict) and d.get("name"):
             tw_hint[code] = d["name"]
+    return tw_hint
 
+
+def _pp_strip_rogue_cards(html: str) -> str:
+    import re as _re
     # 清掉 narrative LLM 私自夾帶的 signal-card:批次卡都有 <!--h:SYM--> 標記且過了
     # _card_passes_audit,無標記卡 = 未把關的 rogue 卡(6/11 preflight 抓到 UMAC 虛詞卡
     # + 無 ticker '?' 卡都是這來源,害整封掉 deterministic fallback)。批次卡已 100% 覆蓋
@@ -690,7 +712,11 @@ def _postprocess_html(html: str, data: dict) -> str:
             lambda m: m.group(0) if "<!--h:" in m.group(0) else "",
             html, flags=_re.DOTALL,
         )
+    return html
 
+
+def _pp_verdict_chip(html: str) -> str:
+    import re as _re
     # signal-card 內把買/賣 verdict 拉到代號旁邊,讓「一眼看懂」效果更好
     # (原本 action-board 總覽已移除,改成直接在每張卡頂端標明買賣)
     _verdict_inline = {
@@ -708,11 +734,14 @@ def _postprocess_html(html: str, data: dict) -> str:
         chip = f'<span class="signal-verdict-chip {verdict}">{label}</span>'
         return f'{full}{chip}'
     html = _card_verdict_re.sub(_add_chip, html)
+    return html
 
+
+def _pp_knife_gate(html: str, _techs_gate: dict) -> str:
+    import re as _re
     # 接刀閘門(deterministic):空頭結構(價<MA20<MA50)的個股若卡片還是「建議買入」,
     # 強制降級為觀望條件單 — plan_sim 實證 77 掃停損 vs 2 達標的主要來源就是逆勢接刀,
     # prompt 規則擋第一層,這裡是不靠 LLM 自覺的死防線。
-    _techs_gate = data.get("technicals", {}) or {}
 
     def _demote_knife(m):
         block = m.group(0)
@@ -728,12 +757,15 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
         _demote_knife, html, flags=_re.DOTALL,
     )
+    return html
 
+
+def _pp_extended_gate(html: str, _techs_gate: dict, _regime_label: str) -> str:
+    import re as _re
     # regime 閘門(deterministic):風險偏多市況 + 個股本身已漲多(RSI14≥70 或站上布林上緣),
     # buy/hold 卡片一律加「漲多勿追/漲多可減」提示 — 2026-06-10 版只靠 prompt 軟性提醒
     # (「漲多的標的要提醒突破才追」),個人化抱單常常沒咬到;這裡補一道不靠 LLM 自覺的死防線,
     # 跟 _demote_knife(逆勢接刀)對稱,但只換 chip 文字不動 reason 段落(避免規則式改寫自然語言出錯)。
-    _regime_label = _market_regime(data).get("label", "neutral")
 
     def _demote_extended(m):
         block, cls = m.group(0), m.group(1)
@@ -755,11 +787,19 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<div class="signal-card (buy|hold)">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
         _demote_extended, html, flags=_re.DOTALL,
     )
+    return html
 
+
+def _pp_strip_badges(html: str) -> str:
+    import re as _re
     # 卡頭已有彩色 verdict-chip(建議買進/賣出),底部 signal-badge 是同一句重複 → 移除,
     # 讓 signal-meta 只剩「信心 X% · 時間窗」,減少邊邊 chip 把卡片拉長。
     html = _re.sub(r'<span class="signal-badge[^"]*">[^<]*</span>\s*', '', html)
+    return html
 
+
+def _pp_clamp_confidence(html: str) -> str:
+    import re as _re
     # 信心校準夾限:公開戰績方向勝率約五成多,顯示 >65% 的信心 = 未校準的過度自信。
     # LLM 已被要求寫 45-65,這裡是 deterministic 死防線(備援版/舊模板也吃得到)。
     def _clamp_conf(m):
@@ -770,7 +810,11 @@ def _postprocess_html(html: str, data: dict) -> str:
         return f"信心 {max(45, min(65, v))}%"
 
     html = _re.sub(r"信心\s*(\d{1,3})\s*%", _clamp_conf, html)
+    return html
 
+
+def _pp_recalibrate_confidence(html: str, _regime_label: str) -> str:
+    import re as _re
     # 信心改由歷史校準表反推:每張卡的信心用 track-record 實測命中率(依 verdict 桶+regime)覆寫,
     # LLM 自填數字只在校準表讀不到時當後備(上面已夾限)。每日戰績更新,數字自動跟著校準。
     def _recalibrate_card(m):
@@ -791,7 +835,11 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<div class="signal-card (buy|hold|sell|wait)">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
         _recalibrate_card, html, flags=_re.DOTALL,
     )
+    return html
 
+
+def _pp_requalify_buy(html: str, data: dict) -> str:
+    import re as _re
     # 「建議買入」chip 分流:建議買區整段低於現價(掛單等回檔)時,chip 改「回檔再買」,
     # 避免新手只看綠 chip 就直接市價追高 — chip 與買價區間語意必須一致。
     all_mkt = {**data.get("us_market", {}), **data.get("tw_market", {})}
@@ -820,7 +868,11 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
         _requalify_buy, html, flags=_re.DOTALL,
     )
+    return html
 
+
+def _pp_scrub_earnings_notes(html: str, data: dict) -> str:
+    import re as _re
     # 財報註記清洗:資料端沒有「已核實預期數字」時,earnings-note 出現任何預期 EPS/營收
     # 都是 LLM 編的 → 換成中性句(deterministic 死防線,搭配 prompt 禁令與 audit)。
     if not any((e or {}).get("eps_est") is not None for e in (data.get("earnings") or [])):
@@ -830,7 +882,11 @@ def _postprocess_html(html: str, data: dict) -> str:
             return m.group(0)
 
         html = _re.sub(r'(<span class="earnings-note">)([^<]*)(</span>)', _scrub_note, html)
+    return html
 
+
+def _pp_expand_tickers(html: str, tw_hint: dict) -> str:
+    import re as _re
     def _expand_ticker(m):
         cls, content = m.group(1), m.group(2)
         if "<" in content:
@@ -864,7 +920,11 @@ def _postprocess_html(html: str, data: dict) -> str:
     def _strip_tw_paren_code(m):
         return "" if m.group(1) in _tw_codes else m.group(0)
     html = _re.sub(r'[ 　]?[（(]\s*([0-9]{4})\s*[）)]', _strip_tw_paren_code, html)
+    return html
 
+
+def _pp_strip_empty_impact(html: str) -> str:
+    import re as _re
     # 沒有任何個股的空「影響個股」區塊直接移除
     def _strip_empty_impact(m):
         return m.group(0) if "impact-stock" in m.group(0) else ""
@@ -873,7 +933,11 @@ def _postprocess_html(html: str, data: dict) -> str:
         r'<div class="news-impact">.*?</div>',
         _strip_empty_impact, html, flags=_re.DOTALL
     )
+    return html
 
+
+def _pp_drop_empty_sections(html: str) -> str:
+    import re as _re
     # 空區塊自動隱藏:沒有實質內容的 section 整塊移除,不留空標題洗版
     def _drop_empty_sections(h):
         parts = _re.split(r'(<div class="section-label">)', h)
@@ -894,7 +958,11 @@ def _postprocess_html(html: str, data: dict) -> str:
         return "".join(out)
 
     html = _drop_empty_sections(html)
+    return html
 
+
+def _pp_hoist_verdict_chip(html: str) -> str:
+    import re as _re
     # 結論情緒 chip 提前:把今天偏多/偏空標籤抓到 TLDR 標題,讓用戶第一眼就掃到結論
     def _hoist_verdict_chip(h):
         vm = _re.search(
@@ -916,10 +984,18 @@ def _postprocess_html(html: str, data: dict) -> str:
         return h2 if n else h
 
     html = _hoist_verdict_chip(html)
+    return html
 
+
+def _pp_markdown_bold(html: str) -> str:
+    import re as _re
     # LLM 偶爾吐 markdown 粗體 **xxx**,轉成 <strong>,別讓星號直接露在卡片上
     html = _re.sub(r'\*\*([^*\n<]+?)\*\*', r'<strong>\1</strong>', html)
+    return html
 
+
+def _pp_fix_bare_wait(html: str) -> str:
+    import re as _re
     # 孤立觀望詞修補:audit(isolated_wait_phrase)同款判定 —— 觀望詞後 60 字內無
     # 價位/事件/日期條件 → 自動補上條件式尾巴,讓「觀望」永遠帶「等什麼」,不留裸虛詞。
     _BARE_WAIT_FIX = {
@@ -939,7 +1015,33 @@ def _postprocess_html(html: str, data: dict) -> str:
         return _re.sub(r"(先觀望|先別動|保守為上|靜觀其變|按兵不動)", _repl, h)
 
     html = _fix_bare_wait(html)
+    return html
 
+
+def _postprocess_html(html: str, data: dict) -> str:
+    html = _pp_strip_llm_style(html)
+    html = _pp_clear_placeholders(html)
+    html = _pp_indicator_class(html, data)
+    html = _pp_crypto_dir(html, data)
+    html = _pp_strip_fake_links(html, data)
+    tw_hint = _pp_tw_hint(data)
+    html = _pp_strip_rogue_cards(html)
+    html = _pp_verdict_chip(html)
+    _techs_gate = data.get("technicals", {}) or {}
+    html = _pp_knife_gate(html, _techs_gate)
+    _regime_label = _market_regime(data).get("label", "neutral")
+    html = _pp_extended_gate(html, _techs_gate, _regime_label)
+    html = _pp_strip_badges(html)
+    html = _pp_clamp_confidence(html)
+    html = _pp_recalibrate_confidence(html, _regime_label)
+    html = _pp_requalify_buy(html, data)
+    html = _pp_scrub_earnings_notes(html, data)
+    html = _pp_expand_tickers(html, tw_hint)
+    html = _pp_strip_empty_impact(html)
+    html = _pp_drop_empty_sections(html)
+    html = _pp_hoist_verdict_chip(html)
+    html = _pp_markdown_bold(html)
+    html = _pp_fix_bare_wait(html)
     return html
 
 
