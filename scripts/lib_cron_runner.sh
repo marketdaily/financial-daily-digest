@@ -8,10 +8,12 @@
 #   cron_time_gate "14:00" "14:09"           # 不在窗口內就靜默 exit 0(跨夜窗口如 "23:50" "00:10" 也支援)
 #   cron_daily_lock "social"                 # 今天已跑過(mkdir 鎖存在)就靜默 exit 0,否則佔鎖繼續
 #   cron_run_and_alert "digest_send" -- python3 foo.py   # 執行指令,log 進 logs/<name>_<日期>.log;
-#                                                          # 非 0 結束碼→自動呼叫 notify_line.py 推 admin(含 log tail)
+#                                                          # 非 0 結束碼→自動呼叫 notify_admin.py 推 admin(含 log tail)
 #   cron_git_persist "chore: xxx [skip ci]" path/to/file  # best-effort commit+pull --rebase+push,不阻斷主流程
 #
-# 依賴:scripts/notify_line.py(需 MARKETDAILY_ALERT_TOKEN env,沒設就跳過推播不報錯)。
+# 依賴:~/.marketdaily-fallback/notify_admin.py(web push+桌面 toast 雙通道,自行從 .env 讀
+# MARKETDAILY_ALERT_TOKEN,已修 Cloudflare WAF User-Agent 403 問題;2026-07-04 前誤用舊版
+# scripts/notify_line.py,因呼叫端從未 export token 到 os.environ 而靜默跳過,失敗告警形同虛設)。
 set -u
 CRON_LIB_REPO="${CRON_LIB_REPO:-$HOME/Delvin-agent}"
 
@@ -44,7 +46,10 @@ cron_daily_lock() {
   mkdir "$lock_dir/${name}.${date_tag}" 2>/dev/null || exit 0
 }
 
-# cron_run_and_alert NAME [--] CMD...   跑指令,log 到 logs/<name>_<日期>.log;失敗自動 LINE 告警 admin。
+# cron_run_and_alert NAME [--] CMD...   跑指令,log 到 logs/<name>_<日期>.log;失敗自動告警 admin。
+# 告警走 notify_admin.py(web push + winrig 桌面 toast 雙通道,自行從 .env 讀 token、已修
+# Cloudflare WAF User-Agent 403 問題)——舊版呼叫 notify_line.py 只認 os.environ 裡的
+# MARKETDAILY_ALERT_TOKEN(呼叫端從未 export 過)會靜默跳過,失敗告警形同虛設,2026-07-04 修正。
 cron_run_and_alert() {
   local name="$1"; shift
   [ "${1:-}" = "--" ] && shift
@@ -59,7 +64,7 @@ cron_run_and_alert() {
   echo "=== end rc=${rc} ===" >> "$log"
   if [ "$rc" -ne 0 ]; then
     tail_msg=$(tail -c 800 "$log")
-    python3 "$CRON_LIB_REPO/scripts/notify_line.py" \
+    MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" "$HOME/.marketdaily-fallback/notify_admin.py" \
       "🔴 winrig cron『${name}』失敗 rc=${rc} $(TZ=Asia/Taipei date '+%F %T')
 --- log tail ---
 ${tail_msg}" >/dev/null 2>&1
