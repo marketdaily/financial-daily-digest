@@ -236,30 +236,51 @@ def _call_claude(prompt: str, system: str = None, model: str = "claude-sonnet-4-
     return "".join(b.get("text", "") for b in data.get("content", [])).strip()
 
 
+LLM_TEMPERATURE = 0.4  # 全 OpenAI 相容 provider 共用(gemini 另在自家 payload 帶同值)
+
+
+def _call_openai_style(url: str, key_env: str, prompt: str, system: str, model: str,
+                       max_tokens: int, extra_headers: dict = None, content_type: bool = False,
+                       retry_429_once: bool = False, timeout: int = 120) -> str:
+    """openai / groq / openrouter / cerebras 四家共用的 chat-completions 轉接
+    (原本四份逐字複製的樣板,2026-07-03 P2 收斂)。headers 順序、payload 欄位、
+    重試行為逐家凍結於 refactor_harness 的 provider 快照 —— 改這裡必先過快照 diff。
+    gemini / claude / cf_ai / ollama 的線路形狀真的不同,不硬塞進來。"""
+    key = os.environ.get(key_env)
+    if not key:
+        raise RuntimeError(f"未設定 {key_env}")
+    headers = {"Authorization": f"Bearer {key}"}
+    if content_type:
+        headers["Content-Type"] = "application/json"
+    if extra_headers:
+        headers.update(extra_headers)
+    payload = {
+        "model": model,
+        "max_tokens": max_tokens,
+        "temperature": LLM_TEMPERATURE,
+        "messages": [
+            {"role": "system", "content": system or _SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
+    }
+    resp = None
+    for attempt in range(2 if retry_429_once else 1):
+        resp = requests.post(url, headers=headers, json=payload, timeout=timeout)
+        if retry_429_once and resp.status_code == 429 and attempt < 1:
+            time.sleep(8)
+            continue
+        break
+    resp.raise_for_status()
+    return resp.json()["choices"][0]["message"]["content"].strip()
+
+
 def _call_openai(prompt: str, system: str = None) -> str:
     """OpenAI gpt-4o-mini 作為最終付費後援(Claude 也掛時用)。需要 OPENAI_API_KEY。
     .env 目前未設此 key → 此 caller 直接 raise,council/fallback 自動跳過(非錯誤)。"""
-    import os
-    api_key = os.environ.get("OPENAI_API_KEY")
-    if not api_key:
-        raise RuntimeError("未設定 OPENAI_API_KEY")
-    resp = requests.post(
-        "https://api.openai.com/v1/chat/completions",
-        headers={"Authorization": f"Bearer {api_key}",
-                 "Content-Type": "application/json"},
-        json={
-            "model": "gpt-4o-mini",
-            "max_tokens": 16000,
-            "temperature": 0.4,
-            "messages": [
-                {"role": "system", "content": system or _SYSTEM_PROMPT},
-                {"role": "user", "content": prompt},
-            ],
-        },
-        timeout=180,
-    )
-    resp.raise_for_status()
-    return resp.json()["choices"][0]["message"]["content"].strip()
+    return _call_openai_style(
+        "https://api.openai.com/v1/chat/completions", "OPENAI_API_KEY",
+        prompt, system, model="gpt-4o-mini", max_tokens=16000,
+        content_type=True, timeout=180)
 
 
 def _call_groq(prompt: str, system: str = None,
@@ -270,33 +291,10 @@ def _call_groq(prompt: str, system: str = None,
     定位:Gemini 免費配額耗盡、Claude 又瞬斷時的『免費第三張網』,接住原本會掉
     deterministic 的班次(2026-07-01 事故:Gemini 429+Claude DNS 抖→3 chunk 掉備援)。
     GROQ_API_KEY 已在 .env;沒設則 raise,鏈/席次自動跳過(非錯誤)。"""
-    import os
-    api_key = os.environ.get("GROQ_API_KEY")
-    if not api_key:
-        raise RuntimeError("未設定 GROQ_API_KEY")
-    resp = None
-    for attempt in range(2):
-        resp = requests.post(
-            "https://api.groq.com/openai/v1/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}",
-                     "Content-Type": "application/json"},
-            json={
-                "model": model,
-                "max_tokens": max_tokens,
-                "temperature": 0.4,
-                "messages": [
-                    {"role": "system", "content": system or _SYSTEM_PROMPT},
-                    {"role": "user", "content": prompt},
-                ],
-            },
-            timeout=120,
-        )
-        if resp.status_code == 429 and attempt < 1:
-            time.sleep(8)
-            continue
-        break
-    resp.raise_for_status()
-    return resp.json()["choices"][0]["message"]["content"].strip()
+    return _call_openai_style(
+        "https://api.groq.com/openai/v1/chat/completions", "GROQ_API_KEY",
+        prompt, system, model=model, max_tokens=max_tokens,
+        content_type=True, retry_429_once=True)
 
 
 def _call_cf_ai(prompt: str, system: str = None,
@@ -322,18 +320,10 @@ def _call_openrouter(prompt: str, system: str = None,
     """OpenRouter 免費層(:free 模型每日額度)。OpenAI 相容 API、獨立廠商聚合器。
     預接線:沒設 OPENROUTER_API_KEY → raise,席次/鏈自動跳過。用戶自行註冊拿 key
     (Cloudflare Turnstile 擋自動註冊)後填進 .env 即自動啟用一席,不需改程式。"""
-    key = os.environ.get("OPENROUTER_API_KEY")
-    if not key:
-        raise RuntimeError("未設定 OPENROUTER_API_KEY")
-    r = requests.post("https://openrouter.ai/api/v1/chat/completions",
-                      headers={"Authorization": f"Bearer {key}",
-                               "HTTP-Referer": "https://marketdaily.ai", "X-Title": "MarketDaily"},
-                      json={"model": model, "max_tokens": max_tokens, "temperature": 0.4,
-                            "messages": [{"role": "system", "content": system or _SYSTEM_PROMPT},
-                                         {"role": "user", "content": prompt}]},
-                      timeout=120)
-    r.raise_for_status()
-    return r.json()["choices"][0]["message"]["content"].strip()
+    return _call_openai_style(
+        "https://openrouter.ai/api/v1/chat/completions", "OPENROUTER_API_KEY",
+        prompt, system, model=model, max_tokens=max_tokens,
+        extra_headers={"HTTP-Referer": "https://marketdaily.ai", "X-Title": "MarketDaily"})
 
 
 def _call_cerebras(prompt: str, system: str = None,
@@ -341,17 +331,9 @@ def _call_cerebras(prompt: str, system: str = None,
     """Cerebras 免費層(晶圓級引擎,推理極快)。OpenAI 相容 API、獨立廠商。
     預接線:沒設 CEREBRAS_API_KEY → raise,席次/鏈自動跳過。用戶自行註冊拿 key
     (reCAPTCHA 擋自動註冊)後填進 .env 即自動啟用一席。"""
-    key = os.environ.get("CEREBRAS_API_KEY")
-    if not key:
-        raise RuntimeError("未設定 CEREBRAS_API_KEY")
-    r = requests.post("https://api.cerebras.ai/v1/chat/completions",
-                      headers={"Authorization": f"Bearer {key}"},
-                      json={"model": model, "max_tokens": max_tokens, "temperature": 0.4,
-                            "messages": [{"role": "system", "content": system or _SYSTEM_PROMPT},
-                                         {"role": "user", "content": prompt}]},
-                      timeout=120)
-    r.raise_for_status()
-    return r.json()["choices"][0]["message"]["content"].strip()
+    return _call_openai_style(
+        "https://api.cerebras.ai/v1/chat/completions", "CEREBRAS_API_KEY",
+        prompt, system, model=model, max_tokens=max_tokens)
 
 
 def _call_ollama(prompt: str, system: str = None,
