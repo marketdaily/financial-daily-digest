@@ -83,23 +83,30 @@ def build_send_history(events):
     """events → 依 messageId 聚合成 [{message_id, requested_at, delivered_at, blocked, opened,
     opened_at, subject}],新到舊排序。
 
-    **注意**:`requests` 只代表 Brevo 曾嘗試寄出,不代表真的送達收件端——過去版本把
+    **注意1**:`requests` 只代表 Brevo 曾嘗試寄出,不代表真的送達收件端——過去版本把
     `requests` 當 `delivered_at` 的替代值,會把「每一封都被收件端 blocked」的帳號誤判成
     「有送達、只是沒開」。`blocked` 必須獨立追蹤,`delivered_at` 只認真正的 `delivered` 事件。
+
+    **注意2**(2026-07-04 獨立子代理驗證抓到):同一 messageId 的不同事件,`subject` 欄位
+    不保證每筆都有(實務上 bounce/blocked 類 webhook 常缺 subject,只有 requests/delivered
+    才穩定帶)。若逐筆事件各自判斷 `is_digest_subject` 再決定要不要併入,一筆缺 subject 的
+    `blocked` 事件會被單獨濾掉——連同它帶的 `blocked=True` 一起消失,讓「每封都被擋」的帳號
+    重新掉回誤判。必須先依 messageId 分組、用組內任一筆事件的 subject 當代表值,只在最後
+    彙整完才判斷一次是否為日報信。
     """
     by_msg = {}
     for e in events:
-        subj = e.get("subject", "")
-        if not is_digest_subject(subj):
-            continue
         mid = e.get("messageId")
         if not mid:
             continue
         rec = by_msg.setdefault(
             mid,
             {"message_id": mid, "requested_at": None, "delivered_at": None, "blocked": False,
-             "opened": False, "opened_at": None, "subject": subj},
+             "opened": False, "opened_at": None, "subject": None},
         )
+        subj = e.get("subject")
+        if subj and not rec["subject"]:
+            rec["subject"] = subj
         ev = e.get("event")
         if ev == "requests" and not rec["requested_at"]:
             rec["requested_at"] = e.get("date")
@@ -111,8 +118,12 @@ def build_send_history(events):
             rec["opened"] = True
             if not rec["opened_at"] or e.get("date") > rec["opened_at"]:
                 rec["opened_at"] = e.get("date")
-    history = [r for r in by_msg.values() if r["requested_at"] or r["delivered_at"]]
-    history.sort(key=lambda r: r["delivered_at"] or r["requested_at"], reverse=True)
+    history = [
+        r for r in by_msg.values()
+        if (r["requested_at"] or r["delivered_at"] or r["blocked"] or r["opened"])
+        and is_digest_subject(r["subject"] or "")
+    ]
+    history.sort(key=lambda r: r["delivered_at"] or r["requested_at"] or "", reverse=True)
     return history
 
 
