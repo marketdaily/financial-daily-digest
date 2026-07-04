@@ -80,7 +80,13 @@ def is_digest_subject(subject):
 
 
 def build_send_history(events):
-    """events → 依 messageId 聚合成 [{message_id, delivered_at, opened, opened_at, subject}],新到舊排序。"""
+    """events → 依 messageId 聚合成 [{message_id, requested_at, delivered_at, blocked, opened,
+    opened_at, subject}],新到舊排序。
+
+    **注意**:`requests` 只代表 Brevo 曾嘗試寄出,不代表真的送達收件端——過去版本把
+    `requests` 當 `delivered_at` 的替代值,會把「每一封都被收件端 blocked」的帳號誤判成
+    「有送達、只是沒開」。`blocked` 必須獨立追蹤,`delivered_at` 只認真正的 `delivered` 事件。
+    """
     by_msg = {}
     for e in events:
         subj = e.get("subject", "")
@@ -91,17 +97,22 @@ def build_send_history(events):
             continue
         rec = by_msg.setdefault(
             mid,
-            {"message_id": mid, "delivered_at": None, "opened": False, "opened_at": None, "subject": subj},
+            {"message_id": mid, "requested_at": None, "delivered_at": None, "blocked": False,
+             "opened": False, "opened_at": None, "subject": subj},
         )
         ev = e.get("event")
-        if ev in ("delivered", "requests") and not rec["delivered_at"]:
+        if ev == "requests" and not rec["requested_at"]:
+            rec["requested_at"] = e.get("date")
+        if ev == "delivered" and not rec["delivered_at"]:
             rec["delivered_at"] = e.get("date")
+        if ev == "blocked":
+            rec["blocked"] = True
         if ev == "opened":
             rec["opened"] = True
             if not rec["opened_at"] or e.get("date") > rec["opened_at"]:
                 rec["opened_at"] = e.get("date")
-    history = [r for r in by_msg.values() if r["delivered_at"]]
-    history.sort(key=lambda r: r["delivered_at"], reverse=True)
+    history = [r for r in by_msg.values() if r["requested_at"] or r["delivered_at"]]
+    history.sort(key=lambda r: r["delivered_at"] or r["requested_at"], reverse=True)
     return history
 
 
@@ -110,6 +121,17 @@ def score_contact(history):
     sends_seen = len(history)
     if sends_seen < MIN_SENDS_FOR_JUDGMENT:
         return {"sends_seen": sends_seen, "status": "too_new"}
+
+    blocked_count = sum(1 for r in history if r.get("blocked"))
+    delivered_count = sum(1 for r in history if r.get("delivered_at"))
+    if delivered_count == 0 and blocked_count == sends_seen:
+        # 每一封都在收件端被擋下,連一次都沒真的送達過——這是送達率/網域信譽問題,
+        # 不是「使用者冷卻」,寄挽回信大機率也會被同樣擋下,不該走 draft_winback。
+        return {
+            "sends_seen": sends_seen,
+            "blocked_count": blocked_count,
+            "status": "delivery_blocked",
+        }
 
     streak_missed = 0
     for rec in history:
@@ -133,6 +155,7 @@ def score_contact(history):
         "streak_missed": streak_missed,
         "never_opened": not ever_opened,
         "days_since_last_open": days_since_last_open,
+        "blocked_count": blocked_count,
         "status": "at_risk" if at_risk else "engaged",
     }
 
@@ -158,6 +181,7 @@ def append_summary_history(summary, path=HISTORY_PATH):
         "engaged": summary.get("engaged"),
         "at_risk": summary.get("at_risk"),
         "never_opened_at_risk": summary.get("never_opened_at_risk"),
+        "delivery_blocked": summary.get("delivery_blocked"),
     })
     rows.sort(key=lambda r: r["date"])
     path.write_text("\n".join(json.dumps(r, ensure_ascii=False) for r in rows) + "\n")
@@ -205,6 +229,7 @@ def run():
     contacts = fetch_contacts(list_id, api_key)
     results = []
     drafts = []
+    delivery_alerts = []
     for c in contacts:
         email = (c.get("email") or "").strip().lower()
         if not email:
@@ -216,6 +241,16 @@ def run():
         results.append(score)
         if score.get("status") == "at_risk":
             drafts.append(draft_winback(email, score))
+        elif score.get("status") == "delivery_blocked":
+            # 每封都被收件端擋下,寄挽回信大機率也會被擋——不產草稿,改記需人工查明的送達率警訊。
+            delivery_alerts.append({
+                "email": email,
+                "sends_seen": score.get("sends_seen"),
+                "blocked_count": score.get("blocked_count"),
+                "note": "每一封信皆在收件端被 blocked,從未真正送達過(非使用者冷卻);"
+                        "寄挽回信同樣大機率被擋,勿寄,需人工查明(常見成因:寄件網域信譽/收件端"
+                        "政策/信箱本身輸入有誤)。",
+            })
 
     summary = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -225,6 +260,7 @@ def run():
         "engaged": sum(1 for r in results if r.get("status") == "engaged"),
         "at_risk": sum(1 for r in results if r.get("status") == "at_risk"),
         "never_opened_at_risk": sum(1 for d in drafts if d.get("never_opened")),
+        "delivery_blocked": len(delivery_alerts),
     }
     append_summary_history(summary)
     out = {
@@ -235,10 +271,13 @@ def run():
         ),
         "summary": summary,
         "drafts": drafts,
+        "delivery_alerts": delivery_alerts,
     }
     OUT_PATH.write_text(json.dumps(out, ensure_ascii=False, indent=2))
     print(json.dumps(summary, ensure_ascii=False, indent=2))
     print(f"→ {len(drafts)} 篇草稿寫入 {OUT_PATH}")
+    if delivery_alerts:
+        print(f"⚠️ {len(delivery_alerts)} 位訂閱者送達率警訊(每封皆被 blocked,非冷卻,見 delivery_alerts)")
     return out
 
 
