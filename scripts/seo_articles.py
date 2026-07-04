@@ -149,6 +149,8 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
+<link rel="apple-touch-icon" href="/logo-icon.svg">
 <title>{title} | MarketDaily</title>
 <meta name="description" content="{desc}">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
@@ -241,6 +243,8 @@ def regenerate_blog_index(dry: bool):
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
+<link rel="apple-touch-icon" href="/logo-icon.svg">
 <title>個股分析文章 | MarketDaily</title>
 <meta name="description" content="MarketDaily 個股深度分析,涵蓋美股、台股長尾關鍵字。">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
