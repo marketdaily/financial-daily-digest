@@ -2734,25 +2734,33 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
 
 
 # ─── Weekend Recap(週六專用:本週回顧 + 下週預告)──────────────
+def _weekend_monday_preamble(data: dict, user_us_stocks: list, user_tw_stocks: list, email_safe: bool):
+    """週六/週一晨間報告共用前置(generate_weekend_report/generate_monday_report逐字重複抽出):
+    holdings 解析、email 裁切、市場資料與新聞格式化(週末新聞量固定美股10篇/台股8篇)。"""
+    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
+    if email_safe:
+        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
+    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
+    us_news_text = _format_news(data.get("us_news", []), max_items=10)
+    tw_news_text = _format_news(data.get("tw_news", []), max_items=8)
+    date = data.get("date", "")
+    holdings = (user_us_stocks or []) + (user_tw_stocks or [])
+    has_holdings = bool(holdings)
+    is_beginner = len(holdings) <= 4
+    return (user_us_stocks, user_tw_stocks, _full_holdings, market_text, us_news_text,
+            tw_news_text, date, holdings, has_holdings, is_beginner)
+
+
 def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                             email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
                             market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
     # market 由雙班次 caller 傳入(週六台股早報走此函式);週末回顧本就是台股晨間語境,
     # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週六晨間日報:不講當日大盤(已收),改聚焦『本週回顧 + 下週重點』。"""
-    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
-    if email_safe:
-        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
-
-    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
-    us_news_text = _format_news(data.get("us_news", []), max_items=10)
-    tw_news_text = _format_news(data.get("tw_news", []), max_items=8)
-    date = data.get("date", "")
+    (user_us_stocks, user_tw_stocks, _full_holdings, market_text, us_news_text,
+     tw_news_text, date, holdings, has_holdings, is_beginner) = _weekend_monday_preamble(
+        data, user_us_stocks, user_tw_stocks, email_safe)
     mkt_status = _market_status(date)
-
-    holdings = (user_us_stocks or []) + (user_tw_stocks or [])
-    has_holdings = bool(holdings)
-    is_beginner = len(holdings) <= 4
 
     # 操作訊號卡股票清單(用 _full_holdings 保證不受 email 裁切影響,每支持股都要有「下一步」)。
     us_market = data.get("us_market", {})
@@ -2860,18 +2868,9 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
     重點:週末新聞累積 + 上週五收盤回顧 + 本週 catalysts + 週一開盤 gap 風險 +
     每檔持股仍給明確操作建議(買/抱/賣/觀望)。"""
     # email 版敘述只聚焦波動最大的 30 檔,但「操作訊號卡」仍覆蓋全部持股(全列在 _full_holdings)。
-    _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
-    if email_safe:
-        user_us_stocks, user_tw_stocks = _trim_holdings_for_email(data, user_us_stocks, user_tw_stocks)
-
-    market_text = _format_market_data(data, user_us_stocks, user_tw_stocks)
-    us_news_text = _format_news(data.get("us_news", []), max_items=10)
-    tw_news_text = _format_news(data.get("tw_news", []), max_items=8)
-    date = data.get("date", "")
-
-    holdings = (user_us_stocks or []) + (user_tw_stocks or [])
-    has_holdings = bool(holdings)
-    is_beginner = len(holdings) <= 4
+    (user_us_stocks, user_tw_stocks, _full_holdings, market_text, us_news_text,
+     tw_news_text, date, holdings, has_holdings, is_beginner) = _weekend_monday_preamble(
+        data, user_us_stocks, user_tw_stocks, email_safe)
 
     # 算上週五日期(今天是週一,往前推 3 天)
     from datetime import datetime as _dt, timezone as _tz, timedelta as _td
