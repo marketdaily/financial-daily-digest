@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T08:05:09",
+  "generated_at": "2026-07-04T19:14:56",
   "n_total": 985,
   "a": {
     "total": 449,
@@ -13,6 +13,12 @@
       ],
       "baseline_pct": 50.0,
       "verdict": "negative_edge",
+      "daycluster_ci95": [
+        26.2,
+        56.5
+      ],
+      "verdict_honest": "inconclusive",
+      "naive_overstated_confidence": true,
       "edge_pct": 9.7,
       "n_needed_for_edge": 106,
       "distinct_days": 13
@@ -65,6 +71,12 @@
         ],
         "baseline_pct": 50.0,
         "verdict": "real_edge",
+        "daycluster_ci95": [
+          41.6,
+          71.2
+        ],
+        "verdict_honest": "inconclusive",
+        "naive_overstated_confidence": true,
         "edge_pct": 7.7,
         "n_needed_for_edge": 166,
         "distinct_days": 7
@@ -79,6 +91,12 @@
         ],
         "baseline_pct": 50.0,
         "verdict": "negative_edge",
+        "daycluster_ci95": [
+          11.5,
+          41.9
+        ],
+        "verdict_honest": "negative_edge",
+        "naive_overstated_confidence": false,
         "edge_pct": 29.5,
         "n_needed_for_edge": 11,
         "distinct_days": 6
@@ -95,6 +113,12 @@
         ],
         "baseline_pct": 50.0,
         "verdict": "inconclusive",
+        "daycluster_ci95": [
+          29.7,
+          61.7
+        ],
+        "verdict_honest": "inconclusive",
+        "naive_overstated_confidence": false,
         "edge_pct": 3.7,
         "n_needed_for_edge": 731,
         "distinct_days": 13
@@ -109,13 +133,20 @@
         ],
         "baseline_pct": 50.0,
         "verdict": "negative_edge",
+        "daycluster_ci95": [
+          18.9,
+          49.2
+        ],
+        "verdict_honest": "negative_edge",
+        "naive_overstated_confidence": false,
         "edge_pct": 17.7,
         "n_needed_for_edge": 31,
         "distinct_days": 9
       }
     },
     "verdict": [
-      "🔴 方向負 edge:40.3%（CI [35.9, 44.9] 整段 < 50.0%）— 反著做勝率更高，n=449",
+      "🟡 說不準:40.3%（day-cluster CI [26.2, 56.5] 跨過 50.0%）— edge 9.7% 需約 106 筆才分得出運氣，現有 449 筆",
+      "⚠️ naive 高估信心:naive Wilson CI [35.9, 44.9] 看似 negative_edge，但 day-cluster 校正後其實是 inconclusive — 別信 naive",
       "⚠️ 樣本相關:449 筆只來自 13 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
       "🔴 信心反向:Brier 0.3888 > 0.25，宣稱越高信心實際命中越低 — 信心數字指錯方向，該移除或重新校準",
       "🔴 負期望值:每筆平均 -0.562%（勝率高也可能賠）— profit factor 0.86，盈99/虧197"
@@ -133,6 +164,12 @@
       ],
       "baseline_pct": 50.0,
       "verdict": "real_edge",
+      "daycluster_ci95": [
+        44.1,
+        69.1
+      ],
+      "verdict_honest": "inconclusive",
+      "naive_overstated_confidence": true,
       "edge_pct": 5.6,
       "n_needed_for_edge": 319,
       "distinct_days": 13
@@ -174,6 +211,12 @@
         ],
         "baseline_pct": 50.0,
         "verdict": "negative_edge",
+        "daycluster_ci95": [
+          33.2,
+          53.9
+        ],
+        "verdict_honest": "inconclusive",
+        "naive_overstated_confidence": true,
         "edge_pct": 7.0,
         "n_needed_for_edge": 205,
         "distinct_days": 7
@@ -188,6 +231,12 @@
         ],
         "baseline_pct": 50.0,
         "verdict": "real_edge",
+        "daycluster_ci95": [
+          67.2,
+          85.0
+        ],
+        "verdict_honest": "real_edge",
+        "naive_overstated_confidence": false,
         "edge_pct": 28.1,
         "n_needed_for_edge": 12,
         "distinct_days": 6
@@ -204,6 +253,12 @@
         ],
         "baseline_pct": 50.0,
         "verdict": "inconclusive",
+        "daycluster_ci95": [
+          38.8,
+          68.3
+        ],
+        "verdict_honest": "inconclusive",
+        "naive_overstated_confidence": false,
         "edge_pct": 3.6,
         "n_needed_for_edge": 771,
         "distinct_days": 13
@@ -218,13 +273,20 @@
         ],
         "baseline_pct": 50.0,
         "verdict": "real_edge",
+        "daycluster_ci95": [
+          45.2,
+          74.0
+        ],
+        "verdict_honest": "inconclusive",
+        "naive_overstated_confidence": true,
         "edge_pct": 7.3,
         "n_needed_for_edge": 185,
         "distinct_days": 9
       }
     },
     "verdict": [
-      "✅ 方向有真 edge:55.6%（CI [51.4, 59.7] 整段 > 50.0%，n=536）",
+      "🟡 說不準:55.6%（day-cluster CI [44.1, 69.1] 跨過 50.0%）— edge 5.6% 需約 319 筆才分得出運氣，現有 536 筆",
+      "⚠️ naive 高估信心:naive Wilson CI [51.4, 59.7] 看似 real_edge，但 day-cluster 校正後其實是 inconclusive — 別信 naive",
       "⚠️ 樣本相關:536 筆只來自 13 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
       "✅ 信心有用:Brier 0.2377 < 0.25"
     ]
