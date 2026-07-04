@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-04",
+ "updated": "2026-07-05",
  "n_rows": 26,
  "n_interim": 0,
  "n_final": 0,
@@ -93,12 +93,14 @@
    "G1_brier": {
     "oos_brier_raw": 0.1946,
     "oos_brier_cal": 0.175,
-    "oos_brier_base": 0.2091
+    "oos_brier_base": 0.2091,
+    "oos_frac_out_of_domain": 0.0581,
+    "oos_brier_cal_deployment_realistic": 0.1793
    },
    "G2_floor_buckets": "30/30",
    "G3_deploy_dev": 0.1068,
    "G4_monotone": true
   },
-  "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);live 帳本 predictions.jsonl 持續對答案"
+  "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);live 帳本 predictions.jsonl 持續對答案;G1_brier.oos_brier_cal 是「假設全列都拿到校準」的理想值,實際部署有 oos_frac_out_of_domain 比例落回未校準 raw(見 cb_ledger.py),誠實部署量測見 oos_brier_cal_deployment_realistic"
  }
 }

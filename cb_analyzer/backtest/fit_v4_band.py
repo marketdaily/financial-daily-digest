@@ -23,6 +23,7 @@ P_RAW = np.clip(np.array([float(r["p_prod"]) for r in rows]), 1e-4, 1 - 1e-4)
 DATES = np.array([r["date"] for r in rows])
 YEARS = np.array([d[:4] for d in DATES])
 DRIFT = 0.07
+DOM_Z, DOM_T, DOM_SIG = (0.05, 3.0), (0.4, 3.2), (0.15, 1.0)  # 同 cb_ledger.py::calibrate_touch 出界判定
 
 Z = np.log(B) / (SIG * np.sqrt(T))
 NU = (DRIFT - 0.5 * SIG**2) * np.sqrt(T) / SIG
@@ -75,6 +76,19 @@ g1 = {"oos_brier_raw": round(brier(P_RAW[te], Y[te]), 4),
       "oos_brier_base": round(brier(np.full(int(te.sum()), base), Y[te]), 4)}
 gate1 = g1["oos_brier_cal"] < g1["oos_brier_raw"] and g1["oos_brier_cal"] < g1["oos_brier_base"]
 print("G1", g1, gate1)
+
+# G1 誠實化(不影響 gate1 判定,純量測):cb_ledger.py::calibrate_touch 對出 domain 的請求
+# 直接回傳未校準 raw(method=raw_out_of_domain),但上面 oos_brier_cal 對全部 OOS 列都套用
+# 校準值計算,等於假設「出 domain 的部分也拿到校準」,略微高估實際部署會交付的表現。
+oob = ~((Z >= DOM_Z[0]) & (Z <= DOM_Z[1]) & (T >= DOM_T[0]) & (T <= DOM_T[1])
+        & (SIG >= DOM_SIG[0]) & (SIG <= DOM_SIG[1]))
+oob_te = oob[te]
+pt_deploy = np.where(oob_te, P_RAW[te], pt)  # 出domain列落回raw,對齊cb_ledger.py實際行為
+g1["oos_frac_out_of_domain"] = round(float(oob_te.mean()), 4)
+g1["oos_brier_cal_deployment_realistic"] = round(brier(pt_deploy, Y[te]), 4)
+print(f"G1 誠實部署量測: out_of_domain={g1['oos_frac_out_of_domain']:.1%} of OOS rows,"
+      f" brier_deploy_realistic={g1['oos_brier_cal_deployment_realistic']}"
+      f" (idealized cal={g1['oos_brier_cal']}, raw={g1['oos_brier_raw']})")
 
 # G2 下限鐵則(嵌套協議):
 # margin 由「≤2021 pooled 曲線 vs 2022 各 z 桶實際」的最大短差決定(不偷看 2023+),
@@ -141,7 +155,7 @@ if all((gate1, gate2, gate3, gate4)):
         "features": "x=[1, z, z², m, z·m]; z=ln(b)/(σ√T), m=(drift−σ²/2)√T/σ; "
                     "point: logit=(1−λ)·logit(p_gbm)+λ·(w_pooled·x); "
                     "floor: sigmoid(w_pooled·x)−floor_margin; band顯示: min/max over w_years",
-        "domain": {"z": [0.05, 3.0], "T": [0.4, 3.2], "sigma": [0.15, 1.0],
+        "domain": {"z": list(DOM_Z), "T": list(DOM_T), "sigma": list(DOM_SIG),
                    "note": "出界→回傳原始 GBM+標記不可信"},
         "provenance": {
             "source": "walk-forward 2019-02..2025-06, 55 CB issuers, 66380 forecasts, "
@@ -151,7 +165,9 @@ if all((gate1, gate2, gate3, gate4)):
             "gates": {"G1_brier": g1, "G2_floor_buckets": f"{ok}/{tot}",
                       "G3_deploy_dev": round(dev, 4), "G4_monotone": gate4},
             "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);"
-                      "live 帳本 predictions.jsonl 持續對答案",
+                      "live 帳本 predictions.jsonl 持續對答案;G1_brier.oos_brier_cal 是「假設全列都拿到"
+                      "校準」的理想值,實際部署有 oos_frac_out_of_domain 比例落回未校準 raw(見 cb_ledger.py),"
+                      "誠實部署量測見 oos_brier_cal_deployment_realistic",
         },
     }
     # 合併寫入:live 帳本記分欄位(n_rows/n_interim/shrink/details…)是 cb_score.py 的資產,保留
