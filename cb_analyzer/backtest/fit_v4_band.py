@@ -6,7 +6,11 @@
   G3 部署域(b1.21/1.33×T2/3):單點偏差 ≤15pp 且下限成立
   G4 曲線對 z 單調遞減
 全過 → calibration.json v4(pooled w + 7 條年度 w + λ + domain 防外插)。"""
-import csv, json, math, os, datetime
+import csv
+import json
+import math
+import os
+import datetime
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))

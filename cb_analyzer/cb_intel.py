@@ -1,6 +1,9 @@
 """市場情報:把外資/投信買賣超(FinMind,即時可靠)+ 法說會/外資目標價(研究快取 company_intel.json)
 接到 CB 分析,強化「為什麼會漲」論點與校準成長率。缺研究快取時只用法人流向。"""
-import os, json, datetime, urllib.request
+import os
+import json
+import datetime
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 INTEL_PATH = os.path.join(HERE, "company_intel.json")

@@ -2,7 +2,10 @@
 資料源 TPEx OpenAPI:bond_ISSBD5_data(國內轉換債)+ bond_ISSBD6_data(海外轉換債)。免 token。
 缺 TCRI(TEJ 專有)→ 預設未知,可用 --tcri 帶入或自動沿用老闆 Excel 內同檔評等。
 用剩餘年限(距今到賣回/到期)計價,非原始年期。"""
-import os, json, datetime, urllib.request
+import os
+import json
+import datetime
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, ".existing_cb_cache.json")

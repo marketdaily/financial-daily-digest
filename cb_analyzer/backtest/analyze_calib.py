@@ -1,6 +1,9 @@
 """校準回測統計:reliability 分桶、Brier vs 基準率、雙向 cluster bootstrap CI、
 時間切分樣本外驗證 + 擬合 logit 校準映射(給 cb_ledger.apply_calibration 用)。"""
-import os, csv, json, math
+import os
+import csv
+import json
+import math
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))

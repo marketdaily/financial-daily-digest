@@ -1,5 +1,8 @@
 """抓 CB 發行公司歷史日線(2018 起)供回測:未調整(複製生產端 vol)+ 還原權值(算實際觸及)。"""
-import os, json, time, sys, urllib.request
+import os
+import json
+import time
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")

@@ -8,7 +8,10 @@
   python cb.py --list        列出老闆 Excel 所有案件
   python cb.py --update x.xlsx   換新 Excel 重建資料庫
 現有 CB 資料源=TPEx OpenAPI(免token);缺 TCRI 用 --tcri 帶入。假設在 cb_core.ASSUMPTIONS。"""
-import sys, os, json, datetime
+import sys
+import os
+import json
+import datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import cb_core
@@ -385,8 +388,8 @@ def print_assumptions():
     print(f"\n{C['d']}── 假設參數(可在 cb_core.ASSUMPTIONS 調整)──")
     print(f"  無風險利率 rf={a['rf']*100:.1f}% · 資產交換 spread={a['asset_swap_spread']*100:.1f}% · "
           f"前瞻波動加權 短{a['vol_w_short']:.0%}/長{a['vol_w_long']:.0%}")
-    print(f"  TCRI 信用利差: " + ", ".join(f"{k}→{v*100:.1f}%" for k, v in a['tcri_spread'].items()))
-    print(f"  ⚠ 隱含波動由真實承銷/競拍價反解;前瞻波動=EWMA(短)與120日(長)加權(均值回歸)。")
+    print("  TCRI 信用利差: " + ", ".join(f"{k}→{v*100:.1f}%" for k, v in a['tcri_spread'].items()))
+    print("  ⚠ 隱含波動由真實承銷/競拍價反解;前瞻波動=EWMA(短)與120日(長)加權(均值回歸)。")
     print(f"     融資/稅費/賣回時點/流動性折價未精算,評分供篩選排序,進場前仍須人工核對承銷與資產交換報價。{C['x']}")
 
 

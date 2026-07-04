@@ -1,5 +1,9 @@
 """標的現股資料:FinMind 抓收盤序列 → 現價、年化歷史波動率、近期漲跌。免 token。"""
-import os, json, math, datetime, urllib.request
+import os
+import json
+import math
+import datetime
+import urllib.request
 
 FINMIND = "https://api.finmindtrade.com/api/v4/data"
 FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "").strip()

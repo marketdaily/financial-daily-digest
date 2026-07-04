@@ -4,7 +4,13 @@
 是否真的觸及水位。輸出逐筆預測 CSV 供 analyze_calib.py 統計。
 波動用未調整價(生產端同款)、實際觸及用還原價(CB 轉換價會隨除息調降,
 還原序列的倍數路徑才貼近真實回本點觸及)。"""
-import os, json, math, csv, datetime, bisect, sys
+import os
+import json
+import math
+import csv
+import datetime
+import bisect
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 from cb_core import touch_prob

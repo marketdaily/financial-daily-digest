@@ -3,7 +3,13 @@
 機械出場:①盤中觸及「內在價值=2×權利金」股價 → +100% 出場(保守:實際含時間價值更早)
 ②否則抱到期:P&L=max(parity−strike,0)−權利金,下檔以權利金為限。
 看 p_floor 分桶的 EV 排序力 + 新舊 gate 對照。月 cluster bootstrap CI。"""
-import os, sys, json, math, csv, bisect, datetime
+import os
+import sys
+import json
+import math
+import csv
+import bisect
+import datetime
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))

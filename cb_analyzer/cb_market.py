@@ -3,7 +3,10 @@
   1) FinMind CB dataset —— 需 FINMIND_TOKEN(免費註冊 finmindtrade.com 即可解鎖)
   2) TPEx 債券電腦議價揭示板 —— 當日有報價時可得(多數 CB 無)
 拿到價就用『市場隱波』取代承銷價隱波(更即時)。"""
-import os, json, datetime, urllib.request
+import os
+import json
+import datetime
+import urllib.request
 
 FINMIND = "https://api.finmindtrade.com/api/v4/data"
 TOKEN = os.environ.get("FINMIND_TOKEN", "").strip()

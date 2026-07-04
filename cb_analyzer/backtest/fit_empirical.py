@@ -2,7 +2,11 @@
 logistic[1,z,z²,m,z·m] 直接學真實觸及率形狀(=學 barrier 的厚尾 smile),
 λ 在 logit 空間向原始 GBM 收縮(保低機率區的抬升)+2022 空頭約束。
 協議:fit≤2021 → λ@2022 → refit≤2022 → OOS 2023+ 四門檻 → 全過才寫生產參數。"""
-import csv, json, math, os, datetime
+import csv
+import json
+import math
+import os
+import datetime
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))

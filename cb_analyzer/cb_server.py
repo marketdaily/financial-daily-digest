@@ -3,9 +3,21 @@
   GET /api/analyze?code=&tcri=   → 該代碼完整分析卡(HTML 片段)
   GET /api/sim?capital=&code=&tcri= → 資金模擬結果(HTML 片段)
 啟動:python3 cb_server.py [port]   預設 8911。"""
-import os, sys, html, json, math, datetime, urllib.parse
+import os
+import sys
+import html
+import json
+import math
+import datetime
+import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-import cb_core, cb_data, cb_profiles, cb_intel, cb_simulate, cb_report, cb_ledger
+import cb_core
+import cb_data
+import cb_profiles
+import cb_intel
+import cb_simulate
+import cb_report
+import cb_ledger
 import cb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -68,8 +80,8 @@ def _verdict_parts(it, a, be_move=None, p_touch=None, p_term=None, cal=None):
                     f"但波動夠大,期間內有約 {p_touch*100:.0f}% 機率碰到回本點(+{need:.0f}%)——"
                     f"碰到就能帶著剩餘時間價值獲利出場,權利金也在合理值內、下檔封頂。"
                     f"這是專業的『風險封頂選擇權注』。",
-                    f"組合裡配一小注(單檔 ≤10~15% 資金),進場同時設好出場紀律"
-                    f"(股價接近回本點或權利金翻倍就走);想單壓全部資金的人跳過這檔。")
+                    "組合裡配一小注(單檔 ≤10~15% 資金),進場同時設好出場紀律"
+                    "(股價接近回本點或權利金翻倍就走);想單壓全部資金的人跳過這檔。")
         return ("⚠️ 先別急,再等等", "#fbbf24",
                 f"股價離轉換價很遠({where})、要漲約 +{need:.0f}% 才回本,"
                 f"而且現在權利金報價偏貴或波動不夠大,勝算撐不起這個價。",
@@ -151,7 +163,7 @@ def _exit_plan(it, a, be_S, be_move):
         '<div class="iline" style="margin-top:6px"><b>機械紀律(進場當天就寫死,不靠感覺):</b>'
         '①權利金市值翻倍→先賣一半收回本金 '
         '②股價碰回本點→至少出一半 '
-        f'③到期/賣回日前 6 個月股價仍低於轉換價 8 折→全部出場(時間價值會加速歸零) '
+        '③到期/賣回日前 6 個月股價仍低於轉換價 8 折→全部出場(時間價值會加速歸零) '
         '④外資+投信同步連賣 10 日以上或公司下修展望→提前減碼</div>'
         '<div class="iline" style="color:#7dd3fc"><b>訊息差怎麼用:</b>'
         '每月 10 日前的月營收、法說會、財報是波動事件——「碰到回本點」最常發生在這些日子前後,'

@@ -2,7 +2,10 @@
 沒有帳本,模型講「中途獲利機率 72%」永遠不用負責;有帳本才有回測→校準→進步。
 紀律:每檔每天只記一筆;記錄絕不拋錯(帳本壞了不能拖垮分析);
 校準因子 n≥20 才啟動且有界(quant-math:小樣本校準=雜訊)。"""
-import os, json, math, datetime
+import os
+import json
+import math
+import datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 LEDGER = os.path.join(HERE, "predictions.jsonl")

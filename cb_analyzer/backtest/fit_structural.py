@@ -1,6 +1,10 @@
 """結構性校準:p = touch_prob(b, T, κ·σ, 0.07+δ) — 修輸入(厚尾→有效波動),非事後掰機率。
 協議同前:≤2021 擬合(κ,δ) → 2022 空頭選保守收縮 λ → ≤2022 重擬合 → 2023+ 樣本外門檻驗收。"""
-import csv, json, math, os, datetime
+import csv
+import json
+import math
+import os
+import datetime
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))

@@ -5,7 +5,11 @@
 輸出 calibration.json:n≥20 才給 shrink 因子(顯示端 cb_ledger.apply_calibration 讀取)。
 用法:cd cb_analyzer && python3 cb_score.py
 """
-import os, json, datetime, time, urllib.request
+import os
+import json
+import datetime
+import time
+import urllib.request
 import cb_core
 
 HERE = os.path.dirname(os.path.abspath(__file__))

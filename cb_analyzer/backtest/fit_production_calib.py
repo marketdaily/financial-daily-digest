@@ -2,7 +2,11 @@
 1) 2019-21 擬合 (a,b) → 2022 空頭年選收縮係數 λ(對沖倖存者偏差,寧可少修不過修)
 2) 2019-22 重擬合 → 2023+ 全樣本外驗收(門檻:Brier 贏原始+贏基準率、各分桶誤差、空頭不高估>5pp)
 3) 全過 → 全數據重擬合 + 選定 λ 寫進 calibration.json 供 cb_ledger.apply_calibration。"""
-import csv, json, math, os, datetime
+import csv
+import json
+import math
+import os
+import datetime
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))

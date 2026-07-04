@@ -1,6 +1,8 @@
 """公司營運簡介:curated company_profiles.json(準確、人工查證)為主,
 FinMind TaiwanStockInfo 產業分類為自動退路。輸入代碼 → 產業/主營/上下游/客戶/合作。"""
-import os, json, urllib.request
+import os
+import json
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 PROFILES_PATH = os.path.join(HERE, "company_profiles.json")

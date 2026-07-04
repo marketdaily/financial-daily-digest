@@ -1,6 +1,8 @@
 """校準偏差的穩健性拆解:分年、分大盤 regime、分水位/年期、分股票、
 以及最嚴苛的 2022 空頭年壓力測試(校準修正在空頭會不會反向爆掉)。"""
-import csv, math, os
+import csv
+import math
+import os
 import numpy as np
 from collections import defaultdict
 
@@ -87,7 +89,6 @@ for lbl, sub in (("2022 空頭年", te22),):
           f"base={np.mean((ys.mean() - ys) ** 2):.4f}")
 
 print("── 倖存者偏差量化:55 檔樣本期年化報酬分佈(還原) ──")
-import json, bisect
 rets = []
 for code in sorted({r["code"] for r in rows}):
     import calib_backtest as CB

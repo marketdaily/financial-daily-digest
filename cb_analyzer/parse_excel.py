@@ -1,6 +1,10 @@
 """把『CB發行案件更新』Excel 解析成結構化 cb_database.json。
 換新檔只要 python parse_excel.py <新檔.xlsx>，系統其他部分不用改。"""
-import sys, os, re, json, datetime
+import sys
+import os
+import re
+import json
+import datetime
 import openpyxl
 
 HERE = os.path.dirname(os.path.abspath(__file__))

@@ -1,5 +1,7 @@
 """把 rank() 結果輸出成自包含 HTML 報告(深色玻璃卡片風)+ 內建互動資金模擬器。"""
-import os, html, json, datetime
+import os
+import html
+import datetime
 import cb_core
 import cb_profiles
 import cb_intel
