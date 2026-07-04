@@ -20,7 +20,6 @@
   "世紀鋼九(9958):投信連 3 日買超(認養訊號,20日淨買 +386 張)",
   "宏致(3605) 重訊[2026-07-03]:公告本公司國內第四次無擔保轉換公司債收足債款",
   "雲豹能源(6869) 重訊[2026-07-03]:公告本公司國內第二次有擔保轉換公司債代收價款及 存儲價款專戶機構",
-  "萬潤(6187) 重訊[2026-07-02]:公告本公司國內第六次無擔保轉換公司債收足價款",
   "🇺🇸 TSLA 目標價⬆️+10.0%→$430(Truist Financial)",
   "🇺🇸 BRK-B 內部人買進:O'Sullivan Michael J. 536股 均價$467.4355(分2筆執行)(約$250,545)",
   "🇺🇸 TSM 內部人買進:Tien Bor-Zen[VP] 1,000股 均價$76.64(約$76,640)",
@@ -78,7 +77,6 @@
   "威宏三KY(8442):法人 20 日淨買超 +249 張(未成連續型態)",
   "大眾控(3701) 重訊[2026-07-03]:代子公司PRIME BASE INC.公告董事改選",
   "星宇航空(2646) 重訊[2026-07-03]:本公司取得1架A350自有客機相關訊息",
-  "青雲(5386) 重訊[2026-07-02]:本公司總經理異動",
   "🇺🇸 AAPL 內部人賣出:LEVINSON ARTHUR D 50,000股 均價$311.02(約$15,551,000)",
   "🇺🇸 AAPL 內部人賣出:Borders Ben 1,274股 均價$290.0(約$369,460)",
   "🇺🇸 AAPL 內部人賣出:LEVINSON ARTHUR D 250,000股 均價$284.7589(分2筆執行)(約$71,189,725)",
@@ -149,7 +147,7 @@
  ],
  "calibration": {
   "updated": "2026-07-04",
-  "n_rows": 25,
+  "n_rows": 26,
   "n_interim": 0,
   "n_final": 0,
   "model": "empirical_band_v4",
@@ -555,11 +553,6 @@
     "source": "institutional",
     "level": "red",
     "signal": "青雲二(5386):外資連 5 日買超(5日淨買 +449 張)"
-   },
-   {
-    "source": "mops_news",
-    "level": "yellow",
-    "signal": "青雲(5386) 重訊[2026-07-02]:本公司總經理異動"
    }
   ],
   "5536": [
@@ -586,11 +579,6 @@
     "source": "institutional",
     "level": "yellow",
     "signal": "萬潤六(6187):法人 20 日淨賣超 -2,012 張(未成連續型態)"
-   },
-   {
-    "source": "mops_news",
-    "level": "red",
-    "signal": "萬潤(6187) 重訊[2026-07-02]:公告本公司國內第六次無擔保轉換公司債收足價款"
    }
   ],
   "6546": [
@@ -1084,8 +1072,14 @@
    }
   ]
  },
- "new_red_since_last_run": [
-  "萬潤(6187) 重訊[2026-07-02]:公告本公司國內第六次無擔保轉換公司債收足價款"
- ],
- "new_red_count": 1
+ "new_red_since_last_run": [],
+ "new_red_count": 0,
+ "sec_rule_changes": [
+  {
+   "date": "2026-06-11",
+   "title": "SEC Proposes Rescission of Regulation NMS Rules 611 and 610(e)",
+   "link": "https://www.sec.gov/newsroom/press-releases/2026-54-sec-proposes-rescission-regulation-nms-rules-611-610e",
+   "level": "yellow"
+  }
+ ]
 }

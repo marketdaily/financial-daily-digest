@@ -11,7 +11,7 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc
+from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory
 
 MAX_MATERIALS_PER_RUN = 5  # 法說會簡報下載+Ollama摘要較耗時,單次巡邏封頂避免跑太久
 
@@ -100,6 +100,8 @@ def run():
     conf_data = tw_investor_conf.scan(codes)
     surv_data = tw_surveillance.scan(codes)
     fsc_data = tw_fsc.scan()  # 自成一套上市金控/銀行/證券/保險名單,不受 CB watchlist(codes)過濾
+    sec_enf = us_sec_regulatory.scan_enforcement()  # 自成一套美股 watchlist,同 fsc_data 不受 codes 過濾
+    sec_rules = us_sec_regulatory.scan_rule_changes()  # 市場級規則變化,非個股,不進 by_code
 
     snap = _cb_snapshot()
     snap_ok = snap.returncode == 0 and "snapshot ok" in (snap.stdout or "")
@@ -163,6 +165,8 @@ def run():
         _emit(c, sv["level"], line, sv["source"])
     for c, f3 in fsc_data.items():
         _emit(c, f3["level"], f3["signal"], f3["source"])
+    for c, f4 in sec_enf.items():
+        _emit(c, f4["level"], f4["signal"], f4["source"])
     materials_fetched = 0
     for c in codes:
         f2 = conf_data.get(c)
@@ -181,13 +185,16 @@ def run():
 
     os.makedirs(BRIEFS, exist_ok=True)
     md = [f"# 信息差簡報 {today}", ""]
-    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔")
+    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔|美股SEC行政程序 {len(sec_enf)} 檔|美股規則變化 {len(sec_rules)} 則")
     md.append("")
     md.append("## 🔴 行動級訊號" if red else "## 🔴 行動級訊號:今日無")
     md += [f"- {x}" for x in red]
     md.append("")
     md.append("## 🟡 注意" if yellow else "## 🟡 注意:今日無")
     md += [f"- {x}" for x in yellow]
+    md.append("")
+    md.append("## 📜 美股 SEC 規則變化(近30日,市場級非個股)" if sec_rules else "## 📜 美股 SEC 規則變化:近30日無")
+    md += [f"- {us_sec_regulatory.format_rule_change_line(rc)}" for rc in sec_rules]
     md.append("")
     md.append("## 📒 回測帳本(CB 預測記分)")
     md.append(f"- 每日快照:{'✅' if snap_ok else '❌ ' + (snap.stderr or '')[-120:]}")
@@ -211,7 +218,8 @@ def run():
     latest = {"date": today, "red": red, "yellow": yellow,
               "calibration": {k: v for k, v in calib.items() if k != "details"},
               "watchlist_n": len(codes), "by_code": by_code,
-              "new_red_since_last_run": new_red_lines, "new_red_count": len(new_pairs)}
+              "new_red_since_last_run": new_red_lines, "new_red_count": len(new_pairs),
+              "sec_rule_changes": sec_rules}
     with open(os.path.join(BRIEFS, "latest.json"), "w", encoding="utf-8") as f:
         json.dump(latest, f, ensure_ascii=False, indent=1)
     print("\n".join(md))
