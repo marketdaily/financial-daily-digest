@@ -2,7 +2,8 @@
 不打 LLM,只驗純邏輯 —— 確保 standard=現行 baseline(不退化)+ Premium 閘門正確。
 跑法:python3 .claude/evals/digest_depth_eval.py
 """
-import sys, os
+import sys
+import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from analyzer import _depth_directive

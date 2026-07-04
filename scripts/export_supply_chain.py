@@ -2,7 +2,9 @@
 docs/data/supply_chain.json 給前端 dashboard story card 用。
 DB 更新後手動重跑:  python3 scripts/export_supply_chain.py
 """
-import json, os, sys
+import json
+import os
+import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, "finance_course", "system"))

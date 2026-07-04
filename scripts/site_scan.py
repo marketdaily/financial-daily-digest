@@ -5,11 +5,10 @@
 exit 0 = 全過;exit 1 = 有 fail(stdout 列出每條)。
 """
 import json
-import re
 import subprocess
 import sys
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 BASE = "https://marketdaily.ai"

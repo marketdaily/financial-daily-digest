@@ -14,7 +14,8 @@ TW_STOCKS = ["2330", "2454"]
 EMAIL = "delvin.12345678@gmail.com"
 DATE_LABEL = "2026-05-20"
 
-import json, os
+import json
+import os
 
 CACHE_FILE = "output/test_data_cache.json"
 

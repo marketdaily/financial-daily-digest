@@ -5,7 +5,10 @@ fetch_stocks.py — 從官方來源抓取「完整」股票宇宙,自動生成 d
   台股:TWSE ISIN 上市 + TPEx ISIN 上櫃 全股票 + 創新板 + ETF
 資料以 type-to-search autocomplete 形式供 docs/preferences.html、docs/dashboard.html 使用。
 """
-import json, re, urllib.request, os, sys
+import re
+import urllib.request
+import os
+import sys
 from datetime import datetime
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
