@@ -31,6 +31,22 @@ FROZEN = _real_dt.datetime(2026, 7, 2, 11, 30, tzinfo=_real_dt.timezone.utc)  # 
 US_H = ["AAPL", "NVDA", "TSLA"]
 TW_H = ["2330", "2317", "2454"]
 
+# 2026-07-04 修:_track_stats() 讀活資料 docs/data/track-record.json(08:00 TW cron 每天更新),
+# 之前沒凍結 → 每次 08:00 之後跑 diff 都會因信心/避坑數字漂移而假 DIFF(9 個變體全紅),
+# 跟任何程式改動無關,逼每次改 analyzer.py 都要順手 reseal 才看得出真假。固定樁值,不再吃活資料。
+FIXED_TRACK_STATS = {
+    "era": {
+        "a_count": 60, "a_wins": 33, "a_rate": 55.0,
+        "c_count": 40, "c_wins": 24, "c_rate": 60.0,
+        "by_regime": {
+            "up": {"a_wins": 20, "a_count": 35},
+            "down": {"a_wins": 10, "a_count": 20},
+        },
+    },
+    "a_count": 60, "a_wins": 33, "a_rate": 55.0,
+    "c_count": 40, "c_wins": 24, "c_rate": 60.0,
+}
+
 
 def _frozen_classes():
     real = _real_dt
@@ -105,6 +121,8 @@ def _load_modules():
     for _name in ("_call_gemini", "_call_claude", "_call_openai", "_call_groq",
                   "_call_cf_ai", "_call_openrouter", "_call_cerebras", "_call_ollama"):
         setattr(analyzer, _name, _stub_provider(_name.replace("_call_", "")))
+
+    analyzer._track_stats = lambda: FIXED_TRACK_STATS
 
     main._inject_ai_banner = lambda html, date: html
     return analyzer, main
