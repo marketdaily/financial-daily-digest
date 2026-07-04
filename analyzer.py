@@ -2304,7 +2304,7 @@ def _gr_personalized_news(has_holdings: bool, all_holdings: list):
 
 
 def _gr_signal_stocks_tech(data: dict, user_us_stocks: list, user_tw_stocks: list,
-                           market: str, _full_holdings: list, depth: str):
+                           market: str, _full_holdings: list):
     us_pref = list(dict.fromkeys(user_us_stocks or []))
     tw_pref = list(dict.fromkeys(user_tw_stocks or []))
     signal_stocks = list(dict.fromkeys(us_pref + tw_pref))
@@ -2334,39 +2334,7 @@ def _gr_signal_stocks_tech(data: dict, user_us_stocks: list, user_tw_stocks: lis
         # 公版關注股全出(台股權值+美股權值最多 7 檔),不切,確保 track-record 每天都收到台股與美股
         top_signal_stocks = sorted(signal_stocks, key=_abs_change, reverse=True)
 
-    technicals = data.get("technicals", {})
-    tech_rows = []
-    for sym in top_signal_stocks:
-        t = technicals.get(sym)
-        if not t:
-            continue
-        hint = tw_market.get(sym, {}).get("name") if sym.isdigit() else None
-        nm = stock_names.display_name(sym, hint)
-        ma50 = f" | MA50 {t['ma50']}" if t.get("ma50") else ""
-        adv = f" | {_adv_tech_str(t)}" if depth == "deep" and _adv_tech_str(t) else ""
-        sup, tgt, stp = _near_term_levels(t.get("price"), t)
-        anchor = f" ‖ 近端錨點→低接 {_fmt_num(sup)} / 反彈目標 {_fmt_num(tgt)} / 停損 {_fmt_num(stp)}" if sup is not None else ""
-        struct = {"bull": " | 結構:多頭(順勢操作,不寫逢低接)",
-                  "bear": " | 結構:空頭(禁建議買入,最多站回MA20的觀望條件)",
-                  "neutral": " | 結構:盤整(中性)"}[_quant_prior(t)]
-        tech_rows.append(
-            f"  {nm}（{sym}）: 現價 {t['price']} | MA20 {t['ma20']}{ma50} | "
-            f"20日高 {t['hi20']} / 20日低 {t['lo20']} | 60日高 {t['hi60']} / 60日低 {t['lo60']}(遠端區間,勿當停損/目標) | ATR14 {t['atr14']}{adv}{anchor}{struct}"
-        )
-    tech_block = ""
-    if tech_rows:
-        deep_rule = ("\n‼️ 專業版進階技術判讀:RSI>70 偏過熱留意拉回、RSI<30 偏超賣可留意反彈;KD 低檔黃金交叉偏多、高檔死亡交叉偏空;"
-                     "MACD 柱由負轉正轉強、由正轉負轉弱;站上布林中軌偏多、跌破下軌弱勢、觸及上軌留意過熱。判讀只能用上面提供的真實指標值,不可編造。"
-                     if depth == "deep" else "")
-        tech_block = (
-            "\n【各持股真實技術價位 — 進場/目標/停損價必須參考這些真實數字,嚴禁編造偏離現價的價位】\n"
-            + "\n".join(tech_rows)
-            + "\n‼️ 定價規則:直接用每支附的「近端錨點」(低接/反彈目標/停損)當建議買價、賺錢目標、止損賣價,可微調不可大幅偏離。"
-            "**嚴禁拿 60日低/60日高 當停損或目標**(遠端區間,大漲後常離現價 30-60%,當停損失準);"
-            "停損距現價 ≤約12%、目標 ≤約15%,所有價位夾在現價上下 15% 內,美股用美元、台股用台幣,不可憑空捏造。"
-            + deep_rule + "\n"
-        )
-    return top_signal_stocks, tech_block
+    return top_signal_stocks
 
 
 def _gr_prompt_blocks(depth: str, is_beginner: bool):
@@ -2728,8 +2696,8 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
 
     few_stocks_note, personalized_news_instruction = _gr_personalized_news(has_holdings, all_holdings)
 
-    top_signal_stocks, tech_block = _gr_signal_stocks_tech(data, user_us_stocks, user_tw_stocks,
-                                                           market, _full_holdings, depth)
+    top_signal_stocks = _gr_signal_stocks_tech(data, user_us_stocks, user_tw_stocks,
+                                               market, _full_holdings)
 
     (signal_instruction, rookie_section, mood_section, indicator_section,
      sector_section, second_order_section, depth_directive) = _gr_prompt_blocks(depth, is_beginner)
