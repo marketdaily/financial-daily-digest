@@ -1,0 +1,97 @@
+{"date": "2026-07-04", "code": "1560", "source": "institutional", "level": "red", "signal": "中砂二(1560):投信連 6 日買超(認養訊號,20日淨買 +1,381 張)", "price_at_signal": 756.0}
+{"date": "2026-07-04", "code": "1623", "source": "institutional", "level": "yellow", "signal": "大東電一(1623):法人 20 日淨買超 +368 張(未成連續型態)", "price_at_signal": 214.0}
+{"date": "2026-07-04", "code": "1623", "source": "holders", "level": "yellow", "signal": "大東電一(1623):千張大戶持股比週減-1.74個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 214.0}
+{"date": "2026-07-04", "code": "2109", "source": "institutional", "level": "red", "signal": "華豐二(2109):外資連 5 日買超(5日淨買 +332 張)", "price_at_signal": 14.95}
+{"date": "2026-07-04", "code": "2303", "source": "institutional", "level": "red", "signal": "聯電一(2303):投信連 10 日賣超(棄養警訊,20日淨賣 -519,608 張)", "price_at_signal": 170.5}
+{"date": "2026-07-04", "code": "2303", "source": "twse_punish", "level": "red", "signal": "聯電一(2303):處置中(第一次處置):最近十個營業日已有六次,期間 115/07/02～115/07/15", "price_at_signal": 170.5}
+{"date": "2026-07-04", "code": "2451", "source": "institutional", "level": "red", "signal": "創見二(2451):投信連 3 日買超(認養訊號,20日淨買 -10,657 張)", "price_at_signal": 263.0}
+{"date": "2026-07-04", "code": "2451", "source": "sbl", "level": "yellow", "signal": "創見二(2451):機構借券賣出5日增19.4%(溫和加碼放空)", "price_at_signal": 263.0}
+{"date": "2026-07-04", "code": "2451", "source": "holders", "level": "yellow", "signal": "創見二(2451):千張大戶持股比週減-1.36個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 263.0}
+{"date": "2026-07-04", "code": "2464", "source": "institutional", "level": "yellow", "signal": "盟立三(2464):法人 20 日淨賣超 -5,479 張(未成連續型態)", "price_at_signal": 172.5}
+{"date": "2026-07-04", "code": "2464", "source": "holders", "level": "red", "signal": "盟立三(2464):千張大戶持股比週增6.58個百分點(大戶顯著加碼)", "price_at_signal": 172.5}
+{"date": "2026-07-04", "code": "2486", "source": "institutional", "level": "yellow", "signal": "一詮七(2486):法人 20 日淨賣超 -7,599 張(未成連續型態)", "price_at_signal": 249.0}
+{"date": "2026-07-04", "code": "2486", "source": "sbl", "level": "yellow", "signal": "一詮七(2486):機構借券賣出5日增12.8%(溫和加碼放空)", "price_at_signal": 249.0}
+{"date": "2026-07-04", "code": "2486", "source": "holders", "level": "yellow", "signal": "一詮七(2486):千張大戶持股比週減-1.05個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 249.0}
+{"date": "2026-07-04", "code": "2530", "source": "institutional", "level": "red", "signal": "華建五(2530):投信連 3 日買超(認養訊號,20日淨買 +1,564 張)", "price_at_signal": 19.4}
+{"date": "2026-07-04", "code": "2530", "source": "holders", "level": "yellow", "signal": "華建五(2530):千張大戶持股比週增0.53個百分點(溫和加碼)", "price_at_signal": 19.4}
+{"date": "2026-07-04", "code": "2646", "source": "institutional", "level": "red", "signal": "星宇航空一(2646):投信連 3 日買超(認養訊號,20日淨買 +1,473 張)", "price_at_signal": 21.3}
+{"date": "2026-07-04", "code": "2646", "source": "mops_news", "level": "yellow", "signal": "星宇航空(2646) 重訊[2026-07-03]:本公司取得1架A350自有客機相關訊息", "price_at_signal": 21.3}
+{"date": "2026-07-04", "code": "3006", "source": "institutional", "level": "yellow", "signal": "晶豪科二(3006):法人 20 日淨賣超 -3,649 張(未成連續型態)", "price_at_signal": 211.5}
+{"date": "2026-07-04", "code": "3006", "source": "holders", "level": "yellow", "signal": "晶豪科二(3006):千張大戶持股比週減-1.14個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 211.5}
+{"date": "2026-07-04", "code": "3028", "source": "institutional", "level": "yellow", "signal": "增你強五(3028):法人 20 日淨買超 +3,622 張(未成連續型態)", "price_at_signal": 82.0}
+{"date": "2026-07-04", "code": "3028", "source": "holders", "level": "red", "signal": "增你強五(3028):千張大戶持股比週增1.32個百分點(大戶顯著加碼)", "price_at_signal": 82.0}
+{"date": "2026-07-04", "code": "3081", "source": "institutional", "level": "red", "signal": "聯亞一(3081):投信連 5 日賣超(棄養警訊,20日淨賣 -3,454 張)", "price_at_signal": 2100.0}
+{"date": "2026-07-04", "code": "3081", "source": "sbl", "level": "red", "signal": "聯亞一(3081):機構借券賣出5日遽增24.4%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": 2100.0}
+{"date": "2026-07-04", "code": "3081", "source": "holders", "level": "red", "signal": "聯亞一(3081):千張大戶持股比週增2.46個百分點(大戶顯著加碼)", "price_at_signal": 2100.0}
+{"date": "2026-07-04", "code": "3141", "source": "institutional", "level": "yellow", "signal": "晶宏四(3141):法人 20 日淨買超 +2,464 張(未成連續型態)", "price_at_signal": 82.7}
+{"date": "2026-07-04", "code": "3149", "source": "institutional", "level": "yellow", "signal": "正達四(3149):法人 20 日淨賣超 -9,992 張(未成連續型態)", "price_at_signal": 87.2}
+{"date": "2026-07-04", "code": "3149", "source": "sbl", "level": "red", "signal": "正達四(3149):機構借券賣出5日遽增46.8%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": 87.2}
+{"date": "2026-07-04", "code": "3149", "source": "holders", "level": "yellow", "signal": "正達四(3149):千張大戶持股比週減-2.29個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 87.2}
+{"date": "2026-07-04", "code": "3583", "source": "institutional", "level": "red", "signal": "辛耘三(3583):投信連 3 日賣超(棄養警訊,20日淨賣 -127 張)", "price_at_signal": 851.0}
+{"date": "2026-07-04", "code": "3583", "source": "holders", "level": "red", "signal": "辛耘三(3583):千張大戶持股比週增2.27個百分點(大戶顯著加碼)", "price_at_signal": 851.0}
+{"date": "2026-07-04", "code": "3605", "source": "institutional", "level": "yellow", "signal": "宏致四(3605):法人 20 日淨買超 +12,842 張(未成連續型態)", "price_at_signal": 88.2}
+{"date": "2026-07-04", "code": "3605", "source": "mops_news", "level": "red", "signal": "宏致(3605) 重訊[2026-07-03]:公告本公司國內第四次無擔保轉換公司債收足債款", "price_at_signal": 88.2}
+{"date": "2026-07-04", "code": "3605", "source": "margin", "level": "yellow", "signal": "宏致四(3605):融資5日暴增38.6%(散戶追高過熱)", "price_at_signal": 88.2}
+{"date": "2026-07-04", "code": "3605", "source": "holders", "level": "red", "signal": "宏致四(3605):千張大戶持股比週增6.84個百分點(大戶顯著加碼)", "price_at_signal": 88.2}
+{"date": "2026-07-04", "code": "3701", "source": "institutional", "level": "yellow", "signal": "大眾控三(3701):法人 20 日淨買超 +1,152 張(未成連續型態)", "price_at_signal": 45.45}
+{"date": "2026-07-04", "code": "4541", "source": "institutional", "level": "yellow", "signal": "晟田五(4541):法人 20 日淨買超 +5,079 張(未成連續型態)", "price_at_signal": 60.7}
+{"date": "2026-07-04", "code": "4541", "source": "margin", "level": "yellow", "signal": "晟田五(4541):融資5日暴增36.0%(散戶追高過熱)", "price_at_signal": 60.7}
+{"date": "2026-07-04", "code": "4764", "source": "institutional", "level": "yellow", "signal": "雙鍵二(4764):法人 20 日淨買超 +2,386 張(未成連續型態)", "price_at_signal": 300.0}
+{"date": "2026-07-04", "code": "4764", "source": "twse_punish", "level": "red", "signal": "雙鍵二(4764):處置中(第一次處置):連續三次,期間 115/06/24～115/07/07", "price_at_signal": 300.0}
+{"date": "2026-07-04", "code": "4967", "source": "institutional", "level": "red", "signal": "十銓五(4967):投信連 3 日買超(認養訊號,20日淨買 +270 張)", "price_at_signal": 260.0}
+{"date": "2026-07-04", "code": "4973", "source": "institutional", "level": "yellow", "signal": "廣穎電通一(4973):法人 20 日淨賣超 -2,908 張(未成連續型態)", "price_at_signal": 171.0}
+{"date": "2026-07-04", "code": "5263", "source": "institutional", "level": "yellow", "signal": "智崴六(5263):法人 20 日淨買超 +277 張(未成連續型態)", "price_at_signal": 99.4}
+{"date": "2026-07-04", "code": "5289", "source": "institutional", "level": "yellow", "signal": "宜鼎二(5289):法人 20 日淨賣超 -4,053 張(未成連續型態)", "price_at_signal": 1635.0}
+{"date": "2026-07-04", "code": "5289", "source": "margin", "level": "yellow", "signal": "宜鼎二(5289):融資5日暴增15.6%(散戶追高過熱)", "price_at_signal": 1635.0}
+{"date": "2026-07-04", "code": "5289", "source": "holders", "level": "yellow", "signal": "宜鼎二(5289):千張大戶持股比週減-3.27個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 1635.0}
+{"date": "2026-07-04", "code": "5291", "source": "institutional", "level": "yellow", "signal": "邑昇二(5291):法人 20 日淨賣超 -304 張(未成連續型態)", "price_at_signal": 60.2}
+{"date": "2026-07-04", "code": "5291", "source": "sbl", "level": "red", "signal": "邑昇二(5291):機構借券賣出5日遽增157.4%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": 60.2}
+{"date": "2026-07-04", "code": "5291", "source": "holders", "level": "yellow", "signal": "邑昇二(5291):千張大戶持股比週減-5.98個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 60.2}
+{"date": "2026-07-04", "code": "5386", "source": "institutional", "level": "red", "signal": "青雲二(5386):外資連 5 日買超(5日淨買 +449 張)", "price_at_signal": 420.5}
+{"date": "2026-07-04", "code": "5386", "source": "mops_news", "level": "yellow", "signal": "青雲(5386) 重訊[2026-07-02]:本公司總經理異動", "price_at_signal": 420.5}
+{"date": "2026-07-04", "code": "5536", "source": "institutional", "level": "red", "signal": "聖暉二(5536):投信連 6 日賣超(棄養警訊,20日淨賣 -410 張)", "price_at_signal": 1430.0}
+{"date": "2026-07-04", "code": "6134", "source": "institutional", "level": "yellow", "signal": "萬旭三(6134):法人 20 日淨賣超 -1,973 張(未成連續型態)", "price_at_signal": 33.75}
+{"date": "2026-07-04", "code": "6134", "source": "holders", "level": "red", "signal": "萬旭三(6134):千張大戶持股比週增1.35個百分點(大戶顯著加碼)", "price_at_signal": 33.75}
+{"date": "2026-07-04", "code": "6187", "source": "institutional", "level": "yellow", "signal": "萬潤六(6187):法人 20 日淨賣超 -2,012 張(未成連續型態)", "price_at_signal": 1030.0}
+{"date": "2026-07-04", "code": "6187", "source": "mops_news", "level": "red", "signal": "萬潤(6187) 重訊[2026-07-02]:公告本公司國內第六次無擔保轉換公司債收足價款", "price_at_signal": 1030.0}
+{"date": "2026-07-04", "code": "6546", "source": "institutional", "level": "yellow", "signal": "正基三(6546):法人 20 日淨賣超 -413 張(未成連續型態)", "price_at_signal": 71.4}
+{"date": "2026-07-04", "code": "6683", "source": "institutional", "level": "yellow", "signal": "雍智科技一(6683):法人 20 日淨賣超 -592 張(未成連續型態)", "price_at_signal": 1805.0}
+{"date": "2026-07-04", "code": "6693", "source": "institutional", "level": "yellow", "signal": "廣閎科一(6693):法人 20 日淨買超 +833 張(未成連續型態)", "price_at_signal": 251.5}
+{"date": "2026-07-04", "code": "6903", "source": "institutional", "level": "yellow", "signal": "巨漢一(6903):法人 20 日淨買超 +600 張(未成連續型態)", "price_at_signal": 404.0}
+{"date": "2026-07-04", "code": "8054", "source": "institutional", "level": "red", "signal": "安國一(8054):外資連 7 日賣超(5日淨賣 -4,073 張)", "price_at_signal": 113.5}
+{"date": "2026-07-04", "code": "8054", "source": "sbl", "level": "yellow", "signal": "安國一(8054):機構借券賣出5日增11.8%(溫和加碼放空)", "price_at_signal": 113.5}
+{"date": "2026-07-04", "code": "8054", "source": "holders", "level": "yellow", "signal": "安國一(8054):千張大戶持股比週減-1.63個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 113.5}
+{"date": "2026-07-04", "code": "8096", "source": "institutional", "level": "yellow", "signal": "擎亞二(8096):法人 20 日淨買超 +3,598 張(未成連續型態)", "price_at_signal": 157.5}
+{"date": "2026-07-04", "code": "8112", "source": "institutional", "level": "red", "signal": "至上11(8112):投信連 6 日買超(認養訊號,20日淨買 +17,099 張)", "price_at_signal": 92.9}
+{"date": "2026-07-04", "code": "8112", "source": "sbl", "level": "red", "signal": "至上11(8112):機構借券賣出5日遽增33.6%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": 92.9}
+{"date": "2026-07-04", "code": "8112", "source": "holders", "level": "yellow", "signal": "至上11(8112):千張大戶持股比週減-2.63個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 92.9}
+{"date": "2026-07-04", "code": "8155", "source": "institutional", "level": "yellow", "signal": "博智二(8155):法人 20 日淨賣超 -257 張(未成連續型態)", "price_at_signal": 384.5}
+{"date": "2026-07-04", "code": "8155", "source": "holders", "level": "red", "signal": "博智二(8155):千張大戶持股比週增1.62個百分點(大戶顯著加碼)", "price_at_signal": 384.5}
+{"date": "2026-07-04", "code": "8299", "source": "institutional", "level": "red", "signal": "群聯(8299):投信連 3 日賣超(棄養警訊,20日淨賣 -3,567 張)", "price_at_signal": 2295.0}
+{"date": "2026-07-04", "code": "8299", "source": "holders", "level": "yellow", "signal": "群聯(8299):千張大戶持股比週減-1.43個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 2295.0}
+{"date": "2026-07-04", "code": "8438", "source": "institutional", "level": "yellow", "signal": "昶昕一(8438):法人 20 日淨買超 +1,275 張(未成連續型態)", "price_at_signal": 100.5}
+{"date": "2026-07-04", "code": "8442", "source": "institutional", "level": "yellow", "signal": "威宏三KY(8442):法人 20 日淨買超 +249 張(未成連續型態)", "price_at_signal": 42.95}
+{"date": "2026-07-04", "code": "8936", "source": "institutional", "level": "red", "signal": "國統五(8936):投信連 4 日賣超(棄養警訊,20日淨賣 -97 張)", "price_at_signal": 57.5}
+{"date": "2026-07-04", "code": "8936", "source": "holders", "level": "red", "signal": "國統五(8936):千張大戶持股比週增1.32個百分點(大戶顯著加碼)", "price_at_signal": 57.5}
+{"date": "2026-07-04", "code": "9935", "source": "institutional", "level": "red", "signal": "慶豐富四(9935):外資連 5 日買超(5日淨買 +607 張)", "price_at_signal": 20.5}
+{"date": "2026-07-04", "code": "9935", "source": "sbl", "level": "yellow", "signal": "慶豐富四(9935):機構借券賣出5日遽減-20.6%(回補潮,空頭力道減弱)", "price_at_signal": 20.5}
+{"date": "2026-07-04", "code": "9958", "source": "institutional", "level": "red", "signal": "世紀鋼九(9958):投信連 3 日買超(認養訊號,20日淨買 +386 張)", "price_at_signal": 120.0}
+{"date": "2026-07-04", "code": "6869", "source": "mops_news", "level": "red", "signal": "雲豹能源(6869) 重訊[2026-07-03]:公告本公司國內第二次有擔保轉換公司債代收價款及 存儲價款專戶機構", "price_at_signal": 70.9}
+{"date": "2026-07-04", "code": "TSLA", "source": "us_analyst", "level": "red", "signal": "🇺🇸 TSLA 目標價⬆️+10.0%→$430(Truist Financial)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "TSLA", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 TSLA 內部人賣出:Taneja Vaibhav[Chief Financial Officer] 2,605股 均價$402.197(約$1,047,924)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "AAPL", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 AAPL 內部人賣出:LEVINSON ARTHUR D 50,000股 均價$311.02(約$15,551,000)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "AMD", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 AMD 內部人賣出:Papermaster Mark D[Chief Technology Officer & EVP] 6,000股 均價$536.33(約$3,217,980)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "ARM", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 ARM 內部人賣出:Bartels Laura Kathleen[Chief Accounting Officer] 11,306股 均價$392.7(約$4,439,866)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "BRK-B", "source": "us_insider", "level": "red", "signal": "🇺🇸 BRK-B 內部人買進:O'Sullivan Michael J. 536股 均價$467.4355(分2筆執行)(約$250,545)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "BRK-B", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 BRK-B 內部人賣出:BERKSHIRE HATHAWAY INC 1,220,376股 均價$149.8429(約$182,864,679)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "GOOGL", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 GOOGL 內部人賣出:WALKER JOHN KENT 8,998股 均價$349.2905(分8筆執行)(約$3,142,916)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "NVDA", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 NVDA 內部人賣出:STEVENS MARK A[董事] 885,000股 均價$210.1694(分2筆執行)(約$185,999,919)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "TSM", "source": "us_insider", "level": "red", "signal": "🇺🇸 TSM 內部人買進:Tien Bor-Zen[VP] 1,000股 均價$76.64(約$76,640)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "AMZN", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 AMZN 內部人賣出:Herrington Douglas J[CEO Worldwide Amazon Stores] 1,000股 均價$266.19(約$266,190)", "price_at_signal": null}
+{"date": "2026-07-04", "code": "3512", "source": "sbl", "level": "yellow", "signal": "皇龍二(3512):機構借券賣出5日遽減-25.6%(回補潮,空頭力道減弱)", "price_at_signal": 20.85}
+{"date": "2026-07-04", "code": "6584", "source": "sbl", "level": "yellow", "signal": "南俊國際三(6584):機構借券賣出5日遽減-21.7%(回補潮,空頭力道減弱)", "price_at_signal": 707.0}
+{"date": "2026-07-04", "code": "6584", "source": "holders", "level": "red", "signal": "南俊國際三(6584):千張大戶持股比週增1.53個百分點(大戶顯著加碼)", "price_at_signal": 707.0}
+{"date": "2026-07-04", "code": "8222", "source": "sbl", "level": "yellow", "signal": "寶一一(8222):機構借券賣出5日增18.4%(溫和加碼放空)", "price_at_signal": 44.75}
+{"date": "2026-07-04", "code": "2880", "source": "fsc_penalty", "level": "yellow", "signal": "華南金(2880) 金管會裁罰[2026-06-30]:華南商業銀行前行員挪用客戶款項及私自留置結帳溢額款項所涉缺失一案，核有違反銀行法第45條之1第1項及行為時之「金融控股公司及銀行業內部控制及", "price_at_signal": 37.65}
+{"date": "2026-07-04", "code": "2887", "source": "fsc_penalty", "level": "yellow", "signal": "台新金(2887) 金管會裁罰[2026-05-28]:台新國際商業銀行新店分行前理財專員(下稱理專)張員涉挪用客戶款項，核有違反銀行法第45條之1第1項規定、行為時「金融控股公司及銀行業內部控制", "price_at_signal": 34.15}
+{"date": "2026-07-04", "code": "2812", "source": "fsc_penalty", "level": "yellow", "signal": "台中銀行(2812) 金管會裁罰[2026-05-15]:台中商業銀行辦理存款開戶、客戶身分持續審查作業及帳戶監控機制相關缺失一案，核有違反銀行法第45條之1第1項及其授權訂定之「金融控股公司及銀行", "price_at_signal": 20.4}

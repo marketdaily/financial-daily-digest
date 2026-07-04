@@ -14,7 +14,7 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals
+from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals, signal_ledger
 
 MAX_MATERIALS_PER_RUN = 5  # 法說會簡報下載+Ollama摘要較耗時,單次巡邏封頂避免跑太久
 
@@ -193,6 +193,11 @@ def run():
                 line += "|簡報摘要:" + "、".join(summ["highlights"][:3])
         _emit(c, f2["level"], line, "investor_conf")
 
+    try:
+        n_new_ledger = signal_ledger.record(by_code, today)
+    except Exception:
+        n_new_ledger = 0
+
     os.makedirs(BRIEFS, exist_ok=True)
     md = [f"# 信息差簡報 {today}", ""]
     md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔|美股SEC行政程序 {len(sec_enf)} 檔|美股規則變化 {len(sec_rules)} 則|新聞事件(美){len(news_us)} 檔|新聞事件(台){len(news_tw)} 檔|市場級主題 {len(news_broad)} 則")
@@ -220,6 +225,7 @@ def run():
             md.append(f"- {calib['note']}")
     else:
         md.append("- 尚無記分(帳本累積中,滿 14 天開始對答案)")
+    md.append(f"- 信息差訊號帳本(P2.6第四步):今晚新增 {n_new_ledger} 筆(`python3 -m intel.signal_ledger score` 查事後報酬分布)")
 
     path = os.path.join(BRIEFS, f"{today}.md")
     with open(path, "w", encoding="utf-8") as f:
@@ -232,7 +238,8 @@ def run():
               "calibration": {k: v for k, v in calib.items() if k != "details"},
               "watchlist_n": len(codes), "by_code": by_code,
               "new_red_since_last_run": new_red_lines, "new_red_count": len(new_pairs),
-              "sec_rule_changes": sec_rules, "news_broad_themes": news_broad}
+              "sec_rule_changes": sec_rules, "news_broad_themes": news_broad,
+              "signal_ledger_new": n_new_ledger}
     with open(os.path.join(BRIEFS, "latest.json"), "w", encoding="utf-8") as f:
         json.dump(latest, f, ensure_ascii=False, indent=1)
     print("\n".join(md))
