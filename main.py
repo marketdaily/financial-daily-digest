@@ -13,7 +13,6 @@ from config_loader import WORKER_URL
 from data_fetcher import fetch_all
 from fake_news_filter import filter_us_news, filter_tw_news
 from analyzer import generate_report, generate_weekend_report, generate_monday_report, DIGEST_EMAIL_MAX_HOLDINGS
-from publisher import publish_to_brevo
 
 
 def _resolve_market() -> str:
@@ -691,11 +690,11 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
             retry_html = build_email_html(data["date"], retry_inner)
             retry_fails = audit_digest(retry_html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est, base_css=CSS)
             if not any(f.get("severity") == "high" for f in retry_fails):
-                print(f"   ✅ retry pass")
+                print("   ✅ retry pass")
                 html = retry_html
                 fails = retry_fails
             else:
-                print(f"   🛡️ retry 仍 HIGH fail → 切 deterministic fallback")
+                print("   🛡️ retry 仍 HIGH fail → 切 deterministic fallback")
                 det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
                 if picks_mode:
                     det_inner = picks_banner + _sanitize_picks_wording(det_inner)
@@ -902,7 +901,8 @@ def _emit_run_report(data, subscribers, processed, success_count, tier_counts,
         print(summary)
         # 寫報告檔給下一輪 review;commit 進 repo 讓 Claude 開新 session 也看得到
         try:
-            import json as _json, os as _os
+            import json as _json
+            import os as _os
             _os.makedirs("output", exist_ok=True)
             report_path = f"output/digest_audit_{data['date']}.json"
             with open(report_path, "w", encoding="utf-8") as f:
@@ -939,7 +939,9 @@ def _hold_until_send_time(market):
 
 def _push_preflight_alert(date_str, high_fails, total_subscribers):
     """Pre-flight 跑出 HIGH fail → 立刻推 admin,他有 30 分鐘修。"""
-    import os, json as _json, urllib.request
+    import os
+    import json as _json
+    import urllib.request
     worker = os.environ.get("MARKETDAILY_ALERT_WORKER_URL",
                             "https://marketdaily-alert-worker.delvin-12345678.workers.dev")
     tok = (os.environ.get("MARKETDAILY_ALERT_TOKEN")
@@ -970,7 +972,9 @@ def _push_preflight_alert(date_str, high_fails, total_subscribers):
 def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails, dry_run=False):
     """日報品質守門:走 deterministic fallback / personalization fail → LINE 即時推 admin。
     用戶不會缺信(都有寄),但 admin 需要立刻知道哪些用戶今天拿到的是降級版,趕快查 prompt 問題。"""
-    import os, json as _json, urllib.request
+    import os
+    import json as _json
+    import urllib.request
     worker = os.environ.get("MARKETDAILY_ALERT_WORKER_URL",
                             "https://marketdaily-alert-worker.delvin-12345678.workers.dev")
     # admin 推播用 alert-worker 專屬 token(它的 INTERNAL_TOKEN 與主 worker 不同把);
@@ -1010,7 +1014,9 @@ def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails, dry_run=False):
 def _push_admin_coverage_alert(date_str, missing_codes, dry_run=False):
     """持股覆蓋率告警:某些台股主源+Yahoo 都抓不到報價(除權息文字欄殘留、下市、端點漏),
     日報那張卡會缺。推 admin(alert-worker 優先 web push)去查,不是只默默少一張卡。"""
-    import os, json as _json, urllib.request
+    import os
+    import json as _json
+    import urllib.request
     worker = os.environ.get("MARKETDAILY_ALERT_WORKER_URL",
                             "https://marketdaily-alert-worker.delvin-12345678.workers.dev")
     tok = (os.environ.get("MARKETDAILY_ALERT_TOKEN")

@@ -1074,7 +1074,7 @@ def generate_deterministic_fallback(data: dict, us_stocks: list, tw_stocks: list
     else:
         parts.append('<li>今天台股休市不開盤</li>')
     if mkt_status.get("us_will_open_tonight"):
-        parts.append(f'<li>今晚美股將開盤(美東 9:30 = TW 21:30-22:30)</li>')
+        parts.append('<li>今晚美股將開盤(美東 9:30 = TW 21:30-22:30)</li>')
     else:
         parts.append(f'<li>今晚美股休市,下次開盤 {mkt_status.get("us_next_trading_date", "?")}</li>')
     parts.append('</ul></div>')
@@ -1637,8 +1637,8 @@ def council_top_picks(data: dict, market: str, n: int = 3) -> list:
                 f"你是投資委員會委員之一,獨立判斷、不要客套。從下列{label}候選(皆為真實今日數據)中,"
                 f"選出未來 1-2 週最有潛力的 {n} 支,優先多頭結構、有明確題材或動能者。\n"
                 + "\n".join(lines) + "\n"
-                f'只輸出 JSON,不要其他字:{{"picks":["代號","代號","代號"]}}'
-                f"(依看好程度排序,代號必須來自上面候選清單)"
+                '只輸出 JSON,不要其他字:{"picks":["代號","代號","代號"]}'
+                "(依看好程度排序,代號必須來自上面候選清單)"
             )
             scores: dict = {}
             voters = 0
@@ -2298,7 +2298,7 @@ def _gr_personalized_news(has_holdings: bool, all_holdings: list):
     <a class="read-more" href="（URL）" target="_blank">閱讀原文 →</a>
   </div>
 </div>
-{f"持倉不多，請也推薦 2-3 支相關股票的 stock-news-item，ticker 後面加上「推薦關注」字樣" if few_stocks_note else ""}
+{"持倉不多，請也推薦 2-3 支相關股票的 stock-news-item，ticker 後面加上「推薦關注」字樣" if few_stocks_note else ""}
 如果沒有任何持倉相關新聞，寫：<div class="stock-news-empty">今日無持倉相關重大新聞</div>）"""
     return few_stocks_note, personalized_news_instruction
 
@@ -2521,8 +2521,8 @@ def _gr_time_discipline(market: str, mkt_status: dict, watchlist_tw: list, date:
 - 正確例：「台積電昨日收 XXX 元」「今早 9:00 開盤後留意 XXX 元支撐」（台股只寫中文名、不帶代碼）
 
 【⚠️ 今天的市場開盤狀態 — 絕對要遵守】
-昨晚美股:{mkt_status['us_note'] or f"美股有開盤,數據是新鮮的,可寫「昨晚美股 XXX」。"}
-今天台股:{mkt_status['tw_note'] or f"台股 9:00 將開盤,可寫「今早開盤」「今日早盤策略」。"}
+昨晚美股:{mkt_status['us_note'] or "美股有開盤,數據是新鮮的,可寫「昨晚美股 XXX」。"}
+今天台股:{mkt_status['tw_note'] or "台股 9:00 將開盤,可寫「今早開盤」「今日早盤策略」。"}
 今晚美股:{mkt_status['us_action_note']}
 
 **雙市場動作對稱性:每張美股 signal-card 要給「今晚開盤後做什麼」(若今晚開盤),每張台股 signal-card 要給「今早 9:00 開盤後做什麼」(若今天開盤)。休市日只給「等下一個交易日 X」,不可寫「今晚/今早開盤」這類字眼。**
