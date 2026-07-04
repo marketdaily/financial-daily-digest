@@ -1,5 +1,8 @@
 """掃描任務佇列,產生自帶資料的單一 HTML 戰情室 dashboard.html(stdlib only)。"""
-import os, sys, json, glob, re, subprocess
+import os
+import json
+import glob
+import subprocess
 from datetime import datetime, timezone, timedelta
 
 DIR = os.path.dirname(os.path.abspath(__file__))

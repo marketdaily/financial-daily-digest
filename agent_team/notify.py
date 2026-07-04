@@ -1,7 +1,12 @@
 """Agent Team 交付通知 — 即時完成信 + 晨間匯總信(Brevo HTML 卡片)"""
-import sys, os, json, glob, re
+import sys
+import os
+import json
+import glob
+import re
 import html as _html
-import urllib.request, urllib.error
+import urllib.request
+import urllib.error
 from datetime import datetime, timezone, timedelta
 
 DIR = os.path.dirname(os.path.abspath(__file__))

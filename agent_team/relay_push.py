@@ -7,8 +7,11 @@ commit 到 GitHub 並寄通知信。純 stdlib,雲端環境可直接跑。
   python3 agent_team/relay_push.py [<任務檔路徑,用來建通知信>]
 需環境變數:RELAY_URL、RELAY_SECRET
 """
-import sys, os, json
-import urllib.request, urllib.error
+import sys
+import os
+import json
+import urllib.request
+import urllib.error
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(DIR)
