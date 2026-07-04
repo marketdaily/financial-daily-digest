@@ -1,7 +1,10 @@
-"""信息差巡邏中樞:每晚把 watchlist 掃一遍(法人動向+重訊+月營收),產出訊號簡報。
+"""信息差巡邏中樞:每晚把 watchlist 掃一遍(法人動向+重訊+月營收+新聞事件),產出訊號簡報。
 watchlist = cb_database 全部標的 ∪ cb_analyzer/holdings.json ∪ intel/watchlist.json extras。
 同場加映:①觸發 CB 每日預測快照(餵 predictions.jsonl,就算沒人開網頁帳本也天天長)
 ②跑 cb_score 記分 → 校準表。輸出 intel/briefs/<日期>.md + latest.json(機器可讀,日報之後接這裡)。
+news_signals(2026-07-04 curriculum I 節收尾)補上「新聞+社群訊號整合」——免費新聞源(NEWS_API+
+cnyes)規則式分級比對 watchlist,political/macro 廣域主題另闢區塊(社群/X 訊號詳見該模組 docstring
+說明為何免費路徑下不需要 XAI key 也能覆蓋大半市場衝擊)。
 用法:cd Delvin-agent && python3 -m intel.patrol
 """
 import os, sys, json, datetime, subprocess
@@ -11,7 +14,7 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory
+from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals
 
 MAX_MATERIALS_PER_RUN = 5  # 法說會簡報下載+Ollama摘要較耗時,單次巡邏封頂避免跑太久
 
@@ -102,6 +105,9 @@ def run():
     fsc_data = tw_fsc.scan()  # 自成一套上市金控/銀行/證券/保險名單,不受 CB watchlist(codes)過濾
     sec_enf = us_sec_regulatory.scan_enforcement()  # 自成一套美股 watchlist,同 fsc_data 不受 codes 過濾
     sec_rules = us_sec_regulatory.scan_rule_changes()  # 市場級規則變化,非個股,不進 by_code
+    news_us = news_signals.scan_us()  # 自成一套美股 watchlist(us_insider),同 sec_enf 不受 codes 過濾
+    news_tw = news_signals.scan_tw(wl)  # 用 codes 對應的公司名(wl)做中文新聞比對
+    news_broad = news_signals.broad_themes()  # 政治/總經市場級主題,非個股,不進 by_code(curriculum I 節收尾)
 
     snap = _cb_snapshot()
     snap_ok = snap.returncode == 0 and "snapshot ok" in (snap.stdout or "")
@@ -167,6 +173,10 @@ def run():
         _emit(c, f3["level"], f3["signal"], f3["source"])
     for c, f4 in sec_enf.items():
         _emit(c, f4["level"], f4["signal"], f4["source"])
+    for c, f5 in news_us.items():
+        _emit(c, f5["level"], f5["signal"], f5["source"])
+    for c, f6 in news_tw.items():
+        _emit(c, f6["level"], f6["signal"], f6["source"])
     materials_fetched = 0
     for c in codes:
         f2 = conf_data.get(c)
@@ -185,7 +195,7 @@ def run():
 
     os.makedirs(BRIEFS, exist_ok=True)
     md = [f"# 信息差簡報 {today}", ""]
-    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔|美股SEC行政程序 {len(sec_enf)} 檔|美股規則變化 {len(sec_rules)} 則")
+    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔|美股SEC行政程序 {len(sec_enf)} 檔|美股規則變化 {len(sec_rules)} 則|新聞事件(美){len(news_us)} 檔|新聞事件(台){len(news_tw)} 檔|市場級主題 {len(news_broad)} 則")
     md.append("")
     md.append("## 🔴 行動級訊號" if red else "## 🔴 行動級訊號:今日無")
     md += [f"- {x}" for x in red]
@@ -195,6 +205,9 @@ def run():
     md.append("")
     md.append("## 📜 美股 SEC 規則變化(近30日,市場級非個股)" if sec_rules else "## 📜 美股 SEC 規則變化:近30日無")
     md += [f"- {us_sec_regulatory.format_rule_change_line(rc)}" for rc in sec_rules]
+    md.append("")
+    md.append("## 🌐 市場級主題(政治/總經,近1.5日非個股)" if news_broad else "## 🌐 市場級主題:近1.5日無")
+    md += [f"- {news_signals.format_broad_line(b)}" for b in news_broad]
     md.append("")
     md.append("## 📒 回測帳本(CB 預測記分)")
     md.append(f"- 每日快照:{'✅' if snap_ok else '❌ ' + (snap.stderr or '')[-120:]}")
@@ -219,7 +232,7 @@ def run():
               "calibration": {k: v for k, v in calib.items() if k != "details"},
               "watchlist_n": len(codes), "by_code": by_code,
               "new_red_since_last_run": new_red_lines, "new_red_count": len(new_pairs),
-              "sec_rule_changes": sec_rules}
+              "sec_rule_changes": sec_rules, "news_broad_themes": news_broad}
     with open(os.path.join(BRIEFS, "latest.json"), "w", encoding="utf-8") as f:
         json.dump(latest, f, ensure_ascii=False, indent=1)
     print("\n".join(md))
