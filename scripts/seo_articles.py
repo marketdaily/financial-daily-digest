@@ -104,10 +104,19 @@ SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手。寫繁體中文 SEO 
 - 開頭 80 字內必須出現關鍵字 + 數字(SEO bonus)
 - 內容要有實質資訊,不空泛
 - **不能保證收益、不能喊進喊出**(改寫成「值得關注」「需評估個人風險」)
+- **絕對禁止捏造具體絕對數字**:你沒有即時行情/財報資料,不可寫出任何「股價 XX 元」「EPS XX 元」「配息 XX 元」「每股淨值 XX 元」這類絕對金額數字——這些數字會隨時間變動,寫死幾乎必然是幻覺(曾發生真實案例:文章寫某股「股價 30 元」但實際股價是 141 元)。涉及估值/配息/淨值主題時,只能用**相對描述**:區間型比率(本益比/殖利率/毛利率可講「歷史區間約 X-Y%」)、趨勢方向、或直接請讀者「請查詢券商即時報價與最新財報」,絕不給出看似精確的假絕對金額。
 - 結尾 CTA:「想每天早上 7 點收到這類分析?免費訂閱 MarketDaily → marketdaily.ai」
-- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html 或 ``` 包住輸出(直接輸出 HTML 標籤本身)
 - HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
 - 不寫日期(會過時),用「2026」這種年度即可"""
+
+
+def strip_code_fence(body: str) -> str:
+    """防禦層:LLM 有時仍會用 ```html ... ``` 包住輸出,即使 prompt 已禁止,直接砍掉殘留圍欄。"""
+    body = body.strip()
+    body = re.sub(r"^```(?:html)?\s*\n?", "", body)
+    body = re.sub(r"\n?```\s*$", "", body)
+    return body.strip()
 
 
 def gen_article(ticker: str, name: str, topic: str, market: str) -> dict:
@@ -120,6 +129,7 @@ def gen_article(ticker: str, name: str, topic: str, market: str) -> dict:
 
 回傳純 HTML 片段(<h1>...到最後</p>),其他不要。"""
     body = call_claude(SYSTEM, user, max_tokens=3000)
+    body = strip_code_fence(body)
     # 從 body 抽 H1 當 title
     m = re.search(r"<h1[^>]*>(.+?)</h1>", body, re.DOTALL)
     title = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else f"{name} {topic}"

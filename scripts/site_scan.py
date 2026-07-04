@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 from datetime import datetime, timedelta
+from pathlib import Path
 
 BASE = "https://marketdaily.ai"
 WORKER = "https://marketdaily-webhook.delvin-12345678.workers.dev"
@@ -172,6 +173,20 @@ def probe_fabricated_content():
               f"發現已知捏造見證關鍵字復活:{hits}" if hits else "OK")
 
 
+# ── 7. Blog SEO 文章內容衛生 ──────────────────────────────────────────
+# 出處 2026-07-04:seo_articles.py 生成文章時 LLM 偶爾把輸出包在 ```html...```
+# 圍欄裡沒被 strip,直接洩漏進渲染頁面(使用者看得到字面 ```);同一批文章裡
+# 另兩篇(2412/2882)寫死了跟真實股價差 4-7 倍的絕對數字(股價/EPS/配息金額),
+# 已下架,見 memory project_blog_seo_fabricated_numbers.md。此檢查防圍欄外洩復發
+# (絕對數字捏造無法機械檢測,靠 seo_articles.py 的 prompt 硬規則防範)。
+def probe_blog_hygiene():
+    blog_dir = Path(__file__).resolve().parents[1] / "docs" / "blog"
+    files = [f for f in blog_dir.glob("*.html") if f.name != "index.html"]
+    leaked = [f.name for f in files if "```" in f.read_text(encoding="utf-8")]
+    check("blog_no_fence_leak", not leaked,
+          f"文章殘留 markdown 圍欄未清:{leaked}" if leaked else f"{len(files)} 篇皆乾淨")
+
+
 def main():
     probe_quotes()
     probe_track_record()
@@ -179,6 +194,7 @@ def main():
     probe_assets()
     probe_pages()
     probe_fabricated_content()
+    probe_blog_hygiene()
     fails = [r for r in RESULTS if not r["ok"]]
     if "--json" in sys.argv:
         print(json.dumps(RESULTS, ensure_ascii=False, indent=1))
