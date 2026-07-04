@@ -1,48 +1,48 @@
 {
   "stats": {
-    "generated_at": "2026-07-03T08:04:12",
+    "generated_at": "2026-07-04T08:05:09",
     "horizon": "5d",
     "days_covered": 20,
     "total_records": 1442,
-    "judged_records": 1019,
+    "judged_records": 1051,
     "one_day": {
-      "a_count": 575,
-      "a_wins": 259,
-      "a_rate": 45.0,
-      "c_count": 745,
-      "c_wins": 410,
-      "c_rate": 55.0
+      "a_count": 591,
+      "a_wins": 267,
+      "a_rate": 45.2,
+      "c_count": 766,
+      "c_wins": 419,
+      "c_rate": 54.7
     },
-    "a_count": 479,
-    "a_wins": 193,
-    "a_rate": 40.3,
+    "a_count": 490,
+    "a_wins": 202,
+    "a_rate": 41.2,
     "a_ci95": [
-      36.0,
-      44.7
+      37.0,
+      45.6
     ],
-    "c_count": 540,
-    "c_wins": 312,
-    "c_rate": 57.8,
+    "c_count": 561,
+    "c_wins": 315,
+    "c_rate": 56.1,
     "c_ci95": [
-      53.6,
-      61.9
+      52.0,
+      60.2
     ],
     "calibration": {
-      "n": 466,
-      "brier": 0.3901,
+      "n": 477,
+      "brier": 0.388,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
-          "n": 59,
-          "hit_rate": 59.3
+          "n": 61,
+          "hit_rate": 59.0
         },
         "61-70": {
           "n": 110,
           "hit_rate": 39.1
         },
         "<=50": {
-          "n": 29,
-          "hit_rate": 69.0
+          "n": 38,
+          "hit_rate": 73.7
         },
         ">70": {
           "n": 268,
@@ -61,31 +61,31 @@
         ]
       },
       "down": {
-        "a_count": 250,
-        "a_wins": 147,
-        "a_rate": 58.8,
+        "a_count": 261,
+        "a_wins": 156,
+        "a_rate": 59.8,
         "ci95": [
-          52.6,
-          64.7
+          53.7,
+          65.5
         ]
       }
     },
     "era": {
       "note": "僅計 2026-06-12 起(結構prior+校準信心上線後)的現行模型;信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
       "since": "2026-06-12",
-      "a_count": 36,
-      "a_wins": 22,
-      "a_rate": 61.1,
+      "a_count": 47,
+      "a_wins": 31,
+      "a_rate": 66.0,
       "a_ci95_day_cluster": [
-        50.0,
-        66.7
+        55.6,
+        76.9
       ],
-      "c_count": 46,
-      "c_wins": 28,
-      "c_rate": 60.9,
+      "c_count": 67,
+      "c_wins": 31,
+      "c_rate": 46.3,
       "c_ci95_day_cluster": [
-        20.0,
-        71.4
+        15.4,
+        67.6
       ],
       "by_regime": {
         "up": {
@@ -94,37 +94,37 @@
           "a_rate": 61.8
         },
         "down": {
-          "a_count": 2,
-          "a_wins": 1,
-          "a_rate": 50.0
+          "a_count": 13,
+          "a_wins": 10,
+          "a_rate": 76.9
         }
       },
       "calibration": {
-        "n": 36,
-        "brier": 0.2917,
+        "n": 47,
+        "brier": 0.2939,
         "coin_flip_brier": 0.25,
         "bins": {
           "51-60": {
-            "n": 11,
-            "hit_rate": 45.5
+            "n": 13,
+            "hit_rate": 46.2
           },
           "<=50": {
-            "n": 25,
-            "hit_rate": 68.0
+            "n": 34,
+            "hit_rate": 73.5
           }
         }
       },
-      "days": 3
+      "days": 4
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 543,
-      "no_fill": 187,
-      "pending": 35,
-      "hit_target": 51,
+      "simulated": 559,
+      "no_fill": 201,
+      "pending": 36,
+      "hit_target": 52,
       "hit_stop": 224,
       "expired": 46,
-      "avg_ret_pct": -0.99,
+      "avg_ret_pct": -0.93,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
@@ -352,7 +352,7 @@
       "target": 4785.0,
       "stop": 3814.8,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-07-02",
@@ -370,7 +370,7 @@
       "target": 2535.0,
       "stop": 2339.82,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-07-02",
@@ -388,7 +388,7 @@
       "target": 264.28,
       "stop": 227.65,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-07-01",
