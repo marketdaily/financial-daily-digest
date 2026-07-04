@@ -11,7 +11,7 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance
+from intel import tw_institutional, mops_watch, us_analyst, us_insider, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc
 
 MAX_MATERIALS_PER_RUN = 5  # 法說會簡報下載+Ollama摘要較耗時,單次巡邏封頂避免跑太久
 
@@ -99,6 +99,7 @@ def run():
     holder_data = tw_holders.scan(codes)
     conf_data = tw_investor_conf.scan(codes)
     surv_data = tw_surveillance.scan(codes)
+    fsc_data = tw_fsc.scan()  # 自成一套上市金控/銀行/證券/保險名單,不受 CB watchlist(codes)過濾
 
     snap = _cb_snapshot()
     snap_ok = snap.returncode == 0 and "snapshot ok" in (snap.stdout or "")
@@ -160,6 +161,8 @@ def run():
             continue
         line = f"{wl[c]}({c}):{sv['signal']}"
         _emit(c, sv["level"], line, sv["source"])
+    for c, f3 in fsc_data.items():
+        _emit(c, f3["level"], f3["signal"], f3["source"])
     materials_fetched = 0
     for c in codes:
         f2 = conf_data.get(c)
@@ -178,7 +181,7 @@ def run():
 
     os.makedirs(BRIEFS, exist_ok=True)
     md = [f"# 信息差簡報 {today}", ""]
-    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔")
+    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔")
     md.append("")
     md.append("## 🔴 行動級訊號" if red else "## 🔴 行動級訊號:今日無")
     md += [f"- {x}" for x in red]
