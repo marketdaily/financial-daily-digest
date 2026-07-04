@@ -6,7 +6,11 @@
 - 美股籌碼:FMP 內部人交易近 90 日 買/賣筆數淨額(沒 key / 失敗則略)。
 CLI: python3 valuation/fundamentals.py 2330 NVDA
 """
-import os, sys, json, urllib.request, datetime
+import os
+import sys
+import json
+import urllib.request
+import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

@@ -5,7 +5,6 @@ Output:
   docs/social/reel_vs_zh.mp4
 """
 import math
-import shutil
 import subprocess
 import tempfile
 from pathlib import Path

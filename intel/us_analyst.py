@@ -11,7 +11,11 @@ watchlist 為 config.US_STOCKS 大型活躍股,搭配高頻輪詢(cron */15,美�
   輪詢一次(累積記帳,回傳本次新訊號): python3 -m intel.us_analyst poll
   今日/近N日訊號(供 patrol.py 併入夜間簡報): intel.us_analyst.todays_signals(days=2)
 """
-import os, sys, json, datetime, urllib.request
+import os
+import sys
+import json
+import datetime
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)

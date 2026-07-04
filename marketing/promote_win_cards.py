@@ -23,7 +23,7 @@ from pathlib import Path
 HERE = Path(__file__).parent
 sys.path.insert(0, str(HERE))
 
-from auto_post import POSTS_FILE, _png_dimensions, _png_to_jpg_playwright, load_posts  # noqa: E402
+from auto_post import POSTS_FILE, _png_to_jpg_playwright  # noqa: E402
 from make_win_cards import load_candidates, slugify, spec_for  # noqa: E402
 from social_cards import make_card  # noqa: E402
 import json

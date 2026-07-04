@@ -24,7 +24,13 @@ tw_institutional/tw_margin/tw_sbl 抓的是法人/融資融券/借券——這�
   ⚪ 中性(只記錄不打擾)
   附註:若持股比增加同時「戶數」減少 → 籌碼更集中在更少的手上,訊號文字會加註。
 """
-import os, re, json, datetime, time, subprocess, tempfile
+import os
+import re
+import json
+import datetime
+import time
+import subprocess
+import tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, ".holders_cache.json")

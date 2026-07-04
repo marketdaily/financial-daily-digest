@@ -8,7 +8,11 @@
   🟡 融資使用率 ≥85%(逼近額度上限,拉回空間有限,易生斷頭賣壓)
   ⚪ 中性(只記錄不打擾)
 """
-import os, json, datetime, time, urllib.request
+import os
+import json
+import datetime
+import time
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, ".margin_cache.json")

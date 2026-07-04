@@ -6,7 +6,11 @@
 只記錄 compute_dcf 有算出結果的檔(FCF 不穩定/資料不足本來就回 None,不強記空值)。
 CLI: python3 valuation/ledger.py [symbols...]  (預設 config.US_STOCKS + config.TW_STOCKS)
 """
-import os, sys, json, datetime, urllib.request
+import os
+import sys
+import json
+import datetime
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)

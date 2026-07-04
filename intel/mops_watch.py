@@ -5,7 +5,10 @@
   重訊 🟡:處分或取得資產/資金貸與/背書保證/高層異動/訴訟
   月營收:新公告即報,YoY ±20% 標 🔴,其餘 🟡;同時給 MoM 與累計 YoY 對照
 """
-import os, json, datetime, urllib.request
+import os
+import json
+import datetime
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REV_CACHE = os.path.join(HERE, ".rev_cache.json")

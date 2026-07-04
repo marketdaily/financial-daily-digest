@@ -7,7 +7,11 @@
   🟡 20 日淨額顯著(±200 張)但未成連續型態
   ⚪ 中性(只記錄不打擾)
 """
-import os, json, datetime, time, urllib.request
+import os
+import json
+import datetime
+import time
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, ".inst_cache.json")

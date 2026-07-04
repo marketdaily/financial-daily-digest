@@ -28,7 +28,11 @@
    1.5-2 倍(不是 1:1),10K 字元中文文本用 num_ctx=8192 實測直接截斷,32768 才穩定跑完整份
    JSON。任何處理中文長文本的 Ollama 呼叫,num_ctx 抓字元數×2 再抓整數才安全。
 """
-import json, re, time, urllib.request, urllib.parse
+import json
+import re
+import time
+import urllib.request
+import urllib.parse
 
 try:
     import fitz  # PyMuPDF

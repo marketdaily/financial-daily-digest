@@ -107,7 +107,7 @@ def build_captions(d):
     )
     threads = (
         f"{md} 盤後 ——\n\n" + "\n".join(p3[:2]) +
-        f"\n\n完整版每早 7 點,連結在下面 👇"
+        "\n\n完整版每早 7 點,連結在下面 👇"
     )
     tiktok = (
         f"{md} 30 秒看完市場 📈\n"
@@ -129,7 +129,7 @@ def build_captions(d):
         f"標題:{md} 30 秒看完美股 + 台股｜MarketDaily 財經日報\n\n"
         f"說明:\n{md} 今日市場重點,30 秒講完 📈\n\n"
         + "\n".join(f"• {p}" for p in p3)
-        + f"\n\n完整個人化日報每早 7 點免費送 👉 "
+        + "\n\n完整個人化日報每早 7 點免費送 👉 "
         + f"{link.replace('{platform}', 'youtube')}\n\n"
         + "僅供參考,非投資建議。\n\n"
         + f"#Shorts {TAGS_ZH}"
@@ -178,8 +178,8 @@ def main():
         }, day_dir / "news_card.png")
 
     print(f"✓ {d['date']} 社群內容已產出 → {day_dir}")
-    print(f"  · captions.md（7 平台文案）")
-    print(f"  · tldr_card.png · news_card.png")
+    print("  · captions.md（7 平台文案）")
+    print("  · tldr_card.png · news_card.png")
 
 
 if __name__ == "__main__":

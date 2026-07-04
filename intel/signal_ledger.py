@@ -14,7 +14,10 @@
 
 CLI: python3 -m intel.signal_ledger score
 """
-import os, sys, json, datetime
+import os
+import sys
+import json
+import datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)

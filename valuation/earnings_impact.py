@@ -5,7 +5,13 @@ LLM 只在數字外圍潤飾,禁止自行產生營收數字。
 - 美股季報:FMP stable(免費層),營收/EPS YoY。
 CLI: python3 valuation/earnings_impact.py 2330 2454 AAPL
 """
-import os, sys, json, time, urllib.request, urllib.error, datetime
+import os
+import sys
+import json
+import time
+import urllib.request
+import urllib.error
+import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 try:

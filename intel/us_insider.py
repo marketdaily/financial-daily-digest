@@ -13,7 +13,13 @@ SEC EDGAR 本身完全免費、無需 key,是美股籌碼面唯一免費路徑�
   輪詢一次(累積記帳,回傳本次新訊號): python3 -m intel.us_insider poll
   今日/近N日訊號(供 patrol.py 併入夜間簡報,含群聚買進合成訊號): intel.us_insider.todays_signals(days=2)
 """
-import os, sys, json, time, datetime, urllib.request, urllib.error
+import os
+import sys
+import json
+import time
+import datetime
+import urllib.request
+import urllib.error
 import xml.etree.ElementTree as ET
 
 HERE = os.path.dirname(os.path.abspath(__file__))

@@ -24,7 +24,12 @@ https://mopsov.twse.com.tw/mops/web/ajax_t100sb02_1 (POST year=民國年&month=�
   ⚪ 中性(>20 天、已過去、或查無排程)
   附註:主旨含「財測」「重大」等關鍵字時額外標註(財測發布常是股價轉折點)。
 """
-import os, re, json, datetime, urllib.request, urllib.parse
+import os
+import re
+import json
+import datetime
+import urllib.request
+import urllib.parse
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, ".investor_conf_cache.json")

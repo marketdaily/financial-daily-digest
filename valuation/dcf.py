@@ -8,7 +8,12 @@
 美股:FMP cash-flow / balance-sheet / profile(需 FMP_API_KEY)。
 CLI: python3 valuation/dcf.py 2330 NVDA
 """
-import os, sys, json, urllib.request, urllib.error, datetime
+import os
+import sys
+import json
+import urllib.request
+import urllib.error
+import datetime
 
 FINMIND = "https://api.finmindtrade.com/api/v4/data"
 FMP = "https://financialmodelingprep.com/stable"

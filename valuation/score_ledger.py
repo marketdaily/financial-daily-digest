@@ -3,7 +3,10 @@ DCF 是中長期估值(兩階段折現假設 5 年+永續),不是短線訊號,mi
 樣本不足(帳本剛起步/尚未滿齡)一律誠實回報 n=0,絕不硬湊數字。
 CLI: python3 valuation/score_ledger.py [min_age_days=90]
 """
-import os, sys, json, datetime
+import os
+import sys
+import json
+import datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 if HERE not in sys.path:

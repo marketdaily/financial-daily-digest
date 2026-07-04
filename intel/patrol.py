@@ -7,7 +7,11 @@ cnyes)規則式分級比對 watchlist,political/macro 廣域主題另闢區塊(�
 說明為何免費路徑下不需要 XAI key 也能覆蓋大半市場衝擊)。
 用法:cd Delvin-agent && python3 -m intel.patrol
 """
-import os, sys, json, datetime, subprocess
+import os
+import sys
+import json
+import datetime
+import subprocess
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)

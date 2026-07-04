@@ -15,7 +15,11 @@ tw_margin.py 抓的是散戶融資融券;這裡抓機構透過證券商「借券
   🟡 SBL 餘額 5 日增 ≥10%(溫和加碼放空)
   ⚪ 中性(只記錄不打擾)
 """
-import os, json, datetime, time, urllib.request
+import os
+import json
+import datetime
+import time
+import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, ".sbl_cache.json")
