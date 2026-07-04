@@ -1338,7 +1338,11 @@ def _track_stats():
 def _tldr_avoid_edge_note() -> str:
     """避坑/看多勝率動態帶入 TLDR prompt(取代舊版寫死「避坑勝率 86.7% vs 看多 30%」——
     對不上任何真實稽核數字,恐被 LLM 原樣抄進用戶信件,踩禁止虛假數字)。
-    優先用 era 桶(現行模型世代,同 _calibrated_confidence 邏輯),n<20 樣本太小就不掛數字只講方向。"""
+    優先用 era 桶(現行模型世代,同 _calibrated_confidence 邏輯),n<20 樣本太小就不掛數字只講方向。
+    day-cluster 誠實檢查(同 capabilities/edge_validator 方法論,見 memory project_edge_validation_crosssystem):
+    era 桶天數常常只有個位數,naive n>=20 門檻在天數少時仍會過度自信——曾實測 era.c_rate(46.3%)
+    低於 era.a_rate(66.0%)卻仍嘴硬宣稱「避坑最強」,數字與框架自相矛盾。避坑的 day-cluster CI
+    未站穩 50 之上、或看多勝率反而更高時,不下具體比較句,退回不帶數字版本。"""
     s = _track_stats()
     if not s:
         return "避坑是我們實測最強的能力,每天都要交付"
@@ -1346,11 +1350,15 @@ def _tldr_avoid_edge_note() -> str:
     src = era if era.get("c_count") else s
     a_n, c_n = src.get("a_count") or 0, src.get("c_count") or 0
     a_rate, c_rate = src.get("a_rate"), src.get("c_rate")
-    if c_rate is not None and c_n >= 20 and a_rate is not None and a_n >= 20:
+    if c_rate is None or c_n < 20:
+        return "避坑是我們實測最強的能力,每天都要交付"
+    c_ci = src.get("c_ci95_day_cluster")
+    c_edge_established = c_ci is None or (c_ci[0] is not None and c_ci[0] > 50.0)
+    if not c_edge_established:
+        return "避坑是我們實測最強的能力,每天都要交付"
+    if a_rate is not None and a_n >= 20 and c_rate > a_rate:
         return f"避坑是我們實測最強的能力(避坑勝率 {c_rate:.1f}% vs 看多 {a_rate:.1f}%),每天都要交付"
-    if c_rate is not None and c_n >= 20:
-        return f"避坑是我們實測最強的能力(避坑勝率 {c_rate:.1f}%),每天都要交付"
-    return "避坑是我們實測最強的能力,每天都要交付"
+    return f"避坑是我們實測最強的能力(避坑勝率 {c_rate:.1f}%),每天都要交付"
 
 
 def _calibrated_confidence(card_cls: str, regime_label: str, sym: str = ""):
