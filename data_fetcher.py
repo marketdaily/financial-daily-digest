@@ -5,10 +5,9 @@ import requests
 import feedparser
 from datetime import datetime, timedelta, timezone
 from config import (
-    NEWS_API_KEY, US_STOCKS, TW_STOCKS, US_INDICES, TW_INDICES,
-    NEWS_WHITELIST_DOMAINS, TW_NEWS_WHITELIST_DOMAINS
+    NEWS_API_KEY, US_INDICES, NEWS_WHITELIST_DOMAINS
 )
-from config_loader import get_us_stocks, get_tw_stocks, get_us_feeds, get_tw_feeds, get_domains
+from config_loader import get_us_stocks, get_tw_stocks, get_us_feeds, get_domains
 
 RSS_FEEDS = [
     # 美股財經
@@ -542,7 +541,6 @@ def _advanced_indicators(c, hi, lo, price, ma20, ma50):
 def _volume_metrics(c, v):
     """量能佐證(全檔次用):相對量比+量能狀態+量價配合/背離。
     只當敘事佐證,不碰方向/信心/價位死防線。資料不足回空 dict。"""
-    import pandas as pd
     out = {}
     try:
         vol = v.dropna()
@@ -900,7 +898,8 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
     # intel/patrol.py 每晚 21:30 產出,latest.json 缺檔或格式異動一律回 {},缺了不缺信
     intel_signals = {}
     try:
-        import json as _json, os as _os
+        import json as _json
+        import os as _os
         _intel_path = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)), "intel", "briefs", "latest.json")
         with open(_intel_path, encoding="utf-8") as _f:
             intel_signals = _json.load(_f).get("by_code") or {}
