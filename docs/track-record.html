@@ -637,6 +637,38 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 </footer>
 
 <script>
+// ── Attribution: same visit-tracking as index.html — this page is a live destination for the
+// daily win-card social campaign (marketing/promote_win_cards.py), so it needs the same /track/visit
+// ping or every click-through from that campaign is permanently unattributable. ──
+(function captureAttribution() {
+  try {
+    const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
+    const u = new URL(window.location.href);
+    const utm = {
+      utm_source:   u.searchParams.get("utm_source"),
+      utm_medium:   u.searchParams.get("utm_medium"),
+      utm_campaign: u.searchParams.get("utm_campaign"),
+      utm_term:     u.searchParams.get("utm_term"),
+      utm_content:  u.searchParams.get("utm_content"),
+    };
+    if (Object.values(utm).some(Boolean)) {
+      const payload = { ...utm, ts: Date.now() };
+      sessionStorage.setItem("md-attr", JSON.stringify(payload));
+      localStorage.setItem("md-attr-first", JSON.stringify(payload));
+    }
+    if (!sessionStorage.getItem("md-visit-id")) {
+      fetch(WORKER_URL + "/track/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...utm, ts: Date.now() }),
+      })
+        .then(r => r.ok ? r.json() : null)
+        .then(d => { if (d && d.visit_id) sessionStorage.setItem("md-visit-id", d.visit_id); })
+        .catch(() => {});
+    }
+  } catch (e) { /* ignore */ }
+})();
+
 // 真實資料來源:/data/track-record.json(由 scripts/build_track_record.py 每週從歷史日報抽出,
 // Yahoo Finance 計算 outcome)。fetch 失敗或無資料 → 顯示「資料準備中」空狀態,絕不顯示 mock。
 let RECORDS = [];

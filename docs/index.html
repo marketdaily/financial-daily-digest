@@ -1892,11 +1892,14 @@ const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
       const payload = { ...utm, ts: Date.now() };
       sessionStorage.setItem("md-attr", JSON.stringify(payload));
       localStorage.setItem("md-attr-first", JSON.stringify(payload));
-      // Fire and forget — request a visit_id from worker, store it
+    }
+    // Always request a visit_id, even for direct/no-UTM visits (once per session) — otherwise
+    // any signup that happens without a UTM-tagged landing is permanently unattributable.
+    if (!sessionStorage.getItem("md-visit-id")) {
       fetch(WORKER_URL + "/track/visit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...utm, ts: Date.now() }),
       })
         .then(r => r.ok ? r.json() : null)
         .then(d => { if (d && d.visit_id) sessionStorage.setItem("md-visit-id", d.visit_id); })
