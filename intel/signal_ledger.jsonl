@@ -95,3 +95,14 @@
 {"date": "2026-07-04", "code": "2880", "source": "fsc_penalty", "level": "yellow", "signal": "華南金(2880) 金管會裁罰[2026-06-30]:華南商業銀行前行員挪用客戶款項及私自留置結帳溢額款項所涉缺失一案，核有違反銀行法第45條之1第1項及行為時之「金融控股公司及銀行業內部控制及", "price_at_signal": 37.65}
 {"date": "2026-07-04", "code": "2887", "source": "fsc_penalty", "level": "yellow", "signal": "台新金(2887) 金管會裁罰[2026-05-28]:台新國際商業銀行新店分行前理財專員(下稱理專)張員涉挪用客戶款項，核有違反銀行法第45條之1第1項規定、行為時「金融控股公司及銀行業內部控制", "price_at_signal": 34.15}
 {"date": "2026-07-04", "code": "2812", "source": "fsc_penalty", "level": "yellow", "signal": "台中銀行(2812) 金管會裁罰[2026-05-15]:台中商業銀行辦理存款開戶、客戶身分持續審查作業及帳戶監控機制相關缺失一案，核有違反銀行法第45條之1第1項及其授權訂定之「金融控股公司及銀行", "price_at_signal": 20.4}
+{"date": "2026-07-05", "code": "AAPL", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 AAPL 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-04-20)", "price_at_signal": null}
+{"date": "2026-07-05", "code": "AMD", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 AMD 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-07-01)", "price_at_signal": null}
+{"date": "2026-07-05", "code": "AMZN", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 AMZN 8-K Item 1.01:重大合約(申報日2026-06-10)", "price_at_signal": null}
+{"date": "2026-07-05", "code": "BRK-B", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 BRK-B 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-05-07)", "price_at_signal": null}
+{"date": "2026-07-05", "code": "GOOGL", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 GOOGL 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-06-11)", "price_at_signal": null}
+{"date": "2026-07-05", "code": "GS", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 GS 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-03-13)", "price_at_signal": null}
+{"date": "2026-07-05", "code": "JPM", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 JPM 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-06-25)", "price_at_signal": null}
+{"date": "2026-07-05", "code": "META", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 META 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-04-14)", "price_at_signal": null}
+{"date": "2026-07-05", "code": "MSFT", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 MSFT 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-06-05)", "price_at_signal": null}
+{"date": "2026-07-05", "code": "NVDA", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 NVDA 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-07-02)", "price_at_signal": null}
+{"date": "2026-07-05", "code": "TSLA", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 TSLA 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2025-11-07)", "price_at_signal": null}
