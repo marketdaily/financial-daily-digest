@@ -53,15 +53,15 @@ def _save_cache(cache):
 
 
 def pct_change(new, old):
-    if not old:
+    if not old or new is None:
         return 0.0
     return (new - old) / old * 100.0
 
 
 def classify(sbl_bal, sbl_5d_ago, price_now=None, price_5d_ago=None):
     """回 {level, signal}。純數字判斷,不叫網路。"""
-    sbl_chg = pct_change(sbl_bal, sbl_5d_ago) if sbl_5d_ago else 0.0
-    price_chg = pct_change(price_now, price_5d_ago) if price_5d_ago else None
+    sbl_chg = pct_change(sbl_bal, sbl_5d_ago) if sbl_5d_ago and sbl_bal is not None else 0.0
+    price_chg = pct_change(price_now, price_5d_ago) if price_5d_ago and price_now is not None else None
 
     if sbl_chg >= 20:
         if price_chg is not None and price_chg <= -3:
