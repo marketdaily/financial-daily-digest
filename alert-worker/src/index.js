@@ -1,6 +1,6 @@
-// MarketDaily — Premium 即時 LINE 重大新聞提醒 alert-worker
-// 每 2 分鐘:抓新聞 → 去重 → 規則粗篩 → 比對 Premium 持股 → AI 嚴重度 → LINE 推播。
-// 設計規格:specs/2026-05-22-premium-realtime-line-alerts-design.md
+// MarketDaily — Premium 即時重大新聞提醒 alert-worker(通道 = 自有 Web Push,LINE 已於 2026-07-06 全面退役)
+// 每 2 分鐘:抓新聞 → 去重 → 規則粗篩 → 比對 Premium 持股 → AI 嚴重度 → web push 推播。
+// 設計規格:specs/2026-05-22-premium-realtime-line-alerts-design.md(其中 LINE 段落已作廢)
 
 import { fetchNews } from "./news_source.js";
 import { displayName } from "./stock_names.js";
@@ -434,10 +434,7 @@ function pushNotif(news, ticker, severity, reason) {
     tag: `md-${ticker}-${(news.publishedAt || "").slice(0, 13)}`,
   });
 }
-// 統一投遞:對單一收件者嘗試所有可用通道(LINE + 自有 web push),任一成功即算送達。
-// 聰明備援策略:web push 是所有人預設(免費無上限);
-// LINE push 只在「用戶沒開 web push(如沒裝 PWA 的 iPhone)」或「超重大 severity≥9」時才動用,
-// 把 LINE 200/月珍貴額度留給真正需要的人。LINE 聊天機器人(reply,免費)不受影響。
+// 統一投遞:通道 = 自有 web push(免費無上限;LINE 已全面退役)。
 async function deliverAlert(env, r, notifStr, opts = {}) {
   let ok = false; const channels = []; let lastStatus = 0;
   const severity = opts.severity || 0;
@@ -460,10 +457,10 @@ async function deliverAlert(env, r, notifStr, opts = {}) {
       else await env.USER_PREFS.delete(`pushsub:${r.email}`);
     }
   }
-  // 訂閱者通道只剩 web push(LINE 推播已移除;admin 內部告警的 LINE 走 alertAdmin,不經這裡)
+  // 訂閱者與 admin 通道都只剩 web push(LINE 已全面退役)
   return { ok, channels, status: lastStatus };
 }
-// 寫入用戶的站內「提醒收件匣」(email-keyed,LINE+web push 用戶都記;dashboard feed 讀這個)。留 90 天、上限 50 則。
+// 寫入用戶的站內「提醒收件匣」(email-keyed;dashboard feed 讀這個)。留 90 天、上限 50 則。
 async function recordAlertInbox(env, email, record) {
   try {
     const key = `alerthist:${email}`;
@@ -516,35 +513,17 @@ function alertMessage(news, ticker, severity, reason, meta = {}) {
 }
 
 
-// 主動告訴 admin(Delvin 的 LINE):推播 / canary 出狀況。
-// 節流:同小時最多 1 則,避免炸訊息;ADMIN_LINE_USER_ID 沒設就跳過。
+// 主動告訴 admin:推播出狀況。通道 = 自有 web push 到所有 admin 裝置(LINE 已退役,不再備援)。
+// 節流:同小時最多 1 則,避免炸訊息。
 async function alertAdmin(env, summary) {
   const hourKey = `admin_alert:${new Date().toISOString().slice(0, 13)}`;
   if (await env.USER_PREFS.get(hourKey)) return;
   let delivered = false;
-  // 1) 自有 web push 到所有 admin 裝置(無額度限制,優先)
   if (await webPushAdmin(env, JSON.stringify({
     title: "🚨 MarketDaily Alert",
     body: summary.slice(0, 300),
     url: "https://marketdaily.ai/dashboard.html#alerts",
   }))) delivered = true;
-  // 2) LINE(備援,受 200/月額度限制)
-  if (env.ADMIN_LINE_USER_ID) {
-    const token = await lineToken(env, { force: true });
-    if (token) {
-      try {
-        const res = await fetch(LINE_PUSH_URL, {
-          method: "POST",
-          headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-          body: JSON.stringify({
-            to: env.ADMIN_LINE_USER_ID,
-            messages: [{ type: "text", text: `🚨 MarketDaily Alert\n\n${summary}\n\n— alert-worker` }],
-          }),
-        });
-        if (res.ok) delivered = true;
-      } catch {}
-    }
-  }
   if (delivered) {
     await env.USER_PREFS.put(hourKey, "1", { expirationTtl: 3700 });
   } else {
@@ -888,14 +867,9 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
 
 export default {
   async scheduled(event, env, ctx) {
-    // 3 個 cron 分支:
+    // 2 個 cron 分支(每小時 LINE canary 已隨 LINE 退役移除):
     //   "*/2 * * * *"  → 主管線(抓新聞 → 比對 → 推播)
-    //   "0 * * * *"    → 每小時 canary,自動驗 token 健康度,失敗就 LINE 告 admin
-    //   "*/15 * * * *" → 政壇市場訊號(政治人物 X 貼文 → LINE,需 XAI_API_KEY)
-    if (event.cron === "0 * * * *") {
-      ctx.waitUntil(canaryCheck(env));
-      return;
-    }
+    //   "*/15 * * * *" → 政壇市場訊號(政治人物 X 貼文 → web push,需 XAI_API_KEY)
     if (event.cron === "*/15 * * * *") {
       const enabled = (await env.USER_PREFS.get("alert:enabled")) === "true";
       ctx.waitUntil(runPoliticalPipeline(env, { push: enabled }));
@@ -1042,25 +1016,13 @@ export default {
       try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
       const message = String(body.message || "").slice(0, 4900);
       if (!message) return json({ error: "empty_message" }, 400);
-      let ok = false; const channels = []; let lineStatus = null;
-      // 1) 自有 web push 到所有 admin 裝置(無額度限制,優先)
+      let ok = false; const channels = [];
+      // 自有 web push 到所有 admin 裝置(LINE 已退役,唯一通道)
       if (await webPushAdmin(env, JSON.stringify({
         title: "🔔 MarketDaily", body: message.slice(0, 300), url: "https://marketdaily.ai/dashboard.html#alerts",
       }))) { ok = true; channels.push("webpush"); }
-      // 2) LINE 備援
-      if (env.ADMIN_LINE_USER_ID) {
-        const token = await lineToken(env, { force: true });
-        if (token) {
-          const res = await fetch(LINE_PUSH_URL, {
-            method: "POST",
-            headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-            body: JSON.stringify({ to: env.ADMIN_LINE_USER_ID, messages: [{ type: "text", text: message }] }),
-          });
-          lineStatus = res.status;
-          if (res.ok) { ok = true; channels.push("line"); }
-        }
-      }
-      return json({ ok, channels, lineStatus });
+      // lineStatus 欄位保留 null 給既有呼叫端(watchdog/runner)解析相容
+      return json({ ok, channels, lineStatus: null });
     }
 
     // 行銷貼文 multicast 目標清單:列出所有綁過 LINE 但 plan != premium 的 userId。
