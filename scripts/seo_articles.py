@@ -625,6 +625,147 @@ def gen_dividend_article(ticker: str, name: str, market: str, rows: list) -> dic
     }
 
 
+# 財報/法說會事件反應文(2026-07-05 分發瓶頸研究缺口 E:唯一需要事件觸發的類型。
+# intel/tw_investor_conf.py(法說會排程)+ intel/tw_investor_materials.py(PDF重點摘要,本機Ollama)
+# 兩個既有信息差引擎連接器已是現成觸發器,本類型只是把它們接進部落格管線——現況(缺口研究原話)是
+# 隨機週抽,錯過新鮮度窗口;改成「這週誰有真實法說會事件落在時效窗口內,就優先寫這家」。
+# 台股專屬(法說會連接器資料源僅台股),只涵蓋 TW_STOCKS;ticker 用真實代號(非 pseudo-ticker),
+# 讓 related_html() 把事件文章自動併入該檔既有的 chain/dividend/主題文章 cluster。
+EVENT_SKIP = {"0050", "0056", "00878"}  # ETF 無公司法說會
+EVENT_WINDOW_PAST_DAYS = 10   # 已召開10天內:PDF材料通常已上傳,值得回顧重點
+EVENT_WINDOW_FUTURE_DAYS = 20  # 即將召開20天內:值得前瞻提醒
+EVENT_TOPIC_HIGHLIGHT = "法說會重點解讀"
+EVENT_TOPIC_PREVIEW = "法說會前瞻"
+
+EVENT_HIGHLIGHT_SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手,寫繁體中文法說會重點解讀文章。
+
+規則:
+- 800-1200 字
+- 結構:H1 標題、引言(這場法說會為何值得關注)、H2「法說會重點摘要」(逐條整理下方提供的真實重點)、
+  H2「這類重點對投資人的意義」(概念性教學,不做買賣建議)、結論 + CTA
+- **只能使用下方提供的「真實法說會重點」內容,絕對不可新增清單以外的具體數字/展望/保證**——這些重點
+  是從公司官方法說會簡報 PDF 抽取整理,你的任務是把它組織成好讀的文章並做意義解讀,不是新增內容
+- 不能保證收益、不能喊進喊出,不做買賣建議
+- 結尾 CTA:「想每天早上 7 點收到這類分析?免費訂閱 MarketDaily → marketdaily.ai」
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html
+  或 ``` 包住輸出(直接輸出 HTML 標籤本身)
+- HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
+- 不寫日期(會過時)用「2026」這種年度即可,但法說會日期本身可原樣引用"""
+
+EVENT_PREVIEW_SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手,寫繁體中文法說會前瞻文章。
+
+規則:
+- 800-1200 字
+- 結構:H1 標題、引言(這場法說會的時間與背景)、H2「法人說明會通常會揭露什麼」(概念性教學:營運成果/
+  展望/產能利用率等常見揭露項目,不針對這家公司杜撰具體內容)、H2「投資人該怎麼準備」、結論 + CTA
+- 下方只提供「真實排程資訊」(公司/日期/主旨),**沒有提供具體財報數字或展望內容**——絕對不可自行
+  杜撰這場法說會會公布的具體數字或結論,只能就法說會這類活動的一般性質做教學,需要提到本次細節處
+  請讀者「屆時查詢公開資訊觀測站或公司官網取得正式內容」
+- 不能保證收益、不能喊進喊出,不做買賣建議
+- 結尾 CTA:「想每天早上 7 點收到這類分析?免費訂閱 MarketDaily → marketdaily.ai」
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html
+  或 ``` 包住輸出(直接輸出 HTML 標籤本身)
+- HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
+- 不寫日期(會過時)用「2026」這種年度即可,但法說會排程日期本身可原樣引用"""
+
+
+def event_slug(code: str, date_start: str) -> str:
+    return f"{code.lower()}-event-{date_start.replace('-', '')}"
+
+
+def _event_highlight_grounding_text(name: str, code: str, conf_entry: dict, materials: dict) -> str:
+    lines = [
+        f"公司:{name}({code})",
+        f"法說會日期:{conf_entry['date_start']}",
+        f"主旨:{conf_entry.get('subject', '')}",
+        "真實法說會重點(從官方簡報PDF抽取整理,不可新增未列出的重點):",
+    ]
+    for h in materials.get("highlights", []):
+        lines.append(f"- {h}")
+    if materials.get("has_guidance"):
+        lines.append("(本次簡報含公司對未來展望的說明,但具體數字仍以上列重點為準,不可延伸推測)")
+    return "\n".join(lines)
+
+
+def _event_preview_grounding_text(name: str, code: str, conf_entry: dict) -> str:
+    days_until = conf_entry["days_until"]
+    timing = f"已於{-days_until}天前召開" if days_until < 0 else f"{days_until}天後召開"
+    return (
+        f"公司:{name}({code})\n"
+        f"法說會日期(真實排程,MOPS官方資料):{conf_entry['date_start']}({timing})\n"
+        f"主旨:{conf_entry.get('subject', '')}"
+    )
+
+
+def gen_event_article(code: str, name: str, market: str, conf_entry: dict, materials: dict) -> dict:
+    if materials:
+        grounding = _event_highlight_grounding_text(name, code, conf_entry, materials)
+        system = EVENT_HIGHLIGHT_SYSTEM
+        topic = EVENT_TOPIC_HIGHLIGHT
+    else:
+        grounding = _event_preview_grounding_text(name, code, conf_entry)
+        system = EVENT_PREVIEW_SYSTEM
+        topic = EVENT_TOPIC_PREVIEW
+    user = f"""寫一篇 SEO 文章,主題是「{name}({code}) {topic}」。
+
+{grounding}
+
+請按 SEO 結構寫,涵蓋 H1/H2/H3,800-1200 字,結尾接 CTA。
+回傳純 HTML 片段(<h1>...到最後</p>),其他不要。"""
+    body = call_claude(system, user, max_tokens=3000)
+    body = strip_code_fence(body)
+    m = re.search(r"<h1[^>]*>(.+?)</h1>", body, re.DOTALL)
+    title = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else f"{name} {topic}"
+    return {
+        "ticker": code,
+        "name": name,
+        "topic": topic,
+        "market": market,
+        "title": title,
+        "body_html": body,
+        "slug": event_slug(code, conf_entry["date_start"]),
+    }
+
+
+def pick_event_seeds(count: int, published: set) -> list:
+    """掃 TW_STOCKS 有沒有真實法說會事件落在時效窗口內(已召開10天內或即將召開20天內);
+    查無時效內事件就回傳空 list,不硬湊(同 pick_dividend_seeds 紀律)。"""
+    if count <= 0:
+        return []
+    try:
+        from intel.tw_investor_conf import scan as conf_scan
+        from intel.tw_investor_materials import fetch_materials
+    except Exception:
+        return []
+    codes = [c for c, n in TW_STOCKS if c not in EVENT_SKIP]
+    name_of = dict(TW_STOCKS)
+    try:
+        by_code = conf_scan(codes)
+    except Exception:
+        return []
+    windowed = []
+    for code, entry in by_code.items():
+        d = entry.get("days_until")
+        if d is None:
+            continue
+        if -EVENT_WINDOW_PAST_DAYS <= d <= EVENT_WINDOW_FUTURE_DAYS:
+            windowed.append((code, entry))
+    windowed.sort(key=lambda x: abs(x[1]["days_until"]))  # 離現在最近的事件優先
+    picked = []
+    for code, entry in windowed:
+        slug = event_slug(code, entry["date_start"])
+        if slug in published:
+            continue
+        name = name_of.get(code, code)
+        materials = None
+        if entry.get("pdf_zh") or entry.get("pdf_en"):
+            materials = fetch_materials(code, name, entry)
+        picked.append((code, name, "tw", entry, materials))
+        if len(picked) >= count:
+            break
+    return picked
+
+
 PAGE_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -921,6 +1062,7 @@ def main():
         "dividend": lambda n: pick_dividend_seeds(n, published),
         "macro": lambda n: pick_macro_seeds(n, published),
         "beginner": lambda n: pick_beginner_seeds(n, published),
+        "event": lambda n: pick_event_seeds(n, published),
     }
     gap_order = list(gap_pickers)
     rotate = int(datetime.now().strftime("%V")) % len(gap_order)
@@ -937,10 +1079,11 @@ def main():
     dividend_seeds = gap_seeds["dividend"]
     macro_seeds = gap_seeds["macro"]
     beginner_seeds = gap_seeds["beginner"]
+    event_seeds = gap_seeds["event"]
     stock_n = (args.count - len(term_seeds) - len(chain_seeds) - len(dividend_seeds)
-               - len(macro_seeds) - len(beginner_seeds))
+               - len(macro_seeds) - len(beginner_seeds) - len(event_seeds))
     stock_seeds = pick_seeds(stock_n, published) if stock_n > 0 else []
-    if not any([term_seeds, chain_seeds, dividend_seeds, macro_seeds, beginner_seeds, stock_seeds]):
+    if not any([term_seeds, chain_seeds, dividend_seeds, macro_seeds, beginner_seeds, event_seeds, stock_seeds]):
         print("  全部組合都發過了,沒新主題可挑。"); return
     print("② 生成中...")
     for term, keyword in term_seeds:
@@ -975,6 +1118,14 @@ def main():
         print(f"  • 新手教學 — {topic}")
         try:
             art = gen_beginner_article(topic, keyword)
+            write_article(art, args.dry)
+        except Exception as e:
+            print(f"    ✗ failed: {e}")
+    for code, name, market, conf_entry, materials in event_seeds:
+        kind = "重點解讀" if materials else "前瞻"
+        print(f"  • {market.upper()} {code} {name} — 法說會{kind}")
+        try:
+            art = gen_event_article(code, name, market, conf_entry, materials)
             write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
