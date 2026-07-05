@@ -90,6 +90,33 @@ TERM_TOPICS = [
     ("財報公布時間與行事曆", "財報公布時間怎麼查 2026"),
 ]
 
+# 總經指標教學(2026-07-05 分發瓶頸研究缺口 C:不綁個股/不需即時資料 grounding,
+# 與 TERM_TOPICS 同一套零幻覺手法——這些是穩定的教科書定義與機制說明,不涉及會過時的絕對數字,
+# 差異在於 TERM_TOPICS 是「公司層級」財務比率/技術指標,這裡是「總體經濟層級」指標,SEO 關鍵字不重疊。
+# 每篇 slug 前綴固定為 "macro",讓既有 related_html() 自動把全部總經文章群聚互連。
+MACRO_TOPICS = [
+    ("CPI 消費者物價指數", "CPI是什麼 通膨怎麼看 2026"),
+    ("PMI 採購經理人指數", "PMI是什麼 景氣領先指標 2026"),
+    ("GDP 經濟成長率", "GDP是什麼 對股市影響 2026"),
+    ("失業率", "失業率是什麼 對股市影響 2026"),
+    ("Fed 利率決議與升降息", "Fed升息降息 對股市影響 2026"),
+    ("殖利率曲線倒掛", "殖利率曲線倒掛是什麼 景氣衰退訊號 2026"),
+    ("景氣對策信號燈", "景氣對策信號燈是什麼 燈號解讀 2026"),
+    ("VIX 恐慌指數", "VIX恐慌指數是什麼 怎麼看 2026"),
+    ("美元指數 DXY", "美元指數是什麼 對台股影響 2026"),
+    ("非農就業報告 NFP", "非農就業數據是什麼 對美股影響 2026"),
+    ("台灣中央銀行升降息", "央行升息降息 對台股影響 2026"),
+    ("美國10年期公債殖利率", "10年期公債殖利率 對股市影響 2026"),
+    ("零售銷售數據", "零售銷售數據是什麼 消費指標 2026"),
+    ("ISM 製造業指數", "ISM製造業指數是什麼 景氣訊號 2026"),
+    ("消費者信心指數", "消費者信心指數是什麼 對股市影響 2026"),
+    ("貨幣供給 M1B 與 M2", "M1B M2是什麼 資金動能指標 2026"),
+    ("台股加權指數與費半指數", "台股加權指數 費城半導體指數 關聯 2026"),
+    ("通膨預期與抗通膨債券", "通膨預期是什麼 抗通膨債券 2026"),
+    ("三大法人期貨未平倉", "期貨未平倉是什麼 法人多空指標 2026"),
+    ("財報季與財測", "財報季是什麼 財測怎麼看 2026"),
+]
+
 # 產業供應鏈全景(2026-07-05 分發瓶頸研究缺口 D:重用既有 supply_chain.json,
 # 66 家已核實公司資料,工程成本最低+零幻覺風險,因資料直接餵給 LLM 當唯一事實來源)
 CHAIN_TOPIC = "供應鏈全景:上下游廠商解析"
@@ -316,6 +343,53 @@ def gen_term_article(term: str, keyword: str) -> dict:
     }
 
 
+MACRO_SYSTEM = """你是 MarketDaily 的總體經濟 SEO 內容寫手。寫繁體中文總經指標教學文章,面向想看懂新聞財經術語的一般投資人。
+
+規則:
+- 800-1200 字
+- 結構:H1 標題(含關鍵字)、引言(為何這個指標重要/多久公布一次)、H2「這個指標怎麼算/怎麼公布」、
+  H2「怎麼解讀(數字高低代表什麼)」、H2「對台股/美股的傳導機制」、H2「常見誤區」、結論 + CTA
+- 開頭 80 字內出現關鍵字
+- **這是總經機制教學,不是即時數據快報**:絕對不可寫出任何「目前 CPI 是 X%」「現在利率是 X%」
+  「上次數值是 X」這類具體即時數字或日期——這些會隨時間變動,你沒有即時資料,寫死幾乎必然是幻覺。
+  只能用**相對描述**討論歷史區間或典型水準(如「消費者物價年增率長期落在某個區間,超過某個區間
+  常被視為升息壓力」),並請讀者「請查詢主計總處/官方最新公布數字」取得現在的實際數值
+- 內容要有實質教學價值,像財經媒體的總經專欄,不是空泛定義
+- 不能保證收益、不能喊進喊出
+- 結尾 CTA:「想每天早上 7 點收到這類分析?免費訂閱 MarketDaily → marketdaily.ai」
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html 或 ``` 包住輸出(直接輸出 HTML 標籤本身)
+- HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
+- 不寫日期(會過時),用「2026」這種年度即可"""
+
+
+def macro_slug(indicator: str) -> str:
+    safe = re.sub(r"[^\w一-鿿]+", "-", indicator)[:30]
+    return f"macro-{safe}-{datetime.now():%Y%m}"
+
+
+def gen_macro_article(indicator: str, keyword: str) -> dict:
+    user = f"""寫一篇 SEO 總經指標教學文章。
+
+關鍵字:「{keyword}」
+指標:{indicator}
+
+請按 SEO 結構寫,涵蓋 H1/H2/H3,800-1200 字,結尾接 CTA。
+回傳純 HTML 片段(<h1>...到最後</p>),其他不要。"""
+    body = call_claude(MACRO_SYSTEM, user, max_tokens=3000)
+    body = strip_code_fence(body)
+    m = re.search(r"<h1[^>]*>(.+?)</h1>", body, re.DOTALL)
+    title = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else indicator
+    return {
+        "ticker": "macro",  # 共用同一 pseudo-ticker,讓 related_html() 自動群聚成總經叢集
+        "name": indicator,
+        "topic": keyword,
+        "market": "macro",
+        "title": title,
+        "body_html": body,
+        "slug": macro_slug(indicator),
+    }
+
+
 CHAIN_SYSTEM = """你是 MarketDaily 的產業供應鏈 SEO 內容寫手。寫繁體中文長尾文章,主題是特定公司的供應鏈上下游關係。
 
 規則:
@@ -535,7 +609,7 @@ strong {{ color:#fbbf24; font-weight:700; }}
 </html>"""
 
 
-MARKET_LABELS = {"us": "美股", "tw": "台股", "term": "投資知識"}
+MARKET_LABELS = {"us": "美股", "tw": "台股", "term": "投資知識", "macro": "總體經濟"}
 
 
 def write_article(art: dict, dry: bool) -> Path:
@@ -543,6 +617,8 @@ def write_article(art: dict, dry: bool) -> Path:
     fname = BLOG_DIR / f"{slug}.html"
     if art["market"] == "term":
         desc = f"{art['name']} — MarketDaily 投資知識整理。"
+    elif art["market"] == "macro":
+        desc = f"{art['name']} — MarketDaily 總體經濟指標整理。"
     else:
         desc = f"{art['name']} ({art['ticker']}) {art['topic']} — MarketDaily 整理。"
     related = related_html(art["ticker"], slug, scan_articles())
@@ -645,6 +721,23 @@ def pick_term_seeds(count: int, published: set) -> list:
     return picked
 
 
+def pick_macro_seeds(count: int, published: set) -> list:
+    if count <= 0:
+        return []
+    import random
+    rng = random.Random(int(datetime.now().timestamp()) + 4)
+    candidates = list(MACRO_TOPICS)
+    rng.shuffle(candidates)
+    picked = []
+    for indicator, keyword in candidates:
+        if macro_slug(indicator) in published:
+            continue
+        picked.append((indicator, keyword))
+        if len(picked) >= count:
+            break
+    return picked
+
+
 def pick_chain_seeds(count: int, published: set) -> list:
     if count <= 0:
         return []
@@ -726,15 +819,17 @@ def main():
 
     published = load_published()
     print(f"① 已發布 {len(published)} 篇,挑新主題 ×{args.count}...")
-    # 配額:每次最多 1 篇財經名詞教學(缺口A)+ 1 篇供應鏈全景(缺口D)+ 1 篇除權息導覽(缺口B),
-    # 剩下的名額才給既有個股×主題組合,避免長青詞彙/產業鏈/除權息池子被單次跑完排擠。
+    # 配額:每次最多 1 篇財經名詞教學(缺口A)+ 1 篇供應鏈全景(缺口D)+ 1 篇除權息導覽(缺口B)
+    # + 1 篇總經指標教學(缺口C),剩下的名額才給既有個股×主題組合,避免長青池子被單次跑完排擠。
     term_seeds = pick_term_seeds(min(1, args.count), published)
     chain_seeds = pick_chain_seeds(min(1, max(args.count - len(term_seeds), 0)), published)
     remaining = max(args.count - len(term_seeds) - len(chain_seeds), 0)
     dividend_seeds = pick_dividend_seeds(min(1, remaining), published)
-    stock_n = args.count - len(term_seeds) - len(chain_seeds) - len(dividend_seeds)
+    remaining = max(remaining - len(dividend_seeds), 0)
+    macro_seeds = pick_macro_seeds(min(1, remaining), published)
+    stock_n = args.count - len(term_seeds) - len(chain_seeds) - len(dividend_seeds) - len(macro_seeds)
     stock_seeds = pick_seeds(stock_n, published) if stock_n > 0 else []
-    if not term_seeds and not chain_seeds and not dividend_seeds and not stock_seeds:
+    if not term_seeds and not chain_seeds and not dividend_seeds and not macro_seeds and not stock_seeds:
         print("  全部組合都發過了,沒新主題可挑。"); return
     print("② 生成中...")
     for term, keyword in term_seeds:
@@ -755,6 +850,13 @@ def main():
         print(f"  • {market.upper()} {code} {name} — {DIVIDEND_TOPIC}")
         try:
             art = gen_dividend_article(code, name, market, rows)
+            write_article(art, args.dry)
+        except Exception as e:
+            print(f"    ✗ failed: {e}")
+    for indicator, keyword in macro_seeds:
+        print(f"  • 總經教學 — {indicator}")
+        try:
+            art = gen_macro_article(indicator, keyword)
             write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
