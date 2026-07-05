@@ -635,9 +635,19 @@ EVENT_SKIP = {"0050", "0056", "00878"}  # ETF 無公司法說會
 EVENT_WINDOW_PAST_DAYS = 10   # 已召開10天內:PDF材料通常已上傳,值得回顧重點
 EVENT_WINDOW_FUTURE_DAYS = 20  # 即將召開20天內:值得前瞻提醒
 EVENT_TOPIC_HIGHLIGHT = "法說會重點解讀"
+EVENT_TOPIC_ADVANCE = "法說會前哨:已揭露重點"
 EVENT_TOPIC_PREVIEW = "法說會前瞻"
+EVENT_TOPIC_RECAP_GENERIC = "法說會回顧"
+
+# ⚠️2026-07-05 驗證者分離抓到的真實bug教訓:「有沒有PDF材料」跟「這場法說會是否已經召開」是
+# 兩件獨立的事——券商邀約的海外巡迴說明會常常沿用稍早既有簡報(檔名日期可能是更早那次法說會的),
+# 即使 days_until 還是正數(尚未召開),PDF 材料也可能已經存在。原本只用 `if materials` 二分,
+# 會讓「即將召開但已有舊材料」的案例被寫成「已經召開/已經公布」的過去式語氣,對讀者是錯誤時態。
+# 改成 (is_past × has_materials) 四象限,各自對應正確時態的 system prompt。
 
 EVENT_HIGHLIGHT_SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手,寫繁體中文法說會重點解讀文章。
+
+情境:這場法說會**已經召開過**,你有真實的簡報重點可引用。
 
 規則:
 - 800-1200 字
@@ -652,7 +662,31 @@ EVENT_HIGHLIGHT_SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手,寫繁
 - HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
 - 不寫日期(會過時)用「2026」這種年度即可,但法說會日期本身可原樣引用"""
 
+EVENT_ADVANCE_SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手,寫繁體中文文章。
+
+情境:某公司**即將**召開法人說明會(尚未舉行),但市場上已有一份公司先前公開揭露的簡報資料流通
+(常見於券商邀約的海外巡迴說明會,沿用稍早既有簡報)。
+
+規則:
+- 800-1200 字
+- **時態務必正確**:這場法說會**尚未召開**,絕對不可寫成「已經公布」「本次說明會公布了」這類
+  過去式語氣;下方提供的重點是公司**先前已公開揭露**的資料內容,請用「公司已公開的資料顯示」
+  「先前已揭露」這類語氣,並清楚說明即將召開的這場法說會日期,建議讀者屆時查詢正式紀錄確認
+  是否有更新內容
+- 結構:H1 標題、引言(即將召開的法說會+已公開資料的背景)、H2「已公開的重點摘要」(逐條整理
+  下方提供的真實重點,用「已公開揭露」語氣,不可暗示是本場即將召開的會議才公布的新內容)、
+  H2「這類重點對投資人的意義」(概念性教學,不做買賣建議)、結論 + CTA
+- **只能使用下方提供的「真實已公開重點」內容,絕對不可新增清單以外的具體數字/展望/保證**
+- 不能保證收益、不能喊進喊出,不做買賣建議
+- 結尾 CTA:「想每天早上 7 點收到這類分析?免費訂閱 MarketDaily → marketdaily.ai」
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html
+  或 ``` 包住輸出(直接輸出 HTML 標籤本身)
+- HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
+- 不寫日期(會過時)用「2026」這種年度即可,但法說會日期本身可原樣引用"""
+
 EVENT_PREVIEW_SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手,寫繁體中文法說會前瞻文章。
+
+情境:某公司**即將**召開法人說明會(尚未舉行),且目前查無可引用的公開簡報重點。
 
 規則:
 - 800-1200 字
@@ -667,6 +701,24 @@ EVENT_PREVIEW_SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手,寫繁�
   或 ``` 包住輸出(直接輸出 HTML 標籤本身)
 - HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
 - 不寫日期(會過時)用「2026」這種年度即可,但法說會排程日期本身可原樣引用"""
+
+EVENT_RECAP_GENERIC_SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手,寫繁體中文文章。
+
+情境:某公司的法人說明會**已經召開**,但目前查無公開簡報摘要內容可引用。
+
+規則:
+- 800-1200 字
+- **時態務必正確**:這場法說會已經召開,行文請用過去式描述時間背景,但**絕對不可杜撰**這場
+  會議實際公布的任何具體數字/結論(你沒有這場會議的簡報內容)
+- 結構:H1 標題、引言(這場法說會已於何時召開)、H2「法人說明會通常會揭露什麼」(概念性教學,
+  不針對這家公司杜撰具體內容)、H2「怎麼查詢這場法說會的正式內容」、結論 + CTA
+- 明確請讀者「查詢公開資訊觀測站或公司官網取得正式簡報內容」
+- 不能保證收益、不能喊進喊出,不做買賣建議
+- 結尾 CTA:「想每天早上 7 點收到這類分析?免費訂閱 MarketDaily → marketdaily.ai」
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html
+  或 ``` 包住輸出(直接輸出 HTML 標籤本身)
+- HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
+- 不寫日期(會過時)用「2026」這種年度即可,但法說會日期本身可原樣引用"""
 
 
 def event_slug(code: str, date_start: str) -> str:
@@ -687,6 +739,22 @@ def _event_highlight_grounding_text(name: str, code: str, conf_entry: dict, mate
     return "\n".join(lines)
 
 
+def _event_advance_grounding_text(name: str, code: str, conf_entry: dict, materials: dict) -> str:
+    days_until = conf_entry["days_until"]
+    lines = [
+        f"公司:{name}({code})",
+        f"即將召開的法說會日期:{conf_entry['date_start']}({days_until}天後,尚未召開)",
+        f"主旨:{conf_entry.get('subject', '')}",
+        "公司先前已公開揭露的重點內容(從已公開簡報PDF抽取整理,不可新增未列出的重點,"
+        "也不可宣稱這是本場即將召開法說會才公布的新內容):",
+    ]
+    for h in materials.get("highlights", []):
+        lines.append(f"- {h}")
+    if materials.get("has_guidance"):
+        lines.append("(該資料含公司對未來展望的說明,但具體數字仍以上列重點為準,不可延伸推測)")
+    return "\n".join(lines)
+
+
 def _event_preview_grounding_text(name: str, code: str, conf_entry: dict) -> str:
     days_until = conf_entry["days_until"]
     timing = f"已於{-days_until}天前召開" if days_until < 0 else f"{days_until}天後召開"
@@ -698,14 +766,19 @@ def _event_preview_grounding_text(name: str, code: str, conf_entry: dict) -> str
 
 
 def gen_event_article(code: str, name: str, market: str, conf_entry: dict, materials: dict) -> dict:
-    if materials:
+    is_past = conf_entry["days_until"] < 0
+    if materials and is_past:
         grounding = _event_highlight_grounding_text(name, code, conf_entry, materials)
-        system = EVENT_HIGHLIGHT_SYSTEM
-        topic = EVENT_TOPIC_HIGHLIGHT
+        system, topic = EVENT_HIGHLIGHT_SYSTEM, EVENT_TOPIC_HIGHLIGHT
+    elif materials:
+        grounding = _event_advance_grounding_text(name, code, conf_entry, materials)
+        system, topic = EVENT_ADVANCE_SYSTEM, EVENT_TOPIC_ADVANCE
+    elif is_past:
+        grounding = _event_preview_grounding_text(name, code, conf_entry)
+        system, topic = EVENT_RECAP_GENERIC_SYSTEM, EVENT_TOPIC_RECAP_GENERIC
     else:
         grounding = _event_preview_grounding_text(name, code, conf_entry)
-        system = EVENT_PREVIEW_SYSTEM
-        topic = EVENT_TOPIC_PREVIEW
+        system, topic = EVENT_PREVIEW_SYSTEM, EVENT_TOPIC_PREVIEW
     user = f"""寫一篇 SEO 文章,主題是「{name}({code}) {topic}」。
 
 {grounding}
@@ -1050,24 +1123,30 @@ def main():
 
     published = load_published()
     print(f"① 已發布 {len(published)} 篇,挑新主題 ×{args.count}...")
-    # 配額:5 種缺口填充池(A詞彙/D供應鏈/B除權息/C總經/F新手)各最多 1 篇,剩下才給既有個股×主題組合。
-    # STOCK_RESERVE 保留至少 1 個名額給長青個股池——production 一週只跑一次 --count 5,若 5 種缺口池
+    # 配額:5 種常青缺口填充池(A詞彙/D供應鏈/B除權息/C總經/F新手)各最多 1 篇,剩下才給既有個股×主題組合。
+    # STOCK_RESERVE 保留至少 1 個名額給長青個股池——production 一週只跑一次 --count 5,若缺口池
     # 都用固定順序搶,個股池永遠分不到(2026-07-05 驗證者分離抓到的真實回歸,曾在此發生)。
-    # 缺口池彼此的搶奪順序依 ISO 週數輪替(而非寫死 term>chain>dividend>macro>beginner),
+    # 常青缺口池彼此的搶奪順序依 ISO 週數輪替(而非寫死 term>chain>dividend>macro>beginner),
     # 讓每個池子輪流被排在最後、輪流被犧牲,不會有後加入的池子長期被排擠到 0。
+    # event(法說會事件)池不加入這個輪替——常青池子這週沒搶到,下週topic還在、可以再搶;
+    # 但 event 池是真實時效窗口(法說會日期一過,那個素材就永久錯過),若跟常青池搶同一輪替
+    # 排到後面會被排擠到 0 次嘗試,等於系統性漏接時效性內容(2026-07-05 驗證者分離抓到的
+    # 真實回歸)。故給 event 池固定優先於輪替之前先查,查到真實窗口內事件才佔用名額,
+    # 查無事件(絕大多數週次)不消耗任何名額,常青池輪替預算不受影響。
     STOCK_RESERVE = 1
+    gap_budget = max(args.count - STOCK_RESERVE, 0)
+    event_seeds = pick_event_seeds(min(1, gap_budget), published)
+    gap_budget -= len(event_seeds)
     gap_pickers = {
         "term": lambda n: pick_term_seeds(n, published),
         "chain": lambda n: pick_chain_seeds(n, published),
         "dividend": lambda n: pick_dividend_seeds(n, published),
         "macro": lambda n: pick_macro_seeds(n, published),
         "beginner": lambda n: pick_beginner_seeds(n, published),
-        "event": lambda n: pick_event_seeds(n, published),
     }
     gap_order = list(gap_pickers)
     rotate = int(datetime.now().strftime("%V")) % len(gap_order)
     gap_order = gap_order[rotate:] + gap_order[:rotate]
-    gap_budget = max(args.count - STOCK_RESERVE, 0)
     gap_seeds = {k: [] for k in gap_pickers}
     for key in gap_order:
         if gap_budget <= 0:
@@ -1079,7 +1158,6 @@ def main():
     dividend_seeds = gap_seeds["dividend"]
     macro_seeds = gap_seeds["macro"]
     beginner_seeds = gap_seeds["beginner"]
-    event_seeds = gap_seeds["event"]
     stock_n = (args.count - len(term_seeds) - len(chain_seeds) - len(dividend_seeds)
                - len(macro_seeds) - len(beginner_seeds) - len(event_seeds))
     stock_seeds = pick_seeds(stock_n, published) if stock_n > 0 else []
@@ -1122,7 +1200,8 @@ def main():
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, market, conf_entry, materials in event_seeds:
-        kind = "重點解讀" if materials else "前瞻"
+        is_past = conf_entry["days_until"] < 0
+        kind = "重點解讀" if (materials and is_past) else "前哨" if materials else ("回顧" if is_past else "前瞻")
         print(f"  • {market.upper()} {code} {name} — 法說會{kind}")
         try:
             art = gen_event_article(code, name, market, conf_entry, materials)
