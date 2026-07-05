@@ -674,7 +674,8 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
         fails = []
         print(f"   ⚠️ audit 異常: {e}")
     if any(f.get("severity") == "high" for f in fails) and (gen_us or gen_tw):
-        print(f"   ⚠️ {email} HIGH audit fail,retry 一次")
+        high_checks = sorted({f["check"] for f in fails if f.get("severity") == "high"})
+        print(f"   ⚠️ {email} HIGH audit fail({','.join(high_checks)}),retry 一次")
         try:
             time.sleep(5)
             # retry 強制換更強模型(Claude/OpenAI 先於 Gemini),否則又從 Gemini 起跑 = 白 retry
@@ -694,7 +695,8 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
                 html = retry_html
                 fails = retry_fails
             else:
-                print("   🛡️ retry 仍 HIGH fail → 切 deterministic fallback")
+                retry_high_checks = sorted({f["check"] for f in retry_fails if f.get("severity") == "high"})
+                print(f"   🛡️ retry 仍 HIGH fail({','.join(retry_high_checks)}) → 切 deterministic fallback")
                 det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
                 if picks_mode:
                     det_inner = picks_banner + _sanitize_picks_wording(det_inner)
