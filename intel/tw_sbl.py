@@ -60,6 +60,8 @@ def pct_change(new, old):
 
 def classify(sbl_bal, sbl_5d_ago, price_now=None, price_5d_ago=None):
     """回 {level, signal}。純數字判斷,不叫網路。"""
+    if sbl_bal is None:
+        return {"level": "unknown", "signal": "借券賣出餘額資料缺漏,暫無法判斷", "sbl_chg_5d": None}
     sbl_chg = pct_change(sbl_bal, sbl_5d_ago) if sbl_5d_ago and sbl_bal is not None else 0.0
     price_chg = pct_change(price_now, price_5d_ago) if price_5d_ago and price_now is not None else None
 

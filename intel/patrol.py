@@ -155,13 +155,13 @@ def run():
         _emit(s["symbol"], s["level"], line, "us_8k")
     for c in codes:
         m = marg.get(c)
-        if not m or m["level"] == "plain":
+        if not m or m["level"] in ("plain", "unknown"):
             continue
         line = f"{wl[c]}({c}):{m['signal']}"
         _emit(c, m["level"], line, "margin")
     for c in codes:
         s = sbl_data.get(c)
-        if not s or s["level"] == "plain":
+        if not s or s["level"] in ("plain", "unknown"):
             continue
         line = f"{wl[c]}({c}):{s['signal']}"
         _emit(c, s["level"], line, "sbl")
