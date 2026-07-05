@@ -145,10 +145,18 @@ def tw_dcf(stock_id, today):
         return None
     shares = cap / 10.0
     cash = field.get("CashAndCashEquivalents") or 0.0
+    # FinMind 實際欄位是 Shortterm/Longterm(小寫term),舊版 ShortTerm/LongTerm 大寫從未命中過,
+    # 銀行借款長期被漏算成0(僅BondsPayable有算到),槓桿愈重的公司net_debt愈失真
     debt = sum(field.get(k) or 0.0 for k in (
-        "ShortTermBorrowings", "ShortTermBillsPayable", "BondsPayable",
-        "LongTermBorrowings", "LongTermLiabilitiesCurrentPortion"))
+        "ShorttermBorrowings", "BondsPayable", "LongtermBorrowings"))
     net_debt = debt - cash
+    # 少數股權(NCI)調整:合併現金流100%含子公司,母公司只有自己的股數;
+    # 用母公司權益佔合併權益比例縮放FCF,避免整份合併現金流除以母公司股數灌水每股價值(如1216統一)
+    equity_total, equity_parent = field.get("Equity"), field.get("EquityAttributableToOwnersOfParent")
+    nci_ratio = equity_parent / equity_total if (equity_total and equity_parent and equity_total > 0) else 1.0
+    if not (0.05 <= nci_ratio <= 1.0):
+        nci_ratio = 1.0
+    base_fcf *= nci_ratio
     wacc_mid = TW_RF + 1.0 * ERP              # beta 預設 1.0(FinMind 無 beta)
     grid = _fair_value_grid(base_fcf, g1, wacc_mid, net_debt, shares)
     if not grid:
