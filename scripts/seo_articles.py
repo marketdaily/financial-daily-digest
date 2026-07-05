@@ -372,6 +372,114 @@ def gen_chain_article(ticker: str, name: str, market: str, chain_key: str) -> di
     }
 
 
+# 除權息旺季導覽(2026-07-05 分發瓶頸研究缺口 B:現正7-9月台股除權息旺季,時效性最高;
+# 用 FinMind TaiwanStockDividend 真實歷史除息資料當唯一事實來源,同 CHAIN_DB grounding 手法防幻覺。
+# 台股專屬機制,只涵蓋 TW_STOCKS,不含美股)
+DIVIDEND_TOPIC = "除權息時間與歷史紀錄"
+FINMIND = "https://api.finmindtrade.com/api/v4/data"
+FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "").strip()
+DIVIDEND_CACHE_FILE = ROOT / "scripts" / ".dividend_cache.json"
+DIVIDEND_SKIP = {"0050", "0056", "00878"}  # ETF 配息機制與個股不同(收益平準金等),不適用本文類型
+
+
+def _fetch_dividend_history(ticker: str) -> list:
+    """FinMind TaiwanStockDividend 近 3 年真實除息紀錄(除息日+每股現金股利),只留有實際除息日的筆數。"""
+    import urllib.request
+    try:
+        start = (datetime.now() - timedelta(days=365 * 3)).strftime("%Y-%m-%d")
+        url = f"{FINMIND}?dataset=TaiwanStockDividend&data_id={ticker}&start_date={start}"
+        if FINMIND_TOKEN:
+            url += f"&token={FINMIND_TOKEN}"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            data = json.loads(r.read().decode())
+        rows = []
+        for row in data.get("data", []):
+            ex_date = row.get("CashExDividendTradingDate") or ""
+            cash = row.get("CashEarningsDistribution") or 0
+            if ex_date and cash:
+                rows.append({
+                    "ex_date": ex_date,
+                    "cash": round(float(cash), 2),
+                    "pay_date": row.get("CashDividendPaymentDate") or "",
+                })
+        return rows[-6:]
+    except Exception:
+        return []
+
+
+def _load_dividend_cache() -> dict:
+    try:
+        return json.loads(DIVIDEND_CACHE_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def dividend_history_for(ticker: str) -> list:
+    """cache-first(當天內免重打 FinMind API);查無資料回傳空 list,呼叫端需自行跳過。"""
+    cache = _load_dividend_cache()
+    today = datetime.now().strftime("%Y-%m-%d")
+    entry = cache.get(ticker)
+    if entry and entry.get("date") == today:
+        return entry.get("rows", [])
+    rows = _fetch_dividend_history(ticker)
+    cache[ticker] = {"date": today, "rows": rows}
+    try:
+        DIVIDEND_CACHE_FILE.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+    return rows
+
+
+DIVIDEND_SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手,寫繁體中文除權息主題文章。
+
+規則:
+- 800-1200 字
+- 結構:H1 標題、引言、H2「除權息是什麼(機制簡介)」、H2「{公司}近年真實除息紀錄」、
+  H2「除權息旺季(每年7-9月為主)投資人該注意什麼」、結論 + CTA
+- **只能使用下方提供的「真實除息資料」裡列出的日期與金額,絕對不可捏造清單以外的日期/金額,
+  也不可推測或杜撰任何未提供的未來除息日期**——這些是 FinMind 官方已核實的歷史資料,你的任務
+  是把它組織成好讀的文章並做除權息機制教學,不是新增內容
+- 資料集不含「填息天數」,可概念性教學「填息/貼息」是什麼,但**不可捏造這檔股票具體填息花了幾天**
+- 不能保證收益、不能喊進喊出
+- 結尾 CTA:「想每天早上 7 點收到這類分析?免費訂閱 MarketDaily → marketdaily.ai」
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html
+  或 ``` 包住輸出(直接輸出 HTML 標籤本身)
+- HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
+- 不寫日期(會過時),用「2026」這種年度即可,但除息歷史紀錄本身的日期可原樣引用"""
+
+
+def _dividend_grounding_text(name: str, ticker: str, rows: list) -> str:
+    lines = [f"公司:{name}({ticker})", "近年真實除息紀錄(FinMind 官方資料,不可新增未列出的紀錄):"]
+    for r in rows:
+        pay = r["pay_date"] or "未提供"
+        lines.append(f"- 除息日 {r['ex_date']}:每股現金股利 {r['cash']} 元(發放日 {pay})")
+    return "\n".join(lines)
+
+
+def gen_dividend_article(ticker: str, name: str, market: str, rows: list) -> dict:
+    grounding = _dividend_grounding_text(name, ticker, rows)
+    user = f"""寫一篇 SEO 文章,主題是「{name}({ticker}) {DIVIDEND_TOPIC}」。
+
+{grounding}
+
+請按 SEO 結構寫,涵蓋 H1/H2/H3,800-1200 字,結尾接 CTA。
+回傳純 HTML 片段(<h1>...到最後</p>),其他不要。"""
+    body = call_claude(DIVIDEND_SYSTEM, user, max_tokens=3000)
+    body = strip_code_fence(body)
+    m = re.search(r"<h1[^>]*>(.+?)</h1>", body, re.DOTALL)
+    title = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else f"{name} {DIVIDEND_TOPIC}"
+    return {
+        "ticker": ticker,
+        "name": name,
+        "topic": DIVIDEND_TOPIC,
+        "market": market,
+        "title": title,
+        "body_html": body,
+        "slug": slug_of(ticker, DIVIDEND_TOPIC),
+    }
+
+
 PAGE_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -563,6 +671,27 @@ def pick_chain_seeds(count: int, published: set) -> list:
     return picked
 
 
+def pick_dividend_seeds(count: int, published: set) -> list:
+    """只在 TW_STOCKS 挑,且即時查 FinMind 確認真的有除息紀錄才收(查無資料的股票不硬湊)。"""
+    if count <= 0:
+        return []
+    import random
+    rng = random.Random(int(datetime.now().timestamp()) + 3)
+    candidates = [(c, n) for c, n in TW_STOCKS if c not in DIVIDEND_SKIP]
+    rng.shuffle(candidates)
+    picked = []
+    for code, name in candidates:
+        if slug_of(code, DIVIDEND_TOPIC) in published:
+            continue
+        rows = dividend_history_for(code)
+        if not rows:
+            continue
+        picked.append((code, name, "tw", rows))
+        if len(picked) >= count:
+            break
+    return picked
+
+
 def pick_seeds(count: int, published: set) -> list:
     """從 stocks × topics 配對,挑沒寫過的 N 個。"""
     import random
@@ -597,13 +726,15 @@ def main():
 
     published = load_published()
     print(f"① 已發布 {len(published)} 篇,挑新主題 ×{args.count}...")
-    # 配額:每次最多 1 篇財經名詞教學(缺口A)+ 1 篇供應鏈全景(缺口D),
-    # 剩下的名額才給既有個股×主題組合,避免長青詞彙/產業鏈池子被單次跑完排擠。
+    # 配額:每次最多 1 篇財經名詞教學(缺口A)+ 1 篇供應鏈全景(缺口D)+ 1 篇除權息導覽(缺口B),
+    # 剩下的名額才給既有個股×主題組合,避免長青詞彙/產業鏈/除權息池子被單次跑完排擠。
     term_seeds = pick_term_seeds(min(1, args.count), published)
     chain_seeds = pick_chain_seeds(min(1, max(args.count - len(term_seeds), 0)), published)
-    stock_n = args.count - len(term_seeds) - len(chain_seeds)
+    remaining = max(args.count - len(term_seeds) - len(chain_seeds), 0)
+    dividend_seeds = pick_dividend_seeds(min(1, remaining), published)
+    stock_n = args.count - len(term_seeds) - len(chain_seeds) - len(dividend_seeds)
     stock_seeds = pick_seeds(stock_n, published) if stock_n > 0 else []
-    if not term_seeds and not chain_seeds and not stock_seeds:
+    if not term_seeds and not chain_seeds and not dividend_seeds and not stock_seeds:
         print("  全部組合都發過了,沒新主題可挑。"); return
     print("② 生成中...")
     for term, keyword in term_seeds:
@@ -617,6 +748,13 @@ def main():
         print(f"  • {market.upper()} {code} {name} — {CHAIN_TOPIC}")
         try:
             art = gen_chain_article(code, name, market, chain_key)
+            write_article(art, args.dry)
+        except Exception as e:
+            print(f"    ✗ failed: {e}")
+    for code, name, market, rows in dividend_seeds:
+        print(f"  • {market.upper()} {code} {name} — {DIVIDEND_TOPIC}")
+        try:
+            art = gen_dividend_article(code, name, market, rows)
             write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
