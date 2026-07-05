@@ -31,19 +31,23 @@ import sys, os, glob, json, time, datetime
 d = sys.argv[1]
 files = sorted(glob.glob(os.path.join(d, '*.jsonl')), key=os.path.getmtime, reverse=True)
 now = time.time()
+now_dt = datetime.datetime.now(datetime.timezone.utc)
+RECENT_CUTOFF_SEC = 24 * 3600  # 超過24小時的真人對話不當「最近」顯示,避免資訊過時誤導
+HUMAN_SOURCES = ('typed', 'queued')  # 排除 tool_result 回饋/自主引擎 sdk-cli 注入/task通知
 out = []
 shown = 0
 for f in files:
     if now - os.path.getmtime(f) < 20:   # 跳過剛建立的本視窗
         continue
     prompts = []
+    latest_ts = None
     try:
         for line in open(f, encoding='utf-8'):
             try:
                 o = json.loads(line)
             except Exception:
                 continue
-            if o.get('type') != 'user':
+            if o.get('type') != 'user' or o.get('promptSource') not in HUMAN_SOURCES:
                 continue
             c = (o.get('message') or {}).get('content')
             if not isinstance(c, str):
@@ -53,12 +57,20 @@ for f in files:
                or 'system-reminder' in t or t.startswith('Caveat:') \
                or t.startswith('Continue from where'):
                 continue
+            try:
+                rec_ts = datetime.datetime.fromisoformat(o.get('timestamp', '').replace('Z', '+00:00'))
+            except ValueError:
+                continue
             prompts.append(t[:100])
+            if latest_ts is None or rec_ts > latest_ts:
+                latest_ts = rec_ts
     except Exception:
         continue
-    if not prompts:
+    if not prompts or latest_ts is None:
         continue
-    ts = datetime.datetime.fromtimestamp(os.path.getmtime(f)).strftime('%m/%d %H:%M')
+    if (now_dt - latest_ts).total_seconds() > RECENT_CUTOFF_SEC:
+        continue
+    ts = latest_ts.astimezone().strftime('%m/%d %H:%M')
     out.append('• 視窗[%s] 最近講的:' % ts)
     for p in prompts[-4:]:
         out.append('    - ' + p)
