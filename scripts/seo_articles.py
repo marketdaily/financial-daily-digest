@@ -117,6 +117,33 @@ MACRO_TOPICS = [
     ("財報季與財測", "財報季是什麼 財測怎麼看 2026"),
 ]
 
+# 新手教學(2026-07-05 分發瓶頸研究缺口 F:與 TERM_TOPICS/MACRO_TOPICS 的差異化角度——
+# 那兩組是「單一名詞/指標是什麼」的定義型內容,這裡是「怎麼做/怎麼選/該注意什麼」的流程與決策型內容
+# (開戶/下單/資產配置/心理偏誤/檢查清單),鎖定不同搜尋意圖的關鍵字,避免內容重疊稀釋 SEO。
+# 每篇 slug 前綴固定為 "guide",讓既有 related_html() 自動把全部新手教學文章群聚互連。
+BEGINNER_TOPICS = [
+    ("第一次買股票前要準備什麼", "股票新手 第一次買股票 準備什麼 2026"),
+    ("新手投資最常犯的5個錯誤", "投資新手 常犯錯誤 2026"),
+    ("市價單與限價單怎麼選", "市價單 限價單 怎麼選 2026"),
+    ("存股與波段操作,新手適合哪一種", "存股 波段 新手適合哪種 2026"),
+    ("資產配置入門:股債比例怎麼抓", "資產配置 股債比例 新手 2026"),
+    ("風險承受度自我評估:我適合哪種投資", "風險承受度 評估 適合投資 2026"),
+    ("投資與投機的差別:新手該有的心態", "投資 投機 差別 心態 2026"),
+    ("複利效果為什麼重要:越早開始投資越好", "複利效果 越早投資越好 2026"),
+    ("零股交易是什麼:小額投資新手指南", "零股交易 小額投資 新手 2026"),
+    ("多少錢可以開始投資:小資族入門攻略", "多少錢開始投資 小資族 2026"),
+    ("基本面技術面籌碼面差在哪:新手選股入門", "基本面 技術面 籌碼面 差別 新手 2026"),
+    ("停損與停利怎麼設:新手風險管理入門", "停損 停利 怎麼設 新手 2026"),
+    ("常見投資心理偏誤:定錨效應與處置效應", "投資心理偏誤 定錨效應 處置效應 2026"),
+    ("第一次買股票前的檢查清單", "買股票前 檢查清單 新手 2026"),
+    ("緊急預備金該存多少才能開始投資", "緊急預備金 開始投資 多少 2026"),
+    ("追高殺低的心理陷阱:新手如何避免", "追高殺低 心理陷阱 新手 如何避免 2026"),
+    ("投資新手該追蹤哪些財經資訊來源", "投資新手 財經資訊來源 怎麼選 2026"),
+    ("複委託與海外券商差在哪:美股投資新手指南", "複委託 海外券商 差別 美股新手 2026"),
+    ("新手常見QA:零股划算嗎 股利怎麼領", "新手投資QA 零股 股利 2026"),
+    ("證券開戶要準備什麼文件:新手開戶流程", "證券開戶 準備文件 流程 新手 2026"),
+]
+
 # 產業供應鏈全景(2026-07-05 分發瓶頸研究缺口 D:重用既有 supply_chain.json,
 # 66 家已核實公司資料,工程成本最低+零幻覺風險,因資料直接餵給 LLM 當唯一事實來源)
 CHAIN_TOPIC = "供應鏈全景:上下游廠商解析"
@@ -390,6 +417,50 @@ def gen_macro_article(indicator: str, keyword: str) -> dict:
     }
 
 
+BEGINNER_SYSTEM = """你是 MarketDaily 的新手投資教育 SEO 內容寫手。寫繁體中文投資新手入門教學文章,面向完全沒有投資經驗、正準備跨出第一步的讀者。
+
+規則:
+- 800-1200 字
+- **這是新手引導文,不是名詞定義文**:重點在「怎麼做/怎麼選/該注意什麼」的實務引導(可用清單/步驟/比較角度),不要退化成單一財務比率或總經指標的定義教學——那類主題本站已有其他系列文章涵蓋,若發現主題其實只是在解釋一個名詞,請改用更寬的流程/決策/心法角度切入
+- 結構:H1 標題(含關鍵字)、引言(從新手常見困惑或痛點切入)、H2 分 2-4 段實務引導、H2「常見誤區」、結論 + CTA
+- 開頭 80 字內出現關鍵字
+- 絕對禁止捏造具體絕對數字(股價/手續費費率/報酬率)、不得推薦或點名特定券商/App/投顧——若需比較不同帳戶類型(如複委託 vs 海外券商)只講概念性差異(稅務/幣別/交易時間等),不列具體費率數字,一律建議讀者「洽詢所屬證券商/查詢官方最新公告」取得現在的實際條件
+- 不能保證收益、不能喊進喊出
+- 語氣友善、鼓勵,像帶新手入門的導師,不是空泛的百科定義
+- 結尾 CTA:「想每天早上 7 點收到這類分析?免費訂閱 MarketDaily → marketdaily.ai」
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html 或 ``` 包住輸出(直接輸出 HTML 標籤本身)
+- HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
+- 不寫日期(會過時),用「2026」這種年度即可"""
+
+
+def beginner_slug(topic: str) -> str:
+    safe = re.sub(r"[^\w一-鿿]+", "-", topic)[:30]
+    return f"guide-{safe}-{datetime.now():%Y%m}"
+
+
+def gen_beginner_article(topic: str, keyword: str) -> dict:
+    user = f"""寫一篇 SEO 投資新手入門教學文章。
+
+關鍵字:「{keyword}」
+主題:{topic}
+
+請按 SEO 結構寫,涵蓋 H1/H2/H3,800-1200 字,結尾接 CTA。
+回傳純 HTML 片段(<h1>...到最後</p>),其他不要。"""
+    body = call_claude(BEGINNER_SYSTEM, user, max_tokens=3000)
+    body = strip_code_fence(body)
+    m = re.search(r"<h1[^>]*>(.+?)</h1>", body, re.DOTALL)
+    title = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else topic
+    return {
+        "ticker": "guide",  # 共用同一 pseudo-ticker,讓 related_html() 自動群聚成新手教學叢集
+        "name": topic,
+        "topic": keyword,
+        "market": "guide",
+        "title": title,
+        "body_html": body,
+        "slug": beginner_slug(topic),
+    }
+
+
 CHAIN_SYSTEM = """你是 MarketDaily 的產業供應鏈 SEO 內容寫手。寫繁體中文長尾文章,主題是特定公司的供應鏈上下游關係。
 
 規則:
@@ -609,7 +680,7 @@ strong {{ color:#fbbf24; font-weight:700; }}
 </html>"""
 
 
-MARKET_LABELS = {"us": "美股", "tw": "台股", "term": "投資知識", "macro": "總體經濟"}
+MARKET_LABELS = {"us": "美股", "tw": "台股", "term": "投資知識", "macro": "總體經濟", "guide": "新手教學"}
 
 
 def write_article(art: dict, dry: bool) -> Path:
@@ -619,6 +690,8 @@ def write_article(art: dict, dry: bool) -> Path:
         desc = f"{art['name']} — MarketDaily 投資知識整理。"
     elif art["market"] == "macro":
         desc = f"{art['name']} — MarketDaily 總體經濟指標整理。"
+    elif art["market"] == "guide":
+        desc = f"{art['name']} — MarketDaily 新手投資教學整理。"
     else:
         desc = f"{art['name']} ({art['ticker']}) {art['topic']} — MarketDaily 整理。"
     related = related_html(art["ticker"], slug, scan_articles())
@@ -785,6 +858,23 @@ def pick_dividend_seeds(count: int, published: set) -> list:
     return picked
 
 
+def pick_beginner_seeds(count: int, published: set) -> list:
+    if count <= 0:
+        return []
+    import random
+    rng = random.Random(int(datetime.now().timestamp()) + 5)
+    candidates = list(BEGINNER_TOPICS)
+    rng.shuffle(candidates)
+    picked = []
+    for topic, keyword in candidates:
+        if beginner_slug(topic) in published:
+            continue
+        picked.append((topic, keyword))
+        if len(picked) >= count:
+            break
+    return picked
+
+
 def pick_seeds(count: int, published: set) -> list:
     """從 stocks × topics 配對,挑沒寫過的 N 個。"""
     import random
@@ -819,17 +909,38 @@ def main():
 
     published = load_published()
     print(f"① 已發布 {len(published)} 篇,挑新主題 ×{args.count}...")
-    # 配額:每次最多 1 篇財經名詞教學(缺口A)+ 1 篇供應鏈全景(缺口D)+ 1 篇除權息導覽(缺口B)
-    # + 1 篇總經指標教學(缺口C),剩下的名額才給既有個股×主題組合,避免長青池子被單次跑完排擠。
-    term_seeds = pick_term_seeds(min(1, args.count), published)
-    chain_seeds = pick_chain_seeds(min(1, max(args.count - len(term_seeds), 0)), published)
-    remaining = max(args.count - len(term_seeds) - len(chain_seeds), 0)
-    dividend_seeds = pick_dividend_seeds(min(1, remaining), published)
-    remaining = max(remaining - len(dividend_seeds), 0)
-    macro_seeds = pick_macro_seeds(min(1, remaining), published)
-    stock_n = args.count - len(term_seeds) - len(chain_seeds) - len(dividend_seeds) - len(macro_seeds)
+    # 配額:5 種缺口填充池(A詞彙/D供應鏈/B除權息/C總經/F新手)各最多 1 篇,剩下才給既有個股×主題組合。
+    # STOCK_RESERVE 保留至少 1 個名額給長青個股池——production 一週只跑一次 --count 5,若 5 種缺口池
+    # 都用固定順序搶,個股池永遠分不到(2026-07-05 驗證者分離抓到的真實回歸,曾在此發生)。
+    # 缺口池彼此的搶奪順序依 ISO 週數輪替(而非寫死 term>chain>dividend>macro>beginner),
+    # 讓每個池子輪流被排在最後、輪流被犧牲,不會有後加入的池子長期被排擠到 0。
+    STOCK_RESERVE = 1
+    gap_pickers = {
+        "term": lambda n: pick_term_seeds(n, published),
+        "chain": lambda n: pick_chain_seeds(n, published),
+        "dividend": lambda n: pick_dividend_seeds(n, published),
+        "macro": lambda n: pick_macro_seeds(n, published),
+        "beginner": lambda n: pick_beginner_seeds(n, published),
+    }
+    gap_order = list(gap_pickers)
+    rotate = int(datetime.now().strftime("%V")) % len(gap_order)
+    gap_order = gap_order[rotate:] + gap_order[:rotate]
+    gap_budget = max(args.count - STOCK_RESERVE, 0)
+    gap_seeds = {k: [] for k in gap_pickers}
+    for key in gap_order:
+        if gap_budget <= 0:
+            break
+        gap_seeds[key] = gap_pickers[key](min(1, gap_budget))
+        gap_budget -= len(gap_seeds[key])
+    term_seeds = gap_seeds["term"]
+    chain_seeds = gap_seeds["chain"]
+    dividend_seeds = gap_seeds["dividend"]
+    macro_seeds = gap_seeds["macro"]
+    beginner_seeds = gap_seeds["beginner"]
+    stock_n = (args.count - len(term_seeds) - len(chain_seeds) - len(dividend_seeds)
+               - len(macro_seeds) - len(beginner_seeds))
     stock_seeds = pick_seeds(stock_n, published) if stock_n > 0 else []
-    if not term_seeds and not chain_seeds and not dividend_seeds and not macro_seeds and not stock_seeds:
+    if not any([term_seeds, chain_seeds, dividend_seeds, macro_seeds, beginner_seeds, stock_seeds]):
         print("  全部組合都發過了,沒新主題可挑。"); return
     print("② 生成中...")
     for term, keyword in term_seeds:
@@ -857,6 +968,13 @@ def main():
         print(f"  • 總經教學 — {indicator}")
         try:
             art = gen_macro_article(indicator, keyword)
+            write_article(art, args.dry)
+        except Exception as e:
+            print(f"    ✗ failed: {e}")
+    for topic, keyword in beginner_seeds:
+        print(f"  • 新手教學 — {topic}")
+        try:
+            art = gen_beginner_article(topic, keyword)
             write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
