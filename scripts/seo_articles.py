@@ -75,6 +75,44 @@ def load_published() -> set:
     return {f.stem for f in BLOG_DIR.glob("*.html") if f.stem != "index"}
 
 
+def ticker_of_slug(slug: str) -> str:
+    """slug 格式 f"{ticker}-{topic}-{yyyymm}",ticker 本身不含 '-',取第一段即可。"""
+    return slug.split("-")[0].lower()
+
+
+def scan_articles() -> list:
+    """掃全部已發布文章,回傳 [{slug, ticker, title}, ...] 供算相關文章用。"""
+    out = []
+    for f in BLOG_DIR.glob("*.html"):
+        if f.stem == "index":
+            continue
+        try:
+            m = re.search(r"<title>(.+?)\s*\|", f.read_text(encoding="utf-8"))
+            title = m.group(1) if m else f.stem
+        except Exception:
+            title = f.stem
+        out.append({"slug": f.stem, "ticker": ticker_of_slug(f.stem), "title": title})
+    return out
+
+
+def related_html(ticker: str, exclude_slug: str, articles: list) -> str:
+    """同代號的其他文章互連,形成 topic cluster;沒有同代號文章就回傳空字串。"""
+    same = [a for a in articles if a["ticker"] == ticker.lower() and a["slug"] != exclude_slug]
+    if not same:
+        return ""
+    items = "\n".join(
+        f'    <li style="margin:8px 0;"><a href="{a["slug"]}.html" '
+        f'style="color:#a5b4fc;text-decoration:none;font-weight:600;">{a["title"]}</a></li>'
+        for a in same[:5]
+    )
+    return f"""  <div style="margin:32px 0 0;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px;">相關文章</p>
+    <ul style="margin:0;padding:0;list-style:none;">
+{items}
+    </ul>
+  </div>"""
+
+
 def call_claude(system: str, user: str, max_tokens: int = 2000) -> str:
     import urllib.request
     req = urllib.request.Request(
@@ -187,6 +225,7 @@ strong {{ color:#fbbf24; font-weight:700; }}
 <article class="wrap">
   <div class="crumb">MARKETDAILY · 個股分析 · {market_label}</div>
   {body}
+{related}
   <div class="cta">
     <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">想每天早上 7 點收到這類分析?</p>
     <p style="font-size:14px;color:rgba(255,255,255,0.65);margin:6px 0 0;">免費訂閱 MarketDaily — 美股 + 台股 AI 過濾日報,30 秒讀完。</p>
@@ -202,6 +241,7 @@ def write_article(art: dict, dry: bool) -> Path:
     slug = art["slug"]
     fname = BLOG_DIR / f"{slug}.html"
     desc = f"{art['name']} ({art['ticker']}) {art['topic']} — MarketDaily 整理。"
+    related = related_html(art["ticker"], slug, scan_articles())
     html = PAGE_TEMPLATE.format(
         title=art["title"],
         desc=desc,
@@ -209,6 +249,7 @@ def write_article(art: dict, dry: bool) -> Path:
         slug_short=slug[:32],
         market_label="美股" if art["market"] == "us" else "台股",
         body=art["body_html"],
+        related=related,
         updated=datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d"),
     )
     if dry:
