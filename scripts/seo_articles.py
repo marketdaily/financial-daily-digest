@@ -64,6 +64,65 @@ TOPICS = [
     "新手第一次買要注意什麼",
 ]
 
+# 財經名詞教學(2026-07-05 分發瓶頸研究缺口 A:不綁個股,搜尋量最大,合規最安全)
+# 每篇 slug 前綴固定為 "term",讓既有 related_html() 自動把全部詞彙文章群聚互連
+# (topic cluster 效果,無需額外程式碼)。
+TERM_TOPICS = [
+    ("本益比 PE Ratio", "本益比是什麼 怎麼看 2026"),
+    ("殖利率", "股票殖利率是什麼 怎麼算 2026"),
+    ("ROE 股東權益報酬率", "ROE是什麼 好公司標準 2026"),
+    ("毛利率與營益率", "毛利率 營業利益率 差別 2026"),
+    ("EPS 每股盈餘", "EPS是什麼 怎麼看好壞 2026"),
+    ("現金流量表", "現金流量表怎麼看 三大現金流 2026"),
+    ("除權息", "除權息是什麼 填權填息 2026"),
+    ("融資融券", "融資融券是什麼 差別風險 2026"),
+    ("法人買賣超", "法人買賣超是什麼 怎麼看 2026"),
+    ("庫藏股", "庫藏股是什麼 對股價影響 2026"),
+    ("KD指標", "KD指標是什麼 黃金交叉死亡交叉 2026"),
+    ("RSI 相對強弱指標", "RSI是什麼 超買超賣怎麼用 2026"),
+    ("布林通道", "布林通道是什麼 怎麼用 2026"),
+    ("市值排名", "股票市值是什麼 怎麼算 2026"),
+    ("Beta值與系統性風險", "Beta值是什麼 股票風險 2026"),
+    ("財報三大報表", "財報怎麼看 損益表資產負債表現金流量表 2026"),
+    ("股票分割", "股票分割是什麼 對投資人影響 2026"),
+    ("ETF 與個股差異", "ETF跟股票差在哪 適合誰 2026"),
+    ("定期定額投資", "定期定額是什麼 適合新手嗎 2026"),
+    ("財報公布時間與行事曆", "財報公布時間怎麼查 2026"),
+]
+
+# 產業供應鏈全景(2026-07-05 分發瓶頸研究缺口 D:重用既有 supply_chain.json,
+# 66 家已核實公司資料,工程成本最低+零幻覺風險,因資料直接餵給 LLM 當唯一事實來源)
+CHAIN_TOPIC = "供應鏈全景:上下游廠商解析"
+SUPPLY_CHAIN_FILE = ROOT / "docs" / "data" / "supply_chain.json"
+CHAIN_TICKER_ALIAS = {"TSM": "2330.TW"}  # ADR 對應台灣母股資料
+CHAIN_SKIP = {"COIN", "2891", "0050", "0056", "00878"}  # ETF 或無 verified 資料,跳過
+
+
+def _load_chain_db() -> dict:
+    try:
+        return json.loads(SUPPLY_CHAIN_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+CHAIN_DB = _load_chain_db()
+
+
+def chain_key_for(ticker: str, market: str):
+    """把 TOPICS 池的 ticker 對應到 supply_chain.json 的 key,查無資料回傳 None。"""
+    if ticker in CHAIN_SKIP:
+        return None
+    alias = CHAIN_TICKER_ALIAS.get(ticker)
+    if alias:
+        return alias if alias in CHAIN_DB else None
+    if market == "us":
+        return ticker if ticker in CHAIN_DB else None
+    for suffix in (".TW", ".TWO"):
+        key = f"{ticker}{suffix}"
+        if key in CHAIN_DB:
+            return key
+    return None
+
 
 def slug_of(ticker: str, topic: str) -> str:
     safe = re.sub(r"[^\w一-鿿]+", "-", topic)[:30]
@@ -214,6 +273,105 @@ def gen_article(ticker: str, name: str, topic: str, market: str) -> dict:
     }
 
 
+TERM_SYSTEM = """你是 MarketDaily 的財經知識 SEO 內容寫手。寫繁體中文投資名詞教學文章,面向完全新手。
+
+規則:
+- 800-1200 字
+- 結構:H1 標題(含關鍵字)、引言(為何這個名詞重要)、H2「定義與計算方式」、H2「怎麼解讀(什麼算好/壞)」、H2「常見誤區」、結論 + CTA
+- 開頭 80 字內出現關鍵字
+- 舉例只能用**相對描述**(如「本益比通常落在某個區間,產業別而異」),絕對不可捏造任何具體公司的絕對數字(股價/EPS/財報數字)
+- 內容要有實質教學價值,像財經媒體的新手教學文,不是空泛定義
+- 不能保證收益、不能喊進喊出
+- 結尾 CTA:「想每天早上 7 點收到這類分析?免費訂閱 MarketDaily → marketdaily.ai」
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html 或 ``` 包住輸出(直接輸出 HTML 標籤本身)
+- HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
+- 不寫日期(會過時),用「2026」這種年度即可"""
+
+
+def term_slug(term: str) -> str:
+    safe = re.sub(r"[^\w一-鿿]+", "-", term)[:30]
+    return f"term-{safe}-{datetime.now():%Y%m}"
+
+
+def gen_term_article(term: str, keyword: str) -> dict:
+    user = f"""寫一篇 SEO 投資名詞教學文章。
+
+關鍵字:「{keyword}」
+名詞:{term}
+
+請按 SEO 結構寫,涵蓋 H1/H2/H3,800-1200 字,結尾接 CTA。
+回傳純 HTML 片段(<h1>...到最後</p>),其他不要。"""
+    body = call_claude(TERM_SYSTEM, user, max_tokens=3000)
+    body = strip_code_fence(body)
+    m = re.search(r"<h1[^>]*>(.+?)</h1>", body, re.DOTALL)
+    title = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else term
+    return {
+        "ticker": "term",  # 共用同一 pseudo-ticker,讓 related_html() 自動群聚成詞彙叢集
+        "name": term,
+        "topic": keyword,
+        "market": "term",
+        "title": title,
+        "body_html": body,
+        "slug": term_slug(term),
+    }
+
+
+CHAIN_SYSTEM = """你是 MarketDaily 的產業供應鏈 SEO 內容寫手。寫繁體中文長尾文章,主題是特定公司的供應鏈上下游關係。
+
+規則:
+- 800-1200 字
+- 結構:H1 標題、引言、H2「上游供應商」、H2「下游客戶」、H2「產業鏈風險與集中度觀察」、結論 + CTA
+- **只能使用下方提供的「真實供應鏈資料」裡列出的公司與描述,絕對不可捏造清單以外的公司名稱、角色或數字**——這些是已核實的真實資料,你的任務是把它組織成好讀的文章,不是新增內容
+- 可依資料裡的「集中度」描述做質化的風險/替代性觀察,但不可給出任何具體營收占比/股價/財報數字(除非資料本身有提供)
+- 不能保證收益、不能喊進喊出
+- 結尾 CTA:「想每天早上 7 點收到這類分析?免費訂閱 MarketDaily → marketdaily.ai」
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html 或 ``` 包住輸出(直接輸出 HTML 標籤本身)
+- HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
+- 不寫日期,用「2026」這種年度即可"""
+
+
+def _chain_grounding_text(entry: dict) -> str:
+    mid = entry.get("mid", {})
+    lines = [f"公司:{mid.get('name', '')}({entry.get('ticker', '')})"]
+    if mid.get("desc"):
+        lines.append(f"業務模式:{mid['desc']}")
+    lines.append("上游供應商(真實資料,不可新增未列出的公司):")
+    for s in entry.get("upstream", []):
+        tk = f"({s['ticker']})" if s.get("ticker") else ""
+        crit = f"; 集中度:{s['criticality']}" if s.get("criticality") else ""
+        lines.append(f"- {s.get('name_zh', '')}{tk}:{s.get('role', '')}{crit}")
+    lines.append("下游客戶(真實資料,不可新增未列出的公司):")
+    for c in entry.get("downstream", []):
+        tk = f"({c['ticker']})" if c.get("ticker") else ""
+        lines.append(f"- {c.get('name_zh', '')}{tk}:{c.get('role', '')}")
+    return "\n".join(lines)
+
+
+def gen_chain_article(ticker: str, name: str, market: str, chain_key: str) -> dict:
+    entry = CHAIN_DB[chain_key]
+    grounding = _chain_grounding_text(entry)
+    user = f"""寫一篇 SEO 文章,主題是「{name}({ticker}) {CHAIN_TOPIC}」。
+
+真實供應鏈資料(唯一可用資料來源,不可新增清單以外的公司):
+{grounding}
+
+請按 SEO 結構寫,涵蓋 H1/H2/H3,800-1200 字,結尾接 CTA。
+回傳純 HTML 片段(<h1>...到最後</p>),其他不要。"""
+    body = call_claude(CHAIN_SYSTEM, user, max_tokens=3000)
+    body = strip_code_fence(body)
+    m = re.search(r"<h1[^>]*>(.+?)</h1>", body, re.DOTALL)
+    title = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else f"{name} {CHAIN_TOPIC}"
+    return {
+        "ticker": ticker,
+        "name": name,
+        "topic": CHAIN_TOPIC,
+        "market": market,
+        "title": title,
+        "body_html": body,
+        "slug": slug_of(ticker, CHAIN_TOPIC),
+    }
+
+
 PAGE_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -269,17 +427,23 @@ strong {{ color:#fbbf24; font-weight:700; }}
 </html>"""
 
 
+MARKET_LABELS = {"us": "美股", "tw": "台股", "term": "投資知識"}
+
+
 def write_article(art: dict, dry: bool) -> Path:
     slug = art["slug"]
     fname = BLOG_DIR / f"{slug}.html"
-    desc = f"{art['name']} ({art['ticker']}) {art['topic']} — MarketDaily 整理。"
+    if art["market"] == "term":
+        desc = f"{art['name']} — MarketDaily 投資知識整理。"
+    else:
+        desc = f"{art['name']} ({art['ticker']}) {art['topic']} — MarketDaily 整理。"
     related = related_html(art["ticker"], slug, scan_articles())
     html = PAGE_TEMPLATE.format(
         title=art["title"],
         desc=desc,
         slug=slug,
         slug_short=slug[:32],
-        market_label="美股" if art["market"] == "us" else "台股",
+        market_label=MARKET_LABELS.get(art["market"], "台股"),
         body=art["body_html"],
         related=related,
         updated=datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d"),
@@ -356,6 +520,49 @@ h1 {{ font-size:32px; font-weight:900; color:#fff; margin-bottom:32px; }}
         print(f"  ✓ index.html ({len(items)} items)")
 
 
+def pick_term_seeds(count: int, published: set) -> list:
+    if count <= 0:
+        return []
+    import random
+    rng = random.Random(int(datetime.now().timestamp()) + 1)
+    candidates = list(TERM_TOPICS)
+    rng.shuffle(candidates)
+    picked = []
+    for term, keyword in candidates:
+        if term_slug(term) in published:
+            continue
+        picked.append((term, keyword))
+        if len(picked) >= count:
+            break
+    return picked
+
+
+def pick_chain_seeds(count: int, published: set) -> list:
+    if count <= 0:
+        return []
+    import random
+    rng = random.Random(int(datetime.now().timestamp()) + 2)
+    all_stocks = [(c, n, "us") for c, n in US_STOCKS] + [(c, n, "tw") for c, n in TW_STOCKS]
+    seen_keys = set()
+    candidates = []
+    for code, name, market in all_stocks:
+        if code in CHAIN_TICKER_ALIAS:
+            continue  # 別名(如 TSM)一律用母股原生 ticker 產文,避免同一份供應鏈資料生出近乎重複的兩篇文章
+        key = chain_key_for(code, market)
+        if key and key not in seen_keys:
+            seen_keys.add(key)
+            candidates.append((code, name, market, key))
+    rng.shuffle(candidates)
+    picked = []
+    for code, name, market, key in candidates:
+        if slug_of(code, CHAIN_TOPIC) in published:
+            continue
+        picked.append((code, name, market, key))
+        if len(picked) >= count:
+            break
+    return picked
+
+
 def pick_seeds(count: int, published: set) -> list:
     """從 stocks × topics 配對,挑沒寫過的 N 個。"""
     import random
@@ -390,11 +597,30 @@ def main():
 
     published = load_published()
     print(f"① 已發布 {len(published)} 篇,挑新主題 ×{args.count}...")
-    seeds = pick_seeds(args.count, published)
-    if not seeds:
-        print("  全部 stocks×topics 組合都發過了,沒新主題可挑。"); return
+    # 配額:每次最多 1 篇財經名詞教學(缺口A)+ 1 篇供應鏈全景(缺口D),
+    # 剩下的名額才給既有個股×主題組合,避免長青詞彙/產業鏈池子被單次跑完排擠。
+    term_seeds = pick_term_seeds(min(1, args.count), published)
+    chain_seeds = pick_chain_seeds(min(1, max(args.count - len(term_seeds), 0)), published)
+    stock_n = args.count - len(term_seeds) - len(chain_seeds)
+    stock_seeds = pick_seeds(stock_n, published) if stock_n > 0 else []
+    if not term_seeds and not chain_seeds and not stock_seeds:
+        print("  全部組合都發過了,沒新主題可挑。"); return
     print("② 生成中...")
-    for code, name, topic, market in seeds:
+    for term, keyword in term_seeds:
+        print(f"  • 詞彙教學 — {term}")
+        try:
+            art = gen_term_article(term, keyword)
+            write_article(art, args.dry)
+        except Exception as e:
+            print(f"    ✗ failed: {e}")
+    for code, name, market, chain_key in chain_seeds:
+        print(f"  • {market.upper()} {code} {name} — {CHAIN_TOPIC}")
+        try:
+            art = gen_chain_article(code, name, market, chain_key)
+            write_article(art, args.dry)
+        except Exception as e:
+            print(f"    ✗ failed: {e}")
+    for code, name, topic, market in stock_seeds:
         print(f"  • {market.upper()} {code} {name} — {topic}")
         try:
             art = gen_article(code, name, topic, market)
