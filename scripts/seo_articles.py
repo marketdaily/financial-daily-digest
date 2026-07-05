@@ -95,6 +95,9 @@ def scan_articles() -> list:
     return out
 
 
+RELATED_BLOCK_OPEN = '<div style="margin:32px 0 0;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;">'
+
+
 def related_html(ticker: str, exclude_slug: str, articles: list) -> str:
     """同代號的其他文章互連,形成 topic cluster;沒有同代號文章就回傳空字串。"""
     same = [a for a in articles if a["ticker"] == ticker.lower() and a["slug"] != exclude_slug]
@@ -105,12 +108,41 @@ def related_html(ticker: str, exclude_slug: str, articles: list) -> str:
         f'style="color:#a5b4fc;text-decoration:none;font-weight:600;">{a["title"]}</a></li>'
         for a in same[:5]
     )
-    return f"""  <div style="margin:32px 0 0;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
+    return f"""  {RELATED_BLOCK_OPEN}
     <p style="font-size:13px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px;">相關文章</p>
     <ul style="margin:0;padding:0;list-style:none;">
 {items}
     </ul>
   </div>"""
+
+
+def reconcile_related_links(dry: bool) -> list:
+    """批次寫檔是逐篇即時掃描,同批次挑到同代號的文章只會單向連結(先寫的看不到後寫的)。
+    寫檔全部跑完後重掃一次,把每篇文章的「相關文章」區塊校正成雙向一致,不論寫入順序。"""
+    articles = scan_articles()
+    block_pattern = re.compile(r"[ \t]*" + re.escape(RELATED_BLOCK_OPEN) + r".*?</div>\n?", re.DOTALL)
+    cta_marker = '<div class="cta">'
+    updated = []
+    for a in articles:
+        fpath = BLOG_DIR / f"{a['slug']}.html"
+        html = fpath.read_text(encoding="utf-8")
+        expected = related_html(a["ticker"], a["slug"], articles)
+        m = block_pattern.search(html)
+        if m:
+            if m.group(0).strip() == expected.strip():
+                continue
+            new_html = html[: m.start()] + (expected + "\n" if expected else "") + html[m.end() :]
+        else:
+            if not expected or cta_marker not in html:
+                continue
+            new_html = html.replace(cta_marker, expected + "\n  " + cta_marker, 1)
+        updated.append(a["slug"])
+        if dry:
+            print(f"  [dry] would sync related links: {a['slug']}")
+        else:
+            fpath.write_text(new_html, encoding="utf-8")
+            print(f"  ✓ related links synced: {a['slug']}")
+    return updated
 
 
 def call_claude(system: str, user: str, max_tokens: int = 2000) -> str:
@@ -369,7 +401,9 @@ def main():
             write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
-    print("③ 更新 blog index...")
+    print("③ 校正相關文章雙向連結...")
+    reconcile_related_links(args.dry)
+    print("④ 更新 blog index...")
     regenerate_blog_index(args.dry)
     print("✓ done")
 
