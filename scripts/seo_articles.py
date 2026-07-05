@@ -17,6 +17,7 @@ import argparse
 import json
 import os
 import re
+import subprocess
 import sys
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -854,6 +855,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://marketdaily.ai/blog/{slug}.html">
 <link rel="canonical" href="https://marketdaily.ai/blog/{slug}.html">
+<script type="application/ld+json">{schema_json}</script>
 <style>
 :root {{ color-scheme: dark; }}
 * {{ box-sizing: border-box; margin: 0; padding: 0; }}
@@ -897,6 +899,55 @@ strong {{ color:#fbbf24; font-weight:700; }}
 MARKET_LABELS = {"us": "美股", "tw": "台股", "term": "投資知識", "macro": "總體經濟", "guide": "新手教學"}
 
 
+def _git_first_commit_date(fname: Path) -> str:
+    """該檔案第一次進 git 的日期(ISO8601)。查不到就退回檔案 mtime。"""
+    try:
+        out = subprocess.run(
+            ["git", "log", "--follow", "--diff-filter=A", "--format=%aI", "--", str(fname)],
+            cwd=str(ROOT), capture_output=True, text=True, timeout=10,
+        ).stdout.strip()
+        if out:
+            return out.splitlines()[-1]
+    except Exception:
+        pass
+    try:
+        return datetime.fromtimestamp(fname.stat().st_mtime, timezone(timedelta(hours=8))).isoformat()
+    except Exception:
+        return datetime.now(timezone(timedelta(hours=8))).isoformat()
+
+
+def _existing_date_published(fname: Path):
+    """重新渲染既有檔案時,盡量保留原本的 datePublished(而非每次重寫都刷新成今天)。"""
+    if not fname.exists():
+        return None
+    try:
+        m = re.search(r'"datePublished"\s*:\s*"([^"]+)"', fname.read_text(encoding="utf-8"))
+        if m:
+            return m.group(1)
+    except Exception:
+        pass
+    return None
+
+
+def _article_schema_json(title: str, desc: str, slug: str, date_published: str, date_modified: str) -> str:
+    schema = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": title,
+        "description": desc,
+        "datePublished": date_published,
+        "dateModified": date_modified,
+        "author": {"@type": "Organization", "name": "MarketDaily"},
+        "publisher": {
+            "@type": "Organization",
+            "name": "MarketDaily",
+            "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"},
+        },
+        "mainEntityOfPage": {"@type": "WebPage", "@id": f"https://marketdaily.ai/blog/{slug}.html"},
+    }
+    return json.dumps(schema, ensure_ascii=False).replace("</", "<\\/")
+
+
 def write_article(art: dict, dry: bool) -> Path:
     slug = art["slug"]
     fname = BLOG_DIR / f"{slug}.html"
@@ -909,6 +960,9 @@ def write_article(art: dict, dry: bool) -> Path:
     else:
         desc = f"{art['name']} ({art['ticker']}) {art['topic']} — MarketDaily 整理。"
     related = related_html(art["ticker"], slug, scan_articles())
+    date_modified = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
+    date_published = _existing_date_published(fname) or _git_first_commit_date(fname) or date_modified
+    schema_json = _article_schema_json(art["title"], desc, slug, date_published, date_modified)
     html = PAGE_TEMPLATE.format(
         title=art["title"],
         desc=desc,
@@ -917,7 +971,8 @@ def write_article(art: dict, dry: bool) -> Path:
         market_label=MARKET_LABELS.get(art["market"], "台股"),
         body=art["body_html"],
         related=related,
-        updated=datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d"),
+        updated=date_modified,
+        schema_json=schema_json,
     )
     if dry:
         print(f"  [dry] {fname.name}({len(html)} bytes)")

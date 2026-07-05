@@ -5,6 +5,7 @@
 exit 0 = 全過;exit 1 = 有 fail(stdout 列出每條)。
 """
 import json
+import re
 import subprocess
 import sys
 import time
@@ -186,6 +187,32 @@ def probe_blog_hygiene():
           f"文章殘留 markdown 圍欄未清:{leaked}" if leaked else f"{len(files)} 篇皆乾淨")
 
 
+# ── 8. Blog 文章 JSON-LD structured data ──────────────────────────────
+# 出處 2026-07-05:35 篇文章上線至今 0 篇有 schema.org Article markup,
+# 搜尋引擎 rich snippet/知識圖譜零命中,是純技術債(非內容問題)。補上後
+# 此檢查防未來新文章類型漏接 schema(seo_articles.py::write_article 統一注入)。
+def probe_blog_schema():
+    blog_dir = Path(__file__).resolve().parents[1] / "docs" / "blog"
+    files = [f for f in blog_dir.glob("*.html") if f.name != "index.html"]
+    missing, invalid = [], []
+    required = ["@context", "@type", "headline", "datePublished", "dateModified"]
+    for f in files:
+        html = f.read_text(encoding="utf-8")
+        m = re.search(r'<script type="application/ld\+json">(.+?)</script>', html, re.DOTALL)
+        if not m:
+            missing.append(f.name)
+            continue
+        try:
+            obj = json.loads(m.group(1))
+            if any(k not in obj for k in required):
+                invalid.append(f.name)
+        except Exception:
+            invalid.append(f.name)
+    ok = not missing and not invalid
+    msg = f"{len(files)} 篇皆有效" if ok else f"缺 schema:{missing};壞 schema:{invalid}"
+    check("blog_schema_present", ok, msg)
+
+
 def main():
     probe_quotes()
     probe_track_record()
@@ -194,6 +221,7 @@ def main():
     probe_pages()
     probe_fabricated_content()
     probe_blog_hygiene()
+    probe_blog_schema()
     fails = [r for r in RESULTS if not r["ok"]]
     if "--json" in sys.argv:
         print(json.dumps(RESULTS, ensure_ascii=False, indent=1))
