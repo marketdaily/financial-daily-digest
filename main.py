@@ -688,7 +688,8 @@ def _generate_user_email(data, email, gen_us, gen_tw, depth, is_premium, picks_m
 
 
 def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, picks_mode,
-                      picks_banner, ai_calls, deterministic_fallbacks):
+                      picks_banner, ai_calls, deterministic_fallbacks,
+                      systemic_high_counts=None):
     """使用者視角 audit:HIGH severity → retry 一次(強制換更強模型),仍 fail →
     deterministic fallback,絕不寄錯誤內容,也絕不讓用戶收不到信。MED/LOW 直接寄。
     回傳 (html, fails, ai_calls)。"""
@@ -706,6 +707,14 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
     if any(f.get("severity") == "high" for f in fails) and (gen_us or gen_tw):
         high_checks = sorted({f["check"] for f in fails if f.get("severity") == "high"})
         print(f"   ⚠️ {email} HIGH audit fail({','.join(high_checks)}),retry 一次")
+        # 系統性失敗熔斷告警:同一 HIGH check 連中 3 位 = 幾乎必是 prompt/樣板層 bug,
+        # 不是個別內容偶發(2026-07-06 週一版 12/12 全中,admin 卻寄完才知道)。
+        # outbox 等整點才寄,這則會趕在寄出前送達;寄送本身不擋——死線是絕不缺信。
+        if systemic_high_counts is not None:
+            for _c in high_checks:
+                systemic_high_counts[_c] = systemic_high_counts.get(_c, 0) + 1
+                if systemic_high_counts[_c] == 3:
+                    _push_systemic_alert(data["date"], _c, email)
         try:
             time.sleep(5)
             # retry 強制換更強模型(Claude/OpenAI 先於 Gemini),否則又從 Gemini 起跑 = 白 retry
@@ -776,6 +785,7 @@ def run():
     audit_failures_by_email = {}  # 寄送前的使用者視角 audit 結果,寄完彙總推給 admin
     personalization_failures = []  # AI 個人化失敗的 (email, reason),寄完一起推給 admin
     deterministic_fallbacks = []  # retry 仍 HIGH fail → 用 deterministic 模板(無 LLM)寄出
+    systemic_high_counts = {}  # HIGH check 名 → 命中用戶數(連中 3 位即熔斷告警,見 _audit_with_retry)
     outbox = []  # (email, html, subject):先全部生成,等班次整點一齊寄(修「日報固定遲到20分」)
 
     # AI 委員會公版精選:沒選本班次市場持股的用戶,改收委員會投票選出的今日最有潛力標的。
@@ -830,7 +840,8 @@ def run():
         try:
             html, fails, ai_calls = _audit_with_retry(
                 data, email, inner, gen_us, gen_tw, depth, is_premium,
-                picks_mode, picks_banner, ai_calls, deterministic_fallbacks)
+                picks_mode, picks_banner, ai_calls, deterministic_fallbacks,
+                systemic_high_counts)
             if fails:
                 audit_failures_by_email[email] = fails
             # 只快取成功生成的精選版(subject=None 表示走了個人化失敗 fallback,別讓一人失敗全體共用)
@@ -971,6 +982,36 @@ def _hold_until_send_time(market):
         return
     print(f"⏸️ 全員生成完畢,等 {int(wait // 60)} 分 {int(wait % 60)} 秒到班次整點一齊寄出")
     time.sleep(wait)
+
+
+def _push_systemic_alert(date_str, check, sample_email):
+    """同一 HIGH audit check 生成中連中 3 位用戶 → 立刻推 admin(不等寄完)。
+    這種模式幾乎必是 prompt/樣板層系統性 bug:retry 換模型也救不回(同 prompt 同病),
+    受影響用戶會拿到 fallback 降級版。05:30 preflight 已隨 GitHub Actions 停擺退役,
+    這條熔斷是它的接替防線(零額外 LLM 成本,靠 outbox 整點寄的時間差跑在寄出前)。"""
+    import json as _json
+    import urllib.request
+    worker = os.environ.get("MARKETDAILY_ALERT_WORKER_URL",
+                            "https://marketdaily-alert-worker.delvin-12345678.workers.dev")
+    tok = (os.environ.get("MARKETDAILY_ALERT_TOKEN")
+           or os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN"))
+    if not tok:
+        print("   (skip systemic push:MARKETDAILY_ALERT_TOKEN/INTERNAL_TOKEN 未設)")
+        return
+    msg = (f"🚨 [系統性] 日報 {date_str} audit HIGH [{check}] 生成中已連中 3 位用戶(如 {sample_email})\n"
+           f"= prompt/樣板層 bug,非個別內容偶發;中招用戶將收到 retry/fallback 降級版。\n"
+           f"整點寄出前仍有時間介入,速查 logs/fallback_{date_str}.log")
+    try:
+        req = urllib.request.Request(
+            f"{worker.rstrip('/')}/internal/admin-line-push",
+            data=_json.dumps({"message": msg}).encode("utf-8"),
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            print(f"   🚨 systemic alert push status={resp.status}")
+    except Exception as e:
+        print(f"   ⚠️ systemic alert 推失敗:{e}")
 
 
 def _push_preflight_alert(date_str, high_fails, total_subscribers):
