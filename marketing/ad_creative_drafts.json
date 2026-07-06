@@ -60,8 +60,8 @@
       "tone": "casual",
       "visual_direction": "split-screen phone mockup:左邊日報 email 卡片(含美股+台股持股卡),右邊時鐘顯示 7:00",
       "hook": "財經新聞用讀的要一小時，你的行事曆沒有那一小時。",
-      "body": "美股+台股雙覆蓋，中文寫，只分析你自己的持股(最多 80 檔)——不是泛泛大盤新聞。週一到週六早上 7 點準時到信箱，週日休息。",
-      "caption_zh": "財經新聞用讀的要一小時，你的行事曆沒有那一小時。\n\n美股+台股雙覆蓋，中文寫，只分析你自己的持股(最多 80 檔)——不是泛泛大盤新聞。\n週一到週六早上 7 點準時到信箱，週日休息。\n\n免費訂閱→ https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_02\n\n#財經日報 #台股 #美股 #投資理財",
+      "body": "美股+台股雙覆蓋，中文寫，個股分析只針對你自己的持股(最多 80 檔)——不是泛泛大盤新聞。週一到週六早上 7 點準時到信箱，週日休息。",
+      "caption_zh": "財經新聞用讀的要一小時，你的行事曆沒有那一小時。\n\n美股+台股雙覆蓋，中文寫，個股分析只針對你自己的持股(最多 80 檔)——不是泛泛大盤新聞。\n週一到週六早上 7 點準時到信箱，週日休息。\n\n免費訂閱→ https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_02\n\n#財經日報 #台股 #美股 #投資理財",
       "caption_en": "Reading the financial news takes an hour. Your calendar doesn't have that hour.\n\nUS + Taiwan markets, written in Chinese, personalized to the stocks you actually hold (up to 80 tickers) — not generic market noise.\nDelivered Mon-Sat 7AM, Sundays off.\n\nSubscribe free → https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_02\n\n#FinanceDaily #TaiwanStocks #USStocks",
       "cta": "免費開始",
       "score": 90,
@@ -96,7 +96,8 @@
           "no_stock_analysis_premium_claim": true
         }
       },
-      "status": "pending_review"
+      "status": "pending_review",
+      "verifier_edits": "caption_zh 原寫「只分析你自己的持股」→ 改為「個股分析只針對你自己的持股」(body 同步修)。原句宣稱 MarketDaily 只分析持股,與 pricing.html 明載的每日大盤摘要/5 大新聞/加密貨幣/板塊輪動功能矛盾,且 caption_en 為 'personalized to the stocks you actually hold'(無 only 的排他宣稱),中英不一致——修正後中文限定範圍為個股分析,與英文及事實一致。"
     },
     {
       "id": "adcreative_2026-07-06_03",
@@ -154,8 +155,8 @@
       "tone": "casual",
       "visual_direction": "chat UI screenshot:AI 投資助手回答一則關於使用者實際持有個股的問題",
       "hook": "你的美股跟台股，誰在幫你一起看?",
-      "body": "多數財經內容只講大盤，不管你手上到底抱哪幾檔。MarketDaily 只分析你的持股(最多 80 檔)，美股台股都算進去，每日 30 則 AI 投資助手問答，免費版就有。",
-      "caption_zh": "你的美股跟台股，誰在幫你一起看?\n\n多數財經內容只講大盤，不管你手上到底抱哪幾檔。MarketDaily 只分析你的持股(最多 80 檔)，美股台股都算進去。\n每日 30 則 AI 投資助手問答，免費版就有。\n\n開始→ https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_04\n\n#財經日報 #台股 #美股",
+      "body": "多數財經內容只講大盤，不管你手上到底抱哪幾檔。MarketDaily 的個股分析只針對你的持股(最多 80 檔)，美股台股都算進去，每日 30 則 AI 投資助手問答，免費版就有。",
+      "caption_zh": "你的美股跟台股，誰在幫你一起看?\n\n多數財經內容只講大盤，不管你手上到底抱哪幾檔。MarketDaily 的個股分析只針對你的持股(最多 80 檔)，美股台股都算進去。\n每日 30 則 AI 投資助手問答，免費版就有。\n\n開始→ https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_04\n\n#財經日報 #台股 #美股",
       "caption_en": "Who's actually watching both your US and Taiwan holdings?\n\nMost finance content just talks about the index, not what you actually own. MarketDaily analyzes your own holdings (up to 80 tickers), US and Taiwan combined.\n30 AI assistant Q&As per day, free tier included.\n\nGet started → https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_04\n\n#FinanceDaily #TaiwanStocks",
       "cta": "開始使用",
       "score": 86,
@@ -190,7 +191,8 @@
           "no_stock_analysis_premium_claim": true
         }
       },
-      "status": "pending_review"
+      "status": "pending_review",
+      "verifier_edits": "caption_zh 原寫「MarketDaily 只分析你的持股」→ 改為「MarketDaily 的個股分析只針對你的持股」(body 同步修)。原句與 pricing.html 明載的大盤摘要/新聞/加密貨幣/板塊輪動功能矛盾(同批 draft 05 甚至以這些區塊為賣點),且 caption_en 為 'MarketDaily analyzes your own holdings'(無 only 的排他宣稱),中英不一致——修正後與英文及事實一致。"
     },
     {
       "id": "adcreative_2026-07-06_05",
