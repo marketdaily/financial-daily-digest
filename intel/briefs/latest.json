@@ -978,13 +978,6 @@
    "level": "yellow"
   }
  ],
- "news_broad_themes": [
-  {
-   "type": "macro",
-   "headline": "本週操盤筆記：美國聯準會會議紀要、中國通膨、紐西蘭利率決議",
-   "url": "https://news.cnyes.com/news/id/6522589",
-   "date": "2026-07-05"
-  }
- ],
+ "news_broad_themes": [],
  "signal_ledger_new": 0
 }
