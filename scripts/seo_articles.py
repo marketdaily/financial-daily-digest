@@ -526,6 +526,7 @@ FINMIND = "https://api.finmindtrade.com/api/v4/data"
 FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "").strip()
 DIVIDEND_CACHE_FILE = ROOT / "scripts" / ".dividend_cache.json"
 DIVIDEND_SKIP = {"0050", "0056", "00878"}  # ETF 配息機制與個股不同(收益平準金等),不適用本文類型
+STOCKNAME_CACHE_FILE = ROOT / "scripts" / ".stockname_cache.json"
 
 
 def _fetch_dividend_history(ticker: str) -> list:
@@ -835,6 +836,246 @@ def pick_event_seeds(count: int, published: set) -> list:
         if entry.get("pdf_zh") or entry.get("pdf_en"):
             materials = fetch_materials(code, name, entry)
         picked.append((code, name, "tw", entry, materials))
+        if len(picked) >= count:
+            break
+    return picked
+
+
+# 訊號匯流觀察文(2026-07-07 深研究夜課產出路線1,backlog.md P2.6,SEO第7種文章類型)。
+# 2026-07-06 opus 深攻輪 confluence_analysis.py 驗證結論:多個正交籌碼訊號同日在同一檔股票
+# 共振(4541 晟田案例)統計上 verdict=inconclusive——within-stock 配對控制後 pooled |CAR| 優勢
+# 崩潰,整合免費層籌碼訊號不製造 edge(memory capability_signal_confluence_validation.md)。
+# 這篇文章的定位因此**只能是質化案例觀察/公開資訊整理教學**,不可包裝成「訊號共振=更準」的
+# 統計背書——這是本類型與其餘六種類型最大的差異:其餘六種在講事實(法說會/除息/供應鏈),
+# 這種是在講「多個免費公開資料源剛好同時亮」這件事本身,措辭稍不慎極易滑向暗示 predictive
+# power,故唯獨本類型在 gen_confluence_article() 內建 confluence_lint() 當出版前防線
+# (其他六型的「不做買賣建議」只寫在 system prompt,沒有自動掃描複查 LLM 有沒有真的遵守)。
+# 只在 intel/briefs/latest.json::by_code 當日 confluence degree(同日不同 connector 數)≥3
+# 才觸發,查無就回傳空 list 不硬湊(同 pick_event_seeds/pick_dividend_seeds 紀律)。
+CONFLUENCE_TOPIC = "多方籌碼訊號同日觀察"
+CONFLUENCE_MIN_DEGREE = 3
+
+# 窄義禁詞:單獨出現即違規,不需要上下文佐證。
+# 2026-07-07 獨立驗證子代理實測抓到原版清單容易被繞過(如「值得投資人偏多留意」「命中率
+# 相當高」「過去案例中偏多力道通常延續」全部零命中),已補上這些真實測出的變體詞。
+CONFLUENCE_FORBIDDEN_PHRASES = [
+    "建議買進", "建議賣出", "建議加碼", "建議減碼", "目標價",
+    "看好後市", "看壞後市", "保證獲利", "穩賺", "勝率", "必漲", "必跌",
+    "命中率", "上漲機率", "下跌機率", "操作上建議", "值得偏多", "值得偏空",
+    "偏多留意", "偏空留意", "力道通常延續", "力道通常會延續", "力道有望延續",
+]
+
+# 「看多/看空」單獨出現常是中性教學用語(定義融資=投資人看多後市的槓桿工具/融券=投資人
+# 看空後市的放空工具,CONFLUENCE_SYSTEM 明確要求教這段),原版無條件禁用會誤傷這段教學內容
+# (2026-07-07 獨立驗證子代理實測「融資是投資人看多後市時的槓桿工具」被誤判)。改成只在
+# 同一句子也出現「方向性語境詞」(暗示這是在對這檔股票/操作下判斷,而非定義名詞)才算違規,
+# 同 marketing_compliance_lint 的 BROAD_SENSITIVE_PHRASES+PREMIUM_GATING_MARKERS
+# co-occurrence 設計。
+CONFLUENCE_BROAD_PHRASES = ["看多", "看空", "偏多操作", "偏空操作"]
+# 注意:「後市」不可放進這份清單——「看多後市/看空後市」是定義融資/融券時的標準固定搭配
+# 本身,放進去會讓中性教學句永遠共現觸發,等於變相恢復無條件禁用(2026-07-07 修復時實測
+# 抓到這個自我矛盾,已排除)。context marker 只留「明確指向這檔股票/具體操作」的詞。
+CONFLUENCE_DIRECTIONAL_CONTEXT_MARKERS = ["此股", "該股", "本檔", "這檔", "操作上", "建議"]
+
+# 誠實揭露檢查拆兩部分、需同時滿足,而非「任一詞出現在文中任何位置即通過」——原版只查單一
+# 清單裡任一詞,「僅供參考」這種每篇文章都可能出現的通用免責語即可誤過關,即使文章完全沒有
+# 交代「內部曾回測、結果顯示無edge」這個實質內容(2026-07-07 獨立驗證子代理實測重現此漏洞)。
+CONFLUENCE_HONESTY_TESTED_MARKERS = [
+    "回測", "歷史回測", "历史回测", "歷史數據", "历史数据", "歷史資料", "历史资料",
+    "內部測試", "内部测试", "歷史驗證", "历史验证",
+]
+CONFLUENCE_HONESTY_NEGATION_MARKERS = [
+    "不具備", "不具备", "不代表", "非預測", "非预测", "不保證", "不保证",
+    "未必", "不必然", "沒有可驗證", "没有可验证",
+]
+
+
+def _confluence_sentences(html: str) -> list:
+    """粗略切句(換行/中文句尾標點當邊界),供 CONFLUENCE_BROAD_PHRASES 的同句共現判斷用;
+    不追求語法正確,只要邊界大致合理即可(同 marketing_compliance_lint 逐行掃描的精神)。"""
+    return re.split(r"[\n。!!??]", html)
+
+
+def confluence_lint(body_html: str) -> list:
+    """回傳違規清單(空 list=通過)。規則見 CONFLUENCE_SYSTEM——這是本專案唯一「有沒有
+    statistical edge」本身就是內容核心的類型,LLM 若照抄類似案例常見寫法很容易滑向暗示
+    預測力,故加自動掃描當出版前硬性防線(其他六型只在 system prompt 交代,無自動複查)。
+    ~/autonomous capabilities/narrative_compliance_lint 會 import 本函式對已發布文章
+    做 post-hoc 複查(防手動編輯或未來程式繞過此 gate),單一來源在此,不重複定義規則。
+    跟 marketing_compliance_lint 一樣,這是關鍵詞掃描不是語意理解,無法對抗任意創意寫法,
+    只能拉高常見繞過寫法的門檻——誤判請人工複查再決定是否調整清單。"""
+    violations = []
+    for phrase in CONFLUENCE_FORBIDDEN_PHRASES:
+        if phrase in body_html:
+            violations.append(f"forbidden:{phrase}")
+    for sent in _confluence_sentences(body_html):
+        for phrase in CONFLUENCE_BROAD_PHRASES:
+            if phrase in sent and any(m in sent for m in CONFLUENCE_DIRECTIONAL_CONTEXT_MARKERS):
+                tag = f"forbidden_broad:{phrase}"
+                if tag not in violations:
+                    violations.append(tag)
+    has_tested = any(m in body_html for m in CONFLUENCE_HONESTY_TESTED_MARKERS)
+    has_negation = any(m in body_html for m in CONFLUENCE_HONESTY_NEGATION_MARKERS)
+    if not (has_tested and has_negation):
+        violations.append("missing_honesty_disclosure")
+    return violations
+
+
+CONFLUENCE_SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手,寫繁體中文「多方籌碼訊號同日觀察」文章。
+
+情境:某檔股票在同一天,有多個各自獨立的免費公開籌碼資訊來源(法人買賣超/融資融券/借券賣出/
+大戶持股分散/法說會排程等)同時出現訊號。這是**真實發生過的公開資訊巧合**,你的任務是把它
+整理成好讀的案例觀察文,而不是宣稱這種巧合本身能預測股價。
+
+**規則(違反任何一條都會被自動掃描退回,務必遵守)**:
+- 絕對禁止使用:「建議買進」「建議賣出」「建議加碼」「建議減碼」「目標價」「看好後市」
+  「看壞後市」「保證獲利」「穩賺」「勝率」「必漲」「必跌」「命中率」,以及任何暗示這種
+  同日巧合「準/靈驗/力道會延續」的說法——這些字眼暗示你在做投資建議或預測,你不是
+- 「看多」「看空」只能用於中性定義融資(投資人看多後市時使用的槓桿工具)/融券(投資人
+  看空後市時使用的放空工具)這類概念性教學,**絕對不可用來對這檔股票本身、或建議讀者
+  操作上偏多/偏空**(例如「此股操作上建議看多」這類句子絕對禁止出現)
+- 文中必須同時包含①任一提及「這是根據歷史數據/回測結果」的說法(如「回測」「歷史數據」
+  「內部測試」)②任一明確的負面用詞(如「不具備」「不代表」「非預測」「不保證」「未必」)
+  ——完整意思:MarketDaily 內部曾用歷史數據回測「多個籌碼訊號同日出現」是否比單一訊號更準,
+  結果顯示統計上**不具備**可驗證的優勢,這種同日多訊號巧合很可能只是反映該股票當下波動度
+  較高、被更多資料源同時捕捉到,而非精準預測。**只寫「僅供參考」這種通用免責語不夠**,
+  必須明確交代「內部曾用歷史數據測過,結果是沒有可驗證的優勢」這個實質內容
+- 只能使用下方提供的「真實訊號」內容,絕對不可新增清單以外的具體數字或方向性推論
+- 800-1200 字,結構:H1 標題、引言(這檔股票今天有哪些公開資訊同時亮起)、H2「今日同時出現的
+  訊號」(逐條整理下方提供的真實訊號原文)、H2「這類同日巧合該怎麼解讀」(納入上述誠實揭露,
+  說明這是案例觀察而非預測工具)、H2「這類公開籌碼資訊各自代表什麼」(概念性教學:法人買賣超/
+  融資融券/借券賣出/大戶持股分別反映哪種市場參與者行為)、結論 + CTA
+- 不能保證收益、不能喊進喊出,不做買賣建議,不使用感嘆號堆疊的煽動語氣
+- 結尾 CTA:「想每天早上 7 點收到這類公開資訊整理?免費訂閱 MarketDaily → marketdaily.ai」
+- 輸出純 HTML body 片段(從 <h1> 到結尾 </p>),不要 <html>/<head>/<body> 包裝,也不要用 ```html
+  或 ``` 包住輸出(直接輸出 HTML 標籤本身)
+- HTML 用簡潔語意標籤:h1, h2, h3, p, ul, ol, strong
+- 不寫日期(會過時)用「2026」這種年度即可,但訊號發生日期本身可原樣引用"""
+
+
+def confluence_slug(code: str, date: str) -> str:
+    return f"{code.lower()}-confluence-{date.replace('-', '')}"
+
+
+def _confluence_grounding_text(name: str, code: str, date: str, entries: list) -> str:
+    lines = [
+        f"公司:{name}({code})",
+        f"日期:{date}",
+        f"同日獨立來源數:{len(set(e.get('source') for e in entries))}",
+        "真實訊號(逐條列出,不可新增清單以外的內容):",
+    ]
+    for e in sorted(entries, key=lambda e: e.get("source") or ""):
+        lines.append(f"- [{e.get('source')}] {e.get('signal')}")
+    return "\n".join(lines)
+
+
+def gen_confluence_article(code: str, name: str, market: str, date: str, entries: list) -> dict:
+    grounding = _confluence_grounding_text(name, code, date, entries)
+    user = f"""寫一篇 SEO 文章,主題是「{name}({code}) {CONFLUENCE_TOPIC}」。
+
+{grounding}
+
+請按 SEO 結構寫,涵蓋 H1/H2/H3,800-1200 字,結尾接 CTA。
+回傳純 HTML 片段(<h1>...到最後</p>),其他不要。"""
+    body = call_claude(CONFLUENCE_SYSTEM, user, max_tokens=3000)
+    body = strip_code_fence(body)
+    violations = confluence_lint(body)
+    if violations:
+        raise ValueError(f"confluence_lint 未通過(拒絕出版): {violations}")
+    m = re.search(r"<h1[^>]*>(.+?)</h1>", body, re.DOTALL)
+    title = re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else f"{name} {CONFLUENCE_TOPIC}"
+    return {
+        "ticker": code,
+        "name": name,
+        "topic": CONFLUENCE_TOPIC,
+        "market": market,
+        "title": title,
+        "body_html": body,
+        "slug": confluence_slug(code, date),
+    }
+
+
+def _load_latest_brief() -> dict:
+    try:
+        return json.loads((ROOT / "intel" / "briefs" / "latest.json").read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def _fetch_clean_stock_name(code: str) -> str:
+    """FinMind TaiwanStockInfo 官方股票簡稱——cb_database 內部追蹤名常帶 CB 系列編號
+    (如「宏致四」「至上11」指該公司第 N 次可轉債發行),不適合當公開文章的公司名稱。"""
+    import urllib.request
+    try:
+        url = f"{FINMIND}?dataset=TaiwanStockInfo&data_id={code}"
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=15) as r:
+            rows = json.loads(r.read().decode()).get("data", [])
+        for row in rows:
+            if row.get("stock_id") == code and row.get("stock_name"):
+                return row["stock_name"]
+        return ""
+    except Exception:
+        return ""
+
+
+def clean_stock_name(code: str, fallback: str) -> str:
+    """cache-first(同天內免重打 FinMind API);查無資料退回 fallback(cb_database 內部追蹤名)。"""
+    try:
+        cache = json.loads(STOCKNAME_CACHE_FILE.read_text(encoding="utf-8"))
+    except Exception:
+        cache = {}
+    today = datetime.now().strftime("%Y-%m-%d")
+    entry = cache.get(code)
+    if entry and entry.get("date") == today:
+        return entry.get("name") or fallback
+    name = _fetch_clean_stock_name(code)
+    cache[code] = {"date": today, "name": name}
+    try:
+        STOCKNAME_CACHE_FILE.write_text(json.dumps(cache, ensure_ascii=False, indent=2), encoding="utf-8")
+    except Exception:
+        pass
+    return name or fallback
+
+
+def pick_confluence_seeds(count: int, published: set) -> list:
+    """掃 intel/briefs/latest.json::by_code,同日 confluence degree(獨立 connector 數)≥3
+    才觸發;查無就回傳空 list,不硬湊(同 pick_event_seeds 紀律)。degree 高的優先。
+
+    `intel/briefs/latest.json` 是跨子系統邊界的資料(夜間 patrol.py cron 產出,15 個
+    connector 任一個未來改版都可能寫出非預期 schema)——2026-07-07 獨立驗證子代理指出
+    原版對格式異常(entries 非 list、entry 非 dict、缺 source 欄位)沒有防呆,會讓
+    AttributeError 逃出這支函式、越過 main() 唯一的 per-article try/except,砍掉當週
+    整批文章生成(不只 confluence 這一種類型陪葬)。故對每個 code 的資料逐一防呆,壞掉的
+    code 直接跳過而非讓整個函式炸掉。"""
+    if count <= 0:
+        return []
+    brief = _load_latest_brief()
+    date = brief.get("date")
+    by_code = brief.get("by_code")
+    if not date or not isinstance(by_code, dict) or not by_code:
+        return []
+    try:
+        from intel.patrol import build_watchlist
+        wl = build_watchlist()
+    except Exception:
+        wl = {}
+    candidates = []
+    for code, entries in by_code.items():
+        if not isinstance(entries, list):
+            continue
+        valid_entries = [e for e in entries if isinstance(e, dict) and e.get("source") and e.get("signal")]
+        sources = set(e["source"] for e in valid_entries)
+        if len(sources) < CONFLUENCE_MIN_DEGREE:
+            continue
+        if confluence_slug(code, date) in published:
+            continue
+        candidates.append((len(sources), code, valid_entries))
+    candidates.sort(key=lambda x: -x[0])
+    picked = []
+    for _, code, entries in candidates:
+        name = clean_stock_name(code, wl.get(code) or code)
+        picked.append((code, name, "tw", date, entries))
         if len(picked) >= count:
             break
     return picked
@@ -1188,10 +1429,15 @@ def main():
     # 排到後面會被排擠到 0 次嘗試,等於系統性漏接時效性內容(2026-07-05 驗證者分離抓到的
     # 真實回歸)。故給 event 池固定優先於輪替之前先查,查到真實窗口內事件才佔用名額,
     # 查無事件(絕大多數週次)不消耗任何名額,常青池輪替預算不受影響。
+    # confluence(訊號匯流觀察)池同理不加入輪替:當日 by_code degree≥3 是特定日期的真實
+    # 巧合,錯過當晚 patrol.py 快照就再也拿不回同一批訊號,跟 event 池同一種「真實時效窗口」
+    # 屬性,故用同一套「固定優先於輪替+查無不佔名額」處理(見 pick_confluence_seeds)。
     STOCK_RESERVE = 1
     gap_budget = max(args.count - STOCK_RESERVE, 0)
     event_seeds = pick_event_seeds(min(1, gap_budget), published)
     gap_budget -= len(event_seeds)
+    confluence_seeds = pick_confluence_seeds(min(1, gap_budget), published)
+    gap_budget -= len(confluence_seeds)
     gap_pickers = {
         "term": lambda n: pick_term_seeds(n, published),
         "chain": lambda n: pick_chain_seeds(n, published),
@@ -1214,9 +1460,10 @@ def main():
     macro_seeds = gap_seeds["macro"]
     beginner_seeds = gap_seeds["beginner"]
     stock_n = (args.count - len(term_seeds) - len(chain_seeds) - len(dividend_seeds)
-               - len(macro_seeds) - len(beginner_seeds) - len(event_seeds))
+               - len(macro_seeds) - len(beginner_seeds) - len(event_seeds) - len(confluence_seeds))
     stock_seeds = pick_seeds(stock_n, published) if stock_n > 0 else []
-    if not any([term_seeds, chain_seeds, dividend_seeds, macro_seeds, beginner_seeds, event_seeds, stock_seeds]):
+    if not any([term_seeds, chain_seeds, dividend_seeds, macro_seeds, beginner_seeds, event_seeds,
+                confluence_seeds, stock_seeds]):
         print("  全部組合都發過了,沒新主題可挑。"); return
     print("② 生成中...")
     for term, keyword in term_seeds:
@@ -1260,6 +1507,14 @@ def main():
         print(f"  • {market.upper()} {code} {name} — 法說會{kind}")
         try:
             art = gen_event_article(code, name, market, conf_entry, materials)
+            write_article(art, args.dry)
+        except Exception as e:
+            print(f"    ✗ failed: {e}")
+    for code, name, market, date, entries in confluence_seeds:
+        degree = len(set(e.get("source") for e in entries))
+        print(f"  • {market.upper()} {code} {name} — {CONFLUENCE_TOPIC}(degree={degree})")
+        try:
+            art = gen_confluence_article(code, name, market, date, entries)
             write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
