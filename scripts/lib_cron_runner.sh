@@ -119,6 +119,19 @@ cron_safe_pull() {
   ) || true
 }
 
+# cron_consume_force_marker MARKER_PATH  event-driven 提前觸發用:marker 檔案存在就刪除
+# 並 return 0(呼叫端應略過平常的星期/時間閘門,直接繼續);不存在 return 1(維持原本閘門)。
+# 用途:某個「只在特定星期/時間窗口跑」的週期性 cron 任務,遇到需要提前執行的事件
+# (例:content_inventory_watchdog 偵測存貨低於門檻,不必等到下次排程窗口)時,由觸發方
+# `touch` 這個檔案,下一次 cron tick 內該任務就會偵測到並提前跑一次;跑完消耗掉 marker,
+# 不會重複觸發。呼叫端仍應保留自己既有的每日鎖(如 DONE 檔案)防同一天被跑兩次。
+cron_consume_force_marker() {
+  local marker="$1"
+  [ -f "$marker" ] || return 1
+  rm -f "$marker"
+  return 0
+}
+
 # cron_abort_if_dirty  若 repo 已有 tracked 未 commit 修改（不含 untracked ??），
 # 直接讓呼叫腳本 exit 0（靜默略過整輪）。給任何後面會做 `git checkout -- .` /
 # `git reset --hard` 這類整樹操作的腳本在動手前守門用 — 保證流程走到那一步時，
