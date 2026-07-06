@@ -40,7 +40,8 @@ def filter_and_label(articles: list, whitelist: list) -> list:
     keyword_map = defaultdict(list)
 
     for article in articles:
-        domain = _domain_from_url(article.get("url", ""))
+        # Google News 等聚合源的 url 是轉址,真實媒體域名放在 source_domain
+        domain = article.get("source_domain") or _domain_from_url(article.get("url", ""))
         if not _match_whitelist(domain, whitelist):
             continue
         title = article.get("title", "").strip()

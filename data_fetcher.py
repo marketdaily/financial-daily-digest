@@ -25,12 +25,10 @@ RSS_FEEDS = [
 ]
 
 TW_RSS_FEEDS = [
-    # 台股中文財經
-    ("cnyes.com",       "https://news.cnyes.com/rss/category/tw_stock"),
-    ("cnyes.com",       "https://news.cnyes.com/rss/category/headline"),
-    ("moneydj.com",     "https://www.moneydj.com/KMDJ/RSS/RSSFeed.aspx?svc=NW"),
-    ("cna.com.tw",      "https://feeds.feedburner.com/cnafinance"),
-    ("udn.com",         "https://udn.com/rssfeed/news/2/6638?ch=news"),
+    # 台股中文財經(2026-07-06 實測汰換:moneydj/cna feedburner/udn 舊 feed 已死回 0 篇)
+    ("tw.stock.yahoo.com", "https://tw.stock.yahoo.com/rss?category=news"),
+    ("technews.tw",        "https://technews.tw/feed/"),
+    ("money.udn.com",      "https://money.udn.com/rssfeed/news/1001/5591?ch=money"),
 ]
 
 def fetch_rss_news() -> list:
@@ -681,10 +679,7 @@ def fetch_tw_rss_news() -> list:
     cutoff = datetime.now() - timedelta(hours=36)
     seen_titles = {a["title"] for a in articles}
 
-    fallback_feeds = [
-        ("moneydj.com", "https://www.moneydj.com/KMDJ/RSS/RSSFeed.aspx?svc=NW"),
-        ("cna.com.tw",  "https://feeds.feedburner.com/cnafinance"),
-    ]
+    fallback_feeds = get_tw_feeds() or TW_RSS_FEEDS
     for domain, url in fallback_feeds:
         try:
             feed = feedparser.parse(url)
@@ -712,7 +707,79 @@ def fetch_tw_rss_news() -> list:
     return articles
 
 
-def fetch_tw_news():
+_TW_STOCK_NEWS_JUNK = ("個股概覽", "爆料同學會", "PTT", "Dcard")
+
+
+def _fetch_tw_stock_news(codes: list) -> list:
+    """每支台股持股用 Google News RSS(zh-TW)查「名稱+代號」點名新聞。
+    泛市場源(cnyes/yahoo)只蓋權值股,持股沒被頭條提到就整天零新聞 → 這裡逐支補洞。
+    只收白名單媒體 + 36h 內,來源域名取自 entry.source(Google 連結是轉址不能 parse URL)。"""
+    if not codes:
+        return []
+    import urllib.parse
+    import time as _time
+    from concurrent.futures import ThreadPoolExecutor
+    names = tw_name_map()
+    cutoff = datetime.now() - timedelta(hours=36)
+    uniq = list(dict.fromkeys([str(c) for c in codes if str(c).isdigit()]))[:80]
+
+    def _whitelisted(domain: str) -> bool:
+        return any(domain == d or domain.endswith("." + d) for d in TW_NEWS_WHITELIST_DOMAINS)
+
+    def _one(code: str) -> list:
+        name = names.get(code)
+        if not name:
+            return []
+        q = urllib.parse.quote(f"{name} {code}")
+        out = []
+        try:
+            feed = feedparser.parse(
+                f"https://news.google.com/rss/search?q={q}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant")
+            for entry in feed.entries[:15]:
+                if len(out) >= 3:
+                    break
+                title = (entry.get("title") or "").strip()
+                if not title or any(j in title for j in _TW_STOCK_NEWS_JUNK):
+                    continue
+                if not getattr(entry, "published_parsed", None):
+                    continue
+                published = datetime.fromtimestamp(_time.mktime(entry.published_parsed))
+                if published < cutoff:
+                    continue
+                src = getattr(entry, "source", {}) or {}
+                href = src.get("href", "")
+                domain = href.split("/")[2].replace("www.", "") if href.startswith("http") else ""
+                if not _whitelisted(domain):
+                    continue
+                src_name = (src.get("title") or domain).strip()
+                if src_name and title.endswith(" - " + src_name):
+                    title = title[:-(len(src_name) + 3)].strip()
+                out.append({
+                    "title": title,
+                    "description": "",
+                    "url": entry.get("link", ""),
+                    "source": {"name": src_name},
+                    "source_domain": domain,
+                    "publishedAt": published.isoformat(),
+                    "lang": "zh",
+                    "relatedTicker": code,
+                })
+        except Exception:
+            pass
+        return out
+
+    articles, seen = [], set()
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        for res in ex.map(_one, uniq):
+            for a in res:
+                if a["title"] in seen:
+                    continue
+                seen.add(a["title"])
+                articles.append(a)
+    return articles
+
+
+def fetch_tw_news(extra_tw_stocks: list = None):
     yesterday = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
     url = (
         f"https://newsapi.org/v2/everything"
@@ -730,7 +797,10 @@ def fetch_tw_news():
     except Exception:
         api_articles = []
     tw_rss = fetch_tw_rss_news()
-    return api_articles + tw_rss
+    # 個股點名新聞:有持股用持股,無持股(公版)用預設台股池,保證每支都查過一輪
+    per_stock_codes = extra_tw_stocks or [s for s in get_tw_stocks() if str(s).isdigit()][:10]
+    per_stock = _fetch_tw_stock_news(per_stock_codes)
+    return api_articles + tw_rss + per_stock
 
 
 def fetch_indicators() -> dict:
@@ -913,7 +983,7 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         "technicals": technicals,
         "tw_names_all": tw_name_map(),
         "us_news": fetch_us_news(extra_us_stocks),
-        "tw_news": fetch_tw_news(),
+        "tw_news": fetch_tw_news(extra_tw_stocks),
         "indicators": fetch_indicators(),
         "crypto": fetch_crypto(),
         "sectors": fetch_sector_performance(),

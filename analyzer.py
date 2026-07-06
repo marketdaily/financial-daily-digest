@@ -1915,6 +1915,13 @@ def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -
         for s in (data.get("political_signals") or []):
             for tk in (s.get("affected") or []):
                 pol_by_tk.setdefault(str(tk).upper(), s)
+    # 個股點名新聞(relatedTicker 標記,台股來自 Google News 逐支查詢、美股來自 ticker news)
+    news_by_tk = {}
+    if depth != "simple":
+        for a in (data.get("tw_news") or []) + (data.get("us_news") or []):
+            tk = str(a.get("relatedTicker") or "").upper()
+            if tk and a.get("title"):
+                news_by_tk.setdefault(tk, []).append(a["title"])
     lines = []
     for sym in chunk:
         is_tw = str(sym).isdigit()
@@ -1964,6 +1971,9 @@ def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -
         if ps:
             _dir = {"bullish": "偏多", "bearish": "偏空", "mixed": "分歧"}.get(ps.get("direction"), "分歧")
             base += f" | ⚡政壇訊號({_dir}/強度{ps.get('severity','?')}):{str(ps.get('headline_zh') or '')[:38]}"
+        heads = news_by_tk.get(str(sym).upper())
+        if heads:
+            base += " | 📰 今日點名新聞:" + ";".join(f"「{h[:40]}」" for h in heads[:2])
         if depth == "deep":
             f = (data.get("fundamentals") or {}).get(sym) or {}
             if f.get("valuation"):
@@ -2131,6 +2141,8 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                 "把它列為「該盯的事」;但 verdict 方向仍以技術結構為準,政壇訊號只調整語氣與觀察重點,不可單憑一則貼文就翻多翻空。\n"
                 "- 標到「基本面背景」(連續成長/累計YoY/EPS YoY)的個股:當作這檔體質的背景脈絡寫進 reason(例:基本面撐腰、回檔較有支撐),"
                 "不要當成今日進場理由,也不可編造任何沒列出的財務數字。\n"
+                "- 標到「📰 今日點名新聞」的個股:挑對操作最有影響的一則(財報/法說/訂單/法人動向/配息),把重點寫進 signal-reason 或 signal-watch,"
+                "讓用戶知道今天新聞為什麼點名它;新聞只補脈絡與觀察重點,方向/價位/信心仍以技術結構為準,嚴禁引用沒列出的新聞或自行腦補新聞細節。\n"
                 "- 宏觀背景只對「真的敏感」的持股連動(利率↑→金融/高估值成長股、油價→能源/航運、避險情緒→防禦vs風險),講不出機制的就別硬扯。\n"
             )
     def _mk_prompt(sub: list) -> str:
