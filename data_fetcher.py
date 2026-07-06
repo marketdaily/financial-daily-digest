@@ -5,9 +5,9 @@ import requests
 import feedparser
 from datetime import datetime, timedelta, timezone
 from config import (
-    NEWS_API_KEY, US_INDICES, NEWS_WHITELIST_DOMAINS
+    NEWS_API_KEY, US_INDICES, NEWS_WHITELIST_DOMAINS, TW_NEWS_WHITELIST_DOMAINS
 )
-from config_loader import get_us_stocks, get_tw_stocks, get_us_feeds, get_domains
+from config_loader import get_us_stocks, get_tw_stocks, get_us_feeds, get_tw_feeds, get_domains
 
 RSS_FEEDS = [
     # 美股財經
