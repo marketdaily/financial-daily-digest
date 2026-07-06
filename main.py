@@ -81,6 +81,35 @@ _CSS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 with open(_CSS_PATH, encoding="utf-8") as _f:
     CSS = _f.read()
 
+# 2026-07-06 週一版事故防線:LLM(不分模型)會把「沿用平日 CSS class」自由發揮成近似名
+# (news-title/summary-item/watch-date…),樣板 CSS 沒這些規則 → 區塊無樣式,
+# undefined_css_class HIGH audit 全員命中 → retry 也同病 → 12/12 打成 deterministic fallback。
+# 這裡在 premailer 內聯【之前】做確定性修復:已知近似名對映回既有 class(恢復原本想要的樣式),
+# 其餘未定義 class 直接拿掉(CSS 本來就沒對應規則,拿掉是視覺 no-op)。audit 檢查保留當最後防線。
+_CSS_CLASSES = frozenset(re.findall(r"\.([A-Za-z_][\w-]*)", CSS))
+_CLASS_ALIASES = {
+    "news-title": "news-headline",
+    "news-content": "news-why",
+    "impact-stocks": "news-impact",
+    "summary-item": "market-summary-item",
+    "summary-label": "market-summary-label",
+    "summary-content": "market-summary-note",
+    "summary-value": "market-summary-value",
+    "watch-date": "watch-list-date",
+    "watch-event": "watch-list-event",
+    "watch-impact": "watch-list-impact",
+    "verdict-playbook": "verdict-content",
+    "playbook-title": "verdict-title",
+}
+_CLASS_ATTR_RE = re.compile(r'class\s*=\s*"([^"]*)"')
+
+
+def _repair_undefined_classes(html_report: str) -> str:
+    def _fix(m):
+        kept = [_CLASS_ALIASES.get(t, t) for t in m.group(1).split()]
+        return 'class="' + " ".join(t for t in kept if t in _CSS_CLASSES) + '"'
+    return _CLASS_ATTR_RE.sub(_fix, html_report)
+
 
 # 日報 inner 內容合法會用到的標籤白名單。凡是 < 後面不接白名單標籤(開/閉)、
 # 也不是註解/DOCTYPE(<!) 的,一律視為 LLM 文字裡的裸「小於號」(如「價<MA20」「殖利率<3%」),
@@ -151,6 +180,7 @@ def render_email_shell(date: str, html_report: str) -> str:
 
 def build_email_html(date: str, html_report: str) -> str:
     html_report = _escape_stray_lt(html_report)
+    html_report = _repair_undefined_classes(html_report)
     full = render_email_shell(date, html_report)
     try:
         from premailer import transform
@@ -829,7 +859,11 @@ def _flush_outbox(outbox, date, send_fn, api_key):
         return 0
     sent_ok = 0
     _hold_until_send_time(MARKET)
+    # MD_SUBJECT_NOTE:人工補寄修正版時標注主旨(例:「(更新版) 」),平常不設=無作用
+    note = os.environ.get("MD_SUBJECT_NOTE", "")
     for email, html, subject in outbox:
+        if note:
+            subject = note + (subject or f"📊 財經日報 {date} — AI 精選美股 + 台股")
         try:
             ok = send_fn(email, date, html, api_key, subject=subject)
         except Exception as e:

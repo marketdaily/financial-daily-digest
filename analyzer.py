@@ -2930,6 +2930,23 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 - 條列 5-8 個 catalysts,標明日期(週幾)與對哪些持股有影響
 - 如新聞中沒提到,寫「本週新聞中未明示具體事件,持續追蹤」即可,不要捏造
 """
+    # 2026-07-06 事故:只寫「沿用平日 CSS class」→ 各家模型自創近似 class(news-title/
+    # summary-item/watch-date/verdict-playbook…),樣板沒規則=版型全毀,undefined_css_class
+    # audit 全員 HIGH → 全打成 deterministic fallback。跟平日 prompt 一樣給逐字骨架才根治。
+    monday_class_rule = """
+【🚫 CSS class 鐵則(違反=版型全毀廢稿)】只能用下列骨架裡出現的 class,絕對禁止自創任何新 class 名(例如 news-title、news-meta、news-source、news-content、summary-item、summary-label、summary-content、verdict-playbook、playbook-title、watch-date、watch-event、impact-stocks、daily-report-container 都不存在,全部是錯的);也不要在最外層包任何自己命名的容器 div,直接依序輸出各區塊。
+- 週末新聞卡,每張逐字用這個骨架:
+<div class="news-card">
+  <div class="news-tag verified">✅ 多源確認</div>
+  <div class="news-headline">（標題,標明「週末發生」,不超過 25 字）</div>
+  <div class="news-why">💡 為什麼重要：（來龍去脈 + 對持股的影響）</div>
+  <div class="news-impact"><span class="impact-label">📊 影響個股</span><span class="impact-stock up">NVDA</span></div>
+  <a class="read-more" href="（URL 原樣複製）" target="_blank">閱讀原文 →</a>
+</div>
+（單一來源改用 <div class="news-tag single">⚠️ 單一來源</div>;impact-stock 內只放代號,up=利多 down=利空）
+- 上週五收盤回顧:<div class="market-summary">（2-3 句話口語化,含台股,所有敘述用「上週五」）</div>
+- Gap 風險卡逐字用:<div class="verdict bullish或bearish或neutral"><div class="verdict-emoji">（📈 偏多 / 📉 偏空 / 😐 中性）</div><div class="verdict-text">（開盤 gap 方向 + 具體 playbook:買/抱/賣 + 價位,全部寫成這段文字,不要另開自訂區塊）</div></div>
+- 本週催化劑:<div class="watch-list"><div class="watch-title">📅 本週催化劑</div><div class="watch-item">日期 · 事件 · 影響哪些持股</div>（每個事件一行,務必都包在 watch-item 裡）</div>"""
     if _simple:
         monday_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class,只要這幾塊(純重點操作:保留週末新聞,但省略大盤收盤回顧段、省略本週事件預告清單):
 1. .tldr 區改成「📅 週一展望」標題,列 3-4 條:①週末最大事件 ②今早 gap 方向 ③本週持股怎麼動
@@ -2937,7 +2954,8 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 3. .section-label「⚠️ 週一開盤 Gap 風險」+ 一張 .verdict.SENTIMENT 卡片,寫明開盤方向 + 具體 playbook(買/抱/賣 + 價位)
 4. 持股操作訊號卡區塊:**原樣輸出下方模板,不要自己生卡片**(卡片由系統填入 <!--SIGNAL_CARDS-->):
 {signal_skeleton}
-5. .verdict.neutral 結尾「週一心法」,提醒週一波動大、可觀察前 30 分鐘再進場"""
+5. .verdict.neutral 結尾「週一心法」,提醒週一波動大、可觀察前 30 分鐘再進場
+{monday_class_rule}"""
     else:
         monday_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class,順序如下:
 1. .tldr 區改成「📅 週一展望」標題,列 3-4 條:①週末最大事件 ②上週五收盤摘要 ③本週要看什麼 ④今早 gap 方向
@@ -2947,7 +2965,8 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 5. .section-label「📅 本週催化劑」+ .watch-list 列出本週事件 + 日期
 6. 持股操作訊號卡區塊:**原樣輸出下方模板,不要自己生卡片**(卡片由系統填入 <!--SIGNAL_CARDS-->):
 {signal_skeleton}
-7. .verdict.neutral 結尾「週一心法」,提醒週一通常波動大、可觀察前 30 分鐘再進場"""
+7. .verdict.neutral 結尾「週一心法」,提醒週一通常波動大、可觀察前 30 分鐘再進場
+{monday_class_rule}"""
 
     prompt = f"""你是這位用戶的專屬財經顧問。今天是**週一晨間**,週六週日股市都沒開盤,所以這份報告的數據基準是「**上週五({last_friday})收盤**」,內容主軸是:
 1. 週末兩天累積的新聞(可能影響今早開盤)
