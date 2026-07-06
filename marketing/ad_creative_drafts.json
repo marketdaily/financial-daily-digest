@@ -1,0 +1,290 @@
+{
+  "generated_at": "2026-07-06T20:10:00+08:00",
+  "based_on_spy_report": "capabilities/marketing_agents_pipeline/latest_spy_report.json",
+  "pricing_snapshot_verified_against": "docs/pricing.html (2026-07-06)",
+  "note": "此批 6 則為 organic-only 產出(非付費投放 spec)。status 一律 pending_review,machine 不自動核可——需 Delvin 或未來某輪人工過目改成 approved 才會被 promote_ad_creatives.py 移入 social_posts.json。",
+  "drafts": [
+    {
+      "id": "adcreative_2026-07-06_01",
+      "platform": "threads",
+      "angle": "借 TradingView『100% in control of your trades』的掌控感 hook 骨架,轉譯成 MarketDaily 真正的差異化:同業廣告只強調你能掌控交易,沒有一家像 MD 把個股分析的對錯公開留底——whitespace 是『可查核的透明』,不是『掌控感』話術。",
+      "hook_type": "question",
+      "pain_framing": "比較型(信任赤字)",
+      "tone": "理性/authoritative",
+      "visual_direction": "screenshot:戰績頁對帳表,同時可見綠色(對)與紅色(錯)判定,不裁切只留贏面",
+      "hook": "別人的『高勝率』,是誰在算給你看?",
+      "body": "MarketDaily 每一次操作建議都留底——5 個交易日後直接對帳,看對的、看錯的都公開列在戰績頁,不是只挑贏的那幾次講。",
+      "caption_zh": "別人的『高勝率』，是誰在算給你看?\n\nMarketDaily 每一次操作建議都留底——5 個交易日後直接對帳，看對的、看錯的都公開列在戰績頁，不是只挑贏的那幾次講。\n\n完整戰績(含看錯的)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_01\n免費訂閱→ https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_01\n\n#戰績公開 #財經日報 #台股 #美股",
+      "caption_en": "Anyone can claim a high win rate. Who's actually keeping score?\n\nEvery call we make gets checked 5 trading days later — wins and losses both, published on one page. Not just the highlight reel.\n\nSee the full record → https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_01\nFree to subscribe → https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_01\n\n#TransparentTrackRecord #FinanceDaily",
+      "cta": "看完整戰績",
+      "score": 90,
+      "score_dims": {
+        "hook_strength": 17,
+        "cta_clarity": 18,
+        "value_match": 19,
+        "target_match": 16,
+        "risk": 20
+      },
+      "score_rationale": "戰績透明是 MD 唯一同業做不到的差異化(競品廣告只秀贏面/福利),風險面完全乾淨(無數字宣稱,只講機制)。",
+      "compliance_self_check": {
+        "no_fabricated_numbers": true,
+        "no_pro_tier_language": true,
+        "no_premium_giveaway": true,
+        "no_guarantee_language": true,
+        "no_stock_analysis_premium_claim": true
+      },
+      "compliance_detail": {
+        "zh": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        },
+        "en": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        }
+      },
+      "status": "pending_review"
+    },
+    {
+      "id": "adcreative_2026-07-06_02",
+      "platform": "instagram",
+      "angle": "借 Morning Brew『Explained clearly. Read quickly.』的清晰/省時 hook 骨架,但 Morning Brew/The Hustle 都只做英文美股市場——whitespace 是『美股+台股雙語雙市場+個人化持股分析』,沒有一家英文財經 newsletter 覆蓋台灣投資人的雙市場持股。",
+      "hook_type": "statement",
+      "pain_framing": "時間焦慮型",
+      "tone": "casual",
+      "visual_direction": "split-screen phone mockup:左邊日報 email 卡片(含美股+台股持股卡),右邊時鐘顯示 7:00",
+      "hook": "財經新聞用讀的要一小時，你的行事曆沒有那一小時。",
+      "body": "美股+台股雙覆蓋，中文寫，只分析你自己的持股(最多 80 檔)——不是泛泛大盤新聞。週一到週六早上 7 點準時到信箱，週日休息。",
+      "caption_zh": "財經新聞用讀的要一小時，你的行事曆沒有那一小時。\n\n美股+台股雙覆蓋，中文寫，只分析你自己的持股(最多 80 檔)——不是泛泛大盤新聞。\n週一到週六早上 7 點準時到信箱，週日休息。\n\n免費訂閱→ https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_02\n\n#財經日報 #台股 #美股 #投資理財",
+      "caption_en": "Reading the financial news takes an hour. Your calendar doesn't have that hour.\n\nUS + Taiwan markets, written in Chinese, personalized to the stocks you actually hold (up to 80 tickers) — not generic market noise.\nDelivered Mon-Sat 7AM, Sundays off.\n\nSubscribe free → https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_02\n\n#FinanceDaily #TaiwanStocks #USStocks",
+      "cta": "免費開始",
+      "score": 90,
+      "score_dims": {
+        "hook_strength": 16,
+        "cta_clarity": 17,
+        "value_match": 19,
+        "target_match": 18,
+        "risk": 20
+      },
+      "score_rationale": "直接對打 Morning Brew/The Hustle 的『清晰省時』定位,但補上他們沒做的雙語雙市場個人化,TA match 強。",
+      "compliance_self_check": {
+        "no_fabricated_numbers": true,
+        "no_pro_tier_language": true,
+        "no_premium_giveaway": true,
+        "no_guarantee_language": true,
+        "no_stock_analysis_premium_claim": true
+      },
+      "compliance_detail": {
+        "zh": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        },
+        "en": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        }
+      },
+      "status": "pending_review"
+    },
+    {
+      "id": "adcreative_2026-07-06_03",
+      "platform": "facebook",
+      "angle": "借 Robinhood『Get a new perk with your Gold membership』的付費福利 hook 骨架,但福利內容完全替換成 MD 實際且合規的非分析類福利(1-1客服/搶先體驗)——刻意主動聲明『分析內容不因付費而不同』,把同業會模糊帶過的話講在前面,反而是差異化。",
+      "hook_type": "statement",
+      "pain_framing": "個人化(信任建立型)",
+      "tone": "理性/authoritative",
+      "visual_direction": "screenshot:pricing.html 免費版vs Premium 對照表,個股分析那幾列特別框起來標示『兩邊相同』",
+      "hook": "想額外支持我們把日報做下去?Premium 是這樣運作的。",
+      "body": "所有個股分析、進出場價位、戰績——免費版所有功能，分析內容完全相同，Premium 不會多給你任何一個分析數字。Premium 換到的是：優先 1-1 客服 + 非分析類新功能搶先體驗，單純支持獨立營運。",
+      "caption_zh": "想額外支持我們把日報做下去?Premium 是這樣運作的：\n\n所有個股分析、進出場價位、戰績——免費版所有功能，分析內容完全相同，Premium 不會多給你任何一個分析數字。\nPremium 換到的是：優先 1-1 客服 + 非分析類新功能搶先體驗，單純支持獨立營運。\n\n了解方案→ https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_03",
+      "caption_en": "Want to support us running this independently? Here's exactly what Premium is.\n\nEvery stock analysis, entry/exit level, and track record — identical on the free tier, fully open. Premium doesn't add a single extra analysis data point.\nWhat Premium gets you: priority 1-on-1 support + early access to non-analysis features. That's it.\n\nSee the plan → https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_03",
+      "cta": "了解方案",
+      "score": 84,
+      "score_dims": {
+        "hook_strength": 14,
+        "cta_clarity": 18,
+        "value_match": 17,
+        "target_match": 15,
+        "risk": 20
+      },
+      "score_rationale": "唯一涉及付費方案描述的一則,分數保守打(hook較平,偏說明性),但 risk 面最乾淨——主動聲明分析不綁付費,直接呼應合規鐵則第1條精神。",
+      "compliance_self_check": {
+        "no_fabricated_numbers": true,
+        "no_pro_tier_language": true,
+        "no_premium_giveaway": true,
+        "no_guarantee_language": true,
+        "no_stock_analysis_premium_claim": true
+      },
+      "compliance_detail": {
+        "zh": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        },
+        "en": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        }
+      },
+      "status": "pending_review"
+    },
+    {
+      "id": "adcreative_2026-07-06_04",
+      "platform": "x",
+      "angle": "六個目標品牌廣告都沒有『同時分析你的美股+台股持股』這個角度(三竹股市查無廣告資料、富途牛牛/Robinhood 都是單一市場券商 App)——whitespace 是『你手上實際抱的股票,而非泛泛大盤』的個人化切角。",
+      "hook_type": "question",
+      "pain_framing": "個人化",
+      "tone": "casual",
+      "visual_direction": "chat UI screenshot:AI 投資助手回答一則關於使用者實際持有個股的問題",
+      "hook": "你的美股跟台股，誰在幫你一起看?",
+      "body": "多數財經內容只講大盤，不管你手上到底抱哪幾檔。MarketDaily 只分析你的持股(最多 80 檔)，美股台股都算進去，每日 30 則 AI 投資助手問答，免費版就有。",
+      "caption_zh": "你的美股跟台股，誰在幫你一起看?\n\n多數財經內容只講大盤，不管你手上到底抱哪幾檔。MarketDaily 只分析你的持股(最多 80 檔)，美股台股都算進去。\n每日 30 則 AI 投資助手問答，免費版就有。\n\n開始→ https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_04\n\n#財經日報 #台股 #美股",
+      "caption_en": "Who's actually watching both your US and Taiwan holdings?\n\nMost finance content just talks about the index, not what you actually own. MarketDaily analyzes your own holdings (up to 80 tickers), US and Taiwan combined.\n30 AI assistant Q&As per day, free tier included.\n\nGet started → https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_04\n\n#FinanceDaily #TaiwanStocks",
+      "cta": "開始使用",
+      "score": 86,
+      "score_dims": {
+        "hook_strength": 15,
+        "cta_clarity": 16,
+        "value_match": 18,
+        "target_match": 17,
+        "risk": 20
+      },
+      "score_rationale": "X 平台偏短打,hook 稍平但 target match 強(直擊『持有美股的台灣人』夾縫TA)。",
+      "compliance_self_check": {
+        "no_fabricated_numbers": true,
+        "no_pro_tier_language": true,
+        "no_premium_giveaway": true,
+        "no_guarantee_language": true,
+        "no_stock_analysis_premium_claim": true
+      },
+      "compliance_detail": {
+        "zh": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        },
+        "en": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        }
+      },
+      "status": "pending_review"
+    },
+    {
+      "id": "adcreative_2026-07-06_05",
+      "platform": "threads",
+      "angle": "借富途牛牛『一個 App 搞掂晒』(all-in-one)的整合感 hook 骨架,轉譯成 MD 的差異化:不用開 App,一封信讀完——同業是要你多開一個 App,MD 是少開幾個 App。",
+      "hook_type": "statement",
+      "pain_framing": "訊息品質(整合疲勞)",
+      "tone": "casual",
+      "visual_direction": "單一 email digest 截圖,標註每個區塊(大盤/新聞/加密貨幣/板塊輪動/持股)",
+      "hook": "股票、加密貨幣、大盤、板塊輪動——不用開四個 App 東湊西湊，一封信讀完。",
+      "body": "週一到週六早上 7 點，美股+台股一起送到信箱，你自己的持股優先分析。",
+      "caption_zh": "股票、加密貨幣、大盤、板塊輪動——不用開四個 App 東湊西湊，一封信讀完。\n\n週一到週六早上 7 點，美股+台股一起送到信箱，你自己的持股優先分析。\n\n免費訂閱→ https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_05\n\n#財經日報 #投資理財 #台股 #美股",
+      "caption_en": "Stocks, crypto, the broader market, sector rotation — no need to juggle four different apps. One email covers it all.\n\nDelivered 7AM every Mon-Sat, US + Taiwan combined, your own holdings analyzed first.\n\nSubscribe free → https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_05\n\n#FinanceDaily",
+      "cta": "免費訂閱",
+      "score": 86,
+      "score_dims": {
+        "hook_strength": 16,
+        "cta_clarity": 17,
+        "value_match": 17,
+        "target_match": 16,
+        "risk": 20
+      },
+      "score_rationale": "整合感 hook 好記,但『不用開App』對照的是券商App類競品(Robinhood/富途),跟MD本身是email非App的產品形態有落差,故 value_match 打17非19。",
+      "compliance_self_check": {
+        "no_fabricated_numbers": true,
+        "no_pro_tier_language": true,
+        "no_premium_giveaway": true,
+        "no_guarantee_language": true,
+        "no_stock_analysis_premium_claim": true
+      },
+      "compliance_detail": {
+        "zh": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        },
+        "en": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        }
+      },
+      "status": "pending_review"
+    },
+    {
+      "id": "adcreative_2026-07-06_06",
+      "platform": "facebook",
+      "angle": "The Hustle/富途牛牛的廣告都偏『進場/賺錢/side hustle』的 hype 語氣——whitespace 是『誠實講不該追高』的反差,MD 的 AI 分析會給 HOLD/觀望判斷,不是每篇都硬要你買。",
+      "hook_type": "contrarian",
+      "pain_framing": "FOMO反向(防錯型)",
+      "tone": "authoritative",
+      "visual_direction": "digest 卡片截圖:一則實際『觀望/HOLD』判斷含理由條列,標籤明顯非『買進』",
+      "hook": "多數財經帳號只會叫你『買進』。",
+      "body": "MarketDaily 的 AI 分析看多也看空——覺得不該追高，就會直接跟你說『觀望』，不是每篇都硬要你買。免費版就是完整版，分析內容從不因付費而不同。",
+      "caption_zh": "多數財經帳號只會叫你『買進』。\n\nMarketDaily 的 AI 分析看多也看空——覺得不該追高，就會直接跟你說『觀望』，不是每篇都硬要你買。\n免費版就是完整版，分析內容從不因付費而不同。\n\n免費訂閱→ https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_06\n\n#財經日報 #台股 #美股 #投資理財",
+      "caption_en": "Most finance accounts only ever tell you to buy.\n\nMarketDaily's AI calls it both ways — if a stock looks overextended, it says 'hold off,' not 'buy' just to have something to say. Free tier is the full tier, analysis never changes with payment.\n\nSubscribe free → https://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_06\n\n#FinanceDaily",
+      "cta": "看免費版內容",
+      "score": 90,
+      "score_dims": {
+        "hook_strength": 18,
+        "cta_clarity": 17,
+        "value_match": 18,
+        "target_match": 17,
+        "risk": 20
+      },
+      "score_rationale": "contrarian hook 最強的一則(反 hype 文化),同時主動聲明分析不因付費而異,一次滿足差異化+合規宣示。",
+      "compliance_self_check": {
+        "no_fabricated_numbers": true,
+        "no_pro_tier_language": true,
+        "no_premium_giveaway": true,
+        "no_guarantee_language": true,
+        "no_stock_analysis_premium_claim": true
+      },
+      "compliance_detail": {
+        "zh": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        },
+        "en": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        }
+      },
+      "status": "pending_review"
+    }
+  ]
+}
