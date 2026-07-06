@@ -132,6 +132,27 @@ cron_consume_force_marker() {
   return 0
 }
 
+# cron_cooldown_ok STATE_FILE MIN_DAYS  節流用:STATE_FILE 記錄「上次通過的時間戳(epoch
+# 秒數)」。距離上次通過 >= MIN_DAYS 天(或從未通過過)才 return 0 並把現在時間寫進
+# STATE_FILE(視為這次也通過、重新起算冷卻);冷卻中則 return 1,不更新檔案。
+# 用途:event-driven 提前觸發(如 cron_consume_force_marker)若觸發條件連續多天存在
+# (例:存貨持續低迷,補產批次連續被驗證者打回),沒有這層節流會導致每天都真的重跑一次
+# 要花錢的操作,而不是原本「一週一次」的節奏——這裡把「觸發條件是否存在」跟「多久可以
+# 再真的動手一次」拆開兩層判斷。壞掉/非數字的 STATE_FILE 內容視為「從未通過過」,不可讓
+# 髒資料卡死節流。
+cron_cooldown_ok() {
+  local state_file="$1" min_days="$2" now last days_since
+  now=$(date +%s)
+  last=$(cat "$state_file" 2>/dev/null || echo 0)
+  case "$last" in (''|*[!0-9]*) last=0 ;; esac
+  if [ "$last" -gt 0 ]; then
+    days_since=$(( (now - last) / 86400 ))
+    [ "$days_since" -ge "$min_days" ] || return 1
+  fi
+  echo "$now" > "$state_file"
+  return 0
+}
+
 # cron_abort_if_dirty  若 repo 已有 tracked 未 commit 修改（不含 untracked ??），
 # 直接讓呼叫腳本 exit 0（靜默略過整輪）。給任何後面會做 `git checkout -- .` /
 # `git reset --hard` 這類整樹操作的腳本在動手前守門用 — 保證流程走到那一步時，
