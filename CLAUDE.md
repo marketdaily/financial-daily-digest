@@ -127,7 +127,7 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 - **digest-watchdog worker**（`digest-watchdog/`,5 cron）：07:20/08:00 TW 驗早報、20:20/21:00 驗晚報——run failure/卡死/cron 沒觸發 → 自動重派一次（KV `watchdog:*` 防重）+ web push 通知 admin;07:50 TW 派發 `site_scan.yml`。診斷:`curl .../status`。
 - **site_scan.yml**：scan（`scripts/site_scan.py`,14 項,源頭=site-doctor skill 的 scan.py,改 skill 版要同步）→ fail 即推播告警 → Claude 在 CI 按 `scripts/site_fix_playbook.md` 自動修（只准動 docs/,guard 強制）→ 重掃全過才部署+push,否則 revert+推播告警。
 - **⚠️ LINE 已全面退役（2026-07-06 連 admin 備援也拔了）**：admin 告警唯一通道 = 自有 web push（alert-worker `/internal/admin-line-push`,路徑名沿用但只發 web push）。任何 session 不得再向用戶提 LINE、不得重接 LINE。
-- **日報整點寄出**：cron 06:20/19:25 TW 觸發只為生成,main.py `_hold_until_send_time` 等到 07:00/20:00 整點一齊寄;preflight 05:30。
+- **日報整點寄出**：cron 06:20/19:25 TW 觸發只為生成,main.py `_hold_until_send_time` 等到 07:00/20:00 整點一齊寄。⚠️ 05:30 preflight 已隨 GitHub Actions 停擺退役(2026-07-06 才發現,勿當它還在);寄前防線=①`build_email_html` 未定義 CSS class 確定性修復層 ②同一 HIGH audit check 生成中連中 3 位即熔斷推 admin(`_push_systemic_alert`,趕在整點寄出前)。
 - 相關 token:alert-worker `ADMIN_PUSH_TOKEN` = GH `MARKETDAILY_ALERT_TOKEN` = watchdog `ALERT_TOKEN`（同值,旋轉要三端一起）。
 - 坑:workers.dev 同帳號互打被 1042 擋（用 service binding）;GH Actions skip 步驟 output=null,`null=='0'` 數字強轉=true。
 
