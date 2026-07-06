@@ -2709,53 +2709,45 @@ async function sendD1Email(email, apiKey, env) {
 
 // D7:Premium 7 折(只給 free 用戶,由 sweep 控制) —— 一週讀者最容易升級的時機
 async function sendD7Email(email, apiKey, env) {
-  const subject = "📊 你已讀了 7 封日報 — 解鎖 Premium 三大功能,首月 7 折";
-  const cta = `https://buy.stripe.com/cNi3cu74FbI80uSfrG4Ja03?utm_source=lifecycle&utm_campaign=d7_premium&prefilled_email=${encodeURIComponent(email)}`;
+  const subject = "☕ 你已經讀了 7 封日報 — 如果對你有幫助,首月 6 折支持我們";
+  const upgradeLink = `https://marketdaily.ai/pricing?utm_source=lifecycle&utm_campaign=d7_premium&email=${encodeURIComponent(email)}`;
   const body = `
-    <p style="font-size:17px;font-weight:800;color:#1a1a1a;margin:0 0 12px;">過去 7 天,你省下大概 35 分鐘掃新聞的時間 ☕</p>
+    <p style="font-size:17px;font-weight:800;color:#1a1a1a;margin:0 0 12px;">過去 7 天,你已經養成看 MarketDaily 的習慣 ☕</p>
     <p style="font-size:15px;color:#444;line-height:1.8;margin:0 0 22px;">
-      你已經習慣每天早上 7 點看 MarketDaily,接下來這三個功能會讓你<strong>從「看新聞」進化到「真的能下手」</strong>。
+      先說清楚:<strong>日報、AI 投資助手、即時推播等所有分析功能,對免費和付費用戶完全相同</strong>,升不升級都不影響你收到的內容。<br>
+      如果這一週對你有幫助,<strong>Premium 支持者方案</strong>是你支持我們繼續獨立營運的方式。
     </p>
     <div style="background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(139,92,246,0.08));border:1px solid rgba(99,102,241,0.25);border-radius:14px;padding:20px 22px;margin-bottom:22px;">
-      <p style="margin:0 0 14px;font-size:15px;font-weight:800;color:#4f46e5;">Premium 三大功能</p>
-      <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
-        <tr>
-          <td width="38" valign="top"><div style="width:30px;height:30px;border-radius:50%;background:#6366f1;color:#fff;font-size:14px;font-weight:800;text-align:center;line-height:30px;">1</div></td>
-          <td style="padding-bottom:14px;font-size:14px;color:#333;line-height:1.7;"><strong>個股深度分析</strong><br><span style="color:#666;">AI 給每支股票的進場 / 停損價位區間,不再只是「漲了 X%」。</span></td>
-        </tr>
-        <tr>
-          <td width="38" valign="top"><div style="width:30px;height:30px;border-radius:50%;background:#6366f1;color:#fff;font-size:14px;font-weight:800;text-align:center;line-height:30px;">2</div></td>
-          <td style="padding-bottom:14px;font-size:14px;color:#333;line-height:1.7;"><strong>即時推播</strong><br><span style="color:#666;">影響你持股的重大新聞,5 分鐘內推到你的裝置。</span></td>
-        </tr>
-        <tr>
-          <td width="38" valign="top"><div style="width:30px;height:30px;border-radius:50%;background:#6366f1;color:#fff;font-size:14px;font-weight:800;text-align:center;line-height:30px;">3</div></td>
-          <td style="font-size:14px;color:#333;line-height:1.7;"><strong>月度投資組合健檢</strong><br><span style="color:#666;">每月一份報告,告訴你持股的集中度、產業偏重、漏掉的對沖。</span></td>
-        </tr>
-      </table>
+      <p style="margin:0 0 14px;font-size:15px;font-weight:800;color:#4f46e5;">PREMIUM 支持者方案</p>
+      <ul style="margin:0;padding-left:18px;font-size:14px;color:#444;line-height:1.95;">
+        <li><strong>支持獨立營運</strong>(不接廣告、不賣明牌、不賣你的資料)</li>
+        <li><strong>1-1 優先客服</strong>(來信優先回覆)</li>
+        <li><strong>非分析類新功能搶先體驗</strong>(總經數據儀表板等,陸續推出)</li>
+      </ul>
+      <p style="margin:14px 0 0;font-size:12px;color:#888;line-height:1.7;">Premium 不包含任何額外的個股分析或投資建議內容 —— 所有分析內容全體用戶免費且相同。</p>
     </div>
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:16px 20px;margin-bottom:20px;text-align:center;">
-      <div style="font-size:12px;color:#92400e;font-weight:700;letter-spacing:1px;margin-bottom:6px;">本週限定</div>
       <div style="font-size:15px;color:#1a1a1a;">
-        <span style="text-decoration:line-through;color:#999;">NT$299</span>
-        &nbsp;→&nbsp;
-        <strong style="font-size:22px;color:#d97706;">NT$209</strong>
-        <span style="color:#666;font-size:13px;"> / 首月(7 折)</span>
+        首月 <strong style="font-size:22px;color:#d97706;">NT$299</strong>
+        <span style="text-decoration:line-through;color:#999;margin-left:6px;">NT$499</span>
+        <span style="color:#666;font-size:13px;"> (6 折)</span>
       </div>
+      <div style="font-size:12px;color:#92400e;margin-top:4px;">之後 NT$499/月,隨時取消,30 天無理由退費</div>
     </div>
     <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:18px;">
       <tr>
         <td align="center">
-          <a href="${cta}" style="display:block;padding:17px 24px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:17px;font-weight:800;text-decoration:none;border-radius:12px;">立即升級 →</a>
+          <a href="${upgradeLink}" style="display:block;padding:17px 24px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:17px;font-weight:800;text-decoration:none;border-radius:12px;">了解 Premium 支持者方案 →</a>
         </td>
       </tr>
     </table>
     <p style="font-size:12px;color:#888;line-height:1.7;margin:0;text-align:center;">
-      不想升級?完全 OK,繼續用免費版享受日報。<br>這封信不會再寄第二次。
+      不想升級?完全 OK,繼續用免費版享受完整功能。<br>這封信不會再寄第二次。
     </p>`;
   const html = lifecycleShell({
-    badge: "Day 7 · Premium 7 折",
-    headerTitle: "📊 你準備好下一步了嗎?",
-    headerSub: "從「看新聞」進化到「真的能下手」",
+    badge: "Day 7 · Premium 支持者方案",
+    headerTitle: "☕ 讀了一週了,想跟你說聲謝謝",
+    headerSub: "如果有幫助,首月 6 折支持我們",
     bodyHtml: body,
   });
   return sendLifecycleEmail(email, apiKey, subject, html);
