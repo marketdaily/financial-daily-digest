@@ -77,12 +77,30 @@ ${tail_msg}" >/dev/null 2>&1
 # 只在「我們自己這批 commit 完之後,tracked 檔案已完全乾淨」時才 pull --rebase;
 # 只要還殘留任何別人的未 commit 修改(M/A/D/R,不含 untracked ??),就跳過 pull 只試 push——
 # push 若因落後遠端被拒會安靜失敗,commit 留在本機等下次乾淨時再補推,絕不去動別人的檔案。
+# 2026-07-07 修正①:commit 一定要帶 pathspec(`-- "${paths[@]}"`)限定只收這批路徑——
+# 先前 `git add "$@"` 之後裸 `git commit`(無 pathspec)會把 index 裡「當下任何已 staged
+# 但不是這次呼叫加的東西」一起吃進來(例如另一個 session 手動 git add 完還沒 commit
+# 就被搶先的 cron 撈走,冠上不相干的 commit message)。pathspec-limited commit 已用
+# 隔離 temp repo 驗證:只會納入指定路徑,其他已 staged 內容原封不動留在 index。
+# 2026-07-07 修正②(獨立驗證子代理抓到):`git add`/`git commit --` 對多重 pathspec
+# 是全有全無的——只要其中一個路徑「目前不存在也未被 git 追蹤過」(例如某個目錄要等
+# promote 腳本第一次真的產生檔案才會出現,呼叫端提前把這個路徑寫進呼叫參數),整條
+# git add/commit 會直接失敗,連同一批裡其他真的有異動的路徑也完全不會被 commit——
+# `marketing_agents_weekly.sh` 傳的 `marketing/assets/posts/ad_creative` 在沒有新
+# 核准草稿的 retry tick 就是這種情境,已用隔離 repo 重現(approved 狀態寫入被無聲吃掉,
+# 沒有任何錯誤訊息)。修法:git add/commit 前先把 "$@" 過濾成「當下真的存在」的路徑
+# (`[ -e ]`,對本專案這批純新增/累積型 ledger 檔案已足夠——沒有 caller 需要靠這個函式
+# 提交刻意刪除 tracked 檔案),不存在的路徑直接跳過,不拖累同批次其他有效路徑。
 cron_git_persist() {
   local msg="$1"; shift
   ( cd "$CRON_LIB_REPO" || exit 0
-    git add "$@" 2>/dev/null
-    git diff --staged --quiet 2>/dev/null && exit 0
-    git -c user.name=winrig -c user.email=winrig@marketdaily commit -m "$msg" 2>/dev/null
+    local paths=() p
+    for p in "$@"; do
+      [ -e "$p" ] && paths+=("$p")
+    done
+    [ "${#paths[@]}" -eq 0 ] && exit 0
+    git add "${paths[@]}" 2>/dev/null
+    git -c user.name=winrig -c user.email=winrig@marketdaily commit -m "$msg" -- "${paths[@]}" >/dev/null 2>&1 || exit 0
     if ! git status --porcelain 2>/dev/null | grep -qv '^??'; then
       git pull --rebase origin main 2>/dev/null
     fi
