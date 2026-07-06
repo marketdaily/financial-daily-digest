@@ -25,6 +25,7 @@ CLI: python3 -m intel.macro_rates_ledger
 import os
 import sys
 import json
+import math
 import fcntl
 import datetime
 import subprocess
@@ -106,6 +107,8 @@ def _is_usable(data: dict) -> bool:
     usdtwd = data.get("usdtwd")
     if fed_upper is None or fed_lower is None or usdtwd is None:
         return False
+    if not all(math.isfinite(v) for v in (fed_upper, fed_lower, usdtwd)):
+        return False  # float() accepts literal "inf"/"Infinity"; a real value is never non-finite
     if not (fed_upper > 0 and fed_lower > 0 and usdtwd > 0):
         return False
     return fed_upper >= fed_lower
