@@ -123,7 +123,8 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 
 ## 自動守望系統（2026-06-11 上線,不要重複建）
 - **🤖 自主進步機器 `~/autonomous/`（2026-07-02 上線,是「我」的一部分,不要當陌生東西關掉/重建）**：winrig 24/7 冷血自學引擎,用戶沒在用電腦時自己找事做、自己學、自己進步。北極星=擴充 `capabilities/INDEX.md` 能力庫,讓未來一句「幫我自動化 X」即 100%。`driver.sh`(cron `*/15`)→活動閘門(用戶互動就完全讓路)+50%用量閘門(`config.sh` `STOP_AT_USD`)+斷點記憶(`state/current_task.md`)+`--dangerously-skip-permissions` 全自主。死線=絕不寄信(全域 hook 擋)。詳見 memory `project_autonomous_machine`;控制:`~/autonomous/看我.txt`。
-- **🧠 大腦語意搜尋（所有 session 都該用,不只機器）**：`python3 ~/autonomous/brainsearch/search.py "問題" -k 5` —— 語意搜全部記憶庫/能力庫/WORKLOG/CLAUDE.md,零 token 秒回;找「以前學過什麼/踩過什麼坑/有沒有現成積木」先用它再 grep。索引每晚 04:40 自動增量重建。
+- **🧠 大腦語意搜尋（所有 session 都該用,不只機器）**：`python3 ~/autonomous/brainsearch/search.py "問題" -k 5 [--graph]` —— 語意搜全部記憶庫/能力庫/WORKLOG/CLAUDE.md,零 token 秒回;找「以前學過什麼/踩過什麼坑/有沒有現成積木」先用它再 grep。`--graph` 附每筆命中的 wikilink 鄰居;`graph.py related "一句話" -d 2` 沿記憶連結圖擴展(GraphRAG,語意+圖譜),`graph.py stats|hubs|orphans|broken` 看圖譜健康。索引每晚 04:40 自動增量重建,04:50 重建 Obsidian vault。
+- **🕸️ Obsidian 大腦 vault（2026-07-07 上線）**：`~/delvin-claude-brain` 整個 repo=Obsidian vault(記憶 299 檔+wikilink 圖譜+自動生成 HOME/MOC-*/GRAPH-HEALTH 導覽頁)。Windows 端已裝 Obsidian,開 vault 路徑=`\\wsl.localhost\Ubuntu\home\userdelvin\delvin-claude-brain`。⚠️ vault 是唯讀鏡像,改記憶一律在 Claude session 改真源;`.obsidian/workspace*` 已 gitignore。
 - **digest-watchdog worker**（`digest-watchdog/`,5 cron）：07:20/08:00 TW 驗早報、20:20/21:00 驗晚報——run failure/卡死/cron 沒觸發 → 自動重派一次（KV `watchdog:*` 防重）+ web push 通知 admin;07:50 TW 派發 `site_scan.yml`。診斷:`curl .../status`。
 - **site_scan.yml**：scan（`scripts/site_scan.py`,14 項,源頭=site-doctor skill 的 scan.py,改 skill 版要同步）→ fail 即推播告警 → Claude 在 CI 按 `scripts/site_fix_playbook.md` 自動修（只准動 docs/,guard 強制）→ 重掃全過才部署+push,否則 revert+推播告警。
 - **⚠️ LINE 已全面退役（2026-07-06 連 admin 備援也拔了）**：admin 告警唯一通道 = 自有 web push（alert-worker `/internal/admin-line-push`,路徑名沿用但只發 web push）。任何 session 不得再向用戶提 LINE、不得重接 LINE。

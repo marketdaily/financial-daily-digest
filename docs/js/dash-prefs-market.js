@@ -31,6 +31,7 @@ async function loadPreferences(email) {
     selectedDepth = data.digest_depth || "standard";
     setupDepthCard();
     selected.us = []; selected.tw = [];
+    positionsMap = (data.positions && typeof data.positions === "object") ? data.positions : {};
     (data.us_stocks || []).forEach(sym => { const f = US_STOCKS.find(([s])=>s===sym); selected.us.push({ sym, name: f ? f[1] : sym }); });
     (data.tw_stocks || []).forEach(sym => { const f = TW_STOCKS.find(([s])=>s===sym); selected.tw.push({ sym, name: f ? f[1] : sym }); });
     renderTags("us"); renderTags("tw"); updateStats();

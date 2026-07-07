@@ -130,6 +130,16 @@ const i18n = {
     chart_load_failed: "圖表載入失敗",
     dd_not_found: q => `找不到「${q}」，可直接按 Enter 加入自訂代號`,
     dd_add: "+ 加入",
+    pos_chip_add: "＋成本",
+    pos_chip_title: "設定進場成本（選填）",
+    pos_title: "持倉成本",
+    pos_desc: "選填。填了進場價後，日報對這檔的建議會改用「持有者框架」——續抱／減碼／停損，並帶上你的損益脈絡；不填則維持一般分析。",
+    pos_price_label: "進場價（每股成本）",
+    pos_date_label: "進場日期（選填）",
+    pos_err_price: "請輸入有效的進場價",
+    pos_err_date: "進場日期不能是未來",
+    pos_save: "儲存",
+    pos_clear: "清除成本",
     sig_neutral: "中性",
     sig_bull_slight: "偏多",
     sig_bear_slight: "偏空",
@@ -315,6 +325,16 @@ const i18n = {
     chart_load_failed: "Failed to load chart",
     dd_not_found: q => `No results for "${q}" — press Enter to add it as a custom ticker`,
     dd_add: "+ Add",
+    pos_chip_add: "+ cost",
+    pos_chip_title: "Set entry cost (optional)",
+    pos_title: "Position cost",
+    pos_desc: "Optional. With an entry price set, the digest switches to holder-framed advice for this stock — hold / trim / stop-loss with your P&L context. Leave it empty for standard analysis.",
+    pos_price_label: "Entry price (per share)",
+    pos_date_label: "Entry date (optional)",
+    pos_err_price: "Please enter a valid entry price",
+    pos_err_date: "Entry date can't be in the future",
+    pos_save: "Save",
+    pos_clear: "Clear cost",
     sig_neutral: "NEUTRAL",
     sig_bull_slight: "Slightly Bullish",
     sig_bear_slight: "Slightly Bearish",
@@ -425,6 +445,8 @@ function refreshDynamicLang() {
 
 let US_STOCKS = [], TW_STOCKS = [];
 const selected = { us: [], tw: [] };
+// 持倉成本(選填):{ sym: { entry_price, entry_date } },隨 /save-preferences 的 positions 存取
+let positionsMap = {};
 let userCap = 3;
 let userPlan = "free";
 let selectedDepth = "standard";

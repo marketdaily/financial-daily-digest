@@ -1350,10 +1350,29 @@ export default {
       const existing = existingRaw ? JSON.parse(existingRaw) : {};
       let digest_depth = body.digest_depth || existing.digest_depth || "standard";
       if (!["simple", "standard", "deep"].includes(digest_depth)) digest_depth = "standard";
+      // 持倉成本(選填,2026-07-07):{ ticker: { entry_price, entry_date } }。
+      // 有帶 positions 就整份取代(空物件=清空),沒帶則沿用既有值;只留仍在追蹤清單內的 ticker。
+      let positions = existing.positions || {};
+      if (body.positions !== undefined) {
+        positions = {};
+        if (body.positions && typeof body.positions === "object" && !Array.isArray(body.positions)) {
+          for (const [sym, p] of Object.entries(body.positions).slice(0, 200)) {
+            if (!p || typeof p !== "object") continue;
+            const entry = {};
+            const price = Number(p.entry_price);
+            if (Number.isFinite(price) && price > 0 && price < 1e7) entry.entry_price = Math.round(price * 10000) / 10000;
+            if (typeof p.entry_date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(p.entry_date)) entry.entry_date = p.entry_date;
+            if (entry.entry_price) positions[sym] = entry;
+          }
+        }
+      }
+      const trackedSyms = new Set([...us, ...tw]);
+      positions = Object.fromEntries(Object.entries(positions).filter(([s]) => trackedSyms.has(s)));
       const prefs = {
         us_stocks: us,
         tw_stocks: tw,
         digest_depth,
+        ...(Object.keys(positions).length ? { positions } : {}),
         updated_at: new Date().toISOString(),
       };
       await env.USER_PREFS.put(email, JSON.stringify(prefs));
@@ -1408,6 +1427,7 @@ export default {
         us_stocks: prefs.us_stocks || [],
         tw_stocks: prefs.tw_stocks || [],
         digest_depth: prefs.digest_depth || "standard",
+        positions: prefs.positions || {},
         plan,
         cap: cap === Infinity ? null : cap,
       });

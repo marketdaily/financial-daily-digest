@@ -48,7 +48,7 @@ function curPayload() {
   const email = localStorage.getItem("md-email") || "";
   // 帶 password 給 /save-preferences (worker 需驗證,否則任何人能改別人偏好)
   const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
-  return JSON.stringify({ email, password, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym), digest_depth: selectedDepth });
+  return JSON.stringify({ email, password, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym), digest_depth: selectedDepth, positions: positionsMap });
 }
 
 // 日報深度卡(全體用戶可選;合規結構 COMPLIANCE_STRUCTURE.md:個股分析內容不得依付費分級)

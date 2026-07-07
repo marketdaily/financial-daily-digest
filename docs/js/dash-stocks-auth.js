@@ -49,8 +49,57 @@ function addStock(market, sym, name) {
 
 function removeStock(market, sym) {
   selected[market] = selected[market].filter(s => s.sym !== sym);
+  delete positionsMap[sym];
   renderTags(market); updateStats();
   scheduleSave();
+}
+
+// ── 持倉成本(選填):進場價/進場日 → 日報改用持有者框架給建議 ──
+let _posEdit = { market: null, sym: null };
+
+function openPosEdit(market, sym) {
+  _posEdit = { market, sym };
+  const p = positionsMap[sym] || {};
+  document.getElementById("pos-title").textContent = `${T('pos_title')} — ${sym}`;
+  document.getElementById("pos-price").value = p.entry_price ?? "";
+  document.getElementById("pos-date").value = p.entry_date || "";
+  document.getElementById("pos-err").style.display = "none";
+  document.getElementById("pos-modal").classList.add("open");
+  document.getElementById("pos-price").focus();
+}
+
+function closePosEdit() {
+  document.getElementById("pos-modal").classList.remove("open");
+  _posEdit = { market: null, sym: null };
+}
+
+function clearPosEdit() {
+  const { market, sym } = _posEdit;
+  if (sym && positionsMap[sym]) {
+    delete positionsMap[sym];
+    renderTags(market);
+    scheduleSave();
+  }
+  closePosEdit();
+}
+
+function confirmPosEdit() {
+  const { market, sym } = _posEdit;
+  if (!sym) { closePosEdit(); return; }
+  const err = document.getElementById("pos-err");
+  const priceRaw = document.getElementById("pos-price").value.trim();
+  const date = document.getElementById("pos-date").value;
+  const price = Number(priceRaw);
+  if (!priceRaw || !Number.isFinite(price) || price <= 0) {
+    err.textContent = T('pos_err_price'); err.style.display = "block"; return;
+  }
+  if (date && date > new Date().toISOString().slice(0, 10)) {
+    err.textContent = T('pos_err_date'); err.style.display = "block"; return;
+  }
+  positionsMap[sym] = { entry_price: price, ...(date ? { entry_date: date } : {}) };
+  renderTags(market);
+  scheduleSave();
+  closePosEdit();
 }
 
 // ── 一鍵套組 + 批量貼上 ──
@@ -199,7 +248,11 @@ function renderTags(market) {
     const zh = market === "us" && typeof US_ZH !== "undefined" ? (US_ZH[sym] || "") : "";
     const label = zh || name;
     const nameHtml = label && label !== sym ? `<span style="font-weight:400;opacity:0.7;font-size:11px"> ${label}</span>` : "";
-    return `<div class="tag">${sym}${nameHtml} <span class="tag-x" onclick="removeStock('${market}','${sym}')">×</span></div>`;
+    const pos = positionsMap[sym];
+    const costHtml = pos && Number(pos.entry_price) > 0
+      ? `<span class="tag-cost" onclick="openPosEdit('${market}','${sym}')" title="${T('pos_chip_title')}">@${Number(pos.entry_price)}</span>`
+      : `<span class="tag-cost empty" onclick="openPosEdit('${market}','${sym}')" title="${T('pos_chip_title')}">${T('pos_chip_add')}</span>`;
+    return `<div class="tag">${sym}${nameHtml} ${costHtml}<span class="tag-x" onclick="removeStock('${market}','${sym}')">×</span></div>`;
   }).join("");
 }
 

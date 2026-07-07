@@ -286,6 +286,14 @@ nav::after {
 }
 .tag-x { cursor: pointer; opacity: 0.55; transition: opacity 0.15s; }
 .tag-x:hover { opacity: 1; color: #f87171; }
+.tag-cost { margin: 0 2px; padding: 1px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; cursor: pointer; background: rgba(99,102,241,0.16); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.35); transition: all 0.15s; white-space: nowrap; }
+.tag-cost:hover { background: rgba(99,102,241,0.3); color: #c7d2fe; }
+.tag-cost.empty { background: transparent; color: var(--text2); border: 1px dashed var(--border2); font-weight: 500; opacity: 0.7; }
+.tag-cost.empty:hover { opacity: 1; color: var(--text); }
+.pos-label { display: block; font-size: 12px; color: var(--text2); margin: 12px 0 5px; font-weight: 600; }
+.pos-input { width: 100%; padding: 11px 13px; border-radius: var(--radius-sm); border: 1px solid var(--border2); background: rgba(255,255,255,0.04); color: var(--text); font-family: inherit; font-size: 14px; outline: none; transition: all 0.2s; }
+.pos-input:focus { border-color: var(--primary); background: rgba(99,102,241,0.08); box-shadow: 0 0 0 3px rgba(99,102,241,0.16); }
+.pos-input::-webkit-calendar-picker-indicator { filter: invert(0.7); cursor: pointer; }
 .tags-empty { font-size: 12px; color: var(--text3); padding: 2px 0; }
 
 /* Save button */
@@ -914,13 +922,13 @@ nav::after {
 </div>
 
 <script src="stocks.js?v=20260528"></script>
-<script src="js/dash-core.js?v=20260707"></script>
-<script src="js/dash-stocks-auth.js?v=20260703"></script>
+<script src="js/dash-core.js?v=20260707b"></script>
+<script src="js/dash-stocks-auth.js?v=20260707b"></script>
 <script src="js/dash-notify-chat.js?v=20260707"></script>
-<script src="js/dash-prefs-market.js?v=20260703"></script>
+<script src="js/dash-prefs-market.js?v=20260707b"></script>
 <script src="js/dash-stories-chain.js?v=20260707"></script>
 <script src="js/dash-chart.js?v=20260703"></script>
-<script src="js/dash-init.js?v=20260703"></script>
+<script src="js/dash-init.js?v=20260707b"></script>
 <script>window.META_PIXEL_ID = "1497334655104185";</script>
 <script src="meta-pixel.js"></script>
 <script src="ui-pro.js?v=20260610a"></script>
@@ -1093,6 +1101,23 @@ window.mdStockTour = function () {
     <div class="md-modal-actions">
       <button class="md-modal-btn ghost" id="bulk-cancel" onclick="closeBulk()">取消</button>
       <button class="md-modal-btn primary" id="bulk-confirm" onclick="confirmBulk()">解析並加入</button>
+    </div>
+  </div>
+</div>
+
+<!-- Position cost modal（持倉成本，選填） -->
+<div class="md-modal-backdrop" id="pos-modal" onclick="if(event.target===this)closePosEdit()">
+  <div class="md-modal-card">
+    <div class="md-modal-title" id="pos-title">持倉成本</div>
+    <div class="md-modal-desc" data-i18n="pos_desc">選填。填了進場價後，日報對這檔的建議會改用「持有者框架」——續抱／減碼／停損，並帶上你的損益脈絡；不填則維持一般分析。</div>
+    <label class="pos-label" for="pos-price" data-i18n="pos_price_label">進場價（每股成本）</label>
+    <input type="number" class="pos-input" id="pos-price" min="0" step="any" inputmode="decimal" placeholder="850">
+    <label class="pos-label" for="pos-date" data-i18n="pos_date_label">進場日期（選填）</label>
+    <input type="date" class="pos-input" id="pos-date">
+    <div class="md-modal-result" id="pos-err" style="display:none;"></div>
+    <div class="md-modal-actions">
+      <button class="md-modal-btn ghost" onclick="clearPosEdit()" data-i18n="pos_clear">清除成本</button>
+      <button class="md-modal-btn primary" onclick="confirmPosEdit()" data-i18n="pos_save">儲存</button>
     </div>
   </div>
 </div>
