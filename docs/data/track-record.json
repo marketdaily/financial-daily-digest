@@ -1,45 +1,81 @@
 {
   "stats": {
-    "generated_at": "2026-07-07T17:23:41",
+    "generated_at": "2026-07-07T22:05:01",
     "horizon": "5d",
     "records_since": "2026-06-12",
     "days_covered": 11,
-    "total_records": 636,
-    "judged_records": 226,
+    "total_records": 675,
+    "judged_records": 271,
     "one_day": {
-      "a_count": 205,
-      "a_wins": 100,
-      "a_rate": 48.8,
-      "c_count": 340,
-      "c_wins": 168,
-      "c_rate": 49.4
+      "a_count": 221,
+      "a_wins": 112,
+      "a_rate": 50.7,
+      "c_count": 371,
+      "c_wins": 196,
+      "c_rate": 52.8
     },
-    "a_count": 81,
-    "a_wins": 47,
-    "a_rate": 58.0,
+    "monthly": {
+      "a_count": 0,
+      "a_wins": 0,
+      "a_rate": 0.0,
+      "a_ci95": [
+        0.0,
+        0.0
+      ],
+      "a_pending": 259,
+      "c_count": 0,
+      "c_wins": 0,
+      "c_rate": 0.0,
+      "c_ci95": [
+        0.0,
+        0.0
+      ],
+      "c_pending": 416
+    },
+    "quarterly": {
+      "a_count": 0,
+      "a_wins": 0,
+      "a_rate": 0.0,
+      "a_ci95": [
+        0.0,
+        0.0
+      ],
+      "a_pending": 259,
+      "c_count": 0,
+      "c_wins": 0,
+      "c_rate": 0.0,
+      "c_ci95": [
+        0.0,
+        0.0
+      ],
+      "c_pending": 416
+    },
+    "a_count": 90,
+    "a_wins": 50,
+    "a_rate": 55.6,
     "a_ci95": [
-      47.2,
-      68.2
+      45.3,
+      65.4
     ],
-    "c_count": 145,
-    "c_wins": 66,
-    "c_rate": 45.5,
+    "c_count": 181,
+    "c_wins": 87,
+    "c_rate": 48.1,
     "c_ci95": [
-      37.6,
-      53.6
+      40.9,
+      55.3
     ],
     "calibration": {
-      "n": 81,
-      "brier": 0.2712,
+      "n": 90,
+      "brier": 0.2698,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
-          "n": 17,
-          "hit_rate": 52.9
+          "n": 19,
+          "hit_rate": 52.6
         },
         "<=50": {
-          "n": 64,
-          "hit_rate": 59.4
+          "n": 71,
+          "hit_rate": 56.3
         }
       }
     },
@@ -54,31 +90,31 @@
         ]
       },
       "down": {
-        "a_count": 38,
-        "a_wins": 24,
-        "a_rate": 63.2,
+        "a_count": 47,
+        "a_wins": 27,
+        "a_rate": 57.4,
         "ci95": [
-          47.3,
-          76.6
+          43.3,
+          70.5
         ]
       }
     },
     "era": {
       "note": "僅計 2026-06-12 起(結構prior+校準信心上線後)的現行模型;信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
       "since": "2026-06-12",
-      "a_count": 81,
-      "a_wins": 47,
-      "a_rate": 58.0,
+      "a_count": 90,
+      "a_wins": 50,
+      "a_rate": 55.6,
       "a_ci95_day_cluster": [
-        44.4,
-        66.0
+        43.9,
+        62.3
       ],
-      "c_count": 145,
-      "c_wins": 66,
-      "c_rate": 45.5,
+      "c_count": 181,
+      "c_wins": 87,
+      "c_rate": 48.1,
       "c_ci95_day_cluster": [
-        27.3,
-        73.5
+        31.6,
+        71.4
       ],
       "by_regime": {
         "up": {
@@ -87,23 +123,23 @@
           "a_rate": 53.5
         },
         "down": {
-          "a_count": 38,
-          "a_wins": 24,
-          "a_rate": 63.2
+          "a_count": 47,
+          "a_wins": 27,
+          "a_rate": 57.4
         }
       },
       "calibration": {
-        "n": 81,
-        "brier": 0.2712,
+        "n": 90,
+        "brier": 0.2698,
         "coin_flip_brier": 0.25,
         "bins": {
           "51-60": {
-            "n": 17,
-            "hit_rate": 52.9
+            "n": 19,
+            "hit_rate": 52.6
           },
           "<=50": {
-            "n": 64,
-            "hit_rate": 59.4
+            "n": 71,
+            "hit_rate": 56.3
           }
         }
       },
@@ -111,24 +147,24 @@
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 205,
-      "no_fill": 120,
-      "pending": 56,
+      "simulated": 221,
+      "no_fill": 128,
+      "pending": 55,
       "hit_target": 2,
-      "hit_stop": 26,
+      "hit_stop": 35,
       "expired": 1,
-      "avg_ret_pct": -2.79,
+      "avg_ret_pct": -3.57,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
-      "a_count": 3,
-      "a_wins": 0,
-      "a_rate": 0.0,
-      "c_count": 13,
-      "c_wins": 6,
-      "c_rate": 46.2
+      "a_count": 4,
+      "a_wins": 1,
+      "a_rate": 25.0,
+      "c_count": 16,
+      "c_wins": 8,
+      "c_rate": 50.0
     },
-    "personal_samples_added": 577
+    "personal_samples_added": 616
   },
   "records": [
     {
@@ -147,7 +183,9 @@
       "target": 432.86,
       "stop": 370.44,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-07",
@@ -165,7 +203,9 @@
       "target": 208.23,
       "stop": 179.7,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-07",
@@ -183,7 +223,9 @@
       "target": 413.04,
       "stop": 353.87,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-07",
@@ -201,7 +243,9 @@
       "target": 317.4,
       "stop": 290.36,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-07",
@@ -219,7 +263,9 @@
       "target": 4612.14,
       "stop": 3630.0,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-07",
@@ -237,7 +283,9 @@
       "target": 2535.0,
       "stop": 2299.28,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-07",
@@ -255,7 +303,9 @@
       "target": 256.58,
       "stop": 223.78,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-06",
@@ -273,7 +323,9 @@
       "target": 431.55,
       "stop": 346.24,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-06",
@@ -291,7 +343,9 @@
       "target": 207.51,
       "stop": 178.98,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-06",
@@ -309,7 +363,9 @@
       "target": 416.83,
       "stop": 357.56,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-06",
@@ -327,7 +383,9 @@
       "target": 317.4,
       "stop": 286.28,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-06",
@@ -345,7 +403,9 @@
       "target": 4703.58,
       "stop": 3691.6,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-06",
@@ -363,7 +423,9 @@
       "target": 2535.0,
       "stop": 2282.5,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-06",
@@ -381,7 +443,9 @@
       "target": 255.78,
       "stop": 221.4,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-03",
@@ -399,7 +463,9 @@
       "target": 431.55,
       "stop": 346.24,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-03",
@@ -417,7 +483,9 @@
       "target": 207.51,
       "stop": 178.98,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-03",
@@ -435,7 +503,9 @@
       "target": 416.83,
       "stop": 357.56,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-03",
@@ -453,7 +523,9 @@
       "target": 317.4,
       "stop": 286.28,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-03",
@@ -471,7 +543,9 @@
       "target": 4785.0,
       "stop": 3823.6,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-03",
@@ -489,7 +563,9 @@
       "target": 2535.0,
       "stop": 2298.03,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-03",
@@ -507,7 +583,9 @@
       "target": 255.08,
       "stop": 218.9,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-02",
@@ -525,7 +603,9 @@
       "target": 433.6,
       "stop": 382.0,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-02",
@@ -543,7 +623,9 @@
       "target": 210.04,
       "stop": 182.01,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-02",
@@ -561,7 +643,9 @@
       "target": 411.3,
       "stop": 350.5,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-02",
@@ -579,7 +663,9 @@
       "target": 311.08,
       "stop": 273.5,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-02",
@@ -597,7 +683,9 @@
       "target": 4785.0,
       "stop": 3814.8,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-02",
@@ -615,7 +703,9 @@
       "target": 2535.0,
       "stop": 2339.82,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-02",
@@ -633,7 +723,9 @@
       "target": 264.28,
       "stop": 227.65,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-01",
@@ -651,7 +743,9 @@
       "target": 433.6,
       "stop": 376.9,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-01",
@@ -669,7 +763,9 @@
       "target": 212.77,
       "stop": 184.24,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-01",
@@ -687,7 +783,9 @@
       "target": 398.92,
       "stop": 340.64,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-01",
@@ -705,7 +803,9 @@
       "target": 306.04,
       "stop": 268.51,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-01",
@@ -723,7 +823,9 @@
       "target": 4810.0,
       "stop": 3735.6,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-01",
@@ -741,7 +843,9 @@
       "target": 2535.0,
       "stop": 2252.85,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-07-01",
@@ -759,7 +863,9 @@
       "target": 268.36,
       "stop": 229.3,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-30",
@@ -777,7 +883,9 @@
       "target": 433.6,
       "stop": 365.34,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-30",
@@ -795,7 +903,9 @@
       "target": 208.57,
       "stop": 177.97,
       "outcome": null,
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-30",
@@ -813,7 +923,9 @@
       "target": 394.57,
       "stop": 336.07,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-30",
@@ -831,7 +943,9 @@
       "target": 299.08,
       "stop": 260.06,
       "outcome": null,
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-29",
@@ -848,8 +962,10 @@
       "entry_hi": 368.6,
       "target": 415.19,
       "stop": 335.36,
-      "outcome": null,
-      "outcome_1d": "loss"
+      "outcome": "win",
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-29",
@@ -866,8 +982,10 @@
       "entry_hi": 191.22,
       "target": 205.99,
       "stop": 175.7,
-      "outcome": null,
-      "outcome_1d": "loss"
+      "outcome": "win",
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-29",
@@ -884,8 +1002,10 @@
       "entry_hi": 354.1,
       "target": 398.13,
       "stop": 341.52,
-      "outcome": null,
-      "outcome_1d": "loss"
+      "outcome": "loss",
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-29",
@@ -902,8 +1022,10 @@
       "entry_hi": 273.75,
       "target": 302.22,
       "stop": 260.73,
-      "outcome": null,
-      "outcome_1d": "win"
+      "outcome": "win",
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-26",
@@ -921,7 +1043,9 @@
       "target": 413.02,
       "stop": 330.11,
       "outcome": "loss",
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-26",
@@ -939,7 +1063,9 @@
       "target": 210.6,
       "stop": 177.17,
       "outcome": "loss",
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-26",
@@ -957,7 +1083,9 @@
       "target": 376.73,
       "stop": 322.95,
       "outcome": "loss",
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-26",
@@ -975,7 +1103,9 @@
       "target": 293.05,
       "stop": 252.77,
       "outcome": "loss",
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-25",
@@ -993,7 +1123,9 @@
       "target": 413.61,
       "stop": 330.47,
       "outcome": "loss",
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-25",
@@ -1011,7 +1143,9 @@
       "target": 214.14,
       "stop": 180.07,
       "outcome": "win",
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-25",
@@ -1029,7 +1163,9 @@
       "target": 388.44,
       "stop": 336.73,
       "outcome": "loss",
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-25",
@@ -1047,7 +1183,9 @@
       "target": 308.78,
       "stop": 273.45,
       "outcome": "loss",
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-17",
@@ -1065,7 +1203,9 @@
       "target": 440.24,
       "stop": 360.19,
       "outcome": "win",
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-17",
@@ -1083,7 +1223,9 @@
       "target": 224.13,
       "stop": 186.51,
       "outcome": "win",
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-17",
@@ -1101,7 +1243,9 @@
       "target": null,
       "stop": 359.7,
       "outcome": "win",
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-17",
@@ -1119,7 +1263,9 @@
       "target": 315.0,
       "stop": 279.54,
       "outcome": "loss",
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-15",
@@ -1137,7 +1283,9 @@
       "target": 441.97,
       "stop": 362.0,
       "outcome": "win",
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-15",
@@ -1155,7 +1303,9 @@
       "target": 221.85,
       "stop": 184.37,
       "outcome": "loss",
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-15",
@@ -1173,7 +1323,9 @@
       "target": 417.06,
       "stop": 357.84,
       "outcome": "loss",
-      "outcome_1d": "loss"
+      "outcome_1d": "loss",
+      "outcome_21d": null,
+      "outcome_63d": null
     },
     {
       "date": "2026-06-15",
@@ -1191,7 +1343,9 @@
       "target": 306.31,
       "stop": 272.15,
       "outcome": "win",
-      "outcome_1d": "win"
+      "outcome_1d": "win",
+      "outcome_21d": null,
+      "outcome_63d": null
     }
   ]
 }

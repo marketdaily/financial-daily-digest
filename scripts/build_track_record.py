@@ -336,11 +336,19 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
         # 偵測到不夠新就丟棄重抓(根治 5/22 等舊建議卡在待結)。
         if hist_dict:
             latest_cached = max(hist_dict.keys()) if hist_dict else ""
-            if latest_cached <= max(dates):
+            # 須同時新於「最新建議日」與「昨天」:月/季結算(21/63 交易日)靠每日重抓
+            # 逐步補齊,若日報停更數日,舊條件會讓快取凍結、長天期永遠待結。
+            yesterday = (datetime.now() - timedelta(days=1)).date().isoformat()
+            if latest_cached <= max(dates) or latest_cached < yesterday:
                 hist_dict = None
         if hist_dict is None:
             start = (datetime.fromisoformat(min(dates)) - timedelta(days=5)).date()
-            end = (datetime.fromisoformat(max(dates)) + timedelta(days=10)).date()
+            # end 至少涵蓋到今天:月結/季結(21/63 交易日)靠每日重跑逐步補齊,
+            # 不能只抓到「最新建議日+10 天」——日報若停更,舊建議的長天期結算會凍結。
+            end = max(
+                (datetime.fromisoformat(max(dates)) + timedelta(days=10)).date(),
+                (datetime.now() + timedelta(days=1)).date(),
+            )
             hist_dict = yahoo_chart(sym, start.isoformat(), end.isoformat())
             if not hist_dict:
                 print(f"[skip] no data for {sym}", file=sys.stderr)
@@ -363,8 +371,11 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
                 ref_idx = sorted_dates.index(d)
             nxt = hist_dict[sorted_dates[ref_idx + 1]] if ref_idx + 1 < len(sorted_dates) else None
             c5 = hist_dict[sorted_dates[ref_idx + 5]] if ref_idx + 5 < len(sorted_dates) else None
+            c21 = hist_dict[sorted_dates[ref_idx + 21]] if ref_idx + 21 < len(sorted_dates) else None
+            c63 = hist_dict[sorted_dates[ref_idx + 63]] if ref_idx + 63 < len(sorted_dates) else None
             path = [hist_dict[dd] for dd in sorted_dates[ref_idx + 1:ref_idx + 14]]
-            out[(ticker, d)] = {"close": today, "next_close": nxt, "close_5d": c5, "path": path}
+            out[(ticker, d)] = {"close": today, "next_close": nxt, "close_5d": c5,
+                                "close_21d": c21, "close_63d": c63, "path": path}
     return out
 
 
@@ -479,17 +490,30 @@ def fetch_spx_regime() -> dict[str, str]:
     return out
 
 
+# 各結算天期設定:ref=價格欄位,hold=「抱住沒事」雙邊緩衝,wait=「別進場」容許小漲門檻。
+# 月/季緩衝按 sqrt(時間) 放大(股價波動 ~ sqrt(t)):hold 3%×√(21/5)≈6%、3%×√(63/5)≈10%;
+# wait 2%×√(21/5)≈4%、2%×√(63/5)≈7%。
+_HORIZONS = {
+    "1d":  {"ref": "next_close", "hold": 0.02, "wait": 0.01},
+    "5d":  {"ref": "close_5d",   "hold": 0.03, "wait": 0.02},
+    "21d": {"ref": "close_21d",  "hold": 0.06, "wait": 0.04},
+    "63d": {"ref": "close_63d",  "hold": 0.10, "wait": 0.07},
+}
+
+
 def judge(rec: dict, prices: dict, horizon: str = "5d") -> str | None:
     """結算一筆建議。
-    horizon="5d"(主指標):建議日收盤 vs 5 個交易日後收盤 — 對齊卡片明寫的「短線 1-2 週視角」。
+    horizon="5d"(主指標/週結):建議日收盤 vs 5 個交易日後收盤 — 對齊卡片明寫的「短線 1-2 週視角」。
       2026-06-10 修正:原本只看隔日一天,拿單日雜訊評 1-2 週的建議 = 量尺錯位,
       量到的是「隔日漲跌擲銅板」不是建議品質。
+    horizon="21d"/"63d"(月結/季結,2026-07-07 起):同一批判斷分別在 ~1 個月/~1 季後結算。
     horizon="1d"(輔助參考):隔日收盤,保留供對照。"""
     p = prices.get((rec["ticker"], rec["date"]))
     if not p:
         return None
+    cfg = _HORIZONS[horizon]
     today = p["close"]
-    ref = p.get("close_5d") if horizon == "5d" else p.get("next_close")
+    ref = p.get(cfg["ref"])
     if ref is None:
         return None  # 尚未到結算日 → 待結
     chg = (ref - today) / today
@@ -497,14 +521,13 @@ def judge(rec: dict, prices: dict, horizon: str = "5d") -> str | None:
     if vc == "buy":
         return "win" if chg > 0 else "loss"
     if vc == "hold":
-        # hold = 「抱住沒事」,5 日緩衝 ±3%(1 日 ±2%)
-        return "win" if abs(chg) <= (0.03 if horizon == "5d" else 0.02) else "loss"
+        return "win" if abs(chg) <= cfg["hold"] else "loss"
     if vc == "sell":
         # sell 是強信號,必須真跌才算對
         return "win" if chg < 0 else "loss"
     if vc == "wait":
         # wait 是「中性偏空 / 暫時別進場」— 緩衝後小漲不算錯
-        return "win" if chg < (0.02 if horizon == "5d" else 0.01) else "loss"
+        return "win" if chg < cfg["wait"] else "loss"
     return None
 
 
@@ -734,11 +757,15 @@ def main() -> int:
     for r in all_records:
         r["outcome"] = judge(r, prices, "5d")
         r["outcome_1d"] = judge(r, prices, "1d")
+        r["outcome_21d"] = judge(r, prices, "21d")
+        r["outcome_63d"] = judge(r, prices, "63d")
         judged_public.append(r)
     judged_personal = []
     for r in personal_records:
         r["outcome"] = judge(r, prices, "5d")
         r["outcome_1d"] = judge(r, prices, "1d")
+        r["outcome_21d"] = judge(r, prices, "21d")
+        r["outcome_63d"] = judge(r, prices, "63d")
         judged_personal.append(r)
 
     # 個人化逐筆模擬報酬(供匿名帳本用;獨立於下面 judged_all 的聚合 sims 迴圈,不影響既有 plan_sim 統計)
@@ -770,6 +797,28 @@ def main() -> int:
     c1 = [r for r in judged_all if r["type"] == "C" and r.get("outcome_1d")]
     a1_wins = sum(1 for r in a1 if r["outcome_1d"] == "win")
     c1_wins = sum(1 for r in c1 if r["outcome_1d"] == "win")
+
+    # 月結(21 交易日)/季結(63 交易日)勝率:同一批判斷換更長的結算尺,pending=尚未到期
+    def horizon_block(field: str) -> dict:
+        a_all = [r for r in judged_all if r["type"] == "A"]
+        c_all = [r for r in judged_all if r["type"] == "C"]
+        a = [r for r in a_all if r.get(field) in ("win", "loss")]
+        c = [r for r in c_all if r.get(field) in ("win", "loss")]
+        aw = sum(1 for r in a if r[field] == "win")
+        cw = sum(1 for r in c if r[field] == "win")
+        return {
+            "a_count": len(a), "a_wins": aw,
+            "a_rate": round(aw / len(a) * 100, 1) if a else 0.0,
+            "a_ci95": list(wilson_ci(aw, len(a))),
+            "a_pending": len(a_all) - len(a),
+            "c_count": len(c), "c_wins": cw,
+            "c_rate": round(cw / len(c) * 100, 1) if c else 0.0,
+            "c_ci95": list(wilson_ci(cw, len(c))),
+            "c_pending": len(c_all) - len(c),
+        }
+
+    monthly = horizon_block("outcome_21d")
+    quarterly = horizon_block("outcome_63d")
 
     # ── 校準 / regime 拆解 / level-based 操作模擬(2026-06-10 自學三件套)──
     calib = calibration_stats(a_recs)
@@ -857,6 +906,8 @@ def main() -> int:
             "c_count": len(c1), "c_wins": c1_wins,
             "c_rate": round(c1_wins / len(c1) * 100, 1) if c1 else 0.0,
         },
+        "monthly": monthly,      # 21 個交易日 ≈ 一個月結算
+        "quarterly": quarterly,  # 63 個交易日 ≈ 一季結算
         "a_count": len(a_recs),
         "a_wins": a_wins,
         "a_rate": round(a_rate, 1),

@@ -385,6 +385,16 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
   .nav-back, .lang-btn { white-space: nowrap; flex-shrink: 0; font-size: 12px; padding: 6px 11px; line-height: 1.2; }
 }
 
+/* 多週期勝率(週/月/季結算) */
+.hz-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+.hz-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 16px; }
+.hz-h { font-size: 12.5px; font-weight: 800; color: rgba(255,255,255,0.85); margin-bottom: 8px; letter-spacing: 0.3px; }
+.hz-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 4px 0; font-size: 13px; }
+.hz-lbl { color: rgba(255,255,255,0.55); flex-shrink: 0; }
+.hz-val { font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; text-align: right; }
+.hz-val .ci { display: block; font-size: 10.5px; color: rgba(255,255,255,0.4); font-weight: 600; }
+.hz-note { margin-top: 12px; font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.65; }
+@media (max-width: 640px) { .hz-grid { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="deepspace.css?v=20260611a">
 <link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -445,6 +455,29 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
   </div>
   <div class="real-service-note" id="real-service-note" style="display:none;">
     <span class="hi">👥 含全部訂閱者個人化日報</span>:<span id="rs-note-detail"></span>
+  </div>
+
+  <!-- Multi-horizon win rates:週結(5交易日)/月結(21)/季結(63) -->
+  <div class="method-card">
+    <div class="ttl" data-i18n="hz_ttl">同一批判斷,三種結算週期</div>
+    <div class="hz-grid">
+      <div class="hz-box">
+        <div class="hz-h" data-i18n="hz_w">📅 週結 · 5 個交易日</div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bull">看多</span><span class="hz-val" id="hz-w-a">—</span></div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bear">看空</span><span class="hz-val" id="hz-w-c">—</span></div>
+      </div>
+      <div class="hz-box">
+        <div class="hz-h" data-i18n="hz_m">🗓️ 月結 · 21 個交易日</div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bull">看多</span><span class="hz-val" id="hz-m-a">—</span></div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bear">看空</span><span class="hz-val" id="hz-m-c">—</span></div>
+      </div>
+      <div class="hz-box">
+        <div class="hz-h" data-i18n="hz_q">📊 季結 · 63 個交易日</div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bull">看多</span><span class="hz-val" id="hz-q-a">—</span></div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bear">看空</span><span class="hz-val" id="hz-q-c">—</span></div>
+      </div>
+    </div>
+    <div class="hz-note" data-i18n="hz_note">同一批判斷分別在 5／21／63 個交易日後用收盤價結算;月結與季結的緩衝門檻按時間放大(續抱 ±6%／±10%,觀望 &lt;4%／&lt;7%)。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。</div>
   </div>
 
   <!-- Method explainer -->
@@ -836,8 +869,38 @@ let STATS = null;
   NORMALIZED = RECORDS.map(normalize);
   renderRecords("all");
   renderCombinedStats();
+  renderHorizonStats();
   if (NORMALIZED.length === 0) renderEmptyState();
 })();
+
+// 多週期勝率:週(5d)=STATS 頭條,月(21d)=STATS.monthly,季(63d)=STATS.quarterly(皆含訂閱者個人化樣本)
+function renderHorizonStats() {
+  if (!STATS || typeof STATS.a_count !== "number") return;
+  const MIN_N = 20;
+  const zh = currentLang !== "en";
+  const fmt = (b) => {
+    if (!b) return "—";
+    if (!b.count) {
+      return b.pending
+        ? (zh ? `待結(${b.pending} 筆)` : `pending (${b.pending})`)
+        : "—";
+    }
+    if (b.count < MIN_N) return zh ? `累積中 ${b.count}/${MIN_N}` : `collecting ${b.count}/${MIN_N}`;
+    const ci = Array.isArray(b.ci) && b.ci.length === 2
+      ? `<span class="ci">95% ${Number(b.ci[0]).toFixed(0)}–${Number(b.ci[1]).toFixed(0)}%</span>` : "";
+    return `${(b.wins / b.count * 100).toFixed(1)}% <span style="font-weight:600;color:rgba(255,255,255,0.45);">(${b.wins}/${b.count})</span>${ci}`;
+  };
+  const pick = (blk, k) => blk
+    ? { count: blk[k + "_count"] || 0, wins: blk[k + "_wins"] || 0, ci: blk[k + "_ci95"], pending: blk[k + "_pending"] || 0 }
+    : null;
+  const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  set("hz-w-a", fmt({ count: STATS.a_count, wins: STATS.a_wins, ci: STATS.a_ci95, pending: 0 }));
+  set("hz-w-c", fmt({ count: STATS.c_count, wins: STATS.c_wins, ci: STATS.c_ci95, pending: 0 }));
+  set("hz-m-a", fmt(pick(STATS.monthly, "a")));
+  set("hz-m-c", fmt(pick(STATS.monthly, "c")));
+  set("hz-q-a", fmt(pick(STATS.quarterly, "a")));
+  set("hz-q-c", fmt(pick(STATS.quarterly, "c")));
+}
 
 // 跨用戶聚合勝率 — 從 stats.a_count/a_wins/c_count/c_wins 讀(這些是公版+個人化合計)
 // 隱私:records 列表只放公版,但 stats 已包含全部用戶訊號
@@ -901,6 +964,13 @@ const i18n = {
     ma_p: "日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後收盤往上走 = 贏(對齊卡片明寫的「短線 1-2 週視角」,2026-06-10 起;舊版只看隔日一天,單日雜訊太重)。",
     mc_h: "🔴 看空勝率",
     mc_p: "日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 5 個交易日後真的沒漲(漲幅 <2%)= 贏(成功避坑)。",
+    hz_ttl: "同一批判斷,三種結算週期",
+    hz_w: "📅 週結 · 5 個交易日",
+    hz_m: "🗓️ 月結 · 21 個交易日",
+    hz_q: "📊 季結 · 63 個交易日",
+    hz_bull: "看多",
+    hz_bear: "看空",
+    hz_note: "同一批判斷分別在 5／21／63 個交易日後用收盤價結算;月結與季結的緩衝門檻按時間放大(續抱 ±6%／±10%,觀望 <4%／<7%)。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。",
     f_us: "🇺🇸 美股", f_tw: "🇹🇼 台股", f_a: "🟢 看多", f_c: "🔴 看空",
     f_win: "✅ 贏", f_loss: "❌ 輸",
     th_date: "日期", th_tic: "個股", th_call: "日報原話", th_type: "類型", th_res: "結果",
@@ -928,6 +998,13 @@ const i18n = {
     ma_p: "Digest says \"bullish / bearish\" → did the close 5 trading days later go that way? (matches the stated 1-2 week horizon)",
     mc_h: "C · Risk Avoidance Hit",
     mc_p: "Digest warns \"wait / pull-back / overheated / risk\" → did stock actually retreat or sideways?",
+    hz_ttl: "Same calls, three settlement horizons",
+    hz_w: "📅 Weekly · 5 trading days",
+    hz_m: "🗓️ Monthly · 21 trading days",
+    hz_q: "📊 Quarterly · 63 trading days",
+    hz_bull: "Bullish",
+    hz_bear: "Bearish",
+    hz_note: "The same calls are settled at close 5 / 21 / 63 trading days out; buffers scale with time (hold ±6% / ±10%, wait <4% / <7%). Monthly & quarterly went live on 2026-07-07 — existing calls need to mature first, shown as \"pending\" until then.",
     f_us: "🇺🇸 US", f_tw: "🇹🇼 TW", f_a: "📐 Direction (A)", f_c: "⚠️ Risk (C)",
     f_win: "✅ Win", f_loss: "❌ Loss",
     th_date: "Date", th_tic: "Stock", th_call: "Original Call", th_type: "Type", th_res: "Result",
@@ -953,6 +1030,7 @@ function applyLang(lang) {
   });
   document.querySelector(".lang-btn").textContent = lang === "zh" ? "EN" : "中文";
   document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
+  if (typeof renderHorizonStats === "function") renderHorizonStats(); // 動態數字隨語言重繪
 }
 function toggleLang() { applyLang(currentLang === "zh" ? "en" : "zh"); }
 applyLang(currentLang);
