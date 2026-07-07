@@ -25,6 +25,12 @@ python3 cb.py 8112 --premium 5.5 --interest 2.2   # 權利金百元報價 5.5 + 
 python3 cb_etf_watch.py 5289      # 查哪些主動式 ETF 持有 5289 + 近30日加減碼異動
 python3 cb_etf_watch.py --update  # 手動立刻重抓全部 00xxA ETF 持股並 diff
 
+# 元大 CBAS 報價單自動套用(2026-07-07):許乃方每週寄的「CB資產交換選擇權報價表」
+# 信件本文內嵌「下周拆解標的」表(百元報價/折現率/選擇權到期日/元大版轉換價/CB市價/波動度)
+python3 cb_yuanta.py --ingest <信件內容檔>  # 入帳本;單檔分析自動套用(--premium 手動輸入仍優先)
+python3 cb_yuanta.py --list               # 帳本內全部元大報價;>14天視為過期不自動套用
+# 元大版轉換價 vs 系統差>0.5% → 自動警示建議 --set-conv(權威交叉源)
+
 # 事件日曆 + 轉換價紀律(2026-07-07):
 python3 cb.py --calendar          # 未來60天:詢圈/申報生效/掛牌/🔑可拆解日/賣回/到期 倒數
 python3 cb_conv_watch.py --alerts # 未解決的「轉換價格調整」公告警示(MOPS 重訊,cron 每日掃)

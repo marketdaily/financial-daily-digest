@@ -33,6 +33,7 @@ import cb_simulate
 import cb_intel
 import cb_etf_watch
 import cb_conv_watch
+import cb_yuanta
 from parse_excel import parse, DB_PATH, DEFAULT_XLSX
 
 C = {"g": "\033[92m", "r": "\033[91m", "y": "\033[93m", "b": "\033[96m",
@@ -122,12 +123,28 @@ def report(item, live=False, premium=None):
         return None
 
     mp = cb_market.get_cb_price(item["bond_code"], deep=live)
+    # 元大 CBAS 報價單自動套用(有手動 --premium 則以手動為準);折現率暫代 spread,算完還原
+    yq = None if premium is not None else cb_yuanta.get_quote(item["bond_code"])
+    eff_premium, old_spread = premium, cb_core.ASSUMPTIONS["asset_swap_spread"]
+    if yq and yq.get("premium_pct") is not None:
+        eff_premium = yq["premium_pct"]
+        if yq.get("discount_rate_pct"):
+            cb_core.set_config(asset_swap_spread=yq["discount_rate_pct"] / 100.0)
     a = cb_core.analyze(item, sd["spot"], sd["vol_blend"],
                         market_price=(mp["price"] if mp else None),
-                        premium_quote=premium)
+                        premium_quote=eff_premium)
+    cb_core.set_config(asset_swap_spread=old_spread)
     if not a["ok"]:
         print(f"{C['r']}✗ {a['reason']}{C['x']}")
         return None
+    if yq and yq.get("premium_pct") is not None:
+        print(f"  {C['b']}📋 元大報價單({yq['quote_date']},{yq['age_days']}天前):"
+              f"百元報價 {yq['premium_pct']}% · 折現率 {yq['discount_rate_pct']}%/年"
+              f" → 已自動套用(權利金端以元大實報為準){C['x']}")
+        yc, oc = yq.get("conv_price"), item.get("conv_price")
+        if yc and oc and abs(yc - oc) / oc > 0.005:
+            print(f"  {C['r']}⚠ 轉換價不一致:元大報 {yc} vs 系統 {oc}(差 {abs(yc-oc)/oc*100:.1f}%)"
+                  f" → 元大較新的話跑 --set-conv {item['bond_code']} {yc}{C['x']}")
 
     g = lambda v: (C['g'] if v > 0 else C['r']) + f"{v:+.2f}" + C['x']
     spot_tag = (f"{C['g']}即時 {sd.get('spot_time') or ''}{C['x']}" if sd.get("spot_rt")
