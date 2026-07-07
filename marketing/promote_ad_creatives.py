@@ -5,8 +5,9 @@
 跟 promote_win_cards.py/promote_tldr.py 同一套「generate→promote」慣例,但**這支刻意不同**:
 草稿內容來源含「借鏡競品 creative 骨架改寫」這個新風險面(brand voice 是否對味、有沒有語意
 上仍貼競品太近),不像 win_card/tldr 是從自家真實數字/歷史結算改寫——所以本腳本**只 promote
-`status == "approved"` 的草稿**,machine 不自動把 pending_review 改成 approved,這是保留人工
-審 brand voice 這一步的唯一機制,不可繞過(見 capabilities/marketing_agents_pipeline/RUNBOOK.md)。
+`status == "approved"` 的草稿**,且生成者不可核可自己的草稿。approved 唯一合法來源=獨立驗證者
+(全新 context 的 headless claude,ma_verify_prompt.md 規範;2026-07-06 前是人工閘門,Delvin
+親令改制,見 capabilities/marketing_agents_pipeline/RUNBOOK.md)。
 
 即使已標 approved,promote 前仍會重跑一次 marketing_compliance_lint 逐字合規掃描
 (capabilities/marketing_agents_pipeline/compliance_selfcheck.py,同一套產生草稿時用的檢查),
@@ -23,7 +24,7 @@ platforms 用草稿自帶的單一 platform(每則草稿的 caption 是針對該
 
 跑法:
     python3 promote_ad_creatives.py --dry   # 只列出 approved 且合規、尚未 promote 的項目,不寫入
-    python3 promote_ad_creatives.py         # 實際 promote(需先手動把草稿 status 改成 "approved")
+    python3 promote_ad_creatives.py         # 實際 promote(status 須已由獨立驗證者改成 "approved")
 """
 import json
 import sys
@@ -115,8 +116,8 @@ def main() -> int:
     if not candidates:
         approved_count = sum(1 for d in drafts if d.get("status") == "approved" and d.get("id") not in already)
         if approved_count == 0:
-            print("沒有 status==approved 的新草稿——需先人工把要發的草稿 status 從 "
-                  "pending_review 改成 approved 才會被 promote。")
+            print("沒有 status==approved 的新草稿——需先由獨立驗證者(ma_verify_prompt.md)"
+                  "把草稿 status 從 pending_review 改成 approved 才會被 promote。")
         return 0
 
     ready = [(d, r) for d, r in candidates if r is None]
