@@ -1018,6 +1018,16 @@ def _pp_fix_bare_wait(html: str) -> str:
     return html
 
 
+def _pp_fix_speculative_causality(html: str) -> str:
+    import re as _re
+    # digest_audit.py::speculative_causality(:279)同款判定——「可能與 XXX 有關」是無來源腦補歸因,
+    # prompt 已禁止(見 news5_block :2556)但 LLM 偶爾仍漏寫。改寫成明講「尚待證實」的誠實開放式
+    # 陳述,不再假裝有個可信解釋——不能只在後面加免責語,因為 audit regex 在「有關」就已完成匹配。
+    def _repl(m):
+        return f"是否與{m.group(1)}有關,尚待後續證實"
+    return _re.sub(r"可能與([^。<]{2,30})有關", _repl, html)
+
+
 def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_strip_llm_style(html)
     html = _pp_clear_placeholders(html)
@@ -1040,6 +1050,9 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_strip_empty_impact(html)
     html = _pp_drop_empty_sections(html)
     html = _pp_hoist_verdict_chip(html)
+    # 必須在 _pp_markdown_bold 之前跑:markdown ** 轉成 <strong> 後,regex 的 [^<] 會被
+    # tag 截斷導致漏網(2026-07-07 獨立驗證抓到)。
+    html = _pp_fix_speculative_causality(html)
     html = _pp_markdown_bold(html)
     html = _pp_fix_bare_wait(html)
     return html
