@@ -1,48 +1,48 @@
 {
   "stats": {
-    "generated_at": "2026-07-06T08:04:43",
+    "generated_at": "2026-07-07T08:05:40",
     "horizon": "5d",
-    "days_covered": 21,
-    "total_records": 1486,
-    "judged_records": 1051,
+    "days_covered": 22,
+    "total_records": 1573,
+    "judged_records": 1131,
     "one_day": {
-      "a_count": 591,
-      "a_wins": 267,
-      "a_rate": 45.2,
-      "c_count": 766,
-      "c_wins": 419,
-      "c_rate": 54.7
+      "a_count": 626,
+      "a_wins": 284,
+      "a_rate": 45.4,
+      "c_count": 812,
+      "c_wins": 447,
+      "c_rate": 55.0
     },
-    "a_count": 490,
-    "a_wins": 202,
-    "a_rate": 41.2,
+    "a_count": 515,
+    "a_wins": 216,
+    "a_rate": 41.9,
     "a_ci95": [
-      37.0,
-      45.6
+      37.8,
+      46.2
     ],
-    "c_count": 561,
-    "c_wins": 315,
-    "c_rate": 56.1,
+    "c_count": 616,
+    "c_wins": 330,
+    "c_rate": 53.6,
     "c_ci95": [
-      52.0,
-      60.2
+      49.6,
+      57.5
     ],
     "calibration": {
-      "n": 477,
-      "brier": 0.388,
+      "n": 502,
+      "brier": 0.3815,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
-          "n": 61,
-          "hit_rate": 59.0
+          "n": 65,
+          "hit_rate": 60.0
         },
         "61-70": {
           "n": 110,
           "hit_rate": 39.1
         },
         "<=50": {
-          "n": 38,
-          "hit_rate": 73.7
+          "n": 59,
+          "hit_rate": 66.1
         },
         ">70": {
           "n": 268,
@@ -61,31 +61,31 @@
         ]
       },
       "down": {
-        "a_count": 261,
-        "a_wins": 156,
-        "a_rate": 59.8,
+        "a_count": 286,
+        "a_wins": 170,
+        "a_rate": 59.4,
         "ci95": [
           53.7,
-          65.5
+          65.0
         ]
       }
     },
     "era": {
       "note": "僅計 2026-06-12 起(結構prior+校準信心上線後)的現行模型;信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
       "since": "2026-06-12",
-      "a_count": 47,
-      "a_wins": 31,
-      "a_rate": 66.0,
+      "a_count": 72,
+      "a_wins": 45,
+      "a_rate": 62.5,
       "a_ci95_day_cluster": [
-        55.6,
-        76.9
+        57.4,
+        68.3
       ],
-      "c_count": 67,
-      "c_wins": 31,
-      "c_rate": 46.3,
+      "c_count": 122,
+      "c_wins": 46,
+      "c_rate": 37.7,
       "c_ci95_day_cluster": [
-        15.4,
-        67.6
+        22.6,
+        63.2
       ],
       "by_regime": {
         "up": {
@@ -94,50 +94,176 @@
           "a_rate": 61.8
         },
         "down": {
-          "a_count": 13,
-          "a_wins": 10,
-          "a_rate": 76.9
+          "a_count": 38,
+          "a_wins": 24,
+          "a_rate": 63.2
         }
       },
       "calibration": {
-        "n": 47,
-        "brier": 0.2939,
+        "n": 72,
+        "brier": 0.2809,
         "coin_flip_brier": 0.25,
         "bins": {
           "51-60": {
-            "n": 13,
-            "hit_rate": 46.2
+            "n": 17,
+            "hit_rate": 52.9
           },
           "<=50": {
-            "n": 34,
-            "hit_rate": 73.5
+            "n": 55,
+            "hit_rate": 65.5
           }
         }
       },
-      "days": 4
+      "days": 5
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 559,
-      "no_fill": 201,
-      "pending": 36,
+      "simulated": 594,
+      "no_fill": 225,
+      "pending": 41,
       "hit_target": 52,
-      "hit_stop": 224,
+      "hit_stop": 230,
       "expired": 46,
-      "avg_ret_pct": -0.93,
+      "avg_ret_pct": -0.92,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
       "a_count": 41,
       "a_wins": 21,
       "a_rate": 51.2,
-      "c_count": 25,
+      "c_count": 29,
       "c_wins": 17,
-      "c_rate": 68.0
+      "c_rate": 58.6
     },
-    "personal_samples_added": 1380
+    "personal_samples_added": 1460
   },
   "records": [
+    {
+      "date": "2026-07-07",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "今晚開盤後，TSLA 股價突破 MA20 站穩，且基本面 YoY 正成長，短線反彈動能強。建議在回測 399.22 美元不破並確認站穩後，分批買進。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 58,
+      "entry_lo": 399.22,
+      "entry_hi": 410.0,
+      "target": 432.86,
+      "stop": 370.44,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-07",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "今晚開盤後，NVDA 空頭結構確立，量能萎縮無買盤。建議暫時觀望，待股價站回 MA20 (202.33 美元) 並確認站穩後再考慮。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 45,
+      "entry_lo": 189.8,
+      "entry_hi": 189.8,
+      "target": 208.23,
+      "stop": 179.7,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-07",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "今晚開盤後，MSFT 基本面強勁且 EPS YoY 達 +23.4%。MA20 支撐 384.89 美元有效，量縮整理後有反彈空間。建議在回測 384.89 美元不破並確認站穩後，分批低接。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 59,
+      "entry_lo": 384.89,
+      "entry_hi": 390.0,
+      "target": 413.04,
+      "stop": 353.87,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-07",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "今晚開盤後，AAPL 多頭結構完整，基本面強勁且 EPS YoY 達 +21.8% 支撐。建議續抱持有，若回測 299.28 美元不破可考慮加碼。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 53,
+      "entry_lo": 299.28,
+      "entry_hi": 305.0,
+      "target": 317.4,
+      "stop": 290.36,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-07",
+      "name": "聯發科",
+      "ticker": "2454",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "今早開盤後，聯發科股價盤整中段，量縮 0.54 倍背離 MA20，缺乏明確突破訊號。建議暫時觀望，等待量能啟動或跌破 3825 元支撐才有明確方向。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 46,
+      "entry_lo": 3825.0,
+      "entry_hi": 3825.0,
+      "target": 4612.14,
+      "stop": 3630.0,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-07",
+      "name": "台積電",
+      "ticker": "2330",
+      "market": "tw",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "今早開盤後，台積電多頭結構完整，股價站上 MA20，且法說會題材加持。量縮整理後有突破 2500-2535 元動能。建議續抱，若回測 2388 元不破可考慮加碼。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 51,
+      "entry_lo": 2388.0,
+      "entry_hi": 2420.0,
+      "target": 2535.0,
+      "stop": 2299.28,
+      "outcome": null,
+      "outcome_1d": null
+    },
+    {
+      "date": "2026-07-07",
+      "name": "鴻海",
+      "ticker": "2317",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "今早開盤後，鴻海基本面強勁 (YoY +52%) 但技術面偏弱，股價在 236-256 元盤整，量能萎縮缺乏方向。建議暫時觀望，等待放量確認方向。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 44,
+      "entry_lo": 236.0,
+      "entry_hi": 236.0,
+      "target": 256.58,
+      "stop": 223.78,
+      "outcome": null,
+      "outcome_1d": null
+    },
     {
       "date": "2026-07-06",
       "name": "特斯拉 Tesla",
@@ -145,7 +271,7 @@
       "market": "us",
       "verdict_class": "sell",
       "verdict_text": "📉 BEARISH",
-      "reason": "今晚開盤後，TSLA 處於空頭結構，股價跌破 MA20 且量能放大，短期看跌動能強。建議觀望，待股價明確站回 MA20 (399.16 美元) 以上並放量，再考慮進場。",
+      "reason": "TSLA 處於空頭結構，股價跌破 MA20 且量能溫和，短期看弱。今晚開盤後，建議觀望，待股價站回 MA20 (約 399.16 美元) 並帶量突破 431.55 美元反彈目標後，再考慮進場。目前不建議買入。",
       "type": "C",
       "source": "signal-card",
       "confidence": 47,
@@ -163,7 +289,7 @@
       "market": "us",
       "verdict_class": "sell",
       "verdict_text": "📉 BEARISH",
-      "reason": "今晚開盤後，NVDA 處於空頭結構，價格持續低於 MA20，反彈乏力。建議觀望，待股價明確站回 MA20 (203.48 美元) 以上，或回測 189.8 美元不破並出現止跌訊號時，再考慮進場。",
+      "reason": "NVDA 空頭結構確立，股價跌破 MA20 且量能萎縮。今晚開盤後，建議觀望，若股價能帶量站回 MA20 (約 203.48 美元) 並突破 207.51 美元反彈目標，才考慮進場。目前不建議買入。",
       "type": "C",
       "source": "signal-card",
       "confidence": 45,
@@ -181,12 +307,12 @@
       "market": "us",
       "verdict_class": "buy",
       "verdict_text": "📈 BULLISH",
-      "reason": "今晚開盤後，MSFT 價漲量增突破盤整，站穩 MA20 (386.96 美元) 支撐，基本面 YoY 雙位數增長。建議在回測 386.96 美元不破時分批買進，目標價 416.83 美元。",
+      "reason": "MSFT 量價齊揚站上 MA20，基本面 EPS YoY +23.4% 強勁。今晚開盤後，若股價回測 386.96 美元不破，可分批買進，短期目標為 416.83 美元。",
       "type": "A",
       "source": "signal-card",
       "confidence": 64,
       "entry_lo": 386.96,
-      "entry_hi": 386.96,
+      "entry_hi": 390.0,
       "target": 416.83,
       "stop": 357.56,
       "outcome": null,
@@ -199,12 +325,12 @@
       "market": "us",
       "verdict_class": "buy",
       "verdict_text": "📈 BULLISH",
-      "reason": "今晚開盤後，AAPL 處於多頭結構，價量齊揚確認多頭堅固，基本面 EPS YoY +21.8% 有力支撐。建議在回測 295.22 美元不破時分批買進，目標價 317.4 美元。",
+      "reason": "AAPL 多頭結構完整，價漲量增確認，基本面 EPS YoY +21.8% 強勁。今晚開盤後，若股價回測 295.22 美元不破，可分批買進加碼，目標看向 317.4 美元。",
       "type": "A",
       "source": "signal-card",
       "confidence": 64,
       "entry_lo": 295.22,
-      "entry_hi": 295.22,
+      "entry_hi": 300.0,
       "target": 317.4,
       "stop": 286.28,
       "outcome": null,
@@ -216,13 +342,13 @@
       "ticker": "2454",
       "market": "tw",
       "verdict_class": "wait",
-      "verdict_text": "↔️ NEUTRAL",
-      "reason": "今早 9:00 開盤後，聯發科技術面量價背離，股價跌破 MA20 缺乏量能支撐，短線偏弱。建議觀望，待股價回測 3825 元不破且出現止跌訊號時，再考慮低接。",
+      "verdict_text": "↔ NEUTRAL",
+      "reason": "聯發科短期偏空盤整，股價跌破 MA20 且量價背離。今早 9:00 開盤後，建議觀望，若股價回測 3825 元不破，可考慮低接，目標為 4703.58 元。需等待增量資金或基本面訊號確認方向。",
       "type": "C",
       "source": "signal-card",
       "confidence": 46,
       "entry_lo": 3825.0,
-      "entry_hi": 3825.0,
+      "entry_hi": 3900.0,
       "target": 4703.58,
       "stop": 3691.6,
       "outcome": null,
@@ -235,12 +361,12 @@
       "market": "tw",
       "verdict_class": "buy",
       "verdict_text": "📈 BULLISH",
-      "reason": "今早 9:00 開盤後，台積電多頭結構完整，股價守 MA20 (2383.25 元) 且基本面強勁。建議續抱，若股價回測 2383.25 元不破，可考慮分批加碼，目標價 2535 元。",
+      "reason": "台積電多頭結構穩健，股價守穩 MA20，營收連 29 月正成長基本面強勁。今早 9:00 開盤後，若股價回測 2383.25 元不破，建議續抱持有，短期目標看向 2535 元。",
       "type": "A",
       "source": "signal-card",
       "confidence": 51,
       "entry_lo": 2383.25,
-      "entry_hi": 2383.25,
+      "entry_hi": 2400.0,
       "target": 2535.0,
       "stop": 2282.5,
       "outcome": null,
@@ -252,13 +378,13 @@
       "ticker": "2317",
       "market": "tw",
       "verdict_class": "wait",
-      "verdict_text": "↔️ NEUTRAL",
-      "reason": "今早 9:00 開盤後，鴻海月營收 YoY +52.1% 偏正面，基本面撐盤，股價量縮靠 236 元支撐，賣壓減弱。建議續抱，若股價回測 236 元不破，可考慮分批加碼，目標價 255.78 元。",
+      "verdict_text": "↔ NEUTRAL",
+      "reason": "鴻海營收 YoY +52.1% 強勁，股價跌量縮顯示賣壓趨緩。今早 9:00 開盤後，若股價回測 236 元不破，建議續抱持有，反彈空間上看 255.78 元。",
       "type": "C",
       "source": "signal-card",
       "confidence": 44,
       "entry_lo": 236.0,
-      "entry_hi": 236.0,
+      "entry_hi": 238.0,
       "target": 255.78,
       "stop": 221.4,
       "outcome": null,
@@ -352,7 +478,7 @@
       "target": 4785.0,
       "stop": 3823.6,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-07-03",
@@ -370,7 +496,7 @@
       "target": 2535.0,
       "stop": 2298.03,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-07-03",
@@ -388,7 +514,7 @@
       "target": 255.08,
       "stop": 218.9,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-07-02",
@@ -406,7 +532,7 @@
       "target": 433.6,
       "stop": 382.0,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-07-02",
@@ -424,7 +550,7 @@
       "target": 210.04,
       "stop": 182.01,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-07-02",
@@ -442,7 +568,7 @@
       "target": 411.3,
       "stop": 350.5,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "win"
     },
     {
       "date": "2026-07-02",
@@ -460,7 +586,7 @@
       "target": 311.08,
       "stop": 273.5,
       "outcome": null,
-      "outcome_1d": null
+      "outcome_1d": "loss"
     },
     {
       "date": "2026-07-02",
@@ -801,7 +927,7 @@
       "entry_hi": null,
       "target": 413.02,
       "stop": 330.11,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss"
     },
     {
@@ -819,7 +945,7 @@
       "entry_hi": null,
       "target": 210.6,
       "stop": 177.17,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss"
     },
     {
@@ -837,7 +963,7 @@
       "entry_hi": null,
       "target": 376.73,
       "stop": 322.95,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win"
     },
     {
@@ -855,7 +981,7 @@
       "entry_hi": 275.0,
       "target": 293.05,
       "stop": 252.77,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win"
     },
     {
