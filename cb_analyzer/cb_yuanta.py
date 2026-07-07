@@ -103,6 +103,31 @@ def parse_quote_table(html, quote_date=None):
     return out
 
 
+def ingest_html(html, quote_date=None, verbose=False):
+    """單一信件 HTML 字串 → 入帳本(同債券較新報價日才覆蓋)。回入帳筆數。IMAP/檔案共用。"""
+    quote_date = quote_date or datetime.date.today().isoformat()
+    ledger = _load()
+    n = 0
+    for row in parse_quote_table(html, quote_date):
+        prev = ledger.get(row["bond_code"])
+        if prev and (prev.get("quote_date") or "") > quote_date:
+            continue
+        ledger[row["bond_code"]] = row
+        n += 1
+    if n:
+        _save(ledger)
+    if verbose and n:
+        print(f"  元大報價入帳 {n} 筆(報價日 {quote_date})")
+    return n
+
+
+def subject_quote_date(subj, fallback=None):
+    """主旨「…報價表_2026/7/6」→ 2026-07-06。"""
+    dm = re.search(r"(\d{4})/(\d{1,2})/(\d{1,2})", subj or "")
+    return (f"{dm.group(1)}-{int(dm.group(2)):02d}-{int(dm.group(3)):02d}"
+            if dm else fallback)
+
+
 def ingest(path):
     """path = Gmail get_thread 存檔(JSON)或原始 HTML/txt。解析→入帳本(同債券新日期覆蓋)。"""
     raw = open(path, encoding="utf-8", errors="ignore").read()
@@ -112,25 +137,13 @@ def ingest(path):
         j = json.loads(raw)
         for m in j.get("messages", []):
             bodies.append(m.get("htmlBody") or m.get("plaintextBody") or "")
-            subj = m.get("subject") or ""
-            dm = re.search(r"(\d{4})/(\d{1,2})/(\d{1,2})", subj)
-            if dm:
-                quote_date = f"{dm.group(1)}-{int(dm.group(2)):02d}-{int(dm.group(3)):02d}"
-            elif m.get("date"):
-                quote_date = str(m["date"])[:10]
+            quote_date = subject_quote_date(m.get("subject"),
+                                            str(m.get("date") or "")[:10] or None)
     except ValueError:
         bodies = [raw]
     quote_date = quote_date or datetime.date.today().isoformat()
+    n = sum(ingest_html(b, quote_date) for b in bodies)
     ledger = _load()
-    n = 0
-    for body in bodies:
-        for row in parse_quote_table(body, quote_date):
-            prev = ledger.get(row["bond_code"])
-            if prev and (prev.get("quote_date") or "") > quote_date:
-                continue
-            ledger[row["bond_code"]] = row
-            n += 1
-    _save(ledger)
     print(f"已入帳 {n} 筆元大報價(帳本共 {len(ledger)} 檔,報價日 {quote_date})")
     for b, r in sorted(ledger.items()):
         if r.get("quote_date") == quote_date:

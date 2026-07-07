@@ -15,6 +15,13 @@ ASSUMPTIONS = {
     "default_tcri": 6,
     "vol_w_short": 0.35,    # 前瞻波動:短期(EWMA)權重
     "vol_w_long": 0.65,     # 長期(120d)權重
+    # 發行人強制贖回(台灣CB標準條款:收盤價連續30營業日達轉換價130%可贖回→持有人被迫轉換,上檔被封)
+    # 這是 Parisian 型條款(要持續超過,非瞬觸):用標準近似「有效障礙上移」
+    # B_eff = 轉換價 × trigger × exp(0.5826·σ·√(window/252)),波動越大有效障礙越高;
+    # σ→∞ 時 B_eff→∞ 收斂回無強贖 vanilla(隱波反解永遠有解)。call_adjust=False 退回純 BS。
+    "call_adjust": True,
+    "call_trigger_mult": 1.30,   # 條款觸價(轉換價的倍數;少數CB是1.5,可用 --set 或 config 改)
+    "call_window_days": 30,      # 連續營業日數
     # 老闆的拆解硬門檻(不是加分,是及格線;任一不過直接淘汰)
     "elig_tcri": [3, 4],    # TCRI 須為 3 或 4 → 銀行才肯承做資產交換
     "elig_min_size": 10,    # 發行量 ≥ 雙位數億 → 有流動性、資產交換台吃得下
@@ -93,6 +100,63 @@ def bs_call(S, K, T, sigma, r):
     return price, delta, gamma, vega
 
 
+def _uo_call(S, K, T, sigma, r, B):
+    """Reiner-Rubinstein up-and-out 買權 + 觸價即付 (B−K) rebate。
+    觸及 B = 發行人強贖 → 持有人轉換,拿走當下內含值(B−K);沒觸及 = 一般買權到期。
+    S ≥ B(已在可贖回區)直接回內含值。已用蒙地卡羅交叉驗證(backtest/test_call_barrier.py)。"""
+    if S >= B:
+        return max(S - K, 0.0)
+    if T <= 0 or sigma <= 0:
+        return max(min(S, B) - K, 0.0) if S > K else 0.0
+    sq = sigma * math.sqrt(T)
+    var = sigma * sigma
+    mu = (r - 0.5 * var) / var
+    lam = math.sqrt(mu * mu + 2.0 * r / var)
+    N = _norm_cdf
+    disc = math.exp(-r * T)
+    x1 = math.log(S / K) / sq + (1 + mu) * sq
+    x2 = math.log(S / B) / sq + (1 + mu) * sq
+    y1 = math.log(B * B / (S * K)) / sq + (1 + mu) * sq
+    y2 = math.log(B / S) / sq + (1 + mu) * sq
+    pw1, pw2 = (B / S) ** (2 * (mu + 1)), (B / S) ** (2 * mu)
+    A_ = S * N(x1) - K * disc * N(x1 - sq)
+    B_ = S * N(x2) - K * disc * N(x2 - sq)
+    C_ = S * pw1 * N(-y1) - K * disc * pw2 * N(-y1 + sq)
+    D_ = S * pw1 * N(-y2) - K * disc * pw2 * N(-y2 + sq)
+    uo = max(A_ - B_ + C_ - D_, 0.0)
+    z = math.log(B / S) / sq + lam * sq
+    rebate = (B - K) * ((B / S) ** (mu + lam) * N(-z)
+                        + (B / S) ** (mu - lam) * N(-z + 2 * lam * sq))
+    return uo + rebate
+
+
+def call_barrier(K, sigma, a=ASSUMPTIONS):
+    """強贖有效障礙(Parisian 持續窗近似,障礙隨σ上移)。"""
+    trig = a.get("call_trigger_mult", 1.30)
+    win = a.get("call_window_days", 30)
+    return K * trig * math.exp(0.5826 * sigma * math.sqrt(win / 252.0))
+
+
+def option_px(S, K, T, sigma, r, a=ASSUMPTIONS):
+    """轉換選擇權單股定價:預設含發行人強贖上限(見 ASSUMPTIONS 註解);greeks 用中央差分。
+    回 (price, delta, gamma, vega)。call_adjust=False 時退回純 BS。"""
+    if not a.get("call_adjust", True):
+        return bs_call(S, K, T, sigma, r)
+    if S <= 0 or K <= 0 or sigma <= 0 or T <= 0:
+        return bs_call(S, K, T, sigma, r)
+    B = call_barrier(K, sigma, a)
+    px = _uo_call(S, K, T, sigma, r, B)
+    h = max(S * 0.005, 1e-6)
+    up = _uo_call(S + h, K, T, sigma, r, B)
+    dn = _uo_call(S - h, K, T, sigma, r, B)
+    delta = max(-1.0, min((up - dn) / (2 * h), 1.5))
+    gamma = (up - 2 * px + dn) / (h * h)
+    hv = 0.01
+    vega = (_uo_call(S, K, T, sigma + hv, r, B)
+            - _uo_call(S, K, T, max(sigma - hv, 1e-4), r, B)) / (2 * hv)
+    return px, delta, gamma, vega
+
+
 def credit_rate(tcri, a=ASSUMPTIONS):
     spread = a["tcri_spread"].get(tcri or a["default_tcri"], a["tcri_spread"][a["default_tcri"]])
     return a["rf"] + spread
@@ -139,8 +203,9 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None, premium_quot
     parity = spot / K * 100.0                # 轉換價值
 
     floor = bond_floor(item, a)
-    call_px, delta, gamma, vega = bs_call(spot, K, T_opt, hist_vol, r)
-    opt_value = shares * call_px             # 每張 CB 的轉換選擇權價值
+    call_px, delta, gamma, vega = option_px(spot, K, T_opt, hist_vol, r, a)
+    opt_value = shares * call_px             # 每張 CB 的轉換選擇權價值(含強贖上限)
+    opt_vanilla = shares * bs_call(spot, K, T_opt, hist_vol, r)[0]   # 無強贖上界(參考)
     theo = floor + opt_value                 # 理論 CB 價
 
     financing = floor * a["asset_swap_spread"] * T_opt   # 期間融資成本(粗估)
@@ -158,8 +223,8 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None, premium_quot
     issue = buy_price
     # 隱含波動率:解 σ 使 floor + shares*BS(σ) = 價格基準
     # 只在有『真實價格基準』(承銷價或市價)時才反推;無真實價不拿面額100 硬解(會產生假隱波)
-    iv_clearing = implied_vol(spot, K, T_opt, r, shares, floor, clearing) if clearing_known else None
-    iv_market = implied_vol(spot, K, T_opt, r, shares, floor, market_price) if market_price else None
+    iv_clearing = implied_vol(spot, K, T_opt, r, shares, floor, clearing, a=a) if clearing_known else None
+    iv_market = implied_vol(spot, K, T_opt, r, shares, floor, market_price, a=a) if market_price else None
     iv = iv_market if iv_market else iv_clearing
     iv_source = "市場價" if iv_market else ("承銷價" if clearing_known else "—")
 
@@ -193,7 +258,10 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None, premium_quot
         "moneyness": moneyness, "premium_at_issue": item.get("premium_mid"),
         "tenor": T, "T_opt": T_opt,
         "bond_floor": floor, "credit_rate": credit_rate(item.get("tcri"), a),
-        "option_value": opt_value, "theoretical": theo, "issue_price": issue,
+        "option_value": opt_value, "option_value_vanilla": opt_vanilla,
+        "call_adjusted": bool(a.get("call_adjust", True)),
+        "call_barrier_eff": call_barrier(K, hist_vol, a) / K if a.get("call_adjust", True) else None,
+        "theoretical": theo, "issue_price": issue,
         "buy_price": buy_price, "buy_source": buy_source,
         "clearing_known": clearing_known, "pricing_method": item.get("pricing_method"),
         "auction_low": item.get("auction_low"), "auction_high": item.get("auction_high"),
@@ -210,12 +278,14 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None, premium_quot
     }
 
 
-def implied_vol(S, K, T, r, shares, floor, target_price, lo=0.05, hi=2.5):
-    """二分法解隱含波動率,使 floor + shares*BS_call(σ) = target_price。"""
+def implied_vol(S, K, T, r, shares, floor, target_price, lo=0.05, hi=2.5, a=ASSUMPTIONS):
+    """二分法解隱含波動率,使 floor + shares*選擇權(σ) = target_price。
+    定價用與 analyze 同一個 option_px(含強贖上限),模型內部一致;
+    強贖上限使選擇權價值有上界,價格太貴解不出 → 回 hi(誠實顯示極端隱波)。"""
     target_opt = (target_price - floor) / shares
     if target_opt <= 0:
         return None
-    f = lambda s: bs_call(S, K, T, s, r)[0] - target_opt
+    f = lambda s: option_px(S, K, T, s, r, a)[0] - target_opt
     flo, fhi = f(lo), f(hi)
     if flo > 0:        # 連最低波動都比目標貴 → 選擇權被高估,回最低
         return lo
@@ -240,10 +310,10 @@ def scenarios(item, spot, K, T, vol, r, shares, floor, premium, issue,
     out = []
     # 假設情境是『短期內』股價變動,時間價值少掉一點(用 0.8*T 近似持有半年到一年後)
     T2 = max(T * 0.6, 0.25)
-    base_opt = shares * bs_call(spot, K, T2, vol, r)[0]
+    base_opt = shares * option_px(spot, K, T2, vol, r)[0]
     for m in moves:
         s2 = spot * (1 + m)
-        opt2 = shares * bs_call(s2, K, T2, vol, r)[0]
+        opt2 = shares * option_px(s2, K, T2, vol, r)[0]
         # 拆解部位損益:選擇權市值變化 / 權利金(下檔以權利金為限)
         pnl = opt2 - base_opt
         ret_on_prem = pnl / premium if premium > 0 else None

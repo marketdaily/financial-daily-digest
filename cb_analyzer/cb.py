@@ -199,7 +199,9 @@ def report(item, live=False, premium=None):
 
     print(f"\n  {C['bold']}── 拆解定價 ──{C['x']}")
     print(f"  債券底       {a['bond_floor']:6.2f}   (折現率 {a['credit_rate']*100:.2f}% = rf+TCRI利差)")
-    print(f"  轉換選擇權   {a['option_value']:6.2f}   (Δ {a['delta']:.2f}, Γ {a['gamma']:.4f})")
+    call_tag = (f"含強贖上限,有效障礙≈轉換價×{a['call_barrier_eff']:.2f};無強贖上界 {a['option_value_vanilla']:.2f}"
+                if a.get("call_adjusted") else "純BS,未計強贖")
+    print(f"  轉換選擇權   {a['option_value']:6.2f}   (Δ {a['delta']:.2f}, Γ {a['gamma']:.4f}；{call_tag})")
     print(f"  理論 CB 價   {C['bold']}{a['theoretical']:6.2f}{C['x']}   vs 買價 {a['issue_price']:.2f}"
           f"（{a['buy_source']}）  → 理論edge {g(a['edge_theo'])}")
     if mp:
@@ -593,7 +595,12 @@ def print_assumptions():
     print(f"  無風險利率 rf={a['rf']*100:.1f}% · 資產交換 spread={a['asset_swap_spread']*100:.1f}% · "
           f"前瞻波動加權 短{a['vol_w_short']:.0%}/長{a['vol_w_long']:.0%}")
     print("  TCRI 信用利差: " + ", ".join(f"{k}→{v*100:.1f}%" for k, v in a['tcri_spread'].items()))
-    print("  ⚠ 隱含波動由真實承銷/競拍價反解;前瞻波動=EWMA(短)與120日(長)加權(均值回歸)。")
+    if a.get("call_adjust", True):
+        print(f"  發行人強贖上限:開啟(條款 {a.get('call_trigger_mult', 1.3)*100:.0f}%×連續{a.get('call_window_days', 30)}日,"
+              "Parisian持續窗近似→有效障礙隨σ上移;蒙地卡羅夾擠驗證過)")
+    else:
+        print("  發行人強贖上限:關閉(純BS)")
+    print("  ⚠ 隱含波動由真實承銷/競拍價反解(同一含強贖模型);前瞻波動=EWMA(短)與120日(長)加權(均值回歸)。")
     print(f"     融資/稅費/賣回時點/流動性折價未精算,評分供篩選排序,進場前仍須人工核對承銷與資產交換報價。{C['x']}")
 
 
