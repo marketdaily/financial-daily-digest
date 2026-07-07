@@ -96,6 +96,20 @@ if [ -d "$AUTO" ]; then
   echo "--- 🤖 自主機器近況 ---"
   echo "能力庫 ${CAPS} 積木 · 累計 ${CYC} 輪值班。最近做的:"
   grep -E '^\- \[' "$AUTO/autonomous_log.md" 2>/dev/null | tail -n 2 | sed 's/^/  /' | cut -c1-160
+
+  # 🌙 用戶不在時(睡覺/外出)機器完成的事——Delvin 2026-07-07 親令:睡醒開視窗要直接看到
+  # 「額度刷新後接手做完了什麼」,不用每次開口問。列近 18 小時值班報告的標題(舊→新,最多 12 筆)。
+  NIGHT=$(find "$AUTO/reports" -name '*.md' -mmin -1080 2>/dev/null | sort | tail -n 12)
+  if [ -n "$NIGHT" ]; then
+    echo "--- 🌙 你不在時完成的(近18h值班報告,舊→新;⚠️這段是給用戶看的,回覆開頭原樣轉述給他) ---"
+    while IFS= read -r f; do
+      ts=$(basename "$f" .md | sed -nE 's/^[0-9-]+_([0-9]{2})([0-9]{2})_.*/\1:\2/p')
+      title=$(grep -m1 -E '^# ' "$f" 2>/dev/null \
+        | sed -E 's/^# *//; s/^學習報告 ?· ?//; s/^[0-9-]+ [0-9:]+ TW ?· ?//')
+      [ -z "$title" ] && title=$(basename "$f" .md)
+      echo "  · [${ts:-??:??}] ${title:0:70}"
+    done <<< "$NIGHT"
+  fi
   echo "  ⓘ 用戶問「你(昨天/上次到現在)學了什麼」→ 跑 \`bash ~/autonomous/report.sh\` 給①增量②累計兩層報告。"
 fi
 
