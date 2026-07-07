@@ -9,6 +9,9 @@
   python cb.py 8112 --watch [秒]  盤中即時監看:每 N 秒(預設20)刷新報價重算全套
   python cb.py --rank        老闆 Excel 已定價 CB → 拆解吸引力排序(三區)
   python cb.py --rank --html     另出玻璃卡片儀表板 report.html
+  python cb.py --calendar [天數]  事件日曆:詢圈/掛牌/可拆解日/賣回/到期 倒數(預設60天)
+  python cb.py --set-conv 811211 95.3 [備註]
+                             人工覆寫最新轉換價(除權息/重設調整後;MOPS 重訊掃描會提醒何時該查)
   python cb.py --list        列出老闆 Excel 所有案件
   python cb.py --update x.xlsx   換新 Excel 重建資料庫
 現股/CB 百元報價=TWSE MIS 即時(免token,盤中即時、收盤後=當日收盤);
@@ -29,6 +32,7 @@ import cb_existing
 import cb_simulate
 import cb_intel
 import cb_etf_watch
+import cb_conv_watch
 from parse_excel import parse, DB_PATH, DEFAULT_XLSX
 
 C = {"g": "\033[92m", "r": "\033[91m", "y": "\033[93m", "b": "\033[96m",
@@ -69,8 +73,9 @@ def find(db, key):
     hits = [i for i in db["items"]
             if key in (i["stock_code"], i["bond_code"]) or key in i["name"]]
     if hits:
-        return hits
+        return [cb_conv_watch.apply_override(h)[0] for h in hits]
     ex = cb_existing.lookup(key)
+    ex = [cb_conv_watch.apply_override(it)[0] for it in ex]
     ov = _tcri_overrides()
     for it in ex:
         if it.get("tcri") is None:      # 現有 CB 無 TCRI → 沿用同股票在 Excel 的評等
@@ -133,6 +138,14 @@ def report(item, live=False, premium=None):
     if premium is not None:
         print(f"  {C['b']}📋 券商報價單輸入:權利金百元報價 {premium} · "
               f"利息 {cb_core.ASSUMPTIONS['asset_swap_spread']*100:.2f}%/年 → 全鏈路以報價為準{C['x']}")
+    ov = item.get("conv_override")
+    if ov:
+        print(f"  {C['b']}轉換價 {item['conv_price']} = 人工覆寫({ov['date']}"
+              f"{(',' + ov['note']) if ov.get('note') else ''};原值 {item.get('conv_price_orig')}){C['x']}")
+    for al in cb_conv_watch.pending_alerts(code)[-1:]:
+        if not ov or al.get("date_iso", "") > ov.get("date", ""):
+            print(f"  {C['r']}⚠ {al['date_iso']} 轉換價調整公告:{al['subject'][:46]}…"
+                  f"轉換價可能已變,查最新價後 --set-conv {item['bond_code']} <新價>{C['x']}")
     prem = f"發行溢價率 {item['premium_mid']}%" if item.get("premium_mid") else ""
     print(f"  轉換價值 parity = {C['bold']}{a['parity']:.1f}{C['x']}  "
           f"（價內外 {a['moneyness']:.3f}×，{'價內' if a['moneyness']>1 else '價外'}）  {prem}")
@@ -152,6 +165,20 @@ def report(item, live=False, premium=None):
              else f"·{a.get('pricing_method') or '—'}{am}")
     print(f"  {C['bold']}買價基準 {a['issue_price']:.2f}{C['x']}"
           f"（{a['buy_source']}{extra}）{flag}")
+    exi = item if item.get("is_existing") else (cb_existing.by_bond(item["bond_code"]) or {})
+    if exi.get("outstanding_yi") is not None:
+        seg = f"  籌碼:流通餘額 {exi['outstanding_yi']}億/發行 {exi.get('size_yi')}億"
+        if exi.get("converted_pct") is not None:
+            cp = exi["converted_pct"]
+            hot = f" {C['y']}(轉換中,籌碼在減){C['x']}" if cp >= 20 else ""
+            seg += f" · 已轉換 {cp:.1f}%{hot}"
+        if exi.get("coupon_rate") is not None:
+            seg += f" · 票面 {exi['coupon_rate']:g}%"
+        print(seg)
+    nxt = [(d, lab) for d, lab in _events_for(item) if d >= datetime.date.today()][:2]
+    if nxt:
+        print("  ⏳ 近期事件:" + " · ".join(
+            f"{lab} {d.isoformat()}(D-{(d - datetime.date.today()).days})" for d, lab in nxt))
 
     print(f"\n  {C['bold']}── 拆解定價 ──{C['x']}")
     print(f"  債券底       {a['bond_floor']:6.2f}   (折現率 {a['credit_rate']*100:.2f}% = rf+TCRI利差)")
@@ -361,6 +388,75 @@ def _watchlist(db):
               f"{str(i['size_yi'])+'億':<6} {i['tenor_year']}年 · {C['d']}{ind}{C['x']}")
 
 
+def _pdate(s):
+    try:
+        return datetime.date.fromisoformat(str(s).strip()[:10])
+    except (ValueError, TypeError, AttributeError):
+        return None
+
+
+def _events_for(item, ref_year=None):
+    """單一 CB 的關鍵日期 list[(date, label)](排序)。Excel 管線+現有 CB 都吃。
+    ≈ 開頭的 label 表示推算值(掛牌日+賣回年數),非公告精確日。"""
+    ev = []
+    def add(d, label):
+        if d:
+            ev.append((d, label))
+    add(_pdate(item.get("effective_date")), "申報生效")
+    add(_pdate(item.get("listing_date")), "掛牌")
+    add(_pdate(item.get("split_date")), "🔑可拆解日")
+    add(_pdate(item.get("conv_start")), "開始可轉換")
+    add(_pdate(item.get("conv_end")), "轉換截止")
+    add(_pdate(item.get("maturity_date")), "到期")
+    # 詢圈/競拍:bookbuild 文字如「詢圈 6/9-6/10」「競拍 6/16」;年份用申報生效/公告年推
+    bb = item.get("bookbuild") or ""
+    m = __import__("re").search(r"(\d{1,2})/(\d{1,2})", bb)
+    if m:
+        yr = (ref_year or (_pdate(item.get("effective_date")) or _pdate(item.get("announce_date"))
+                           or datetime.date.today()).year)
+        try:
+            add(datetime.date(yr, int(m.group(1)), int(m.group(2))),
+                ("競拍" if "競拍" in bb else "詢圈"))
+        except ValueError:
+            pass
+    # 提前賣回:現有 CB put.raw 帶精確日;Excel 管線用 掛牌+年數 推算
+    put = item.get("put") or {}
+    m = __import__("re").search(r"@(\d{4}-\d{2}-\d{2})", put.get("raw") or "")
+    if m:
+        add(_pdate(m.group(1)), f"提前賣回@{put.get('redeem_price') or 100:g}")
+    elif put.get("year") and item.get("listing_date"):
+        ld = _pdate(item["listing_date"])
+        if ld:
+            try:
+                add(ld.replace(year=ld.year + int(put["year"])), "≈提前賣回")
+            except ValueError:
+                pass
+    return sorted(ev)
+
+
+def calendar_view(db, days=60):
+    """老闆 Excel 管線全案件 → 未來 N 天事件日曆(倒數排序)。"""
+    today = datetime.date.today()
+    rows = []
+    for item in db["items"]:
+        for d, lab in _events_for(item):
+            if today <= d <= today + datetime.timedelta(days=days):
+                rows.append((d, lab, item))
+    rows.sort(key=lambda x: x[0])
+    print(f"\n{C['bold']}{C['b']}📅 CB 事件日曆(未來 {days} 天,{len(rows)} 件){C['x']}  "
+          f"{C['d']}來源 {db['source_file']};≈為推算日{C['x']}\n")
+    if not rows:
+        print(f"  {C['d']}(窗口內無事件){C['x']}")
+        return
+    for d, lab, item in rows:
+        dd = (d - today).days
+        col = C['r'] if dd <= 3 else (C['y'] if dd <= 7 else "")
+        elig = "✅" if cb_core.eligibility(item)[0] else "  "
+        print(f"  {col}D-{dd:<3}{C['x']} {d.isoformat()}  {lab:<10} {elig} "
+              f"{item['name']:<12}(股 {item['stock_code']}/債 {item['bond_code']}) "
+              f"{C['d']}TCRI{item.get('tcri') or '?'} {item.get('size_yi') or '?'}億{C['x']}")
+
+
 def _parse_capital(s):
     s = str(s).strip().replace(",", "").replace("$", "").replace("NT", "")
     mult = 1
@@ -565,7 +661,17 @@ def main():
     if args and args[0] == "--update":
         rebuild(args[1] if len(args) > 1 else DEFAULT_XLSX)
         return
+    if args and args[0] == "--set-conv":
+        if len(args) < 3:
+            print("用法:python cb.py --set-conv <債券或股票代碼> <最新轉換價> [備註]")
+            return
+        r = cb_conv_watch.set_override(args[1], float(args[2]), " ".join(args[3:]))
+        print(f"已覆寫 {args[1]} 轉換價 = {r['conv_price']}({r['date']});該公司待核警示已標記解決")
+        return
     db = load_db()
+    if args and args[0] == "--calendar":
+        calendar_view(db, days=int(args[1]) if len(args) > 1 else 60)
+        return
     if args and args[0] == "--sim":
         cap = _parse_capital(args[1]) if len(args) > 1 else None
         if not cap:

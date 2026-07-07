@@ -95,6 +95,8 @@ def _to_item(d, today):
     gdesc = (d.get("GuaranteeDescription") or "").strip()
     size = _num(d.get("IssueAmount"))
     size_yi = round(size / 1e8, 2) if size else None
+    out_amt = _num(d.get("OutstandingAmount"))
+    conv_s, conv_e = _pdate(d.get("Conversion/ExchangePeriodStartDate")), _pdate(d.get("Conversion/ExchangePeriodEndDate"))
     return {
         "section": "現有可轉債",
         "stock_code": (d.get("IssuerCode") or "").strip().lstrip("0") or (d.get("IssuerCode") or "").strip(),
@@ -121,6 +123,12 @@ def _to_item(d, today):
         "pricing_method": "現有CB(次級市場)",
         "issue_price": None,
         "is_existing": True,
+        # 籌碼/條款面(TPEx 每日檔):流通餘額→轉換進度;票面利率;轉換期間
+        "outstanding_yi": round(out_amt / 1e8, 2) if out_amt else None,
+        "converted_pct": round((1 - out_amt / size) * 100, 1) if (out_amt and size) else None,
+        "coupon_rate": _num(d.get("CouponRate")),
+        "conv_start": conv_s.isoformat() if conv_s else None,
+        "conv_end": conv_e.isoformat() if conv_e else None,
         "note": (f"發行 {d.get('IssueDate','?')}→到期 {d.get('MaturityDate','?')};"
                  f"轉換價為發行時價,可能經反稀釋/除權息調整,精算前請核對最新轉換價與流通餘額"),
     }
@@ -161,3 +169,10 @@ def lookup(code, today=None):
 def all_items(today=None):
     idx = _build_index(today or datetime.date.today())
     return list(idx["by_bond"].values())
+
+
+def by_bond(bond_code, today=None):
+    """單一債券代碼 → TPEx 現況 item(流通餘額/轉換進度/票面/轉換期間)或 None。
+    給老闆 Excel 管線的 CB 掛牌後補籌碼面資訊用。"""
+    idx = _build_index(today or datetime.date.today())
+    return idx["by_bond"].get(str(bond_code).strip())

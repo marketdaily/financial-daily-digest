@@ -25,6 +25,12 @@ python3 cb.py 8112 --premium 5.5 --interest 2.2   # 權利金百元報價 5.5 + 
 python3 cb_etf_watch.py 5289      # 查哪些主動式 ETF 持有 5289 + 近30日加減碼異動
 python3 cb_etf_watch.py --update  # 手動立刻重抓全部 00xxA ETF 持股並 diff
 
+# 事件日曆 + 轉換價紀律(2026-07-07):
+python3 cb.py --calendar          # 未來60天:詢圈/申報生效/掛牌/🔑可拆解日/賣回/到期 倒數
+python3 cb_conv_watch.py --alerts # 未解決的「轉換價格調整」公告警示(MOPS 重訊,cron 每日掃)
+python3 cb.py --set-conv 811211 95.3  # 查到最新轉換價後人工覆寫(報告顯示覆寫日期+原值)
+# 單檔報告自動附:籌碼(流通餘額/已轉換%/票面,TPEx 每日檔)+近期事件倒數+轉換價調整警示
+
 # 臨時覆寫假設(優先於 cb_config.json):
 python3 cb.py --rank --swap 0.025 --rf 0.015 --vol-short 0.2 --vol-long 0.8
 ```
