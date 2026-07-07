@@ -679,11 +679,14 @@ def run_ledger_edge_audit() -> None:
 
 
 def main() -> int:
-    dates = discover_dates()
+    # 2026-07-07 Delvin 指令:舊世代引擎(結構 prior+校準信心上線前)的預測不是現行系統產的,
+    # 混進公開頭條勝率=不真實 → 公開戰績只計 MODEL_ERA_START 起的記錄,全程用現行規則重算。
+    # 舊記錄不銷毀:匿名帳本 personal_ledger.jsonl(append-only,不對外)保留全史供內部稽核。
+    dates = [d for d in discover_dates() if d >= MODEL_ERA_START]
     if not dates:
         print("no digest dates discoverable from local or CDN", file=sys.stderr)
         return 1
-    print(f"[discover] {len(dates)} dates to process")
+    print(f"[discover] {len(dates)} dates to process (>= {MODEL_ERA_START})")
 
     all_records: list[dict] = []
     personal_records: list[dict] = []  # 跨用戶聚合用,不寫進公開 records 列表
@@ -844,6 +847,7 @@ def main() -> int:
     stats = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "horizon": "5d",
+        "records_since": MODEL_ERA_START,
         "days_covered": len({r["date"] for r in judged_all}),
         "total_records": len(judged_all),
         "judged_records": len(a_recs) + len(c_recs),
