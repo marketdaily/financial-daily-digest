@@ -55,3 +55,4 @@ cb_analyzer/.score_price_cache.json
 valuation/cache/
 scripts/.dividend_cache.json
 scripts/.stockname_cache.json
+cb_analyzer/.quote_cache.json

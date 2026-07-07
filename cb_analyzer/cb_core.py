@@ -145,15 +145,16 @@ def analyze(item, spot, hist_vol, a=ASSUMPTIONS, market_price=None, premium_quot
 
     financing = floor * a["asset_swap_spread"] * T_opt   # 期間融資成本(粗估)
     # 券商直接報權利金(我們實際買的拆解後選擇權端)→ 反推等效 CB 價,全鏈路以報價為準
+    had_market = market_price is not None
     if premium_quote and not market_price:
         market_price = floor + premium_quote - financing
 
     clearing = item.get("clearing_price")
     clearing_known = clearing is not None
-    # 買價基準:權利金報價 > CB 現價 > 承銷/競拍價 > 面額100佔位
+    # 買價基準:CB 現價 > 權利金報價(反推) > 承銷/競拍價 > 面額100佔位
     buy_price = market_price or clearing or 100.0
-    buy_source = ("權利金報價" if premium_quote else
-                  ("CB現價" if market_price else ("承銷價" if clearing_known else "面額100(估)")))
+    buy_source = ("CB現價" if had_market else
+                  ("權利金報價" if premium_quote else ("承銷價" if clearing_known else "面額100(估)")))
     issue = buy_price
     # 隱含波動率:解 σ 使 floor + shares*BS(σ) = 價格基準
     # 只在有『真實價格基準』(承銷價或市價)時才反推;無真實價不拿面額100 硬解(會產生假隱波)

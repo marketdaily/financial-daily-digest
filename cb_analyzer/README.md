@@ -13,7 +13,17 @@ python3 cb.py --rank          # 所有已定價 CB → 拆解吸引力排序(看
 python3 cb.py --rank --html   # 同上,並輸出 report.html 玻璃卡片儀表板(瀏覽器打開)
 python3 cb.py --list          # 列出資料庫全部案件(● 已定價 / ○ 條件未定)
 python3 cb.py --update 新檔.xlsx   # 老闆給新一期 Excel,重建資料庫
-python3 cb.py 8112 --live     # 額外抓 CB 次級市場成交價,改用「市場隱波」(更即時)
+
+# 即時報價(2026-07-07 起預設開啟,免旗標):現股+CB 百元報價自動用 TWSE MIS 即時
+python3 cb.py 8112 --watch        # 盤中即時監看:每 20 秒刷新報價重算全套(--watch 10 改間隔,5~600秒)
+python3 cb.py 8112 --live         # 加試 FinMind/TPEx議價板深源(MIS 抓不到 CB 價時的備援)
+
+# 券商 CBAS 報價單輸入(拿到報價單就填,全鏈路以真實報價為準,零誤差):
+python3 cb.py 8112 --premium 5.5 --interest 2.2   # 權利金百元報價 5.5 + 每年利息 2.2%
+
+# 主動式 ETF 持股監控(cron 每天 08:35 自動更新帳本;單檔報告會自動附):
+python3 cb_etf_watch.py 5289      # 查哪些主動式 ETF 持有 5289 + 近30日加減碼異動
+python3 cb_etf_watch.py --update  # 手動立刻重抓全部 00xxA ETF 持股並 diff
 
 # 臨時覆寫假設(優先於 cb_config.json):
 python3 cb.py --rank --swap 0.025 --rf 0.015 --vol-short 0.2 --vol-long 0.8
@@ -59,15 +69,29 @@ python3 cb.py --rank --swap 0.025 --rf 0.015 --vol-short 0.2 --vol-long 0.8
 - 評分當**篩選排序**用,不是直接下單訊號。融資、交易稅、賣回時點、流動性折價未精算。
 - 最終進場前仍要人工核對承銷條件與資產交換報價。
 
-## CB 次級市場價(`--live`)
+## 即時報價(2026-07-07 上線)
 
-台股**個別 CB 收盤價沒有穩定免費來源**(FinMind CB dataset 要 token、TPEx OpenAPI 只有 CBAS 餘額/券商彙總、議價板多為空)。`cb_market.py` 依序嘗試:
+**TWSE MIS API**(免費免 token,約 5 秒快照,上市/上櫃/CB 都有)是現股與 CB 百元報價的第一來源:
 
-1. **FinMind CB dataset** —— 設環境變數 `FINMIND_TOKEN`(到 finmindtrade.com 免費註冊取得)即解鎖
-2. **TPEx 議價揭示板** —— 當日有報價才有
+- 現股價:盤中=即時成交/中價(報告標「即時 HH:MM:SS」),收盤後=當日收盤(標「收盤 日期」)。波動率仍用日線算,即時 tick 不進波動率。
+- **CB 百元報價**:債券代碼直接查 MIS(CB 在櫃買等價系統交易),含買賣五檔第一檔。有市價 → 隱波/權利金/評分全改用**市場隱波**;抓不到 → 透明退回承銷價隱波。
+- 快取 15 秒(`.quote_cache.json`),`--rank`/網頁全表掃描批次抓不會狂打。
+- `--live` 現在的意思=加試深源備援(FinMind CB dataset 需 `FINMIND_TOKEN`、TPEx 議價板),MIS 抓不到才需要。
+- 網頁版(`cb_server.py`,port 8911)同步受益:沒手動帶 CB 價時自動用 MIS 即時價。
 
-抓得到 → 用**市場隱波**(比承銷價更即時);抓不到 → 透明退回承銷價隱波(不影響其餘分析)。
-不帶 `--live` 預設不抓(快)。
+## 券商目標價紀律(2026-07-07 起)
+
+`company_intel.json` 的 target_price **必附 broker(來源券商)+ target_date + source_url**;
+顯示端:缺券商 → 標「⚠ 來源不明,勿引用」;逾 90 天 → 標過期需重查;無出處連結 → 標「新聞轉述」。
+目標價多為新聞轉述非原始報告,查證以兩則獨立報導互證。
+
+## 主動式 ETF 持股監控(cb_etf_watch.py)
+
+全部 00xxA 主動式 ETF(清單動態拉 FinMind,新發行自動納入)每日全持股快照(MoneyDJ,資料日 T-1),
+與前份 diff → **新進/剔除/加碼(權重+0.5pt或股數+20%)/減碼** 事件記 `.etf_holdings/events.jsonl`。
+cron 每天 08:35 自動跑(`~/.marketdaily-fallback/cb_etf_watch_runner.sh`);單檔報告自動附
+「🎯 主動式 ETF」區(哪些 ETF 持有+近30日異動)。防呆:原本有持股突然全空=疑似來源異常,保留舊快照不產生假「全部剔除」。
+主動式**基金**(月揭露,lag 大)暫不做;投信整體買賣超已在市場情報的法人流向裡。
 
 ## 檔案
 
@@ -75,8 +99,12 @@ python3 cb.py --rank --swap 0.025 --rf 0.015 --vol-short 0.2 --vol-long 0.8
 |----|------|
 | `parse_excel.py` | Excel → `cb_database.json` |
 | `cb_core.py` | 量化核心(BS / 債券底 / 隱含波動 / 拆解 / 評分),假設參數在此 |
-| `cb_data.py` | FinMind 抓現股價 + 多窗口/EWMA 前瞻波動率(免 token) |
-| `cb_market.py` | CB 次級市場成交價(可插拔,`--live` 用;FinMind token/TPEx) |
+| `cb_quote.py` | TWSE MIS 即時報價(現股+CB 百元報價,批次+15秒快取) |
+| `cb_data.py` | FinMind 日線(波動率)+ 即時價疊加層 |
+| `cb_market.py` | CB 市價:MIS 即時首選;`--live` 加試 FinMind token/TPEx 深源 |
+| `cb_etf_watch.py` | 主動式 ETF 每日全持股快照+加減碼異動偵測(`.etf_holdings/`) |
+| `cb_intel.py` | 市場情報:法人流向 + 券商目標價(強制來源/日期/過期標記) |
 | `cb_report.py` | HTML 玻璃卡片儀表板生成 |
+| `cb_server.py` | 常駐網頁版(port 8911,keepalive cron 自癒) |
 | `cb_config.json` | 假設參數(改這裡不用動程式) |
-| `cb.py` | CLI 主程式 + 報告 |
+| `cb.py` | CLI 主程式 + 報告 + `--watch` 盤中監看 |

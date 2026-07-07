@@ -13,6 +13,7 @@ import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import cb_core
 import cb_data
+import cb_market
 import cb_profiles
 import cb_intel
 import cb_simulate
@@ -23,6 +24,15 @@ import cb
 HERE = os.path.dirname(os.path.abspath(__file__))
 DB = cb.load_db()
 VW = lambda: (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
+
+
+def _auto_cb_price(it):
+    """用戶沒手動帶 CB 價時,自動抓 MIS 即時百元報價(cb_quote 15s 快取;失敗回 None,透明退回)。"""
+    try:
+        mp = cb_market.get_cb_price(it["bond_code"])
+        return mp["price"] if mp else None
+    except Exception:
+        return None
 
 
 def _fair_premium(a):
@@ -303,7 +313,8 @@ def brief_fragment():
         if not sd:
             continue
         qdate = sd.get("date") or qdate
-        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"])
+        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"],
+                            market_price=_auto_cb_price(it))
         if not a.get("ok"):
             continue
         be_S, be_move, p_touch, p_term, cal = _outlook(it, a)
@@ -387,7 +398,7 @@ def analyze_fragment(code, tcri=None, prem=None, cbprice=None):
                          % (html.escape(it["name"]), it["stock_code"]))
             continue
         a = cb_core.analyze(it, sd["spot"], sd["vol_blend"],
-                            market_price=cbprice, premium_quote=prem)
+                            market_price=(cbprice or _auto_cb_price(it)), premium_quote=prem)
         if a.get("ok"):
             cards.append(_human_card(it, sd, a))
     return "".join(cards)
@@ -436,7 +447,7 @@ def sim_fragment(capital, code=None, tcri=None, drift=0.07, cbprice=None, prem=N
         if not sd:
             continue
         a = cb_core.analyze(it, sd["spot"], sd["vol_blend"],
-                            market_price=cbprice if code else None,
+                            market_price=((cbprice if code else None) or _auto_cb_price(it)),
                             premium_quote=prem if code else None)
         if a.get("ok"):
             cands.append((it, a))
@@ -524,7 +535,8 @@ def _resolve(code, tcri=None, cbprice=None, prem=None):
     sd = cb_data.get_stock(it["stock_code"], vol_weights=VW())
     if not sd:
         return None, "抓不到現股報價"
-    a = cb_core.analyze(it, sd["spot"], sd["vol_blend"], market_price=cbprice, premium_quote=prem)
+    a = cb_core.analyze(it, sd["spot"], sd["vol_blend"],
+                        market_price=(cbprice or _auto_cb_price(it)), premium_quote=prem)
     return (it, sd, a), None
 
 
@@ -537,19 +549,23 @@ def price_fragment(code, tcri=None, cbprice=None, prem_q=None):
     prem = a["cbas_premium"]
     return (
         '<div class="simbox"><h3>📈 %s(股%s/債%s)現價與拆解基準</h3>'
-        '<div class="simrow"><b>現股價 %.2f</b>(%s,即時)　轉換價 %s　'
+        '<div class="simrow"><b>現股價 %.2f</b>(%s)　轉換價 %s　'
         '<b>parity %.1f</b>(%s)</div>'
         '<div class="simrow">債券底 %.1f　CB 合理價 %.1f　<b>權利金上限 %.1f</b>——券商報這以內才接　目前權利金 <b>%.1f</b>(NT$%s)　槓桿 %.1f×</div>'
         '<div class="iline">買價基準:<b>%s</b>%s</div>'
         '<div class="iline" style="color:#7dd3fc">要零誤差:我們買的是拆解後的權利金端——券商報權利金給你時,'
         '填進「權利金報價」欄(組合的每檔也可以填),整套就用真實報價算。</div></div>'
         % (html.escape(it["name"]), it["stock_code"], it["bond_code"],
-           sd["spot"], sd["date"], it["conv_price"],
+           sd["spot"],
+           ("MIS即時 " + (sd.get("spot_time") or "")) if sd.get("spot_rt") else ("收盤 " + sd["date"]),
+           it["conv_price"],
            a["parity"], "價內" if a["moneyness"] > 1 else "價外",
            a["bond_floor"], a["theoretical"], _fair_premium(a), prem, f"{prem*1000:,.0f}",
            a["leverage"] or 0,
            src, ("(券商權利金 %.1f)" % prem_q) if prem_q else
-                (("(你帶入 %.1f)" % cbprice) if cbprice else "(未帶報價,為估計值)")))
+                (("(你帶入 %.1f)" % cbprice) if cbprice else
+                 (("(MIS即時 %.2f)" % a["buy_price"]) if src == "CB現價"
+                  else "(未帶報價,為估計值)"))))
 
 
 def _parse_legs(s):

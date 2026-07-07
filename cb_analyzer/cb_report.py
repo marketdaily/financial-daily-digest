@@ -101,7 +101,7 @@ def _card(item, sd, a):
         <div><b>{sd['spot']:.1f}</b><label>現股價</label></div>
         <div><b>{item['conv_price']}</b><label>轉換價</label></div>
         <div><b>{a['parity']:.0f}</b><label>parity</label></div>
-        <div><b>{a['issue_price']:.1f}</b><label>清算價</label></div>
+        <div><b>{a['issue_price']:.1f}</b><label>{a['buy_source']}</label></div>
         <div><b>{a['bond_floor']:.1f}</b><label>債券底</label></div>
         <div><b>{a['option_value']:.1f}</b><label>選擇權</label></div>
         <div><b style="color:{g(a['edge_theo'])}">{a['theoretical']:.1f}</b><label>理論價</label></div>

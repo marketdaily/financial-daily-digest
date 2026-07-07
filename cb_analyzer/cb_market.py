@@ -1,12 +1,14 @@
-"""CB 次級市場成交價(可插拔多來源)。
-台股個別 CB 收盤價沒有穩定免費源,所以依序嘗試,全失敗就回 None(分析端透明退回承銷價):
-  1) FinMind CB dataset —— 需 FINMIND_TOKEN(免費註冊 finmindtrade.com 即可解鎖)
-  2) TPEx 債券電腦議價揭示板 —— 當日有報價時可得(多數 CB 無)
+"""CB 次級市場成交價(可插拔多來源)。依序嘗試,全失敗回 None(分析端透明退回承銷價):
+  0) TWSE MIS 即時報價(cb_quote)—— 免費免 token,盤中即時、收盤後=當日收盤,首選
+  1) FinMind CB dataset —— 需 FINMIND_TOKEN(deep=True 才試)
+  2) TPEx 債券電腦議價揭示板 —— 當日有報價時可得(deep=True 才試)
 拿到價就用『市場隱波』取代承銷價隱波(更即時)。"""
 import os
 import json
 import datetime
 import urllib.request
+
+import cb_quote
 
 FINMIND = "https://api.finmindtrade.com/api/v4/data"
 TOKEN = os.environ.get("FINMIND_TOKEN", "").strip()
@@ -82,10 +84,22 @@ def _avg(a, b):
     return (a + b) / 2 if a and b else None
 
 
-def get_cb_price(bond_code, today=None):
-    """回 {price, date, src} 或 None。"""
+def _from_mis(bond_code, today):
+    try:
+        q = cb_quote.get_quote(bond_code)
+    except Exception:
+        return None
+    if q and q.get("price") and 50 <= q["price"] <= 300:
+        src = "MIS即時" + (f" {q['time']}" if q.get("time") else "")
+        return {"price": q["price"], "date": q.get("date"), "src": src, "quote": q}
+    return None
+
+
+def get_cb_price(bond_code, today=None, deep=False):
+    """回 {price, date, src} 或 None。預設只打 MIS 即時(快);deep=True 加試 FinMind/TPEx議價板。"""
     today = today or datetime.date.today()
-    for fn in (_from_finmind, _from_tpex):
+    fns = (_from_mis, _from_finmind, _from_tpex) if deep else (_from_mis,)
+    for fn in fns:
         r = fn(bond_code, today)
         if r:
             return r

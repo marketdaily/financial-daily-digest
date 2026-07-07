@@ -2,25 +2,33 @@
   python cb.py 8112          單檔全套分析(老闆 Excel 管線;股票/債券代碼/公司名)
   python cb.py 11011         現有可轉債(找不到就自動查全市場 TPEx,如台泥一永 11011)
   python cb.py 11011 --tcri 4    現有 CB 帶入 TCRI 判定老闆準則
-  python cb.py 11011 --live      額外抓次級市價算市場隱波(需 FINMIND_TOKEN)
+  python cb.py 11011 --live      額外抓 FinMind/TPEx議價板深源(MIS 即時價一律自動抓)
+  python cb.py 8112 --premium 5.5 --interest 2.2
+                             券商 CBAS 報價單輸入:百元報價(權利金/per100)+每年利息%,
+                             全鏈路以真實報價為準(零誤差)
+  python cb.py 8112 --watch [秒]  盤中即時監看:每 N 秒(預設20)刷新報價重算全套
   python cb.py --rank        老闆 Excel 已定價 CB → 拆解吸引力排序(三區)
   python cb.py --rank --html     另出玻璃卡片儀表板 report.html
   python cb.py --list        列出老闆 Excel 所有案件
   python cb.py --update x.xlsx   換新 Excel 重建資料庫
+現股/CB 百元報價=TWSE MIS 即時(免token,盤中即時、收盤後=當日收盤);
 現有 CB 資料源=TPEx OpenAPI(免token);缺 TCRI 用 --tcri 帶入。假設在 cb_core.ASSUMPTIONS。"""
 import sys
 import os
 import json
+import time
 import datetime
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import cb_core
 import cb_data
 import cb_market
+import cb_quote
 import cb_profiles
 import cb_existing
 import cb_simulate
 import cb_intel
+import cb_etf_watch
 from parse_excel import parse, DB_PATH, DEFAULT_XLSX
 
 C = {"g": "\033[92m", "r": "\033[91m", "y": "\033[93m", "b": "\033[96m",
@@ -82,7 +90,7 @@ def _bar(label, val, maxv, width=18):
     return f"{label} {'█'*n}{'░'*(width-n)} {val:.0f}/{maxv:.0f}"
 
 
-def report(item, live=False):
+def report(item, live=False, premium=None):
     code = item["stock_code"]
     tcri_s = f"TCRI{item['tcri']}" if item.get("tcri") else "TCRI?"
     print(f"\n{C['bold']}{C['b']}━━ {item['name']}  (股 {code} / 債 {item['bond_code']}){C['x']}")
@@ -100,8 +108,7 @@ def report(item, live=False):
               f"備註:{item['note']}{C['x']}")
         return None
     if item.get("is_existing"):
-        print(f"  {C['d']}現有 CB:用剩餘年限計價;轉換價為發行時價可能已調整;"
-              f"買進分析請加 --live 或以現價比對(次級市價需 FINMIND_TOKEN)。{C['x']}")
+        print(f"  {C['d']}現有 CB:用剩餘年限計價;轉換價為發行時價可能已調整。{C['x']}")
 
     sd = cb_data.get_stock(code, vol_weights=(cb_core.ASSUMPTIONS["vol_w_short"],
                                               cb_core.ASSUMPTIONS["vol_w_long"]))
@@ -109,17 +116,23 @@ def report(item, live=False):
         print(f"{C['r']}✗ 抓不到 {code} 現股資料(可能停牌/代碼異常),跳過。{C['x']}")
         return None
 
-    mp = cb_market.get_cb_price(item["bond_code"]) if live else None
+    mp = cb_market.get_cb_price(item["bond_code"], deep=live)
     a = cb_core.analyze(item, sd["spot"], sd["vol_blend"],
-                        market_price=(mp["price"] if mp else None))
+                        market_price=(mp["price"] if mp else None),
+                        premium_quote=premium)
     if not a["ok"]:
         print(f"{C['r']}✗ {a['reason']}{C['x']}")
         return None
 
     g = lambda v: (C['g'] if v > 0 else C['r']) + f"{v:+.2f}" + C['x']
-    print(f"\n  現股價 {C['bold']}{sd['spot']:.2f}{C['x']}（{sd['date']}，近20日 "
+    spot_tag = (f"{C['g']}即時 {sd.get('spot_time') or ''}{C['x']}" if sd.get("spot_rt")
+                else f"收盤 {sd['date']}")
+    print(f"\n  現股價 {C['bold']}{sd['spot']:.2f}{C['x']}（{spot_tag}，近20日 "
           f"{g((sd['ret_20d'] or 0)*100)}%）  轉換價 {item['conv_price']}  "
           f"換股 {a['shares']:.2f}張/CB")
+    if premium is not None:
+        print(f"  {C['b']}📋 券商報價單輸入:權利金百元報價 {premium} · "
+              f"利息 {cb_core.ASSUMPTIONS['asset_swap_spread']*100:.2f}%/年 → 全鏈路以報價為準{C['x']}")
     prem = f"發行溢價率 {item['premium_mid']}%" if item.get("premium_mid") else ""
     print(f"  轉換價值 parity = {C['bold']}{a['parity']:.1f}{C['x']}  "
           f"（價內外 {a['moneyness']:.3f}×，{'價內' if a['moneyness']>1 else '價外'}）  {prem}")
@@ -133,18 +146,26 @@ def report(item, live=False):
     if a.get("auction_low"):
         am = f"，競拍區間 {a['auction_low']}~{a['auction_high']}"
     flag = "" if a["clearing_known"] else f" {C['y']}(未定，暫用面額100){C['x']}"
-    print(f"  {C['bold']}真實清算價 {a['issue_price']:.2f}{C['x']}"
-          f"（{a.get('pricing_method') or '—'}{am}）{flag}")
+    clr = item.get("clearing_price")
+    extra = (f"；承銷/清算 {clr:.2f}·{a.get('pricing_method') or '—'}{am}"
+             if clr and abs(clr - a["issue_price"]) > 1e-9
+             else f"·{a.get('pricing_method') or '—'}{am}")
+    print(f"  {C['bold']}買價基準 {a['issue_price']:.2f}{C['x']}"
+          f"（{a['buy_source']}{extra}）{flag}")
 
     print(f"\n  {C['bold']}── 拆解定價 ──{C['x']}")
     print(f"  債券底       {a['bond_floor']:6.2f}   (折現率 {a['credit_rate']*100:.2f}% = rf+TCRI利差)")
     print(f"  轉換選擇權   {a['option_value']:6.2f}   (Δ {a['delta']:.2f}, Γ {a['gamma']:.4f})")
-    print(f"  理論 CB 價   {C['bold']}{a['theoretical']:6.2f}{C['x']}   vs 清算價 {a['issue_price']:.2f}"
-          f"  → 理論edge {g(a['edge_theo'])}")
+    print(f"  理論 CB 價   {C['bold']}{a['theoretical']:6.2f}{C['x']}   vs 買價 {a['issue_price']:.2f}"
+          f"（{a['buy_source']}）  → 理論edge {g(a['edge_theo'])}")
     if mp:
-        print(f"  {C['g']}次級市場成交價 {mp['price']:.2f}（{mp['date']}，{mp['src']}）{C['x']}")
-    elif live:
-        print(f"  {C['d']}次級市場:無成交/無報價,退回承銷價隱波（設 FINMIND_TOKEN 可解鎖 CB 行情）{C['x']}")
+        q = mp.get("quote") or {}
+        ba = (f"，買 {q['bid']:.2f}/賣 {q['ask']:.2f}" if q.get("bid") and q.get("ask") else "")
+        print(f"  {C['g']}CB 百元報價 {C['bold']}{mp['price']:.2f}{C['x']}{C['g']}"
+              f"（{mp['src']}{ba}，{mp['date']}）{C['x']}")
+    else:
+        print(f"  {C['d']}CB 百元報價:MIS 無此債券即時報價"
+              f"{'' if live else '(加 --live 可試 FinMind/TPEx 深源)'},退回承銷價隱波{C['x']}")
     if a["implied_vol"]:
         ve = a["vol_edge"]
         col = C['g'] if ve and ve > 0 else C['y']
@@ -172,7 +193,27 @@ def report(item, live=False):
         print(f"    · {rr}")
     print(f"  {C['bold']}結論:{verdict(a['score'])}{C['x']}")
     _print_profile(code)
+    _print_etf(code)
     return a
+
+
+def _print_etf(code):
+    """主動式 ETF 持股狀況+近期異動(讀本地帳本,不打網路;帳本由每日 cron 更新)。"""
+    try:
+        info = cb_etf_watch.stock_summary(code)
+    except Exception:
+        return
+    if not info or (not info["holders"] and not info["events"]):
+        return
+    print(f"\n  {C['bold']}── 🎯 主動式 ETF ──{C['x']}  "
+          f"{C['d']}(持股資料日 {info.get('data_date') or '—'}){C['x']}")
+    for h in info["holders"][:6]:
+        sh = "（{:,.0f} 股）".format(h["shares"]) if h.get("shares") else ""
+        print(f"  {h['etf_name']}({h['etf']}) 持 {h['weight']:.2f}%{sh}")
+    for e in info["events"][:5]:
+        col = C['g'] if e["kind"] in ("新進", "加碼") else C['r']
+        print(f"  {col}⚡ {e['date']} {e['etf_name']} {e['kind']}"
+              f"{('' if e.get('note') is None else ' ' + e['note'])}{C['x']}")
 
 
 def _print_profile(code):
@@ -194,6 +235,45 @@ def _print_profile(code):
         print(f"  {C['y']}💡 {p['note']}{C['x']}")
 
 
+def watch(item, interval=20, live=False, premium=None):
+    """盤中即時監看:每 interval 秒刷新 MIS 報價、重算全套拆解,一行一快照。Ctrl+C 停。"""
+    code, bond = item["stock_code"], item["bond_code"]
+    vw = (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
+    print(f"\n{C['bold']}{C['b']}👁 盤中監看 {item['name']}(股 {code}/債 {bond}) "
+          f"每 {interval:.0f}s 刷新,Ctrl+C 停{C['x']}", flush=True)
+    print(f"  {'時間':<9}{'現股':>8}{'CB價':>8}{'parity':>7}{'權利金':>7}"
+          f"{'理論':>7}{'隱波':>6}{'Δ':>5}{'評分':>5}", flush=True)
+    last = None
+    try:
+        while True:
+            try:
+                cb_quote.get_quotes([code, bond], ttl=max(5, interval - 2))
+                sd = cb_data.get_stock(code, vol_weights=vw)
+                mp = cb_market.get_cb_price(bond, deep=False)
+                a = cb_core.analyze(item, sd["spot"], sd["vol_blend"],
+                                    market_price=(mp["price"] if mp else None),
+                                    premium_quote=premium) if sd else {"ok": False}
+            except Exception:
+                a = {"ok": False}
+            if a.get("ok"):
+                t = (sd.get("spot_time") or datetime.datetime.now().strftime("%H:%M:%S"))[:8]
+                iv = f"{a['implied_vol']*100:.0f}%" if a.get("implied_vol") else "—"
+                cbp = f"{mp['price']:.2f}" if mp else "—"
+                mark = ""
+                if last is not None and sd["spot"] != last:
+                    mark = C['g'] + "▲" + C['x'] if sd["spot"] > last else C['r'] + "▼" + C['x']
+                last = sd["spot"]
+                print(f"  {t:<9}{sd['spot']:>8.2f}{mark}{cbp:>8}{a['parity']:>7.1f}"
+                      f"{a['cbas_premium']:>7.2f}{a['theoretical']:>7.2f}{iv:>6}"
+                      f"{a['delta']:>5.2f}{a['score']:>5.0f}", flush=True)
+            else:
+                print(f"  {datetime.datetime.now().strftime('%H:%M:%S')}  (本輪抓價/計算失敗,續盯)",
+                      flush=True)
+            time.sleep(interval)
+    except KeyboardInterrupt:
+        print(f"\n{C['d']}監看結束。{C['x']}")
+
+
 def _score_color(s):
     return C['g'] if s >= 65 else (C['y'] if s >= 50 else C['r'])
 
@@ -212,18 +292,27 @@ def rank(db, live=False):
     print(f"\n{C['bold']}{C['b']}═══ 全表 CB 拆解吸引力排序 ═══{C['x']}  "
           f"{C['d']}(來源 {db['source_file']}, {db.get('parsed_at','')}){C['x']}\n")
     vw = (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
+    priced = [i for i in db["items"] if i.get("conv_price") and i.get("premium_mid")]
+    # 一次批次抓全部現股+CB 即時報價進快取,後面逐檔分析全走快取(不重複打 MIS)
+    try:
+        cb_quote.get_quotes([i["stock_code"] for i in priced] + [i["bond_code"] for i in priced])
+    except Exception:
+        pass
     results = []
-    for item in db["items"]:
-        if not item.get("conv_price") or not item.get("premium_mid"):
-            continue
+    for item in priced:
         sd = cb_data.get_stock(item["stock_code"], vol_weights=vw)
         if not sd:
             continue
-        mp = cb_market.get_cb_price(item["bond_code"]) if live else None
+        mp = cb_market.get_cb_price(item["bond_code"], deep=live)
         a = cb_core.analyze(item, sd["spot"], sd["vol_blend"],
                             market_price=(mp["price"] if mp else None))
         if a["ok"]:
             results.append((item, sd, a))
+    rt = [sd for _, sd, _ in results if sd.get("spot_rt")]
+    if rt:
+        print(f"  {C['g']}報價:MIS 即時({rt[0].get('spot_time') or ''},{len(rt)}/{len(results)} 檔即時)"
+              f"{C['x']}{C['d']} · 其餘退回收盤價{C['x']}\n" if len(rt) < len(results) else
+              f"  {C['g']}報價:MIS 即時({rt[0].get('spot_time') or ''}){C['x']}\n")
     results.sort(key=lambda x: x[2]["score"], reverse=True)
     elig = [r for r in results if r[2]["eligible"]]
     other = [r for r in results if not r[2]["eligible"]]
@@ -300,7 +389,9 @@ def _analyzed_candidates(db, codes=None):
         sd = cb_data.get_stock(it["stock_code"], vol_weights=vw)
         if not sd:
             continue
-        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"])
+        mp = cb_market.get_cb_price(it["bond_code"])
+        a = cb_core.analyze(it, sd["spot"], sd["vol_blend"],
+                            market_price=(mp["price"] if mp else None))
         if a.get("ok"):
             out.append((it, a))
     return out
@@ -451,7 +542,25 @@ def main():
         args.remove("--live")
     tcri_override = pop_flag(args, "--tcri", int)
     drift = pop_flag(args, "--drift")
-    cb_core.set_config(asset_swap_spread=swap, rf=rf, vol_w_short=ws, vol_w_long=wl)
+    premium = pop_flag(args, "--premium")          # 券商 CBAS 報價單:權利金百元報價
+    interest = pop_flag(args, "--interest")        # 券商 CBAS 報價單:每年利息(%)
+    watch_iv = None
+    if "--watch" in args:
+        i = args.index("--watch")
+        watch_iv = 20.0
+        if i + 1 < len(args):
+            try:
+                v = float(args[i + 1])
+                if 5 <= v <= 600:                   # 5~600 秒視為間隔;更大(如 8112)視為代碼
+                    watch_iv = v
+                    del args[i + 1]
+            except ValueError:
+                pass
+        args.remove("--watch")
+    if interest is not None:                        # --interest 一律是百分比:2.2 → 0.022
+        interest /= 100.0
+    cb_core.set_config(asset_swap_spread=(swap if swap is not None else interest),
+                       rf=rf, vol_w_short=ws, vol_w_long=wl)
 
     if args and args[0] == "--update":
         rebuild(args[1] if len(args) > 1 else DEFAULT_XLSX)
@@ -480,8 +589,15 @@ def main():
         if tcri_override:
             for it in hits:
                 it["tcri"] = tcri_override
+        if watch_iv:
+            target = next((h for h in hits if h.get("conv_price")), None)
+            if not target:
+                print(f"{C['y']}⚠ 此案條件未定(無轉換價),無法監看。{C['x']}")
+                return
+            watch(target, interval=watch_iv, live=live, premium=premium)
+            return
         for item in hits:
-            report(item, live=live)
+            report(item, live=live, premium=premium)
         print_assumptions()
 
 

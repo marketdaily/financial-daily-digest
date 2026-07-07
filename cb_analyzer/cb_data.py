@@ -1,9 +1,13 @@
-"""標的現股資料:FinMind 抓收盤序列 → 現價、年化歷史波動率、近期漲跌。免 token。"""
+"""標的現股資料:FinMind 抓收盤序列 → 波動率、近期漲跌;現價疊加 MIS 即時報價(cb_quote)。
+盤中跑 → spot=即時價(spot_rt=True,附 spot_time);收盤後/抓不到即時 → 退回最後收盤價。
+波動率一律用日線算(即時 tick 不進波動率)。"""
 import os
 import json
 import math
 import datetime
 import urllib.request
+
+import cb_quote
 
 FINMIND = "https://api.finmindtrade.com/api/v4/data"
 FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "").strip()
@@ -71,8 +75,26 @@ def blend_vol(vols, w_short=0.35, w_long=0.65):
     return b, {"short": short, "long": long, "w_short": w_short, "w_long": w_long}
 
 
-def get_stock(code, today=None, use_cache=True, vol_weights=(0.35, 0.65)):
-    """回 dict:spot, date, ret_20d, 多窗口波動(v20/v60/v120/ewma)+ vol_blend(前瞻估計)。失敗回 None。"""
+def get_stock(code, today=None, use_cache=True, vol_weights=(0.35, 0.65), realtime=True):
+    """回 dict:spot, date, ret_20d, 多窗口波動(v20/v60/v120/ewma)+ vol_blend(前瞻估計)。失敗回 None。
+    realtime=True 時疊加 MIS 即時報價:spot 換成最新成交/中價,原收盤留在 close_spot/close_date,
+    spot_rt=True + spot_time 標時間戳;即時抓不到就維持收盤價(不加旗標)。"""
+    out = _get_daily(code, today=today, use_cache=use_cache, vol_weights=vol_weights)
+    if not out or not realtime:
+        return out
+    try:
+        q = cb_quote.get_quote(code)
+    except Exception:
+        q = None
+    if q and q.get("price") and q.get("date") and q["date"] >= out["date"]:
+        out = dict(out)
+        out["close_spot"], out["close_date"] = out["spot"], out["date"]
+        out["spot"], out["date"] = q["price"], q["date"]
+        out["spot_rt"], out["spot_time"], out["quote"] = True, q.get("time"), q
+    return out
+
+
+def _get_daily(code, today=None, use_cache=True, vol_weights=(0.35, 0.65)):
     today = today or datetime.date.today()
     cache = _load_cache() if use_cache else {}
     ckey = f"{code}:{today.isoformat()}:v2:{vol_weights}"

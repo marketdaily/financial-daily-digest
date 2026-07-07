@@ -90,8 +90,24 @@ def implied_drift(code, spot):
     return None
 
 
+def _tp_age_days(r):
+    """目標價資料齡(天)。依序取 target_date > updated > conference_date;無日期回 None。"""
+    ds = r.get("target_date") or r.get("updated") or r.get("conference_date")
+    if not ds:
+        return None
+    for fmt in ("%Y-%m-%d", "%Y/%m/%d"):
+        try:
+            d = datetime.datetime.strptime(str(ds).strip(), fmt).date()
+            return (datetime.date.today() - d).days
+        except ValueError:
+            continue
+    return None
+
+
 def intel_lines(code, spot=None):
-    """給報告用的情報行 list(法人流向 + 研究快取重點)。上檔空間依現價動態計算。"""
+    """給報告用的情報行 list(法人流向 + 研究快取重點)。上檔空間依現價動態計算。
+    券商目標價紀律:來源券商+日期是強制欄位,缺了就明示「來源不明勿引用」;
+    逾 90 天標過期;非原始報告(新聞轉述)且無出處連結也明示——確認狀態永遠可見。"""
     lines = []
     fn = flow_narrative(code)
     if fn:
@@ -102,12 +118,21 @@ def intel_lines(code, spot=None):
         if tp:
             up = (tp / spot - 1) * 100 if spot else None
             seg = f"券商目標價 {tp}"
+            age = _tp_age_days(r)
             if r.get("broker"):
-                seg += f"({r['broker']})"
+                seg += f"({r['broker']}" + (f",{age}天前" if age is not None else ",日期不明") + ")"
+            else:
+                seg += "(⚠ 來源券商不明,勿引用)"
             if up is not None:
                 seg += (f",隱含上檔 {up:+.0f}%" if up > 0
                         else f",⚠現價已超越目標價 {abs(up):.0f}%(目標偏保守/落後)")
+            if age is not None and age > 90:
+                seg += f" ⚠已逾{age}天未確認,需重查"
+            if not r.get("source_url"):
+                seg += "(新聞轉述,未附出處連結)"
             lines.append(seg)
+            if r.get("source_url"):
+                lines.append(f"目標價出處:{r['source_url']}")
         if r.get("conference_date"):
             lines.append(f"最近法說會:{r['conference_date']}")
         for t in (r.get("takeaways") or [])[:3]:
