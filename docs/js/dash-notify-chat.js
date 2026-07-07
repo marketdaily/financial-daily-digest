@@ -121,8 +121,8 @@ async function loadAlertHistory(force) {
     const alerts = (data && data.alerts) || [];
     if (!alerts.length) { if (emptyEl) emptyEl.style.display = "block"; return; }
     for (const a of alerts) {
-      const sev = a.severity >= 9 ? "#f87171" : (a.kind === "political" ? "#4AF626" : "#FFB000");
-      const icon = a.kind === "political" ? "🏛️" : (a.severity >= 9 ? "🚨" : "📈");
+      const sev = a.severity >= 9 ? "#f87171" : (a.kind === "political" ? "#4AF626" : (a.kind === "supply_chain" ? "#4ade80" : "#FFB000"));
+      const icon = a.kind === "political" ? "🏛️" : (a.kind === "supply_chain" ? "🔗" : (a.severity >= 9 ? "🚨" : "📈"));
       const item = document.createElement("div");
       item.className = "alert-item";
       item.style.cssText = "padding:13px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--input-border);border-left:3px solid " + sev + ";border-radius:12px;";

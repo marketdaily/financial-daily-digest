@@ -1715,6 +1715,29 @@ export default {
       }
     }
 
+    // 產業鏈🆕最新動態 — alert-worker /internal/supply-chain-event 寫入的官方公告事件
+    // (新合作/新供應關係,MOPS 重訊+8-K 1.01)。免登入,唯讀共用 KV scpend:{ticker}。
+    if (url.pathname === "/supply-chain-updates" && request.method === "GET") {
+      let t = (url.searchParams.get("ticker") || "").trim().toUpperCase().slice(0, 12);
+      t = t.replace(/\.(TW|TWO)$/, "");
+      if (!t || !/^[A-Z0-9.\-]+$/.test(t)) return json({ error: "invalid_ticker" }, 400);
+      const ip = clientIp(request);
+      const rlKey = `rl:scu:${ip}`;
+      const rlCount = parseInt((await env.USER_PREFS.get(rlKey)) || "0", 10);
+      if (rlCount >= 60) return json({ error: "rate_limited" }, 429);
+      ctx.waitUntil(env.USER_PREFS.put(rlKey, String(rlCount + 1), { expirationTtl: 60 }));
+      let events = [];
+      try {
+        const raw = await env.USER_PREFS.get(`scpend:${t}`);
+        if (raw) events = JSON.parse(raw);
+      } catch {}
+      // 只回近 60 天,最多 5 則——「最新動態」區塊不是歷史帳
+      const cutoff = Date.now() - 60 * 24 * 3600 * 1000;
+      events = (Array.isArray(events) ? events : [])
+        .filter((e) => e && (!e.ts || e.ts >= cutoff)).slice(0, 5);
+      return json({ ticker: t, events });
+    }
+
     // 產業鏈 / 供應鏈 — DB 未命中的股票走這裡用 AI 生成(前端先查靜態 DB)。
     // 免登入(免費功能),但加 per-IP rate limit 防 LLM 濫用;結果存 KV 30 天。
     if (url.pathname === "/supply-chain" && request.method === "GET") {

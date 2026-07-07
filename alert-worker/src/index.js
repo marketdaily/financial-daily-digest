@@ -1025,6 +1025,97 @@ export default {
       return json({ ok, channels, lineStatus: null });
     }
 
+    // 供應鏈事件(winrig intel/supply_chain_watch.py 上送):官方公告的新合作/新供應關係。
+    // 每則:KV pending(dashboard 產業鏈🆕區塊經 stripe-webhook /supply-chain-updates 讀)
+    // + 比對全體用戶持股發 web push + 站內收件匣 + admin 彙總通知。事件級去重(scdone marker),
+    // 呼叫端可安全重送同批(上送失敗重試不會造成重複推播)。
+    if (url.pathname === "/internal/supply-chain-event" && request.method === "POST") {
+      const got = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+      const candidates = [env.ADMIN_PUSH_TOKEN, env.ADMIN_PUSH_TOKEN_2, env.INTERNAL_TOKEN].filter(Boolean);
+      let okAuth = false;
+      for (const t of candidates) {
+        if (got.length !== t.length) continue;
+        let diff = 0;
+        for (let i = 0; i < got.length; i++) diff |= got.charCodeAt(i) ^ t.charCodeAt(i);
+        if (diff === 0) { okAuth = true; break; }
+      }
+      if (!okAuth) return json({ error: "forbidden" }, 403);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      const events = Array.isArray(body.events) ? body.events.slice(0, 20) : [];
+      if (!events.length) return json({ error: "no_events" }, 400);
+      let recipients = null;
+      const results = [];
+      const adminLines = [];
+      for (const ev of events) {
+        if (!ev || typeof ev !== "object") {
+          results.push({ id: "", stored: false, error: "bad_event" });
+          continue;
+        }
+        const id = String(ev.id || "").replace(/[^a-z0-9]/gi, "").slice(0, 40);
+        const code = String(ev.code || "").trim().toUpperCase();
+        const headline = String(ev.headline || "").slice(0, 300);
+        if (!id || !headline || !/^[A-Z0-9.\-]{1,12}$/.test(code)) {
+          results.push({ id, stored: false, error: "bad_event" });
+          continue;
+        }
+        if (await env.USER_PREFS.get(`scdone:${id}`)) {
+          results.push({ id, stored: true, dup: true });
+          continue;
+        }
+        const rec = {
+          id,
+          date: String(ev.date || "").slice(0, 10),
+          market: ev.market === "us" ? "us" : "tw",
+          code,
+          name: String(ev.name || "").slice(0, 40),
+          counterparty: ev.counterparty ? String(ev.counterparty).slice(0, 40) : null,
+          headline,
+          url: /^https:\/\//.test(ev.url || "") ? String(ev.url).slice(0, 300) : null,
+          source_type: String(ev.source_type || "").slice(0, 10),
+          ts: Date.now(),
+        };
+        // dashboard 產業鏈🆕區塊 pending 清單(每檔留最新 10 則)
+        const pkey = `scpend:${code}`;
+        let list = [];
+        try { const raw = await env.USER_PREFS.get(pkey); if (raw) list = JSON.parse(raw); } catch {}
+        list = [rec, ...(Array.isArray(list) ? list : []).filter((x) => x && x.id !== id)].slice(0, 10);
+        await env.USER_PREFS.put(pkey, JSON.stringify(list), { expirationTtl: 120 * 24 * 3600 });
+        // 比對全體用戶持股 → web push + 站內收件匣(事實揭露,全體用戶同權,合規)
+        if (!recipients) recipients = await premiumRecipients(env);
+        const holders = recipients.filter((r) => r.holdings.has(code));
+        const label = rec.name && rec.name !== code ? `${rec.name}(${code})` : code;
+        let pushed = 0;
+        const notifStr = JSON.stringify({
+          title: `🔗 ${label}｜供應鏈動態`,
+          body: (rec.counterparty ? `對手方:${rec.counterparty}｜` : "") + headline.slice(0, 150),
+          url: rec.url || "https://marketdaily.ai/dashboard.html#alerts",
+          tag: `md-sc-${id}`,
+        });
+        for (const r of holders) {
+          const dr = await deliverAlert(env, r, notifStr);
+          if (dr.ok) pushed++;
+          await recordAlertInbox(env, r.email, {
+            ts: new Date().toISOString(), kind: "supply_chain", ticker: code,
+            name: rec.name || code, title: headline, url: rec.url,
+            reason: rec.source_type === "8k" ? "官方申報:8-K 重大合約" : "官方公告:新合作/供應關係",
+            severity: 6, category: "supply_chain", speculative: false,
+          });
+        }
+        await env.USER_PREFS.put(`scdone:${id}`, "1", { expirationTtl: 60 * 24 * 3600 });
+        adminLines.push(`${label} ${headline.slice(0, 50)}${holders.length ? `(推${pushed}/${holders.length}人)` : ""}`);
+        results.push({ id, stored: true, pushed, holders: holders.length });
+      }
+      if (adminLines.length) {
+        await webPushAdmin(env, JSON.stringify({
+          title: `🔗 供應鏈事件×${adminLines.length}`,
+          body: adminLines.join(";").slice(0, 290),
+          url: "https://marketdaily.ai/dashboard.html#alerts",
+        }));
+      }
+      return json({ ok: true, results });
+    }
+
     // 行銷貼文 multicast 目標清單:列出所有綁過 LINE 但 plan != premium 的 userId。
     // marketing/auto_post.py post_line 會打這支取得排除 premium 的 multicast targets。
     if (url.pathname === "/internal/marketing-line-targets") {

@@ -274,9 +274,42 @@ async function loadSupplyChain(sym) {
   if (reqSym !== _stories[_storyIdx]?.symbol) return;
   if (!data || (!data.mid?.desc && !(data.upstream||[]).length && !(data.downstream||[]).length)) {
     el.innerHTML = `<div class="sc-empty">${T('sc_unavailable')}</div>`;
-    return;
+  } else {
+    el.innerHTML = renderSupplyChain(data, sym);
   }
-  el.innerHTML = renderSupplyChain(data, sym);
+  // 🆕 最新供應鏈動態(官方公告事件,產業鏈圖之外非同步補上;沒有就不顯示)
+  _loadScUpdates(sym).then(evts => {
+    if (reqSym !== _stories[_storyIdx]?.symbol || !evts.length) return;
+    const cur = document.getElementById("sc-supplychain");
+    if (cur && !cur.querySelector(".sc-upd-label")) {
+      cur.insertAdjacentHTML("beforeend", renderScUpdates(evts));
+    }
+  });
+}
+
+const _scUpdCache = {};
+
+async function _loadScUpdates(sym) {
+  if (_scUpdCache[sym] !== undefined) return _scUpdCache[sym];
+  try {
+    const r = await fetch(`${WORKER_URL}/supply-chain-updates?ticker=${encodeURIComponent(sym)}`);
+    const j = r.ok ? await r.json() : null;
+    _scUpdCache[sym] = (j && Array.isArray(j.events)) ? j.events : [];
+  } catch { _scUpdCache[sym] = []; }
+  return _scUpdCache[sym];
+}
+
+function renderScUpdates(evts) {
+  const items = evts.slice(0, 5).map(e => {
+    const cp = e.counterparty ? `<b>${_esc(e.counterparty)}</b> · ` : "";
+    const safeUrl = (e.url && /^https:\/\//.test(e.url)) ? _esc(e.url).replace(/"/g, "%22") : "";
+    const link = safeUrl ? ` <a class="sc-upd-src" href="${safeUrl}" target="_blank" rel="noopener">${T('sc_upd_src')}</a>` : "";
+    return `<div class="sc-item sc-upd">
+      <div class="sc-item-top"><span class="sc-upd-date">${_esc(e.date || "")}</span><span class="sc-upd-badge">${T('sc_upd_pending')}</span></div>
+      <div class="sc-item-role">${cp}${_esc(e.headline || "")}${link}</div>
+    </div>`;
+  }).join("");
+  return `<div class="sc-section-label sc-upd-label">🆕 ${T('sc_upd_heading')}</div><div class="sc-items">${items}</div>`;
 }
 
 function _scCritClass(c) {
