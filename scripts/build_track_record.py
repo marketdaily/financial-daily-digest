@@ -165,6 +165,13 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
             verdict_class, rtype = "wait", "C"
         else:
             continue
+        # 顯示層優先(2026-07-08 量尺修正):降級閘門只改卡片 class+chip 不動 signal-bias,
+        # 兩者不一致時用戶看到的是 class/chip — 結算必須量用戶看到的判斷,bias 只當 fallback。
+        vc_shown = next((cc for cc in (card.get("class") or [])
+                         if cc in ("buy", "hold", "sell", "wait")), None)
+        if vc_shown and vc_shown != verdict_class:
+            verdict_class = vc_shown
+            rtype = "A" if vc_shown in ("buy", "hold") else "C"
         name, ticker = _extract_name_ticker(ticker_span)
         # 台股卡經 _postprocess 後 signal-ticker 只剩中文名(不露代號),抓不到真代碼 →
         # 用 _mark_card 塞在卡尾的隱形 <!--h:代號--> 標記補回(美股 ticker 是字母不受影響)。
@@ -225,6 +232,15 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
                 verdict_class = vc_div
             rtype = "H"
 
+        # 閘門反事實標記 <!--gated:原判斷:閘門名-->:這張卡被降級過 → 結算時雙軌
+        # (顯示的觀望 + 被擋的原判斷,見 stats.gate_effect),自動驗證閘門擋對還是擋錯。
+        gated_from = gate_name = None
+        for c in card.find_all(string=lambda t: isinstance(t, Comment)):
+            gm = re.match(r"\s*gated:(buy|hold|sell|wait):([a-z_]+)\s*$", str(c))
+            if gm:
+                gated_from, gate_name = gm.group(1), gm.group(2)
+                break
+
         maybe_add({
             "date": date_str,
             "name": name,
@@ -237,6 +253,7 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
             "source": "signal-card",
             "confidence": confidence,
             **({"holder": True, "holder_entry": holder_entry} if holder_entry else {}),
+            **({"gated_from": gated_from, "gate": gate_name} if gated_from else {}),
             **levels,
         })
 
@@ -963,6 +980,29 @@ def main() -> int:
 
     # 匿名化逐筆帳本(修5):只有個人化 token 資料時才有內容;沒 INTERNAL_TOKEN 時 personal_records
     # 為空,entries 也是空,append/audit 都是安全 no-op。
+    # 閘門反事實結算(2026-07-08):被降級的卡雙軌結算——顯示判斷 vs 被擋的原判斷。
+    # shown_rate > blocked_rate = 閘門擋對(降級後更準);反之該閘門要檢討。
+    gate_counts: dict[str, dict] = {}
+    for r in judged_all:
+        gf = r.get("gated_from")
+        if not gf or r.get("outcome") not in ("win", "loss"):
+            continue
+        cf = judge({**r, "verdict_class": gf}, prices, "5d")
+        if cf not in ("win", "loss"):
+            continue
+        g = gate_counts.setdefault(r.get("gate") or "unknown",
+                                   {"n": 0, "shown_wins": 0, "blocked_wins": 0})
+        g["n"] += 1
+        g["shown_wins"] += 1 if r["outcome"] == "win" else 0
+        g["blocked_wins"] += 1 if cf == "win" else 0
+    for g in gate_counts.values():
+        g["shown_rate"] = round(g["shown_wins"] / g["n"] * 100, 1)
+        g["blocked_rate"] = round(g["blocked_wins"] / g["n"] * 100, 1)
+    gate_effect = {
+        "note": "降級卡雙軌結算:shown=降級後顯示判斷勝率,blocked=若沒降級原判斷勝率;shown>blocked=閘門擋對",
+        "gates": gate_counts,
+    }
+
     ledger_entries = _personal_ledger_entries(judged_personal, personal_sims, regime_by_date)
     ledger_added = append_personal_ledger(ledger_entries)
     if ledger_added:
@@ -997,6 +1037,7 @@ def main() -> int:
         "by_regime": by_regime,
         "era": era,
         "plan_sim": plan_sim,
+        "gate_effect": gate_effect,
         # 區分公版 / 個人化來源,讓前端可看到是否包含跨用戶聚合
         "public_only": {
             "a_count": len(a_pub),

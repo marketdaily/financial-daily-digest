@@ -750,7 +750,8 @@ def _pp_knife_gate(html: str, _techs_gate: dict) -> str:
             return block
         block = block.replace('class="signal-card buy"', 'class="signal-card wait"', 1)
         block = block.replace('<span class="signal-verdict-chip buy">🟢 建議買入</span>',
-                              '<span class="signal-verdict-chip wait">⚪ 觀望·空頭結構(站回 MA20 再議)</span>', 1)
+                              '<span class="signal-verdict-chip wait">⚪ 觀望·空頭結構(站回 MA20 再議)</span>'
+                              '<!--gated:buy:knife-->', 1)
         return block
 
     html = _re.sub(
@@ -777,7 +778,8 @@ def _pp_oversold_gate(html: str, _techs_gate: dict) -> str:
             return block
         block = block.replace('class="signal-card sell"', 'class="signal-card wait"', 1)
         block = block.replace('<span class="signal-verdict-chip sell">🔴 建議賣出</span>',
-                              '<span class="signal-verdict-chip wait">⚪ 觀望·跌深超賣慎追空</span>', 1)
+                              '<span class="signal-verdict-chip wait">⚪ 觀望·跌深超賣慎追空</span>'
+                              '<!--gated:sell:oversold-->', 1)
         return block
 
     html = _re.sub(
@@ -813,7 +815,8 @@ def _pp_bucket_autogate(html: str, _regime_label: str) -> str:
             block = m.group(0)
             block = block.replace(f'class="signal-card {_vc}"', 'class="signal-card wait"', 1)
             block = _re.sub(r'<span class="signal-verdict-chip %s">[^<]*</span>' % _vc,
-                            '<span class="signal-verdict-chip wait">⚪ 觀望·同型判斷近期實測失準,自動降級</span>',
+                            '<span class="signal-verdict-chip wait">⚪ 觀望·同型判斷近期實測失準,自動降級</span>'
+                            f'<!--gated:{_vc}:autogate-->',
                             block, count=1)
             return block
 
