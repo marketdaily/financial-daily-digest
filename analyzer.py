@@ -760,6 +760,70 @@ def _pp_knife_gate(html: str, _techs_gate: dict) -> str:
     return html
 
 
+def _pp_oversold_gate(html: str, _techs_gate: dict) -> str:
+    import re as _re
+    # 超賣閘門(deterministic,2026-07-08):空頭結構+超賣區的「建議賣出」強制降級為觀望。
+    # 三年×24檔實證(train/test 67/33):該區 5 日上漲率 61%/55%,sell 判贏率僅 38%/44%,
+    # wait 判贏率 52%/63% 全面壓過 sell — 跌深之後才喊賣出是系統性輸點(6/25-26 V轉整批陣亡)。
+    # 反手買反彈 OOS 只有 54.6% 未過關,所以只降級 sell、不改喊買。
+
+    def _demote_panic_sell(m):
+        block = m.group(0)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        t = _techs_gate.get(hm.group(1))
+        if _quant_prior(t) != "bear" or not _is_oversold(t):
+            return block
+        block = block.replace('class="signal-card sell"', 'class="signal-card wait"', 1)
+        block = block.replace('<span class="signal-verdict-chip sell">🔴 建議賣出</span>',
+                              '<span class="signal-verdict-chip wait">⚪ 觀望·跌深超賣慎追空</span>', 1)
+        return block
+
+    html = _re.sub(
+        r'<div class="signal-card sell">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote_panic_sell, html, flags=_re.DOTALL,
+    )
+    return html
+
+
+def _pp_bucket_autogate(html: str, _regime_label: str) -> str:
+    import re as _re
+    # 桶級自動閘門(2026-07-08):把「每日戰績稽核 → 人工分析 → 改規則」閉環成全自動。
+    # track-record 現行世代的 verdict×regime 桶勝率(K=20 向 50 收縮)跌破 42 → 該桶的
+    # buy/sell 卡當日全部降級為觀望;未來任何在追蹤桶浮現的系統性輸點,隔天自動被擋,不等人。
+    # 門檻 42 非 50:收縮下要持續失準才觸發,小樣本雜訊不會亂降級。只降級不升級、
+    # 只動 buy/sell(wait/hold 本身即保守方)、桶樣本 <15 或 neutral regime 不動作。
+    trend = {"risk_on": "up", "risk_off": "down"}.get(_regime_label)
+    if not trend:
+        return html
+    s = _track_stats() or {}
+    buckets = ((s.get("era") or {}).get("by_verdict_regime")) or {}
+    K = 20.0
+    for vc in ("buy", "sell"):
+        b = buckets.get(f"{vc}|{trend}") or {}
+        n, w = b.get("count") or 0, b.get("wins") or 0
+        if n < 15:
+            continue
+        shrunk = (w + K * 0.5) / (n + K) * 100
+        if shrunk >= 42:
+            continue
+
+        def _demote(m, _vc=vc):
+            block = m.group(0)
+            block = block.replace(f'class="signal-card {_vc}"', 'class="signal-card wait"', 1)
+            block = _re.sub(r'<span class="signal-verdict-chip %s">[^<]*</span>' % _vc,
+                            '<span class="signal-verdict-chip wait">⚪ 觀望·同型判斷近期實測失準,自動降級</span>',
+                            block, count=1)
+            return block
+
+        html = _re.sub(
+            r'<div class="signal-card %s">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)' % vc,
+            _demote, html, flags=_re.DOTALL,
+        )
+    return html
+
+
 def _pp_extended_gate(html: str, _techs_gate: dict, _regime_label: str) -> str:
     import re as _re
     # regime 閘門(deterministic):風險偏多市況 + 個股本身已漲多(RSI14≥70 或站上布林上緣),
@@ -1039,8 +1103,10 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_verdict_chip(html)
     _techs_gate = data.get("technicals", {}) or {}
     html = _pp_knife_gate(html, _techs_gate)
+    html = _pp_oversold_gate(html, _techs_gate)
     _regime_label = _market_regime(data).get("label", "neutral")
     html = _pp_extended_gate(html, _techs_gate, _regime_label)
+    html = _pp_bucket_autogate(html, _regime_label)
     html = _pp_strip_badges(html)
     html = _pp_clamp_confidence(html)
     html = _pp_recalibrate_confidence(html, _regime_label)
@@ -1326,6 +1392,41 @@ def _is_extended(t: dict) -> bool:
                 return True
         except (TypeError, ValueError):
             pass
+    return False
+
+
+def _is_oversold(t: dict) -> bool:
+    """個股短線是否「跌深超賣」(RSI14≤30、收盤≤布林下緣、或對 MA20 負乖離≤-7%)——
+    _is_extended 的對稱面。用途:空頭結構+超賣區禁止新喊賣出(_pp_oversold_gate),
+    實證見該閘門註解。資料不足一律 False(寧鬆勿誤殺)。"""
+    if not t:
+        return False
+    rsi = t.get("rsi14")
+    if rsi is not None:
+        try:
+            if float(rsi) <= 30:
+                return True
+        except (TypeError, ValueError):
+            pass
+    try:
+        price = float(t.get("price") or 0)
+    except (TypeError, ValueError):
+        return False
+    if not price:
+        return False
+    boll_low = t.get("boll_low")
+    if boll_low is not None:
+        try:
+            if price <= float(boll_low):
+                return True
+        except (TypeError, ValueError):
+            pass
+    try:
+        ma20 = float(t.get("ma20") or 0)
+        if ma20 and (price / ma20 - 1) <= -0.07:
+            return True
+    except (TypeError, ValueError):
+        pass
     return False
 
 

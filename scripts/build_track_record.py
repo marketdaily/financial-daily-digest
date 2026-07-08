@@ -848,6 +848,17 @@ def main() -> int:
         w = sum(1 for r in sub if r["outcome"] == "win")
         era_by_regime[trend] = {"a_count": len(sub), "a_wins": w,
                                 "a_rate": round(w / len(sub) * 100, 1) if sub else 0.0}
+    # verdict×regime 細桶:analyzer._pp_bucket_autogate 的資料源(2026-07-08)——
+    # 任一桶勝率持續失準,隔天日報該類 buy/sell 卡自動降級觀望,稽核→改規則不再等人工。
+    era_by_verdict_regime = {}
+    for vc in ("buy", "hold", "sell", "wait"):
+        for trend in ("up", "down"):
+            sub = [r for r in era_a + era_c
+                   if r["verdict_class"] == vc and regime_by_date.get(r["date"]) == trend]
+            w = sum(1 for r in sub if r["outcome"] == "win")
+            era_by_verdict_regime[f"{vc}|{trend}"] = {
+                "count": len(sub), "wins": w,
+                "rate": round(w / len(sub) * 100, 1) if sub else 0.0}
     era = {
         "note": f"僅計 {MODEL_ERA_START} 起(結構prior+校準信心上線後)的現行模型;"
                 "信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
@@ -859,6 +870,7 @@ def main() -> int:
         "c_rate": round(era_c_wins / len(era_c) * 100, 1) if era_c else 0.0,
         "c_ci95_day_cluster": day_cluster_ci(era_c),
         "by_regime": era_by_regime,
+        "by_verdict_regime": era_by_verdict_regime,
         "calibration": calibration_stats(era_a),
         "days": len({r["date"] for r in era_a + era_c}),
     }
