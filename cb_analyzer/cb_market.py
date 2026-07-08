@@ -34,8 +34,14 @@ def _from_finmind(bond_code, today):
             if data:
                 last = data[-1]
                 px = last.get("close") or last.get("Close") or last.get("price")
-                if px:
-                    return {"price": float(px), "date": last.get("date"), "src": f"FinMind/{ds}"}
+                try:
+                    v = float(px)
+                except (TypeError, ValueError):
+                    v = None
+                # 與 _from_mis/_ppval 同一百元價範圍防呆:dataset 欄位改名/回傳殖利率或比率等非百元價
+                # 時,不可當真實 CB 市價吃進來(否則下游偏離掃描對非市價報「市場狀態」=假訊號)
+                if v is not None and 50 <= v <= 300:
+                    return {"price": v, "date": last.get("date"), "src": f"FinMind/{ds}"}
         except Exception:
             continue
     return None
