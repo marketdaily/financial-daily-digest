@@ -935,6 +935,34 @@ def _pp_requalify_buy(html: str, data: dict) -> str:
     return html
 
 
+def _pp_holder_wording(html: str) -> str:
+    import re as _re
+    # 持有者框架措辭死防線(2026-07-07 持倉客製化):帶 <!--pos:--> 標記的卡=用戶已持有,
+    # chip 不得出現「觀望/建議買入」等未持有措辭。prompt 擋第一層,這裡不靠 LLM 自覺;
+    # 也覆蓋 knife/extended/requalify 三個閘門改寫後的 chip 文字。放在那些閘門之後跑。
+    _SWAPS = (
+        ("🟢 建議買入", "🟢 加碼買進"),
+        ("🟢 回檔再買(現價勿追)", "🟢 回檔再加碼(現價勿追)"),
+        ("🟢 買入·漲多勿追高", "🟢 加碼·漲多勿追高"),
+        ("⚪ 暫時觀望", "⚪ 持股防守·守好停損"),
+        ("⚪ 觀望·空頭結構(站回 MA20 再議)", "⚪ 防守·空頭結構(守停損,站回 MA20 再議)"),
+        ("🔴 建議賣出", "🔴 減碼/出場"),
+    )
+
+    def _fix(m):
+        block = m.group(0)
+        if "<!--pos:" not in block:
+            return block
+        for old, new in _SWAPS:
+            block = block.replace(old, new)
+        return block
+
+    return _re.sub(
+        r'<div class="signal-card [^"]*">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _fix, html, flags=_re.DOTALL,
+    )
+
+
 def _pp_scrub_earnings_notes(html: str, data: dict) -> str:
     import re as _re
     # 財報註記清洗:資料端沒有「已核實預期數字」時,earnings-note 出現任何預期 EPS/營收
@@ -1111,6 +1139,7 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_clamp_confidence(html)
     html = _pp_recalibrate_confidence(html, _regime_label)
     html = _pp_requalify_buy(html, data)
+    html = _pp_holder_wording(html)  # 須在 knife/extended/requalify 三閘門之後:覆蓋它們改寫的 chip
     html = _pp_scrub_earnings_notes(html, data)
     html = _pp_expand_tickers(html, tw_hint)
     html = _pp_strip_empty_impact(html)
@@ -2182,14 +2211,19 @@ def _deterministic_signal_card(sym: str, data: dict, mkt_status: dict) -> str:
     )
 
 
-def _mark_card(card: str, sym: str) -> str:
+def _mark_card(card: str, sym: str, entry: float = None) -> str:
     """在卡片**結尾前**塞一個隱形註解帶純代號 — 讓 audit 的 holdings_uncovered 找得到,
     因為 _postprocess_html 會把 signal-ticker 展開成公司名(台股甚至不留代號)。
-    放結尾才不會打斷 _postprocess_html 加 verdict-chip 的開頭比對。"""
+    放結尾才不會打斷 _postprocess_html 加 verdict-chip 的開頭比對。
+    entry(2026-07-07 持倉客製化):用戶自填進場成本 → 加 <!--pos:SYM:ENTRY--> 機器可讀標記,
+    供 _pp_holder_wording 措辭死防線與 build_track_record 持有者框架結算辨識。"""
+    marks = f"<!--h:{sym}-->"
+    if entry:
+        marks += f"<!--pos:{sym}:{entry}-->"
     idx = card.rfind("</div>")
     if idx < 0:
-        return card + f"<!--h:{sym}-->"
-    return card[:idx] + f"<!--h:{sym}-->" + card[idx:]
+        return card + marks
+    return card[:idx] + marks + card[idx:]
 
 
 def _compact_overflow_card(sym: str, data: dict, mkt_status: dict) -> str:
@@ -2216,7 +2250,7 @@ def _compact_overflow_card(sym: str, data: dict, mkt_status: dict) -> str:
             f'<div class="signal-body"><div class="signal-reason">{body}</div></div></div>')
 
 
-def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, full_limit: int = None, prefer_strong: bool = False, depth: str = "standard", picks_mode: bool = False) -> str:
+def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, full_limit: int = None, prefer_strong: bool = False, depth: str = "standard", picks_mode: bool = False, positions: dict = None) -> str:
     """分批生成每檔持股的 signal-card,保證『使用者選的每一支都有下一步』。
     一次塞 30-50 檔給 LLM 會超出輸出上限被截斷 → 改成每 10 檔一批多次呼叫,
     任何一檔 LLM 失敗 / 不合格 → 用真實技術價位的 deterministic 卡補位。
@@ -2227,6 +2261,19 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
     if not seen:
         return ""
     all_market = {**data.get("us_market", {}), **data.get("tw_market", {})}
+    # 持倉客製化(2026-07-07):用戶自填進場成本 → 持有者框架。picks_mode=推薦標的(未持有)不適用。
+    pos_map = {}
+    if positions and not picks_mode:
+        for s in seen:
+            p = positions.get(s)
+            if not isinstance(p, dict):
+                continue
+            try:
+                ep = float(p.get("entry_price"))
+            except (TypeError, ValueError):
+                continue
+            if ep > 0:
+                pos_map[s] = {"entry_price": ep, "entry_date": p.get("entry_date")}
     seen.sort(key=lambda s: abs((all_market.get(s) or {}).get("change_pct", 0) or 0), reverse=True)
     llm_stocks = seen[:full_limit] if full_limit else seen
     rules = _signal_card_format_rules(mkt_status, regime=_market_regime(data),
@@ -2259,6 +2306,33 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                 "讓用戶知道今天新聞為什麼點名它;新聞只補脈絡與觀察重點,方向/價位/信心仍以技術結構為準,嚴禁引用沒列出的新聞或自行腦補新聞細節。\n"
                 "- 宏觀背景只對「真的敏感」的持股連動(利率↑→金融/高估值成長股、油價→能源/航運、避險情緒→防禦vs風險),講不出機制的就別硬扯。\n"
             )
+    def _pos_note(sub: list) -> str:
+        """持有者框架 prompt 區塊:只對用戶自填了進場成本的標的生效,其餘標的完全不受影響。
+        損益數字在這裡用真實市價算好餵給 LLM,嚴禁 LLM 自行計算。"""
+        held = [s for s in sub if s in pos_map]
+        if not held:
+            return ""
+        lines = []
+        for s in held:
+            p = pos_map[s]
+            cur = (all_market.get(s) or {}).get("price")
+            pnl = ""
+            try:
+                if cur:
+                    pnl = f",目前未實現 {((float(cur) - p['entry_price']) / p['entry_price'] * 100):+.1f}%"
+            except (TypeError, ValueError, ZeroDivisionError):
+                pnl = ""
+            since = f"、{p['entry_date']} 進場" if p.get("entry_date") else ""
+            lines.append(f"- {s}:進場成本 {p['entry_price']}{since}{pnl}")
+        return (
+            "\n【用戶實際持倉成本(用戶自填+真實市價算出,嚴禁改寫)】\n" + "\n".join(lines) + "\n"
+            "【持有者框架 — 僅適用上列標的,名單外的標的照常】\n"
+            "- 上列標的用戶已實際持有:嚴禁「觀望/先別進場/可進場買進/等回檔再買進」等未持有措辭。\n"
+            "- 卡片 class 只能用 buy(=加碼)/hold(=續抱)/sell(=減碼、停損、獲利了結),不可用 wait。\n"
+            "- signal-reason 第一句先講損益脈絡,只能引用上面給的成本與損益數字(例:「你的成本 850,目前 +27.1%」),嚴禁自行計算或編造。\n"
+            "- 技術面轉弱 → 對持有者的建議是「減碼/停損在 $X」而非「觀望」;獲利已大 → 可建議移動停利保護獲利。\n"
+        )
+
     def _mk_prompt(sub: list) -> str:
         block = _chunk_market_tech_block(data, sub, depth)
         if picks_mode:
@@ -2273,7 +2347,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
         return (
             lead +
             f"標的({len(sub)} 支,一支都不能少、不能合併):{', '.join(sub)}\n\n"
-            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{_council_prompt_block(council, sub)}\n"
+            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{_pos_note(sub)}{_council_prompt_block(council, sub)}\n"
             f"{rules}\n\n"
             f"只輸出這 {len(sub)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
             f"不要輸出 signal-grid 外框、不要任何說明文字、不要 markdown 反引號。"
@@ -2333,7 +2407,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             card = _compact_overflow_card(s, data, mkt_status)
         else:
             card = cards_by_sym.get(s) or _deterministic_signal_card(s, data, mkt_status)
-        ordered.append(_mark_card(card, s))
+        ordered.append(_mark_card(card, s, entry=(pos_map.get(s) or {}).get("entry_price")))
     return "\n".join(ordered)
 
 
@@ -2804,7 +2878,8 @@ def _gr_build_prompt(date: str, all_holdings: list, has_holdings: bool,
 
 def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                     email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                    market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
+                    market: str = "both", is_premium: bool = False, picks_mode: bool = False,
+                    positions: dict = None) -> str:
     # market: "both"=台美合併(預設/手動);"tw"=早 7:00 台股盤前為主、美股昨夜回顧;
     #         "us"=晚 20:00 美股盤前為主、台股今日收盤回顧。雙班次由 caller 傳對應市場 holdings。
     _full_holdings = list(dict.fromkeys((user_us_stocks or []) + (user_tw_stocks or [])))
@@ -2858,7 +2933,8 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
         raw = re.sub(r'\n?```$', '', raw)
     cards = _render_signal_cards_batched(data, top_signal_stocks, mkt_status,
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
-                                         prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode)
+                                         prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode,
+                                         positions=positions)
     cards += _portfolio_lens_block(data, all_holdings, depth)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
@@ -2887,7 +2963,8 @@ def _weekend_monday_preamble(data: dict, user_us_stocks: list, user_tw_stocks: l
 
 def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                             email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                            market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
+                            market: str = "both", is_premium: bool = False, picks_mode: bool = False,
+                            positions: dict = None) -> str:
     # market 由雙班次 caller 傳入(週六台股早報走此函式);週末回顧本就是台股晨間語境,
     # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週六晨間日報:不講當日大盤(已收),改聚焦『本週回顧 + 下週重點』。"""
@@ -2983,7 +3060,8 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
     # retry 同樣必敗,只能靠 deterministic fallback 頂住(見 _mark_card 呼叫處註解)。
     cards = _render_signal_cards_batched(data, signal_stocks, mkt_status,
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
-                                         prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode)
+                                         prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode,
+                                         positions=positions)
     cards += _portfolio_lens_block(data, signal_stocks, depth)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
@@ -2995,7 +3073,8 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 # ─── Monday Outlook(週一專用:上週五收盤 + 週末新聞 + 本週展望 + Gap 警示)──────────────
 def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None,
                            email_safe: bool = False, prefer_strong: bool = False, depth: str = "standard",
-                           market: str = "both", is_premium: bool = False, picks_mode: bool = False) -> str:
+                           market: str = "both", is_premium: bool = False, picks_mode: bool = False,
+                           positions: dict = None) -> str:
     # market 由雙班次 caller 傳入(週一台股早報走此函式);週一展望本就是台股晨間語境,
     # holdings 已由 caller 依 market scope,這裡接受參數即可(行為不變)。
     """週一晨間日報:前兩天(週六、週日)沒開盤,所以基準是『上週五收盤』。
@@ -3148,7 +3227,8 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
         raw = re.sub(r'\n?```$', '', raw)
     cards = _render_signal_cards_batched(data, signal_stocks, mkt_status,
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
-                                         prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode)
+                                         prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode,
+                                         positions=positions)
     cards += _portfolio_lens_block(data, all_holdings, depth)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)

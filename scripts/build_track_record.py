@@ -207,6 +207,24 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
             elif "止損" in t or "停損" in t:
                 levels["stop"] = nums[0]
 
+        # 持有者框架卡(2026-07-07 持倉客製化):<!--pos:SYM:ENTRY--> 標記=用戶已持有、自填成本。
+        # verdict 直接讀卡片 class(buy=加碼/hold=續抱/sell=減碼停損/wait=閘門降級防守),
+        # 獨立 type="H" → 不混入 A/C 頭條統計,用 judge_holder 持有者規則結算。
+        holder_entry = None
+        for c in card.find_all(string=lambda t: isinstance(t, Comment)):
+            pm = re.match(r"\s*pos:\s*[0-9A-Za-z.]+\s*:\s*([\d.]+)\s*$", str(c))
+            if pm:
+                try:
+                    holder_entry = float(pm.group(1))
+                except ValueError:
+                    holder_entry = None
+                break
+        if holder_entry:
+            vc_div = next((cc for cc in (card.get("class") or []) if cc in ("buy", "hold", "sell", "wait")), None)
+            if vc_div:
+                verdict_class = vc_div
+            rtype = "H"
+
         maybe_add({
             "date": date_str,
             "name": name,
@@ -218,6 +236,7 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
             "type": rtype,
             "source": "signal-card",
             "confidence": confidence,
+            **({"holder": True, "holder_entry": holder_entry} if holder_entry else {}),
             **levels,
         })
 
@@ -531,6 +550,30 @@ def judge(rec: dict, prices: dict, horizon: str = "5d") -> str | None:
     return None
 
 
+def judge_holder(rec: dict, prices: dict, horizon: str = "5d") -> str | None:
+    """持有者框架結算(type="H",2026-07-07 持倉客製化):建議對象是「已持有」的用戶,
+    量的是「聽這個建議 vs 出場,持有期間有沒有守住」:
+      buy(加碼)   → 漲才算對(跟方向判斷同標準)
+      hold(續抱)/wait(閘門降級的防守) → 沒有跌破緩衝就算對(續抱時大漲是好事,不對稱懲罰)
+      sell(減碼/停損/獲利了結) → 之後真的跌=提前出場是對的"""
+    p = prices.get((rec["ticker"], rec["date"]))
+    if not p:
+        return None
+    cfg = _HORIZONS[horizon]
+    ref = p.get(cfg["ref"])
+    if ref is None:
+        return None  # 尚未到結算日 → 待結
+    chg = (ref - p["close"]) / p["close"]
+    vc = rec["verdict_class"]
+    if vc == "buy":
+        return "win" if chg > 0 else "loss"
+    if vc in ("hold", "wait"):
+        return "win" if chg >= -cfg["hold"] else "loss"
+    if vc == "sell":
+        return "win" if chg < 0 else "loss"
+    return None
+
+
 def fetch_digest_html(date_str: str) -> str | None:
     """Try local file first; fall back to CDN."""
     local = DIGEST_DIR / f"digest_{date_str}.html"
@@ -643,6 +686,8 @@ def _personal_ledger_entries(judged_personal: list[dict], personal_sims: dict[in
             "regime": regime_by_date.get(r["date"]),
             "ret": sim["ret_pct"] if sim else None,
             "user_hash": user_hash,
+            # 持有者框架(type="H")補記自填成本,供未來 per-position 稽核
+            **({"holder_entry": r["holder_entry"]} if r.get("holder_entry") else {}),
         })
     return entries
 
@@ -727,8 +772,9 @@ def main() -> int:
         if INTERNAL_TOKEN:
             tokens = list_personal_digest_tokens(date_str)
             if tokens:
-                # 去重避免同一個人化 digest 多次計算 — 用 (date, ticker, verdict) 三元組
-                seen_keys = {(r["date"], r["ticker"], r["verdict_class"]) for r in recs}
+                # 去重避免同一個人化 digest 多次計算 — 用 (date, ticker, verdict, 持有者框架) 四元組
+                # (持有者框架 H 卡與一般卡語意不同,不可被同 verdict 的公版卡吃掉)
+                seen_keys = {(r["date"], r["ticker"], r["verdict_class"], r.get("type") == "H") for r in recs}
                 added = 0
                 for tok in tokens:
                     p_html = fetch_personal_digest_html(tok)
@@ -736,7 +782,7 @@ def main() -> int:
                         continue
                     p_recs = parse_digest_html(date_str, p_html)
                     for pr in p_recs:
-                        key = (pr["date"], pr["ticker"], pr["verdict_class"])
+                        key = (pr["date"], pr["ticker"], pr["verdict_class"], pr.get("type") == "H")
                         if key in seen_keys:
                             continue
                         seen_keys.add(key)
@@ -753,24 +799,28 @@ def main() -> int:
     print(f"[fetch] {len(keys)} (ticker,date) pairs via yfinance (cached where possible)...")
     prices = fetch_prices(keys)
 
+    def _judge_record(r: dict) -> None:
+        # type="H"(持有者框架)用 judge_holder,其餘照舊
+        jfn = judge_holder if r.get("type") == "H" else judge
+        r["outcome"] = jfn(r, prices, "5d")
+        r["outcome_1d"] = jfn(r, prices, "1d")
+        r["outcome_21d"] = jfn(r, prices, "21d")
+        r["outcome_63d"] = jfn(r, prices, "63d")
+
     judged_public = []
     for r in all_records:
-        r["outcome"] = judge(r, prices, "5d")
-        r["outcome_1d"] = judge(r, prices, "1d")
-        r["outcome_21d"] = judge(r, prices, "21d")
-        r["outcome_63d"] = judge(r, prices, "63d")
+        _judge_record(r)
         judged_public.append(r)
     judged_personal = []
     for r in personal_records:
-        r["outcome"] = judge(r, prices, "5d")
-        r["outcome_1d"] = judge(r, prices, "1d")
-        r["outcome_21d"] = judge(r, prices, "21d")
-        r["outcome_63d"] = judge(r, prices, "63d")
+        _judge_record(r)
         judged_personal.append(r)
 
     # 個人化逐筆模擬報酬(供匿名帳本用;獨立於下面 judged_all 的聚合 sims 迴圈,不影響既有 plan_sim 統計)
     personal_sims: dict[int, dict] = {}
     for r in judged_personal:
+        if r.get("type") == "H":
+            continue  # 持有者卡價位是減碼/停損位,照卡片進場模擬會失真(同下方頭條 sims 迴圈)
         s = simulate_plan(r, prices)
         if s:
             personal_sims[id(r)] = s
@@ -819,6 +869,18 @@ def main() -> int:
 
     monthly = horizon_block("outcome_21d")
     quarterly = horizon_block("outcome_63d")
+
+    # 持有者框架(type="H")獨立統計:樣本先累積,不混入 A/C 頭條(同 07-07 era 切分的誠實原則)
+    h_all = [r for r in judged_all if r.get("type") == "H"]
+    h_recs = [r for r in h_all if r.get("outcome") in ("win", "loss")]
+    h_wins = sum(1 for r in h_recs if r["outcome"] == "win")
+    holder_stats = {
+        "note": "持有者框架建議(用戶自填進場成本):judge_holder 獨立結算,不計入 A/C 頭條",
+        "count": len(h_recs), "wins": h_wins,
+        "rate": round(h_wins / len(h_recs) * 100, 1) if h_recs else 0.0,
+        "ci95": list(wilson_ci(h_wins, len(h_recs))),
+        "pending": len(h_all) - len(h_recs),
+    }
 
     # ── 校準 / regime 拆解 / level-based 操作模擬(2026-06-10 自學三件套)──
     calib = calibration_stats(a_recs)
@@ -877,6 +939,8 @@ def main() -> int:
 
     sims = []
     for r in judged_all:
+        if r.get("type") == "H":
+            continue  # 持有者卡的價位是減碼/停損位,混進「照卡片進場」模擬會失真
         s = simulate_plan(r, prices)
         if s:
             sims.append(s)
@@ -920,6 +984,7 @@ def main() -> int:
         },
         "monthly": monthly,      # 21 個交易日 ≈ 一個月結算
         "quarterly": quarterly,  # 63 個交易日 ≈ 一季結算
+        "holder": holder_stats,  # 持有者框架(持倉客製化)獨立統計
         "a_count": len(a_recs),
         "a_wins": a_wins,
         "a_rate": round(a_rate, 1),

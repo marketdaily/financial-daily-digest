@@ -379,6 +379,8 @@ def get_user_preferences(email: str) -> dict:
                     "tw_stocks": d.get("tw_stocks") or [],
                     "plan": plan,
                     "digest_depth": depth,
+                    # 持倉成本(選填):{sym:{entry_price,entry_date}} → 持有者框架建議
+                    "positions": d.get("positions") if isinstance(d.get("positions"), dict) else {},
                 }
         except Exception:
             pass
@@ -388,7 +390,7 @@ def get_user_preferences(email: str) -> dict:
     if last_status == 403:
         reason = "INTERNAL_TOKEN 未設" if not tok else "INTERNAL_TOKEN 與 worker env 不匹配"
         print(f"      → 原因：{reason}，server-to-server bypass 失效")
-    return {"us_stocks": [], "tw_stocks": [], "plan": "free", "digest_depth": "standard", "_fetch_failed": True, "_status": last_status}
+    return {"us_stocks": [], "tw_stocks": [], "plan": "free", "digest_depth": "standard", "positions": {}, "_fetch_failed": True, "_status": last_status}
 
 
 def save_hosted_digest(html: str, date: str = "") -> str:
@@ -625,7 +627,8 @@ def _route_shift_content(data, us_stocks, tw_stocks, get_picks):
 
 def _generate_user_email(data, email, gen_us, gen_tw, depth, is_premium, picks_mode,
                          picks_banner, picks_market, pk_names, exp_tier, exp_score, total,
-                         default_report, default_web_url, ai_calls, personalization_failures):
+                         default_report, default_web_url, ai_calls, personalization_failures,
+                         positions=None):
     """單一用戶的個人化內容生成:完整版上傳網頁、email 版超上限裁切、個人化失敗
     走顯著告知 banner + 公版(絕不偷偷把通用版當個人化寄)。
     回傳 (inner, subject, web_url, shown, ai_calls)。"""
@@ -639,7 +642,7 @@ def _generate_user_email(data, email, gen_us, gen_tw, depth, is_premium, picks_m
         try:
             if ai_calls > 0:
                 time.sleep(5)  # 輕度間隔，避免觸發 Gemini 免費層每分鐘上限
-            full_inner = _report_fn()(data, gen_us or None, gen_tw or None, depth=depth, market=MARKET, is_premium=is_premium, picks_mode=picks_mode)
+            full_inner = _report_fn()(data, gen_us or None, gen_tw or None, depth=depth, market=MARKET, is_premium=is_premium, picks_mode=picks_mode, positions=positions)
             ai_calls += 1
             full_inner = _inject_ai_banner(full_inner, data["date"])
             if depth != "simple":
@@ -653,7 +656,7 @@ def _generate_user_email(data, email, gen_us, gen_tw, depth, is_premium, picks_m
             # email 版：持倉超過上限時縮減，避免被 Gmail 截斷
             if total > DIGEST_EMAIL_MAX_HOLDINGS:
                 time.sleep(5)
-                inner = _report_fn()(data, gen_us or None, gen_tw or None, email_safe=True, depth=depth, market=MARKET, is_premium=is_premium, picks_mode=picks_mode)
+                inner = _report_fn()(data, gen_us or None, gen_tw or None, email_safe=True, depth=depth, market=MARKET, is_premium=is_premium, picks_mode=picks_mode, positions=positions)
                 ai_calls += 1
                 inner = _inject_ai_banner(inner, data["date"])
                 if depth != "simple":
@@ -689,7 +692,7 @@ def _generate_user_email(data, email, gen_us, gen_tw, depth, is_premium, picks_m
 
 def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, picks_mode,
                       picks_banner, ai_calls, deterministic_fallbacks,
-                      systemic_high_counts=None):
+                      systemic_high_counts=None, positions=None):
     """使用者視角 audit:HIGH severity → retry 一次(強制換更強模型),仍 fail →
     deterministic fallback,絕不寄錯誤內容,也絕不讓用戶收不到信。MED/LOW 直接寄。
     回傳 (html, fails, ai_calls)。"""
@@ -718,7 +721,7 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
         try:
             time.sleep(5)
             # retry 強制換更強模型(Claude/OpenAI 先於 Gemini),否則又從 Gemini 起跑 = 白 retry
-            retry_inner = _report_fn()(data, gen_us or None, gen_tw or None, prefer_strong=True, depth=depth, market=MARKET, is_premium=is_premium, picks_mode=picks_mode)
+            retry_inner = _report_fn()(data, gen_us or None, gen_tw or None, prefer_strong=True, depth=depth, market=MARKET, is_premium=is_premium, picks_mode=picks_mode, positions=positions)
             ai_calls += 1
             retry_inner = _inject_ai_banner(retry_inner, data["date"])
             if depth != "simple":
@@ -803,6 +806,7 @@ def run():
         prefs = subscriber_prefs[email]
         us_stocks = prefs.get("us_stocks") or []
         tw_stocks = prefs.get("tw_stocks") or []
+        positions = prefs.get("positions") or {}  # 持倉成本(選填)→持有者框架,全體用戶可用
         depth = prefs.get("digest_depth") or "standard"  # 日報深度全體用戶可選(合規結構:不依付費分級)
         is_premium = prefs.get("plan") in ("premium", "admin")  # 僅供統計/tier 標籤;禁止用來分級日報內容(COMPLIANCE_STRUCTURE.md)
 
@@ -830,7 +834,8 @@ def run():
         inner, subject, web_url, shown, ai_calls = _generate_user_email(
             data, email, gen_us, gen_tw, depth, is_premium, picks_mode, picks_banner,
             picks_market, pk_names, exp_tier, exp_score, total,
-            default_report, default_web_url, ai_calls, personalization_failures)
+            default_report, default_web_url, ai_calls, personalization_failures,
+            positions=positions)
 
         if web_url:
             inner = _web_view_banner(web_url, total, shown) + inner
@@ -841,7 +846,7 @@ def run():
             html, fails, ai_calls = _audit_with_retry(
                 data, email, inner, gen_us, gen_tw, depth, is_premium,
                 picks_mode, picks_banner, ai_calls, deterministic_fallbacks,
-                systemic_high_counts)
+                systemic_high_counts, positions=positions)
             if fails:
                 audit_failures_by_email[email] = fails
             # 只快取成功生成的精選版(subject=None 表示走了個人化失敗 fallback,別讓一人失敗全體共用)
