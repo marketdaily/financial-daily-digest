@@ -2423,6 +2423,8 @@ async function subscribeFree() {
     const data = await res.json();
     if (data.ok) {
       if (window.mdTrackLead) window.mdTrackLead({ plan: "free" });
+      if (window.mdIdentify) window.mdIdentify(email);
+      if (window.mdTrack) window.mdTrack("signup_free", { plan: "free" });
       successEl.textContent = currentLang === "zh" ? "✅ 訂閱成功！請到信箱確認連結。" : "✅ Subscribed! Check your inbox.";
       successEl.style.display = "block";
       btn.textContent = currentLang === "zh" ? "已加入 ✓" : "Joined ✓";
@@ -2458,6 +2460,7 @@ function showReferralPrompt(email) {
 // Premium 試讀:後端動態 Stripe Checkout(coupon baked in,不需手動輸碼)
 async function goPremiumTrial(e) {
   if (e) e.preventDefault();
+  if (window.mdTrack) window.mdTrack("premium_checkout_start");
   const btn = e && e.currentTarget;
   const orig = btn && btn.textContent;
   if (btn) { btn.textContent = "..."; btn.style.pointerEvents = "none"; }
@@ -2837,6 +2840,7 @@ function switchAbout(panel, btn) {
 <!-- Meta Pixel: 設好 META_PIXEL_ID 才會載 fbevents.js,沒設整支 noop -->
 <script>window.META_PIXEL_ID = "1497334655104185";</script>
 <script src="meta-pixel.js"></script>
+<script src="analytics.js?v=20260708a"></script>
 <script src="ui-pro.js?v=20260610a"></script>
 
 <!-- Financial 3D particle background -->

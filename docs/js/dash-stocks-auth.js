@@ -376,6 +376,8 @@ function doLogout() {
 }
 
 async function showDashboard(email, plan) {
+  if (window.mdIdentify) window.mdIdentify(email);
+  if (window.mdTrack) window.mdTrack("login_success", { plan: plan || "free" });
   document.getElementById("login-screen").style.display = "none";
   document.getElementById("dashboard").style.display = "block";
   if (typeof renderQuickRow === 'function') { renderQuickRow('us'); renderQuickRow('tw'); }
