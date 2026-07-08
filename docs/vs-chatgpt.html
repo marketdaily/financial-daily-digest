@@ -450,7 +450,7 @@ footer a:hover { color: var(--primary-light); }
         <tr>
           <td class="col-axis" data-i18n="comp_r4_axis">即時新聞數據</td>
           <td class="hide-mobile"><span class="comp-meh">△</span> <span data-i18n="comp_r4_a">有 cutoff，要自己 prompt</span></td>
-          <td class="col-md"><span class="comp-check">✓</span> <span data-i18n="comp_r4_b">5 分鐘前的 Reuters / Bloomberg</span></td>
+          <td class="col-md"><span class="comp-check">✓</span> <span data-i18n="comp_r4_b">白名單多源即時交叉驗證</span></td>
         </tr>
         <tr>
           <td class="col-axis" data-i18n="comp_r5_axis">明確進出場建議</td>
@@ -460,7 +460,7 @@ footer a:hover { color: var(--primary-light); }
         <tr>
           <td class="col-axis" data-i18n="comp_r6_axis">每週戰績公開</td>
           <td class="hide-mobile"><span class="comp-x">✕</span> <span data-i18n="comp_r6_a">沒有 track record</span></td>
-          <td class="col-md"><span class="comp-check">✓</span> <a href="/track-record.html" style="color:#818cf8;text-decoration:none;"><span class="comp-check">✓</span> <span data-i18n="comp_r6_b">公開戰績頁可查</span></a></td>
+          <td class="col-md"><a href="/track-record.html" style="color:#818cf8;text-decoration:none;"><span class="comp-check">✓</span> <span data-i18n="comp_r6_b">公開戰績頁可查</span></a></td>
         </tr>
         <tr>
           <td class="col-axis" data-i18n="comp_r7_axis">需要 prompt engineering</td>
@@ -602,7 +602,7 @@ const TR = {
     comp_r1_axis: "早上 7 點主動推播", comp_r1_a: "不會主動", comp_r1_b: "每日定時送到信箱",
     comp_r2_axis: "記得你的持股", comp_r2_a: "每次都要重貼", comp_r2_b: "綁定你的偏好，自動篩相關新聞",
     comp_r3_axis: "即時推播持股利空", comp_r3_a: "不會半夜戳你", comp_r3_b: "即時推播(手機/瀏覽器)+ AI 助手對話",
-    comp_r4_axis: "即時新聞數據", comp_r4_a: "有 cutoff，要自己 prompt", comp_r4_b: "5 分鐘前的 Reuters / Bloomberg",
+    comp_r4_axis: "即時新聞數據", comp_r4_a: "有 cutoff，要自己 prompt", comp_r4_b: "白名單多源即時交叉驗證",
     comp_r5_axis: "明確進出場建議", comp_r5_a: "長篇分析要自己整理", comp_r5_b: "每股直接給 買/賣/持有 + 信心 %",
     comp_r6_axis: "每週戰績公開", comp_r6_a: "沒有 track record", comp_r6_b: "公開戰績頁可查",
     comp_r7_axis: "需要 prompt engineering", comp_r7_a: "會問才有用", comp_r7_b: "不用學，30 秒看完",
@@ -650,7 +650,7 @@ const TR = {
     comp_r1_axis: "Pushes at 7AM", comp_r1_a: "Won't act on its own", comp_r1_b: "Daily, on schedule, to inbox",
     comp_r2_axis: "Remembers your holdings", comp_r2_a: "You re-paste every time", comp_r2_b: "Auto-filters news for your positions",
     comp_r3_axis: "Real-time breaking-news alerts", comp_r3_a: "Won't wake you up", comp_r3_b: "App/browser push + AI chat",
-    comp_r4_axis: "Real-time market data", comp_r4_a: "Has cutoff, you must prompt", comp_r4_b: "Reuters / Bloomberg, 5 min fresh",
+    comp_r4_axis: "Real-time market data", comp_r4_a: "Has cutoff, you must prompt", comp_r4_b: "multi-source whitelist, cross-verified in near-real-time",
     comp_r5_axis: "Clear trade signals", comp_r5_a: "Long-form analysis, you distill", comp_r5_b: "Buy/Sell/Hold + confidence % per stock",
     comp_r6_axis: "Public weekly track record", comp_r6_a: "No track record", comp_r6_b: "Public track record page",
     comp_r7_axis: "Needs prompt engineering", comp_r7_a: "Only works if you ask well", comp_r7_b: "Nothing to learn, 30 sec to read",

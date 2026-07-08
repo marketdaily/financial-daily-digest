@@ -123,7 +123,7 @@
   </header>
   <div id="body"><div class="skel" data-i18n="loading_board">⏳ 載入戰情室資料…</div></div>
   <footer data-i18n-html="footer">
-    夜間值班系統 · 資料來自 GitHub,每 60 秒自動更新<br>
+    夜間值班系統 · 歷史值班紀錄(資料通道整修中,暫停自動更新)<br>
     Worker 每輪重建 board.json,本頁無須重新部署即跟著最新進度走
   </footer>
 </div>
@@ -140,7 +140,7 @@ const i18n = {
     connecting: "連線中…",
     loading_meta: "讀取資料中",
     loading_board: "⏳ 載入戰情室資料…",
-    footer: "夜間值班系統 · 資料來自 GitHub,每 60 秒自動更新<br>Worker 每輪重建 board.json,本頁無須重新部署即跟著最新進度走",
+    footer: "夜間值班系統 · 歷史值班紀錄(資料通道整修中,暫停自動更新)<br>資料恢復後本頁會自動跟上,無須重新部署",
     rel_now: "剛剛", rel_min: "分鐘前", rel_hr: "小時前", rel_day: "天前",
     st_live: "LIVE · 已連線", st_fail: "連線失敗 · 重試中",
     err_prefix: "⚠ 暫時讀不到資料(", err_suffix: ")<br>board.json 尚未產生或網路問題,60 秒後自動重試",
@@ -163,7 +163,7 @@ const i18n = {
     connecting: "Connecting…",
     loading_meta: "Loading data",
     loading_board: "⏳ Loading war room data…",
-    footer: "Night shift system · Data from GitHub, auto-refreshes every 60s<br>The Worker rebuilds board.json each cycle — this page tracks the latest progress with no redeploy needed",
+    footer: "Night shift system · Historical duty log (data channel under maintenance, auto-refresh paused)<br>This page will catch up automatically once the feed is restored",
     rel_now: "just now", rel_min: "min ago", rel_hr: "hr ago", rel_day: "d ago",
     st_live: "LIVE · Connected", st_fail: "Connection failed · Retrying",
     err_prefix: "⚠ Can't load data right now (", err_suffix: ")<br>board.json not generated yet or a network issue — auto-retry in 60s",

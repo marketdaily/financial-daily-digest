@@ -649,8 +649,6 @@ nav::after {
   box-shadow: 0 4px 24px rgba(99,102,241,0.45), inset 0 1px 0 rgba(255,255,255,0.12);
 }
 .cta-btn:hover { background: #4f46e5; transform: translateY(-3px); box-shadow: 0 12px 40px rgba(99,102,241,0.55); }
-.cta-btn.line { background: #06C755; box-shadow: 0 4px 24px rgba(6,199,85,0.42), inset 0 1px 0 rgba(255,255,255,0.18); }
-.cta-btn.line:hover { background: #05a948; transform: translateY(-3px); box-shadow: 0 12px 40px rgba(6,199,85,0.5); }
 
 /* ── FOOTER ── */
 footer {
@@ -1582,7 +1580,7 @@ footer {
           <span data-i18n="faq_q_chatgpt">我用 ChatGPT 就好，為什麼要付錢訂閱？</span>
           <span class="faq-chevron">▾</span>
         </button>
-        <div class="faq-a-body"><p data-i18n-html="faq_a_chatgpt">ChatGPT 不會在早上 6:55 主動掃完台積電、特斯拉、輝達的隔夜消息，挑出影響<strong>你部位</strong>的那幾則送到你信箱。它是<strong>「你問它答」</strong>的工具；我們是<strong>「不問也送到你眼前」</strong>的助理 —— 知道你抱什麼股、自動篩相關新聞、Premium 還會即時推播持股利空到你手機/瀏覽器，並支援 AI 助手雙向問答。比 ChatGPT Plus 便宜一半，只專心做好一件事:讓你不用再決定「今天該問 AI 什麼」。<br><br><a href="/vs-chatgpt" style="color:#a5b4fc;text-decoration:underline;font-weight:600;">看完整逐項對比 →</a></p></div>
+        <div class="faq-a-body"><p data-i18n-html="faq_a_chatgpt">ChatGPT 不會在早上 6:55 主動掃完台積電、特斯拉、輝達的隔夜消息，挑出影響<strong>你部位</strong>的那幾則送到你信箱。它是<strong>「你問它答」</strong>的工具；我們是<strong>「不問也送到你眼前」</strong>的助理 —— 知道你抱什麼股、自動篩相關新聞、即時推播持股利空到你手機/瀏覽器(免費版就有)，並支援 AI 助手雙向問答。比 ChatGPT Plus 便宜一半，只專心做好一件事:讓你不用再決定「今天該問 AI 什麼」。<br><br><a href="/vs-chatgpt" style="color:#a5b4fc;text-decoration:underline;font-weight:600;">看完整逐項對比 →</a></p></div>
       </div>
 
       <div class="faq-item-acc">
@@ -1606,7 +1604,7 @@ footer {
           <span data-i18n="faq_q5">免費版跟 Premium 差在哪？</span>
           <span class="faq-chevron">▾</span>
         </button>
-        <div class="faq-a-body"><p data-i18n="faq_a5">免費版提供台股早上 7 點、美股晚上 8 點的 AI 財經日報基本版,完全免費、不需邀請碼。Premium 首月 NT$299(原價 NT$499/月)立即解鎖全部 Premium 功能 —— 個人化日報、AI 助手雙向對話、重大新聞即時推播。試讀月後自動續訂 NT$499/月,隨時可取消。</p></div>
+        <div class="faq-a-body"><p data-i18n="faq_a5">分析內容零差異:個人化日報、AI 助手對話、重大新聞即時推播,免費版全部都有,完全免費、不需邀請碼。Premium(首月 NT$299,之後 NT$499/月)是支持者方案 —— 支持我們獨立營運、優先客服與新功能搶先體驗,不會看到更多或更深的個股分析。隨時可取消。</p></div>
       </div>
 
       <div class="faq-item-acc">
@@ -1924,6 +1922,7 @@ function getAttrPayload() {
 const i18n = {
   en: {
     nav_settings: "My Account", nav_pricing: "Pricing", nav_guide: "Getting Started", nav_record: "Record", nav_vs: "vs Rivals", nav_audio: "Audio",
+    mq1: "YOUR HOLDINGS", mq2: "EVERY TICKER CALLED", mq3: "US + TW STOCKS", mq4: "TW 07:00 · US 20:00",
     hero_my_account: "Already have an account? Go to My Account →",
     sp_heading: "🎉 Subscription confirmed! Set your password",
     sp_pwd_placeholder: "Set a password (at least 6 characters)",
@@ -1974,12 +1973,12 @@ const i18n = {
     slider_title: "What's in every brief", slider_sub: "5 AI-curated sections. TW stocks 7AM, US stocks 8PM Taiwan time.",
     faq_eyebrow: "FAQ", faq_title: "Common Questions",
     faq_q_chatgpt: "I already use ChatGPT — why pay for this?",
-    faq_a_chatgpt: "ChatGPT doesn't wake up at 6:55 AM to scan TSMC, Tesla and Nvidia's overnight news and deliver only the items affecting <strong>your</strong> positions to your inbox. It's a <strong>\"you ask, it answers\"</strong> tool; we're a <strong>\"shows up without being asked\"</strong> assistant — we know your holdings, auto-filter relevant news, and (Premium) push breaking news to your phone/browser, plus two-way AI assistant Q&amp;A. Half the price of ChatGPT Plus, focused on one job: removing your daily \"what should I even ask AI today?\" decision.<br><br><a href=\"/vs-chatgpt\" style=\"color:#a5b4fc;text-decoration:underline;font-weight:600;\">See the full head-to-head →</a>",
+    faq_a_chatgpt: "ChatGPT doesn't wake up at 6:55 AM to scan TSMC, Tesla and Nvidia's overnight news and deliver only the items affecting <strong>your</strong> positions to your inbox. It's a <strong>\"you ask, it answers\"</strong> tool; we're a <strong>\"shows up without being asked\"</strong> assistant — we know your holdings, auto-filter relevant news, and push breaking news to your phone/browser (included in Free), plus two-way AI assistant Q&amp;A. Half the price of ChatGPT Plus, focused on one job: removing your daily \"what should I even ask AI today?\" decision.<br><br><a href=\"/vs-chatgpt\" style=\"color:#a5b4fc;text-decoration:underline;font-weight:600;\">See the full head-to-head →</a>",
     faq_q1: "What time does the brief arrive?", faq_a1: "Taiwan-stock digest at 7:00 AM, US-stock digest at 8:00 PM — both Taiwan time. You get the edition(s) matching the markets you hold (hold both and it's one each morning and evening). Mon–Sat; <strong>Saturday morning is a special 'weekly recap + next-week catalysts' edition covering both markets</strong>. No email Sunday (both markets closed), and no evening email when US markets are shut. If you don't see it, check your spam folder.",
     faq_q2: "What's inside every briefing?", faq_a2: "30-second TL;DR, top headlines (fake-news filtered), AI trade signals per stock (Buy/Sell/Hold + target price + confidence %), market sentiment dashboard, and personalized holdings analysis.",
     faq_q3: "How do I get an invite code?", faq_a3: "Invite codes are issued by Delvin personally and are limited. Currently for friends and family only. Contact us if you'd like one.",
     faq_q4: "How do I unsubscribe?", faq_a4: "Click 'Unsubscribe' at the bottom of any email. Takes effect immediately — no need to contact support.",
-    faq_q5: "What's the difference between Free and Premium?", faq_a5: "Free gives the daily AI market briefing — totally free, no invite code needed. Premium (first month NT$299, then NT$499/mo) unlocks all Premium features instantly: personalized digest, two-way AI chat, real-time breaking-news push. Auto-renews after trial, cancel anytime.",
+    faq_q5: "What's the difference between Free and Premium?", faq_a5: "Zero difference in analysis content: personalized digest, two-way AI chat and real-time breaking-news push are all included in Free — totally free, no invite code. Premium (first month NT$299, then NT$499/mo) is a supporter plan: it funds our independence and adds priority support and early access — never more or deeper stock analysis. Cancel anytime.",
     faq_contact: "More questions? <a href='contact.html'>Contact AI Support →</a>",
     price_free_btn: "Start Free →", home_free_submit: "Submit →", price_pro_badge: "⭐ Premium Trial · 40% Off", price_mo2: "/ mo",
     price_pro_desc: "The supporter plan, 40% off your first month. Every analysis feature is already free — upgrading supports our independence. Full refund within 30 days.",
@@ -2088,6 +2087,7 @@ const i18n = {
   },
   zh: {
     nav_settings: "我的專區", nav_pricing: "定價", nav_guide: "新手教學", nav_record: "戰績", nav_vs: "vs 對手", nav_audio: "語音快報",
+    mq1: "你的持股", mq2: "逐檔點名", mq3: "美股+台股", mq4: "台股07:00·美股20:00",
     hero_my_account: "已有帳號？直接前往我的專區 →",
     sp_heading: "🎉 訂閱確認！設定你的密碼",
     sp_pwd_placeholder: "設定密碼（至少 6 位）",
@@ -2143,12 +2143,12 @@ const i18n = {
     slider_title: "每日簡報包含什麼", slider_sub: "5 個 AI 精選區塊，台股早上 7 點、美股晚上 8 點準時送達。",
     faq_eyebrow: "FAQ", faq_title: "常見問題",
     faq_q_chatgpt: "我用 ChatGPT 就好，為什麼要付錢訂閱？",
-    faq_a_chatgpt: "ChatGPT 不會在早上 6:55 主動掃完台積電、特斯拉、輝達的隔夜消息，挑出影響<strong>你部位</strong>的那幾則送到你信箱。它是<strong>「你問它答」</strong>的工具；我們是<strong>「不問也送到你眼前」</strong>的助理 —— 知道你抱什麼股、自動篩相關新聞、Premium 還會即時推播持股利空到你手機/瀏覽器，並支援 AI 助手雙向問答。比 ChatGPT Plus 便宜一半，只專心做好一件事:讓你不用再決定「今天該問 AI 什麼」。<br><br><a href=\"/vs-chatgpt\" style=\"color:#a5b4fc;text-decoration:underline;font-weight:600;\">看完整逐項對比 →</a>",
+    faq_a_chatgpt: "ChatGPT 不會在早上 6:55 主動掃完台積電、特斯拉、輝達的隔夜消息，挑出影響<strong>你部位</strong>的那幾則送到你信箱。它是<strong>「你問它答」</strong>的工具；我們是<strong>「不問也送到你眼前」</strong>的助理 —— 知道你抱什麼股、自動篩相關新聞、即時推播持股利空到你手機/瀏覽器(免費版就有)，並支援 AI 助手雙向問答。比 ChatGPT Plus 便宜一半，只專心做好一件事:讓你不用再決定「今天該問 AI 什麼」。<br><br><a href=\"/vs-chatgpt\" style=\"color:#a5b4fc;text-decoration:underline;font-weight:600;\">看完整逐項對比 →</a>",
     faq_q1: "幾點收到日報？", faq_a1: "台股日報每天早上 07:00、美股日報每天晚上 20:00(台灣時間)準時送達——你會依持有的市場收到對應日報,兩個市場都持有就早晚各一封。週一到週六發送,<strong>週六早上是「本週回顧 + 下週重點」特別版(美股、台股都含)</strong>,週日休息(兩邊都沒開盤)。美股休市日當晚不寄。沒收到請先看垃圾郵件夾。",
     faq_q2: "每封日報包含什麼？", faq_a2: "30 秒精華摘要、今日頭條（假訊息過濾）、AI 操作建議（每支持股 買/賣/持有 + 目標價 + 信心百分比）、市場情緒儀表板，以及你的個人持倉動態分析。",
     faq_q3: "邀請碼哪裡取得？", faq_a3: "邀請碼由 Delvin 本人發出，數量有限，目前僅開放給親友。如有需要請透過客服聯繫。",
     faq_q4: "如何取消訂閱？", faq_a4: "在任何一封日報 Email 底部點「取消訂閱」即可立即生效，完全不需要聯繫客服。",
-    faq_q5: "免費版跟 Premium 差在哪？", faq_a5: "免費版提供台股早上 7 點、美股晚上 8 點的 AI 財經日報基本版,完全免費、不需邀請碼。Premium 首月 NT$299(原價 NT$499/月)立即解鎖全部 Premium 功能 —— 個人化日報、AI 助手雙向對話、重大新聞即時推播。試讀月後自動續訂 NT$499/月,隨時可取消。",
+    faq_q5: "免費版跟 Premium 差在哪？", faq_a5: "分析內容零差異:個人化日報、AI 助手對話、重大新聞即時推播,免費版全部都有,完全免費、不需邀請碼。Premium(首月 NT$299,之後 NT$499/月)是支持者方案 —— 支持我們獨立營運、優先客服與新功能搶先體驗,不會看到更多或更深的個股分析。隨時可取消。",
     faq_contact: "還有其他問題？<a href='contact.html'>聯絡 AI 客服 →</a>",
     price_pro_btn: "6 折試讀 →",
     about_title: "關於財經日報", about_sub: "我們是誰，我們在做什麼",
@@ -2965,7 +2965,7 @@ MDTour.mount([
     title: { zh: "第 2 步:按「繼續」", en: "Step 2: Click “Continue”" },
     body: { zh: "Email 打好後,按這個按鈕進入下一步。", en: "Once your email is in, click this button to move on." } },
   { title: { zh: "接下來會發生什麼", en: "What happens next" },
-    body: { zh: "你會看到兩個方案 —— 免費版(留 Email 直接訂閱,台股早上 7 點、美股晚上 8 點收日報,週一到週六,週日休息)或 Premium 試讀(首月 NT$299,解鎖個人化分析 + AI 助手對話)。週六是「本週回顧 + 下週重點」特別版。之後想登入「我的專區」時,系統才會請你設一組密碼。", en: "You’ll see two plans — Free (just leave your email; TW digest 7AM, US digest 8PM TWT, Mon–Sat, Sun off) or Premium trial (first month NT$299, unlocks personalized analysis + AI assistant chat). Saturday is a special 'weekly recap + next-week catalysts' edition. You’ll only set a password later when logging in to “My Account.”" } }
+    body: { zh: "你會看到兩個方案 —— 免費版(留 Email 直接訂閱,台股早上 7 點、美股晚上 8 點收日報,週一到週六,週日休息;個人化分析與 AI 助手對話免費就有)或 Premium 支持者方案(首月 NT$299,支持獨立營運,分析內容與免費版完全相同)。週六是「本週回顧 + 下週重點」特別版。之後想登入「我的專區」時,系統才會請你設一組密碼。", en: "You’ll see two plans — Free (just leave your email; TW digest 7AM, US digest 8PM TWT, Mon–Sat, Sun off; personalized analysis and AI chat included) or the Premium supporter plan (first month NT$299 — supports our independence; analysis content is identical to Free). Saturday is a special 'weekly recap + next-week catalysts' edition. You’ll only set a password later when logging in to “My Account.”" } }
 ], { tourId: "index", auto: true });
 </script>
 <script src="terminal.js?v=1"></script>

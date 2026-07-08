@@ -65,7 +65,7 @@ const CHECKS = [
     run: async () => {
       const r = await fetch(`/data/track-record.json?t=${Date.now()}`,{cache:"no-store"});
       const j = await r.json();
-      const g = j.generated_at || j.generatedAt;
+      const g = j.generated_at || j.generatedAt || (j.stats && j.stats.generated_at);
       if(!g) return {state:"warn", note:"無更新時間戳"};
       const hrs = (Date.now() - new Date(g).getTime())/3.6e6;
       const when = `${Math.round(hrs)}h 前`;

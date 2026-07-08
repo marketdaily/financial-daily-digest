@@ -258,6 +258,9 @@ async function loadData() {
   } catch (e) { console.error(e); }
 }
 
+function esc(v) {
+  return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
 function render(data) {
   const days = data.days || [];           // [{date, total, by_source:{}, by_event:{}}]
   const recent = data.recent || [];        // [{ts, email, event, utm_source, utm_campaign}]
@@ -298,7 +301,7 @@ function render(data) {
   } else {
     srcBars.innerHTML = srcList.map(([s, n]) => `
       <div class="bar-row">
-        <span class="src-name">${s}</span>
+        <span class="src-name">${esc(s)}</span>
         <div class="bar-track"><div class="bar-fill" style="width:${(n / srcMax * 100).toFixed(1)}%"></div></div>
         <span class="bar-count">${n}</span>
       </div>`).join("");
@@ -323,8 +326,8 @@ function render(data) {
   } else {
     campT.innerHTML = campList.slice(0, 20).map(([c, d]) => {
       const sources = Object.entries(d.sources).sort((a, b) => b[1] - a[1])
-        .map(([k, v]) => `${k}·${v}`).join(", ");
-      return `<tr><td><strong>${c}</strong></td><td class="muted">${sources}</td><td style="text-align:right;font-weight:800;color:#a5b4fc;">${d.total}</td></tr>`;
+        .map(([k, v]) => `${esc(k)}·${v}`).join(", ");
+      return `<tr><td><strong>${esc(c)}</strong></td><td class="muted">${sources}</td><td style="text-align:right;font-weight:800;color:#a5b4fc;">${d.total}</td></tr>`;
     }).join("");
   }
 
@@ -339,10 +342,10 @@ function render(data) {
       const evt = (r.event || "").replace(/^subscribe_/, "");
       return `<tr>
         <td class="muted">${time}</td>
-        <td>${r.email || "—"}</td>
-        <td class="pill-cell"><span class="evt-pill ${r.event || ''}">${evt || "—"}</span></td>
-        <td>${r.utm_source || "(direct)"}</td>
-        <td class="muted">${r.utm_campaign || "—"}</td>
+        <td>${esc(r.email) || "—"}</td>
+        <td class="pill-cell"><span class="evt-pill ${esc(r.event) || ''}">${esc(evt) || "—"}</span></td>
+        <td>${esc(r.utm_source) || "(direct)"}</td>
+        <td class="muted">${esc(r.utm_campaign) || "—"}</td>
       </tr>`;
     }).join("");
   }
