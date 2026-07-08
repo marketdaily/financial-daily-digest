@@ -1,18 +1,18 @@
 {
   "stats": {
-    "generated_at": "2026-07-08T08:03:30",
+    "generated_at": "2026-07-08T15:18:33",
     "horizon": "5d",
     "records_since": "2026-06-12",
     "days_covered": 12,
     "total_records": 721,
-    "judged_records": 271,
+    "judged_records": 292,
     "one_day": {
-      "a_count": 221,
-      "a_wins": 110,
-      "a_rate": 49.8,
-      "c_count": 371,
-      "c_wins": 194,
-      "c_rate": 52.3
+      "a_count": 242,
+      "a_wins": 121,
+      "a_rate": 50.0,
+      "c_count": 390,
+      "c_wins": 206,
+      "c_rate": 52.8
     },
     "monthly": {
       "a_count": 0,
@@ -61,23 +61,23 @@
       ],
       "pending": 0
     },
-    "a_count": 90,
-    "a_wins": 49,
-    "a_rate": 54.4,
+    "a_count": 101,
+    "a_wins": 51,
+    "a_rate": 50.5,
     "a_ci95": [
-      44.2,
-      64.3
+      40.9,
+      60.0
     ],
-    "c_count": 181,
-    "c_wins": 88,
-    "c_rate": 48.6,
+    "c_count": 191,
+    "c_wins": 95,
+    "c_rate": 49.7,
     "c_ci95": [
-      41.4,
-      55.9
+      42.7,
+      56.8
     ],
     "calibration": {
-      "n": 90,
-      "brier": 0.2672,
+      "n": 101,
+      "brier": 0.2579,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
@@ -85,19 +85,19 @@
           "hit_rate": 52.6
         },
         "<=50": {
-          "n": 71,
-          "hit_rate": 54.9
+          "n": 82,
+          "hit_rate": 50.0
         }
       }
     },
     "by_regime": {
       "up": {
-        "a_count": 43,
-        "a_wins": 23,
-        "a_rate": 53.5,
+        "a_count": 54,
+        "a_wins": 25,
+        "a_rate": 46.3,
         "ci95": [
-          38.9,
-          67.5
+          33.7,
+          59.4
         ]
       },
       "down": {
@@ -113,25 +113,25 @@
     "era": {
       "note": "僅計 2026-06-12 起(結構prior+校準信心上線後)的現行模型;信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
       "since": "2026-06-12",
-      "a_count": 90,
-      "a_wins": 49,
-      "a_rate": 54.4,
+      "a_count": 101,
+      "a_wins": 51,
+      "a_rate": 50.5,
       "a_ci95_day_cluster": [
-        41.7,
-        62.0
+        35.3,
+        59.7
       ],
-      "c_count": 181,
-      "c_wins": 88,
-      "c_rate": 48.6,
+      "c_count": 191,
+      "c_wins": 95,
+      "c_rate": 49.7,
       "c_ci95_day_cluster": [
-        31.6,
-        71.4
+        34.0,
+        73.2
       ],
       "by_regime": {
         "up": {
-          "a_count": 43,
-          "a_wins": 23,
-          "a_rate": 53.5
+          "a_count": 54,
+          "a_wins": 25,
+          "a_rate": 46.3
         },
         "down": {
           "a_count": 47,
@@ -139,9 +139,51 @@
           "a_rate": 55.3
         }
       },
+      "by_verdict_regime": {
+        "buy|up": {
+          "count": 54,
+          "wins": 25,
+          "rate": 46.3
+        },
+        "buy|down": {
+          "count": 47,
+          "wins": 26,
+          "rate": 55.3
+        },
+        "hold|up": {
+          "count": 0,
+          "wins": 0,
+          "rate": 0.0
+        },
+        "hold|down": {
+          "count": 0,
+          "wins": 0,
+          "rate": 0.0
+        },
+        "sell|up": {
+          "count": 19,
+          "wins": 9,
+          "rate": 47.4
+        },
+        "sell|down": {
+          "count": 25,
+          "wins": 4,
+          "rate": 16.0
+        },
+        "wait|up": {
+          "count": 55,
+          "wins": 45,
+          "rate": 81.8
+        },
+        "wait|down": {
+          "count": 92,
+          "wins": 37,
+          "rate": 40.2
+        }
+      },
       "calibration": {
-        "n": 90,
-        "brier": 0.2672,
+        "n": 101,
+        "brier": 0.2579,
         "coin_flip_brier": 0.25,
         "bins": {
           "51-60": {
@@ -149,31 +191,31 @@
             "hit_rate": 52.6
           },
           "<=50": {
-            "n": 71,
-            "hit_rate": 54.9
+            "n": 82,
+            "hit_rate": 50.0
           }
         }
       },
-      "days": 6
+      "days": 7
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 221,
-      "no_fill": 126,
-      "pending": 57,
+      "simulated": 242,
+      "no_fill": 135,
+      "pending": 63,
       "hit_target": 2,
-      "hit_stop": 35,
+      "hit_stop": 41,
       "expired": 1,
-      "avg_ret_pct": -3.53,
+      "avg_ret_pct": -3.4,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
-      "a_count": 4,
+      "a_count": 6,
       "a_wins": 1,
-      "a_rate": 25.0,
-      "c_count": 16,
-      "c_wins": 8,
-      "c_rate": 50.0
+      "a_rate": 16.7,
+      "c_count": 17,
+      "c_wins": 9,
+      "c_rate": 52.9
     },
     "personal_samples_added": 655
   },
@@ -414,7 +456,7 @@
       "target": 4612.14,
       "stop": 3630.0,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null
     },
@@ -434,7 +476,7 @@
       "target": 2535.0,
       "stop": 2299.28,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null
     },
@@ -454,7 +496,7 @@
       "target": 256.58,
       "stop": 223.78,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null
     },
@@ -973,7 +1015,7 @@
       "entry_hi": 3825.0,
       "target": 4810.0,
       "stop": 3735.6,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null
@@ -993,7 +1035,7 @@
       "entry_hi": 2372.0,
       "target": 2535.0,
       "stop": 2252.85,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null
@@ -1013,7 +1055,7 @@
       "entry_hi": 246.0,
       "target": 268.36,
       "stop": 229.3,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null
