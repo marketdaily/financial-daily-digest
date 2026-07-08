@@ -600,6 +600,58 @@ export default {
       return json({ ok: true });
     }
 
+    // 忘記密碼:寄重設連結(token 30 分鐘一次性;無論帳號存在與否一律回 ok,不洩漏帳號存在性)
+    if (url.pathname === "/forgot-password" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
+      const email = (body.email || "").trim().toLowerCase();
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "invalid_email" }, 400);
+
+      const ip = clientIp(request);
+      const ipKey = `rl:pwdreset-ip:${ip}`;
+      const ipCount = parseInt((await env.USER_PREFS.get(ipKey)) || "0", 10);
+      if (ipCount >= 5) return json({ ok: true });
+      ctx.waitUntil(env.USER_PREFS.put(ipKey, String(ipCount + 1), { expirationTtl: 3600 }));
+      if (await env.USER_PREFS.get(`rl:pwdreset-email:${email}`)) return json({ ok: true });
+      ctx.waitUntil(env.USER_PREFS.put(`rl:pwdreset-email:${email}`, "1", { expirationTtl: 300 }));
+
+      const stored = await env.USER_PREFS.get(`pwd:${email}`);
+      if (!stored) return json({ ok: true });
+
+      const token = crypto.randomUUID().replace(/-/g, "") + crypto.randomUUID().replace(/-/g, "");
+      await env.USER_PREFS.put(`pwdreset:${token}`, email, { expirationTtl: 1800 });
+      const link = `https://marketdaily.ai/reset-password.html?token=${token}`;
+      ctx.waitUntil(sendPasswordResetEmail(email, env.BREVO_API_KEY, link));
+      return json({ ok: true });
+    }
+
+    // 忘記密碼:用 token 設新密碼(token 用過即刪)
+    if (url.pathname === "/reset-password" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
+      const token = (body.token || "").trim();
+      const password = body.password || "";
+      if (!/^[a-f0-9]{64}$/.test(token)) return json({ error: "invalid_token" }, 400);
+
+      const ip = clientIp(request);
+      const tryKey = `rl:pwdreset-try:${ip}`;
+      const tries = parseInt((await env.USER_PREFS.get(tryKey)) || "0", 10);
+      if (tries >= 20) return json({ error: "too_many_attempts" }, 429);
+      ctx.waitUntil(env.USER_PREFS.put(tryKey, String(tries + 1), { expirationTtl: 3600 }));
+
+      const weak = checkPwdStrength(password);
+      if (weak) return json({ error: weak }, 400);
+
+      const email = await env.USER_PREFS.get(`pwdreset:${token}`);
+      if (!email) return json({ error: "invalid_token" }, 400);
+
+      const newHash = await makePwdHash(password);
+      await env.USER_PREFS.put(`pwd:${email}`, newHash);
+      await env.USER_PREFS.delete(`pwdreset:${token}`);
+      ctx.waitUntil(clearAuthFail(env, email, request));
+      return json({ ok: true });
+    }
+
     // AI 投資助手:聊天(Premium 專屬)
     if (url.pathname === "/chat" && request.method === "POST") {
       let body;
@@ -2711,6 +2763,32 @@ async function sendLifecycleEmail(email, apiKey, subject, html) {
       htmlContent: html,
     }),
   });
+}
+
+async function sendPasswordResetEmail(email, apiKey, link) {
+  const body = `
+    <p style="font-size:16px;font-weight:800;color:#1a1a1a;margin:0 0 14px;">收到重設密碼的請求</p>
+    <p style="font-size:14px;color:#444;line-height:1.8;margin:0 0 22px;">
+      有人（希望是你本人）為這個 Email 申請重設 MarketDaily 密碼。<br>
+      點下方按鈕設定新密碼，連結 <strong>30 分鐘內有效</strong>，且只能使用一次。
+    </p>
+    <div style="text-align:center;margin-bottom:24px;">
+      <a href="${link}" style="display:inline-block;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;font-size:15px;font-weight:800;padding:14px 36px;border-radius:12px;text-decoration:none;">重設我的密碼 →</a>
+    </div>
+    <p style="font-size:12px;color:#888;line-height:1.8;margin:0;">
+      如果按鈕無法點擊，複製這個網址到瀏覽器開啟：<br>
+      <span style="word-break:break-all;color:#6366f1;">${link}</span>
+    </p>
+    <p style="font-size:12px;color:#888;line-height:1.8;margin:14px 0 0;">
+      如果這不是你本人的操作，直接忽略這封信即可，你的密碼不會被更改。
+    </p>`;
+  const html = lifecycleShell({
+    badge: "PASSWORD RESET",
+    headerTitle: "🔐 重設你的密碼",
+    headerSub: "MarketDaily 帳號安全",
+    bodyHtml: body,
+  });
+  return sendLifecycleEmail(email, apiKey, "🔐 重設你的 MarketDaily 密碼", html);
 }
 
 // D1:設股票偏好 —— 沒設就會收到通用版日報,失去個人化價值

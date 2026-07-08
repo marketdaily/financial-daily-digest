@@ -31,6 +31,7 @@ const i18n = {
     setpwd_btn: "設定並進入 →",
     setpwd_back: "← 返回",
     login_hint: "尚未訂閱？<a href=\"index.html\">前往訂閱 →</a><br>第一次使用、不知道怎麼操作？<a href=\"guide.html\">看新手教學 →</a>",
+    login_forgot: "忘記密碼？",
     ph_min6: "至少 6 位",
     ph_again: "再輸入一次",
     nav_logout: "登出",
@@ -226,6 +227,7 @@ const i18n = {
     setpwd_btn: "Set and Continue →",
     setpwd_back: "← Back",
     login_hint: "Not subscribed yet? <a href=\"index.html\">Subscribe now →</a><br>First time here, not sure how it works? <a href=\"guide.html\">See the getting-started guide →</a>",
+    login_forgot: "Forgot password?",
     ph_min6: "At least 6 characters",
     ph_again: "Enter again",
     nav_logout: "Log out",
@@ -426,6 +428,15 @@ function applyLang(lang) {
 
 function toggleLang() {
   applyLang(currentLang === 'zh' ? 'en' : 'zh');
+}
+
+function togglePwd(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  const show = inp.type === "password";
+  inp.type = show ? "text" : "password";
+  btn.classList.toggle("showing", show);
+  btn.setAttribute("aria-label", show ? "隱藏密碼" : "顯示密碼");
 }
 
 // Re-render dynamic (JS-set) strings after a language switch
