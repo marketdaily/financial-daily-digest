@@ -16,6 +16,7 @@ CLI: python3 -m intel.regime_ledger
 import os
 import sys
 import json
+import math
 import fcntl
 import datetime
 
@@ -69,7 +70,10 @@ def _is_usable(data: dict) -> bool:
     vix = ind.get("vix")
     us = data.get("us_market") or {}
     tw = data.get("tw_market") or {}
-    return bool(vix) and "^GSPC" in us and "^IXIC" in us and "^TWII" in tw
+    # 同 pe_ratio_ledger.py/macro_rates_ledger.py 慣例:`bool(vix)` 對字面 NaN 仍是 True
+    # (2026-07-09 VERIFIER 提醒與姊妹檔一致),明確驗證有限正數才算抓價成功。
+    vix_ok = isinstance(vix, (int, float)) and not isinstance(vix, bool) and math.isfinite(vix) and vix > 0
+    return vix_ok and "^GSPC" in us and "^IXIC" in us and "^TWII" in tw
 
 
 def record(date_str: str, regime: dict) -> bool:

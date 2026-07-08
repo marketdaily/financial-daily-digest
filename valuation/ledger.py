@@ -9,6 +9,7 @@ CLI: python3 valuation/ledger.py [symbols...]  (預設 config.US_STOCKS + config
 import os
 import sys
 import json
+import math
 import datetime
 import urllib.request
 
@@ -35,6 +36,14 @@ except Exception:
     compute_dcf = None
 
 _seen = None
+
+
+def _finite_positive(x):
+    """髒值防呆(同 score_ledger.py):dcf.py 的 `_fair_value_grid()` 用 `p and p > 0` 過濾
+    price 序列,擋得掉 None/0/負數/NaN(nan>0 為 False),但擋不掉字面 `inf`(inf>0 為 True)——
+    FinMind/FMP 偶爾回傳的 "Infinity" 字串經 `_f()` 的裸 `float()` 轉換後就是合法 inf,一路
+    傳到這裡會被 `json.dumps` 原樣寫成不合法的 Infinity 字面值進帳本(2026-07-09 VERIFIER 抓到)。"""
+    return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) and x > 0
 
 
 def _http_json(url, timeout=15):
@@ -98,7 +107,7 @@ def price_now(symbol):
 def record(symbol, date_str, dcf, price):
     """回 True=真的新寫入一筆,False=跳過(重複/無 dcf)。絕不拋錯。"""
     try:
-        if not dcf or dcf.get("dcf_low") is None or dcf.get("dcf_high") is None:
+        if not dcf or not _finite_positive(dcf.get("dcf_low")) or not _finite_positive(dcf.get("dcf_high")):
             return False
         seen = _load_seen()
         key = (symbol, date_str)

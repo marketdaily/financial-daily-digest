@@ -38,6 +38,7 @@ import csv
 import io
 import re
 import json
+import math
 import fcntl
 import zipfile
 import tempfile
@@ -75,6 +76,10 @@ CUSIP_MAP = {
 }
 ACCEPTED_SUBMISSION_TYPES = {"13F-HR", "13F-HR/A"}
 QOQ_NOTABLE_PCT = 10.0  # 季增減幅度達此門檻才算「notable」訊號,見 classify()
+
+
+def _finite_positive(x):
+    return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) and x > 0
 
 
 def _default_watchlist_tickers():
@@ -341,10 +346,12 @@ def classify(ticker: str) -> dict:
     if len(rows) < 2:
         return {"ticker": ticker, "level": "insufficient_data", "periods_recorded": len(rows)}
     prev, latest = rows[-2], rows[-1]
-    prev_shares = prev.get("total_shares", 0)
-    if prev_shares <= 0:
+    prev_shares, latest_shares = prev.get("total_shares"), latest.get("total_shares")
+    # 髒值防呆(2026-07-09 VERIFIER 補):latest_shares 原本完全沒驗證,缺欄位時 `.get(...,0)`
+    # 靜默退化成 0,會印出假的「減碼 -100.0%」確定性訊號而非誠實回報樣本不足。
+    if not _finite_positive(prev_shares) or not _finite_positive(latest_shares):
         return {"ticker": ticker, "level": "insufficient_data", "periods_recorded": len(rows)}
-    pct_change = (latest.get("total_shares", 0) - prev_shares) / prev_shares * 100.0
+    pct_change = (latest_shares - prev_shares) / prev_shares * 100.0
     if abs(pct_change) >= QOQ_NOTABLE_PCT:
         level = "yellow"
         direction = "加碼" if pct_change > 0 else "減碼"
@@ -372,7 +379,11 @@ def active_signals(tickers=None) -> dict:
     for ticker in sorted(wl):
         if ticker not in CUSIP_MAP:
             continue
-        result = classify(ticker)
+        try:
+            result = classify(ticker)
+        except Exception:
+            # 單一 ticker 的帳本列髒掉(如非數值 total_shares)不可讓整晚其餘 ticker 的訊號一起消失
+            continue
         if result.get("level") == "yellow":
             out[ticker] = result
     return out
