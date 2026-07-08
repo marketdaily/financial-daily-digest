@@ -10,7 +10,8 @@ export const meta = {
   ],
 }
 
-const OUT = (args && args.outPath) || 'marketing/ad_creative_drafts.json'
+const ARGS = typeof args === 'string' ? JSON.parse(args) : (args || {})
+const OUT = ARGS.outPath || 'marketing/ad_creative_drafts.json'
 const SKILLS = '~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills'
 const CAP = '~/autonomous/capabilities/marketing_agents_pipeline'
 

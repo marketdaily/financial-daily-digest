@@ -9,7 +9,8 @@ export const meta = {
   ],
 }
 
-const DRAFTS = (args && args.draftsPath) || 'marketing/ad_creative_drafts.json'
+const ARGS = typeof args === 'string' ? JSON.parse(args) : (args || {})
+const DRAFTS = ARGS.draftsPath || 'marketing/ad_creative_drafts.json'
 
 const LIST_SCHEMA = {
   type: 'object', required: ['read_ok', 'drafts'],
@@ -87,7 +88,7 @@ ${JSON.stringify(finalVerdicts, null, 2)}
 - action=approve → 該 id 的 status="approved";有 fixed_caption_zh/fixed_caption_en 就先替換 caption 欄位,並寫入 verifier_edits
 - action=reject → status="rejected" + reject_reason
 - 只動列出的 id,不新增/刪除草稿、不改其他欄位、不碰 social_posts.json、不 git commit、不 deploy
-- 寫完重新讀檔驗證:不得殘留任何 pending_review;統計 approved/rejected 數量回報`,
+- 寫完重新讀檔驗證:不得殘留任何 pending_review;approved/rejected 只統計「本次裁決清單裡的 id」(不含檔案裡先前批次的舊草稿)`,
   { label: 'apply-verdicts', schema: APPLY_SCHEMA }
 )
 log(`approved=${applied.approved} rejected=${applied.rejected}`)
