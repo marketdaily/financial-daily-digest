@@ -61,36 +61,11 @@
   .badge { font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px;
            margin-left:auto; white-space:nowrap; }
   .b-working { background:rgba(251,146,60,.18); color:#fb923c; }
-  .b-queued  { background:rgba(255,176,0,.18); color:#FFC74D; }
   .b-idle    { background:rgba(255,255,255,.07); color:#8b89a8; }
-  .agent .doing { font-size:12px; color:#cbd5e1; line-height:1.6;
-                  background:rgba(0,0,0,.25); border-radius:9px; padding:9px 10px;
-                  min-height:46px; }
-  .agent .doing .lbl { font-weight:700; font-size:10px; letter-spacing:.5px; }
   .agent .tally { display:flex; gap:14px; margin-top:10px; font-size:11px; color:#8b89a8; }
   .agent .tally b { color:#e7e5f3; }
-
-  .cols { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
-  @media(max-width:880px){ .cols,.stats{grid-template-columns:repeat(2,1fr);} }
-  @media(max-width:520px){ .cols,.stats{grid-template-columns:1fr;} }
-  .col h3 { font-size:12px; font-weight:700; margin-bottom:9px; color:#8b89a8;
-            display:flex; justify-content:space-between; }
-  .col h3 .c { background:rgba(255,255,255,.08); border-radius:10px;
-               padding:1px 8px; color:#FFD98A; }
-  .card { background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.08);
-          border-left:3px solid var(--c,#FFB000); border-radius:11px;
-          padding:11px 12px; margin-bottom:9px; }
-  .card .t { font-weight:700; font-size:13px; line-height:1.4; }
-  .card .tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:7px; }
-  .tag { font-size:10px; padding:2px 7px; border-radius:6px;
-         background:rgba(255,255,255,.08); color:#FFD98A; }
-  .tag.p高 { background:rgba(255,69,58,.2); color:#ff8a80; }
-  .tag.p中 { background:rgba(255,159,10,.18); color:#ffcc80; }
-  .tag.p低 { background:rgba(255,255,255,.08); color:#9ca3af; }
-  .card .note { font-size:11px; color:#9aa0b4; line-height:1.6; margin-top:8px;
-                border-top:1px solid rgba(255,255,255,.06); padding-top:7px;
-                white-space:pre-wrap; }
-  .card .lease { font-size:10px; margin-top:6px; font-weight:600; }
+  @media(max-width:880px){ .stats{grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:520px){ .stats{grid-template-columns:1fr;} }
   .empty { font-size:12px; color:#5b596e; padding:14px 4px; text-align:center; }
 
   .feed { background:rgba(255,255,255,.035); border:1px solid rgba(255,255,255,.07);
@@ -99,9 +74,11 @@
                font-size:12px; border-bottom:1px solid rgba(255,255,255,.045); }
   .feed .row:last-child { border-bottom:none; }
   .feed .hash { font-family:ui-monospace,Menlo,monospace; color:#4AF626;
-                font-size:11px; flex-shrink:0; }
+                font-size:11px; flex-shrink:0; min-width:42px; }
   .feed .msg { color:#cbd5e1; flex:1; }
-  .feed .when { color:#6b6982; flex-shrink:0; font-size:11px; }
+  .feed .when { color:#6b6982; flex-shrink:0; font-size:11px; min-width:64px; text-align:right; }
+  .daybar { display:block; height:8px; border-radius:5px; width:var(--w,0%);
+            background:linear-gradient(90deg,#FFB000,#FFD98A); min-width:3px; }
   footer { text-align:center; margin-top:32px; font-size:11px; color:#56546a; line-height:1.8; }
   .skel { padding:50px 0; text-align:center; color:#6b6982; font-size:13px; }
 </style>
@@ -123,13 +100,14 @@
   </header>
   <div id="body"><div class="skel" data-i18n="loading_board">⏳ 載入戰情室資料…</div></div>
   <footer data-i18n-html="footer">
-    夜間值班系統 · 歷史值班紀錄(資料通道整修中,暫停自動更新)<br>
-    Worker 每輪重建 board.json,本頁無須重新部署即跟著最新進度走
+    夜間值班系統 · 資料每次改版自動重建,只顯示彙整數字(不公開任務內容細節)<br>
+    winrig 24/7 自動化引擎產出,本頁無須重新部署即跟著最新進度走
   </footer>
 </div>
 
 <script>
-const RAW = "https://raw.githubusercontent.com/marketdaily/financial-daily-digest/main/agent_team/board.json";
+const RAW = "/data/board.json";
+const STALE_AFTER_MS = 6 * 3600 * 1000;
 
 /* ── i18n ── */
 const i18n = {
@@ -140,21 +118,24 @@ const i18n = {
     connecting: "連線中…",
     loading_meta: "讀取資料中",
     loading_board: "⏳ 載入戰情室資料…",
-    footer: "夜間值班系統 · 歷史值班紀錄(資料通道整修中,暫停自動更新)<br>資料恢復後本頁會自動跟上,無須重新部署",
-    rel_now: "剛剛", rel_min: "分鐘前", rel_hr: "小時前", rel_day: "天前",
-    st_live: "LIVE · 已連線", st_fail: "連線失敗 · 重試中",
-    err_prefix: "⚠ 暫時讀不到資料(", err_suffix: ")<br>board.json 尚未產生或網路問題,60 秒後自動重試",
-    stat_working: "進行中", stat_inbox: "待辦", stat_done: "完成", stat_failed: "失敗",
-    sec_team: "值班團隊", sec_board: "任務看板", sec_activity: "活動軌跡",
-    col_inbox: "📥 待辦", col_working: "⚙️ 進行中", col_done: "✅ 完成", col_failed: "❌ 失敗",
-    empty: "— 空 —", no_activity: "尚無提交紀錄",
-    badge_working: "執行中", badge_idle: "待命", badge_queued_suffix: "件排隊",
-    doing_working: "執行中", doing_next: "下一個",
-    doing_claimed: "已認領,執行中…", doing_standby: "目前待命,無排隊任務",
-    tally_queued: "排隊", tally_done: "完成", tally_failed: "失敗",
-    lease_left_pre: "🔒 租約剩 ", lease_left_post: " 分", lease_expired: "⚠ 租約已過期 · 下輪接手",
-    completed_at: "完成於 ", attempts: "嘗試 ",
-    generated_at: "資料產生於 "
+    footer: "夜間值班系統 · 資料每次改版自動重建,只顯示彙整數字(不公開任務內容細節)<br>winrig 24/7 自動化引擎產出,本頁無須重新部署即跟著最新進度走",
+    st_live: "LIVE · 即時運作中", st_stale: "資料稍舊 · 引擎持續運作", st_fail: "連線失敗 · 重試中",
+    err_prefix: "⚠ 暫時讀不到資料(", err_suffix: ")<br>board.json 尚未產生或網路問題,5 分鐘後自動重試",
+    stat_active: "目前運作中", stat_done7d: "近7天完成", stat_caps: "能力庫積木",
+    stat_selfheal: "近7天自動修復",
+    sec_team: "值班團隊", sec_activity: "近 7 天活動軌跡",
+    empty: "— 空 —", no_activity: "尚無近期資料",
+    badge_working: "執行中", badge_idle: "待命",
+    tally_done: "近7天完成", tally_selfheal: "自動修復",
+    day_suffix: " 項改善",
+    generated_at: "資料產生於 ",
+    agents: {
+      digest_ops: {emoji:"📰", name:"日報 Ops", desc:"每日 AI 財經日報產線 · 帳號/推播/報價"},
+      intel:      {emoji:"📡", name:"信息差引擎", desc:"美股/台股/總經即時訊號連接器艦隊"},
+      quant:      {emoji:"📈", name:"戰績與量化", desc:"戰績結算 · 可轉債拆解 · 估值模型"},
+      growth:     {emoji:"📣", name:"內容與成長", desc:"SEO 內容 · 社群發布 · 成長行銷自動化"},
+      engine:     {emoji:"🛠️", name:"引擎自我升級", desc:"站務健檢 · 自動修復 · 能力庫擴充"}
+    }
   },
   en: {
     page_title: "Agent Team War Room · MarketDaily",
@@ -163,26 +144,30 @@ const i18n = {
     connecting: "Connecting…",
     loading_meta: "Loading data",
     loading_board: "⏳ Loading war room data…",
-    footer: "Night shift system · Historical duty log (data channel under maintenance, auto-refresh paused)<br>This page will catch up automatically once the feed is restored",
-    rel_now: "just now", rel_min: "min ago", rel_hr: "hr ago", rel_day: "d ago",
-    st_live: "LIVE · Connected", st_fail: "Connection failed · Retrying",
-    err_prefix: "⚠ Can't load data right now (", err_suffix: ")<br>board.json not generated yet or a network issue — auto-retry in 60s",
-    stat_working: "Working", stat_inbox: "Inbox", stat_done: "Done", stat_failed: "Failed",
-    sec_team: "On-Duty Team", sec_board: "Task Board", sec_activity: "Activity Feed",
-    col_inbox: "📥 Inbox", col_working: "⚙️ Working", col_done: "✅ Done", col_failed: "❌ Failed",
-    empty: "— Empty —", no_activity: "No commits yet",
-    badge_working: "Working", badge_idle: "Idle", badge_queued_suffix: "queued",
-    doing_working: "Working", doing_next: "Next up",
-    doing_claimed: "Claimed, running…", doing_standby: "Idle — no queued tasks",
-    tally_queued: "Queued", tally_done: "Done", tally_failed: "Failed",
-    lease_left_pre: "🔒 Lease ", lease_left_post: " min left", lease_expired: "⚠ Lease expired · next cycle takes over",
-    completed_at: "Completed at ", attempts: "Attempt ",
-    generated_at: "Data generated at "
+    footer: "Night shift system · Data is rebuilt automatically on every release (only aggregate counts are shown, no task-level detail)<br>Produced by the winrig 24/7 automation engine — this page stays current without a redeploy",
+    st_live: "LIVE · Running", st_stale: "Data slightly stale · engine still running", st_fail: "Connection failed · Retrying",
+    err_prefix: "⚠ Can't load data right now (", err_suffix: ")<br>board.json not generated yet or a network issue — auto-retry in 5 min",
+    stat_active: "Active now", stat_done7d: "Done (7d)", stat_caps: "Capabilities built",
+    stat_selfheal: "Self-healed (7d)",
+    sec_team: "On-Duty Team", sec_activity: "Last 7 Days Activity",
+    empty: "— Empty —", no_activity: "No recent data",
+    badge_working: "Working", badge_idle: "Idle",
+    tally_done: "Done (7d)", tally_selfheal: "Self-healed",
+    day_suffix: " improvements",
+    generated_at: "Data generated at ",
+    agents: {
+      digest_ops: {emoji:"📰", name:"Digest Ops", desc:"Daily AI financial digest pipeline · accounts/push/quotes"},
+      intel:      {emoji:"📡", name:"Intel Engine", desc:"US/TW/macro real-time signal connector fleet"},
+      quant:      {emoji:"📈", name:"Track Record & Quant", desc:"Performance settlement · CB analysis · valuation models"},
+      growth:     {emoji:"📣", name:"Content & Growth", desc:"SEO content · social publishing · growth automation"},
+      engine:     {emoji:"🛠️", name:"Engine Self-Upgrade", desc:"Site health checks · auto-repair · capability building"}
+    }
   }
 };
 let curLang = localStorage.getItem('md-lang-v2') || 'zh';
 const T = () => i18n[curLang] || i18n.zh;
 let lastBoard = null;
+let lastStatusKind = null; // 'ok' | 'warn' | 'err' | null(尚未載入過)
 
 function applyLang(lang) {
   curLang = lang;
@@ -201,121 +186,82 @@ function applyLang(lang) {
   document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
   localStorage.setItem('md-lang-v2', lang);
   if (lastBoard) render(lastBoard);
+  if (lastStatusKind) setStatus(lastStatusKind, {ok:t.st_live, warn:t.st_stale, err:t.st_fail}[lastStatusKind]);
 }
 function toggleLang() {
   applyLang(curLang === 'zh' ? 'en' : 'zh');
 }
 
 const esc = s => (s||"").replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
-function rel(iso){
-  if(!iso) return "";
-  const t=T();
-  const s=(Date.now()-new Date(iso).getTime())/1000;
-  if(s<60) return t.rel_now;
-  if(s<3600) return Math.floor(s/60)+" "+t.rel_min;
-  if(s<86400) return Math.floor(s/3600)+" "+t.rel_hr;
-  return Math.floor(s/86400)+" "+t.rel_day;
-}
-function leaseInfo(iso){
-  if(!iso) return null;
-  const t=T();
-  const left=(new Date(iso).getTime()-Date.now())/1000;
-  if(left>0) return {txt:t.lease_left_pre+Math.ceil(left/60)+t.lease_left_post,col:"#34d399"};
-  return {txt:t.lease_expired,col:"#fb923c"};
-}
 function setStatus(cls,txt){
   const e=document.getElementById("status");
   e.className="live "+cls;
   e.innerHTML='<span class="dot"></span> '+txt;
 }
-
-function taskCard(t,k,c){
-  const L=T();
-  let note="",lease="";
-  if(k==="working"){
-    note=(t.progress||[]).join("\n");
-    const li=leaseInfo(t.lease);
-    if(li) lease=`<div class="lease" style="color:${li.col}">${li.txt}</div>`;
-  }else if(k==="done"||k==="failed"){
-    note=t.summary||(t.progress||[]).slice(-1)[0]||"";
-    if(t.completed) note=(note?note+"\n":"")+L.completed_at+t.completed;
-  }else{ note=t.desc||""; }
-  return `<div class="card" style="--c:${c}">
-    <div class="t">${esc(t.title)}</div>
-    <div class="tags"><span class="tag">${esc(t.type)}</span>
-      <span class="tag p${t.priority}">${esc(t.priority)}</span>
-      ${t.attempts&&t.attempts!=="0"?`<span class="tag">${L.attempts}${t.attempts}</span>`:""}
-      <span class="tag" style="background:none;color:#5b596e">${esc(t.id)}</span></div>
-    ${note?`<div class="note">${esc(note)}</div>`:""}${lease}
-  </div>`;
+function fmtDay(dateStr){
+  const d=new Date(dateStr+"T00:00:00Z");
+  return (curLang==='zh')
+    ? (d.getUTCMonth()+1)+"/"+d.getUTCDate()
+    : d.toLocaleDateString('en-US',{month:'short',day:'numeric',timeZone:'UTC'});
+}
+function fmtGenerated(iso){
+  const d=new Date(iso);
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',
+    year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(d);
+  const get=t=>parts.find(p=>p.type===t).value;
+  const s=`${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}`;
+  return curLang==='zh' ? s+" 台北" : s+" Taipei";
 }
 
 function render(b){
   lastBoard=b;
   const L=T();
   const S=b.stats;
-  const stats=[[L.stat_working,S.working,"#fb923c"],[L.stat_inbox,S.inbox,"#FFC74D"],
-    [L.stat_done,S.done,"#34d399"],[L.stat_failed,S.failed,"#ff6b6b"]]
+  const stats=[[L.stat_active,S.active_now?1:0,"#fb923c"],[L.stat_done7d,S.done_7d,"#34d399"],
+    [L.stat_caps,S.capabilities_total,"#22d3ee"],[L.stat_selfheal,S.failed_7d,"#FFC74D"]]
     .map(([l,n,c])=>`<div class="stat"><div class="n" style="color:${c}">${n}</div>
       <div class="l">${l}</div></div>`).join("");
 
   const agents=b.agents.map(a=>{
-    let doing;
-    if(a.current){
-      const pg=(a.current.progress||[]).slice(-1)[0]||L.doing_claimed;
-      doing=`<div class="doing"><span class="lbl" style="color:#fb923c">${L.doing_working}</span><br>
-        ${esc(a.current.title)}
-        <div style="color:#8b89a8;margin-top:4px">${esc(pg)}</div></div>`;
-    }else if(a.next){
-      doing=`<div class="doing"><span class="lbl" style="color:#FFC74D">${L.doing_next}</span><br>
-        ${esc(a.next.title)}</div>`;
-    }else{
-      doing=`<div class="doing" style="color:#5b596e">${L.doing_standby}</div>`;
-    }
-    const bc=a.status==="working"?"b-working":a.status==="queued"?"b-queued":"b-idle";
-    const bt=a.status==="working"?L.badge_working:a.status==="queued"?a.queued+" "+L.badge_queued_suffix:L.badge_idle;
+    const meta=L.agents[a.key]||{emoji:"🤖",name:a.key,desc:""};
+    const bc=a.status==="working"?"b-working":"b-idle";
+    const bt=a.status==="working"?L.badge_working:L.badge_idle;
     return `<div class="agent" style="--ac:${a.accent}">
-      <div class="top"><span class="emoji">${a.emoji}</span>
-        <div><div class="nm">${a.name}</div><div class="ds">${esc(a.desc)}</div></div>
+      <div class="top"><span class="emoji">${meta.emoji}</span>
+        <div><div class="nm">${esc(meta.name)}</div><div class="ds">${esc(meta.desc)}</div></div>
         <span class="badge ${bc}">${bt}</span></div>
-      ${doing}
-      <div class="tally"><span>${L.tally_queued} <b>${a.queued}</b></span>
-        <span>${L.tally_done} <b>${a.done}</b></span>
-        <span>${L.tally_failed} <b style="${a.failed?'color:#ff6b6b':''}">${a.failed}</b></span></div>
+      <div class="tally"><span>${L.tally_done} <b>${a.done_7d}</b></span>
+        ${a.failed_7d?`<span>${L.tally_selfheal} <b>${a.failed_7d}</b></span>`:""}</div>
     </div>`;
   }).join("");
 
-  const cols=[["inbox",L.col_inbox,"#FFC74D"],["working",L.col_working,"#fb923c"],
-    ["done",L.col_done,"#34d399"],["failed",L.col_failed,"#ff6b6b"]]
-    .map(([k,label,c])=>{
-      const list=b.tasks[k]||[];
-      const inner=list.length?list.map(t=>taskCard(t,k,c)).join(""):
-        `<div class="empty">${L.empty}</div>`;
-      return `<div class="col"><h3>${label}<span class="c">${list.length}</span></h3>${inner}</div>`;
-    }).join("");
-
-  const act=b.activity||[];
-  const feed=act.length?act.map(r=>
-    `<div class="row"><span class="hash">${r.hash}</span>
-      <span class="msg">${esc(r.msg)}</span>
-      <span class="when">${rel(r.iso)}</span></div>`).join(""):
-    `<div class="empty">${L.no_activity}</div>`;
+  const days=b.activity_daily||[];
+  const maxTotal=Math.max(1,...days.map(d=>d.total));
+  const feed=days.length?days.map(d=>{
+    const pct=Math.round(d.total/maxTotal*100);
+    return `<div class="row"><span class="hash">${esc(fmtDay(d.date))}</span>
+      <span class="msg"><span class="daybar" style="--w:${pct}%"></span></span>
+      <span class="when">${d.total}${L.day_suffix}</span></div>`;
+  }).join(""):`<div class="empty">${L.no_activity}</div>`;
 
   document.getElementById("body").innerHTML=
     `<div class="stats">${stats}</div>
      <h2 class="sec">${L.sec_team}</h2><div class="agents">${agents}</div>
-     <h2 class="sec">${L.sec_board}</h2><div class="cols">${cols}</div>
      <h2 class="sec">${L.sec_activity}</h2><div class="feed">${feed}</div>`;
-  document.getElementById("gen").textContent=L.generated_at+b.generated_display;
+  document.getElementById("gen").textContent=L.generated_at+fmtGenerated(b.generated_utc);
 }
 
 async function load(){
   try{
     const r=await fetch(RAW+"?t="+Date.now(),{cache:"no-store"});
     if(!r.ok) throw new Error("HTTP "+r.status);
-    render(await r.json());
-    setStatus("ok",T().st_live);
+    const data=await r.json();
+    render(data);
+    const age=Date.now()-new Date(data.generated_utc).getTime();
+    lastStatusKind = age>STALE_AFTER_MS?"warn":"ok";
+    setStatus(lastStatusKind, lastStatusKind==="warn"?T().st_stale:T().st_live);
   }catch(e){
+    lastStatusKind = "err";
     setStatus("err",T().st_fail);
     if(!document.querySelector(".stats"))
       document.getElementById("body").innerHTML=
@@ -324,7 +270,7 @@ async function load(){
 }
 applyLang(curLang);
 load();
-setInterval(load,60000);
+setInterval(load,300000);
 </script>
 <script src="terminal.js?v=1"></script>
 </body>
