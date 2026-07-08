@@ -54,6 +54,7 @@ def extract(path):
         name_m = re.search(r"signal-ticker.*?>([^<]+)<", card, re.S)
         tick_m = re.search(r"monospace[^>]*>([A-Z0-9.]{1,10})<", card)
         move_m = re.search(r'signal-day-move (up|down)">([▲▼])\s*([+-][\d.]+)%', card)
+        verdict_m = re.search(r'signal-verdict-chip [^"]*">[^\w]*([^<]+)<', card)
         if not (name_m and move_m):
             continue
         movers.append({
@@ -61,7 +62,16 @@ def extract(path):
             "ticker": tick_m.group(1) if tick_m else "",
             "dir": move_m.group(1),
             "move": move_m.group(3),
+            "verdict": verdict_m.group(1).strip() if verdict_m else "",
         })
+
+    sectors = [{"name": n.strip(), "move": mv.strip(), "comment": c.strip()}
+               for n, mv, c in re.findall(
+                   r'class="sector-name">([^<]+)<.*?class="sector-move[^"]*">([^<]+)<.*?class="sector-comment">([^<]+)<',
+                   h, re.S)]
+    news = [{"headline": hd.strip(), "why": re.sub(r"^💡\s*為什麼重要[：:]\s*", "", w).strip()}
+            for hd, w in re.findall(
+                r'class="news-headline">([^<]+)<.*?class="news-why">([^<]+)<', h, re.S)]
 
     brief = {
         "date": date_str,
@@ -69,6 +79,8 @@ def extract(path):
         "mood": mood,
         "bullets": bullets,
         "movers": movers,
+        "sectors": sectors,
+        "news": news,
         "source_file": path.name,
         "extracted_at": datetime.now().isoformat(timespec="seconds"),
     }
@@ -76,6 +88,10 @@ def extract(path):
     for mv in movers:
         if mv["move"] not in h:
             sys.exit(f"數字 {mv['move']} 不存在於源 HTML,abort")
+    for s in sectors:
+        for num in re.findall(r"[+-]?\d+(?:\.\d+)?", s["move"]):
+            if num not in h:
+                sys.exit(f"sector 數字 {num} 不存在於源 HTML,abort")
     for b in bullets:
         for num in re.findall(r"[+-]?\d+(?:\.\d+)?%", b):
             if num.lstrip("+-") not in h:

@@ -157,6 +157,7 @@ def render_email_shell(date: str, html_report: str) -> str:
     </table>
     <div class="header-meta">{date}</div>
     <div class="header-tagline">AI 精選 · 假訊息過濾 · 美股 + 台股</div>
+    <div style="margin-top:10px;font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"><a href="https://marketdaily.ai/audio.html" style="color:#6366f1;text-decoration:none;font-weight:700;">🎙 沒空看?3 分鐘語音版(免費) →</a></div>
   </div>
   {html_report}
 
@@ -171,7 +172,8 @@ def render_email_shell(date: str, html_report: str) -> str:
     ✅ 多源確認 = 2個以上白名單媒體報導 &nbsp;|&nbsp; ⚠️ 單一來源 = 請自行查證<br>
     本報告為 AI 生成之一般性資訊整理，僅供參考，不構成投資建議；MarketDaily 非證券投資顧問事業<br>所有分析內容對免費與付費用戶完全相同，不因付費而異；投資有風險，決策請自行判斷<br><br>
     <a href="https://marketdaily.ai" style="color:#6366f1;text-decoration:none;font-weight:700;">🌐 marketdaily.ai</a> &nbsp;·&nbsp;
-    <a href="https://marketdaily.ai/dashboard.html" style="color:#6366f1;text-decoration:none;">⚙️ 我的專區</a>
+    <a href="https://marketdaily.ai/dashboard.html" style="color:#6366f1;text-decoration:none;">⚙️ 我的專區</a> &nbsp;·&nbsp;
+    <a href="https://marketdaily.ai/audio.html" style="color:#6366f1;text-decoration:none;">🎙 語音快報</a>
   </div>
 </div>
 </body>

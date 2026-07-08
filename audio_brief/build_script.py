@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""brief.json → 晨間音頻旁白稿(確定性生成,非 LLM,數字全部來自公版日報)。
+
+輸出 out/narration_{date}_{ed}.txt。目標 2.5-3 分鐘(約 650-800 字)。
+合規:公版日報本身免費公開,音頻=同內容之衍生,全員免費相同。
+"""
+import json
+import sys
+from datetime import datetime
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+REPO = HERE.parent
+VB_OUT = REPO / "video_brief" / "out"
+OUT = HERE / "out"
+
+MOOD_TEXT = {"bearish": "整體氛圍偏空", "bullish": "整體氛圍偏多", "neutral": "整體呈現震盪格局"}
+NUM_READ = str.maketrans({"%": " 個百分點"})
+
+
+def spoken_pct(move):
+    sign = "下跌" if move.startswith("-") else "上漲"
+    return f"{sign}{move.lstrip('+-')}%"
+
+
+def build(brief):
+    d = datetime.strptime(brief["date"], "%Y-%m-%d")
+    label = "美股晚間快報" if brief["edition"] == "us" else "台股晨間快報"
+    lines = []
+    lines.append(f"歡迎收聽 MarketDaily {label},今天是 {d.year} 年 {d.month} 月 {d.day} 日,{MOOD_TEXT.get(brief['mood'])}。")
+    hook = brief["bullets"][0].replace("⚠️", "").replace("避坑：", "首先是今天的避坑提醒:")
+    lines.append(hook.strip())
+    if len(brief["bullets"]) > 1:
+        lines.append("接下來是今天的市場重點。")
+        for i, b in enumerate(brief["bullets"][1:4], 1):
+            lines.append(f"第{['一','二','三'][i-1]},{b}")
+    if brief["movers"]:
+        lines.append("再來快速看一下重點個股的昨日表現與今日方向。")
+        for m in brief["movers"]:
+            seg = f"{m['name']},昨日{spoken_pct(m['move'])}"
+            if m.get("verdict"):
+                seg += f",今日評估:{m['verdict']}"
+            lines.append(seg + "。")
+    news = brief.get("news") or []
+    if news:
+        lines.append("接著看今天必知的市場新聞。")
+        for n in news[:2]:
+            why = n["why"].split("。")[0]
+            lines.append(f"{n['headline']}。{why}。")
+    sectors = brief.get("sectors") or []
+    if sectors:
+        ups = [s for s in sectors if s["move"].startswith("▲")]
+        downs = [s for s in sectors if s["move"].startswith("▼")]
+        seg = "產業板塊方面,"
+        if ups:
+            s = ups[0]
+            seg += f"{s['name']}最強,上漲{s['move'].lstrip('▲ +')},{s['comment']}"
+        if downs:
+            s = downs[-1]
+            seg += f"最弱的是{s['name']},下跌{s['move'].lstrip('▼ -')},{s['comment']}"
+        lines.append(seg)
+    lines.append("以上個股評估都有完整的進出場計畫,包含建議買價、目標價與止損價,詳細內容在今天早上寄出的日報裡。")
+    lines.append("MarketDaily 每天早上七點,把你自選股票的完整分析寄到你的信箱,完全免費,到 marketdaily 點 ai 就能訂閱。")
+    lines.append("最後提醒,以上內容為公開資訊整理,不構成投資建議,投資一定有風險,進場前請自行評估。我們明天早上見。")
+    return "\n".join(lines)
+
+
+def main():
+    briefs = sorted(VB_OUT.glob("brief_*.json"))
+    src = Path(sys.argv[1]) if len(sys.argv) > 1 else (briefs[-1] if briefs else None)
+    if not src:
+        sys.exit("找不到 brief json,先跑 video_brief/extract.py")
+    brief = json.loads(src.read_text(encoding="utf-8"))
+    text = build(brief)
+    OUT.mkdir(parents=True, exist_ok=True)
+    out = OUT / f"narration_{brief['date']}_{brief['edition']}.txt"
+    out.write_text(text, encoding="utf-8")
+    print(f"✓ {out.name}  {len(text)} 字")
+    print(text[:200] + "…")
+
+
+if __name__ == "__main__":
+    main()
