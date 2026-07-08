@@ -154,6 +154,7 @@ if [ "$MARKET" = tw ]; then
   fi
   npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true \
     --commit-message "daily refresh (local fallback)" || echo "pages deploy failed"
+  python3 scripts/indexnow_ping.py || echo "indexnow ping skipped"
 fi
 
 push_admin_line "✅ [本機備援] $(TZ=Asia/Taipei date +%F) ${MARKET} 班日報已由本機 Mac 寄出(GitHub Actions 仍停用中,記得到 https://support.github.com/contact/reinstatement 申訴解鎖)"
