@@ -2429,6 +2429,10 @@ async function subscribeFree() {
       successEl.style.display = "block";
       btn.textContent = currentLang === "zh" ? "已加入 ✓" : "Joined ✓";
       showReferralPrompt(email);
+    } else if (data.error === "undeliverable_email") {
+      errEl.textContent = currentLang === "zh" ? "這個 Email 好像收不到信，請確認拼字是否正確。" : "This email looks undeliverable — please check the spelling.";
+      errEl.style.display = "block";
+      btn.disabled = false; btn.textContent = currentLang === "zh" ? "免費加入 →" : "Join Free →";
     } else {
       errEl.textContent = currentLang === "zh" ? "出了點問題，請稍後再試。" : "Something went wrong. Please try again.";
       errEl.style.display = "block";

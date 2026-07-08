@@ -242,6 +242,27 @@ function normalizeEmail(email) {
   return `${local}@${domain}`;
 }
 
+// ZeroBounce email 可投遞性驗證。**fail-open**:只在「確定無效/spamtrap/濫用」時回 false 擋下,
+// 其餘(valid/catch-all/unknown/API 掛/沒 key/超額)一律回 true 放行,絕不因驗證服務問題擋住真人註冊。
+async function isEmailDeliverable(email, env) {
+  const key = env.ZEROBOUNCE_API_KEY;
+  if (!key) return true; // 沒設 key = 不驗,放行
+  try {
+    const u = `https://api.zerobounce.net/v2/validate?api_key=${key}&email=${encodeURIComponent(email)}&ip_address=`;
+    const ctl = new AbortController();
+    const to = setTimeout(() => ctl.abort(), 4000);
+    const r = await fetch(u, { signal: ctl.signal });
+    clearTimeout(to);
+    if (!r.ok) return true; // API 非 200(含超額)→ 放行
+    const d = await r.json();
+    // 只擋這幾種「確定不該收信」的狀態;valid/catch-all/unknown 全放行
+    const block = new Set(["invalid", "spamtrap", "abuse", "do_not_mail"]);
+    return !block.has((d.status || "").toLowerCase());
+  } catch {
+    return true; // timeout/網路錯 → 放行
+  }
+}
+
 // 統一 admin 端點驗證:email 必須在 ADMIN_EMAILS,且 password 必須正確;含 rate limit。
 // 若該 admin 已啟用 TOTP(KV totp:${email}):驗證 body.totp;同 IP 通過後 10 分鐘記憶。
 // 回傳 email(成功)或 null(失敗/被 lock/缺 TOTP)。
@@ -556,6 +577,7 @@ export default {
         if (await env.USER_PREFS.get(`rl:signup-email:${email}`)) return json({ error: "rate_limited" }, 429);
         ctx.waitUntil(env.USER_PREFS.put(ipKey, String(ipCount + 1), { expirationTtl: 3600 }));
         ctx.waitUntil(env.USER_PREFS.put(`rl:signup-email:${email}`, "1", { expirationTtl: 300 }));
+        if (!(await isEmailDeliverable(email, env))) return json({ error: "undeliverable_email" }, 400);
         const added = await addToBrevo(email, env.BREVO_API_KEY, targetList);
         if (!added) return json({ error: "brevo_error" }, 502);
         const existingPlan = await env.USER_PREFS.get(`plan:${email}`);
@@ -1581,6 +1603,7 @@ export default {
       if (!INVITE_CODES.includes(code)) {
         return json({ error: "invalid_code" }, 400);
       }
+      if (!(await isEmailDeliverable(email, env))) return json({ error: "undeliverable_email" }, 400);
       // 邀請碼 single-use:同一碼只能被兌一次
       const usedKey = `invite:used:${code}`;
       const usedBy = await env.USER_PREFS.get(usedKey);
@@ -1904,6 +1927,7 @@ export default {
       try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
       const email = (body.email || "").trim().toLowerCase();
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "invalid_email" }, 400);
+      if (!(await isEmailDeliverable(email, env))) return json({ error: "undeliverable_email" }, 400);
       // Anti-spam: IP 級每小時 10 次 + 同 email 5 分鐘內 1 次
       const ip = request.headers.get("cf-connecting-ip") || "anon";
       const ipKey = `rl:signup-ip:${ip}`;
