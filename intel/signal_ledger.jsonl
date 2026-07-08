@@ -106,3 +106,40 @@
 {"date": "2026-07-05", "code": "MSFT", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 MSFT 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-06-05)", "price_at_signal": null}
 {"date": "2026-07-05", "code": "NVDA", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 NVDA 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2026-07-02)", "price_at_signal": null}
 {"date": "2026-07-05", "code": "TSLA", "source": "us_8k", "level": "yellow", "signal": "🇺🇸 TSLA 8-K Item 5.02:董事/高層人事異動(方向待個案判斷)(申報日2025-11-07)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "2316", "source": "institutional", "level": "yellow", "signal": "楠梓電一(2316):法人 20 日淨買超 +5,711 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "2316", "source": "revenue", "level": "red", "signal": "楠梓電(2316):2026/05 營收公告、YoY +39.1%(強勁)、MoM -11.1%", "price_at_signal": null}
+{"date": "2026-07-07", "code": "2316", "source": "twse_punish", "level": "red", "signal": "楠梓電一(2316):處置中(第一次處置):連續三次,期間 115/06/25～115/07/08", "price_at_signal": null}
+{"date": "2026-07-07", "code": "2530", "source": "institutional", "level": "yellow", "signal": "華建五(2530):法人 20 日淨賣超 -419 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "2762", "source": "institutional", "level": "red", "signal": "世界健身一KY(2762):外資連 6 日賣超(5日淨賣 -214 張)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "2762", "source": "sbl", "level": "yellow", "signal": "世界健身一KY(2762):機構借券賣出5日增13.3%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3006", "source": "institutional", "level": "red", "signal": "晶豪科二(3006):投信連 4 日賣超(棄養警訊,20日淨賣 -1,991 張)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3016", "source": "institutional", "level": "yellow", "signal": "嘉晶六(3016):法人 20 日淨買超 +1,779 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3016", "source": "revenue", "level": "red", "signal": "嘉晶(3016):2026/05 營收公告、YoY +37.3%(強勁)、MoM +1.7%", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3016", "source": "sbl", "level": "red", "signal": "嘉晶六(3016):機構借券賣出5日遽增55.0%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3016", "source": "holders", "level": "yellow", "signal": "嘉晶六(3016):千張大戶持股比週減-2.55個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3081", "source": "institutional", "level": "yellow", "signal": "聯亞一(3081):法人 20 日淨買超 +295 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3081", "source": "sbl", "level": "yellow", "signal": "聯亞一(3081):機構借券賣出5日增16.3%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3149", "source": "sbl", "level": "yellow", "signal": "正達四(3149):機構借券賣出5日增19.7%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3219", "source": "institutional", "level": "yellow", "signal": "倚強科一(3219):法人 20 日淨賣超 -222 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3219", "source": "revenue", "level": "red", "signal": "倚強科(3219):2026/05 營收公告、YoY +38.4%(強勁)、MoM +2.1%", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3583", "source": "mops_news", "level": "red", "signal": "辛耘(3583) 重訊[2026-07-06]:公告本公司國內第三次及第四次無擔保轉換公司債 代收價款行庫及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-07-07", "code": "3605", "source": "sbl", "level": "yellow", "signal": "宏致四(3605):機構借券賣出5日遽減-30.5%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "4541", "source": "institutional", "level": "red", "signal": "晟田五(4541):外資連 6 日買超(5日淨買 +3,306 張)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "4541", "source": "sbl", "level": "yellow", "signal": "晟田五(4541):機構借券賣出5日增12.4%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "5263", "source": "institutional", "level": "red", "signal": "智崴六(5263):外資連 5 日買超(5日淨買 +108 張)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "5386", "source": "institutional", "level": "yellow", "signal": "青雲二(5386):法人 20 日淨買超 +305 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "5386", "source": "mops_news", "level": "red", "signal": "青雲(5386) 重訊[2026-07-06]:本公司自行撤回115年度現金增資發行新股暨國內第二次 無擔保轉換公司債", "price_at_signal": null}
+{"date": "2026-07-07", "code": "6570", "source": "institutional", "level": "yellow", "signal": "維田二(6570):法人 20 日淨買超 +249 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "6570", "source": "revenue", "level": "red", "signal": "維田(6570):2026/05 營收公告、YoY +32.1%(強勁)、MoM +27.9%", "price_at_signal": null}
+{"date": "2026-07-07", "code": "8096", "source": "institutional", "level": "red", "signal": "擎亞二(8096):外資連 5 日賣超(5日淨賣 -1,754 張)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "8222", "source": "institutional", "level": "yellow", "signal": "寶一一(8222):法人 20 日淨賣超 -267 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "8222", "source": "margin", "level": "red", "signal": "寶一一(8222):融資5日驟減-18.0%(疑似斷頭/停損潮,股價同期止穩,籌碼出清轉機留意)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "8299", "source": "institutional", "level": "yellow", "signal": "群聯(8299):法人 20 日淨賣超 -3,708 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "8422", "source": "institutional", "level": "red", "signal": "可寧衛三(8422):投信連 6 日買超(認養訊號,20日淨買 +9,380 張)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "8422", "source": "revenue", "level": "red", "signal": "可寧衛*(8422):2026/05 營收公告、YoY +199.6%(強勁)、MoM +227.6%", "price_at_signal": null}
+{"date": "2026-07-07", "code": "8422", "source": "sbl", "level": "yellow", "signal": "可寧衛三(8422):機構借券賣出5日增12.8%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "8438", "source": "sbl", "level": "yellow", "signal": "昶昕一(8438):機構借券賣出5日遽減-24.8%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "8936", "source": "margin", "level": "red", "signal": "國統五(8936):融資5日驟減-20.4%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "9935", "source": "institutional", "level": "yellow", "signal": "慶豐富四(9935):法人 20 日淨買超 +1,428 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "MSFT", "source": "us_analyst", "level": "red", "signal": "🇺🇸 MSFT ⬇️ Outperform→Market Perform(Bernstein)", "price_at_signal": null}
+{"date": "2026-07-07", "code": "META", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 META 內部人賣出:KIMMITT ROBERT M[董事] 500股 均價$607.75(約$303,875)", "price_at_signal": null}
