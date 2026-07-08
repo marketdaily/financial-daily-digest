@@ -2,6 +2,15 @@ name = "marketdaily-digest-watchdog"
 main = "src/index.js"
 compatibility_date = "2026-05-01"
 
+# 2026-07-09: Custom Domain 取代前端曝光的 workers.dev URL(帳號名 delvin-12345678 外露,
+# 見 memory project_privacy_audit)。明確保留 workers_dev=true(新版 wrangler 只要偵測到
+# 明確 routes 就會把未寫明的 workers_dev 預設改成 false,實測踩過一次短暫斷線)。
+workers_dev = true
+
+[[routes]]
+pattern = "watchdog.marketdaily.ai"
+custom_domain = true
+
 # 2026-06-30 停用(crons 清空):這隻 watchdog 整個綁死 GitHub Actions —— 查 Actions run、用
 # Actions /dispatches 重派。但 6/11 起 GitHub 帳號被 flag、Actions 停用,日報早搬去 winrig cron。
 # 結果它每班都找不到 Actions run → 誤判「cron 沒觸發」→ 想用已死的 Actions 重派 → 422 →

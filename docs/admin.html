@@ -1075,7 +1075,7 @@ body {
 <div id="toast"></div>
 
 <script>
-const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
+const WORKER_URL = "https://api.marketdaily.ai";
 const ADMIN_EMAIL = "delvin.12345678@gmail.com";
 
 // ── State ──
@@ -1592,7 +1592,7 @@ async function runHealthInto(rowsId, overallId) {
 }
 
 // ── Ops monitor ──
-const WATCHDOG_URL = "https://marketdaily-digest-watchdog.delvin-12345678.workers.dev";
+const WATCHDOG_URL = "https://watchdog.marketdaily.ai";
 async function loadOps(force) {
   try {
     const d = await api("/admin/ops-status");

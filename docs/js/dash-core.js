@@ -1,5 +1,5 @@
 // dashboard.html 內嵌 JS 抽出(dash-core.js);7 檔按原始順序載入,順序不可換(全域相依)。2026-07-03 P5。
-const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
+const WORKER_URL = "https://api.marketdaily.ai";
 
 /* ── i18n ── */
 const i18n = {

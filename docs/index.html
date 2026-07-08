@@ -1884,7 +1884,7 @@ footer {
 </footer>
 
 <script>
-const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
+const WORKER_URL = "https://api.marketdaily.ai";
 
 // ── Attribution: capture UTM on first visit, persist for 90 days, ping /track/visit ──
 (function captureAttribution() {
@@ -2693,7 +2693,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const storedRef = localStorage.getItem("md-ref");
   if (urlRef) {
     localStorage.setItem("md-ref", urlRef.toUpperCase());
-    fetch("https://marketdaily-webhook.delvin-12345678.workers.dev/track-referral-click", {
+    fetch("https://api.marketdaily.ai/track-referral-click", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: urlRef.toUpperCase() })

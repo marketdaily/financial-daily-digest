@@ -176,7 +176,7 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
 <footer>Reactive Content MVP · Cloudflare Workers KV · Gemini Flash</footer>
 
 <script>
-const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
+const WORKER_URL = "https://api.marketdaily.ai";
 function adminEmail() { return localStorage.getItem("md-admin-email"); }
 function adminPwd() { return sessionStorage.getItem("md-admin-pwd") || ""; }
 function adminAuth() { return { email: adminEmail() || "", password: adminPwd() }; }

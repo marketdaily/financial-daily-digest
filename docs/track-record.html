@@ -675,7 +675,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 // ping or every click-through from that campaign is permanently unattributable. ──
 (function captureAttribution() {
   try {
-    const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
+    const WORKER_URL = "https://api.marketdaily.ai";
     const u = new URL(window.location.href);
     const utm = {
       utm_source:   u.searchParams.get("utm_source"),
