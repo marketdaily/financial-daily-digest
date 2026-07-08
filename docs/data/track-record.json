@@ -1,18 +1,18 @@
 {
   "stats": {
-    "generated_at": "2026-07-07T22:05:01",
+    "generated_at": "2026-07-08T08:03:30",
     "horizon": "5d",
     "records_since": "2026-06-12",
-    "days_covered": 11,
-    "total_records": 675,
+    "days_covered": 12,
+    "total_records": 721,
     "judged_records": 271,
     "one_day": {
       "a_count": 221,
-      "a_wins": 112,
-      "a_rate": 50.7,
+      "a_wins": 110,
+      "a_rate": 49.8,
       "c_count": 371,
-      "c_wins": 196,
-      "c_rate": 52.8
+      "c_wins": 194,
+      "c_rate": 52.3
     },
     "monthly": {
       "a_count": 0,
@@ -22,7 +22,7 @@
         0.0,
         0.0
       ],
-      "a_pending": 259,
+      "a_pending": 276,
       "c_count": 0,
       "c_wins": 0,
       "c_rate": 0.0,
@@ -30,7 +30,7 @@
         0.0,
         0.0
       ],
-      "c_pending": 416
+      "c_pending": 445
     },
     "quarterly": {
       "a_count": 0,
@@ -40,7 +40,7 @@
         0.0,
         0.0
       ],
-      "a_pending": 259,
+      "a_pending": 276,
       "c_count": 0,
       "c_wins": 0,
       "c_rate": 0.0,
@@ -48,25 +48,36 @@
         0.0,
         0.0
       ],
-      "c_pending": 416
+      "c_pending": 445
+    },
+    "holder": {
+      "note": "持有者框架建議(用戶自填進場成本):judge_holder 獨立結算,不計入 A/C 頭條",
+      "count": 0,
+      "wins": 0,
+      "rate": 0.0,
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "pending": 0
     },
     "a_count": 90,
-    "a_wins": 50,
-    "a_rate": 55.6,
+    "a_wins": 49,
+    "a_rate": 54.4,
     "a_ci95": [
-      45.3,
-      65.4
+      44.2,
+      64.3
     ],
     "c_count": 181,
-    "c_wins": 87,
-    "c_rate": 48.1,
+    "c_wins": 88,
+    "c_rate": 48.6,
     "c_ci95": [
-      40.9,
-      55.3
+      41.4,
+      55.9
     ],
     "calibration": {
       "n": 90,
-      "brier": 0.2698,
+      "brier": 0.2672,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
@@ -75,7 +86,7 @@
         },
         "<=50": {
           "n": 71,
-          "hit_rate": 56.3
+          "hit_rate": 54.9
         }
       }
     },
@@ -91,11 +102,11 @@
       },
       "down": {
         "a_count": 47,
-        "a_wins": 27,
-        "a_rate": 57.4,
+        "a_wins": 26,
+        "a_rate": 55.3,
         "ci95": [
-          43.3,
-          70.5
+          41.2,
+          68.6
         ]
       }
     },
@@ -103,15 +114,15 @@
       "note": "僅計 2026-06-12 起(結構prior+校準信心上線後)的現行模型;信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
       "since": "2026-06-12",
       "a_count": 90,
-      "a_wins": 50,
-      "a_rate": 55.6,
+      "a_wins": 49,
+      "a_rate": 54.4,
       "a_ci95_day_cluster": [
-        43.9,
-        62.3
+        41.7,
+        62.0
       ],
       "c_count": 181,
-      "c_wins": 87,
-      "c_rate": 48.1,
+      "c_wins": 88,
+      "c_rate": 48.6,
       "c_ci95_day_cluster": [
         31.6,
         71.4
@@ -124,13 +135,13 @@
         },
         "down": {
           "a_count": 47,
-          "a_wins": 27,
-          "a_rate": 57.4
+          "a_wins": 26,
+          "a_rate": 55.3
         }
       },
       "calibration": {
         "n": 90,
-        "brier": 0.2698,
+        "brier": 0.2672,
         "coin_flip_brier": 0.25,
         "bins": {
           "51-60": {
@@ -139,7 +150,7 @@
           },
           "<=50": {
             "n": 71,
-            "hit_rate": 56.3
+            "hit_rate": 54.9
           }
         }
       },
@@ -148,12 +159,12 @@
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
       "simulated": 221,
-      "no_fill": 128,
-      "pending": 55,
+      "no_fill": 126,
+      "pending": 57,
       "hit_target": 2,
       "hit_stop": 35,
       "expired": 1,
-      "avg_ret_pct": -3.57,
+      "avg_ret_pct": -3.53,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值"
     },
     "public_only": {
@@ -164,9 +175,149 @@
       "c_wins": 8,
       "c_rate": 50.0
     },
-    "personal_samples_added": 616
+    "personal_samples_added": 655
   },
   "records": [
+    {
+      "date": "2026-07-08",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "🔍 NEUTRAL",
+      "reason": "今晚美股開盤後，現價 402.9 美元勿追。TSLA 目前在 MA20（399.82 美元）附近多空拉鋸，量能僅 0.77x 偏平淡。建議暫時觀望，若今晚收盤能「確認回測 399.82 美元守住不破」，再考慮以限價單分批佈局。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 42,
+      "entry_lo": 399.82,
+      "entry_hi": 399.82,
+      "target": 432.86,
+      "stop": 354.55,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-08",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "sell",
+      "verdict_text": "📉 BEARISH",
+      "reason": "今晚美股開盤後，嚴禁買入。NVDA 目前處於空頭結構（價 < MA20 < MA50），且量能萎靡反彈無力。今日微幅收紅僅為弱勢反彈，建議保持觀望，至少等待股價「帶量站回 MA20（201.92 美元）」再重新評估。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 45,
+      "entry_lo": 189.8,
+      "entry_hi": 189.8,
+      "target": 209.57,
+      "stop": 181.13,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-08",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "今晚美股開盤後，現價 388.84 美元勿追。微軟目前站上 MA20（383.5 美元）支撐，且基本面 EPS +23.4% 表現亮眼。建議等股價「回測 383.5 美元確認守穩」後，再以條件單分批低接。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 52,
+      "entry_lo": 383.5,
+      "entry_hi": 383.5,
+      "target": 414.84,
+      "stop": 356.34,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-08",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "🔍 NEUTRAL",
+      "reason": "今晚美股開盤後，現價 310.66 美元切勿追高。目前呈現「價漲量縮」的量價背離結構，追高風險極大。雖然基本面 EPS YoY +21.8% 穩健，但技術面仍屬盤整，建議等回測 297.43 美元不破再行考慮。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 43,
+      "entry_lo": 297.43,
+      "entry_hi": 297.43,
+      "target": 317.4,
+      "stop": 288.61,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-08",
+      "name": "聯發科",
+      "ticker": "2454",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "🔍 NEUTRAL",
+      "reason": "今早 9:00 台股開盤後，現價 4030 元保持觀望。聯發科昨日除息雖演秒填息，但上半場後翻黑，顯示高檔賣壓沉重。目前股價低於 MA20（4271.75 元）且量能萎縮，建議靜待股價回測 3825 元守穩再考慮。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 41,
+      "entry_lo": 3825.0,
+      "entry_hi": 3825.0,
+      "target": 4537.86,
+      "stop": 3546.4,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-08",
+      "name": "台積電",
+      "ticker": "2330",
+      "market": "tw",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "今早 9:00 台股開盤後，現價 2440 元勿追。台積電維持「價 > MA20 > MA50」的多頭結構，且營收連 29 月正成長。今日雖受新聞點名軟腳，但結構未壞。建議等回測 MA20（約 2395.25 元）確認守穩時順勢佈局。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 55,
+      "entry_lo": 2395.25,
+      "entry_hi": 2395.25,
+      "target": 2535.0,
+      "stop": 2277.5,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-08",
+      "name": "鴻海",
+      "ticker": "2317",
+      "market": "tw",
+      "verdict_class": "buy",
+      "verdict_text": "📈 BULLISH",
+      "reason": "今早 9:00 台股開盤後，現價 237 元勿追。雖然大盤風險偏空，但鴻海剛公布月營收 YoY +52.1% 表現強勁，基本面有撐。建議等價格回測 236 元不破、且盤中出現止穩訊號時，再分批進場低接。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 236.0,
+      "entry_hi": 236.0,
+      "target": 251.78,
+      "stop": 218.53,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
     {
       "date": "2026-07-07",
       "name": "特斯拉 Tesla",
@@ -343,7 +494,7 @@
       "target": 207.51,
       "stop": 178.98,
       "outcome": null,
-      "outcome_1d": "win",
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null
     },
@@ -483,7 +634,7 @@
       "target": 207.51,
       "stop": 178.98,
       "outcome": null,
-      "outcome_1d": "win",
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null
     },
