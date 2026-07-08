@@ -17,6 +17,7 @@ CLI: python3 -m intel.signal_ledger score
 import os
 import sys
 import json
+import math
 import datetime
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -26,6 +27,11 @@ if ROOT not in sys.path:
 
 LEDGER = os.path.join(HERE, "signal_ledger.jsonl")
 MIN_AGE_DAYS = 5  # 近似交易日(日曆日),同 score_ledger.py 慣例不強求精確交易日曆
+MIN_SUBGROUP = 8  # source×level 子分組最小樣本數,不足只回 n(同 cb-desk alert_ledger 誠實鐵則)
+
+
+def _finite_positive(x):
+    return isinstance(x, (int, float)) and not isinstance(x, bool) and math.isfinite(x) and x > 0
 
 try:
     from valuation.ledger import price_now
@@ -112,8 +118,8 @@ def score(min_age_days=MIN_AGE_DAYS, rows=None, price_fn=price_now, today=None):
     today = today or datetime.date.today()
     detail = []
     for r in rows:
-        if r.get("price_at_signal") is None:
-            continue
+        if not _finite_positive(r.get("price_at_signal")):
+            continue  # 髒值防呆:0/負數/NaN 的訊號當下股價會讓報酬率除零或炸出離譜%,寧可跳過不算
         try:
             d = datetime.date.fromisoformat(r["date"])
         except Exception:
@@ -125,7 +131,7 @@ def score(min_age_days=MIN_AGE_DAYS, rows=None, price_fn=price_now, today=None):
             cur = price_fn(r["code"]) if price_fn else None
         except Exception:
             cur = None
-        if cur is None:
+        if not _finite_positive(cur):
             continue
         pct = round((cur - r["price_at_signal"]) / r["price_at_signal"] * 100, 2)
         detail.append({
@@ -140,6 +146,12 @@ def score(min_age_days=MIN_AGE_DAYS, rows=None, price_fn=price_now, today=None):
     for k, vals in groups.items():
         vals_sorted = sorted(vals)
         n = len(vals_sorted)
+        if n < MIN_SUBGROUP:
+            # 子分組誠實閘門(VERIFIER 教訓,見 lesson calibration_honesty_subgroup_and_null_baseline.md):
+            # 舊版沒有這道閘,n=1 也會印 pct_positive=100.0,像是有把握的訊號——樣本不足只回 n。
+            summary[k] = {"n": n, "status": "insufficient_data",
+                          "mean_pct": None, "median_pct": None, "pct_positive": None}
+            continue
         summary[k] = {
             "n": n,
             "mean_pct": round(sum(vals_sorted) / n, 2),

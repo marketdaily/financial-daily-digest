@@ -193,7 +193,10 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
         if conf_span:
             cm = re.search(r"(\d{1,3})\s*%", conf_span.get_text())
             if cm:
-                confidence = int(cm.group(1))
+                cval = int(cm.group(1))
+                # 髒值防呆:\d{1,3} 最寬可配到 999,超出合理機率範圍的值不採信(避免單筆髒資料
+                # 主宰整批 Brier——(9.99-0)²≈98 遠大於正常 (0~1) 範圍,見 lesson calibration_honesty_*)
+                confidence = cval if 0 <= cval <= 100 else None
 
         # 卡片寫的進出場價位(供 level-based 操作模擬:照建議做會賺還是賠)
         levels: dict[str, float | None] = {"entry_lo": None, "entry_hi": None, "target": None, "stop": None}
@@ -926,7 +929,8 @@ def main() -> int:
         sub = [r for r in era_a if regime_by_date.get(r["date"]) == trend]
         w = sum(1 for r in sub if r["outcome"] == "win")
         era_by_regime[trend] = {"a_count": len(sub), "a_wins": w,
-                                "a_rate": round(w / len(sub) * 100, 1) if sub else 0.0}
+                                "a_rate": round(w / len(sub) * 100, 1) if sub else 0.0,
+                                "a_ci95": list(wilson_ci(w, len(sub)))}
     # verdict×regime 細桶:analyzer._pp_bucket_autogate 的資料源(2026-07-08)——
     # 任一桶勝率持續失準,隔天日報該類 buy/sell 卡自動降級觀望,稽核→改規則不再等人工。
     era_by_verdict_regime = {}
@@ -935,9 +939,14 @@ def main() -> int:
             sub = [r for r in era_a + era_c
                    if r["verdict_class"] == vc and regime_by_date.get(r["date"]) == trend]
             w = sum(1 for r in sub if r["outcome"] == "win")
+            n = len(sub)
+            # 誠實閘門(2026-07-09,同 era_by_regime):n<15 是 `_pp_bucket_autogate` 本身
+            # 認定「小樣本雜訊」的門檻(analyzer.py 該函式對此桶 n<15 直接跳過不動作)——
+            # 這裡的 rate 欄位只供人工查閱/公開 JSON,對齊同一條線,不對外印出未達門檻的假精確%。
             era_by_verdict_regime[f"{vc}|{trend}"] = {
-                "count": len(sub), "wins": w,
-                "rate": round(w / len(sub) * 100, 1) if sub else 0.0}
+                "count": n, "wins": w,
+                "rate": round(w / n * 100, 1) if n >= 15 else None,
+                "status": "insufficient_data" if n < 15 else None}
     era = {
         "note": f"僅計 {MODEL_ERA_START} 起(結構prior+校準信心上線後)的現行模型;"
                 "信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
