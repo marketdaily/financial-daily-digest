@@ -939,13 +939,16 @@ def _pp_holder_wording(html: str) -> str:
     import re as _re
     # 持有者框架措辭死防線(2026-07-07 持倉客製化):帶 <!--pos:--> 標記的卡=用戶已持有,
     # chip 不得出現「觀望/建議買入」等未持有措辭。prompt 擋第一層,這裡不靠 LLM 自覺;
-    # 也覆蓋 knife/extended/requalify 三個閘門改寫後的 chip 文字。放在那些閘門之後跑。
+    # 也覆蓋 knife/extended/requalify/oversold/bucket_autogate 各降級閘門改寫後的 chip。
+    # 放在那些閘門之後跑(見 _postprocess_html 鏈序)。
     _SWAPS = (
         ("🟢 建議買入", "🟢 加碼買進"),
         ("🟢 回檔再買(現價勿追)", "🟢 回檔再加碼(現價勿追)"),
         ("🟢 買入·漲多勿追高", "🟢 加碼·漲多勿追高"),
         ("⚪ 暫時觀望", "⚪ 持股防守·守好停損"),
         ("⚪ 觀望·空頭結構(站回 MA20 再議)", "⚪ 防守·空頭結構(守停損,站回 MA20 再議)"),
+        ("⚪ 觀望·跌深超賣慎追空", "⚪ 持股防守·跌深超賣別追空,守停損"),
+        ("⚪ 觀望·同型判斷近期實測失準,自動降級", "⚪ 持股防守·同型判斷近期失準,守好停損"),
         ("🔴 建議賣出", "🔴 減碼/出場"),
     )
 
@@ -955,6 +958,11 @@ def _pp_holder_wording(html: str) -> str:
             return block
         for old, new in _SWAPS:
             block = block.replace(old, new)
+        # 兜底:未來任何新降級閘門若又對已持有卡塞「觀望」verdict chip,一律改持有者防守語,
+        # 不必逐一列舉(死防線的意義=held 卡永遠不出現未持有措辭)。只動 verdict chip、只在 held 卡。
+        block = _re.sub(
+            r'(<span class="signal-verdict-chip )(?:wait|sell|buy)(">)[^<]*觀望[^<]*(</span>)',
+            r'\1wait\2⚪ 持股防守·守好停損\3', block)
         return block
 
     return _re.sub(
