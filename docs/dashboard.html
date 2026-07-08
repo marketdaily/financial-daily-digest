@@ -856,28 +856,28 @@ nav::after {
 
     <!-- 即時推播提醒(自有通道,全體用戶) -->
     <div class="card" id="push-alert-card" style="margin-top:8px;display:none;">
-      <div class="card-title">🔔 即時推播提醒</div>
-      <div class="card-desc">重大新聞影響你的持股時,直接推播到這台裝置(鎖屏也會跳通知),不必等隔天日報。完全免費。</div>
+      <div class="card-title" data-i18n="push_card_title">🔔 即時推播提醒</div>
+      <div class="card-desc" data-i18n="push_card_desc">重大新聞影響你的持股時,直接推播到這台裝置(鎖屏也會跳通知),不必等隔天日報。完全免費。</div>
       <div id="push-unbound-box" style="display:none;margin-top:14px;">
-        <button class="save-btn" onclick="enablePush()" id="push-enable-btn" style="margin-top:0;background:linear-gradient(135deg,#6366f1,#8b5cf6);">🔔 啟用即時推播</button>
-        <div id="push-ios-hint" style="display:none;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6;padding:10px 13px;background:rgba(255,176,0,0.08);border:1px solid rgba(255,176,0,0.22);border-radius:10px;">💡 iPhone / iPad 用戶:請先點 Safari 分享鈕 → <b>加入主畫面</b>,再從主畫面打開本站才能啟用推播(Apple 限制)。</div>
+        <button class="save-btn" onclick="enablePush()" id="push-enable-btn" style="margin-top:0;background:linear-gradient(135deg,#6366f1,#8b5cf6);" data-i18n="push_enable_btn">🔔 啟用即時推播</button>
+        <div id="push-ios-hint" style="display:none;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6;padding:10px 13px;background:rgba(255,176,0,0.08);border:1px solid rgba(255,176,0,0.22);border-radius:10px;" data-i18n-html="push_ios_hint">💡 iPhone / iPad 用戶:請先點 Safari 分享鈕 → <b>加入主畫面</b>,再從主畫面打開本站才能啟用推播(Apple 限制)。</div>
         <div style="display:none;margin-top:12px;font-size:13px;color:#f87171;text-align:center;" id="push-err"></div>
       </div>
       <div id="push-bound-box" style="display:none;margin-top:14px;">
-        <div style="padding:12px 16px;background:rgba(255,176,0,0.12);border:1px solid rgba(255,176,0,0.32);color:#FFC74D;font-size:13px;font-weight:600;border-radius:10px;margin-bottom:12px;">✓ 這台裝置已啟用即時推播</div>
-        <button class="save-btn" onclick="disablePush()" id="push-disable-btn" style="margin-top:0;background:rgba(255,255,255,0.06);border:1px solid var(--input-border);">關閉推播</button>
+        <div style="padding:12px 16px;background:rgba(255,176,0,0.12);border:1px solid rgba(255,176,0,0.32);color:#FFC74D;font-size:13px;font-weight:600;border-radius:10px;margin-bottom:12px;" data-i18n="push_bound_msg">✓ 這台裝置已啟用即時推播</div>
+        <button class="save-btn" onclick="disablePush()" id="push-disable-btn" style="margin-top:0;background:rgba(255,255,255,0.06);border:1px solid var(--input-border);" data-i18n="push_disable_btn">關閉推播</button>
       </div>
     </div>
 
     <!-- 即時提醒紀錄 feed(全體用戶,可滑歷史) -->
     <div class="card" id="alerts-feed-card" style="margin-top:8px;display:none;scroll-margin-top:80px;">
-      <div class="card-title">📬 即時提醒紀錄</div>
-      <div class="card-desc">你收到的所有重大新聞/政壇提醒都在這裡,最新在最上面,保留 90 天。點「原文」看完整新聞。</div>
+      <div class="card-title" data-i18n="alerts_card_title">📬 即時提醒紀錄</div>
+      <div class="card-desc" data-i18n="alerts_card_desc">你收到的所有重大新聞/政壇提醒都在這裡,最新在最上面,保留 90 天。點「原文」看完整新聞。</div>
       <div id="alerts-feed-list" style="margin-top:14px;display:flex;flex-direction:column;gap:10px;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-right:4px;">
-        <div id="alerts-feed-empty" style="display:none;padding:28px 16px;text-align:center;color:var(--text2);font-size:13px;line-height:1.7;">還沒有收到任何即時提醒。<br>當重大新聞影響你追蹤的股票時,會即時推播並出現在這裡。</div>
-        <div id="alerts-feed-loading" style="padding:24px;text-align:center;color:var(--text2);font-size:13px;">載入中…</div>
+        <div id="alerts-feed-empty" style="display:none;padding:28px 16px;text-align:center;color:var(--text2);font-size:13px;line-height:1.7;" data-i18n-html="alerts_empty">還沒有收到任何即時提醒。<br>當重大新聞影響你追蹤的股票時,會即時推播並出現在這裡。</div>
+        <div id="alerts-feed-loading" style="padding:24px;text-align:center;color:var(--text2);font-size:13px;" data-i18n="alerts_loading">載入中…</div>
       </div>
-      <button onclick="loadAlertHistory(true)" style="margin-top:12px;width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--input-border);color:var(--text2);padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">↻ 重新整理</button>
+      <button onclick="loadAlertHistory(true)" style="margin-top:12px;width:100%;background:rgba(255,255,255,0.05);border:1px solid var(--input-border);color:var(--text2);padding:10px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;" data-i18n="alerts_refresh_btn">↻ 重新整理</button>
     </div>
 
     <!-- AI 投資助手(浮動泡泡,全體用戶) -->
@@ -946,9 +946,9 @@ nav::after {
 </div>
 
 <script src="stocks.js?v=20260528"></script>
-<script src="js/dash-core.js?v=20260708a"></script>
+<script src="js/dash-core.js?v=20260708b"></script>
 <script src="js/dash-stocks-auth.js?v=20260707b"></script>
-<script src="js/dash-notify-chat.js?v=20260707"></script>
+<script src="js/dash-notify-chat.js?v=20260708a"></script>
 <script src="js/dash-prefs-market.js?v=20260707b"></script>
 <script src="js/dash-stories-chain.js?v=20260707"></script>
 <script src="js/dash-chart.js?v=20260703"></script>

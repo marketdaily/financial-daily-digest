@@ -10,7 +10,7 @@ async function setupPushCard(email, plan) {
   if (isIOS && !standalone) document.getElementById("push-ios-hint").style.display = "block";
   if (!pushSupported()) {
     document.getElementById("push-enable-btn").disabled = true;
-    document.getElementById("push-enable-btn").textContent = "此瀏覽器不支援推播";
+    document.getElementById("push-enable-btn").textContent = T('push_unsupported');
     document.getElementById("push-unbound-box").style.display = "block";
     return;
   }
@@ -28,11 +28,11 @@ async function enablePush() {
   const errEl = document.getElementById("push-err");
   const btn = document.getElementById("push-enable-btn");
   errEl.style.display = "none";
-  if (!pushSupported()) { errEl.textContent = "此瀏覽器不支援推播"; errEl.style.display = "block"; return; }
-  btn.disabled = true; btn.textContent = "啟用中…";
+  if (!pushSupported()) { errEl.textContent = T('push_unsupported'); errEl.style.display = "block"; return; }
+  btn.disabled = true; btn.textContent = T('push_enabling');
   try {
     const perm = await Notification.requestPermission();
-    if (perm !== "granted") { throw new Error("你拒絕了通知權限,請到瀏覽器設定開啟後再試"); }
+    if (perm !== "granted") { throw new Error(T('push_err_denied')); }
     const reg = await navigator.serviceWorker.register("/sw.js");
     await navigator.serviceWorker.ready;
     let sub = await reg.pushManager.getSubscription();
@@ -47,24 +47,24 @@ async function enablePush() {
       body: JSON.stringify({ email, password, subscription: sub.toJSON() }),
     });
     const data = await res.json();
-    if (!res.ok || !data.ok) throw new Error(data.error === "auth" ? "登入已過期,請重新登入後再試" : "儲存訂閱失敗,請稍後再試");
+    if (!res.ok || !data.ok) throw new Error(data.error === "auth" ? T('push_err_auth') : T('push_err_save'));
     document.getElementById("push-bound-box").style.display = "block";
     document.getElementById("push-unbound-box").style.display = "none";
   } catch (e) {
-    errEl.textContent = e.message || "啟用失敗"; errEl.style.display = "block";
+    errEl.textContent = e.message || T('push_err_generic'); errEl.style.display = "block";
   } finally {
-    btn.disabled = false; btn.textContent = "🔔 啟用即時推播";
+    btn.disabled = false; btn.textContent = T('push_enable_btn');
   }
 }
 // ── 即時提醒紀錄 feed ──
 let _alertsLoaded = false;
 function timeAgo(ts) {
   const d = new Date(ts); const s = (Date.now() - d.getTime()) / 1000;
-  if (s < 60) return "剛剛";
-  if (s < 3600) return Math.floor(s / 60) + " 分鐘前";
-  if (s < 86400) return Math.floor(s / 3600) + " 小時前";
-  if (s < 86400 * 7) return Math.floor(s / 86400) + " 天前";
-  return d.toLocaleDateString("zh-TW", { month: "numeric", day: "numeric" });
+  if (s < 60) return T('time_just_now');
+  if (s < 3600) return T('time_min_ago')(Math.floor(s / 60));
+  if (s < 86400) return T('time_hr_ago')(Math.floor(s / 3600));
+  if (s < 86400 * 7) return T('time_day_ago')(Math.floor(s / 86400));
+  return d.toLocaleDateString(currentLang === "en" ? "en-US" : "zh-TW", { month: "numeric", day: "numeric" });
 }
 function escapeHtml(s) {
   return String(s || "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -128,18 +128,18 @@ async function loadAlertHistory(force) {
       item.style.cssText = "padding:13px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--input-border);border-left:3px solid " + sev + ";border-radius:12px;";
       item.innerHTML =
         '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">' +
-          '<span style="font-size:13px;font-weight:800;color:#fff;">' + icon + " " + escapeHtml(a.name || a.ticker || "提醒") + (a.speculative ? ' <span style="font-size:11px;color:var(--text2);font-weight:600;">· 觀點/傳言</span>' : "") + '</span>' +
+          '<span style="font-size:13px;font-weight:800;color:#fff;">' + icon + " " + escapeHtml(a.name || a.ticker || T('alert_default_label')) + (a.speculative ? ' <span style="font-size:11px;color:var(--text2);font-weight:600;">' + T('alert_speculative_tag') + '</span>' : "") + '</span>' +
           '<span style="font-size:11px;color:var(--text2);white-space:nowrap;">' + timeAgo(a.ts) + '</span>' +
         '</div>' +
         '<div style="font-size:13px;color:rgba(255,255,255,0.92);line-height:1.5;margin-bottom:' + (a.reason || a.stance || a.action ? "10px" : "0") + ';font-weight:600;">' + escapeHtml(a.title) + '</div>' +
-        (a.reason ? '<div style="font-size:12px;line-height:1.6;margin-bottom:6px;"><span style="font-weight:800;color:#4AF626;">💡 為什麼跟你有關</span><br><span style="color:var(--text2);">' + escapeHtml(a.reason) + '</span></div>' : "") +
-        ((a.stance || a.action) ? '<div style="font-size:12px;line-height:1.6;"><span style="font-weight:800;color:#FFC74D;">📊 對你的部位</span><br><span style="color:#FFD98A;">' + escapeHtml([a.stance, a.action].filter(Boolean).join(" — ")) + '</span></div>' : "") +
-        (a.url && a.url.indexOf("dashboard.html") === -1 ? '<a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;font-size:12px;color:#FFC74D;font-weight:700;text-decoration:none;">🔗 看原文 →</a>' : "");
+        (a.reason ? '<div style="font-size:12px;line-height:1.6;margin-bottom:6px;"><span style="font-weight:800;color:#4AF626;">' + T('alert_why_heading') + '</span><br><span style="color:var(--text2);">' + escapeHtml(a.reason) + '</span></div>' : "") +
+        ((a.stance || a.action) ? '<div style="font-size:12px;line-height:1.6;"><span style="font-weight:800;color:#FFC74D;">' + T('alert_position_heading') + '</span><br><span style="color:#FFD98A;">' + escapeHtml([a.stance, a.action].filter(Boolean).join(" — ")) + '</span></div>' : "") +
+        (a.url && a.url.indexOf("dashboard.html") === -1 ? '<a href="' + escapeHtml(a.url) + '" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;font-size:12px;color:#FFC74D;font-weight:700;text-decoration:none;">' + T('alert_source_link') + '</a>' : "");
       listEl.appendChild(item);
     }
   } catch (e) {
     if (loadingEl) loadingEl.style.display = "none";
-    if (emptyEl) { emptyEl.textContent = "載入失敗,請重新整理"; emptyEl.style.display = "block"; }
+    if (emptyEl) { emptyEl.textContent = T('alerts_load_failed'); emptyEl.style.display = "block"; }
   }
 }
 
@@ -147,7 +147,7 @@ async function disablePush() {
   const email = localStorage.getItem("md-email");
   const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
   const btn = document.getElementById("push-disable-btn");
-  btn.disabled = true; btn.textContent = "關閉中…";
+  btn.disabled = true; btn.textContent = T('push_disabling');
   try {
     let endpoint = null;
     const reg = await navigator.serviceWorker.getRegistration();
@@ -159,7 +159,7 @@ async function disablePush() {
     document.getElementById("push-bound-box").style.display = "none";
     document.getElementById("push-unbound-box").style.display = "block";
   } catch {} finally {
-    btn.disabled = false; btn.textContent = "關閉推播";
+    btn.disabled = false; btn.textContent = T('push_disable_btn');
   }
 }
 

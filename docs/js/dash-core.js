@@ -197,7 +197,35 @@ const i18n = {
     bulk_nothing: "沒有解析到任何股票,請檢查輸入內容",
     bundle_added: n => `✅ 已加入 ${n} 檔`,
     bundle_all_have: "你已經追蹤這組所有股票",
-    bundle_capped: (a, c) => `已加入 ${a} 檔;${c} 檔超過追蹤上限未加入`
+    bundle_capped: (a, c) => `已加入 ${a} 檔;${c} 檔超過追蹤上限未加入`,
+    push_card_title: "🔔 即時推播提醒",
+    push_card_desc: "重大新聞影響你的持股時,直接推播到這台裝置(鎖屏也會跳通知),不必等隔天日報。完全免費。",
+    push_ios_hint: "💡 iPhone / iPad 用戶:請先點 Safari 分享鈕 → <b>加入主畫面</b>,再從主畫面打開本站才能啟用推播(Apple 限制)。",
+    push_enable_btn: "🔔 啟用即時推播",
+    push_enabling: "啟用中…",
+    push_unsupported: "此瀏覽器不支援推播",
+    push_err_denied: "你拒絕了通知權限,請到瀏覽器設定開啟後再試",
+    push_err_auth: "登入已過期,請重新登入後再試",
+    push_err_save: "儲存訂閱失敗,請稍後再試",
+    push_err_generic: "啟用失敗",
+    push_bound_msg: "✓ 這台裝置已啟用即時推播",
+    push_disable_btn: "關閉推播",
+    push_disabling: "關閉中…",
+    alerts_card_title: "📬 即時提醒紀錄",
+    alerts_card_desc: "你收到的所有重大新聞/政壇提醒都在這裡,最新在最上面,保留 90 天。點「原文」看完整新聞。",
+    alerts_empty: "還沒有收到任何即時提醒。<br>當重大新聞影響你追蹤的股票時,會即時推播並出現在這裡。",
+    alerts_loading: "載入中…",
+    alerts_refresh_btn: "↻ 重新整理",
+    alerts_load_failed: "載入失敗,請重新整理",
+    alert_default_label: "提醒",
+    alert_speculative_tag: "· 觀點/傳言",
+    alert_why_heading: "💡 為什麼跟你有關",
+    alert_position_heading: "📊 對你的部位",
+    alert_source_link: "🔗 看原文 →",
+    time_just_now: "剛剛",
+    time_min_ago: n => `${n} 分鐘前`,
+    time_hr_ago: n => `${n} 小時前`,
+    time_day_ago: n => `${n} 天前`
   },
   en: {
     page_title: "Subscriber Area · MarketDaily",
@@ -393,7 +421,35 @@ const i18n = {
     bulk_nothing: "Nothing parsed — please check your input",
     bundle_added: n => `✅ Added ${n} stocks`,
     bundle_all_have: "You already track every stock in this bundle",
-    bundle_capped: (a, c) => `Added ${a}; ${c} skipped — tracking cap reached`
+    bundle_capped: (a, c) => `Added ${a}; ${c} skipped — tracking cap reached`,
+    push_card_title: "🔔 Instant Push Alerts",
+    push_card_desc: "When breaking news affects your holdings, it pushes straight to this device (even on the lock screen) — no need to wait for tomorrow's digest. Completely free.",
+    push_ios_hint: "💡 iPhone / iPad users: tap the Safari share button → <b>Add to Home Screen</b> first, then open the site from your home screen to enable push (Apple restriction).",
+    push_enable_btn: "🔔 Enable Instant Push",
+    push_enabling: "Enabling…",
+    push_unsupported: "Push isn't supported in this browser",
+    push_err_denied: "You denied notification permission — enable it in your browser settings and try again",
+    push_err_auth: "Your session expired — please log in again and retry",
+    push_err_save: "Failed to save subscription, please try again later",
+    push_err_generic: "Enable failed",
+    push_bound_msg: "✓ Instant push is enabled on this device",
+    push_disable_btn: "Turn Off Push",
+    push_disabling: "Turning off…",
+    alerts_card_title: "📬 Alert History",
+    alerts_card_desc: "Every breaking news / political alert you've received is here, newest on top, kept for 90 days. Tap “Source” for the full story.",
+    alerts_empty: "No instant alerts yet.<br>When breaking news affects a stock you track, it'll push here in real time.",
+    alerts_loading: "Loading…",
+    alerts_refresh_btn: "↻ Refresh",
+    alerts_load_failed: "Failed to load — please refresh",
+    alert_default_label: "Alert",
+    alert_speculative_tag: "· Opinion/rumor",
+    alert_why_heading: "💡 Why it matters to you",
+    alert_position_heading: "📊 For your position",
+    alert_source_link: "🔗 Source →",
+    time_just_now: "just now",
+    time_min_ago: n => `${n}m ago`,
+    time_hr_ago: n => `${n}h ago`,
+    time_day_ago: n => `${n}d ago`
   }
 };
 
@@ -451,6 +507,15 @@ function refreshDynamicLang() {
     if (badge) badge.textContent = plan === "admin" ? T('hdr_plan_admin') : plan === "free" ? T('hdr_plan_free') : T('hdr_plan_paid');
     renderTags("us"); renderTags("tw"); updateStats();
     if (typeof renderQuickRow === 'function') { renderQuickRow('us'); renderQuickRow('tw'); }
+  }
+  // push 卡:重跑一次判斷式(未支援/已綁定等狀態)蓋掉 data-i18n 迴圈剛套用的預設文字
+  if (typeof setupPushCard === 'function') {
+    const pushCard = document.getElementById('push-alert-card');
+    if (pushCard && pushCard.style.display !== 'none') setupPushCard(email, plan);
+  }
+  // alerts feed:項目是語言切換前就已 innerHTML 烘進中文的 DOM,只能強制重抓重繪
+  if (typeof loadAlertHistory === 'function' && typeof _alertsLoaded !== 'undefined' && _alertsLoaded) {
+    loadAlertHistory(true);
   }
 }
 
