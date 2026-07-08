@@ -25,6 +25,13 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .nav-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #FFB000, #FF8A3D); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .nav-logo em { color: #4AF626; font-style: normal; }
 .nav-back { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5); text-decoration: none; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); padding: 7px 16px; border-radius: 20px; }
+.nav-right { display: flex; align-items: center; gap: 8px; }
+.lang-btn {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+  padding: 7px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s;
+}
+.lang-btn:hover { background: rgba(255,176,0,0.12); border-color: rgba(255,176,0,0.28); color: #fff; }
 .page-wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 56px 24px 80px; }
 .page-badge { display: inline-flex; align-items: center; gap: 7px;
   background: rgba(255,176,0,0.12); border: 1px solid rgba(255,176,0,0.28);
@@ -47,6 +54,14 @@ a:hover { text-decoration: underline; }
 .disclaimer p { font-size: 13.5px; color: rgba(255,255,255,0.78); margin-bottom: 0; }
 footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,255,255,0.06);
   font-size: 12px; color: rgba(255,255,255,0.35); position: relative; z-index: 1; }
+@media (max-width: 600px) {
+  nav { padding: 0 14px; gap: 10px; }
+  .nav-logo { font-size: 15px; gap: 7px; flex-shrink: 0; }
+  .nav-logo-icon { width: 26px; height: 26px; }
+  .nav-right { gap: 6px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .nav-right::-webkit-scrollbar { display: none; }
+  .nav-back, .lang-btn { white-space: nowrap; flex-shrink: 0; font-size: 12px; padding: 6px 11px; line-height: 1.2; }
+}
 </style>
 </head>
 <body>
@@ -55,63 +70,170 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
     <div class="nav-logo-icon"><svg width="16" height="16" viewBox="0 0 22 22"><rect x="1" y="14" width="4" height="7" rx="1.5" fill="white" fill-opacity="0.55"/><rect x="7" y="9" width="4" height="12" rx="1.5" fill="white" fill-opacity="0.78"/><rect x="13" y="4" width="4" height="17" rx="1.5" fill="white"/><circle cx="20" cy="3" r="2" fill="#fde68a"/></svg></div>
     Market<em>Daily</em>
   </a>
-  <a href="index.html" class="nav-back">← 返回首頁</a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back" data-i18n="nav_back">← 返回首頁</a>
+    <button class="lang-btn" onclick="toggleLang()">EN</button>
+  </div>
 </nav>
 
 <div class="page-wrap">
-  <div class="page-badge">服務條款</div>
-  <h1>使用 MarketDaily 的規則</h1>
-  <p class="lead">短版:你訂閱我們寄日報,我們不對你的交易結果負責,30 天內不滿意全額退費,隨時可以取消。</p>
-  <p class="updated">最後更新:2026-05-23</p>
+  <div class="page-badge" data-i18n="page_badge">服務條款</div>
+  <h1 data-i18n="page_h1">使用 MarketDaily 的規則</h1>
+  <p class="lead" data-i18n="page_lead">短版:你訂閱我們寄日報,我們不對你的交易結果負責,30 天內不滿意全額退費,隨時可以取消。</p>
+  <p class="updated" data-i18n="page_updated">最後更新:2026-05-23</p>
 
-  <h2>1. 服務內容</h2>
-  <p>MarketDaily(marketdaily.ai)提供每日 AI 精選財經日報、個股方向判讀、市場情緒分析、可選用即時推播提醒等資訊服務。所有內容由 AI 生成 + 主編親自審稿後發送。</p>
+  <h2 data-i18n="h2_1">1. 服務內容</h2>
+  <p data-i18n="s1_p">MarketDaily(marketdaily.ai)提供每日 AI 精選財經日報、個股方向判讀、市場情緒分析、可選用即時推播提醒等資訊服務。所有內容由 AI 生成 + 主編親自審稿後發送。</p>
 
   <div class="disclaimer">
-    <h3>⚠️ 重要免責聲明</h3>
-    <p>MarketDaily 提供的所有內容、判斷、勝率紀錄、操作建議,<strong>皆為資訊服務,不構成個別投資建議</strong>。我們沒有證券投顧執照,不替你做任何個別交易決策。你看完日報後是否進場、何時進場、部位多少、停損停利,全由你自己決定並承擔結果。</p>
+    <h3 data-i18n="disclaimer_h3">⚠️ 重要免責聲明</h3>
+    <p data-i18n-html="disclaimer_p">MarketDaily 提供的所有內容、判斷、勝率紀錄、操作建議,<strong>皆為資訊服務,不構成個別投資建議</strong>。我們沒有證券投顧執照,不替你做任何個別交易決策。你看完日報後是否進場、何時進場、部位多少、停損停利,全由你自己決定並承擔結果。</p>
   </div>
 
-  <h2>2. 訂閱方案</h2>
+  <h2 data-i18n="h2_2">2. 訂閱方案</h2>
   <ul>
-    <li><strong>免費方案(NT$0)</strong>:完整產品 —— 每日個人化 AI 財經日報(最多 80 檔)、日報深度自選、AI 投資助手(每日 30 則)、重大新聞即時推播</li>
-    <li><strong>Premium 支持者方案(NT$499 / 月)</strong>:支持獨立營運、優先 1-1 專人客服、非分析類新功能搶先體驗</li>
+    <li data-i18n-html="s2_li1"><strong>免費方案(NT$0)</strong>:完整產品 —— 每日個人化 AI 財經日報(最多 80 檔)、日報深度自選、AI 投資助手(每日 30 則)、重大新聞即時推播</li>
+    <li data-i18n-html="s2_li2"><strong>Premium 支持者方案(NT$499 / 月)</strong>:支持獨立營運、優先 1-1 專人客服、非分析類新功能搶先體驗</li>
   </ul>
-  <p><strong>內容均一原則</strong>:所有投資分析內容(日報、持股訊號卡、AI 助手、即時推播)對免費與付費用戶完全相同,不因付費而有任何差異。Premium 不包含任何額外的個股分析或投資建議內容。</p>
-  <p>付費透過 Stripe 處理,訂閱自動續扣。隨時可從 dashboard 取消,取消後當月仍可使用至期末。</p>
+  <p data-i18n-html="s2_p2"><strong>內容均一原則</strong>:所有投資分析內容(日報、持股訊號卡、AI 助手、即時推播)對免費與付費用戶完全相同,不因付費而有任何差異。Premium 不包含任何額外的個股分析或投資建議內容。</p>
+  <p data-i18n="s2_p3">付費透過 Stripe 處理,訂閱自動續扣。隨時可從 dashboard 取消,取消後當月仍可使用至期末。</p>
 
-  <h2>3. 退費政策</h2>
-  <p><strong>30 天無理由退費保證</strong>。首次訂閱付費方案後 30 天內,寄信給 <a href="mailto:marketdailyhq@gmail.com">marketdailyhq@gmail.com</a> 表達退費意願,我們不問理由全額退還。第二次以上訂閱不適用此保證(避免濫用)。</p>
+  <h2 data-i18n="h2_3">3. 退費政策</h2>
+  <p data-i18n-html="s3_p"><strong>30 天無理由退費保證</strong>。首次訂閱付費方案後 30 天內,寄信給 <a href="mailto:marketdailyhq@gmail.com">marketdailyhq@gmail.com</a> 表達退費意願,我們不問理由全額退還。第二次以上訂閱不適用此保證(避免濫用)。</p>
 
-  <h2>4. 你不能做的事</h2>
+  <h2 data-i18n="h2_4">4. 你不能做的事</h2>
   <ul>
-    <li>不能轉寄日報全文給非訂戶(內容引用 + 註明來源 OK)</li>
-    <li>不能爬日報拿去做衍生商業產品轉售</li>
-    <li>不能用機器人或自動化方式刷邀請碼 / 推薦獎勵</li>
-    <li>不能用 AI 投資助手做明顯違法用途(操縱市場、騙取資訊等)</li>
+    <li data-i18n="s4_li1">不能轉寄日報全文給非訂戶(內容引用 + 註明來源 OK)</li>
+    <li data-i18n="s4_li2">不能爬日報拿去做衍生商業產品轉售</li>
+    <li data-i18n="s4_li3">不能用機器人或自動化方式刷邀請碼 / 推薦獎勵</li>
+    <li data-i18n="s4_li4">不能用 AI 投資助手做明顯違法用途(操縱市場、騙取資訊等)</li>
   </ul>
-  <p>違反以上條款我們有權立即停權且不退費。</p>
+  <p data-i18n="s4_p2">違反以上條款我們有權立即停權且不退費。</p>
 
-  <h2>5. 智慧財產</h2>
-  <p>MarketDaily 的內容、AI 分析、圖卡、品牌名稱均屬本服務所有。授權你以「個人非商業使用」方式閱讀、儲存日報內容。轉發、引用請註明來源「來自 MarketDaily(marketdaily.ai)」。</p>
+  <h2 data-i18n="h2_5">5. 智慧財產</h2>
+  <p data-i18n="s5_p">MarketDaily 的內容、AI 分析、圖卡、品牌名稱均屬本服務所有。授權你以「個人非商業使用」方式閱讀、儲存日報內容。轉發、引用請註明來源「來自 MarketDaily(marketdaily.ai)」。</p>
 
-  <h2>6. 推薦計畫</h2>
-  <p>邀請朋友透過你的專屬連結成功訂閱(免費或付費),雙方各得 30 天 Premium 信用。同一個朋友 Email 重複訂閱不重複發獎。自推(用自己的另一個 Email)被偵測到視為作弊,所有信用作廢。</p>
+  <h2 data-i18n="h2_6">6. 推薦計畫</h2>
+  <p data-i18n="s6_p">邀請朋友透過你的專屬連結成功訂閱(免費或付費),雙方各得 30 天 Premium 信用。同一個朋友 Email 重複訂閱不重複發獎。自推(用自己的另一個 Email)被偵測到視為作弊,所有信用作廢。</p>
 
-  <h2>7. 服務變更 / 終止</h2>
-  <p>我們保留隨時調整服務內容、定價、發送時間的權利。重大變更會提前 14 天透過 Email 通知所有訂戶。若你不接受變更,可在生效前申請退費(按未使用天數比例)。</p>
+  <h2 data-i18n="h2_7">7. 服務變更 / 終止</h2>
+  <p data-i18n="s7_p">我們保留隨時調整服務內容、定價、發送時間的權利。重大變更會提前 14 天透過 Email 通知所有訂戶。若你不接受變更,可在生效前申請退費(按未使用天數比例)。</p>
 
-  <h2>8. 限制責任</h2>
-  <p>MarketDaily 提供的所有資訊「現狀提供」(as-is),不保證 100% 準確、即時、完整。<strong>你不能因為依據日報判斷而產生的投資虧損向我們求償</strong>。本服務責任上限為你過去 12 個月支付的訂閱費總額。</p>
+  <h2 data-i18n="h2_8">8. 限制責任</h2>
+  <p data-i18n-html="s8_p">MarketDaily 提供的所有資訊「現狀提供」(as-is),不保證 100% 準確、即時、完整。<strong>你不能因為依據日報判斷而產生的投資虧損向我們求償</strong>。本服務責任上限為你過去 12 個月支付的訂閱費總額。</p>
 
-  <h2>9. 準據法</h2>
-  <p>本條款適用中華民國法律。如有爭議,以台灣台北地方法院為第一審管轄法院。</p>
+  <h2 data-i18n="h2_9">9. 準據法</h2>
+  <p data-i18n="s9_p">本條款適用中華民國法律。如有爭議,以台灣台北地方法院為第一審管轄法院。</p>
 
-  <h2>10. 聯絡我們</h2>
-  <p>條款相關問題,寄信:<a href="mailto:marketdailyhq@gmail.com">marketdailyhq@gmail.com</a>,或從 <a href="contact.html">聯絡頁</a> 送問題單。</p>
+  <h2 data-i18n="h2_10">10. 聯絡我們</h2>
+  <p data-i18n-html="s10_p">條款相關問題,寄信:<a href="mailto:marketdailyhq@gmail.com">marketdailyhq@gmail.com</a>,或從 <a href="contact.html">聯絡頁</a> 送問題單。</p>
 </div>
 
-<footer>MarketDaily · marketdaily.ai · 僅供參考,非投資建議</footer>
+<footer data-i18n="footer_text">MarketDaily · marketdaily.ai · 僅供參考,非投資建議</footer>
+<script>
+const i18n = {
+  zh: {
+    page_title: "服務條款 — MarketDaily",
+    nav_back: "← 返回首頁",
+    page_badge: "服務條款",
+    page_h1: "使用 MarketDaily 的規則",
+    page_lead: "短版:你訂閱我們寄日報,我們不對你的交易結果負責,30 天內不滿意全額退費,隨時可以取消。",
+    page_updated: "最後更新:2026-05-23",
+    h2_1: "1. 服務內容",
+    s1_p: "MarketDaily(marketdaily.ai)提供每日 AI 精選財經日報、個股方向判讀、市場情緒分析、可選用即時推播提醒等資訊服務。所有內容由 AI 生成 + 主編親自審稿後發送。",
+    disclaimer_h3: "⚠️ 重要免責聲明",
+    disclaimer_p: "MarketDaily 提供的所有內容、判斷、勝率紀錄、操作建議,<strong>皆為資訊服務,不構成個別投資建議</strong>。我們沒有證券投顧執照,不替你做任何個別交易決策。你看完日報後是否進場、何時進場、部位多少、停損停利,全由你自己決定並承擔結果。",
+    h2_2: "2. 訂閱方案",
+    s2_li1: "<strong>免費方案(NT$0)</strong>:完整產品 —— 每日個人化 AI 財經日報(最多 80 檔)、日報深度自選、AI 投資助手(每日 30 則)、重大新聞即時推播",
+    s2_li2: "<strong>Premium 支持者方案(NT$499 / 月)</strong>:支持獨立營運、優先 1-1 專人客服、非分析類新功能搶先體驗",
+    s2_p2: "<strong>內容均一原則</strong>:所有投資分析內容(日報、持股訊號卡、AI 助手、即時推播)對免費與付費用戶完全相同,不因付費而有任何差異。Premium 不包含任何額外的個股分析或投資建議內容。",
+    s2_p3: "付費透過 Stripe 處理,訂閱自動續扣。隨時可從 dashboard 取消,取消後當月仍可使用至期末。",
+    h2_3: "3. 退費政策",
+    s3_p: "<strong>30 天無理由退費保證</strong>。首次訂閱付費方案後 30 天內,寄信給 <a href=\"mailto:marketdailyhq@gmail.com\">marketdailyhq@gmail.com</a> 表達退費意願,我們不問理由全額退還。第二次以上訂閱不適用此保證(避免濫用)。",
+    h2_4: "4. 你不能做的事",
+    s4_li1: "不能轉寄日報全文給非訂戶(內容引用 + 註明來源 OK)",
+    s4_li2: "不能爬日報拿去做衍生商業產品轉售",
+    s4_li3: "不能用機器人或自動化方式刷邀請碼 / 推薦獎勵",
+    s4_li4: "不能用 AI 投資助手做明顯違法用途(操縱市場、騙取資訊等)",
+    s4_p2: "違反以上條款我們有權立即停權且不退費。",
+    h2_5: "5. 智慧財產",
+    s5_p: "MarketDaily 的內容、AI 分析、圖卡、品牌名稱均屬本服務所有。授權你以「個人非商業使用」方式閱讀、儲存日報內容。轉發、引用請註明來源「來自 MarketDaily(marketdaily.ai)」。",
+    h2_6: "6. 推薦計畫",
+    s6_p: "邀請朋友透過你的專屬連結成功訂閱(免費或付費),雙方各得 30 天 Premium 信用。同一個朋友 Email 重複訂閱不重複發獎。自推(用自己的另一個 Email)被偵測到視為作弊,所有信用作廢。",
+    h2_7: "7. 服務變更 / 終止",
+    s7_p: "我們保留隨時調整服務內容、定價、發送時間的權利。重大變更會提前 14 天透過 Email 通知所有訂戶。若你不接受變更,可在生效前申請退費(按未使用天數比例)。",
+    h2_8: "8. 限制責任",
+    s8_p: "MarketDaily 提供的所有資訊「現狀提供」(as-is),不保證 100% 準確、即時、完整。<strong>你不能因為依據日報判斷而產生的投資虧損向我們求償</strong>。本服務責任上限為你過去 12 個月支付的訂閱費總額。",
+    h2_9: "9. 準據法",
+    s9_p: "本條款適用中華民國法律。如有爭議,以台灣台北地方法院為第一審管轄法院。",
+    h2_10: "10. 聯絡我們",
+    s10_p: "條款相關問題,寄信:<a href=\"mailto:marketdailyhq@gmail.com\">marketdailyhq@gmail.com</a>,或從 <a href=\"contact.html\">聯絡頁</a> 送問題單。",
+    footer_text: "MarketDaily · marketdaily.ai · 僅供參考,非投資建議"
+  },
+  en: {
+    page_title: "Terms of Service — MarketDaily",
+    nav_back: "← Back to Home",
+    page_badge: "Terms of Service",
+    page_h1: "Rules for Using MarketDaily",
+    page_lead: "TL;DR: you subscribe and we send you the digest, we're not responsible for your trading results, full refund within 30 days if unsatisfied, and you can cancel anytime.",
+    page_updated: "Last updated: 2026-05-23",
+    h2_1: "1. What the Service Provides",
+    s1_p: "MarketDaily (marketdaily.ai) provides daily AI-curated financial digests, stock direction analysis, market sentiment analysis, and optional real-time push alerts. All content is AI-generated and personally reviewed by the editor before it's sent.",
+    disclaimer_h3: "⚠️ Important Disclaimer",
+    disclaimer_p: "All content, judgments, win-rate records, and action suggestions provided by MarketDaily <strong>are informational only and do not constitute individualized investment advice</strong>. We do not hold a securities investment advisory license and do not make any individual trading decisions on your behalf. Whether to enter a position, when, at what size, and where to set stop-loss/take-profit is entirely your own decision and at your own risk.",
+    h2_2: "2. Subscription Plans",
+    s2_li1: "<strong>Free plan (NT$0)</strong>: the full product — daily personalized AI financial digest (up to 80 tickers), in-depth digest customization, AI investing assistant (30 messages/day), real-time push alerts for major news",
+    s2_li2: "<strong>Premium supporter plan (NT$499/month)</strong>: support independent operations, priority 1-on-1 support, early access to non-analysis features",
+    s2_p2: "<strong>Content-parity principle</strong>: all investment analysis content (digest, holdings signal cards, AI assistant, real-time push) is exactly the same for free and paid users, with zero difference based on payment. Premium does not include any additional stock analysis or investment advice content.",
+    s2_p3: "Payments are processed via Stripe and subscriptions auto-renew. You can cancel anytime from the dashboard; after cancelling you retain access through the end of the current billing period.",
+    h2_3: "3. Refund Policy",
+    s3_p: "<strong>30-day no-questions-asked refund guarantee.</strong> Within 30 days of your first paid subscription, email <a href=\"mailto:marketdailyhq@gmail.com\">marketdailyhq@gmail.com</a> to request a refund and we'll refund it in full, no questions asked. This guarantee does not apply to second or subsequent subscriptions (to prevent abuse).",
+    h2_4: "4. What You Can't Do",
+    s4_li1: "Forward the full text of the digest to non-subscribers (quoting with attribution is fine)",
+    s4_li2: "Scrape the digest to build derivative commercial products for resale",
+    s4_li3: "Use bots or automation to farm invite codes / referral rewards",
+    s4_li4: "Use the AI investing assistant for clearly illegal purposes (market manipulation, fraud, etc.)",
+    s4_p2: "Violating the above terms gives us the right to immediately suspend your account without a refund.",
+    h2_5: "5. Intellectual Property",
+    s5_p: "MarketDaily's content, AI analysis, graphic cards, and brand name are all owned by this service. You're licensed to read and store digest content for personal, non-commercial use. When forwarding or quoting, please attribute the source as \"from MarketDaily (marketdaily.ai)\".",
+    h2_6: "6. Referral Program",
+    s6_p: "When you invite a friend who successfully subscribes (free or paid) through your unique referral link, both of you receive a 30-day Premium credit. The same friend's email re-subscribing does not trigger a repeat reward. Self-referral (using another email you own) is treated as fraud if detected, and all credits are voided.",
+    h2_7: "7. Service Changes / Termination",
+    s7_p: "We reserve the right to adjust the service's content, pricing, and delivery times at any time. Material changes will be notified to all subscribers via email at least 14 days in advance. If you don't accept a change, you may request a refund (prorated for unused days) before it takes effect.",
+    h2_8: "8. Limitation of Liability",
+    s8_p: "All information provided by MarketDaily is offered \"as-is\" with no guarantee of 100% accuracy, timeliness, or completeness. <strong>You may not seek damages from us for investment losses resulting from decisions based on the digest.</strong> This service's total liability is capped at the total subscription fees you paid over the preceding 12 months.",
+    h2_9: "9. Governing Law",
+    s9_p: "These terms are governed by the laws of the Republic of China (Taiwan). Any disputes are subject to the exclusive jurisdiction of the Taipei District Court, Taiwan, as the court of first instance.",
+    h2_10: "10. Contact Us",
+    s10_p: "For questions about these terms, email <a href=\"mailto:marketdailyhq@gmail.com\">marketdailyhq@gmail.com</a>, or submit a ticket from the <a href=\"contact.html\">contact page</a>.",
+    footer_text: "MarketDaily · marketdaily.ai · For informational purposes only, not investment advice"
+  }
+};
+
+function applyLang(lang) {
+  const t = i18n[lang] || i18n.zh;
+  document.title = t.page_title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = t[el.dataset.i18n];
+    if (v !== undefined) el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = t[el.dataset.i18nHtml];
+    if (v !== undefined) el.innerHTML = v;
+  });
+  const langBtn = document.querySelector('.lang-btn');
+  if (langBtn) langBtn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+  localStorage.setItem('md-lang-v2', lang);
+}
+
+function toggleLang() {
+  const cur = localStorage.getItem('md-lang-v2') || 'zh';
+  applyLang(cur === 'zh' ? 'en' : 'zh');
+}
+
+applyLang(localStorage.getItem('md-lang-v2') || 'zh');
+</script>
 <script src="terminal.js?v=1"></script>
 </body>
 </html>

@@ -25,6 +25,13 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .nav-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #FFB000, #FF8A3D); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .nav-logo em { color: #4AF626; font-style: normal; }
 .nav-back { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5); text-decoration: none; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); padding: 7px 16px; border-radius: 20px; }
+.nav-right { display: flex; align-items: center; gap: 8px; }
+.lang-btn {
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
+  padding: 7px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s;
+}
+.lang-btn:hover { background: rgba(255,176,0,0.12); border-color: rgba(255,176,0,0.28); color: #fff; }
 .page-wrap { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; padding: 56px 24px 80px; }
 .page-badge { display: inline-flex; align-items: center; gap: 7px;
   background: rgba(255,176,0,0.12); border: 1px solid rgba(255,176,0,0.28);
@@ -44,6 +51,14 @@ a { color: #FFC74D; text-decoration: none; }
 a:hover { text-decoration: underline; }
 footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,255,255,0.06);
   font-size: 12px; color: rgba(255,255,255,0.35); position: relative; z-index: 1; }
+@media (max-width: 600px) {
+  nav { padding: 0 14px; gap: 10px; }
+  .nav-logo { font-size: 15px; gap: 7px; flex-shrink: 0; }
+  .nav-logo-icon { width: 26px; height: 26px; }
+  .nav-right { gap: 6px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .nav-right::-webkit-scrollbar { display: none; }
+  .nav-back, .lang-btn { white-space: nowrap; flex-shrink: 0; font-size: 12px; padding: 6px 11px; line-height: 1.2; }
+}
 </style>
 <link rel="stylesheet" href="deepspace.css?v=20260611a">
 </head>
@@ -53,72 +68,193 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
     <div class="nav-logo-icon"><svg width="16" height="16" viewBox="0 0 22 22"><rect x="1" y="14" width="4" height="7" rx="1.5" fill="white" fill-opacity="0.55"/><rect x="7" y="9" width="4" height="12" rx="1.5" fill="white" fill-opacity="0.78"/><rect x="13" y="4" width="4" height="17" rx="1.5" fill="white"/><circle cx="20" cy="3" r="2" fill="#fde68a"/></svg></div>
     Market<em>Daily</em>
   </a>
-  <a href="index.html" class="nav-back">← 返回首頁</a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back" data-i18n="nav_back">← 返回首頁</a>
+    <button class="lang-btn" onclick="toggleLang()">EN</button>
+  </div>
 </nav>
 
 <div class="page-wrap">
-  <div class="page-badge">隱私權政策</div>
-  <h1>我們如何處理你的資料</h1>
-  <p class="lead">短版:你的 Email 用來寄日報,你的股票偏好用來客製日報內容,瀏覽器推播訂閱用來推即時提醒。我們不賣資料、不共享給第三方廣告商、不追蹤你瀏覽其他網站。</p>
-  <p class="updated">最後更新:2026-05-23</p>
+  <div class="page-badge" data-i18n="page_badge">隱私權政策</div>
+  <h1 data-i18n="page_h1">我們如何處理你的資料</h1>
+  <p class="lead" data-i18n="page_lead">短版:你的 Email 用來寄日報,你的股票偏好用來客製日報內容,瀏覽器推播訂閱用來推即時提醒。我們不賣資料、不共享給第三方廣告商、不追蹤你瀏覽其他網站。</p>
+  <p class="updated" data-i18n="page_updated">最後更新:2026-05-23</p>
 
-  <h2>1. 我們蒐集哪些資料</h2>
-  <p>當你使用 MarketDaily(marketdaily.ai),我們會蒐集以下資料:</p>
+  <h2 data-i18n="h2_1">1. 我們蒐集哪些資料</h2>
+  <p data-i18n="s1_p">當你使用 MarketDaily(marketdaily.ai),我們會蒐集以下資料:</p>
   <ul>
-    <li><strong>必要資料</strong>:Email、密碼(雜湊儲存,我們看不到原文)、訂閱方案(免費 / Premium)、訂閱起始時間</li>
-    <li><strong>個人化用資料</strong>:你在後台設定的美股 / 台股股票偏好</li>
-    <li><strong>選用資料</strong>:瀏覽器推播訂閱(只有你主動「啟用即時推播」時才取得,用於推送即時提醒到你的裝置)</li>
-    <li><strong>系統資料</strong>:來源 UTM 標籤、頁面點擊、註冊裝置粗略地理位置(僅國家層級)</li>
-    <li><strong>金流資料</strong>:付費訂閱透過 Stripe 處理,我們不接觸你的信用卡資料,只收到 Stripe 回傳的訂閱狀態</li>
+    <li data-i18n-html="s1_li1"><strong>必要資料</strong>:Email、密碼(雜湊儲存,我們看不到原文)、訂閱方案(免費 / Premium)、訂閱起始時間</li>
+    <li data-i18n-html="s1_li2"><strong>個人化用資料</strong>:你在後台設定的美股 / 台股股票偏好</li>
+    <li data-i18n-html="s1_li3"><strong>選用資料</strong>:瀏覽器推播訂閱(只有你主動「啟用即時推播」時才取得,用於推送即時提醒到你的裝置)</li>
+    <li data-i18n-html="s1_li4"><strong>系統資料</strong>:來源 UTM 標籤、頁面點擊、註冊裝置粗略地理位置(僅國家層級)</li>
+    <li data-i18n-html="s1_li5"><strong>金流資料</strong>:付費訂閱透過 Stripe 處理,我們不接觸你的信用卡資料,只收到 Stripe 回傳的訂閱狀態</li>
   </ul>
 
-  <h2>2. 我們為什麼蒐集</h2>
+  <h2 data-i18n="h2_2">2. 我們為什麼蒐集</h2>
   <ul>
-    <li>Email:寄送你訂閱的每日財經日報、帳號通知、付款收據</li>
-    <li>股票偏好:讓日報只分析你關心的個股,不是給所有人一樣的內容</li>
-    <li>瀏覽器推播訂閱:當重大新聞影響你的持股時即時推播到你的裝置(需你主動啟用才會用到)</li>
-    <li>UTM / 行銷分析:了解哪個來源的訂戶最多,優化我們的內容</li>
+    <li data-i18n="s2_li1">Email:寄送你訂閱的每日財經日報、帳號通知、付款收據</li>
+    <li data-i18n="s2_li2">股票偏好:讓日報只分析你關心的個股,不是給所有人一樣的內容</li>
+    <li data-i18n="s2_li3">瀏覽器推播訂閱:當重大新聞影響你的持股時即時推播到你的裝置(需你主動啟用才會用到)</li>
+    <li data-i18n="s2_li4">UTM / 行銷分析:了解哪個來源的訂戶最多,優化我們的內容</li>
   </ul>
 
-  <h2>3. 我們不做這些事</h2>
+  <h2 data-i18n="h2_3">3. 我們不做這些事</h2>
   <ul>
-    <li><strong>不販售</strong>任何個資給第三方</li>
-    <li><strong>不分享</strong>給數據經紀商</li>
-    <li><strong>不做跨站廣告追蹤鎖定</strong>、不投放個人化再行銷廣告</li>
-    <li>不在 Email 中夾帶與你訂閱主題無關的廣告</li>
+    <li data-i18n-html="s3_li1"><strong>不販售</strong>任何個資給第三方</li>
+    <li data-i18n-html="s3_li2"><strong>不分享</strong>給數據經紀商</li>
+    <li data-i18n-html="s3_li3"><strong>不做跨站廣告追蹤鎖定</strong>、不投放個人化再行銷廣告</li>
+    <li data-i18n="s3_li4">不在 Email 中夾帶與你訂閱主題無關的廣告</li>
   </ul>
 
-  <h2>4. 資料儲存在哪</h2>
-  <p>所有資料儲存在 <strong>Cloudflare KV</strong>(全球 CDN 邊緣節點)與 <strong>Brevo</strong>(歐盟 GDPR 合規 Email 服務)。台灣與美國用戶資料可能存於不同邊緣節點以加快回應速度。</p>
+  <h2 data-i18n="h2_4">4. 資料儲存在哪</h2>
+  <p data-i18n-html="s4_p">所有資料儲存在 <strong>Cloudflare KV</strong>(全球 CDN 邊緣節點)與 <strong>Brevo</strong>(歐盟 GDPR 合規 Email 服務)。台灣與美國用戶資料可能存於不同邊緣節點以加快回應速度。</p>
 
-  <h2>5. 你有什麼權利</h2>
+  <h2 data-i18n="h2_5">5. 你有什麼權利</h2>
   <ul>
-    <li><strong>取得備份</strong>:寄信到下方聯絡 Email,我們會把你所有資料以 JSON 格式寄給你</li>
-    <li><strong>修改 / 更正</strong>:登入 dashboard.html 直接改,或寄信請主編改</li>
-    <li><strong>刪除帳號</strong>:任何一封日報底部點「取消訂閱」即時生效;若要連同所有 KV 紀錄一併清除,寄信給我們會 7 日內完成</li>
-    <li><strong>退費</strong>:30 天無理由退費保證</li>
+    <li data-i18n-html="s5_li1"><strong>取得備份</strong>:寄信到下方聯絡 Email,我們會把你所有資料以 JSON 格式寄給你</li>
+    <li data-i18n-html="s5_li2"><strong>修改 / 更正</strong>:登入 dashboard.html 直接改,或寄信請主編改</li>
+    <li data-i18n-html="s5_li3"><strong>刪除帳號</strong>:任何一封日報底部點「取消訂閱」即時生效;若要連同所有 KV 紀錄一併清除,寄信給我們會 7 日內完成</li>
+    <li data-i18n-html="s5_li4"><strong>退費</strong>:30 天無理由退費保證</li>
   </ul>
 
-  <h2>6. Cookie / 本機儲存</h2>
-  <p>MarketDaily 使用 <strong>localStorage / sessionStorage</strong>(不是傳統 cookie)儲存:你的登入 Email、語言偏好、UTM 來源標籤、推薦碼。這些資料只存在你的瀏覽器,我們不會主動讀取,也不會跨網站追蹤。</p>
+  <h2 data-i18n="h2_6">6. Cookie / 本機儲存</h2>
+  <p data-i18n-html="s6_p">MarketDaily 使用 <strong>localStorage / sessionStorage</strong>(不是傳統 cookie)儲存:你的登入 Email、語言偏好、UTM 來源標籤、推薦碼。這些資料只存在你的瀏覽器,我們不會主動讀取,也不會跨網站追蹤。</p>
 
-  <h2>6-1. 使用分析</h2>
-  <p>為了了解網站哪裡好用、哪裡卡關並持續改善服務,我們使用少量、隱私友善的分析工具:<strong>PostHog</strong>(產品使用分析,已關閉畫面錄影,僅記錄匿名的頁面瀏覽與按鈕點擊等操作事件)與 <strong>Meta Pixel</strong>(轉換成效衡量)。這些工具用來衡量「有多少人看到頁面、完成註冊」等彙總數據,<strong>不用於販售個資,也不用於跨站個人化廣告鎖定</strong>。你的密碼永遠不會被這些工具記錄。</p>
+  <h2 data-i18n="h2_6b">6-1. 使用分析</h2>
+  <p data-i18n-html="s6b_p">為了了解網站哪裡好用、哪裡卡關並持續改善服務,我們使用少量、隱私友善的分析工具:<strong>PostHog</strong>(產品使用分析,已關閉畫面錄影,僅記錄匿名的頁面瀏覽與按鈕點擊等操作事件)與 <strong>Meta Pixel</strong>(轉換成效衡量)。這些工具用來衡量「有多少人看到頁面、完成註冊」等彙總數據,<strong>不用於販售個資,也不用於跨站個人化廣告鎖定</strong>。你的密碼永遠不會被這些工具記錄。</p>
 
-  <h2>7. 即時推播(選用)</h2>
-  <p>當你在 dashboard 點「啟用即時推播」,瀏覽器會產生一組推播訂閱(Web Push Subscription)交給我們,僅用於在重大新聞影響你持股時即時推播到你的裝置。我們不會藉此讀取你的瀏覽紀錄或其他網站資料。你可在瀏覽器設定或 dashboard 隨時關閉推播。</p>
+  <h2 data-i18n="h2_7">7. 即時推播(選用)</h2>
+  <p data-i18n="s7_p">當你在 dashboard 點「啟用即時推播」,瀏覽器會產生一組推播訂閱(Web Push Subscription)交給我們,僅用於在重大新聞影響你持股時即時推播到你的裝置。我們不會藉此讀取你的瀏覽紀錄或其他網站資料。你可在瀏覽器設定或 dashboard 隨時關閉推播。</p>
 
-  <h2>8. 兒少保護</h2>
-  <p>本服務不對 13 歲以下用戶提供服務。若你發現有未滿 13 歲用戶提供個資給我們,請通知主編,我們會在 48 小時內刪除其資料。</p>
+  <h2 data-i18n="h2_8">8. 兒少保護</h2>
+  <p data-i18n="s8_p">本服務不對 13 歲以下用戶提供服務。若你發現有未滿 13 歲用戶提供個資給我們,請通知主編,我們會在 48 小時內刪除其資料。</p>
 
-  <h2>9. 政策變更</h2>
-  <p>政策若有重大變更,我們會透過你訂閱的 Email 發送通知,並在此頁更新「最後更新」日期。</p>
+  <h2 data-i18n="h2_9">9. 政策變更</h2>
+  <p data-i18n="s9_p">政策若有重大變更,我們會透過你訂閱的 Email 發送通知,並在此頁更新「最後更新」日期。</p>
 
-  <h2>10. 聯絡我們</h2>
-  <p>有任何隱私權相關問題,寄信:<a href="mailto:marketdailyhq@gmail.com">marketdailyhq@gmail.com</a>,或從 <a href="contact.html">聯絡頁</a> 送問題單,主編 24 小時內回覆。</p>
+  <h2 data-i18n="h2_10">10. 聯絡我們</h2>
+  <p data-i18n-html="s10_p">有任何隱私權相關問題,寄信:<a href="mailto:marketdailyhq@gmail.com">marketdailyhq@gmail.com</a>,或從 <a href="contact.html">聯絡頁</a> 送問題單,主編 24 小時內回覆。</p>
 </div>
 
-<footer>MarketDaily · marketdaily.ai · 僅供參考,非投資建議</footer>
+<footer data-i18n="footer_text">MarketDaily · marketdaily.ai · 僅供參考,非投資建議</footer>
+<script>
+const i18n = {
+  zh: {
+    page_title: "隱私權政策 — MarketDaily",
+    nav_back: "← 返回首頁",
+    page_badge: "隱私權政策",
+    page_h1: "我們如何處理你的資料",
+    page_lead: "短版:你的 Email 用來寄日報,你的股票偏好用來客製日報內容,瀏覽器推播訂閱用來推即時提醒。我們不賣資料、不共享給第三方廣告商、不追蹤你瀏覽其他網站。",
+    page_updated: "最後更新:2026-05-23",
+    h2_1: "1. 我們蒐集哪些資料",
+    s1_p: "當你使用 MarketDaily(marketdaily.ai),我們會蒐集以下資料:",
+    s1_li1: "<strong>必要資料</strong>:Email、密碼(雜湊儲存,我們看不到原文)、訂閱方案(免費 / Premium)、訂閱起始時間",
+    s1_li2: "<strong>個人化用資料</strong>:你在後台設定的美股 / 台股股票偏好",
+    s1_li3: "<strong>選用資料</strong>:瀏覽器推播訂閱(只有你主動「啟用即時推播」時才取得,用於推送即時提醒到你的裝置)",
+    s1_li4: "<strong>系統資料</strong>:來源 UTM 標籤、頁面點擊、註冊裝置粗略地理位置(僅國家層級)",
+    s1_li5: "<strong>金流資料</strong>:付費訂閱透過 Stripe 處理,我們不接觸你的信用卡資料,只收到 Stripe 回傳的訂閱狀態",
+    h2_2: "2. 我們為什麼蒐集",
+    s2_li1: "Email:寄送你訂閱的每日財經日報、帳號通知、付款收據",
+    s2_li2: "股票偏好:讓日報只分析你關心的個股,不是給所有人一樣的內容",
+    s2_li3: "瀏覽器推播訂閱:當重大新聞影響你的持股時即時推播到你的裝置(需你主動啟用才會用到)",
+    s2_li4: "UTM / 行銷分析:了解哪個來源的訂戶最多,優化我們的內容",
+    h2_3: "3. 我們不做這些事",
+    s3_li1: "<strong>不販售</strong>任何個資給第三方",
+    s3_li2: "<strong>不分享</strong>給數據經紀商",
+    s3_li3: "<strong>不做跨站廣告追蹤鎖定</strong>、不投放個人化再行銷廣告",
+    s3_li4: "不在 Email 中夾帶與你訂閱主題無關的廣告",
+    h2_4: "4. 資料儲存在哪",
+    s4_p: "所有資料儲存在 <strong>Cloudflare KV</strong>(全球 CDN 邊緣節點)與 <strong>Brevo</strong>(歐盟 GDPR 合規 Email 服務)。台灣與美國用戶資料可能存於不同邊緣節點以加快回應速度。",
+    h2_5: "5. 你有什麼權利",
+    s5_li1: "<strong>取得備份</strong>:寄信到下方聯絡 Email,我們會把你所有資料以 JSON 格式寄給你",
+    s5_li2: "<strong>修改 / 更正</strong>:登入 dashboard.html 直接改,或寄信請主編改",
+    s5_li3: "<strong>刪除帳號</strong>:任何一封日報底部點「取消訂閱」即時生效;若要連同所有 KV 紀錄一併清除,寄信給我們會 7 日內完成",
+    s5_li4: "<strong>退費</strong>:30 天無理由退費保證",
+    h2_6: "6. Cookie / 本機儲存",
+    s6_p: "MarketDaily 使用 <strong>localStorage / sessionStorage</strong>(不是傳統 cookie)儲存:你的登入 Email、語言偏好、UTM 來源標籤、推薦碼。這些資料只存在你的瀏覽器,我們不會主動讀取,也不會跨網站追蹤。",
+    h2_6b: "6-1. 使用分析",
+    s6b_p: "為了了解網站哪裡好用、哪裡卡關並持續改善服務,我們使用少量、隱私友善的分析工具:<strong>PostHog</strong>(產品使用分析,已關閉畫面錄影,僅記錄匿名的頁面瀏覽與按鈕點擊等操作事件)與 <strong>Meta Pixel</strong>(轉換成效衡量)。這些工具用來衡量「有多少人看到頁面、完成註冊」等彙總數據,<strong>不用於販售個資,也不用於跨站個人化廣告鎖定</strong>。你的密碼永遠不會被這些工具記錄。",
+    h2_7: "7. 即時推播(選用)",
+    s7_p: "當你在 dashboard 點「啟用即時推播」,瀏覽器會產生一組推播訂閱(Web Push Subscription)交給我們,僅用於在重大新聞影響你持股時即時推播到你的裝置。我們不會藉此讀取你的瀏覽紀錄或其他網站資料。你可在瀏覽器設定或 dashboard 隨時關閉推播。",
+    h2_8: "8. 兒少保護",
+    s8_p: "本服務不對 13 歲以下用戶提供服務。若你發現有未滿 13 歲用戶提供個資給我們,請通知主編,我們會在 48 小時內刪除其資料。",
+    h2_9: "9. 政策變更",
+    s9_p: "政策若有重大變更,我們會透過你訂閱的 Email 發送通知,並在此頁更新「最後更新」日期。",
+    h2_10: "10. 聯絡我們",
+    s10_p: "有任何隱私權相關問題,寄信:<a href=\"mailto:marketdailyhq@gmail.com\">marketdailyhq@gmail.com</a>,或從 <a href=\"contact.html\">聯絡頁</a> 送問題單,主編 24 小時內回覆。",
+    footer_text: "MarketDaily · marketdaily.ai · 僅供參考,非投資建議"
+  },
+  en: {
+    page_title: "Privacy Policy — MarketDaily",
+    nav_back: "← Back to Home",
+    page_badge: "Privacy Policy",
+    page_h1: "How We Handle Your Data",
+    page_lead: "TL;DR: your email is used to send you the digest, your stock preferences customize its content, and browser push subscriptions power real-time alerts. We never sell your data, never share it with third-party advertisers, and never track you across other websites.",
+    page_updated: "Last updated: 2026-05-23",
+    h2_1: "1. What Data We Collect",
+    s1_p: "When you use MarketDaily (marketdaily.ai), we collect the following data:",
+    s1_li1: "<strong>Required data</strong>: email, password (stored hashed — we never see the plaintext), subscription plan (Free / Premium), subscription start date",
+    s1_li2: "<strong>Personalization data</strong>: the US / TW stock preferences you set in your account",
+    s1_li3: "<strong>Optional data</strong>: browser push subscription (only collected if you actively enable \"real-time push alerts\"), used to send real-time alerts to your device",
+    s1_li4: "<strong>System data</strong>: referral UTM tags, page clicks, coarse device geolocation at signup (country level only)",
+    s1_li5: "<strong>Payment data</strong>: paid subscriptions are processed via Stripe — we never touch your credit card details, only the subscription status Stripe reports back to us",
+    h2_2: "2. Why We Collect It",
+    s2_li1: "Email: to send your daily financial digest, account notifications, and payment receipts",
+    s2_li2: "Stock preferences: so the digest only analyzes the stocks you care about, not the same content for everyone",
+    s2_li3: "Browser push subscription: to send a real-time alert to your device when major news affects your holdings (only used if you actively enable it)",
+    s2_li4: "UTM / marketing analytics: to understand which channels bring the most subscribers, so we can improve our content",
+    h2_3: "3. What We Don't Do",
+    s3_li1: "We <strong>never sell</strong> any personal data to third parties",
+    s3_li2: "We <strong>never share</strong> it with data brokers",
+    s3_li3: "We <strong>never do cross-site ad tracking or targeting</strong>, and never run personalized retargeting ads",
+    s3_li4: "We never insert ads unrelated to your subscription topic into your emails",
+    h2_4: "4. Where Data Is Stored",
+    s4_p: "All data is stored on <strong>Cloudflare KV</strong> (global CDN edge nodes) and <strong>Brevo</strong> (EU GDPR-compliant email service). Taiwan and US user data may be stored on different edge nodes to speed up response times.",
+    h2_5: "5. Your Rights",
+    s5_li1: "<strong>Get a copy</strong>: email us at the address below and we'll send you all your data in JSON format",
+    s5_li2: "<strong>Change / correct</strong>: log in to dashboard.html and edit directly, or email us and the editor will make the change",
+    s5_li3: "<strong>Delete your account</strong>: click \"Unsubscribe\" at the bottom of any digest email for instant effect; to also clear all KV records, email us and it'll be done within 7 days",
+    s5_li4: "<strong>Refund</strong>: 30-day no-questions-asked refund guarantee",
+    h2_6: "6. Cookies / Local Storage",
+    s6_p: "MarketDaily uses <strong>localStorage / sessionStorage</strong> (not traditional cookies) to store: your login email, language preference, UTM source tag, and referral code. This data lives only in your browser — we never proactively read it, and never track you across sites with it.",
+    h2_6b: "6-1. Usage Analytics",
+    s6b_p: "To understand what works well on the site, where users get stuck, and to keep improving the service, we use a small set of privacy-friendly analytics tools: <strong>PostHog</strong> (product usage analytics, session recording disabled, only anonymous page views and button clicks are logged) and <strong>Meta Pixel</strong> (conversion measurement). These tools are used to measure aggregate figures like \"how many people saw a page\" or \"completed sign-up\" — <strong>never to sell personal data, and never for cross-site personalized ad targeting</strong>. Your password is never logged by these tools.",
+    h2_7: "7. Real-Time Push Alerts (Optional)",
+    s7_p: "When you click \"Enable real-time push\" on the dashboard, your browser generates a Web Push Subscription that it hands to us, used solely to send real-time alerts to your device when major news affects your holdings. We never use this to read your browsing history or data from other sites. You can disable push at any time from your browser settings or the dashboard.",
+    h2_8: "8. Children's Privacy",
+    s8_p: "This service is not offered to users under 13. If you discover that a user under 13 has provided us with personal data, please notify the editor and we will delete their data within 48 hours.",
+    h2_9: "9. Policy Changes",
+    s9_p: "If we make a material change to this policy, we'll notify you via the email you subscribed with, and update the \"Last updated\" date on this page.",
+    h2_10: "10. Contact Us",
+    s10_p: "For any privacy-related questions, email us at <a href=\"mailto:marketdailyhq@gmail.com\">marketdailyhq@gmail.com</a>, or submit a ticket from the <a href=\"contact.html\">contact page</a> — the editor replies within 24 hours.",
+    footer_text: "MarketDaily · marketdaily.ai · For informational purposes only, not investment advice"
+  }
+};
+
+function applyLang(lang) {
+  const t = i18n[lang] || i18n.zh;
+  document.title = t.page_title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = t[el.dataset.i18n];
+    if (v !== undefined) el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = t[el.dataset.i18nHtml];
+    if (v !== undefined) el.innerHTML = v;
+  });
+  const langBtn = document.querySelector('.lang-btn');
+  if (langBtn) langBtn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+  localStorage.setItem('md-lang-v2', lang);
+}
+
+function toggleLang() {
+  const cur = localStorage.getItem('md-lang-v2') || 'zh';
+  applyLang(cur === 'zh' ? 'en' : 'zh');
+}
+
+applyLang(localStorage.getItem('md-lang-v2') || 'zh');
+</script>
 <script src="terminal.js?v=1"></script>
 </body>
 </html>
