@@ -39,7 +39,7 @@ def main():
     ap.add_argument("text", nargs="?")
     ap.add_argument("out", nargs="?", default="tts_out.mp3")
     ap.add_argument("--voice", default=DEFAULT_VOICE)
-    ap.add_argument("--rate", default=None, help="+10% / -20%")
+    ap.add_argument("--rate", default=None, help="+10%% / -20%%")
     ap.add_argument("--volume", default=None)
     ap.add_argument("--file", help="從檔案讀文字")
     ap.add_argument("--list", action="store_true")
