@@ -1976,6 +1976,67 @@ def _macro_backdrop_note(data: dict) -> str:
     return " ｜ ".join(parts)
 
 
+_OPTIONS_NOTE_CACHE = {}
+
+
+def _options_flow_note(data: dict) -> str:
+    """美股選擇權流補充(put/call 比,marketdata.app EOD)。純情緒參考,不改寫方向/價位。
+    掛掉/缺 token/量太少一律靜默回空字串,注入點自動 no-op,絕不影響主商品、不告警。"""
+    token = os.getenv("MARKETDATA_API_TOKEN")
+    if not token:
+        return ""
+    us = (data or {}).get("us_market") or {}
+    syms = [s for s in us.keys() if s and not str(s).isdigit()][:6]
+    if not syms:
+        return ""
+    cache_key = time.strftime("%Y-%m-%d") + "|" + ",".join(sorted(syms))
+    if cache_key in _OPTIONS_NOTE_CACHE:
+        return _OPTIONS_NOTE_CACHE[cache_key]
+    parts = []
+    for sym in syms:
+        try:
+            r = requests.get(
+                f"https://api.marketdata.app/v1/options/chain/{sym}/",
+                params={"dte": 45, "strikeLimit": 20},
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=8,
+            )
+            # marketdata.app 對 EOD/快取資料回 203(Non-Authoritative),非錯誤
+            if r.status_code not in (200, 203):
+                continue
+            j = r.json()
+            if j.get("s") != "ok":
+                continue
+            sides = j.get("side") or []
+            ois = j.get("openInterest") or []
+            vols = j.get("volume") or []
+            call_oi = sum(o for sd, o in zip(sides, ois) if sd == "call" and o)
+            put_oi = sum(o for sd, o in zip(sides, ois) if sd == "put" and o)
+            # 優先用未平倉(EOD 較穩);缺就退成交量
+            if call_oi + put_oi >= 500 and call_oi:
+                pcr = put_oi / call_oi
+            else:
+                call_v = sum(v for sd, v in zip(sides, vols) if sd == "call" and v)
+                put_v = sum(v for sd, v in zip(sides, vols) if sd == "put" and v)
+                if call_v + put_v < 200 or not call_v:
+                    continue
+                pcr = put_v / call_v
+            tag = "偏空避險濃" if pcr >= 1.3 else ("偏多押注濃" if pcr <= 0.6 else "")
+            parts.append(f"{sym} P/C {pcr:.2f}" + (f"({tag})" if tag else ""))
+        except Exception:
+            continue
+    if not parts:
+        _OPTIONS_NOTE_CACHE[cache_key] = ""
+        return ""
+    note = (
+        "\n【美股選擇權流(真實 put/call 未平倉比,情緒參考)】" + " ｜ ".join(parts) + "\n"
+        "用法:P/C>1.3=選擇權市場偏空避險、<0.6=偏多押注,只作為該股 signal-watch 的情緒補充,"
+        "方向/價位/信心仍以技術結構為準,講不出機制就別硬扯。\n"
+    )
+    _OPTIONS_NOTE_CACHE[cache_key] = note
+    return note
+
+
 def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -> str:
     """組合透視(看深入專屬):純計算整個持股的集中度與最大組合風險,缺料/持股太少不談。
     只用既有資料(結構 prior / 政壇訊號 / 估值 / 籌碼),不編造、不經 LLM。"""
@@ -2317,6 +2378,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                 "讓用戶知道今天新聞為什麼點名它;新聞只補脈絡與觀察重點,方向/價位/信心仍以技術結構為準,嚴禁引用沒列出的新聞或自行腦補新聞細節。\n"
                 "- 宏觀背景只對「真的敏感」的持股連動(利率↑→金融/高估值成長股、油價→能源/航運、避險情緒→防禦vs風險),講不出機制的就別硬扯。\n"
             )
+    options_note = _options_flow_note(data) if depth != "simple" else ""
     def _pos_note(sub: list) -> str:
         """持有者框架 prompt 區塊:只對用戶自填了進場成本的標的生效,其餘標的完全不受影響。
         損益數字在這裡用真實市價算好餵給 LLM,嚴禁 LLM 自行計算。"""
@@ -2358,7 +2420,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
         return (
             lead +
             f"標的({len(sub)} 支,一支都不能少、不能合併):{', '.join(sub)}\n\n"
-            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{_pos_note(sub)}{_council_prompt_block(council, sub)}\n"
+            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{options_note}{_pos_note(sub)}{_council_prompt_block(council, sub)}\n"
             f"{rules}\n\n"
             f"只輸出這 {len(sub)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
             f"不要輸出 signal-grid 外框、不要任何說明文字、不要 markdown 反引號。"

@@ -9,6 +9,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 BEEHIIV_API_KEY = os.getenv("BEEHIIV_API_KEY")
 BEEHIIV_PUBLICATION_ID = os.getenv("BEEHIIV_PUBLICATION_ID")
 BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+MARKETDATA_API_TOKEN = os.getenv("MARKETDATA_API_TOKEN")
 SENDER_EMAIL = os.getenv("SENDER_EMAIL", "hello@marketdaily.ai")
 SENDER_NAME = os.getenv("SENDER_NAME", "財經日報")
 
