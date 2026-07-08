@@ -1256,32 +1256,43 @@ footer {
 <script>
 // 首頁戰績數字 — 動態讀 track-record.json,與 /track-record 頁同步
 (function(){
+  let trData = null; // 供 applyLang() 語言切換時重繪(i18n JS 動態渲染盲區,見 feedback_i18n_js_dynamic_render_blindspot)
+  // 樣本 < 20 顯示「樣本累積中」,跟戰績頁口徑一致(英文文案沿用 track-record.html 既有 "Collecting")
+  const MIN_N = 20;
+  const fmt = (rate, n) => {
+    if (typeof n !== 'number' || n === 0) return '—';
+    if (n < MIN_N) {
+      const label = currentLang === 'en' ? 'Collecting' : '累積中';
+      return `${label}<br><span style="font-size:14px;opacity:0.7;">(${n}/${MIN_N})</span>`;
+    }
+    return (typeof rate === 'number' ? rate.toFixed(1) : '—') + '%';
+  };
+  window.renderHeroTrackRecord = function(){
+    if (!trData || !trData.stats) return;
+    const a = document.getElementById('tr-stat-a');
+    const c = document.getElementById('tr-stat-c');
+    const t = document.getElementById('tr-stat-total');
+    const heroChip = document.getElementById('hp-chip1-num');
+    // 看多用「公版可查證」口徑(與 /track-record 頁主數字一致,可逐筆對照紀錄表);
+    // 避坑用全用戶合計(戰績頁同樣有列)。沒有 public_only 時退回合計值。
+    const pub = trData.stats.public_only || trData.stats;
+    if (a) a.innerHTML = fmt(pub.a_rate, pub.a_count);
+    if (c) c.innerHTML = fmt(trData.stats.c_rate, trData.stats.c_count);
+    if (t && typeof trData.stats.total_records === 'number') t.textContent = trData.stats.total_records;
+    // Hero chip 帶頭數字:避坑勝率(公版可查證口徑,與買進負edge區隔——見 backlog P1.5 修4)
+    if (heroChip) {
+      const raw = fmt(pub.c_rate, pub.c_count);
+      heroChip.textContent = raw.startsWith('累積中') || raw.startsWith('Collecting')
+        ? (currentLang === 'en' ? 'Collecting' : '累積中')
+        : raw;
+    }
+  };
   fetch('data/track-record.json', { cache: 'no-cache' })
     .then(r => r.ok ? r.json() : null)
     .then(d => {
       if (!d || !d.stats) return;
-      const a = document.getElementById('tr-stat-a');
-      const c = document.getElementById('tr-stat-c');
-      const t = document.getElementById('tr-stat-total');
-      const heroChip = document.getElementById('hp-chip1-num');
-      // 樣本 < 20 顯示「樣本累積中」,跟戰績頁口徑一致
-      const MIN_N = 20;
-      const fmt = (rate, n) => {
-        if (typeof n !== 'number' || n === 0) return '—';
-        if (n < MIN_N) return `累積中<br><span style="font-size:14px;opacity:0.7;">(${n}/${MIN_N})</span>`;
-        return (typeof rate === 'number' ? rate.toFixed(1) : '—') + '%';
-      };
-      // 看多用「公版可查證」口徑(與 /track-record 頁主數字一致,可逐筆對照紀錄表);
-      // 避坑用全用戶合計(戰績頁同樣有列)。沒有 public_only 時退回合計值。
-      const pub = d.stats.public_only || d.stats;
-      if (a) a.innerHTML = fmt(pub.a_rate, pub.a_count);
-      if (c) c.innerHTML = fmt(d.stats.c_rate, d.stats.c_count);
-      if (t && typeof d.stats.total_records === 'number') t.textContent = d.stats.total_records;
-      // Hero chip 帶頭數字:避坑勝率(公版可查證口徑,與買進負edge區隔——見 backlog P1.5 修4)
-      if (heroChip) {
-        const raw = fmt(pub.c_rate, pub.c_count);
-        heroChip.textContent = raw.startsWith('累積中') ? '累積中' : raw;
-      }
+      trData = d;
+      window.renderHeroTrackRecord();
     })
     .catch(() => {});
 })();
@@ -2277,6 +2288,7 @@ function applyLang(lang) {
   });
   document.getElementById("lang-toggle").textContent = lang === "en" ? "中文" : "EN";
   document.documentElement.lang = lang === "en" ? "en" : "zh-Hant";
+  if (window.renderHeroTrackRecord) window.renderHeroTrackRecord();
 }
 
 function toggleLang() {
