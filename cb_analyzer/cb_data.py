@@ -33,8 +33,10 @@ def _load_cache():
 
 def _save_cache(c):
     try:
-        with open(CACHE_PATH, "w", encoding="utf-8") as f:
+        tmp = CACHE_PATH + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as f:
             json.dump(c, f, ensure_ascii=False)
+        os.replace(tmp, CACHE_PATH)
     except Exception:
         pass
 
@@ -97,7 +99,7 @@ def get_stock(code, today=None, use_cache=True, vol_weights=(0.35, 0.65), realti
 def _get_daily(code, today=None, use_cache=True, vol_weights=(0.35, 0.65)):
     today = today or datetime.date.today()
     cache = _load_cache() if use_cache else {}
-    ckey = f"{code}:{today.isoformat()}:v2:{vol_weights}"
+    ckey = f"{code}:{today.isoformat()}:v3:{vol_weights}"
     if ckey in cache:
         return cache[ckey]
 
@@ -128,6 +130,7 @@ def _get_daily(code, today=None, use_cache=True, vol_weights=(0.35, 0.65)):
         "ret_20d": ret_20d, "n": len(allrets),
         "vols": vols, "vol_blend": blend, "vol_detail": detail,
         "hist_vol": vols["v60"],   # 相容舊欄位
+        "closes": closes,   # [(date_iso, close), ...] 升冪排序,供強贖進度等逐日門檻計算使用
     }
     cache[ckey] = out
     if use_cache:
