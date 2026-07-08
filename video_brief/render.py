@@ -60,7 +60,10 @@ def record(brief_path):
     vid_dir = OUT / "_rec"
     vid_dir.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
-        browser = p.chromium.launch(args=["--force-device-scale-factor=1"])
+        browser = p.chromium.launch(args=[
+            "--force-device-scale-factor=1",
+            "--disable-gpu", "--disable-dev-shm-usage",  # WSL/headless 環境 GPU process 起不來
+        ])
         ctx = browser.new_context(
             viewport={"width": 1080, "height": 1920},
             record_video_dir=str(vid_dir),
