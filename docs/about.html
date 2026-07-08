@@ -445,7 +445,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
         <div class="mono-d">D</div>
         <div class="mono-tag">Chief Editor</div>
       </div>
-      <span class="pulse-dot" title="今日已審稿"></span>
+      <span class="pulse-dot" data-i18n-title="pulse_title" title="今日已審稿"></span>
     </div>
     <div>
       <div class="page-badge" data-i18n="page_badge">主編 · Editor-in-Chief</div>
@@ -597,6 +597,7 @@ const i18n = {
     qual_investor: "投資者",
     qual_eng: "軟體工程",
     qual_dual: "台美雙線",
+    pulse_title: "今日已審稿",
     hero_note: "我設計並持續盯緊整條編輯管線:多模型交叉辯論、品質熔斷、公開戰績留底。出錯的每一天,更正也公開。",
     s1_h2: "為什麼做 MarketDaily",
     s1_p1: "我以前每天早上起床第一件事是滑 Bloomberg、CNBC、PTT、Reddit。一個小時下來,我看過 200 條新聞,但對「我自己的股」還是一頭霧水。",
@@ -655,6 +656,7 @@ const i18n = {
     qual_investor: "Investor",
     qual_eng: "Software Engineer",
     qual_dual: "TW/US Dual Market",
+    pulse_title: "Reviewed today",
     hero_note: "I designed and keep watch over the entire editorial pipeline: multi-model cross-debate, quality circuit breakers, public track record. Every day we get it wrong, the correction is public too.",
     s1_h2: "Why I Built MarketDaily",
     s1_p1: "I used to start every morning scrolling Bloomberg, CNBC, PTT, Reddit. An hour later I'd read 200 headlines but still be foggy on the stocks I actually held.",
@@ -716,6 +718,10 @@ function applyLang(lang) {
   document.querySelectorAll('[data-i18n-html]').forEach(el => {
     const v = t[el.dataset.i18nHtml];
     if (v !== undefined) el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const v = t[el.dataset.i18nTitle];
+    if (v !== undefined) el.title = v;
   });
   const langBtn = document.querySelector('.lang-btn');
   if (langBtn) langBtn.textContent = lang === 'zh' ? 'EN' : '中文';
