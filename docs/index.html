@@ -1257,12 +1257,12 @@ footer {
 // 首頁戰績數字 — 動態讀 track-record.json,與 /track-record 頁同步
 (function(){
   let trData = null; // 供 applyLang() 語言切換時重繪(i18n JS 動態渲染盲區,見 feedback_i18n_js_dynamic_render_blindspot)
-  // 樣本 < 20 顯示「樣本累積中」,跟戰績頁口徑一致(英文文案沿用 track-record.html 既有 "Collecting")
+  // 樣本 < 20 顯示「樣本累積中」,跟戰績頁口徑一致(英文文案沿用 track-record.html 既有 "Collecting samples")
   const MIN_N = 20;
   const fmt = (rate, n) => {
     if (typeof n !== 'number' || n === 0) return '—';
     if (n < MIN_N) {
-      const label = currentLang === 'en' ? 'Collecting' : '累積中';
+      const label = currentLang === 'en' ? 'Collecting samples' : '樣本累積中';
       return `${label}<br><span style="font-size:14px;opacity:0.7;">(${n}/${MIN_N})</span>`;
     }
     return (typeof rate === 'number' ? rate.toFixed(1) : '—') + '%';
@@ -1282,7 +1282,8 @@ footer {
     // Hero chip 帶頭數字:避坑勝率(公版可查證口徑,與買進負edge區隔——見 backlog P1.5 修4)
     if (heroChip) {
       const raw = fmt(pub.c_rate, pub.c_count);
-      heroChip.textContent = raw.startsWith('累積中') || raw.startsWith('Collecting')
+      // hero chip 空間窄(單行,與下方 subtitle 相鄰),故意用比大卡片短的字樣,避免長字串溢位重疊
+      heroChip.textContent = raw.startsWith('樣本累積中') || raw.startsWith('Collecting')
         ? (currentLang === 'en' ? 'Collecting' : '累積中')
         : raw;
     }
