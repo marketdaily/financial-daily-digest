@@ -415,8 +415,9 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     Market<em>Daily</em>
   </a>
   <div class="nav-right">
-    <a href="index.html" class="nav-back">← 返回首頁</a>
-      </div>
+    <a href="index.html" class="nav-back" data-i18n="nav_back">← 返回首頁</a>
+    <button class="lang-btn" onclick="toggleLang()">EN</button>
+  </div>
 </nav>
 
 <div class="page-wrap">
@@ -447,16 +448,16 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
       <span class="pulse-dot" title="今日已審稿"></span>
     </div>
     <div>
-      <div class="page-badge">主編 · Editor-in-Chief</div>
+      <div class="page-badge" data-i18n="page_badge">主編 · Editor-in-Chief</div>
       <h1>Delvin Chang</h1>
-      <p class="role-line">每封 MarketDaily 日報出去前,我都看過。</p>
+      <p class="role-line" data-i18n="role_line">每封 MarketDaily 日報出去前,我都看過。</p>
       <div class="qual-row">
-        <span class="qual-pill">MarketDaily 創辦人</span>
-        <span class="qual-pill">投資者</span>
-        <span class="qual-pill">軟體工程</span>
-        <span class="qual-pill">台美雙線</span>
+        <span class="qual-pill" data-i18n="qual_founder">MarketDaily 創辦人</span>
+        <span class="qual-pill" data-i18n="qual_investor">投資者</span>
+        <span class="qual-pill" data-i18n="qual_eng">軟體工程</span>
+        <span class="qual-pill" data-i18n="qual_dual">台美雙線</span>
       </div>
-      <p style="margin-top:14px;font-size:12px;color:rgba(255,255,255,0.4);line-height:1.6;">
+      <p style="margin-top:14px;font-size:12px;color:rgba(255,255,255,0.4);line-height:1.6;" data-i18n="hero_note">
         我設計並持續盯緊整條編輯管線:多模型交叉辯論、品質熔斷、公開戰績留底。出錯的每一天,更正也公開。
       </p>
     </div>
@@ -464,19 +465,19 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
   <!-- Why I built this -->
   <div class="section">
-    <h2><span class="num">1</span>為什麼做 MarketDaily</h2>
+    <h2><span class="num">1</span><span data-i18n="s1_h2">為什麼做 MarketDaily</span></h2>
     <div class="why-box">
       <div class="quote-mark">"</div>
-      <p>
+      <p data-i18n="s1_p1">
         我以前每天早上起床第一件事是滑 Bloomberg、CNBC、PTT、Reddit。一個小時下來,我看過 200 條新聞,但對「我自己的股」還是一頭霧水。
       </p>
-      <p>
+      <p data-i18n="s1_p2">
         更糟的是,一半新聞跟我無關,有些是假的,有些是業配。最後我會在 LINE 群組看別人推什麼明牌,然後跟著買——結果不用想,大部分是賠的。
       </p>
-      <p>
+      <p data-i18n="s1_p3">
         我懶得再做這件事。所以我自己寫了一套 AI Pipeline,讓它每天清晨幫我做完掃新聞、過濾假訊息、針對我的持股做摘要——然後寄到我自己信箱。
       </p>
-      <p>
+      <p data-i18n-html="s1_p4">
         <strong>用了 6 個月,我幾乎沒打開過財經 App。</strong>朋友看到後說「給我也用一下」,於是有了 MarketDaily。
       </p>
     </div>
@@ -484,112 +485,250 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
   <!-- Daily workflow -->
   <div class="section">
-    <h2><span class="num">2</span>每天清晨的編輯流程</h2>
-    <p style="margin-bottom:24px;">日報是 <strong>AI 起稿 + 多層制度把關</strong>:多模型交叉辯論、確定性品質稽核、獨立看門狗驗證。每天經過下面 6 個關卡,任何一關出問題就熔斷告警。</p>
+    <h2><span class="num">2</span><span data-i18n="s2_h2">每天清晨的編輯流程</span></h2>
+    <p style="margin-bottom:24px;" data-i18n-html="s2_lead">日報是 <strong>AI 起稿 + 多層制度把關</strong>:多模型交叉辯論、確定性品質稽核、獨立看門狗驗證。每天經過下面 6 個關卡,任何一關出問題就熔斷告警。</p>
     <div class="timeline">
       <div class="tl-item">
         <div class="tl-time">06:20 TWT</div>
-        <div class="tl-title">AI Pipeline 啟動</div>
-        <div class="tl-desc">系統開始掃白名單全球財經來源(Reuters / Bloomberg / WSJ / 經濟日報 / Anue / 鉅亨...),依照訂戶持股清單分桶歸類。</div>
+        <div class="tl-title" data-i18n="tl1_title">AI Pipeline 啟動</div>
+        <div class="tl-desc" data-i18n="tl1_desc">系統開始掃白名單全球財經來源(Reuters / Bloomberg / WSJ / 經濟日報 / Anue / 鉅亨...),依照訂戶持股清單分桶歸類。</div>
       </div>
       <div class="tl-item">
         <div class="tl-time">06:30 TWT</div>
-        <div class="tl-title">多源交叉驗證 + 假新聞篩選</div>
-        <div class="tl-desc">每則新聞至少 2 個獨立來源驗證才標 ✅,單一來源標 ⚠️。看不出真假的整篇剔除。</div>
+        <div class="tl-title" data-i18n="tl2_title">多源交叉驗證 + 假新聞篩選</div>
+        <div class="tl-desc" data-i18n="tl2_desc">每則新聞至少 2 個獨立來源驗證才標 ✅,單一來源標 ⚠️。看不出真假的整篇剔除。</div>
       </div>
       <div class="tl-item">
         <div class="tl-time">06:00 TWT</div>
-        <div class="tl-title">AI 委員會多模型辯論</div>
-        <div class="tl-desc">每支個股的方向判斷不是單一模型說了算——多個獨立 AI 模型交叉辯論,意見分歧的降信心或改觀望,不硬給結論。</div>
+        <div class="tl-title" data-i18n="tl3_title">AI 委員會多模型辯論</div>
+        <div class="tl-desc" data-i18n="tl3_desc">每支個股的方向判斷不是單一模型說了算——多個獨立 AI 模型交叉辯論,意見分歧的降信心或改觀望,不硬給結論。</div>
       </div>
       <div class="tl-item">
         <div class="tl-time">06:45 TWT</div>
-        <div class="tl-title">品質稽核 + 熔斷機制</div>
-        <div class="tl-desc">自動稽核逐項檢查版面與內容完整性;同類高風險問題連續命中會直接熔斷,寄出前推播管理員,寧可延誤不寄錯。</div>
+        <div class="tl-title" data-i18n="tl4_title">品質稽核 + 熔斷機制</div>
+        <div class="tl-desc" data-i18n="tl4_desc">自動稽核逐項檢查版面與內容完整性;同類高風險問題連續命中會直接熔斷,寄出前推播管理員,寧可延誤不寄錯。</div>
       </div>
       <div class="tl-item">
         <div class="tl-time">06:55 TWT</div>
-        <div class="tl-title">最終放行 → 排程發送</div>
-        <div class="tl-desc">確認沒有業配、沒有炒作、版面零錯誤 → 排程到 7:00 整點寄出;寄出後獨立看門狗再驗一次,失敗自動重派+告警。</div>
+        <div class="tl-title" data-i18n="tl5_title">最終放行 → 排程發送</div>
+        <div class="tl-desc" data-i18n="tl5_desc">確認沒有業配、沒有炒作、版面零錯誤 → 排程到 7:00 整點寄出;寄出後獨立看門狗再驗一次,失敗自動重派+告警。</div>
       </div>
       <div class="tl-item">
         <div class="tl-time">07:00 TWT</div>
-        <div class="tl-title">日報送達訂戶信箱</div>
-        <div class="tl-desc">台灣早上 7:00,台股日報準時躺在你信箱;晚上 8:00,美股日報接著送達。</div>
+        <div class="tl-title" data-i18n="tl6_title">日報送達訂戶信箱</div>
+        <div class="tl-desc" data-i18n="tl6_desc">台灣早上 7:00,台股日報準時躺在你信箱;晚上 8:00,美股日報接著送達。</div>
       </div>
     </div>
   </div>
 
   <!-- Editorial commitments -->
   <div class="section">
-    <h2><span class="num">3</span>編輯立場 · 我的承諾</h2>
-    <p style="margin-bottom:24px;">下面 6 點是我給每位訂戶的明確承諾。違反任一條,你都可以公開要求退費 + 公告。</p>
+    <h2><span class="num">3</span><span data-i18n="s3_h2">編輯立場 · 我的承諾</span></h2>
+    <p style="margin-bottom:24px;" data-i18n="s3_lead">下面 6 點是我給每位訂戶的明確承諾。違反任一條,你都可以公開要求退費 + 公告。</p>
     <div class="commit-grid">
       <div class="commit-card">
-        <div class="commit-h">不收業配</div>
-        <p>日報絕不收任何個股、券商、投顧的廣告或業配。內容只服務訂戶利益。</p>
+        <div class="commit-h" data-i18n="c1_h">不收業配</div>
+        <p data-i18n="c1_p">日報絕不收任何個股、券商、投顧的廣告或業配。內容只服務訂戶利益。</p>
       </div>
       <div class="commit-card">
-        <div class="commit-h">不持有提及個股</div>
-        <p>當天日報明確提到「偏多/偏空/留意」的個股,我自己「不會」在前後 3 天進出。</p>
+        <div class="commit-h" data-i18n="c2_h">不持有提及個股</div>
+        <p data-i18n-html="c2_p">當天日報明確提到「偏多/偏空/留意」的個股,我自己「不會」在前後 3 天進出。</p>
       </div>
       <div class="commit-card">
-        <div class="commit-h">錯了公開更正</div>
-        <p>判斷錯了或事實錯了,隔天日報開頭公開更正。戰績頁也會列輸的部分,不藏。</p>
+        <div class="commit-h" data-i18n="c3_h">錯了公開更正</div>
+        <p data-i18n="c3_p">判斷錯了或事實錯了,隔天日報開頭公開更正。戰績頁也會列輸的部分,不藏。</p>
       </div>
       <div class="commit-card">
-        <div class="commit-h">不報明牌</div>
-        <p>不會說「請在 X 元進場、停損 Y 元」。那是投顧的事,需要牌照。我只給方向與風險。</p>
+        <div class="commit-h" data-i18n="c4_h">不報明牌</div>
+        <p data-i18n-html="c4_p">不會說「請在 X 元進場、停損 Y 元」。那是投顧的事,需要牌照。我只給方向與風險。</p>
       </div>
       <div class="commit-card">
-        <div class="commit-h">不抽老師佣金</div>
-        <p>沒有任何外部投顧/老師合作。日報的判斷來自 AI 模型 + 我親自校核,沒有第三方利益。</p>
+        <div class="commit-h" data-i18n="c5_h">不抽老師佣金</div>
+        <p data-i18n="c5_p">沒有任何外部投顧/老師合作。日報的判斷來自 AI 模型 + 我親自校核,沒有第三方利益。</p>
       </div>
       <div class="commit-card">
-        <div class="commit-h">不誘導交易</div>
-        <p>商業模式只有訂閱費。你下不下單我都領一樣的錢——所以我沒有理由叫你頻繁進出。</p>
+        <div class="commit-h" data-i18n="c6_h">不誘導交易</div>
+        <p data-i18n="c6_p">商業模式只有訂閱費。你下不下單我都領一樣的錢——所以我沒有理由叫你頻繁進出。</p>
       </div>
     </div>
   </div>
 
   <!-- Signature -->
   <div class="section">
-    <h2><span class="num">4</span>我的簽名</h2>
-    <p>這頁不是法律文件,但你可以把它當合約讀。</p>
+    <h2><span class="num">4</span><span data-i18n="s4_h2">我的簽名</span></h2>
+    <p data-i18n="s4_p">這頁不是法律文件,但你可以把它當合約讀。</p>
     <div class="signature-block">
       <div class="sig-line1">Delvin Chang</div>
-      <div class="sig-line2">MarketDaily Editor-in-Chief · 2026-05-23 起,每封日報出去前我都看過</div>
+      <div class="sig-line2" data-i18n="sig_line2">MarketDaily Editor-in-Chief · 2026-05-23 起,每封日報出去前我都看過</div>
     </div>
   </div>
 
   <!-- Bottom CTA -->
   <div class="bottom-cta">
-    <h2>準備好讓早晨變更聰明嗎?</h2>
-    <p>Premium 試讀首月 6 折 NT$299 · 30 天無理由退費 · 隨時取消</p>
+    <h2 data-i18n="cta_h2">準備好讓早晨變更聰明嗎?</h2>
+    <p data-i18n="cta_p">Premium 試讀首月 6 折 NT$299 · 30 天無理由退費 · 隨時取消</p>
     <div class="bottom-cta-btns">
-      <a href="index.html#pricing" class="bcta-btn">立即試讀 →</a>
-      <a href="track-record.html" class="bcta-btn ghost">看公開戰績</a>
-      <a href="vs.html" class="bcta-btn ghost">看對手比較</a>
+      <a href="index.html#pricing" class="bcta-btn" data-i18n="cta_btn1">立即試讀 →</a>
+      <a href="track-record.html" class="bcta-btn ghost" data-i18n="cta_btn2">看公開戰績</a>
+      <a href="vs.html" class="bcta-btn ghost" data-i18n="cta_btn3">看對手比較</a>
     </div>
   </div>
 </div>
 
 <footer>
   <div class="footer-links">
-    <a href="track-record.html">戰績紀錄</a>
-    <a href="vs.html">vs 對手</a>
-    <a href="about.html">主編</a>
-    <a href="pricing.html">定價</a>
-    <a href="contact.html">聯絡客服</a>
+    <a href="track-record.html" data-i18n="footer_record">戰績紀錄</a>
+    <a href="vs.html" data-i18n="footer_vs">vs 對手</a>
+    <a href="about.html" data-i18n="footer_about">主編</a>
+    <a href="pricing.html" data-i18n="footer_pricing">定價</a>
+    <a href="contact.html" data-i18n="footer_contact">聯絡客服</a>
   </div>
-  <span>主編承諾自 2026-05-23 起生效 · 違反任一條訂戶可公開要求更正</span>
+  <span data-i18n="footer_note">主編承諾自 2026-05-23 起生效 · 違反任一條訂戶可公開要求更正</span>
 </footer>
 
 <script>
-function toggleLang() {
-  const btn = document.querySelector(".lang-btn");
-  btn.textContent = btn.textContent === "EN" ? "中文" : "EN";
+const i18n = {
+  zh: {
+    page_title: "主編 Delvin · 編輯流程 — MarketDaily",
+    nav_back: "← 返回首頁",
+    page_badge: "主編 · Editor-in-Chief",
+    role_line: "每封 MarketDaily 日報出去前,我都看過。",
+    qual_founder: "MarketDaily 創辦人",
+    qual_investor: "投資者",
+    qual_eng: "軟體工程",
+    qual_dual: "台美雙線",
+    hero_note: "我設計並持續盯緊整條編輯管線:多模型交叉辯論、品質熔斷、公開戰績留底。出錯的每一天,更正也公開。",
+    s1_h2: "為什麼做 MarketDaily",
+    s1_p1: "我以前每天早上起床第一件事是滑 Bloomberg、CNBC、PTT、Reddit。一個小時下來,我看過 200 條新聞,但對「我自己的股」還是一頭霧水。",
+    s1_p2: "更糟的是,一半新聞跟我無關,有些是假的,有些是業配。最後我會在 LINE 群組看別人推什麼明牌,然後跟著買——結果不用想,大部分是賠的。",
+    s1_p3: "我懶得再做這件事。所以我自己寫了一套 AI Pipeline,讓它每天清晨幫我做完掃新聞、過濾假訊息、針對我的持股做摘要——然後寄到我自己信箱。",
+    s1_p4: "<strong>用了 6 個月,我幾乎沒打開過財經 App。</strong>朋友看到後說「給我也用一下」,於是有了 MarketDaily。",
+    s2_h2: "每天清晨的編輯流程",
+    s2_lead: "日報是 <strong>AI 起稿 + 多層制度把關</strong>:多模型交叉辯論、確定性品質稽核、獨立看門狗驗證。每天經過下面 6 個關卡,任何一關出問題就熔斷告警。",
+    tl1_title: "AI Pipeline 啟動",
+    tl1_desc: "系統開始掃白名單全球財經來源(Reuters / Bloomberg / WSJ / 經濟日報 / Anue / 鉅亨...),依照訂戶持股清單分桶歸類。",
+    tl2_title: "多源交叉驗證 + 假新聞篩選",
+    tl2_desc: "每則新聞至少 2 個獨立來源驗證才標 ✅,單一來源標 ⚠️。看不出真假的整篇剔除。",
+    tl3_title: "AI 委員會多模型辯論",
+    tl3_desc: "每支個股的方向判斷不是單一模型說了算——多個獨立 AI 模型交叉辯論,意見分歧的降信心或改觀望,不硬給結論。",
+    tl4_title: "品質稽核 + 熔斷機制",
+    tl4_desc: "自動稽核逐項檢查版面與內容完整性;同類高風險問題連續命中會直接熔斷,寄出前推播管理員,寧可延誤不寄錯。",
+    tl5_title: "最終放行 → 排程發送",
+    tl5_desc: "確認沒有業配、沒有炒作、版面零錯誤 → 排程到 7:00 整點寄出;寄出後獨立看門狗再驗一次,失敗自動重派+告警。",
+    tl6_title: "日報送達訂戶信箱",
+    tl6_desc: "台灣早上 7:00,台股日報準時躺在你信箱;晚上 8:00,美股日報接著送達。",
+    s3_h2: "編輯立場 · 我的承諾",
+    s3_lead: "下面 6 點是我給每位訂戶的明確承諾。違反任一條,你都可以公開要求退費 + 公告。",
+    c1_h: "不收業配",
+    c1_p: "日報絕不收任何個股、券商、投顧的廣告或業配。內容只服務訂戶利益。",
+    c2_h: "不持有提及個股",
+    c2_p: "當天日報明確提到「偏多/偏空/留意」的個股,我自己「不會」在前後 3 天進出。",
+    c3_h: "錯了公開更正",
+    c3_p: "判斷錯了或事實錯了,隔天日報開頭公開更正。戰績頁也會列輸的部分,不藏。",
+    c4_h: "不報明牌",
+    c4_p: "不會說「請在 X 元進場、停損 Y 元」。那是投顧的事,需要牌照。我只給方向與風險。",
+    c5_h: "不抽老師佣金",
+    c5_p: "沒有任何外部投顧/老師合作。日報的判斷來自 AI 模型 + 我親自校核,沒有第三方利益。",
+    c6_h: "不誘導交易",
+    c6_p: "商業模式只有訂閱費。你下不下單我都領一樣的錢——所以我沒有理由叫你頻繁進出。",
+    s4_h2: "我的簽名",
+    s4_p: "這頁不是法律文件,但你可以把它當合約讀。",
+    sig_line2: "MarketDaily Editor-in-Chief · 2026-05-23 起,每封日報出去前我都看過",
+    cta_h2: "準備好讓早晨變更聰明嗎?",
+    cta_p: "Premium 試讀首月 6 折 NT$299 · 30 天無理由退費 · 隨時取消",
+    cta_btn1: "立即試讀 →",
+    cta_btn2: "看公開戰績",
+    cta_btn3: "看對手比較",
+    footer_record: "戰績紀錄",
+    footer_vs: "vs 對手",
+    footer_about: "主編",
+    footer_pricing: "定價",
+    footer_contact: "聯絡客服",
+    footer_note: "主編承諾自 2026-05-23 起生效 · 違反任一條訂戶可公開要求更正",
+  },
+  en: {
+    page_title: "Editor Delvin · Editorial Process — MarketDaily",
+    nav_back: "← Back to Home",
+    page_badge: "Editor-in-Chief",
+    role_line: "I personally review every MarketDaily digest before it ships.",
+    qual_founder: "MarketDaily Founder",
+    qual_investor: "Investor",
+    qual_eng: "Software Engineer",
+    qual_dual: "TW/US Dual Market",
+    hero_note: "I designed and keep watch over the entire editorial pipeline: multi-model cross-debate, quality circuit breakers, public track record. Every day we get it wrong, the correction is public too.",
+    s1_h2: "Why I Built MarketDaily",
+    s1_p1: "I used to start every morning scrolling Bloomberg, CNBC, PTT, Reddit. An hour later I'd read 200 headlines but still be foggy on the stocks I actually held.",
+    s1_p2: "Worse, half the news had nothing to do with me — some fake, some paid placements. I'd end up in a LINE group watching people push hot tips and following along — and unsurprisingly, mostly losing money.",
+    s1_p3: "I got tired of it. So I built my own AI pipeline to scan the news, filter out noise, and summarize what mattered for my own holdings every morning — then email it to myself.",
+    s1_p4: "<strong>Six months in, I'd barely opened a finance app.</strong> Friends saw it and asked to use it too — that's how MarketDaily started.",
+    s2_h2: "The Daily Editorial Process",
+    s2_lead: "The digest is <strong>AI-drafted with layered institutional review</strong>: multi-model cross-debate, deterministic quality audits, an independent watchdog. It passes through 6 gates every day — any failure trips a circuit breaker.",
+    tl1_title: "AI Pipeline Starts",
+    tl1_desc: "The system scans a whitelist of global finance sources (Reuters / Bloomberg / WSJ / Economic Daily News / Anue / CnYes...) and buckets stories by subscriber holdings.",
+    tl2_title: "Multi-Source Verification + Fake News Filter",
+    tl2_desc: "Every story needs 2+ independent sources to get a ✅ tag; single-source stories are flagged ⚠️. Anything unverifiable is dropped entirely.",
+    tl3_title: "AI Committee Multi-Model Debate",
+    tl3_desc: "No single model decides a stock's direction — multiple independent AI models cross-debate. Disagreement lowers confidence or flips the call to hold, never forced into a verdict.",
+    tl4_title: "Quality Audit + Circuit Breaker",
+    tl4_desc: "An automated audit checks layout and content integrity item by item; repeated high-severity issues trip a circuit breaker and page the admin before send — better late than wrong.",
+    tl5_title: "Final Sign-Off → Scheduled Send",
+    tl5_desc: "Confirmed clean of paid placements, hype, and layout errors → scheduled for the 7:00 send; an independent watchdog re-verifies after send and auto-retries + alerts on failure.",
+    tl6_title: "Digest Lands in Subscriber Inboxes",
+    tl6_desc: "7:00am Taiwan time, the TW-market digest lands on schedule; 8:00pm, the US-market digest follows.",
+    s3_h2: "Editorial Stance · My Commitments",
+    s3_lead: "The 6 commitments below are what I promise every subscriber. Break any one of them and you can publicly demand a refund + a public statement.",
+    c1_h: "No Paid Placements",
+    c1_p: "The digest never accepts advertising or paid placement from any stock, broker, or advisory firm. Content serves subscribers only.",
+    c2_h: "No Positions in Covered Stocks",
+    c2_p: "If a stock gets a clear \"bullish/bearish/watch\" call in that day's digest, I personally will not trade it within 3 days before or after.",
+    c3_h: "Public Correction When Wrong",
+    c3_p: "When a call or a fact is wrong, the next day's digest opens with a public correction. The track record page lists the losses too — nothing hidden.",
+    c4_h: "No Specific Buy/Sell Prices",
+    c4_p: "I will never say \"enter at $X, stop loss at $Y\" — that requires an advisory license. I only give direction and risk context.",
+    c5_h: "No Commission from \"Gurus\"",
+    c5_p: "No outside advisor or \"guru\" partnerships. Every call comes from the AI models plus my own review — no third-party interest involved.",
+    c6_h: "No Incentive to Trade More",
+    c6_p: "The business model is subscription-only. I get paid the same whether you trade or not — so I have no reason to push you into frequent trades.",
+    s4_h2: "My Signature",
+    s4_p: "This page isn't a legal document, but you can read it like a contract.",
+    sig_line2: "MarketDaily Editor-in-Chief · Reviewing every digest personally since 2026-05-23",
+    cta_h2: "Ready for smarter mornings?",
+    cta_p: "Premium first month 40% off NT$299 · 30-day no-questions refund · cancel anytime",
+    cta_btn1: "Try it now →",
+    cta_btn2: "See Public Track Record",
+    cta_btn3: "Compare vs Competitors",
+    footer_record: "Track Record",
+    footer_vs: "vs Competitors",
+    footer_about: "About the Editor",
+    footer_pricing: "Pricing",
+    footer_contact: "Contact",
+    footer_note: "Editor commitments effective since 2026-05-23 · subscribers may publicly demand a correction for any violation",
+  },
+};
+
+function applyLang(lang) {
+  const t = i18n[lang] || i18n.zh;
+  document.title = t.page_title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = t[el.dataset.i18n];
+    if (v !== undefined) el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = t[el.dataset.i18nHtml];
+    if (v !== undefined) el.innerHTML = v;
+  });
+  const langBtn = document.querySelector('.lang-btn');
+  if (langBtn) langBtn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+  localStorage.setItem('md-lang-v2', lang);
 }
+
+function toggleLang() {
+  const cur = localStorage.getItem('md-lang-v2') || 'zh';
+  applyLang(cur === 'zh' ? 'en' : 'zh');
+}
+
+applyLang(localStorage.getItem('md-lang-v2') || 'zh');
 </script>
 <script src="terminal.js?v=1"></script>
 </body>
