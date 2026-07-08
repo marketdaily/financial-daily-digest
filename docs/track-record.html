@@ -454,7 +454,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     </div>
   </div>
   <div class="real-service-note" id="real-service-note" style="display:none;">
-    <span class="hi">👥 含全部訂閱者個人化日報</span>:<span id="rs-note-detail"></span>
+    <span class="hi" data-i18n="rsn_label">👥 含全部訂閱者個人化日報</span>:<span id="rs-note-detail"></span>
   </div>
 
   <!-- Multi-horizon win rates:週結(5交易日)/月結(21)/季結(63) -->
@@ -487,12 +487,12 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
       <div class="method-box">
         <h3 data-i18n="ma_h">🟢 看多勝率</h3>
         <p data-i18n="ma_p">日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後收盤往上走 = 贏(對齊卡片明寫的「短線 1-2 週視角」,2026-06-10 起;舊版只看隔日一天,單日雜訊太重)。</p>
-        <code>例:「台積電可分批接」→ 5 個交易日後收盤高於建議日 = 贏</code>
+        <code data-i18n="ma_code">例:「台積電可分批接」→ 5 個交易日後收盤高於建議日 = 贏</code>
       </div>
       <div class="method-box">
         <h3 data-i18n="mc_h">🔴 看空勝率</h3>
         <p data-i18n="mc_p">日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 5 個交易日後真的沒漲(漲幅 <2%)= 贏(成功避坑)。</p>
-        <code>例:「NVDA 短期過熱建議觀望」→ 5 個交易日後沒漲算贏</code>
+        <code data-i18n="mc_code">例:「NVDA 短期過熱建議觀望」→ 5 個交易日後沒漲算贏</code>
       </div>
     </div>
     <div style="margin-top:14px;font-size:12.5px;color:rgba(255,255,255,0.5);line-height:1.65;" data-i18n-html="method_note">
@@ -571,13 +571,13 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
   }
   </style>
   <div class="tr-faq">
-    <h2>常見問題 · 給認真讀紀錄的人</h2>
+    <h2 data-i18n="faq_h2">常見問題 · 給認真讀紀錄的人</h2>
 
     <div class="tr-faq-item">
       <button class="tr-faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span>🟢 看多 vs 🔴 看空 是什麼意思?</span><span class="chev">▾</span>
+        <span data-i18n="faq_q1">🟢 看多 vs 🔴 看空 是什麼意思?</span><span class="chev">▾</span>
       </button>
-      <div class="tr-faq-a"><div class="tr-faq-a-inner">
+      <div class="tr-faq-a"><div class="tr-faq-a-inner" data-i18n-html="faq_a1">
         <strong>🟢 看多</strong>:日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後股價真的往上就算贏。<br>
         <strong>🔴 看空</strong>:日報示警這支「觀望 / 拉回 / 短期過熱」(偏空)→ 5 個交易日後股價真的沒漲就算贏(代表我們幫你避開了一次坑)。<br><br>
         簡單講:<code>看多看的是「跟對」</code>,<code>看空看的是「躲過」</code>。
@@ -586,9 +586,9 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
     <div class="tr-faq-item">
       <button class="tr-faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span>🤔 勝率 100% 不就更好?為什麼說 100% 是假的</span><span class="chev">▾</span>
+        <span data-i18n="faq_q2">🤔 勝率 100% 不就更好?為什麼說 100% 是假的</span><span class="chev">▾</span>
       </button>
-      <div class="tr-faq-a"><div class="tr-faq-a-inner">
+      <div class="tr-faq-a"><div class="tr-faq-a-inner" data-i18n-html="faq_a2">
         市場長期任何一個方向判斷的勝率上限,就算神級分析師,做到 70% 就是天花板。一年 250 個交易日,要每天命中是統計上不可能的事。
         <strong>看到誰宣稱 100% / 95% 勝率,99% 是後修數字或刪輸的紀錄</strong>。MarketDaily 的紀錄連輸的都留下來——這才叫公開戰績。
       </div></div>
@@ -596,9 +596,9 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
     <div class="tr-faq-item">
       <button class="tr-faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span>💵 75% 勝率,我跟單一定賺嗎?</span><span class="chev">▾</span>
+        <span data-i18n="faq_q3">💵 75% 勝率,我跟單一定賺嗎?</span><span class="chev">▾</span>
       </button>
-      <div class="tr-faq-a"><div class="tr-faq-a-inner">
+      <div class="tr-faq-a"><div class="tr-faq-a-inner" data-i18n-html="faq_a3">
         <strong>不一定</strong>。勝率不等於獲利。如果你贏的時候平均賺 1%、輸的時候平均賠 3%——75% 勝率仍會賠錢。
         這頁顯示的是「判斷方向的準度」,不是「我跟單會賺多少」。
         MarketDaily 的價值是「替你掃完雜訊 + 標好風險方向」,讓你用 30 秒做完原本 30 分鐘的功課——<strong>進出場的時點、停損、部位大小,還是你自己負責</strong>。
@@ -607,9 +607,9 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
     <div class="tr-faq-item">
       <button class="tr-faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span>📊 為什麼不直接報「進場價 / 停損價」?</span><span class="chev">▾</span>
+        <span data-i18n="faq_q4">📊 為什麼不直接報「進場價 / 停損價」?</span><span class="chev">▾</span>
       </button>
-      <div class="tr-faq-a"><div class="tr-faq-a-inner">
+      <div class="tr-faq-a"><div class="tr-faq-a-inner" data-i18n-html="faq_a4">
         因為那叫<strong>投資顧問</strong>,在台灣需要證券投顧執照,我們不做。
         我們做的是「方向判讀 + 風險示警」,屬於資訊服務,符合監管。
         想要明確進出場價位的,該找有牌照的投顧——但記得問他們「公開戰績」。
@@ -618,9 +618,9 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
     <div class="tr-faq-item">
       <button class="tr-faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span>🔄 紀錄多久更新一次?資料怎麼來的?</span><span class="chev">▾</span>
+        <span data-i18n="faq_q5">🔄 紀錄多久更新一次?資料怎麼來的?</span><span class="chev">▾</span>
       </button>
-      <div class="tr-faq-a"><div class="tr-faq-a-inner">
+      <div class="tr-faq-a"><div class="tr-faq-a-inner" data-i18n-html="faq_a5">
         <strong>每週自動更新</strong>:腳本從歷史日報抓出每一筆個股提及,自動分類為 A / C,並用 Yahoo Finance 拉 5 個交易日後的收盤價計算贏輸(建議的時間視角是 1-2 週,不拿單日雜訊評分)。因此最近 5 個交易日內的建議會顯示「結算中(第 N/5 日)」——尚未走完 5 日視窗、還在累積資料,並非卡住;滿 5 日後自動翻成贏/輸。
         程式碼公開在 <code>scripts/build_track_record.py</code>。沒有任何人工後修——紀錄出來什麼就什麼。
       </div></div>
@@ -628,9 +628,9 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
     <div class="tr-faq-item">
       <button class="tr-faq-q" onclick="this.parentElement.classList.toggle('open')">
-        <span>❓ 如果我發現紀錄有錯怎麼辦?</span><span class="chev">▾</span>
+        <span data-i18n="faq_q6">❓ 如果我發現紀錄有錯怎麼辦?</span><span class="chev">▾</span>
       </button>
-      <div class="tr-faq-a"><div class="tr-faq-a-inner">
+      <div class="tr-faq-a"><div class="tr-faq-a-inner" data-i18n-html="faq_a6">
         立刻回報。傳信給 <code>marketdailyhq@gmail.com</code> 或從聯絡頁送問題單,主編 24 小時內會親自回覆 + 更正。
         錯誤公開於下一封日報開頭。我們不藏錯——藏錯比錯本身更傷信任。
       </div></div>
@@ -660,11 +660,11 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
 <footer>
   <div class="footer-links">
-    <a href="track-record.html">戰績紀錄</a>
-    <a href="vs.html">vs 對手</a>
-    <a href="about.html">主編</a>
-    <a href="pricing.html">定價</a>
-    <a href="contact.html">聯絡客服</a>
+    <a href="track-record.html" data-i18n="f_tic">戰績紀錄</a>
+    <a href="vs.html" data-i18n="f_vs">vs 對手</a>
+    <a href="about.html" data-i18n="f_about">主編</a>
+    <a href="pricing.html" data-i18n="f_pricing">定價</a>
+    <a href="contact.html" data-i18n="f_contact">聯絡客服</a>
   </div>
   <span data-i18n="footer_note">紀錄每週更新 · 資料來源:MarketDaily 日報歷史 · For informational purposes only · Not financial advice.</span>
 </footer>
@@ -773,6 +773,7 @@ function renderRecords(filter) {
     "00940":"元大台灣價值高息","00713":"元大台灣高息低波",
   };
 
+  const zhTable = currentLang !== "en";
   filtered.forEach(r => {
     const row = document.createElement("div");
     row.className = "rec-row";
@@ -783,16 +784,19 @@ function renderRecords(filter) {
       ? r.name
       : (isTW ? (TW_NAMES_FALLBACK[r.ticker] || r.ticker) : r.ticker);
     const tagClass = r.type === "A" ? "tag-a" : "tag-c";
-    const tagText = r.type === "A" ? "🟢 看多" : "🔴 看空";
-    let resClass = "neut", resText = "⏳ 結算中";
-    if (r.outcome === "win") { resClass = "win"; resText = "✅ 贏"; }
-    else if (r.outcome === "loss") { resClass = "loss"; resText = "❌ 輸"; }
+    const tagText = r.type === "A"
+      ? (zhTable ? "🟢 看多" : "🟢 Bullish")
+      : (zhTable ? "🔴 看空" : "🔴 Bearish");
+    const settleText = zhTable ? "⏳ 結算中" : "⏳ Settling";
+    let resClass = "neut", resText = settleText;
+    if (r.outcome === "win") { resClass = "win"; resText = zhTable ? "✅ 贏" : "✅ Win"; }
+    else if (r.outcome === "loss") { resClass = "loss"; resText = zhTable ? "❌ 輸" : "❌ Loss"; }
     else {
       // 待結:顯示 5 日結算進度(第 N/5 日),讓人看出在跑而非凍結
       const td = Math.min(5, tradingDaysSince(r.date));
       resText = td < 5
-        ? `⏳ 結算中<span class="prog">第 ${td}/5 日</span>`
-        : `⏳ 結算中`;
+        ? `${settleText}<span class="prog">${zhTable ? `第 ${td}/5 日` : `day ${td}/5`}</span>`
+        : settleText;
     }
     row.innerHTML = `
       <div class="rec-cell date">${r.date}</div>
@@ -821,10 +825,10 @@ function renderRecords(filter) {
   };
   const fmtRate = (wins, total) => {
     if (total === 0) return "—";
-    if (total < MIN_N) return `樣本累積中<br><span style="font-size:13px;color:rgba(255,255,255,0.5);font-weight:600;">(${total}/${MIN_N})</span>`;
+    if (total < MIN_N) return `${zhTable ? "樣本累積中" : "Collecting samples"}<br><span style="font-size:13px;color:rgba(255,255,255,0.5);font-weight:600;">(${total}/${MIN_N})</span>`;
     const ci = wilsonCI(wins, total);
     return ((wins / total) * 100).toFixed(1) + "%" +
-      `<br><span style="font-size:11px;color:rgba(255,255,255,0.45);font-weight:600;">95% 區間 ${ci[0]}–${ci[1]}%</span>`;
+      `<br><span style="font-size:11px;color:rgba(255,255,255,0.45);font-weight:600;">${zhTable ? "95% 區間" : "95% CI"} ${ci[0]}–${ci[1]}%</span>`;
   };
   const sd = document.getElementById("stat-direction");
   const sr = document.getElementById("stat-risk");
@@ -835,17 +839,35 @@ function renderRecords(filter) {
   document.getElementById("stat-total").textContent = NORMALIZED.length;
   const days = new Set(NORMALIZED.map(r => r.date)).size;
   document.getElementById("stat-days").textContent = days;
-  document.querySelector('[data-filter="all"]').textContent = `全部 (${NORMALIZED.length})`;
+  document.querySelector('[data-filter="all"]').textContent = zhTable ? `全部 (${NORMALIZED.length})` : `All (${NORMALIZED.length})`;
 }
 
+let currentFilter = "all";
 function applyFilter(btn) {
   document.querySelectorAll(".fpill").forEach(p => p.classList.remove("active"));
   btn.classList.add("active");
-  renderRecords(btn.dataset.filter);
+  currentFilter = btn.dataset.filter;
+  renderRecords(currentFilter);
+}
+
+let GENERATED_AT = null;
+function renderDataBadge() {
+  if (!GENERATED_AT) return;
+  const zh = currentLang !== "en";
+  let badge = document.getElementById("data-updated-badge");
+  if (!badge) {
+    badge = document.createElement("div");
+    badge.id = "data-updated-badge";
+    badge.style.cssText = "display:inline-block;margin-top:8px;font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:0.3px;";
+    const sub = document.querySelector(".sub");
+    if (sub) sub.appendChild(badge);
+  }
+  badge.textContent = (zh ? "資料更新:" : "Updated: ") + GENERATED_AT.replace("T", " ").slice(0, 16);
 }
 
 // Try to load real data; fall back to inline sample
 let STATS = null;
+let dataLoaded = false;
 (async () => {
   try {
     const res = await fetch("/data/track-record.json", { cache: "no-cache" });
@@ -855,11 +877,8 @@ let STATS = null;
         RECORDS = data.records;
         STATS = data.stats || null;
         if (data.stats && data.stats.generated_at) {
-          const badge = document.createElement("div");
-          badge.style.cssText = "display:inline-block;margin-top:8px;font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:0.3px;";
-          badge.textContent = "資料更新:" + data.stats.generated_at.replace("T", " ").slice(0, 16);
-          const sub = document.querySelector(".sub");
-          if (sub) sub.appendChild(badge);
+          GENERATED_AT = data.stats.generated_at;
+          renderDataBadge();
         }
       }
     }
@@ -867,7 +886,8 @@ let STATS = null;
     console.warn("track-record.json load failed:", e);
   }
   NORMALIZED = RECORDS.map(normalize);
-  renderRecords("all");
+  dataLoaded = true;
+  renderRecords(currentFilter);
   renderCombinedStats();
   renderHorizonStats();
   if (NORMALIZED.length === 0) renderEmptyState();
@@ -909,34 +929,48 @@ function renderCombinedStats() {
   const personal = STATS.personal_samples_added || 0;
   if (personal === 0) return; // 沒個人化樣本就不顯示對比,避免冗餘
   const MIN_N = 20;
+  const zh = currentLang !== "en";
   const fmt = (wins, total) => {
     if (total === 0) return "—";
-    if (total < MIN_N) return `${total}/${MIN_N} 樣本累積中`;
-    return `全用戶 ${((wins/total)*100).toFixed(1)}% (${wins}/${total})`;
+    if (total < MIN_N) return zh ? `${total}/${MIN_N} 樣本累積中` : `${total}/${MIN_N} collecting`;
+    return zh
+      ? `全用戶 ${((wins/total)*100).toFixed(1)}% (${wins}/${total})`
+      : `All users ${((wins/total)*100).toFixed(1)}% (${wins}/${total})`;
   };
   const sdc = document.getElementById("stat-direction-combined");
   const src_ = document.getElementById("stat-risk-combined");
   const stc = document.getElementById("stat-total-combined");
   if (sdc) sdc.textContent = fmt(STATS.a_wins, STATS.a_count);
   if (src_) src_.textContent = fmt(STATS.c_wins, STATS.c_count);
-  if (stc) stc.textContent = `含 ${personal} 筆訂閱者訊號`;
+  if (stc) stc.textContent = zh ? `含 ${personal} 筆訂閱者訊號` : `includes ${personal} subscriber signals`;
   const note = document.getElementById("real-service-note");
   const det = document.getElementById("rs-note-detail");
   if (note && det) {
     const pub = STATS.public_only || {};
-    det.textContent =
-      `公版已結算 ${pub.a_count||0}+${pub.c_count||0} 筆,加計訂閱者個人化已結算 ${Math.max(((STATS.a_count||0)+(STATS.c_count||0))-((pub.a_count||0)+(pub.c_count||0)),0)} 筆 → 合計樣本 ${(STATS.a_count||0)+(STATS.c_count||0)} 筆(另有 ${personal} 筆個人化紀錄含未結算)。隱私保護:列表只列公版,訂閱者個人化只進總勝率。`;
+    const publicSettled = (pub.a_count||0)+(pub.c_count||0);
+    const personalSettled = Math.max(((STATS.a_count||0)+(STATS.c_count||0))-publicSettled,0);
+    const totalSettled = (STATS.a_count||0)+(STATS.c_count||0);
+    det.textContent = zh
+      ? `公版已結算 ${publicSettled} 筆,加計訂閱者個人化已結算 ${personalSettled} 筆 → 合計樣本 ${totalSettled} 筆(另有 ${personal} 筆個人化紀錄含未結算)。隱私保護:列表只列公版,訂閱者個人化只進總勝率。`
+      : `Public calls settled: ${publicSettled}; plus personalized calls settled: ${personalSettled} → total sample ${totalSettled} (${personal} personalized records still include unsettled ones). Privacy: the list only shows public calls — personalized ones only feed into the aggregate win rate.`;
     note.style.display = "inline-block";
   }
 }
 
 function renderEmptyState() {
+  const zh = currentLang !== "en";
   const table = document.getElementById("rec-table");
   if (table) {
-    table.innerHTML = `<div style="padding:48px 24px;text-align:center;color:rgba(255,255,255,0.55);">
+    table.innerHTML = zh
+      ? `<div style="padding:48px 24px;text-align:center;color:rgba(255,255,255,0.55);">
       <div style="font-size:48px;margin-bottom:12px;">📊</div>
       <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:6px;">資料準備中</div>
       <div style="font-size:13px;line-height:1.6;">日報剛上線不久,戰績紀錄正在累積中。<br>每週日重新計算,等樣本累積到 20+ 筆才會公開勝率。</div>
+    </div>`
+      : `<div style="padding:48px 24px;text-align:center;color:rgba(255,255,255,0.55);">
+      <div style="font-size:48px;margin-bottom:12px;">📊</div>
+      <div style="font-size:15px;font-weight:600;color:#fff;margin-bottom:6px;">Data warming up</div>
+      <div style="font-size:13px;line-height:1.6;">The digest is new — the track record is still accumulating.<br>Recalculated every Sunday; win rates go public once samples reach 20+.</div>
     </div>`;
   }
   ["stat-direction","stat-risk","stat-total","stat-days"].forEach(id => {
@@ -964,6 +998,8 @@ const i18n = {
     ma_p: "日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後收盤往上走 = 贏(對齊卡片明寫的「短線 1-2 週視角」,2026-06-10 起;舊版只看隔日一天,單日雜訊太重)。",
     mc_h: "🔴 看空勝率",
     mc_p: "日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 5 個交易日後真的沒漲(漲幅 <2%)= 贏(成功避坑)。",
+    ma_code: "例:「台積電可分批接」→ 5 個交易日後收盤高於建議日 = 贏",
+    mc_code: "例:「NVDA 短期過熱建議觀望」→ 5 個交易日後沒漲算贏",
     hz_ttl: "同一批判斷,三種結算週期",
     hz_w: "📅 週結 · 5 個交易日",
     hz_m: "🗓️ 月結 · 21 個交易日",
@@ -980,6 +1016,21 @@ const i18n = {
     cta_p: "免費訂閱就能收到同樣完整的個股分析 · 想支持我們再升級 Premium(首月 NT$299) · 隨時取消",
     cta_pri: "立即試讀 →", cta_vs: "先看 vs 對手比較",
     footer_note: "紀錄每週更新 · 資料來源:MarketDaily 日報歷史 · 僅供參考,非投資建議",
+    rsn_label: "👥 含全部訂閱者個人化日報",
+    f_tic: "戰績紀錄", f_vs: "vs 對手", f_about: "主編", f_pricing: "定價", f_contact: "聯絡客服",
+    faq_h2: "常見問題 · 給認真讀紀錄的人",
+    faq_q1: "🟢 看多 vs 🔴 看空 是什麼意思?",
+    faq_a1: "<strong>🟢 看多</strong>:日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後股價真的往上就算贏。<br><strong>🔴 看空</strong>:日報示警這支「觀望 / 拉回 / 短期過熱」(偏空)→ 5 個交易日後股價真的沒漲就算贏(代表我們幫你避開了一次坑)。<br><br>簡單講:<code>看多看的是「跟對」</code>,<code>看空看的是「躲過」</code>。",
+    faq_q2: "🤔 勝率 100% 不就更好?為什麼說 100% 是假的",
+    faq_a2: "市場長期任何一個方向判斷的勝率上限,就算神級分析師,做到 70% 就是天花板。一年 250 個交易日,要每天命中是統計上不可能的事。<strong>看到誰宣稱 100% / 95% 勝率,99% 是後修數字或刪輸的紀錄</strong>。MarketDaily 的紀錄連輸的都留下來——這才叫公開戰績。",
+    faq_q3: "💵 75% 勝率,我跟單一定賺嗎?",
+    faq_a3: "<strong>不一定</strong>。勝率不等於獲利。如果你贏的時候平均賺 1%、輸的時候平均賠 3%——75% 勝率仍會賠錢。這頁顯示的是「判斷方向的準度」,不是「我跟單會賺多少」。MarketDaily 的價值是「替你掃完雜訊 + 標好風險方向」,讓你用 30 秒做完原本 30 分鐘的功課——<strong>進出場的時點、停損、部位大小,還是你自己負責</strong>。",
+    faq_q4: "📊 為什麼不直接報「進場價 / 停損價」?",
+    faq_a4: "因為那叫<strong>投資顧問</strong>,在台灣需要證券投顧執照,我們不做。我們做的是「方向判讀 + 風險示警」,屬於資訊服務,符合監管。想要明確進出場價位的,該找有牌照的投顧——但記得問他們「公開戰績」。",
+    faq_q5: "🔄 紀錄多久更新一次?資料怎麼來的?",
+    faq_a5: "<strong>每週自動更新</strong>:腳本從歷史日報抓出每一筆個股提及,自動分類為 A / C,並用 Yahoo Finance 拉 5 個交易日後的收盤價計算贏輸(建議的時間視角是 1-2 週,不拿單日雜訊評分)。因此最近 5 個交易日內的建議會顯示「結算中(第 N/5 日)」——尚未走完 5 日視窗、還在累積資料,並非卡住;滿 5 日後自動翻成贏/輸。程式碼公開在 <code>scripts/build_track_record.py</code>。沒有任何人工後修——紀錄出來什麼就什麼。",
+    faq_q6: "❓ 如果我發現紀錄有錯怎麼辦?",
+    faq_a6: "立刻回報。傳信給 <code>marketdailyhq@gmail.com</code> 或從聯絡頁送問題單,主編 24 小時內會親自回覆 + 更正。錯誤公開於下一封日報開頭。我們不藏錯——藏錯比錯本身更傷信任。",
   },
   en: {
     nav_back: "← Back to Home",
@@ -998,6 +1049,8 @@ const i18n = {
     ma_p: "Digest says \"bullish / bearish\" → did the close 5 trading days later go that way? (matches the stated 1-2 week horizon)",
     mc_h: "C · Risk Avoidance Hit",
     mc_p: "Digest warns \"wait / pull-back / overheated / risk\" → did stock actually retreat or sideways?",
+    ma_code: "e.g.: \"TSMC — scale in gradually\" → close 5 trading days later above the call date = win",
+    mc_code: "e.g.: \"NVDA overheated, hold off\" → didn't rise 5 trading days later = win",
     hz_ttl: "Same calls, three settlement horizons",
     hz_w: "📅 Weekly · 5 trading days",
     hz_m: "🗓️ Monthly · 21 trading days",
@@ -1014,6 +1067,21 @@ const i18n = {
     cta_p: "Subscribe free and get the exact same stock analysis · Upgrade to Premium (first month NT$299) to support us · cancel anytime",
     cta_pri: "Start Free Trial →", cta_vs: "See vs. competitors first",
     footer_note: "Updated weekly · Source: MarketDaily digest history · Informational only, not financial advice",
+    rsn_label: "👥 Includes all subscribers' personalized digests",
+    f_tic: "Track Record", f_vs: "vs Rivals", f_about: "About", f_pricing: "Pricing", f_contact: "Contact",
+    faq_h2: "FAQ · For the careful reader",
+    faq_q1: "🟢 Bullish vs 🔴 Bearish — what do they mean?",
+    faq_a1: "<strong>🟢 Bullish</strong>: the digest calls a stock \"buy / keep holding\" → win if the price is actually higher 5 trading days later.<br><strong>🔴 Bearish</strong>: the digest warns \"wait / pullback / overheated\" → win if the price didn't actually rise 5 trading days later (meaning we helped you dodge a drop).<br><br>In short: <code>bullish scores \"did we call it right\"</code>, <code>bearish scores \"did we help you avoid it\"</code>.",
+    faq_q2: "🤔 Wouldn't a 100% win rate be better? Why is 100% always fake",
+    faq_a2: "Even a top-tier analyst tops out around 70% for any long-run directional call — hitting every single day across 250 trading days a year is statistically impossible. <strong>Anyone claiming 100% / 95% is almost certainly using backfilled numbers or has deleted the losses.</strong> MarketDaily's record keeps the losses in — that's what makes it a real public scorecard.",
+    faq_q3: "💵 75% win rate — am I guaranteed to profit if I copy the calls?",
+    faq_a3: "<strong>Not necessarily.</strong> Win rate ≠ profit. If your average win is 1% and your average loss is 3%, a 75% win rate can still lose money overall. This page measures \"how accurate the direction call was,\" not \"how much you'd make copying it.\" MarketDaily's value is filtering the noise and flagging risk direction — turning 30 minutes of homework into 30 seconds — <strong>but entry timing, stop-loss, and position size are still your call.</strong>",
+    faq_q4: "📊 Why not just give an exact entry price / stop-loss?",
+    faq_a4: "Because that's <strong>licensed investment advisory</strong> — it requires a securities advisory license in Taiwan, and we don't hold one. What we do is \"direction reading + risk flagging,\" which is an informational service under the regulations. If you want exact entry/exit prices, go to a licensed advisor — but ask them for their public track record too.",
+    faq_q5: "🔄 How often is the record updated? Where does the data come from?",
+    faq_a5: "<strong>Updated automatically every week</strong>: a script pulls every stock mention from historical digests, classifies it as A / C, and uses Yahoo Finance's close price 5 trading days later to score win/loss (the digest's stated horizon is 1-2 weeks, so we don't score on single-day noise). Calls from within the last 5 trading days will show \"settling (day N/5)\" — that just means the 5-day window hasn't finished yet, not that it's stuck; it flips to win/loss automatically once the window closes. The code is public at <code>scripts/build_track_record.py</code>. No manual edits after the fact — whatever the script outputs is what's shown.",
+    faq_q6: "❓ What if I spot an error in the record?",
+    faq_a6: "Report it immediately. Email <code>marketdailyhq@gmail.com</code> or submit a ticket from the contact page — the editor personally replies and corrects it within 24 hours. Corrections are disclosed at the top of the next digest. We don't hide mistakes — hiding them would hurt trust more than the mistake itself.",
   }
 };
 let currentLang = localStorage.getItem("md-lang-v2") || "zh";
@@ -1031,6 +1099,13 @@ function applyLang(lang) {
   document.querySelector(".lang-btn").textContent = lang === "zh" ? "EN" : "中文";
   document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
   if (typeof renderHorizonStats === "function") renderHorizonStats(); // 動態數字隨語言重繪
+  if (dataLoaded) {
+    // 表格/合計統計/空狀態的文字是 JS 生成,不吃 data-i18n,語言切換要手動重繪
+    renderRecords(currentFilter);
+    renderCombinedStats();
+    renderDataBadge();
+    if (NORMALIZED.length === 0) renderEmptyState();
+  }
 }
 function toggleLang() { applyLang(currentLang === "zh" ? "en" : "zh"); }
 applyLang(currentLang);
