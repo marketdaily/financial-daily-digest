@@ -1,0 +1,12 @@
+name = "media-worker"
+main = "src/index.js"
+compatibility_date = "2026-06-01"
+account_id = "a92082d84f08b1d4883facbf1a1dc445"
+
+routes = [
+  { pattern = "media.marketdaily.ai", custom_domain = true }
+]
+
+[[kv_namespaces]]
+binding = "MEDIA"
+id = "9f3b5e510de04803bd0b59d451911d58"

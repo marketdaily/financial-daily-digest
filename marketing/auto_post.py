@@ -543,21 +543,39 @@ UTM_SRC = {"instagram": "ig", "facebook": "fb", "threads": "threads",
            "line": "line", "x": "x", "tiktok": "tiktok", "youtube": "youtube"}
 
 
-def caption_for(caption, plat, line_url):
+def caption_for(caption, plat, line_url=None):
     # Per-platform UTM source swap so attribution can tell which network drove the click
+    # (LINE 已全面退役 2026-07-06,不再注入加 LINE CTA;line_url 參數保留只為相容舊呼叫)
     src = UTM_SRC.get(plat, "social")
-    caption = caption.replace("utm_source=social&", f"utm_source={src}&")
-    if plat in ("line", "x") or not line_url:
-        return caption
-    if plat == "instagram":
-        # IG 貼文 / 留言的網址不可點 —— 導向可點的個人簡介連結。
-        cta = "📲 加 LINE 即時提醒 — 連結在個人簡介 🔗"
-    else:
-        cta = f"📲 加 LINE 不錯過 MarketDaily 👉 {line_url}"
-    if "\n\n" in caption:
-        head, _, tail = caption.rpartition("\n\n")
-        return f"{head}\n\n{cta}\n\n{tail}"
-    return f"{caption}\n\n{cta}"
+    return caption.replace("utm_source=social&", f"utm_source={src}&")
+
+
+def post_reel_direct(env, post_id, video_url, caption, platforms):
+    """直發 reel(不經 social_posts.json 佇列)—— 給每日日報短影音用。
+
+    冪等靠 LOG_FILE:呼叫端先用 daily_run.posted_ids() 查 post_id。
+    """
+    results = {}
+    print(f"發布 [{post_id}] (Reel 直發) → {video_url}\n平台:{', '.join(platforms)}\n")
+    for plat in platforms:
+        fn = REEL_PLATFORMS.get(plat)
+        if not fn:
+            print(f"  ⚠️ {plat}:不支援 reel")
+            continue
+        try:
+            ok, detail = fn(env, video_url, caption_for(caption, plat))
+        except KeyError as e:
+            ok, detail = False, f".env 缺少 {e}"
+        soft = (not ok) and (plat == "x"
+                             or (plat == "tiktok"
+                                 and not (env.get("TIKTOK_ACCESS_TOKEN") or env.get("TIKTOK_REFRESH_TOKEN"))))
+        results[plat] = {"ok": ok, "skipped": soft, "detail": str(detail)}
+        print(f"  {'✅' if ok else ('⏭️' if soft else '❌')} {plat}: {detail}")
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with LOG_FILE.open("a", encoding="utf-8") as f:
+        f.write(json.dumps({"ts": datetime.now().isoformat(), "post": post_id,
+                            "results": results}, ensure_ascii=False) + "\n")
+    return results
 
 
 def cmd_post(env, post_id, only=None):
