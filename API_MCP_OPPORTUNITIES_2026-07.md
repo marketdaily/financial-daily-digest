@@ -5,6 +5,19 @@
 
 ---
 
+## ✅ 落地狀態（2026-07-08 執行）
+
+**探勘後發現 codebase 已領先報告一半**（研究 agent 看不到私有碼所致）：
+- ~~TWSE/TPEx OpenAPI~~ — **早已是台股主源**（`data_fetcher.py:141/267`），Yahoo 反而是備援＋救援層。免做。
+- ~~Groq/DeepSeek fallback 鏈~~ — `analyzer.py:370 _llm_generate` 已有 Gemini×5 → Claude → Groq → CF → OpenRouter → Cerebras → OpenAI → 本地 Ollama 完整鏈，retry 換強模型也已落實。免做。
+- ~~edgartools~~ — `intel/us_insider.py` 自建 Form 4 解析已在 prod 跑，換依賴=無收益風險，**不動**。
+- ~~FRED~~ — `intel/macro_rates_ledger.py` 已走 fredgraph.csv 免 key 路徑。免做。
+
+**本次新落地（皆 e2e 驗證）**：
+- ✅ IndexNow — key 檔上線 + `scripts/indexnow_ping.py`，掛進 winrig `run.sh`（每日部署後）＋`seo_runner.sh`（週一文章後）＋Mac 備援腳本；實測回 202。
+- ✅ Edge-TTS — `scripts/tts_edge.py`（zh-TW 曉臻預設），Mac＋winrig 兩端裝好實測出聲。
+- ✅ Cloudflare Bindings + Observability MCP — 已加 user scope，**待用戶 `/mcp` 點 OAuth**。
+
 ## 🔴 第一梯隊：立刻接（零成本或近零成本，直接治現有痛點）
 
 | # | 項目 | 成本 | 治什麼 |
