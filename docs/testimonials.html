@@ -296,15 +296,15 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     Market<em>Daily</em>
   </a>
   <div class="nav-right">
-    <a href="index.html" class="nav-back">← 返回首頁</a>
-    <button class="lang-btn">EN</button>
+    <a href="index.html" class="nav-back" data-i18n="nav_back">← 返回首頁</a>
+    <button class="lang-btn" onclick="toggleLang()">EN</button>
   </div>
 </nav>
 
 <div class="page-wrap">
-  <div class="page-badge">Testimonials · 用戶見證</div>
-  <h1>誠實的第一步:我們還沒有見證</h1>
-  <p class="sub">
+  <div class="page-badge" data-i18n="page_badge">Testimonials · 用戶見證</div>
+  <h1 data-i18n="page_h1">誠實的第一步:我們還沒有見證</h1>
+  <p class="sub" data-i18n-html="page_lead">
     MarketDaily 目前訂閱者還很少,還沒有累積到足夠、可公開分享的真實見證——
     比起端出幾則故事撐場面,我們選擇老實告訴你這件事。
     未來刊登的每一則見證都會經本人同意公開,姓名與職業均屬實;
@@ -315,17 +315,17 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
   <!-- Top share CTA -->
   <div class="share-cta">
     <div>
-      <h2>想分享你的故事?</h2>
-      <p>填寫下方表單,審核通過後會放在這頁公開展示。<br>每則被採用的見證,主編親自感謝。</p>
+      <h2 data-i18n="share_h2">想分享你的故事?</h2>
+      <p data-i18n-html="share_p">填寫下方表單,審核通過後會放在這頁公開展示。<br>每則被採用的見證,主編親自感謝。</p>
     </div>
-    <a href="#submit-form" class="share-cta-btn">立即提交我的故事 →</a>
+    <a href="#submit-form" class="share-cta-btn" data-i18n="share_btn">立即提交我的故事 →</a>
   </div>
 
   <!-- Featured testimonials -->
   <div class="t-section">
-    <div class="t-section-h">⭐ 精選見證</div>
+    <div class="t-section-h" data-i18n="featured_h">⭐ 精選見證</div>
     <div class="t-card" style="text-align:center;padding:40px 28px;">
-      <p class="t-quote" style="flex:none;margin-bottom:0;color:rgba(255,255,255,0.62);">
+      <p class="t-quote" style="flex:none;margin-bottom:0;color:rgba(255,255,255,0.62);" data-i18n-html="featured_quote">
         我們才剛起步,訂閱者還不到 20 人——還沒有累積到足夠的公開見證。<br><br>
         與其搬出幾則故事撐場面,我們選擇誠實地留白。<br>
         想看我們真正的實力?去看 100% 可查證、輸的也列出來的
@@ -337,63 +337,169 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
   <!-- Submission form -->
   <div class="form-card" id="submit-form">
-    <h2>提交你的故事 ✍️</h2>
-    <p class="form-sub">
+    <h2 data-i18n="form_h2">提交你的故事 ✍️</h2>
+    <p class="form-sub" data-i18n="form_sub">
       審核通過後,你的見證會出現在這頁與首頁。匿名亦可(只取首字),但完整資訊可信度更高。
     </p>
 
     <div class="form-row">
-      <label for="t-name">你的名字 (可只留首字 + 姓)</label>
-      <input type="text" id="t-name" placeholder="例:張小明 / 陳先生 / A. Wang" required>
+      <label for="t-name" data-i18n="label_name">你的名字 (可只留首字 + 姓)</label>
+      <input type="text" id="t-name" placeholder="例:張小明 / 陳先生 / A. Wang" data-i18n-placeholder="ph_name" required>
     </div>
 
     <div class="form-row">
-      <label for="t-role">職業 + 地點 (選填)</label>
-      <input type="text" id="t-role" placeholder="例:軟體工程師 · 台北 · 持有 NVDA / 台積電">
+      <label for="t-role" data-i18n="label_role">職業 + 地點 (選填)</label>
+      <input type="text" id="t-role" placeholder="例:軟體工程師 · 台北 · 持有 NVDA / 台積電" data-i18n-placeholder="ph_role">
     </div>
 
     <div class="form-row">
-      <label for="t-email">你的訂閱 Email *</label>
+      <label for="t-email" data-i18n="label_email">你的訂閱 Email *</label>
       <input type="email" id="t-email" placeholder="your@email.com" required>
     </div>
 
     <div class="form-row">
-      <label for="t-quote">你的見證內容 *</label>
-      <textarea id="t-quote" placeholder="說說你怎麼使用 MarketDaily、最讓你有感的功能、或它幫你做了哪個決定..." required></textarea>
+      <label for="t-quote" data-i18n="label_quote">你的見證內容 *</label>
+      <textarea id="t-quote" placeholder="說說你怎麼使用 MarketDaily、最讓你有感的功能、或它幫你做了哪個決定..." data-i18n-placeholder="ph_quote" required></textarea>
     </div>
 
     <div class="checkbox-row">
       <input type="checkbox" id="t-consent" required>
-      <label for="t-consent">我同意 MarketDaily 在網站、社群、Email 行銷中公開展示這則見證(包含我提供的名字與職業)。如需匿名請在內容中註明。</label>
+      <label for="t-consent" data-i18n="consent_label">我同意 MarketDaily 在網站、社群、Email 行銷中公開展示這則見證(包含我提供的名字與職業)。如需匿名請在內容中註明。</label>
     </div>
 
     <div class="checkbox-row">
       <input type="checkbox" id="t-truthful" required>
-      <label for="t-truthful">我聲明本見證為個人真實使用體驗,沒有收受 MarketDaily 任何形式報酬以換取本見證。</label>
+      <label for="t-truthful" data-i18n="truthful_label">我聲明本見證為個人真實使用體驗,沒有收受 MarketDaily 任何形式報酬以換取本見證。</label>
     </div>
 
-    <button class="submit-btn" id="submit-btn" onclick="submitTestimonial()">送出我的見證 →</button>
-    <div class="msg success" id="msg-success">✅ 已收到!主編會在 48 小時內審核並回信。</div>
-    <div class="msg error" id="msg-error">出了點問題,請稍後再試,或直接寄信給 marketdailyhq@gmail.com</div>
+    <button class="submit-btn" id="submit-btn" onclick="submitTestimonial()" data-i18n="submit_btn">送出我的見證 →</button>
+    <div class="msg success" id="msg-success" data-i18n="msg_success">✅ 已收到!主編會在 48 小時內審核並回信。</div>
+    <div class="msg error" id="msg-error" data-i18n="msg_error">出了點問題,請稍後再試,或直接寄信給 marketdailyhq@gmail.com</div>
   </div>
 
 </div>
 
 <footer>
   <div class="footer-links">
-    <a href="track-record.html">戰績紀錄</a>
-    <a href="vs.html">vs 對手</a>
-    <a href="about.html">主編</a>
-    <a href="pricing.html">定價</a>
-    <a href="contact.html">聯絡客服</a>
+    <a href="track-record.html" data-i18n="footer_record">戰績紀錄</a>
+    <a href="vs.html" data-i18n="footer_vs">vs 對手</a>
+    <a href="about.html" data-i18n="footer_about">主編</a>
+    <a href="pricing.html" data-i18n="footer_pricing">定價</a>
+    <a href="contact.html" data-i18n="footer_contact">聯絡客服</a>
   </div>
-  <span>假見證偵測獎勵 NT$10,000 · 寄信至 marketdailyhq@gmail.com 主編親自核實</span>
+  <span data-i18n="footer_note">假見證偵測獎勵 NT$10,000 · 寄信至 marketdailyhq@gmail.com 主編親自核實</span>
 </footer>
 
 <script>
 const WORKER_URL = "https://marketdaily-webhook.delvin-12345678.workers.dev";
 
+const i18n = {
+  zh: {
+    page_title: "用戶見證 + 提交你的故事 — MarketDaily",
+    nav_back: "← 返回首頁",
+    page_badge: "Testimonials · 用戶見證",
+    page_h1: "誠實的第一步:我們還沒有見證",
+    page_lead: "MarketDaily 目前訂閱者還很少,還沒有累積到足夠、可公開分享的真實見證——比起端出幾則故事撐場面,我們選擇老實告訴你這件事。未來刊登的每一則見證都會經本人同意公開,姓名與職業均屬實;我們不放假見證——如果你發現任何一則造假,請寄信主編,獎勵 NT$10,000 並公開更正。想看我們真正的實力?去看 100% 可查證的<a href=\"track-record.html\" style=\"color:#a5b4fc;\">公開戰績</a>。",
+    share_h2: "想分享你的故事?",
+    share_p: "填寫下方表單,審核通過後會放在這頁公開展示。<br>每則被採用的見證,主編親自感謝。",
+    share_btn: "立即提交我的故事 →",
+    featured_h: "⭐ 精選見證",
+    featured_quote: "我們才剛起步,訂閱者還不到 20 人——還沒有累積到足夠的公開見證。<br><br>與其搬出幾則故事撐場面,我們選擇誠實地留白。<br>想看我們真正的實力?去看 100% 可查證、輸的也列出來的<a href=\"track-record.html\" style=\"color:#a5b4fc;\">公開戰績</a>。<br><br>想成為第一位分享真實心得的訂戶?往下填表提交 ↓",
+    form_h2: "提交你的故事 ✍️",
+    form_sub: "審核通過後,你的見證會出現在這頁與首頁。匿名亦可(只取首字),但完整資訊可信度更高。",
+    label_name: "你的名字 (可只留首字 + 姓)",
+    ph_name: "例:張小明 / 陳先生 / A. Wang",
+    label_role: "職業 + 地點 (選填)",
+    ph_role: "例:軟體工程師 · 台北 · 持有 NVDA / 台積電",
+    label_email: "你的訂閱 Email *",
+    label_quote: "你的見證內容 *",
+    ph_quote: "說說你怎麼使用 MarketDaily、最讓你有感的功能、或它幫你做了哪個決定...",
+    consent_label: "我同意 MarketDaily 在網站、社群、Email 行銷中公開展示這則見證(包含我提供的名字與職業)。如需匿名請在內容中註明。",
+    truthful_label: "我聲明本見證為個人真實使用體驗,沒有收受 MarketDaily 任何形式報酬以換取本見證。",
+    submit_btn: "送出我的見證 →",
+    submit_btn_sending: "送出中...",
+    msg_success: "✅ 已收到!主編會在 48 小時內審核並回信。",
+    msg_error: "出了點問題,請稍後再試,或直接寄信給 marketdailyhq@gmail.com",
+    err_name: "請填寫名字",
+    err_email: "請輸入有效的 Email",
+    err_quote: "見證內容請至少 20 字",
+    err_checkbox: "請勾選兩項同意聲明",
+    footer_record: "戰績紀錄",
+    footer_vs: "vs 對手",
+    footer_about: "主編",
+    footer_pricing: "定價",
+    footer_contact: "聯絡客服",
+    footer_note: "假見證偵測獎勵 NT$10,000 · 寄信至 marketdailyhq@gmail.com 主編親自核實",
+  },
+  en: {
+    page_title: "User Testimonials + Share Your Story — MarketDaily",
+    nav_back: "← Back to Home",
+    page_badge: "Testimonials",
+    page_h1: "Honest First Step: We Don't Have Testimonials Yet",
+    page_lead: "MarketDaily still has very few subscribers, and we haven't gathered enough real, publishable testimonials yet — rather than showcase a handful to look good, we'd rather tell you the truth. Every testimonial we publish will be posted with the person's consent, with real names and occupations; we never post fake testimonials — if you spot one that's fabricated, email the editor for a NT$10,000 reward and a public correction. Want to see our real track record instead? Check our 100% verifiable <a href=\"track-record.html\" style=\"color:#a5b4fc;\">public performance page</a>.",
+    share_h2: "Want to share your story?",
+    share_p: "Fill out the form below — once approved, it'll be featured on this page.<br>Every testimonial we use gets a personal thank-you from the editor.",
+    share_btn: "Submit my story now →",
+    featured_h: "⭐ Featured Testimonials",
+    featured_quote: "We just launched, with fewer than 20 subscribers — not enough yet for a meaningful public testimonial base.<br><br>Rather than showcase a few stories to look good, we choose to be honest and leave this blank.<br>Want to see our real track record instead? Check our 100% verifiable public performance page, losses included —<a href=\"track-record.html\" style=\"color:#a5b4fc;\">see it here</a>.<br><br>Want to be our first subscriber to share a real testimonial? Fill out the form below ↓",
+    form_h2: "Submit Your Story ✍️",
+    form_sub: "Once approved, your testimonial will appear on this page and the homepage. Anonymity is fine (initials only), but full details are more credible.",
+    label_name: "Your name (initials + last name is fine)",
+    ph_name: "e.g. J. Chen / Mr. Wang / A. Smith",
+    label_role: "Occupation + location (optional)",
+    ph_role: "e.g. Software Engineer · Taipei · holds NVDA / TSMC",
+    label_email: "Your subscription email *",
+    label_quote: "Your testimonial *",
+    ph_quote: "Tell us how you use MarketDaily, what feature stood out, or a decision it helped you make...",
+    consent_label: "I agree that MarketDaily may publicly display this testimonial (including the name and occupation I provided) on the website, social media, and email marketing. Note in the content if you'd like to remain anonymous.",
+    truthful_label: "I declare this testimonial reflects my genuine personal experience, and I have not received any compensation from MarketDaily in exchange for it.",
+    submit_btn: "Submit my testimonial →",
+    submit_btn_sending: "Sending...",
+    msg_success: "✅ Received! The editor will review and reply within 48 hours.",
+    msg_error: "Something went wrong — please try again later, or email marketdailyhq@gmail.com directly.",
+    err_name: "Please enter your name",
+    err_email: "Please enter a valid email",
+    err_quote: "Your testimonial should be at least 20 characters",
+    err_checkbox: "Please check both consent boxes",
+    footer_record: "Track Record",
+    footer_vs: "vs Competitors",
+    footer_about: "About the Editor",
+    footer_pricing: "Pricing",
+    footer_contact: "Contact",
+    footer_note: "NT$10,000 reward for spotting a fake testimonial · email marketdailyhq@gmail.com for editor verification",
+  },
+};
+
+function applyLang(lang) {
+  const t = i18n[lang] || i18n.zh;
+  document.title = t.page_title;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const v = t[el.dataset.i18n];
+    if (v !== undefined) el.textContent = v;
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const v = t[el.dataset.i18nHtml];
+    if (v !== undefined) el.innerHTML = v;
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const v = t[el.dataset.i18nPlaceholder];
+    if (v !== undefined) el.placeholder = v;
+  });
+  const langBtn = document.querySelector('.lang-btn');
+  if (langBtn) langBtn.textContent = lang === 'zh' ? 'EN' : '中文';
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : 'en';
+  localStorage.setItem('md-lang-v2', lang);
+}
+
+function toggleLang() {
+  const cur = localStorage.getItem('md-lang-v2') || 'zh';
+  applyLang(cur === 'zh' ? 'en' : 'zh');
+}
+
+applyLang(localStorage.getItem('md-lang-v2') || 'zh');
+
 async function submitTestimonial() {
+  const t = i18n[localStorage.getItem('md-lang-v2') || 'zh'] || i18n.zh;
   const name = document.getElementById("t-name").value.trim();
   const role = document.getElementById("t-role").value.trim();
   const email = document.getElementById("t-email").value.trim();
@@ -405,14 +511,14 @@ async function submitTestimonial() {
   const err = document.getElementById("msg-error");
   ok.style.display = "none"; err.style.display = "none";
 
-  if (!name) { err.textContent = "請填寫名字"; err.style.display = "block"; return; }
+  if (!name) { err.textContent = t.err_name; err.style.display = "block"; return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    err.textContent = "請輸入有效的 Email"; err.style.display = "block"; return;
+    err.textContent = t.err_email; err.style.display = "block"; return;
   }
-  if (quote.length < 20) { err.textContent = "見證內容請至少 20 字"; err.style.display = "block"; return; }
-  if (!consent || !truthful) { err.textContent = "請勾選兩項同意聲明"; err.style.display = "block"; return; }
+  if (quote.length < 20) { err.textContent = t.err_quote; err.style.display = "block"; return; }
+  if (!consent || !truthful) { err.textContent = t.err_checkbox; err.style.display = "block"; return; }
 
-  btn.disabled = true; btn.textContent = "送出中...";
+  btn.disabled = true; btn.textContent = t.submit_btn_sending;
   try {
     const res = await fetch(WORKER_URL + "/contact", {
       method: "POST",
@@ -424,6 +530,7 @@ async function submitTestimonial() {
       }),
     });
     if (res.ok) {
+      ok.textContent = t.msg_success;
       ok.style.display = "block";
       document.getElementById("t-name").value = "";
       document.getElementById("t-role").value = "";
@@ -434,9 +541,10 @@ async function submitTestimonial() {
       throw new Error("HTTP " + res.status);
     }
   } catch (e) {
+    err.textContent = t.msg_error;
     err.style.display = "block";
   } finally {
-    btn.disabled = false; btn.textContent = "送出我的見證 →";
+    btn.disabled = false; btn.textContent = t.submit_btn;
   }
 }
 </script>
