@@ -197,18 +197,26 @@ function toggleLang() {
   renderList();
 }
 
-/* ── 集數載入:檢查近 8 天哪幾天有音檔 ── */
+/* ── 集數載入:一次讀 manifest,對近 8 天取交集(不再逐日 HEAD 探測,避免必然的 404 console 噪音) ── */
 const MEDIA = "https://media.marketdaily.ai";
 let episodes = null;
 
-async function probe(dateStr) {
-  try {
-    const r = await fetch(`${MEDIA}/audio_${dateStr}_tw.mp3`, { method: "HEAD" });
-    return r.ok;
-  } catch (e) { return false; }
-}
 function fmtDate(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+async function fetchManifestKeys() {
+  // 單次 fetch 取代舊版 8 次逐日 HEAD 探測;為免單次瞬斷就整頁顯示「無集數」,失敗重試一次
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const r = await fetch(`${MEDIA}/_list?prefix=audio_`);
+      if (!r.ok) throw new Error(`http ${r.status}`);
+      const data = await r.json();
+      return data.keys || [];
+    } catch (e) {
+      if (attempt === 0) await new Promise(res => setTimeout(res, 500));
+    }
+  }
+  return [];
 }
 async function loadEpisodes() {
   const days = [];
@@ -216,8 +224,13 @@ async function loadEpisodes() {
     const d = new Date(); d.setDate(d.getDate() - i);
     days.push(fmtDate(d));
   }
-  const avail = await Promise.all(days.map(probe));
-  episodes = days.filter((_, i) => avail[i]);
+  const present = new Set();
+  const re = /^audio_(\d{4}-\d{2}-\d{2})_tw\.mp3$/;
+  (await fetchManifestKeys()).forEach(k => {
+    const m = re.exec(k);
+    if (m) present.add(m[1]);
+  });
+  episodes = days.filter(d => present.has(d));
   renderList();
 }
 function renderList() {
