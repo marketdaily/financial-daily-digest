@@ -8,6 +8,7 @@
 - 平台：Windows（家用主機，WSL2 / Ubuntu）—— 原 macOS 已非主力機
 - 終端機：WSL bash
 - 語音輸入：Windows 內建 Win+H（需接麥克風；詳見 memory feedback_voice_dictation_terminal）
+- **⚠️ Mac 禁止新增 launchd / cron / 常駐排程（2026-07-09 發燙事故鐵則）**：排程與背景工作一律放 winrig；Mac 只允許 `~/.mac-guard/allowlist.txt` 清單內項目（遠端控制、同步類等必須在 Mac 本機的東西）。守衛 `com.delvin.launchagent-guard` 每日 08:30/20:30 自動掃，違規即 web push 告警。確要在 Mac 加合法項目：先問用戶，核可後同步加進 allowlist
 
 ## 專案說明
 
@@ -134,7 +135,8 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 
 ## 重要慣例（從過去 session 學到）
 - **🔁 模型交接手冊（2026-07-07 建立）**：換模型接手（Fable 週額度見底改用 Opus 4.8 等）的**第一個 session,開工前先讀 memory `feedback_model_handoff_playbook.md` 全文**——Fable 隱性工作法一頁版（十鐵則/驗證者分離/e2e驗證/收工四件套/武器庫/陷阱Top清單）。CLAUDE.md+記憶+skills 換模型自動繼承,手冊補的是「工作法靈魂」。
-- **⚖️ 合規鐵則：個股分析內容永不與付費掛鉤（2026-07-02 上線,COMPLIANCE_STRUCTURE.md）**：MarketDaily 無投顧牌,依法(投信投顧法§4/§107,橋頭111金訴235判例)任何含「個別有價證券分析/建議/買賣價位」的內容必須**免費開放全體用戶且完全相同**——不得因付費差異化數量、深度、速度、先後;付費 Premium=支持者方案,只能含非建議類價值(客服/搶先體驗/支持營運);行銷文案不得把個股功能與付費連結;新功能開發前先對照 COMPLIANCE_STRUCTURE.md 永久規則。已拆閘門:持股上限統一80、深度全開、AI對話全開(30則/日)、推播全開、pricing/信件/terms 全改。
+- **⚖️ 合規鐵則：個股分析內容永不與付費掛鉤（2026-07-02 上線,COMPLIANCE_STRUCTURE.md）**：MarketDaily 無投顧牌,依法(投信投顧法§4/§107,橋頭111金訴235判例)任何含「個別有價證券分析/建議/買賣價位」的內容必須**免費開放全體用戶且完全相同**——不得因付費差異化數量、深度、速度、先後;行銷文案不得把個股功能與付費連結;新功能開發前先對照 COMPLIANCE_STRUCTURE.md 永久規則。已拆閘門:持股上限統一80、深度全開、AI對話全開(30則/日)、推播全開。
+- **💸 全面免費化＋早鳥口徑（2026-07-09,用戶指令,法律風險考量）**：Premium 付費方案與 Stripe 金流全部下架,全站零收費。對外唯一口徑=**「限時免費＋早鳥鎖定」**:「目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權」。未來若恢復收費只能收非分析類價值(或拿牌後另議),**個股分析依法永遠免費,任何文案不得暗示未來分析內容會收費**。後端:`/stripe/checkout-trial` 已 410、D7/D14/D21/D45 升級信全停(模板保留)、welcome/客服 AI 口徑已改、推薦獎勵不再承諾任何回報(純分享)。既有 Stripe 訂戶皆親友未付錢,無退款議題。詳見 memory `project_marketdaily_free_earlybird`。
 - **🧬 白話 → 先重寫成精準 prompt 並【明寫出來給用戶看】再執行（用戶 2026-06-26 指令,2026-06-27 確認要「看得到的重寫」,所有 session 通用,含主終端機與語音終端機）**：用戶講話常很白話、口語、省略脈絡(語音輸入還有同音字/聽錯)。收到指令後**先別照字面做**：用「我記得關於老闆的一切」(CLAUDE.md、記憶庫、最近在做的事)把這句白話**重寫成一段精準的專業指令**——補省略脈絡、修同音字、講清楚真正目標。**關鍵:重寫後的 prompt 要先用一兩句明寫出來貼給用戶看(例如「我把你的意思理解成:___,這樣對嗎/開始做了」),讓他能即時校正同音字與方向,而不是只在心裡默默重寫**(2026-06-27 用戶反映「我怎麼都沒看到你在做」=之前內化不外顯,他要看得到)。確認/明顯的指令可邊寫邊做不必等回覆;模糊或高風險才停下等他點頭。用戶原話:「你用專業的 prompt 貼給自己看,你比較好做事…讓它成為基因的一部分」。已燒進 voice_term `_start_session` priming + memory `feedback-voice-prompt-rewrite`。
 - **🚫 禁止手動寄信（用戶 2026-05-22 明確指令）**：非台灣時間早上 7:00，禁止做任何會寄 email 給訂閱者的動作 —— 包括手動觸發 `daily_digest` workflow、跑 `send_*.py` 測試腳本、直接 curl Brevo 寄信 API。日報**只能**由 digest-cron worker 的排程 cron（每天 06:55 UTC）自動寄出。**唯一例外**：新訂閱者歡迎信，由 Cloudflare Worker 在註冊當下自動發送，允許。已加 PreToolUse hook（`.claude/hooks/block-mass-email.sh`）強制攔截。任何發信動作有疑慮一律先問用戶，不可自行觸發。
 - **🚫 社群自動發文：發前必逐字驗 caption（2026-05-26 出包）**：`marketing/daily_run.py` 跑前**必須**先 `python daily_run.py --dry` 看下一篇 id，然後讀 `social_posts.json` 對該 id 的 caption + 圖片內容，逐字比對現行方案/事實（價格、來源數、勝率、邀請制、即時市況）。任何一條對不上 → 停手不發、先問用戶。歷史教訓:5/26 我直接補發 `referral`,caption 還寫「免費方案邀請制」+「推薦 3 人 → Pro 免費 1 個月」(早改掉的舊文案);同一批 `social_posts.json` 還埋有「75+ 來源」「勝率 75.5%」「捏造訂戶 Jason」「寫死 Fed/台積電/油價」等地雷,全清空 backup 在 `marketing/social_posts.json.bak-2026-05-26`。

@@ -323,8 +323,6 @@ nav::after {
 .cap-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 0 2px 12px; font-size: 13px; }
 .cap-count { color: var(--text2); font-weight: 600; }
 .cap-count.full { color: #fbbf24; }
-.cap-upgrade { color: #818cf8; font-weight: 700; text-decoration: none; }
-.cap-upgrade:hover { color: #fff; }
 
 /* Messages */
 .msg {
@@ -906,8 +904,8 @@ nav::after {
       <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px;">
         <div class="referral-icon">🎁</div>
         <div>
-          <div style="font-size:15px;font-weight:800;color:var(--text);line-height:1.3;" data-i18n="ref_title">邀請朋友,雙方都得 30 天 Premium</div>
-          <div style="font-size:12px;color:var(--text2);margin-top:2px;">已邀請 <b id="ref-signups" style="color:var(--text);">—</b> 人 · 已賺 <b id="ref-rewards" style="color:var(--text);">—</b> 天免費</div>
+          <div style="font-size:15px;font-weight:800;color:var(--text);line-height:1.3;" data-i18n="ref_title">邀請朋友一起用 MarketDaily</div>
+          <div style="font-size:12px;color:var(--text2);margin-top:2px;">已邀請 <b id="ref-signups" style="color:var(--text);">—</b> 人</div>
         </div>
       </div>
 
@@ -946,13 +944,13 @@ nav::after {
 </div>
 
 <script src="stocks.js?v=20260528"></script>
-<script src="js/dash-core.js?v=20260708b"></script>
-<script src="js/dash-stocks-auth.js?v=20260707b"></script>
+<script src="js/dash-core.js?v=20260709a"></script>
+<script src="js/dash-stocks-auth.js?v=20260709a"></script>
 <script src="js/dash-notify-chat.js?v=20260708a"></script>
 <script src="js/dash-prefs-market.js?v=20260707b"></script>
 <script src="js/dash-stories-chain.js?v=20260707"></script>
 <script src="js/dash-chart.js?v=20260703"></script>
-<script src="js/dash-init.js?v=20260707b"></script>
+<script src="js/dash-init.js?v=20260709a"></script>
 <script>window.META_PIXEL_ID = "1497334655104185";</script>
 <script src="meta-pixel.js"></script>
 <script src="analytics.js?v=20260708a"></script>
@@ -1111,7 +1109,7 @@ window.mdStockTour = function () {
       body: { zh: "點右下角這顆泡泡,直接問 AI 你的持股、大盤、財經概念 —— 它知道你正在追蹤哪些股票。", en: "Tap this bubble (bottom-right) to ask the AI about your holdings, the market, anything — it knows your watchlist." } },
     { selector: "#referral-section",
       title: { zh: "⑦ 邀請朋友", en: "7. Invite friends" },
-      body: { zh: "把你的專屬連結分享給朋友,朋友訂閱成功,你跟他各得 30 天 Premium 免費。", en: "Share your link — when a friend subscribes, you both get 30 days of Premium free." } }
+      body: { zh: "把你的專屬連結分享給朋友,邀請他們一起收 AI 財經日報。", en: "Share your link and invite friends to MarketDaily." } }
   ], { tourId: "dashboard-v2-features", auto: true });
 };
 </script>

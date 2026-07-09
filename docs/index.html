@@ -333,8 +333,6 @@ nav::after {
 .plan-mini-btn.free:hover { background: rgba(16,185,129,0.24); }
 .plan-mini-btn.paid { background: var(--primary); color: #fff; box-shadow: 0 4px 16px rgba(99,102,241,0.38); }
 .plan-mini-btn.paid:hover { background: #4f46e5; }
-.plan-mini-btn.premium { background: linear-gradient(135deg,#7c3aed,#a855f7); color: #fff; box-shadow: 0 4px 16px rgba(168,85,247,0.35); border:none; }
-.plan-mini-btn.premium:hover { background: linear-gradient(135deg,#6d28d9,#9333ea); }
 
 /* ── 3D FLOATING CARDS ── */
 .cards-3d-section {
@@ -969,8 +967,8 @@ footer {
 
       <!-- Step 2b: New user - choose plan -->
       <div id="new-user-step" style="display:none;">
-        <div style="font-size:13px;color:#a5b4fc;font-weight:700;margin-bottom:20px;text-align:center;" data-i18n="choose_plan">選擇你的方案</div>
-        <div class="plan-mini-grid">
+        <div style="font-size:13px;color:#a5b4fc;font-weight:700;margin-bottom:20px;text-align:center;" data-i18n="choose_plan">🎉 註冊完成,歡迎加入</div>
+        <div class="plan-mini-grid" style="grid-template-columns:1fr;max-width:340px;margin:0 auto;">
           <!-- Free -->
           <div class="plan-mini-card">
             <div class="plan-mini-badge" style="background:rgba(16,185,129,0.14);color:#6ee7b7;border:1px solid rgba(16,185,129,0.24);" data-i18n="plan_free_badge">免費</div>
@@ -984,23 +982,6 @@ footer {
             <button class="plan-mini-btn free" id="free-signup-btn" style="margin-top:10px;width:100%;" onclick="subscribeFree()" data-i18n="plan_free_btn">免費加入 →</button>
             <div id="free-error" style="display:none;margin-top:8px;font-size:12px;color:#fca5a5;"></div>
             <div id="free-success" style="display:none;margin-top:8px;font-size:12px;color:#6ee7b7;"></div>
-          </div>
-          <!-- Premium with first-month trial price -->
-          <div class="plan-mini-card featured">
-            <div class="plan-mini-badge" style="background:rgba(168,85,247,0.2);color:#d8b4fe;border:1px solid rgba(168,85,247,0.4);" data-i18n="price_pro_badge">⭐ Premium · 試讀首月 6 折</div>
-            <div class="plan-mini-price" style="display:flex;align-items:baseline;gap:8px;">
-              <span style="font-size:16px;font-weight:700;color:rgba(255,255,255,0.4);text-decoration:line-through;text-decoration-thickness:2px;">NT$499</span>
-              <span style="font-size:26px;font-weight:900;">NT$299</span>
-              <span style="font-size:13px;color:rgba(255,255,255,0.55);" data-i18n="price_mo2">/月</span>
-            </div>
-            <div style="font-size:11px;color:#fde68a;margin:6px 0 12px;font-weight:600;" data-i18n="price_pro_renew">首月 NT$299 · 之後 NT$499/月 · 隨時取消</div>
-            <ul style="list-style:none;margin:10px 0 16px;">
-              <li style="font-size:12px;color:rgba(255,255,255,0.72);padding:4px 0 4px 16px;position:relative;"><span style="position:absolute;left:0;color:#d8b4fe;font-weight:800;">✓</span><span data-i18n="pp1">免費版所有功能（分析內容完全相同）</span></li>
-              <li style="font-size:12px;color:rgba(255,255,255,0.72);padding:4px 0 4px 16px;position:relative;"><span style="position:absolute;left:0;color:#d8b4fe;font-weight:800;">✓</span><span data-i18n="pp2">支持獨立營運（不接廣告、不賣明牌）</span></li>
-              <li style="font-size:12px;color:rgba(255,255,255,0.72);padding:4px 0 4px 16px;position:relative;"><span style="position:absolute;left:0;color:#d8b4fe;font-weight:800;">✓</span><span data-i18n="pp3">優先 1-1 專人客服</span></li>
-              <li style="font-size:12px;color:rgba(255,255,255,0.72);padding:4px 0 4px 16px;position:relative;"><span style="position:absolute;left:0;color:#d8b4fe;font-weight:800;">✓</span><span data-i18n="pp4">非分析類新功能搶先體驗（陸續推出）</span></li>
-            </ul>
-            <a id="stripe-plan-btn" href="#" onclick="goPremiumTrial(event)" class="plan-mini-btn paid" style="width:100%;display:block;text-align:center;" data-i18n="price_pro_btn">6 折試讀 →</a>
           </div>
         </div>
         <!-- Invite code collapsible -->
@@ -1080,8 +1061,8 @@ footer {
       <div class="chip chip-c">
         <div class="chip-ico" style="background:rgba(245,158,11,0.16);">🔁</div>
         <div>
-          <div class="chip-num" data-i18n="hp_chip3_num">30 天</div>
-          <div class="chip-txt" data-i18n="hp_chip3">無理由退費 · 隨時取消</div>
+          <div class="chip-num" data-i18n="hp_chip3_num">NT$0</div>
+          <div class="chip-txt" data-i18n="hp_chip3">限時免費 · 早鳥永久免費</div>
         </div>
       </div>
     </div>
@@ -1511,12 +1492,12 @@ footer {
     <h2 data-i18n="price_title">Simple, transparent pricing</h2>
     <p data-i18n="price_sub">Start free. Upgrade anytime.</p>
   </div>
-  <div class="pricing-grid" style="grid-template-columns:repeat(2,1fr);max-width:680px;margin:0 auto;">
+  <div class="pricing-grid" style="grid-template-columns:1fr;max-width:420px;margin:0 auto;">
     <!-- Free -->
     <div class="pricing-card scene-from-left">
-      <div class="pricing-badge free-badge" data-i18n="price_free_badge">免費版</div>
-      <div class="pricing-price">NT$0 <span data-i18n="price_mo">/ mo</span></div>
-      <p class="pricing-desc" data-i18n="price_free_desc">台股日報早上 7 點、美股日報晚上 8 點,AI 直送信箱,完全免費。</p>
+      <div class="pricing-badge free-badge" data-i18n="price_free_badge">⏳ 限時免費 · 早鳥永久免費</div>
+      <div class="pricing-price" style="display:flex;align-items:baseline;gap:10px;justify-content:center;"><span style="font-size:20px;font-weight:700;color:rgba(255,255,255,0.4);text-decoration:line-through;text-decoration-thickness:2px;">NT$499</span><span>NT$0</span> <span data-i18n="price_mo">/ mo</span></div>
+      <p class="pricing-desc" data-i18n="price_free_desc">台股日報早上 7 點、美股日報晚上 8 點,AI 直送信箱。目前全功能限時免費,現在訂閱未來恢復收費後仍永久免費。</p>
       <div class="pricing-divider"></div>
       <ul class="pricing-features">
         <li data-i18n="pf1">每日 AI 財經日報</li>
@@ -1532,31 +1513,12 @@ footer {
         <div id="home-free-msg" style="display:none;margin-top:8px;font-size:12px;line-height:1.5;text-align:center;"></div>
       </div>
     </div>
-    <!-- Premium with first-month trial price -->
-    <div class="pricing-card featured scene-zoom-in">
-      <div class="pricing-badge" style="background:rgba(168,85,247,0.2);color:#d8b4fe;border:1px solid rgba(168,85,247,0.4);" data-i18n="price_pro_badge">⭐ Premium · 試讀首月 6 折</div>
-      <div class="pricing-price" style="display:flex;align-items:baseline;gap:10px;justify-content:center;">
-        <span style="font-size:20px;font-weight:700;color:rgba(255,255,255,0.4);text-decoration:line-through;text-decoration-thickness:2px;">NT$499</span>
-        <span style="font-size:36px;font-weight:900;">NT$299</span>
-        <span style="font-size:14px;color:rgba(255,255,255,0.55);" data-i18n="price_mo2">/月</span>
-      </div>
-      <div style="text-align:center;font-size:13px;color:#fde68a;font-weight:600;margin-top:4px;margin-bottom:10px;" data-i18n="price_pro_renew">首月 NT$299 · 之後 NT$499/月 · 隨時取消</div>
-      <p class="pricing-desc" data-i18n="price_pro_desc">支持者方案。所有分析功能免費版已全部包含 — Premium 是你支持 MarketDaily 獨立營運的方式。</p>
-      <div class="pricing-divider"></div>
-      <ul class="pricing-features">
-        <li data-i18n="pp1">免費版所有功能（分析內容完全相同）</li>
-        <li data-i18n="pp2">支持獨立營運（不接廣告、不賣明牌）</li>
-        <li data-i18n="pp3">優先 1-1 專人客服</li>
-        <li data-i18n="pp4">非分析類新功能搶先體驗（陸續推出）</li>
-      </ul>
-      <a class="pricing-btn btn-pro" href="#" onclick="goPremiumTrial(event)" data-i18n="price_pro_btn">6 折試讀 →</a>
-    </div>
   </div>
-  <p style="text-align:center;margin-top:20px;font-size:13px;color:var(--text-dim);"><a href="pricing.html" style="color:#a5b4fc;text-decoration:none;" data-i18n="price_compare_link">查看完整方案比較 →</a></p>
+  <p style="text-align:center;margin-top:20px;font-size:13px;color:var(--text-dim);"><a href="pricing.html" style="color:#a5b4fc;text-decoration:none;" data-i18n="price_compare_link">了解限時免費與早鳥權益 →</a></p>
   <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:18px;">
-    <span style="display:inline-flex;align-items:center;gap:7px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.22);color:#6ee7b7;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;" data-i18n="refund_badge">🛡️ 30 天無理由退費</span>
-    <span style="display:inline-flex;align-items:center;gap:7px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.22);color:#a5b4fc;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;" data-i18n="nocard_badge">⭐ 試讀首月 6 折 NT$299</span>
-    <span style="display:inline-flex;align-items:center;gap:7px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.22);color:#fbbf24;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;" data-i18n="cancel_badge">⚡ 隨時取消 · 1 鍵搞定</span>
+    <span style="display:inline-flex;align-items:center;gap:7px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.22);color:#6ee7b7;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;" data-i18n="refund_badge">🎁 全功能限時免費</span>
+    <span style="display:inline-flex;align-items:center;gap:7px;background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.22);color:#a5b4fc;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;" data-i18n="nocard_badge">🔒 早鳥永久免費權益</span>
+    <span style="display:inline-flex;align-items:center;gap:7px;background:rgba(251,191,36,0.08);border:1px solid rgba(251,191,36,0.22);color:#fbbf24;font-size:12px;font-weight:700;padding:7px 14px;border-radius:20px;" data-i18n="cancel_badge">⚡ 不需信用卡 · 隨時取消</span>
   </div>
 </div>
 
@@ -1589,10 +1551,10 @@ footer {
 
       <div class="faq-item-acc">
         <button class="faq-q-btn" onclick="toggleFaq(this)">
-          <span data-i18n="faq_q_chatgpt">我用 ChatGPT 就好，為什麼要付錢訂閱？</span>
+          <span data-i18n="faq_q_chatgpt">我用 ChatGPT 就好，為什麼要訂閱？</span>
           <span class="faq-chevron">▾</span>
         </button>
-        <div class="faq-a-body"><p data-i18n-html="faq_a_chatgpt">ChatGPT 不會在早上 6:55 主動掃完台積電、特斯拉、輝達的隔夜消息，挑出影響<strong>你部位</strong>的那幾則送到你信箱。它是<strong>「你問它答」</strong>的工具；我們是<strong>「不問也送到你眼前」</strong>的助理 —— 知道你抱什麼股、自動篩相關新聞、即時推播持股利空到你手機/瀏覽器(免費版就有)，並支援 AI 助手雙向問答。比 ChatGPT Plus 便宜一半，只專心做好一件事:讓你不用再決定「今天該問 AI 什麼」。<br><br><a href="/vs-chatgpt" style="color:#a5b4fc;text-decoration:underline;font-weight:600;">看完整逐項對比 →</a></p></div>
+        <div class="faq-a-body"><p data-i18n-html="faq_a_chatgpt">ChatGPT 不會在早上 6:55 主動掃完台積電、特斯拉、輝達的隔夜消息，挑出影響<strong>你部位</strong>的那幾則送到你信箱。它是<strong>「你問它答」</strong>的工具；我們是<strong>「不問也送到你眼前」</strong>的助理 —— 知道你抱什麼股、自動篩相關新聞、即時推播持股利空到你手機/瀏覽器(免費版就有)，並支援 AI 助手雙向問答。ChatGPT Plus 要月費,MarketDaily 現在限時免費,只專心做好一件事:讓你不用再決定「今天該問 AI 什麼」。<br><br><a href="/vs-chatgpt" style="color:#a5b4fc;text-decoration:underline;font-weight:600;">看完整逐項對比 →</a></p></div>
       </div>
 
       <div class="faq-item-acc">
@@ -1613,10 +1575,10 @@ footer {
 
       <div class="faq-item-acc">
         <button class="faq-q-btn" onclick="toggleFaq(this)">
-          <span data-i18n="faq_q5">免費版跟 Premium 差在哪？</span>
+          <span data-i18n="faq_q5">真的完全免費嗎？之後會收費嗎？</span>
           <span class="faq-chevron">▾</span>
         </button>
-        <div class="faq-a-body"><p data-i18n="faq_a5">分析內容零差異:個人化日報、AI 助手對話、重大新聞即時推播,免費版全部都有,完全免費、不需邀請碼。Premium(首月 NT$299,之後 NT$499/月)是支持者方案 —— 支持我們獨立營運、優先客服與新功能搶先體驗,不會看到更多或更深的個股分析。隨時可取消。</p></div>
+        <div class="faq-a-body"><p data-i18n="faq_a5">是,目前全功能限時免費開放:個人化日報、AI 助手對話、重大新聞即時推播全部包含,不需信用卡、不需邀請碼。未來會恢復收費,但現在訂閱的早鳥用戶永久保留免費使用權——恢復收費只影響之後的新用戶,且會提前公告。</p></div>
       </div>
 
       <div class="faq-item-acc">
@@ -1858,9 +1820,9 @@ footer {
 <div class="cta-bottom scene-zoom-in">
   <div class="cta-inner">
     <h2 data-i18n="cta_title">讓每個早晨更聰明</h2>
-    <p data-i18n="cta_sub">Premium 試讀首月 NT$299 · 30 天退費保證 · 隨時取消</p>
+    <p data-i18n="cta_sub">目前全功能限時免費 · 早鳥永久保留免費權益 · 不需信用卡</p>
     <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">
-      <a href="#" onclick="goPremiumTrial(event)" class="cta-btn" data-i18n="cta_btn">立即訂閱 Premium →</a>
+      <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});event.preventDefault();" class="cta-btn" data-i18n="cta_btn">免費訂閱,鎖定早鳥權益 →</a>
       <a href="pricing.html" class="cta-btn" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.8);" data-i18n="cta_see_plans">查看所有方案</a>
     </div>
     <p style="margin-top:4px;font-size:13px;color:var(--text-dim);" data-i18n-html="cta_invite_full">有朋友邀請？<span style="color:#a5b4fc;cursor:pointer;" onclick="window.scrollTo({top:0,behavior:'smooth'});">在上方輸入邀請碼免費加入 ↑</span></p>
@@ -1954,7 +1916,7 @@ const i18n = {
     hero_btn_signin: "Go to My Account →",
     hero_btn_back: "← Not you? Change email",
     wb_found: "✅ Found your subscription!",
-    choose_plan: "Choose your plan",
+    choose_plan: "🎉 Account created — welcome!",
     invite_title: "Someone sent you a gift 🎁", invite_hint: "A friend's invite gets you MarketDaily free — limited spots",
     or_divider: "or",
     btn_use_invite: "Claim my free briefing →",
@@ -1970,33 +1932,27 @@ const i18n = {
     howto_eyebrow: "How It Works",
     howto_title: "Four steps to your daily digest",
     howto_sub: "Three minutes to set up. TW 7AM & US 8PM, delivered automatically.",
-    howto_step1_title: "Sign up", howto_step1_desc: "Enter your email and pick a plan — done in 30 seconds.",
+    howto_step1_title: "Sign up", howto_step1_desc: "Enter your email — done in 30 seconds.",
     howto_step2_title: "Pick your stocks", howto_step2_desc: "Choose the US and Taiwan stocks you follow in Preferences.",
     howto_step3_title: "Check your dashboard", howto_step3_desc: "See your preference summary at a glance in the dashboard.",
     howto_step4_title: "Get your digest", howto_step4_desc: "TW stocks at 7AM, US stocks at 8PM (Taiwan time) — with a buy / hold / sell call and AI confidence score for each stock.",
     preview_title: "What it looks like 👇",
-    price_title: "Simple, transparent pricing", price_sub: "Start free. Upgrade anytime.",
-    price_free_badge: "Free", price_mo: "/ mo",
-    price_free_desc: "TW digest at 7AM, US digest at 8PM — AI market briefing to your inbox, totally free.",
+    price_title: "Free for a limited time", price_sub: "Every feature included. Early subscribers stay free forever.",
+    price_free_badge: "⏳ Limited-time free · Early birds free forever", price_mo: "/ mo",
+    price_free_desc: "TW digest at 7AM, US digest at 8PM — AI market briefing to your inbox. Free for a limited time; subscribe now and stay free forever when paid plans return.",
     pf1: "TW 7AM · US 8PM briefing", pf2: "US + Taiwan markets", pf3: "AI fake-news filter", pf4: "30-second summary",
-    price_premium_badge: "Premium Supporter", price_premium_desc: "Identical analysis content to Free — paying supports independent operations.",
-    pe1: "Everything in Free (identical analysis content)", pe2: "Support independent operations", pe3: "Priority 1-on-1 support", pe4: "Early access to non-analysis features",
-    price_premium_btn: "Learn More →", price_compare_link: "See full plan comparison →",
+    price_compare_link: "About the limited-time free offer →",
     slider_title: "What's in every brief", slider_sub: "5 AI-curated sections. TW stocks 7AM, US stocks 8PM Taiwan time.",
     faq_eyebrow: "FAQ", faq_title: "Common Questions",
-    faq_q_chatgpt: "I already use ChatGPT — why pay for this?",
-    faq_a_chatgpt: "ChatGPT doesn't wake up at 6:55 AM to scan TSMC, Tesla and Nvidia's overnight news and deliver only the items affecting <strong>your</strong> positions to your inbox. It's a <strong>\"you ask, it answers\"</strong> tool; we're a <strong>\"shows up without being asked\"</strong> assistant — we know your holdings, auto-filter relevant news, and push breaking news to your phone/browser (included in Free), plus two-way AI assistant Q&amp;A. Half the price of ChatGPT Plus, focused on one job: removing your daily \"what should I even ask AI today?\" decision.<br><br><a href=\"/vs-chatgpt\" style=\"color:#a5b4fc;text-decoration:underline;font-weight:600;\">See the full head-to-head →</a>",
+    faq_q_chatgpt: "I already use ChatGPT — why subscribe?",
+    faq_a_chatgpt: "ChatGPT doesn't wake up at 6:55 AM to scan TSMC, Tesla and Nvidia's overnight news and deliver only the items affecting <strong>your</strong> positions to your inbox. It's a <strong>\"you ask, it answers\"</strong> tool; we're a <strong>\"shows up without being asked\"</strong> assistant — we know your holdings, auto-filter relevant news, and push breaking news to your phone/browser (included in Free), plus two-way AI assistant Q&amp;A. ChatGPT Plus costs a monthly fee; MarketDaily is currently free for a limited time — focused on one job: removing your daily \"what should I even ask AI today?\" decision.<br><br><a href=\"/vs-chatgpt\" style=\"color:#a5b4fc;text-decoration:underline;font-weight:600;\">See the full head-to-head →</a>",
     faq_q1: "What time does the brief arrive?", faq_a1: "Taiwan-stock digest at 7:00 AM, US-stock digest at 8:00 PM — both Taiwan time. You get the edition(s) matching the markets you hold (hold both and it's one each morning and evening). Mon–Sat; <strong>Saturday morning is a special 'weekly recap + next-week catalysts' edition covering both markets</strong>. No email Sunday (both markets closed), and no evening email when US markets are shut. If you don't see it, check your spam folder.",
     faq_q2: "What's inside every briefing?", faq_a2: "30-second TL;DR, top headlines (fake-news filtered), AI trade signals per stock (Buy/Sell/Hold + target price + confidence %), market sentiment dashboard, and personalized holdings analysis.",
     faq_q3: "How do I get an invite code?", faq_a3: "Invite codes are issued by Delvin personally and are limited. Currently for friends and family only. Contact us if you'd like one.",
     faq_q4: "How do I unsubscribe?", faq_a4: "Click 'Unsubscribe' at the bottom of any email. Takes effect immediately — no need to contact support.",
-    faq_q5: "What's the difference between Free and Premium?", faq_a5: "Zero difference in analysis content: personalized digest, two-way AI chat and real-time breaking-news push are all included in Free — totally free, no invite code. Premium (first month NT$299, then NT$499/mo) is a supporter plan: it funds our independence and adds priority support and early access — never more or deeper stock analysis. Cancel anytime.",
+    faq_q5: "Is it really free? Will you charge later?", faq_a5: "Yes — every feature is currently free for a limited time: personalized digest, two-way AI chat and real-time breaking-news push. No credit card, no invite code. Paid plans will return, but early subscribers keep full free access forever — future pricing only affects new users, announced in advance.",
     faq_contact: "More questions? <a href='contact.html'>Contact AI Support →</a>",
-    price_free_btn: "Start Free →", home_free_submit: "Submit →", price_pro_badge: "⭐ Premium Trial · 40% Off", price_mo2: "/ mo",
-    price_pro_desc: "The supporter plan, 40% off your first month. Every analysis feature is already free — upgrading supports our independence. Full refund within 30 days.",
-    price_pro_renew: "Then NT$499/mo · cancel anytime",
-    pp1: "Everything in Free (identical analysis content)", pp2: "Support independent operations (no ads, no stock tips for sale)", pp3: "Priority 1-on-1 support", pp4: "Early access to non-analysis features (rolling out)",
-    price_pro_btn: "Start Trial 40% Off →",
+    price_free_btn: "Subscribe Free →", home_free_submit: "Submit →",
     feat_sub: "Everything you need to start your morning smarter. Nothing you don't.",
     about_title: "About MarketDaily", about_sub: "Why we built this — and who it's for",
     about_tab_problem: "😩 The Problem", about_tab_solution: "✅ Our Solution",
@@ -2018,7 +1974,7 @@ const i18n = {
     about_solution_title: "Our solution", about_solution_desc: "MarketDaily scans major financial sources (Reuters, Bloomberg, Yahoo Finance, FT) every night, filters out fake news, and uses AI to write a plain-language briefing — TW stocks at 7AM, US stocks at 8PM Taiwan time, straight to your inbox.",
     about_who_title: "Who it's for", about_who_desc: "Busy professionals and investors in Taiwan who hold US or Taiwan stocks and want to make smarter decisions — without spending an hour reading financial news every morning.",
     about_trust_title: "Our commitment", about_trust_desc: "Every story is cross-checked across multiple trusted sources. We clearly label what's verified and what isn't. No hype, no clickbait — just the facts that matter to your portfolio.",
-    cta_title: "Start your mornings smarter", cta_sub: "From NT$299/mo · Cancel anytime", cta_btn: "Subscribe Premium →",
+    cta_title: "Start your mornings smarter", cta_sub: "Free for a limited time · Early subscribers stay free forever · No credit card", cta_btn: "Subscribe free — lock in early-bird access →",
     cta_see_plans: "See all plans",
     cta_invite_full: "Got an invite from a friend? <span style=\"color:#a5b4fc;cursor:pointer;\" onclick=\"window.scrollTo({top:0,behavior:'smooth'});\">Enter your code above to join free ↑</span>",
     footer2: "✅ Multi-source verified  |  ⚠️ Single source — read with caution",
@@ -2091,7 +2047,7 @@ const i18n = {
     hp_foot: "AI-generated sample · informational only, not financial advice",
     hp_chip1: "Public avoid-the-bad-ones rate · verifiable",
     hp_chip2_num: "No sponsors", hp_chip2: "No positions · corrections public",
-    hp_chip3_num: "30 days", hp_chip3: "No-questions refund · cancel anytime",
+    hp_chip3_num: "NT$0", hp_chip3: "Free for a limited time · early birds free forever",
     footer_record: "Track Record",
     footer_vs: "vs Rivals",
     footer_about: "Editor · Process",
@@ -2119,7 +2075,7 @@ const i18n = {
     hero_btn_signin: "前往我的專區 →",
     hero_btn_back: "← 不是你？重新輸入",
     wb_found: "✅ 找到你的訂閱了！",
-    choose_plan: "選擇你的方案",
+    choose_plan: "🎉 註冊完成,歡迎加入",
     invite_title: "有人送你一份禮物 🎁", invite_hint: "用朋友送的邀請碼免費入場 —— 名額有限",
     or_divider: "或",
     btn_use_invite: "領取我的免費日報 →",
@@ -2141,28 +2097,22 @@ const i18n = {
     howto_step3_title: "確認後台", howto_step3_desc: "在後台一眼看完你的偏好摘要。",
     howto_step4_title: "收到日報", howto_step4_desc: "台股每天早上 7 點、美股每天晚上 8 點，日報附每支股票的買/持有/賣訊號與 AI 信心指數。",
     preview_title: "長這個樣子 👇",
-    price_title: "簡單透明的定價", price_sub: "免費入門，隨時升級。",
-    price_free_badge: "免費版", price_mo: "/ 月",
-    price_free_desc: "台股日報早上 7 點、美股日報晚上 8 點,AI 直送信箱,完全免費。",
+    price_title: "限時免費開放中", price_sub: "全功能免費。現在訂閱的早鳥用戶,未來恢復收費後永久免費。",
+    price_free_badge: "⏳ 限時免費 · 早鳥永久免費", price_mo: "/ 月",
+    price_free_desc: "台股日報早上 7 點、美股日報晚上 8 點,AI 直送信箱。目前全功能限時免費,現在訂閱未來恢復收費後仍永久免費。",
     pf1: "台股早 7 點・美股晚 8 點日報", pf2: "美股 + 台股", pf3: "AI 假訊息過濾", pf4: "30 秒快速摘要",
-    price_free_btn: "免費開始 →", home_free_submit: "送出 →", price_pro_badge: "⭐ Premium 試讀 · 6 折", price_mo2: "/ 月",
-    price_pro_desc: "支持者方案,首月 6 折。所有分析功能免費版已全部包含,升級是支持我們獨立營運。30 天內無理由全額退費。",
-    price_pro_renew: "次月起 NT$499/月 · 隨時取消",
-    pp1: "免費版所有功能（分析內容完全相同）", pp2: "支持獨立營運（不接廣告、不賣明牌）", pp3: "優先 1-1 專人客服", pp4: "非分析類新功能搶先體驗（陸續推出）",
-    price_premium_badge: "Premium 支持者方案", price_premium_desc: "分析內容與免費版完全相同,付費是支持獨立營運。",
-    pe1: "免費版所有功能（分析內容完全相同）", pe2: "支持獨立營運", pe3: "優先 1-1 專人客服", pe4: "非分析類新功能搶先體驗",
-    price_premium_btn: "了解更多 →", price_compare_link: "查看完整方案比較 →",
+    price_free_btn: "免費訂閱 →", home_free_submit: "送出 →",
+    price_compare_link: "了解限時免費與早鳥權益 →",
     slider_title: "每日簡報包含什麼", slider_sub: "5 個 AI 精選區塊，台股早上 7 點、美股晚上 8 點準時送達。",
     faq_eyebrow: "FAQ", faq_title: "常見問題",
-    faq_q_chatgpt: "我用 ChatGPT 就好，為什麼要付錢訂閱？",
-    faq_a_chatgpt: "ChatGPT 不會在早上 6:55 主動掃完台積電、特斯拉、輝達的隔夜消息，挑出影響<strong>你部位</strong>的那幾則送到你信箱。它是<strong>「你問它答」</strong>的工具；我們是<strong>「不問也送到你眼前」</strong>的助理 —— 知道你抱什麼股、自動篩相關新聞、即時推播持股利空到你手機/瀏覽器(免費版就有)，並支援 AI 助手雙向問答。比 ChatGPT Plus 便宜一半，只專心做好一件事:讓你不用再決定「今天該問 AI 什麼」。<br><br><a href=\"/vs-chatgpt\" style=\"color:#a5b4fc;text-decoration:underline;font-weight:600;\">看完整逐項對比 →</a>",
+    faq_q_chatgpt: "我用 ChatGPT 就好，為什麼要訂閱？",
+    faq_a_chatgpt: "ChatGPT 不會在早上 6:55 主動掃完台積電、特斯拉、輝達的隔夜消息，挑出影響<strong>你部位</strong>的那幾則送到你信箱。它是<strong>「你問它答」</strong>的工具；我們是<strong>「不問也送到你眼前」</strong>的助理 —— 知道你抱什麼股、自動篩相關新聞、即時推播持股利空到你手機/瀏覽器(免費版就有)，並支援 AI 助手雙向問答。ChatGPT Plus 要月費,MarketDaily 現在限時免費,只專心做好一件事:讓你不用再決定「今天該問 AI 什麼」。<br><br><a href=\"/vs-chatgpt\" style=\"color:#a5b4fc;text-decoration:underline;font-weight:600;\">看完整逐項對比 →</a>",
     faq_q1: "幾點收到日報？", faq_a1: "台股日報每天早上 07:00、美股日報每天晚上 20:00(台灣時間)準時送達——你會依持有的市場收到對應日報,兩個市場都持有就早晚各一封。週一到週六發送,<strong>週六早上是「本週回顧 + 下週重點」特別版(美股、台股都含)</strong>,週日休息(兩邊都沒開盤)。美股休市日當晚不寄。沒收到請先看垃圾郵件夾。",
     faq_q2: "每封日報包含什麼？", faq_a2: "30 秒精華摘要、今日頭條（假訊息過濾）、AI 操作建議（每支持股 買/賣/持有 + 目標價 + 信心百分比）、市場情緒儀表板，以及你的個人持倉動態分析。",
     faq_q3: "邀請碼哪裡取得？", faq_a3: "邀請碼由 Delvin 本人發出，數量有限，目前僅開放給親友。如有需要請透過客服聯繫。",
     faq_q4: "如何取消訂閱？", faq_a4: "在任何一封日報 Email 底部點「取消訂閱」即可立即生效，完全不需要聯繫客服。",
-    faq_q5: "免費版跟 Premium 差在哪？", faq_a5: "分析內容零差異:個人化日報、AI 助手對話、重大新聞即時推播,免費版全部都有,完全免費、不需邀請碼。Premium(首月 NT$299,之後 NT$499/月)是支持者方案 —— 支持我們獨立營運、優先客服與新功能搶先體驗,不會看到更多或更深的個股分析。隨時可取消。",
+    faq_q5: "真的完全免費嗎？之後會收費嗎？", faq_a5: "是,目前全功能限時免費開放:個人化日報、AI 助手對話、重大新聞即時推播全部包含,不需信用卡、不需邀請碼。未來會恢復收費,但現在訂閱的早鳥用戶永久保留免費使用權——恢復收費只影響之後的新用戶,且會提前公告。",
     faq_contact: "還有其他問題？<a href='contact.html'>聯絡 AI 客服 →</a>",
-    price_pro_btn: "6 折試讀 →",
     about_title: "關於財經日報", about_sub: "我們是誰，我們在做什麼",
     about_tab_problem: "😩 現在的問題", about_tab_solution: "✅ 我們的解法",
     about_prob_eye: "你現在的早晨", about_prob_time: "60+ 分鐘白白浪費",
@@ -2183,7 +2133,7 @@ const i18n = {
     about_solution_title: "我們的解法", about_solution_desc: "財經日報每晚掃描 Reuters、Bloomberg、Yahoo Finance、經濟日報等主流財經來源，過濾假新聞，再由 AI 用生活化的語言寫成摘要——台股日報早上 7 點、美股日報晚上 8 點準時送進你的收件匣。",
     about_who_title: "適合誰看", about_who_desc: "持有美股或台股、想做出更聰明投資決策的台灣上班族與投資人。不想每天花一個小時讀財經新聞，但又不想錯過重要消息的人。",
     about_trust_title: "我們的承諾", about_trust_desc: "每則新聞都經過多個可信來源交叉比對，並明確標示「多源確認」或「單一來源」。不炒作、不標題黨，只給你真正影響持股的事實。",
-    cta_title: "讓每個早晨更聰明", cta_sub: "從 NT$299/月起 · 隨時取消", cta_btn: "立即訂閱 Premium →",
+    cta_title: "讓每個早晨更聰明", cta_sub: "目前全功能限時免費 · 早鳥永久保留免費權益 · 不需信用卡", cta_btn: "免費訂閱,鎖定早鳥權益 →",
     cta_see_plans: "查看所有方案",
     cta_invite_full: "有朋友邀請？<span style=\"color:#a5b4fc;cursor:pointer;\" onclick=\"window.scrollTo({top:0,behavior:'smooth'});\">在上方輸入邀請碼免費加入 ↑</span>",
     footer2: "✅ 多源確認  |  ⚠️ 單一來源，請自行查證",
@@ -2216,9 +2166,9 @@ const i18n = {
     tr_s1: "看多勝率 · 公版可查證",
     tr_s2: "避坑勝率",
     tr_s3: "累計提及個股",
-    refund_badge: "🛡️ 30 天無理由退費",
-    nocard_badge: "⭐ 試讀首月 6 折 NT$299",
-    cancel_badge: "⚡ 隨時取消 · 1 鍵搞定",
+    refund_badge: "🎁 全功能限時免費",
+    nocard_badge: "🔒 早鳥永久免費權益",
+    cancel_badge: "⚡ 不需信用卡 · 隨時取消",
     commit_1: "不收業配",
     commit_2: "不持有提及個股",
     commit_3: "錯了會公開更正",
@@ -2256,7 +2206,7 @@ const i18n = {
     hp_foot: "AI 生成範例 · 僅供參考，不構成投資建議",
     hp_chip1: "公開避坑勝率 · 可查證",
     hp_chip2_num: "不收業配", hp_chip2: "不持有提及個股 · 錯了公開更正",
-    hp_chip3_num: "30 天", hp_chip3: "無理由退費 · 隨時取消",
+    hp_chip3_num: "NT$0", hp_chip3: "限時免費 · 早鳥永久免費",
     footer_record: "戰績紀錄",
     footer_vs: "vs 對手比較",
     footer_about: "主編 · 編輯流程",
@@ -2385,13 +2335,11 @@ async function heroSetPassword() {
     if (data.ok) {
       localStorage.setItem("md-email", _pendingSetupEmail);
       if (_pendingIsNewSignup) {
-        // 新註冊:設完密碼 → 跳選方案(Free 已自動加,可直接 Premium 升級)
+        // 新註冊:設完密碼 → 顯示完成畫面(Free 已自動加,全站限時免費)
         if (window.mdTrackLead) window.mdTrackLead({ plan: "free" });
         document.getElementById("set-pwd-step").style.display = "none";
         document.getElementById("new-invite-email").value = _pendingSetupEmail;
         document.getElementById("invite-sec-email").value = _pendingSetupEmail;
-        const stripBtn = document.getElementById("stripe-plan-btn");
-        if (stripBtn) stripBtn.dataset.prefillEmail = _pendingSetupEmail;
         const freeBtn = document.getElementById("free-signup-btn");
         if (freeBtn) {
           freeBtn.textContent = currentLang === "zh" ? "前往我的專區 →" : "Go to dashboard →";
@@ -2466,41 +2414,12 @@ function showReferralPrompt(email) {
   box.id = id;
   box.style.cssText = "margin-top:14px;padding:14px 16px;border-radius:14px;background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(168,85,247,.18));border:1px solid rgba(165,180,252,.45);color:#e0e7ff;font-size:14px;line-height:1.5;text-align:left;";
   box.innerHTML = (currentLang === "zh"
-    ? '🎁 <strong>馬上邀請朋友再得 30 天免費</strong><br><a href="dashboard.html#referral" style="display:inline-block;margin-top:8px;padding:8px 14px;border-radius:10px;background:#6366f1;color:#fff;text-decoration:none;font-weight:600;">前往我的專區 →</a>'
-    : '🎁 <strong>Invite a friend and get 30 days free</strong><br><a href="dashboard.html#referral" style="display:inline-block;margin-top:8px;padding:8px 14px;border-radius:10px;background:#6366f1;color:#fff;text-decoration:none;font-weight:600;">Go to My Account →</a>');
+    ? '📣 <strong>覺得不錯？邀請朋友一起用</strong><br><a href="dashboard.html#referral" style="display:inline-block;margin-top:8px;padding:8px 14px;border-radius:10px;background:#6366f1;color:#fff;text-decoration:none;font-weight:600;">前往我的專區 →</a>'
+    : '📣 <strong>Invite friends to MarketDaily</strong><br><a href="dashboard.html#referral" style="display:inline-block;margin-top:8px;padding:8px 14px;border-radius:10px;background:#6366f1;color:#fff;text-decoration:none;font-weight:600;">Go to My Account →</a>');
   const free = document.getElementById("free-success");
   const inv = document.getElementById("invite-success");
   const anchor = (free && free.style.display !== "none") ? free : (inv && inv.style.display !== "none" ? inv : (free || inv));
   if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(box, anchor.nextSibling);
-}
-
-// Premium 試讀:後端動態 Stripe Checkout(coupon baked in,不需手動輸碼)
-async function goPremiumTrial(e) {
-  if (e) e.preventDefault();
-  if (window.mdTrack) window.mdTrack("premium_checkout_start");
-  const btn = e && e.currentTarget;
-  const orig = btn && btn.textContent;
-  if (btn) { btn.textContent = "..."; btn.style.pointerEvents = "none"; }
-  try {
-    const prefillEmail = btn && btn.dataset && btn.dataset.prefillEmail;
-    const heroEmail = (document.getElementById("hero-email") || {}).value || "";
-    const email = (prefillEmail || heroEmail || "").trim().toLowerCase();
-    const res = await fetch(WORKER_URL + "/stripe/checkout-trial", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        ref: localStorage.getItem("md-ref") || "",
-        ...getAttrPayload(),
-      }),
-    });
-    const data = await res.json();
-    if (data.url) { window.location.href = data.url; return; }
-    alert(currentLang === "zh" ? "結帳建立失敗,請稍後再試。" : "Checkout failed. Please try again.");
-  } catch {
-    alert(currentLang === "zh" ? "網路錯誤,請稍後再試。" : "Network error. Please try again.");
-  } finally {
-    if (btn) { btn.textContent = orig; btn.style.pointerEvents = ""; }
-  }
 }
 
 // 首頁 Pricing 區免費卡:inline email + 直接訂閱(無邀請碼)
@@ -2705,8 +2624,8 @@ document.addEventListener("DOMContentLoaded", () => {
     banner.id = "ref-gift-banner";
     banner.style.cssText = "position:sticky;top:0;z-index:120;background:linear-gradient(90deg,#6366f1,#a855f7);color:#fff;padding:11px 44px 11px 18px;font-size:14px;font-weight:600;text-align:center;box-shadow:0 6px 18px rgba(99,102,241,.35);letter-spacing:.02em;";
     banner.innerHTML = (lang === "zh"
-      ? '🎁 你的朋友送你一份禮物！訂閱可享 <u>30 天 Premium 免費</u>'
-      : '🎁 Your friend sent you a gift — get <u>30 days of Premium free</u> when you subscribe')
+      ? '🎁 你的朋友邀請你一起用 MarketDaily — 現在全功能限時免費'
+      : '🎁 Your friend invited you to MarketDaily — every feature is free for a limited time')
       + '<button aria-label="close" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:4px 8px;">×</button>';
     banner.querySelector("button").addEventListener("click", () => {
       sessionStorage.setItem("md-ref-banner-dismissed", "1");
@@ -2986,7 +2905,7 @@ MDTour.mount([
     title: { zh: "第 2 步:按「繼續」", en: "Step 2: Click “Continue”" },
     body: { zh: "Email 打好後,按這個按鈕進入下一步。", en: "Once your email is in, click this button to move on." } },
   { title: { zh: "接下來會發生什麼", en: "What happens next" },
-    body: { zh: "你會看到兩個方案 —— 免費版(留 Email 直接訂閱,台股早上 7 點、美股晚上 8 點收日報,週一到週六,週日休息;個人化分析與 AI 助手對話免費就有)或 Premium 支持者方案(首月 NT$299,支持獨立營運,分析內容與免費版完全相同)。週六是「本週回顧 + 下週重點」特別版。之後想登入「我的專區」時,系統才會請你設一組密碼。", en: "You’ll see two plans — Free (just leave your email; TW digest 7AM, US digest 8PM TWT, Mon–Sat, Sun off; personalized analysis and AI chat included) or the Premium supporter plan (first month NT$299 — supports our independence; analysis content is identical to Free). Saturday is a special 'weekly recap + next-week catalysts' edition. You’ll only set a password later when logging in to “My Account.”" } }
+    body: { zh: "留下 Email 就能直接訂閱,目前全功能限時免費(台股早上 7 點、美股晚上 8 點收日報,週一到週六,週日休息;個人化分析與 AI 助手對話全部包含)。現在訂閱的早鳥用戶,未來恢復收費後仍永久免費。週六是「本週回顧 + 下週重點」特別版。之後想登入「我的專區」時,系統才會請你設一組密碼。", en: "Just leave your email to subscribe — every feature is currently free for a limited time (TW digest 7AM, US digest 8PM TWT, Mon–Sat, Sun off; personalized analysis and AI chat included). Early subscribers stay free forever when paid plans return. Saturday is a special 'weekly recap + next-week catalysts' edition. You’ll only set a password later when logging in to “My Account.”" } }
 ], { tourId: "index", auto: true });
 </script>
 <script src="terminal.js?v=1"></script>

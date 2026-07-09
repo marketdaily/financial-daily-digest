@@ -98,8 +98,8 @@ async function doAutoSave() {
       _lastSaved = payload;
       if (data.dropped > 0) {
         setSaveStatus("error", currentLang === 'zh'
-          ? `⚠️ 已達追蹤上限 ${data.cap} 檔,超過的 ${data.dropped} 檔未儲存`
-          : `⚠️ Free plan allows ${data.cap} stocks — ${data.dropped} not saved`);
+          ? `⚠️ 最多可追蹤 ${data.cap} 檔,超過的 ${data.dropped} 檔未儲存`
+          : `⚠️ You can track up to ${data.cap} stocks — ${data.dropped} not saved`);
       } else {
         setSaveStatus("saved", T('save_saved_long'));
       }
@@ -158,7 +158,7 @@ function renderBonusBadge(days) {
 }
 
 function shareText() {
-  return (T('share_msg_template') || "邀請新朋友訂閱 MarketDaily,你跟他都得 30 天 Premium 免費。連結:{link}").replace("{link}", _refLink);
+  return (T('share_msg_template') || "我在用 MarketDaily,每天 7 點 AI 財經日報,現在限時免費:{link}").replace("{link}", _refLink);
 }
 
 function copyRefLink() {

@@ -1953,55 +1953,9 @@ export default {
 
     // Stripe Checkout Session for Premium 試讀 (coupon baked in,客戶不需輸碼)
     if (url.pathname === "/stripe/checkout-trial" && request.method === "POST") {
-      let body = {};
-      try { body = await request.json(); } catch {}
-      const email = (body.email || "").trim().toLowerCase();
-      const refCode = (body.ref || "").trim();
-      const utm = {
-        utm_source: body.utm_source || "",
-        utm_medium: body.utm_medium || "",
-        utm_campaign: body.utm_campaign || "",
-      };
-      // Anti-spam: 每 IP 每分鐘 10 次 — 用戶連刷 Pricing 頁面也夠用,擋 abuse 直打 Stripe API。
-      const ip = request.headers.get("cf-connecting-ip") || "anon";
-      const rlKey = `rl:checkout:${ip}`;
-      const rlCount = parseInt((await env.USER_PREFS.get(rlKey)) || "0", 10);
-      if (rlCount >= 10) return json({ error: "too_many_attempts" }, 429);
-      ctx.waitUntil(env.USER_PREFS.put(rlKey, String(rlCount + 1), { expirationTtl: 60 }));
-      if (!env.STRIPE_SECRET_KEY) return json({ error: "missing_stripe_key" }, 500);
-      const params = new URLSearchParams();
-      params.set("mode", "subscription");
-      params.set("line_items[0][price]", "price_1TZAUyBdHwgNDiM7rpsa0HDB");
-      params.set("line_items[0][quantity]", "1");
-      params.set("discounts[0][coupon]", "premium_trial_v2");
-      params.set("success_url", "https://marketdaily.ai/dashboard.html?welcome=premium&sid={CHECKOUT_SESSION_ID}");
-      params.set("cancel_url", "https://marketdaily.ai/pricing.html?cancel=1");
-      params.set("billing_address_collection", "auto");
-      if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) params.set("customer_email", email);
-      if (refCode) params.set("metadata[ref]", refCode);
-      if (utm.utm_source) params.set("metadata[utm_source]", utm.utm_source);
-      if (utm.utm_medium) params.set("metadata[utm_medium]", utm.utm_medium);
-      if (utm.utm_campaign) params.set("metadata[utm_campaign]", utm.utm_campaign);
-      try {
-        const r = await fetch("https://api.stripe.com/v1/checkout/sessions", {
-          method: "POST",
-          headers: {
-            "Authorization": "Bearer " + env.STRIPE_SECRET_KEY,
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: params.toString(),
-        });
-        const data = await r.json();
-        if (!r.ok || !data.url) {
-          console.log("stripe session error:", JSON.stringify(data));
-          return json({ error: "stripe_error", detail: data.error?.message || "unknown" }, 502);
-        }
-        return json({ url: data.url });
-      } catch (e) {
-        return json({ error: "network", detail: String(e) }, 502);
-      }
+      // 2026-07-09 全面免費化:法律風險考量,下架所有付費方案,不再開新結帳。
+      return json({ error: "payments_disabled", message: "MarketDaily 現已完全免費,所有功能對全體用戶開放,無需付費。" }, 410);
     }
-
     // AI Customer Support endpoint
     if (url.pathname === "/support" && request.method === "POST") {
       let body;
@@ -2238,37 +2192,9 @@ async function runLifecycleSweep(env) {
             await env.USER_PREFS.put(`lc_d1_sent:${email}`, String(Date.now()));
             sent.d1++;
           }
-        } else if (days === 7) {
-          // 即時讀當下 plan,而不是註冊時的 tier —— 用戶 D1~D7 之間升級了就不該收 D7 折扣
-          const plan = (await env.USER_PREFS.get(`plan:${email}`)) || "free";
-          if (plan === "free" && !(await env.USER_PREFS.get(`lc_d7_sent:${email}`))) {
-            await sendD7Email(email, env.BREVO_API_KEY, env);
-            await env.USER_PREFS.put(`lc_d7_sent:${email}`, String(Date.now()));
-            sent.d7++;
-          }
-        } else if (days === 14) {
-          if (!(await env.USER_PREFS.get(`lc_d14_sent:${email}`))) {
-            await sendD14Email(email, env.BREVO_API_KEY, env);
-            await env.USER_PREFS.put(`lc_d14_sent:${email}`, String(Date.now()));
-            sent.d14++;
-          }
-        } else if (days === 21) {
-          // D21:習慣養成里程碑(已讀 ~15-18 封日報)+ 軟銷 Premium 試讀
-          const plan = (await env.USER_PREFS.get(`plan:${email}`)) || "free";
-          if (plan === "free" && !(await env.USER_PREFS.get(`lc_d21_sent:${email}`))) {
-            await sendD21Email(email, env.BREVO_API_KEY, env);
-            await env.USER_PREFS.put(`lc_d21_sent:${email}`, String(Date.now()));
-            sent.d21 = (sent.d21 || 0) + 1;
-          }
-        } else if (days === 45) {
-          // D45:重新介入 — 強化 Premium 升級(限時誘因)
-          const plan = (await env.USER_PREFS.get(`plan:${email}`)) || "free";
-          if (plan === "free" && !(await env.USER_PREFS.get(`lc_d45_sent:${email}`))) {
-            await sendD45Email(email, env.BREVO_API_KEY, env);
-            await env.USER_PREFS.put(`lc_d45_sent:${email}`, String(Date.now()));
-            sent.d45 = (sent.d45 || 0) + 1;
-          }
         }
+        // 2026-07-09 全面免費化:D7/D14/D21/D45 皆為 Premium 升級/推薦獎勵信,全數停發。
+        // 模板函數保留(admin lifecycle-test 仍可預覽),排程不再觸發。
 
       } catch (e) {
         errors++;
@@ -2514,8 +2440,10 @@ async function generateSupportResponse(name, topic, message, apiKey) {
 - 來源：Reuters、CNBC、Bloomberg、FT 等可信媒體
 
 【方案】
-- 免費方案：留 Email 即可訂閱,完全免費（不需邀請碼）,包含完整功能（個人化日報、AI 助手、即時推播）
-- Premium 支持者方案：NT$499/月，隨時可取消;所有分析內容與免費版完全相同,Premium 提供的是支持獨立營運、優先客服與非分析類新功能搶先體驗
+- MarketDaily 目前全功能限時免費開放：留 Email 即可訂閱（不需邀請碼）,包含全部功能（個人化日報、AI 助手、即時推播）
+- 早鳥權益：現在訂閱的用戶,未來恢復收費後仍永久保留免費使用權
+- 若用戶問到過去的 Premium 付費方案：已於 2026 年 7 月取消,目前沒有任何付費方案;曾付費的用戶請聯繫 support@marketdaily.ai 處理
+- 所有分析內容對全體用戶完全相同
 
 【常見問題處理】
 - 帳號/訂閱問題：請用戶聯繫 support@marketdaily.ai
@@ -2612,11 +2540,8 @@ async function notifyAdmin(userEmail, name, topic, message, aiReply, apiKey) {
 }
 
 async function sendWelcomeEmail(email, apiKey, isPaid = false, tier = "") {
-  const subject = isPaid ? "✅ 訂閱成功！歡迎加入財經日報 🎉" : "✅ 邀請碼確認！歡迎加入財經日報 🎉";
-  const tierLabel = tier && tier !== "付費" ? `${tier} 方案` : "付費方案";
-  const planLine = isPaid
-    ? `您的 <strong>${tierLabel}</strong>已啟用。`
-    : "您的<strong>免費邀請方案</strong>已啟用。";
+  const subject = "✅ 訂閱成功！歡迎加入財經日報 🎉";
+  const planLine = "您的訂閱已啟用。MarketDaily 目前<strong>全功能限時免費</strong>,而且你已鎖定<strong>早鳥權益</strong> — 未來恢復收費後,你仍永久免費使用。";
 
   const html = `<!DOCTYPE html>
 <html lang="zh-Hant">

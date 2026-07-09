@@ -273,7 +273,6 @@ function updateStats() {
   if (countEl) {
     countEl.textContent = userCap === Infinity ? T('cap_count_unlimited')(n) : T('cap_count_capped')(n, userCap);
     countEl.classList.toggle("full", atCap);
-    document.getElementById("cap-upgrade").style.display = atCap && userPlan !== "premium" ? "" : "none";
   }
   ["us", "tw"].forEach(m => {
     const inp = document.getElementById(`${m}-search`);
