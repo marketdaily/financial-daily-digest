@@ -973,6 +973,7 @@ def main() -> int:
             continue  # 持有者卡的價位是減碼/停損位,混進「照卡片進場」模擬會失真
         s = simulate_plan(r, prices)
         if s:
+            s["date"] = r["date"]
             sims.append(s)
     sim_win = [s for s in sims if s["result"] == "win"]
     sim_loss = [s for s in sims if s["result"] == "loss"]
@@ -989,6 +990,17 @@ def main() -> int:
         "expired": len(sim_exp),
         "avg_ret_pct": round(sum(rets) / len(rets), 2) if rets else None,
         "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值",
+        # 每日模擬報酬序列(內部淨值曲線用):按建議日分組,只有日期+報酬率,無個股/用戶資訊。
+        # rets=當日已結束模擬單的報酬%(no_fill/pending 不在內),n_cards=當日全部模擬單(含 no_fill)。
+        "by_day": [
+            {
+                "d": d,
+                "n_cards": sum(1 for s in sims if s["date"] == d and s["result"] != "pending"),
+                "rets": [s["ret_pct"] for s in sims
+                         if s["date"] == d and s.get("ret_pct") is not None],
+            }
+            for d in sorted({s["date"] for s in sims})
+        ],
     }
 
     # 匿名化逐筆帳本(修5):只有個人化 token 資料時才有內容;沒 INTERNAL_TOKEN 時 personal_records
