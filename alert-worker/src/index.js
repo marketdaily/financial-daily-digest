@@ -1102,6 +1102,15 @@ export default {
             severity: 6, category: "supply_chain", speculative: false,
           });
         }
+        // admin 收得到每件彙總推播,提醒紀錄也要看得到全部事件(非持股者上面迴圈不會寫)
+        if (env.ADMIN_EMAIL && !holders.some((h) => h.email === env.ADMIN_EMAIL)) {
+          await recordAlertInbox(env, env.ADMIN_EMAIL, {
+            ts: new Date().toISOString(), kind: "supply_chain", ticker: code,
+            name: rec.name || code, title: headline, url: rec.url,
+            reason: rec.source_type === "8k" ? "官方申報:8-K 重大合約" : "官方公告:新合作/供應關係",
+            severity: 6, category: "supply_chain", speculative: false,
+          });
+        }
         await env.USER_PREFS.put(`scdone:${id}`, "1", { expirationTtl: 60 * 24 * 3600 });
         adminLines.push(`${label} ${headline.slice(0, 50)}${holders.length ? `(推${pushed}/${holders.length}人)` : ""}`);
         results.push({ id, stored: true, pushed, holders: holders.length });
