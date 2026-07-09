@@ -1559,6 +1559,41 @@ export default {
           lookups++;
         }
       }
+      // 歷史回填:2026-07-10 前的 token 沒有 digest_email 對應——改用「該 token 的股票集合
+      // ⊆ 某用戶自選股,且全體用戶中唯一命中」推定歸戶;有歧義(0 或 2+ 命中)就留 null,不亂認。
+      const unmapped = [...new Set(trades.filter((t) => t.tok && !tokEmail[String(t.tok)]).map((t) => String(t.tok)))];
+      if (unmapped.length) {
+        try {
+          const norm = (v) => String(typeof v === "object" ? (v.symbol || v.ticker || "") : v)
+            .toUpperCase().replace(/\.TWO?$/, "").trim();
+          const listId = parseInt(env.BREVO_LIST_ID) || 2;
+          const bres = await fetch(`https://api.brevo.com/v3/contacts/lists/${listId}/contacts?limit=500`, {
+            headers: { "api-key": env.BREVO_API_KEY },
+          });
+          const contacts = ((await bres.json()).contacts || []).slice(0, 200);
+          const userSets = [];
+          for (const c of contacts) {
+            const em = (c.email || "").toLowerCase();
+            if (!em) continue;
+            const raw = await env.USER_PREFS.get(em);
+            if (!raw) continue;
+            let prefs; try { prefs = JSON.parse(raw); } catch { continue; }
+            const set = new Set([...(prefs.us_stocks || []), ...(prefs.tw_stocks || [])].map(norm).filter(Boolean));
+            if (set.size) userSets.push({ em, set });
+          }
+          const tokTickers = {};
+          for (const t of trades) {
+            const tok = String(t.tok || "");
+            if (tok && unmapped.includes(tok)) (tokTickers[tok] = tokTickers[tok] || new Set()).add(norm(t.t || ""));
+          }
+          for (const tok of unmapped) {
+            const need = [...(tokTickers[tok] || [])].filter(Boolean);
+            if (!need.length) continue;
+            const hits = userSets.filter((u) => need.every((x) => u.set.has(x)));
+            if (hits.length === 1) tokEmail[tok] = hits[0].em;
+          }
+        } catch (e) { /* 回填失敗非致命,留 null 明日再試 */ }
+      }
       const out = trades.map((t) => {
         const { tok, ...rest } = t;
         return { ...rest, u: tok ? (tokEmail[String(tok)] || null) : "public" };
@@ -1566,7 +1601,9 @@ export default {
       await env.USER_PREFS.put("plan_trades:v1", JSON.stringify({
         updated_at: new Date().toISOString(), trades: out,
       }));
-      return json({ ok: true, n: out.length, mapped: Object.values(tokEmail).filter(Boolean).length });
+      const byUser = {};
+      for (const t of out) if (t.u && t.u !== "public") byUser[t.u] = (byUser[t.u] || 0) + 1;
+      return json({ ok: true, n: out.length, mapped: Object.values(tokEmail).filter(Boolean).length, by_user: byUser });
     }
 
     // Admin:模擬跟單逐筆明細(含個股+歸戶 email)——只有 admin 認證看得到
