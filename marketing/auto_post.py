@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MarketDaily 社群自動發文 — IG / FB / Threads / LINE / X / YouTube / TikTok。
+"""MarketDaily 社群自動發文 — IG / FB / Threads / X / YouTube / TikTok。(LINE 已全面退役 2026-07-06)
 
 一次性設定見 SETUP_AUTOPOST.md;把權杖填進 marketing/.env。
 用法:
@@ -34,8 +34,7 @@ LOG_FILE = HERE / "social_out" / "post_log.jsonl"
 
 
 ENV_KEYS = ("META_ACCESS_TOKEN", "FB_PAGE_ID", "IG_USER_ID", "THREADS_ACCESS_TOKEN",
-            "THREADS_USER_ID", "LINE_CHANNEL_ID", "LINE_CHANNEL_SECRET",
-            "LINE_CHANNEL_ACCESS_TOKEN", "LINE_ADD_URL", "SITE_BASE",
+            "THREADS_USER_ID", "SITE_BASE",
             "X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET",
             "YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN",
             "TIKTOK_CLIENT_KEY", "TIKTOK_CLIENT_SECRET",
@@ -54,13 +53,6 @@ def load_env():
         env = {k: os.environ[k] for k in ENV_KEYS if os.environ.get(k)}
         if not env:
             sys.exit("找不到 marketing/.env,環境變數也沒設 —— 請參考 SETUP_AUTOPOST.md")
-    if env.get("LINE_CHANNEL_ID") and env.get("LINE_CHANNEL_SECRET"):
-        ok, r = http("https://api.line.me/v2/oauth/accessToken", "POST",
-                     form={"grant_type": "client_credentials",
-                           "client_id": env["LINE_CHANNEL_ID"],
-                           "client_secret": env["LINE_CHANNEL_SECRET"]})
-        if ok and r.get("access_token"):
-            env["LINE_CHANNEL_ACCESS_TOKEN"] = r["access_token"]
     return env
 
 
@@ -154,36 +146,6 @@ def post_threads(env, image_url, caption):
     ok, p = http(f"{THREADS}/{uid}/threads_publish", "POST",
                  form={"creation_id": c["id"], "access_token": tok})
     return (True, p["id"]) if ok and "id" in p else (False, p)
-
-
-def post_line(env, image_url, caption):
-    # 行銷貼文改 multicast 排除 premium:從 alert-worker 拉「非 premium 已綁 LINE」清單,
-    # 切批 500 推送。未設定 ALERT_WORKER_URL/INTERNAL_TOKEN → fail-closed 跳過。
-    worker_url = env.get("MARKETDAILY_ALERT_WORKER_URL")
-    internal_tok = env.get("MARKETDAILY_INTERNAL_TOKEN")
-    if not worker_url or not internal_tok:
-        return False, "skip:未設 MARKETDAILY_ALERT_WORKER_URL/MARKETDAILY_INTERNAL_TOKEN(避免誤發 premium)"
-    ok, r = http(f"{worker_url.rstrip('/')}/internal/marketing-line-targets",
-                 headers={"Authorization": f"Bearer {internal_tok}"})
-    if not ok:
-        return False, f"取 targets 失敗: {r}"
-    targets = r.get("targets", [])
-    if not targets:
-        return True, f"no non-premium LINE users (scanned={r.get('scanned',0)} excluded={r.get('excludedPremium',0)})"
-    msgs = [
-        {"type": "image", "originalContentUrl": image_url, "previewImageUrl": image_url},
-        {"type": "text", "text": caption},
-    ]
-    headers = {"Authorization": f"Bearer {env['LINE_CHANNEL_ACCESS_TOKEN']}"}
-    sent = 0
-    for i in range(0, len(targets), 500):
-        chunk = targets[i:i + 500]
-        ok, r2 = http("https://api.line.me/v2/bot/message/multicast", "POST",
-                      json_body={"to": chunk, "messages": msgs}, headers=headers)
-        if not ok:
-            return False, f"multicast 第 {i//500+1} 批失敗 (已發 {sent}): {r2}"
-        sent += len(chunk)
-    return True, f"multicast sent to {sent} non-premium users (excluded premium={r.get('excludedPremium',0)})"
 
 
 def post_instagram_reel(env, video_url, caption):
@@ -458,7 +420,7 @@ def post_tiktok(env, video_url, caption):
 
 
 PLATFORMS = {"facebook": post_facebook, "instagram": post_instagram,
-             "threads": post_threads, "line": post_line, "x": post_x}
+             "threads": post_threads, "x": post_x}
 
 REEL_PLATFORMS = {"instagram": post_instagram_reel, "facebook": post_facebook_reel,
                   "youtube": post_youtube, "x": post_x_reel,
@@ -488,10 +450,6 @@ def cmd_check(env):
         qtt = urllib.parse.quote(env["THREADS_ACCESS_TOKEN"])
         ok, r = http(f"{THREADS}/me?fields=username&access_token={qtt}")
         print(f"  Threads:      {'✅ @' + r['username'] if ok and 'username' in r else '❌ ' + str(r)}")
-    if env.get("LINE_CHANNEL_ACCESS_TOKEN"):
-        ok, r = http("https://api.line.me/v2/bot/info",
-                     headers={"Authorization": f"Bearer {env['LINE_CHANNEL_ACCESS_TOKEN']}"})
-        print(f"  LINE OA:      {'✅ ' + r.get('displayName', '?') if ok else '❌ ' + str(r)}")
     if env.get("X_API_KEY"):
         # 免費層讀取額度極少,不花在健檢;發文用獨立額度,實際發文時才驗證金鑰。
         ready = all(env.get(k) for k in
@@ -568,7 +526,7 @@ def cmd_stage(env):
 
 
 UTM_SRC = {"instagram": "ig", "facebook": "fb", "threads": "threads",
-           "line": "line", "x": "x", "tiktok": "tiktok", "youtube": "youtube"}
+           "x": "x", "tiktok": "tiktok", "youtube": "youtube"}
 
 
 def caption_for(caption, plat, line_url=None):
@@ -623,7 +581,6 @@ def cmd_post(env, post_id, only=None):
         media_url = f"{base}/social/{Path(post['image']).stem}.jpg"
         table = PLATFORMS
     targets = only or post["platforms"]
-    line_url = env.get("LINE_ADD_URL", "")
     print(f"發布 [{post_id}]{' (Reel)' if is_reel else ''} → {media_url}\n平台:{', '.join(targets)}\n")
     results = {}
     for plat in targets:
@@ -635,7 +592,7 @@ def cmd_post(env, post_id, only=None):
             print(f"  ⚠️ {plat}:多圖 carousel 目前只支援 instagram")
             continue
         try:
-            ok, detail = fn(env, media_url, caption_for(post["caption"], plat, line_url))
+            ok, detail = fn(env, media_url, caption_for(post["caption"], plat))
         except KeyError as e:
             ok, detail = False, f".env 缺少 {e}"
         # X 未充值、TikTok 未設定 secrets → 軟略過,不打斷其他平台。

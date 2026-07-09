@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """每日日報 → 社群貼文 全自動發布(永動引擎)。
 
-抓當天線上日報 → 生成文案 + 圖卡 → 發到 IG / FB / Threads / LINE。
+抓當天線上日報 → 生成文案 + 圖卡 → 發到 IG / FB / Threads。(LINE 已全面退役 2026-07-06)
 內容守門:日報解析重點不足則跳過,不發殘缺貼文。
 
 用法:
@@ -20,7 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from auto_post import (caption_for, load_env, post_facebook, post_instagram,
-                       post_line, post_threads, post_x)
+                       post_threads, post_x)
 from digest_to_social import general_points, parse_digest
 from social_cards import make_card
 
@@ -33,7 +33,7 @@ TAGS = "#美股 #台股 #投資理財 #財經 #股市 #理財 #財經新聞"
 MIN_POINTS = 2
 
 PLATFORMS = {"instagram": post_instagram, "facebook": post_facebook,
-             "threads": post_threads, "line": post_line, "x": post_x}
+             "threads": post_threads, "x": post_x}
 
 
 def taiwan_date():
