@@ -293,6 +293,128 @@
       },
       "status": "approved",
       "verifier_verdict": "2026-07-07 獨立驗證者(全新 context)核可:HOLD/觀望判斷類型與digest既有verdict_class機制一致,主動聲明分析不因付費而異對照pricing.html屬實,compliance_selfcheck.py全過。"
+    },
+    {
+      "id": "adcreative_2026-07-09_frameworks",
+      "platform": "instagram",
+      "format": "carousel",
+      "angle": "借 IG @the_coding_wizard 2026-06-30 爆款貼文(8,980讚)『10 prompts 讓 Claude 像投行分析股票』的黑底輪播骨架,但反打其核心弱點:角色扮演 prompt 不餵真實數據=請模型編數字。whitespace=MarketDaily 不是叫 AI 演分析師,是真的把行情/財報/量化基率餵進多模型委員會管線——展示 8 個真實在跑的框架,順帶展示『敢公開對帳』的差異化。",
+      "hook_type": "contrarian",
+      "pain_framing": "信任焦慮型",
+      "tone": "confident",
+      "visual_direction": "10 張黑底品牌圖卡(封面+8框架+早鳥CTA),social_cards.make_card 模板,IG carousel",
+      "hook": "AI 分析股票,光角色扮演是不夠的。",
+      "body": "MarketDaily 日報背後是 8 個真的在跑的分析框架:AI 委員會辯論、量化基率先行、真實數據餵入、真實技術關卡、休市偵測、多層稽核熔斷、戰績公開對帳、產業鏈追蹤。",
+      "cta": "免費訂閱",
+      "caption_zh": "👀 很多人問 AI:「這支股票好不好?」\n\n問題不在 AI,在流程。單一 AI 憑印象回答,再厲害的角色扮演都只是演戲。\n\nMarketDaily 的每日日報,背後是 8 個真的在跑的分析框架:\n\n1️⃣ AI 委員會——多個模型互相辯論挑戰,不是一言堂\n2️⃣ 先算數學——歷史統計先給基率,AI 的信心經過校準\n3️⃣ 餵真實數據——即時行情+財報直接進管線,不憑 AI 記憶\n4️⃣ 關鍵價位來自真實技術關卡,不是順口編一個\n5️⃣ 休市偵測——不把舊收盤當今天的行情\n6️⃣ 多層稽核——寄出前逐項檢查,異常寧可攔下\n7️⃣ 戰績公開對帳——每天的判斷留檔,對錯自己查\n8️⃣ 產業鏈追蹤——影響路徑具體到公司\n\n往右滑,一張一個框架 👉\n\n目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n免費訂閱 → https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=frameworks_carousel\n\n#財經日報 #台股 #美股 #投資理財 #AI",
+      "caption_en": "👀 Most people ask AI: \"Is this stock good?\"\n\nThe problem isn't the AI — it's the process. One model answering from memory is role-play, not research.\n\nBehind every MarketDaily digest are 8 frameworks that actually run:\n\n1️⃣ AI council — multiple models debate and challenge each other\n2️⃣ Math first — historical base rates before any AI opinion, confidence calibrated\n3️⃣ Real data in — live quotes + financials piped in, never from AI memory\n4️⃣ Key levels from real technical structure, never made up\n5️⃣ Market-holiday detection — stale closes never presented as today\n6️⃣ Multi-layer audits — checked line by line before sending, anomalies get blocked\n7️⃣ Public track record — every daily call archived, right or wrong\n8️⃣ Supply-chain tracing — impact paths named down to specific companies\n\nSwipe for one framework per card 👉\n\nAll features are free for a limited time; early-bird subscribers keep free access permanently if paid plans ever return.\n\nSubscribe free → https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=frameworks_carousel\n\n#FinanceDaily #TaiwanStocks #USStocks #AI",
+      "carousel_slides": [
+        {
+          "file": "frameworks_carousel_01",
+          "tag": "日報幕後",
+          "accent": "#FFB000",
+          "headline": "AI 分析股票\n光角色扮演\n是不夠的",
+          "body": "MarketDaily 日報背後\n8 個真的在跑的分析框架\n往右滑 →"
+        },
+        {
+          "file": "frameworks_carousel_02",
+          "tag": "框架 1/8",
+          "accent": "#4AF626",
+          "headline": "AI 委員會\n互相辯論",
+          "body": "不是單一 AI 一言堂\n多個模型互相挑戰結論\n吵完才寫進日報"
+        },
+        {
+          "file": "frameworks_carousel_03",
+          "tag": "框架 2/8",
+          "accent": "#FFC74D",
+          "headline": "先算數學\n再讓 AI 說話",
+          "body": "歷史統計先給出基率\nAI 的信心經過校準\n不憑感覺喊多空"
+        },
+        {
+          "file": "frameworks_carousel_04",
+          "tag": "框架 3/8",
+          "accent": "#FFB000",
+          "headline": "餵真實數據\n不靠 AI 記憶",
+          "body": "美股台股即時行情\n財報數字直接進管線\nAI 不用『憑印象』"
+        },
+        {
+          "file": "frameworks_carousel_05",
+          "tag": "框架 4/8",
+          "accent": "#4AF626",
+          "headline": "關鍵價位\n來自真實關卡",
+          "body": "支撐與壓力\n從行情資料算出來\n不是順口編一個數字"
+        },
+        {
+          "file": "frameworks_carousel_06",
+          "tag": "框架 5/8",
+          "accent": "#FFC74D",
+          "headline": "休市偵測",
+          "body": "假日與休市自動辨識\n不把舊收盤\n當成今天的行情"
+        },
+        {
+          "file": "frameworks_carousel_07",
+          "tag": "框架 6/8",
+          "accent": "#FFB000",
+          "headline": "多層稽核\n寧可攔下",
+          "body": "寄出前逐項檢查\n連續異常直接熔斷\n錯的內容不進你的信箱"
+        },
+        {
+          "file": "frameworks_carousel_08",
+          "tag": "框架 7/8",
+          "accent": "#4AF626",
+          "headline": "戰績\n公開對帳",
+          "body": "每天的方向判斷留檔\n對的錯的都在頁面上\nmarketdaily.ai/track-record"
+        },
+        {
+          "file": "frameworks_carousel_09",
+          "tag": "框架 8/8",
+          "accent": "#FFC74D",
+          "headline": "產業鏈\n追到公司",
+          "body": "一條新聞的影響路徑\n具體到上下游哪家公司\n不是『利多出盡』四個字"
+        },
+        {
+          "file": "frameworks_carousel_10",
+          "tag": "早鳥",
+          "accent": "#FFB000",
+          "headline": "限時免費\n全功能開放",
+          "body": "未來恢復收費後\n現在訂閱的早鳥用戶\n永久保留免費使用權",
+          "cta": "marketdaily.ai →"
+        }
+      ],
+      "score": null,
+      "score_rationale": "一次性靈感貼文(用戶親自交辦),未走每週評分輪,由獨立驗證者把關事實與合規。",
+      "compliance_self_check": {
+        "no_fabricated_numbers": true,
+        "no_pro_tier_language": true,
+        "no_premium_giveaway": true,
+        "no_guarantee_language": true,
+        "no_stock_analysis_premium_claim": true
+      },
+      "compliance_detail": {
+        "zh": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        },
+        "en": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        },
+        "slides": {
+          "no_fabricated_numbers": true,
+          "no_pro_tier_language": true,
+          "no_premium_giveaway": true,
+          "no_guarantee_language": true,
+          "no_stock_analysis_premium_claim": true
+        }
+      },
+      "status": "approved",
+      "verifier_verdict": "獨立驗證者(全新 context)裁決:APPROVED(2026-07-09)。逐條驗證:(1) AI 委員會辯論→analyzer.py L1562-1720 multi-model council(_COUNCIL_SEATS 多席次 gemini/claude/groq/local/cf + _COUNCIL_JUDGE 裁判,分歧度回饋信心,main.py L796-801 council_top_picks 進日報),屬實。(2) 先算數學/基率+信心校準→analyzer.py _quant_prior(L1393,價格 vs MA20/MA50 結構硬 prior,方向不交 LLM 自由發揮)+_calibrated_confidence(L1521,信心由 track-record 實測命中率反推,不採 LLM 自填)+_pp_recalibrate_confidence(L886),屬實。(3) 餵真實數據→data_fetcher.py:yahooquery/yfinance 報價(L61-87)、TWSE openapi STOCK_DAY_ALL(L149)、TPEx openapi(L280)、fetch_earnings_calendar(L894,FMP 已核實預期 EPS/營收,退回 yfinance 只給日期禁 LLM 補數字),main.py L967-972 earnings_impact 進管線,屬實。(4) 關鍵價位真實關卡→analyzer.py _near_term_levels(L1303,由行情/技術資料算支撐-目標-停損,L2161/L2252 進卡片),屬實。(5) 休市偵測→analyzer.py _US_HOLIDAYS/_TW_HOLIDAYS+_is_trading(L38-121),main.py L552-556 美股休市夜整輪不發,屬實。(6) 多層稽核+熔斷→main.py _audit_with_retry(L695,HIGH audit fail→retry 換強模型→仍 fail 切 deterministic fallback)+_push_systemic_alert(L994,同一 HIGH check 連中 3 位即熔斷推 admin),屬實。(7) 戰績公開對帳→https://marketdaily.ai/track-record 實測 HTTP 200,/data/track-record.json 73 筆紀錄、最新 2026-07-09,每筆含日期/判斷/理由/價位/outcome,對錯都留檔,屬實。(8) 產業鏈到公司→analyzer.py L2706(美股→台灣供應鏈傳導,路徑帶具體公司)+L2813(impact-stock 必須寫出具體傳導機制,無機制不准塞),屬實。口徑合規:caption/slide10 早鳥措辭與線上 https://marketdaily.ai/pricing 逐字一致(『目前限時免費。未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權』);線上頁 NT$499 為劃線歷史價、Premium 僅存於 CSS 註解,無現在式付費方案衝突;未暗示個股分析未來收費。中英一致:caption_en 八條宣稱與 zh 一一對應,無多出或誇大(英文早鳥句『if paid plans ever return』較 zh 更保守,可接受)。機械掃描:compliance_selfcheck.check_caption zh/en 全 True。捏造數字:caption 與 10 張 slide 僅有『8 個框架』與 slide 編號等產品結構描述,無讚數/用戶數/勝率/百分比。"
     }
   ]
 }

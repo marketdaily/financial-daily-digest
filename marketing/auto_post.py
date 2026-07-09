@@ -97,22 +97,49 @@ def post_facebook(env, image_url, caption):
     return False, r
 
 
-def post_instagram(env, image_url, caption):
-    ig, tok = env["IG_USER_ID"], env["META_ACCESS_TOKEN"]
-    ok, c = http(f"{GRAPH}/{ig}/media", "POST",
-                 form={"image_url": image_url, "caption": caption, "access_token": tok})
-    if not ok or "id" not in c:
-        return False, c
-    cid, qtok = c["id"], urllib.parse.quote(tok)
+def _ig_wait_finished(cid, tok):
+    qtok = urllib.parse.quote(tok)
     for _ in range(20):
         time.sleep(3)
         _, st = http(f"{GRAPH}/{cid}?fields=status_code&access_token={qtok}")
         if st.get("status_code") == "FINISHED":
-            break
+            return True, st
         if st.get("status_code") == "ERROR":
             return False, st
+    return True, {}
+
+
+def post_instagram(env, image_url, caption):
+    """image_url 為 str=單圖;為 list=carousel(IG API 上限 10 張)。"""
+    ig, tok = env["IG_USER_ID"], env["META_ACCESS_TOKEN"]
+    if isinstance(image_url, list):
+        if not 2 <= len(image_url) <= 10:
+            return False, f"carousel 需 2-10 張,收到 {len(image_url)}"
+        children = []
+        for u in image_url:
+            ok, c = http(f"{GRAPH}/{ig}/media", "POST",
+                         form={"image_url": u, "is_carousel_item": "true",
+                               "access_token": tok})
+            if not ok or "id" not in c:
+                return False, {"carousel_item": u, "error": c}
+            children.append(c["id"])
+        for cid in children:
+            ok, st = _ig_wait_finished(cid, tok)
+            if not ok:
+                return False, st
+        ok, c = http(f"{GRAPH}/{ig}/media", "POST",
+                     form={"media_type": "CAROUSEL", "children": ",".join(children),
+                           "caption": caption, "access_token": tok})
+    else:
+        ok, c = http(f"{GRAPH}/{ig}/media", "POST",
+                     form={"image_url": image_url, "caption": caption, "access_token": tok})
+    if not ok or "id" not in c:
+        return False, c
+    ok, st = _ig_wait_finished(c["id"], tok)
+    if not ok:
+        return False, st
     ok, p = http(f"{GRAPH}/{ig}/media_publish", "POST",
-                 form={"creation_id": cid, "access_token": tok})
+                 form={"creation_id": c["id"], "access_token": tok})
     return (True, p["id"]) if ok and "id" in p else (False, p)
 
 
@@ -445,7 +472,8 @@ def load_posts():
 def cmd_list():
     for p in load_posts():
         kind = "Reel" if p.get("type") == "reel" else "圖卡"
-        print(f"  [{p['id']:<10}] day {p['day']} · {kind} · {p.get('image') or p.get('video')} · {', '.join(p['platforms'])}")
+        media = p.get("image") or p.get("video") or (f"carousel×{len(p['images'])}" if p.get("images") else "?")
+        print(f"  [{p['id']:<10}] day {p['day']} · {kind} · {media} · {', '.join(p['platforms'])}")
 
 
 def cmd_check(env):
@@ -588,6 +616,9 @@ def cmd_post(env, post_id, only=None):
     if is_reel:
         media_url = f"{base}/social/{post['video']}"
         table = REEL_PLATFORMS
+    elif post.get("images"):
+        media_url = [f"{base}/social/{Path(i).stem}.jpg" for i in post["images"]]
+        table = PLATFORMS
     else:
         media_url = f"{base}/social/{Path(post['image']).stem}.jpg"
         table = PLATFORMS
@@ -599,6 +630,9 @@ def cmd_post(env, post_id, only=None):
         fn = table.get(plat)
         if not fn:
             print(f"  ⚠️ {plat}:此貼文型態不支援此平台")
+            continue
+        if isinstance(media_url, list) and plat != "instagram":
+            print(f"  ⚠️ {plat}:多圖 carousel 目前只支援 instagram")
             continue
         try:
             ok, detail = fn(env, media_url, caption_for(post["caption"], plat, line_url))
