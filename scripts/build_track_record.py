@@ -529,7 +529,7 @@ def fetch_spx_regime() -> dict[str, str]:
     return out
 
 
-# 各結算天期設定:ref=價格欄位,hold=「抱住沒事」雙邊緩衝,wait=「別進場」容許小漲門檻。
+# 各結算天期設定:ref=價格欄位,hold=「抱住沒事」下方緩衝,wait=「別進場」容許小漲門檻。
 # 月/季緩衝按 sqrt(時間) 放大(股價波動 ~ sqrt(t)):hold 3%×√(21/5)≈6%、3%×√(63/5)≈10%;
 # wait 2%×√(21/5)≈4%、2%×√(63/5)≈7%。
 _HORIZONS = {
@@ -560,7 +560,11 @@ def judge(rec: dict, prices: dict, horizon: str = "5d") -> str | None:
     if vc == "buy":
         return "win" if chg > 0 else "loss"
     if vc == "hold":
-        return "win" if abs(chg) <= cfg["hold"] else "loss"
+        # 2026-07-09 修正:「續抱」對讀者是不對稱的——照建議續抱後上漲是好結果,
+        # 只有跌破下方緩衝才是建議錯(與 judge_holder 同規則)。舊版 ±3% 對稱緩衝
+        # 把「續抱後大漲」也記輸,量的是「預測股價不動」不是建議品質
+        # (實測 hold 桶 up/down regime 同時 ~20%,對稱地低=緩衝問題非方向問題)。
+        return "win" if chg >= -cfg["hold"] else "loss"
     if vc == "sell":
         # sell 是強信號,必須真跌才算對
         return "win" if chg < 0 else "loss"

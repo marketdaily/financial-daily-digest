@@ -477,7 +477,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
         <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bear">看空</span><span class="hz-val" id="hz-q-c">—</span></div>
       </div>
     </div>
-    <div class="hz-note" data-i18n="hz_note">同一批判斷分別在 5／21／63 個交易日後用收盤價結算;月結與季結的緩衝門檻按時間放大(續抱 ±6%／±10%,觀望 &lt;4%／&lt;7%)。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。</div>
+    <div class="hz-note" data-i18n="hz_note">同一批判斷分別在 5／21／63 個交易日後用收盤價結算;月結與季結的緩衝門檻按時間放大(續抱不跌破 -6%／-10%,觀望 &lt;4%／&lt;7%)。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。</div>
   </div>
 
   <!-- Method explainer -->
@@ -486,7 +486,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     <div class="method-grid">
       <div class="method-box">
         <h3 data-i18n="ma_h">🟢 看多勝率</h3>
-        <p data-i18n="ma_p">日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後收盤往上走 = 贏(對齊卡片明寫的「短線 1-2 週視角」,2026-06-10 起;舊版只看隔日一天,單日雜訊太重)。</p>
+        <p data-i18n="ma_p">日報判斷「可以買」→ 5 個交易日後收盤往上走 = 贏;「繼續抱」→ 5 個交易日內沒有跌破 -3% = 贏(續抱後上漲對持有者是好結果,故只罰下跌,2026-07-09 起;舊版把續抱後大漲也記輸,量的是「預測不動」不是建議品質)。</p>
         <code data-i18n="ma_code">例:「台積電可分批接」→ 5 個交易日後收盤高於建議日 = 贏</code>
       </div>
       <div class="method-box">
@@ -995,7 +995,7 @@ const i18n = {
     s1: "看多勝率", s2: "看空勝率", s3: "累計提及個股", s4: "統計天數",
     method_ttl: "我們怎麼算勝率(沒任何模糊空間)",
     ma_h: "🟢 看多勝率",
-    ma_p: "日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後收盤往上走 = 贏(對齊卡片明寫的「短線 1-2 週視角」,2026-06-10 起;舊版只看隔日一天,單日雜訊太重)。",
+    ma_p: "日報判斷「可以買」→ 5 個交易日後收盤往上走 = 贏;「繼續抱」→ 5 個交易日內沒有跌破 -3% = 贏(續抱後上漲對持有者是好結果,故只罰下跌,2026-07-09 起;舊版把續抱後大漲也記輸,量的是「預測不動」不是建議品質)。",
     mc_h: "🔴 看空勝率",
     mc_p: "日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 5 個交易日後真的沒漲(漲幅 <2%)= 贏(成功避坑)。",
     ma_code: "例:「台積電可分批接」→ 5 個交易日後收盤高於建議日 = 贏",
@@ -1006,7 +1006,7 @@ const i18n = {
     hz_q: "📊 季結 · 63 個交易日",
     hz_bull: "看多",
     hz_bear: "看空",
-    hz_note: "同一批判斷分別在 5／21／63 個交易日後用收盤價結算;月結與季結的緩衝門檻按時間放大(續抱 ±6%／±10%,觀望 <4%／<7%)。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。",
+    hz_note: "同一批判斷分別在 5／21／63 個交易日後用收盤價結算;月結與季結的緩衝門檻按時間放大(續抱不跌破 -6%／-10%,觀望 <4%／<7%)。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。",
     f_us: "🇺🇸 美股", f_tw: "🇹🇼 台股", f_a: "🟢 看多", f_c: "🔴 看空",
     f_win: "✅ 贏", f_loss: "❌ 輸",
     th_date: "日期", th_tic: "個股", th_call: "日報原話", th_type: "類型", th_res: "結果",
@@ -1046,7 +1046,7 @@ const i18n = {
     s1: "Direction Hit (A)", s2: "Risk Avoid Hit (C)", s3: "Stocks Mentioned", s4: "Days Tracked",
     method_ttl: "How we score (no fuzziness)",
     ma_h: "A · Direction Hit",
-    ma_p: "Digest says \"bullish / bearish\" → did the close 5 trading days later go that way? (matches the stated 1-2 week horizon)",
+    ma_p: "Digest says \"buy\" → close 5 trading days later is higher = win. \"Keep holding\" → didn't drop more than 3% within 5 trading days = win (upside while holding is a good outcome, so only downside counts against it; since 2026-07-09).",
     mc_h: "C · Risk Avoidance Hit",
     mc_p: "Digest warns \"wait / pull-back / overheated / risk\" → did stock actually retreat or sideways?",
     ma_code: "e.g.: \"TSMC — scale in gradually\" → close 5 trading days later above the call date = win",
@@ -1057,7 +1057,7 @@ const i18n = {
     hz_q: "📊 Quarterly · 63 trading days",
     hz_bull: "Bullish",
     hz_bear: "Bearish",
-    hz_note: "The same calls are settled at close 5 / 21 / 63 trading days out; buffers scale with time (hold ±6% / ±10%, wait <4% / <7%). Monthly & quarterly went live on 2026-07-07 — existing calls need to mature first, shown as \"pending\" until then.",
+    hz_note: "The same calls are settled at close 5 / 21 / 63 trading days out; buffers scale with time (hold: no drop beyond -6% / -10%, wait <4% / <7%). Monthly & quarterly went live on 2026-07-07 — existing calls need to mature first, shown as \"pending\" until then.",
     f_us: "🇺🇸 US", f_tw: "🇹🇼 TW", f_a: "📐 Direction (A)", f_c: "⚠️ Risk (C)",
     f_win: "✅ Win", f_loss: "❌ Loss",
     th_date: "Date", th_tic: "Stock", th_call: "Original Call", th_type: "Type", th_res: "Result",
