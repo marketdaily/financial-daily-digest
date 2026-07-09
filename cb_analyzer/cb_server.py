@@ -5,9 +5,12 @@
 啟動:python3 cb_server.py [port]   預設 8911。"""
 import os
 import sys
+import hmac
 import html
 import json
 import math
+import time
+import hashlib
 import datetime
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -22,6 +25,45 @@ import cb_ledger
 import cb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+
+
+def _desk_password():
+    """CB_DESK_PASSWORD 取自 repo 根 .env;未設定=不設門禁(本機開發用)。"""
+    try:
+        with open(os.path.join(os.path.dirname(HERE), ".env"), encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("CB_DESK_PASSWORD=") and line.split("=", 1)[1].strip():
+                    return line.split("=", 1)[1].strip()
+    except OSError:
+        pass
+    return None
+
+
+DESK_PW = _desk_password()
+AUTH_TOKEN = (hmac.new(DESK_PW.encode(), b"cb-desk-auth-v1", hashlib.sha256).hexdigest()
+              if DESK_PW else None)
+_LOGIN_FAILS = {}
+
+LOGIN_HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>CB 工作台登入</title>
+<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+font-family:system-ui,-apple-system,"PingFang TC","Microsoft JhengHei",sans-serif;
+background:linear-gradient(160deg,#0b1020,#131a33)}
+.card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;
+padding:36px 40px;width:300px;backdrop-filter:blur(12px)}
+h1{color:#e8ecf8;font-size:1.15rem;margin:0 0 4px}p{color:#8b93ad;font-size:.82rem;margin:0 0 20px}
+input{width:100%;box-sizing:border-box;padding:11px 12px;border-radius:9px;border:1px solid rgba(255,255,255,.18);
+background:rgba(0,0,0,.25);color:#e8ecf8;font-size:1rem;outline:none}
+input:focus{border-color:#5b7cfa}
+button{width:100%;margin-top:14px;padding:11px;border:0;border-radius:9px;background:#5b7cfa;
+color:#fff;font-size:.95rem;font-weight:600;cursor:pointer}button:hover{background:#4a68e8}
+.err{color:#ff7a7a;font-size:.8rem;min-height:1.1em;margin-top:10px}</style></head><body>
+<form class="card" method="post" action="/login">
+<h1>CB 拆解工作台</h1><p>輸入桌面共用密碼</p>
+<input type="password" name="password" placeholder="密碼" autofocus autocomplete="current-password">
+<button>登入</button><div class="err">{{msg}}</div></form></body></html>"""
+
 DB = cb.load_db()
 VW = lambda: (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
 
@@ -677,10 +719,52 @@ class H(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(b)
 
+    def _client_ip(self):
+        return self.headers.get("CF-Connecting-IP") or self.client_address[0]
+
+    def _authed(self):
+        if not AUTH_TOKEN:
+            return True
+        for part in self.headers.get("Cookie", "").split(";"):
+            k, _, v = part.strip().partition("=")
+            if k == "cbauth" and hmac.compare_digest(v, AUTH_TOKEN):
+                return True
+        return False
+
+    def do_POST(self):
+        u = urllib.parse.urlparse(self.path)
+        if u.path != "/login":
+            return self._send(404, '<div class="serr">404</div>')
+        ip = self._client_ip()
+        now = time.time()
+        recent = [t for t in _LOGIN_FAILS.get(ip, []) if now - t < 600]
+        if len(recent) >= 8:
+            _LOGIN_FAILS[ip] = recent
+            return self._send(429, LOGIN_HTML.replace("{{msg}}", "嘗試太多次,10 分鐘後再試"))
+        ln = int(self.headers.get("Content-Length", 0) or 0)
+        body = self.rfile.read(min(ln, 4096)).decode("utf-8", "replace")
+        pw = urllib.parse.parse_qs(body).get("password", [""])[0]
+        if DESK_PW and hmac.compare_digest(pw, DESK_PW):
+            _LOGIN_FAILS.pop(ip, None)
+            self.send_response(303)
+            self.send_header("Set-Cookie",
+                             "cbauth=%s; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax" % AUTH_TOKEN)
+            self.send_header("Location", "/")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+        recent.append(now)
+        _LOGIN_FAILS[ip] = recent
+        return self._send(401, LOGIN_HTML.replace("{{msg}}", "密碼錯誤"))
+
     def do_GET(self):
         u = urllib.parse.urlparse(self.path)
         qs = urllib.parse.parse_qs(u.query)
         g = lambda k: (qs.get(k, [None])[0])
+        if not self._authed():
+            if u.path.startswith("/api/"):
+                return self._send(401, '<div class="serr">未登入,請重新整理頁面登入</div>')
+            return self._send(401, LOGIN_HTML.replace("{{msg}}", ""))
         try:
             if u.path in ("/", "/index.html"):
                 with open(os.path.join(HERE, "index.html"), encoding="utf-8") as f:
