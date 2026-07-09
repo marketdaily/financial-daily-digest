@@ -1214,13 +1214,26 @@ def main() -> int:
          "u": tok_user.get(s.get("_tok") or "")}
         for s in sims if s["result"] != "no_fill"
     ]
+    # 每用戶逐卡隔日勝負(用戶勝率統一隔日尺,與戰績頁頭條同一把):每張個人化卡
+    # 帶 verdict + 隔日結算結果,供 admin 用戶抽屜算「此用戶日報卡片勝率(隔日)」。
+    internal_cards = []
+    for r in personal_records:
+        internal_cards.append({
+            "c": r["date"], "t": r.get("ticker"), "name": r.get("name"),
+            "m": r.get("market"), "v": r.get("verdict_class"),
+            "o": judge(r, prices, "1d"),  # win/loss/None=待結
+            "tok": r.get("_user_token") or "",
+            "u": tok_user.get(r.get("_user_token") or ""),
+        })
     internal_file = ROOT / "scripts" / "plan_sim_trades_internal.json"
     internal_file.write_text(
-        json.dumps({"generated_at": stats["generated_at"], "trades": internal_trades},
+        json.dumps({"generated_at": stats["generated_at"], "trades": internal_trades,
+                    "cards": internal_cards},
                    ensure_ascii=False),
         encoding="utf-8",
     )
-    print(f"[write] {internal_file} ({len(internal_trades)} trades, internal only)")
+    print(f"[write] {internal_file} ({len(internal_trades)} trades, "
+          f"{len(internal_cards)} cards, internal only)")
     pub = stats["public_only"]
     print(
         f"[write] {OUT_FILE}\n"

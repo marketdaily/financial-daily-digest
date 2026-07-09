@@ -1220,6 +1220,7 @@ function nav(id, btn) {
 // ── 模擬跟單淨值(內部指標) ──
 let EQ_JSON = null;
 let EQ_TRADES = null;   // /admin/plan-trades:逐筆明細(含個股+歸戶email,admin 認證)
+let EQ_CARDS = null;    // 每用戶逐卡隔日勝負(與戰績頁頭條同一把隔日尺)
 async function renderEquity() {
   const el = document.getElementById("eq-chart");
   try {
@@ -1236,7 +1237,11 @@ async function renderEquity() {
 async function loadEqTrades() {
   const el = document.getElementById("eq-trades");
   try {
-    if (!EQ_TRADES) EQ_TRADES = (await api("/admin/plan-trades")).trades || [];
+    if (!EQ_TRADES) {
+      const d = await api("/admin/plan-trades");
+      EQ_TRADES = d.trades || [];
+      EQ_CARDS = d.cards || [];
+    }
     renderEqTrades();
   } catch (e) {
     el.innerHTML = "個股明細載入失敗(" + (e.status || e) + ")——需 worker /admin/plan-trades 有資料";
@@ -1846,21 +1851,57 @@ async function openUserDetail(email) {
     body.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>${e.status===400?"Email 格式錯誤":"無法載入用戶詳情"}</div>`;
   }
 }
-// 用戶抽屜:該用戶的模擬跟單(照他個人化日報卡片價位)
+// 用戶抽屜:該用戶的日報卡片勝率(隔日,與戰績頁頭條同一把尺)+模擬跟單
+function userCardStats(email) {
+  const mine = (EQ_CARDS || []).filter(c => c.u === email);
+  const judged = mine.filter(c => c.o === "win" || c.o === "loss");
+  if (!judged.length) return "";
+  const wins = judged.filter(c => c.o === "win").length;
+  const rate = (wins / judged.length * 100).toFixed(1);
+  const grp = (vs) => {
+    const g = judged.filter(c => vs.includes(c.v));
+    if (!g.length) return "—";
+    return (g.filter(c => c.o === "win").length / g.length * 100).toFixed(0) + "% (" + g.length + ")";
+  };
+  const vLabel = { buy: "買進", hold: "續抱", wait: "觀望", sell: "減碼" };
+  const recent = mine.filter(c => c.o || c.v).sort((a, b) => (b.c || "").localeCompare(a.c || "")).slice(0, 10);
+  const rows = recent.map(c => {
+    const mark = c.o === "win" ? '<span style="color:var(--green);font-weight:800;">✓ 對</span>'
+      : c.o === "loss" ? '<span style="color:var(--red);font-weight:800;">✗ 錯</span>'
+      : '<span style="opacity:.45;">待結</span>';
+    return `<div style="display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;">
+      <span style="font-weight:600;">${esc(c.name || c.t || "?")} <span class="mono" style="opacity:.5;font-size:10.5px;">${esc(c.t || "")}</span></span>
+      <span style="opacity:.7;">${esc(vLabel[c.v] || c.v || "?")}</span>
+      <span class="mono" style="opacity:.55;font-size:10.5px;">${esc(c.c || "")}</span>
+      <span>${mark}</span></div>`;
+  }).join("");
+  return `<div style="font-size:12.5px;font-weight:800;margin-bottom:8px;">🎯 日報卡片勝率(隔日結算)</div>
+    <div style="display:flex;gap:14px;align-items:baseline;margin-bottom:6px;">
+      <span style="font-size:22px;font-weight:900;color:${rate >= 50 ? "var(--green)" : "var(--red)"};">${rate}%</span>
+      <span style="font-size:11.5px;opacity:.6;">${wins}/${judged.length} 卡·看多 ${grp(["buy", "hold"])}·看空 ${grp(["wait", "sell"])}</span>
+    </div>
+    <div style="font-size:11px;font-weight:700;opacity:.7;margin:8px 0 2px;">最近卡片(隔日對錯)</div>${rows}
+    <div style="margin-bottom:14px;"></div>`;
+}
 async function renderUserSim(email) {
   const box = document.getElementById("ud-sim");
   if (!box) return;
   box.innerHTML = `<div style="font-size:12px;opacity:.5;">持倉模擬載入中…</div>`;
   try {
-    if (!EQ_TRADES) EQ_TRADES = (await api("/admin/plan-trades")).trades || [];
+    if (!EQ_TRADES) {
+      const d = await api("/admin/plan-trades");
+      EQ_TRADES = d.trades || [];
+      EQ_CARDS = d.cards || [];
+    }
   } catch (e) {
     box.innerHTML = `<div style="font-size:12px;opacity:.5;">持倉模擬載入失敗</div>`;
     return;
   }
+  const cardBlock = userCardStats(email);
   const mine = EQ_TRADES.filter(t => t.u === email);
-  const ttl = `<div style="font-size:12.5px;font-weight:800;margin-bottom:8px;">📈 模擬跟單(此用戶日報卡片)</div>`;
+  const ttl = `<div style="font-size:12.5px;font-weight:800;margin-bottom:8px;">📈 模擬跟單(照卡片價位)</div>`;
   if (!mine.length) {
-    box.innerHTML = ttl + `<div style="font-size:12px;opacity:.55;line-height:1.6;">此用戶尚無模擬單——他的卡片還沒觸發過買進成交,或個別歷史單無法唯一歸戶(歷史單用「持股集合唯一比對」推定;7/10 起改 token 直接歸戶,每天自動累積)。</div>`;
+    box.innerHTML = cardBlock + ttl + `<div style="font-size:12px;opacity:.55;line-height:1.6;">此用戶尚無模擬單——他的卡片還沒觸發過買進成交,或個別歷史單無法唯一歸戶(歷史單用「持股集合唯一比對」推定;7/10 起改 token 直接歸戶,每天自動累積)。</div>`;
     return;
   }
   const open = mine.filter(t => t.result === "pending");
@@ -1875,7 +1916,7 @@ async function renderUserSim(email) {
       <span class="mono" style="opacity:.55;font-size:10.5px;">${esc(t.e || t.c || "")}</span>
       <span style="font-weight:700;${rc}">${r}</span></div>`;
   };
-  box.innerHTML = ttl +
+  box.innerHTML = cardBlock + ttl +
     `<div style="font-size:11.5px;opacity:.6;margin-bottom:8px;">已結束 ${done.length} 筆·賺 ${wins} 賠 ${done.length - wins}·平均 ${(avg >= 0 ? "+" : "") + avg.toFixed(2)}%/筆</div>` +
     (open.length ? `<div style="font-size:11px;font-weight:700;opacity:.7;margin:6px 0 2px;">持倉中(${open.length})</div>` + open.map(rowT).join("") : "") +
     (done.length ? `<div style="font-size:11px;font-weight:700;opacity:.7;margin:10px 0 2px;">已結束</div>` + done.slice(0, 15).map(rowT).join("") : "");

@@ -1549,9 +1549,10 @@ export default {
       try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
       const trades = Array.isArray(body.trades) ? body.trades.slice(0, 5000) : null;
       if (!trades) return json({ error: "no_trades" }, 400);
+      const cards = Array.isArray(body.cards) ? body.cards.slice(0, 20000) : [];
       const tokEmail = {};
       let lookups = 0;
-      for (const t of trades) {
+      for (const t of [...trades, ...cards]) {
         const tok = String(t.tok || "");
         // 上限 500 次 KV 查找防 subrequest 爆掉;舊 token(>45d TTL 過期)本來就查不到
         if (tok && !(tok in tokEmail) && lookups < 500) {
@@ -1595,16 +1596,18 @@ export default {
         } catch (e) { /* 回填失敗非致命,留 null 明日再試 */ }
       }
       // 歸戶優先序:digest_email(7/10 起 token 直接對應,權威) > builder 完整集合比對 hint > 備援
-      const out = trades.map((t) => {
+      const attach = (t) => {
         const { tok, u: hint, ...rest } = t;
         return { ...rest, u: tok ? (tokEmail[String(tok)] || hint || null) : "public" };
-      });
+      };
+      const out = trades.map(attach);
+      const outCards = cards.map(attach);
       await env.USER_PREFS.put("plan_trades:v1", JSON.stringify({
-        updated_at: new Date().toISOString(), trades: out,
+        updated_at: new Date().toISOString(), trades: out, cards: outCards,
       }));
       const byUser = {};
       for (const t of out) if (t.u && t.u !== "public") byUser[t.u] = (byUser[t.u] || 0) + 1;
-      return json({ ok: true, n: out.length, mapped: Object.values(tokEmail).filter(Boolean).length, by_user: byUser });
+      return json({ ok: true, n: out.length, n_cards: outCards.length, mapped: Object.values(tokEmail).filter(Boolean).length, by_user: byUser });
     }
 
     // Admin:模擬跟單逐筆明細(含個股+歸戶 email)——只有 admin 認證看得到
