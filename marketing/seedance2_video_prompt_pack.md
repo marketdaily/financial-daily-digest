@@ -5,6 +5,7 @@
 > 官方公式:`精確主體 + 動作細節 + 場景環境 + 光線色調 + 運鏡 + 視覺風格 + 畫質 + 約束條件`。
 > 音訊符號:`（）`=音樂、`<>`=音效、`{}`=台詞、`【】`=字幕;台詞單一語言不可中英混。
 > 鐵則:每鏡只用一種運鏡;不寫每鏡秒數(官方明說計時不穩);直版亂字幕機率較高,約束句放 prompt 最後一行。
+> **⚠️ 聲音鐵則(2026-07-09 用戶指令)**:行銷影片不用 AI 語音/人聲,資訊靠後製燒錄字幕;聲音全押震撼音效(音牆→驟停、sub-bass、鐘鳴留白、端卡 impact hit 用免版稅素材後製疊)。
 > **⚠️ 一次到位鐵則(2026-07-09 用戶指令)**:送生成前 Preflight(§5)全綠才按;改進意見折進本檔定稿,等下支影片/下期額度才用;額度見底只做零成本後製。
 
 ---
@@ -51,7 +52,7 @@ Premium fintech brand film in vertical 9:16 composition, HD, rich details, cinem
 
 Shot 1: Macro close-up at the center of the vertical frame: drifting golden data particles spiral together in dark space and assemble into a floating smartphone, screen facing the camera. The screen lights up and displays the email interface from @Image 2, scrolling slowly and elegantly upward; the interface text appears soft and gently out of focus, with no readable numbers. Fine particles orbit the phone like tiny satellites. <a soft, crisp notification chime as the screen lights up>（a calm minimal piano motif joined by warm strings）
 
-Shot 2: The camera slowly pulls back and tilts slightly upward: the phone floats in the lower third of the vertical frame while a warm sunrise breaks across a dark horizon behind it, rays of morning light streaming up the tall frame and rim-lighting the device. Voiceover: a calm, confident young male voice says in Chinese: {每天早上七點，AI 幫你把全球市場讀完。一封信，開盤前就緒。}
+Shot 2: The camera slowly pulls back and tilts slightly upward: the phone floats in the lower third of the vertical frame while a warm sunrise breaks across a dark horizon behind it, rays of morning light streaming up the tall frame and rim-lighting the device. <one deep, resonant bell-like chime with a long warm tail as the sunrise crests, the vast silence around it making the moment feel monumental>（no vocals anywhere in the film）
 
 Shot 3: Fixed shot. The scene dissolves to a pure black background; the logo from @Image 1 appears centered in the middle of the vertical frame, glowing softly. 【MarketDaily｜marketdaily.ai】 fades in below it in clean white type, synchronized with the final piano note.
 
@@ -86,7 +87,7 @@ Premium fintech brand film, HD, rich details, cinematic texture; the mood shifts
 
 Shot 1: Medium shot on a sunlit apartment balcony at golden-hour sunrise, the city skyline soft in the background. The same man, now relaxed in a clean white shirt, leans on the railing holding his phone, reading calmly with a slight confident smile, steam rising from a coffee cup beside him. <distant morning birdsong and soft city ambience>（warm, optimistic minimal piano with light strings）
 
-Shot 2: Close-up over his shoulder: the phone screen clearly shows the email interface from @Image 2 scrolling slowly and smoothly. Voiceover: a calm, confident young male voice says in Chinese: {別人還在追新聞的時候，你已經看完今天的重點了。}
+Shot 2: Close-up over his shoulder: the phone screen clearly shows the email interface from @Image 2 scrolling slowly and smoothly. <a single deep, satisfying chime with a long warm tail; calm morning air around it>（no vocals anywhere in the film）
 
 Shot 3: Fixed shot. The scene fades to a pure black background; the logo from @Image 1 appears centered, glowing softly. 【MarketDaily｜marketdaily.ai】 fades in at the bottom-center in clean white type, synchronized with the final piano chord.
 
