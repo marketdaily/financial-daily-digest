@@ -22,7 +22,7 @@
 **分鏡**:
 - **0–2s(hook)**:混亂者的臉被紅綠 K 線光轟炸,通知音疊成噪音牆;燒錄大字 hook:「開盤前 10 分鐘,兩種人」
 - **2–15s(Clip 1|混亂者)**:06:50,亂桌、三台裝置、無限刷新聞、咖啡沒動,鬧鐘跳 07:00 他還在資訊海裡;字幕:「一種人:8 個視窗、300 條新聞、越看越慌」
-- **15–25s(Clip 2|從容者)**:另一個人,晨光廚房/陽台,一杯咖啡,打開**一封信**滑完(日報介面柔焦捲動),微笑收起手機出門;旁白+字幕:「同一個早上,有人已經把全球市場讀完了」
+- **15–25s(Clip 2|從容者)**:另一個人,晨光廚房/陽台,一杯咖啡,打開**一封信**滑完(日報介面柔焦捲動),微笑收起手機出門;字幕:「同一個早上,有人已經把全球市場讀完了」(**全片無人聲——用戶 2026-07-09 指令:不用 AI 語音,資訊由燒錄字幕承載,聲音全靠震撼音效設計**)
 - **25–30s(正版 end card)**:logo+「每天 07:00,一封信讀完全球市場」+「marketdaily.ai」(可加現行口徑「限時免費」,發佈前照口徑鐵則再驗)
 
 ## 三、素材清單(生成前備齊 = Preflight 第 2、6 項)
@@ -42,11 +42,11 @@
 ```
 Photorealistic cinematic slice-of-life scene in vertical 9:16 composition, handheld documentary energy, HD, rich skin and fabric detail, moody mixed lighting from screens, shot on a cinema camera.
 
-Shot 1: The opening frame is an extreme close-up of a young East Asian man's tired face at 6:50 AM, lit only by flashing red and green light from off-screen monitors, eyes darting rapidly; reflections of racing candlestick charts flicker across his glasses. <a chaotic wall of overlapping notification dings and muffled news-anchor voices>（tense, cluttered electronic pulse）
+Shot 1: The opening frame is an extreme close-up of a young East Asian man's tired face at 6:50 AM, lit only by flashing red and green light from off-screen monitors, eyes darting rapidly; reflections of racing candlestick charts flicker across his glasses. <a chaotic wall of overlapping notification dings stacking louder and louder, layered over a deep sub-bass heartbeat that keeps accelerating>（a tense rising drone builds underneath, no vocals）
 
 Shot 2: Quick handheld pull-back: a cluttered desk in a dim bedroom — laptop, tablet and phone all glowing with dense scrolling feeds and charts, sticky notes everywhere, an untouched cup of coffee gone cold, cables tangled. He frantically swipes between devices, jaw tight, one hand gripping his hair.
 
-Shot 3: Fixed close-up on a phone alarm flipping to 7:00 AM on the desk; behind it, out of focus, the man is still hunched and swiping, drowning in feeds. The notification noise keeps stacking, almost suffocating, then hard-cuts to silence on the final frame. <alert dings crescendo into noise, then abrupt silence>
+Shot 3: Fixed close-up on a phone alarm flipping to 7:00 AM on the desk; behind it, out of focus, the man is still hunched and swiping, drowning in feeds. The notification noise keeps stacking, almost suffocating, then hard-cuts to silence on the final frame. <alert dings and the racing heartbeat crescendo into a suffocating wall of noise, one final deep sub-bass slam, then absolute dead silence>
 
 Constraints: strict vertical 9:16 composition; all screen content must be abstract blurred glow with no readable text, tickers, numbers or prices; keep it subtitle-free, avoid generating any text or subtitles, do not generate a logo, do not generate a watermark.
 ```
@@ -58,16 +58,18 @@ Reference the logo in @Image 1 and the email interface design in @Image 2, keepi
 
 Photorealistic cinematic slice-of-life scene in vertical 9:16 composition, warm golden morning light, airy and calm, HD, rich detail, gentle depth of field, shot on a cinema camera.
 
-Shot 1: Medium shot in a bright modern kitchen at sunrise: a young East Asian woman in a crisp shirt leans against the counter with a warm cup of coffee, steam rising through a beam of morning sunlight. She picks up her phone with one relaxed hand. <soft kitchen ambience, a single crisp notification chime>（a calm, confident minimal piano motif）
+Shot 1: Medium shot in a bright modern kitchen at sunrise: a young East Asian woman in a crisp shirt leans against the counter with a warm cup of coffee, steam rising through a beam of morning sunlight. She picks up her phone with one relaxed hand. <soft kitchen ambience, a single crisp notification chime>（no vocals anywhere; a sparse, confident minimal piano motif over deep quiet）
 
-Shot 2: Close-up over her shoulder: the phone screen shows the email interface from @Image 2 scrolling slowly and elegantly upward; the interface text appears soft and gently out of focus, with no readable numbers. She reads with a slight, assured smile and takes an unhurried sip of coffee. Voiceover: a calm, confident female voice says in Chinese: {同一個早上，有人已經把全球市場讀完了。}
+Shot 2: Close-up over her shoulder: the phone screen shows the email interface from @Image 2 scrolling slowly and elegantly upward; the interface text appears soft and gently out of focus, with no readable numbers. She reads with a slight, assured smile and takes an unhurried sip of coffee. <one deep, satisfying resonant chime as the email opens — like a struck temple bell with a long warm tail; the silence around it feels vast>
 
 Shot 3: Medium-wide shot: she locks the phone, slips it into her bag, and walks toward the sunlit door with light, confident steps; the camera holds as she exits the frame, leaving the bright, calm kitchen. <soft footsteps, door opening, birdsong outside>（the piano motif resolves warmly）
 
 Constraints: strict vertical 9:16 composition; do not invent any other text; do not generate a watermark; the email interface text must stay softly blurred with no readable stock prices or numbers anywhere; keep it subtitle-free except the referenced screen content.
 ```
 
-> 端卡不靠 AI:24–25s 起 `xfade=fadeblack` 切正版 end card(SOP §3)。
+> 端卡不靠 AI:24–25s 起 `xfade=fadeblack` 切正版 end card(SOP §3)。**端卡進場配一記 cinematic impact hit(deep boom + sub drop),用免版稅 SFX 素材後製疊上,不靠 AI 生成——這是全片最後的震撼記憶點。**
+>
+> **聲音設計總則(2026-07-09 用戶指令)**:全片零人聲;混亂段=通知音牆+加速心跳+riser 到窒息再驟停(對比式震撼);從容段=巨大留白+一記鐘鳴;端卡=impact hit。響度照 SOP 壓 -14 LUFS,但保留 SFX 瞬態衝擊力(TP -1.0 限幅,不過度壓縮)。
 
 ## 五、發佈計畫
 
