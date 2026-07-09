@@ -272,7 +272,9 @@ def _fetch_tpex_all() -> dict:
     now = datetime.now()
     if _TPEX_CACHE and _TPEX_CACHE_TIME and (now - _TPEX_CACHE_TIME).seconds < 3600:
         return _TPEX_CACHE
-    for _ in range(2):
+    # TPEx 部分節點憑證缺 Subject Key Identifier → Python3.13+ 嚴格驗證間歇 SSLError,
+    # 重試換節點幾乎必成功(2026-07-09 事故:連兩次踩壞節點 → 上櫃名字全滅)
+    for _ in range(4):
         try:
             resp = requests.get(
                 "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes",
@@ -327,18 +329,20 @@ def tw_name_map() -> dict:
                 names[c] = d["name"]
     except Exception:
         pass
-    try:
-        resp = requests.get(
-            "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes",
-            timeout=15
-        )
-        for row in resp.json():
-            code = (row.get("SecuritiesCompanyCode") or "").strip()
-            name = (row.get("CompanyName") or "").strip()
-            if code and name:
-                names.setdefault(code, name)
-    except Exception:
-        pass
+    for _ in range(4):
+        try:
+            resp = requests.get(
+                "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes",
+                timeout=15
+            )
+            for row in resp.json():
+                code = (row.get("SecuritiesCompanyCode") or "").strip()
+                name = (row.get("CompanyName") or "").strip()
+                if code and name:
+                    names.setdefault(code, name)
+            break
+        except Exception:
+            continue
     fetched = len(names)
     disk = {}
     try:
