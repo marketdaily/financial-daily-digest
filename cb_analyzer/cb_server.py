@@ -743,7 +743,7 @@ class H(BaseHTTPRequestHandler):
             return self._send(429, LOGIN_HTML.replace("{{msg}}", "嘗試太多次,10 分鐘後再試"))
         ln = int(self.headers.get("Content-Length", 0) or 0)
         body = self.rfile.read(min(ln, 4096)).decode("utf-8", "replace")
-        pw = urllib.parse.parse_qs(body).get("password", [""])[0]
+        pw = urllib.parse.parse_qs(body).get("password", [""])[0].strip()
         if DESK_PW and hmac.compare_digest(pw, DESK_PW):
             _LOGIN_FAILS.pop(ip, None)
             self.send_response(303)
