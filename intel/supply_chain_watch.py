@@ -88,7 +88,9 @@ def collect_events(days=2):
             "id": _eid("tw", e["code"], e["date"], e["subject"]),
             "market": "tw", "code": e["code"], "name": e["name"],
             "date": e["date"], "headline": e["subject"],
-            "counterparty": e.get("counterparty"), "url": "",
+            # MOPS open API 無單則公告深連結;Yahoo 個股公告頁列同源重訊,後綴錯了 Yahoo 會自動正規化
+            "counterparty": e.get("counterparty"),
+            "url": f"https://tw.stock.yahoo.com/quote/{e['code']}.TW/announcement",
             "source_type": "mops", "keyword": e["keyword"],
         })
     cutoff = (datetime.date.today() - datetime.timedelta(days=days)).isoformat()
