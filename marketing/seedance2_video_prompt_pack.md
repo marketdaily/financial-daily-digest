@@ -106,3 +106,36 @@ Constraints: the logo from @Image 1 must stay sharp and undistorted; do not inve
 - [ ] 不把個股功能與付費連結:全片不出現價格方案
 - [ ] 螢幕內容 = 公版日報真截圖,非捏造
 - [ ] 社群發佈時 caption 依鐵則 `--dry` + 逐字驗
+
+---
+
+## 方案 A v2(Reels 直式加強版,2026-07-09 下午)
+9:16 專用重寫:第 1 秒即主體衝臉 hook、垂直構圖引導(主體上 2/3)、K 線光柱沿直式畫框兩側。
+
+### Clip A-1 v2(9:16)
+```
+Epic cinematic financial-market spectacle in vertical 9:16 composition, premium brand-film quality, HD, rich details, cinematic texture, deep-space black palette with electric blue and amber-gold accents, volumetric lighting, dramatic rim light, shot on a cinema camera.
+
+Shot 1: The opening frame is already mid-action: a colossal bull sculpted from molten bronze light fills the lower half of the vertical frame, charging straight toward the camera in a low-angle shot, hooves striking sparks of golden data particles off an obsidian plain etched with glowing candlestick charts; towering columns of K-line light rise like skyscrapers along both edges of the vertical frame. <thunderous hoofbeats and a deep rumbling roar>（dark, driving cinematic percussion at high tempo）
+
+Shot 2: Fast tilt upward: from the top of the frame a monumental bear formed of cold blue glass dives down between the candlestick towers. The instant they collide at the center of the vertical frame, ultra-slow motion: the impact erupts into a spherical shockwave of golden and blue data particles like a supernova, shattered K-line columns suspended mid-air inside the blast. <one deep sub-bass impact, then near-silence with shimmering particle chimes>
+
+Shot 3: The camera slowly pushes forward through the drifting golden particles into the calm eye of the explosion, where the chaotic particles align into clean vertical rows of glowing lines — chaos resolving into order — then drift gently upward like embers.（a clean, confident minimal piano motif emerges from the silence）
+
+Constraints: strict vertical 9:16 composition with main subjects in the upper two-thirds of the frame; keep it subtitle-free, avoid generating any text or subtitles, do not generate a logo, do not generate a watermark, no readable stock tickers, numbers or prices anywhere in the frame.
+```
+
+### Clip A-2 v2(9:16)
+```
+Reference the logo in @Image 1 and the email interface design in @Image 2, keeping both consistent, sharp and undistorted.
+
+Premium fintech brand film in vertical 9:16 composition, HD, rich details, cinematic texture, deep-space black palette with electric blue and amber-gold accents; the mood continues from a calm, confident aftermath.
+
+Shot 1: Macro close-up at the center of the vertical frame: drifting golden data particles spiral together in dark space and assemble into a floating smartphone, screen facing the camera. The screen lights up and displays the email interface from @Image 2, scrolling slowly and elegantly upward; the interface text appears soft and gently out of focus, with no readable numbers. Fine particles orbit the phone like tiny satellites. <a soft, crisp notification chime as the screen lights up>（a calm minimal piano motif joined by warm strings）
+
+Shot 2: The camera slowly pulls back and tilts slightly upward: the phone floats in the lower third of the vertical frame while a warm sunrise breaks across a dark horizon behind it, rays of morning light streaming up the tall frame and rim-lighting the device. Voiceover: a calm, confident young male voice says in Chinese: {每天早上七點，AI 幫你把全球市場讀完。一封信，開盤前就緒。}
+
+Shot 3: Fixed shot. The scene dissolves to a pure black background; the logo from @Image 1 appears centered in the middle of the vertical frame, glowing softly. 【MarketDaily｜marketdaily.ai】 fades in below it in clean white type, synchronized with the final piano note.
+
+Constraints: strict vertical 9:16 composition; the logo from @Image 1 must stay sharp and undistorted; do not invent any other text; do not generate a watermark; the email interface text must stay softly blurred with no readable stock prices or numbers anywhere.
+```
