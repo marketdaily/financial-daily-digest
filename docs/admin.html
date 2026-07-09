@@ -701,12 +701,16 @@ body {
         <div class="section-header">
           <div>
             <div class="section-title">模擬跟單淨值</div>
-            <div class="section-desc">照日報卡片「買價 / 目標 / 停損」每日等權跟單的模擬資金曲線。內部北極星:期望值轉正才對外公開。</div>
+            <div class="section-desc">照日報卡片「買價 / 目標 / 停損」跟單的組合層級資金模擬(單筆固定比例+現金池佔用)。內部北極星:期望值轉正才對外公開。</div>
           </div>
-          <div style="display:flex;align-items:center;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
             <label for="eq-cap" style="font-size:12px;color:var(--text2);font-weight:600;">起始資金 NT$</label>
             <input id="eq-cap" type="number" value="1000000" step="100000" min="1"
-              style="width:130px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:7px 10px;font-size:13px;font-variant-numeric:tabular-nums;"
+              style="width:120px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:7px 10px;font-size:13px;font-variant-numeric:tabular-nums;"
+              onchange="drawEquity()">
+            <label for="eq-alloc" style="font-size:12px;color:var(--text2);font-weight:600;">單筆比例 %</label>
+            <input id="eq-alloc" type="number" value="10" step="1" min="1" max="100"
+              style="width:64px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:7px 10px;font-size:13px;font-variant-numeric:tabular-nums;"
               onchange="drawEquity()">
           </div>
         </div>
@@ -736,7 +740,7 @@ body {
         <div class="card">
           <div style="font-size:12.5px;color:var(--text2);line-height:1.7;">
             <strong style="color:var(--text);">模型假設(誠實條款):</strong>
-            資料源=track-record.json 的 plan_sim.by_day(全用戶聚合)。每日資金等權分配到當天全部模擬 buy 卡;3 日內收盤沒進買區=沒成交(當現金 0%);成交後 10 個交易日內收盤先碰目標/停損結算,期滿以收盤價出場。每筆報酬按建議日入帳。只有日收盤價、無盤中觸發、無手續費滑價——結果偏保守但公平。淨值=逐日複利。此頁為內部指標,依合規原則不得作為對外行銷素材,除非轉正且加註「歷史模擬非績效保證」。
+            資料源=track-record.json 的 plan_sim.trades(全用戶聚合,逐筆進出場日,無個股/用戶資訊)。組合層級真實資金分配:每筆進場撥「單筆比例 × 當時淨值」,現金不夠就縮到剩餘現金、現金池空了直接跳過該筆;資金被持倉佔用期間不能重複使用,出場日(10 個交易日內收盤先碰目標/停損,期滿收盤出)才回到現金池,同日先出後進。持倉以成本計價、損益出場日入帳。3 日內收盤沒進買區=沒成交;只有日收盤價、無盤中觸發、無手續費滑價;尚未結束的單不在曲線內。此頁為內部指標,依合規原則不得作為對外行銷素材,除非轉正且加註「歷史模擬非績效保證」。
           </div>
         </div>
       </div>
@@ -1182,7 +1186,7 @@ const SECTION_TITLES = {
   email:       ["寄信成效","Brevo 送達 / 開信 / 退信"],
   audit:       ["稽核記錄","管理員操作軌跡"],
   analytics:   ["數據分析","30 日 UTM 歸因分析"],
-  equity:      ["模擬跟單淨值","照卡片價位每日等權跟單的內部模擬(未公開)"],
+  equity:      ["模擬跟單淨值","照卡片價位跟單的組合層級資金模擬(未公開)"],
   subscribers: ["訂閱者","Brevo 訂閱列表"],
   reactive:    ["內容審核","Hot Take 發佈佇列"],
   news:        ["新聞源管理","RSS Feeds 與域名白名單"],
@@ -1225,33 +1229,59 @@ async function renderEquity() {
 }
 function drawEquity() {
   const el = document.getElementById("eq-chart");
-  const days = ((((EQ_JSON || {}).stats || {}).plan_sim || {}).by_day) || [];
+  const trades = ((((EQ_JSON || {}).stats || {}).plan_sim || {}).trades) || [];
   const cap0 = Math.max(1, Number(document.getElementById("eq-cap").value) || 1000000);
-  // 每日等權:資金分到當日全部已定案模擬單(no_fill=現金0%),日報酬=Σrets/n_cards,逐日複利
-  let eq = cap0, peak = cap0, mdd = 0, closed = 0, cards = 0;
-  const pts = [];
-  for (const day of days) {
-    const n = Math.max(day.n_cards || 0, (day.rets || []).length);
-    if (!n) continue;
-    cards += n; closed += day.rets.length;
-    const r = day.rets.reduce((a, b) => a + b, 0) / n / 100;
-    eq *= 1 + r;
-    peak = Math.max(peak, eq);
-    mdd = Math.max(mdd, (peak - eq) / peak);
-    pts.push({ d: day.d, v: eq, r: r * 100, n, f: day.rets.length });
+  const allocPct = Math.min(100, Math.max(1, Number(document.getElementById("eq-alloc").value) || 10)) / 100;
+  // 組合層級資金分配:每筆進場撥 allocPct×當時淨值(現金不夠縮到剩餘現金,池空跳過);
+  // 資金被持倉佔用到出場日才回收,同日先出後進;持倉以成本計價,損益出場日入帳。
+  const byDate = {};
+  for (const t of trades) {
+    (byDate[t.e] = byDate[t.e] || { en: [], ex: [] }).en.push(t);
+    (byDate[t.x] = byDate[t.x] || { en: [], ex: [] }).ex.push(t);
   }
+  const dates = Object.keys(byDate).sort();
+  let cash = cap0, invested = 0, peak = cap0, mdd = 0;
+  let entered = 0, skipped = 0, exited = 0, maxOpen = 0;
+  const open = new Map();
+  const pts = [];
+  for (const d of dates) {
+    let exToday = 0;
+    for (const t of byDate[d].ex) {          // 先出
+      const size = open.get(t);
+      if (size == null) continue;            // 進場時池空被跳過的單
+      open.delete(t);
+      invested -= size;
+      cash += size * (1 + t.ret / 100);
+      exited++; exToday++;
+    }
+    for (const t of byDate[d].en) {          // 後進
+      const want = (cash + invested) * allocPct;
+      const size = Math.min(want, cash);
+      if (size < (cash + invested) * 0.005) { skipped++; continue; }  // 池子見底(<0.5%淨值)跳過
+      open.set(t, size);
+      cash -= size;
+      invested += size;
+      entered++;
+    }
+    maxOpen = Math.max(maxOpen, open.size);
+    const eqNow = cash + invested;
+    peak = Math.max(peak, eqNow);
+    mdd = Math.max(mdd, (peak - eqNow) / peak);
+    pts.push({ d, v: eqNow, n: open.size, f: exToday, u: invested / eqNow * 100 });
+  }
+  const eq = pts.length ? pts[pts.length - 1].v : cap0;
   const money = (v) => "NT$" + Math.round(v).toLocaleString("en-US");
   const totRet = (eq / cap0 - 1) * 100;
   const sign = totRet >= 0 ? "+" : "";
   const fv = document.getElementById("eq-final");
   fv.textContent = money(eq);
   fv.style.color = totRet >= 0 ? "var(--green)" : "var(--red)";
-  document.getElementById("eq-final-sub").textContent = `總報酬 ${sign}${totRet.toFixed(2)}%(起始 ${money(cap0)})`;
+  document.getElementById("eq-final-sub").textContent = `總報酬 ${sign}${totRet.toFixed(2)}%(起始 ${money(cap0)},單筆 ${(allocPct * 100).toFixed(0)}%)`;
   document.getElementById("eq-mdd").textContent = "-" + (mdd * 100).toFixed(1) + "%";
-  document.getElementById("eq-fills").textContent = closed;
-  document.getElementById("eq-fills-sub").textContent = `成交率 ${cards ? (closed / cards * 100).toFixed(0) : 0}%(掛不到=現金)`;
+  document.getElementById("eq-fills").textContent = exited;
+  document.getElementById("eq-fills-sub").textContent = `進場 ${entered}·池空跳過 ${skipped}·最大同時 ${maxOpen} 倉`;
   if (!pts.length) {
-    el.innerHTML = '<div style="padding:60px 20px;text-align:center;color:var(--text2);font-size:13px;">尚無已結束的模擬單(等 plan_sim.by_day 累積)</div>';
+    el.innerHTML = '<div style="padding:60px 20px;text-align:center;color:var(--text2);font-size:13px;">尚無已結束的模擬單(等 plan_sim.trades 累積)</div>';
     return;
   }
   const W = 920, H = 280, PL = 74, PR = 20, PT = 16, PB = 30;
@@ -1261,7 +1291,7 @@ function drawEquity() {
   lo -= pad; hi += pad;
   const X = (i) => PL + (W - PL - PR) * (i / Math.max(pts.length, 1));
   const Y = (v) => PT + (H - PT - PB) * (1 - (v - lo) / (hi - lo));
-  const all = [{ d: "起點", v: cap0, r: 0, n: 0, f: 0 }, ...pts];
+  const all = [{ d: "起點", v: cap0, n: 0, f: 0, u: 0 }, ...pts];
   const line = all.map((p, i) => (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(p.v).toFixed(1)).join(" ");
   const grid = [0, 1, 2, 3].map(g => {
     const v = lo + (hi - lo) * g / 3, y = Y(v).toFixed(1);
@@ -1295,7 +1325,7 @@ function drawEquity() {
     cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.style.display = "";
     dot.setAttribute("cx", px); dot.setAttribute("cy", py); dot.style.display = "";
     tip.innerHTML = `<strong>${p.d}</strong><br>淨值 ${money(p.v)}` +
-      (i ? `<br>日報酬 ${p.r >= 0 ? "+" : ""}${p.r.toFixed(2)}%<br>模擬單 ${p.n} 筆(已結 ${p.f})` : "");
+      (i ? `<br>持倉 ${p.n} 筆·當日出場 ${p.f}<br>資金使用率 ${p.u.toFixed(0)}%` : "");
     tip.style.display = "block";
     const tw = tip.offsetWidth;
     tip.style.left = Math.min(Math.max(px / sx - tw / 2, 0), r.width - tw) + "px";
