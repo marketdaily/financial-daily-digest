@@ -1559,9 +1559,9 @@ export default {
           lookups++;
         }
       }
-      // 歷史回填:2026-07-10 前的 token 沒有 digest_email 對應——改用「該 token 的股票集合
-      // ⊆ 某用戶自選股,且全體用戶中唯一命中」推定歸戶;有歧義(0 或 2+ 命中)就留 null,不亂認。
-      const unmapped = [...new Set(trades.filter((t) => t.tok && !tokEmail[String(t.tok)]).map((t) => String(t.tok)))];
+      // 歷史回填(最後備援):builder 已用「完整持股卡集合」比對出 t.u hint;這裡只處理
+      // 既無 digest_email 也無 hint 的 token——「股票集合 ⊆ 用戶自選股且唯一命中」,歧義留 null。
+      const unmapped = [...new Set(trades.filter((t) => t.tok && !tokEmail[String(t.tok)] && !t.u).map((t) => String(t.tok)))];
       if (unmapped.length) {
         try {
           const norm = (v) => String(typeof v === "object" ? (v.symbol || v.ticker || "") : v)
@@ -1594,9 +1594,10 @@ export default {
           }
         } catch (e) { /* 回填失敗非致命,留 null 明日再試 */ }
       }
+      // 歸戶優先序:digest_email(7/10 起 token 直接對應,權威) > builder 完整集合比對 hint > 備援
       const out = trades.map((t) => {
-        const { tok, ...rest } = t;
-        return { ...rest, u: tok ? (tokEmail[String(tok)] || null) : "public" };
+        const { tok, u: hint, ...rest } = t;
+        return { ...rest, u: tok ? (tokEmail[String(tok)] || hint || null) : "public" };
       });
       await env.USER_PREFS.put("plan_trades:v1", JSON.stringify({
         updated_at: new Date().toISOString(), trades: out,

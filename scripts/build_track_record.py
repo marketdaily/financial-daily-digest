@@ -522,6 +522,92 @@ def simulate_plan(rec: dict, prices: dict) -> dict | None:
             "entry_date": _d(entry_i), "exit_date": _d(entry_i + len(rest))}
 
 
+def _env_key(name: str) -> str:
+    """從 ROOT/.env 或環境變數取 key(builder 在 winrig cron 只被注入 INTERNAL_TOKEN)。"""
+    try:
+        for line in (ROOT / ".env").read_text(encoding="utf-8").splitlines():
+            if line.startswith(name + "="):
+                return line.split("=", 1)[1].strip().strip('"\'')
+    except Exception:
+        pass
+    return os.environ.get(name, "").strip()
+
+
+def _norm_tk(v) -> str:
+    if isinstance(v, dict):
+        v = v.get("symbol") or v.get("ticker") or ""
+    return str(v).upper().replace(".TWO", "").replace(".TW", "").strip()
+
+
+def fetch_user_pref_sets() -> dict[str, dict]:
+    """email → 自選股集合(us/tw/all,正規化)。Brevo 訂閱名單 + worker /get-preferences
+    (Bearer INTERNAL_TOKEN bypass)。供 token→用戶歸戶比對;失敗回空 dict(歸戶跳過,非致命)。"""
+    brevo_key = _env_key("BREVO_API_KEY")
+    if not (brevo_key and INTERNAL_TOKEN):
+        return {}
+    out: dict[str, dict] = {}
+    try:
+        list_id = _env_key("BREVO_LIST_ID") or "2"
+        req = urllib.request.Request(
+            f"https://api.brevo.com/v3/contacts/lists/{list_id}/contacts?limit=500",
+            headers={"api-key": brevo_key, "User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            contacts = json.loads(resp.read()).get("contacts") or []
+        for c in contacts[:200]:
+            em = (c.get("email") or "").lower()
+            if not em:
+                continue
+            try:
+                preq = urllib.request.Request(
+                    f"{WORKER}/get-preferences",
+                    data=json.dumps({"email": em}).encode(),
+                    headers={"Content-Type": "application/json",
+                             "Authorization": f"Bearer {INTERNAL_TOKEN}", "User-Agent": UA},
+                    method="POST")
+                with urllib.request.urlopen(preq, timeout=15) as presp:
+                    prefs = json.loads(presp.read())
+            except Exception:
+                continue
+            us = {_norm_tk(x) for x in (prefs.get("us_stocks") or [])} - {""}
+            tw = {_norm_tk(x) for x in (prefs.get("tw_stocks") or [])} - {""}
+            if us or tw:
+                out[em] = {"us": us, "tw": tw, "all": us | tw}
+    except Exception as exc:
+        print(f"[warn] pref-sets fetch failed: {exc}", file=sys.stderr)
+    return out
+
+
+def match_tokens_to_users(personal_records: list[dict]) -> dict[str, str]:
+    """token → email 歸戶:用該 token 日報的『完整持股卡集合』比對用戶自選股。
+    雙時段日報一個 token 只含單一市場的卡,故規則:
+      候選 = 卡集合 ⊆ 用戶(us∪tw);唯一候選 → 歸戶;
+      多候選 → 卡集合『恰等於』某用戶的 us 或 tw 全集且唯一 → 歸戶;否則留空不亂認。"""
+    tok_cards: dict[str, set] = {}
+    for r in personal_records:
+        tok = r.get("_user_token") or ""
+        tk = _norm_tk(r.get("ticker") or "")
+        if tok and tk:
+            tok_cards.setdefault(tok, set()).add(tk)
+    if not tok_cards:
+        return {}
+    pref_sets = fetch_user_pref_sets()
+    if not pref_sets:
+        return {}
+    tok_user: dict[str, str] = {}
+    for tok, cards in tok_cards.items():
+        subs = [em for em, p in pref_sets.items() if cards <= p["all"]]
+        if len(subs) == 1:
+            tok_user[tok] = subs[0]
+        elif len(subs) > 1:
+            exact = [em for em in subs
+                     if cards == pref_sets[em]["us"] or cards == pref_sets[em]["tw"]]
+            if len(exact) == 1:
+                tok_user[tok] = exact[0]
+    print(f"[match] token→user: {len(tok_user)}/{len(tok_cards)} tokens attributed "
+          f"(users={len(pref_sets)})")
+    return tok_user
+
+
 def fetch_spx_regime() -> dict[str, str]:
     """日期 → 大盤趨勢標記(SPX 收盤 vs 5 個交易日前:up/down)。
     用來把勝率按 regime 拆開 — 驗證「下跌 regime 整批喊買 = 主要虧損源」假設,
@@ -1120,10 +1206,12 @@ def main() -> int:
     # 內部逐筆明細(含個股+用戶token):寫本地檔,由 winrig 排程 POST 到 worker
     # /internal/plan-trades 歸戶進 KV,admin 後台認證後才看得到。
     # 絕不進公開 JSON、絕不 commit(.gitignore 已擋)。
+    tok_user = match_tokens_to_users(personal_records)
     internal_trades = [
         {"c": s["date"], "t": s.get("_ticker"), "name": s.get("_name"),
          "m": s.get("_market"), "e": s.get("entry_date"), "x": s.get("exit_date"),
-         "ret": s.get("ret_pct"), "result": s["result"], "tok": s.get("_tok") or ""}
+         "ret": s.get("ret_pct"), "result": s["result"], "tok": s.get("_tok") or "",
+         "u": tok_user.get(s.get("_tok") or "")}
         for s in sims if s["result"] != "no_fill"
     ]
     internal_file = ROOT / "scripts" / "plan_sim_trades_internal.json"
