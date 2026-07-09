@@ -42,13 +42,13 @@
 ```
 Photorealistic cinematic slice-of-life scene in vertical 9:16 composition, handheld documentary energy, HD, rich skin and fabric detail, moody mixed lighting from screens, shot on a cinema camera.
 
-Shot 1: The opening frame is an extreme close-up of a young East Asian man's tired face at 6:50 AM, lit only by flashing red and green light from off-screen monitors, eyes darting rapidly; reflections of racing candlestick charts flicker across his glasses. <a chaotic wall of overlapping notification dings stacking louder and louder, layered over a deep sub-bass heartbeat that keeps accelerating>（a tense rising drone builds underneath, no vocals）
+Shot 1: The opening frame is an extreme close-up of a young East Asian man's tired face in a pre-dawn dark room, lit only by flashing red and green light from off-screen monitors, eyes darting rapidly; reflections of racing candlestick charts flicker across his glasses. <a chaotic wall of overlapping notification dings stacking louder and louder, layered over a deep sub-bass heartbeat that keeps accelerating>（a tense rising drone builds underneath, no vocals）
 
-Shot 2: Quick handheld pull-back: a cluttered desk in a dim bedroom — laptop, tablet and phone all glowing with dense scrolling feeds and charts, sticky notes everywhere, an untouched cup of coffee gone cold, cables tangled. He frantically swipes between devices, jaw tight, one hand gripping his hair.
+Shot 2: Quick handheld pull-back: a cluttered desk in a dim bedroom — laptop, tablet and phone all glowing with dense scrolling feeds and charts, blank sticky notes scattered around, an untouched cup of coffee gone cold, cables tangled. He frantically swipes between devices, jaw tight, one hand gripping his hair.
 
-Shot 3: Fixed close-up on a phone alarm flipping to 7:00 AM on the desk; behind it, out of focus, the man is still hunched and swiping, drowning in feeds. The notification noise keeps stacking, almost suffocating, then hard-cuts to silence on the final frame. <alert dings and the racing heartbeat crescendo into a suffocating wall of noise, one final deep sub-bass slam, then absolute dead silence>
+Shot 3: Fixed close-up on a phone lying on the desk showing a minimal black clock screen; its large, sharp white digits flip from 6:59 to 7:00 — this clock display is the only readable element allowed in the entire clip. Behind it, out of focus, the man is still hunched and swiping, drowning in feeds. The notification noise keeps stacking, almost suffocating, then hard-cuts to silence on the final frame. <alert dings and the racing heartbeat crescendo into a suffocating wall of noise, one final deep sub-bass slam, then absolute dead silence>
 
-Constraints: strict vertical 9:16 composition; all screen content must be abstract blurred glow with no readable text, tickers, numbers or prices; keep it subtitle-free, avoid generating any text or subtitles, do not generate a logo, do not generate a watermark.
+Constraints: strict vertical 9:16 composition; apart from the single clock display showing 6:59 flipping to 7:00 in Shot 3, all other screen content must be abstract blurred glow with no readable text, tickers, numbers or prices anywhere; no other clocks or time displays in any shot; keep it subtitle-free, avoid generating any text or subtitles, do not generate a logo, do not generate a watermark.
 ```
 
 ### Clip 2 從容者(R2V,9:16,15s;Image 1 = logo、Image 2 = 日報截圖)
