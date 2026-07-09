@@ -160,6 +160,7 @@ const i18n = {
     today_tag: "今天",
     ep_tag_tw: "台股晨間快報",
     ep_tag_us: "美股晚間快報",
+    generating: "這集正在生成中,通常幾分鐘內上線,頁面會自動更新,不用重新整理。",
     note: "內容為公開資訊整理,不構成投資建議,投資一定有風險。<br>想看完整進出場計畫?<a href=\"index.html\" style=\"color:var(--primary-light)\">免費訂閱日報</a>,每天早上 7 點寄到你信箱。",
     outro_link: "← 回到首頁"
   },
@@ -174,6 +175,7 @@ const i18n = {
     today_tag: "Today",
     ep_tag_tw: "TW Morning Brief",
     ep_tag_us: "US Evening Brief",
+    generating: "This episode is being generated — usually live within a few minutes. The page will update automatically.",
     note: "Content is a summary of public information, not investment advice. Investing involves risk.<br>Want the full entry/exit plans? <a href=\"index.html\" style=\"color:var(--primary-light)\">Subscribe free</a> — delivered to your inbox at 7:00 AM daily.",
     outro_link: "← Back to home"
   }
@@ -202,6 +204,8 @@ function toggleLang() {
 /* ── 集數載入:一次讀 manifest。預設依台北時段只顯示一集(07-19時=台股晨間,20-06時=美股晚間);?date=YYYY-MM-DD 顯示指定日(舊集數入口=當天日報 email 連結) ── */
 const MEDIA = "https://media.marketdaily.ai";
 let episodes = null;
+let waitingEd = null;
+let pollCount = 0;
 
 function fmtDate(d) {
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
@@ -244,9 +248,19 @@ async function loadEpisodes() {
   }
   if (/^\d{4}-\d{2}-\d{2}$/.test(want)) {
     const dayEps = epsFor(want);
-    // 指定版別沒檔→退同日另一集→再退最新一集,不給空頁
     episodes = dayEps.filter(e => !wantEd || e.ed === wantEd);
-    if (!episodes.length) episodes = dayEps.length ? dayEps : latest;
+    if (!episodes.length) {
+      // 今天的指定版別還沒生成→顯示「生成中」+輪詢等它上線,不偷播另一集(早晚集嚴格分開)
+      if (want === fmtDate(new Date()) && (wantEd === "tw" || wantEd === "us") && pollCount < 80) {
+        pollCount++;
+        waitingEd = wantEd;
+        renderList();
+        setTimeout(loadEpisodes, 45000);
+        return;
+      }
+      // 過去日期真的沒那集(或輪詢逾時)才退:同日另一集→最新一集,不給空頁
+      episodes = dayEps.length ? dayEps : latest;
+    }
   } else {
     // 預設依台北時段只給一集:07-19時=台股晨間,20-06時=美股晚間;該版別全缺才退最新一集防空頁
     const tpHour = Number(new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Taipei", hour: "2-digit", hour12: false }).format(new Date())) % 24;
@@ -258,12 +272,24 @@ async function loadEpisodes() {
     }
     episodes = pref ? [pref] : latest.slice(0, 1);
   }
+  waitingEd = null;
   renderList();
 }
 function renderList() {
-  if (episodes === null) return;
   const t = i18n[LANG] || i18n.zh;
   const list = document.getElementById("list");
+  if (waitingEd) {
+    list.innerHTML = `
+    <div class="ep today">
+      <div class="ep-head">
+        <span class="ep-date">${fmtDate(new Date())}</span>
+        <span><span class="ep-tag">${waitingEd === "us" ? t.ep_tag_us : t.ep_tag_tw}</span></span>
+      </div>
+      <div class="empty">${t.generating}</div>
+    </div>`;
+    return;
+  }
+  if (episodes === null) return;
   if (!episodes.length) {
     list.innerHTML = `<div class="empty">${t.empty}</div>`;
     return;
