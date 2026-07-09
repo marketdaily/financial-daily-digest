@@ -224,6 +224,15 @@ def audit_digest(
                               "msg": f"代號 {code} 附近沒有中文公司名"})
                 break  # 抽樣一個就夠
 
+    # 11b. 台股 signal-card 的 ticker 是裸代號(如 6907)沒展開成中文公司名。
+    #      2026-07-09 事故:winrig certifi 過期 → TPEx openapi SSL 失敗被靜默吞掉 →
+    #      上櫃股名稱表全滅,主旨+卡片全部裸代號寄出。名稱展開是確定性後處理,
+    #      正常情況不可能裸 → 命中即 HIGH(retry→fallback+admin 推播)。
+    bare_tw_tickers = re.findall(r'signal-ticker"[^>]*>\s*(\d{4,6})\s*<', html)
+    if bare_tw_tickers:
+        fails.append({"check": "tw_ticker_bare_code", "severity": "high",
+                      "msg": f"台股卡片只有裸代號沒中文名:{sorted(set(bare_tw_tickers))[:5]}(名稱表可能歸零,查 TWSE/TPEx API 與 scripts/.tw_names_cache.json)"})
+
     # ───── 編造/假數據 ─────
     # 12. URL 必須是 http(s):// 開頭,不可是 example.com / xxx.com
     fake_urls = re.findall(r"https?://(?:www\.)?(example|xxx|test|placeholder|todo)\.[a-z]+", html, re.I)

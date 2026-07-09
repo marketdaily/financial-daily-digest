@@ -221,7 +221,9 @@ def _tw_stocks_via_yahoo(codes: list, twse: dict, tpex: dict) -> dict:
     out = {}
 
     def _label(c, p):
-        nm = (twse.get(c) or {}).get("name") or (tpex.get(c) or {}).get("name") or c
+        # 名稱查無時寧可留空,不可拿裸代號當名稱(會蓋掉 tw_names_all 的正確名字)
+        nm = ((twse.get(c) or {}).get("name") or (tpex.get(c) or {}).get("name")
+              or tw_name_map().get(c) or "")
         out[c] = {"name": nm, "price": p["price"], "change_pct": p["change_pct"]}
 
     ymap = {c: _yahoo_symbol(c, twse, tpex) for c in codes}
@@ -305,9 +307,16 @@ def _fetch_tpex_all() -> dict:
 _TW_NAME_CACHE: dict = {}
 _TW_NAME_CACHE_TIME: datetime = None
 
+def _tw_names_disk_path() -> str:
+    import os
+    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "scripts", ".tw_names_cache.json")
+
 def tw_name_map() -> dict:
-    """全部上市(TWSE)+上櫃(TPEx)台股 {code: 中文名},給日報把代號展開成公司名。"""
+    """全部上市(TWSE)+上櫃(TPEx)台股 {code: 中文名},給日報把代號展開成公司名。
+    官方源斷線時(如 2026-07-09 winrig certifi 過期 → TPEx SSL 失敗)沿用磁碟上
+    最後一次成功的名稱表,名字永不歸零 → 日報不會出現裸代號。"""
     global _TW_NAME_CACHE, _TW_NAME_CACHE_TIME
+    import json
     now = datetime.now()
     if _TW_NAME_CACHE and _TW_NAME_CACHE_TIME and (now - _TW_NAME_CACHE_TIME).seconds < 3600:
         return _TW_NAME_CACHE
@@ -330,6 +339,21 @@ def tw_name_map() -> dict:
                 names.setdefault(code, name)
     except Exception:
         pass
+    fetched = len(names)
+    disk = {}
+    try:
+        with open(_tw_names_disk_path(), encoding="utf-8") as f:
+            disk = json.load(f) or {}
+    except Exception:
+        pass
+    for c, n in disk.items():
+        names.setdefault(c, n)
+    if fetched and len(names) >= len(disk):
+        try:
+            with open(_tw_names_disk_path(), "w", encoding="utf-8") as f:
+                json.dump(names, f, ensure_ascii=False)
+        except Exception:
+            pass
     if names:
         _TW_NAME_CACHE = names
         _TW_NAME_CACHE_TIME = now

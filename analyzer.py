@@ -442,8 +442,11 @@ def get_personalized_subject(data: dict, us_stocks: list, tw_stocks: list, date:
                 biggest_pct = pct
                 biggest_sym = (sym, chg)
     # 主旨裡的個股:台股一律用中文名(不可露代碼)、美股用「中文 代號」
+    names_all = data.get("tw_names_all", {}) or {}
     def _subj_label(s):
-        return stock_names.label_with_code(s, tw_market.get(s, {}).get("name")) if s in tw_market else s
+        if s not in tw_market:
+            return s
+        return stock_names.label_with_code(s, tw_market.get(s, {}).get("name") or names_all.get(s))
     if weekday == 0:
         # 週一:基準是上週五收盤,主旨明寫「上週五」避免誤導
         if biggest_sym and biggest_pct >= 2:

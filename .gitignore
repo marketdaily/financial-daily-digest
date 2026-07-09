@@ -59,3 +59,4 @@ scripts/.stockname_cache.json
 cb_analyzer/.quote_cache.json
 cb_analyzer/inbox_files/
 cb_analyzer/.mail_seen.json
+scripts/.tw_names_cache.json
