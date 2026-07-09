@@ -199,7 +199,7 @@ function toggleLang() {
   renderList();
 }
 
-/* ── 集數載入:一次讀 manifest。預設只顯示最新一集;?date=YYYY-MM-DD 顯示指定日(舊集數入口=當天日報 email 連結) ── */
+/* ── 集數載入:一次讀 manifest。預設依台北時段只顯示一集(07-19時=台股晨間,20-06時=美股晚間);?date=YYYY-MM-DD 顯示指定日(舊集數入口=當天日報 email 連結) ── */
 const MEDIA = "https://media.marketdaily.ai";
 let episodes = null;
 
@@ -248,7 +248,15 @@ async function loadEpisodes() {
     episodes = dayEps.filter(e => !wantEd || e.ed === wantEd);
     if (!episodes.length) episodes = dayEps.length ? dayEps : latest;
   } else {
-    episodes = latest;
+    // 預設依台北時段只給一集:07-19時=台股晨間,20-06時=美股晚間;該版別全缺才退最新一集防空頁
+    const tpHour = Number(new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Taipei", hour: "2-digit", hour12: false }).format(new Date())) % 24;
+    const prefEd = (tpHour >= 20 || tpHour < 7) ? "us" : "tw";
+    let pref = null;
+    for (const d of days) {
+      const hit = epsFor(d).find(e => e.ed === prefEd);
+      if (hit) { pref = hit; break; }
+    }
+    episodes = pref ? [pref] : latest.slice(0, 1);
   }
   renderList();
 }
