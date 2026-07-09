@@ -385,8 +385,9 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
   .nav-back, .lang-btn { white-space: nowrap; flex-shrink: 0; font-size: 12px; padding: 6px 11px; line-height: 1.2; }
 }
 
-/* 多週期勝率(週/月/季結算) */
-.hz-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+/* 多週期勝率(隔日/週/月/季結算) */
+.hz-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 14px; }
+@media (max-width: 900px) { .hz-grid { grid-template-columns: repeat(2, 1fr); } }
 .hz-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px 16px; }
 .hz-h { font-size: 12.5px; font-weight: 800; color: rgba(255,255,255,0.85); margin-bottom: 8px; letter-spacing: 0.3px; }
 .hz-row { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 4px 0; font-size: 13px; }
@@ -435,12 +436,12 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
   <div class="stats-hero">
     <div class="stat-box">
       <span class="num emerald" id="stat-risk">—</span>
-      <div class="lbl" data-i18n="s2">看空勝率</div>
+      <div class="lbl" data-i18n="s2">看空勝率(隔日)</div>
       <div class="sub-rate combined" id="stat-risk-combined"></div>
     </div>
     <div class="stat-box">
       <span class="num indigo" id="stat-direction">—</span>
-      <div class="lbl" data-i18n="s1">看多勝率</div>
+      <div class="lbl" data-i18n="s1">看多勝率(隔日)</div>
       <div class="sub-rate combined" id="stat-direction-combined"></div>
     </div>
     <div class="stat-box">
@@ -459,8 +460,13 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
   <!-- Multi-horizon win rates:週結(5交易日)/月結(21)/季結(63) -->
   <div class="method-card">
-    <div class="ttl" data-i18n="hz_ttl">同一批判斷,三種結算週期</div>
+    <div class="ttl" data-i18n="hz_ttl">同一批判斷,四種結算週期</div>
     <div class="hz-grid">
+      <div class="hz-box">
+        <div class="hz-h" data-i18n="hz_d">⚡ 隔日 · 次一交易日</div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bull">看多</span><span class="hz-val" id="hz-d-a">—</span></div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bear">看空</span><span class="hz-val" id="hz-d-c">—</span></div>
+      </div>
       <div class="hz-box">
         <div class="hz-h" data-i18n="hz_w">📅 週結 · 5 個交易日</div>
         <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bull">看多</span><span class="hz-val" id="hz-w-a">—</span></div>
@@ -477,7 +483,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
         <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bear">看空</span><span class="hz-val" id="hz-q-c">—</span></div>
       </div>
     </div>
-    <div class="hz-note" data-i18n="hz_note">同一批判斷分別在 5／21／63 個交易日後用收盤價結算;月結與季結的緩衝門檻按時間放大(續抱不跌破 -6%／-10%,觀望 &lt;4%／&lt;7%)。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。</div>
+    <div class="hz-note" data-i18n="hz_note">同一批判斷分別在次一交易日／5／21／63 個交易日後用收盤價結算;緩衝門檻按時間放大(續抱不跌破 -2%／-3%／-6%／-10%,觀望 &lt;1%／&lt;2%／&lt;4%／&lt;7%)。頭條用隔日(日報每天覆寫,量當天判斷),持有更久的視角也全公開。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。</div>
   </div>
 
   <!-- Method explainer -->
@@ -486,13 +492,13 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     <div class="method-grid">
       <div class="method-box">
         <h3 data-i18n="ma_h">🟢 看多勝率</h3>
-        <p data-i18n="ma_p">日報判斷「可以買」→ 5 個交易日後收盤往上走 = 贏;「繼續抱」→ 5 個交易日內沒有跌破 -3% = 贏(續抱後上漲對持有者是好結果,故只罰下跌,2026-07-09 起;舊版把續抱後大漲也記輸,量的是「預測不動」不是建議品質)。</p>
-        <code data-i18n="ma_code">例:「台積電可分批接」→ 5 個交易日後收盤高於建議日 = 贏</code>
+        <p data-i18n="ma_p">頭條=隔日結算:日報每天出新判斷,今天的判斷明天就被新一份日報取代,所以頭條量「當天判斷,隔日收盤對不對」。「可以買」→ 隔日收盤上漲 = 贏;「繼續抱」→ 隔日沒有跌破 -2% = 贏(續抱後上漲對持有者是好結果,故只罰下跌)。跟著抱更久的結果在上方 週/月/季 表,全部公開。</p>
+        <code data-i18n="ma_code">例:「台積電可分批接」→ 隔日收盤高於建議日 = 贏</code>
       </div>
       <div class="method-box">
         <h3 data-i18n="mc_h">🔴 看空勝率</h3>
-        <p data-i18n="mc_p">日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 5 個交易日後真的沒漲(漲幅 <2%)= 贏(成功避坑)。</p>
-        <code data-i18n="mc_code">例:「NVDA 短期過熱建議觀望」→ 5 個交易日後沒漲算贏</code>
+        <p data-i18n="mc_p">日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 隔日收盤真的沒漲(漲幅 <1%)= 贏(成功避坑);週/月/季結算門檻按時間放大(<2% / <4% / <7%)。</p>
+        <code data-i18n="mc_code">例:「NVDA 短期過熱建議觀望」→ 隔日沒漲算贏</code>
       </div>
     </div>
     <div style="margin-top:14px;font-size:12.5px;color:rgba(255,255,255,0.5);line-height:1.65;" data-i18n-html="method_note">
@@ -832,10 +838,18 @@ function renderRecords(filter) {
   };
   const sd = document.getElementById("stat-direction");
   const sr = document.getElementById("stat-risk");
-  sd.innerHTML = fmtRate(aw, a.length);
-  sr.innerHTML = fmtRate(cw, c.length);
-  if (a.length > 0 && a.length < MIN_N) sd.style.fontSize = "20px";
-  if (c.length > 0 && c.length < MIN_N) sr.style.fontSize = "20px";
+  // 頭條=隔日結算(全用戶聚合):日報每天出新判斷,今天的判斷明天就被覆寫,
+  // 頭條量「當天判斷隔日對錯」;持有更久的視角在下方 隔日/週/月/季 表全公開
+  const od = (typeof STATS === "object" && STATS && STATS.one_day) || null;
+  if (od && od.a_count >= MIN_N && od.c_count >= MIN_N) {
+    sd.innerHTML = fmtRate(od.a_wins, od.a_count);
+    sr.innerHTML = fmtRate(od.c_wins, od.c_count);
+  } else {
+    sd.innerHTML = fmtRate(aw, a.length);
+    sr.innerHTML = fmtRate(cw, c.length);
+    if (a.length > 0 && a.length < MIN_N) sd.style.fontSize = "20px";
+    if (c.length > 0 && c.length < MIN_N) sr.style.fontSize = "20px";
+  }
   document.getElementById("stat-total").textContent = NORMALIZED.length;
   const days = new Set(NORMALIZED.map(r => r.date)).size;
   document.getElementById("stat-days").textContent = days;
@@ -870,7 +884,7 @@ let STATS = null;
 let dataLoaded = false;
 (async () => {
   try {
-    const res = await fetch("/data/track-record.json", { cache: "no-cache" });
+    const res = await fetch("/data/track-record.json?t=" + Date.now(), { cache: "no-cache" });
     if (res.ok) {
       const data = await res.json();
       if (data && Array.isArray(data.records) && data.records.length > 0) {
@@ -893,7 +907,7 @@ let dataLoaded = false;
   if (NORMALIZED.length === 0) renderEmptyState();
 })();
 
-// 多週期勝率:週(5d)=STATS 頭條,月(21d)=STATS.monthly,季(63d)=STATS.quarterly(皆含訂閱者個人化樣本)
+// 多週期勝率:隔日(1d)=STATS.one_day,週(5d)=STATS 主欄,月(21d)=STATS.monthly,季(63d)=STATS.quarterly(皆含訂閱者個人化樣本)
 function renderHorizonStats() {
   if (!STATS || typeof STATS.a_count !== "number") return;
   const MIN_N = 20;
@@ -914,6 +928,9 @@ function renderHorizonStats() {
     ? { count: blk[k + "_count"] || 0, wins: blk[k + "_wins"] || 0, ci: blk[k + "_ci95"], pending: blk[k + "_pending"] || 0 }
     : null;
   const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  const od = STATS.one_day || null;
+  set("hz-d-a", fmt(od ? { count: od.a_count || 0, wins: od.a_wins || 0, pending: 0 } : null));
+  set("hz-d-c", fmt(od ? { count: od.c_count || 0, wins: od.c_wins || 0, pending: 0 } : null));
   set("hz-w-a", fmt({ count: STATS.a_count, wins: STATS.a_wins, ci: STATS.a_ci95, pending: 0 }));
   set("hz-w-c", fmt({ count: STATS.c_count, wins: STATS.c_wins, ci: STATS.c_ci95, pending: 0 }));
   set("hz-m-a", fmt(pick(STATS.monthly, "a")));
@@ -934,8 +951,8 @@ function renderCombinedStats() {
     if (total === 0) return "—";
     if (total < MIN_N) return zh ? `${total}/${MIN_N} 樣本累積中` : `${total}/${MIN_N} collecting`;
     return zh
-      ? `全用戶 ${((wins/total)*100).toFixed(1)}% (${wins}/${total})`
-      : `All users ${((wins/total)*100).toFixed(1)}% (${wins}/${total})`;
+      ? `週結 ${((wins/total)*100).toFixed(1)}% (${wins}/${total})`
+      : `Weekly ${((wins/total)*100).toFixed(1)}% (${wins}/${total})`;
   };
   const sdc = document.getElementById("stat-direction-combined");
   const src_ = document.getElementById("stat-risk-combined");
@@ -992,21 +1009,22 @@ const i18n = {
     badge: "Track Record · 公開戰績",
     h1: "不空談 AI 多強,讓紀錄說話",
     sub: "這頁公開過去 30 天日報點到的每一支個股、每一個方向判斷、每一次避坑示警的真實結果。錯的我們也列出來——100% 勝率才是假的。68-75% 是人類能做到的誠實上限。",
-    s1: "看多勝率", s2: "看空勝率", s3: "累計提及個股", s4: "統計天數",
+    s1: "看多勝率(隔日)", s2: "看空勝率(隔日)", s3: "累計提及個股", s4: "統計天數",
     method_ttl: "我們怎麼算勝率(沒任何模糊空間)",
     ma_h: "🟢 看多勝率",
-    ma_p: "日報判斷「可以買」→ 5 個交易日後收盤往上走 = 贏;「繼續抱」→ 5 個交易日內沒有跌破 -3% = 贏(續抱後上漲對持有者是好結果,故只罰下跌,2026-07-09 起;舊版把續抱後大漲也記輸,量的是「預測不動」不是建議品質)。",
+    ma_p: "頭條=隔日結算:日報每天出新判斷,今天的判斷明天就被新一份日報取代,所以頭條量「當天判斷,隔日收盤對不對」。「可以買」→ 隔日收盤上漲 = 贏;「繼續抱」→ 隔日沒有跌破 -2% = 贏(續抱後上漲對持有者是好結果,故只罰下跌)。跟著抱更久的結果在上方 週/月/季 表,全部公開。",
     mc_h: "🔴 看空勝率",
-    mc_p: "日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 5 個交易日後真的沒漲(漲幅 <2%)= 贏(成功避坑)。",
-    ma_code: "例:「台積電可分批接」→ 5 個交易日後收盤高於建議日 = 贏",
-    mc_code: "例:「NVDA 短期過熱建議觀望」→ 5 個交易日後沒漲算贏",
-    hz_ttl: "同一批判斷,三種結算週期",
+    mc_p: "日報示警「觀望 / 拉回 / 短期過熱 / 風險」(偏空)→ 隔日收盤真的沒漲(漲幅 <1%)= 贏(成功避坑);週/月/季結算門檻按時間放大(<2% / <4% / <7%)。",
+    ma_code: "例:「台積電可分批接」→ 隔日收盤高於建議日 = 贏",
+    mc_code: "例:「NVDA 短期過熱建議觀望」→ 隔日沒漲算贏",
+    hz_ttl: "同一批判斷,四種結算週期",
+    hz_d: "⚡ 隔日 · 次一交易日",
     hz_w: "📅 週結 · 5 個交易日",
     hz_m: "🗓️ 月結 · 21 個交易日",
     hz_q: "📊 季結 · 63 個交易日",
     hz_bull: "看多",
     hz_bear: "看空",
-    hz_note: "同一批判斷分別在 5／21／63 個交易日後用收盤價結算;月結與季結的緩衝門檻按時間放大(續抱不跌破 -6%／-10%,觀望 <4%／<7%)。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。",
+    hz_note: "同一批判斷分別在次一交易日／5／21／63 個交易日後用收盤價結算;緩衝門檻按時間放大(續抱不跌破 -2%／-3%／-6%／-10%,觀望 <1%／<2%／<4%／<7%)。頭條用隔日(日報每天覆寫,量當天判斷),持有更久的視角也全公開。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。",
     f_us: "🇺🇸 美股", f_tw: "🇹🇼 台股", f_a: "🟢 看多", f_c: "🔴 看空",
     f_win: "✅ 贏", f_loss: "❌ 輸",
     th_date: "日期", th_tic: "個股", th_call: "日報原話", th_type: "類型", th_res: "結果",
@@ -1043,21 +1061,22 @@ const i18n = {
     badge: "Track Record · Public Scorecard",
     h1: "We don't claim AI is magical. The record speaks.",
     sub: "Every stock mention from our daily digest over the past 30 days — direction calls, risk warnings, real outcomes. Losses included. 100% would be fake; 68-75% is the honest human ceiling.",
-    s1: "Direction Hit (A)", s2: "Risk Avoid Hit (C)", s3: "Stocks Mentioned", s4: "Days Tracked",
+    s1: "Direction Hit · next close", s2: "Risk Avoid · next close", s3: "Stocks Mentioned", s4: "Days Tracked",
     method_ttl: "How we score (no fuzziness)",
     ma_h: "A · Direction Hit",
-    ma_p: "Digest says \"buy\" → close 5 trading days later is higher = win. \"Keep holding\" → didn't drop more than 3% within 5 trading days = win (upside while holding is a good outcome, so only downside counts against it; since 2026-07-09).",
+    ma_p: "Headline = next-close settlement: a fresh digest supersedes each call the very next day, so the headline measures \"was today's call right at tomorrow's close\". \"Buy\" → next close higher = win. \"Keep holding\" → didn't drop more than 2% by next close = win (upside while holding is a good outcome, so only downside counts against it). Longer holding horizons (weekly/monthly/quarterly) are fully published in the table above.",
     mc_h: "C · Risk Avoidance Hit",
-    mc_p: "Digest warns \"wait / pull-back / overheated / risk\" → did stock actually retreat or sideways?",
-    ma_code: "e.g.: \"TSMC — scale in gradually\" → close 5 trading days later above the call date = win",
-    mc_code: "e.g.: \"NVDA overheated, hold off\" → didn't rise 5 trading days later = win",
-    hz_ttl: "Same calls, three settlement horizons",
+    mc_p: "Digest warns \"wait / pull-back / overheated / risk\" → next close didn't rise (gain <1%) = win (risk avoided); weekly/monthly/quarterly thresholds scale with time (<2% / <4% / <7%).",
+    ma_code: "e.g.: \"TSMC — scale in gradually\" → next close above the call date = win",
+    mc_code: "e.g.: \"NVDA overheated, hold off\" → didn't rise by next close = win",
+    hz_ttl: "Same calls, four settlement horizons",
+    hz_d: "⚡ Next day · 1 trading day",
     hz_w: "📅 Weekly · 5 trading days",
     hz_m: "🗓️ Monthly · 21 trading days",
     hz_q: "📊 Quarterly · 63 trading days",
     hz_bull: "Bullish",
     hz_bear: "Bearish",
-    hz_note: "The same calls are settled at close 5 / 21 / 63 trading days out; buffers scale with time (hold: no drop beyond -6% / -10%, wait <4% / <7%). Monthly & quarterly went live on 2026-07-07 — existing calls need to mature first, shown as \"pending\" until then.",
+    hz_note: "The same calls are settled at the next close and 5 / 21 / 63 trading days out; buffers scale with time (hold: no drop beyond -2% / -3% / -6% / -10%, wait <1% / <2% / <4% / <7%). The headline uses next-close settlement (each day's digest supersedes the last), with longer holding horizons fully published too. Monthly & quarterly went live on 2026-07-07 — existing calls need to mature first, shown as \"pending\" until then.",
     f_us: "🇺🇸 US", f_tw: "🇹🇼 TW", f_a: "📐 Direction (A)", f_c: "⚠️ Risk (C)",
     f_win: "✅ Win", f_loss: "❌ Loss",
     th_date: "Date", th_tic: "Stock", th_call: "Original Call", th_type: "Type", th_res: "Result",
