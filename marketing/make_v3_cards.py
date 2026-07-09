@@ -93,7 +93,7 @@ CARDS = [
         "tag": "AI 助手",
         "accent": EMERALD,
         "headline": "讀完早報\n還有問題?\n直接問",
-        "body": "「這則對我持股影響大嗎?」\nAI 用你的持股脈絡回答\nPremium 功能",
+        "body": "「這則對我持股影響大嗎?」\nAI 用你的持股脈絡回答\n所有用戶都能用 · 每天 30 則",
         "cta": "marketdaily.ai →",
     },
     {
