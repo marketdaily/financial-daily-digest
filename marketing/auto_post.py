@@ -152,7 +152,8 @@ def post_instagram_reel(env, video_url, caption):
     ig, tok = env["IG_USER_ID"], env["META_ACCESS_TOKEN"]
     ok, c = http(f"{GRAPH}/{ig}/media", "POST",
                  form={"media_type": "REELS", "video_url": video_url,
-                       "caption": caption, "access_token": tok})
+                       "caption": caption, "thumb_offset": "3000",
+                       "access_token": tok})
     if not ok or "id" not in c:
         return False, c
     cid, qtok = c["id"], urllib.parse.quote(tok)

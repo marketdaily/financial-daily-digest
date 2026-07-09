@@ -70,7 +70,8 @@ def verify(brief, caption, mp4):
     if not a:
         die("缺音軌")
 
-    for ts in ("3", "15", "33"):
+    # 0s=IG 預設封面幀、3s=thumb_offset 指定封面幀:太黑或太白都不准出貨(封面不能是白的)
+    for ts in ("0", "3", "15", "33"):
         r = subprocess.run(
             ["ffmpeg", "-v", "info", "-ss", ts, "-i", str(mp4), "-frames:v", "1",
              "-vf", "signalstats,metadata=print:key=lavfi.signalstats.YAVG",
@@ -78,7 +79,9 @@ def verify(brief, caption, mp4):
         m = re.search(r"YAVG=([\d.]+)", r.stderr)
         if not m or float(m.group(1)) < 8:
             die(f"{ts}s 處畫面近全黑(YAVG={m.group(1) if m else '?'})")
-    print("✓ 驗證全過(數字回對/禁用詞/規格/非黑幀)")
+        if float(m.group(1)) > 180:
+            die(f"{ts}s 處畫面近全白(YAVG={m.group(1)}),封面/畫面不可白底")
+    print("✓ 驗證全過(數字回對/禁用詞/規格/非黑幀/非白幀)")
 
 
 def upload(mp4, key):
