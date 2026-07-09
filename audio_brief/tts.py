@@ -138,24 +138,38 @@ def verify(final):
     return dur
 
 
+def _head_size(url):
+    try:
+        req = urllib.request.Request(url, method="HEAD",
+                                     headers={"User-Agent": "MarketDailyBot/1.0"})
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return int(r.headers.get("content-length", 0))
+    except Exception:
+        return -1
+
+
 def upload(final, key):
-    subprocess.run(
-        ["npx", "wrangler", "kv", "key", "put", key, "--path", str(final),
-         "--namespace-id", KV_NAMESPACE, "--remote"],
-        check=True, capture_output=True, cwd=HERE.parent)
     url = f"{MEDIA_BASE}/{key}"
     size = final.stat().st_size
+    # wrangler kv put 會在寫入已成功時偶發回非 0(2026-07-09 兩連中),
+    # 所以 rc 只當參考,成敗以 HEAD content-length 相符為準
+    for attempt in range(1, 4):
+        r = subprocess.run(
+            ["npx", "wrangler", "kv", "key", "put", key, "--path", str(final),
+             "--namespace-id", KV_NAMESPACE, "--remote"],
+            capture_output=True, text=True, cwd=HERE.parent)
+        if r.returncode == 0:
+            break
+        print(f"⚠ wrangler put rc={r.returncode} (attempt {attempt}/3): "
+              f"{(r.stderr or r.stdout).strip()[-300:]}")
+        if _head_size(url) == size:
+            break
+        time.sleep(5)
     for _ in range(6):
         time.sleep(10)
-        try:
-            req = urllib.request.Request(url, method="HEAD",
-                                         headers={"User-Agent": "MarketDailyBot/1.0"})
-            with urllib.request.urlopen(req, timeout=30) as r:
-                if int(r.headers.get("content-length", 0)) == size:
-                    print(f"✓ 上線 {url} ({size} bytes)")
-                    return url
-        except Exception:
-            pass
+        if _head_size(url) == size:
+            print(f"✓ 上線 {url} ({size} bytes)")
+            return url
     die(f"上傳後 {url} 驗不到")
 
 
