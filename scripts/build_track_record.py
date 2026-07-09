@@ -412,9 +412,11 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
             c5 = hist_dict[sorted_dates[ref_idx + 5]] if ref_idx + 5 < len(sorted_dates) else None
             c21 = hist_dict[sorted_dates[ref_idx + 21]] if ref_idx + 21 < len(sorted_dates) else None
             c63 = hist_dict[sorted_dates[ref_idx + 63]] if ref_idx + 63 < len(sorted_dates) else None
-            path = [hist_dict[dd] for dd in sorted_dates[ref_idx + 1:ref_idx + 14]]
+            path_dates = sorted_dates[ref_idx + 1:ref_idx + 14]
+            path = [hist_dict[dd] for dd in path_dates]
             out[(ticker, d)] = {"close": today, "next_close": nxt, "close_5d": c5,
-                                "close_21d": c21, "close_63d": c63, "path": path}
+                                "close_21d": c21, "close_63d": c63, "path": path,
+                                "path_dates": path_dates}
     return out
 
 
@@ -492,6 +494,7 @@ def simulate_plan(rec: dict, prices: dict) -> dict | None:
         return None
     p = prices.get((rec["ticker"], rec["date"]))
     path = (p or {}).get("path") or []
+    pdates = (p or {}).get("path_dates") or []
     if not path:
         return None
     entry = None
@@ -503,15 +506,20 @@ def simulate_plan(rec: dict, prices: dict) -> dict | None:
     if entry is None:
         # 3 天內價格沒回到買區 → 單子沒成交(這不算錯,但要統計「建議常常掛不到」)
         return {"result": "no_fill", "ret_pct": None}
+    def _d(i):
+        return pdates[i] if i < len(pdates) else None
     rest = path[entry_i + 1:entry_i + 11]
-    for c in rest:
+    for j, c in enumerate(rest):
         if c >= tgt:
-            return {"result": "win", "ret_pct": round((c - entry) / entry * 100, 2)}
+            return {"result": "win", "ret_pct": round((c - entry) / entry * 100, 2),
+                    "entry_date": _d(entry_i), "exit_date": _d(entry_i + 1 + j)}
         if c <= stp:
-            return {"result": "loss", "ret_pct": round((c - entry) / entry * 100, 2)}
+            return {"result": "loss", "ret_pct": round((c - entry) / entry * 100, 2),
+                    "entry_date": _d(entry_i), "exit_date": _d(entry_i + 1 + j)}
     if len(rest) < 10:
         return {"result": "pending", "ret_pct": None}
-    return {"result": "expired", "ret_pct": round((rest[-1] - entry) / entry * 100, 2)}
+    return {"result": "expired", "ret_pct": round((rest[-1] - entry) / entry * 100, 2),
+            "entry_date": _d(entry_i), "exit_date": _d(entry_i + len(rest))}
 
 
 def fetch_spx_regime() -> dict[str, str]:
@@ -1001,6 +1009,16 @@ def main() -> int:
             }
             for d in sorted({s["date"] for s in sims})
         ],
+        # 逐筆已結束模擬單(組合層級資金分配模擬用):c=建議日,e=進場日,x=出場日,ret=報酬%。
+        # 無個股/用戶資訊。admin 後台據此做「單筆固定比例+現金池佔用」的真實跟單模擬。
+        "trades": sorted(
+            [
+                {"c": s["date"], "e": s["entry_date"], "x": s["exit_date"], "ret": s["ret_pct"]}
+                for s in closed
+                if s.get("ret_pct") is not None and s.get("entry_date") and s.get("exit_date")
+            ],
+            key=lambda t: (t["e"], t["x"]),
+        ),
     }
 
     # 匿名化逐筆帳本(修5):只有個人化 token 資料時才有內容;沒 INTERNAL_TOKEN 時 personal_records
