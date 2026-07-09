@@ -517,7 +517,7 @@ def simulate_plan(rec: dict, prices: dict) -> dict | None:
             return {"result": "loss", "ret_pct": round((c - entry) / entry * 100, 2),
                     "entry_date": _d(entry_i), "exit_date": _d(entry_i + 1 + j)}
     if len(rest) < 10:
-        return {"result": "pending", "ret_pct": None}
+        return {"result": "pending", "ret_pct": None, "entry_date": _d(entry_i)}
     return {"result": "expired", "ret_pct": round((rest[-1] - entry) / entry * 100, 2),
             "entry_date": _d(entry_i), "exit_date": _d(entry_i + len(rest))}
 
@@ -982,6 +982,11 @@ def main() -> int:
         s = simulate_plan(r, prices)
         if s:
             s["date"] = r["date"]
+            # 內部明細用(絕不寫入公開 JSON):個股+用戶 token,由 worker 端 token→email 歸戶
+            s["_ticker"] = r.get("ticker")
+            s["_name"] = r.get("name")
+            s["_market"] = r.get("market")
+            s["_tok"] = r.get("_user_token") or ""
             sims.append(s)
     sim_win = [s for s in sims if s["result"] == "win"]
     sim_loss = [s for s in sims if s["result"] == "loss"]
@@ -1112,6 +1117,22 @@ def main() -> int:
         json.dumps({"stats": stats, "records": judged_public}, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+    # 內部逐筆明細(含個股+用戶token):寫本地檔,由 winrig 排程 POST 到 worker
+    # /internal/plan-trades 歸戶進 KV,admin 後台認證後才看得到。
+    # 絕不進公開 JSON、絕不 commit(.gitignore 已擋)。
+    internal_trades = [
+        {"c": s["date"], "t": s.get("_ticker"), "name": s.get("_name"),
+         "m": s.get("_market"), "e": s.get("entry_date"), "x": s.get("exit_date"),
+         "ret": s.get("ret_pct"), "result": s["result"], "tok": s.get("_tok") or ""}
+        for s in sims if s["result"] != "no_fill"
+    ]
+    internal_file = ROOT / "scripts" / "plan_sim_trades_internal.json"
+    internal_file.write_text(
+        json.dumps({"generated_at": stats["generated_at"], "trades": internal_trades},
+                   ensure_ascii=False),
+        encoding="utf-8",
+    )
+    print(f"[write] {internal_file} ({len(internal_trades)} trades, internal only)")
     pub = stats["public_only"]
     print(
         f"[write] {OUT_FILE}\n"

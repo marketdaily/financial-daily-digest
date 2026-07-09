@@ -395,16 +395,20 @@ def get_user_preferences(email: str) -> dict:
     return {"us_stocks": [], "tw_stocks": [], "plan": "free", "digest_depth": "standard", "positions": {}, "_fetch_failed": True, "_status": last_status}
 
 
-def save_hosted_digest(html: str, date: str = "") -> str:
+def save_hosted_digest(html: str, date: str = "", email: str = "") -> str:
     """把完整日報 HTML 上傳到 Worker KV，回傳可分享的網頁連結；失敗回 None。
     date 若有值會同步寫進 digest_idx:{date}:{token},供 track-record builder 列舉所有
-    當日個人化日報、算進跨用戶總勝率。"""
+    當日個人化日報、算進跨用戶總勝率。
+    email 若有值,worker 會寫 digest_email:{token} 對應,供 admin 後台把模擬跟單歸戶
+    (只存 KV、admin 認證才讀得到,不影響日報內容與寄送)。"""
     import requests
     token = secrets.token_urlsafe(12)
     try:
         payload = {"token": token, "html": html}
         if date:
             payload["date"] = date
+        if email:
+            payload["email"] = email
         res = requests.post(
             f"{WORKER_URL}/save-digest",
             json=payload,
@@ -654,7 +658,7 @@ def _generate_user_email(data, email, gen_us, gen_tw, depth, is_premium, picks_m
             if picks_mode:
                 full_inner = picks_banner + _sanitize_picks_wording(full_inner)
             # 完整版（含全部持倉）上傳網頁
-            web_url = save_hosted_digest(build_email_html(data["date"], full_inner), data["date"]) or default_web_url
+            web_url = save_hosted_digest(build_email_html(data["date"], full_inner), data["date"], email=email) or default_web_url
             # email 版：持倉超過上限時縮減，避免被 Gmail 截斷
             if total > DIGEST_EMAIL_MAX_HOLDINGS:
                 time.sleep(5)

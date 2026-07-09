@@ -1531,7 +1531,51 @@ export default {
         // 同步寫索引,TTL 同 digest 本體
         await env.USER_PREFS.put(`digest_idx:${date}:${token}`, "1", { expirationTtl: 86400 * 45 });
       }
+      // 可選 email → token 歸戶對應(供 admin 後台把模擬跟單明細對到用戶;只有 admin 認證端點會讀)
+      const digestEmail = String(body.email || "").trim().toLowerCase();
+      if (digestEmail && /^[^@\s]{1,64}@[^@\s]{1,255}\.[^@\s]{2,}$/.test(digestEmail)) {
+        await env.USER_PREFS.put(`digest_email:${token}`, digestEmail, { expirationTtl: 86400 * 45 });
+      }
       return json({ ok: true, url: `${url.origin}/digest/${token}`, token });
+    }
+
+    // 內部用:track-record builder 上傳模擬跟單逐筆明細(含個股+用戶token)。
+    // 寫入時把 token→email 歸戶(digest_email:{tok}),存 KV plan_trades:v1;
+    // token 不落地,只有 /admin/plan-trades(admin 認證)讀得到。
+    // 認證:Bearer header 比對 env.INTERNAL_TOKEN
+    if (url.pathname === "/internal/plan-trades" && request.method === "POST") {
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      const trades = Array.isArray(body.trades) ? body.trades.slice(0, 5000) : null;
+      if (!trades) return json({ error: "no_trades" }, 400);
+      const tokEmail = {};
+      let lookups = 0;
+      for (const t of trades) {
+        const tok = String(t.tok || "");
+        // 上限 500 次 KV 查找防 subrequest 爆掉;舊 token(>45d TTL 過期)本來就查不到
+        if (tok && !(tok in tokEmail) && lookups < 500) {
+          tokEmail[tok] = await env.USER_PREFS.get(`digest_email:${tok}`);
+          lookups++;
+        }
+      }
+      const out = trades.map((t) => {
+        const { tok, ...rest } = t;
+        return { ...rest, u: tok ? (tokEmail[String(tok)] || null) : "public" };
+      });
+      await env.USER_PREFS.put("plan_trades:v1", JSON.stringify({
+        updated_at: new Date().toISOString(), trades: out,
+      }));
+      return json({ ok: true, n: out.length, mapped: Object.values(tokEmail).filter(Boolean).length });
+    }
+
+    // Admin:模擬跟單逐筆明細(含個股+歸戶 email)——只有 admin 認證看得到
+    if (url.pathname === "/admin/plan-trades" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      const raw = await env.USER_PREFS.get("plan_trades:v1");
+      return json(raw ? JSON.parse(raw) : { updated_at: null, trades: [] });
     }
 
     // 內部用:推 LINE 訊息給 admin(供 digest pipeline、audit 失分通知用)

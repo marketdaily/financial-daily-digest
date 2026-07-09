@@ -737,6 +737,10 @@ body {
         <div class="card mb-16">
           <div id="eq-chart" style="position:relative;min-height:280px;"></div>
         </div>
+        <div class="card mb-16">
+          <div style="font-size:13px;font-weight:800;margin-bottom:10px;">逐筆明細(含個股·admin 限定)</div>
+          <div id="eq-trades" style="font-size:13px;color:var(--text2);">載入中…</div>
+        </div>
         <div class="card">
           <div style="font-size:12.5px;color:var(--text2);line-height:1.7;">
             <strong style="color:var(--text);">模型假設(誠實條款):</strong>
@@ -1215,6 +1219,7 @@ function nav(id, btn) {
 
 // ── 模擬跟單淨值(內部指標) ──
 let EQ_JSON = null;
+let EQ_TRADES = null;   // /admin/plan-trades:逐筆明細(含個股+歸戶email,admin 認證)
 async function renderEquity() {
   const el = document.getElementById("eq-chart");
   try {
@@ -1226,6 +1231,43 @@ async function renderEquity() {
   } catch (e) {
     el.innerHTML = '<div style="padding:60px 20px;text-align:center;color:var(--text2);font-size:13px;">track-record.json 載入失敗:' + e + '</div>';
   }
+  loadEqTrades();
+}
+async function loadEqTrades() {
+  const el = document.getElementById("eq-trades");
+  try {
+    if (!EQ_TRADES) EQ_TRADES = (await api("/admin/plan-trades")).trades || [];
+    renderEqTrades();
+  } catch (e) {
+    el.innerHTML = "個股明細載入失敗(" + (e.status || e) + ")——需 worker /admin/plan-trades 有資料";
+  }
+}
+function eqUserLabel(u) {
+  if (u === "public") return "公版";
+  if (!u) return "未歸戶(歷史)";
+  return u;
+}
+function renderEqTrades() {
+  const el = document.getElementById("eq-trades");
+  if (!EQ_TRADES || !EQ_TRADES.length) { el.innerHTML = "尚無明細(等 winrig 下次上傳)"; return; }
+  const stockCell = (t) => `<span style="font-weight:700;color:var(--text);">${esc(t.name || t.t || "?")}</span> <span class="mono" style="opacity:.55;font-size:11px;">${esc(t.t || "")}${t.m === "tw" ? "·台" : t.m === "us" ? "·美" : ""}</span>`;
+  const open = EQ_TRADES.filter(t => t.result === "pending").sort((a, b) => (b.e || "").localeCompare(a.e || ""));
+  const done = EQ_TRADES.filter(t => t.result !== "pending").sort((a, b) => (b.x || "").localeCompare(a.x || ""));
+  const badge = { win: ["badge-green", "達標"], loss: ["badge-red", "停損"], expired: ["badge-gray", "期滿"] };
+  let html = `<div style="font-weight:700;color:var(--text);margin-bottom:6px;">持倉中(${open.length})</div>`;
+  html += open.length
+    ? `<table class="dtable" style="margin-bottom:16px;"><thead><tr><th>個股</th><th>用戶</th><th>建議日</th><th>進場日</th></tr></thead><tbody>` +
+      open.map(t => `<tr><td>${stockCell(t)}</td><td class="mono" style="font-size:11.5px;">${esc(eqUserLabel(t.u))}</td><td>${esc(t.c || "")}</td><td>${esc(t.e || "")}</td></tr>`).join("") + `</tbody></table>`
+    : `<div style="margin-bottom:16px;">無持倉</div>`;
+  html += `<div style="font-weight:700;color:var(--text);margin-bottom:6px;">已結束(${done.length})</div>`;
+  html += `<table class="dtable"><thead><tr><th>結果</th><th>個股</th><th>用戶</th><th>進場→出場</th><th style="text-align:right;">報酬</th></tr></thead><tbody>` +
+    done.map(t => {
+      const [cls, lbl] = badge[t.result] || ["badge-gray", t.result];
+      const r = t.ret == null ? "—" : (t.ret >= 0 ? "+" : "") + t.ret.toFixed(2) + "%";
+      const rc = t.ret == null ? "" : t.ret >= 0 ? "color:var(--green);" : "color:var(--red);";
+      return `<tr><td><span class="badge ${cls}">${lbl}</span></td><td>${stockCell(t)}</td><td class="mono" style="font-size:11.5px;">${esc(eqUserLabel(t.u))}</td><td class="mono" style="font-size:11.5px;">${esc(t.e || "?")} → ${esc(t.x || "?")}</td><td style="text-align:right;font-weight:700;${rc}">${r}</td></tr>`;
+    }).join("") + `</tbody></table>`;
+  el.innerHTML = html;
 }
 function drawEquity() {
   const el = document.getElementById("eq-chart");
@@ -1794,13 +1836,49 @@ async function openUserDetail(email) {
       ${row("美股自選", us.length?esc(us.join("、")):"—")}
       ${row("台股自選", tw.length?esc(tw.join("、")):"—")}
       ${row("偏好更新", d.prefs?.updated_at?new Date(d.prefs.updated_at).toLocaleDateString("zh-TW"):"—")}
+      <div id="ud-sim" style="margin-top:16px;"></div>
       <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px">
         <button class="btn btn-primary btn-sm" onclick="copyDigestLink()">📋 複製今日日報連結給此用戶</button>
         <div style="font-size:11px;opacity:.5;line-height:1.5">「重寄」採複製連結而非自動寄信 —— 遵守「日報只由排程自動寄」硬規則。複製後可自行貼給用戶。連結為 ${today} 公版日報。</div>
       </div>`;
+    renderUserSim(email);
   } catch (e) {
     body.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>${e.status===400?"Email 格式錯誤":"無法載入用戶詳情"}</div>`;
   }
+}
+// 用戶抽屜:該用戶的模擬跟單(照他個人化日報卡片價位)
+async function renderUserSim(email) {
+  const box = document.getElementById("ud-sim");
+  if (!box) return;
+  box.innerHTML = `<div style="font-size:12px;opacity:.5;">持倉模擬載入中…</div>`;
+  try {
+    if (!EQ_TRADES) EQ_TRADES = (await api("/admin/plan-trades")).trades || [];
+  } catch (e) {
+    box.innerHTML = `<div style="font-size:12px;opacity:.5;">持倉模擬載入失敗</div>`;
+    return;
+  }
+  const mine = EQ_TRADES.filter(t => t.u === email);
+  const ttl = `<div style="font-size:12.5px;font-weight:800;margin-bottom:8px;">📈 模擬跟單(此用戶日報卡片)</div>`;
+  if (!mine.length) {
+    box.innerHTML = ttl + `<div style="font-size:12px;opacity:.55;line-height:1.6;">尚無歸戶紀錄——email 歸戶從 2026-07-10 起的日報開始累積(歷史單無對應),之後每天自動出現。</div>`;
+    return;
+  }
+  const open = mine.filter(t => t.result === "pending");
+  const done = mine.filter(t => t.result !== "pending" && t.ret != null);
+  const wins = done.filter(t => t.ret > 0).length;
+  const avg = done.length ? done.reduce((a, t) => a + t.ret, 0) / done.length : 0;
+  const rowT = (t) => {
+    const r = t.ret == null ? "持倉中" : (t.ret >= 0 ? "+" : "") + t.ret.toFixed(2) + "%";
+    const rc = t.ret == null ? "color:var(--banana);" : t.ret >= 0 ? "color:var(--green);" : "color:var(--red);";
+    return `<div style="display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px;">
+      <span style="font-weight:600;">${esc(t.name || t.t || "?")} <span class="mono" style="opacity:.5;font-size:10.5px;">${esc(t.t || "")}</span></span>
+      <span class="mono" style="opacity:.55;font-size:10.5px;">${esc(t.e || t.c || "")}</span>
+      <span style="font-weight:700;${rc}">${r}</span></div>`;
+  };
+  box.innerHTML = ttl +
+    `<div style="font-size:11.5px;opacity:.6;margin-bottom:8px;">已結束 ${done.length} 筆·賺 ${wins} 賠 ${done.length - wins}·平均 ${(avg >= 0 ? "+" : "") + avg.toFixed(2)}%/筆</div>` +
+    (open.length ? `<div style="font-size:11px;font-weight:700;opacity:.7;margin:6px 0 2px;">持倉中(${open.length})</div>` + open.map(rowT).join("") : "") +
+    (done.length ? `<div style="font-size:11px;font-weight:700;opacity:.7;margin:10px 0 2px;">已結束</div>` + done.slice(0, 15).map(rowT).join("") : "");
 }
 function closeUserDetail() {
   document.getElementById("ud-scrim").style.display = "none";
