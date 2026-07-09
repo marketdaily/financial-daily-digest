@@ -318,13 +318,7 @@ async function loadAdminStats() {
     if (!res.ok) return;
     const data = await res.json();
     const total = data.totalSubscribers ?? data.total ?? 0;
-    const subs = data.subscribers || [];
-    let paid = 0, free = 0;
-    for (const s of subs) { if (s.plan === "premium") paid++; else free++; }
-    // 0 是合法數字(例:全員付費時免費=0),不可被 || 當 falsy 吞成「—」
     document.getElementById("admin-total").textContent = Number.isFinite(total) ? total : "—";
-    document.getElementById("admin-free").textContent = Number.isFinite(free) ? free : "—";
-    document.getElementById("admin-paid").textContent = Number.isFinite(paid) ? paid : "—";
   } catch {}
 }
 

@@ -575,9 +575,6 @@ body {
 
       <div class="sb-section">
         <div class="sb-section-label">商業</div>
-        <button class="sb-item" onclick="nav('revenue',this)">
-          <span class="sb-icon">$</span> 營收 MRR
-        </button>
         <button class="sb-item" onclick="nav('email',this)">
           <span class="sb-icon">✉</span> 寄信成效
         </button>
@@ -653,18 +650,12 @@ body {
         </div>
 
         <!-- KPI tiles -->
-        <div class="grid-4 mb-16">
+        <div class="grid-3 mb-16">
           <div class="stat-tile blue reveal reveal-d1">
             <div class="stat-top"><span class="stat-ic">◻</span></div>
             <div class="stat-value" id="kpi-subs">—</div>
             <div class="stat-label">訂閱總數</div>
             <div class="stat-sub" id="kpi-subs-sub">Brevo 聯絡人列表</div>
-          </div>
-          <div class="stat-tile banana reveal reveal-d2">
-            <div class="stat-top"><span class="stat-ic">★</span></div>
-            <div class="stat-value" id="kpi-paid">—</div>
-            <div class="stat-label">付費會員</div>
-            <div class="stat-sub" id="kpi-paid-sub">Premium 方案</div>
           </div>
           <div class="stat-tile indigo reveal reveal-d3">
             <div class="stat-top"><span class="stat-ic">◔</span></div>
@@ -680,18 +671,9 @@ body {
           </div>
         </div>
 
-        <div class="grid-2 mb-16">
-          <!-- Plan distribution -->
-          <div class="card reveal">
-            <div class="card-title"><span class="dot"></span>方案分佈 <span class="right" id="plan-total"></span></div>
-            <div class="segbar" id="plan-segbar"><span class="seg-free" style="width:100%"></span></div>
-            <div class="seg-legend" id="plan-legend">
-              <div class="seg-leg"><span class="sw seg-premium"></span>Premium <b id="leg-premium">—</b></div>
-              <div class="seg-leg"><span class="sw seg-free"></span>免費 <b id="leg-free">—</b></div>
-            </div>
-          </div>
+        <div class="mb-16">
           <!-- System health -->
-          <div class="card reveal reveal-d1">
+          <div class="card reveal">
             <div class="card-title"><span class="dot"></span>系統健康 <span class="right" id="health-overall">檢查中…</span></div>
             <div id="health-rows"></div>
           </div>
@@ -796,47 +778,6 @@ body {
         </div>
       </div>
 
-      <!-- ── Revenue ── -->
-      <div id="sec-revenue" class="section">
-        <div class="section-header">
-          <div>
-            <div class="section-title">營收 MRR</div>
-            <div class="section-desc">即時取自 Stripe 訂閱 —— 月經常性收入、年化、各狀態訂閱數</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="loadRevenue(true)">↻ 重新整理</button>
-        </div>
-        <div class="grid-4 mb-16">
-          <div class="stat-tile green">
-            <div class="stat-top"><span class="stat-ic">$</span></div>
-            <div class="stat-value" id="rev-mrr">—</div>
-            <div class="stat-label">MRR 月經常收入</div>
-            <div class="stat-sub" id="rev-cur">—</div>
-          </div>
-          <div class="stat-tile banana">
-            <div class="stat-top"><span class="stat-ic">$</span></div>
-            <div class="stat-value" id="rev-arr">—</div>
-            <div class="stat-label">ARR 年化</div>
-            <div class="stat-sub">MRR × 12</div>
-          </div>
-          <div class="stat-tile blue">
-            <div class="stat-top"><span class="stat-ic">★</span></div>
-            <div class="stat-value" id="rev-active">—</div>
-            <div class="stat-label">有效訂閱</div>
-            <div class="stat-sub" id="rev-trial">—</div>
-          </div>
-          <div class="stat-tile indigo">
-            <div class="stat-top"><span class="stat-ic">◔</span></div>
-            <div class="stat-value" id="rev-new">—</div>
-            <div class="stat-label">本月新訂閱</div>
-            <div class="stat-sub" id="rev-churn">—</div>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title"><span class="dot"></span>訂閱狀態分佈</div>
-          <div id="rev-breakdown"><div class="empty-state">載入中…</div></div>
-        </div>
-      </div>
-
       <!-- ── Email deliverability ── -->
       <div id="sec-email" class="section">
         <div class="section-header">
@@ -897,7 +838,7 @@ body {
         <div class="section-header">
           <div>
             <div class="section-title">訂閱者管理</div>
-            <div class="section-desc">調整方案：先選好下拉，再按「套用」才會寫入 KV（避免誤觸）</div>
+            <div class="section-desc">全站免費開放（2026-07-09 起）—— 名單即 Brevo 訂閱列表,點 email 看用戶詳情</div>
           </div>
           <button class="btn btn-ghost btn-sm" onclick="exportSubsCSV()">⬇ 匯出 CSV</button>
         </div>
@@ -912,11 +853,6 @@ body {
             <div class="search-wrap">
               <span class="search-icon">⌕</span>
               <input class="search-input" id="sub-search" placeholder="搜尋 email…" oninput="renderSubs()" aria-label="搜尋訂閱者">
-            </div>
-            <div class="chips" id="sub-chips">
-              <button class="chip active" data-plan="all" onclick="setSubFilter('all',this)">全部 <span class="ct" id="ct-all">0</span></button>
-              <button class="chip" data-plan="premium" onclick="setSubFilter('premium',this)">Premium <span class="ct" id="ct-premium">0</span></button>
-              <button class="chip" data-plan="free" onclick="setSubFilter('free',this)">免費 <span class="ct" id="ct-free">0</span></button>
             </div>
           </div>
         </div>
@@ -1025,15 +961,6 @@ body {
 
         <div class="gap-16">
           <div class="card">
-            <div class="card-title"><span class="dot"></span>同步 Brevo 方案屬性</div>
-            <div class="settings-row" style="border:none;padding:0">
-              <div><div class="settings-label">把 KV 內所有 plan:* 推到 Brevo</div><div class="settings-desc" style="font-size:12px;color:var(--text2);margin-top:3px">修補手動改 KV 後 Brevo 屬性沒跟上的情況（不寄信，只更新 contact 屬性）</div></div>
-              <button class="btn btn-primary btn-sm" onclick="syncBrevo(this)">▶ 執行同步</button>
-            </div>
-            <div id="sync-result" style="margin-top:12px;font-size:12.5px;color:var(--text2)"></div>
-          </div>
-
-          <div class="card">
             <div class="card-title"><span class="dot"></span>生命週期信測試</div>
             <div class="inline-add" style="margin-top:0">
               <input class="inline-input" id="lc-email" placeholder="收件 email（測試用，建議寄給自己）" aria-label="測試收件 email">
@@ -1111,7 +1038,6 @@ let cfg = {
   ]
 };
 let SUBS = [];         // [{email, plan, since}]
-let SUB_FILTER = "all";
 let ANALYTICS = null;  // {days, totals, recent}
 let RX_ITEMS = [];
 
@@ -1205,15 +1131,14 @@ function closeSidebar(){ document.getElementById("sidebar").classList.remove("op
 const SECTION_TITLES = {
   overview:    ["總覽","全平台關鍵指標監控"],
   ops:         ["營運監控","日報產生數 / 排程狀態 / 系統健康"],
-  revenue:     ["營收 MRR","Stripe 訂閱月經常收入"],
   email:       ["寄信成效","Brevo 送達 / 開信 / 退信"],
   audit:       ["稽核記錄","管理員操作軌跡"],
   analytics:   ["數據分析","30 日 UTM 歸因分析"],
-  subscribers: ["訂閱者","Brevo 訂閱列表與方案管理"],
+  subscribers: ["訂閱者","Brevo 訂閱列表"],
   reactive:    ["內容審核","Hot Take 發佈佇列"],
   news:        ["新聞源管理","RSS Feeds 與域名白名單"],
   settings:    ["系統設定","API 狀態與全域設定"],
-  tools:       ["維運工具","Brevo 同步 / 信件測試 / 資料清理"],
+  tools:       ["維運工具","信件測試 / 資料清理"],
 };
 
 function nav(id, btn) {
@@ -1230,7 +1155,6 @@ function nav(id, btn) {
   if (id === "analytics") renderAnalytics();
   if (id === "reactive") renderReactive();
   if (id === "ops") loadOps();
-  if (id === "revenue") loadRevenue();
   if (id === "email") loadEmailStats();
   if (id === "audit") loadAudit();
 }
@@ -1339,7 +1263,6 @@ async function loadSubscribers() {
     SUBS = (d.subscribers || []).map(s => ({ email: s.email || "", plan: (s.plan || "free").toLowerCase(), since: s.since || null }));
     const total = d.totalSubscribers != null ? d.totalSubscribers : SUBS.length;
     document.getElementById("kpi-subs").textContent = total.toLocaleString();
-    renderPlanDist();
     renderSubs();
     const badge = document.getElementById("badge-subs");
     badge.textContent = total; badge.classList.add("show");
@@ -1350,58 +1273,20 @@ async function loadSubscribers() {
   }
 }
 
-function planCounts() {
-  const c = { premium: 0, free: 0 };
-  SUBS.forEach(s => { c[s.plan] != null ? c[s.plan]++ : c.free++; });
-  return c;
-}
-
-function renderPlanDist() {
-  const c = planCounts(), t = SUBS.length || 1;
-  const pct = n => (n / t * 100).toFixed(1) + "%";
-  document.getElementById("plan-segbar").innerHTML =
-    `<span class="seg-premium" style="width:${pct(c.premium)}"></span>` +
-    `<span class="seg-free" style="width:${pct(c.free)}"></span>`;
-  document.getElementById("leg-premium").textContent = c.premium;
-  document.getElementById("leg-free").textContent = c.free;
-  document.getElementById("plan-total").textContent = SUBS.length + " 位（取樣）";
-  document.getElementById("kpi-paid").textContent = c.premium.toLocaleString();
-  document.getElementById("kpi-paid-sub").textContent = `Premium ${c.premium}`;
-  // chips
-  document.getElementById("ct-all").textContent = SUBS.length;
-  document.getElementById("ct-premium").textContent = c.premium;
-  document.getElementById("ct-free").textContent = c.free;
-}
-
-function setSubFilter(p, btn) {
-  SUB_FILTER = p;
-  document.querySelectorAll("#sub-chips .chip").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  renderSubs();
-}
-
 function renderSubs() {
   const el = document.getElementById("subs-content");
   if (!SUBS.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">📭</div>尚無訂閱者資料</div>`; return; }
   const q = (document.getElementById("sub-search")?.value || "").trim().toLowerCase();
-  let rows = SUBS.filter(s => SUB_FILTER === "all" || s.plan === SUB_FILTER);
+  let rows = SUBS;
   if (q) rows = rows.filter(s => s.email.toLowerCase().includes(q));
   if (!rows.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">🔍</div>沒有符合的訂閱者</div>`; return; }
-  const planLabel = { premium: "Premium", free: "免費" };
-  const opt = (cur, v, label) => `<option value="${v}"${cur === v ? " selected" : ""}>${label}</option>`;
   el.innerHTML = `<table class="dtable"><thead><tr>
-      <th>訂閱者</th><th>加入時間</th><th>方案</th><th></th></tr></thead><tbody>` +
+      <th>訂閱者</th><th>加入時間</th></tr></thead><tbody>` +
     rows.map(s => {
       const email = esc(s.email);
       return `<tr>
         <td><div style="display:flex;align-items:center;gap:10px"><div class="sub-av">${esc((s.email||"?")[0].toUpperCase())}</div><span class="mono" style="cursor:pointer;border-bottom:1px dotted rgba(255,255,255,.3)" onclick="openUserDetail('${email}')" title="查看詳情">${email}</span></div></td>
         <td>${s.since ? new Date(s.since).toLocaleDateString("zh-TW") : "—"}</td>
-        <td>
-          <select class="plan-select" data-email="${email}" data-prev="${s.plan}" onchange="stagePlan(this)" aria-label="方案">
-            ${opt(s.plan,"free","免費")}${opt(s.plan,"premium","Premium")}
-          </select>
-        </td>
-        <td style="text-align:right"><button class="plan-apply" onclick="applyPlan(this)" disabled>套用</button></td>
       </tr>`;
     }).join("") + `</tbody></table>`;
 }
@@ -1416,37 +1301,6 @@ function exportSubsCSV() {
   a.download = `marketdaily-subscribers-${new Date().toISOString().slice(0,10)}.csv`;
   a.click(); URL.revokeObjectURL(a.href);
   toast(`已匯出 ${SUBS.length} 筆 CSV ✓`);
-}
-
-function stagePlan(sel) {
-  const btn = sel.closest("tr").querySelector(".plan-apply");
-  if (!btn) return;
-  const changed = sel.value !== sel.dataset.prev;
-  btn.disabled = !changed;
-  btn.classList.toggle("ready", changed);
-  sel.classList.remove("ok", "bad");
-}
-
-async function applyPlan(btn) {
-  const sel = btn.closest("tr").querySelector(".plan-select");
-  if (!sel) return;
-  const target = sel.dataset.email, plan = sel.value, prev = sel.dataset.prev || plan;
-  if (!target || plan === prev) return;
-  btn.disabled = true; sel.disabled = true; btn.textContent = "…"; sel.classList.remove("ok","bad");
-  try {
-    const d = await api("/admin/set-plan", { target, plan });
-    if (d.ok) {
-      sel.dataset.prev = plan; sel.classList.add("ok"); btn.classList.remove("ready"); btn.textContent = "已套用";
-      const sub = SUBS.find(s => s.email === target); if (sub) sub.plan = plan;
-      renderPlanDist();
-      setTimeout(() => { btn.textContent = "套用"; }, 1600);
-    } else throw new Error("fail");
-  } catch {
-    sel.classList.add("bad"); btn.textContent = "失敗"; btn.disabled = false;
-    setTimeout(() => { btn.textContent = "套用"; }, 1600);
-  }
-  sel.disabled = false;
-  setTimeout(() => sel.classList.remove("ok","bad"), 1600);
 }
 
 // ── Analytics ──
@@ -1697,28 +1551,6 @@ function breakdownRows(pairs) {
   return `<table class="dtable"><tbody>` + pairs.map(([k,v])=>`<tr><td>${esc(k)}</td><td style="text-align:right"><b>${v??0}</b></td></tr>`).join("") + `</tbody></table>`;
 }
 
-// ── Revenue (Stripe MRR) ──
-async function loadRevenue(force) {
-  const set = (id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
-  try {
-    const d = await api("/admin/revenue");
-    if (d.error) throw Object.assign(new Error(d.error), {code:d.error});
-    const cur = d.currency || "TWD";
-    const fmt = n => (cur==="TWD"?"NT$":cur+" ") + (n||0).toLocaleString();
-    set("rev-mrr", fmt(d.mrr)); set("rev-cur", cur + " · 月");
-    set("rev-arr", fmt(d.arr));
-    set("rev-active", d.active ?? "—"); set("rev-trial", (d.trialing?`+${d.trialing} 試用`:"付費中"));
-    set("rev-new", d.newThisMonth ?? "—"); set("rev-churn", (d.canceled?`${d.canceled} 累計取消`:"—"));
-    document.getElementById("rev-breakdown").innerHTML = breakdownRows([
-      ["有效訂閱 active", d.active], ["試用中 trialing", d.trialing],
-      ["逾期 past_due", d.pastDue], ["已取消 canceled", d.canceled],
-    ]);
-  } catch (e) {
-    ["rev-mrr","rev-arr","rev-active","rev-new"].forEach(id=>set(id,"—"));
-    document.getElementById("rev-breakdown").innerHTML = `<div class="empty-state"><div class="emoji">💳</div>${e.code==="missing_stripe_key"?"Stripe 金鑰未設定":"無法讀取 Stripe 訂閱資料"}</div>`;
-  }
-}
-
 // ── Email deliverability ──
 async function loadEmailStats(force) {
   const set = (id,v)=>{const e=document.getElementById(id); if(e) e.textContent=v;};
@@ -1778,7 +1610,7 @@ async function openUserDetail(email) {
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
         <div class="sub-av" style="width:44px;height:44px;font-size:18px">${esc((email[0]||"?").toUpperCase())}</div>
         <div style="min-width:0"><div class="mono" style="font-weight:600;word-break:break-all">${esc(email)}</div>
-        <div style="margin-top:4px"><span class="badge ${d.plan==="premium"?"badge-green":""}">${d.plan==="premium"?"Premium":"免費"}</span></div></div>
+        <div style="margin-top:4px"><span class="badge badge-green">訂閱中 · 免費開放</span></div></div>
       </div>
       ${row("註冊日", esc(since))}
       ${row("已設密碼", d.hasPassword?"✓ 是":"✗ 否")}
@@ -1892,19 +1724,6 @@ async function rxReject(id, btn) {
 }
 
 // ── Tools ──
-async function syncBrevo(btn) {
-  if (!confirm("確定要把 KV 內所有方案推到 Brevo？此操作不寄信，只更新聯絡人屬性。")) return;
-  btn.disabled = true; btn.textContent = "同步中…";
-  const out = document.getElementById("sync-result");
-  try {
-    const d = await api("/admin/sync-brevo-plans");
-    const byPlan = Object.entries(d.by_plan || {}).map(([k,v]) => `${k}:${v}`).join(" · ");
-    out.innerHTML = `<span class="badge badge-green">完成</span> 成功 ${d.ok||0} · 失敗 ${d.fail||0}${byPlan?` · ${esc(byPlan)}`:""}`;
-    toast("Brevo 同步完成 ✓");
-  } catch (e) { out.innerHTML = `<span class="badge badge-red">失敗</span> ${esc(e.message)}`; }
-  btn.disabled = false; btn.textContent = "▶ 執行同步";
-}
-
 async function lifecycleTest(btn) {
   const target = document.getElementById("lc-email").value.trim();
   const type = document.getElementById("lc-type").value;
