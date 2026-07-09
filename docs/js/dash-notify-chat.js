@@ -5,9 +5,15 @@ async function setupPushCard(email, plan) {
   if (!card) return;
   card.style.display = "block";
   // iOS Safari:僅在「已加入主畫面(standalone)」時支援 web push
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   const standalone = window.navigator.standalone === true || window.matchMedia("(display-mode: standalone)").matches;
-  if (isIOS && !standalone) document.getElementById("push-ios-hint").style.display = "block";
+  if (isIOS && !standalone) {
+    // 還沒加入主畫面 → 啟用鈕沒作用,改顯示一鍵圖解引導
+    document.getElementById("push-enable-btn").style.display = "none";
+    document.getElementById("push-ios-box").style.display = "block";
+    document.getElementById("push-unbound-box").style.display = "block";
+    return;
+  }
   if (!pushSupported()) {
     document.getElementById("push-enable-btn").disabled = true;
     document.getElementById("push-enable-btn").textContent = T('push_unsupported');
@@ -55,6 +61,36 @@ async function enablePush() {
   } finally {
     btn.disabled = false; btn.textContent = T('push_enable_btn');
   }
+}
+// ── iOS 加入主畫面圖解引導 ──
+function isInAppBrowser() {
+  return /Line\/|FBAN|FBAV|Instagram|Messenger|MicroMessenger/i.test(navigator.userAgent);
+}
+function openIosGuide() {
+  const inapp = isInAppBrowser();
+  document.getElementById("ios-guide-inapp").style.display = inapp ? "block" : "none";
+  document.getElementById("ios-guide-steps").style.display = inapp ? "none" : "flex";
+  // 分享鈕跳動箭頭:只有 iPhone Safari 的分享鈕在正下方(iPad 在右上)
+  const isIphone = /iphone|ipod/i.test(navigator.userAgent);
+  document.getElementById("ios-guide-arrow").style.display = (!inapp && isIphone) ? "block" : "none";
+  document.getElementById("ios-guide-overlay").style.display = "block";
+  document.body.style.overflow = "hidden";
+}
+function closeIosGuide() {
+  document.getElementById("ios-guide-overlay").style.display = "none";
+  document.body.style.overflow = "";
+}
+async function copyGuideLink() {
+  const url = "https://marketdaily.ai/dashboard.html";
+  const btn = document.getElementById("ios-guide-copy-btn");
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch {
+    const tmp = document.createElement("input");
+    tmp.value = url; document.body.appendChild(tmp);
+    tmp.select(); document.execCommand("copy"); tmp.remove();
+  }
+  btn.textContent = T('ios_guide_copied');
 }
 // ── 即時提醒紀錄 feed ──
 let _alertsLoaded = false;

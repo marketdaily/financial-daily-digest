@@ -849,7 +849,10 @@ nav::after {
       <div class="card-desc" data-i18n="push_card_desc">重大新聞影響你的持股時,直接推播到這台裝置(鎖屏也會跳通知),不必等隔天日報。完全免費。</div>
       <div id="push-unbound-box" style="display:none;margin-top:14px;">
         <button class="save-btn" onclick="enablePush()" id="push-enable-btn" style="margin-top:0;background:linear-gradient(135deg,#6366f1,#8b5cf6);" data-i18n="push_enable_btn">🔔 啟用即時推播</button>
-        <div id="push-ios-hint" style="display:none;margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6;padding:10px 13px;background:rgba(255,176,0,0.08);border:1px solid rgba(255,176,0,0.22);border-radius:10px;" data-i18n-html="push_ios_hint">💡 iPhone / iPad 用戶:請先點 Safari 分享鈕 → <b>加入主畫面</b>,再從主畫面打開本站才能啟用推播(Apple 限制)。</div>
+        <div id="push-ios-box" style="display:none;">
+          <button class="save-btn" onclick="openIosGuide()" id="push-ios-guide-btn" style="margin-top:0;background:linear-gradient(135deg,#f59e0b,#f97316);" data-i18n="push_ios_guide_btn">📲 iPhone 用戶:圖解 30 秒開啟推播</button>
+          <div style="margin-top:10px;font-size:12px;color:var(--text2);line-height:1.6;" data-i18n="push_ios_note">Apple 規定:網站要先「加入主畫面」才能收推播。點上方按鈕看圖解,照做兩步就完成。</div>
+        </div>
         <div style="display:none;margin-top:12px;font-size:13px;color:#f87171;text-align:center;" id="push-err"></div>
       </div>
       <div id="push-bound-box" style="display:none;margin-top:14px;">
@@ -934,10 +937,51 @@ nav::after {
   </div>
 </div>
 
+<!-- iOS 加入主畫面圖解引導 overlay -->
+<div id="ios-guide-overlay" style="display:none;position:fixed;inset:0;z-index:100001;background:rgba(5,5,14,0.94);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);overflow-y:auto;-webkit-overflow-scrolling:touch;">
+  <div style="max-width:420px;margin:0 auto;padding:28px 22px 130px;">
+    <div style="display:flex;justify-content:flex-end;">
+      <button onclick="closeIosGuide()" aria-label="close" style="background:rgba(255,255,255,0.08);border:none;color:#ccc;font-size:20px;line-height:1;width:36px;height:36px;border-radius:50%;cursor:pointer;">✕</button>
+    </div>
+    <div style="font-size:21px;font-weight:800;color:#fff;margin-top:6px;" data-i18n="ios_guide_title">📲 把 MarketDaily 加入主畫面</div>
+    <div style="font-size:13px;color:#a8a8bf;line-height:1.7;margin-top:8px;" data-i18n="ios_guide_sub">Apple 規定:網站要先加入主畫面,才能收到即時推播。照下面步驟,30 秒完成。</div>
+    <div id="ios-guide-inapp" style="display:none;margin-top:18px;padding:14px 16px;background:rgba(255,176,0,0.1);border:1px solid rgba(255,176,0,0.3);border-radius:12px;">
+      <div style="font-size:13px;color:#FFC74D;line-height:1.7;" data-i18n="ios_guide_inapp_warn">⚠️ 你目前在 LINE / App 內建瀏覽器,這裡沒有「加入主畫面」功能。請先複製網址,改用 Safari 開啟後再照步驟做。</div>
+      <button class="save-btn" id="ios-guide-copy-btn" onclick="copyGuideLink()" style="margin-top:12px;background:linear-gradient(135deg,#f59e0b,#f97316);" data-i18n="ios_guide_copy_btn">📋 複製網址(貼到 Safari 開啟)</button>
+    </div>
+    <div id="ios-guide-steps" style="margin-top:18px;display:flex;flex-direction:column;gap:12px;">
+      <div style="display:flex;gap:14px;align-items:flex-start;padding:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;">
+        <div style="flex:none;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;">1</div>
+        <div style="font-size:14px;color:#e8e8f2;line-height:1.7;">
+          <span data-i18n-html="ios_guide_step1">點 Safari <b>正下方</b>的「分享」鈕</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-left:6px;"><path d="M12 3v12"/><path d="M8 6l4-4 4 4"/><path d="M5 11v8a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-8"/></svg>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;padding:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;">
+        <div style="flex:none;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;">2</div>
+        <div style="font-size:14px;color:#e8e8f2;line-height:1.7;">
+          <span data-i18n-html="ios_guide_step2">選單<b>往下滑</b>,點「<b>加入主畫面</b>」,再按右上角「新增」</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4da3ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-4px;margin-left:6px;"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 9v6M9 12h6"/></svg>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;padding:16px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:14px;">
+        <div style="flex:none;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;">3</div>
+        <div style="font-size:14px;color:#e8e8f2;line-height:1.7;" data-i18n-html="ios_guide_step3">回到手機主畫面,點開 <b>MarketDaily</b> 圖示登入,按「<b>🔔 啟用即時推播</b>」就完成 🎉</div>
+      </div>
+    </div>
+    <button onclick="closeIosGuide()" style="display:block;width:100%;margin-top:20px;padding:13px 16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:12px;color:#e8e8f2;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;" data-i18n="ios_guide_done">我知道了</button>
+  </div>
+  <div id="ios-guide-arrow" style="display:none;position:fixed;bottom:10px;left:50%;transform:translateX(-50%);text-align:center;pointer-events:none;">
+    <div style="font-size:12px;font-weight:700;color:#FFC74D;background:rgba(0,0,0,0.6);padding:4px 12px;border-radius:99px;margin-bottom:4px;" data-i18n="ios_guide_arrow_label">分享鈕在這下面</div>
+    <div style="font-size:30px;animation:mdGuideBounce 1s ease-in-out infinite;">⬇️</div>
+  </div>
+</div>
+<style>@keyframes mdGuideBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}</style>
+
 <script src="stocks.js?v=20260528"></script>
-<script src="js/dash-core.js?v=20260709a"></script>
+<script src="js/dash-core.js?v=20260709b"></script>
 <script src="js/dash-stocks-auth.js?v=20260709a"></script>
-<script src="js/dash-notify-chat.js?v=20260709a"></script>
+<script src="js/dash-notify-chat.js?v=20260709b"></script>
 <script src="js/dash-prefs-market.js?v=20260707b"></script>
 <script src="js/dash-stories-chain.js?v=20260707"></script>
 <script src="js/dash-chart.js?v=20260703"></script>
