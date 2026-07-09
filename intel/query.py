@@ -43,6 +43,7 @@ SOURCE_MEANING = {
     "news_tw": {"label": "台股新聞事件", "action": "同 news_us,中文關鍵字比對", "direction": "context"},
     "investor_conf": {"label": "法說會時程/簡報摘要", "action": "法說會逼近=財測/展望修正機率上升的事件窗口,有簡報摘要時參考highlights", "direction": "event_window"},
     "us_13f": {"label": "美股13F機構持股季度變動", "action": "機構總持股季增/減達notable門檻,提示法人資金流向,方向本身不下多空判斷(需配合signal_backtest_harness事後驗證)", "direction": "context"},
+    "tw_financials": {"label": "台股財報結構化(綜合損益表+資產負債表)", "action": "由盈轉虧/營收YoY年減≥20%/毛利率QoQ驟降=基本面轉弱警訊;負債比率過高=財務風險升溫,方向本身不下多空判斷(內容型信息差覆蓋,非已驗證統計edge)", "direction": "context"},
 }
 
 DIRECTION_LABEL_ZH = {
