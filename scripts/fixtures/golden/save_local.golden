@@ -215,7 +215,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
     </table>
     <div class="header-meta">YYYY-MM-DD</div>
     <div class="header-tagline">AI 精選 · 假訊息過濾 · 美股 + 台股</div>
-    <div style="margin-top:10px;font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"><a href="https://marketdaily.ai/audio.html" style="color:#6366f1;text-decoration:none;font-weight:700;">🎙 沒空看?3 分鐘語音版(免費) →</a></div>
+    <div style="margin-top:10px;font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"><a href="https://marketdaily.ai/audio.html?date=YYYY-MM-DD&amp;ed=tw" style="color:#6366f1;text-decoration:none;font-weight:700;">🎙 沒空看?3 分鐘語音版(免費) →</a></div>
   </div>
   
 <div class="signal-header"><div class="signal-header-title">⚡ 詳細進出場計畫</div><div class="signal-header-subtitle">每一支持股的下一步</div></div><div class="signal-grid"><div class="signal-card hold"><div class="signal-card-top"><span class="signal-ticker"><span style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:800;">特斯拉 Tesla</span><span style="font-family:'SF Mono',ui-monospace,monospace;font-size:10px;color:#8e8e93;margin-left:5px;font-weight:700;">TSLA</span></span><span class="signal-verdict-chip hold">🟡 續抱持有</span><span class="signal-day-move down">▼ -7.49%</span><div class="signal-score-block"><span class="signal-score">5</span><span class="signal-score-label">/ 10</span></div><span class="signal-bias bearish">📉 BEARISH</span></div><div class="signal-body"><div class="signal-reason">特斯拉 Tesla(TSLA) 收 $393.45(-7.49%),目前空頭結構(價＜MA20＜MA50),先不接。下個交易日後站回 $399.16 之上並收穩再評估分批;持有者跌破 $346.24 先減碼控風險。</div><div class="signal-battle-plan"><div class="battle-row"><span class="battle-label">建議買價</span><span class="battle-val">$368.6–$381.02</span></div><div class="battle-row"><span class="battle-label">賺錢目標</span><span class="battle-val up">$431.55</span></div><div class="battle-row"><span class="battle-label">止損賣價</span><span class="battle-val down">$346.24</span></div></div><div class="signal-watch">👀 盯 $346.24 支撐與 $431.55 壓力</div><div class="signal-meta"><span class="signal-confidence">信心 47%</span><span class="signal-horizon">⏱ 本週視角</span></div></div><!--h:TSLA--></div>
@@ -238,7 +238,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Ne
     本報告為 AI 生成之一般性資訊整理，僅供參考，不構成投資建議；MarketDaily 非證券投資顧問事業<br>所有分析內容對免費與付費用戶完全相同，不因付費而異；投資有風險，決策請自行判斷<br><br>
     <a href="https://marketdaily.ai" style="color:#6366f1;text-decoration:none;font-weight:700;">🌐 marketdaily.ai</a> &nbsp;·&nbsp;
     <a href="https://marketdaily.ai/dashboard.html" style="color:#6366f1;text-decoration:none;">⚙️ 我的專區</a> &nbsp;·&nbsp;
-    <a href="https://marketdaily.ai/audio.html" style="color:#6366f1;text-decoration:none;">🎙 語音快報</a>
+    <a href="https://marketdaily.ai/audio.html?date=YYYY-MM-DD&amp;ed=tw" style="color:#6366f1;text-decoration:none;">🎙 語音快報</a>
   </div>
 </div>
 </body>

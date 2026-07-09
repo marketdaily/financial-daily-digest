@@ -59,9 +59,10 @@ def build(brief):
             s = downs[-1]
             seg += f"最弱的是{s['name']},下跌{s['move'].lstrip('▼ -')},{s['comment']}"
         lines.append(seg)
-    lines.append("以上個股評估都有完整的進出場計畫,包含建議買價、目標價與止損價,詳細內容在今天早上寄出的日報裡。")
-    lines.append("MarketDaily 每天早上七點,把你自選股票的完整分析寄到你的信箱,完全免費,到 marketdaily 點 ai 就能訂閱。")
-    lines.append("最後提醒,以上內容為公開資訊整理,不構成投資建議,投資一定有風險,進場前請自行評估。我們明天早上見。")
+    when, next_see = ("今天晚上", "我們明天見。") if brief["edition"] == "us" else ("今天早上", "我們明天早上見。")
+    lines.append(f"以上個股評估都有完整的進出場計畫,包含建議買價、目標價與止損價,詳細內容在{when}寄出的日報裡。")
+    lines.append("MarketDaily 每個交易日早晚,把你自選股票的完整分析寄到你的信箱,完全免費,到 marketdaily 點 ai 就能訂閱。")
+    lines.append(f"最後提醒,以上內容為公開資訊整理,不構成投資建議,投資一定有風險,進場前請自行評估。{next_see}")
     return "\n".join(lines)
 
 
