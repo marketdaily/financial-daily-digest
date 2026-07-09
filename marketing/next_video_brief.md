@@ -1,6 +1,6 @@
 # 下一支影片企劃 —「開盤前的兩種人」(等額度刷新,一次過)
 
-> 2026-07-09 研究定稿。生成執行照 `seedance2_video_prompt_pack.md` §5 Preflight,4K 9:16 兩段 = 660 credits(下期額度)。
+> 2026-07-09 研究定稿。生成執行照 `seedance2_video_prompt_pack.md` §5 Preflight,**1080p 9:16 兩段 = 270 credits**(用戶 2026-07-09 指令:發行終點是 IG,只生成 IG 上傳規格,不產 4K——IG 最高吃 1080×1920,4K 是白花 2.4 倍錢)。
 
 ## 一、IG/TikTok 爆紅 AI 行銷影片研究結論(2026-07)
 

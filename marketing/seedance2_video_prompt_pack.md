@@ -112,7 +112,7 @@ Constraints: the logo from @Image 1 must stay sharp and undistorted; do not inve
 | 1080p | 135 | 270 |
 | 4K | 330 | 660 |
 
-Plus 方案每月 1,200 credits。**預算規劃:每支影片一輪過(660 或 270),不留重抽預算——因為根本不重抽。**
+Plus 方案每月 1,200 credits。**預算規劃(用戶 2026-07-09 指令):發 IG 的影片一律原生 1080p 生成(兩段 270),不產 4K——IG 上限 1080×1920,4K 無實質收益;只有網站 hero/YouTube 等真 4K 場景才用 4K。每支一輪過,不留重抽預算——因為根本不重抽。**
 
 ## 5. 一次到位 Preflight(送生成前逐項打勾,全綠才按)
 
