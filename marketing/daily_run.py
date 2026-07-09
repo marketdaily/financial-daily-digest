@@ -32,7 +32,8 @@ def main():
     dry = "--dry" in sys.argv
     print(f"[{datetime.now():%Y-%m-%d %H:%M}] daily_run")
     done = posted_ids()
-    nxt = next((p for p in load_posts() if p["id"] not in done), None)
+    nxt = next((p for p in load_posts()
+                if p["id"] not in done and not p.get("retired")), None)
     if not nxt:
         print("  所有貼文都發完了 —— 無動作。")
         return
