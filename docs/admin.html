@@ -571,6 +571,9 @@ body {
         <button class="sb-item" onclick="nav('analytics',this)">
           <span class="sb-icon">◔</span> 數據分析
         </button>
+        <button class="sb-item" onclick="nav('equity',this)">
+          <span class="sb-icon">∿</span> 模擬跟單
+        </button>
       </div>
 
       <div class="sb-section">
@@ -693,6 +696,51 @@ body {
       </div>
 
       <!-- ── Analytics ── -->
+      <!-- ══ SIM-FOLLOW EQUITY(內部指標,未對外)══ -->
+      <div id="sec-equity" class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">模擬跟單淨值</div>
+            <div class="section-desc">照日報卡片「買價 / 目標 / 停損」每日等權跟單的模擬資金曲線。內部北極星:期望值轉正才對外公開。</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <label for="eq-cap" style="font-size:12px;color:var(--text2);font-weight:600;">起始資金 NT$</label>
+            <input id="eq-cap" type="number" value="1000000" step="100000" min="1"
+              style="width:130px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);padding:7px 10px;font-size:13px;font-variant-numeric:tabular-nums;"
+              onchange="drawEquity()">
+          </div>
+        </div>
+        <div class="grid-3 mb-16">
+          <div class="stat-tile indigo">
+            <div class="stat-top"><span class="stat-ic">∿</span></div>
+            <div class="stat-value" id="eq-final">—</div>
+            <div class="stat-label">期末淨值</div>
+            <div class="stat-sub" id="eq-final-sub">—</div>
+          </div>
+          <div class="stat-tile blue">
+            <div class="stat-top"><span class="stat-ic">▼</span></div>
+            <div class="stat-value" id="eq-mdd">—</div>
+            <div class="stat-label">最大回撤</div>
+            <div class="stat-sub">峰值到谷底</div>
+          </div>
+          <div class="stat-tile green">
+            <div class="stat-top"><span class="stat-ic">☷</span></div>
+            <div class="stat-value" id="eq-fills">—</div>
+            <div class="stat-label">已結束模擬單</div>
+            <div class="stat-sub" id="eq-fills-sub">—</div>
+          </div>
+        </div>
+        <div class="card mb-16">
+          <div id="eq-chart" style="position:relative;min-height:280px;"></div>
+        </div>
+        <div class="card">
+          <div style="font-size:12.5px;color:var(--text2);line-height:1.7;">
+            <strong style="color:var(--text);">模型假設(誠實條款):</strong>
+            資料源=track-record.json 的 plan_sim.by_day(全用戶聚合)。每日資金等權分配到當天全部模擬 buy 卡;3 日內收盤沒進買區=沒成交(當現金 0%);成交後 10 個交易日內收盤先碰目標/停損結算,期滿以收盤價出場。每筆報酬按建議日入帳。只有日收盤價、無盤中觸發、無手續費滑價——結果偏保守但公平。淨值=逐日複利。此頁為內部指標,依合規原則不得作為對外行銷素材,除非轉正且加註「歷史模擬非績效保證」。
+          </div>
+        </div>
+      </div>
+
       <div id="sec-analytics" class="section">
         <div class="section-header">
           <div>
@@ -1134,6 +1182,7 @@ const SECTION_TITLES = {
   email:       ["寄信成效","Brevo 送達 / 開信 / 退信"],
   audit:       ["稽核記錄","管理員操作軌跡"],
   analytics:   ["數據分析","30 日 UTM 歸因分析"],
+  equity:      ["模擬跟單淨值","照卡片價位每日等權跟單的內部模擬(未公開)"],
   subscribers: ["訂閱者","Brevo 訂閱列表"],
   reactive:    ["內容審核","Hot Take 發佈佇列"],
   news:        ["新聞源管理","RSS Feeds 與域名白名單"],
@@ -1153,10 +1202,106 @@ function nav(id, btn) {
   window.scrollTo(0, 0);
   if (id === "subscribers") renderSubs();
   if (id === "analytics") renderAnalytics();
+  if (id === "equity") renderEquity();
   if (id === "reactive") renderReactive();
   if (id === "ops") loadOps();
   if (id === "email") loadEmailStats();
   if (id === "audit") loadAudit();
+}
+
+// ── 模擬跟單淨值(內部指標) ──
+let EQ_JSON = null;
+async function renderEquity() {
+  const el = document.getElementById("eq-chart");
+  try {
+    if (!EQ_JSON) {
+      const res = await fetch("/data/track-record.json?t=" + Date.now(), { cache: "no-cache" });
+      EQ_JSON = await res.json();
+    }
+    drawEquity();
+  } catch (e) {
+    el.innerHTML = '<div style="padding:60px 20px;text-align:center;color:var(--text2);font-size:13px;">track-record.json 載入失敗:' + e + '</div>';
+  }
+}
+function drawEquity() {
+  const el = document.getElementById("eq-chart");
+  const days = ((((EQ_JSON || {}).stats || {}).plan_sim || {}).by_day) || [];
+  const cap0 = Math.max(1, Number(document.getElementById("eq-cap").value) || 1000000);
+  // 每日等權:資金分到當日全部已定案模擬單(no_fill=現金0%),日報酬=Σrets/n_cards,逐日複利
+  let eq = cap0, peak = cap0, mdd = 0, closed = 0, cards = 0;
+  const pts = [];
+  for (const day of days) {
+    const n = Math.max(day.n_cards || 0, (day.rets || []).length);
+    if (!n) continue;
+    cards += n; closed += day.rets.length;
+    const r = day.rets.reduce((a, b) => a + b, 0) / n / 100;
+    eq *= 1 + r;
+    peak = Math.max(peak, eq);
+    mdd = Math.max(mdd, (peak - eq) / peak);
+    pts.push({ d: day.d, v: eq, r: r * 100, n, f: day.rets.length });
+  }
+  const money = (v) => "NT$" + Math.round(v).toLocaleString("en-US");
+  const totRet = (eq / cap0 - 1) * 100;
+  const sign = totRet >= 0 ? "+" : "";
+  const fv = document.getElementById("eq-final");
+  fv.textContent = money(eq);
+  fv.style.color = totRet >= 0 ? "var(--green)" : "var(--red)";
+  document.getElementById("eq-final-sub").textContent = `總報酬 ${sign}${totRet.toFixed(2)}%(起始 ${money(cap0)})`;
+  document.getElementById("eq-mdd").textContent = "-" + (mdd * 100).toFixed(1) + "%";
+  document.getElementById("eq-fills").textContent = closed;
+  document.getElementById("eq-fills-sub").textContent = `成交率 ${cards ? (closed / cards * 100).toFixed(0) : 0}%(掛不到=現金)`;
+  if (!pts.length) {
+    el.innerHTML = '<div style="padding:60px 20px;text-align:center;color:var(--text2);font-size:13px;">尚無已結束的模擬單(等 plan_sim.by_day 累積)</div>';
+    return;
+  }
+  const W = 920, H = 280, PL = 74, PR = 20, PT = 16, PB = 30;
+  const vs = [cap0, ...pts.map(p => p.v)];
+  let lo = Math.min(...vs), hi = Math.max(...vs);
+  const pad = Math.max((hi - lo) * 0.12, cap0 * 0.004);
+  lo -= pad; hi += pad;
+  const X = (i) => PL + (W - PL - PR) * (i / Math.max(pts.length, 1));
+  const Y = (v) => PT + (H - PT - PB) * (1 - (v - lo) / (hi - lo));
+  const all = [{ d: "起點", v: cap0, r: 0, n: 0, f: 0 }, ...pts];
+  const line = all.map((p, i) => (i ? "L" : "M") + X(i).toFixed(1) + " " + Y(p.v).toFixed(1)).join(" ");
+  const grid = [0, 1, 2, 3].map(g => {
+    const v = lo + (hi - lo) * g / 3, y = Y(v).toFixed(1);
+    return `<line x1="${PL}" y1="${y}" x2="${W - PR}" y2="${y}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>` +
+      `<text x="${PL - 8}" y="${+y + 4}" text-anchor="end" font-size="10.5" fill="rgba(255,255,255,0.45)">${money(v)}</text>`;
+  }).join("");
+  const xlabs = all.map((p, i) => (i && (i === all.length - 1 || i % Math.ceil(all.length / 6) === 0))
+    ? `<text x="${X(i).toFixed(1)}" y="${H - 8}" text-anchor="middle" font-size="10.5" fill="rgba(255,255,255,0.45)">${p.d.slice(5)}</text>` : "").join("");
+  const lastX = X(all.length - 1), lastY = Y(eq);
+  el.innerHTML = `
+    <svg id="eq-svg" viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block;">
+      ${grid}
+      <line x1="${PL}" y1="${Y(cap0).toFixed(1)}" x2="${W - PR}" y2="${Y(cap0).toFixed(1)}" stroke="rgba(255,255,255,0.22)" stroke-width="1" stroke-dasharray="3 4"/>
+      <path d="${line} L ${lastX.toFixed(1)} ${H - PB} L ${PL} ${H - PB} Z" fill="rgba(99,102,241,0.08)" stroke="none"/>
+      <path d="${line}" fill="none" stroke="var(--indigo)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="3.5" fill="var(--indigo)" stroke="#07070e" stroke-width="2"/>
+      <text x="${(lastX - 6).toFixed(1)}" y="${(lastY - 10).toFixed(1)}" text-anchor="end" font-size="11" font-weight="700" fill="#eef0f6">${money(eq)}(${sign}${totRet.toFixed(1)}%)</text>
+      ${xlabs}
+      <line id="eq-cross" x1="0" y1="${PT}" x2="0" y2="${H - PB}" stroke="rgba(255,255,255,0.25)" stroke-width="1" style="display:none;"/>
+      <circle id="eq-dot" r="4" fill="var(--indigo)" stroke="#07070e" stroke-width="2" style="display:none;"/>
+      <rect x="${PL}" y="${PT}" width="${W - PL - PR}" height="${H - PT - PB}" fill="transparent" style="cursor:crosshair;"/>
+    </svg>
+    <div id="eq-tip" style="display:none;position:absolute;pointer-events:none;background:#15151f;border:1px solid var(--border2);border-radius:8px;padding:8px 11px;font-size:12px;line-height:1.6;color:var(--text);white-space:nowrap;z-index:5;"></div>`;
+  const svg = document.getElementById("eq-svg");
+  const tip = document.getElementById("eq-tip"), cross = document.getElementById("eq-cross"), dot = document.getElementById("eq-dot");
+  svg.addEventListener("mousemove", (ev) => {
+    const r = svg.getBoundingClientRect(), sx = W / r.width;
+    const mx = (ev.clientX - r.left) * sx;
+    const i = Math.max(0, Math.min(all.length - 1, Math.round((mx - PL) / (W - PL - PR) * (all.length - 1))));
+    const p = all[i], px = X(i), py = Y(p.v);
+    cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.style.display = "";
+    dot.setAttribute("cx", px); dot.setAttribute("cy", py); dot.style.display = "";
+    tip.innerHTML = `<strong>${p.d}</strong><br>淨值 ${money(p.v)}` +
+      (i ? `<br>日報酬 ${p.r >= 0 ? "+" : ""}${p.r.toFixed(2)}%<br>模擬單 ${p.n} 筆(已結 ${p.f})` : "");
+    tip.style.display = "block";
+    const tw = tip.offsetWidth;
+    tip.style.left = Math.min(Math.max(px / sx - tw / 2, 0), r.width - tw) + "px";
+    tip.style.top = (py / sx - tip.offsetHeight - 14) + "px";
+  });
+  svg.addEventListener("mouseleave", () => { tip.style.display = "none"; cross.style.display = "none"; dot.style.display = "none"; });
 }
 
 // ── Load / Save Config ──
