@@ -143,3 +143,17 @@
 {"date": "2026-07-07", "code": "9935", "source": "institutional", "level": "yellow", "signal": "慶豐富四(9935):法人 20 日淨買超 +1,428 張(未成連續型態)", "price_at_signal": null}
 {"date": "2026-07-07", "code": "MSFT", "source": "us_analyst", "level": "red", "signal": "🇺🇸 MSFT ⬇️ Outperform→Market Perform(Bernstein)", "price_at_signal": null}
 {"date": "2026-07-07", "code": "META", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 META 內部人賣出:KIMMITT ROBERT M[董事] 500股 均價$607.75(約$303,875)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "1560", "source": "institutional", "level": "yellow", "signal": "中砂二(1560):法人 20 日淨買超 +2,464 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "2303", "source": "institutional", "level": "yellow", "signal": "聯電一(2303):法人 20 日淨賣超 -84,453 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "2464", "source": "margin", "level": "red", "signal": "盟立三(2464):融資5日驟減-25.6%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "3583", "source": "institutional", "level": "yellow", "signal": "辛耘三(3583):法人 20 日淨買超 +1,747 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "4541", "source": "sbl", "level": "red", "signal": "晟田五(4541):機構借券賣出5日遽增21.4%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "4764", "source": "sbl", "level": "red", "signal": "雙鍵二(4764):機構借券賣出5日遽增22.5%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "8096", "source": "sbl", "level": "yellow", "signal": "擎亞二(8096):機構借券賣出5日增10.1%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "8422", "source": "institutional", "level": "yellow", "signal": "可寧衛三(8422):法人 20 日淨賣超 -21,919 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "8442", "source": "mops_news", "level": "red", "signal": "威宏-KY(8442) 重訊[2026-07-07]:公告本公司辦理2026年度現金增資發行新股、中華民國境內 第三次有擔保轉換公司債暨中華民國境內第四次無擔保轉換公司債 申", "price_at_signal": null}
+{"date": "2026-07-08", "code": "8467", "source": "institutional", "level": "red", "signal": "波力四KY(8467):外資連 5 日買超(5日淨買 +29 張)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "8467", "source": "sbl", "level": "yellow", "signal": "波力四KY(8467):機構借券賣出5日遽減-33.4%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "8936", "source": "institutional", "level": "yellow", "signal": "國統五(8936):法人 20 日淨賣超 -895 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "9935", "source": "margin", "level": "yellow", "signal": "慶豐富四(9935):融資5日暴增16.4%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-07-08", "code": "GS", "source": "us_analyst", "level": "red", "signal": "🇺🇸 GS 目標價⬆️+10.3%→$1150(Goldman Sachs)", "price_at_signal": null}
