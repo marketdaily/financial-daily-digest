@@ -70,6 +70,75 @@ _TW_HOLIDAYS = {
     "2026-10-09",  # 國慶連假
 }
 
+# ── 臨時休市偵測(2026-07-10 颱風停市事故根因修)──
+# 固定假日表抓不到颱風/天災臨時休市。權威來源=TWSE 官方公告 API(臨時休市前一日
+# 即發布「…年M月D日休市」公告),加人工 override 檔備援;網路失敗 fail-open 視同開市。
+# MD_SKIP_ADHOC_FETCH=1 時跳過網路與快取(refactor_harness 隔離用,防活資料弄髒 golden)。
+_TWSE_NEWS_API = "https://openapi.twse.com.tw/v1/news/newsList"
+_CLOSURE_RE = re.compile(r"(\d{2,3})年(\d{1,2})月(\d{1,2})日(?:（[^）]{1,8}）)?休市")
+_ADHOC_CACHE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".tw_closure_cache.json")
+_OVERRIDE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "market_closures_override.txt")
+_ADHOC_MEMO: dict = {}
+
+
+def _override_closures(prefix: str) -> set:
+    """讀人工 override 檔:一行一個 YYYY-MM-DD(台股),美股臨時休市加 us: 前綴,# 註解。"""
+    dates = set()
+    try:
+        if os.path.exists(_OVERRIDE_FILE):
+            for line in open(_OVERRIDE_FILE, encoding="utf-8"):
+                line = line.split("#")[0].strip()
+                if not line:
+                    continue
+                if prefix == "us" and line.startswith("us:"):
+                    dates.add(line[3:].strip())
+                elif prefix == "tw" and not line.startswith("us:"):
+                    dates.add(line)
+    except Exception:
+        pass
+    return dates
+
+
+def _twse_announced_closures(today_iso: str) -> set:
+    """掃 TWSE 公告標題抓「115年7月10日休市」類臨時休市日,ROC 年轉 ISO。當日快取。"""
+    import json as _json
+    cache = {}
+    try:
+        with open(_ADHOC_CACHE, encoding="utf-8") as f:
+            cache = _json.load(f)
+        if cache.get("fetched_on") == today_iso:
+            return set(cache.get("dates", []))
+    except Exception:
+        pass
+    dates = set()
+    try:
+        r = requests.get(_TWSE_NEWS_API, timeout=8)
+        for item in r.json():
+            title = item.get("Title", "")
+            if "交易市場" not in title and "證券交易所" not in title:
+                continue
+            for m in _CLOSURE_RE.finditer(title):
+                y, mo, d = int(m.group(1)), int(m.group(2)), int(m.group(3))
+                dates.add(f"{y + 1911:04d}-{mo:02d}-{d:02d}")
+        with open(_ADHOC_CACHE, "w", encoding="utf-8") as f:
+            _json.dump({"fetched_on": today_iso, "dates": sorted(dates)}, f)
+    except Exception:
+        # 網路失敗 → 沿用舊快取(可能含尚未過期的休市日),否則空集合 fail-open
+        return set(cache.get("dates", []))
+    return dates
+
+
+def _adhoc_closures(today_iso: str) -> tuple:
+    """回傳 (tw_set, us_set)。同一 today_iso 進程內只算一次。"""
+    if today_iso in _ADHOC_MEMO:
+        return _ADHOC_MEMO[today_iso]
+    tw = _override_closures("tw")
+    us = _override_closures("us")
+    if not os.environ.get("MD_SKIP_ADHOC_FETCH"):
+        tw |= _twse_announced_closures(today_iso)
+    _ADHOC_MEMO[today_iso] = (tw, us)
+    return tw, us
+
 
 def _market_status(today_iso: str) -> dict:
     """
@@ -93,45 +162,49 @@ def _market_status(today_iso: str) -> dict:
             return False
         return d_.isoformat() not in holidays
 
+    adhoc_tw, adhoc_us = _adhoc_closures(today_iso)
+    tw_hol = _TW_HOLIDAYS | adhoc_tw
+    us_hol = _US_HOLIDAYS | adhoc_us
+
     # 「昨晚美股」對應 TW 今天 - 1 天 (因美股 04:00 TW 收盤)
     yest = td - timedelta(days=1)
-    us_traded = _is_trading(yest, _US_HOLIDAYS)
+    us_traded = _is_trading(yest, us_hol)
     us_last = yest
     if not us_traded:
         # 往前找最近一個美股交易日
         scan = yest
         for _ in range(7):
             scan = scan - timedelta(days=1)
-            if _is_trading(scan, _US_HOLIDAYS):
+            if _is_trading(scan, us_hol):
                 us_last = scan
                 break
 
     # 「今晚美股」對應 TW 今天那天的美股 session (美東 9:30 = TW 21:30 / 22:30)
-    us_will_open_tonight = _is_trading(td, _US_HOLIDAYS)
+    us_will_open_tonight = _is_trading(td, us_hol)
     us_next_trading = td
     if not us_will_open_tonight:
         scan = td
         for _ in range(7):
             scan = scan + timedelta(days=1)
-            if _is_trading(scan, _US_HOLIDAYS):
+            if _is_trading(scan, us_hol):
                 us_next_trading = scan
                 break
 
     # 今天台股是否將開盤
-    tw_open = _is_trading(td, _TW_HOLIDAYS)
+    tw_open = _is_trading(td, tw_hol)
     tw_last = td
     if not tw_open:
         scan = td
         for _ in range(7):
             scan = scan - timedelta(days=1)
-            if _is_trading(scan, _TW_HOLIDAYS):
+            if _is_trading(scan, tw_hol):
                 tw_last = scan
                 break
     else:
         # 今天有開,「最新已有數據」= 昨日(若是交易日)
         scan = td - timedelta(days=1)
         for _ in range(7):
-            if _is_trading(scan, _TW_HOLIDAYS):
+            if _is_trading(scan, tw_hol):
                 tw_last = scan
                 break
             scan = scan - timedelta(days=1)

@@ -5,6 +5,7 @@
 合規:公版日報本身免費公開,音頻=同內容之衍生,全員免費相同。
 """
 import json
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -18,9 +19,23 @@ MOOD_TEXT = {"bearish": "整體氛圍偏空", "bullish": "整體氛圍偏多", "
 NUM_READ = str.maketrans({"%": " 個百分點"})
 
 
+_EMOJI_RE = re.compile("[\u2600-\u27bf\ufe0f\u2b00-\u2bff\U0001f000-\U0001faff]")
+
+
+def _clean(b, first=False):
+    b = _EMOJI_RE.sub("", b).strip()
+    return b.replace("避坑：", "首先是今天的避坑提醒:" if first else "避坑提醒:").strip()
+
+
 def spoken_pct(move):
+    v = move.lstrip("+-")
+    try:
+        if float(v) == 0:
+            return "持平"
+    except ValueError:
+        pass
     sign = "下跌" if move.startswith("-") else "上漲"
-    return f"{sign}{move.lstrip('+-')}%"
+    return f"{sign}{v}%"
 
 
 def build(brief):
@@ -28,18 +43,20 @@ def build(brief):
     label = "美股晚間快報" if brief["edition"] == "us" else "台股晨間快報"
     lines = []
     lines.append(f"歡迎收聽 MarketDaily {label},今天是 {d.year} 年 {d.month} 月 {d.day} 日,{MOOD_TEXT.get(brief['mood'])}。")
-    hook = brief["bullets"][0].replace("⚠️", "").replace("避坑：", "首先是今天的避坑提醒:")
-    lines.append(hook.strip())
+    lines.append(_clean(brief["bullets"][0], first=True))
     if len(brief["bullets"]) > 1:
         lines.append("接下來是今天的市場重點。")
         for i, b in enumerate(brief["bullets"][1:4], 1):
-            lines.append(f"第{['一','二','三'][i-1]},{b}")
+            lines.append(f"第{['一','二','三'][i-1]},{_clean(b)}")
     if brief["movers"]:
-        lines.append("再來快速看一下重點個股的昨日表現與今日方向。")
+        closed = bool(brief.get("tw_market_closed")) and brief["edition"] == "tw"
+        lines.append("再來快速看一下重點個股的昨日表現。" if closed
+                     else "再來快速看一下重點個股的昨日表現與今日方向。")
+        verdict_label = "目前評估" if closed else "今日評估"
         for m in brief["movers"]:
             seg = f"{m['name']},昨日{spoken_pct(m['move'])}"
             if m.get("verdict"):
-                seg += f",今日評估:{m['verdict']}"
+                seg += f",{verdict_label}:{m['verdict']}"
             lines.append(seg + "。")
     news = brief.get("news") or []
     if news:
@@ -59,7 +76,8 @@ def build(brief):
             s = downs[-1]
             seg += f"最弱的是{s['name']},下跌{s['move'].lstrip('▼ -')},{s['comment']}"
         lines.append(seg)
-    when, next_see = ("今天晚上", "我們明天見。") if brief["edition"] == "us" else ("今天早上", "我們明天早上見。")
+    when = "今天晚上" if brief["edition"] == "us" else "今天早上"
+    next_see = "我們下一集見。"
     lines.append(f"以上個股評估都有完整的進出場計畫,包含建議買價、目標價與止損價,詳細內容在{when}寄出的日報裡。")
     lines.append("MarketDaily 每個交易日早晚,把你自選股票的完整分析寄到你的信箱,完全免費,到 marketdaily 點 ai 就能訂閱。")
     lines.append(f"最後提醒,以上內容為公開資訊整理,不構成投資建議,投資一定有風險,進場前請自行評估。{next_see}")

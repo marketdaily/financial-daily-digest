@@ -73,6 +73,10 @@ def extract(path):
             for hd, w in re.findall(
                 r'class="news-headline">([^<]+)<.*?class="news-why">([^<]+)<', h, re.S)]
 
+    text = _strip(h)
+    tw_market_closed = bool(re.search(
+        r"台股今(?:天|日)[^。]{0,12}休市|今(?:天|日)[^。]{0,6}台股[^。]{0,12}休市", text))
+
     brief = {
         "date": date_str,
         "edition": edition,
@@ -81,6 +85,7 @@ def extract(path):
         "movers": movers,
         "sectors": sectors,
         "news": news,
+        "tw_market_closed": tw_market_closed,
         "source_file": path.name,
         "extracted_at": datetime.now().isoformat(timespec="seconds"),
     }

@@ -1,0 +1,4 @@
+# 臨時休市人工 override(analyzer.py _market_status 讀取,最後手段)
+# 台股:一行一個 YYYY-MM-DD;美股加 us: 前綴(例:us:2026-12-05)
+# 颱風類臨時休市 TWSE 公告通常會自動抓到(快取在 .tw_closure_cache.json),
+# 只有官方公告格式變了或非 TWSE 來源的休市才需要手動加這裡。

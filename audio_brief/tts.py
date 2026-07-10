@@ -60,7 +60,11 @@ def _num_zh(s):
 _DIGIT_ZH = str.maketrans("0123456789", "零一二三四五六七八九")
 
 
+_EMOJI_RE = re.compile("[☀-➿️⬀-⯿\U0001f000-\U0001faff]")
+
+
 def _tts_normalize(t):
+    t = _EMOJI_RE.sub("", t)
     t = re.sub(r"(?<=\d),(?=\d)", "", t)
     t = re.sub(r"(\d{4})(?=\s*年)", lambda m: m.group(1).translate(_DIGIT_ZH), t)
     t = re.sub(r"(\d+(?:\.\d+)?)\s*%", lambda m: "百分之" + _num_zh(m.group(1)), t)

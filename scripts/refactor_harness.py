@@ -27,6 +27,7 @@ import datetime as _real_dt
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIX_DIR = os.path.join(ROOT, "scripts", "fixtures")
 GOLD_DIR = os.path.join(FIX_DIR, "golden")
+os.environ.setdefault("MD_SKIP_ADHOC_FETCH", "1")  # 臨時休市偵測活資料隔離(全部入口)
 FROZEN = _real_dt.datetime(2026, 7, 2, 11, 30, tzinfo=_real_dt.timezone.utc)  # 週四 19:30 TW
 US_H = ["AAPL", "NVDA", "TSLA"]
 TW_H = ["2330", "2317", "2454"]
@@ -94,6 +95,9 @@ def _load_modules():
     _t.sleep = lambda *a, **k: None
     sys.path.insert(0, ROOT)
     os.chdir(ROOT)
+    # 臨時休市偵測走網路(TWSE 公告)+當日快取,活資料會弄髒 golden → 隔離掉,
+    # harness 內只吃 override 檔(repo 內容,確定性)。
+    os.environ["MD_SKIP_ADHOC_FETCH"] = "1"
     import analyzer
     import main
     import premailer  # noqa: F401  真 datetime 下先載完(lxml/cssutils C 擴充)

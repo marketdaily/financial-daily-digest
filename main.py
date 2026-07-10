@@ -128,9 +128,31 @@ def _escape_stray_lt(html_report: str) -> str:
     return _STRAY_LT_RE.sub("&lt;", html_report)
 
 
+def _fix_closed_market_wording(date: str, html_report: str) -> str:
+    """休市日措辭確定性防線(2026-07-10 颱風停市事故):台股休市日不可殘留
+    「今早 9:00 開盤」類字眼,美股休市夜不可殘留「今晚開盤」。不依賴 LLM 聽話,
+    audit 的 tw_holiday_open_tense/us_holiday_tonight_tense 是這層的獨立驗證者。
+    開市日 no-op,_market_status 失敗 fail-open 維持原文。"""
+    try:
+        from analyzer import _market_status
+        mkt = _market_status(date)
+    except Exception:
+        return html_report
+    if mkt.get("tw_will_open_today") is False:
+        html_report = re.sub(r"今早\s*9\s*[:：]?\s*00\s*開盤", "下一個交易日開盤", html_report)
+        html_report = re.sub(r"今早開盤", "下一個交易日開盤", html_report)
+        html_report = re.sub(r"今日早盤", "下一個交易日早盤", html_report)
+    if mkt.get("us_will_open_tonight") is False:
+        nxt = mkt.get("us_next_trading_date") or "下個交易日"
+        html_report = re.sub(r"今晚美股開盤", f"美股 {nxt} 開盤", html_report)
+        html_report = re.sub(r"今晚開盤", f"{nxt} 開盤", html_report)
+    return html_report
+
+
 def render_email_shell(date: str, html_report: str) -> str:
     """Email/本地存檔共用的完整 HTML 骨架(原 build_email_html 與 save_local 各持
     一份逐字節相同的複本,2026-07-03 P3 收斂)。<style> 內容 byte 級凍結於 golden。"""
+    html_report = _fix_closed_market_wording(date, html_report)
     return f"""<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>

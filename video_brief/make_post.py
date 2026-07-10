@@ -32,7 +32,7 @@ def build_caption(brief):
     hook = brief["bullets"][0].replace("避坑：", "避坑 ")
     movers = brief["movers"][:3]
     mover_line = " · ".join(
-        f"{m['name'].split()[0]} {'+' if not m['move'].startswith('-') else ''}{m['move']}%"
+        f"{m['name'].split()[0]} {'+' if not m['move'].startswith(('-', '+')) else ''}{m['move']}%"
         for m in movers)
     return (
         f"{MOOD_EMOJI.get(brief['mood'], '😐')} {d.month}/{d.day} {label}｜30 秒看完今天重點\n\n"
@@ -53,6 +53,14 @@ def verify(brief, caption, mp4):
     for bad in FORBIDDEN:
         if bad in caption:
             die(f"caption 含禁用詞「{bad}」")
+
+    # 台股休市日(颱風等)不可出現開盤時序字眼(2026-07-10 事故;上游 main.py 已有
+    # 確定性修復層,這裡是媒體端最後防線,抓到=生成端有洞,不出貨)
+    if brief.get("tw_market_closed") and brief["edition"] == "tw":
+        joined = caption + " ".join(brief.get("bullets", []))
+        m = re.search(r"今早.{0,6}開盤|今日早盤", joined)
+        if m:
+            die(f"台股休市日 caption/bullets 含開盤時序字眼「{m.group(0)}」")
 
     if not mp4.exists():
         die("mp4 不存在")
@@ -85,12 +93,20 @@ def verify(brief, caption, mp4):
 
 
 def upload(mp4, key):
-    subprocess.run(
-        ["npx", "wrangler", "kv", "key", "put", key, "--path", str(mp4),
-         "--namespace-id", KV_NAMESPACE, "--remote"],
-        check=True, capture_output=True, cwd=REPO)
+    # wrangler kv put 會在寫入已成功時偶發回非 0(tts.py 2026-07-09 兩連中同款),
+    # rc 只當參考印出來,成敗以下方 HEAD content-length 相符為準
     url = f"{MEDIA_BASE}/{key}"
     size = mp4.stat().st_size
+    for attempt in range(1, 4):
+        r = subprocess.run(
+            ["npx", "wrangler", "kv", "key", "put", key, "--path", str(mp4),
+             "--namespace-id", KV_NAMESPACE, "--remote"],
+            capture_output=True, text=True, cwd=REPO)
+        if r.returncode == 0:
+            break
+        print(f"⚠ wrangler put rc={r.returncode} (attempt {attempt}/3): "
+              f"{(r.stderr or r.stdout).strip()[-300:]}")
+        time.sleep(5)
     for i in range(6):
         time.sleep(10)
         try:
