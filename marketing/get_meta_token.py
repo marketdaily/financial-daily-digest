@@ -45,11 +45,14 @@ def auth_url(env):
 
 
 def extract_token(pasted):
+    pasted = pasted.strip()
+    if not pasted.lower().startswith("http"):
+        return pasted  # Graph API Explorer 直接複製出來的 raw token
     frag = urllib.parse.urlparse(pasted).fragment
     params = urllib.parse.parse_qs(frag)
     tok = (params.get("access_token") or [""])[0]
     if not tok:
-        sys.exit("網址裡找不到 access_token —— 要貼「同意授權後」跳轉到 login_success.html 的完整網址(含 # 後面那串)")
+        sys.exit("網址裡找不到 access_token —— 貼跳轉後完整網址(含 # 後面),或直接貼 Explorer 的 token")
     return tok
 
 
