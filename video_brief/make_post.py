@@ -138,7 +138,8 @@ def main():
         "edition": brief["edition"],
         "video_url": url,
         "caption": caption,
-        "platforms": ["instagram", "facebook", "youtube", "x", "tiktok"],
+        # x 已拔(2026-07-10 Delvin 指令:API credits 為零從未發成);tiktok 等 secrets 設好自動生效
+        "platforms": ["instagram", "facebook", "youtube", "tiktok"],
         "verified": True,
         "created_at": datetime.now().isoformat(timespec="seconds"),
     }
