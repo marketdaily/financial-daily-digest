@@ -12,3 +12,4 @@
 - **organic only**：不投 Meta 付費廣告；ads-meta skill 輸出一律 organic 模式
 - 個股分析內容不得與付費連結（合規鐵則，見根 CLAUDE.md）
 - **封面不可白底（2026-07-09 用戶指令）**：所有社群素材一律深色品牌底。IG Reels 必帶 `thumb_offset`（auto_post.py 已固定 3000ms，勿拿掉）；make_post.py 驗證含 0/3/15/33s 非黑非白幀閘
+- **Reels 一律配最 trending 音樂（2026-07-10 用戶指令）**：`auto_post.py::post_instagram_reel` 自動查 IG Audio API `GET /ig_audio`（不帶 search_query=trending 榜，只回 Meta 授權第三方使用的曲目，零版權風險）掛 `audio_configuration` 並把影片內建配樂靜音。曲庫空或掛載被拒 → fail-open 退回烘焙配樂，發文絕不因音樂缺席。現況（2026-07-10）：此帳號的第三方曲庫尚空（權限通、回 200 但 0 筆，疑區域/逐步開放；`auto_post.py check` 的「IG 曲庫」行可隨時看狀態，Meta 開放即自動生效）。FB/TikTok/YT 的 API 無掛曲庫能力，維持烘焙配樂；**絕不把版權音樂直接烘進影片檔上傳**（商業帳號會被靜音/下架/拉黑）。未來有旁白的 reel 必須傳 `trending_audio=False`，否則旁白會被 `video_volume=0` 靜音

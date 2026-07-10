@@ -148,12 +148,38 @@ def post_threads(env, image_url, caption):
     return (True, p["id"]) if ok and "id" in p else (False, p)
 
 
-def post_instagram_reel(env, video_url, caption):
+def get_trending_audio(env):
+    """IG Audio API:不帶 search_query 預設回傳 trending 曲目(只含 Meta 授權第三方使用的音樂)。
+    目前(2026-07-10)此帳號拿到的第三方曲庫是空的(權限通、回 200 但 0 筆,疑區域/逐步開放);
+    Meta 開放後這裡自動開始生效。任何失敗回 None,發文絕不因音樂缺席。"""
+    ig, qtok = env["IG_USER_ID"], urllib.parse.quote(env["META_ACCESS_TOKEN"])
+    for audio_type in ("music", "original_sound"):
+        ok, r = http(f"{GRAPH}/ig_audio?ig_user_id={ig}&audio_type={audio_type}"
+                     f"&access_token={qtok}")
+        items = r.get("data") or []
+        if ok and items:
+            a = items[0]
+            return {"id": a.get("id"),
+                    "title": a.get("title") or a.get("display_name") or "?"}
+    return None
+
+
+def post_instagram_reel(env, video_url, caption, trending_audio=True):
     ig, tok = env["IG_USER_ID"], env["META_ACCESS_TOKEN"]
-    ok, c = http(f"{GRAPH}/{ig}/media", "POST",
-                 form={"media_type": "REELS", "video_url": video_url,
-                       "caption": caption, "thumb_offset": "3000",
-                       "access_token": tok})
+    form = {"media_type": "REELS", "video_url": video_url,
+            "caption": caption, "thumb_offset": "3000",
+            "access_token": tok}
+    audio = get_trending_audio(env) if trending_audio else None
+    if audio and audio.get("id"):
+        # 掛 trending 音樂時把影片內建配樂靜音(避免兩軌打架);有旁白的 reel 要傳 trending_audio=False
+        form["audio_configuration"] = json.dumps(
+            {"audio_id": audio["id"], "audio_volume": 100, "video_volume": 0})
+        print(f"  🎵 trending audio:{audio['title']} ({audio['id']})")
+    ok, c = http(f"{GRAPH}/{ig}/media", "POST", form=form)
+    if (not ok or "id" not in c) and "audio_configuration" in form:
+        print(f"  ⚠️ trending audio 掛載被拒,退回影片內建配樂重試:{c}")
+        form.pop("audio_configuration")
+        ok, c = http(f"{GRAPH}/{ig}/media", "POST", form=form)
     if not ok or "id" not in c:
         return False, c
     cid, qtok = c["id"], urllib.parse.quote(tok)
@@ -447,6 +473,8 @@ def cmd_check(env):
     if env.get("IG_USER_ID"):
         ok, r = http(f"{GRAPH}/{env['IG_USER_ID']}?fields=username&access_token={qt}")
         print(f"  Instagram:    {'✅ @' + r['username'] if ok and 'username' in r else '❌ ' + str(r)}")
+        audio = get_trending_audio(env)
+        print(f"  IG 曲庫:      {'✅ trending 可用:' + audio['title'] if audio else '⏸️ Meta 第三方曲庫對此帳號尚空(開放後 reel 自動掛 trending 音樂)'}")
     if env.get("THREADS_ACCESS_TOKEN"):
         qtt = urllib.parse.quote(env["THREADS_ACCESS_TOKEN"])
         ok, r = http(f"{THREADS}/me?fields=username&access_token={qtt}")
