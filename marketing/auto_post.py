@@ -156,13 +156,15 @@ def get_trending_audio(env):
     # 三層曲源:授權音樂(Creator 帳號才有)→ 原創音訊 → Sound Collection(token 需 ads_management)
     for qs in ("audio_type=music", "audio_type=original_sound", "product=ADS"):
         ok, r = http(f"{GRAPH}/ig_audio?ig_user_id={ig}&{qs}&access_token={qtok}")
-        items = r.get("data") or []
+        # 實際回應把曲目放在 "audio" 鍵、id 叫 "audio_id"(與文件寫的 data/id 不同,2026-07-10 實測)
+        items = r.get("audio") or r.get("data") or []
         if ok and items:
             a = items[0]
-            audio = {"id": a.get("id"),
+            audio = {"id": a.get("audio_id") or a.get("id"),
                      "title": a.get("title") or a.get("display_name") or "?"}
-            _notify_audio_unlocked_once(audio)
-            return audio
+            if audio["id"]:
+                _notify_audio_unlocked_once(audio)
+                return audio
     return None
 
 
@@ -190,7 +192,9 @@ def _notify_audio_unlocked_once(audio):
                f"Reels 從現在起自動配 trending 音樂(本次:{audio['title']})。零人工動作需要。")
         ok, _ = http(f"{worker.rstrip('/')}/internal/admin-line-push", "POST",
                      json_body={"message": msg},
-                     headers={"Authorization": f"Bearer {tok}"})
+                     headers={"Authorization": f"Bearer {tok}",
+                              # 裸 urllib UA 會被 Cloudflare 1010 擋(2026-07-10 實測)
+                              "User-Agent": "Mozilla/5.0 MarketDailyBot/1.0"})
         if ok:
             marker.write_text(datetime.now().isoformat(), encoding="utf-8")
     except Exception as e:  # noqa: BLE001
