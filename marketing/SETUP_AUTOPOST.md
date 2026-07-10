@@ -29,6 +29,7 @@ cp .env.example .env
    - 點 **新增權限**,勾選:
      `pages_show_list` `pages_read_engagement` `pages_manage_posts`
      `instagram_basic` `instagram_content_publish` `business_management`
+     `ads_management`(← 2026-07-10 新增:解鎖 IG Audio API 的 Sound Collection 推薦曲,Reels 自動配樂用)
    - 點 **產生存取權杖** → 同意授權
 6. **換成長期權杖**:把上面拿到的權杖貼到「**存取權杖偵錯工具**」(Access Token Debugger)→ 最下方點 **延長存取權杖** → 再執行一次 `GET /me/accounts`,裡面粉專的 `access_token` 就是**不會過期的粉專權杖** → 這個填入 `META_ACCESS_TOKEN`
 7. 拿 ID(在 Graph API Explorer 執行):

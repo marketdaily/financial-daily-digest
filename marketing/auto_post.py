@@ -153,45 +153,86 @@ def get_trending_audio(env):
     目前(2026-07-10)此帳號拿到的第三方曲庫是空的(權限通、回 200 但 0 筆,疑區域/逐步開放);
     Meta 開放後這裡自動開始生效。任何失敗回 None,發文絕不因音樂缺席。"""
     ig, qtok = env["IG_USER_ID"], urllib.parse.quote(env["META_ACCESS_TOKEN"])
-    for audio_type in ("music", "original_sound"):
-        ok, r = http(f"{GRAPH}/ig_audio?ig_user_id={ig}&audio_type={audio_type}"
-                     f"&access_token={qtok}")
+    # 三層曲源:授權音樂(Creator 帳號才有)→ 原創音訊 → Sound Collection(token 需 ads_management)
+    for qs in ("audio_type=music", "audio_type=original_sound", "product=ADS"):
+        ok, r = http(f"{GRAPH}/ig_audio?ig_user_id={ig}&{qs}&access_token={qtok}")
         items = r.get("data") or []
         if ok and items:
             a = items[0]
-            return {"id": a.get("id"),
-                    "title": a.get("title") or a.get("display_name") or "?"}
+            audio = {"id": a.get("id"),
+                     "title": a.get("title") or a.get("display_name") or "?"}
+            _notify_audio_unlocked_once(audio)
+            return audio
     return None
+
+
+def _notify_audio_unlocked_once(audio):
+    """Meta 第一次對此帳號開放曲庫時推播 admin 一次(marker 防重);失敗不影響發文。"""
+    marker = HERE / "social_out" / ".ig_audio_unlocked"
+    if marker.exists():
+        return
+    try:
+        kv = {}
+        env_file = ROOT / ".env"
+        if env_file.exists():
+            for line in env_file.read_text(encoding="utf-8").splitlines():
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    kv[k.strip()] = v.strip().strip('"').strip("'")
+        tok = (os.environ.get("MARKETDAILY_ALERT_TOKEN")
+               or kv.get("MARKETDAILY_ALERT_TOKEN") or "")
+        if not tok:
+            return
+        worker = (os.environ.get("MARKETDAILY_ALERT_WORKER_URL")
+                  or "https://marketdaily-alert-worker.delvin-12345678.workers.dev")
+        msg = (f"🎵 Meta 已對 @marketdailyhq 開放 IG 第三方曲庫!"
+               f"Reels 從現在起自動配 trending 音樂(本次:{audio['title']})。零人工動作需要。")
+        ok, _ = http(f"{worker.rstrip('/')}/internal/admin-line-push", "POST",
+                     json_body={"message": msg},
+                     headers={"Authorization": f"Bearer {tok}"})
+        if ok:
+            marker.write_text(datetime.now().isoformat(), encoding="utf-8")
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️ 曲庫開放推播失敗(不影響發文):{e}")
 
 
 def post_instagram_reel(env, video_url, caption, trending_audio=True):
     ig, tok = env["IG_USER_ID"], env["META_ACCESS_TOKEN"]
-    form = {"media_type": "REELS", "video_url": video_url,
-            "caption": caption, "thumb_offset": "3000",
-            "access_token": tok}
     audio = get_trending_audio(env) if trending_audio else None
-    if audio and audio.get("id"):
-        # 掛 trending 音樂時把影片內建配樂靜音(避免兩軌打架);有旁白的 reel 要傳 trending_audio=False
-        form["audio_configuration"] = json.dumps(
-            {"audio_id": audio["id"], "audio_volume": 100, "video_volume": 0})
-        print(f"  🎵 trending audio:{audio['title']} ({audio['id']})")
-    ok, c = http(f"{GRAPH}/{ig}/media", "POST", form=form)
-    if (not ok or "id" not in c) and "audio_configuration" in form:
-        print(f"  ⚠️ trending audio 掛載被拒,退回影片內建配樂重試:{c}")
-        form.pop("audio_configuration")
+
+    def _create_and_process(with_audio):
+        """container 建立+處理輪詢;回 (creation_id, None) 或 (None, err)。publish 前失敗都可安全重來。"""
+        form = {"media_type": "REELS", "video_url": video_url,
+                "caption": caption, "thumb_offset": "3000",
+                "access_token": tok}
+        if with_audio:
+            # 掛 trending 音樂時把影片內建配樂靜音(避免兩軌打架);有旁白的 reel 要傳 trending_audio=False
+            form["audio_configuration"] = json.dumps(
+                {"audio_id": audio["id"], "audio_volume": 100, "video_volume": 0})
         ok, c = http(f"{GRAPH}/{ig}/media", "POST", form=form)
-    if not ok or "id" not in c:
-        return False, c
-    cid, qtok = c["id"], urllib.parse.quote(tok)
-    for _ in range(60):
-        time.sleep(5)
-        _, st = http(f"{GRAPH}/{cid}?fields=status_code&access_token={qtok}")
-        if st.get("status_code") == "FINISHED":
-            break
-        if st.get("status_code") == "ERROR":
-            return False, st
-    else:
-        return False, {"error": "Reel 處理逾時"}
+        if not ok or "id" not in c:
+            return None, c
+        cid, qtok = c["id"], urllib.parse.quote(tok)
+        for _ in range(60):
+            time.sleep(5)
+            _, st = http(f"{GRAPH}/{cid}?fields=status_code&access_token={qtok}")
+            if st.get("status_code") == "FINISHED":
+                return cid, None
+            if st.get("status_code") == "ERROR":
+                return None, st
+        return None, {"error": "Reel 處理逾時"}
+
+    cid = None
+    if audio and audio.get("id"):
+        print(f"  🎵 trending audio:{audio['title']} ({audio['id']})")
+        cid, err = _create_and_process(True)
+        if cid is None:
+            print(f"  ⚠️ trending audio 版容器失敗,退回影片內建配樂重試:{err}")
+    if cid is None:
+        cid, err = _create_and_process(False)
+        if cid is None:
+            return False, err
     ok, p = http(f"{GRAPH}/{ig}/media_publish", "POST",
                  form={"creation_id": cid, "access_token": tok})
     return (True, p["id"]) if ok and "id" in p else (False, p)
