@@ -19,6 +19,7 @@ if [ "${1:-}" = "us-audio" ]; then
   "$PY" video_brief/extract.py "$TWDATE" us                                  || exit 10
   "$PY" audio_brief/build_script.py "video_brief/out/brief_${TWDATE}_us.json" || exit 13
   "$PY" audio_brief/tts.py "audio_brief/out/narration_${TWDATE}_us.txt"       || exit 14
+  "$PY" audio_brief/personal.py "$TWDATE" us                                  || exit 15
   echo "run_daily us-audio done rc=0"
   exit 0
 fi
@@ -26,17 +27,23 @@ fi
 RC=0
 "$PY" video_brief/extract.py || exit 10
 
-"$PY" video_brief/render.py    || RC=11
-[ "$RC" = 0 ] && { "$PY" video_brief/make_post.py || RC=12; }
-
+# 語音先行(公版+個人):postcheck 07:45 窗口要驗到個人音檔;reel 死線是 14:00 發文,不急。
 # 週末只產 reel(週末盤點版):語音快報的旁白稿/TTS 是平日格式,週末不做
 TWU=$((10#$(TZ=Asia/Taipei date +%u)))
 if [ "$TWU" -lt 6 ]; then
+  TWDATE=$(TZ=Asia/Taipei date +%Y-%m-%d)
   "$PY" audio_brief/build_script.py || RC=$((RC == 0 ? 13 : RC))
   "$PY" audio_brief/tts.py          || RC=$((RC == 0 ? 14 : RC))
+  "$PY" audio_brief/personal.py "$TWDATE" tw || RC=$((RC == 0 ? 15 : RC))
 else
   echo "週末:僅產 reel,語音快報跳過"
 fi
+
+# reel 產線(語音壞了 reel 照出,反之亦然:REEL_RC 獨立追蹤再合併)
+REEL_RC=0
+"$PY" video_brief/render.py    || REEL_RC=11
+[ "$REEL_RC" = 0 ] && { "$PY" video_brief/make_post.py || REEL_RC=12; }
+[ "$RC" = 0 ] && RC=$REEL_RC
 
 echo "run_daily done rc=$RC"
 exit "$RC"

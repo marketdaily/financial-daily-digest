@@ -15,6 +15,9 @@ REPO = HERE.parent
 VB_OUT = REPO / "video_brief" / "out"
 OUT = HERE / "out"
 
+sys.path.insert(0, str(HERE))
+from spoken import mover_line, grouped_quiet_lines, split_movers, pick_news  # noqa: E402
+
 MOOD_TEXT = {"bearish": "整體氛圍偏空", "bullish": "整體氛圍偏多", "neutral": "整體呈現震盪格局"}
 NUM_READ = str.maketrans({"%": " 個百分點"})
 
@@ -25,17 +28,6 @@ _EMOJI_RE = re.compile("[\u2600-\u27bf\ufe0f\u2b00-\u2bff\U0001f000-\U0001faff]"
 def _clean(b, first=False):
     b = _EMOJI_RE.sub("", b).strip()
     return b.replace("避坑：", "首先是今天的避坑提醒:" if first else "避坑提醒:").strip()
-
-
-def spoken_pct(move):
-    v = move.lstrip("+-")
-    try:
-        if float(v) == 0:
-            return "持平"
-    except ValueError:
-        pass
-    sign = "下跌" if move.startswith("-") else "上漲"
-    return f"{sign}{v}%"
 
 
 def build(brief):
@@ -53,15 +45,15 @@ def build(brief):
         lines.append("再來快速看一下重點個股的昨日表現。" if closed
                      else "再來快速看一下重點個股的昨日表現與今日方向。")
         verdict_label = "目前評估" if closed else "今日評估"
-        for m in brief["movers"]:
-            seg = f"{m['name']},昨日{spoken_pct(m['move'])}"
-            if m.get("verdict"):
-                seg += f",{verdict_label}:{m['verdict']}"
-            lines.append(seg + "。")
-    news = brief.get("news") or []
+        # 有波動/評估有變的逐檔唸;安靜的分組壓縮(「續抱持有」連唸五次=機械式聽感)
+        detail, quiet = split_movers(brief["movers"])
+        for m in detail:
+            lines.append(mover_line(m, verdict_label))
+        lines.extend(grouped_quiet_lines(quiet, verdict_label))
+    news = pick_news(brief.get("news") or [], brief.get("bullets") or [])
     if news:
         lines.append("接著看今天必知的市場新聞。")
-        for n in news[:2]:
+        for n in news:
             why = n["why"].split("。")[0]
             lines.append(f"{n['headline']}。{why}。")
     sectors = brief.get("sectors") or []

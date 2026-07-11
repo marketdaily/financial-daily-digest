@@ -136,6 +136,7 @@ nav {
     <p data-i18n-html="hero_p">每個交易日早上,AI 把當天日報濃縮成 3 分鐘語音。<br>通勤、洗漱、開車時聽,完全免費。</p>
   </header>
 
+  <div id="personal"></div>
   <div id="list"><div class="loading" data-i18n="loading">載入節目中…</div></div>
 
   <p class="note" data-i18n-html="note">內容為公開資訊整理,不構成投資建議,投資一定有風險。<br>想看完整進出場計畫?<a href="index.html" style="color:var(--primary-light)">免費訂閱日報</a>,每天早上 7 點寄到你信箱。</p>
@@ -162,6 +163,10 @@ const i18n = {
     ep_tag_us: "美股晚間快報",
     generating: "這集正在生成中,通常幾分鐘內上線,頁面會自動更新,不用重新整理。",
     weekend_notice: "週末不製作語音快報(週六早上為文字版週末回顧),先聽最新一集:",
+    personal_tag: "你的專屬快報",
+    personal_note: "依你的持股客製,只講跟你有關的",
+    personal_generating: "你的專屬快報正在生成中,通常幾分鐘內上線,頁面會自動更新,不用重新整理。",
+    public_below: "下方是當日公版快報:",
     note: "內容為公開資訊整理,不構成投資建議,投資一定有風險。<br>想看完整進出場計畫?<a href=\"index.html\" style=\"color:var(--primary-light)\">免費訂閱日報</a>,每天早上 7 點寄到你信箱。",
     outro_link: "← 回到首頁"
   },
@@ -178,6 +183,10 @@ const i18n = {
     ep_tag_us: "US Evening Brief",
     generating: "This episode is being generated — usually live within a few minutes. The page will update automatically.",
     weekend_notice: "No audio briefs on weekends (Saturday mornings get the written weekly recap). Here's the latest episode:",
+    personal_tag: "Your personal brief",
+    personal_note: "Tailored to your holdings — only what matters to you",
+    personal_generating: "Your personal brief is being generated — usually live within minutes. This page will update automatically.",
+    public_below: "Below is the market-wide edition:",
     note: "Content is a summary of public information, not investment advice. Investing involves risk.<br>Want the full entry/exit plans? <a href=\"index.html\" style=\"color:var(--primary-light)\">Subscribe free</a> — delivered to your inbox at 7:00 AM daily.",
     outro_link: "← Back to home"
   }
@@ -201,6 +210,7 @@ function toggleLang() {
   localStorage.setItem('md-lang-v2', next);
   applyLang(next);
   renderList();
+  renderPersonal();
 }
 
 /* ── 集數載入:一次讀 manifest。預設依台北時段只顯示一集(07-19時=台股晨間,20-06時=美股晚間);?date=YYYY-MM-DD 顯示指定日(舊集數入口=當天日報 email 連結) ── */
@@ -315,7 +325,65 @@ function renderList() {
       <audio controls preload="none" src="${MEDIA}/audio_${d}_${ed}.mp3"></audio>
     </div>`).join("");
 }
+/* ── 個人專屬快報:email 連結帶 ?u={token}(依持股客製的專屬音檔 pa_*.mp3,
+      token 不可枚舉、只有信件本人拿得到)。檔還沒好=輪詢生成中;非今日或逾時=靜默退公版 ── */
+const P = { tok: null, date: null, ed: null, polls: 0, status: null, url: null };
+function renderPersonal() {
+  const box = document.getElementById("personal");
+  if (!box || !P.status) return;
+  const t = i18n[LANG] || i18n.zh;
+  const tag = `<span class="ep-tag today-tag">${t.personal_tag}</span> <span class="ep-tag">${P.ed === "us" ? t.ep_tag_us : t.ep_tag_tw}</span>`;
+  if (P.status === "ready") {
+    box.innerHTML = `
+    <div class="ep today">
+      <div class="ep-head">
+        <span class="ep-date">${P.date}</span>
+        <span>${tag}</span>
+      </div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:10px;">${t.personal_note}</div>
+      <audio controls preload="none" src="${P.url}"></audio>
+    </div>
+    <div class="empty" style="padding:10px 0 18px;">${t.public_below}</div>`;
+  } else if (P.status === "waiting") {
+    box.innerHTML = `
+    <div class="ep today">
+      <div class="ep-head">
+        <span class="ep-date">${P.date}</span>
+        <span>${tag}</span>
+      </div>
+      <div class="empty">${t.personal_generating}</div>
+    </div>`;
+  } else {
+    box.innerHTML = "";
+  }
+}
+async function pollPersonal() {
+  const url = `${MEDIA}/pa_${P.date}_${P.ed}_${P.tok}.mp3`;
+  let ok = false;
+  try { ok = (await fetch(url, { method: "HEAD" })).ok; } catch (e) {}
+  if (ok) {
+    P.status = "ready"; P.url = url;
+  } else if (P.date === fmtDate(new Date()) && P.polls < 80) {
+    P.polls++;
+    P.status = "waiting";
+    setTimeout(pollPersonal, 45000);
+  } else {
+    P.status = "gone"; // 舊集數的個人版已不存在 → 不佔版面,靜默退公版
+  }
+  renderPersonal();
+}
+function initPersonal() {
+  const q = new URLSearchParams(location.search);
+  const u = (q.get("u") || "").trim();
+  const d = (q.get("date") || "").trim();
+  const ed = (q.get("ed") || "").trim();
+  if (!/^[0-9a-f]{8,32}$/.test(u) || !/^\d{4}-\d{2}-\d{2}$/.test(d) || !["tw", "us"].includes(ed)) return;
+  P.tok = u; P.date = d; P.ed = ed;
+  pollPersonal();
+}
+
 applyLang(LANG);
+initPersonal();
 loadEpisodes();
 </script>
 </body>

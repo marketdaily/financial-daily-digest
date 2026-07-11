@@ -23,6 +23,9 @@ tuna_pipeline/debug_*.png
 
 # 產出物 —— 每日 pipeline 生成的 digest,不版控
 /output/
+# 語音/短影音產線產出(manifest 含訂閱者 email+token,屬個資,絕不可進 git)
+audio_brief/out/
+video_brief/out/
 # 個人化日報含訂閱者持股,一律不進 git(隱私)。公版 docs/output/digest_YYYY-MM-DD.html 才版控。
 docs/output/*_personal_*.html
 # Churn Sniper 草稿含訂閱者 email,一律不進 git(隱私)

@@ -125,13 +125,13 @@ def normalize(raw, final):
         check=True, capture_output=True)
 
 
-def verify(final):
+def verify(final, lo=100, hi=260):
     probe = json.loads(subprocess.run(
         ["ffprobe", "-v", "quiet", "-show_entries", "format=duration",
          "-of", "json", str(final)], capture_output=True, text=True).stdout)
     dur = float(probe["format"]["duration"])
-    if not 100 <= dur <= 260:
-        die(f"時長 {dur:.0f}s 不在 100-260s")
+    if not lo <= dur <= hi:
+        die(f"時長 {dur:.0f}s 不在 {lo}-{hi}s")
     r = subprocess.run(
         ["ffmpeg", "-v", "info", "-i", str(final), "-af",
          "astats=metadata=1", "-f", "null", "-"], capture_output=True, text=True)

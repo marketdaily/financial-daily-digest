@@ -791,6 +791,18 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
     return html, fails, ai_calls
 
 
+def _audio_personalize(html, email, date, picks_mode):
+    """個人語音快報:audit 後的最終 HTML → audio 連結加專屬 token+抽個股進 manifest。
+    fail-open:任何失敗回(原 html, None),信件維持公版連結,絕不影響寄送。"""
+    try:
+        from audio_brief.manifest import personalize_email_audio
+        return personalize_email_audio(html, email, date,
+                                       "us" if MARKET == "us" else "tw", picks_mode)
+    except Exception as e:
+        print(f"   ⚠️ 語音個人化跳過({e})")
+        return html, None
+
+
 def run():
     from config import BREVO_API_KEY
     from publisher import get_list_id, check_subscriber_count, get_all_subscribers, send_transactional_email
@@ -824,6 +836,7 @@ def run():
     deterministic_fallbacks = []  # retry 仍 HIGH fail → 用 deterministic 模板(無 LLM)寄出
     systemic_high_counts = {}  # HIGH check 名 → 命中用戶數(連中 3 位即熔斷告警,見 _audit_with_retry)
     outbox = []  # (email, html, subject):先全部生成,等班次整點一齊寄(修「日報固定遲到20分」)
+    audio_entries = []  # 個人語音快報 manifest(每人 token+實收個股),寄送前寫檔給 personal.py
 
     # AI 委員會公版精選:沒選本班次市場持股的用戶,改收委員會投票選出的今日最有潛力標的。
     # council_top_picks 內部有快取(每輪只投一次票)+動能保底,絕不拋例外。
@@ -861,6 +874,9 @@ def run():
                 print(f"   [DRY-RUN] 略過寄信 → {email}")
                 success_count += 1
             else:
+                html, _a_entry = _audio_personalize(html, email, data["date"], picks_mode)
+                if _a_entry:
+                    audio_entries.append(_a_entry)
                 outbox.append((email, html, subject))
                 print(f"   📦 生成完成,進寄送佇列 → {email}")
             continue
@@ -890,10 +906,21 @@ def run():
                 print(f"   [DRY-RUN] 略過寄信 → {email}")
                 success_count += 1
             else:
+                html, _a_entry = _audio_personalize(html, email, data["date"], picks_mode)
+                if _a_entry:
+                    audio_entries.append(_a_entry)
                 outbox.append((email, html, subject))
                 print(f"   📦 生成完成,進寄送佇列 → {email}")
         except Exception as e:
             print(f"   ❌ 生成異常：{email}（{e}）")
+
+    if audio_entries and not DRY_RUN:
+        try:
+            from audio_brief.manifest import write_manifest
+            _mp = write_manifest(audio_entries, data["date"], "us" if MARKET == "us" else "tw")
+            print(f"🎙 個人語音 manifest:{len(audio_entries)} 份 → {_mp}")
+        except Exception as e:
+            print(f"   ⚠️ 語音 manifest 寫檔失敗({e})")
 
     success_count += _flush_outbox(outbox, data["date"], send_transactional_email, BREVO_API_KEY)
 

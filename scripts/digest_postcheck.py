@@ -15,6 +15,8 @@ reel post json、CDN 檔案完整性。生成端修好但發布端漏掉的洞,�
   5. 語音 mp3 / reel mp4 CDN HEAD 大小 == 本地檔(上傳假成功偵測)
   6. 訂閱者視角 e2e(2026-07-11 語音頁卡「生成中」事故後建):headless 瀏覽器打開
      email 裡實際的語音連結,必須有可播集數,不准停在「生成中」;守衛本身掛掉也算失分(不靜默)
+  7. 個人語音快報(2026-07-11 上線):manifest 每人一支 pa mp3 都要在 CDN,
+     並抽一個 token 用訂閱者視角開個人頁驗 #personal 有播放器
 
 用法: post_send_check.py tw|us [--date YYYY-MM-DD] [--dry]
 exit: 0=全過 / 1=內容或完整性失分(呼叫端推 admin) / 3=該存在的 archive 不存在
@@ -70,6 +72,54 @@ def audio_page_user_view(archive_html, url=None):
         state = "卡在「生成中」" if stuck else "無可播集數"
         return [f"[語音頁e2e] 訂閱者點 email 語音連結{state}:{url} → 頁面:{list_text[:80]!r}"]
     return []
+
+
+def personal_page_user_view(url):
+    """個人語音頁訂閱者視角:#personal 區塊必須有可播 <audio>(不是卡「生成中」)。"""
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            b = p.chromium.launch(headless=True)
+            try:
+                pg = b.new_page()
+                pg.goto(url, wait_until="networkidle", timeout=30000)
+                pg.wait_for_timeout(3000)
+                n_audio = pg.locator("#personal audio").count()
+                txt = pg.inner_text("#personal", timeout=10000)
+            finally:
+                b.close()
+    except Exception as e:
+        return [f"[個人語音e2e] 守衛本身跑不動({type(e).__name__}: {e}),用戶視角無人看守"]
+    if n_audio == 0:
+        stuck = "生成中" in txt or "being generated" in txt
+        state = "卡在「生成中」" if stuck else "沒有渲染出播放器"
+        return [f"[個人語音e2e] 訂閱者點自己的專屬語音連結{state}:{url} → {txt[:80]!r}"]
+    return []
+
+
+def personal_audio_check(date, edition):
+    """個人語音防線(2026-07-11 上線):寄信時 main.py 寫的 manifest 每人一支
+    pa_{date}_{ed}_{token}.mp3 都要在 CDN,再抽第一個 token 用訂閱者視角開個人頁。
+    平日 manifest 不存在 = main.py 掛鉤沒跑或 secret 未設,失分不靜默。"""
+    if not audio_expected(date, edition):
+        return []
+    mpath = REPO / "audio_brief" / "out" / f"manifest_{date}_{edition}.json"
+    if not mpath.exists():
+        return [f"[個人語音] manifest 不存在(main.py 掛鉤沒跑或 MD_AUDIO_TOKEN_SECRET 未設):manifest_{date}_{edition}.json"]
+    try:
+        entries = json.loads(mpath.read_text(encoding="utf-8")).get("entries") or []
+    except Exception as e:
+        return [f"[個人語音] manifest 壞檔({e})"]
+    if not entries:
+        return []
+    missing = [e["token"] for e in entries
+               if head_size(f"https://media.marketdaily.ai/pa_{date}_{edition}_{e['token']}.mp3") <= 0]
+    if missing:
+        return [f"[個人語音] {len(missing)}/{len(entries)} 支個人音檔 CDN 驗不到"
+                f"(personal.py 沒跑完或上傳掛了):{missing[:3]}"]
+    tok = entries[0]["token"]
+    return personal_page_user_view(
+        f"https://marketdaily.ai/audio.html?date={date}&ed={edition}&u={tok}")
 
 
 def head_size(url):
@@ -168,6 +218,9 @@ def main():
 
     # ── 6. 訂閱者視角 e2e:email 裡的語音連結實際打開看 ──
     problems.extend(audio_page_user_view(html))
+
+    # ── 7. 個人語音快報:manifest 每人一支 pa mp3 都要上線+個人頁可播 ──
+    problems.extend(personal_audio_check(date, edition))
 
     if problems:
         print(f"✗ 寄後複檢 {date} {edition}:{len(problems)} 個問題")
