@@ -57,47 +57,199 @@ def fetch_rss_news() -> list:
     return articles
 
 
+# ── Yahoo 熔斷器 ──
+# yahooquery 與 yfinance 其實同屬 Yahoo 基礎設施(query1/query2.finance.yahoo.com),
+# Yahoo 整站被擋/斷線時,fetch_us_market 逐檔呼叫會每檔白等 2xYQ+1xyf 的 timeout。
+# 連續 3 個批次 Yahoo 全滅 → 熔斷 10 分鐘直接走非 Yahoo 救援層,期滿半開重試。
+_YAHOO_CB = {"fails": 0, "until": None}
+
+def _yahoo_cb_open() -> bool:
+    until = _YAHOO_CB["until"]
+    if until and datetime.now() < until:
+        return True
+    return False
+
+def _yahoo_cb_report(got_any: bool) -> None:
+    if got_any:
+        _YAHOO_CB["fails"] = 0
+        _YAHOO_CB["until"] = None
+        return
+    _YAHOO_CB["fails"] += 1
+    if _YAHOO_CB["fails"] >= 3:
+        _YAHOO_CB["until"] = datetime.now() + timedelta(minutes=10)
+        print(f"[alt-quotes] Yahoo 連續 {_YAHOO_CB['fails']} 批全滅,熔斷 10 分鐘改走救援源")
+
+
+# ── 非 Yahoo 救援層(2026-07-11,參考 HKUDS/Vibe-Trading 多源 fallback 設計)──
+# 用與 Yahoo 完全獨立的免費源,救「Yahoo 生態系整個死掉」這種單點故障:
+# 騰訊 qt.gtimg.cn(美股/ETF/美指數)、TWSE MIS(台股上市櫃/加權指數)、Coinbase(BTC/ETH)。
+# 只在 Yahoo 層查無時啟用;救回的數字一律過 sanity 檢查,救不回維持缺料(絕不編數字)。
+# ⚠️ 不映射 ^VIX:實測騰訊 s_us.VIX 是舊值(21.67 vs Yahoo 15.03,change 恆 0),寧缺勿假
+_TENCENT_INDEX_MAP = {"^GSPC": "s_usINX", "^IXIC": "s_usIXIC", "^DJI": "s_usDJI"}
+
+def _alt_sane(price: float, change_pct: float, tw_stock: bool) -> bool:
+    if not price or price <= 0:
+        return False
+    limit = 11.0 if tw_stock else 50.0  # 台股 ±10% 漲跌停(留容差);其餘擋離譜值
+    return abs(change_pct) <= limit
+
+def _alt_tencent_quotes(syms: list) -> dict:
+    """騰訊簡要報價:v_s_usAAPL="200~苹果~AAPL.OQ~價~漲跌~漲跌%~量~..."。
+    美股個股/ETF 用 s_us{SYM}(BRK-B→BRK.B),指數走 _TENCENT_INDEX_MAP。"""
+    qmap = {}
+    for s in syms:
+        if s in _TENCENT_INDEX_MAP:
+            qmap[_TENCENT_INDEX_MAP[s]] = s
+        elif re.fullmatch(r"[A-Z][A-Z.\-]{0,9}", s):
+            qmap[f"s_us{s.replace('-', '.')}"] = s
+    if not qmap:
+        return {}
+    out = {}
+    for _ in range(2):
+        try:
+            resp = requests.get(f"https://qt.gtimg.cn/q={','.join(qmap)}", timeout=10,
+                                headers={"User-Agent": "Mozilla/5.0", "Referer": "https://gu.qq.com/"})
+            resp.encoding = "gbk"
+            for m in re.finditer(r'v_(s_us[^=]+)="([^"]*)"', resp.text):
+                sym = qmap.get(m.group(1))
+                f = m.group(2).split("~")
+                if not sym or len(f) < 7:
+                    continue
+                try:
+                    price, pct = float(f[3]), float(f[5])
+                    vol = float(f[6] or 0)
+                except ValueError:
+                    continue
+                # 殭屍報價閘:量 0 且漲跌 0 = 該檔沒在更新(如 .VIX 實測回舊值),寧缺勿假
+                if vol == 0 and pct == 0:
+                    continue
+                if _alt_sane(price, pct, tw_stock=False):
+                    out[sym] = {"price": round(price, 2), "change_pct": round(pct, 2)}
+            if out:
+                break
+        except Exception:
+            continue
+    return out
+
+def _alt_mis_quotes(syms: list) -> dict:
+    """TWSE MIS 即時快照:.TW→tse_、.TWO→otc_、^TWII→tse_t00.tw。
+    z=最新成交(可能為'-'),pz=備用價,y=昨收;漲跌自己算。"""
+    exmap = {}
+    for s in syms:
+        if s == "^TWII":
+            exmap["tse_t00.tw"] = s
+        elif re.fullmatch(r"\d{4,6}\.TW", s):
+            exmap[f"tse_{s[:-3]}.tw"] = s
+        elif re.fullmatch(r"\d{4,6}\.TWO", s):
+            exmap[f"otc_{s[:-4]}.tw"] = s
+    if not exmap:
+        return {}
+    out = {}
+    stale_cut = (datetime.now(timezone.utc) + timedelta(hours=8) - timedelta(days=4)).strftime("%Y%m%d")
+    for _ in range(2):
+        try:
+            resp = requests.get("https://mis.twse.com.tw/stock/api/getStockInfo.jsp",
+                                params={"ex_ch": "|".join(exmap), "json": "1", "delay": "0"},
+                                timeout=10, headers={"User-Agent": "Mozilla/5.0"})
+            for row in resp.json().get("msgArray", []):
+                key = f"{row.get('ex', '')}_{row.get('ch', '')}"
+                sym = exmap.get(key)
+                if not sym:
+                    continue
+                # 新鮮度閘:資料日超過 4 天舊 = 殭屍快照(4 天容忍週末+連假,不誤殺颱風假)
+                if row.get("d") and str(row["d"]) < stale_cut:
+                    continue
+                try:
+                    price = float(row.get("z") if row.get("z") not in (None, "-", "") else row.get("pz") or 0)
+                    prev = float(row.get("y") or 0)
+                except (TypeError, ValueError):
+                    continue
+                if price <= 0 or prev <= 0:
+                    continue
+                pct = (price - prev) / prev * 100
+                if _alt_sane(price, pct, tw_stock=(sym != "^TWII")):
+                    out[sym] = {"price": round(price, 2), "change_pct": round(pct, 2)}
+            if out:
+                break
+        except Exception:
+            continue
+    return out
+
+def _alt_coinbase_quotes(syms: list) -> dict:
+    out = {}
+    for s in [x for x in syms if x in ("BTC-USD", "ETH-USD")]:
+        try:
+            spot = requests.get(f"https://api.coinbase.com/v2/prices/{s}/spot", timeout=10)
+            price = float(spot.json()["data"]["amount"])
+            yday = (datetime.now(timezone.utc) - timedelta(days=1)).strftime("%Y-%m-%d")
+            hist = requests.get(f"https://api.coinbase.com/v2/prices/{s}/spot",
+                                params={"date": yday}, timeout=10)
+            prev = float(hist.json()["data"]["amount"])
+            if price > 0 and prev > 0:
+                pct = (price - prev) / prev * 100
+                if _alt_sane(price, pct, tw_stock=False):
+                    out[s] = {"price": round(price, 2), "change_pct": round(pct, 2)}
+        except Exception:
+            continue
+    return out
+
+def _alt_rescue_prices(missing: list) -> dict:
+    rescued = {}
+    rescued.update(_alt_tencent_quotes([s for s in missing if not s.endswith((".TW", ".TWO"))
+                                        and s not in ("BTC-USD", "ETH-USD") and s != "^TWII"]))
+    rescued.update(_alt_mis_quotes([s for s in missing if s not in rescued]))
+    rescued.update(_alt_coinbase_quotes([s for s in missing if s not in rescued]))
+    if rescued:
+        print(f"[alt-quotes] Yahoo 查無 {len(missing)} 檔,救援源救回 {len(rescued)} 檔:{sorted(rescued)}")
+    return rescued
+
+
 def _batch_prices(symbols: list) -> dict:
-    """yahooquery 批次抓 + 重試 + yfinance 逐檔備援。
+    """yahooquery 批次抓 + 重試 + yfinance 逐檔備援 + 非 Yahoo 救援層。
     GH Actions 上 Yahoo 常整批失敗(429/空回),7am 寄送時害美股全變「今日無報價」,故加韌性。"""
     if not symbols:
         return {}
     result = {}
-    for _ in range(2):
-        try:
-            data = YQTicker(symbols).price
-            if isinstance(data, dict):
-                for sym in symbols:
-                    if sym in result:
-                        continue
-                    p = data.get(sym, {})
-                    if not isinstance(p, dict):
-                        continue
-                    price = p.get("regularMarketPrice")
-                    prev = p.get("regularMarketPreviousClose")
+    if not _yahoo_cb_open():
+        for _ in range(2):
+            try:
+                data = YQTicker(symbols).price
+                if isinstance(data, dict):
+                    for sym in symbols:
+                        if sym in result:
+                            continue
+                        p = data.get(sym, {})
+                        if not isinstance(p, dict):
+                            continue
+                        price = p.get("regularMarketPrice")
+                        prev = p.get("regularMarketPreviousClose")
+                        if price and prev and prev != 0:
+                            result[sym] = {
+                                "price": round(float(price), 2),
+                                "change_pct": round((float(price) - float(prev)) / float(prev) * 100, 2),
+                            }
+                if len(result) == len(symbols):
+                    return result
+            except Exception:
+                pass
+        # yahooquery 沒補齊的,逐檔用 yfinance 歷史價備援(不同 endpoint,常在 quote API 被擋時仍可用)
+        for sym in [s for s in symbols if s not in result]:
+            try:
+                hist = yf.Ticker(sym).history(period="5d")
+                if len(hist) >= 2:
+                    price = float(hist["Close"].iloc[-1])
+                    prev = float(hist["Close"].iloc[-2])
                     if price and prev and prev != 0:
                         result[sym] = {
-                            "price": round(float(price), 2),
-                            "change_pct": round((float(price) - float(prev)) / float(prev) * 100, 2),
+                            "price": round(price, 2),
+                            "change_pct": round((price - prev) / prev * 100, 2),
                         }
-            if len(result) == len(symbols):
-                return result
-        except Exception:
-            pass
-    # yahooquery 沒補齊的,逐檔用 yfinance 歷史價備援(不同 endpoint,常在 quote API 被擋時仍可用)
-    for sym in [s for s in symbols if s not in result]:
-        try:
-            hist = yf.Ticker(sym).history(period="5d")
-            if len(hist) >= 2:
-                price = float(hist["Close"].iloc[-1])
-                prev = float(hist["Close"].iloc[-2])
-                if price and prev and prev != 0:
-                    result[sym] = {
-                        "price": round(price, 2),
-                        "change_pct": round((price - prev) / prev * 100, 2),
-                    }
-        except Exception:
-            continue
+            except Exception:
+                continue
+        _yahoo_cb_report(got_any=bool(result))
+    missing = [s for s in symbols if s not in result]
+    if missing:
+        result.update(_alt_rescue_prices(missing))
     return result
 
 
