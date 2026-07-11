@@ -259,7 +259,12 @@ def _threads_count(keyword, token):
 
 
 def scan_threads(all_keywords):
-    """{keyword: (count, samples)}。無 token=靜默停用;首個權限錯誤即整源停用(不重複打)。"""
+    """{keyword: (count, samples)}。無 token=靜默停用;首個權限錯誤即整源停用(不重複打)。
+    ⚠️ 2026-07-11 實測:threads_keyword_search 標準權限只搜得到 app 用戶自己的貼文(結構性 0),
+    公開內容要過 Meta App Review 拿 Advanced Access。核准前用 THREADS_SEARCH_ENABLED=1 閘門
+    鎖住本源——否則 baseline 被結構性 0 污染,核准日起一週會噴假異常。核准後 .env 加旗標即啟用。"""
+    if os.environ.get("THREADS_SEARCH_ENABLED", "").strip() != "1":
+        return {}
     token = os.environ.get("THREADS_ACCESS_TOKEN", "").strip()
     if not token:
         return {}
