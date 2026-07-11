@@ -2,6 +2,8 @@
 """發當日日報短影音 reel(冪等)。由 social_post_runner.sh 在 14:00 窗口呼叫。
 
 exit code: 0=發出或已發過 / 2=今天沒有已驗證的 reel(生成端出問題) / 3=主平台全失敗
+           4=主平台已發出但次要平台失敗(如 YT 帳號停權;2026-07-10 起 YT 默默失敗
+           兩天沒人知道的教訓——非 skipped 的平台失敗不准無聲)
 """
 import json
 import sys
@@ -46,6 +48,10 @@ def main():
     primary = [r for p, r in results.items() if p in ("instagram", "facebook")]
     if primary and not any(r["ok"] for r in primary):
         sys.exit(3)
+    failed = [p for p, r in results.items() if not r["ok"] and not r.get("skipped")]
+    if failed:
+        print(f"⚠️ 次要平台失敗:{', '.join(failed)}(主平台已發出)")
+        sys.exit(4)
 
 
 if __name__ == "__main__":
