@@ -153,6 +153,12 @@ def render_email_shell(date: str, html_report: str) -> str:
     """Email/本地存檔共用的完整 HTML 骨架(原 build_email_html 與 save_local 各持
     一份逐字節相同的複本,2026-07-03 P3 收斂)。<style> 內容 byte 級凍結於 golden。"""
     html_report = _fix_closed_market_wording(date, html_report)
+    # 週六早報=週末回顧,媒體產線週末不產語音(video_brief_runner 週末防線)→
+    # header 不放「3 分鐘語音版」承諾,footer 連結拿掉 ?date= 改聽最新一集,
+    # 否則 audio.html?date=週六 會顯示等不到的「生成中」。
+    weekend_no_audio = MARKET != "us" and _is_saturday_tw()
+    audio_qs = "" if weekend_no_audio else f"?date={date}&amp;ed={'us' if MARKET == 'us' else 'tw'}"
+    audio_header_line = "" if weekend_no_audio else f'''<div style="margin-top:10px;font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"><a href="https://marketdaily.ai/audio.html{audio_qs}" style="color:#6366f1;text-decoration:none;font-weight:700;">🎙 沒空看?3 分鐘語音版(免費) →</a></div>'''
     return f"""<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -179,7 +185,7 @@ def render_email_shell(date: str, html_report: str) -> str:
     </table>
     <div class="header-meta">{date}</div>
     <div class="header-tagline">AI 精選 · 假訊息過濾 · 美股 + 台股</div>
-    <div style="margin-top:10px;font-size:11px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;"><a href="https://marketdaily.ai/audio.html?date={date}&amp;ed={'us' if MARKET == 'us' else 'tw'}" style="color:#6366f1;text-decoration:none;font-weight:700;">🎙 沒空看?3 分鐘語音版(免費) →</a></div>
+    {audio_header_line}
   </div>
   {html_report}
 
@@ -195,7 +201,7 @@ def render_email_shell(date: str, html_report: str) -> str:
     本報告為 AI 生成之一般性資訊整理，僅供參考，不構成投資建議；MarketDaily 非證券投資顧問事業<br>所有分析內容對免費與付費用戶完全相同，不因付費而異；投資有風險，決策請自行判斷<br><br>
     <a href="https://marketdaily.ai" style="color:#6366f1;text-decoration:none;font-weight:700;">🌐 marketdaily.ai</a> &nbsp;·&nbsp;
     <a href="https://marketdaily.ai/dashboard.html" style="color:#6366f1;text-decoration:none;">⚙️ 我的專區</a> &nbsp;·&nbsp;
-    <a href="https://marketdaily.ai/audio.html?date={date}&amp;ed={'us' if MARKET == 'us' else 'tw'}" style="color:#6366f1;text-decoration:none;">🎙 語音快報</a>
+    <a href="https://marketdaily.ai/audio.html{audio_qs}" style="color:#6366f1;text-decoration:none;">🎙 語音快報</a>
   </div>
 </div>
 </body>

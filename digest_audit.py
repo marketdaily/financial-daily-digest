@@ -121,6 +121,9 @@ def audit_digest(
 
     # ───── TLDR 個人化 ─────
     tldr = _section(html, "tldr")
+    if not tldr:
+        fails.append({"check": "tldr_section_missing", "severity": "high",
+                      "msg": "整份日報沒有 .tldr 30 秒重點區塊"})
     if tldr:
         tldr_text = _strip_html_to_text(tldr)
         # 5. 用戶持有台股 → TLDR 至少要有一條提到台股關鍵字或台股代號(us 晚報台股非主軸,不檢查)
@@ -138,7 +141,10 @@ def audit_digest(
         # 6. TLDR 至少 3 條 bullet
         bullets = re.findall(r"<li[^>]*>", tldr)
         if len(bullets) < 3:
-            fails.append({"check": "tldr_too_short", "severity": "med",
+            # 0 條=區塊整個空的(2026-07-11 mandy 週末版實際出過),用戶看得到的破損
+            # → HIGH 走 retry→deterministic fallback;1-2 條算內容偏短,MED 照寄
+            fails.append({"check": "tldr_too_short",
+                          "severity": "high" if not bullets else "med",
                           "msg": f"TLDR 只有 {len(bullets)} 條,至少要 3 條"})
 
     # ───── 操作建議具體性 ─────

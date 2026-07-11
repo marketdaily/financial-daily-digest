@@ -161,6 +161,7 @@ const i18n = {
     ep_tag_tw: "台股晨間快報",
     ep_tag_us: "美股晚間快報",
     generating: "這集正在生成中,通常幾分鐘內上線,頁面會自動更新,不用重新整理。",
+    weekend_notice: "週末不製作語音快報(週六早上為文字版週末回顧),先聽最新一集:",
     note: "內容為公開資訊整理,不構成投資建議,投資一定有風險。<br>想看完整進出場計畫?<a href=\"index.html\" style=\"color:var(--primary-light)\">免費訂閱日報</a>,每天早上 7 點寄到你信箱。",
     outro_link: "← 回到首頁"
   },
@@ -176,6 +177,7 @@ const i18n = {
     ep_tag_tw: "TW Morning Brief",
     ep_tag_us: "US Evening Brief",
     generating: "This episode is being generated — usually live within a few minutes. The page will update automatically.",
+    weekend_notice: "No audio briefs on weekends (Saturday mornings get the written weekly recap). Here's the latest episode:",
     note: "Content is a summary of public information, not investment advice. Investing involves risk.<br>Want the full entry/exit plans? <a href=\"index.html\" style=\"color:var(--primary-light)\">Subscribe free</a> — delivered to your inbox at 7:00 AM daily.",
     outro_link: "← Back to home"
   }
@@ -205,6 +207,7 @@ function toggleLang() {
 const MEDIA = "https://media.marketdaily.ai";
 let episodes = null;
 let waitingEd = null;
+let noticeKey = null;
 let pollCount = 0;
 
 function fmtDate(d) {
@@ -250,16 +253,23 @@ async function loadEpisodes() {
     const dayEps = epsFor(want);
     episodes = dayEps.filter(e => !wantEd || e.ed === wantEd);
     if (!episodes.length) {
-      // 今天的指定版別還沒生成→顯示「生成中」+輪詢等它上線,不偷播另一集(早晚集嚴格分開)
-      if (want === fmtDate(new Date()) && (wantEd === "tw" || wantEd === "us") && pollCount < 80) {
+      // 週六日媒體產線不產快報(週六早上=文字版週末回顧)→不輪詢傻等,誠實說明+退最新一集
+      const [wy, wm, wd] = want.split("-").map(Number);
+      const wdow = new Date(Date.UTC(wy, wm - 1, wd)).getUTCDay();
+      if (wdow === 0 || wdow === 6) {
+        noticeKey = "weekend_notice";
+        episodes = dayEps.length ? dayEps : latest;
+      } else if (want === fmtDate(new Date()) && (wantEd === "tw" || wantEd === "us") && pollCount < 80) {
+        // 今天的指定版別還沒生成→顯示「生成中」+輪詢等它上線,不偷播另一集(早晚集嚴格分開)
         pollCount++;
         waitingEd = wantEd;
         renderList();
         setTimeout(loadEpisodes, 45000);
         return;
+      } else {
+        // 過去日期真的沒那集(或輪詢逾時)才退:同日另一集→最新一集,不給空頁
+        episodes = dayEps.length ? dayEps : latest;
       }
-      // 過去日期真的沒那集(或輪詢逾時)才退:同日另一集→最新一集,不給空頁
-      episodes = dayEps.length ? dayEps : latest;
     }
   } else {
     // 預設依台北時段只給一集:07-19時=台股晨間,20-06時=美股晚間;該版別全缺才退最新一集防空頁
@@ -295,7 +305,8 @@ function renderList() {
     return;
   }
   const todayStr = fmtDate(new Date());
-  list.innerHTML = episodes.map(({ d, ed }) => `
+  const notice = noticeKey && t[noticeKey] ? `<div class="empty" style="margin-bottom:14px;">${t[noticeKey]}</div>` : "";
+  list.innerHTML = notice + episodes.map(({ d, ed }) => `
     <div class="ep${d === todayStr ? " today" : ""}">
       <div class="ep-head">
         <span class="ep-date">${d}</span>
