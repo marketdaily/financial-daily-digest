@@ -2113,6 +2113,35 @@ def _options_flow_note(data: dict) -> str:
     return note
 
 
+def _social_buzz_note(data: dict) -> str:
+    """台股社群聲量觀察(intel/social_buzz winrig cron 每日 18:40 產出 latest.json)。
+    純觀察補充只餵 reason 素材,不改方向/價位;檔案缺/過期(>3天)/與本份日報台股無交集
+    一律靜默回空字串,注入點自動 no-op,絕不影響主商品、不告警。"""
+    import json as _json
+    import datetime as _dt
+    try:
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                            "intel", "social_buzz_latest.json")
+        with open(path, encoding="utf-8") as f:
+            j = _json.load(f)
+        # 過期防線:>3 天的聲量異常不進 prompt,避免舊事件被 LLM 寫成「今日」
+        if (_dt.date.today() - _dt.date.fromisoformat(j.get("date", "1970-01-01"))).days > 3:
+            return ""
+        tw = (data or {}).get("tw_market") or {}
+        parts = [v["note"] for c, v in (j.get("by_code") or {}).items()
+                 if c in tw and v.get("note")]
+        if not parts:
+            return ""
+        return (
+            "\n【台股社群聲量異常(PTT/巴哈姆特/Threads 提及量統計,觀察性質)】"
+            + " ｜ ".join(parts[:4]) + "\n"
+            "用法:僅作 reason 裡的觀察補充(例如「社群討論度暴增,留意消息面發酵」),"
+            "不得因此改變方向/進出場價位/信心;聲量≠基本面,講不出對營收的機制就別硬扯。\n"
+        )
+    except Exception:
+        return ""
+
+
 def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -> str:
     """組合透視(看深入專屬):純計算整個持股的集中度與最大組合風險,缺料/持股太少不談。
     只用既有資料(結構 prior / 政壇訊號 / 估值 / 籌碼),不編造、不經 LLM。"""
@@ -2455,6 +2484,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                 "- 宏觀背景只對「真的敏感」的持股連動(利率↑→金融/高估值成長股、油價→能源/航運、避險情緒→防禦vs風險),講不出機制的就別硬扯。\n"
             )
     options_note = _options_flow_note(data) if depth != "simple" else ""
+    social_note = _social_buzz_note(data) if depth != "simple" else ""
     def _pos_note(sub: list) -> str:
         """持有者框架 prompt 區塊:只對用戶自填了進場成本的標的生效,其餘標的完全不受影響。
         損益數字在這裡用真實市價算好餵給 LLM,嚴禁 LLM 自行計算。"""
@@ -2496,7 +2526,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
         return (
             lead +
             f"標的({len(sub)} 支,一支都不能少、不能合併):{', '.join(sub)}\n\n"
-            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{options_note}{_pos_note(sub)}{_council_prompt_block(council, sub)}\n"
+            f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{options_note}{social_note}{_pos_note(sub)}{_council_prompt_block(council, sub)}\n"
             f"{rules}\n\n"
             f"只輸出這 {len(sub)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
             f"不要輸出 signal-grid 外框、不要任何說明文字、不要 markdown 反引號。"
