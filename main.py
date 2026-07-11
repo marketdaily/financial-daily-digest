@@ -1006,9 +1006,46 @@ def _emit_run_report(data, subscribers, processed, success_count, tier_counts,
             print(f"   ⚠️ audit 報告寫檔失敗: {e}")
 
 
+def _push_admin_alert(msg):
+    """通用 admin web push(alert-worker /internal/admin-line-push,路徑名沿用但只發 web push)。"""
+    import json as _json
+    import urllib.request
+    worker = os.environ.get("MARKETDAILY_ALERT_WORKER_URL",
+                            "https://marketdaily-alert-worker.delvin-12345678.workers.dev")
+    tok = (os.environ.get("MARKETDAILY_ALERT_TOKEN")
+           or os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN"))
+    if not tok:
+        print("   (skip admin push:MARKETDAILY_ALERT_TOKEN/INTERNAL_TOKEN 未設)")
+        return
+    try:
+        req = urllib.request.Request(
+            f"{worker.rstrip('/')}/internal/admin-line-push",
+            data=_json.dumps({"message": msg}).encode("utf-8"),
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            print(f"   📣 admin push status={resp.status}")
+    except Exception as e:
+        print(f"   ⚠️ admin push 失敗:{e}")
+
+
+def _alert_if_late(market, late_sec):
+    """生成拖過班次整點:照寄(遲到比不寄好),但遲到不准隱形(2026-07-11 早報遲 55 分無人知,
+    Delvin 問了才發現;07-07→07-11 完成時間 07:02→07:59 連五天劣化)。
+    遲 15 分~3 小時=本班次真遲到,推 admin;更久=人工補寄/異常時段,不吵。"""
+    late_min = int(late_sec // 60)
+    if not (15 <= late_min <= 180):
+        return
+    label = "早報(整點 07:00 TW)" if market == "tw" else "晚報(整點 20:00 TW)"
+    _push_admin_alert(f"⏰ {label} 遲到 {late_min} 分鐘才寄出——生成拖過整點,照寄但要查慢因"
+                      f"(近日 Gemini 429 全滅逐戶 fallback 是主嫌)。若為人工補寄可忽略。"
+                      f"log: logs/fallback_*.log")
+
+
 def _hold_until_send_time(market):
     """提早觸發只為先把日報生成好;寄出時間釘在班次整點(tw 07:00 TW=23:00 UTC / us 20:00 TW=12:00 UTC)。
-    生成若拖過整點 → 不等,立刻寄(遲到比不寄好)。both/手動班次不等。"""
+    生成若拖過整點 → 不等,立刻寄(遲到比不寄好),但遲到>15分推 admin 告警。both/手動班次不等。"""
     from datetime import datetime, timezone
     hm = {"tw": (23, 0), "us": (12, 0)}.get(market)
     if not hm:
@@ -1018,6 +1055,7 @@ def _hold_until_send_time(market):
     wait = (target - now).total_seconds()
     # 只在「距整點 60 分內」才等:>60 分 = 手動補發/異常時段,直接寄,不白等
     if wait <= 0 or wait > 60 * 60:
+        _alert_if_late(market, -wait)
         return
     print(f"⏸️ 全員生成完畢,等 {int(wait // 60)} 分 {int(wait % 60)} 秒到班次整點一齊寄出")
     time.sleep(wait)
