@@ -21,6 +21,9 @@ def main():
     today = datetime.now().strftime("%Y-%m-%d")
     src = OUT / f"post_{today}_tw.json"
     if not src.exists():
+        if datetime.now().isoweekday() >= 6:
+            print("週六日生成端照設計不產 reel(video_brief_runner 前置防線),靜默跳過")
+            return
         print(f"⚠️ 找不到 {src.name} —— 今天沒有已驗證的 reel")
         sys.exit(2)
     post = json.loads(src.read_text(encoding="utf-8"))
