@@ -589,8 +589,89 @@ def _yahoo_symbol(code: str, twse: dict, tpex: dict) -> str:
     return code
 
 
+def _tech_from_df(df, pd):
+    """單檔 OHLCV DataFrame → 技術價位 row。資料不足回 None。"""
+    c = df["close"].dropna()
+    if len(c) < 25:
+        return None
+    hi, lo = df["high"], df["low"]
+    prev = c.shift(1)
+    tr = pd.concat([(hi - lo), (hi - prev).abs(), (lo - prev).abs()], axis=1).max(axis=1)
+    atr = tr.rolling(14).mean().iloc[-1]
+    price = float(c.iloc[-1])
+    ma20 = round(float(c.tail(20).mean()), 2)
+    ma50 = round(float(c.tail(50).mean()), 2) if len(c) >= 50 else None
+    row = {
+        "price": round(price, 2),
+        "ma20": ma20,
+        "ma50": ma50,
+        "hi20": round(float(hi.tail(20).max()), 2),
+        "lo20": round(float(lo.tail(20).min()), 2),
+        "hi60": round(float(hi.tail(60).max()), 2),
+        "lo60": round(float(lo.tail(60).min()), 2),
+        "atr14": round(float(atr), 2),
+    }
+    row.update(_advanced_indicators(c, hi, lo, price, ma20, ma50))
+    if "volume" in getattr(df, "columns", []):
+        row.update(_volume_metrics(c, df["volume"]))
+    return row
+
+
+def _clean_ohlc(df, pd):
+    """OHLC 不變量清洗(參考 Vibe-Trading validate_ohlc):零/負價、high<low 的壞列直接丟。"""
+    ok = (df[["open", "close", "high", "low"]] > 0).all(axis=1) & (df["high"] >= df["low"])
+    df = df[ok]
+    return df if len(df) else None
+
+
+def _alt_history_us(sym: str, pd):
+    """騰訊 kline 兩段式:s_us 報價拿交易所後綴代號(AAPL.OQ)→ ifzq fqkline 拉 90 日。
+    kline 列序=[date,open,close,high,low,volume](close 在 high 前,勿照直覺)。"""
+    r = requests.get(f"https://qt.gtimg.cn/q=s_us{sym.replace('-', '.')}", timeout=10,
+                     headers={"User-Agent": "Mozilla/5.0", "Referer": "https://gu.qq.com/"})
+    r.encoding = "gbk"
+    m = re.search(r'"200~[^~]*~([^~]+)~', r.text)
+    if not m or "." not in m.group(1):
+        return None
+    resp = requests.get(
+        f"https://web.ifzq.gtimg.cn/appstock/app/fqkline/get?param=us{m.group(1)},day,,,90,qfq",
+        timeout=15, headers={"User-Agent": "Mozilla/5.0", "Referer": "https://gu.qq.com/"})
+    node = (resp.json().get("data") or {}).get(f"us{m.group(1)}") or {}
+    rows = node.get("qfqday") or node.get("day") or []
+    if len(rows) < 25:
+        return None
+    df = pd.DataFrame([r[:6] for r in rows],
+                      columns=["date", "open", "close", "high", "low", "volume"])
+    df = df.set_index(pd.to_datetime(df.pop("date"))).astype(float).sort_index()
+    return _clean_ohlc(df, pd)
+
+
+def _alt_history_tw(code: str, pd):
+    """FinMind TaiwanStockPrice(免 token):上市櫃日 K,欄位 max/min 對應 high/low。"""
+    start = (datetime.now(timezone.utc) + timedelta(hours=8) - timedelta(days=130)).strftime("%Y-%m-%d")
+    resp = requests.get("https://api.finmindtrade.com/api/v4/data",
+                        params={"dataset": "TaiwanStockPrice", "data_id": code, "start_date": start},
+                        timeout=15)
+    rows = resp.json().get("data") or []
+    if len(rows) < 25:
+        return None
+    df = pd.DataFrame(rows).rename(columns={"max": "high", "min": "low", "Trading_Volume": "volume"})
+    df = df[["date", "open", "close", "high", "low", "volume"]]
+    df = df.set_index(pd.to_datetime(df.pop("date"))).astype(float).sort_index()
+    return _clean_ohlc(df, pd)
+
+
+def _alt_history(raw: str, pd):
+    if raw.isdigit():
+        return _alt_history_tw(raw, pd)
+    if re.fullmatch(r"[A-Z][A-Z.\-]{0,9}", raw):
+        return _alt_history_us(raw, pd)
+    return None
+
+
 def fetch_technicals(symbols: list) -> dict:
-    """各持股真實技術價位:現價/MA20/MA50/20日高低/60日高低/ATR14,給日報訂進出場關卡用真實數字。"""
+    """各持股真實技術價位:現價/MA20/MA50/20日高低/60日高低/ATR14,給日報訂進出場關卡用真實數字。
+    Yahoo 歷史查無時走非 Yahoo 救援(美股騰訊 kline、台股 FinMind),算法同一套。"""
     syms = list(dict.fromkeys([s for s in (symbols or []) if s]))
     if not syms:
         return {}
@@ -598,47 +679,40 @@ def fetch_technicals(symbols: list) -> dict:
     twse = _fetch_twse_all()
     tpex = _fetch_tpex_all()
     ymap = {s: _yahoo_symbol(s, twse, tpex) for s in syms}
-    try:
-        h = YQTicker(list(ymap.values())).history(period="3mo")
-    except Exception:
-        return {}
-    if h is None or not hasattr(h, "columns") or "close" not in getattr(h, "columns", []):
-        return {}
-    out = {}
-    for raw, ysym in ymap.items():
+    h = None
+    if not _yahoo_cb_open():
         try:
-            df = h
-            if isinstance(h.index, pd.MultiIndex):
-                lvl0 = h.index.get_level_values(0)
-                if ysym not in lvl0:
-                    continue
-                df = h.xs(ysym, level=0)
-            c = df["close"].dropna()
-            if len(c) < 25:
+            h = YQTicker(list(ymap.values())).history(period="3mo")
+        except Exception:
+            h = None
+    out = {}
+    if h is not None and hasattr(h, "columns") and "close" in getattr(h, "columns", []):
+        for raw, ysym in ymap.items():
+            try:
+                df = h
+                if isinstance(h.index, pd.MultiIndex):
+                    lvl0 = h.index.get_level_values(0)
+                    if ysym not in lvl0:
+                        continue
+                    df = h.xs(ysym, level=0)
+                row = _tech_from_df(df, pd)
+                if row:
+                    out[raw] = row
+            except Exception:
                 continue
-            hi, lo = df["high"], df["low"]
-            prev = c.shift(1)
-            tr = pd.concat([(hi - lo), (hi - prev).abs(), (lo - prev).abs()], axis=1).max(axis=1)
-            atr = tr.rolling(14).mean().iloc[-1]
-            price = float(c.iloc[-1])
-            ma20 = round(float(c.tail(20).mean()), 2)
-            ma50 = round(float(c.tail(50).mean()), 2) if len(c) >= 50 else None
-            row = {
-                "price": round(price, 2),
-                "ma20": ma20,
-                "ma50": ma50,
-                "hi20": round(float(hi.tail(20).max()), 2),
-                "lo20": round(float(lo.tail(20).min()), 2),
-                "hi60": round(float(hi.tail(60).max()), 2),
-                "lo60": round(float(lo.tail(60).min()), 2),
-                "atr14": round(float(atr), 2),
-            }
-            row.update(_advanced_indicators(c, hi, lo, price, ma20, ma50))
-            if "volume" in getattr(df, "columns", []):
-                row.update(_volume_metrics(c, df["volume"]))
-            out[raw] = row
+    missing = [s for s in syms if s not in out]
+    rescued = []
+    for raw in missing:
+        try:
+            df = _alt_history(raw, pd)
+            row = _tech_from_df(df, pd) if df is not None else None
+            if row:
+                out[raw] = row
+                rescued.append(raw)
         except Exception:
             continue
+    if rescued:
+        print(f"[alt-hist] Yahoo 歷史查無 {len(missing)} 檔,救援源救回 {len(rescued)} 檔:{rescued}")
     return out
 
 
