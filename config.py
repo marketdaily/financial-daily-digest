@@ -5,6 +5,7 @@ load_dotenv()
 
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY_2 = os.getenv("GEMINI_API_KEY_2")  # 第二把免費額度 key(另一 Google 帳號),429 輪替用
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 BEEHIIV_API_KEY = os.getenv("BEEHIIV_API_KEY")
 BEEHIIV_PUBLICATION_ID = os.getenv("BEEHIIV_PUBLICATION_ID")

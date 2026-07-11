@@ -3,7 +3,7 @@ import re
 import time
 import requests
 import stock_names
-from config import GEMINI_API_KEY
+from config import GEMINI_API_KEY, GEMINI_API_KEY_2
 
 # 免費 LLM 引擎：Gemini Flash 系列（免費，無需付費）。
 # flash-latest 品質佳為主；flash-lite 免費層每日額度最高，作為備援確保不斷線。
@@ -244,14 +244,18 @@ def _market_status(today_iso: str) -> dict:
     }
 
 
-_GEMINI_QUOTA_DEAD: set = set()
+_GEMINI_QUOTA_DEAD: set = set()  # 元素=(model, key尾6碼):每把 key 每個模型獨立熔斷
 
 
 def _call_gemini(prompt: str, model: str, system: str = None) -> str:
-    if not GEMINI_API_KEY:
+    # 雙 key 輪替(2026-07-11):免費額度綁 Google 帳號,第二把 key 來自另一帳號;
+    # 同一模型 key1 429 熔斷後自動換 key2,兩把都熔斷才真的跳過該模型。
+    keys = [k for k in (GEMINI_API_KEY, GEMINI_API_KEY_2) if k]
+    if not keys:
         raise RuntimeError("未設定 GEMINI_API_KEY")
-    if model in _GEMINI_QUOTA_DEAD:
-        raise RuntimeError(f"{model} 本輪 429 配額耗盡,熔斷跳過")
+    live = [k for k in keys if (model, k[-6:]) not in _GEMINI_QUOTA_DEAD]
+    if not live:
+        raise RuntimeError(f"{model} 本輪 429 配額耗盡(全部 {len(keys)} 把 key),熔斷跳過")
     payload = {
         "systemInstruction": {"parts": [{"text": system or _SYSTEM_PROMPT}]},
         "contents": [{"parts": [{"text": prompt}]}],
@@ -263,24 +267,24 @@ def _call_gemini(prompt: str, model: str, system: str = None) -> str:
             "thinkingConfig": {"thinkingBudget": 0},
         },
     }
-    url = f"{GEMINI_BASE}/{model}:generateContent?key={GEMINI_API_KEY}"
-    resp = None
-    for attempt in range(4):
-        resp = requests.post(url, json=payload, timeout=120)
-        if resp.status_code == 429:
-            # 退避一次仍 429 = 日配額耗盡而非瞬間 RPM;熔斷該模型,
-            # 否則 6/11 事故重演:每次呼叫白燒 ~50s×2 模型,整班拖到數小時
-            if attempt >= 1:
-                _GEMINI_QUOTA_DEAD.add(model)
-                raise RuntimeError(f"{model} 連續 429,視為配額耗盡並熔斷")
-            time.sleep(12)
-            continue
-        if resp.status_code in (500, 502, 503) and attempt < 3:
-            time.sleep(6)
-            continue
-        resp.raise_for_status()
-        break
-    return resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+    for key in live:
+        url = f"{GEMINI_BASE}/{model}:generateContent?key={key}"
+        for attempt in range(4):
+            resp = requests.post(url, json=payload, timeout=120)
+            if resp.status_code == 429:
+                # 退避一次仍 429 = 日配額耗盡而非瞬間 RPM;熔斷該 (model,key) 換下一把,
+                # 否則 6/11 事故重演:每次呼叫白燒 ~50s×2 模型,整班拖到數小時
+                if attempt >= 1:
+                    _GEMINI_QUOTA_DEAD.add((model, key[-6:]))
+                    break
+                time.sleep(12)
+                continue
+            if resp.status_code in (500, 502, 503) and attempt < 3:
+                time.sleep(6)
+                continue
+            resp.raise_for_status()
+            return resp.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+    raise RuntimeError(f"{model} 連續 429,所有可用 key 皆熔斷")
 
 
 def _call_claude(prompt: str, system: str = None, model: str = "claude-sonnet-4-6") -> str:
