@@ -46,6 +46,8 @@ const RULES = `你是「獨立驗證者」,全新 context,工作目錄是 Market
 3. 合規字眼:不准出現寫死的勝率/訂戶數/百分比、「Pro」、免費試讀、邀請碼、送 Premium、保證/穩賺/絕對/100%、喊進喊出個股、AI 自稱老師/大師/神算、任何 LINE CTA(LINE 已退役)
 4. 品牌距離:對照 ~/autonomous/capabilities/marketing_agents_pipeline/latest_spy_report.json,語句不得與競品 creative 貼太近(近乎照抄=駁回)
 5. 用 Bash 跑 ~/autonomous/capabilities/marketing_agents_pipeline/compliance_selfcheck.py 的 check_caption() 重掃 caption_zh,任何一項 false=駁回
+6. 新聞hook型(草稿帶 source_url):用 ToolSearch 載入 WebFetch 讀 source_url,逐一核對 caption 裡每個外部事實(主體名/數字/事件描述),任何一項對不上或來源抓不到=駁回;新聞非近 14 天內=駁回。外部新聞數字是「零捏造數字」規則的唯一例外,但僅限 source_url 能證實的
+7. 留言閘門型(caption 含「留言『早鳥』」類 CTA):caption 內不得出現任何 URL/連結(連結由留言機器人自動回);口徑只能是「目前限時免費+早鳥用戶未來恢復收費後永久保留免費使用權」,任何暗示「未來分析內容要收費」的寫法=駁回
 
 裁決規則:
 - 小型事實錯誤(日期/星期寫法/明顯錯字)可修正:回傳 fixed_caption_zh / fixed_caption_en(完整改寫後全文)+verifier_edits(改了什麼+為什麼);修正後必須重跑上述全部檢查,全過才可 approve

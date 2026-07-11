@@ -19,7 +19,9 @@ GRAPH = "https://graph.facebook.com/v21.0"
 REDIRECT = "https://www.facebook.com/connect/login_success.html"
 SCOPES = ("pages_show_list,pages_read_engagement,pages_manage_posts,"
           "instagram_basic,instagram_content_publish,business_management,"
-          "ads_management")
+          "ads_management,"
+          # 留言閘門漏斗(comment_funnel.py):回留言+私訊
+          "instagram_manage_comments,instagram_manage_messages,pages_messaging")
 
 
 def load_env():

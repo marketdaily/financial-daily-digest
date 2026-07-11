@@ -75,6 +75,35 @@ def load_drafts() -> list:
     return data.get("drafts", [])
 
 
+def _is_gated(caption: str) -> bool:
+    """留言閘門型貼文:caption 叫人留言關鍵字,連結由 comment_funnel.py 自動回。"""
+    from comment_funnel import KEYWORDS
+    low = caption.lower()
+    return "留言" in caption and any(k.lower() in low for k in KEYWORDS)
+
+
+_FUNNEL_READY = None
+
+
+def _funnel_ready() -> bool:
+    """token 有 instagram_manage_comments 才算漏斗就緒;沒就緒的閘門貼文不入佇列,
+    否則留言的人會得不到任何回覆(fail-closed)。"""
+    global _FUNNEL_READY
+    if _FUNNEL_READY is None:
+        try:
+            import urllib.parse
+            from auto_post import GRAPH, http, load_env
+            env = load_env()
+            ok, r = http(f"{GRAPH}/debug_token?input_token="
+                         f"{urllib.parse.quote(env['META_ACCESS_TOKEN'])}"
+                         f"&access_token={env['APP_ID']}|{env['APP_SECRET']}")
+            _FUNNEL_READY = ok and "instagram_manage_comments" in (
+                (r.get("data") or {}).get("scopes") or [])
+        except Exception:  # noqa: BLE001
+            _FUNNEL_READY = False
+    return _FUNNEL_READY
+
+
 def eligible(drafts: list, already: set) -> list:
     """status == approved、未 promote 過、重新掃描仍合規(草稿可能被人工編輯過,不能只信
     生成當下留在檔案裡的 compliance_self_check)。回傳 [(draft, reject_reason_or_None), ...]。
@@ -94,6 +123,11 @@ def eligible(drafts: list, already: set) -> list:
         if not cc.all_pass(check):
             failed = [k for k, v in check.items() if not v]
             out.append((d, f"重新掃描仍未過合規檢查:{failed}"))
+            seen.add(draft_id)
+            continue
+        if _is_gated(d["caption_zh"]) and not _funnel_ready():
+            out.append((d, "留言閘門型但漏斗未就緒(token 缺 instagram_manage_comments)——"
+                           "先不入佇列,重授權後下次 promote 自動放行"))
             seen.add(draft_id)
             continue
         out.append((d, None))

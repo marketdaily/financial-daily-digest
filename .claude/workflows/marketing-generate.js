@@ -17,6 +17,7 @@ const CAP = '~/autonomous/capabilities/marketing_agents_pipeline'
 
 const IRON_RULES = `鐵則(違反=白做,獨立驗證者會駁回):
 - 零捏造數字:勝率/訂戶數/來源數/百分比一律不准寫死在 caption(下週重跑數字會變=變假話);講機制不講當下數字
+- 唯一例外:「新聞hook型」草稿裡的外部新聞事實數字(非我方產品數據)不但可以寫還必須具體,但 draft 必須帶 source_url 欄位(公開可驗證的原始出處,驗證者會逐字對)
 - 只有 Premium 一個付費方案;禁「Pro」「免費試讀」「不綁卡」「邀請碼」「送 Premium」
 - 禁「保證/穩賺/絕對/100%/月賺X%」;不喊進喊出個股;個股分析內容不得與付費連結(合規鐵則)
 - organic only,不投付費廣告;禁任何 LINE CTA(LINE 已退役)
@@ -37,12 +38,16 @@ const FINAL_SCHEMA = {
 }
 
 const ANGLES = [
-  { platform: 'instagram', angle: '痛點切入:資訊焦慮/看不完新聞' },
+  // 觸及軌(源自 @100xengineers 拆解,memory reference_100xengineers_playbook):
+  // 第一句 hook=具名主體+具體數字+對比;caption=旁白逐字稿式迷你文章(有獨立收藏價值),
+  // 收尾一句自然帶到 MarketDaily;新聞事實必須近 7 天內+可公開驗證,draft 帶 source_url
+  { platform: 'instagram', angle: '新聞hook型(觸及軌):挑近7天一則「金融×AI」真實新聞(新工具/新模型/大公司動作),第一句=具名主體+具體數字+對比(範式:「Google 剛把要價 $30,000 的 Bloomberg Terminal 變成免費 App」),caption 寫成完整迷你文章,結尾一句帶 MarketDaily;draft 必須帶 source_url(驗證者會逐字對新聞事實)' },
   { platform: 'threads', angle: '機制差異化:AI 假訊息過濾怎麼運作' },
   { platform: 'x', angle: '產品日常:一封日報長什麼樣(講結構不講當日數字)' },
   { platform: 'facebook', angle: '信任與合規:免費與付費看到完全相同的個股分析' },
   { platform: 'instagram', angle: '新功能:每天 3 分鐘語音快報(marketdaily.ai/audio)' },
-  { platform: 'threads', angle: '使用情境:通勤/開盤前的晨間儀式' },
+  // 轉換軌:留言閘門(comment_funnel.py 自動回連結;caption 絕不放連結,固定關鍵字「早鳥」)
+  { platform: 'instagram', angle: '留言閘門轉換型:內容教一個真材實料的投資資訊習慣/方法(教方法,不喊個股不給價位),CTA 固定收尾「留言『早鳥』,我把訂閱連結私訊給你 ✌️」;caption 短(三句內)、不放任何連結;口徑只能是「目前全功能限時免費,早鳥用戶在未來恢復收費後永久保留免費使用權」,禁止暗示未來分析內容收費' },
 ]
 
 phase('研究')
