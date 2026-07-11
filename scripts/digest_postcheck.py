@@ -9,9 +9,12 @@ reel post json、CDN 檔案完整性。生成端修好但發布端漏掉的洞,�
   1. 公版 archive 存在(美股休市夜整輪不發=合法缺席,自動跳過)
   2. 市場時序/休市措辭(重用 digest_audit 同一套檢查器,單一事實來源)
   3. 語音稿:休市時序字眼/emoji 殘留(F5 唸不出)/「上漲0.00%」/休市日「今日評估」
+     3b. 平日該有語音卻連旁白稿都沒有=產線沒跑,直接失分(2026-07-11 前是靜默跳過)
   4. reel post json(早場):caption 時序字眼、「++」雙符號
      → 任一不過即把 verified 翻 false(post_daily_reel 只發 verified=true,攔下 14:00 社群發文)
   5. 語音 mp3 / reel mp4 CDN HEAD 大小 == 本地檔(上傳假成功偵測)
+  6. 訂閱者視角 e2e(2026-07-11 語音頁卡「生成中」事故後建):headless 瀏覽器打開
+     email 裡實際的語音連結,必須有可播集數,不准停在「生成中」;守衛本身掛掉也算失分(不靜默)
 
 用法: post_send_check.py tw|us [--date YYYY-MM-DD] [--dry]
 exit: 0=全過 / 1=內容或完整性失分(呼叫端推 admin) / 3=該存在的 archive 不存在
@@ -31,6 +34,42 @@ sys.path.insert(0, str(REPO))
 TENSE_CHECKS = {"tw_pre_market_tense", "tw_pre_market_tense_zaoshen",
                 "us_holiday_tense", "tw_holiday_open_tense", "us_holiday_tonight_tense"}
 EMOJI_RE = re.compile("[☀-➿️⬀-⯿\U0001f000-\U0001faff]")
+
+
+def audio_expected(date, edition):
+    """平日班次語音必須存在;週六早報=週末回顧(產線僅產 reel 不產語音)、週日無班次。
+    與 video_brief 產線的單一事實源(archive 存在+週末規則)對齊。"""
+    wd = datetime.strptime(date, "%Y-%m-%d").weekday()  # Mon=0 .. Sun=6
+    return wd < 5
+
+
+def audio_page_user_view(archive_html, url=None):
+    """訂閱者視角 e2e:從已寄出的 archive 抽出 email 裡實際的語音連結,headless 打開,
+    要求 #list 內出現可播 <audio>;卡「生成中」或空清單=失分。守衛失效(playwright 掛)
+    也回報失分——守衛死掉必須看得見,不准靜默(feedback_zero_error_no_miss)。"""
+    import html as _html
+    if url is None:
+        m = re.search(r'href="(https://marketdaily\.ai/audio\.html[^"]*)"', archive_html)
+        url = _html.unescape(m.group(1)) if m else "https://marketdaily.ai/audio.html"
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            b = p.chromium.launch(headless=True)
+            try:
+                pg = b.new_page()
+                pg.goto(url, wait_until="networkidle", timeout=30000)
+                pg.wait_for_timeout(3000)
+                list_text = pg.inner_text("#list", timeout=10000)
+                n_audio = pg.locator("#list audio").count()
+            finally:
+                b.close()
+    except Exception as e:
+        return [f"[語音頁e2e] 守衛本身跑不動({type(e).__name__}: {e}),用戶視角無人看守"]
+    if n_audio == 0:
+        stuck = "生成中" in list_text or "being generated" in list_text
+        state = "卡在「生成中」" if stuck else "無可播集數"
+        return [f"[語音頁e2e] 訂閱者點 email 語音連結{state}:{url} → 頁面:{list_text[:80]!r}"]
+    return []
 
 
 def head_size(url):
@@ -77,8 +116,12 @@ def main():
         if f["check"] in TENSE_CHECKS:
             problems.append(f"[archive] {f['check']}: {f['msg']}")
 
-    # ── 3. 語音稿 ──
+    # ── 3b. 平日該有語音卻沒有=產線沒跑,不准靜默(2026-07-11 事故) ──
     narration = REPO / "audio_brief" / "out" / f"narration_{date}_{edition}.txt"
+    if not narration.exists() and audio_expected(date, edition):
+        problems.append(f"[語音] 平日日報已寄出但旁白稿不存在(產線沒跑或掛在 extract):narration_{date}_{edition}.txt")
+
+    # ── 3. 語音稿 ──
     if narration.exists():
         text = narration.read_text(encoding="utf-8")
         if edition == "tw" and tw_closed:
@@ -123,12 +166,15 @@ def main():
                 cap_problems.append("→ 已把 post json verified 翻 false,今天 14:00 不會發這支 reel")
             problems.extend(cap_problems)
 
+    # ── 6. 訂閱者視角 e2e:email 裡的語音連結實際打開看 ──
+    problems.extend(audio_page_user_view(html))
+
     if problems:
         print(f"✗ 寄後複檢 {date} {edition}:{len(problems)} 個問題")
         for p in problems:
             print("  -", p)
         return 1
-    print(f"✓ 寄後複檢 {date} {edition} 全過(archive/時序/語音/reel/CDN)")
+    print(f"✓ 寄後複檢 {date} {edition} 全過(archive/時序/語音/reel/CDN/用戶視角e2e)")
     return 0
 
 
