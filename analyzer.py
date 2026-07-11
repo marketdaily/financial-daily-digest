@@ -5,16 +5,18 @@ import requests
 import stock_names
 from config import GEMINI_API_KEY, GEMINI_API_KEY_2
 
-# 免費 LLM 引擎：Gemini Flash 系列（免費，無需付費）。
-# flash-latest 品質佳為主；flash-lite 免費層每日額度最高，作為備援確保不斷線。
-# 2026-06-30 更正:Anthropic key 實測正常(sonnet/haiku 皆 200),Claude 為可用付費後援+council 席次;
-# OpenAI 純因 .env 未設 key 而停用(補 key 即恢復)。Gemini 仍是免費主力,故擴充 model fallback ——
-# 最穩+最高品質的 2.5-flash 擺第一,
-# 再墊 lite + 2.0 世代(獨立配額桶,2.5 配額爆時頂上),flash-latest(別名,常 503)放最後。
-# 實測(本機 key,2026-06-25):2.5-flash/2.5-flash-lite=200、2.0-flash/lite=429(配額,會重置)、
-# flash-latest=503、1.5 系列=404 已下架。
-GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite",
-                 "gemini-2.0-flash", "gemini-2.0-flash-lite", "gemini-flash-latest"]
+# 免費 LLM 引擎：Gemini Flash 系列(免費層,雙 key 輪替)。
+# 2026-07-11 雙 key 實測版圖:key1(舊 AI Studio 專案,grandfathered)吃得到 2.5/2.0 全系列;
+# key2(新帳號 AI Studio 專案)只吃得到 -latest 別名與 gemini-3 世代——
+# 2.5 系列對新專案 404「no longer available to new users」,2.0 系列免費層 limit=0。
+# 階梯設計:品質優先(2.5-flash),第二階 flash-latest 兩把 key 皆可服務(=雙倍額度主力),
+# 再墊 lite 對(key1 的 2.5-lite / key2 的 lite-latest),最後 2.0 世代(key1 獨立配額桶備援)。
+# 404/429 皆按 (model,key) 熔斷,打不到的組合每輪最多白打一次。
+# 另:免費額度只發給 AI Studio 自動建的專案(gen-lang-client-*),CLI/console 手開專案 limit=0;
+# 新版 key 格式為 AQ. 開頭(舊 AIzaSy 仍有效)。gemini-3-*-preview 可用但 preview 不進生產階梯。
+GEMINI_MODELS = ["gemini-2.5-flash", "gemini-flash-latest",
+                 "gemini-2.5-flash-lite", "gemini-flash-lite-latest",
+                 "gemini-2.0-flash", "gemini-2.0-flash-lite"]
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
 # ── 近端價位錨定參數(_near_term_levels / _postprocess_html 買點分流共用)──
@@ -271,6 +273,10 @@ def _call_gemini(prompt: str, model: str, system: str = None) -> str:
         url = f"{GEMINI_BASE}/{model}:generateContent?key={key}"
         for attempt in range(4):
             resp = requests.post(url, json=payload, timeout=120)
+            if resp.status_code == 404:
+                # 模型對這把 key 的專案已下架/不存在(新專案拿不到 2.5 系列):立即熔斷換下一把
+                _GEMINI_QUOTA_DEAD.add((model, key[-6:]))
+                break
             if resp.status_code == 429:
                 # 退避一次仍 429 = 日配額耗盡而非瞬間 RPM;熔斷該 (model,key) 換下一把,
                 # 否則 6/11 事故重演:每次呼叫白燒 ~50s×2 模型,整班拖到數小時
