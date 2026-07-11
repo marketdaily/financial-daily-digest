@@ -21,8 +21,11 @@ def main():
     today = datetime.now().strftime("%Y-%m-%d")
     src = OUT / f"post_{today}_tw.json"
     if not src.exists():
-        if datetime.now().isoweekday() >= 6:
-            print("週六日生成端照設計不產 reel(video_brief_runner 前置防線),靜默跳過")
+        # 與生成端共用同一事實源:當日日報 archive 存在才該有 reel
+        # (週日/假日沒日報→兩端同步靜默,不會再有規則岔開的假警報)
+        digest = ROOT / "docs" / "output" / f"digest_{today}.html"
+        if not digest.exists():
+            print(f"今天沒有日報 archive({digest.name}),照設計不該有 reel,靜默跳過")
             return
         print(f"⚠️ 找不到 {src.name} —— 今天沒有已驗證的 reel")
         sys.exit(2)

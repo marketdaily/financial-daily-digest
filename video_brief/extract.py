@@ -80,6 +80,7 @@ def extract(path):
     brief = {
         "date": date_str,
         "edition": edition,
+        "weekend": datetime.strptime(date_str, "%Y-%m-%d").isoweekday() >= 6,
         "mood": mood,
         "bullets": bullets,
         "movers": movers,

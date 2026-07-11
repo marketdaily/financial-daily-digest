@@ -28,14 +28,21 @@ def die(msg):
 
 def build_caption(brief):
     d = datetime.strptime(brief["date"], "%Y-%m-%d")
-    label = "美股晚報" if brief["edition"] == "us" else "台股晨報"
+    weekend = bool(brief.get("weekend")) and brief["edition"] == "tw"
+    if brief["edition"] == "us":
+        label, span = "美股晚報", "今天"
+    elif weekend:
+        label, span = "週末盤點", "本週"
+    else:
+        label, span = "台股晨報", "今天"
+    emoji = "🗓" if weekend and brief["mood"] == "neutral" else MOOD_EMOJI.get(brief["mood"], "😐")
     hook = brief["bullets"][0].replace("避坑：", "避坑 ")
     movers = brief["movers"][:3]
     mover_line = " · ".join(
         f"{m['name'].split()[0]} {'+' if not m['move'].startswith(('-', '+')) else ''}{m['move']}%"
         for m in movers)
     return (
-        f"{MOOD_EMOJI.get(brief['mood'], '😐')} {d.month}/{d.day} {label}｜30 秒看完今天重點\n\n"
+        f"{emoji} {d.month}/{d.day} {label}｜30 秒看完{span}重點\n\n"
         f"{hook}\n"
         f"📊 {mover_line}\n\n"
         f"每支你選的股票都有完整進出場計畫\n"

@@ -29,8 +29,14 @@ RC=0
 "$PY" video_brief/render.py    || RC=11
 [ "$RC" = 0 ] && { "$PY" video_brief/make_post.py || RC=12; }
 
-"$PY" audio_brief/build_script.py || RC=$((RC == 0 ? 13 : RC))
-"$PY" audio_brief/tts.py          || RC=$((RC == 0 ? 14 : RC))
+# 週末只產 reel(週末盤點版):語音快報的旁白稿/TTS 是平日格式,週末不做
+TWU=$((10#$(TZ=Asia/Taipei date +%u)))
+if [ "$TWU" -lt 6 ]; then
+  "$PY" audio_brief/build_script.py || RC=$((RC == 0 ? 13 : RC))
+  "$PY" audio_brief/tts.py          || RC=$((RC == 0 ? 14 : RC))
+else
+  echo "週末:僅產 reel,語音快報跳過"
+fi
 
 echo "run_daily done rc=$RC"
 exit "$RC"

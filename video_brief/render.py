@@ -84,7 +84,9 @@ def encode(brief, webm):
     make_music(music)
     final = OUT / f"brief_{brief['date']}_{brief['edition']}.mp4"
     subprocess.run([
-        "ffmpeg", "-y", "-i", str(webm), "-i", str(music),
+        # -ss 0.4:Playwright 錄影開頭含導航完成前的空白(白底)幀,裁掉才不會
+        # 變成 IG 0s 預設封面(make_post 非白幀閘會擋;時序有變異,必須確定性裁除)
+        "ffmpeg", "-y", "-ss", "0.4", "-i", str(webm), "-i", str(music),
         "-t", str(DURATION),
         "-vf", "fps=30,scale=1080:1920:flags=lanczos",
         "-c:v", "libx264", "-preset", "slow", "-crf", "21",
