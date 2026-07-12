@@ -1240,6 +1240,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{og_image}">
 <link rel="canonical" href="https://marketdaily.ai/blog/{slug}.html">
+<link rel="alternate" type="application/rss+xml" title="MarketDaily 個股分析" href="/feed.xml">
 <script type="application/ld+json">{schema_json}</script>
 <style>
 :root {{ color-scheme: dark; }}
@@ -1424,6 +1425,7 @@ def regenerate_blog_index(dry: bool):
 <title>個股分析文章 | MarketDaily</title>
 <meta name="description" content="MarketDaily 個股深度分析,涵蓋美股、台股長尾關鍵字。">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
+<link rel="alternate" type="application/rss+xml" title="MarketDaily 個股分析" href="/feed.xml">
 <link rel="canonical" href="https://marketdaily.ai/blog/index.html">
 <style>
 :root {{ color-scheme: dark; }}
@@ -1707,6 +1709,15 @@ def main():
     backfill_og_cards(args.dry)
     print("⑤ 更新 blog index...")
     regenerate_blog_index(args.dry)
+    print("⑥ 更新 RSS feed(docs/feed.xml)...")
+    try:
+        scripts_dir = str(Path(__file__).resolve().parent)
+        if scripts_dir not in sys.path:
+            sys.path.insert(0, scripts_dir)
+        from blog_feed import build_feed
+        build_feed(args.dry)
+    except Exception as e:
+        print(f"  [feed] skip(不阻斷管線): {type(e).__name__}: {e}")
     print("✓ done")
 
 
