@@ -259,6 +259,28 @@ def reconcile_related_links(dry: bool) -> list:
     return updated
 
 
+def backfill_beacon(dry: bool) -> list:
+    """對 docs/blog/ 全部 html 注入 attribution beacon(缺 marker 才注入,冪等)。
+    新文章走 PAGE_TEMPLATE 的 {beacon} 已自帶;此函式負責①beacon 上線前就存在的舊文章
+    ②任何未來手動落檔遺漏的檔案。以 BEACON_MARKER 判存在→已有即 no-op,可安全重跑。"""
+    injected = []
+    for f in BLOG_DIR.glob("*.html"):
+        html = f.read_text(encoding="utf-8")
+        if BEACON_MARKER in html:
+            continue
+        if "</body>" not in html:
+            continue
+        slug = "blog-index" if f.stem == "index" else f.stem
+        new_html = html.replace("</body>", beacon_for(slug) + "\n</body>", 1)
+        injected.append(f.stem)
+        if dry:
+            print(f"  [dry] would inject beacon: {f.name}")
+        else:
+            f.write_text(new_html, encoding="utf-8")
+            print(f"  ✓ beacon injected: {f.name}")
+    return injected
+
+
 def call_claude(system: str, user: str, max_tokens: int = 2000) -> str:
     import urllib.request
     req = urllib.request.Request(
@@ -1081,6 +1103,58 @@ def pick_confluence_seeds(count: int, published: set) -> list:
     return picked
 
 
+# Attribution beacon(2026-07-13 分發瓶頸裁決:SEO 是唯一 automatable-at-scale 成長管道,
+# 但 blog 頁面過去零埋點→search→閱讀流量完全隱形。此 beacon 讓每篇文章的真人閱讀落成
+# attr:visit 記錄,funnel_attribution 積木即可回答「SEO 到底有沒有帶客」。
+# 設計要點:①navigator.webdriver guard——自家 site_scan/site-audit/引擎輪掃描不落資料
+#          (與 docs/index.html:1871、track-record.html 同款,2026-07-12 ef6ae6a 已驗有效);
+#          ②每 session 一次(md-visit-id sessionStorage guard,與首頁共享→blog 先打贏、
+#            點 CTA 到首頁不重複打,同一 session 正確歸因到 blog 起點);
+#          ③organic 落地(URL 無 utm)標 utm_source=blog/utm_medium=organic/utm_content=<slug>
+#            讓 funnel 能逐篇分辨 blog-origin session;有真 utm 的分享連結則保留原值。
+# ⚠️ BEACON_JS 永遠不經過 str.format()——它含大量 {}(JS 物件/箭頭函式),一律以「已 replace
+#   __SLUG__ 的成品字串」當 .format() 的 beacon= 參數傳入(值內的 {} 不會被 format 再解讀),
+#   或在 index f-string 內以 {BEACON_JS.replace(...)} 內插;絕不可把它塞進 format 模板字面。
+BEACON_JS = """<!-- md-attr-beacon -->
+<script>
+(function(){
+  try {
+    var WORKER_URL = "https://api.marketdaily.ai";
+    var p = new URL(window.location.href).searchParams;
+    var real = p.get("utm_source");
+    var utm = {
+      utm_source:   real || "blog",
+      utm_medium:   p.get("utm_medium")   || (real ? null : "organic"),
+      utm_campaign: p.get("utm_campaign") || null,
+      utm_term:     p.get("utm_term")     || null,
+      utm_content:  p.get("utm_content")  || "__SLUG__",
+    };
+    if (real) {
+      var payload = { utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, ts: Date.now() };
+      try { sessionStorage.setItem("md-attr", JSON.stringify(payload)); localStorage.setItem("md-attr-first", JSON.stringify(payload)); } catch (e) {}
+    }
+    if (!navigator.webdriver && !sessionStorage.getItem("md-visit-id")) {
+      fetch(WORKER_URL + "/track/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, utm_term: utm.utm_term, utm_content: utm.utm_content, ts: Date.now() }),
+      })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){ if (d && d.visit_id) { try { sessionStorage.setItem("md-visit-id", d.visit_id); } catch (e) {} } })
+        .catch(function(){});
+    }
+  } catch (e) {}
+})();
+</script>"""
+
+BEACON_MARKER = "<!-- md-attr-beacon -->"
+
+
+def beacon_for(slug: str) -> str:
+    """回傳該 slug 專屬的 beacon 成品字串(__SLUG__ 已填)。"""
+    return BEACON_JS.replace("__SLUG__", slug)
+
+
 PAGE_TEMPLATE = """<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
@@ -1133,6 +1207,7 @@ strong {{ color:#fbbf24; font-weight:700; }}
   </div>
   <p class="disc">本文僅供資訊整理,非投資建議。投資有風險,請評估自身狀況。資料更新:{updated}</p>
 </article>
+{beacon}
 </body>
 </html>"""
 
@@ -1214,6 +1289,7 @@ def write_article(art: dict, dry: bool) -> Path:
         related=related,
         updated=date_modified,
         schema_json=schema_json,
+        beacon=beacon_for(slug),
     )
     if dry:
         print(f"  [dry] {fname.name}({len(html)} bytes)")
@@ -1277,6 +1353,7 @@ h1 {{ font-size:32px; font-weight:900; color:#fff; margin-bottom:32px; }}
   <h1>個股分析 · {len(items)} 篇</h1>
   <div class="grid">{cards}</div>
 </div>
+{beacon_for("blog-index")}
 </body>
 </html>"""
     out = BLOG_DIR / "index.html"
@@ -1527,7 +1604,9 @@ def main():
             print(f"    ✗ failed: {e}")
     print("③ 校正相關文章雙向連結...")
     reconcile_related_links(args.dry)
-    print("④ 更新 blog index...")
+    print("④ 回填 attribution beacon(缺 marker 才注入,冪等)...")
+    backfill_beacon(args.dry)
+    print("⑤ 更新 blog index...")
     regenerate_blog_index(args.dry)
     print("✓ done")
 
