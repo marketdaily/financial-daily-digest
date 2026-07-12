@@ -104,7 +104,7 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 - **AI/Agent 工程**：agentic-engineering、ai-first-engineering、ai-regression-testing、agent-eval、eval-harness、council、iterative-retrieval、cost-aware-llm-pipeline、context-budget、cost-tracking、autonomous-loops、continuous-agent-loop、continuous-learning-v2、skill-creator、skill-seekers、mcp-builder
 - **開發紀律/測試/hooks**：superpowers、superpowers-lab、tdd-workflow、systematic-debugging、root-cause-tracing、finish-branch、pypict、playwright-testing、browser-qa、click-path-audit、fuzz-security、defense-in-depth、deployment-patterns、error-handling、api-connector-builder、data-scraper-agent、code-quality-hooks、typescript-quality-hooks、cc-hooks-python、claude-hooks-sdk（備用）、cc-notify（⚠️Mac-only）、claudio（⚠️Mac-only）、discord-notifier、activity-tracker、code-review-skill（⚠️退役→內建 /code-review）
 - **研究/知識**：deep-research、tapestry、research-indexer、academic-analyzer、knowledge-ops、doc-coauthoring
-- **產能/雜項**：docx、pptx、xlsx、pdf、invoice-organizer、file-organizer、web-artifacts-builder、dashboard-builder、sql-generator、excel-formula、api-docs-generator、genai-prompt-pro（⚠️生成prompt/任務spec強制前置層）、nano-banana-pro、antigravity、open-generative-ai、ui-wireframe-generator、creative-direction、color-palette-generator、font-pairing（⚠️typography-pairing 退役）、defi-amm-security、evm-token-decimals
+- **產能/雜項**：docx、pptx、xlsx、pdf、invoice-organizer、file-organizer、website-design-team（⚠️做整站/landing 唯一入口）、web-artifacts-builder、dashboard-builder、sql-generator、excel-formula、api-docs-generator、genai-prompt-pro（⚠️生成prompt/任務spec強制前置層）、nano-banana-pro、antigravity、open-generative-ai、ui-wireframe-generator、creative-direction、color-palette-generator、font-pairing（⚠️typography-pairing 退役）、defi-amm-security、evm-token-decimals
 
 ## 編碼規範
 - 使用 Python 開發
