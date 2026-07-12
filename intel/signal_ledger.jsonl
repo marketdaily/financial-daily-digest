@@ -157,3 +157,48 @@
 {"date": "2026-07-08", "code": "8936", "source": "institutional", "level": "yellow", "signal": "國統五(8936):法人 20 日淨賣超 -895 張(未成連續型態)", "price_at_signal": null}
 {"date": "2026-07-08", "code": "9935", "source": "margin", "level": "yellow", "signal": "慶豐富四(9935):融資5日暴增16.4%(散戶追高過熱)", "price_at_signal": null}
 {"date": "2026-07-08", "code": "GS", "source": "us_analyst", "level": "red", "signal": "🇺🇸 GS 目標價⬆️+10.3%→$1150(Goldman Sachs)", "price_at_signal": null}
+{"date": "2026-07-09", "code": "2464", "source": "institutional", "level": "red", "signal": "盟立三(2464):外資連 5 日賣超(5日淨賣 -6,310 張)", "price_at_signal": 161.5}
+{"date": "2026-07-09", "code": "3016", "source": "margin", "level": "red", "signal": "嘉晶六(3016):融資5日驟減-17.0%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": 121.5}
+{"date": "2026-07-09", "code": "5291", "source": "mops_news", "level": "red", "signal": "邑昇(5291) 重訊[2026-07-08]:本公司115年度現金增資催繳公告", "price_at_signal": 57.1}
+{"date": "2026-07-09", "code": "5536", "source": "institutional", "level": "yellow", "signal": "聖暉二(5536):法人 20 日淨買超 +2,827 張(未成連續型態)", "price_at_signal": 1215.0}
+{"date": "2026-07-09", "code": "6584", "source": "institutional", "level": "yellow", "signal": "南俊國際三(6584):法人 20 日淨買超 +232 張(未成連續型態)", "price_at_signal": 663.0}
+{"date": "2026-07-09", "code": "6683", "source": "mops_news", "level": "red", "signal": "雍智科技(6683) 重訊[2026-07-08]:公告本公司國內第一次無擔保轉換公司債之代收價款行庫 及存儲專戶行庫", "price_at_signal": 1725.0}
+{"date": "2026-07-09", "code": "6869", "source": "institutional", "level": "red", "signal": "雲豹能源二(6869):外資連 5 日買超(5日淨買 +536 張)", "price_at_signal": 71.2}
+{"date": "2026-07-09", "code": "6903", "source": "mops_news", "level": "red", "signal": "巨漢(6903) 重訊[2026-07-08]:公告本公司國內第一次暨第二次無擔保轉換公司債代收價款行庫 及存儲專戶行庫", "price_at_signal": 394.0}
+{"date": "2026-07-09", "code": "9958", "source": "mops_news", "level": "red", "signal": "世紀鋼(9958) 重訊[2026-07-08]:公告本公司國內第七次無擔保轉換公司債轉換價格調整", "price_at_signal": 117.0}
+{"date": "2026-07-10", "code": "2464", "source": "mops_news", "level": "red", "signal": "盟立(2464) 重訊[2026-07-09]:公告本公司董事會決議辦理限制員 工權利新股收回註銷減資事宜", "price_at_signal": 161.5}
+{"date": "2026-07-10", "code": "3006", "source": "sbl", "level": "yellow", "signal": "晶豪科二(3006):機構借券賣出5日增12.1%(溫和加碼放空)", "price_at_signal": 237.0}
+{"date": "2026-07-10", "code": "3016", "source": "sbl", "level": "yellow", "signal": "嘉晶六(3016):機構借券賣出5日增17.1%(溫和加碼放空)", "price_at_signal": 121.5}
+{"date": "2026-07-10", "code": "4764", "source": "mops_news", "level": "red", "signal": "雙鍵(4764) 重訊[2026-07-09]:公告本公司115年度現金增資認股基準日相關事宜", "price_at_signal": 336.0}
+{"date": "2026-07-10", "code": "6187", "source": "sbl", "level": "yellow", "signal": "萬潤六(6187):機構借券賣出5日遽減-34.9%(回補潮,空頭力道減弱)", "price_at_signal": 1050.0}
+{"date": "2026-07-10", "code": "6546", "source": "sbl", "level": "yellow", "signal": "正基三(6546):機構借券賣出5日增10.8%(溫和加碼放空)", "price_at_signal": 67.6}
+{"date": "2026-07-10", "code": "8438", "source": "mops_news", "level": "red", "signal": "昶昕(8438) 重訊[2026-07-09]:公告本公司國內第一次無擔保轉換公司債委託代收價款 及存儲專戶合約", "price_at_signal": 93.8}
+{"date": "2026-07-10", "code": "AMZN", "source": "us_analyst", "level": "red", "signal": "🇺🇸 AMZN ⬇️ Overweight→Sector Weight(KeyBanc)", "price_at_signal": null}
+{"date": "2026-07-11", "code": "3028", "source": "mops_news", "level": "red", "signal": "增你強(3028) 重訊[2026-07-10]:公告本公司訂定115年現金增資認股基準日等相關事宜(補充 公告發行價格)", "price_at_signal": null}
+{"date": "2026-07-11", "code": "3081", "source": "revenue", "level": "red", "signal": "聯亞(3081):2026/06 營收公告、YoY +128.1%(強勁)、MoM +3.7%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "3149", "source": "mops_news", "level": "red", "signal": "正達(3149) 重訊[2026-07-10]:公告本公司現金增資認股基準日及相關事宜 (補充公告發行價格)", "price_at_signal": null}
+{"date": "2026-07-11", "code": "4541", "source": "revenue", "level": "red", "signal": "晟田(4541):2026/06 營收公告、YoY +58.7%(強勁)、MoM +8.8%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "4973", "source": "revenue", "level": "red", "signal": "廣穎電通(4973):2026/06 營收公告、YoY +197.3%(強勁)、MoM +3.2%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "5263", "source": "revenue", "level": "red", "signal": "智崴(5263):2026/06 營收公告、YoY +90.2%(強勁)、MoM +22.1%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "5289", "source": "revenue", "level": "red", "signal": "宜鼎(5289):2026/06 營收公告、YoY +696.3%(強勁)、MoM +8.5%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "5291", "source": "revenue", "level": "red", "signal": "邑昇(5291):2026/06 營收公告、YoY +40.5%(強勁)、MoM +4.8%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "5386", "source": "revenue", "level": "red", "signal": "青雲(5386):2026/06 營收公告、YoY +442.3%(強勁)、MoM -35.5%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "5536", "source": "revenue", "level": "red", "signal": "聖暉*(5536):2026/06 營收公告、YoY +24.9%(強勁)、MoM +5.7%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "6134", "source": "revenue", "level": "red", "signal": "萬旭(6134):2026/06 營收公告、YoY +36.4%(強勁)、MoM -6.1%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "6187", "source": "revenue", "level": "red", "signal": "萬潤(6187):2026/06 營收公告、YoY +87.1%(強勁)、MoM +38.9%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "6546", "source": "revenue", "level": "yellow", "signal": "正基(6546):2026/06 營收公告、YoY -0.8%、MoM -1.8%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "6584", "source": "revenue", "level": "red", "signal": "南俊國際(6584):2026/06 營收公告、YoY +40.6%(強勁)、MoM +1.5%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "6683", "source": "revenue", "level": "red", "signal": "雍智科技(6683):2026/06 營收公告、YoY +24.5%(強勁)、MoM +14.1%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "6903", "source": "revenue", "level": "red", "signal": "巨漢(6903):2026/06 營收公告、YoY +163.9%(強勁)、MoM +7.3%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "8054", "source": "revenue", "level": "red", "signal": "安國(8054):2026/06 營收公告、YoY -20.6%(衰退)、MoM -62.3%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
+{"date": "2026-07-11", "code": "8096", "source": "revenue", "level": "red", "signal": "擎亞(8096):2026/06 營收公告、YoY +433.5%(強勁)、MoM +125.5%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "8155", "source": "revenue", "level": "red", "signal": "博智(8155):2026/06 營收公告、YoY +31.9%(強勁)、MoM +4.2%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "8299", "source": "revenue", "level": "red", "signal": "群聯(8299):2026/06 營收公告、YoY +301.0%(強勁)、MoM +8.9%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "8936", "source": "revenue", "level": "red", "signal": "國統(8936):2026/06 營收公告、YoY +21.2%(強勁)、MoM +6.4%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "1295", "source": "revenue", "level": "red", "signal": "生合(1295):2026/06 營收公告、YoY +26.7%(強勁)、MoM +38.7%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
+{"date": "2026-07-11", "code": "3141", "source": "revenue", "level": "yellow", "signal": "晶宏(3141):2026/06 營收公告、YoY +10.8%、MoM +1.6%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "3512", "source": "revenue", "level": "red", "signal": "皇龍(3512):2026/06 營收公告、YoY -57.6%(衰退)、MoM -42.8%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "3597", "source": "revenue", "level": "red", "signal": "映興(3597):2026/06 營收公告、YoY +40.7%(強勁)、MoM +1.0%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "6692", "source": "revenue", "level": "yellow", "signal": "進能服(6692):2026/06 營收公告、YoY -17.0%、MoM -34.3%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "7738", "source": "revenue", "level": "yellow", "signal": "東聯互動(7738):2026/06 營收公告、YoY +8.2%、MoM -3.3%", "price_at_signal": null}
+{"date": "2026-07-11", "code": "8916", "source": "revenue", "level": "yellow", "signal": "光隆(8916):2026/06 營收公告、YoY +4.0%、MoM -13.4%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
