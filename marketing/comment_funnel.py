@@ -210,9 +210,11 @@ def run(dry=False):
             break
 
     if perm_dead and not dry:
-        alert(env, "🚨 留言漏斗:token 缺 instagram_manage_comments,無法回覆留言。"
-                   "跑 marketing/get_meta_token.py 重授權(scope 已含新權限),"
-                   "換完把新 token 同步 winrig marketing/.env。", state)
+        alert(env, "🚨 留言漏斗:回覆被 Meta 擋(權限碼)。token 已含 instagram_manage_comments"
+                   "(標準存取),但對外公開粉絲的回覆/私訊需 Advanced access。"
+                   "請到 App→Instagram use case 提 App Review 申請 advanced access"
+                   "(需螢幕錄影+商家驗證),核准後把 marketing/.env 的 "
+                   "COMMENT_FUNNEL_ADVANCED 設 1。", state)
     if not dry:
         save_state(state)
     print(f"[{datetime.now(TW):%F %T}] 閘門貼文 {len(targets)} 篇,本輪回覆 {replied_n} 則"

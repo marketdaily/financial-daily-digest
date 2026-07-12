@@ -86,14 +86,23 @@ _FUNNEL_READY = None
 
 
 def _funnel_ready() -> bool:
-    """token 有 instagram_manage_comments 才算漏斗就緒;沒就緒的閘門貼文不入佇列,
-    否則留言的人會得不到任何回覆(fail-closed)。"""
+    """閘門貼文可否入佇列。需兩個條件(fail-closed):
+    ① token 帶 instagram_manage_comments(2026-07-12 已授權,標準存取可讀/回自家貼文留言);
+    ② env COMMENT_FUNNEL_ADVANCED 為真——標準存取只保證能回「有 App 角色/連結資產」的留言,
+       對外公開粉絲的回覆/私訊需 Advanced access(App Review 核准)。核准前不放行閘門貼文,
+       以免 po 出「留言早鳥」卻回不了公開粉絲=對用戶失信。核准後把該旗標設 1 即開通。"""
     global _FUNNEL_READY
     if _FUNNEL_READY is None:
         try:
+            import os
             import urllib.parse
             from auto_post import GRAPH, http, load_env
             env = load_env()
+            adv = str(env.get("COMMENT_FUNNEL_ADVANCED")
+                      or os.environ.get("COMMENT_FUNNEL_ADVANCED") or "").strip().lower()
+            if adv not in ("1", "true", "yes", "on"):
+                _FUNNEL_READY = False
+                return _FUNNEL_READY
             ok, r = http(f"{GRAPH}/debug_token?input_token="
                          f"{urllib.parse.quote(env['META_ACCESS_TOKEN'])}"
                          f"&access_token={env['APP_ID']}|{env['APP_SECRET']}")
