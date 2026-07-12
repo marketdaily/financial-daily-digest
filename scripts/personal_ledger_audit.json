@@ -1,38 +1,38 @@
 {
-  "generated_at": "2026-07-11T08:04:19",
-  "n_total": 1450,
+  "generated_at": "2026-07-12T08:04:39",
+  "n_total": 1451,
   "a": {
-    "total": 657,
+    "total": 658,
     "hit_rate": {
-      "n": 657,
-      "wins": 249,
-      "rate_pct": 37.9,
+      "n": 658,
+      "wins": 250,
+      "rate_pct": 38.0,
       "ci95": [
-        34.3,
-        41.7
+        34.4,
+        41.8
       ],
       "baseline_pct": 50.0,
       "verdict": "negative_edge",
       "daycluster_ci95": [
-        27.6,
+        27.7,
         49.1
       ],
       "verdict_honest": "negative_edge",
       "daycluster_degenerate": false,
       "naive_overstated_confidence": false,
-      "edge_pct": 12.1,
-      "n_needed_for_edge": 68,
+      "edge_pct": 12.0,
+      "n_needed_for_edge": 69,
       "distinct_days": 18
     },
     "calibration": {
-      "n": 657,
-      "brier": 0.3399,
+      "n": 658,
+      "brier": 0.3397,
       "coin_flip_brier": 0.25,
       "worse_than_coin_flip": true,
       "bins": {
         "<=50": {
-          "n": 213,
-          "hit_pct": 39.0
+          "n": 214,
+          "hit_pct": 39.3
         },
         "51-60": {
           "n": 90,
@@ -107,24 +107,24 @@
     },
     "by_group": {
       "tw": {
-        "n": 376,
-        "wins": 153,
-        "rate_pct": 40.7,
+        "n": 377,
+        "wins": 154,
+        "rate_pct": 40.8,
         "ci95": [
-          35.8,
-          45.7
+          36.0,
+          45.9
         ],
         "baseline_pct": 50.0,
         "verdict": "negative_edge",
         "daycluster_ci95": [
-          28.4,
-          52.7
+          28.7,
+          52.8
         ],
         "verdict_honest": "inconclusive",
         "daycluster_degenerate": false,
         "naive_overstated_confidence": true,
-        "edge_pct": 9.3,
-        "n_needed_for_edge": 115,
+        "edge_pct": 9.2,
+        "n_needed_for_edge": 119,
         "distinct_days": 18
       },
       "us": {
@@ -150,9 +150,9 @@
       }
     },
     "verdict": [
-      "🔴 方向負 edge:37.9%（day-cluster CI [27.6, 49.1] 整段 < 50.0%）— 反著做勝率更高，n=657",
-      "⚠️ 樣本相關:657 筆只來自 18 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
-      "🔴 信心反向:Brier 0.3399 > 0.25，宣稱越高信心實際命中越低 — 信心數字指錯方向，該移除或重新校準",
+      "🔴 方向負 edge:38.0%（day-cluster CI [27.7, 49.1] 整段 < 50.0%）— 反著做勝率更高，n=658",
+      "⚠️ 樣本相關:658 筆只來自 18 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
+      "🔴 信心反向:Brier 0.3397 > 0.25，宣稱越高信心實際命中越低 — 信心數字指錯方向，該移除或重新校準",
       "🔴 負期望值:每筆平均 -0.928%（勝率高也可能賠）— profit factor 0.78，盈101/虧221"
     ]
   },

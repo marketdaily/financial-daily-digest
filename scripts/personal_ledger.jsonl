@@ -1448,3 +1448,4 @@
 {"date": "2026-07-02", "ticker": "QCOM", "market": "us", "type": "C", "verdict_class": "wait", "label": "loss", "prob": 0.4, "regime": "up", "ret": null, "user_hash": "7913d89e73fc"}
 {"date": "2026-07-02", "ticker": "DELL", "market": "us", "type": "A", "verdict_class": "buy", "label": "win", "prob": 0.4, "regime": "up", "ret": null, "user_hash": "7913d89e73fc"}
 {"date": "2026-07-02", "ticker": "AMZN", "market": "us", "type": "A", "verdict_class": "buy", "label": "win", "prob": 0.4, "regime": "up", "ret": null, "user_hash": "7913d89e73fc"}
+{"date": "2026-07-03", "ticker": "0050", "market": "tw", "type": "A", "verdict_class": "hold", "label": "win", "prob": 0.48, "regime": null, "ret": null, "user_hash": "457b2e6f757b"}
