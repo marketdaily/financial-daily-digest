@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-12T22:52:16",
+  "generated_at": "2026-07-13T00:08:08",
   "n_total": 1451,
   "rule": "v2",
   "a": {
@@ -310,7 +310,23 @@
       "buy": 42.9,
       "hold": 55.9,
       "sell": 56.8,
-      "wait": 66.5
+      "wait": 66.5,
+      "by_regime": {
+        "down": {
+          "n_pairs": 503,
+          "buy": 62.4,
+          "hold": 76.1,
+          "sell": 37.4,
+          "wait": 48.9
+        },
+        "up": {
+          "n_pairs": 499,
+          "buy": 25.7,
+          "hold": 37.3,
+          "sell": 73.9,
+          "wait": 82.2
+        }
+      }
     },
     "era": {
       "n_pairs": 429,
@@ -319,7 +335,23 @@
       "buy": 43.4,
       "hold": 57.3,
       "sell": 56.6,
-      "wait": 66.7
+      "wait": 66.7,
+      "by_regime": {
+        "down": {
+          "n_pairs": 144,
+          "buy": 64.6,
+          "hold": 75.7,
+          "sell": 35.4,
+          "wait": 44.4
+        },
+        "up": {
+          "n_pairs": 255,
+          "buy": 36.1,
+          "hold": 50.6,
+          "sell": 63.9,
+          "wait": 75.3
+        }
+      }
     }
   },
   "label_freshness": {

@@ -969,6 +969,7 @@ def _zero_skill_baseline(records: list[dict], since: str | None = None) -> dict:
     不需重抓價格。演算法對齊 ~/autonomous/research/verifier_repro_20260712.py R3。"""
     pairs_all: set[tuple] = set()
     chg_by_pair: dict[tuple, float] = {}
+    regime_by_pair: dict[tuple, str] = {}
     for r in records:
         if r.get("label") not in ("win", "loss"):
             continue
@@ -979,6 +980,8 @@ def _zero_skill_baseline(records: list[dict], since: str | None = None) -> dict:
         pairs_all.add(key)
         if r.get("chg") is not None and key not in chg_by_pair:
             chg_by_pair[key] = r["chg"]
+        if r.get("regime") and key not in regime_by_pair:
+            regime_by_pair[key] = r["regime"]  # regime 是日級別,同 (ticker,date) 一致
     chgs = list(chg_by_pair.values())
     out: dict = {"n_pairs": len(chgs), "n_pairs_missing_chg": len(pairs_all) - len(chgs)}
     if since:
@@ -987,6 +990,21 @@ def _zero_skill_baseline(records: list[dict], since: str | None = None) -> dict:
         for cls in ("buy", "hold", "sell", "wait"):
             wins = sum(1 for c in chgs if label_from_chg(cls, c, "5d") == "win")
             out[cls] = round(100 * wins / len(chgs), 1)
+        # regime-條件化基線(2026-07-13):regime 過濾子集(如 chase_high=buy∩up)的正確虛無假設。
+        # up-regime 全市場漲多→buy null 遠高於全 regime 43.4;用全 regime null 會把 up-regime
+        # 追高的負 edge 遮蔽掉(kpi_pull era 4b 逐筆按 (regime,verdict_class) 混合取此表)。
+        by_regime: dict = {}
+        for rg in sorted(set(regime_by_pair.values())):
+            rg_chgs = [chg_by_pair[k] for k in chg_by_pair if regime_by_pair.get(k) == rg]
+            if not rg_chgs:
+                continue
+            blk = {"n_pairs": len(rg_chgs)}
+            for cls in ("buy", "hold", "sell", "wait"):
+                wins = sum(1 for c in rg_chgs if label_from_chg(cls, c, "5d") == "win")
+                blk[cls] = round(100 * wins / len(rg_chgs), 1)
+            by_regime[rg] = blk
+        if by_regime:
+            out["by_regime"] = by_regime
     return out
 
 
