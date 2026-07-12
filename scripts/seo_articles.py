@@ -1398,8 +1398,13 @@ def write_article(art: dict, dry: bool) -> Path:
 
 def regenerate_blog_index(dry: bool):
     """掃 docs/blog/ 所有文章,生成 index.html 列表頁。"""
-    files = sorted(BLOG_DIR.glob("*.html"), key=lambda f: f.stat().st_mtime, reverse=True)
-    files = [f for f in files if f.stem != "index"]
+    # 按 datePublished 排序(新→舊),而非 mtime。og/beacon/rss 回填會把全部文章 mtime
+    # 刷成同一天 → mtime 排序退化成任意 glob 順序、最新文章被埋;datePublished 與 git 首次
+    # 提交日一致且穩定,git checkout 也不會改動。slug 當決定性次序(同日多篇時可重現)。
+    _articles = [f for f in BLOG_DIR.glob("*.html") if f.stem != "index"]
+    _keyed = [((_existing_date_published(f) or _git_first_commit_date(f)), f.stem, f) for f in _articles]
+    _keyed.sort(key=lambda k: (k[0], k[1]), reverse=True)
+    files = [f for _, _, f in _keyed]
     items = []
     for f in files:
         try:
