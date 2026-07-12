@@ -361,13 +361,77 @@ def yahoo_chart(sym: str, _start_iso: str, _end_iso: str) -> dict[str, float] | 
     return None
 
 
+# ── 偽 bar 結算防線(2026-07-13 根治，見 research/2026-07-13_settlement_spurious_bar_root_cause.md）──
+# 結算價用 sorted_dates[ref_idx+N] 純「位置索引」取第 N 個交易日收盤。Yahoo 偶爾在個別檔的
+# feed 塞偽 bar（美股假期日、週末填補、重複日）→ 索引整段平移到錯的交易日 → 錯結算價被
+# judge 首判「凍死」進 label 永不自癒（2026-07 事故：美股 07/04 觀察日 07/03 偽 bar 讓 6 筆
+# 06-29/07-01 建議結算窗早一日、label 凍錯；Yahoo 事後清掉偽 bar，backfill 才發現不一致）。
+# 用「同市場多檔共識交易日」濾偽 bar：真交易日全市場近 100% 有，偽 bar 只在個別髒 feed 冒出。
+# 市場分群用 ticker.isdigit()（台股全數字，含 5-6 位 ETF 如 006208/00878；美股全字母）——
+# 不靠寫死假期表（會過期，見 harness_golden_live_data_drift），也不靠 yf_symbol 的 4 位判斷
+# （漏 5-6 位 ETF）。只刪「夾在兩個真交易日之間、市場占比極低」的孤立日，稀疏上市邊界不誤刪。
+# 【已知限制（2026-07-13 驗證者 Finding 1，親手復現屬實）】：偽 bar 與「真交易日但多數檔缺、
+# 兩鄰日卻齊全」在覆蓋率上結構完全相同，純共識無法區分——後者僅在真日夾在兩滿鄰日間才誤刪。
+# 實測不會發生於真實連續 Yahoo 歷史（清版 cache 0 drop；ragged-edge 靠鄰日同低被 contiguity 救），
+# 但為理論 HIGH：故每次 drop 都印 stderr（cron 可見、不靜默），且徹底根治見 backlog「共識日曆索引」
+# （改用市場共識交易日曆算結算日，消除位置索引脆性，但可能動現行公開數字→需另做 A/B+Delvin 拍板）。
+# 市場分群假設：MarketDaily 只推個股，不含含字母的台股權證/ETN（如 07286P）；若未來納入需改分群鍵。
+_CONSENSUS_MIN_TICKERS = 5       # 市場檔數不足以建共識 → 完全不濾(退回原行為)
+_CONSENSUS_SPURIOUS_FRAC = 0.15  # 某日占該市場檔數比例 ≤ 此 = 疑偽 bar
+_CONSENSUS_REAL_FRAC = 0.60      # 相鄰日占比 ≥ 此 = 真交易日(只在偽日夾在兩真日間才刪)
+
+
+def _market_of(ticker: str) -> str:
+    return "TW" if ticker.strip().isdigit() else "US"
+
+
+def _market_consensus_days(hist_by_ticker: dict[str, dict]) -> dict[str, dict[str, float]]:
+    """每個市場 {date: 有此 bar 的檔數占比}。真交易日 ≈1.0、偽 bar ≈0。檔數不足回空(不濾)。"""
+    groups: dict[str, list[str]] = {}
+    for t in hist_by_ticker:
+        groups.setdefault(_market_of(t), []).append(t)
+    freq: dict[str, dict[str, float]] = {}
+    for mkt, tickers in groups.items():
+        n = len(tickers)
+        if n < _CONSENSUS_MIN_TICKERS:
+            freq[mkt] = {}
+            continue
+        cnt: dict[str, int] = {}
+        for t in tickers:
+            for d in hist_by_ticker[t]:
+                cnt[d] = cnt.get(d, 0) + 1
+        freq[mkt] = {d: c / n for d, c in cnt.items()}
+    return freq
+
+
+def _filtered_sorted_dates(hist_dict: dict, ticker: str,
+                           consensus: dict[str, dict[str, float]]) -> tuple[list[str], list[str]]:
+    """回傳 (濾後 sorted_dates, 被判偽 bar 的日期)。市場共識不足或無異常 → 原封不動。"""
+    sd = sorted(hist_dict.keys())
+    fr = consensus.get(_market_of(ticker)) or {}
+    if not fr:
+        return sd, []
+    keep: list[str] = []
+    dropped: list[str] = []
+    for i, d in enumerate(sd):
+        if fr.get(d, 0.0) <= _CONSENSUS_SPURIOUS_FRAC:
+            prev_real = i > 0 and fr.get(sd[i - 1], 0.0) >= _CONSENSUS_REAL_FRAC
+            next_real = i < len(sd) - 1 and fr.get(sd[i + 1], 0.0) >= _CONSENSUS_REAL_FRAC
+            if prev_real and next_real:
+                dropped.append(d)
+                continue
+        keep.append(d)
+    return keep, dropped
+
+
 def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
     cache = load_cache()
     by_ticker: dict[str, list[str]] = {}
     for t, d in keys:
         by_ticker.setdefault(t, []).append(d)
 
-    out: dict[tuple[str, str], dict] = {}
+    # Pass 1:取得每檔完整歷史(快取或抓取),先集齊才能跨檔算共識辨識偽 bar。
+    hist_by_ticker: dict[str, dict[str, float]] = {}
     for ticker, dates in by_ticker.items():
         sym = yf_symbol(ticker)
         cache_key = f"{sym}::history"
@@ -397,11 +461,26 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
             cache[cache_key] = hist_dict
             save_cache(cache)
             time.sleep(0.35)  # be polite to yahoo
-        # Lookup per date
-        sorted_dates = sorted(hist_dict.keys())
+        hist_by_ticker[ticker] = hist_dict
+
+    # 跨檔共識:濾掉個別髒 feed 的偽 bar(見 fetch_prices 上方註解),避免結算窗位置平移。
+    consensus = _market_consensus_days(hist_by_ticker)
+
+    # Pass 2:逐檔用濾後交易日索引結算價。
+    out: dict[tuple[str, str], dict] = {}
+    for ticker, dates in by_ticker.items():
+        hist_dict = hist_by_ticker.get(ticker)
+        if not hist_dict:
+            continue
+        sorted_dates, dropped = _filtered_sorted_dates(hist_dict, ticker, consensus)
+        for dd in dropped:
+            fr = consensus.get(_market_of(ticker), {}).get(dd, 0.0)
+            print(f"[settle-guard] drop spurious bar {ticker} {dd} (market freq {fr:.0%})",
+                  file=sys.stderr)
         for d in dates:
             today = hist_dict.get(d)
-            if today is None:
+            # 建議日本身被判偽(極罕,建議日=真交易日)也走「下一交易日」分支,免 index 崩潰。
+            if today is None or d not in sorted_dates:
                 # next trading day on/after
                 later = [dd for dd in sorted_dates if dd >= d]
                 if not later:
@@ -868,7 +947,10 @@ def _reconcile_row(stored: dict, fresh: dict | None, prices: dict | None = None)
     # chg:舊列沒存事實 → 一次性 backfill。優先取 fresh(與本輪 judge 同一價格來源);
     # fresh 缺席(token 已不可歸戶)退回本輪價格快取直接結算——沒有 chg 的列在未來
     # 規則 bump 時無法遷移,等於病沒根治,所以 main() 會把缺 chg 列的鍵也併入抓價。
-    # 美股除息回溯調整會讓極少數舊列與當年結算值 drift,由蓋章機制可見,不在此處遮掩。
+    # 極少數舊列 backfill 出的 chg 會與「當年首判凍結的 label」不一致(→蓋不了章、留白給偵測器)。
+    # 2026-07-13 根因確認:非除息回溯調整,而是首判時 Yahoo feed 有偽 bar(美股假期/週末)讓
+    # sorted_dates[ref_idx+N] 結算窗位置平移、凍錯 label;Yahoo 事後清 bar,backfill 才拿到正確窗口。
+    # fetch_prices 已加跨市場共識濾網防未來復發;既有 9 筆凍錯 label 待人工決定是否改寫(動公開勝率)。
     if stored.get("chg") is None:
         if fresh and fresh.get("chg") is not None:
             stored["chg"] = fresh["chg"]
