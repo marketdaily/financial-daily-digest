@@ -1867,7 +1867,8 @@ const WORKER_URL = "https://api.marketdaily.ai";
     }
     // Always request a visit_id, even for direct/no-UTM visits (once per session) — otherwise
     // any signup that happens without a UTM-tagged landing is permanently unattributable.
-    if (!sessionStorage.getItem("md-visit-id")) {
+    // navigator.webdriver=true → 自動化瀏覽器(自家 QA 掃描/爬蟲),不落 attribution 資料。
+    if (!navigator.webdriver && !sessionStorage.getItem("md-visit-id")) {
       fetch(WORKER_URL + "/track/visit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

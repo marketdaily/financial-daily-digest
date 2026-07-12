@@ -695,7 +695,8 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
       sessionStorage.setItem("md-attr", JSON.stringify(payload));
       localStorage.setItem("md-attr-first", JSON.stringify(payload));
     }
-    if (!sessionStorage.getItem("md-visit-id")) {
+    // navigator.webdriver=true → 自動化瀏覽器(自家 QA 掃描/爬蟲),不落 attribution 資料。
+    if (!navigator.webdriver && !sessionStorage.getItem("md-visit-id")) {
       fetch(WORKER_URL + "/track/visit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
