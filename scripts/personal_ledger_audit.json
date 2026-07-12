@@ -1,6 +1,7 @@
 {
-  "generated_at": "2026-07-12T21:22:27",
+  "generated_at": "2026-07-12T22:52:16",
   "n_total": 1451,
+  "rule": "v2",
   "a": {
     "total": 658,
     "hit_rate": {
@@ -50,15 +51,15 @@
       "inverted": true
     },
     "expectancy": {
-      "n": 323,
-      "avg_ret_pct": -0.928,
+      "n": 325,
+      "avg_ret_pct": -0.984,
       "avg_win_pct": 10.47,
-      "avg_loss_pct": -6.14,
+      "avg_loss_pct": -6.18,
       "win_loss_count": [
         101,
-        221
+        223
       ],
-      "profit_factor": 0.78,
+      "profit_factor": 0.77,
       "positive_expectancy": false
     },
     "by_regime": {
@@ -154,7 +155,7 @@
       "⚠️ naive 高估信心:naive Wilson CI [37.6, 45.1] 看似 negative_edge，但 day-cluster 校正後其實是 inconclusive — 別信 naive",
       "⚠️ 樣本相關:658 筆只來自 18 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
       "🔴 信心反向:Brier 0.34 > 0.25，宣稱越高信心實際命中越低 — 信心數字指錯方向，該移除或重新校準",
-      "🔴 負期望值:每筆平均 -0.928%（勝率高也可能賠）— profit factor 0.78，盈101/虧221"
+      "🔴 負期望值:每筆平均 -0.984%（勝率高也可能賠）— profit factor 0.77，盈101/虧223"
     ]
   },
   "c": {
@@ -300,5 +301,31 @@
       "⚠️ 樣本相關:793 筆只來自 18 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
       "✅ 信心有用:Brier 0.246 < 0.25"
     ]
+  },
+  "baseline": {
+    "note": "零技能基線=同宇宙全部可結算(ticker,date)無腦全標同類的命中率(5d);wait/hold 勝利條件不對稱,50% 不是正確虛無假設",
+    "all_with_chg": {
+      "n_pairs": 1032,
+      "n_pairs_missing_chg": 0,
+      "buy": 42.9,
+      "hold": 55.9,
+      "sell": 56.8,
+      "wait": 66.5
+    },
+    "era": {
+      "n_pairs": 429,
+      "n_pairs_missing_chg": 0,
+      "since": "2026-06-12",
+      "buy": 43.4,
+      "hold": 57.3,
+      "sell": 56.6,
+      "wait": 66.7
+    }
+  },
+  "label_freshness": {
+    "n_judged": 1451,
+    "n_rule_current": 1442,
+    "n_rule_legacy_unstamped": 9,
+    "n_missing_chg": 0
   }
 }
