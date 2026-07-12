@@ -340,7 +340,10 @@ const CORS_HEADERS = {
 };
 
 // 歸一化 utm_source 到固定集合,讓 daily aggregate 桶數可控
-const ATTR_SOURCES = ["ig", "fb", "threads", "line", "x", "tiktok", "youtube", "email", "direct", "other"];
+// 2026-07-13:加 "blog"——SEO blog 頁面 beacon(utm_source=blog,見 scripts/seo_articles.py
+// BEACON_JS)+ blog CTA(utm_source=blog)是排序#2 成長管道的歸因來源;缺此值時
+// normalizeSource 把 blog 收斂進 "other",/admin/analytics-summary by_source 看不到 blog 轉換。
+const ATTR_SOURCES = ["ig", "fb", "threads", "line", "x", "tiktok", "youtube", "email", "blog", "direct", "other"];
 function normalizeSource(s) {
   const v = (s || "").toString().trim().toLowerCase();
   if (!v) return "direct";
