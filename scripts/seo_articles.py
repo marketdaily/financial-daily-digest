@@ -281,6 +281,68 @@ def backfill_beacon(dry: bool) -> list:
     return injected
 
 
+OG_MARKER = 'property="og:image"'
+
+
+def _inject_schema_image(html: str, image: str) -> str:
+    """把 image 加進既有 JSON-LD Article schema(冪等,robust via json)。抽不到就原樣返回。"""
+    m = re.search(r'(<script type="application/ld\+json">)(.*?)(</script>)', html, re.S)
+    if not m:
+        return html
+    try:
+        data = json.loads(m.group(2))
+    except Exception:
+        return html
+    if isinstance(data, dict) and "image" not in data:
+        data["image"] = [image]
+        new_json = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+        return html[:m.start(2)] + new_json + html[m.end(2):]
+    return html
+
+
+def backfill_og_cards(dry: bool) -> list:
+    """對 docs/blog/ 全部既有文章補社群卡(og:image + twitter:card + schema image)。
+    冪等:已含 og:image 即 no-op,可安全重跑;產卡失敗個別文章 fallback 站台預設 og.png。
+    新文章走 PAGE_TEMPLATE 已自帶,此函式只補 og:image 上線前的舊文。"""
+    done = []
+    for f in BLOG_DIR.glob("*.html"):
+        if f.stem == "index":
+            continue
+        html = f.read_text(encoding="utf-8")
+        if OG_MARKER in html:
+            continue
+        tm = re.search(r"<title>(.+?)\s*\|", html)
+        title = tm.group(1) if tm else f.stem
+        dm = re.search(r'<meta name="description" content="([^"]*)"', html)
+        desc = dm.group(1) if dm else title
+        cm = re.search(r"個股分析 · ([^<]+?)</div>", html)
+        market_label = cm.group(1).strip() if cm else "台股"
+        ticker = ticker_of_slug(f.stem)
+        og_image = og_image_for(f.stem, ticker, market_label, title)
+        block = (
+            f'<meta property="og:site_name" content="MarketDaily">\n'
+            f'<meta property="og:image" content="{og_image}">\n'
+            f'<meta property="og:image:width" content="1200">\n'
+            f'<meta property="og:image:height" content="630">\n'
+            f'<meta name="twitter:card" content="summary_large_image">\n'
+            f'<meta name="twitter:title" content="{title}">\n'
+            f'<meta name="twitter:description" content="{desc}">\n'
+            f'<meta name="twitter:image" content="{og_image}">'
+        )
+        if '<link rel="canonical"' in html:
+            html2 = re.sub(r'(<link rel="canonical"[^>]*>)', block + r"\n\1", html, count=1)
+        else:
+            html2 = html.replace("</title>", "</title>\n" + block, 1)
+        html2 = _inject_schema_image(html2, og_image)
+        done.append(f.stem)
+        if dry:
+            print(f"  [dry] would add og card: {f.name}")
+        else:
+            f.write_text(html2, encoding="utf-8")
+            print(f"  ✓ og card: {f.name}")
+    return done
+
+
 def call_claude(system: str, user: str, max_tokens: int = 2000) -> str:
     import urllib.request
     req = urllib.request.Request(
@@ -1169,6 +1231,14 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta property="og:description" content="{desc}">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://marketdaily.ai/blog/{slug}.html">
+<meta property="og:site_name" content="MarketDaily">
+<meta property="og:image" content="{og_image}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{title}">
+<meta name="twitter:description" content="{desc}">
+<meta name="twitter:image" content="{og_image}">
 <link rel="canonical" href="https://marketdaily.ai/blog/{slug}.html">
 <script type="application/ld+json">{schema_json}</script>
 <style>
@@ -1245,12 +1315,35 @@ def _existing_date_published(fname: Path):
     return None
 
 
-def _article_schema_json(title: str, desc: str, slug: str, date_published: str, date_modified: str) -> str:
+DEFAULT_OG_IMAGE = "https://marketdaily.ai/assets/og.png"
+
+
+def og_image_for(slug: str, ticker: str, market_label: str, title: str) -> str:
+    """回傳該文章 og:image 絕對 URL。嘗試用 scripts/og_card.py 生成品牌卡(冪等,存在即略過);
+    任何失敗(PIL 不在/字型缺/渲染例外)一律 fallback 站台預設 og.png——保證管線永不因產圖而斷。"""
+    try:
+        scripts_dir = Path(__file__).resolve().parent
+        if str(scripts_dir) not in sys.path:
+            sys.path.insert(0, str(scripts_dir))
+        from og_card import render_card
+        out = BLOG_DIR / "og" / f"{slug}.png"
+        if not out.exists():
+            render_card(out, ticker, market_label, title)
+        if out.exists() and out.stat().st_size > 0:
+            return f"https://marketdaily.ai/blog/og/{slug}.png"
+    except Exception as e:
+        print(f"  [og_card] fallback default ({type(e).__name__}: {e})")
+    return DEFAULT_OG_IMAGE
+
+
+def _article_schema_json(title: str, desc: str, slug: str, date_published: str,
+                         date_modified: str, image: str = DEFAULT_OG_IMAGE) -> str:
     schema = {
         "@context": "https://schema.org",
         "@type": "Article",
         "headline": title,
         "description": desc,
+        "image": [image],
         "datePublished": date_published,
         "dateModified": date_modified,
         "author": {"@type": "Organization", "name": "MarketDaily"},
@@ -1278,17 +1371,20 @@ def write_article(art: dict, dry: bool) -> Path:
     related = related_html(art["ticker"], slug, scan_articles())
     date_modified = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
     date_published = _existing_date_published(fname) or _git_first_commit_date(fname) or date_modified
-    schema_json = _article_schema_json(art["title"], desc, slug, date_published, date_modified)
+    market_label = MARKET_LABELS.get(art["market"], "台股")
+    og_image = DEFAULT_OG_IMAGE if dry else og_image_for(slug, art["ticker"], market_label, art["title"])
+    schema_json = _article_schema_json(art["title"], desc, slug, date_published, date_modified, og_image)
     html = PAGE_TEMPLATE.format(
         title=art["title"],
         desc=desc,
         slug=slug,
         slug_short=slug[:32],
-        market_label=MARKET_LABELS.get(art["market"], "台股"),
+        market_label=market_label,
         body=art["body_html"],
         related=related,
         updated=date_modified,
         schema_json=schema_json,
+        og_image=og_image,
         beacon=beacon_for(slug),
     )
     if dry:
@@ -1606,6 +1702,9 @@ def main():
     reconcile_related_links(args.dry)
     print("④ 回填 attribution beacon(缺 marker 才注入,冪等)...")
     backfill_beacon(args.dry)
+
+    print("④ 補社群卡 og:image...")
+    backfill_og_cards(args.dry)
     print("⑤ 更新 blog index...")
     regenerate_blog_index(args.dry)
     print("✓ done")
