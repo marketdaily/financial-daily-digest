@@ -66,3 +66,6 @@ scripts/.tw_names_cache.json
 scripts/plan_sim_trades_internal.json
 .tw_closure_cache.json
 intel/social_buzz_wl_cache.json
+scripts/personal_ledger.jsonl.bak
+scripts/personal_ledger.jsonl.tmp
+scripts/personal_ledger.jsonl.lock

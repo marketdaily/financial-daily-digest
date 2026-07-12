@@ -10,9 +10,11 @@ Each mention is classified A (direction) or C (risk-avoidance).
 yfinance gives next-trading-day close → win / loss.
 """
 from __future__ import annotations
+import fcntl
 import hashlib
 import json
 import re
+import shutil
 import sys
 import time
 from datetime import datetime, timedelta
@@ -633,6 +635,54 @@ _HORIZONS = {
     "63d": {"ref": "close_63d",  "hold": 0.10, "wait": 0.07},
 }
 
+# 判定規則版本:label_from_chg 的語意每次變更都必須 bump,並沿用 append_personal_ledger
+# 的 reconcile 讓歷史帳本列從「存下的 chg 事實」重導出 label(2026-07-12 根治:append-only
+# 帳本 × 規則演進 = 舊行永遠停在舊規則,「修規則+重跑」會靜默地什麼都沒修,見 8138144 的
+# 22 筆 hold 凍結事故)。版本史:
+#   v1 = hold 對稱 ±3%(2026-07-09 14:41 前)
+#   v2 = hold 不對稱只罰跌破下緩衝(8755845 起)
+JUDGE_RULE_VERSION = "v2"
+# 全部曾經存在過的版本(bump 時同步 append):週跑偵測器 ledger_label_freshness 用來抓
+# 帳本裡不在版本史上的髒 rule 值(=手改/竄改,FAIL)
+JUDGE_RULE_HISTORY = ("v1", "v2")
+
+
+def settlement_chg(rec: dict, prices: dict, horizon: str = "5d") -> float | None:
+    """結算日漲跌(原始事實):建議日收盤 → horizon 結算價的變化率;尚未到結算日回 None。"""
+    p = prices.get((rec["ticker"], rec["date"]))
+    if not p:
+        return None
+    ref = p.get(_HORIZONS[horizon]["ref"])
+    if ref is None:
+        return None
+    return (ref - p["close"]) / p["close"]
+
+
+def label_from_chg(verdict_class: str, chg: float, horizon: str = "5d",
+                   holder: bool = False) -> str | None:
+    """判定規則單一真源:從結算日漲跌導出 win/loss。judge()/judge_holder()/帳本 reconcile/
+    零技能基線全部走這裡,規則只在此處存在一份(改語意必 bump JUDGE_RULE_VERSION)。
+    一般框架(holder=False):
+      buy  → 漲才算對
+      hold → 2026-07-09 修正:「續抱」對讀者是不對稱的——照建議續抱後上漲是好結果,
+             只有跌破下方緩衝才是建議錯(與持有者框架同規則)。舊版 ±3% 對稱緩衝
+             把「續抱後大漲」也記輸,量的是「預測股價不動」不是建議品質
+             (實測 hold 桶 up/down regime 同時 ~20%,對稱地低=緩衝問題非方向問題)。
+      sell → 強信號,必須真跌才算對
+      wait → 「中性偏空 / 暫時別進場」— 緩衝後小漲不算錯
+    持有者框架(holder=True,type="H"):量的是「聽建議 vs 出場,持有期間有沒有守住」,
+      wait(閘門降級的防守)與 hold 同規則(沒跌破緩衝就算對,大漲是好事不對稱懲罰)。"""
+    cfg = _HORIZONS[horizon]
+    if verdict_class == "buy":
+        return "win" if chg > 0 else "loss"
+    if verdict_class == "hold" or (holder and verdict_class == "wait"):
+        return "win" if chg >= -cfg["hold"] else "loss"
+    if verdict_class == "sell":
+        return "win" if chg < 0 else "loss"
+    if verdict_class == "wait":
+        return "win" if chg < cfg["wait"] else "loss"
+    return None
+
 
 def judge(rec: dict, prices: dict, horizon: str = "5d") -> str | None:
     """結算一筆建議。
@@ -641,31 +691,10 @@ def judge(rec: dict, prices: dict, horizon: str = "5d") -> str | None:
       量到的是「隔日漲跌擲銅板」不是建議品質。
     horizon="21d"/"63d"(月結/季結,2026-07-07 起):同一批判斷分別在 ~1 個月/~1 季後結算。
     horizon="1d"(輔助參考):隔日收盤,保留供對照。"""
-    p = prices.get((rec["ticker"], rec["date"]))
-    if not p:
-        return None
-    cfg = _HORIZONS[horizon]
-    today = p["close"]
-    ref = p.get(cfg["ref"])
-    if ref is None:
+    chg = settlement_chg(rec, prices, horizon)
+    if chg is None:
         return None  # 尚未到結算日 → 待結
-    chg = (ref - today) / today
-    vc = rec["verdict_class"]
-    if vc == "buy":
-        return "win" if chg > 0 else "loss"
-    if vc == "hold":
-        # 2026-07-09 修正:「續抱」對讀者是不對稱的——照建議續抱後上漲是好結果,
-        # 只有跌破下方緩衝才是建議錯(與 judge_holder 同規則)。舊版 ±3% 對稱緩衝
-        # 把「續抱後大漲」也記輸,量的是「預測股價不動」不是建議品質
-        # (實測 hold 桶 up/down regime 同時 ~20%,對稱地低=緩衝問題非方向問題)。
-        return "win" if chg >= -cfg["hold"] else "loss"
-    if vc == "sell":
-        # sell 是強信號,必須真跌才算對
-        return "win" if chg < 0 else "loss"
-    if vc == "wait":
-        # wait 是「中性偏空 / 暫時別進場」— 緩衝後小漲不算錯
-        return "win" if chg < cfg["wait"] else "loss"
-    return None
+    return label_from_chg(rec["verdict_class"], chg, horizon)
 
 
 def judge_holder(rec: dict, prices: dict, horizon: str = "5d") -> str | None:
@@ -674,22 +703,10 @@ def judge_holder(rec: dict, prices: dict, horizon: str = "5d") -> str | None:
       buy(加碼)   → 漲才算對(跟方向判斷同標準)
       hold(續抱)/wait(閘門降級的防守) → 沒有跌破緩衝就算對(續抱時大漲是好事,不對稱懲罰)
       sell(減碼/停損/獲利了結) → 之後真的跌=提前出場是對的"""
-    p = prices.get((rec["ticker"], rec["date"]))
-    if not p:
-        return None
-    cfg = _HORIZONS[horizon]
-    ref = p.get(cfg["ref"])
-    if ref is None:
+    chg = settlement_chg(rec, prices, horizon)
+    if chg is None:
         return None  # 尚未到結算日 → 待結
-    chg = (ref - p["close"]) / p["close"]
-    vc = rec["verdict_class"]
-    if vc == "buy":
-        return "win" if chg > 0 else "loss"
-    if vc in ("hold", "wait"):
-        return "win" if chg >= -cfg["hold"] else "loss"
-    if vc == "sell":
-        return "win" if chg < 0 else "loss"
-    return None
+    return label_from_chg(rec["verdict_class"], chg, horizon, holder=True)
 
 
 def fetch_digest_html(date_str: str) -> str | None:
@@ -782,9 +799,11 @@ def fetch_personal_digest_html(token: str) -> str | None:
 
 
 def _personal_ledger_entries(judged_personal: list[dict], personal_sims: dict[int, dict],
-                              regime_by_date: dict[str, str]) -> list[dict]:
+                              regime_by_date: dict[str, str], prices: dict) -> list[dict]:
     """匿名化個人化建議→帳本欄位(修5)。只留 user token 的雜湊,不留 token/姓名/持股原文
-    ——夠讓 edge_audit 稽核方向/信心/期望值,不夠反推是哪個人。"""
+    ——夠讓 edge_audit 稽核方向/信心/期望值,不夠反推是哪個人。
+    2026-07-12 起每行加存原始事實欄:chg=結算日漲跌(全精度)+rule=判定規則版本,
+    讓未來規則修正可由 reconcile 從事實重導出 label,不再依賴當時的價格快照。"""
     entries = []
     for r in judged_personal:
         outcome = r.get("outcome")
@@ -804,16 +823,100 @@ def _personal_ledger_entries(judged_personal: list[dict], personal_sims: dict[in
             "regime": regime_by_date.get(r["date"]),
             "ret": sim["ret_pct"] if sim else None,
             "user_hash": user_hash,
+            "chg": settlement_chg(r, prices, "5d"),
+            "rule": JUDGE_RULE_VERSION,
             # 持有者框架(type="H")補記自填成本,供未來 per-position 稽核
             **({"holder_entry": r["holder_entry"]} if r.get("holder_entry") else {}),
         })
     return entries
 
 
-def append_personal_ledger(entries: list[dict]) -> int:
+def _ledger_key(e: dict) -> tuple:
+    return (e.get("date"), e.get("ticker"), e.get("type"),
+            e.get("verdict_class"), e.get("user_hash"))
+
+
+def _ledger_pairs_missing_chg() -> set[tuple[str, str]]:
+    """帳本裡還沒存 chg 事實欄的 (ticker,date)——併入本輪抓價,讓 reconcile 能直接
+    從價格快取補事實(fresh 只覆蓋本輪可歸戶的 token,歷史列大多要走這條)。"""
+    pairs: set[tuple[str, str]] = set()
+    if LEDGER_FILE.exists():
+        for line in LEDGER_FILE.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            try:
+                e = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if e.get("chg") is None and e.get("ticker") and e.get("date"):
+                pairs.add((e["ticker"], e["date"]))
+    return pairs
+
+
+def _reconcile_row(stored: dict, fresh: dict | None, prices: dict | None = None) -> bool:
+    """就地補全既有帳本列的「事實欄」,回傳是否有改動。
+    永不改 label——唯一例外是 rule 落後現行版本:從「存下的 chg 事實」重導出 label
+    (2026-07-12 根治 8138144 事故:append-only × 規則演進 = 舊行凍結在舊規則;
+    以後改 judge 語意只要 bump JUDGE_RULE_VERSION,下一輪 build 自動完成遷移,
+    且從事實重導出,不受價格回溯調整 drift 影響)。"""
+    changed = False
+    # ret:寫入當下 sim 常 pending → null 被 dedup 永久凍結;之後任何一輪 sim 出值就補上。
+    # 只填 null,永不覆蓋已有值。
+    if stored.get("ret") is None and fresh and fresh.get("ret") is not None:
+        stored["ret"] = fresh["ret"]
+        changed = True
+    # chg:舊列沒存事實 → 一次性 backfill。優先取 fresh(與本輪 judge 同一價格來源);
+    # fresh 缺席(token 已不可歸戶)退回本輪價格快取直接結算——沒有 chg 的列在未來
+    # 規則 bump 時無法遷移,等於病沒根治,所以 main() 會把缺 chg 列的鍵也併入抓價。
+    # 美股除息回溯調整會讓極少數舊列與當年結算值 drift,由蓋章機制可見,不在此處遮掩。
+    if stored.get("chg") is None:
+        if fresh and fresh.get("chg") is not None:
+            stored["chg"] = fresh["chg"]
+            changed = True
+        elif prices is not None:
+            c = settlement_chg(stored, prices, "5d")
+            if c is not None:
+                stored["chg"] = c
+                changed = True
+    if stored.get("chg") is not None:
+        derived = label_from_chg(stored.get("verdict_class"), stored["chg"], "5d",
+                                 holder=stored.get("type") == "H")
+        rule = stored.get("rule")
+        if rule is None:
+            # 自我認證遷移:存的 label 與現行規則一致才蓋章;不一致=legacy drift
+            # (價格回溯調整等),留白給偵測器可見,不 silent 改寫歷史 label。
+            if derived == stored.get("label"):
+                stored["rule"] = JUDGE_RULE_VERSION
+                changed = True
+        elif rule != JUDGE_RULE_VERSION:
+            # derived=None(新版規則不認得這個 verdict_class)→ 不蓋章不改 label,
+            # 留在 pending_migration 給偵測器可見;蓋了章會變成永久 silent_drift 假陽性
+            if derived is not None:
+                if derived != stored.get("label"):
+                    stored["label"] = derived
+                stored["rule"] = JUDGE_RULE_VERSION
+                changed = True
+    return changed
+
+
+def append_personal_ledger(entries: list[dict], prices: dict | None = None) -> int:
     """append-only、跨日重跑 idempotent(同 date+ticker+type+verdict+user_hash 不重複寫入,
-    因為 build_track_record 每次都重新走訪全部歷史日期)。"""
+    因為 build_track_record 每次都重新走訪全部歷史日期)。
+    2026-07-12 起外加事實 reconcile:既有列補 ret/chg、rule 蓋章與規則遷移(見 _reconcile_row)。
+    有 patch 才整檔原子改寫(tmp+rename,先落 .bak);純新增走 append。git 版控=審計軌跡。
+    全程持 flock(改寫引入 read→rewrite→rename 窗口,並發 append 會被無聲蓋掉;帳本唯一
+    排程寫者是本腳本+每日鎖,鎖防的是手動跑 build/backfill 與 cron 重疊)。"""
+    with open(LEDGER_FILE.parent / (LEDGER_FILE.name + ".lock"), "w") as lk:
+        fcntl.flock(lk, fcntl.LOCK_EX)
+        return _append_personal_ledger_locked(entries, prices)
+
+
+def _append_personal_ledger_locked(entries: list[dict], prices: dict | None) -> int:
+    # stored_rows 元素=dict(可解析列)或原始字串(不可解析列)。壞行是審計證據:讀入時
+    # 跳過=改寫時永久刪除,不對稱;改為原樣穿透到改寫輸出,只告警不消滅。
+    stored_rows: list[dict | str] = []
     existing_keys: set[tuple] = set()
+    n_bad = 0
     if LEDGER_FILE.exists():
         for line in LEDGER_FILE.read_text(encoding="utf-8").splitlines():
             line = line.strip()
@@ -822,20 +925,69 @@ def append_personal_ledger(entries: list[dict]) -> int:
             try:
                 e = json.loads(line)
             except json.JSONDecodeError:
+                stored_rows.append(line)
+                n_bad += 1
                 continue
-            existing_keys.add((e.get("date"), e.get("ticker"), e.get("type"),
-                               e.get("verdict_class"), e.get("user_hash")))
-    new_lines = []
+            stored_rows.append(e)
+            existing_keys.add(_ledger_key(e))
+    if n_bad:
+        print(f"[ledger] WARN: {n_bad} unparseable lines preserved verbatim (查根因,別手刪)",
+              file=sys.stderr)
+
+    fresh_by_key: dict[tuple, dict] = {}
     for e in entries:
-        key = (e["date"], e["ticker"], e["type"], e["verdict_class"], e["user_hash"])
-        if key in existing_keys:
-            continue
-        existing_keys.add(key)
-        new_lines.append(json.dumps(e, ensure_ascii=False))
-    if new_lines:
+        fresh_by_key.setdefault(_ledger_key(e), e)
+
+    appended = [e for k, e in fresh_by_key.items() if k not in existing_keys]
+
+    patched = 0
+    for stored in stored_rows:
+        if isinstance(stored, dict) and \
+                _reconcile_row(stored, fresh_by_key.get(_ledger_key(stored)), prices):
+            patched += 1
+
+    if patched:
+        if LEDGER_FILE.exists():
+            shutil.copy2(LEDGER_FILE, LEDGER_FILE.parent / (LEDGER_FILE.name + ".bak"))
+        tmp = LEDGER_FILE.parent / (LEDGER_FILE.name + ".tmp")
+        all_rows = stored_rows + appended
+        tmp.write_text("\n".join(r if isinstance(r, str) else json.dumps(r, ensure_ascii=False)
+                                 for r in all_rows) + "\n",
+                       encoding="utf-8")
+        tmp.replace(LEDGER_FILE)
+        print(f"[ledger] reconcile: {patched} rows patched (ret/chg/rule), {len(appended)} appended")
+    elif appended:
         with open(LEDGER_FILE, "a", encoding="utf-8") as f:
-            f.write("\n".join(new_lines) + "\n")
-    return len(new_lines)
+            f.write("\n".join(json.dumps(e, ensure_ascii=False) for e in appended) + "\n")
+    return len(appended)
+
+
+def _zero_skill_baseline(records: list[dict], since: str | None = None) -> dict:
+    """零技能基線(2026-07-12 H3 方法論修正):hit-rate 對 wait/hold 這種不對稱勝利條件,
+    baseline=50% 是錯的虛無假設。正確做法:同宇宙全部可結算 (ticker,date) 的 chg,
+    算「無腦全標同一類」的命中率當各類基線。chg 來自帳本存的事實欄(reconcile backfill),
+    不需重抓價格。演算法對齊 ~/autonomous/research/verifier_repro_20260712.py R3。"""
+    pairs_all: set[tuple] = set()
+    chg_by_pair: dict[tuple, float] = {}
+    for r in records:
+        if r.get("label") not in ("win", "loss"):
+            continue
+        d = r.get("date") or ""
+        if since and d < since:
+            continue
+        key = (r.get("ticker"), d)
+        pairs_all.add(key)
+        if r.get("chg") is not None and key not in chg_by_pair:
+            chg_by_pair[key] = r["chg"]
+    chgs = list(chg_by_pair.values())
+    out: dict = {"n_pairs": len(chgs), "n_pairs_missing_chg": len(pairs_all) - len(chgs)}
+    if since:
+        out["since"] = since
+    if chgs:
+        for cls in ("buy", "hold", "sell", "wait"):
+            wins = sum(1 for c in chgs if label_from_chg(cls, c, "5d") == "win")
+            out[cls] = round(100 * wins / len(chgs), 1)
+    return out
 
 
 def run_ledger_edge_audit() -> None:
@@ -852,11 +1004,28 @@ def run_ledger_edge_audit() -> None:
         import audit as edge_audit  # type: ignore
 
         records = [json.loads(l) for l in LEDGER_FILE.read_text(encoding="utf-8").splitlines() if l.strip()]
+        judged = [r for r in records if r.get("label") in ("win", "loss")]
         out = {
             "generated_at": datetime.now().isoformat(timespec="seconds"),
             "n_total": len(records),
+            "rule": JUDGE_RULE_VERSION,
             "a": edge_audit.audit_records([r for r in records if r.get("type") == "A"], group_by="market"),
             "c": edge_audit.audit_records([r for r in records if r.get("type") == "C"], group_by="market"),
+            # 各類 hit-rate 的正確對照尺:讀 kpi/audit 時拿同類 baseline 比,不拿 50%
+            "baseline": {
+                "note": "零技能基線=同宇宙全部可結算(ticker,date)無腦全標同類的命中率(5d);"
+                        "wait/hold 勝利條件不對稱,50% 不是正確虛無假設",
+                "all_with_chg": _zero_skill_baseline(records),
+                "era": _zero_skill_baseline(records, since=MODEL_ERA_START),
+            },
+            # 標籤新鮮度摘要:legacy_unstamped=舊列 label 與現行規則導出不一致(價格 drift 等),
+            # 蓋不了章;數字變大要查(週跑偵測器 ledger_label_freshness 會擋)
+            "label_freshness": {
+                "n_judged": len(judged),
+                "n_rule_current": sum(1 for r in judged if r.get("rule") == JUDGE_RULE_VERSION),
+                "n_rule_legacy_unstamped": sum(1 for r in judged if r.get("rule") is None),
+                "n_missing_chg": sum(1 for r in judged if r.get("chg") is None),
+            },
         }
         LEDGER_AUDIT_FILE.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"[ledger-audit] n={len(records)} -> {LEDGER_AUDIT_FILE}")
@@ -914,6 +1083,7 @@ def main() -> int:
     # 公版 + 個人化合在一起算 price + judge
     combined = all_records + personal_records
     keys = {(r["ticker"], r["date"]) for r in combined}
+    keys |= _ledger_pairs_missing_chg()
     print(f"[fetch] {len(keys)} (ticker,date) pairs via yfinance (cached where possible)...")
     prices = fetch_prices(keys)
 
@@ -1137,8 +1307,8 @@ def main() -> int:
         "gates": gate_counts,
     }
 
-    ledger_entries = _personal_ledger_entries(judged_personal, personal_sims, regime_by_date)
-    ledger_added = append_personal_ledger(ledger_entries)
+    ledger_entries = _personal_ledger_entries(judged_personal, personal_sims, regime_by_date, prices)
+    ledger_added = append_personal_ledger(ledger_entries, prices)
     if ledger_added:
         print(f"[ledger] +{ledger_added} new personal ledger rows (candidates={len(ledger_entries)})")
     run_ledger_edge_audit()
