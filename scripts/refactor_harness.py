@@ -23,6 +23,9 @@ import sys
 import tempfile
 import types
 import datetime as _real_dt
+import os as _os_bsl, tempfile as _tf_bsl
+# buy_signal_log 隔離:golden/diff 全程指向臨時檔,活資料不弄髒 golden、golden 不污染真檔
+_os_bsl.environ["MD_BUY_SIGNAL_LOG"] = _os_bsl.path.join(_tf_bsl.mkdtemp(prefix="md_harness_"), "buy_signal_log.json")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIX_DIR = os.path.join(ROOT, "scripts", "fixtures")
