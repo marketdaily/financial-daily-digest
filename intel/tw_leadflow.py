@@ -168,7 +168,11 @@ def _news_seen_recent(days=4):
     today = datetime.date.today()
     try:
         from intel.mops_watch import _iter_news_rows
-        for code, _name, d, _subj in _iter_news_rows(days=2):
+        for code, _name, d, subj in _iter_news_rows(days=2):
+            # 澄清類公告(交易所對連續漲停常函請發布「無應公布而未公布之重訊」)不算真新聞,
+            # 不進排除記憶——否則先行異動期的股票會被自己的否認公告誤殺,正是最不能漏的時候
+            if "澄清" in subj:
+                continue
             if _is_common_stock(code):
                 mem.setdefault(d.isoformat(), [])
                 if code not in mem[d.isoformat()]:
