@@ -19,6 +19,8 @@ CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
 from intel import tw_institutional, mops_watch, us_analyst, us_insider, us_8k_events, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals, signal_ledger, us_13f_ledger, tw_financials, tw_leadflow
+# confluence 刻意【不】在此 import——改在 confluence_section 內 lazy import,
+# 讓 confluence.py 萬一 import-time 壞掉也只降級成 fallback 段,不會整個 patrol 崩掉害 latest.json 沒產出餓死日報(驗證者 LOW-1)。
 
 MAX_MATERIALS_PER_RUN = 5  # 法說會簡報下載+Ollama摘要較耗時,單次巡邏封頂避免跑太久
 
@@ -86,6 +88,22 @@ def _red_pairs(by_code):
     """{(code, source)} 集合,只取 red 級——用來跟前一次巡邏結果比對「有沒有新的行動級訊號」。"""
     return {(code, item["source"]) for code, items in (by_code or {}).items()
             for item in items if item.get("level") == "red"}
+
+
+def confluence_section(by_code, top=15):
+    """跨源信念榜 markdown 段(唯讀 by_code,fail-safe——絕不擋巡邏/簡報寫出)。
+    多個獨立信息源指向同一標的=最高信息差(Delvin 哲學#11);confluence.py 唯讀分類聚合,無 LLM。
+    lazy import 連同 rank/render 全包在 try 內,任何失敗只降級成 fallback 段。"""
+    try:
+        from intel import confluence
+        ranked = confluence.rank(by_code)
+        md = confluence.render_markdown(ranked, top=top)
+        if len(ranked) > top:  # 不靜默砍尾(feedback_no_silent_limits):列出被截筆數+全量指令
+            md += (f"\n\n> …另有 {len(ranked) - top} 檔較低信念的匯流/背離未列"
+                   f"（`python3 -m intel.confluence` 看全部）。")
+        return md
+    except Exception as e:
+        return f"## 🎯 跨源信念榜\n（本段生成失敗，不影響其餘簡報：{e}）"
 
 
 def run():
@@ -222,6 +240,8 @@ def run():
     os.makedirs(BRIEFS, exist_ok=True)
     md = [f"# 信息差簡報 {today}", ""]
     md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|美股8-K重大事件 {len(us_8k_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔|美股SEC行政程序 {len(sec_enf)} 檔|美股規則變化 {len(sec_rules)} 則|新聞事件(美){len(news_us)} 檔|新聞事件(台){len(news_tw)} 檔|市場級主題 {len(news_broad)} 則|美股13F機構持股 {len(us13f_data)} 檔|台股財報結構化 {len(tw_fin_data)} 檔|先行異動雷達 {len(leadflow_data)} 檔")
+    md.append("")
+    md.append(confluence_section(by_code))
     md.append("")
     md.append("## 🔴 行動級訊號" if red else "## 🔴 行動級訊號:今日無")
     md += [f"- {x}" for x in red]
