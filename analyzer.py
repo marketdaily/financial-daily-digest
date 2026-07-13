@@ -985,6 +985,46 @@ def _pp_oversold_gate(html: str, _techs_gate: dict) -> str:
     return html
 
 
+CHASE_EXT_PCT = 0.06  # 高於 MA20 逾 6% = 追高過熱
+
+
+def _pp_chase_gate(html: str, _techs_gate: dict) -> str:
+    import re as _re
+    # 追高過熱閘(deterministic,2026-07-13):多頭結構(價>MA20>MA50)且價高於 MA20 逾 6%
+    # 的「建議買入」強制降級觀望。帳本實證(personal_ledger,train<=2026-06-20<test 預先登記、
+    # 不掃參):此型 buy 223 筆,扣掉已被 rebuy-bleed 擋的 83 筆後新增 140 筆仍 train EV -2.46%/
+    # test -5.89%(勝率 25%),OOS 一致。與 rebuy-bleed(攤平接落刀)互補=一擋買頂一擋買跌;
+    # 兩閘上線後剩餘 buy 由 -2.39%/39% → OOS +1.03%/55%(全體 +1.98%/58%)。
+    # 用 MA20 距離(非 RSI)因這正是帳本回測的確切條件;不看市況 regime(過熱回檔是個股均值回歸
+    # 性質、不分牛熊,舊 _pp_extended_gate 只在 risk_on 才動且只改字=幾乎不咬,本閘補死防線)。
+
+    def _demote_chase(m):
+        block = m.group(0)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        t = _techs_gate.get(hm.group(1))
+        if _quant_prior(t) != "bull":
+            return block
+        try:
+            p = float(t.get("price") or 0)
+            ma20 = float(t.get("ma20") or 0)
+        except (TypeError, ValueError):
+            return block
+        if not (p and ma20) or (p - ma20) / ma20 <= CHASE_EXT_PCT:
+            return block
+        block = block.replace('class="signal-card buy"', 'class="signal-card wait"', 1)
+        block = block.replace('<span class="signal-verdict-chip buy">🟢 建議買入</span>',
+                              '<span class="signal-verdict-chip wait">⚪ 觀望·漲多過熱(回檔再進)</span>'
+                              '<!--gated:buy:chase-->', 1)
+        return block
+
+    return _re.sub(
+        r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote_chase, html, flags=_re.DOTALL,
+    )
+
+
 def _pp_bucket_autogate(html: str, _regime_label: str) -> str:
     import re as _re
     # 桶級自動閘門(2026-07-08):把「每日戰績稽核 → 人工分析 → 改規則」閉環成全自動。
@@ -1193,6 +1233,7 @@ def _pp_holder_wording(html: str) -> str:
         ("⚪ 觀望·空頭結構(站回 MA20 再議)", "⚪ 防守·空頭結構(守停損,站回 MA20 再議)"),
         ("⚪ 觀望·跌深超賣慎追空", "⚪ 持股防守·跌深超賣別追空,守停損"),
         ("⚪ 觀望·前訊號已破止損(禁再加碼)", "⚪ 持股防守·已破止損,守紀律勿加碼"),
+        ("⚪ 觀望·漲多過熱(回檔再進)", "⚪ 持股防守·漲多過熱,守停損別加碼"),
         ("⚪ 觀望·同型判斷近期實測失準,自動降級", "⚪ 持股防守·同型判斷近期失準,守好停損"),
         ("⚪ 觀望·今日除息(參考價已扣息)", "⚪ 持股防守·今日除息(參考價已扣息)"),
         ("🔴 建議賣出", "🔴 減碼/出場"),
@@ -1386,6 +1427,7 @@ def _postprocess_html(html: str, data: dict) -> str:
     _techs_gate = data.get("technicals", {}) or {}
     html = _pp_knife_gate(html, _techs_gate)
     html = _pp_rebuy_bleed_gate(html, data)
+    html = _pp_chase_gate(html, _techs_gate)
     html = _pp_oversold_gate(html, _techs_gate)
     _regime_label = _market_regime(data).get("label", "neutral")
     html = _pp_extended_gate(html, _techs_gate, _regime_label)
