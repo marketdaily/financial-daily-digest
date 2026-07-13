@@ -37,9 +37,20 @@ MAX_CANDIDATES = 40     # 瘋狂日封頂,超出部分記在 dropped 不裝沒�
 
 
 def _get(url, timeout=25):
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read().decode())
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return json.loads(r.read().decode())
+    except urllib.error.URLError as e:
+        if "SSL" not in str(e):
+            raise
+        # TPEx 憑證在 OpenSSL 3.x 報 Missing Subject Key Identifier,Python SSLContext 過嚴,
+        # curl 驗證會過 → 改 curl 子行程(同 intel/tw_holders.py 對 TDCC 的既有模式)
+        import subprocess
+        out = subprocess.run(["curl", "-sL", "--max-time", str(timeout),
+                              "-A", "Mozilla/5.0", url],
+                             capture_output=True, text=True, timeout=timeout + 5)
+        return json.loads(out.stdout)
 
 
 def _num(v):
