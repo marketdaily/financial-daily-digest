@@ -18,7 +18,7 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch, us_analyst, us_insider, us_8k_events, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals, signal_ledger, us_13f_ledger, tw_financials
+from intel import tw_institutional, mops_watch, us_analyst, us_insider, us_8k_events, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals, signal_ledger, us_13f_ledger, tw_financials, tw_leadflow
 
 MAX_MATERIALS_PER_RUN = 5  # 法說會簡報下載+Ollama摘要較耗時,單次巡邏封頂避免跑太久
 
@@ -115,6 +115,11 @@ def run():
     news_broad = news_signals.broad_themes()  # 政治/總經市場級主題,非個股,不進 by_code(curriculum I 節收尾)
     us13f_data = us_13f_ledger.active_signals()  # 唯讀讀ledger,不觸網(季度資料抓取由獨立cron runner負責)
     tw_fin_data = tw_financials.active_signals(codes)  # 唯讀讀ledger,不觸網(快照抓取由獨立cron runner負責)
+    try:
+        leadflow_data = tw_leadflow.scan()  # 全市場先行異動雷達,自成一套不受 codes 過濾(6488 美光事件教訓)
+    except Exception as e:
+        print(f"leadflow 掃描失敗(不擋巡邏):{e}")
+        leadflow_data = {}
 
     snap = _cb_snapshot()
     snap_ok = snap.returncode == 0 and "snapshot ok" in (snap.stdout or "")
@@ -191,6 +196,8 @@ def run():
         _emit(c, f7["level"], us_13f_ledger.format_line(f7), "us_13f")
     for c, f8 in tw_fin_data.items():
         _emit(c, f8["level"], tw_financials.format_line(f8), "tw_financials")
+    for c, f9 in leadflow_data.items():
+        _emit(c, f9["level"], f9["signal"], "leadflow")
     materials_fetched = 0
     for c in codes:
         f2 = conf_data.get(c)
@@ -214,7 +221,7 @@ def run():
 
     os.makedirs(BRIEFS, exist_ok=True)
     md = [f"# 信息差簡報 {today}", ""]
-    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|美股8-K重大事件 {len(us_8k_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔|美股SEC行政程序 {len(sec_enf)} 檔|美股規則變化 {len(sec_rules)} 則|新聞事件(美){len(news_us)} 檔|新聞事件(台){len(news_tw)} 檔|市場級主題 {len(news_broad)} 則|美股13F機構持股 {len(us13f_data)} 檔|台股財報結構化 {len(tw_fin_data)} 檔")
+    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|美股8-K重大事件 {len(us_8k_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔|美股SEC行政程序 {len(sec_enf)} 檔|美股規則變化 {len(sec_rules)} 則|新聞事件(美){len(news_us)} 檔|新聞事件(台){len(news_tw)} 檔|市場級主題 {len(news_broad)} 則|美股13F機構持股 {len(us13f_data)} 檔|台股財報結構化 {len(tw_fin_data)} 檔|先行異動雷達 {len(leadflow_data)} 檔")
     md.append("")
     md.append("## 🔴 行動級訊號" if red else "## 🔴 行動級訊號:今日無")
     md += [f"- {x}" for x in red]

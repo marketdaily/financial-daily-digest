@@ -69,3 +69,7 @@ intel/social_buzz_wl_cache.json
 scripts/personal_ledger.jsonl.bak
 scripts/personal_ledger.jsonl.tmp
 scripts/personal_ledger.jsonl.lock
+
+# 先行異動雷達 runtime 產物(patrol 每晚重生,不進版控免髒 dirty 閘)
+intel/leadflow_latest.json
+intel/leadflow_news_seen.json
