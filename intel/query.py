@@ -138,8 +138,24 @@ def _cli():
     ap.add_argument("--summary", action="store_true", help="今日訊號摘要")
     ap.add_argument("--freshness", action="store_true", help="latest.json 新鮮度")
     ap.add_argument("--explain", help="查某個 source 字串的白話定義")
+    ap.add_argument("--confluence", action="store_true",
+                    help="跨源信念榜(多個獨立信息源匯流/背離排序)")
+    ap.add_argument("--top", type=int, help="搭配 --confluence:只印前 N 檔")
     ap.add_argument("--json", action="store_true", help="輸出 JSON(給程式呼叫端用)")
     args = ap.parse_args()
+
+    if args.confluence:
+        try:
+            from . import confluence as _cf
+        except ImportError:
+            import confluence as _cf
+        ranked = _cf.rank(_cf.load_by_code())
+        if args.json:
+            print(json.dumps(ranked[:args.top] if args.top else ranked,
+                             ensure_ascii=False, indent=1))
+        else:
+            print(_cf.render_markdown(ranked, top=args.top))
+        return
 
     out = None
     if args.explain:
