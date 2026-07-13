@@ -6,6 +6,7 @@ import os
 import json
 import datetime
 import urllib.request
+import urllib.error
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CACHE = os.path.join(HERE, ".existing_cb_cache.json")
@@ -18,8 +19,21 @@ ENDPOINTS = [
 
 def _get(url, timeout=30):
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read().decode()
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            return r.read().decode()
+    except urllib.error.URLError as e:
+        if "SSL" not in str(e):
+            raise
+        # TPEx 憑證在 OpenSSL 3.x 報 Missing Subject Key Identifier,Python 驗證過嚴,
+        # curl 會過(同 intel/tw_leadflow.py / tw_holders.py 既有模式)
+        import subprocess
+        out = subprocess.run(["curl", "-sL", "--max-time", str(timeout),
+                              "-A", "Mozilla/5.0", url],
+                             capture_output=True, text=True, timeout=timeout + 5)
+        if out.returncode != 0 or not out.stdout.strip():
+            raise
+        return out.stdout
 
 
 def _num(x):
@@ -49,13 +63,14 @@ def fetch_raw(force=False, today=None):
                 return c["rows"]
         except Exception:
             pass
-    rows = []
+    rows, failed = [], False
     for ep in ENDPOINTS:
         try:
             rows += json.loads(_get(ep))
         except Exception:
-            continue
-    if rows:
+            failed = True
+    # 任一端點失敗就不寫當日快取,否則半套資料會毒快取一整天(國內CB全查不到)
+    if rows and not failed:
         try:
             with open(CACHE, "w", encoding="utf-8") as f:
                 json.dump({"date": today.isoformat(), "rows": rows}, f, ensure_ascii=False)
