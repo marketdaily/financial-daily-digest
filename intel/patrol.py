@@ -33,13 +33,53 @@ def _load_json(path, default):
         return default
 
 
+_CJK_DIGITS = "零一二三四五六七八九"
+_ISSUE_CHARS = set("一二三四五六七八九十")
+_TAIL_MARKERS = ("-KY", "KY", "創")  # 期別號【之後】的板別/KY 尾標,先剝出待會補回
+
+
+def _cjk_numeral(n):
+    """阿拉伯數字→中文數字(1-99;CB 期別實務不會更大)。無法表示回空字串。"""
+    if n <= 0 or n >= 100:
+        return ""
+    if n < 10:
+        return _CJK_DIGITS[n]
+    if n < 20:
+        return "十" + (_CJK_DIGITS[n % 10] if n % 10 else "")
+    return _CJK_DIGITS[n // 10] + "十" + (_CJK_DIGITS[n % 10] if n % 10 else "")
+
+
+def _stock_display_name(it):
+    """CB 資料庫的 `name` 是【可轉債名】(創見二/宏致四/聚賢研發一創=公司+期別[+板別]),
+    但 stock-level 訊號要顯示【股票名】。優先用 bond_code 減 stock_code 得精確期別號,只剝除
+    (KY/創 尾標前的)與該期別吻合的中文數字;bond_code 缺損時退回剝單一結尾期別字(本 db 每個
+    name 恆為債名=公司+期別,此保底安全)。期別號不在預期位置→原樣返回(fail-safe,不 over-strip)。"""
+    name = str(it.get("name") or "").strip()
+    if not name:
+        return name
+    stock = str(it.get("stock_code") or "")
+    bond = str(it.get("bond_code") or "")
+    tail = ""
+    for mk in _TAIL_MARKERS:
+        if name.endswith(mk):
+            name, tail = name[:-len(mk)], (mk if mk.startswith("-") else "-" + mk)
+            break
+    issue = bond[len(stock):] if stock and bond.startswith(stock) else ""
+    numeral = _cjk_numeral(int(issue)) if issue.isdigit() and issue else ""
+    if numeral and len(name) > len(numeral) and name.endswith(numeral):
+        name = name[:-len(numeral)]
+    elif not numeral and len(name) > 1 and name[-1] in _ISSUE_CHARS:
+        name = name[:-1]  # bond_code 缺損保底
+    return name + tail
+
+
 def build_watchlist():
     """回 {stock_code: 顯示名}。"""
     wl = {}
     db = _load_json(os.path.join(CBDIR, "cb_database.json"), {})
     for it in db.get("items", []):
         if it.get("stock_code"):
-            wl.setdefault(str(it["stock_code"]), it.get("name", ""))
+            wl.setdefault(str(it["stock_code"]), _stock_display_name(it))
     holdings = _load_json(os.path.join(CBDIR, "holdings.json"), [])
     items = holdings.get("items", []) if isinstance(holdings, dict) else holdings
     for h in items if isinstance(items, list) else []:
