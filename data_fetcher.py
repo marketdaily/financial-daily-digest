@@ -362,6 +362,90 @@ def _twse_is_stale() -> bool:
     return _TWSE_DATA_DATE < _expected_tw_session_date()
 
 
+def _tw_next_session_date() -> str:
+    """本次日報要給建議的「下一個台股交易日」(ISO):盤前(TW <14:00 且今天是交易日)
+    → 今天;否則往後找最近交易日。休市源與 analyzer._market_status 同一套
+    (固定假日 + TWSE 公告臨時休市),analyzer 讀不到時退化為只避週末。"""
+    tw_now = datetime.now(timezone.utc) + timedelta(hours=8)
+    try:
+        from analyzer import _TW_HOLIDAYS, _adhoc_closures
+        holidays = set(_TW_HOLIDAYS) | _adhoc_closures(tw_now.strftime("%Y-%m-%d"))[0]
+    except Exception:
+        holidays = set()
+
+    def _is_trading(d):
+        return d.weekday() < 5 and d.strftime("%Y-%m-%d") not in holidays
+
+    d = tw_now.date()
+    if not (_is_trading(d) and tw_now.hour < 14):
+        d = d + timedelta(days=1)
+        for _ in range(10):
+            if _is_trading(d):
+                break
+            d = d + timedelta(days=1)
+    return d.strftime("%Y-%m-%d")
+
+
+def _fetch_tw_ex_dividends(codes: list) -> dict:
+    """FinMind TaiwanStockDividend(免 token):查每檔排定的除權息交易日與現金股利。
+    回 {code: [(排定除息交易日ISO, 現金股利), ...]};日期取現金/股票除權息中較早有值者。
+    只查傳入代號(本次日報會出卡的),逐檔查、單檔失敗跳過該檔(fail-safe,絕不拖垮日報)。
+    start_date 回看 180 天:FinMind 以公告的 date 欄過濾,只查今年初會漏掉
+    「前一年底公告、隔年初除息」的案例。"""
+    out = {}
+    start = (datetime.now(timezone.utc) + timedelta(hours=8) - timedelta(days=180)).strftime("%Y-%m-%d")
+    for code in codes:
+        try:
+            r = requests.get(
+                "https://api.finmindtrade.com/api/v4/data",
+                params={"dataset": "TaiwanStockDividend", "data_id": code, "start_date": start},
+                timeout=10,
+            )
+            rows = (r.json() or {}).get("data") or []
+        except Exception as e:
+            print(f"[ex_div] FinMind {code} 查詢失敗,略過該檔: {e}")
+            continue
+        events = []
+        for row in rows:
+            dates = [d for d in (row.get("CashExDividendTradingDate"),
+                                 row.get("StockExDividendTradingDate")) if d]
+            if not dates:
+                continue
+            try:
+                cash = float(row.get("CashEarningsDistribution") or 0)
+            except (TypeError, ValueError):
+                cash = 0.0
+            events.append((min(dates), cash))
+        if events:
+            out[code] = events
+    return out
+
+
+def _annotate_tw_ex_div(tw_market: dict) -> None:
+    """除息日 guardrail 資料端(2026-07-13 聯詠 3034 事故根治):除息當天參考價已扣息,
+    前一日收盤/MA/停損全是除息前口徑,算出的「多頭結構 買入」不可信(542→參考價 519,
+    -4.2% 是機械跳空非虧損)。對本次日報會出卡的台股代號就地標 ex_div_today / ex_div_cash,
+    analyzer._pp_exdiv_guard 據此降級卡片+加註記。
+    命中規則:last_session < 排定除息交易日 ≤ today_session —— 吃得下颱風順延
+    (7/9 < 7/10 ≤ 7/13 = True)且隔日不重複觸發(7/13 < 7/10 = False)。整段 fail-safe。"""
+    try:
+        codes = [c for c in tw_market if str(c).isdigit()]
+        if not codes:
+            return
+        last_session = _TWSE_DATA_DATE or _expected_tw_session_date()
+        today_session = _tw_next_session_date()
+        sched = _fetch_tw_ex_dividends(codes)
+        for code in codes:
+            hits = sorted(d_cash for d_cash in sched.get(code, [])
+                          if last_session < d_cash[0] <= today_session)
+            tw_market[code]["ex_div_today"] = bool(hits)
+            if hits:
+                tw_market[code]["ex_div_cash"] = hits[0][1]
+                print(f"[ex_div] {code} 今日除息(排定 {hits[0][0]},現金股利 {hits[0][1]}),卡片將降級+加註")
+    except Exception as e:
+        print(f"[ex_div] 標記失敗(fail-safe,視同無除息): {e}")
+
+
 def _tw_stocks_via_yahoo(codes: list, twse: dict, tpex: dict) -> dict:
     """TWSE 過期時改用 Yahoo 抓指定台股收盤(與加權指數同源同日,消除日期打架)。
     回 {code: {name, price, change_pct}};名稱沿用 TWSE/TPEx 既有對照。
@@ -1180,6 +1264,7 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         missing_tw = [s for s in extra_tw_stocks if s not in tw_market]
         if missing_tw:
             tw_market.update(fetch_custom_stocks(missing_tw))
+    _annotate_tw_ex_div(tw_market)
 
     # 公版預設關注股(無持股用戶/公版日報/AI 精選候選池用):美股全預設池 + 台股權值,
     # 確保公版 signal-card 與委員會精選都有真實技術價位可錨

@@ -847,6 +847,116 @@ def _pp_knife_gate(html: str, _techs_gate: dict) -> str:
     return html
 
 
+def _buy_signal_log_path():
+    import os
+    from pathlib import Path as _P
+    p = os.environ.get("MD_BUY_SIGNAL_LOG")
+    return _P(p) if p else _P(__file__).resolve().parent / "scripts" / "buy_signal_log.json"
+
+
+REBUY_BLEED_PCT = 0.08   # 前訊號至今已跌逾 8%
+REBUY_BLEED_DAYS = 5     # 回看 5 個日曆日
+
+
+def _pp_rebuy_bleed_gate(html: str, data: dict) -> str:
+    import re as _re, json as _json
+    from datetime import date as _date
+    # 追虧封鎖閘(deterministic,2026-07-13):同一檔 5 個日曆日內發過「建議買入」且現價較
+    # 當日已跌逾 8% → 今日 buy 強制降級觀望。帳本實證(563 筆已結算 buy):此群 192 筆
+    # 勝率 18.2%、平均 5 日再跌 -6.96%(fade t=+10.9),buy 全部負 edge 集中於此;其餘 buy
+    # EV -0.03%≈零。參數 -8%/5d 為預先登記值,-4%~-8%×3~5d 全域穩健(非掃參挑優)。
+    # 接刀閘對 techs 缺席 fail-open(4542 連三日喊買事故),本閘只依賴自家訊號史
+    # (buy_signal_log,見 _pp_record_buys)+現價,互補死防線。
+    try:
+        log = _json.loads(_buy_signal_log_path().read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return html
+    try:
+        today_d = _date.fromisoformat(str(data.get("date") or ""))
+    except ValueError:
+        return html
+    all_mkt = {**(data.get("us_market") or {}), **(data.get("tw_market") or {})}
+
+    def _demote_rebuy(m):
+        block = m.group(0)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        sym = hm.group(1)
+        try:
+            cur = float((all_mkt.get(sym) or {}).get("price"))
+        except (TypeError, ValueError):
+            return block
+        for day, seen in log.items():
+            try:
+                gap = (today_d - _date.fromisoformat(day)).days
+            except ValueError:
+                continue
+            if not (0 < gap <= REBUY_BLEED_DAYS):
+                continue
+            try:
+                ref = float(seen.get(sym))
+            except (TypeError, ValueError):
+                continue
+            if ref > 0 and cur <= ref * (1 - REBUY_BLEED_PCT):
+                block = block.replace('class="signal-card buy"', 'class="signal-card wait"', 1)
+                block = block.replace('<span class="signal-verdict-chip buy">🟢 建議買入</span>',
+                                      '<span class="signal-verdict-chip wait">⚪ 觀望·前訊號已破止損(禁再加碼)</span>'
+                                      '<!--gated:buy:rebuy-bleed-->', 1)
+                return block
+        return block
+
+    return _re.sub(
+        r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote_rebuy, html, flags=_re.DOTALL,
+    )
+
+
+def _pp_record_buys(html: str, data: dict) -> str:
+    import re as _re, json as _json, fcntl
+    from datetime import date as _date, timedelta as _td
+    # 存活(過完全部降級閘門)的 buy 訊號記入 buy_signal_log.json,供次日起追虧封鎖閘回看。
+    # (date,ticker) 冪等、逾 21 天修剪、flock 防多用戶並發;失敗靜默不影響日報。
+    try:
+        today_d = _date.fromisoformat(str(data.get("date") or ""))
+    except ValueError:
+        return html
+    today = today_d.isoformat()
+    all_mkt = {**(data.get("us_market") or {}), **(data.get("tw_market") or {})}
+    found = {}
+    for m in _re.finditer(r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+                          html, flags=_re.DOTALL):
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", m.group(0))
+        if not hm:
+            continue
+        try:
+            found[hm.group(1)] = float((all_mkt.get(hm.group(1)) or {}).get("price"))
+        except (TypeError, ValueError):
+            continue
+    if not found:
+        return html
+    log_path = _buy_signal_log_path()
+    try:
+        log_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(str(log_path) + ".lock", "w") as lk:
+            fcntl.flock(lk, fcntl.LOCK_EX)
+            try:
+                log = _json.loads(log_path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                log = {}
+            day = log.setdefault(today, {})
+            for sym, px in found.items():
+                day.setdefault(sym, px)
+            cutoff = (today_d - _td(days=21)).isoformat()
+            log = {d: v for d, v in sorted(log.items()) if d >= cutoff}
+            tmp = log_path.with_name(log_path.name + ".tmp")
+            tmp.write_text(_json.dumps(log, ensure_ascii=False, indent=1), encoding="utf-8")
+            tmp.replace(log_path)
+    except OSError:
+        pass
+    return html
+
+
 def _pp_oversold_gate(html: str, _techs_gate: dict) -> str:
     import re as _re
     # 超賣閘門(deterministic,2026-07-08):空頭結構+超賣區的「建議賣出」強制降級為觀望。
@@ -878,9 +988,11 @@ def _pp_oversold_gate(html: str, _techs_gate: dict) -> str:
 def _pp_bucket_autogate(html: str, _regime_label: str) -> str:
     import re as _re
     # 桶級自動閘門(2026-07-08):把「每日戰績稽核 → 人工分析 → 改規則」閉環成全自動。
-    # track-record 現行世代的 verdict×regime 桶勝率(K=20 向 50 收縮)跌破 42 → 該桶的
+    # track-record 現行世代的 verdict×regime 桶勝率(K=20 向 50 收縮)跌破 45 → 該桶的
     # buy/sell 卡當日全部降級為觀望;未來任何在追蹤桶浮現的系統性輸點,隔天自動被擋,不等人。
-    # 門檻 42 非 50:收縮下要持續失準才觸發,小樣本雜訊不會亂降級。只降級不升級、
+    # 門檻 42→45(2026-07-13 聯詠案例):buy|up 桶原始 41.4%(99筆)收縮後 42.86% 擦邊漏接,
+    # 而 plan_sim 實測 buy 卡照做平均 -3.29%(停損 39 vs 達標 4)→ 持續失準的桶必須攔得住。
+    # 門檻仍低於 50:收縮下要持續失準才觸發,小樣本雜訊不會亂降級。只降級不升級、
     # 只動 buy/sell(wait/hold 本身即保守方)、桶樣本 <15 或 neutral regime 不動作。
     trend = {"risk_on": "up", "risk_off": "down"}.get(_regime_label)
     if not trend:
@@ -894,7 +1006,7 @@ def _pp_bucket_autogate(html: str, _regime_label: str) -> str:
         if n < 15:
             continue
         shrunk = (w + K * 0.5) / (n + K) * 100
-        if shrunk >= 42:
+        if shrunk >= 45:
             continue
 
         def _demote(m, _vc=vc):
@@ -911,6 +1023,49 @@ def _pp_bucket_autogate(html: str, _regime_label: str) -> str:
             _demote, html, flags=_re.DOTALL,
         )
     return html
+
+
+def _pp_exdiv_guard(html: str, data: dict) -> str:
+    import re as _re
+    # 除息日閘門(2026-07-13 聯詠 3034 事故根治):除息當天參考價已扣現金股利,
+    # 卡上用前一日收盤算的現價/MA20/停損/買價整組是除息前口徑(542→參考價 519,
+    # -4.2% 是機械跳空非虧損),據此判的「多頭結構 買入」不可信 → buy/sell 卡一律
+    # 降級觀望+紅字註記;hold/wait 不動 chip 只加註記。flag 由 data_fetcher
+    # _annotate_tw_ex_div 標在 tw_market[code](命中規則吃得下颱風順延且不重複觸發)。
+    flagged = {c: v for c, v in (data.get("tw_market") or {}).items()
+               if isinstance(v, dict) and v.get("ex_div_today")}
+    if not flagged:
+        return html
+
+    def _guard(m):
+        block, cls = m.group(0), m.group(1)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm or hm.group(1) not in flagged:
+            return block
+        cash = flagged[hm.group(1)].get("ex_div_cash") or 0
+        # 註記不帶 class(templates CSS 無對應規則,帶了會被 _repair_undefined_classes
+        # 剝掉且踩 undefined_css_class HIGH audit),純 inline style;標點全形防破版。
+        detail = f"參考價已扣現金股利 ${cash:g}" if cash > 0 else "參考價已因除權息調整"
+        note = ('<div style="color:#dc2626;font-size:12px;font-weight:700;line-height:1.6;'
+                'margin:4px 0 6px;">'
+                f'⚠️ 今日除息,{detail};下方買價/關卡以除息前價格計算,請以除息後參考價為準</div>')
+        if cls in ("buy", "sell"):
+            block = block.replace(f'class="signal-card {cls}"', 'class="signal-card wait"', 1)
+            block = _re.sub(r'<span class="signal-verdict-chip %s">[^<]*</span>' % cls,
+                            '<span class="signal-verdict-chip wait">⚪ 觀望·今日除息(參考價已扣息)</span>'
+                            f'<!--gated:{cls}:exdiv-->',
+                            block, count=1)
+        if '<div class="signal-reason">' in block:
+            block = block.replace('<div class="signal-reason">',
+                                  note + '<div class="signal-reason">', 1)
+        else:
+            block = block.replace("<!--h:", note + "<!--h:", 1)
+        return block
+
+    return _re.sub(
+        r'<div class="signal-card (buy|hold|sell|wait)">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _guard, html, flags=_re.DOTALL,
+    )
 
 
 def _pp_extended_gate(html: str, _techs_gate: dict, _regime_label: str) -> str:
@@ -1028,7 +1183,7 @@ def _pp_holder_wording(html: str) -> str:
     import re as _re
     # 持有者框架措辭死防線(2026-07-07 持倉客製化):帶 <!--pos:--> 標記的卡=用戶已持有,
     # chip 不得出現「觀望/建議買入」等未持有措辭。prompt 擋第一層,這裡不靠 LLM 自覺;
-    # 也覆蓋 knife/extended/requalify/oversold/bucket_autogate 各降級閘門改寫後的 chip。
+    # 也覆蓋 knife/extended/requalify/oversold/bucket_autogate/exdiv 各降級閘門改寫後的 chip。
     # 放在那些閘門之後跑(見 _postprocess_html 鏈序)。
     _SWAPS = (
         ("🟢 建議買入", "🟢 加碼買進"),
@@ -1037,7 +1192,9 @@ def _pp_holder_wording(html: str) -> str:
         ("⚪ 暫時觀望", "⚪ 持股防守·守好停損"),
         ("⚪ 觀望·空頭結構(站回 MA20 再議)", "⚪ 防守·空頭結構(守停損,站回 MA20 再議)"),
         ("⚪ 觀望·跌深超賣慎追空", "⚪ 持股防守·跌深超賣別追空,守停損"),
+        ("⚪ 觀望·前訊號已破止損(禁再加碼)", "⚪ 持股防守·已破止損,守紀律勿加碼"),
         ("⚪ 觀望·同型判斷近期實測失準,自動降級", "⚪ 持股防守·同型判斷近期失準,守好停損"),
+        ("⚪ 觀望·今日除息(參考價已扣息)", "⚪ 持股防守·今日除息(參考價已扣息)"),
         ("🔴 建議賣出", "🔴 減碼/出場"),
     )
 
@@ -1228,14 +1385,17 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_verdict_chip(html)
     _techs_gate = data.get("technicals", {}) or {}
     html = _pp_knife_gate(html, _techs_gate)
+    html = _pp_rebuy_bleed_gate(html, data)
     html = _pp_oversold_gate(html, _techs_gate)
     _regime_label = _market_regime(data).get("label", "neutral")
     html = _pp_extended_gate(html, _techs_gate, _regime_label)
     html = _pp_bucket_autogate(html, _regime_label)
+    html = _pp_exdiv_guard(html, data)
     html = _pp_strip_badges(html)
     html = _pp_clamp_confidence(html)
     html = _pp_recalibrate_confidence(html, _regime_label)
     html = _pp_requalify_buy(html, data)
+    html = _pp_record_buys(html, data)
     html = _pp_holder_wording(html)  # 須在 knife/extended/requalify 三閘門之後:覆蓋它們改寫的 chip
     html = _pp_scrub_earnings_notes(html, data)
     html = _pp_expand_tickers(html, tw_hint)
