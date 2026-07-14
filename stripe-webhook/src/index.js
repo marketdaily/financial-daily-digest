@@ -1554,14 +1554,14 @@ export default {
       if (!trades) return json({ error: "no_trades" }, 400);
       const cards = Array.isArray(body.cards) ? body.cards.slice(0, 20000) : [];
       const tokEmail = {};
-      let lookups = 0;
-      for (const t of [...trades, ...cards]) {
-        const tok = String(t.tok || "");
-        // 上限 500 次 KV 查找防 subrequest 爆掉;舊 token(>45d TTL 過期)本來就查不到
-        if (tok && !(tok in tokEmail) && lookups < 500) {
-          tokEmail[tok] = await env.USER_PREFS.get(`digest_email:${tok}`);
-          lookups++;
-        }
+      // 需查的 unique token(去重);上限 500 防 subrequest 爆掉;舊 token(>45d TTL 過期)本來就查不到。
+      const uniqToks = [...new Set([...trades, ...cards].map((t) => String(t.tok || "")).filter(Boolean))].slice(0, 500);
+      // 批次並行讀 KV 取代逐一 await——處理時間不再隨 token 數線性成長(原順序讀 ~54s 致 winrig curl -m 30 逾時,見 memory project_plan_trades_kv_timeout_20260714)
+      const KV_BATCH = 60;
+      for (let i = 0; i < uniqToks.length; i += KV_BATCH) {
+        const batch = uniqToks.slice(i, i + KV_BATCH);
+        const vals = await Promise.all(batch.map((tok) => env.USER_PREFS.get(`digest_email:${tok}`)));
+        batch.forEach((tok, j) => { tokEmail[tok] = vals[j]; });
       }
       // 歷史回填(最後備援):builder 已用「完整持股卡集合」比對出 t.u hint;這裡只處理
       // 既無 digest_email 也無 hint 的 token——「股票集合 ⊆ 用戶自選股且唯一命中」,歧義留 null。
@@ -1576,14 +1576,18 @@ export default {
           });
           const contacts = ((await bres.json()).contacts || []).slice(0, 200);
           const userSets = [];
-          for (const c of contacts) {
-            const em = (c.email || "").toLowerCase();
-            if (!em) continue;
-            const raw = await env.USER_PREFS.get(em);
-            if (!raw) continue;
-            let prefs; try { prefs = JSON.parse(raw); } catch { continue; }
-            const set = new Set([...(prefs.us_stocks || []), ...(prefs.tw_stocks || [])].map(norm).filter(Boolean));
-            if (set.size) userSets.push({ em, set });
+          const ems = [...new Set(contacts.map((c) => (c.email || "").toLowerCase()).filter(Boolean))];
+          // 同樣批次並行讀,取代逐 contact 順序 await
+          for (let i = 0; i < ems.length; i += KV_BATCH) {
+            const batch = ems.slice(i, i + KV_BATCH);
+            const raws = await Promise.all(batch.map((em) => env.USER_PREFS.get(em)));
+            batch.forEach((em, j) => {
+              const raw = raws[j];
+              if (!raw) return;
+              let prefs; try { prefs = JSON.parse(raw); } catch { return; }
+              const set = new Set([...(prefs.us_stocks || []), ...(prefs.tw_stocks || [])].map(norm).filter(Boolean));
+              if (set.size) userSets.push({ em, set });
+            });
           }
           const tokTickers = {};
           for (const t of trades) {
