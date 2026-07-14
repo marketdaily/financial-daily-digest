@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1584 396" width="1584" height="396">
+  <defs>
+    <linearGradient id="bgg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0E0E0A"/>
+      <stop offset="100%" stop-color="#060604"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="38%" r="62%">
+      <stop offset="0%" stop-color="#FFB000" stop-opacity="0.16"/>
+      <stop offset="60%" stop-color="#FFB000" stop-opacity="0.03"/>
+      <stop offset="100%" stop-color="#FFB000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="bandg" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#A66E00"/>
+      <stop offset="55%" stop-color="#FFB000"/>
+      <stop offset="100%" stop-color="#4AF626"/>
+    </linearGradient>
+    <linearGradient id="ic3" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#FFC74D"/>
+      <stop offset="55%" stop-color="#9FF03A"/>
+      <stop offset="100%" stop-color="#4AF626"/>
+    </linearGradient>
+    <pattern id="scan" width="6" height="6" patternUnits="userSpaceOnUse">
+      <rect y="3" width="6" height="3" fill="#000" fill-opacity="0.20"/>
+    </pattern>
+    <linearGradient id="grid" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FFB000" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#FFB000" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#FFB000" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1584" height="396" fill="url(#bgg)"/>
+  <rect width="1584" height="396" fill="url(#glow)"/>
+
+  <!-- skyline -->
+  <g>
+    <rect x="532.7" y="356.4" width="24.3" height="23.8" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="577.6" y="336.6" width="24.3" height="43.6" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="622.6" y="346.9" width="24.3" height="33.3" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="667.5" y="324.7" width="24.3" height="55.4" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="712.4" y="340.6" width="24.3" height="39.6" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="757.4" y="312.8" width="24.3" height="67.3" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="802.3" y="331.1" width="24.3" height="49.1" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="847.2" y="304.9" width="24.3" height="75.2" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="892.2" y="323.1" width="24.3" height="57.0" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="937.1" y="334.2" width="24.3" height="45.9" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="982.0" y="316.8" width="24.3" height="63.4" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+    <rect x="1027.0" y="327.9" width="24.3" height="52.3" rx="3.7" fill="url(#bandg)" fill-opacity="0.5"/>
+  </g>
+  <rect x="514.0" y="380.2" width="556.1" height="2.3" fill="url(#grid)"/>
+
+  <!-- status row (top of safe band) -->
+  <g font-family="'IBM Plex Mono','SFMono-Regular',ui-monospace,monospace" font-weight="600">
+    <circle cx="643.7" cy="39.6" r="6.6" fill="#4AF626"/>
+    <text x="660.2" y="47.0" font-size="20.6" fill="#FFB000" letter-spacing="2">SYSTEM ONLINE · TPE 07:00 / 20:00</text>
+  </g>
+
+  <!-- icon -->
+  <g transform="translate(471.7,162.0)">
+    <rect x="2.6" y="40.6" width="10.5" height="19.7" rx="3.3" fill="#A66E00"/>
+    <rect x="19.7" y="26.2" width="10.5" height="34.1" rx="3.3" fill="#FFB000"/>
+    <rect x="36.7" y="10.5" width="10.5" height="49.8" rx="3.3" fill="url(#ic3)"/>
+    <circle cx="56.4" cy="6.6" r="5.6" fill="#4AF626"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="543.8" y="213.5" font-family="'IBM Plex Mono','SFMono-Regular',ui-monospace,monospace" font-weight="700" font-size="86.1" fill="#F5E6C8" letter-spacing="-2">MarketDaily</text>
+
+  <!-- tagline -->
+  <text x="792.0" y="283.6" text-anchor="middle" font-family="'IBM Plex Mono','SFMono-Regular',ui-monospace,monospace" font-weight="500" font-size="25.3" fill="#FFB000" letter-spacing="1">台股日報 07:00 · 美股日報 20:00 · 你的持股逐檔點名 · <tspan fill="#4AF626">NO NOISE, JUST SIGNAL</tspan></text>
+
+  <rect width="1584" height="396" fill="url(#scan)"/>
+  <rect x="3" y="3" width="1578" height="390" fill="none" stroke="#000" stroke-opacity="0.35" stroke-width="6"/>
+</svg>
