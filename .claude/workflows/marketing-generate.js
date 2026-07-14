@@ -42,6 +42,9 @@ const ANGLES = [
   // 第一句 hook=具名主體+具體數字+對比;caption=旁白逐字稿式迷你文章(有獨立收藏價值),
   // 收尾一句自然帶到 MarketDaily;新聞事實必須近 7 天內+可公開驗證,draft 帶 source_url
   { platform: 'instagram', angle: '新聞hook型(觸及軌):挑近7天一則「金融×AI」真實新聞(新工具/新模型/大公司動作),第一句=具名主體+具體數字+對比(範式:「Google 剛把要價 $30,000 的 Bloomberg Terminal 變成免費 App」),caption 寫成完整迷你文章,結尾一句帶 MarketDaily;draft 必須帶 source_url(驗證者會逐字對新聞事實)' },
+  // AI 神用法軌(源自三大帳號拆解 reference_big3_ai_ig_accounts:aipagedaily「Claude砍機票8prompts」、getintoai「反諂媚prompt」都是這桶,收藏率極高):
+  // 教「一個可照抄的 AI 用法」但落在投資/看盤場景,示範 MarketDaily 用戶怎麼用 AI 更聰明地做功課,不喊個股不給買賣價位
+  { platform: 'instagram', angle: 'AI 神用法型(觸及軌):教一個具體可照抄的 AI 用法,場景放「用 AI 更聰明地做投資功課」(範式:一句 prompt 讓 ChatGPT 停止拍你馬屁、逼它列出你持股的三個看空理由;或用 AI 十分鐘讀懂一份財報)。第一句 hook=具體數字+對比;caption 給出可直接複製的 prompt/步驟(迷你教學,高收藏);結尾帶 MarketDaily 每天幫你把功課做好。鐵則:只教方法與體驗,絕不出個別股票買賣價位/建議,個股分析不得與付費連結' },
   { platform: 'threads', angle: '機制差異化:AI 假訊息過濾怎麼運作' },
   { platform: 'x', angle: '產品日常:一封日報長什麼樣(講結構不講當日數字)' },
   { platform: 'facebook', angle: '信任與合規:免費與付費看到完全相同的個股分析' },
@@ -56,7 +59,8 @@ const research = await agent(
 1. 讀 ${SKILLS}/spy/SKILL.md 與 ${SKILLS}/competitive-ads-extractor/SKILL.md 的鐵則。
 2. 用 .venv/bin/python(沒有就 python3)跑 ${CAP}/spy.py 的 spy_report(),結果以 JSON 覆寫 ${CAP}/latest_spy_report.json。spy 失敗最多修一次,再失敗就沿用既有檔案並回報 spy_stale=true(不可因 spy 掛掉就整批不產)。
 3. 讀 ${CAP}/RUNBOOK.md、marketing/CLAUDE.md、docs/pricing.html、docs/data/track-record.json(當下現值)。
-4. 產出給創作代理的研究簡報 brief(競品在打什麼/我們的差異化彈藥/當前方案與排程事實/可用的真實賣點),800 字內。`,
+4. 讀 marketing/COMPETITOR_CONTENT_SWIPE.md(三大 AI IG 帳號 @aipagedaily/@getintoai/@evolving.ai 拆解:選題三桶=錢/工作衝擊·名人擂台·獵奇科技、Hook 公式、可搬 AI 神用法),挑當前最能對接我們金融×AI 利基的角度餵給創作代理。
+5. 產出給創作代理的研究簡報 brief(競品在打什麼/我們的差異化彈藥/當前方案與排程事實/可用的真實賣點),800 字內。`,
   { label: 'research', schema: RESEARCH_SCHEMA }
 )
 
@@ -80,7 +84,8 @@ if (drafts.length < 4) throw new Error(`創作代理只回來 ${drafts.length} �
 phase('評分')
 const scored = await parallel(drafts.map((d, i) => () =>
   agent(
-    `讀 ${SKILLS}/ads-score/SKILL.md 評分準則,對這則草稿評分(0-100)+兩句筆記(強項/弱點):\n${JSON.stringify(d, null, 2)}`,
+    `讀 ${SKILLS}/ads-score/SKILL.md 評分準則,對這則草稿評分(0-100)+兩句筆記(強項/弱點)。
+額外硬性加權(源自三大 AI IG 帳號拆解):第一句 hook 是否符合「具名主體+具體數字+對比/衝突」公式(第一句就是全部賭注,弱 hook 直接扣分);觸及軌貼文 caption 是否有獨立收藏/教學價值。這兩點不合格則 score 不得高於 70。\n${JSON.stringify(d, null, 2)}`,
     { label: `score:${twoDigit(i)}`, phase: '評分', schema: SCORE_SCHEMA }
   ).then((s) => ({ ...d, ads_score: s ? s.score : null, ads_score_notes: s ? s.notes : 'scorer 缺席' }))
 ))
