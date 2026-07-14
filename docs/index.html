@@ -108,7 +108,8 @@ nav::after {
   font-size: 14px; flex-shrink: 0;
 }
 .logo em { color: var(--primary-light); font-style: normal; }
-.nav-right { display: flex; align-items: center; gap: 8px; }
+.nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto; min-width: 0; }
+nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 .nav-badge {
   background: var(--primary-dim); color: var(--primary-light);
   font-size: 11px; font-weight: 700; padding: 5px 13px;
@@ -883,8 +884,8 @@ footer {
     <a href="track-record.html" class="lang-btn" data-i18n="nav_record">戰績</a>
     <a href="vs.html" class="lang-btn" data-i18n="nav_vs">vs 對手</a>
     <a href="pricing.html" class="lang-btn" data-i18n="nav_pricing">定價</a>
-    <button class="lang-btn" id="lang-toggle" onclick="toggleLang()">中文</button>
-  </div>
+</div>
+  <button class="lang-btn" id="lang-toggle" onclick="toggleLang()">中文</button>
 </nav>
 
 <!-- Hero + Cards shared video background -->
@@ -1496,7 +1497,7 @@ footer {
     <!-- Free -->
     <div class="pricing-card scene-from-left">
       <div class="pricing-badge free-badge" data-i18n="price_free_badge">⏳ 限時免費 · 早鳥永久免費</div>
-      <div class="pricing-price" style="display:flex;align-items:baseline;gap:10px;justify-content:center;"><span style="font-size:20px;font-weight:700;color:rgba(255,255,255,0.4);text-decoration:line-through;text-decoration-thickness:2px;">NT$499</span><span>NT$0</span> <span data-i18n="price_mo">/ mo</span></div>
+      <div class="pricing-price" style="display:flex;align-items:baseline;gap:10px;justify-content:center;"><span>NT$0</span> <span data-i18n="price_mo">/ mo</span></div>
       <p class="pricing-desc" data-i18n="price_free_desc">台股日報早上 7 點、美股日報晚上 8 點,AI 直送信箱。目前全功能限時免費,現在訂閱未來恢復收費後仍永久免費。</p>
       <div class="pricing-divider"></div>
       <ul class="pricing-features">

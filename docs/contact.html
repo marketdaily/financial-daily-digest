@@ -59,7 +59,8 @@ nav {
   padding: 7px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s;
 }
 .lang-btn:hover { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.28); color: #fff; }
-.nav-right { display: flex; align-items: center; gap: 8px; }
+.nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto; min-width: 0; }
+nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 
 .page-wrap {
   max-width: 560px;
@@ -212,8 +213,8 @@ h1 {
   </a>
   <div class="nav-right">
     <a href="index.html" class="nav-back" data-i18n="nav_back">← 返回首頁</a>
-    <button class="lang-btn" onclick="toggleLang()">EN</button>
-  </div>
+</div>
+  <button class="lang-btn" onclick="toggleLang()">EN</button>
 </nav>
 
 <div class="page-wrap">

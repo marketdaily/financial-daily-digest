@@ -100,7 +100,8 @@ nav {
   font-size: 14px; flex-shrink: 0;
 }
 .logo em { color: var(--primary-light); font-style: normal; }
-.nav-right { display: flex; align-items: center; gap: 8px; }
+.nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto; min-width: 0; }
+nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 .lang-btn {
   background: rgba(255,255,255,0.05); border: 1px solid var(--border);
   color: var(--text-muted); font-size: 12px; font-weight: 700; font-family: inherit;
@@ -398,8 +399,8 @@ footer a:hover { color: var(--primary-light); }
     <a href="vs.html" class="lang-btn" data-i18n="nav_vs">vs 對手</a>
     <a href="pricing.html" class="lang-btn" data-i18n="nav_pricing">定價</a>
     <a href="dashboard.html" class="lang-btn" data-i18n="nav_dash">我的專區</a>
-    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">EN</button>
-  </div>
+</div>
+  <button class="lang-btn" onclick="toggleLang()" id="lang-btn">EN</button>
 </nav>
 
 <!-- HERO -->

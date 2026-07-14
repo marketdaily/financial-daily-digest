@@ -35,52 +35,100 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>🩺 MarketDaily 系統狀態</h1>
-  <p class="sub">前台用戶可見的核心管線即時健康度 · 每 60 秒自動更新</p>
+  <h1 id="pg-h1">🩺 MarketDaily 系統狀態</h1>
+  <p class="sub" id="pg-sub">前台用戶可見的核心管線即時健康度 · 每 60 秒自動更新</p>
   <div class="overall" id="overall">
     <span class="dot pend" id="ov-dot"></span>
     <b id="ov-text">檢查中…</b>
   </div>
   <div id="cards"></div>
-  <div class="foot">最後檢查:<span id="ts">—</span> · <a href="/">回首頁</a></div>
+  <div class="foot"><span id="foot-last">最後檢查:</span><span id="ts">—</span> · <a href="/" id="foot-home">回首頁</a></div>
 </div>
 <script>
 const WORKER = "https://api.marketdaily.ai";
 const pad = n => String(n).padStart(2,"0");
 function ymd(d){return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());}
 
+// 全站雙語一致:尊重使用者在其他頁設定的語言偏好(md-lang-v2),EN 時整頁英文渲染。
+const LANG = (localStorage.getItem("md-lang-v2") === "en") ? "en" : "zh";
+const I18N = {
+  zh: {
+    title:"🩺 MarketDaily 系統狀態", sub:"前台用戶可見的核心管線即時健康度 · 每 60 秒自動更新",
+    checking:"檢查中…", checking_st:"檢查中", last:"最後檢查:", home:"回首頁",
+    st:{ok:"正常",warn:"注意",bad:"異常"},
+    ov:{ok:"全部系統正常",warn:"部分系統需注意",bad:"偵測到系統異常"},
+    checks:[
+      {name:"網站前台", desc:"marketdaily.ai 可正常載入"},
+      {name:"即時報價 API", desc:"美股 + 台股報價回傳"},
+      {name:"戰績資料", desc:"track-record.json 持續刷新"},
+      {name:"公版日報存檔", desc:"每日日報網頁版產出"},
+    ],
+    note:{
+      page_ok:"頁面已載入",
+      quotes:(n)=>`${n}/2 支有報價`, quotes_one:"僅 1 支有報價", quotes_none:"報價無回傳",
+      tr_none:"無更新時間戳", tr_ok:(w)=>`更新於 ${w}`, tr_old:(w)=>`偏舊(${w})`, tr_bad:(w)=>`過期(${w})`,
+      hrs_ago:(h)=>`${h}h 前`,
+      digest_ok:(d)=>`最新 ${d}`, digest_none:"近 2 日無存檔",
+      check_fail:"檢查失敗",
+    },
+  },
+  en: {
+    title:"🩺 MarketDaily System Status", sub:"Live health of the user-facing core pipeline · auto-refreshes every 60s",
+    checking:"Checking…", checking_st:"Checking", last:"Last checked: ", home:"Home",
+    st:{ok:"Operational",warn:"Warning",bad:"Down"},
+    ov:{ok:"All systems operational",warn:"Some systems need attention",bad:"System issue detected"},
+    checks:[
+      {name:"Website front-end", desc:"marketdaily.ai loads normally"},
+      {name:"Live quotes API", desc:"US + TW quotes returning"},
+      {name:"Track record data", desc:"track-record.json keeps refreshing"},
+      {name:"Public digest archive", desc:"daily digest web version published"},
+    ],
+    note:{
+      page_ok:"Page loaded",
+      quotes:(n)=>`${n}/2 quotes live`, quotes_one:"only 1 quote live", quotes_none:"no quotes returned",
+      tr_none:"no timestamp", tr_ok:(w)=>`updated ${w}`, tr_old:(w)=>`stale (${w})`, tr_bad:(w)=>`expired (${w})`,
+      hrs_ago:(h)=>`${h}h ago`,
+      digest_ok:(d)=>`latest ${d}`, digest_none:"no archive in last 2 days",
+      check_fail:"check failed",
+    },
+  },
+};
+const T = I18N[LANG];
+document.documentElement.lang = LANG === "en" ? "en" : "zh-Hant";
+document.getElementById("pg-h1").textContent = T.title;
+document.getElementById("pg-sub").textContent = T.sub;
+document.getElementById("ov-text").textContent = T.checking;
+document.getElementById("foot-last").textContent = T.last;
+document.getElementById("foot-home").textContent = T.home;
+
 const CHECKS = [
-  { name:"網站前台", desc:"marketdaily.ai 可正常載入",
-    run: async () => ({state:"ok", note:"頁面已載入"}) },
-  { name:"即時報價 API", desc:"美股 + 台股報價回傳",
-    run: async () => {
+  { run: async () => ({state:"ok", note:T.note.page_ok}) },
+  { run: async () => {
       const r = await fetch(`${WORKER}/stock-quotes?tickers=2330,AAPL`,{cache:"no-store"});
       const j = await r.json();
       const q = (j.quotes||[]).filter(x=>x && (x.price>0));
-      if(q.length>=2) return {state:"ok", note:`${q.length}/2 支有報價`};
-      if(q.length===1) return {state:"warn", note:"僅 1 支有報價"};
-      return {state:"bad", note:"報價無回傳"};
+      if(q.length>=2) return {state:"ok", note:T.note.quotes(q.length)};
+      if(q.length===1) return {state:"warn", note:T.note.quotes_one};
+      return {state:"bad", note:T.note.quotes_none};
     } },
-  { name:"戰績資料", desc:"track-record.json 持續刷新",
-    run: async () => {
+  { run: async () => {
       const r = await fetch(`/data/track-record.json?t=${Date.now()}`,{cache:"no-store"});
       const j = await r.json();
       const g = j.generated_at || j.generatedAt || (j.stats && j.stats.generated_at);
-      if(!g) return {state:"warn", note:"無更新時間戳"};
+      if(!g) return {state:"warn", note:T.note.tr_none};
       const hrs = (Date.now() - new Date(g).getTime())/3.6e6;
-      const when = `${Math.round(hrs)}h 前`;
-      if(hrs<36) return {state:"ok", note:`更新於 ${when}`};
-      if(hrs<60) return {state:"warn", note:`偏舊(${when})`};
-      return {state:"bad", note:`過期(${when})`};
+      const when = T.note.hrs_ago(Math.round(hrs));
+      if(hrs<36) return {state:"ok", note:T.note.tr_ok(when)};
+      if(hrs<60) return {state:"warn", note:T.note.tr_old(when)};
+      return {state:"bad", note:T.note.tr_bad(when)};
     } },
-  { name:"公版日報存檔", desc:"每日日報網頁版產出",
-    run: async () => {
+  { run: async () => {
       const today = new Date(), y = new Date(Date.now()-864e5);
       for(const d of [today,y]){
         const r = await fetch(`/output/digest_${ymd(d)}.html`,{method:"HEAD",cache:"no-store"});
-        if(r.ok) return {state:"ok", note:`最新 ${ymd(d)}`};
+        if(r.ok) return {state:"ok", note:T.note.digest_ok(ymd(d))};
       }
-      return {state:"warn", note:"近 2 日無存檔"};
+      return {state:"warn", note:T.note.digest_none};
     } },
 ];
 
@@ -88,26 +136,25 @@ const order = {ok:0, warn:1, bad:2, pend:3};
 async function runAll(){
   const box = document.getElementById("cards");
   box.innerHTML = "";
-  const cards = CHECKS.map(c=>{
+  const cards = CHECKS.map((c,i)=>{
     const el = document.createElement("div"); el.className="card";
     el.innerHTML = `<span class="dot pend"></span><div class="meta">
-      <div class="name">${c.name}</div><div class="desc">${c.desc}</div></div>
-      <span class="st pend">檢查中</span>`;
+      <div class="name">${T.checks[i].name}</div><div class="desc">${T.checks[i].desc}</div></div>
+      <span class="st pend">${T.checking_st}</span>`;
     box.appendChild(el); return el;
   });
   const results = await Promise.all(CHECKS.map(async (c,i)=>{
-    let res; try{ res = await c.run(); }catch(e){ res={state:"bad", note:"檢查失敗"}; }
+    let res; try{ res = await c.run(); }catch(e){ res={state:"bad", note:T.note.check_fail}; }
     const el = cards[i];
     el.querySelector(".dot").className = "dot "+res.state;
     const st = el.querySelector(".st"); st.className="st "+res.state;
-    st.textContent = ({ok:"正常",warn:"注意",bad:"異常"})[res.state]||"—";
+    st.textContent = T.st[res.state]||"—";
     el.querySelector(".desc").textContent = res.note;
     return res.state;
   }));
   const worst = results.reduce((a,b)=> order[b]>order[a]?b:a, "ok");
-  const ov = {ok:["ok","🟢 全部系統正常"],warn:["warn","🟡 部分系統需注意"],bad:["bad","🔴 偵測到系統異常"]}[worst];
-  document.getElementById("ov-dot").className = "dot "+ov[0];
-  document.getElementById("ov-text").textContent = ov[1];
+  document.getElementById("ov-dot").className = "dot "+worst;
+  document.getElementById("ov-text").textContent = T.ov[worst];
   const d = new Date();
   document.getElementById("ts").textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }

@@ -25,7 +25,8 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .nav-logo-icon { width: 30px; height: 30px; background: linear-gradient(135deg, #FFB000, #FF8A3D); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
 .nav-logo em { color: #4AF626; font-style: normal; }
 .nav-back { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5); text-decoration: none; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08); padding: 7px 16px; border-radius: 20px; }
-.nav-right { display: flex; align-items: center; gap: 8px; }
+.nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto; min-width: 0; }
+nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 .lang-btn {
   background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
   color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 700; font-family: 'Inter', sans-serif;
@@ -70,8 +71,8 @@ footer { text-align: center; padding: 36px 24px; border-top: 1px solid rgba(255,
   </a>
   <div class="nav-right">
     <a href="index.html" class="nav-back" data-i18n="nav_back">← 返回首頁</a>
-    <button class="lang-btn" onclick="toggleLang()">EN</button>
-  </div>
+</div>
+  <button class="lang-btn" onclick="toggleLang()">EN</button>
 </nav>
 
 <div class="page-wrap">
