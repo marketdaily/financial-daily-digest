@@ -112,14 +112,17 @@ export async function fetchPoliticalSignals(env, windowHours = 2, maxItems = 6) 
 
 // 本機 Playwright 直抓 X 的原始貼文 → Claude(Haiku)批次分析成與 Grok 同形的訊號物件。
 // 零 xAI 成本路線:抓取在用戶 Mac 上用自己的 X session,worker 只負責判讀+推播。
-export async function analyzePoliticalPosts(env, posts) {
+export async function analyzePoliticalPosts(env, posts, globalLead = "") {
   if (!env.ANTHROPIC_API_KEY) return { error: "no ANTHROPIC_API_KEY", signals: [] };
   if (!posts.length) return { signals: [] };
   const list = posts.slice(0, 20).map((p, i) =>
     `${i + 1}. @${p.handle} (${p.posted_at || "?"}) ${p.url || ""}\n${String(p.text || "").slice(0, 500)}`
   ).join("\n---\n");
   const prompt = `你是頂尖財經市場分析師。以下是政治人物/官方機構剛發的 X 貼文,挑出『可能實質牽動』美股、台股、外匯、利率、原物料或加密貨幣的——例如關稅、出口管制、利率/Fed、財政、產業補貼、點名特定公司、地緣政治。純政治口水、個人攻防、選舉造勢一律忽略(不要輸出)。
-
+${globalLead ? `
+【🌏 全球領先脈絡(鄰近市場當日/隔夜漲跌,僅供市場背景參考)】${globalLead}
+盤勢背景會放大或緩和政策發言對市場的衝擊(如半導體鏈走弱時,晶片出口管制類發言殺傷力提高)。據此【微調】severity,但這是背景不是主因,發言內容本身仍是主要依據。
+` : ""}
 ${list}
 
 每則入選的整理成物件。affected 填股票代碼(美股 ticker 如 NVDA;台股四位數如 2330;影響大盤/匯率/利率就留空)。kind:已宣布/簽署/生效的具體政策行動="action";喊話/批評/暗示/預告="statement"。severity 0-10:9-10=立即重挫或暴漲級;7-8=明顯牽動相關板塊;6 以下=影響有限。

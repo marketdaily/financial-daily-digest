@@ -1252,7 +1252,7 @@ export default {
         fresh.push(p);
       }
       if (!fresh.length) return json({ ok: true, analyzed: 0, note: "all seen" });
-      const ana = await analyzePoliticalPosts(env, fresh);
+      const ana = await analyzePoliticalPosts(env, fresh, await fetchGlobalLead(env));
       if (ana.error) return json({ ok: false, error: ana.error }, 502);
       const enabled = (await env.USER_PREFS.get("alert:enabled")) === "true";
       const report = await runPoliticalPipeline(env, {
