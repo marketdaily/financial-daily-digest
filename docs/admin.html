@@ -250,6 +250,9 @@ body {
 .bar.zero { background: var(--surface2); }
 .bar-x { font-size: 9px; color: var(--text3); white-space: nowrap; }
 .chart-empty { color: var(--text3); font-size: 13px; text-align: center; padding: 40px 0; }
+/* 成長曲線 = SVG 面積圖(非長條),讓它依自身比例排版,勿套 .chart 的固定高度 */
+.growth-chart { display: block; width: 100%; overflow: hidden; }
+.growth-chart svg { display: block; width: 100%; height: auto; }
 
 /* ── Data table ── */
 .dtable { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -891,7 +894,7 @@ body {
 
         <div class="card mb-16">
           <div class="card-title"><span class="dot"></span>訂閱者成長（累計 · 近 90 日） <span class="right" id="growth-total"></span></div>
-          <div id="growth-chart" class="chart"><div class="chart-empty">載入中…</div></div>
+          <div id="growth-chart" class="growth-chart"><div class="chart-empty">載入中…</div></div>
         </div>
 
         <div class="card mb-16" style="padding:16px 20px">
