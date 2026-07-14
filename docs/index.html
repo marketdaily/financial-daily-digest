@@ -1255,16 +1255,19 @@ footer {
     const c = document.getElementById('tr-stat-c');
     const t = document.getElementById('tr-stat-total');
     const heroChip = document.getElementById('hp-chip1-num');
-    // 看多與避坑一律用「公版可查證」口徑(與 /track-record 頁主數字一致、可逐筆對照紀錄表,
-    // 也與 Hero chip 同源)。2026-07-14 audit:避坑原用全用戶合計,與 Hero 的 public 值同名卻差
-    // ~10pp、兩處都掛「可查證」無法對帳,削弱信任訴求 → 統一 public。沒有 public_only 時退回合計。
-    const pub = trData.stats.public_only || trData.stats;
-    if (a) a.innerHTML = fmt(pub.a_rate, pub.a_count);
-    if (c) c.innerHTML = fmt(pub.c_rate, pub.c_count);
+    // 看多與避坑一律對齊 /track-record 頁頭條口徑 one_day(隔日結算、全用戶聚合),與那頁點進去
+    // 看到的頭條數字完全同源同數字、可在紀錄表逐筆對照。2026-07-14 用戶拍板:先前改用 public_only
+    // (樣本僅 24/31)反而與紀錄頁頭條 one_day 差 ~10pp,點進去對不上更傷信任 → 統一走 one_day。
+    // one_day 樣本未達門檻(<MIN_N)時退回 public_only,再退回合計。
+    const od = trData.stats.one_day;
+    const src = (od && typeof od.a_count === 'number' && od.a_count >= MIN_N && od.c_count >= MIN_N)
+      ? od : (trData.stats.public_only || trData.stats);
+    if (a) a.innerHTML = fmt(src.a_rate, src.a_count);
+    if (c) c.innerHTML = fmt(src.c_rate, src.c_count);
     if (t && typeof trData.stats.total_records === 'number') t.textContent = trData.stats.total_records;
-    // Hero chip 帶頭數字:避坑勝率(公版可查證口徑,與買進負edge區隔——見 backlog P1.5 修4)
+    // Hero chip 帶頭數字:避坑勝率(與大卡片同源 one_day,可對照紀錄表)
     if (heroChip) {
-      const raw = fmt(pub.c_rate, pub.c_count);
+      const raw = fmt(src.c_rate, src.c_count);
       // hero chip 空間窄(單行,與下方 subtitle 相鄰),故意用比大卡片短的字樣,避免長字串溢位重疊
       heroChip.textContent = raw.startsWith('樣本累積中') || raw.startsWith('Collecting')
         ? (currentLang === 'en' ? 'Collecting' : '累積中')
@@ -2048,7 +2051,7 @@ const i18n = {
     hp_tw: "TSMC", hp_holding_signal: "Hold · watch the open",
     hp_sources: "Sources: Reuters · Bloomberg · CNA — each cross-checked",
     hp_foot: "AI-generated sample · informational only, not financial advice",
-    hp_chip1: "Public avoid-the-bad-ones rate · verifiable",
+    hp_chip1: "Avoid-the-bad-ones rate · verifiable in record",
     hp_chip2_num: "No sponsors", hp_chip2: "No positions · corrections public",
     hp_chip3_num: "NT$0", hp_chip3: "Free for a limited time · early birds free forever",
     footer_record: "Track Record",
@@ -2166,7 +2169,7 @@ const i18n = {
     tr_title: "不空談 AI 多強,讓紀錄說話",
     tr_sub: "過去 30 天,日報點到的個股「方向勝率」與「避坑勝率」全部公開。錯的我們也列出來——100% 才是假的。",
     tr_cta: "看完整紀錄表 →",
-    tr_s1: "看多勝率 · 公版可查證",
+    tr_s1: "看多勝率 · 可對照紀錄表",
     tr_s2: "避坑勝率",
     tr_s3: "累計提及個股",
     refund_badge: "🎁 全功能限時免費",
@@ -2207,7 +2210,7 @@ const i18n = {
     hp_tw: "台積電", hp_holding_signal: "持有 · 觀望開盤",
     hp_sources: "來源：Reuters · Bloomberg · 經濟日報 — 每則交叉比對",
     hp_foot: "AI 生成範例 · 僅供參考，不構成投資建議",
-    hp_chip1: "公開避坑勝率 · 可查證",
+    hp_chip1: "避坑勝率 · 可對照紀錄表",
     hp_chip2_num: "不收業配", hp_chip2: "不持有提及個股 · 錯了公開更正",
     hp_chip3_num: "NT$0", hp_chip3: "限時免費 · 早鳥永久免費",
     footer_record: "戰績紀錄",
