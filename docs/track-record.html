@@ -942,7 +942,7 @@ function renderHorizonStats() {
 }
 
 // 跨用戶聚合勝率 — 從 stats.a_count/a_wins/c_count/c_wins 讀(這些是公版+個人化合計)
-// 隱私:records 列表只放公版,但 stats 已包含全部用戶訊號
+// 隱私:records 列表含公版+全用戶持股(匿名去重聚合,無用戶身分),stats 為全部用戶訊號合計
 function renderCombinedStats() {
   if (!STATS || typeof STATS.a_count !== "number") return;
   const personal = STATS.personal_samples_added || 0;
@@ -970,8 +970,8 @@ function renderCombinedStats() {
     const personalSettled = Math.max(((STATS.a_count||0)+(STATS.c_count||0))-publicSettled,0);
     const totalSettled = (STATS.a_count||0)+(STATS.c_count||0);
     det.textContent = zh
-      ? `公版已結算 ${publicSettled} 筆,加計訂閱者個人化已結算 ${personalSettled} 筆 → 合計樣本 ${totalSettled} 筆(另有 ${personal} 筆個人化紀錄含未結算)。隱私保護:列表只列公版,訂閱者個人化只進總勝率。`
-      : `Public calls settled: ${publicSettled}; plus personalized calls settled: ${personalSettled} → total sample ${totalSettled} (${personal} personalized records still include unsettled ones). Privacy: the list only shows public calls — personalized ones only feed into the aggregate win rate.`;
+      ? `公版已結算 ${publicSettled} 筆,加計訂閱者個人化已結算 ${personalSettled} 筆 → 合計樣本 ${totalSettled} 筆(另有 ${personal} 筆個人化紀錄含未結算)。清單已納入全部訂閱者持股的建議(依日期+標的去重的匿名聚合);隱私保護:僅呈現代號與判斷,絕不顯示任何用戶身分或持有成本。`
+      : `Public calls settled: ${publicSettled}; plus personalized calls settled: ${personalSettled} → total sample ${totalSettled} (${personal} personalized records still include unsettled ones). The list now covers every subscriber's holdings (an anonymous aggregate deduped by date + ticker); privacy: only ticker and verdict are shown — never any user identity or cost basis.`;
     note.style.display = "inline-block";
   }
 }

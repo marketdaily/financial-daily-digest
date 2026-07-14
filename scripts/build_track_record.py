@@ -1510,6 +1510,30 @@ def main() -> int:
         },
         "personal_samples_added": len(judged_personal),
     }
+
+    # 可見清單 = 公版 + 全用戶持股(Delvin 2026-07-14 指令:公開戰績持股一定要全用戶持股)。
+    # 舊「隱私策略 A」只輸出 judged_public(7 檔),那 1000+ 筆全用戶個人化建議只餵勝率、被藏起來
+    # → 截圖只看到 3 檔台股的病根。現改為把個人化紀錄「匿名去重」後也寫進可見 records。
+    # 隱私三閘:①排除持有者框架(H/holder)卡 —— 它含用戶成本價,會間接洩漏誰持有;
+    #          ②依 (date,ticker,verdict) 去重 → 呈現「用戶群當天對某股的看法」聚合,非逐用戶;
+    #          ③剝除所有內部欄位(_user_token / source_scope 等),絕不輸出任何用戶識別。
+    _seen_vis = {(r["date"], r["ticker"], r["verdict_class"]) for r in judged_public}
+    visible_personal: list[dict] = []
+    for r in judged_personal:
+        if r.get("type") == "H" or r.get("holder"):
+            continue  # 持有者卡含成本價,不進公開清單
+        k = (r["date"], r["ticker"], r["verdict_class"])
+        if k in _seen_vis:
+            continue
+        _seen_vis.add(k)
+        clean = {kk: vv for kk, vv in r.items()
+                 if not kk.startswith("_") and kk not in ("source_scope", "holder_entry")}
+        clean["scope"] = "aggregate"  # 前端可標示為「訂閱者持股聚合」
+        visible_personal.append(clean)
+    visible_records = judged_public + visible_personal
+    visible_records.sort(key=lambda x: (x["date"], x["ticker"]), reverse=True)
+    stats["visible_personal_added"] = len(visible_personal)
+
     # 防呆:刷新拿到 0 筆通常是 CDN 抓取失敗,不是真的沒戰績。
     # 若既有檔案已有資料,拒絕用空結果覆蓋,改報錯讓排程 fail 不靜默歸零。
     if stats["total_records"] == 0 and OUT_FILE.exists():
@@ -1527,7 +1551,7 @@ def main() -> int:
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     OUT_FILE.write_text(
-        json.dumps({"stats": stats, "records": judged_public}, ensure_ascii=False, indent=2),
+        json.dumps({"stats": stats, "records": visible_records}, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
     # 內部逐筆明細(含個股+用戶token):寫本地檔,由 winrig 排程 POST 到 worker
