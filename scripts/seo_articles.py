@@ -343,6 +343,41 @@ def backfill_og_cards(dry: bool) -> list:
     return done
 
 
+# 只改「宣告真正 canonical URL 的三個訊號欄」(canonical / og:url / JSON-LD @id),
+# 絕不碰 og:image(.png)、topnav 導覽連結、相關文章內連(那些是導覽,308 hop 無傷)。
+_CANON_HTML_RE = re.compile(r'(<link rel="canonical" href="https://marketdaily\.ai/blog/[^"]*?)\.html(">)')
+_OGURL_HTML_RE = re.compile(r'(<meta property="og:url" content="https://marketdaily\.ai/blog/[^"]*?)\.html(">)')
+_LDID_HTML_RE = re.compile(r'("@id": "https://marketdaily\.ai/blog/[^"]*?)\.html(")')
+
+
+def backfill_canonical(dry: bool) -> list:
+    """把既有文章的 canonical / og:url / JSON-LD @id 從 `.html` 改成 extensionless 乾淨 URL。
+    CF Pages 會把 `/blog/x.html` 308→`/blog/x`;canonical 指向 redirect URL 是 SEO 反模式
+    (Google 明文警告),且與 sitemap(本就用乾淨 URL)簽名衝突。新文章走 PAGE_TEMPLATE 已修正,
+    此函式回填上線前的舊文。冪等:已是乾淨 URL 即 no-op(regex 需 `.html"` 結尾才命中),可安全重跑。
+    index.html 特例:canonical `/blog/index.html`→`/blog/`(目錄根,非 `/blog/index`)。"""
+    changed = []
+    for f in BLOG_DIR.glob("*.html"):
+        html = f.read_text(encoding="utf-8")
+        orig = html
+        if f.stem == "index":
+            html = html.replace(
+                '<link rel="canonical" href="https://marketdaily.ai/blog/index.html">',
+                '<link rel="canonical" href="https://marketdaily.ai/blog/">')
+        else:
+            html = _CANON_HTML_RE.sub(r"\1\2", html)
+            html = _OGURL_HTML_RE.sub(r"\1\2", html)
+            html = _LDID_HTML_RE.sub(r"\1\2", html)
+        if html != orig:
+            changed.append(f.stem)
+            if dry:
+                print(f"  [dry] would fix canonical: {f.name}")
+            else:
+                f.write_text(html, encoding="utf-8")
+                print(f"  ✓ canonical→clean: {f.name}")
+    return changed
+
+
 def call_claude(system: str, user: str, max_tokens: int = 2000) -> str:
     import urllib.request
     req = urllib.request.Request(
@@ -1230,7 +1265,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://marketdaily.ai/blog/{slug}.html">
+<meta property="og:url" content="https://marketdaily.ai/blog/{slug}">
 <meta property="og:site_name" content="MarketDaily">
 <meta property="og:image" content="{og_image}">
 <meta property="og:image:width" content="1200">
@@ -1239,7 +1274,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta name="twitter:title" content="{title}">
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{og_image}">
-<link rel="canonical" href="https://marketdaily.ai/blog/{slug}.html">
+<link rel="canonical" href="https://marketdaily.ai/blog/{slug}">
 <link rel="alternate" type="application/rss+xml" title="MarketDaily 個股分析" href="/feed.xml">
 <script type="application/ld+json">{schema_json}</script>
 <style>
@@ -1353,7 +1388,7 @@ def _article_schema_json(title: str, desc: str, slug: str, date_published: str,
             "name": "MarketDaily",
             "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"},
         },
-        "mainEntityOfPage": {"@type": "WebPage", "@id": f"https://marketdaily.ai/blog/{slug}.html"},
+        "mainEntityOfPage": {"@type": "WebPage", "@id": f"https://marketdaily.ai/blog/{slug}"},
     }
     return json.dumps(schema, ensure_ascii=False).replace("</", "<\\/")
 
@@ -1497,7 +1532,7 @@ def regenerate_blog_index(dry: bool):
 <meta name="description" content="MarketDaily 財經知識庫:個股拆解、法說會前瞻、除權息、供應鏈全景,到總經指標與新手入門,涵蓋美股、台股。">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
 <link rel="alternate" type="application/rss+xml" title="MarketDaily 財經知識庫" href="/feed.xml">
-<link rel="canonical" href="https://marketdaily.ai/blog/index.html">
+<link rel="canonical" href="https://marketdaily.ai/blog/">
 <style>
 :root{ color-scheme:dark; --bg:#060611; --ink:#e8ebf5; --muted:#9aa3bd;
   --indigo:#818cf8; --indigo-l:#a5b4fc; --line:rgba(255,255,255,.08); --line-h:rgba(129,140,248,.42); }
@@ -1827,6 +1862,8 @@ def main():
 
     print("④ 補社群卡 og:image...")
     backfill_og_cards(args.dry)
+    print("④ 校正 canonical/og:url→乾淨 URL(免 .html 308 redirect,冪等)...")
+    backfill_canonical(args.dry)
     print("⑤ 更新 blog index...")
     regenerate_blog_index(args.dry)
     print("⑥ 更新 RSS feed(docs/feed.xml)...")
