@@ -1396,31 +1396,83 @@ def write_article(art: dict, dry: bool) -> Path:
     return fname
 
 
+BLOG_CATS = {
+    "term":   ("名詞",   "#a78bfa"),
+    "macro":  ("總經",   "#38bdf8"),
+    "guide":  ("新手",   "#6ee7b7"),
+    "event":  ("法說會", "#fbbf24"),
+    "exdiv":  ("除權息", "#fca5a5"),
+    "supply": ("供應鏈", "#f59e0b"),
+    "stock":  ("個股分析", "#818cf8"),
+}
+
+
+def _blog_classify(slug: str) -> str:
+    if slug.startswith("term-"):  return "term"
+    if slug.startswith("macro-"): return "macro"
+    if slug.startswith("guide-"): return "guide"
+    if "-event-" in slug:         return "event"
+    if "除權息" in slug:           return "exdiv"
+    if "供應鏈全景" in slug:       return "supply"
+    return "stock"
+
+
+def _blog_summary(title: str) -> str:
+    for sep in ("：", ":", "？", "?", "──", "—", "｜", "|"):
+        if sep in title:
+            tail = title.split(sep, 1)[1].strip(" ？?：:")
+            if len(tail) >= 6:
+                return tail
+    return title
+
+
+def _blog_esc(s: str) -> str:
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
 def regenerate_blog_index(dry: bool):
-    """掃 docs/blog/ 所有文章,生成 index.html 列表頁。"""
+    """掃 docs/blog/ 所有文章,生成 index.html 列表頁(分類/摘要/日期/篩選)。"""
     # 按 datePublished 排序(新→舊),而非 mtime。og/beacon/rss 回填會把全部文章 mtime
     # 刷成同一天 → mtime 排序退化成任意 glob 順序、最新文章被埋;datePublished 與 git 首次
     # 提交日一致且穩定,git checkout 也不會改動。slug 當決定性次序(同日多篇時可重現)。
     _articles = [f for f in BLOG_DIR.glob("*.html") if f.stem != "index"]
     _keyed = [((_existing_date_published(f) or _git_first_commit_date(f)), f.stem, f) for f in _articles]
     _keyed.sort(key=lambda k: (k[0], k[1]), reverse=True)
-    files = [f for _, _, f in _keyed]
+
     items = []
-    for f in files:
+    for date_key, slug, f in _keyed:
         try:
             m = re.search(r"<title>(.+?)\s*\|", f.read_text(encoding="utf-8"))
-            title = m.group(1) if m else f.stem
+            title = m.group(1) if m else slug
         except Exception:
-            title = f.stem
-        items.append({"slug": f.stem, "title": title})
+            title = slug
+        cat = _blog_classify(slug)
+        label, color = BLOG_CATS[cat]
+        date = (str(date_key)[:10].replace("-", "·")) if date_key else "2026"
+        items.append({"slug": slug, "title": title, "cat": cat, "label": label,
+                      "color": color, "date": date, "summary": _blog_summary(title)})
+
+    total = len(items)
+    counts = {k: sum(1 for it in items if it["cat"] == k) for k in BLOG_CATS}
+    order = ["stock", "event", "exdiv", "supply", "macro", "term", "guide"]
+    pills = ['<button class="pill on" data-f="all">全部 %d</button>' % total]
+    for k in order:
+        if counts.get(k):
+            pills.append('<button class="pill" data-f="%s">%s %d</button>' % (k, BLOG_CATS[k][0], counts[k]))
+    filters = "\n      ".join(pills)
 
     cards = "\n".join(
-        f'<a class="card" href="{it["slug"]}.html"><div class="card-title">{it["title"]}</div>'
-        f'<div class="card-meta">→ 閱讀</div></a>'
+        '<a class="card" data-cat="%s" href="%s.html">'
+        '<span class="tag" style="--tc:%s">%s</span>'
+        '<div class="card-title">%s</div>'
+        '<div class="card-sum">%s</div>'
+        '<div class="card-meta"><span>%s</span><span class="arrow">閱讀 →</span></div></a>'
+        % (it["cat"], it["slug"], it["color"], it["label"],
+           _blog_esc(it["title"]), _blog_esc(it["summary"]), it["date"])
         for it in items
     ) or '<p style="color:rgba(255,255,255,0.5)">尚無文章。</p>'
 
-    idx_html = f"""<!DOCTYPE html>
+    tmpl = """<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
@@ -1430,41 +1482,90 @@ def regenerate_blog_index(dry: bool):
 <title>財經知識庫 · 投資學堂 | MarketDaily</title>
 <meta name="description" content="MarketDaily 財經知識庫:個股拆解、法說會前瞻、除權息、供應鏈全景,到總經指標與新手入門,涵蓋美股、台股。">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
-<link rel="alternate" type="application/rss+xml" title="MarketDaily 個股分析" href="/feed.xml">
+<link rel="alternate" type="application/rss+xml" title="MarketDaily 財經知識庫" href="/feed.xml">
 <link rel="canonical" href="https://marketdaily.ai/blog/index.html">
 <style>
-:root {{ color-scheme: dark; }}
-* {{ box-sizing:border-box; margin:0; padding:0; }}
-body {{ background:#0a0a14; color:#e2e8f0; font-family:'Inter','PingFang TC',sans-serif; }}
-.wrap {{ max-width:880px; margin:0 auto; padding:48px 24px 80px; }}
-.topnav {{ padding:14px 24px; display:flex; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.08); }}
-.topnav a {{ color:#a5b4fc; text-decoration:none; font-weight:700; }}
-h1 {{ font-size:32px; font-weight:900; color:#fff; margin-bottom:32px; }}
-.grid {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }}
-.card {{ display:block; padding:20px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; text-decoration:none; color:inherit; transition:all 0.15s; }}
-.card:hover {{ background:rgba(99,102,241,0.10); border-color:rgba(99,102,241,0.40); transform:translateY(-2px); }}
-.card-title {{ font-size:16px; font-weight:700; color:#fff; line-height:1.5; }}
-.card-meta {{ font-size:13px; color:#a5b4fc; margin-top:10px; }}
+:root{ color-scheme:dark; --bg:#060611; --ink:#e8ebf5; --muted:#9aa3bd;
+  --indigo:#818cf8; --indigo-l:#a5b4fc; --line:rgba(255,255,255,.08); --line-h:rgba(129,140,248,.42); }
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{ background:radial-gradient(900px 500px at 82% -8%, rgba(99,102,241,.16), transparent 60%),
+  radial-gradient(700px 460px at 8% 4%, rgba(56,189,248,.08), transparent 55%), var(--bg);
+  color:var(--ink); font-family:'Inter','PingFang TC','Noto Sans TC',sans-serif; -webkit-font-smoothing:antialiased; min-height:100vh; }
+.topnav{ display:flex; justify-content:space-between; align-items:center; padding:16px 24px;
+  border-bottom:1px solid var(--line); max-width:1080px; margin:0 auto; }
+.topnav a{ color:var(--indigo-l); text-decoration:none; font-weight:700; font-size:14px; }
+.topnav a:hover{ color:#fff; }
+.wrap{ max-width:1080px; margin:0 auto; padding:52px 24px 96px; }
+.eyebrow{ font-size:12px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--indigo-l); margin-bottom:14px; }
+h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:-.02em; line-height:1.12; }
+.sub{ margin-top:14px; color:var(--muted); font-size:16px; line-height:1.6; max-width:60ch; }
+.filters{ display:flex; flex-wrap:wrap; gap:10px; margin:34px 0 30px; }
+.pill{ font:inherit; font-size:13.5px; font-weight:700; color:var(--muted); cursor:pointer;
+  background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:999px; padding:8px 16px;
+  transition:all .18s cubic-bezier(.22,1,.36,1); }
+.pill:hover{ color:#fff; border-color:var(--line-h); }
+.pill.on{ color:#0b0b16; background:linear-gradient(135deg,#a5b4fc,#818cf8); border-color:transparent; }
+.grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; }
+.card{ position:relative; display:flex; flex-direction:column; padding:22px 22px 18px;
+  background:rgba(255,255,255,.035); border:1px solid var(--line); border-radius:16px;
+  text-decoration:none; color:inherit; overflow:hidden;
+  transition:transform .2s cubic-bezier(.22,1,.36,1),border-color .2s,background .2s; }
+.card::before{ content:""; position:absolute; inset:0 auto auto 0; width:100%; height:2px;
+  background:linear-gradient(90deg,var(--tc,#818cf8),transparent); opacity:0; transition:opacity .2s; }
+.card:hover{ transform:translateY(-3px); background:rgba(129,140,248,.08); border-color:var(--line-h); }
+.card:hover::before{ opacity:.7; }
+.tag{ align-self:flex-start; font-size:11.5px; font-weight:800; letter-spacing:.02em; color:var(--tc);
+  background:color-mix(in srgb,var(--tc) 14%,transparent); border:1px solid color-mix(in srgb,var(--tc) 32%,transparent);
+  padding:3px 10px; border-radius:999px; margin-bottom:13px; }
+.card-title{ font-size:16px; font-weight:750; color:#fff; line-height:1.45; letter-spacing:-.01em; }
+.card-sum{ margin-top:9px; font-size:13.5px; line-height:1.6; color:var(--muted);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.card-meta{ margin-top:auto; padding-top:15px; display:flex; justify-content:space-between; align-items:center;
+  font-size:12.5px; color:#6f7793; }
+.card-meta .arrow{ color:var(--indigo-l); font-weight:700; opacity:0; transform:translateX(-4px); transition:all .2s; }
+.card:hover .arrow{ opacity:1; transform:translateX(0); }
+.empty{ color:var(--muted); padding:40px 0; font-size:15px; }
+@media(max-width:520px){ .grid{ grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
-<div class="topnav">
-  <a href="/">← MarketDaily</a>
-  <a href="/pricing.html">定價</a>
-</div>
+<div class="topnav"><a href="/">← MarketDaily</a><a href="/dashboard.html">我的後台</a></div>
 <div class="wrap">
-  <h1>財經知識庫 · {len(items)} 篇</h1>
-  <div class="grid">{cards}</div>
+  <div class="eyebrow">投資學堂 · Learn</div>
+  <h1>財經知識庫</h1>
+  <p class="sub">個股拆解、法說會前瞻、除權息、供應鏈全景,到總經指標與新手入門——__TOTAL__ 篇免費開放,依主題挑你要讀的。</p>
+  <div class="filters">
+      __FILTERS__
+  </div>
+  <div class="grid" id="grid">
+__CARDS__
+  </div>
+  <div class="empty" id="empty" style="display:none">這個分類還沒有文章。</div>
 </div>
-{beacon_for("blog-index")}
+<script>
+const pills=document.querySelectorAll('.pill');
+const cards=[...document.querySelectorAll('.card')];
+const empty=document.getElementById('empty');
+pills.forEach(p=>p.addEventListener('click',()=>{
+  pills.forEach(x=>x.classList.remove('on'));p.classList.add('on');
+  const f=p.dataset.f;let n=0;
+  cards.forEach(c=>{const show=f==='all'||c.dataset.cat===f;c.style.display=show?'':'none';if(show)n++;});
+  empty.style.display=n?'none':'block';
+}));
+</script>
+__BEACON__
 </body>
 </html>"""
+    idx_html = (tmpl.replace("__TOTAL__", str(total))
+                    .replace("__FILTERS__", filters)
+                    .replace("__CARDS__", cards)
+                    .replace("__BEACON__", beacon_for("blog-index")))
     out = BLOG_DIR / "index.html"
     if dry:
-        print(f"  [dry] index({len(items)} items)")
+        print(f"  [dry] index({total} items)")
     else:
         out.write_text(idx_html, encoding="utf-8")
-        print(f"  ✓ index.html ({len(items)} items)")
+        print(f"  ✓ index.html ({total} items)")
 
 
 def pick_term_seeds(count: int, published: set) -> list:
