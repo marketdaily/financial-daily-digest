@@ -1169,6 +1169,37 @@ def fetch_indicators() -> dict:
     return indicators
 
 
+# 全球領先脈絡指數:鄰近市場開盤早於台股(東京/首爾 08:00 TW 早於台股 09:00),半導體鏈跨市連動,
+# 這些市場的當日/隔夜漲跌是台股(尤其科技鏈)與美股當日的領先脈絡。只當「內容型 context」餵 reason
+# (同 news_tw/us_13f 等級,非已驗證統計 edge),刻意不接進 _market_regime 確定性閘門(未經 walk-forward 回測)。
+_GLOBAL_LEAD_INDICES = [
+    ("^SOX", "費城半導體", "semi"),
+    ("^N225", "日經225", "asia"),
+    ("^KS11", "韓國KOSPI", "asia"),
+    ("^HSI", "恒生", "asia"),
+    ("000001.SS", "上證綜合", "asia"),
+    ("^STOXX50E", "歐洲Stoxx50", "europe"),
+    ("^GDAXI", "德國DAX", "europe"),
+    ("^FTSE", "英國FTSE", "europe"),
+]
+
+
+def fetch_global_lead() -> dict:
+    """全球鄰近市場指數快照(半導體/亞洲/歐洲)——台股與美股當日的領先脈絡。
+    亞洲市場開盤早於台股、半導體鏈跨市連動,這些指數的當日/隔夜漲跌對台股(尤其科技鏈)與
+    美股有領先參考。零新增依賴(複用 _batch_prices 含韌性/救援層),抓不到的指數靜默略過,缺了不缺信。"""
+    syms = [s for s, _, _ in _GLOBAL_LEAD_INDICES]
+    raw = _batch_prices(syms)
+    out = {}
+    for sym, name, region in _GLOBAL_LEAD_INDICES:
+        d = raw.get(sym)
+        if not d:
+            continue
+        out[sym] = {"name": name, "region": region,
+                    "price": d["price"], "change_pct": d["change_pct"]}
+    return out
+
+
 def fetch_crypto() -> dict:
     raw = _batch_prices(["BTC-USD", "ETH-USD"])
     result = {}
@@ -1324,6 +1355,7 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         "us_news": fetch_us_news(extra_us_stocks),
         "tw_news": fetch_tw_news(extra_tw_stocks),
         "indicators": fetch_indicators(),
+        "global_lead": fetch_global_lead(),
         "crypto": fetch_crypto(),
         "sectors": fetch_sector_performance(),
         "earnings": fetch_earnings_calendar(),

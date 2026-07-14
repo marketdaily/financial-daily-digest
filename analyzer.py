@@ -547,6 +547,33 @@ def get_personalized_subject(data: dict, us_stocks: list, tw_stocks: list, date:
     return f"📊 財經日報 {date} — AI 精選美股 + 台股"
 
 
+def _global_lead_context(data: dict) -> list:
+    """全球領先脈絡文字塊:鄰近市場(半導體/亞洲/歐洲)指數漲跌 → 餵 reason 當 context。
+    背景:亞洲市場開盤早於台股、半導體鏈跨市連動(費半 SOX 領先台積電/聯發科等台股科技鏈),
+    這些指數的當日/隔夜漲跌是台股與美股當日的領先脈絡(分析師指認)。
+    合規:個股分析內容 → 全用戶免費且相同;只給方向脈絡,不給買賣價位。
+    純確定性文字:不下確定性方向結論、不碰 _market_regime 信心閘門(未經回測不當已驗證 edge)。"""
+    gl = data.get("global_lead") or {}
+    if not gl:
+        return []
+    region_order = [("semi", "半導體鏈"), ("asia", "亞洲市場"), ("europe", "歐洲市場")]
+    lines = ["\n【🌏 全球領先脈絡(鄰近市場,僅供方向脈絡參考,非買賣依據)】"]
+    for rk, rlabel in region_order:
+        items = [(v["name"], v["change_pct"]) for v in gl.values() if v.get("region") == rk]
+        if not items:
+            continue
+        parts = [f"{n} {c:+.2f}%" for n, c in items]
+        lines.append(f"  {rlabel}: " + "、".join(parts))
+    sox = gl.get("^SOX")
+    if sox:
+        c = sox["change_pct"]
+        if c >= 1.0:
+            lines.append(f"  → 費半隔夜偏強({c:+.2f}%),台積電/聯發科等台股半導體鏈開盤有正向領先脈絡(僅脈絡,非保證同向)。")
+        elif c <= -1.0:
+            lines.append(f"  → 費半隔夜偏弱({c:+.2f}%),台股半導體鏈開盤留意賣壓領先脈絡(僅脈絡,非保證同向)。")
+    return lines
+
+
 def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks: list = None) -> str:
     lines = []
     us = data.get("us_market", {})
@@ -575,6 +602,8 @@ def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks:
     if "^TWII" in tw:
         d = tw["^TWII"]
         lines.append(f"  台灣加權指數: {d['price']} ({d['change_pct']:+.2f}%)")
+
+    lines.extend(_global_lead_context(data))
 
     if user_us_stocks or user_tw_stocks:
         lines.append("\n【⭐ 用戶持倉今日表現（最重要，優先分析）】")
