@@ -1472,6 +1472,20 @@ def regenerate_blog_index(dry: bool):
         for it in items
     ) or '<p style="color:rgba(255,255,255,0.5)">尚無文章。</p>'
 
+    # 免維護防呆:同一前綴 ≥3 篇、又不是台股代碼(純數字)卻落入「個股分析」,
+    # 很可能是新增的固定前綴類型被靜默歸類。印醒目告警(weekly seo_runner 會擷取此行推播 admin),
+    # 免得未來加新類型時忘了在 _blog_classify 補規則。
+    _seg = {}
+    for it in items:
+        if it["cat"] == "stock":
+            s = it["slug"].split("-")[0]
+            if not s.isdigit():
+                _seg[s] = _seg.get(s, 0) + 1
+    _suspect = sorted([(s, n) for s, n in _seg.items() if n >= 3], key=lambda kv: -kv[1])
+    if _suspect:
+        _m = "、".join(f"{s}({n}篇)" for s, n in _suspect)
+        print(f"⚠️ BLOG_CAT_ALERT 可能有新文章類型被歸入個股分析(同前綴≥3篇、非台股代碼):{_m}。若是新類型請在 _blog_classify 加一條規則。")
+
     tmpl = """<!DOCTYPE html>
 <html lang="zh-Hant">
 <head>
