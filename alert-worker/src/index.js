@@ -484,12 +484,21 @@ async function webPush(env, subscription, payloadStr) {
   }
 }
 // 瀏覽器通知 payload(service worker 解析用)
-function pushNotif(news, ticker, severity, reason) {
+// 每則提醒的穩定短錨點(djb2 hash→base36)——push url 帶 #alert-<id>、收件匣 record 存同一 id,
+// dashboard 據此捲到「被點的那則」而非只跳到列表頂端。同一則新聞/貼文永遠算出同一 id(冪等)。
+function alertAnchor(seed) {
+  let h = 5381;
+  const s = String(seed || "");
+  for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) >>> 0;
+  return h.toString(36);
+}
+
+function pushNotif(news, ticker, severity, reason, anchor = "") {
   const name = ticker === "大盤" ? "大盤" : displayName(ticker);
   return JSON.stringify({
     title: severity >= 9 ? `🚨 ${name}｜重大消息` : `📈 ${name}｜即時提醒`,
     body: (news.title || reason || "").slice(0, 160),
-    url: "https://marketdaily.ai/dashboard.html#alerts",
+    url: "https://marketdaily.ai/dashboard.html#" + (anchor ? `alert-${anchor}` : "alerts"),
     tag: `md-${ticker}-${(news.publishedAt || "").slice(0, 13)}`,
   });
 }
@@ -787,15 +796,16 @@ async function runPipeline(env, { push, persist }) {
         cand.recipients.push({ email: h.email, ticker: hit, status: "would-push" });
         continue;
       }
-      const pushed = await deliverAlert(env, h, pushNotif(news, hit, severity, dispReason), { severity });
+      const aid = alertAnchor(`${hit}|${news.url || ""}|${news.publishedAt || ""}`);
+      const pushed = await deliverAlert(env, h, pushNotif(news, hit, severity, dispReason, aid), { severity });
       if (pushed.ok) {
         await env.USER_PREFS.put(cluster, report.ts, { expirationTtl: PUSHED_TTL });
         await env.USER_PREFS.put(countKey, String(count + 1), { expirationTtl: COUNT_TTL });
         report.counts.pushed++;
         cand.recipients.push({ email: h.email, ticker: hit, status: `pushed:${pushed.channels.join("+")}` });
-        // 站內提醒收件匣(dashboard feed 顯示用)
+        // 站內提醒收件匣(dashboard feed 顯示用);id 與 push url 錨點一致,供深連結捲動
         await recordAlertInbox(env, h.email, {
-          ts: report.ts, kind: "news", ticker: hit,
+          id: aid, ts: report.ts, kind: "news", ticker: hit,
           name: hit === "大盤" ? "大盤" : displayName(hit),
           title: news.title, url: news.url, reason: dispReason, stance, action,
           severity, category, speculative,
@@ -895,11 +905,12 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
     // 不再因「沒持有被點名個股」而漏接;每日上限 4 則(上方 cap)防轟炸。
     const targets = recipients;
     const fired = { headline: sig.headline_zh, severity: sig.severity, kind: sig.kind, recipients: [] };
+    const aid = alertAnchor(`pol|${sig.post_url || sig.headline_zh || ""}`);
     if (push && targets.length) {
       const notif = JSON.stringify({
         title: `🏛️ 政壇影響｜${(sig.headline_zh || "").slice(0, 36)}`,
         body: (sig.headline_zh || "").slice(0, 160),
-        url: "https://marketdaily.ai/dashboard.html#alerts",
+        url: `https://marketdaily.ai/dashboard.html#alert-${aid}`,
         tag: `md-pol-${(sig.post_url || sig.headline_zh || "").slice(0, 40)}`,
       });
       for (const r of targets) {
@@ -908,7 +919,7 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
         if (out.ok) {
           report.pushed++;
           await recordAlertInbox(env, r.email, {
-            ts: new Date().toISOString(), kind: "political",
+            id: aid, ts: new Date().toISOString(), kind: "political",
             ticker: (sig.affected && sig.affected[0]) || "大盤",
             name: (sig.affected && sig.affected[0]) ? displayName(sig.affected[0]) : "政壇/大盤",
             title: sig.headline_zh, url: sig.post_url || "https://marketdaily.ai/dashboard.html",
@@ -1147,6 +1158,7 @@ export default {
         if (!recipients) recipients = await premiumRecipients(env);
         const holders = recipients.filter((r) => r.holdings.has(code));
         const label = rec.name && rec.name !== code ? `${rec.name}(${code})` : code;
+        const scAnchor = alertAnchor(`sc-${id}`);
         let pushed = 0;
         const notifStr = JSON.stringify({
           title: `🔗 ${label}｜供應鏈動態`,
@@ -1158,7 +1170,7 @@ export default {
           const dr = await deliverAlert(env, r, notifStr);
           if (dr.ok) pushed++;
           await recordAlertInbox(env, r.email, {
-            ts: new Date().toISOString(), kind: "supply_chain", ticker: code,
+            id: scAnchor, ts: new Date().toISOString(), kind: "supply_chain", ticker: code,
             name: rec.name || code, title: headline, url: rec.url,
             reason: rec.source_type === "8k" ? "官方申報:8-K 重大合約" : "官方公告:新合作/供應關係",
             severity: 6, category: "supply_chain", speculative: false,
@@ -1167,7 +1179,7 @@ export default {
         // admin 收得到每件彙總推播,提醒紀錄也要看得到全部事件(非持股者上面迴圈不會寫)
         if (env.ADMIN_EMAIL && !holders.some((h) => h.email === env.ADMIN_EMAIL)) {
           await recordAlertInbox(env, env.ADMIN_EMAIL, {
-            ts: new Date().toISOString(), kind: "supply_chain", ticker: code,
+            id: scAnchor, ts: new Date().toISOString(), kind: "supply_chain", ticker: code,
             name: rec.name || code, title: headline, url: rec.url,
             reason: rec.source_type === "8k" ? "官方申報:8-K 重大合約" : "官方公告:新合作/供應關係",
             severity: 6, category: "supply_chain", speculative: false,

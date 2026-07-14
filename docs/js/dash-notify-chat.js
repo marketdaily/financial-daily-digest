@@ -110,8 +110,35 @@ async function setupAlertsFeed(email, plan) {
   if (!card) return;
   card.style.display = "block";
   await loadAlertHistory();
-  // 從推播點進來(#alerts)→ 直接捲到提醒紀錄
-  if (location.hash === "#alerts") scrollToAlerts();
+  // 從推播點進來 → #alert-<id> 捲到那一則、#alerts 捲到列表頂
+  handleAlertHash();
+}
+
+// 推播 url 錨點分派:#alert-<id>=那一則、#alerts=列表頂端
+function handleAlertHash() {
+  const h = location.hash || "";
+  if (h.indexOf("#alert-") === 0) scrollToAlertItem(h.slice(7));
+  else if (h === "#alerts") scrollToAlerts();
+}
+
+// 捲到「被點的那一則」提醒並高亮;找不到(太舊被裁掉)→ 退回捲到列表頂
+function scrollToAlertItem(id) {
+  const card = document.getElementById("alerts-feed-card");
+  if (!card || card.style.display === "none" || !id) return;
+  const safe = (window.CSS && CSS.escape) ? CSS.escape(id) : id;
+  const el = document.querySelector('#alerts-feed-list .alert-item[data-alert-id="' + safe + '"]');
+  if (!el) { scrollToAlerts(); return; }
+  let tries = 0;
+  const tick = () => {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (++tries < 5) setTimeout(tick, 420);
+  };
+  tick();
+  const prevBg = el.style.background;
+  el.style.transition = "box-shadow .4s, background .4s";
+  el.style.boxShadow = "0 0 0 2px rgba(255,176,0,.75)";
+  el.style.background = "rgba(255,176,0,.10)";
+  setTimeout(() => { el.style.boxShadow = ""; el.style.background = prevBg; }, 2600);
 }
 
 // 可靠捲到提醒紀錄:其他卡片(股票/大盤)非同步載入會改變高度,
@@ -132,7 +159,8 @@ function scrollToAlerts() {
 
 // App/分頁已開著時點通知:只有 hash 變,init 不會重跑 → 監聽 hashchange 補捲
 window.addEventListener("hashchange", () => {
-  if (location.hash === "#alerts") { loadAlertHistory(true).then(scrollToAlerts); }
+  const h = location.hash || "";
+  if (h === "#alerts" || h.indexOf("#alert-") === 0) { loadAlertHistory(true).then(handleAlertHash); }
 });
 async function loadAlertHistory(force) {
   if (_alertsLoaded && !force) return;
@@ -161,7 +189,8 @@ async function loadAlertHistory(force) {
       const icon = a.kind === "political" ? "🏛️" : (a.kind === "supply_chain" ? "🔗" : (a.severity >= 9 ? "🚨" : "📈"));
       const item = document.createElement("div");
       item.className = "alert-item";
-      item.style.cssText = "padding:13px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--input-border);border-left:3px solid " + sev + ";border-radius:12px;";
+      if (a.id) item.dataset.alertId = a.id;  // 供推播深連結(#alert-<id>)捲到這則
+      item.style.cssText = "padding:13px 15px;background:rgba(255,255,255,0.03);border:1px solid var(--input-border);border-left:3px solid " + sev + ";border-radius:12px;scroll-margin-top:80px;";
       item.innerHTML =
         '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">' +
           '<span style="font-size:13px;font-weight:800;color:#fff;">' + icon + " " + escapeHtml(a.name || a.ticker || T('alert_default_label')) + (a.speculative ? ' <span style="font-size:11px;color:var(--text2);font-weight:600;">' + T('alert_speculative_tag') + '</span>' : "") + '</span>' +
