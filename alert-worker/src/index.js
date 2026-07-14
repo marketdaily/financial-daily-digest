@@ -6,8 +6,12 @@ import { fetchNews } from "./news_source.js";
 import { displayName } from "./stock_names.js";
 import { fetchPoliticalSignals, formatPoliticalMsg, analyzePoliticalPosts } from "./political_source.js";
 
-const SEVERITY_THRESHOLD = 7;          // 已發生/已公告事件的推播門檻
+const SEVERITY_THRESHOLD = 7;          // 已發生/已公告事件的推播門檻(新聞管線共用,勿隨意動)
 const SPECULATIVE_THRESHOLD = 9;       // 傳言/觀點/臆測文門檻拉高,避免「If…will…」評論文當 🚨重大消息 轟炸
+// 政治/總經「已宣布政策行動」單獨的推播門檻(比新聞的 7 低一階)——政治事件本質大盤級,
+// 用戶要求「大盤級推全體」後,達標的政策行動一律推全體訂閱者(見 runPoliticalPipeline targets)。
+// 言論/預告(statement)仍沿用 SPECULATIVE_THRESHOLD(9)高標防嘴砲轟炸;每日上限 4 則另做安全網。
+const POLITICAL_ACTION_THRESHOLD = 6;
 const DAILY_CAP = 5;
 const MAX_AGE_HOURS = 24;     // 超過此時數的新聞視為舊聞,不評分、不推(即時提醒只推新鮮事)
 const PRESCORE_FLOOR = 40;    // 規則預評分低於此值直接跳過 AI;調高=更省 AI,調低=更不漏新聞
@@ -845,8 +849,8 @@ async function runPipeline(env, { push, persist }) {
 }
 
 // ── 政壇市場訊號管線(政治人物 X 貼文 → LINE)──────────────────────
-// 門檻沿用新聞管線同一套紀律:政策行動 ≥ SEVERITY_THRESHOLD(7)、
-// 言論/觀點 ≥ SPECULATIVE_THRESHOLD(9)且訊息掛「💬 言論觀點」標籤,不轟炸。
+// 門檻:政策行動 ≥ POLITICAL_ACTION_THRESHOLD(6,比新聞的 7 低一階,因政治事件本質大盤級)、
+// 言論/觀點 ≥ SPECULATIVE_THRESHOLD(9)且訊息掛「💬 言論觀點」標籤,不轟炸。達標即推全體訂閱者。
 // 無 XAI_API_KEY → 安靜 no-op;KV alert:political = "off" 可單獨關掉這條線。
 // signals 可由兩個來源餵入:不傳=Grok x_search 直抓(需 XAI_API_KEY+credits);
 // 傳入=本機 Playwright 掃 X 後經 /political-ingest 送進來(零 xAI 成本路線)。
@@ -875,7 +879,7 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
 
   let recipients = null;
   for (const sig of res.signals) {
-    const threshold = sig.kind === "action" ? SEVERITY_THRESHOLD : SPECULATIVE_THRESHOLD;
+    const threshold = sig.kind === "action" ? POLITICAL_ACTION_THRESHOLD : SPECULATIVE_THRESHOLD;
     if (sig.severity < threshold) continue;
     // 去重:同一貼文(URL)48h 只推一次
     const seenKey = "pol:seen:" + encodeURIComponent(sig.post_url || sig.headline_zh).slice(0, 480);
@@ -887,9 +891,9 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
 
     report.qualified++;
     if (recipients === null) recipients = await premiumRecipients(env);
-    // 點名個股 → 推給持有者;severity ≥9 的大事 → 全體綁定 Premium 都推
-    const targets = recipients.filter(r =>
-      sig.severity >= 9 || !sig.affected.length || sig.affected.some(t => r.holdings.has(t)));
+    // 政治/總經事件本質大盤級(用戶定調「大盤級推全體」)→ 達標即推全體訂閱者,
+    // 不再因「沒持有被點名個股」而漏接;每日上限 4 則(上方 cap)防轟炸。
+    const targets = recipients;
     const fired = { headline: sig.headline_zh, severity: sig.severity, kind: sig.kind, recipients: [] };
     if (push && targets.length) {
       const notif = JSON.stringify({
