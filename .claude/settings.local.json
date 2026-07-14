@@ -24,6 +24,11 @@
             "type": "command",
             "command": "bash '/home/userdelvin/Delvin-agent/.claude/hooks/block-mass-email.sh'",
             "statusMessage": "檢查寄信封鎖規則..."
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/sync-track-data-before-deploy.sh\"",
+            "statusMessage": "部署前同步最新戰績資料..."
           }
         ]
       }
