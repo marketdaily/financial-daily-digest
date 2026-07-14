@@ -165,7 +165,27 @@ def tw_dcf(stock_id, today):
 
 
 # ── 美股 DCF ──
-def us_dcf(symbol):
+# 資料源優先序:免費 SEC EDGAR(companyfacts,無需 key)→ FMP(需付費 key,現行 402 死)。
+# 兩者都回同一組輸入 (fcfs[oldest→newest], shares, beta, net_debt);DCF 數學共用。
+def _us_inputs_edgar(symbol):
+    try:
+        from valuation import edgar_fundamentals as _edgar
+    except ImportError:
+        try:
+            import edgar_fundamentals as _edgar        # CLI(cwd=valuation/)
+        except ImportError:
+            return None
+    try:
+        d = _edgar.fetch_us_fundamentals(symbol)
+    except Exception as e:
+        print(f"[dcf] {symbol} EDGAR skipped: {e}")
+        return None
+    if not d or not d.get("fcfs"):
+        return None
+    return d["fcfs"], d.get("shares"), (d.get("beta") or 1.0), (d.get("net_debt") or 0.0)
+
+
+def _us_inputs_fmp(symbol):
     if not FMP_KEY:
         return None
     try:
@@ -188,14 +208,8 @@ def us_dcf(symbol):
             v = (v0 + cx) if (v0 is not None and cx is not None) else None
         if v is not None:
             fcfs.append(v)
-    norm = _normalize_fcf(fcfs)
-    if not norm:
-        return None
-    base_fcf, g1 = norm
     p = prof[0]
     shares = _f(p.get("sharesOutstanding")) or _f(p.get("mktCap")) and (_f(p.get("mktCap")) / (_f(p.get("price")) or 1))
-    if not shares or shares <= 0:
-        return None
     beta = _f(p.get("beta")) or 1.0
     b0 = bs[0]
     net_debt = _f(b0.get("netDebt"))          # FMP 直接給,優先用
@@ -203,7 +217,21 @@ def us_dcf(symbol):
         debt = (_f(b0.get("totalDebt")) or 0.0)
         cash = (_f(b0.get("cashAndShortTermInvestments")) or _f(b0.get("cashAndCashEquivalents")) or 0.0)
         net_debt = debt - cash
-    wacc_mid = US_RF + max(0.6, min(1.8, beta)) * ERP
+    return fcfs, shares, beta, net_debt
+
+
+def us_dcf(symbol):
+    inputs = _us_inputs_edgar(symbol) or _us_inputs_fmp(symbol)
+    if not inputs:
+        return None
+    fcfs, shares, beta, net_debt = inputs
+    if not shares or shares <= 0:
+        return None
+    norm = _normalize_fcf(fcfs)
+    if not norm:
+        return None
+    base_fcf, g1 = norm
+    wacc_mid = US_RF + max(0.6, min(1.8, beta or 1.0)) * ERP
     grid = _fair_value_grid(base_fcf, g1, wacc_mid, net_debt, shares)
     if not grid:
         return None
