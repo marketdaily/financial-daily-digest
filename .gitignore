@@ -94,3 +94,4 @@ _ig_frames/
 scripts/.price_cache.json
 *.bak-*
 *.sh.bak-*
+valuation/.us_cik_map.json
