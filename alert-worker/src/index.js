@@ -227,8 +227,60 @@ async function premiumRecipients(env) {
   return [...map.values()].filter((r) => r && r.pushSubs && r.pushSubs.length);
 }
 
+// 全球領先脈絡指數:鄰近市場(半導體SOX/亞洲/歐洲)當日/隔夜漲跌 —— 這些市場開盤早於台股、
+// 半導體鏈跨市連動,是「會直接或經產業鏈下游波及使用者持股」的市場背景。每次排程抓一次餵給
+// aiSeverity 當 severity/stance 判斷的背景(僅脈絡、不給買賣價位;同日報 analyzer._global_lead_context 精神)。
+const GLOBAL_LEAD_INDICES = [
+  ["%5ESOX", "費城半導體", "半導體"],
+  ["%5EN225", "日經225", "亞洲"],
+  ["%5EKS11", "韓國KOSPI", "亞洲"],
+  ["%5EHSI", "恒生", "亞洲"],
+  ["000001.SS", "上證", "亞洲"],
+  ["%5ESTOXX50E", "歐洲Stoxx50", "歐洲"],
+  ["%5EGDAXI", "德國DAX", "歐洲"],
+  ["%5EFTSE", "英國FTSE", "歐洲"],
+];
+
+// Yahoo chart 端點(Worker 可打、無需 auth)抓全球指數,組成一行背景字串;抓不到就回空字串
+// (背景缺了不影響提醒本身,graceful degradation)。KV 快取 15 分鐘,避免每次排程重打 8 檔。
+async function fetchGlobalLead(env) {
+  const CACHE_KEY = "alert:globallead";
+  if (env && env.USER_PREFS) {
+    try { const c = await env.USER_PREFS.get(CACHE_KEY); if (c !== null) return c; } catch (e) {}
+  }
+  const out = [];
+  await Promise.all(GLOBAL_LEAD_INDICES.map(async ([sym, name, region]) => {
+    try {
+      const r = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=1d&range=1d`,
+        { headers: { "User-Agent": "Mozilla/5.0" } });
+      if (!r.ok) return;
+      const meta = (await r.json())?.chart?.result?.[0]?.meta;
+      const price = Number(meta?.regularMarketPrice);
+      // previousClose = 官方昨收(對齊 Python _batch_prices 的 regularMarketPreviousClose);
+      // chartPreviousClose 在多日 range 會指到視窗前一日 → 只當備援
+      const prev = Number(meta?.previousClose ?? meta?.chartPreviousClose);
+      if (!price || !prev) return;
+      const pct = (price - prev) / prev * 100;
+      if (Math.abs(pct) > 20) return;  // 指數單日 >20% 幾乎必為壞資料,寧缺勿假(同 _alt_sane)
+      out.push({ name, region, pct });
+    } catch (e) {}
+  }));
+  let line = "";
+  if (out.length) {
+    const byR = {};
+    for (const o of out) (byR[o.region] ||= []).push(o);
+    line = ["半導體", "亞洲", "歐洲"].filter((rk) => byR[rk]).map((rk) =>
+      `${rk}:` + byR[rk].map((o) => `${o.name}${o.pct >= 0 ? "+" : ""}${o.pct.toFixed(2)}%`).join("、")
+    ).join("｜");
+  }
+  if (env && env.USER_PREFS) {
+    try { await env.USER_PREFS.put(CACHE_KEY, line, { expirationTtl: 900 }); } catch (e) {}
+  }
+  return line;
+}
+
 // Claude 嚴重度判定:輸入新聞 + 相關 ticker,輸出 {severity 0-10, reason}。
-async function aiSeverity(env, news, tickers, universe = null) {
+async function aiSeverity(env, news, tickers, universe = null, globalLead = "") {
   if (!env.ANTHROPIC_API_KEY) return { severity: null, reason: "AI 未設定", skipped: true };
   const names = tickers.length
     ? tickers.map((t) => `${t}(${displayName(t)})`).join("、")
@@ -246,7 +298,10 @@ async function aiSeverity(env, news, tickers, universe = null) {
 標題:${news.title}
 摘要:${news.summary || "(無)"}
 來源:${news.source}
-
+${globalLead ? `
+【🌏 全球領先脈絡(鄰近市場當日/隔夜漲跌,僅供市場背景參考)】${globalLead}
+盤勢背景會放大或緩和這則新聞對持股的衝擊:半導體鏈(費半/日韓)走弱時,晶片/科技相關利空對持股的殺傷力提高;鄰近市場全面走強則對利空有緩衝。據此【微調】severity 與 stance,但這是背景不是主因——不可僅憑背景就升降級,新聞事件本身仍是主要依據。
+` : ""}
 評分標準(severity 0-10):
 - 9-10:破產、重大併購、財測大幅下修、CEO 突然去職、重大訴訟敗訴等,股價可能立即大幅變動。
 - 7-8:財報明顯優於/低於預期、重要評等調整、監管調查、產品重大事件。
@@ -581,6 +636,9 @@ async function runPipeline(env, { push, persist }) {
   const recipients = await premiumRecipients(env);
   const universe = [...new Set(recipients.flatMap((r) => [...r.holdings]))];
   report.premiumUniverse = universe;
+  // 全球領先脈絡:每次排程抓一次,餵給 aiSeverity 當市場背景(會直接/下游波及持股的鄰近市場動向)
+  const globalLead = await fetchGlobalLead(env);
+  report.globalLead = globalLead;
 
   // 有 Premium 持股 → 用個股 RSS 精準抓;沒有 → 抓大盤綜合 feed(供觀察粗篩用)。
   const usUniverse = universe.filter((t) => /^[A-Z.\-]{1,6}$/.test(t));
@@ -644,7 +702,7 @@ async function runPipeline(env, { push, persist }) {
 
     // AI 嚴重度 + 第二層被波及標的(broadImpact 才傳 universe)
     const { severity, reason, category, stance, action, affected = [], skipped, error } =
-      await aiSeverity(env, news, news.tickers, universe);
+      await aiSeverity(env, news, news.tickers, universe, globalLead);
     if (!skipped) report.counts.aiEvaluated++;
     // 臆測/觀點:標題標記命中 或 AI 判 rumor/opinion → 門檻拉高 + 標籤改「觀點／傳言」。
     const speculative = isSpeculative(`${news.title} ${news.summary || ""}`)
