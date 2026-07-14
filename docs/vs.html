@@ -78,7 +78,8 @@ nav {
   padding: 7px 14px; border-radius: 20px; cursor: pointer; transition: all 0.2s;
 }
 .lang-btn:hover { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.28); color: #fff; }
-.nav-right { display: flex; align-items: center; gap: 8px; }
+.nav-right { display: flex; align-items: center; gap: 8px; margin-left: auto; min-width: 0; }
+nav > .lang-btn { flex-shrink: 0; margin-left: 8px; }
 
 .page-wrap {
   position: relative; z-index: 1;
@@ -394,23 +395,23 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     <a href="pricing.html" class="nav-back" data-i18n="nav_pricing">定價</a>
     <a href="dashboard.html" class="nav-back" data-i18n="nav_dash">我的專區</a>
     <a href="index.html" class="nav-back" data-i18n="nav_home">← 首頁</a>
-    <button class="lang-btn" onclick="toggleLang()">EN</button>
   </div>
+  <button class="lang-btn" onclick="toggleLang()">EN</button>
 </nav>
 
 <div class="page-wrap">
-  <div class="page-badge">VS · 對手全面比較</div>
-  <h1>MarketDaily vs 其他你在用的東西</h1>
-  <p class="sub">
+  <div class="page-badge" data-i18n="badge">VS · 對手全面比較</div>
+  <h1 data-i18n="h1">MarketDaily vs 其他你在用的東西</h1>
+  <p class="sub" data-i18n="sub">
     我們不怕比較。把市面上所有跟「幫你看市場」相關的服務攤開對比——看盤 App、券商工具、財經 newsletter、投顧老師——你會發現 MarketDaily 站的位置很乾淨:沒有人在做「主動推送 + 深度個人化 + 公開戰績 + 無利益衝突」這四件套。
   </p>
 
   <!-- Category tabs -->
   <div class="cat-tabs">
-    <button class="cat-pill active" onclick="switchCat('all', this)">全部對手</button>
-    <button class="cat-pill" onclick="switchCat('app', this)">📱 看盤 App</button>
-    <button class="cat-pill" onclick="switchCat('news', this)">📨 Newsletter</button>
-    <button class="cat-pill" onclick="switchCat('tw', this)">🇹🇼 台灣財經服務</button>
+    <button class="cat-pill active" onclick="switchCat('all', this)" data-i18n="tab_all">全部對手</button>
+    <button class="cat-pill" onclick="switchCat('app', this)" data-i18n="tab_app">📱 看盤 App</button>
+    <button class="cat-pill" onclick="switchCat('news', this)" data-i18n="tab_news">📨 Newsletter</button>
+    <button class="cat-pill" onclick="switchCat('tw', this)" data-i18n="tab_tw">🇹🇼 台灣財經服務</button>
   </div>
 
   <!-- Comparison table -->
@@ -420,91 +421,91 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
       <div class="cmp-cell label"></div>
       <div class="cmp-cell">
         <div class="cmp-name md">MarketDaily</div>
-        <div class="cmp-tagline">主動推送 + 個人化</div>
+        <div class="cmp-tagline" data-i18n="tl_md">主動推送 + 個人化</div>
       </div>
       <div class="cmp-cell" data-cat="app">
         <div class="cmp-name">三竹股市</div>
-        <div class="cmp-tagline">台灣看盤通用</div>
+        <div class="cmp-tagline" data-i18n="tl_sanchu">台灣看盤通用</div>
       </div>
       <div class="cmp-cell" data-cat="app">
         <div class="cmp-name">TradingView</div>
-        <div class="cmp-tagline">全球圖表工具</div>
+        <div class="cmp-tagline" data-i18n="tl_tv">全球圖表工具</div>
       </div>
       <div class="cmp-cell" data-cat="app">
         <div class="cmp-name">富途牛牛</div>
-        <div class="cmp-tagline">跨境券商 + 社群</div>
+        <div class="cmp-tagline" data-i18n="tl_futu">跨境券商 + 社群</div>
       </div>
       <div class="cmp-cell" data-cat="news">
         <div class="cmp-name">Morning Brew</div>
-        <div class="cmp-tagline">美國財經 Newsletter</div>
+        <div class="cmp-tagline" data-i18n="tl_mb">美國財經 Newsletter</div>
       </div>
     </div>
 
     <!-- Section: 推送方式 -->
-    <div class="cmp-section-row">📬 推送方式 & 個人化</div>
+    <div class="cmp-section-row" data-i18n="sec_push">📬 推送方式 & 個人化</div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">主動送到信箱</div>
+      <div class="cmp-cell label" data-i18n="r_push">主動送到信箱</div>
       <div class="cmp-cell md"><span class="cmp-yes">✓</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-no">✗</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-meh">部分(警示)</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-meh">App 通知</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-meh" data-i18n="v_partial_alert">部分(警示)</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-meh" data-i18n="v_app_notif">App 通知</span></div>
       <div class="cmp-cell" data-cat="news"><span class="cmp-yes">✓</span></div>
     </div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">只分析你持股的個股</div>
+      <div class="cmp-cell label" data-i18n="r_only_yours">只分析你持股的個股</div>
       <div class="cmp-cell md"><span class="cmp-yes">✓</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-meh">要自己設定</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-meh">要自己 watchlist</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-meh">要自己 watchlist</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-meh" data-i18n="v_self_setup">要自己設定</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-meh" data-i18n="v_self_watchlist">要自己 watchlist</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-meh" data-i18n="v_self_watchlist">要自己 watchlist</span></div>
       <div class="cmp-cell" data-cat="news"><span class="cmp-no">✗</span></div>
     </div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">繁中 + 美股台股雙線</div>
+      <div class="cmp-cell label" data-i18n="r_bilingual">繁中 + 美股台股雙線</div>
       <div class="cmp-cell md"><span class="cmp-yes">✓</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-meh">只台股</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-meh">中文弱</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-meh">台灣身份尷尬</span></div>
-      <div class="cmp-cell" data-cat="news"><span class="cmp-no">純英文</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-meh" data-i18n="v_tw_only">只台股</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-meh" data-i18n="v_weak_zh">中文弱</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-meh" data-i18n="v_tw_awkward">台灣身份尷尬</span></div>
+      <div class="cmp-cell" data-cat="news"><span class="cmp-no" data-i18n="v_en_only">純英文</span></div>
     </div>
 
     <!-- Section: AI 判讀 -->
-    <div class="cmp-section-row">🧠 判讀 vs 工具</div>
+    <div class="cmp-section-row" data-i18n="sec_read">🧠 判讀 vs 工具</div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">AI 替你判讀方向</div>
+      <div class="cmp-cell label" data-i18n="r_ai_dir">AI 替你判讀方向</div>
       <div class="cmp-cell md"><span class="cmp-yes">✓</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-no">純數據</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-no">純工具</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-meh">基礎 AI 選股</span></div>
-      <div class="cmp-cell" data-cat="news"><span class="cmp-meh">人類編輯</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-no" data-i18n="v_data_only">純數據</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-no" data-i18n="v_tool_only">純工具</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-meh" data-i18n="v_basic_ai">基礎 AI 選股</span></div>
+      <div class="cmp-cell" data-cat="news"><span class="cmp-meh" data-i18n="v_human_editor">人類編輯</span></div>
     </div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">風險示警 (避坑)</div>
+      <div class="cmp-cell label" data-i18n="r_risk">風險示警 (避坑)</div>
       <div class="cmp-cell md"><span class="cmp-yes">✓</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-no">✗</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-no">✗</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-no">✗</span></div>
-      <div class="cmp-cell" data-cat="news"><span class="cmp-meh">偶爾</span></div>
+      <div class="cmp-cell" data-cat="news"><span class="cmp-meh" data-i18n="v_occasional">偶爾</span></div>
     </div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">假新聞 / 多源交叉驗證</div>
+      <div class="cmp-cell label" data-i18n="r_fake_news">假新聞 / 多源交叉驗證</div>
       <div class="cmp-cell md"><span class="cmp-yes">✓</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-no">✗</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-no">✗</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-no">✗</span></div>
-      <div class="cmp-cell" data-cat="news"><span class="cmp-meh">人工把關</span></div>
+      <div class="cmp-cell" data-cat="news"><span class="cmp-meh" data-i18n="v_manual_check">人工把關</span></div>
     </div>
 
     <!-- Section: 信任 -->
-    <div class="cmp-section-row">🛡️ 信任 & 透明度</div>
+    <div class="cmp-section-row" data-i18n="sec_trust">🛡️ 信任 & 透明度</div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">公開戰績可查</div>
+      <div class="cmp-cell label" data-i18n="r_public_record">公開戰績可查</div>
       <div class="cmp-cell md"><span class="cmp-yes">✓</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-no">N/A</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-no">N/A</span></div>
@@ -513,72 +514,72 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     </div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">無利益衝突</div>
+      <div class="cmp-cell label" data-i18n="r_no_coi">無利益衝突</div>
       <div class="cmp-cell md"><span class="cmp-yes">✓</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-no">收券商授權</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-no">訂閱續訂壓力</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-no">收手續費</span></div>
-      <div class="cmp-cell" data-cat="news"><span class="cmp-no">廣告變現</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-no" data-i18n="v_broker_deal">收券商授權</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-no" data-i18n="v_renew_pressure">訂閱續訂壓力</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-no" data-i18n="v_takes_fees">收手續費</span></div>
+      <div class="cmp-cell" data-cat="news"><span class="cmp-no" data-i18n="v_ad_revenue">廣告變現</span></div>
     </div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">主編公開身份 + 立場</div>
+      <div class="cmp-cell label" data-i18n="r_editor_id">主編公開身份 + 立場</div>
       <div class="cmp-cell md"><span class="cmp-yes">✓</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-no">公司</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-no">匿名社群</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-no">公司</span></div>
-      <div class="cmp-cell" data-cat="news"><span class="cmp-meh">編輯部</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-no" data-i18n="v_company">公司</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-no" data-i18n="v_anon_community">匿名社群</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-no" data-i18n="v_company">公司</span></div>
+      <div class="cmp-cell" data-cat="news"><span class="cmp-meh" data-i18n="v_editorial">編輯部</span></div>
     </div>
 
     <!-- Section: 時間/成本 -->
-    <div class="cmp-section-row">⏱️ 時間 & 成本</div>
+    <div class="cmp-section-row" data-i18n="sec_time">⏱️ 時間 & 成本</div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">每天花費時間</div>
-      <div class="cmp-cell md"><span class="cmp-val win">30 秒</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-val bad">30 分+</span></div>
+      <div class="cmp-cell label" data-i18n="r_daily_time">每天花費時間</div>
+      <div class="cmp-cell md"><span class="cmp-val win" data-i18n="v_30s">30 秒</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-val bad" data-i18n="v_30m">30 分+</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-val bad">1 hr+</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-val bad">30 分+</span></div>
-      <div class="cmp-cell" data-cat="news"><span class="cmp-val">5 分</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-val bad" data-i18n="v_30m">30 分+</span></div>
+      <div class="cmp-cell" data-cat="news"><span class="cmp-val" data-i18n="v_5m">5 分</span></div>
     </div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">月費</div>
-      <div class="cmp-cell md"><span class="cmp-val win">免費（限時開放）</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-val">免費</span></div>
+      <div class="cmp-cell label" data-i18n="r_fee">月費</div>
+      <div class="cmp-cell md"><span class="cmp-val win" data-i18n="v_free_limited">免費（限時開放）</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-val" data-i18n="v_free">免費</span></div>
       <div class="cmp-cell" data-cat="app"><span class="cmp-val">US$15-60</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-val">免費(手續費)</span></div>
-      <div class="cmp-cell" data-cat="news"><span class="cmp-val">免費</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-val" data-i18n="v_free_commission">免費(手續費)</span></div>
+      <div class="cmp-cell" data-cat="news"><span class="cmp-val" data-i18n="v_free">免費</span></div>
     </div>
 
     <div class="cmp-row">
-      <div class="cmp-cell label">學習門檻</div>
-      <div class="cmp-cell md"><span class="cmp-val win">零</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-val">中</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-val bad">高</span></div>
-      <div class="cmp-cell" data-cat="app"><span class="cmp-val">中</span></div>
-      <div class="cmp-cell" data-cat="news"><span class="cmp-val win">零</span></div>
+      <div class="cmp-cell label" data-i18n="r_learning">學習門檻</div>
+      <div class="cmp-cell md"><span class="cmp-val win" data-i18n="v_zero">零</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-val" data-i18n="v_mid">中</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-val bad" data-i18n="v_high">高</span></div>
+      <div class="cmp-cell" data-cat="app"><span class="cmp-val" data-i18n="v_mid">中</span></div>
+      <div class="cmp-cell" data-cat="news"><span class="cmp-val win" data-i18n="v_zero">零</span></div>
     </div>
 
     <!-- TW services category -->
-    <div class="cmp-section-row" data-cat="tw">🇹🇼 台灣財經服務 (CMoney / 玩股網 / HiStock 老師訂閱)</div>
+    <div class="cmp-section-row" data-cat="tw" data-i18n="sec_tw">🇹🇼 台灣財經服務 (CMoney / 玩股網 / HiStock 老師訂閱)</div>
 
     <div class="cmp-row" data-cat="tw">
-      <div class="cmp-cell label">主編敢公開個人持股</div>
-      <div class="cmp-cell md"><span class="cmp-yes">✓ 不持有提及個股</span></div>
-      <div class="cmp-cell" data-cat="tw" style="grid-column: 2 / -1;"><span class="cmp-no" style="font-size:13px;">幾乎沒有人這樣做(常見利益衝突)</span></div>
+      <div class="cmp-cell label" data-i18n="r_tw_holdings">主編敢公開個人持股</div>
+      <div class="cmp-cell md"><span class="cmp-yes" data-i18n="v_tw_md_holdings">✓ 不持有提及個股</span></div>
+      <div class="cmp-cell" data-cat="tw" style="grid-column: 3 / -1;"><span class="cmp-no" style="font-size:13px;" data-i18n="v_tw_holdings_rare">幾乎沒有人這樣做(常見利益衝突)</span></div>
     </div>
 
     <div class="cmp-row" data-cat="tw">
-      <div class="cmp-cell label">月費</div>
-      <div class="cmp-cell md"><span class="cmp-val win">免費（限時開放）</span></div>
-      <div class="cmp-cell" data-cat="tw" style="grid-column: 2 / -1;"><span class="cmp-val bad" style="font-size:13px;">老師訂閱常見 NT$3,000 - 10,000+ / 月</span></div>
+      <div class="cmp-cell label" data-i18n="r_fee">月費</div>
+      <div class="cmp-cell md"><span class="cmp-val win" data-i18n="v_free_limited">免費（限時開放）</span></div>
+      <div class="cmp-cell" data-cat="tw" style="grid-column: 3 / -1;"><span class="cmp-val bad" style="font-size:13px;" data-i18n="v_tw_fee">老師訂閱常見 NT$3,000 - 10,000+ / 月</span></div>
     </div>
 
     <div class="cmp-row" data-cat="tw">
-      <div class="cmp-cell label">是否會「報明牌」</div>
-      <div class="cmp-cell md"><span class="cmp-val win">不會</span></div>
-      <div class="cmp-cell" data-cat="tw" style="grid-column: 2 / -1;"><span class="cmp-val bad" style="font-size:13px;">明牌文化盛行(常被監管質疑)</span></div>
+      <div class="cmp-cell label" data-i18n="r_tw_tips">是否會「報明牌」</div>
+      <div class="cmp-cell md"><span class="cmp-val win" data-i18n="v_no">不會</span></div>
+      <div class="cmp-cell" data-cat="tw" style="grid-column: 3 / -1;"><span class="cmp-val bad" style="font-size:13px;" data-i18n="v_tw_tips_common">明牌文化盛行(常被監管質疑)</span></div>
     </div>
   </div>
 
@@ -586,47 +587,47 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
   <div class="why-grid">
     <div class="why-card">
       <div class="ico">📬</div>
-      <h3>主動 vs 被動</h3>
-      <p>看盤 App、券商工具、TradingView——全部都要你「主動打開、主動滑、主動找」。MarketDaily 是唯一「自己出現在你信箱」的選項。</p>
+      <h3 data-i18n="why1_h">主動 vs 被動</h3>
+      <p data-i18n="why1_p">看盤 App、券商工具、TradingView——全部都要你「主動打開、主動滑、主動找」。MarketDaily 是唯一「自己出現在你信箱」的選項。</p>
     </div>
     <div class="why-card">
       <div class="ico">🎯</div>
-      <h3>只看你的股 vs 一份送全部</h3>
-      <p>Morning Brew、Bloomberg 一份送 400 萬人,內容你都得看完才知道跟你有沒有關。MarketDaily 只給你你持有/追蹤的個股。</p>
+      <h3 data-i18n="why2_h">只看你的股 vs 一份送全部</h3>
+      <p data-i18n="why2_p">Morning Brew、Bloomberg 一份送 400 萬人,內容你都得看完才知道跟你有沒有關。MarketDaily 只給你你持有/追蹤的個股。</p>
     </div>
     <div class="why-card">
       <div class="ico">🛡️</div>
-      <h3>無衝突 vs 全部都有衝突</h3>
-      <p>券商要你下單(手續費)、TradingView 要你續訂、老師要你續費、媒體要你看廣告。MarketDaily 只收訂閱費,不從你下單賺一塊錢。</p>
+      <h3 data-i18n="why3_h">無衝突 vs 全部都有衝突</h3>
+      <p data-i18n="why3_p">券商要你下單(手續費)、TradingView 要你續訂、老師要你續費、媒體要你看廣告。MarketDaily 只收訂閱費,不從你下單賺一塊錢。</p>
     </div>
   </div>
 
   <!-- Use case section -->
   <div class="uc-section">
-    <h2>早晨 7:00 — 你的一天怎麼開始?</h2>
-    <p class="uc-sub">同樣是關心市場,你的早晨可能長這兩種樣子之一。</p>
+    <h2 data-i18n="uc_h">早晨 7:00 — 你的一天怎麼開始?</h2>
+    <p class="uc-sub" data-i18n="uc_sub">同樣是關心市場,你的早晨可能長這兩種樣子之一。</p>
 
     <div class="uc-row">
       <div class="uc-box bad">
-        <div class="ttl">😩 沒有 MarketDaily 的早晨</div>
+        <div class="ttl" data-i18n="uc_bad_ttl">😩 沒有 MarketDaily 的早晨</div>
         <ul>
-          <li>6:45 鬧鐘響,刷牙時順手滑 X / Reddit / Discord 看美股盤後</li>
-          <li>7:00 開 Bloomberg / CNBC App 找「跟我股有關的新聞」</li>
-          <li>7:15 切到 cnYES / Anue 看台股早盤訊息</li>
-          <li>7:30 開三竹/富途看盤,猶豫該不該動 NVDA</li>
-          <li>7:45 看 LINE 投顧群,有人在喊明牌,看不出真假</li>
-          <li>8:00 通勤路上還在滑,沒有結論,焦慮上班</li>
+          <li data-i18n="uc_bad_1">6:45 鬧鐘響,刷牙時順手滑 X / Reddit / Discord 看美股盤後</li>
+          <li data-i18n="uc_bad_2">7:00 開 Bloomberg / CNBC App 找「跟我股有關的新聞」</li>
+          <li data-i18n="uc_bad_3">7:15 切到 cnYES / Anue 看台股早盤訊息</li>
+          <li data-i18n="uc_bad_4">7:30 開三竹/富途看盤,猶豫該不該動 NVDA</li>
+          <li data-i18n="uc_bad_5">7:45 看投顧群,有人在喊明牌,看不出真假</li>
+          <li data-i18n="uc_bad_6">8:00 通勤路上還在滑,沒有結論,焦慮上班</li>
         </ul>
       </div>
       <div class="uc-box good">
-        <div class="ttl">📩 有 MarketDaily 的早晨</div>
+        <div class="ttl" data-i18n="uc_good_ttl">📩 有 MarketDaily 的早晨</div>
         <ul>
-          <li>6:55 MarketDaily 已躺在你信箱</li>
-          <li>7:00 喝咖啡,30 秒看完今天該關心的 3 個重點</li>
-          <li>7:01 你的 NVDA 今天動能轉強,日報明確標出</li>
-          <li>7:01 你的 2330 留意 1080 支撐,理由給齊</li>
-          <li>7:02 看完,該動就動,該守就守</li>
-          <li>7:05 把省下的 55 分鐘拿去做更值錢的事</li>
+          <li data-i18n="uc_good_1">6:55 MarketDaily 已躺在你信箱</li>
+          <li data-i18n="uc_good_2">7:00 喝咖啡,30 秒看完今天該關心的 3 個重點</li>
+          <li data-i18n="uc_good_3">7:01 你的 NVDA 今天動能轉強,日報明確標出</li>
+          <li data-i18n="uc_good_4">7:01 你的 2330 留意 1080 支撐,理由給齊</li>
+          <li data-i18n="uc_good_5">7:02 看完,該動就動,該守就守</li>
+          <li data-i18n="uc_good_6">7:05 把省下的 55 分鐘拿去做更值錢的事</li>
         </ul>
       </div>
     </div>
@@ -634,25 +635,25 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 
   <!-- Bottom CTA -->
   <div class="bottom-cta">
-    <h2>看完對比,你決定。</h2>
-    <p>MarketDaily 目前全功能限時免費開放 · 所有分析內容對全體用戶完全相同 · 未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權</p>
+    <h2 data-i18n="cta_h">看完對比,你決定。</h2>
+    <p data-i18n="cta_p">MarketDaily 目前全功能限時免費開放 · 所有分析內容對全體用戶完全相同 · 未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權</p>
     <div class="bottom-cta-btns">
-      <a href="/" class="bcta-btn">免費訂閱,鎖定早鳥權益 →</a>
-      <a href="track-record.html" class="bcta-btn ghost">看公開戰績</a>
-      <a href="about.html" class="bcta-btn ghost">認識主編</a>
+      <a href="/" class="bcta-btn" data-i18n="cta_btn1">免費訂閱,鎖定早鳥權益 →</a>
+      <a href="track-record.html" class="bcta-btn ghost" data-i18n="cta_btn2">看公開戰績</a>
+      <a href="about.html" class="bcta-btn ghost" data-i18n="cta_btn3">認識主編</a>
     </div>
   </div>
 </div>
 
 <footer>
   <div class="footer-links">
-    <a href="track-record.html">戰績紀錄</a>
-    <a href="vs.html">vs 對手</a>
-    <a href="about.html">主編</a>
-    <a href="pricing.html">定價</a>
-    <a href="contact.html">聯絡客服</a>
+    <a href="track-record.html" data-i18n="f_record">戰績紀錄</a>
+    <a href="vs.html" data-i18n="f_vs">vs 對手</a>
+    <a href="about.html" data-i18n="f_about">主編</a>
+    <a href="pricing.html" data-i18n="f_pricing">定價</a>
+    <a href="contact.html" data-i18n="f_contact">聯絡客服</a>
   </div>
-  <span>對比資料整理自各服務官方資訊 · 僅供決策參考</span>
+  <span data-i18n="f_note">對比資料整理自各服務官方資訊 · 僅供決策參考</span>
 </footer>
 
 <script>
@@ -681,10 +682,106 @@ function switchCat(cat, btn) {
   });
 }
 
-// 內容區大部分是中文寫死(這頁主要為台灣讀者比較本地對手),只切換 nav。
+// 全頁 i18n:nav + hero + 比較表 + why + 早晨對照 + CTA + footer(公司名不譯)。
 const VS_I18N = {
-  zh: { nav_record: "戰績", nav_pricing: "定價", nav_dash: "我的專區", nav_home: "← 首頁" },
-  en: { nav_record: "Record", nav_pricing: "Pricing", nav_dash: "My Account", nav_home: "← Home" },
+  zh: {
+    nav_record: "戰績", nav_pricing: "定價", nav_dash: "我的專區", nav_home: "← 首頁",
+    badge: "VS · 對手全面比較",
+    h1: "MarketDaily vs 其他你在用的東西",
+    sub: "我們不怕比較。把市面上所有跟「幫你看市場」相關的服務攤開對比——看盤 App、券商工具、財經 newsletter、投顧老師——你會發現 MarketDaily 站的位置很乾淨:沒有人在做「主動推送 + 深度個人化 + 公開戰績 + 無利益衝突」這四件套。",
+    tab_all: "全部對手", tab_app: "📱 看盤 App", tab_news: "📨 Newsletter", tab_tw: "🇹🇼 台灣財經服務",
+    tl_md: "主動推送 + 個人化", tl_sanchu: "台灣看盤通用", tl_tv: "全球圖表工具", tl_futu: "跨境券商 + 社群", tl_mb: "美國財經 Newsletter",
+    sec_push: "📬 推送方式 & 個人化", sec_read: "🧠 判讀 vs 工具", sec_trust: "🛡️ 信任 & 透明度", sec_time: "⏱️ 時間 & 成本",
+    sec_tw: "🇹🇼 台灣財經服務 (CMoney / 玩股網 / HiStock 老師訂閱)",
+    r_push: "主動送到信箱", r_only_yours: "只分析你持股的個股", r_bilingual: "繁中 + 美股台股雙線",
+    r_ai_dir: "AI 替你判讀方向", r_risk: "風險示警 (避坑)", r_fake_news: "假新聞 / 多源交叉驗證",
+    r_public_record: "公開戰績可查", r_no_coi: "無利益衝突", r_editor_id: "主編公開身份 + 立場",
+    r_daily_time: "每天花費時間", r_fee: "月費", r_learning: "學習門檻",
+    r_tw_holdings: "主編敢公開個人持股", r_tw_tips: "是否會「報明牌」",
+    v_partial_alert: "部分(警示)", v_app_notif: "App 通知", v_self_setup: "要自己設定", v_self_watchlist: "要自己 watchlist",
+    v_tw_only: "只台股", v_weak_zh: "中文弱", v_tw_awkward: "台灣身份尷尬", v_en_only: "純英文",
+    v_data_only: "純數據", v_tool_only: "純工具", v_basic_ai: "基礎 AI 選股", v_human_editor: "人類編輯",
+    v_occasional: "偶爾", v_manual_check: "人工把關",
+    v_broker_deal: "收券商授權", v_renew_pressure: "訂閱續訂壓力", v_takes_fees: "收手續費", v_ad_revenue: "廣告變現",
+    v_company: "公司", v_anon_community: "匿名社群", v_editorial: "編輯部",
+    v_30s: "30 秒", v_30m: "30 分+", v_5m: "5 分",
+    v_free_limited: "免費（限時開放）", v_free: "免費", v_free_commission: "免費(手續費)",
+    v_zero: "零", v_mid: "中", v_high: "高", v_no: "不會",
+    v_tw_md_holdings: "✓ 不持有提及個股", v_tw_holdings_rare: "幾乎沒有人這樣做(常見利益衝突)",
+    v_tw_fee: "老師訂閱常見 NT$3,000 - 10,000+ / 月", v_tw_tips_common: "明牌文化盛行(常被監管質疑)",
+    why1_h: "主動 vs 被動", why1_p: "看盤 App、券商工具、TradingView——全部都要你「主動打開、主動滑、主動找」。MarketDaily 是唯一「自己出現在你信箱」的選項。",
+    why2_h: "只看你的股 vs 一份送全部", why2_p: "Morning Brew、Bloomberg 一份送 400 萬人,內容你都得看完才知道跟你有沒有關。MarketDaily 只給你你持有/追蹤的個股。",
+    why3_h: "無衝突 vs 全部都有衝突", why3_p: "券商要你下單(手續費)、TradingView 要你續訂、老師要你續費、媒體要你看廣告。MarketDaily 只收訂閱費,不從你下單賺一塊錢。",
+    uc_h: "早晨 7:00 — 你的一天怎麼開始?", uc_sub: "同樣是關心市場,你的早晨可能長這兩種樣子之一。",
+    uc_bad_ttl: "😩 沒有 MarketDaily 的早晨",
+    uc_bad_1: "6:45 鬧鐘響,刷牙時順手滑 X / Reddit / Discord 看美股盤後",
+    uc_bad_2: "7:00 開 Bloomberg / CNBC App 找「跟我股有關的新聞」",
+    uc_bad_3: "7:15 切到 cnYES / Anue 看台股早盤訊息",
+    uc_bad_4: "7:30 開三竹/富途看盤,猶豫該不該動 NVDA",
+    uc_bad_5: "7:45 看投顧群,有人在喊明牌,看不出真假",
+    uc_bad_6: "8:00 通勤路上還在滑,沒有結論,焦慮上班",
+    uc_good_ttl: "📩 有 MarketDaily 的早晨",
+    uc_good_1: "6:55 MarketDaily 已躺在你信箱",
+    uc_good_2: "7:00 喝咖啡,30 秒看完今天該關心的 3 個重點",
+    uc_good_3: "7:01 你的 NVDA 今天動能轉強,日報明確標出",
+    uc_good_4: "7:01 你的 2330 留意 1080 支撐,理由給齊",
+    uc_good_5: "7:02 看完,該動就動,該守就守",
+    uc_good_6: "7:05 把省下的 55 分鐘拿去做更值錢的事",
+    cta_h: "看完對比,你決定。",
+    cta_p: "MarketDaily 目前全功能限時免費開放 · 所有分析內容對全體用戶完全相同 · 未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權",
+    cta_btn1: "免費訂閱,鎖定早鳥權益 →", cta_btn2: "看公開戰績", cta_btn3: "認識主編",
+    f_record: "戰績紀錄", f_vs: "vs 對手", f_about: "主編", f_pricing: "定價", f_contact: "聯絡客服",
+    f_note: "對比資料整理自各服務官方資訊 · 僅供決策參考",
+  },
+  en: {
+    nav_record: "Record", nav_pricing: "Pricing", nav_dash: "My Account", nav_home: "← Home",
+    badge: "VS · Full Competitor Breakdown",
+    h1: "MarketDaily vs everything else you're using",
+    sub: "We're not afraid of comparison. Lay every \"help me watch the market\" service side by side — trading apps, broker tools, finance newsletters, tip-selling gurus — and MarketDaily stands on clean ground: nobody else does all four of push delivery + deep personalization + a public track record + zero conflict of interest.",
+    tab_all: "All rivals", tab_app: "📱 Trading apps", tab_news: "📨 Newsletters", tab_tw: "🇹🇼 Taiwan finance services",
+    tl_md: "Push + personalized", tl_sanchu: "Taiwan retail staple", tl_tv: "Global charting tool", tl_futu: "Cross-border broker + social", tl_mb: "US finance newsletter",
+    sec_push: "📬 Delivery & personalization", sec_read: "🧠 Judgment vs tools", sec_trust: "🛡️ Trust & transparency", sec_time: "⏱️ Time & cost",
+    sec_tw: "🇹🇼 Taiwan finance services (CMoney / WantGoo / HiStock guru subscriptions)",
+    r_push: "Pushed to your inbox", r_only_yours: "Analyzes only the stocks you hold", r_bilingual: "Chinese + US & TW dual coverage",
+    r_ai_dir: "AI reads direction for you", r_risk: "Risk warnings (pitfall alerts)", r_fake_news: "Fake-news / multi-source cross-check",
+    r_public_record: "Public, auditable track record", r_no_coi: "No conflict of interest", r_editor_id: "Editor's public identity + stance",
+    r_daily_time: "Time spent daily", r_fee: "Monthly fee", r_learning: "Learning curve",
+    r_tw_holdings: "Editor discloses own holdings", r_tw_tips: "Sells stock tips?",
+    v_partial_alert: "Partial (alerts)", v_app_notif: "App notification", v_self_setup: "Set it up yourself", v_self_watchlist: "Build your own watchlist",
+    v_tw_only: "TW stocks only", v_weak_zh: "Weak Chinese", v_tw_awkward: "Awkward for TW users", v_en_only: "English only",
+    v_data_only: "Data only", v_tool_only: "Tool only", v_basic_ai: "Basic AI screening", v_human_editor: "Human editors",
+    v_occasional: "Occasional", v_manual_check: "Manual vetting",
+    v_broker_deal: "Broker deals", v_renew_pressure: "Renewal pressure", v_takes_fees: "Takes commissions", v_ad_revenue: "Ad-funded",
+    v_company: "Company", v_anon_community: "Anonymous community", v_editorial: "Editorial desk",
+    v_30s: "30 sec", v_30m: "30 min+", v_5m: "5 min",
+    v_free_limited: "Free (limited-time)", v_free: "Free", v_free_commission: "Free (commissions)",
+    v_zero: "None", v_mid: "Medium", v_high: "High", v_no: "No",
+    v_tw_md_holdings: "✓ Holds none of the stocks it covers", v_tw_holdings_rare: "Almost nobody does (common conflict of interest)",
+    v_tw_fee: "Guru subs often NT$3,000 - 10,000+/mo", v_tw_tips_common: "Tip culture is rampant (often flagged by regulators)",
+    why1_h: "Active vs passive", why1_p: "Trading apps, broker tools, TradingView — they all need you to open, scroll and hunt. MarketDaily is the only one that shows up in your inbox on its own.",
+    why2_h: "Only your stocks vs one blast for all", why2_p: "Morning Brew and Bloomberg send one edition to millions; you read it all just to find what's relevant to you. MarketDaily covers only the stocks you hold or track.",
+    why3_h: "No conflict vs everyone has one", why3_p: "Brokers want your trades (commissions), TradingView wants renewals, gurus want re-subscriptions, media wants ad views. MarketDaily earns nothing from your trades.",
+    uc_h: "7:00 AM — how does your day start?", uc_sub: "Same interest in the market, two very different mornings.",
+    uc_bad_ttl: "😩 A morning without MarketDaily",
+    uc_bad_1: "6:45 Alarm rings; you scroll X / Reddit / Discord for the US close while brushing your teeth",
+    uc_bad_2: "7:00 Open Bloomberg / CNBC apps hunting for \"news about my stocks\"",
+    uc_bad_3: "7:15 Switch to cnYES / Anue for TW pre-market chatter",
+    uc_bad_4: "7:30 Open a trading app, unsure whether to touch NVDA",
+    uc_bad_5: "7:45 Check tip groups; someone's calling a hot stock, no way to tell if it's real",
+    uc_bad_6: "8:00 Still scrolling on the commute, no conclusion, anxious into work",
+    uc_good_ttl: "📩 A morning with MarketDaily",
+    uc_good_1: "6:55 MarketDaily is already sitting in your inbox",
+    uc_good_2: "7:00 Coffee; 30 seconds to read today's 3 things that matter",
+    uc_good_3: "7:01 Your NVDA's momentum is turning up — the digest flags it clearly",
+    uc_good_4: "7:01 Your 2330: watch the 1080 support, with the full reasoning",
+    uc_good_5: "7:02 Done — act when you should, hold when you should",
+    uc_good_6: "7:05 Put the 55 minutes you saved into something worth more",
+    cta_h: "You've seen the comparison. You decide.",
+    cta_p: "MarketDaily is fully free for a limited time · all analysis is identical for every user · when paid plans return, early subscribers keep free access permanently.",
+    cta_btn1: "Subscribe free, lock in early-bird →", cta_btn2: "See the public record", cta_btn3: "Meet the editor",
+    f_record: "Track Record", f_vs: "vs Rivals", f_about: "Editor", f_pricing: "Pricing", f_contact: "Contact",
+    f_note: "Comparison data compiled from each service's official information · for reference only",
+  },
 };
 
 function applyLang(lang) {
