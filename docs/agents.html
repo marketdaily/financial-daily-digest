@@ -107,7 +107,7 @@
 
 <script>
 const RAW = "/data/board.json";
-const STALE_AFTER_MS = 6 * 3600 * 1000;
+const STALE_AFTER_MS = 28 * 3600 * 1000;  // board 為每日 14:40 批次 feed,>28h=真的漏跑一天才警示(6h 會每天誤報 20h,2026-07-14 audit)
 
 /* ── i18n ── */
 const i18n = {

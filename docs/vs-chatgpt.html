@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MarketDaily vs ChatGPT — 為什麼不能用免費 AI 就好？</title>
-<meta name="description" content="ChatGPT 是工具，MarketDaily 是服務。每天早上 7 點主動送到信箱，比 ChatGPT Plus 便宜一半，只做一件事 —— 讓你不用再決定今天該問 AI 什麼。">
+<meta name="description" content="ChatGPT 是工具，MarketDaily 是服務。每天早上 7 點主動送到信箱，全功能限時免費，只做一件事 —— 讓你不用再決定今天該問 AI 什麼。">
 <meta name="theme-color" content="#6366f1">
 <link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
 <link rel="apple-touch-icon" href="/logo-icon.svg">
@@ -14,7 +14,7 @@
 
 <!-- Open Graph -->
 <meta property="og:title" content="MarketDaily vs ChatGPT — 為什麼不能用免費 AI 就好？">
-<meta property="og:description" content="ChatGPT 等你問。MarketDaily 不用問。每天 07:00 自動送到信箱，比 ChatGPT Plus 便宜一半。">
+<meta property="og:description" content="ChatGPT 等你問。MarketDaily 不用問。每天 07:00 自動送到信箱，全功能限時免費開放。">
 <meta property="og:image" content="https://marketdaily.ai/social/01_launch.jpg">
 <meta property="og:url" content="https://marketdaily.ai/vs-chatgpt">
 <meta property="og:type" content="website">
@@ -237,8 +237,11 @@ section {
 .comp-meh { color: var(--amber); font-weight: 700; font-size: 14px; }
 
 @media (max-width: 720px) {
-  .comp-table th, .comp-table td { padding: 12px 10px; font-size: 13px; }
-  .comp-table .hide-mobile { display: none; }
+  .comp-table th, .comp-table td { padding: 12px 8px; font-size: 12.5px; }
+  /* ChatGPT 對照欄=整頁賣點,手機不可隱藏(2026-07-14 audit);三欄縮排顯示 */
+}
+@media (max-width: 430px) {
+  .comp-table th, .comp-table td { padding: 10px 5px; font-size: 11px; }
 }
 
 /* ── ANGLE CARDS ── */
@@ -558,7 +561,7 @@ footer a:hover { color: var(--primary-light); }
         <span data-i18n="faq_q5">既然 ChatGPT 那麼弱，為什麼還有那麼多人用？</span>
         <span class="faq-chev">▾</span>
       </button>
-      <div class="faq-a"><p data-i18n-html="faq_a5">因為 ChatGPT <strong>真的很強</strong> —— 寫程式、寫文案、學新領域、翻譯。但「每天早上幫你看財經新聞 + 知道你部位 + 給建議」不是它最強的場景。<strong>我們不打它最強的地方，只打它打不到的地方。</strong>你完全可以兩個都訂 —— 99% 用戶就是這樣。</p></div>
+      <div class="faq-a"><p data-i18n-html="faq_a5">因為 ChatGPT <strong>真的很強</strong> —— 寫程式、寫文案、學新領域、翻譯。但「每天早上幫你看財經新聞 + 知道你部位 + 給建議」不是它最強的場景。<strong>我們不打它最強的地方，只打它打不到的地方。</strong>你完全可以兩個都訂,很多人就是這樣搭配用。</p></div>
     </div>
   </div>
 </section>
@@ -626,7 +629,7 @@ const TR = {
     faq_q4: "取消會不會很難？",
     faq_a4: '任何一封日報底部點「取消訂閱」立即生效，不用聯繫客服、不用解釋原因、不用扣留挽留優惠折磨你。我們對自己有信心 —— 留不下你是我們的問題。',
     faq_q5: "既然 ChatGPT 那麼弱，為什麼還有那麼多人用？",
-    faq_a5: '因為 ChatGPT <strong>真的很強</strong> —— 寫程式、寫文案、學新領域、翻譯。但「每天早上幫你看財經新聞 + 知道你部位 + 給建議」不是它最強的場景。<strong>我們不打它最強的地方，只打它打不到的地方。</strong>你完全可以兩個都訂 —— 99% 用戶就是這樣。',
+    faq_a5: '因為 ChatGPT <strong>真的很強</strong> —— 寫程式、寫文案、學新領域、翻譯。但「每天早上幫你看財經新聞 + 知道你部位 + 給建議」不是它最強的場景。<strong>我們不打它最強的地方，只打它打不到的地方。</strong>你完全可以兩個都訂,很多人就是這樣搭配用。',
     cta_h: "把「今天該問 AI 什麼」這個決定外包出去",
     cta_p: "每天早上 7 點，30 秒。完全免費,不需信用卡;現在訂閱,未來恢復收費後永久保留免費使用權。",
     cta_btn: "免費訂閱 →",
@@ -674,7 +677,7 @@ const TR = {
     faq_q4: "How hard is it to cancel?",
     faq_a4: 'One click at the bottom of any email — effective immediately. No contacting support, no explaining yourself, no "wait, here\'s a retention offer" torture. We trust ourselves — if we can\'t hold you, that\'s on us.',
     faq_q5: "If ChatGPT is so weak, why do people use it?",
-    faq_a5: 'Because ChatGPT <strong>is actually great</strong> — coding, writing, learning, translation. But "scan financial news every morning, know your positions, give signals" isn\'t its sweet spot. <strong>We don\'t fight where it\'s strong; we own where it can\'t reach.</strong> You can absolutely subscribe to both — 99% of our users do.',
+    faq_a5: 'Because ChatGPT <strong>is actually great</strong> — coding, writing, learning, translation. But "scan financial news every morning, know your positions, give signals" isn\'t its sweet spot. <strong>We don\'t fight where it\'s strong; we own where it can\'t reach.</strong> You can absolutely subscribe to both — plenty of people do exactly that.',
     cta_h: "Outsource the \"what should I ask AI today?\" decision",
     cta_p: "Every morning at 7. 30 seconds. Completely free, no credit card — subscribe now and lock in early-bird access forever.",
     cta_btn: "Subscribe free →",

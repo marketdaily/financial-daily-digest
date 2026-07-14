@@ -96,7 +96,8 @@ nav {
   flex-shrink: 0;
 }
 .logo em { color: var(--primary-light); font-style: normal; }
-.nav-right { display: flex; align-items: center; gap: 4px; }
+.nav-right { display: flex; align-items: center; gap: 4px; margin-left: auto; min-width: 0; }
+nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 .nav-link {
   font-size: 13px; font-weight: 500; color: var(--text-muted);
   text-decoration: none; padding: 7px 14px; border-radius: 8px;
@@ -659,8 +660,8 @@ footer {
     <a class="nav-link" href="vs.html" data-i18n="nav_vs">vs 對手</a>
     <a class="nav-link active" href="pricing.html" data-i18n="nav_pricing">定價</a>
     <a class="nav-link" href="dashboard.html" data-i18n="nav_dashboard">我的專區</a>
-    <button class="lang-btn" onclick="toggleLang()">EN</button>
   </div>
+  <button class="lang-btn" onclick="toggleLang()">EN</button>
 </nav>
 
 <main>
