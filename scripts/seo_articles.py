@@ -1427,8 +1427,8 @@ def regenerate_blog_index(dry: bool):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
 <link rel="apple-touch-icon" href="/logo-icon.svg">
-<title>個股分析文章 | MarketDaily</title>
-<meta name="description" content="MarketDaily 個股深度分析,涵蓋美股、台股長尾關鍵字。">
+<title>財經知識庫 · 投資學堂 | MarketDaily</title>
+<meta name="description" content="MarketDaily 財經知識庫:個股拆解、法說會前瞻、除權息、供應鏈全景,到總經指標與新手入門,涵蓋美股、台股。">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
 <link rel="alternate" type="application/rss+xml" title="MarketDaily 個股分析" href="/feed.xml">
 <link rel="canonical" href="https://marketdaily.ai/blog/index.html">
@@ -1453,7 +1453,7 @@ h1 {{ font-size:32px; font-weight:900; color:#fff; margin-bottom:32px; }}
   <a href="/pricing.html">定價</a>
 </div>
 <div class="wrap">
-  <h1>個股分析 · {len(items)} 篇</h1>
+  <h1>財經知識庫 · {len(items)} 篇</h1>
   <div class="grid">{cards}</div>
 </div>
 {beacon_for("blog-index")}
