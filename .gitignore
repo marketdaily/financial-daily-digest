@@ -73,3 +73,24 @@ scripts/personal_ledger.jsonl.lock
 # 先行異動雷達 runtime 產物(patrol 每晚重生,不進版控免髒 dirty 閘)
 intel/leadflow_latest.json
 intel/leadflow_news_seen.json
+
+# ── 開發過程雜物(各 session 產生,不入版控)2026-07-14 整理 ──
+# 根目錄一次性截圖(playwright 截的 cv_*/game_*/eq_* 等,真資產在 docs/ 與 brand_avatars/)
+/*.jpeg
+/*.jpg
+/*.png
+# 改版 mockup 存檔 / IG 分鏡 / 一次性圖框(體積大,archive 性質)
+_redesign_mockups/
+_ig_frames/
+# 一次性 dev 腳本(playwright 截圖/預覽/banner 產生器)
+/_shot.py
+/_sweep.py
+/_banner_gen.py
+/_preview_gen.py
+/_blog_upgrade.py
+# playwright accessibility 快照 debug 產物
+/*.yml
+# 雜項 cache / 備份
+scripts/.price_cache.json
+*.bak-*
+*.sh.bak-*
