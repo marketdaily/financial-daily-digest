@@ -425,6 +425,34 @@ def backfill_breadcrumb(dry: bool) -> list:
     return changed
 
 
+_CRUMB_RE = re.compile(r'(<div class="crumb">MARKETDAILY · )([^<]*)(</div>)')
+
+
+def backfill_crumb(dry: bool) -> list:
+    """.crumb 舊版寫死「個股分析 · {market}」,對 term/macro/guide/event/exdiv/supply 類文章
+    語意不符(它們不是個股分析;index.html 分類徽章早已用 _blog_classify 正確分類七種類型,
+    只有文章內頁麵包屑沒同步)。改用同一顆分類器當單一真源:stock 類維持原樣(個股分析 · 美股/
+    台股,不動,避免無謂 diff);其餘類別改印各自正確分類文字(如「供應鏈」「除權息」「法說會」)。"""
+    changed = []
+    for f in BLOG_DIR.glob("*.html"):
+        if f.stem == "index":
+            continue
+        cat = _blog_classify(f.stem)
+        if cat == "stock":
+            continue
+        label = BLOG_CATS[cat][0]
+        html = f.read_text(encoding="utf-8")
+        new_html, n = _CRUMB_RE.subn(lambda m: f"{m.group(1)}{label}{m.group(3)}", html)
+        if n and new_html != html:
+            changed.append(f.stem)
+            if dry:
+                print(f"  [dry] would fix crumb: {f.name} → {label}")
+            else:
+                f.write_text(new_html, encoding="utf-8")
+                print(f"  ✓ crumb fixed: {f.name} → {label}")
+    return changed
+
+
 # ── meta description 從文章自身 prose 擴寫(零捏造)────────────────────────────
 # 動機(MEASURED 2026-07-15):43 篇 blog 的 meta description 全是 25–45 CJK 字的 template
 # stub(如「台積電 (2330) 法說會前瞻 — MarketDaily 整理。」),Google SERP 約可顯示 78 CJK
@@ -1508,7 +1536,7 @@ strong {{ color:#fbbf24; font-weight:700; }}
   <a href="/blog/index.html">所有文章</a>
 </div>
 <article class="wrap">
-  <div class="crumb">MARKETDAILY · 個股分析 · {market_label}</div>
+  <div class="crumb">MARKETDAILY · {crumb_label}</div>
   {body}
 {related}
   <div class="cta">
@@ -1631,6 +1659,8 @@ def write_article(art: dict, dry: bool) -> Path:
     date_modified = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
     date_published = _existing_date_published(fname) or _git_first_commit_date(fname) or date_modified
     market_label = MARKET_LABELS.get(art["market"], "台股")
+    cat = _blog_classify(slug)
+    crumb_label = f"個股分析 · {market_label}" if cat == "stock" else BLOG_CATS[cat][0]
     og_image = DEFAULT_OG_IMAGE if dry else og_image_for(slug, art["ticker"], market_label, art["title"])
     schema_json = _article_schema_json(art["title"], desc, slug, date_published, date_modified, og_image)
     html = PAGE_TEMPLATE.format(
@@ -1638,7 +1668,7 @@ def write_article(art: dict, dry: bool) -> Path:
         desc=desc,
         slug=slug,
         slug_short=slug[:32],
-        market_label=market_label,
+        crumb_label=crumb_label,
         body=art["body_html"],
         related=related,
         updated=date_modified,
@@ -2089,6 +2119,8 @@ def main():
     backfill_canonical(args.dry)
     print("④ 回填 BreadcrumbList(bare Article→@graph,冪等)...")
     backfill_breadcrumb(args.dry)
+    print("④ 校正麵包屑 .crumb 分類文字(term/macro/guide/event/exdiv/supply,冪等)...")
+    backfill_crumb(args.dry)
     print("④ 擴寫 meta description(從文章自身 prose,零捏造,冪等)...")
     backfill_meta_desc(args.dry)
     print("⑤ 更新 blog index...")
