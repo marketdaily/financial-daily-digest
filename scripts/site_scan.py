@@ -191,6 +191,27 @@ def probe_blog_hygiene():
 # 出處 2026-07-05:35 篇文章上線至今 0 篇有 schema.org Article markup,
 # 搜尋引擎 rich snippet/知識圖譜零命中,是純技術債(非內容問題)。補上後
 # 此檢查防未來新文章類型漏接 schema(seo_articles.py::write_article 統一注入)。
+def _find_article_node(obj):
+    """把 blog JSON-LD 攤平成單一 Article 視圖。支援 2026-07-15 起的
+    `@graph[Article,BreadcrumbList]` 版與舊扁平物件——@graph 版 headline/date 收在
+    Article 節點內、@context 只在頂層宣告,故回填進 Article 視圖讓 required 檢查一致。
+    找不到 Article 節點回 None(=壞 schema)。同款扁平化亦在 seo_health H5 做過
+    (lesson jsonld_graph_migration_breaks_consumers:改 emit 成 @graph 要 grep 全部消費者)。"""
+    if not isinstance(obj, dict):
+        return None
+    graph = obj.get("@graph")
+    if isinstance(graph, list):
+        for node in graph:
+            t = node.get("@type") if isinstance(node, dict) else None
+            if t == "Article" or (isinstance(t, list) and "Article" in t):
+                merged = dict(node)
+                if "@context" not in merged and "@context" in obj:
+                    merged["@context"] = obj["@context"]
+                return merged
+        return None
+    return obj  # 舊扁平版:整個物件即 Article
+
+
 def probe_blog_schema():
     blog_dir = Path(__file__).resolve().parents[1] / "docs" / "blog"
     files = [f for f in blog_dir.glob("*.html") if f.name != "index.html"]
@@ -204,7 +225,8 @@ def probe_blog_schema():
             continue
         try:
             obj = json.loads(m.group(1))
-            if any(k not in obj for k in required):
+            article = _find_article_node(obj)
+            if article is None or any(k not in article for k in required):
                 invalid.append(f.name)
         except Exception:
             invalid.append(f.name)

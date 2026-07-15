@@ -285,7 +285,10 @@ OG_MARKER = 'property="og:image"'
 
 
 def _inject_schema_image(html: str, image: str) -> str:
-    """把 image 加進既有 JSON-LD Article schema(冪等,robust via json)。抽不到就原樣返回。"""
+    """把 image 加進既有 JSON-LD Article schema 的 Article 節點(冪等,robust via json)。
+    2026-07-15 起 blog schema 是 `@graph[Article,BreadcrumbList]`——image 要注入 Article 節點,
+    注在 @graph 外層=Google 忽略的死標記(lesson jsonld_graph_migration_breaks_consumers)。
+    舊扁平物件維持原行為(整個 data 即 target)。抽不到就原樣返回。"""
     m = re.search(r'(<script type="application/ld\+json">)(.*?)(</script>)', html, re.S)
     if not m:
         return html
@@ -293,8 +296,13 @@ def _inject_schema_image(html: str, image: str) -> str:
         data = json.loads(m.group(2))
     except Exception:
         return html
-    if isinstance(data, dict) and "image" not in data:
-        data["image"] = [image]
+    target = data if isinstance(data, dict) else None
+    if isinstance(target, dict) and isinstance(target.get("@graph"), list):
+        target = next((n for n in target["@graph"] if isinstance(n, dict) and (
+            n.get("@type") == "Article"
+            or (isinstance(n.get("@type"), list) and "Article" in n.get("@type")))), None)
+    if isinstance(target, dict) and "image" not in target:
+        target["image"] = [image]
         new_json = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
         return html[:m.start(2)] + new_json + html[m.end(2):]
     return html
