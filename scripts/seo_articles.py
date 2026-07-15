@@ -424,6 +424,164 @@ def backfill_breadcrumb(dry: bool) -> list:
     return changed
 
 
+# ── meta description 從文章自身 prose 擴寫(零捏造)────────────────────────────
+# 動機(MEASURED 2026-07-15):43 篇 blog 的 meta description 全是 25–45 CJK 字的 template
+# stub(如「台積電 (2330) 法說會前瞻 — MarketDaily 整理。」),Google SERP 約可顯示 78 CJK
+# 字,這些 stub 浪費 >40% 版面且讀起來像樣板。修法=從文章「自身第一段實質 prose」擴寫到
+# SERP 甜蜜區,零捏造(只截既有正文)。content_seo 稽核器 C2 精確標出此缺陷,本函式是修復。
+_DANGER_ASCII = set('"<>&\\')
+_SENT_END = "。！？!?"
+_CLAUSE_PUNCT = "。！？，、；：!?,;:"
+_TRAIL_SEP = "，、；：,;:"
+
+
+def _desc_dw(s: str) -> int:
+    """SERP display width 近似:CJK/全形 2、ASCII 1(與 content_seo 稽核器同一把尺)。"""
+    return sum(2 if ord(c) > 0x2E7F else 1 for c in s)
+
+
+def _first_prose(source_html: str) -> str:
+    """抽文章正文第一段實質 prose(去空白後 ≥30 字元),空白 collapse 成單一空格。
+    source 可為完整頁面(backfill 路徑,取 <article> 區並剝 CTA/disclaimer chrome)或
+    生成階段的 body_html(無 <article> 包裹,直接掃第一個 <p>)。抽不到回空字串。"""
+    m = re.search(r"<article\b[^>]*>(.*?)</article>", source_html, re.S)
+    region = m.group(1) if m else source_html
+    region = re.sub(r'<div class="cta">.*?</div>', "", region, flags=re.S)
+    region = re.sub(r'<p class="disc">.*?</p>', "", region, flags=re.S)
+    for pm in re.finditer(r"<p\b[^>]*>(.*?)</p>", region, re.S):
+        inner = re.sub(r"<[^>]+>", "", pm.group(1))
+        if len(re.sub(r"\s+", "", inner)) >= 30:
+            return re.sub(r"\s+", " ", inner).strip()
+    return ""
+
+
+def _hard_cut(s: str, maxw: int) -> int:
+    w = 0
+    for i, ch in enumerate(s):
+        w += 2 if ord(ch) > 0x2E7F else 1
+        if w > maxw:
+            return i
+    return len(s)
+
+
+def _prose_meta_desc(source_html: str, fallback: str, title: str = "",
+                     min_w: int = 110, max_w: int = 320, target: int = 240) -> str:
+    """從文章自身第一段 prose 擴寫 SERP 甜蜜區 meta desc(display-width ∈[min_w,max_w]),
+    零捏造(只截既有正文)。抽不到 / 含危險 ASCII / 結果過短或等於標題 → 回 fallback
+    (現行 template desc,已知安全)。
+    危險 ASCII(" < > & \\)一律整體回退而非部分清洗:這些字元在 3 個 HTML 屬性槽與 1 個
+    JSON 字串槽的跳脫需求互相衝突(HTML 要 &amp;、JSON 要字面 &),實測 0/43 篇出現,回退是
+    可證明正確的優雅降級(那篇維持較短但合法的 desc)。回傳值保證不含危險 ASCII → 4 槽皆安全:
+    HTML 屬性用 " 界定不會破、JSON 走 json.dumps 無需跳脫。"""
+    cand = _first_prose(source_html)
+    if not cand or any(c in _DANGER_ASCII for c in cand):
+        return fallback
+    if _desc_dw(cand) <= max_w:
+        chosen = cand
+    else:
+        pick = None
+        for pset in (_SENT_END, _CLAUSE_PUNCT):   # 先找句末標點,再退而求其次任何分句標點
+            best = None
+            w = 0
+            for i, ch in enumerate(cand):
+                w += 2 if ord(ch) > 0x2E7F else 1
+                if ch in pset and min_w <= w <= target:
+                    best = i + 1
+            if best:
+                pick = best
+                break
+        if pick is None:
+            pick = _hard_cut(cand, max_w)
+        chosen = cand[:pick]
+        if chosen and chosen[-1] in _TRAIL_SEP:   # 不以懸空逗號/頓號結尾
+            chosen = chosen[:-1]
+    if _desc_dw(chosen) < min_w or chosen == title:
+        return fallback
+    return chosen
+
+
+def _set_schema_description(html: str, new_desc: str):
+    """把 JSON-LD Article 節點的 description 改成 new_desc,回傳 (html, applied)。
+    robust via json,與 _inject_schema_image 同一路徑。@graph[Article,...] 改 Article 節點;
+    舊扁平物件改整個 data。applied=True 只在「JSON-LD Article.description 事後保證 == new_desc」
+    (現改 or 本就相同);applied=False 代表無可解析的 Article-with-description(無 ld+json /
+    無法解析 / 非 Article / 缺 description 鍵)——呼叫端必須據此把整篇更新視為失敗、不落盤,
+    以保 4 槽一致(不可只改 3 個 meta 槽卻留 stale JSON)。new_desc 保證無危險 ASCII 故 json 安全。"""
+    m = _LDJSON_RE.search(html)
+    if not m:
+        return html, False
+    try:
+        data = json.loads(m.group(2).strip())
+    except Exception:
+        return html, False
+    target = data if isinstance(data, dict) else None
+    if isinstance(target, dict) and isinstance(target.get("@graph"), list):
+        target = next((n for n in target["@graph"] if isinstance(n, dict) and (
+            n.get("@type") == "Article"
+            or (isinstance(n.get("@type"), list) and "Article" in n.get("@type")))), None)
+    if not isinstance(target, dict) or "description" not in target:
+        return html, False
+    if target["description"] == new_desc:
+        return html, True
+    target["description"] = new_desc
+    new_json = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+    return html[:m.start(2)] + new_json + html[m.end(2):], True
+
+
+_DESC_META_RES = (
+    re.compile(r'(<meta name="description" content=")([^"]*)(">)'),
+    re.compile(r'(<meta property="og:description" content=")([^"]*)(">)'),
+    re.compile(r'(<meta name="twitter:description" content=")([^"]*)(">)'),
+)
+
+
+def backfill_meta_desc(dry: bool) -> list:
+    """把既有文章短 template stub 的 meta description 擴寫成文章自身第一段 prose(零捏造,
+    SERP 甜蜜區 display-width)。四槽一致改寫:name=description / og:description /
+    twitter:description / JSON-LD Article.description。新文章走 write_article 已自帶,
+    此函式回填舊文。
+    冪等:new_desc 與現值相同即整篇 skip(抽不到 prose 或含危險 ASCII 時 _prose_meta_desc
+    回傳現值 fallback → 亦相同 → skip)。fail-safe:個別檔任何例外只印警告不中斷管線。"""
+    changed = []
+    for f in BLOG_DIR.glob("*.html"):
+        if f.stem == "index":
+            continue
+        try:
+            html = f.read_text(encoding="utf-8")
+            cm = _DESC_META_RES[0].search(html)
+            cur = cm.group(2) if cm else ""
+            tm = re.search(r"<title>(.+?)\s*\|", html)
+            title = tm.group(1).strip() if tm else ""
+            new_desc = _prose_meta_desc(html, fallback=cur, title=title)
+            if new_desc == cur:
+                continue
+            # 全篇更新必須原子:3 個 meta 槽與 JSON-LD Article.description 要嘛全改、要嘛整篇
+            # 不動——絕不落盤「只改 3 meta 卻留 stale JSON」的 4 槽不一致檔(驗證者 Finding 1)。
+            html2 = html
+            ok = True
+            for rex in _DESC_META_RES:
+                html2, n = rex.subn(lambda mm: mm.group(1) + new_desc + mm.group(3), html2, count=1)
+                if n != 1:                       # 缺某個 meta desc 槽 → 放棄整篇(保持原一致值)
+                    ok = False
+                    break
+            if not ok:
+                print(f"  [skip] {f.name}: 缺 meta description 槽,整篇不改(保 4 槽一致)")
+                continue
+            html2, applied = _set_schema_description(html2, new_desc)
+            if not applied:                      # JSON-LD 無法一致更新 → 放棄整篇
+                print(f"  [skip] {f.name}: JSON-LD Article.description 無法更新,整篇不改(保 4 槽一致)")
+                continue
+            changed.append(f.stem)
+            if dry:
+                print(f"  [dry] would expand meta desc: {f.name}(→w{_desc_dw(new_desc)})")
+            else:
+                f.write_text(html2, encoding="utf-8")
+                print(f"  ✓ meta desc expanded: {f.name}")
+        except Exception as e:
+            print(f"  [skip] meta desc backfill {f.name}: {type(e).__name__}: {e}")
+    return changed
+
+
 def call_claude(system: str, user: str, max_tokens: int = 2000) -> str:
     import urllib.request
     req = urllib.request.Request(
@@ -1459,13 +1617,15 @@ def write_article(art: dict, dry: bool) -> Path:
     slug = art["slug"]
     fname = BLOG_DIR / f"{slug}.html"
     if art["market"] == "term":
-        desc = f"{art['name']} — MarketDaily 投資知識整理。"
+        template_desc = f"{art['name']} — MarketDaily 投資知識整理。"
     elif art["market"] == "macro":
-        desc = f"{art['name']} — MarketDaily 總體經濟指標整理。"
+        template_desc = f"{art['name']} — MarketDaily 總體經濟指標整理。"
     elif art["market"] == "guide":
-        desc = f"{art['name']} — MarketDaily 新手投資教學整理。"
+        template_desc = f"{art['name']} — MarketDaily 新手投資教學整理。"
     else:
-        desc = f"{art['name']} ({art['ticker']}) {art['topic']} — MarketDaily 整理。"
+        template_desc = f"{art['name']} ({art['ticker']}) {art['topic']} — MarketDaily 整理。"
+    # 從文章自身第一段 prose 擴寫到 SERP 甜蜜區(零捏造);抽不到就回退 template stub。
+    desc = _prose_meta_desc(art["body_html"], fallback=template_desc, title=art["title"])
     related = related_html(art["ticker"], slug, scan_articles())
     date_modified = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
     date_published = _existing_date_published(fname) or _git_first_commit_date(fname) or date_modified
@@ -1928,6 +2088,8 @@ def main():
     backfill_canonical(args.dry)
     print("④ 回填 BreadcrumbList(bare Article→@graph,冪等)...")
     backfill_breadcrumb(args.dry)
+    print("④ 擴寫 meta description(從文章自身 prose,零捏造,冪等)...")
+    backfill_meta_desc(args.dry)
     print("⑤ 更新 blog index...")
     regenerate_blog_index(args.dry)
     print("⑥ 更新 RSS feed(docs/feed.xml)...")
