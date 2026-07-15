@@ -235,6 +235,46 @@ def probe_blog_schema():
     check("blog_schema_present", ok, msg)
 
 
+# ── 9. 頂層行銷頁 + 日報 archive 長尾頁 canonical/JSON-LD ──────────────
+# 出處 2026-07-16:pricing/track-record/guide/about/contact/vs/vs-chatgpt/testimonials
+# 與 docs/output/digest_*.html(sitemap 長尾頁)過去 canonical=0、JSON-LD=0,唯讀稽核
+# 發現後補上(scripts/site_structured_data.py)。此檢查防未來新增/改版頁面漏接。
+# 頁面清單單一事實來源=site_structured_data.CORE_PAGES,不在此另存一份易漂移的清單。
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from site_structured_data import CORE_PAGES as _CORE_SEO_PAGE_PATHS  # noqa: E402
+
+
+def probe_core_pages_schema():
+    docs = Path(__file__).resolve().parents[1] / "docs"
+    fnames = list(_CORE_SEO_PAGE_PATHS.values())
+    missing = []
+    for name in fnames:
+        html = (docs / name).read_text(encoding="utf-8")
+        if not ('rel="canonical"' in html and "application/ld+json" in html):
+            missing.append(name)
+    check("core_pages_schema", not missing,
+          f"{len(fnames)} 頁皆有 canonical+JSON-LD" if not missing else f"缺:{missing}")
+
+
+def probe_digest_archive_schema():
+    """只驗最近幾篇(archive 會一直長大,不逐篇全歷史驗)——抓「今天/最近沒接上每日
+    wiring」才有價值,舊檔已一次性 backfill、新檔靠獨立 cron 補,見
+    ~/.marketdaily-fallback/digest_archive_seo_runner.sh。"""
+    out_dir = Path(__file__).resolve().parents[1] / "docs" / "output"
+    files = sorted(out_dir.glob("digest_*.html"))
+    files = [f for f in files if "_us" not in f.name and "_personal_" not in f.name]
+    recent = files[-5:]
+    missing = []
+    for f in recent:
+        html = f.read_text(encoding="utf-8")
+        if not ('rel="canonical"' in html and "application/ld+json" in html
+                and 'meta name="description"' in html):
+            missing.append(f.name)
+    check("digest_archive_schema", not missing,
+          f"最近 {len(recent)} 篇皆有 canonical/meta-desc/JSON-LD" if not missing else f"缺:{missing}",
+          severity="med")
+
+
 def main():
     probe_quotes()
     probe_track_record()
@@ -244,6 +284,8 @@ def main():
     probe_fabricated_content()
     probe_blog_hygiene()
     probe_blog_schema()
+    probe_core_pages_schema()
+    probe_digest_archive_schema()
     fails = [r for r in RESULTS if not r["ok"]]
     if "--json" in sys.argv:
         print(json.dumps(RESULTS, ensure_ascii=False, indent=1))

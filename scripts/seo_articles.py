@@ -493,17 +493,22 @@ def _hard_cut(s: str, maxw: int) -> int:
     return len(s)
 
 
-def _prose_meta_desc(source_html: str, fallback: str, title: str = "",
-                     min_w: int = 110, max_w: int = 320, target: int = 240) -> str:
-    """從文章自身第一段 prose 擴寫 SERP 甜蜜區 meta desc(display-width ∈[min_w,max_w]),
-    零捏造(只截既有正文)。抽不到 / 含危險 ASCII / 結果過短或等於標題 → 回 fallback
-    (現行 template desc,已知安全)。
-    危險 ASCII(" < > & \\)一律整體回退而非部分清洗:這些字元在 3 個 HTML 屬性槽與 1 個
-    JSON 字串槽的跳脫需求互相衝突(HTML 要 &amp;、JSON 要字面 &),實測 0/43 篇出現,回退是
-    可證明正確的優雅降級(那篇維持較短但合法的 desc)。回傳值保證不含危險 ASCII → 4 槽皆安全:
-    HTML 屬性用 " 界定不會破、JSON 走 json.dumps 無需跳脫。"""
-    cand = _first_prose(source_html)
-    if not cand or any(c in _DANGER_ASCII for c in cand):
+def _truncate_to_desc(cand: str, fallback: str, title: str = "",
+                      min_w: int = 110, max_w: int = 320, target: int = 240,
+                      danger_chars: frozenset = frozenset()) -> str:
+    """把任意抽出的候選正文(cand)截到 SERP 甜蜜區 display-width ∈[min_w,max_w],
+    零捏造(只截既有文字,不改寫內容)。抽不到 / 含危險字元 / 結果過短或等於標題 → 回
+    fallback(呼叫端提供的已知安全 template desc)。與抽取候選文字的來源(第一段 prose /
+    其他結構如 TL;DR 條列)無關,供 `_prose_meta_desc`(blog 文章)與
+    `scripts/site_structured_data.py`(日報 archive 頁)共用同一套截斷邏輯,避免各自維護
+    一份易漂移的句界截斷演算法。
+    `danger_chars` 預設空集合(呼叫端各自決定要擋哪些字元,見下方 `_prose_meta_desc`
+    對 " < > & \\ 全擋的原因)——blog 用法把這 4 字元一律整體回退而非部分清洗,因為
+    blog 端把同一個 desc 字串直接塞進 3 個 HTML 屬性槽與 1 個 JSON 字串槽,無各自轉義;
+    其他呼叫端(如日報 archive)若有能力對 HTML 屬性槽單獨做 `html.escape()`、對
+    JSON-LD 槽保留字面字元,可傳入較寬鬆的 `danger_chars`(例如只擋 < > \\,允許 & 這種
+    可安全轉義的字元通過,避免像「S&P 500」這種常見市場詞彙被整篇回退成罐頭文案)。"""
+    if not cand or any(c in danger_chars for c in cand):
         return fallback
     if _desc_dw(cand) <= max_w:
         chosen = cand
@@ -527,6 +532,14 @@ def _prose_meta_desc(source_html: str, fallback: str, title: str = "",
     if _desc_dw(chosen) < min_w or chosen == title:
         return fallback
     return chosen
+
+
+def _prose_meta_desc(source_html: str, fallback: str, title: str = "",
+                     min_w: int = 110, max_w: int = 320, target: int = 240) -> str:
+    """從文章自身第一段 prose 擴寫 SERP 甜蜜區 meta desc,見 `_truncate_to_desc` docstring。
+    blog 用法擋 " < > & \\ 全部(同一字串直塞 4 個槽,無各自轉義能力)。"""
+    return _truncate_to_desc(_first_prose(source_html), fallback, title, min_w, max_w, target,
+                             danger_chars=_DANGER_ASCII)
 
 
 def _set_schema_description(html: str, new_desc: str):
