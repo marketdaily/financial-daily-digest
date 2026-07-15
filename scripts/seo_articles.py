@@ -348,6 +348,7 @@ def backfill_og_cards(dry: bool) -> list:
 _CANON_HTML_RE = re.compile(r'(<link rel="canonical" href="https://marketdaily\.ai/blog/[^"]*?)\.html(">)')
 _OGURL_HTML_RE = re.compile(r'(<meta property="og:url" content="https://marketdaily\.ai/blog/[^"]*?)\.html(">)')
 _LDID_HTML_RE = re.compile(r'("@id": "https://marketdaily\.ai/blog/[^"]*?)\.html(")')
+_LDJSON_RE = re.compile(r'(<script type="application/ld\+json">)(.*?)(</script>)', re.S)
 
 
 def backfill_canonical(dry: bool) -> list:
@@ -375,6 +376,43 @@ def backfill_canonical(dry: bool) -> list:
             else:
                 f.write_text(html, encoding="utf-8")
                 print(f"  ✓ canonical→clean: {f.name}")
+    return changed
+
+
+def backfill_breadcrumb(dry: bool) -> list:
+    """把上線前只含 bare Article 的 JSON-LD 升級成 @graph[Article, BreadcrumbList]。
+    BreadcrumbList 讓 Google SERP 顯示麵包屑(首頁 › 財經知識庫 › 文章),提升 CTR 與爬取。
+    新文章走 _article_schema_json 已含 @graph,此函式回填舊文。
+    冪等:已是 @graph 即 skip;無法解析或非 Article 亦 skip(fail-safe,絕不破壞原檔)。
+    麵包屑末項名稱直接取自該檔 Article 的 headline,保證與頁面標題一致。"""
+    changed = []
+    for f in BLOG_DIR.glob("*.html"):
+        if f.stem == "index":
+            continue
+        html = f.read_text(encoding="utf-8")
+        m = _LDJSON_RE.search(html)
+        if not m:
+            continue
+        try:
+            data = json.loads(m.group(2).strip())
+        except Exception:
+            print(f"  [skip] ld+json 無法解析: {f.name}")
+            continue
+        if "@graph" in data or data.get("@type") != "Article":
+            continue
+        title = data.get("headline", "")
+        article = {k: v for k, v in data.items() if k != "@context"}
+        new_obj = {"@context": "https://schema.org",
+                   "@graph": [article, _breadcrumb_schema(title)]}
+        new_json = json.dumps(new_obj, ensure_ascii=False).replace("</", "<\\/")
+        new_html = html[:m.start(2)] + new_json + html[m.end(2):]
+        if new_html != html:
+            changed.append(f.stem)
+            if dry:
+                print(f"  [dry] would add breadcrumb: {f.name}")
+            else:
+                f.write_text(new_html, encoding="utf-8")
+                print(f"  ✓ breadcrumb added: {f.name}")
     return changed
 
 
@@ -1374,8 +1412,7 @@ def og_image_for(slug: str, ticker: str, market_label: str, title: str) -> str:
 
 def _article_schema_json(title: str, desc: str, slug: str, date_published: str,
                          date_modified: str, image: str = DEFAULT_OG_IMAGE) -> str:
-    schema = {
-        "@context": "https://schema.org",
+    article = {
         "@type": "Article",
         "headline": title,
         "description": desc,
@@ -1390,7 +1427,24 @@ def _article_schema_json(title: str, desc: str, slug: str, date_published: str,
         },
         "mainEntityOfPage": {"@type": "WebPage", "@id": f"https://marketdaily.ai/blog/{slug}"},
     }
+    breadcrumb = _breadcrumb_schema(title)
+    schema = {"@context": "https://schema.org", "@graph": [article, breadcrumb]}
     return json.dumps(schema, ensure_ascii=False).replace("</", "<\\/")
+
+
+def _breadcrumb_schema(title: str) -> dict:
+    """導覽麵包屑:首頁 › 財經知識庫 › {文章};末項(當前頁)省略 item 為最佳實踐。
+    URL 一律用最終回 200 的乾淨 URL(與 canonical 一致,絕不指向 3xx)。"""
+    return {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "首頁",
+             "item": "https://marketdaily.ai/"},
+            {"@type": "ListItem", "position": 2, "name": "財經知識庫",
+             "item": "https://marketdaily.ai/blog/"},
+            {"@type": "ListItem", "position": 3, "name": title},
+        ],
+    }
 
 
 def write_article(art: dict, dry: bool) -> Path:
@@ -1864,6 +1918,8 @@ def main():
     backfill_og_cards(args.dry)
     print("④ 校正 canonical/og:url→乾淨 URL(免 .html 308 redirect,冪等)...")
     backfill_canonical(args.dry)
+    print("④ 回填 BreadcrumbList(bare Article→@graph,冪等)...")
+    backfill_breadcrumb(args.dry)
     print("⑤ 更新 blog index...")
     regenerate_blog_index(args.dry)
     print("⑥ 更新 RSS feed(docs/feed.xml)...")
