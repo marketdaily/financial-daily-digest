@@ -83,7 +83,8 @@ def margin_short(code, today=None):
     flags = []
     if sr is not None and sr >= 20:
         flags.append(f"券資比 {sr}% 偏高(軋空燃料)")
-    if m20 is not None and mt and m20 / mt > 0.15:
+    base20 = (mt - m20) if (m20 is not None and mt is not None) else None
+    if base20 and base20 > 0 and m20 / base20 > 0.15:
         flags.append("融資近20日急增>15%(散戶追買,極端反指標)")
     out["signal"] = " / ".join(flags) if flags else "融資券結構中性"
     c[ck] = out
