@@ -1388,6 +1388,38 @@ def main() -> int:
         "days": len({r["date"] for r in era_a + era_c}),
     }
 
+    # ── 分市場拆分(2026-07-16 台股戰績卡資料層先備:UI 等 Delvin 點頭,先不動前端)──
+    # 與頭條同一把尺(5d outcome+Wilson CI),era 子集另附 day-cluster CI(同日相關,Wilson 假獨立會假窄)。
+    # 純加法輸出:既有讀取端(track-record.html/kpi_pull/site_scan)都按鍵取值,不受新鍵影響。
+    by_market = {}
+    for mk in ("tw", "us"):
+        ma = [r for r in a_recs if r.get("market") == mk]
+        mc = [r for r in c_recs if r.get("market") == mk]
+        maw = sum(1 for r in ma if r["outcome"] == "win")
+        mcw = sum(1 for r in mc if r["outcome"] == "win")
+        ema = [r for r in ma if r["date"] >= MODEL_ERA_START]
+        emc = [r for r in mc if r["date"] >= MODEL_ERA_START]
+        emaw = sum(1 for r in ema if r["outcome"] == "win")
+        emcw = sum(1 for r in emc if r["outcome"] == "win")
+        by_market[mk] = {
+            "a_count": len(ma), "a_wins": maw,
+            "a_rate": round(maw / len(ma) * 100, 1) if ma else 0.0,
+            "a_ci95": list(wilson_ci(maw, len(ma))),
+            "c_count": len(mc), "c_wins": mcw,
+            "c_rate": round(mcw / len(mc) * 100, 1) if mc else 0.0,
+            "c_ci95": list(wilson_ci(mcw, len(mc))),
+            "era": {
+                "since": MODEL_ERA_START,
+                "a_count": len(ema), "a_wins": emaw,
+                "a_rate": round(emaw / len(ema) * 100, 1) if ema else 0.0,
+                "a_ci95_day_cluster": day_cluster_ci(ema),
+                "c_count": len(emc), "c_wins": emcw,
+                "c_rate": round(emcw / len(emc) * 100, 1) if emc else 0.0,
+                "c_ci95_day_cluster": day_cluster_ci(emc),
+                "days": len({r["date"] for r in ema + emc}),
+            },
+        }
+
     sims = []
     for r in judged_all:
         if r.get("type") == "H":
@@ -1496,6 +1528,7 @@ def main() -> int:
         "c_ci95": list(wilson_ci(c_wins, len(c_recs))),
         "calibration": calib,
         "by_regime": by_regime,
+        "by_market": by_market,  # 分市場拆分(台股戰績卡資料層,2026-07-16)
         "era": era,
         "plan_sim": plan_sim,
         "gate_effect": gate_effect,
