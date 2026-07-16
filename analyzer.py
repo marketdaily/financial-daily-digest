@@ -2457,6 +2457,14 @@ def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -
             dcf_over.append(h)
     overvalued = [h for h in holds if h in rich or h in dcf_over]  # 本益比或DCF任一偏貴
 
+    # 2026-07-17:清單不可裸代號(audit ticker_no_zh_name 07-14/15 大宗來源),
+    # 用 stock_names 單一真源展開成「名稱+代號」(台股中文名);無資料 fail-safe 回代號。
+    names_all = data.get("tw_names_all", {}) or {}
+
+    def _lbl(h):
+        hint = names_all.get(h) or (allm.get(h) or {}).get("name")
+        return stock_names.label_with_code(h, hint)
+
     rows = [f"<b>結構分佈</b>:多頭 {bull} / 盤整 {neu} / 空頭 {bear}（共 {n} 檔）"]
     if us_n and tw_n:
         rows.append(f"<b>市場配置</b>:美股 {us_n} 檔、台股 {tw_n} 檔")
@@ -2465,13 +2473,13 @@ def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -
     else:
         rows.append(f"<b>市場配置</b>:全部 {us_n} 檔美股(單一市場)")
     if rich:
-        rows.append(f"<b>估值偏貴</b>:{', '.join(rich[:5])}（追高風險集中)")
+        rows.append(f"<b>估值偏貴</b>:{', '.join(_lbl(h) for h in rich[:5])}（追高風險集中)")
     if dcf_over:
-        rows.append(f"<b>DCF 內在價值偏貴</b>:{', '.join(dcf_over[:5])}（現價高於折現合理區間上緣)")
+        rows.append(f"<b>DCF 內在價值偏貴</b>:{', '.join(_lbl(h) for h in dcf_over[:5])}（現價高於折現合理區間上緣)")
     if sell_chips:
-        rows.append(f"<b>法人/內部人偏賣</b>:{', '.join(sell_chips[:5])}")
+        rows.append(f"<b>法人/內部人偏賣</b>:{', '.join(_lbl(h) for h in sell_chips[:5])}")
     if pol_hit:
-        rows.append(f"<b>政策面曝險</b>:{', '.join(pol_hit[:5])} 同受今日政壇訊號波及")
+        rows.append(f"<b>政策面曝險</b>:{', '.join(_lbl(h) for h in pol_hit[:5])} 同受今日政壇訊號波及")
 
     half = max(2, round(n * 0.5))
     if bear >= half:

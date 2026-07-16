@@ -12,6 +12,8 @@
 import re
 from typing import List, Dict
 
+import stock_names
+
 
 def _strip_html_to_text(html: str) -> str:
     """粗略去 tag,留下純文字供 keyword 比對。"""
@@ -217,17 +219,32 @@ def audit_digest(
                           "msg": "「大盤怎麼了」沒提到台股大盤(用戶持有台股)"})
 
     # ───── 中英文股名 ─────
-    # 11. 內文出現純代號(NVDA / 2330) 沒有中英文公司名
+    # 11. 內文出現純代號(NVDA / 2330) 沒有中英文公司名。
+    #     2026-07-17:Meta/Alphabet 這類中文媒體慣用拉丁字母名的公司,「Meta（META）」是正確寫法,
+    #     只認 ≥2 連續中文會結構性誤判(07-10~16 復發根因之一)→ 同時接受 stock_names.US_NAMES
+    #     的中/英公司名(word-boundary;en 名等同代號者如 AMD 不能拿代號自己當名字)。
+    #     定位第一次出現也改 word-boundary(text.find 會誤中 METALS 這類子字串位置)。
     code_only_us = re.findall(r"(?<![A-Za-z])(NVDA|AAPL|MSFT|TSLA|GOOGL|META|AMD|TSM|JPM|AMZN)(?![A-Za-z])", text)
     if code_only_us:
-        # 抽樣檢查:每個代號前後 12 字是否有中文公司名
+        # 抽樣檢查:每個代號前後 12 字是否有中英文公司名
         for code in set(code_only_us[:5]):
-            idx = text.find(code)
+            m = re.search(r"(?<![A-Za-z])" + code + r"(?![A-Za-z])", text)
+            if not m:
+                continue
+            idx = m.start()
             ctx = text[max(0, idx - 12):idx + 12]
-            has_zh = re.search(r"[一-鿿]{2,}", ctx)
-            if not has_zh:
+            has_name = re.search(r"[一-鿿]{2,}", ctx)
+            if not has_name:
+                # 守衛=名字字串不可正好等於代號本身(AMD),否則代號自己救自己;
+                # 大小寫不同(Meta vs META)是合法名字,regex 區分大小寫不會誤中代號。
+                for nm in stock_names.US_NAMES.get(code, ()):
+                    if nm and nm != code and re.search(
+                            r"(?<![A-Za-z])" + re.escape(nm) + r"(?![A-Za-z])", ctx):
+                        has_name = True
+                        break
+            if not has_name:
                 fails.append({"check": "ticker_no_zh_name", "severity": "low",
-                              "msg": f"代號 {code} 附近沒有中文公司名"})
+                              "msg": f"代號 {code} 附近沒有中英文公司名"})
                 break  # 抽樣一個就夠
 
     # 11b. 台股 signal-card 的 ticker 是裸代號(如 6907)沒展開成中文公司名。
