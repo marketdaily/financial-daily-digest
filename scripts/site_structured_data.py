@@ -6,7 +6,8 @@ project_growth_channel_deep_dive_20260705 缺口②):
 1. 頂層行銷頁(CORE,見 gen_sitemap.CORE,排除已有結構化資料的 / 與另一套 pipeline 的 /blog/):
    pricing/track-record/vs-chatgpt/vs/guide/about/contact/testimonials — 目前
    canonical=0、JSON-LD=0(唯讀稽核發現,首頁 index.html 是唯一有 @graph 的非 blog 頁)。
-2. 日報公版 archive 長尾頁(docs/output/digest_*.html,gen_sitemap 收錄的 46 篇)——
+2. 日報公版 archive 長尾頁(docs/output/digest_*.html,gen_sitemap 收錄、逐日累加,
+   目前 40+ 篇)——
    同樣 canonical=0、JSON-LD=0、meta description=0。description 從頁面自身
    「☕ 30 秒看完今天重點」TL;DR 條列文字抽取(零捏造,複用 seo_articles._truncate_to_desc
    同一套截斷邏輯),過濾 AI 生成異常的備援錯誤訊息開頭(不把系統性故障字句曝在公開 SERP)。
@@ -30,7 +31,7 @@ import argparse
 import json
 import re
 import sys
-from html import escape as _esc
+from html import escape as _esc, unescape as _unesc
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -101,14 +102,18 @@ def inject_core_page(path: str, fname: str, dry: bool) -> bool:
     html = _strip_existing_block(original)
     url = f"{BASE}{path}"
     title_m = TITLE_RE.search(html)
-    title = title_m.group(1) if title_m else "MarketDaily"
+    if not title_m:
+        raise ValueError(f"{fname}: 找不到 <title> 標籤,無法插入結構化資料區塊,需人工檢查頁面結構")
+    # 捕獲值來自既有 <title>/<meta content> 屬性,若原頁面本就用 HTML 實體寫特殊字元
+    # (例如 &amp;),要先 unescape 回明文,才能對 HTML 屬性槽與 JSON-LD 槽各自正確跳脫一次
+    # ——否則 HTML 槽會雙重跳脫(&amp;amp;)、JSON-LD 槽會殘留實體字面文字。
+    title = _unesc(title_m.group(1))
     desc_m = META_DESC_RE.search(html) or OG_DESC_RE.search(html)
-    desc = desc_m.group(1) if desc_m else DESC_FALLBACK.get(path, "")
+    desc = _unesc(desc_m.group(1)) if desc_m else DESC_FALLBACK.get(path, "")
     if not desc:
         raise ValueError(f"{fname}: 無 meta/og description 可重用,也無 fallback,需人工補")
 
-    # HTML 屬性槽一律 html.escape(quote=True):title/desc 來自既有頁面內容(理論上已乾淨),
-    # 但新插入的屬性自己不能預設輸入乾淨——JSON-LD 槽另用未跳脫的原始 title/desc(json.dumps
+    # HTML 屬性槽一律 html.escape(quote=True);JSON-LD 槽用未跳脫的原始 title/desc(json.dumps
     # 自己正確處理 " 跳脫,& < > 在 JSON 字串內是字面字元,不需要 HTML 實體)。
     title_a, desc_a = _esc(title, quote=True), _esc(desc, quote=True)
     block_lines = []
@@ -197,6 +202,8 @@ def _digest_schema_json(date: str, desc: str, url: str) -> str:
 def inject_archive_page(fpath: Path, date: str, dry: bool) -> bool:
     original = fpath.read_text(encoding="utf-8")
     html = _strip_existing_block(original)
+    if not DIGEST_TITLE_RE.search(html):
+        raise ValueError(f"{fpath.name}: 找不到 <title> 標籤,無法插入結構化資料區塊,需人工檢查頁面結構")
     url = f"{BASE}/output/digest_{date}"
     fallback = f"MarketDaily {date} AI 財經日報:美股與台股當日重點整理,個股分析全免費開放。"
     cand = _extract_tldr_text(html)
