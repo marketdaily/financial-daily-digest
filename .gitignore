@@ -94,3 +94,5 @@ _ig_frames/
 scripts/.price_cache.json
 *.bak-*
 *.sh.bak-*
+
+quant_lab/auto_trade/.tx_daily.json

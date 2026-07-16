@@ -5,6 +5,50 @@
 from engine import Bar, Signal, Strategy
 
 
+class SuperTrend(Strategy):
+    """SuperTrend 趨勢跟蹤(公司同事在做的那型):ATR 通道追蹤停損,收盤突破上/下軌翻多/翻空。
+    永遠在場(always-in flip)。訊號用日K收盤算、當根收盤價成交(常規日線回測口徑,
+    含輕微同根 look-ahead,誠實標注)。bar.extra 需含 high/low。速度無關=分析車道。"""
+    def __init__(self, period=10, mult=3.0, size=1.0):
+        self.n, self.k, self.size = period, mult, size
+        self.atr = None
+        self.prev_close = None
+        self.fu = self.fl = None      # final upper / lower band
+        self.trend = 0                # +1 多 / -1 空
+        self.pos = 0
+
+    def on_bar(self, bar: Bar) -> list[Signal]:
+        h = bar.extra.get("high", bar.last)
+        l = bar.extra.get("low", bar.last)
+        c = bar.last
+        pc = self.prev_close if self.prev_close is not None else c
+        tr = max(h - l, abs(h - pc), abs(l - pc))
+        self.atr = tr if self.atr is None else (self.atr * (self.n - 1) + tr) / self.n  # Wilder
+        self.prev_close = c
+        if self.atr is None:
+            return []
+        mid = (h + l) / 2
+        bu, bl = mid + self.k * self.atr, mid - self.k * self.atr
+        # band ratchet:上軌只降不升(除非前收盤突破),下軌只升不降
+        self.fu = bu if (self.fu is None or bu < self.fu or pc > self.fu) else self.fu
+        self.fl = bl if (self.fl is None or bl > self.fl or pc < self.fl) else self.fl
+        new = self.trend
+        if c > self.fu:
+            new = 1
+        elif c < self.fl:
+            new = -1
+        if new == self.trend or new == 0:
+            return []
+        self.trend = new
+        want = new * self.size
+        delta = want - self.pos
+        self.pos = want
+        if delta == 0:
+            return []
+        return [Signal(bar.symbol, 1 if delta > 0 else -1, abs(delta),
+                       f"SuperTrend 翻{'多' if new > 0 else '空'}")]
+
+
 class OptionVolSeller(Strategy):
     """賣波動率:市場隱含波動 IV 明顯 > 前瞻波動 FV → 賣選擇權收 vol 溢酬。
     delta 交給避險腿(這裡只發選擇權賣/回補訊號)。
