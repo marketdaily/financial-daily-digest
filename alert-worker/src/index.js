@@ -583,8 +583,11 @@ function alertMessage(news, ticker, severity, reason, meta = {}) {
 
 // 主動告訴 admin:推播出狀況。通道 = 自有 web push 到所有 admin 裝置(LINE 已退役,不再備援)。
 // 節流:同小時最多 1 則,避免炸訊息。
-async function alertAdmin(env, summary) {
-  const hourKey = `admin_alert:${new Date().toISOString().slice(0, 13)}`;
+// channel:預設共用 admin_alert:<hour> 節流閘(既有呼叫端行為不變)。
+// 傳 channel 可讓某個子系統(如 political)有自己獨立的節流閘,不會被別條管線
+// (如 news pipeline,*/2 觸發頻率高很多)搶先卡位同一小時的額度而被靜默吞掉。
+async function alertAdmin(env, summary, { channel = "" } = {}) {
+  const hourKey = `admin_alert:${channel ? channel + ":" : ""}${new Date().toISOString().slice(0, 13)}`;
   if (await env.USER_PREFS.get(hourKey)) return;
   let delivered = false;
   if (await webPushAdmin(env, JSON.stringify({
@@ -880,7 +883,13 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
   if (sigList === null) {
     const res = await fetchPoliticalSignals(env, 2);
     if (res.skipped) { report.skipped = res.skipped; return done(); }
-    if (res.error) { report.errors.push(res.error); return done(); }
+    if (res.error) {
+      report.errors.push(res.error);
+      // 這條管線之前只把錯誤寫進 alert:pol_laststatus 沒人看,靜默壞掉不會被發現
+      // (news 管線早就有等價的 alertAdmin,political 管線是漏網的那條)。
+      if (push) await alertAdmin(env, `政壇訊號抓取失敗(*/15 cron)\n${res.error}`, { channel: "political" });
+      return done();
+    }
     sigList = res.signals;
   }
   const res = { signals: sigList };
@@ -935,6 +944,24 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
     await env.USER_PREFS.put(seenKey, "1", { expirationTtl: SEEN_TTL });
     await env.USER_PREFS.put(capKey, String(sent + 1), { expirationTtl: COUNT_TTL });
   }
+  // 推播炸了就告訴 admin(對齊 runPipeline 既有邏輯——political 管線之前完全沒有這段,
+  // VAPID/push 若壞掉,這條頻道會一直沒人知道訂閱者早就收不到)。
+  if (push) {
+    const failed = [];
+    for (const f of report.fired) {
+      for (const r of f.recipients || []) {
+        const s = r.status || "";
+        if (s.startsWith("fail:")) failed.push({ email: r.email, status: s, headline: f.headline });
+      }
+    }
+    if (failed.length) {
+      const lines = failed.slice(0, 3).map((f) =>
+        `• ${f.email} ${f.status}\n  ${(f.headline || "").slice(0, 50)}`);
+      await alertAdmin(env,
+        `政壇推播失敗 ${failed.length} 筆(/${report.fired.length} 達標事件)\n${lines.join("\n")}` +
+        (failed.length > 3 ? `\n…還有 ${failed.length - 3} 筆` : ""), { channel: "political" });
+    }
+  }
   return done();
 }
 
@@ -980,6 +1007,7 @@ export default {
       }
       const lastRaw = await env.USER_PREFS.get("alert:laststatus");
       const canaryRaw = await env.USER_PREFS.get("alert:lastcanary");
+      const lastPolRaw = await env.USER_PREFS.get("alert:pol_laststatus");
       return json({
         ok: true,
         ts: new Date().toISOString(),
@@ -992,14 +1020,17 @@ export default {
           LINE_CHANNEL_SECRET: !!env.LINE_CHANNEL_SECRET,
           ADMIN_LINE_USER_ID: !!env.ADMIN_LINE_USER_ID,
           INTERNAL_TOKEN: !!env.INTERNAL_TOKEN,
+          XAI_API_KEY: !!env.XAI_API_KEY,
         },
         config: {
           severityThreshold: SEVERITY_THRESHOLD, speculativeThreshold: SPECULATIVE_THRESHOLD,
           dailyCap: DAILY_CAP, maxAgeHours: MAX_AGE_HOURS, preScoreFloor: PRESCORE_FLOOR,
-          crons: ["*/2 * * * *(pipeline)", "0 * * * *(canary)"],
+          // LINE canary 已隨 LINE 退役移除,現行兩條 cron 見 wrangler.toml [triggers]
+          crons: ["*/2 * * * *(pipeline)", "*/15 * * * *(political)"],
         },
         lastRun: lastRaw ? JSON.parse(lastRaw) : null,
         lastCanary: canaryRaw ? JSON.parse(canaryRaw) : null,
+        lastPolitical: lastPolRaw ? JSON.parse(lastPolRaw) : null,
       });
     }
 
@@ -1254,7 +1285,7 @@ export default {
       try { body = await request.json(); } catch { return json({ error: "bad json" }, 400); }
       // X 掃描器回報 session 失效 → 通知 admin 重登(web push 優先,alertAdmin 自帶每小時節流)
       if (body.session_dead) {
-        await alertAdmin(env, "⚠️ 政壇 X 掃描器 session 失效，winrig 抓不到貼文。請在 Mac 跑 `python3 watch_x.py --login` 重登 X，再把 auth_state.json 搬回 winrig。");
+        await alertAdmin(env, "⚠️ 政壇 X 掃描器 session 失效，winrig 抓不到貼文。請在 Mac 跑 `python3 watch_x.py --login` 重登 X，再把 auth_state.json 搬回 winrig。", { channel: "political" });
         return json({ ok: true, alerted: true });
       }
       const posts = (body.posts || []).filter(p => p && p.handle && p.text).slice(0, 30);
