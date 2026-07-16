@@ -1,10 +1,11 @@
 {
  "_chain_order_default": [
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
   "https://api.anthropic.com/v1/messages",
   "https://api.groq.com/openai/v1/chat/completions",
   "https://cf-proxy.test/ai",
@@ -21,10 +22,11 @@
   "https://api.cerebras.ai/v1/chat/completions",
   "https://api.openai.com/v1/chat/completions",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
   "http://localhost:11434/api/chat"
  ],
  "cerebras_custom": {
