@@ -96,3 +96,4 @@ scripts/.price_cache.json
 *.sh.bak-*
 
 quant_lab/auto_trade/.tx_daily.json
+quant_lab/auto_trade/.txo_iv.json
