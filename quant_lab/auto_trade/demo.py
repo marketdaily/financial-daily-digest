@@ -83,9 +83,11 @@ def main():
     print(f"  DSR = P(真 edge>0 | 試了{n_trials}套) = {dsr:.3f}  ← <0.5 就很可能是運氣挑出來的\n")
 
     # —— walk-forward:每段 OOS 只評一次 ——
+    # 前置 lookback 根暖機 bar(取自 in-sample 尾端):指標窗剛好在 OOS 第一根填滿,
+    # 訊號從 OOS 開始產生,不浪費 OOS 樣本、也不偷看 OOS 之後的資料。
     wf_pnls = []
-    for _, oos_seg in walk_forward(oos, window=200, step=100):
-        wf_pnls += bt(oos_seg, lookback=best_lb, entry_z=best_z)
+    for ins, oos_seg in walk_forward(oos, window=200, step=100):
+        wf_pnls += bt(ins[-best_lb:] + oos_seg, lookback=best_lb, entry_z=best_z)
     print(f"walk-forward OOS:{len(wf_pnls)} 筆交易,Sharpe = {sharpe(wf_pnls):.3f}")
 
     # —— lockbox:最後只跑這一次 ——

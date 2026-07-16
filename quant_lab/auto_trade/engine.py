@@ -101,20 +101,29 @@ class Engine:
         return self.result()
 
     def _apply(self, f: Fill):
-        cost = f.price * f.size
-        fee = cost * self.fee
+        fee_total = f.price * f.size * self.fee
         signed = f.side * f.size
         prev = self.pos.get(f.symbol, 0.0)
-        # 平倉即結算一筆已實現損益(供 per-trade 統計)
+        _, e_px = self._entry.get(f.symbol, (0.0, f.price))
+        # 平倉即結算一筆已實現損益(進出雙腿手續費都算進這筆)
         if prev != 0 and (prev > 0) != (f.side > 0):
-            e_signed, e_px = self._entry.get(f.symbol, (prev, f.price))
             closed = min(abs(prev), f.size)
-            pnl = (f.price - e_px) * closed * (1 if prev > 0 else -1) - fee
+            fee_close = f.price * closed * self.fee
+            fee_entry = e_px * closed * self.fee
+            pnl = (f.price - e_px) * closed * (1 if prev > 0 else -1) - fee_close - fee_entry
             self.trade_pnls.append(pnl)
-        self.pos[f.symbol] = prev + signed
-        if self.pos[f.symbol] != 0:
-            self._entry[f.symbol] = (self.pos[f.symbol], f.price)
-        self.cash -= fee
+        new_pos = prev + signed
+        if new_pos == 0:
+            self._entry.pop(f.symbol, None)
+        elif prev == 0 or (prev > 0) != (new_pos > 0):
+            self._entry[f.symbol] = (new_pos, f.price)      # 開倉/翻倉:新倉成本=本次成交價
+        elif (prev > 0) == (f.side > 0):
+            avg = (e_px * abs(prev) + f.price * f.size) / (abs(prev) + f.size)
+            self._entry[f.symbol] = (new_pos, avg)          # 同向加碼:攤平均成本
+        else:
+            self._entry[f.symbol] = (new_pos, e_px)         # 部分平倉:剩餘倉成本不變
+        self.pos[f.symbol] = new_pos
+        self.cash -= fee_total
 
     def result(self) -> dict:
         return {
