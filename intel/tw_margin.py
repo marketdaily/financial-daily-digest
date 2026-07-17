@@ -52,9 +52,9 @@ def pct_change(new, old):
 
 
 def classify(margin_bal, margin_5d_ago, short_bal, margin_limit, price_now, price_5d_ago):
-    """回 {level, signal}。純數字判斷,不叫網路。"""
+    """回 {level, signal, rule}。純數字判斷,不叫網路。"""
     if margin_bal is None:
-        return {"level": "unknown", "signal": "融資餘額資料缺漏,暫無法判斷",
+        return {"level": "unknown", "signal": "融資餘額資料缺漏,暫無法判斷", "rule": "unknown",
                 "margin_chg_5d": None, "short_ratio": None, "util": None}
     margin_chg = pct_change(margin_bal, margin_5d_ago) if margin_5d_ago and margin_bal is not None else 0.0
     short_ratio = (short_bal / margin_bal * 100.0) if margin_bal and short_bal is not None else 0.0
@@ -68,19 +68,37 @@ def classify(margin_bal, margin_5d_ago, short_bal, margin_limit, price_now, pric
             note = "股價同期止穩,籌碼出清轉機留意"
         else:
             note = "股價走勢待確認"
-        return {"level": "red", "signal": f"融資5日驟減{margin_chg:.1f}%(疑似斷頭/停損潮,{note})",
+        return {"level": "red", "signal": f"融資5日驟減{margin_chg:.1f}%(疑似斷頭/停損潮,{note})", "rule": "margin_plunge",
                 "margin_chg_5d": round(margin_chg, 1), "short_ratio": round(short_ratio, 1), "util": round(util, 1)}
     if short_ratio >= 15:
-        return {"level": "red", "signal": f"券資比{short_ratio:.1f}%(相對高檔,看空押注集中,軋空風險留意)",
+        return {"level": "red", "signal": f"券資比{short_ratio:.1f}%(相對高檔,看空押注集中,軋空風險留意)", "rule": "short_ratio_high",
                 "margin_chg_5d": round(margin_chg, 1), "short_ratio": round(short_ratio, 1), "util": round(util, 1)}
     if margin_chg >= 15:
-        return {"level": "yellow", "signal": f"融資5日暴增{margin_chg:.1f}%(散戶追高過熱)",
+        return {"level": "yellow", "signal": f"融資5日暴增{margin_chg:.1f}%(散戶追高過熱)", "rule": "margin_surge",
                 "margin_chg_5d": round(margin_chg, 1), "short_ratio": round(short_ratio, 1), "util": round(util, 1)}
     if util >= 85:
-        return {"level": "yellow", "signal": f"融資使用率{util:.1f}%(逼近額度上限,拉回易生斷頭壓力)",
+        return {"level": "yellow", "signal": f"融資使用率{util:.1f}%(逼近額度上限,拉回易生斷頭壓力)", "rule": "margin_util_high",
                 "margin_chg_5d": round(margin_chg, 1), "short_ratio": round(short_ratio, 1), "util": round(util, 1)}
-    return {"level": "plain", "signal": "融資券中性",
+    return {"level": "plain", "signal": "融資券中性", "rule": "neutral",
             "margin_chg_5d": round(margin_chg, 1), "short_ratio": round(short_ratio, 1), "util": round(util, 1)}
+
+
+def ca_conversion_suspect(prices, date_lo, date_hi):
+    """分割/減資在生效日把股數餘額原地換算(5536 1:2 分割日融資餘額×2、4967 減資
+    ×0.7,2026-07-17 稽核實測),跨進 5 日窗時變化率是機械跳升非籌碼行為。台股單一
+    交易日漲跌停 ±10%,相鄰收盤 |變化|>10.5% 只可能是公司行動或資料錯誤,以此偵測。
+    配股不用擋:餘額在除權日與發放日皆不跳(同稽核三重實證);但大配股除權日價格
+    缺口也會 >10.5% → 寧可誤壓(少發一則假斷頭/追高)不漏放。價格缺漏時不壓(fail-open,
+    分割/減資年僅 1-2 次,與價格缺漏日重疊機率可忽略)。"""
+    prev = None
+    for p in prices:
+        d, c = p.get("date"), p.get("close")
+        if not d or not c or d > date_hi:
+            continue
+        if prev is not None and d > date_lo and abs(c / prev - 1.0) > 0.105:
+            return True
+        prev = c
+    return False
 
 
 def margin(code, today=None):
@@ -121,6 +139,10 @@ def margin(code, today=None):
         "margin_limit": margin_limit,
     }
     out.update(classify(margin_bal, margin_5d_ago, short_bal, margin_limit, price_now, price_5d_ago))
+    if out.get("rule") in ("margin_plunge", "margin_surge") and ca_conversion_suspect(
+            prices, date_5d_ago or "", last["date"]):
+        out.update({"level": "plain", "rule": "ca_conversion_guard",
+                    "signal": "疑似分割/減資使融資餘額換算跳動(單日價格變化超出漲跌停上限),5日變化率失真不判讀"})
 
     cache = {k: v for k, v in cache.items() if k.endswith(today.isoformat())}
     cache[ck] = out

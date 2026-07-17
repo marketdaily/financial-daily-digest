@@ -59,9 +59,9 @@ def pct_change(new, old):
 
 
 def classify(sbl_bal, sbl_5d_ago, price_now=None, price_5d_ago=None):
-    """回 {level, signal}。純數字判斷,不叫網路。"""
+    """回 {level, signal, rule}。純數字判斷,不叫網路。"""
     if sbl_bal is None:
-        return {"level": "unknown", "signal": "借券賣出餘額資料缺漏,暫無法判斷", "sbl_chg_5d": None}
+        return {"level": "unknown", "signal": "借券賣出餘額資料缺漏,暫無法判斷", "rule": "unknown", "sbl_chg_5d": None}
     sbl_chg = pct_change(sbl_bal, sbl_5d_ago) if sbl_5d_ago and sbl_bal is not None else 0.0
     price_chg = pct_change(price_now, price_5d_ago) if price_5d_ago and price_now is not None else None
 
@@ -73,14 +73,32 @@ def classify(sbl_bal, sbl_5d_ago, price_now=None, price_5d_ago=None):
         else:
             note = "股價走勢待確認"
         return {"level": "red", "signal": f"機構借券賣出5日遽增{sbl_chg:.1f}%(聰明錢加碼放空,{note})",
-                "sbl_chg_5d": round(sbl_chg, 1)}
+                "rule": "sbl_surge", "sbl_chg_5d": round(sbl_chg, 1)}
     if sbl_chg <= -20:
         return {"level": "yellow", "signal": f"機構借券賣出5日遽減{sbl_chg:.1f}%(回補潮,空頭力道減弱)",
-                "sbl_chg_5d": round(sbl_chg, 1)}
+                "rule": "sbl_plunge", "sbl_chg_5d": round(sbl_chg, 1)}
     if sbl_chg >= 10:
         return {"level": "yellow", "signal": f"機構借券賣出5日增{sbl_chg:.1f}%(溫和加碼放空)",
-                "sbl_chg_5d": round(sbl_chg, 1)}
-    return {"level": "plain", "signal": "借券賣出中性", "sbl_chg_5d": round(sbl_chg, 1)}
+                "rule": "sbl_mild_increase", "sbl_chg_5d": round(sbl_chg, 1)}
+    return {"level": "plain", "signal": "借券賣出中性", "rule": "neutral", "sbl_chg_5d": round(sbl_chg, 1)}
+
+
+def ca_conversion_suspect(prices, date_lo, date_hi):
+    """分割/減資在生效日把股數餘額原地換算(5536 1:2 分割日融資餘額×2、4967 減資
+    ×0.7,2026-07-17 稽核實測),跨進 5 日窗時變化率是機械跳升非籌碼行為。台股單一
+    交易日漲跌停 ±10%,相鄰收盤 |變化|>10.5% 只可能是公司行動或資料錯誤,以此偵測。
+    配股不用擋:餘額在除權日與發放日皆不跳(同稽核三重實證);但大配股除權日價格
+    缺口也會 >10.5% → 寧可誤壓(少發一則假放空/回補)不漏放。價格缺漏時不壓(fail-open,
+    分割/減資年僅 1-2 次,與價格缺漏日重疊機率可忽略)。"""
+    prev = None
+    for p in prices:
+        d, c = p.get("date"), p.get("close")
+        if not d or not c or d > date_hi:
+            continue
+        if prev is not None and d > date_lo and abs(c / prev - 1.0) > 0.105:
+            return True
+        prev = c
+    return False
 
 
 def sbl(code, today=None):
@@ -118,6 +136,10 @@ def sbl(code, today=None):
         "sbl_quota": last.get("SBLShortSalesQuota", 0),
     }
     out.update(classify(sbl_bal, sbl_5d_ago, price_now, price_5d_ago))
+    if out.get("rule") in ("sbl_surge", "sbl_plunge", "sbl_mild_increase") and ca_conversion_suspect(
+            prices, date_5d_ago or "", last["date"]):
+        out.update({"level": "plain", "rule": "ca_conversion_guard",
+                    "signal": "疑似分割/減資使借券餘額換算跳動(單日價格變化超出漲跌停上限),5日變化率失真不判讀"})
 
     cache = {k: v for k, v in cache.items() if k.endswith(today.isoformat())}
     cache[ck] = out
