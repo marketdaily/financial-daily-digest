@@ -257,6 +257,40 @@ cron_abort_if_dirty_scoped() {
   _cron_dirty_starve_clear "$name"
 }
 
+# cron_deploy_surface_gate NAME SCOPE...  非中止版 deploy 面守門(2026-07-18 艦隊鋪設)。
+# 給「守門點在腳本尾端、前面已做完不可略過的工作(寄信/生成/commit)」的 runner 用:
+# 檢查 dirty tracked + untracked 是否落在 SCOPE 內,有 → return 1(呼叫端只跳過 deploy
+# 步驟,絕不中止整個腳本——尾端若 exit 會吞掉腳本收尾的成功推播/done log);乾淨 → return 0。
+# 讓路/通過與 cron_abort_if_*_scoped 走同一份 starve 記帳(同 NAME 同 state)。
+# 使用前提:呼叫端自己的輸出檔必須在呼叫本函式【之前】commit 完(pathspec),否則自己的
+# 未 commit 輸出會擋掉自己的合法部署(先 persist 後 deploy 的順序不變量)。
+# 無 SCOPE=fail-safe return 1(絕不因參數缺失變成永遠放行)。
+cron_deploy_surface_gate() {
+  local name="$1"; shift
+  if [ "$#" -eq 0 ]; then
+    echo "[cron_deploy_surface_gate:$name] 未宣告 scope,fail-safe 擋下本輪 deploy"
+    _cron_dirty_starve_mark "$name" "(missing-scope)"
+    return 1
+  fi
+  local f s hit blocked=""
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    hit=0
+    for s in "$@"; do
+      while [ "${s%/}" != "$s" ]; do s="${s%/}"; done
+      if [ "$f" = "$s" ] || [[ "$f" == "$s"/* ]]; then hit=1; break; fi
+    done
+    [ "$hit" = 1 ] && blocked="${blocked}${f} "
+  done < <({ cron_dirty_tracked_files; cron_untracked_files; })
+  if [ -n "$blocked" ]; then
+    echo "[cron_deploy_surface_gate:$name] deploy 面有 WIP/untracked(deploy 上傳磁碟現狀),本輪跳過部署: ${blocked}"
+    _cron_dirty_starve_mark "$name" "$blocked"
+    return 1
+  fi
+  _cron_dirty_starve_clear "$name"
+  return 0
+}
+
 # cron_untracked_files  列出 untracked(??)路徑,一行一檔。整個未追蹤目錄 porcelain 只列
 # 「dir/」一條(trailing slash),前綴匹配仍吃得到。
 cron_untracked_files() {

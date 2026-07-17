@@ -127,20 +127,22 @@ if [ -n "${ZSH_VERSION:-}" ]; then setopt null_glob; else shopt -s nullglob 2>/d
 rm -f docs/output/*_personal_*
 git config user.name "marketdaily-bot"
 git config user.email "marketdailyhq@gmail.com"
+PERSIST=()
 for f in docs/output/digest_*.html; do
   [ -e "$f" ] || continue
   case "$f" in *_personal_*) continue;; esac
-  git add "$f"
+  git add "$f" && PERSIST+=("$f")
 done
-git add docs/output/manifest.json 2>/dev/null
+[ -e docs/output/manifest.json ] && git add docs/output/manifest.json 2>/dev/null && PERSIST+=(docs/output/manifest.json)
 # analyzer.py 每班寫入的報價快取——digest runner 是唯一 persist owner;沒人收會 tracked-dirty
 # 卡死全部 cron_abort_if_dirty 守門 runner(2026-07-17 孤兒檔餓死 cron 生態鏈事故;winrig run.sh 同步修)
-git add scripts/buy_signal_log.json 2>/dev/null
-python3 scripts/gen_sitemap.py && git add docs/sitemap.xml || echo "sitemap gen skipped"
-if git diff --cached --quiet; then
+[ -e scripts/buy_signal_log.json ] && git add scripts/buy_signal_log.json 2>/dev/null && PERSIST+=(scripts/buy_signal_log.json)
+if python3 scripts/gen_sitemap.py; then git add docs/sitemap.xml && PERSIST+=(docs/sitemap.xml); else echo "sitemap gen skipped"; fi
+# commit 一律帶 pathspec(2026-07-18):裸 commit 會把別視窗 pre-staged 未 commit 的檔掃進來
+if [ "${#PERSIST[@]}" -eq 0 ] || git diff --cached --quiet -- "${PERSIST[@]}"; then
   echo "no new public digest to commit"
 else
-  git commit -m "chore(digest): persist public archive $(date -u +%Y-%m-%d) (local fallback)"
+  git commit -m "chore(digest): persist public archive $(date -u +%Y-%m-%d) (local fallback)" -- "${PERSIST[@]}"
   safe_pull
   git push origin HEAD:main || echo "archive push failed"
 fi
@@ -149,15 +151,29 @@ fi
 if [ "$MARKET" = tw ]; then
   MARKETDAILY_INTERNAL_TOKEN="$(python3 -c "from dotenv import dotenv_values; print(dotenv_values('.env').get('MARKETDAILY_INTERNAL_TOKEN') or '')")" \
     python3 scripts/build_track_record.py || echo "track record build failed"
-  if [ -n "$(git status --short docs/data/track-record.json)" ]; then
-    git add docs/data/track-record.json
-    git commit -m "chore(track-record): auto-refresh $(date -u +%Y-%m-%d_%H%M)UTC (local fallback)"
+  # build_track_record.py 同時寫兩個 tracked ledger 檔——只收 track-record.json 會讓本 clone
+  # tracked 樹永遠髒,safe_pull 從此死掉、備援 pipeline 靜默跑舊碼(2026-07-18 fleet_deploy_gate
+  # 驗證者 F5;winrig refresh_track_record.sh 的 LEDGER_PATHS 同一組)。zsh/bash 皆可的陣列寫法。
+  TR_PERSIST=()
+  for f in docs/data/track-record.json scripts/personal_ledger.jsonl scripts/personal_ledger_audit.json; do
+    [ -e "$f" ] && TR_PERSIST+=("$f")
+  done
+  if [ "${#TR_PERSIST[@]}" -gt 0 ] && [ -n "$(git status --short -- "${TR_PERSIST[@]}")" ]; then
+    git add -- "${TR_PERSIST[@]}"
+    git commit -m "chore(track-record): auto-refresh $(date -u +%Y-%m-%d_%H%M)UTC (local fallback)" -- "${TR_PERSIST[@]}"
     safe_pull
     git push origin HEAD:main || echo "track record push failed"
   fi
-  npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true \
-    --commit-message "daily refresh (local fallback)" || echo "pages deploy failed"
-  python3 scripts/indexnow_ping.py || echo "indexnow ping skipped"
+  # deploy 面檢查(2026-07-18):deploy 上傳磁碟現狀,自家輸出上面已 pathspec commit 完,
+  # 此時 docs/ 殘留 dirty/untracked=別視窗 WIP/草稿——跳過本輪部署(archive 已 commit,
+  # 之後任一乾淨班次 deploy 會帶上線)。本檔不 source lib(獨立 clone 通用檔),自包含實作。
+  if [ -z "$(git status --porcelain -uall -- docs/ 2>/dev/null)" ]; then
+    npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true \
+      --commit-message "daily refresh (local fallback)" || echo "pages deploy failed"
+    python3 scripts/indexnow_ping.py || echo "indexnow ping skipped"
+  else
+    echo "docs deploy 面有 WIP/untracked,本輪跳過部署(archive 已 commit)"
+  fi
 fi
 
 push_admin_line "✅ [本機備援] $(TZ=Asia/Taipei date +%F) ${MARKET} 班日報已由本機 Mac 寄出(GitHub Actions 仍停用中,記得到 https://support.github.com/contact/reinstatement 申訴解鎖)"
