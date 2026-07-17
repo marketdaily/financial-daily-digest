@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""發當日日報短影音 reel(冪等)。由 social_post_runner.sh 在 14:00 窗口呼叫。
+"""發當日日報短影音 reel(冪等)。由 social_post_runner.sh 在各發文窗口呼叫。
+
+用法: post_daily_reel.py [tw|us] [--dry]
+  tw(預設)=台股晨報 reel,09:00 台股開盤前發(08:00-08:59 窗口)
+  us=美股晚報 reel,21:30 TW 美股開盤前發(20:30-21:29 窗口)
 
 exit code: 0=發出或已發過 / 2=今天沒有已驗證的 reel(生成端出問題) / 3=主平台全失敗
            4=主平台已發出但次要平台失敗(如 YT 帳號停權;2026-07-10 起 YT 默默失敗
@@ -20,12 +24,17 @@ OUT = ROOT / "video_brief" / "out"
 
 def main():
     dry = "--dry" in sys.argv
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    edition = args[0] if args else "tw"
+    if edition not in ("tw", "us"):
+        sys.exit(f"未知 edition「{edition}」,只接受 tw/us")
     today = datetime.now().strftime("%Y-%m-%d")
-    src = OUT / f"post_{today}_tw.json"
+    src = OUT / f"post_{today}_{edition}.json"
     if not src.exists():
-        # 與生成端共用同一事實源:當日日報 archive 存在才該有 reel
+        # 與生成端共用同一事實源:當日(該版本)日報 archive 存在才該有 reel
         # (週日/假日沒日報→兩端同步靜默,不會再有規則岔開的假警報)
-        digest = ROOT / "docs" / "output" / f"digest_{today}.html"
+        suffix = "_us" if edition == "us" else ""
+        digest = ROOT / "docs" / "output" / f"digest_{today}{suffix}.html"
         if not digest.exists():
             print(f"今天沒有日報 archive({digest.name}),照設計不該有 reel,靜默跳過")
             return
