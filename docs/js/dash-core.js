@@ -496,7 +496,7 @@ function applyLang(lang) {
     const v = t[el.dataset.i18nPlaceholder];
     if (typeof v === 'string') el.placeholder = v;
   });
-  const langBtn = document.querySelector('.lang-btn');
+  const langBtn = document.querySelector('button.lang-btn[onclick="toggleLang()"]');
   if (langBtn) langBtn.textContent = currentLang === 'zh' ? 'EN' : '中文';
   localStorage.setItem('md-lang-v2', currentLang);
   if (typeof refreshDynamicLang === 'function') refreshDynamicLang();
