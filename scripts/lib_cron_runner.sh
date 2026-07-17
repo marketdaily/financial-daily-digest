@@ -164,3 +164,22 @@ cron_abort_if_dirty() {
     exit 0
   fi
 }
+
+# cron_privacy_deploy_guard  部署 docs/ 前的隱私斷路器(2026-07-18,robots /output/ 開放收錄後
+# 唯一的 crawl 屏障已拆)。wrangler pages deploy 上傳磁碟現狀(.gitignore 只擋 git 不擋部署),
+# docs/output/ 出現任何 *_personal_* 檔(訂閱者持股個資)= 部署即公開可爬,必須擋死本輪部署
+# 並告警,絕不靜默跳過。所有執行 `wrangler pages deploy docs` 的 runner 在部署前呼叫:
+#   cron_privacy_deploy_guard || exit 1
+# find 涵蓋子目錄與無副檔名變體(比單層 glob 寬);目錄不存在=乾淨放行。
+cron_privacy_deploy_guard() {
+  local _found
+  _found=$(find "$CRON_LIB_REPO/docs/output" -name '*_personal_*' -print -quit 2>/dev/null)
+  if [ -n "$_found" ]; then
+    MD_REPO="$CRON_LIB_REPO" "${PY:-$CRON_LIB_REPO/.venv/bin/python}" \
+      "$HOME/.marketdaily-fallback/notify_admin.py" \
+      "🔴 [winrig] docs/output/ 發現 *_personal_* 檔(訂閱者隱私),已擋死本輪 docs 部署,需人工清除:$_found" >/dev/null 2>&1 || true
+    echo "[cron_privacy_deploy_guard] ABORT: personal file in docs/output/: $_found"
+    return 1
+  fi
+  return 0
+}
