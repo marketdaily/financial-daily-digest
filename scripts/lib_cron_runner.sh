@@ -158,11 +158,148 @@ cron_cooldown_ok() {
 # `git reset --hard` 這類整樹操作的腳本在動手前守門用 — 保證流程走到那一步時，
 # 樹在腳本自己開始改動之前就是乾淨的，後續的 revert 只會碰到腳本自己造成的變動，
 # 不會誤傷別人的 WIP。呼叫點必須在任何 git 操作之前。
+# ⚠️ 2026-07-18 起新 runner 優先用 cron_abort_if_dirty_scoped(見下)——blanket 版把
+# 「別視窗任何無關檔髒」也當讓路條件,實測讓 site_scan cron 連續 13 天餓死(intel ledger
+# 檔每日髒 ~13h,daily-cycle 髒齡又低於 dirty_tree_watch 20h 門檻=零告警)。本函式保留
+# 給「後續操作真的是整樹級、無法宣告 scope」的腳本。
 cron_abort_if_dirty() {
   if ( cd "$CRON_LIB_REPO" && git status --porcelain 2>/dev/null | grep -qv '^??' ); then
     echo "[cron_abort_if_dirty] repo 有未 commit 修改(可能是別視窗 WIP)，本輪略過保護"
     exit 0
   fi
+}
+
+# cron_dirty_tracked_files  列出 tracked 且有未 commit 修改(不含 untracked ??)的路徑,
+# 一行一檔。porcelain -z --no-renames:NUL 分隔避免特殊字元被 C-style quoting 包裹,
+# rename 退化為 D+A 單 token(雙 token 格式曾在 dirty_tree_watch 吞掉下一筆真髒檔,
+# 見該檔 docstring)。已知限制:檔名含換行會破壞行輸出(病態案例,tracked 檔無此慣例)。
+cron_dirty_tracked_files() {
+  ( cd "$CRON_LIB_REPO" || exit 0
+    git status --porcelain -z --no-renames 2>/dev/null |
+      while IFS= read -r -d '' entry; do
+        [ "${#entry}" -lt 4 ] && continue
+        [ "${entry:0:2}" = "??" ] && continue
+        printf '%s\n' "${entry:3}"
+      done )
+}
+
+# _cron_tw_today  台灣日期(YYYY-MM-DD)。CRON_FAKE_TODAY 僅供自測注入,生產不設。
+_cron_tw_today() { echo "${CRON_FAKE_TODAY:-$(TZ=Asia/Taipei date +%F)}"; }
+
+# 餓死 streak 帳:state 檔一行「streak last_date alerted」。連續(以「不同日期的讓路
+# 次數」計,對週頻 runner 也成立)達門檻(預設 2)推 admin 一次(alerted 旗標防重複),
+# 成功通過守門即清檔。告警管道可用 CRON_NOTIFY_CMD 覆寫(自測 stub 用)。
+_cron_dirty_starve_state_dir() { echo "${CRON_STARVE_STATE_DIR:-$HOME/.marketdaily-fallback/state}"; }
+
+_cron_dirty_starve_mark() {
+  local name="$1" files="$2" today streak last alerted dir f
+  today=$(_cron_tw_today)
+  dir=$(_cron_dirty_starve_state_dir); mkdir -p "$dir"
+  f="$dir/dirty_starve_${name}"
+  read -r streak last alerted 2>/dev/null < "$f" || { streak=0; last=""; alerted=0; }
+  case "$streak" in (''|*[!0-9]*) streak=0 ;; esac
+  [ "$last" = "$today" ] && return 0   # 同日多 tick 只計一次
+  streak=$((streak + 1)); [ "$streak" -eq 1 ] && alerted=0
+  local threshold="${CRON_STARVE_ALERT_AFTER:-2}"
+  if [ "$streak" -ge "$threshold" ] && [ "${alerted:-0}" != 1 ]; then
+    local msg="🟡 [winrig] cron『${name}』已連續 ${streak} 個班次因 scope 內未 commit 修改讓路(檔:${files})。若是長壽 WIP 請儘快 commit,若是孤兒 cron 輸出檔=缺 persist owner。"
+    if [ -n "${CRON_NOTIFY_CMD:-}" ]; then
+      $CRON_NOTIFY_CMD "$msg" >/dev/null 2>&1 || true
+    else
+      MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" \
+        "$HOME/.marketdaily-fallback/notify_admin.py" "$msg" >/dev/null 2>&1 || true
+    fi
+    alerted=1
+  fi
+  echo "$streak $today $alerted" > "$f"
+}
+
+_cron_dirty_starve_clear() {
+  rm -f "$(_cron_dirty_starve_state_dir)/dirty_starve_${1}" 2>/dev/null || true
+}
+
+# cron_abort_if_dirty_scoped NAME SCOPE...  path-scoped 版守門(2026-07-18,根治
+# 「別視窗無關 WIP 餓死整條 cron 生態鏈」)。dirty tracked 檔 ∩ SCOPE ≠ ∅ 才讓路
+# (exit 0+餓死 streak 記帳);scope 外髒檔只記 log 不擋(判準抄 git_safe_push 的
+# overlap 檢查)。SCOPE 是目錄(前綴按路徑段匹配,docs 不會誤吃 docs2/)或單檔精確匹配。
+# ⚠️ 使用前提(不變量,違反=死線 3b 風險):呼叫端後續【所有】寫檔/git add/commit/
+# revert/deploy 都只碰 SCOPE 內路徑;wrangler pages deploy docs 上傳磁碟現狀,所以
+# 有 deploy 的 runner SCOPE 必含 docs/。做不到就用 blanket 版 cron_abort_if_dirty。
+# 呼叫點放在 cron_daily_lock【之前】:讓路不消耗當日鎖,同日樹變乾淨後續 tick 可重試。
+cron_abort_if_dirty_scoped() {
+  local name="$1"; shift
+  local f s hit blocked="" ignored=""
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    hit=0
+    for s in "$@"; do
+      s="${s%/}"
+      if [ "$f" = "$s" ] || [[ "$f" == "$s"/* ]]; then hit=1; break; fi
+    done
+    if [ "$hit" = 1 ]; then blocked="${blocked}${f} "; else ignored="${ignored}${f} "; fi
+  done < <(cron_dirty_tracked_files)
+  if [ -n "$blocked" ]; then
+    echo "[cron_abort_if_dirty_scoped:$name] scope 內有未 commit 修改(可能是別視窗 WIP),本輪讓路: ${blocked}"
+    _cron_dirty_starve_mark "$name" "$blocked"
+    exit 0
+  fi
+  [ -n "$ignored" ] && echo "[cron_abort_if_dirty_scoped:$name] scope 外髒檔(與本 runner 無關,續行): ${ignored}"
+  _cron_dirty_starve_clear "$name"
+}
+
+# ── site_scan fix 相位專用:WIP snapshot / targeted revert(取代整樹 git checkout -- .)──
+# cron_wip_snapshot SNAP_DIR  把「現在」的 dirty tracked 檔逐一拷貝到 SNAP_DIR(保留相對
+# 路徑),並寫 manifest(SNAP_DIR/.manifest,一行一檔)。之後 cron_wip_restore_tampered 用
+# manifest+bytes 判斷這批 pre-existing WIP 檔有沒有被中途動到,有就還原 snapshot 原 bytes
+# (=忠實還原別視窗 WIP 當時的內容,不是還原 HEAD)。
+cron_wip_snapshot() {
+  local snap="$1" f
+  rm -rf "$snap"; mkdir -p "$snap"
+  : > "$snap/.manifest"
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    printf '%s\n' "$f" >> "$snap/.manifest"
+    if [ -e "$CRON_LIB_REPO/$f" ]; then
+      mkdir -p "$snap/files/$(dirname "$f")"
+      cp -p "$CRON_LIB_REPO/$f" "$snap/files/$f"
+    fi
+  done < <(cron_dirty_tracked_files)
+}
+
+# cron_wip_restore_tampered SNAP_DIR  對 manifest 裡每個檔:bytes 與 snapshot 不同(或被
+# 刪)→ 還原 snapshot;原本就不存在磁碟(D 狀態)而現在被重建 → 刪回。stdout 印被動過的
+# 檔清單(空=無人動)。
+cron_wip_restore_tampered() {
+  local snap="$1" f tampered=""
+  [ -f "$snap/.manifest" ] || return 0
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    if [ -f "$snap/files/$f" ]; then
+      if ! cmp -s "$snap/files/$f" "$CRON_LIB_REPO/$f" 2>/dev/null; then
+        mkdir -p "$CRON_LIB_REPO/$(dirname "$f")"
+        cp -p "$snap/files/$f" "$CRON_LIB_REPO/$f"
+        tampered="${tampered}${f} "
+      fi
+    else
+      # snapshot 時是「已刪除」狀態:現在若被重建,刪回維持原 WIP 狀態
+      if [ -e "$CRON_LIB_REPO/$f" ]; then
+        rm -f "$CRON_LIB_REPO/$f"
+        tampered="${tampered}${f} "
+      fi
+    fi
+  done < "$snap/.manifest"
+  [ -n "$tampered" ] && echo "$tampered"
+  return 0
+}
+
+# cron_revert_files FILE...  逐檔 git checkout(還原到 index),絕不整樹。給「本輪自己
+# 新造成的變動」用;pre-existing WIP 檔走 cron_wip_restore_tampered,不可混用。
+cron_revert_files() {
+  local f
+  for f in "$@"; do
+    [ -n "$f" ] || continue
+    git -C "$CRON_LIB_REPO" checkout -- "$f" 2>/dev/null || true
+  done
 }
 
 # cron_privacy_deploy_guard  部署 docs/ 前的隱私斷路器(2026-07-18,robots /output/ 開放收錄後

@@ -78,8 +78,9 @@ def main():
         return 0
 
     detail = "、".join(f"{p}({h:.0f}h)" for p, h in sorted(stale.items()))
-    print(f"git tracked 檔持續髒逾{THRESHOLD_H:g}h:{detail}——期間 cron_abort_if_dirty "
-          f"守門 runner 全數略過中;若是人工 WIP 請知悉,若是 cron 輸出檔=缺 persist owner"
+    print(f"git tracked 檔持續髒逾{THRESHOLD_H:g}h:{detail}——期間 cron_abort_if_dirty(blanket)"
+          f"與 scope 涵蓋這些檔的 scoped 守門 runner 略過中;若是人工 WIP 請知悉,"
+          f"若是 cron 輸出檔=缺 persist owner"
           f"(writer 的 runner 用 cron_git_persist 收自己的輸出,參考 valuation_ledger_runner)")
     return 2
 
