@@ -133,6 +133,9 @@ for f in docs/output/digest_*.html; do
   git add "$f"
 done
 git add docs/output/manifest.json 2>/dev/null
+# analyzer.py 每班寫入的報價快取——digest runner 是唯一 persist owner;沒人收會 tracked-dirty
+# 卡死全部 cron_abort_if_dirty 守門 runner(2026-07-17 孤兒檔餓死 cron 生態鏈事故;winrig run.sh 同步修)
+git add scripts/buy_signal_log.json 2>/dev/null
 python3 scripts/gen_sitemap.py && git add docs/sitemap.xml || echo "sitemap gen skipped"
 if git diff --cached --quiet; then
   echo "no new public digest to commit"
