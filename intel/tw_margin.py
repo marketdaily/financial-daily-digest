@@ -83,22 +83,44 @@ def classify(margin_bal, margin_5d_ago, short_bal, margin_limit, price_now, pric
             "margin_chg_5d": round(margin_chg, 1), "short_ratio": round(short_ratio, 1), "util": round(util, 1)}
 
 
-def ca_conversion_suspect(prices, date_lo, date_hi):
+def _limit_steps(rows, key):
+    """單日限額變化率序列。限額=股數基準(25% 流通股),分割/減資/配股發放在名目日
+    精確跳因子(零噪音階梯,4967 名目 10-07 跳 ×0.7 而餘額 10-11 才換算);現金除息
+    完全不動它(3006/2451 除息窗實測平坦)。非數值/非正值列跳過。"""
+    vals = [r.get(key) for r in rows]
+    vals = [v for v in vals if isinstance(v, (int, float)) and v > 0]
+    return [b / a - 1.0 for a, b in zip(vals, vals[1:])]
+
+
+def ca_conversion_suspect(prices, date_lo, date_hi, limit_rows=None, limit_key=None):
     """分割/減資在生效日把股數餘額原地換算(5536 1:2 分割日融資餘額×2、4967 減資
-    ×0.7,2026-07-17 稽核實測),跨進 5 日窗時變化率是機械跳升非籌碼行為。台股單一
-    交易日漲跌停 ±10%,相鄰收盤 |變化|>10.5% 只可能是公司行動或資料錯誤,以此偵測。
-    配股不用擋:餘額在除權日與發放日皆不跳(同稽核三重實證);但大配股除權日價格
-    缺口也會 >10.5% → 寧可誤壓(少發一則假斷頭/追高)不漏放。價格缺漏時不壓(fail-open,
-    分割/減資年僅 1-2 次,與價格缺漏日重疊機率可忽略)。"""
+    ×0.7,2026-07-17 稽核實測),跨進 5 日窗時變化率是機械跳升非籌碼行為。
+    v2(驗證者第12案):相鄰收盤 |變化|>10.5%(漲跌停物理上限)只是初篩,單獨不足——
+    大額現金除息(3006/2451 2022-07 歷史重放 2/4 觸發=誤壓有機斷頭訊號)、興櫃/新上市
+    無漲跌幅時段(1623)、價格缺洞使比較跨多日,皆會產生 >10.5% 假缺口。
+    故加限額錨定:①價格缺口 且 限額單日|跳變|>5% → 壓;②限額單日下降>5%(減資/註銷
+    專屬簽名,配股/增資只會升)→ 價格缺口 <10.5% 的小減資(factor>0.905 舊盲區)也壓;
+    ③限額資料不可用(<2 有效列)→ 退回純價格缺口判定(寧可誤壓不漏放)。
+    配股不誤壓:餘額除權/發放日皆不跳(三重實證),發放日限額升但無價格缺口配套
+    (大配股除權缺口+發放日限額升同窗=既知接受的誤壓類)。價格全缺時不壓(fail-open);
+    非數值 close 列跳過(髒資料不炸巡邏)。"""
+    gap = False
     prev = None
     for p in prices:
         d, c = p.get("date"), p.get("close")
-        if not d or not c or d > date_hi:
+        if not d or not isinstance(c, (int, float)) or c <= 0 or d > date_hi:
             continue
         if prev is not None and d > date_lo and abs(c / prev - 1.0) > 0.105:
-            return True
+            gap = True
         prev = c
-    return False
+    if limit_rows is None:
+        return gap
+    steps = _limit_steps(limit_rows, limit_key)
+    if not steps:
+        return gap
+    if any(s < -0.05 for s in steps):
+        return True
+    return gap and any(abs(s) > 0.05 for s in steps)
 
 
 def margin(code, today=None):
@@ -140,9 +162,16 @@ def margin(code, today=None):
     }
     out.update(classify(margin_bal, margin_5d_ago, short_bal, margin_limit, price_now, price_5d_ago))
     if out.get("rule") in ("margin_plunge", "margin_surge") and ca_conversion_suspect(
-            prices, date_5d_ago or "", last["date"]):
+            prices, date_5d_ago or "", last["date"],
+            limit_rows=rows, limit_key="MarginPurchaseLimit"):
         out.update({"level": "plain", "rule": "ca_conversion_guard",
-                    "signal": "疑似分割/減資使融資餘額換算跳動(單日價格變化超出漲跌停上限),5日變化率失真不判讀"})
+                    "signal": "疑似分割/減資使融資餘額換算跳動(價格缺口+限額跳變佐證),5日變化率失真不判讀"})
+    elif out.get("rule") == "margin_util_high" and any(
+            abs(s) > 0.05 for s in _limit_steps(rows[-6:], "MarginPurchaseLimit")):
+        # 名目日限額已換算而餘額未換算的錯位窗(4967 實測差 4 交易日):util 分母失真,
+        # 減資方向會 ×(1/factor) 灌水假觸發 → 壓;分割方向只遮蔽(同樣不可判讀)
+        out.update({"level": "plain", "rule": "ca_conversion_guard",
+                    "signal": "限額單日跳變(股數基準變動),融資使用率分母換算錯位失真不判讀"})
 
     cache = {k: v for k, v in cache.items() if k.endswith(today.isoformat())}
     cache[ck] = out

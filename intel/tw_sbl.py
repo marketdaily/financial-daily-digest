@@ -83,22 +83,43 @@ def classify(sbl_bal, sbl_5d_ago, price_now=None, price_5d_ago=None):
     return {"level": "plain", "signal": "借券賣出中性", "rule": "neutral", "sbl_chg_5d": round(sbl_chg, 1)}
 
 
-def ca_conversion_suspect(prices, date_lo, date_hi):
+def _limit_steps(rows, key):
+    """單日限額變化率序列。限額=股數基準(25% 流通股),分割/減資/配股發放在名目日
+    精確跳因子(零噪音階梯,4967 名目 10-07 跳 ×0.7 而餘額 10-11 才換算);現金除息
+    完全不動它(3006/2451 除息窗實測平坦)。非數值/非正值列跳過。"""
+    vals = [r.get(key) for r in rows]
+    vals = [v for v in vals if isinstance(v, (int, float)) and v > 0]
+    return [b / a - 1.0 for a, b in zip(vals, vals[1:])]
+
+
+def ca_conversion_suspect(prices, date_lo, date_hi, limit_rows=None, limit_key=None):
     """分割/減資在生效日把股數餘額原地換算(5536 1:2 分割日融資餘額×2、4967 減資
-    ×0.7,2026-07-17 稽核實測),跨進 5 日窗時變化率是機械跳升非籌碼行為。台股單一
-    交易日漲跌停 ±10%,相鄰收盤 |變化|>10.5% 只可能是公司行動或資料錯誤,以此偵測。
-    配股不用擋:餘額在除權日與發放日皆不跳(同稽核三重實證);但大配股除權日價格
-    缺口也會 >10.5% → 寧可誤壓(少發一則假放空/回補)不漏放。價格缺漏時不壓(fail-open,
-    分割/減資年僅 1-2 次,與價格缺漏日重疊機率可忽略)。"""
+    ×0.7,2026-07-17 稽核實測),跨進 5 日窗時變化率是機械跳升非籌碼行為。
+    v2(驗證者第12案):偵測=相鄰收盤 |變化|>10.5%(漲跌停物理上限)+可選限額錨定
+    (見 tw_margin 同名函式;函式體兩檔鏡像)。⚠️ SBL 呼叫端維持純價格判定——
+    TaiwanDailyShortSaleBalances 無股數基準限額欄(SBLShortSalesQuota 逐日波動 10%+
+    是常態,見模組 docstring 坑注,不可當錨定),故已知誤壓類照舊存在且方向保守
+    (少發一則假放空/回補):大額現金除息缺口、興櫃/新上市無漲跌幅時段(1623 官方數據
+    連兩日 ±13-15%)、價格缺洞使比較跨多日;2369 筆歷史事件重放中 SBL 側零實現誤壓。
+    配股不用擋:餘額在除權日與發放日皆不跳(同稽核三重實證)。價格全缺時不壓
+    (fail-open);非數值 close 列跳過(髒資料不炸巡邏)。"""
+    gap = False
     prev = None
     for p in prices:
         d, c = p.get("date"), p.get("close")
-        if not d or not c or d > date_hi:
+        if not d or not isinstance(c, (int, float)) or c <= 0 or d > date_hi:
             continue
         if prev is not None and d > date_lo and abs(c / prev - 1.0) > 0.105:
-            return True
+            gap = True
         prev = c
-    return False
+    if limit_rows is None:
+        return gap
+    steps = _limit_steps(limit_rows, limit_key)
+    if not steps:
+        return gap
+    if any(s < -0.05 for s in steps):
+        return True
+    return gap and any(abs(s) > 0.05 for s in steps)
 
 
 def sbl(code, today=None):
