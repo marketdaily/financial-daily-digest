@@ -276,6 +276,15 @@ cron_untracked_files() {
 # 必須:untracked 版在前、dirty 版在後(否則 streak 會被中途清掉)。
 cron_abort_if_untracked_scoped() {
   local name="$1"; shift
+  if [ "$#" -eq 0 ]; then   # 忘了宣告 scope=fail-safe 退回 blanket(任何 untracked 即讓路),絕不因參數缺失變成永遠放行
+    echo "[cron_abort_if_untracked_scoped:$name] 未宣告 scope,fail-safe 退回 blanket 守門"
+    if [ -n "$(cron_untracked_files | head -1)" ]; then
+      echo "[cron_abort_if_untracked_scoped:$name] repo 有 untracked 檔,本輪讓路"
+      _cron_dirty_starve_mark "$name" "(blanket-untracked)"
+      exit 0
+    fi
+    return 0
+  fi
   local f s hit blocked=""
   while IFS= read -r f; do
     [ -n "$f" ] || continue
@@ -325,6 +334,10 @@ cron_fix_wt_apply() {
     [ -n "$f" ] || continue
     if [ -n "$scope" ]; then
       case "$f" in ("$scope"/*|"$scope") ;; (*) continue ;; esac
+    fi
+    if [ -L "$wt/$f" ]; then   # symlink 不鏡回:cp -p 解參照會把 scope 外(含 .env 類)內容寫進主樹 scope 內
+      echo "[cron_fix_wt_apply] symlink 拒鏡回: $f" >&2
+      continue
     fi
     if [ -e "$wt/$f" ]; then
       mkdir -p "$CRON_LIB_REPO/$(dirname "$f")"
