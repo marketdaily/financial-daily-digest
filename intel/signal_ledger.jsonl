@@ -258,3 +258,92 @@
 {"date": "2026-07-13", "code": "6241", "source": "leadflow", "level": "red", "signal": "鑫永洋(6241) 無消息近漲停+9.8%(量能4.7×,5日+12.3%),疑資訊先行資金|外資+投信近3日僅+78張,法人未同步=隱形買盤", "price_at_signal": 17.3}
 {"date": "2026-07-13", "code": "4513", "source": "leadflow", "level": "red", "signal": "福裕(4513) 無消息近漲停+9.8%(量能13.4×,5日+11.1%),疑資訊先行資金|外資+投信近3日僅+25張,法人未同步=隱形買盤", "price_at_signal": 18.5}
 {"date": "2026-07-13", "code": "8059", "source": "leadflow", "level": "yellow", "signal": "凱碩(8059) 無消息近漲停+9.8%(量能2.3×,5日+4.8%),疑資訊先行資金", "price_at_signal": 17.4}
+{"date": "2026-07-14", "code": "1623", "source": "sbl", "level": "red", "signal": "大東電(1623):機構借券賣出5日遽增900.0%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": 234.5}
+{"date": "2026-07-14", "code": "2303", "source": "investor_conf", "level": "yellow", "signal": "聯電(2303):法說會15天後召開", "price_at_signal": 151.0}
+{"date": "2026-07-14", "code": "2486", "source": "mops_news", "level": "red", "signal": "一詮(2486) 重訊[2026-07-13]:公告本公司國內第七次無擔保轉換公司債之委託代收債款 及存儲專戶行庫", "price_at_signal": 234.0}
+{"date": "2026-07-14", "code": "3128", "source": "revenue", "level": "yellow", "signal": "昇銳(3128):2026/06 營收公告、YoY -17.0%、MoM -5.5%", "price_at_signal": 22.8}
+{"date": "2026-07-14", "code": "4967", "source": "institutional", "level": "yellow", "signal": "十銓(4967):法人 20 日淨賣超 -2,235 張(未成連續型態)", "price_at_signal": 224.5}
+{"date": "2026-07-14", "code": "5386", "source": "margin", "level": "red", "signal": "青雲(5386):融資5日驟減-17.3%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": 347.0}
+{"date": "2026-07-14", "code": "5386", "source": "sbl", "level": "yellow", "signal": "青雲(5386):機構借券賣出5日遽減-22.8%(回補潮,空頭力道減弱)", "price_at_signal": 347.0}
+{"date": "2026-07-14", "code": "6134", "source": "institutional", "level": "red", "signal": "萬旭(6134):外資連 5 日賣超(5日淨賣 -829 張)", "price_at_signal": 28.5}
+{"date": "2026-07-14", "code": "6134", "source": "mops_news", "level": "red", "signal": "萬旭(6134) 重訊[2026-07-13]:公告本公司國內第三次有擔保轉換公司債(萬旭三)遇颱風影響， 調整得標人得標價款及得標手續費繳存往來銀行截止日作業及原掛 ", "price_at_signal": 28.5}
+{"date": "2026-07-14", "code": "6187", "source": "institutional", "level": "red", "signal": "萬潤(6187):投信連 3 日買超(認養訊號,20日淨買 -1,188 張)", "price_at_signal": 985.0}
+{"date": "2026-07-14", "code": "6683", "source": "institutional", "level": "red", "signal": "雍智(6683):投信連 3 日買超(認養訊號,20日淨買 +483 張)", "price_at_signal": 1510.0}
+{"date": "2026-07-14", "code": "6693", "source": "revenue", "level": "red", "signal": "廣閎科(6693):2026/06 營收公告、YoY +107.0%(強勁)、MoM +9.6%", "price_at_signal": 218.5}
+{"date": "2026-07-14", "code": "7631", "source": "institutional", "level": "red", "signal": "聚賢研發-創(7631):外資連 5 日買超(5日淨買 +86 張)", "price_at_signal": 148.0}
+{"date": "2026-07-14", "code": "8096", "source": "mops_news", "level": "red", "signal": "擎亞(8096) 重訊[2026-07-13]:公告本公司國內第三次無擔保轉換公司債收足債款", "price_at_signal": 157.5}
+{"date": "2026-07-14", "code": "8112", "source": "institutional", "level": "yellow", "signal": "至上(8112):法人 20 日淨賣超 -29,085 張(未成連續型態)", "price_at_signal": 85.4}
+{"date": "2026-07-14", "code": "8112", "source": "revenue", "level": "red", "signal": "至上(8112):2026/06 營收公告、YoY +231.2%(強勁)、MoM +14.3%", "price_at_signal": 85.4}
+{"date": "2026-07-14", "code": "4190", "source": "mops_news", "level": "red", "signal": "佐登-KY(4190) 重訊[2026-07-13]:公告本公司中華民國境內第三次有擔保轉換公司債(佐登三) 因颱風停止營業致賣回權行使順延事宜", "price_at_signal": 25.25}
+{"date": "2026-07-14", "code": "6584", "source": "mops_news", "level": "red", "signal": "南俊國際(6584) 重訊[2026-07-13]:本公司可轉換公司債南俊國際三(代號：65843)近期達公布 注意交易資訊標準，故公告相關訊息，以利投資人區別瞭解", "price_at_signal": 671.0}
+{"date": "2026-07-14", "code": "1336", "source": "leadflow", "level": "red", "signal": "台翰(1336) 無消息近漲停+10.0%(量能14.0×,5日+10.0%),疑資訊先行資金|外資+投信近3日僅+287張,法人未同步=隱形買盤", "price_at_signal": 15.95}
+{"date": "2026-07-14", "code": "3685", "source": "leadflow", "level": "red", "signal": "元創精密(3685) 無消息近漲停+10.0%(連2根,5日+21.4%),疑資訊先行資金|外資+投信近3日+638張", "price_at_signal": 36.85}
+{"date": "2026-07-14", "code": "4139", "source": "leadflow", "level": "red", "signal": "馬光-KY(4139) 無消息近漲停+10.0%(量能8.9×,5日+15.6%),疑資訊先行資金|外資+投信近3日僅+9張,法人未同步=隱形買盤", "price_at_signal": 28.6}
+{"date": "2026-07-14", "code": "6130", "source": "leadflow", "level": "red", "signal": "上亞科技(6130) 無消息近漲停+10.0%(量能18.1×,5日+17.0%),疑資訊先行資金|外資+投信近3日僅-74張,法人未同步=隱形買盤", "price_at_signal": 28.6}
+{"date": "2026-07-14", "code": "3532", "source": "leadflow", "level": "red", "signal": "台勝科(3532) 無消息近漲停+9.6%(連2根,5日+33.2%),疑資訊先行資金|外資+投信近3日+4329張", "price_at_signal": 510.0}
+{"date": "2026-07-14", "code": "6907", "source": "leadflow", "level": "red", "signal": "雅特力-KY(6907) 無消息近漲停+9.9%(連2根,5日+12.8%),疑資訊先行資金|外資+投信近3日僅-1170張,法人未同步=隱形買盤", "price_at_signal": 211.5}
+{"date": "2026-07-14", "code": "1810", "source": "leadflow", "level": "red", "signal": "和成(1810) 無消息近漲停+9.9%(連2根,5日+19.5%),疑資訊先行資金|外資+投信近3日+2704張", "price_at_signal": 28.8}
+{"date": "2026-07-14", "code": "6829", "source": "leadflow", "level": "red", "signal": "千附精密(6829) 無消息近漲停+9.9%(量能7.1×,5日+23.0%),疑資訊先行資金|外資+投信近3日+532張", "price_at_signal": 256.5}
+{"date": "2026-07-14", "code": "8421", "source": "leadflow", "level": "red", "signal": "旭源(8421) 無消息近漲停+9.8%(連2根,5日+18.2%),疑資訊先行資金|外資+投信近3日僅+161張,法人未同步=隱形買盤", "price_at_signal": 16.85}
+{"date": "2026-07-14", "code": "7714", "source": "leadflow", "level": "red", "signal": "創泓科技(7714) 無消息近漲停+9.5%(連3根,5日+41.3%),疑資訊先行資金|外資+投信近3日僅-44張,法人未同步=隱形買盤", "price_at_signal": 202.0}
+{"date": "2026-07-14", "code": "5483", "source": "leadflow", "level": "red", "signal": "中美晶(5483) 無消息近漲停+9.3%(連2根,5日+27.5%),疑資訊先行資金|外資+投信近3日+13612張", "price_at_signal": 253.0}
+{"date": "2026-07-15", "code": "1623", "source": "mops_news", "level": "red", "signal": "大東電(1623) 重訊[2026-07-14]:公告本公司國內第一次無擔保轉換公司債收足債款", "price_at_signal": 235.0}
+{"date": "2026-07-15", "code": "2109", "source": "institutional", "level": "yellow", "signal": "華豐(2109):法人 20 日淨買超 +275 張(未成連續型態)", "price_at_signal": 14.75}
+{"date": "2026-07-15", "code": "2451", "source": "sbl", "level": "red", "signal": "創見(2451):機構借券賣出5日遽增27.2%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": 253.0}
+{"date": "2026-07-15", "code": "2464", "source": "revenue", "level": "red", "signal": "盟立(2464):2026/06 營收公告、YoY +43.1%(強勁)、MoM +15.8%", "price_at_signal": 159.5}
+{"date": "2026-07-15", "code": "2646", "source": "revenue", "level": "red", "signal": "星宇航空(2646):2026/06 營收公告、YoY +40.8%(強勁)、MoM +9.5%", "price_at_signal": 21.3}
+{"date": "2026-07-15", "code": "2762", "source": "institutional", "level": "yellow", "signal": "世界健身-KY(2762):法人 20 日淨賣超 -511 張(未成連續型態)", "price_at_signal": 84.8}
+{"date": "2026-07-15", "code": "3583", "source": "sbl", "level": "yellow", "signal": "辛耘(3583):機構借券賣出5日遽減-23.3%(回補潮,空頭力道減弱)", "price_at_signal": 842.0}
+{"date": "2026-07-15", "code": "4764", "source": "leadflow", "level": "red", "signal": "雙鍵(4764) 無消息近漲停+10.0%(連2根,5日+15.3%),疑資訊先行資金|外資+投信近3日+955張", "price_at_signal": 364.5}
+{"date": "2026-07-15", "code": "5291", "source": "sbl", "level": "yellow", "signal": "邑昇(5291):機構借券賣出5日增15.7%(溫和加碼放空)", "price_at_signal": 53.0}
+{"date": "2026-07-15", "code": "6187", "source": "leadflow", "level": "red", "signal": "萬潤(6187) 無消息近漲停+9.6%(連2根,5日+13.1%),疑資訊先行資金|外資+投信近3日僅-19張,法人未同步=隱形買盤", "price_at_signal": 1080.0}
+{"date": "2026-07-15", "code": "6869", "source": "institutional", "level": "yellow", "signal": "雲豹能源(6869):法人 20 日淨買超 +286 張(未成連續型態)", "price_at_signal": 69.8}
+{"date": "2026-07-15", "code": "6869", "source": "revenue", "level": "red", "signal": "雲豹能源(6869):2026/06 營收公告、YoY +70.4%(強勁)、MoM +38.2%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": 69.8}
+{"date": "2026-07-15", "code": "6903", "source": "sbl", "level": "yellow", "signal": "巨漢(6903):機構借券賣出5日增14.1%(溫和加碼放空)", "price_at_signal": 406.0}
+{"date": "2026-07-15", "code": "9958", "source": "institutional", "level": "yellow", "signal": "世紀鋼(9958):法人 20 日淨賣超 -2,074 張(未成連續型態)", "price_at_signal": 119.0}
+{"date": "2026-07-15", "code": "3086", "source": "leadflow", "level": "yellow", "signal": "華義*(3086) 無消息近漲停+10.0%(量能1.5×,5日+1.1%),疑資訊先行資金", "price_at_signal": 31.9}
+{"date": "2026-07-15", "code": "3430", "source": "leadflow", "level": "yellow", "signal": "奇鈦科(3430) 無消息近漲停+10.0%(量能2.0×,5日+10.4%),疑資訊先行資金", "price_at_signal": 143.0}
+{"date": "2026-07-15", "code": "4534", "source": "leadflow", "level": "red", "signal": "慶騰(4534) 無消息近漲停+10.0%(量能4.1×,5日+17.0%),疑資訊先行資金|外資+投信近3日+903張", "price_at_signal": 38.5}
+{"date": "2026-07-15", "code": "6207", "source": "leadflow", "level": "red", "signal": "雷科(6207) 無消息近漲停+10.0%(連2根,5日+13.4%),疑資訊先行資金|外資+投信近3日僅-33張,法人未同步=隱形買盤", "price_at_signal": 148.5}
+{"date": "2026-07-15", "code": "8932", "source": "leadflow", "level": "yellow", "signal": "智通*(8932) 無消息近漲停+10.0%(量能2.5×,5日+5.9%),疑資訊先行資金", "price_at_signal": 126.5}
+{"date": "2026-07-15", "code": "6243", "source": "leadflow", "level": "red", "signal": "迅杰(6243) 無消息近漲停+10.0%(連2根,5日+9.0%),疑資訊先行資金|外資+投信近3日僅-224張,法人未同步=隱形買盤", "price_at_signal": 43.6}
+{"date": "2026-07-15", "code": "3374", "source": "leadflow", "level": "red", "signal": "精材(3374) 無消息近漲停+10.0%(連2根,5日+23.9%),疑資訊先行資金|外資+投信近3日僅-4268張,法人未同步=隱形買盤", "price_at_signal": 402.0}
+{"date": "2026-07-15", "code": "3288", "source": "leadflow", "level": "red", "signal": "點晶(3288) 無消息近漲停+10.0%(連2根,5日+18.5%),疑資訊先行資金|外資+投信近3日僅+5張,法人未同步=隱形買盤", "price_at_signal": 22.05}
+{"date": "2026-07-15", "code": "2719", "source": "leadflow", "level": "red", "signal": "燦星旅(2719) 無消息近漲停+10.0%(量能9.3×,5日-1.0%),疑資訊先行資金|外資+投信近3日僅-2張,法人未同步=隱形買盤", "price_at_signal": 23.75}
+{"date": "2026-07-15", "code": "6147", "source": "leadflow", "level": "red", "signal": "頎邦(6147) 無消息近漲停+9.9%(連2根,5日+2.5%),疑資訊先行資金|外資+投信近3日+11559張", "price_at_signal": 204.5}
+{"date": "2026-07-15", "code": "6680", "source": "leadflow", "level": "red", "signal": "鑫創電子(6680) 無消息近漲停+9.9%(量能5.8×,5日+8.5%),疑資訊先行資金|外資+投信近3日僅-2張,法人未同步=隱形買盤", "price_at_signal": 54.7}
+{"date": "2026-07-15", "code": "7734", "source": "leadflow", "level": "red", "signal": "印能科技(7734) 無消息近漲停+9.9%(量能3.7×,5日+8.9%),疑資訊先行資金|外資+投信近3日僅+182張,法人未同步=隱形買盤", "price_at_signal": 3045.0}
+{"date": "2026-07-15", "code": "6967", "source": "leadflow", "level": "red", "signal": "汎瑋材料(6967) 無消息近漲停+9.9%(連2根,5日+13.2%),疑資訊先行資金|外資+投信近3日僅+58張,法人未同步=隱形買盤", "price_at_signal": 78.8}
+{"date": "2026-07-15", "code": "4127", "source": "leadflow", "level": "yellow", "signal": "天良(4127) 無消息近漲停+9.9%(量能1.9×,5日+2.1%),疑資訊先行資金", "price_at_signal": 81.2}
+{"date": "2026-07-15", "code": "5351", "source": "leadflow", "level": "red", "signal": "鈺創(5351) 無消息近漲停+9.8%(連2根,5日+17.0%),疑資訊先行資金|外資+投信近3日+17972張", "price_at_signal": 104.5}
+{"date": "2026-07-15", "code": "4707", "source": "leadflow", "level": "yellow", "signal": "磐亞(4707) 無消息近漲停+9.2%(一價鎖死,5日+10.5%),疑資訊先行資金", "price_at_signal": 41.95}
+{"date": "2026-07-15", "code": "3303", "source": "leadflow", "level": "red", "signal": "岱稜(3303) 無消息近漲停+9.2%(量能4.3×,5日+12.6%),疑資訊先行資金|外資+投信近3日+842張", "price_at_signal": 62.7}
+{"date": "2026-07-15", "code": "3551", "source": "leadflow", "level": "red", "signal": "世禾(3551) 無消息近漲停+9.2%(量能8.0×,5日+11.4%),疑資訊先行資金|外資+投信近3日+1150張", "price_at_signal": 225.0}
+{"date": "2026-07-15", "code": "4911", "source": "leadflow", "level": "red", "signal": "德英(4911) 無消息近漲停+8.7%(量能8.0×,5日+4.5%),疑資訊先行資金|外資+投信近3日僅-17張,法人未同步=隱形買盤", "price_at_signal": 35.1}
+{"date": "2026-07-15", "code": "3402", "source": "leadflow", "level": "yellow", "signal": "漢科(3402) 無消息近漲停+8.6%(量能2.4×,5日+10.1%),疑資訊先行資金", "price_at_signal": 158.0}
+{"date": "2026-07-16", "code": "1560", "source": "mops_news", "level": "red", "signal": "中砂(1560) 重訊[2026-07-15]:公告中砂股份有限公司國內第一次無擔保轉換公司債(簡稱：中砂一，代碼：15601)發行公司行使債券贖回權暨訂於115年09", "price_at_signal": 728.0}
+{"date": "2026-07-16", "code": "2303", "source": "mops_news", "level": "yellow", "signal": "聯電(2303) 重訊[2026-07-15]:代子公司宏誠創業投資(股)公司公告處分台灣半導體(股)公司普通股之相關資料", "price_at_signal": 160.0}
+{"date": "2026-07-16", "code": "2464", "source": "sbl", "level": "yellow", "signal": "盟立(2464):機構借券賣出5日增12.3%(溫和加碼放空)", "price_at_signal": 157.5}
+{"date": "2026-07-16", "code": "2646", "source": "institutional", "level": "yellow", "signal": "星宇航空(2646):法人 20 日淨買超 +15,187 張(未成連續型態)", "price_at_signal": 21.55}
+{"date": "2026-07-16", "code": "2762", "source": "margin", "level": "yellow", "signal": "世界健身-KY(2762):融資5日暴增24.6%(散戶追高過熱)", "price_at_signal": 86.1}
+{"date": "2026-07-16", "code": "4764", "source": "sbl", "level": "yellow", "signal": "雙鍵(4764):機構借券賣出5日增12.8%(溫和加碼放空)", "price_at_signal": 328.5}
+{"date": "2026-07-16", "code": "6570", "source": "institutional", "level": "red", "signal": "維田(6570):外資連 5 日賣超(5日淨賣 -52 張)", "price_at_signal": 49.7}
+{"date": "2026-07-16", "code": "6570", "source": "sbl", "level": "yellow", "signal": "維田(6570):機構借券賣出5日增12.4%(溫和加碼放空)", "price_at_signal": 49.7}
+{"date": "2026-07-16", "code": "6683", "source": "sbl", "level": "red", "signal": "雍智(6683):機構借券賣出5日遽增22.8%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": 1350.0}
+{"date": "2026-07-16", "code": "8054", "source": "mops_news", "level": "red", "signal": "安國(8054) 重訊[2026-07-15]:公告本公司115年現金增資認股基準日等相關事宜", "price_at_signal": 95.9}
+{"date": "2026-07-16", "code": "8096", "source": "sbl", "level": "red", "signal": "擎亞(8096):機構借券賣出5日遽增46.5%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": 142.0}
+{"date": "2026-07-16", "code": "7631", "source": "mops_news", "level": "yellow", "signal": "聚賢研發-創(7631) 重訊[2026-07-15]:更正本公司114年第三季合併財務報告、114年度個體財務報告 及114年度合併財務報告附註揭露資金貸與他人部份資訊", "price_at_signal": 144.5}
+{"date": "2026-07-16", "code": "2221", "source": "leadflow", "level": "red", "signal": "大甲(2221) 無消息近漲停+10.0%(量能4.8×,5日+23.2%),疑資訊先行資金|外資+投信近3日僅+99張,法人未同步=隱形買盤", "price_at_signal": 58.4}
+{"date": "2026-07-16", "code": "6505", "source": "leadflow", "level": "red", "signal": "台塑化(6505) 無消息近漲停+9.9%(連2根,5日+36.1%),疑資訊先行資金|外資+投信近3日+31955張", "price_at_signal": 80.0}
+{"date": "2026-07-16", "code": "3178", "source": "leadflow", "level": "red", "signal": "公準(3178) 無消息近漲停+10.0%(量能9.2×,5日+7.4%),疑資訊先行資金|外資+投信近3日僅+186張,法人未同步=隱形買盤", "price_at_signal": 70.7}
+{"date": "2026-07-16", "code": "6739", "source": "leadflow", "level": "yellow", "signal": "竹陞科技(6739) 無消息近漲停+10.0%(量能1.7×,5日+15.2%),疑資訊先行資金", "price_at_signal": 1215.0}
+{"date": "2026-07-16", "code": "3577", "source": "leadflow", "level": "yellow", "signal": "泓格(3577) 無消息近漲停+9.9%(量能2.0×,5日+10.4%),疑資訊先行資金", "price_at_signal": 138.5}
+{"date": "2026-07-16", "code": "4939", "source": "leadflow", "level": "red", "signal": "亞電(4939) 無消息近漲停+9.9%(連2根,5日+18.0%),疑資訊先行資金|外資+投信近3日僅+440張,法人未同步=隱形買盤", "price_at_signal": 66.8}
+{"date": "2026-07-16", "code": "8933", "source": "leadflow", "level": "red", "signal": "愛地雅(8933) 無消息近漲停+9.8%(量能4.1×,5日+5.7%),疑資訊先行資金|外資+投信近3日僅+114張,法人未同步=隱形買盤", "price_at_signal": 4.81}
+{"date": "2026-07-17", "code": "TSM", "source": "us_analyst", "level": "red", "signal": "🇺🇸 TSM 目標價⬆️+22.0%→$500(D.A. Davidson)", "price_at_signal": null}
+{"date": "2026-07-17", "code": "7814", "source": "leadflow", "level": "red", "signal": "海昌生技(7814) 無消息近漲停+21.7%(量能11.5×,5日+2.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-07-17", "code": "5450", "source": "leadflow", "level": "red", "signal": "南良(5450) 無消息近漲停+10.0%(量能8.3×,5日+14.8%),疑資訊先行資金", "price_at_signal": 17.05}
+{"date": "2026-07-17", "code": "8291", "source": "leadflow", "level": "red", "signal": "尚茂(8291) 無消息近漲停+9.9%(連2根,5日-4.0%),疑資訊先行資金", "price_at_signal": 30.05}
+{"date": "2026-07-17", "code": "3297", "source": "leadflow", "level": "red", "signal": "杭特(3297) 無消息近漲停+9.8%(量能9.0×,5日+5.5%),疑資訊先行資金", "price_at_signal": 32.35}
+{"date": "2026-07-17", "code": "4171", "source": "leadflow", "level": "red", "signal": "瑞基(4171) 無消息近漲停+9.9%(量能6.5×,5日+7.6%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-07-17", "code": "1526", "source": "leadflow", "level": "red", "signal": "日馳(1526) 無消息近漲停+9.9%(連2根,5日+19.8%),疑資訊先行資金", "price_at_signal": null}

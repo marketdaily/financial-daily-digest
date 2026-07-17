@@ -1,73 +1,9 @@
 {
- "updated": "2026-07-16",
- "n_rows": 129,
- "n_interim": 9,
+ "updated": "2026-07-17",
+ "n_rows": 130,
+ "n_interim": 0,
  "n_final": 0,
- "details": [
-  {
-   "bond": "52892",
-   "date": "2026-07-02",
-   "age_d": 14,
-   "p_interim": 0.0,
-   "touched": false
-  },
-  {
-   "bond": "82993",
-   "date": "2026-07-02",
-   "age_d": 14,
-   "p_interim": 0.065,
-   "touched": false
-  },
-  {
-   "bond": "41904",
-   "date": "2026-07-02",
-   "age_d": 14,
-   "p_interim": 0.0,
-   "touched": false
-  },
-  {
-   "bond": "61876",
-   "date": "2026-07-02",
-   "age_d": 14,
-   "p_interim": 0.002,
-   "touched": false
-  },
-  {
-   "bond": "65463",
-   "date": "2026-07-02",
-   "age_d": 14,
-   "p_interim": 0.0,
-   "touched": false
-  },
-  {
-   "bond": "65843",
-   "date": "2026-07-02",
-   "age_d": 14,
-   "p_interim": 0.187,
-   "touched": false
-  },
-  {
-   "bond": "80962",
-   "date": "2026-07-02",
-   "age_d": 14,
-   "p_interim": 0.134,
-   "touched": false
-  },
-  {
-   "bond": "80963",
-   "date": "2026-07-02",
-   "age_d": 14,
-   "p_interim": 0.161,
-   "touched": false
-  },
-  {
-   "bond": "811211",
-   "date": "2026-07-02",
-   "age_d": 14,
-   "p_interim": 0.027,
-   "touched": false
-  }
- ],
+ "details": [],
  "model": "empirical_band_v4",
  "lam": 0.8,
  "drift": 0.07,
