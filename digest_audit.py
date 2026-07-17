@@ -14,6 +14,19 @@ from typing import List, Dict
 
 import stock_names
 
+# 台股早報「晨間動作窗口」字眼(check#15 與 main._fix_tw_morning_action_wording 共用,單一事實來源)。
+# 2026-07-17:原 `9.{0,2}開盤` 吃不下「9:00開盤」(9 與開盤之間 3 字元)→ 07-15 實鍋假陽性;
+# 放寬成 9[:：點時.]?[0-5]?\d?開盤 並接受「今日開盤」。「明日開盤」刻意不收 — 早報在開盤前
+# 寄出,寫「明日開盤」是時序錯亂,屬真違規(main 的確定性防線會改寫成「今早開盤」)。
+# 驗證者第14案修正:①早盤 前綴 明日/明天/明/昨日/昨天/昨 不算合規(「明日早盤」同屬時序錯亂、
+# 「昨日早盤」是回顧非動作窗口);②9 前面是數字/千分位/小數點不算(「以1090開盤」是價格回顧)。
+TW_MORNING_ACTION_RE = re.compile(
+    r"今早"
+    r"|(?<!明日)(?<!明天)(?<!明)(?<!昨日)(?<!昨天)(?<!昨)早盤"
+    r"|今日開盤"
+    r"|(?<![\d,,.．])0?9\s*[:：點時.]?\s*[0-5]?\d?\s*開盤"
+)
+
 
 def _strip_html_to_text(html: str) -> str:
     """粗略去 tag,留下純文字供 keyword 比對。"""
@@ -358,7 +371,7 @@ def audit_digest(
     # 15. 若今早台股將開盤,signal-card 應該有「今早 / 開盤」字眼(us 晚報台股非主軸,不檢查)
     if market != "us" and mkt_status.get("tw_will_open_today") and tw_holdings and signal_cards:
         signal_text = " ".join(signal_cards)
-        if not re.search(r"今早|早盤|9.{0,2}開盤", signal_text):
+        if not TW_MORNING_ACTION_RE.search(signal_text):
             fails.append({"check": "tw_morning_action_missing", "severity": "med",
                           "msg": "今早台股將開盤,但 signal-card 沒有「今早開盤後」動作指示"})
 

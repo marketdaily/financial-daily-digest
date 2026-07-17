@@ -149,10 +149,66 @@ def _fix_closed_market_wording(date: str, html_report: str) -> str:
     return html_report
 
 
+# signal-card 區塊切分(同 analyzer._pp_* 系列的邊界慣例:下一張卡 / disclaimer / section-label / 結尾)
+_SIGNAL_CARD_BLOCK_RE = re.compile(
+    r'<div class="signal-card[ "].*?'
+    r'(?=<div class="signal-card[ "]|<div class="signal-disclaimer|<div class="section-label|$)',
+    re.S)
+
+
+def _fix_tw_morning_action_wording(date: str, html_report: str) -> str:
+    """台股早報動作窗口確定性防線(audit#15 tw_morning_action_missing 根治,2026-07-17)。
+    prompt 已要求台股卡講「今早 9:00 開盤後」動作,但 LLM 遵從隨機(07-13/17 實鍋 5 封),
+    且 med severity 不觸發 retry → 不依賴 LLM 聽話:
+    ①台股卡裡「明日/明天開盤」= 時序錯亂(這封信在今早開盤前寄出)→ 改寫「今早開盤」
+    ②整批台股卡皆無晨間窗口字眼 → 第一張帶 signal-reason 的台股卡開頭補「今早 9:00 開盤後:」。
+    只在台股開盤日的非 us 班次生效;美股卡(h-mark 非純數字)零觸碰;已合規日報 no-op。
+    audit#15 是這層的獨立驗證者(TW_MORNING_ACTION_RE 兩邊共用,不會 guard 過了 audit 卻紅)。"""
+    if MARKET == "us":
+        return html_report
+    try:
+        from analyzer import _market_status
+        from digest_audit import TW_MORNING_ACTION_RE
+        mkt = _market_status(date)
+    except Exception:
+        return html_report
+    if not mkt.get("tw_will_open_today"):
+        return html_report
+
+    def _tw_blocks(html: str):
+        return [m for m in _SIGNAL_CARD_BLOCK_RE.finditer(html)
+                if re.search(r"<!--h:\d+-->", m.group(0))]
+
+    # ① 時序錯字修正(從後往前替換,前面 match 的 offset 不失效)。
+    #    只修「整塊沒有任何晨間窗口字眼」的卡(驗證者第14案 F1):已合規卡裡的
+    #    「明日開盤前重新評估」是合法的收盤後前瞻,不可改寫製造新時序錯亂。
+    #    pattern 要求 明+日/天/早(F2:涵蓋「明早開盤」),不吃「說明開盤」這類複合詞。
+    for m in reversed(_tw_blocks(html_report)):
+        blk = m.group(0)
+        if TW_MORNING_ACTION_RE.search(blk):
+            continue
+        fixed = re.sub(r"明(?:[日天]\s*(?:一早\s*)?|早)開盤", "今早開盤", blk)
+        fixed = re.sub(r"明[日天]\s*早盤", "今日早盤", fixed)
+        if fixed != blk:
+            html_report = html_report[:m.start()] + fixed + html_report[m.end():]
+
+    # ② 樓地板保證:整批台股卡仍無晨間窗口 → 首張有 reason 的台股卡補開場
+    blocks = _tw_blocks(html_report)
+    if blocks and not any(TW_MORNING_ACTION_RE.search(m.group(0)) for m in blocks):
+        for m in blocks:
+            injected = re.sub(r'(<div class="signal-reason"[^>]*>)',
+                              r"\g<1>今早 9:00 開盤後:", m.group(0), count=1)
+            if injected != m.group(0):
+                html_report = html_report[:m.start()] + injected + html_report[m.end():]
+                break
+    return html_report
+
+
 def render_email_shell(date: str, html_report: str) -> str:
     """Email/本地存檔共用的完整 HTML 骨架(原 build_email_html 與 save_local 各持
     一份逐字節相同的複本,2026-07-03 P3 收斂)。<style> 內容 byte 級凍結於 golden。"""
     html_report = _fix_closed_market_wording(date, html_report)
+    html_report = _fix_tw_morning_action_wording(date, html_report)
     # 週六早報=週末回顧,媒體產線週末不產語音(video_brief_runner 週末防線)→
     # header 不放「3 分鐘語音版」承諾,footer 連結拿掉 ?date= 改聽最新一集,
     # 否則 audio.html?date=週六 會顯示等不到的「生成中」。

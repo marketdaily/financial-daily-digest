@@ -2802,6 +2802,17 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
 
     def _mk_prompt(sub: list) -> str:
         block = _chunk_market_tech_block(data, sub, depth)
+        # 台股早盤動作窗口強規則(2026-07-17,audit#15 失分榜首根治):格式規格 2211 行那句
+        # 埋在範例裡 LLM 遵從隨機(07-13 三封/07-17 兩封整批無晨間框架實鍋)→ 拉出來當獨立鐵則。
+        # 只在「台股今日將開盤 且 本批含台股標的」時注入;晚報批次全美股,永不觸發。
+        tw_morning_note = ""
+        if mkt_status.get("tw_will_open_today") and any(str(s).isdigit() for s in sub):
+            tw_morning_note = (
+                "\n【‼️ 台股早盤動作窗口】台股今日 9:00 將開盤,這封信在開盤前送達:"
+                "每張台股卡 signal-reason 第一句就要給「今早 9:00 開盤後」的具體動作"
+                "(例:「今早 9:00 開盤後現價勿追,等回測 NT$X 不破再分批」"
+                "「今早 9:00 開盤後若跳空跌破 NT$X,先減碼控風險」)。"
+                "嚴禁寫「明日開盤」「明天開盤」— 開盤就是今天早上,那是時序錯亂。\n")
         if picks_mode:
             _tw_open = "今早 9:00 開盤後" if mkt_status.get("tw_will_open_today") else "下個台股交易日"
             _us_open = "今晚開盤後" if mkt_status.get("us_will_open_tonight") else "下個美股交易日"
@@ -2815,7 +2826,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             lead +
             f"標的({len(sub)} 支,一支都不能少、不能合併):{', '.join(sub)}\n\n"
             f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{options_note}{social_note}{leadflow_note}{_pos_note(sub)}{_council_prompt_block(council, sub)}\n"
-            f"{rules}\n\n"
+            f"{rules}\n{tw_morning_note}\n"
             f"只輸出這 {len(sub)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
             f"不要輸出 signal-grid 外框、不要任何說明文字、不要 markdown 反引號。"
         )
