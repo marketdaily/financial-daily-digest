@@ -1171,7 +1171,7 @@ def fetch_indicators() -> dict:
 
 # 全球領先脈絡指數:鄰近市場開盤早於台股(東京/首爾 08:00 TW 早於台股 09:00),半導體鏈跨市連動,
 # 這些市場的當日/隔夜漲跌是台股(尤其科技鏈)與美股當日的領先脈絡。只當「內容型 context」餵 reason
-# (同 news_tw/us_13f 等級,非已驗證統計 edge),刻意不接進 _market_regime 確定性閘門(未經 walk-forward 回測)。
+# 餵 reason;其中 ^SOX/^KS11 已於 2026-07-17 完成 16 年回測(見 analyzer._crash_gate),接進 _market_regime 確定性閘門,其餘指數仍僅為內容型 context。
 _GLOBAL_LEAD_INDICES = [
     ("^SOX", "費城半導體", "semi"),
     ("^N225", "日經225", "asia"),

@@ -586,6 +586,11 @@ def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks:
     if regime["label"] == "risk_off":
         lines.append("  ‼️ TLDR、結論與每張操作卡的立場必須一致:今天偏防守。"
                      "若結論寫「先觀望/等數據」,操作卡就不可同時喊「即刻買進」——買進只能以條件單形式出現(回到支撐、站穩、數據公布後)。")
+    cg = regime.get("crash_gate") or {}
+    if cg.get("triggered"):
+        lines.append("  ‼️ 外盤重挫閘觸發(" + "、".join(cg.get("parts") or []) +
+                     "):歷史統計這種日子台股當日大跌機率為平日約 10 倍。"
+                     "TLDR 開頭必須是全市場防守警告;今天所有個股禁止無條件買進,持股者重點講防守與停損。")
 
     index_names = {
         "^GSPC": "S&P500", "^IXIC": "NASDAQ", "^DJI": "道瓊",
@@ -850,6 +855,28 @@ def _pp_verdict_chip(html: str) -> str:
         return f'{full}{chip}'
     html = _card_verdict_re.sub(_add_chip, html)
     return html
+
+
+def _pp_crash_gate(html: str, data: dict) -> str:
+    import re as _re
+    # 外盤重挫閘(deterministic,2026-07-17 -2953 點事故):_crash_gate 觸發日,所有「建議買入」
+    # 卡強制降級觀望 — 該日 LLM 內文常會寫對(嚴禁搶入)但徽章仍掛 buy,只掃徽章的用戶會被誤導。
+    # 統計依據見 _crash_gate docstring。不靠 LLM 自覺的死防線,與接刀閘(個股結構)互補(全市場層)。
+    if not _crash_gate(data)["triggered"]:
+        return html
+
+    def _demote(m):
+        block = m.group(0)
+        block = block.replace('class="signal-card buy"', 'class="signal-card wait"', 1)
+        block = block.replace('<span class="signal-verdict-chip buy">🟢 建議買入</span>',
+                              '<span class="signal-verdict-chip wait">⚪ 觀望·外盤重挫(企穩再進)</span>'
+                              '<!--gated:buy:crash-->', 1)
+        return block
+
+    return _re.sub(
+        r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote, html, flags=_re.DOTALL,
+    )
 
 
 def _pp_knife_gate(html: str, _techs_gate: dict) -> str:
@@ -1260,6 +1287,7 @@ def _pp_holder_wording(html: str) -> str:
         ("🟢 買入·漲多勿追高", "🟢 加碼·漲多勿追高"),
         ("⚪ 暫時觀望", "⚪ 持股防守·守好停損"),
         ("⚪ 觀望·空頭結構(站回 MA20 再議)", "⚪ 防守·空頭結構(守停損,站回 MA20 再議)"),
+        ("⚪ 觀望·外盤重挫(企穩再進)", "⚪ 持股防守·外盤重挫,守好停損"),
         ("⚪ 觀望·跌深超賣慎追空", "⚪ 持股防守·跌深超賣別追空,守停損"),
         ("⚪ 觀望·前訊號已破止損(禁再加碼)", "⚪ 持股防守·已破止損,守紀律勿加碼"),
         ("⚪ 觀望·漲多過熱(回檔再進)", "⚪ 持股防守·漲多過熱,守停損別加碼"),
@@ -1455,6 +1483,7 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_verdict_chip(html)
     _techs_gate = data.get("technicals", {}) or {}
     html = _pp_knife_gate(html, _techs_gate)
+    html = _pp_crash_gate(html, data)
     html = _pp_rebuy_bleed_gate(html, data)
     html = _pp_chase_gate(html, _techs_gate)
     html = _pp_oversold_gate(html, _techs_gate)
@@ -1667,6 +1696,33 @@ def _detect_macro_event(data: dict) -> bool:
     return any(_MACRO_EVENT_RE.search(a.get("title", "") or "") for a in arts[:20])
 
 
+CRASH_GATE_SOX = -3.0
+CRASH_GATE_KOSPI = -4.0
+
+
+def _crash_gate(data: dict) -> dict:
+    """外盤重挫閘(deterministic,2026-07-17 台股 -2953 點事故):費半隔夜<=-3% 或 KOSPI 前日<=-4%
+    → 全市場統計高危日。回測 2010-2026(3,397 交易日,yfinance 日線):觸發 197 天(約 12 天/年),
+    台股當日均報酬 -1.04%、單日<=-3% 機率 10.2%(基礎率 1.06%,約 10 倍),且 2010-17/18-22/23-26
+    三段年代皆成立(7.6%~12.5%),非觸發日均報酬為正。門檻為預先登記值,非掃參挑優。
+    兩訊號在日報 06:20 生成時皆已收盤定案(費半=美股昨收,KOSPI=韓股昨收),無前視偏誤。"""
+    gl = data.get("global_lead") or {}
+
+    def _chg(sym):
+        try:
+            return float((gl.get(sym) or {}).get("change_pct"))
+        except (TypeError, ValueError):
+            return None
+
+    sox, kospi = _chg("^SOX"), _chg("^KS11")
+    parts = []
+    if sox is not None and sox <= CRASH_GATE_SOX:
+        parts.append(f"費半 {sox:+.2f}%")
+    if kospi is not None and kospi <= CRASH_GATE_KOSPI:
+        parts.append(f"韓股KOSPI {kospi:+.2f}%")
+    return {"triggered": bool(parts), "parts": parts}
+
+
 def _market_regime(data: dict) -> dict:
     """大盤狀態粗分類:risk_on / neutral / risk_off(指數日變動 + VIX)。
     目的:擋「全市場下殺日每支機械式喊低接買進」的同質性 — 歷史戰績顯示這種日子逆勢
@@ -1700,8 +1756,12 @@ def _market_regime(data: dict) -> dict:
         score -= 1
     elif 0 < vix < 16:
         score += 1
+    crash = _crash_gate(data)
+    if crash["triggered"]:
+        score -= 2
     label = "risk_off" if score <= -2 else ("risk_on" if score >= 2 else "neutral")
-    return {"label": label, "vix": vix, "spx_chg": spx, "ndx_chg": ndx, "twii_chg": twii}
+    return {"label": label, "vix": vix, "spx_chg": spx, "ndx_chg": ndx, "twii_chg": twii,
+            "crash_gate": crash}
 
 
 def _quant_prior(t: dict) -> str:
