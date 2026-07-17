@@ -589,6 +589,13 @@ function alertMessage(news, ticker, severity, reason, meta = {}) {
 async function alertAdmin(env, summary, { channel = "" } = {}) {
   const hourKey = `admin_alert:${channel ? channel + ":" : ""}${new Date().toISOString().slice(0, 13)}`;
   if (await env.USER_PREFS.get(hourKey)) return;
+  // 一模一樣的告警內容 24h 只推一次:永久性故障(如 xAI 無 credits 的 403)在每小時節流下
+  // 仍是 24 則/天轟炸;轟炸讓用戶關通知,真告警就再也到不了(2026-07-17 政壇 403 事故修)。
+  let sig = 5381;
+  const sigSrc = `${channel}|${summary}`;
+  for (let i = 0; i < sigSrc.length; i++) sig = ((sig << 5) + sig + sigSrc.charCodeAt(i)) >>> 0;
+  const sigKey = `admin_alert_sig:${sig.toString(36)}`;
+  if (await env.USER_PREFS.get(sigKey)) return;
   let delivered = false;
   if (await webPushAdmin(env, JSON.stringify({
     title: "🚨 MarketDaily Alert",
@@ -597,6 +604,7 @@ async function alertAdmin(env, summary, { channel = "" } = {}) {
   }))) delivered = true;
   if (delivered) {
     await env.USER_PREFS.put(hourKey, "1", { expirationTtl: 3700 });
+    await env.USER_PREFS.put(sigKey, "1", { expirationTtl: 24 * 3600 });
   } else {
     await env.USER_PREFS.put(`admin_alert_failed:${Date.now()}`,
       JSON.stringify({ summary, reason: "all channels failed" }),
