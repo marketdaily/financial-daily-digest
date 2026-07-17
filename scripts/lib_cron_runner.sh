@@ -192,26 +192,31 @@ _cron_tw_today() { echo "${CRON_FAKE_TODAY:-$(TZ=Asia/Taipei date +%F)}"; }
 _cron_dirty_starve_state_dir() { echo "${CRON_STARVE_STATE_DIR:-$HOME/.marketdaily-fallback/state}"; }
 
 _cron_dirty_starve_mark() {
-  local name="$1" files="$2" today streak last alerted dir f
+  local name="$1" files="$2" today dir f
   today=$(_cron_tw_today)
   dir=$(_cron_dirty_starve_state_dir); mkdir -p "$dir"
   f="$dir/dirty_starve_${name}"
-  read -r streak last alerted 2>/dev/null < "$f" || { streak=0; last=""; alerted=0; }
-  case "$streak" in (''|*[!0-9]*) streak=0 ;; esac
-  [ "$last" = "$today" ] && return 0   # 同日多 tick 只計一次
-  streak=$((streak + 1)); [ "$streak" -eq 1 ] && alerted=0
-  local threshold="${CRON_STARVE_ALERT_AFTER:-2}"
-  if [ "$streak" -ge "$threshold" ] && [ "${alerted:-0}" != 1 ]; then
-    local msg="🟡 [winrig] cron『${name}』已連續 ${streak} 個班次因 scope 內未 commit 修改讓路(檔:${files})。若是長壽 WIP 請儘快 commit,若是孤兒 cron 輸出檔=缺 persist owner。"
-    if [ -n "${CRON_NOTIFY_CMD:-}" ]; then
-      $CRON_NOTIFY_CMD "$msg" >/dev/null 2>&1 || true
-    else
-      MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" \
-        "$HOME/.marketdaily-fallback/notify_admin.py" "$msg" >/dev/null 2>&1 || true
+  ( flock -w 5 9 || exit 0   # 同名並發 RMW 防重複告警(生產同名僅一條 cron,belt-and-suspenders)
+    local streak="" last="" alerted=""
+    read -r streak last alerted 2>/dev/null < "$f" || true   # 截斷檔已讀到的欄位保留,不整組重設
+    case "$streak" in (''|*[!0-9]*) streak=0 ;; esac
+    alerted="${alerted%% *}"   # 髒資料多欄只取首欄
+    case "$alerted" in (1) ;; (*) alerted=0 ;; esac
+    [ "$last" = "$today" ] && exit 0   # 同日多 tick 只計一次
+    streak=$((streak + 1)); [ "$streak" -eq 1 ] && alerted=0
+    local threshold="${CRON_STARVE_ALERT_AFTER:-2}"
+    if [ "$streak" -ge "$threshold" ] && [ "$alerted" != 1 ]; then
+      local msg="🟡 [winrig] cron『${name}』已連續 ${streak} 個班次因 scope 內未 commit 修改/untracked 檔讓路(檔:${files})。若是長壽 WIP 請儘快 commit,若是孤兒 cron 輸出檔=缺 persist owner。"
+      if [ -n "${CRON_NOTIFY_CMD:-}" ]; then
+        $CRON_NOTIFY_CMD "$msg" >/dev/null 2>&1 || true
+      else
+        MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" \
+          "$HOME/.marketdaily-fallback/notify_admin.py" "$msg" >/dev/null 2>&1 || true
+      fi
+      alerted=1
     fi
-    alerted=1
-  fi
-  echo "$streak $today $alerted" > "$f"
+    echo "$streak $today $alerted" > "$f"
+  ) 9>>"$f.lock"
 }
 
 _cron_dirty_starve_clear() {
@@ -228,12 +233,17 @@ _cron_dirty_starve_clear() {
 # 呼叫點放在 cron_daily_lock【之前】:讓路不消耗當日鎖,同日樹變乾淨後續 tick 可重試。
 cron_abort_if_dirty_scoped() {
   local name="$1"; shift
+  if [ "$#" -eq 0 ]; then   # 忘了宣告 scope=fail-safe 退回 blanket,絕不因參數缺失變成永遠放行
+    echo "[cron_abort_if_dirty_scoped:$name] 未宣告 scope,fail-safe 退回 blanket 守門"
+    cron_abort_if_dirty
+    return 0
+  fi
   local f s hit blocked="" ignored=""
   while IFS= read -r f; do
     [ -n "$f" ] || continue
     hit=0
     for s in "$@"; do
-      s="${s%/}"
+      while [ "${s%/}" != "$s" ]; do s="${s%/}"; done
       if [ "$f" = "$s" ] || [[ "$f" == "$s"/* ]]; then hit=1; break; fi
     done
     if [ "$hit" = 1 ]; then blocked="${blocked}${f} "; else ignored="${ignored}${f} "; fi
@@ -247,59 +257,104 @@ cron_abort_if_dirty_scoped() {
   _cron_dirty_starve_clear "$name"
 }
 
-# ── site_scan fix 相位專用:WIP snapshot / targeted revert(取代整樹 git checkout -- .)──
-# cron_wip_snapshot SNAP_DIR  把「現在」的 dirty tracked 檔逐一拷貝到 SNAP_DIR(保留相對
-# 路徑),並寫 manifest(SNAP_DIR/.manifest,一行一檔)。之後 cron_wip_restore_tampered 用
-# manifest+bytes 判斷這批 pre-existing WIP 檔有沒有被中途動到,有就還原 snapshot 原 bytes
-# (=忠實還原別視窗 WIP 當時的內容,不是還原 HEAD)。
-cron_wip_snapshot() {
-  local snap="$1" f
-  rm -rf "$snap"; mkdir -p "$snap"
-  : > "$snap/.manifest"
-  while IFS= read -r f; do
-    [ -n "$f" ] || continue
-    printf '%s\n' "$f" >> "$snap/.manifest"
-    if [ -e "$CRON_LIB_REPO/$f" ]; then
-      mkdir -p "$snap/files/$(dirname "$f")"
-      cp -p "$CRON_LIB_REPO/$f" "$snap/files/$f"
-    fi
-  done < <(cron_dirty_tracked_files)
+# cron_untracked_files  列出 untracked(??)路徑,一行一檔。整個未追蹤目錄 porcelain 只列
+# 「dir/」一條(trailing slash),前綴匹配仍吃得到。
+cron_untracked_files() {
+  ( cd "$CRON_LIB_REPO" || exit 0
+    git status --porcelain -z --no-renames -uall 2>/dev/null |
+      while IFS= read -r -d '' entry; do
+        [ "${#entry}" -lt 4 ] && continue
+        [ "${entry:0:2}" = "??" ] || continue
+        printf '%s\n' "${entry:3}"
+      done )
 }
 
-# cron_wip_restore_tampered SNAP_DIR  對 manifest 裡每個檔:bytes 與 snapshot 不同(或被
-# 刪)→ 還原 snapshot;原本就不存在磁碟(D 狀態)而現在被重建 → 刪回。stdout 印被動過的
-# 檔清單(空=無人動)。
-cron_wip_restore_tampered() {
-  local snap="$1" f tampered=""
-  [ -f "$snap/.manifest" ] || return 0
+# cron_abort_if_untracked_scoped NAME SCOPE...  untracked 版守門(2026-07-18 驗證者 F3):
+# wrangler pages deploy 上傳磁碟現狀,untracked 的 docs/ 檔(別視窗草稿/上輪殘留)一樣會被
+# 發佈——deploy 型 runner 對 deploy surface(docs)必掛。讓路走同一份 starve 記帳(同 NAME
+# 同 state);本函式【不】清 state,清除只由最後一道 cron_abort_if_dirty_scoped 做,呼叫順序
+# 必須:untracked 版在前、dirty 版在後(否則 streak 會被中途清掉)。
+cron_abort_if_untracked_scoped() {
+  local name="$1"; shift
+  local f s hit blocked=""
   while IFS= read -r f; do
     [ -n "$f" ] || continue
-    if [ -f "$snap/files/$f" ]; then
-      if ! cmp -s "$snap/files/$f" "$CRON_LIB_REPO/$f" 2>/dev/null; then
-        mkdir -p "$CRON_LIB_REPO/$(dirname "$f")"
-        cp -p "$snap/files/$f" "$CRON_LIB_REPO/$f"
-        tampered="${tampered}${f} "
-      fi
+    hit=0
+    for s in "$@"; do
+      while [ "${s%/}" != "$s" ]; do s="${s%/}"; done
+      if [ "$f" = "$s" ] || [[ "$f" == "$s"/* ]]; then hit=1; break; fi
+    done
+    [ "$hit" = 1 ] && blocked="${blocked}${f} "
+  done < <(cron_untracked_files)
+  if [ -n "$blocked" ]; then
+    echo "[cron_abort_if_untracked_scoped:$name] scope 內有 untracked 檔(別視窗草稿/上輪殘留?),deploy 會照磁碟現狀上傳,本輪讓路: ${blocked}"
+    _cron_dirty_starve_mark "$name" "$blocked"
+    exit 0
+  fi
+}
+
+# ── site_scan fix 相位:拋棄式 git worktree 物理隔離(2026-07-18 v2)──
+# 修復代理在 detached HEAD worktree 內動工,主樹在修復期間【零寫入】。「哪些變動是修復造成
+# 的」由容器邊界回答,不再用時間窗快照歸因——v1 的 snapshot/restore/targeted-revert 設計被
+# 獨立驗證者以三條確定性重現路徑駁倒(並發 ledger append 被回滾/第三方 mid-run 髒檔被
+# checkout 毀掉/untracked 全盲),同輪已整組廢除,勿復刻。
+# 使用前提:主樹上 fix 要鏡回的 SCOPE(docs)在 gate 時=HEAD(tracked 乾淨+無 untracked),
+# 這樣 apply 的逐檔鏡像=恰好修復代理的變動。殘餘 race(別視窗在修復進行的幾分鐘內動主樹
+# SCOPE 內同一檔)無合作鎖不可根治,窗口已排程隔離(08:20-08:49 保留給 site_scan)。
+cron_fix_wt_create() {   # cron_fix_wt_create WT_PATH ; rc!=0=建立失敗(呼叫端要處理)
+  git -C "$CRON_LIB_REPO" worktree add --detach "$1" HEAD >/dev/null 2>&1
+}
+
+cron_fix_wt_changes() {  # 列出 worktree 內全部變動(tracked M/A/D + untracked ??),一行一檔
+  # -uall:untracked 新子目錄逐檔展開(否則 porcelain 只列「dir/」一條,apply 的 cp 會拒目錄)
+  ( cd "$1" || exit 0
+    git status --porcelain -z --no-renames -uall 2>/dev/null |
+      while IFS= read -r -d '' entry; do
+        [ "${#entry}" -lt 4 ] && continue
+        printf '%s\n' "${entry:3}"
+      done )
+}
+
+# cron_fix_wt_apply WT SCOPE  把 worktree 變動清單中 SCOPE 下的檔逐一鏡回主樹(worktree 有
+# →cp;worktree 沒有=修復刪檔→rm)。stdout 印實際 applied 檔,失敗時餵 cron_fix_wt_unapply。
+# 只鏡「worktree 變動清單」內的檔:主樹上別視窗 mid-run 新增的檔不在清單,不會被碰。
+cron_fix_wt_apply() {
+  local wt="$1" scope="${2:-}" f
+  while [ -n "$scope" ] && [ "${scope%/}" != "$scope" ]; do scope="${scope%/}"; done
+  while IFS= read -r f; do
+    [ -n "$f" ] || continue
+    if [ -n "$scope" ]; then
+      case "$f" in ("$scope"/*|"$scope") ;; (*) continue ;; esac
+    fi
+    if [ -e "$wt/$f" ]; then
+      mkdir -p "$CRON_LIB_REPO/$(dirname "$f")"
+      cp -p "$wt/$f" "$CRON_LIB_REPO/$f"
     else
-      # snapshot 時是「已刪除」狀態:現在若被重建,刪回維持原 WIP 狀態
-      if [ -e "$CRON_LIB_REPO/$f" ]; then
-        rm -f "$CRON_LIB_REPO/$f"
-        tampered="${tampered}${f} "
-      fi
+      rm -f "$CRON_LIB_REPO/$f"
     fi
-  done < "$snap/.manifest"
-  [ -n "$tampered" ] && echo "$tampered"
-  return 0
+    printf '%s\n' "$f"
+  done < <(cron_fix_wt_changes "$wt")
 }
 
-# cron_revert_files FILE...  逐檔 git checkout(還原到 index),絕不整樹。給「本輪自己
-# 新造成的變動」用;pre-existing WIP 檔走 cron_wip_restore_tampered,不可混用。
-cron_revert_files() {
+# cron_fix_wt_unapply FILE...  把 apply 過的檔還原到 HEAD(HEAD 有→checkout HEAD;HEAD 沒
+# 有=修復新檔→刪)。只可餵 cron_fix_wt_apply 的輸出清單(這批檔 gate 時=HEAD,還原到 HEAD
+# 語意正確且不碰 index 殘留),不可餵別的清單。
+cron_fix_wt_unapply() {
   local f
   for f in "$@"; do
     [ -n "$f" ] || continue
-    git -C "$CRON_LIB_REPO" checkout -- "$f" 2>/dev/null || true
+    if git -C "$CRON_LIB_REPO" cat-file -e "HEAD:$f" 2>/dev/null; then
+      git -C "$CRON_LIB_REPO" checkout HEAD -- "$f" 2>/dev/null || true
+      git -C "$CRON_LIB_REPO" reset -q -- "$f" 2>/dev/null || true
+    else
+      rm -f "$CRON_LIB_REPO/$f"
+    fi
   done
+}
+
+cron_fix_wt_destroy() {
+  git -C "$CRON_LIB_REPO" worktree remove --force "$1" >/dev/null 2>&1 || rm -rf "$1"
+  git -C "$CRON_LIB_REPO" worktree prune >/dev/null 2>&1 || true
 }
 
 # cron_privacy_deploy_guard  部署 docs/ 前的隱私斷路器(2026-07-18,robots /output/ 開放收錄後
