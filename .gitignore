@@ -52,6 +52,7 @@ cb_analyzer/search_result.png
 intel/.inst_cache.json
 intel/.rev_cache.json
 intel/.margin_cache.json
+intel/.ca_scan_cache.json
 intel/.sbl_cache.json
 intel/.holders_cache.json
 intel/.investor_conf_cache.json
