@@ -91,10 +91,11 @@ def reduce_day(rows_day, date):
         K = x.get("strike_price")
         px = x.get("close") or 0
         v = x.get("volume") or 0
+        oi = x.get("open_interest") or 0
         if not K or px <= 0:
             continue
         side = "C" if x.get("call_put") == "call" else "P"
-        chain.setdefault(K, {})[side] = {"px": px, "v": v}
+        chain.setdefault(K, {})[side] = {"px": px, "v": v, "oi": oi}
     # put-call parity 反推 F
     fs = [K + c["C"]["px"] - c["P"]["px"] for K, c in chain.items()
           if "C" in c and "P" in c and c["C"]["v"] >= MIN_VOL and c["P"]["v"] >= MIN_VOL]
@@ -113,18 +114,27 @@ def reduce_day(rows_day, date):
                 ivs.append(iv)
     if not ivs:
         return None
-    strikes = {str(K): {s: round(e["px"], 2) for s, e in c.items()}
-               for K, c in chain.items() if abs(K - F) / F <= WIN}
+    strikes = {}
+    for K, c in chain.items():
+        if abs(K - F) / F > WIN:
+            continue
+        e = {s: round(x["px"], 2) for s, x in c.items()}
+        e["oc"] = c.get("C", {}).get("oi", 0)
+        e["op"] = c.get("P", {}).get("oi", 0)
+        strikes[str(K)] = e
     return {"contract": pick, "F": round(F, 1), "dte": dte_pick,
             "atm_K": K_atm, "atm_iv": round(sum(ivs) / len(ivs), 4), "strikes": strikes}
 
 
+CACHE_V = 2  # v2: strikes 含 oc/op(OI),GEX 研究需要
+
+
 def load(start="2023-01-01", refresh=False):
-    cache = {"start": start, "months": [], "days": {}}
+    cache = {"start": start, "v": CACHE_V, "months": [], "days": {}}
     if not refresh and os.path.exists(CACHE):
         with open(CACHE, encoding="utf-8") as f:
             c = json.load(f)
-        if c.get("start") == start:
+        if c.get("start") == start and c.get("v") == CACHE_V:
             cache = c
     today = datetime.date.today()
     y, m = int(start[:4]), int(start[5:7])
