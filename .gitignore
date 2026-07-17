@@ -93,6 +93,7 @@ _ig_frames/
 /*.yml
 # 雜項 cache / 備份
 scripts/.price_cache.json
+scripts/.div_cache.json
 *.bak-*
 *.sh.bak-*
 valuation/.us_cik_map.json

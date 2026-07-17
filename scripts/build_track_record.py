@@ -382,6 +382,16 @@ def yahoo_chart(sym: str, _start_iso: str, _end_iso: str) -> dict[str, float] | 
 # 不含含字母的台股權證/ETN(如 07286P),若未來納入需改分群鍵(驗證者 Finding 3)。
 _CONSENSUS_MIN_TICKERS = 5   # 市場檔數不足以建日曆 → 退回位置索引(原行為)
 _CAL_REAL_FRAC = 0.60        # 覆蓋該日的檔 ≥ 此比例有 bar = 共識交易日
+# ── 幽靈休市日濾網(2026-07-17)──
+# 2026-07-10 颱風全市場休市,Yahoo 卻對 39/42 檔台股印出「=07-09 收盤複本」的幽靈 bar:
+# 共識日曆的 ≥60% 覆蓋率防線只擋「少數檔的偽 bar」,對全市場級幽靈日結構性失明(93% 檔都有 bar
+# → 07-10 混進日曆),結算落該日=拿到陳舊價、跨該日的窗=提早一個真實交易日。簽名=該日有 bar 的
+# 檔裡 ≥90% 的收盤與各自前一個 bar 完全相同——單檔連兩日同收盤是常態(~1-2%),≥10 檔裡 9 成
+# 同時發生只有「休市+資料商複製前日 bar」一種解釋(實測 07-10 為 39/39=100%,真交易日遠低於此)。
+_PHANTOM_MIN_SYMBOLS = 10    # 有 bar 檔數低於此不判(樣本太薄,寧可保守不剔)
+_PHANTOM_IDENTICAL_FRAC = 0.90
+# fetch_prices 的 off-calendar 提示對已判定幽靈日免印(偵測行已印一次,39 檔逐檔印=洗版)
+_LAST_PHANTOM_DAYS: dict[str, set] = {}
 
 
 def _market_of(ticker: str) -> str:
@@ -412,9 +422,30 @@ def _market_trading_calendar(
             cover[d] = n_cover
             fr[d] = c / n_cover if n_cover else 0.0
         freqs[mkt] = fr
+        # 幽靈休市日:該日有 bar 的檔中 ≥_PHANTOM_IDENTICAL_FRAC 與各自前一 bar 完全相同 → 剔除
+        same_cnt: dict[str, int] = {}
+        both_cnt: dict[str, int] = {}
+        for h in hists:
+            sd_h = sorted(h)
+            for i in range(1, len(sd_h)):
+                v, pv = h[sd_h[i]], h[sd_h[i - 1]]
+                if v is None or pv is None:
+                    continue
+                both_cnt[sd_h[i]] = both_cnt.get(sd_h[i], 0) + 1
+                if abs(v - pv) < 1e-9:
+                    same_cnt[sd_h[i]] = same_cnt.get(sd_h[i], 0) + 1
+        phantom = {d for d, n in both_cnt.items()
+                   if n >= _PHANTOM_MIN_SYMBOLS
+                   and same_cnt.get(d, 0) / n >= _PHANTOM_IDENTICAL_FRAC}
+        for d in sorted(phantom):
+            print(f"[settle-cal] {mkt} {d}: 幽靈休市日剔除"
+                  f"({same_cnt.get(d, 0)}/{both_cnt[d]} 檔 bar=前日複本;"
+                  f"休市+資料商複製前日 bar 簽名)", file=sys.stderr)
+        _LAST_PHANTOM_DAYS[mkt] = phantom
         # 覆蓋檔數 <2 不進日曆(2026-07-13 驗證者 F3):右緣「未來日期偽 bar」會讓分母塌縮成
         # 髒檔自己(fr=1.0)混進日曆;真右緣 bar 若暫時只有 1 檔有,晚一輪 build 自然補進,無害。
-        cals[mkt] = sorted(d for d, f in fr.items() if f >= _CAL_REAL_FRAC and cover[d] >= 2)
+        cals[mkt] = sorted(d for d, f in fr.items()
+                           if f >= _CAL_REAL_FRAC and cover[d] >= 2 and d not in phantom)
     return cals, freqs
 
 
@@ -441,30 +472,272 @@ def _settle_on_calendar(hist_dict: dict, sd: list[str], cal: list[str], cal_set:
               file=sys.stderr)
     last_bar = sd[-1]
 
-    def px(n: int) -> float | None:
+    def px(n: int) -> tuple[float | None, str | None]:
         j = i + n
         if j >= len(cal):
-            return None                      # 市場日曆還沒長到 → 未到期
+            return None, None                # 市場日曆還沒長到 → 未到期
         tgt = cal[j]
+        if tgt <= base_date:
+            # 退化窗守衛(2026-07-17):rec 日無 bar 使基準前推越過日曆 ref 時,結算日可能
+            # 落在基準日當日或之前(chg 恆 0 的假結算,6907 2026-07-10 實例)→ 誠實待結
+            print(f"[settle-cal] {ticker} {d}+{n}: 結算日 {tgt} ≤ 基準日 {base_date},"
+                  f"退化窗待結", file=sys.stderr)
+            return None, None
         if tgt > last_bar:
-            return None                      # 該檔資料尚未涵蓋結算日 → 未到期(同位置法右緣,不用停牌舊價結算)
+            return None, None                # 該檔資料尚未涵蓋結算日 → 未到期(同位置法右緣,不用停牌舊價結算)
         v = hist_dict.get(tgt)
         if v is not None:
-            return v
+            return v, tgt
         # 結算日該檔缺 bar(停牌/feed 缺洞)→ 就近往回取窗內最後一個「日曆上的」bar
         k = bisect.bisect_right(sd, tgt) - 1
         while k >= 0 and sd[k] > base_date:
             if sd[k] in cal_set:
                 print(f"[settle-cal] {ticker} {d}+{n}: 結算日 {tgt} 無 bar,就近用 {sd[k]}",
                       file=sys.stderr)
-                return hist_dict[sd[k]]
+                return hist_dict[sd[k]], sd[k]
             k -= 1
-        return None                          # 整窗無 bar(長停牌)→ 誠實待結
+        return None, None                    # 整窗無 bar(長停牌)→ 誠實待結
 
     path_dates = [dd for dd in sd if dd > base_date and dd in cal_set][:13]
-    return {"close": close, "next_close": px(1), "close_5d": px(5),
-            "close_21d": px(21), "close_63d": px(63),
+    p1, d1 = px(1)
+    p5, d5 = px(5)
+    p21, d21 = px(21)
+    p63, d63 = px(63)
+    return {"close": close, "next_close": p1, "close_5d": p5,
+            "close_21d": p21, "close_63d": p63,
+            "base_date": base_date,
+            "date_1d": d1, "date_5d": d5, "date_21d": d21, "date_63d": d63,
             "path": [hist_dict[dd] for dd in path_dates], "path_dates": path_dates}
+
+
+# ── 現金股息修正(2026-07-17)────────────────────────────────────
+# Yahoo quote.close 語意:分割/除權(配股)會回溯調整(0050 2025-06-18 1:4、4989 2026-06-29 實證),
+# 現金股息「不」調整(2330/3034/6669 快取=官方 raw 實證)→ 持有窗跨除息日時 chg 被股息機械性壓低:
+# buy 假 loss/sell·wait 假 win(除權息旺季系統性偏差,2026-07-17 稽核實測 41 筆公版 label 翻轉,
+# A 勝率被低估 ~0.7pp、C 被高估 ~0.7pp)。修正=結算價加回窗內現金股息(持有人實際拿到)。
+# TW 主源=FinMind TaiwanStockDividendResult(官方;Yahoo TW events 不可靠:漏 0050 真分割、列
+# 6669 幽靈分割),FinMind 網路/API 失敗才退 Yahoo events;US=Yahoo v8 events=div(query2 直連)。
+# 除權(配股)列不加現金(Yahoo close 已回溯調整,再加=重複計算),僅 stderr 提示。
+# 失敗語意=fail-open:抓不到股息 → 該檔本輪無調整(=舊行為)+stderr 警告,絕不讓夜跑 crash。
+DIV_CACHE_FILE = ROOT / "scripts" / ".div_cache.json"
+_DIV_CACHE_FRESH_H = 20          # 快取 20h 內免重抓(一天一次)
+_DIV_SCALE_SANITY = (0.2, 1.2)   # 快取前收/FinMind before_price 合理帶(除權回溯調整換算用)
+_ISO_DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def _events_valid(evs) -> bool:
+    """股息事件清單形狀驗證(fetch 產出與快取讀回共用):date 必須是 ISO 字串、金額可轉
+    float。毒快取自癒——非法列=整筆作廢重抓,不讓髒 date 流進 _attach_window_divs 的
+    bisect 比較炸掉夜跑(驗證者 F4)。"""
+    if not isinstance(evs, list):
+        return False
+    for ev in evs:
+        if not isinstance(ev, dict):
+            return False
+        dd = ev.get("date")
+        if not isinstance(dd, str) or not _ISO_DATE_RE.match(dd):
+            return False
+        try:
+            float(ev.get("cash") or 0.0)
+            float(ev.get("stock") or 0.0)
+        except (TypeError, ValueError):
+            return False
+    return True
+
+
+def _fetch_finmind_dividends(ticker: str, start_iso: str) -> list[dict] | None:
+    """FinMind TaiwanStockDividendResult → [{'date','cash','stock','before_price'},...]。
+    網路/API 失敗回 None(呼叫端 fallback);status 200 空資料回 []=該檔真的無除權息。"""
+    params = {"dataset": "TaiwanStockDividendResult",
+              "data_id": ticker, "start_date": start_iso}
+    tok = os.environ.get("FINMIND_TOKEN", "").strip()  # 同 intel/* 連接器慣例;未配置=匿名層
+    if tok:
+        params["token"] = tok
+    url = "https://api.finmindtrade.com/api/v4/data?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except Exception as exc:
+        print(f"[div] finmind {ticker}: {exc}", file=sys.stderr)
+        return None
+    if data.get("status") != 200:
+        print(f"[div] finmind {ticker}: status={data.get('status')}", file=sys.stderr)
+        return None
+    out = []
+    # payload 形狀漂移(data 非 list/列非 dict/date 非 ISO 字串)=整檔回 None 觸發 Yahoo
+    # fallback:解析迴圈原在 try 外,status 200 + 形狀漂移會炸穿夜跑,且非法 date 會先進
+    # .div_cache.json 再 crash _attach_window_divs,20h 新鮮期內每輪重放毒快取(驗證者 F4)。
+    try:
+        rows = data.get("data") or []
+        if not isinstance(rows, list):
+            raise TypeError(f"data 形狀 {type(rows).__name__}")
+        for row in rows:
+            if not isinstance(row, dict):
+                raise TypeError(f"row 形狀 {type(row).__name__}")
+            kind = str(row.get("stock_or_cache_dividend") or "")
+            try:
+                amt = float(row.get("stock_and_cache_dividend") or 0.0)
+            except (TypeError, ValueError):
+                continue
+            dd = row.get("date")
+            if dd in (None, ""):
+                continue
+            if not isinstance(dd, str) or not _ISO_DATE_RE.match(dd):
+                raise TypeError(f"date 非 ISO 字串: {dd!r}")
+            if amt <= 0:
+                continue
+            ev = {"date": dd, "cash": 0.0, "stock": 0.0,
+                  "before_price": row.get("before_price")}
+            # kind 精確集合比對:「現金股利」型詞彙含『股』字,子字串判斷會把它誤歸
+            # 配股而靜默略過現金修正(驗證者 F5,vocab 裸子字串 beekeeper 同型坑)
+            if kind in ("息", "除息"):
+                ev["cash"] = amt
+            elif kind in ("權", "除權"):
+                ev["stock"] = amt
+            else:
+                # 「權息」合併列/未知詞彙:現金歸屬不明,寧可不調整(fail-open)也不錯加
+                print(f"[div] {ticker} {dd}: kind={kind!r} 無法歸類,不調整",
+                      file=sys.stderr)
+                ev["ambiguous"] = True
+            out.append(ev)
+    except Exception as exc:
+        print(f"[div] finmind {ticker}: payload 異常({exc}),退 Yahoo", file=sys.stderr)
+        return None
+    return out
+
+
+def _fetch_yahoo_dividends(sym_candidates: list[str], rng: str = "6mo") -> list[dict] | None:
+    """Yahoo v8 events=div。日期轉換與 yahoo_chart 同款 fromtimestamp(本地)保持對齊。"""
+    for sym in sym_candidates:
+        url = (f"https://query2.finance.yahoo.com/v8/finance/chart/"
+               f"{urllib.parse.quote(sym)}?interval=1d&range={rng}&events=div")
+        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                data = json.loads(resp.read().decode("utf-8"))
+            r = (data.get("chart") or {}).get("result") or []
+            if not r:
+                continue
+            ev = (r[0].get("events") or {}).get("dividends") or {}
+            agg: dict[str, float] = {}
+            for v in ev.values():
+                dd = datetime.fromtimestamp(v["date"]).date().isoformat()
+                agg[dd] = agg.get(dd, 0.0) + float(v["amount"])
+            return [{"date": dd, "cash": amt, "stock": 0.0, "before_price": None}
+                    for dd, amt in sorted(agg.items())]
+        except Exception as exc:
+            print(f"[div] yahoo {sym}: {exc}", file=sys.stderr)
+            continue
+    return None
+
+
+def fetch_dividends(tickers: set[str], start_iso: str) -> dict[str, list[dict]]:
+    """全部代碼的除權息事件(.div_cache.json 快取 20h;失敗 fail-open 沿用舊快取或空)。"""
+    try:
+        cache = json.loads(DIV_CACHE_FILE.read_text()) if DIV_CACHE_FILE.exists() else {}
+    except Exception:
+        cache = {}
+    out: dict[str, list[dict]] = {}
+    dirty = False
+    now = datetime.now()
+    for t in sorted(tickers):
+        ent = cache.get(t)
+        if ent and not _events_valid(ent.get("events") or []):
+            print(f"[div] {t}: 快取事件形狀非法,作廢重抓(毒快取自癒)", file=sys.stderr)
+            ent = None
+        if ent and ent.get("start") and ent["start"] <= start_iso:
+            try:
+                age_h = (now - datetime.fromisoformat(ent["fetched_at"])).total_seconds() / 3600
+            except Exception:
+                age_h = 1e9
+            if 0 <= age_h < _DIV_CACHE_FRESH_H:
+                out[t] = ent.get("events") or []
+                continue
+        if _market_of(t) == "TW":
+            evs = _fetch_finmind_dividends(t, start_iso)
+            if evs is None:  # FinMind 失敗才退 Yahoo;空 list=真的沒有,不退
+                evs = _fetch_yahoo_dividends([f"{t}.TW", f"{t}.TWO"])
+        else:
+            evs = _fetch_yahoo_dividends([t])
+        if evs is None:
+            if ent:
+                print(f"[div] {t}: 本輪抓取失敗,沿用舊快取({ent.get('fetched_at')})",
+                      file=sys.stderr)
+                out[t] = ent.get("events") or []
+            else:
+                print(f"[div] {t}: 無股息資料可用,本輪不調整(fail-open)", file=sys.stderr)
+                out[t] = []
+            continue
+        out[t] = evs
+        cache[t] = {"fetched_at": now.isoformat(timespec="seconds"),
+                    "start": start_iso, "events": evs}
+        dirty = True
+        time.sleep(0.25)
+    if dirty:
+        try:
+            DIV_CACHE_FILE.write_text(json.dumps(cache, ensure_ascii=False))
+        except Exception as exc:
+            print(f"[div] cache write failed: {exc}", file=sys.stderr)
+    return out
+
+
+def _attach_window_divs(fields: dict, events: list[dict], hist_dict: dict,
+                        cal: list[str], ticker: str) -> None:
+    """把 (基準日, 結算日] 窗內現金股息掛到 fields['div_{hz}']。
+    生效日語意:排定除息日遇休市順延到日曆上第一個 ≥ 排定日的交易日
+    (FinMind date=排定日;3034 2026-07-10 颱風休市 → 07-13 生效實例)。"""
+    base = fields.get("base_date")
+    if not base or not events or not cal:
+        return
+    sd = sorted(hist_dict)
+    resolved: list[tuple[str, float]] = []
+    for ev in events:
+        dd = ev.get("date") or ""
+        if not dd or ev.get("ambiguous"):
+            continue
+        i = bisect.bisect_left(cal, dd)
+        if i >= len(cal):
+            continue  # 生效日在日曆右緣外(未來事件)
+        eff = cal[i]
+        if ev.get("stock"):
+            if base < eff <= (fields.get("date_63d") or fields.get("date_21d")
+                              or fields.get("date_5d") or fields.get("date_1d") or ""):
+                print(f"[div] {ticker} {eff}: 除權(配股 {ev['stock']})不加現金"
+                      f"(Yahoo close 已回溯調整)", file=sys.stderr)
+            continue
+        cash = float(ev.get("cash") or 0.0)
+        if cash <= 0:
+            continue
+        # 尺度換算:快取序列可能被「更晚的除權/分割」回溯調整,官方股息金額是 raw 尺度;
+        # 用 快取前收/官方 before_price 換算(無 before_price 或帶外 → 1.0 並提示)
+        factor = 1.0
+        bp = ev.get("before_price")
+        prevs = [x for x in sd if x < eff]
+        if bp and prevs:
+            cp = hist_dict.get(prevs[-1])
+            f = None
+            try:
+                if cp:
+                    f = cp / float(bp)
+            except (TypeError, ValueError, ZeroDivisionError):
+                f = None
+            if f is not None:
+                if _DIV_SCALE_SANITY[0] <= f <= _DIV_SCALE_SANITY[1]:
+                    factor = f
+                else:
+                    print(f"[div] {ticker} {eff}: 尺度帶外"
+                          f"(cache_prev/before_price={f:.3f}),股息不換算", file=sys.stderr)
+        resolved.append((eff, cash * factor))
+    if not resolved:
+        return
+    for hz in ("1d", "5d", "21d", "63d"):
+        tgt = fields.get(f"date_{hz}")
+        if not tgt:
+            continue
+        tot = sum(c for e, c in resolved if base < e <= tgt)
+        if tot:
+            fields[f"div_{hz}"] = tot
 
 
 def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
@@ -510,6 +783,15 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
     calendars, cal_freq = _market_trading_calendar(hist_by_ticker)
     cal_sets = {mkt: set(c) for mkt, c in calendars.items()}
 
+    # 現金股息事件(跨除息窗 chg 修正用;fail-open,見 fetch_dividends)
+    all_dates = [d for _, d in keys]
+    div_events: dict[str, list[dict]] = {}
+    if all_dates:
+        div_start = (datetime.fromisoformat(min(all_dates))
+                     - timedelta(days=7)).date().isoformat()
+        div_events = fetch_dividends(
+            {t for t, _ in keys if hist_by_ticker.get(t)}, div_start)
+
     # Pass 2:逐檔結算。
     out: dict[tuple[str, str], dict] = {}
     for ticker, dates in by_ticker.items():
@@ -523,12 +805,16 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
             fr = cal_freq.get(mkt) or {}
             for dd in sorted_dates:
                 # 檔內 bar 不在日曆上(且落日曆範圍內)= 疑偽 bar/極少數覆蓋日,結算不採用;可見不靜默
-                if dd not in cal_sets[mkt] and cal[0] <= dd <= cal[-1]:
+                # (已判定的幽靈休市日免逐檔印:偵測時已印一次,39 檔逐檔印=洗版)
+                if (dd not in cal_sets[mkt] and cal[0] <= dd <= cal[-1]
+                        and dd not in _LAST_PHANTOM_DAYS.get(mkt, set())):
                     print(f"[settle-cal] off-calendar bar {ticker} {dd} "
                           f"(market freq {fr.get(dd, 0.0):.0%})", file=sys.stderr)
             for d in dates:
                 fields = _settle_on_calendar(hist_dict, sorted_dates, cal, cal_sets[mkt], ticker, d)
                 if fields:
+                    _attach_window_divs(fields, div_events.get(ticker) or [],
+                                        hist_dict, cal, ticker)
                     out[(ticker, d)] = fields
             continue
         # 市場檔數不足以建日曆 → 原位置索引法(單檔 bar 增缺仍會平移,但無共識可依);可見不靜默
@@ -546,15 +832,25 @@ def fetch_prices(keys: set[tuple[str, str]]) -> dict[tuple[str, str], dict]:
                 ref_idx = sorted_dates.index(later[0])
             else:
                 ref_idx = sorted_dates.index(d)
-            nxt = hist_dict[sorted_dates[ref_idx + 1]] if ref_idx + 1 < len(sorted_dates) else None
-            c5 = hist_dict[sorted_dates[ref_idx + 5]] if ref_idx + 5 < len(sorted_dates) else None
-            c21 = hist_dict[sorted_dates[ref_idx + 21]] if ref_idx + 21 < len(sorted_dates) else None
-            c63 = hist_dict[sorted_dates[ref_idx + 63]] if ref_idx + 63 < len(sorted_dates) else None
+            def _at(n: int) -> tuple[float | None, str | None]:
+                if ref_idx + n < len(sorted_dates):
+                    dd = sorted_dates[ref_idx + n]
+                    return hist_dict[dd], dd
+                return None, None
+            nxt, d1 = _at(1)
+            c5, d5 = _at(5)
+            c21, d21 = _at(21)
+            c63, d63 = _at(63)
             path_dates = sorted_dates[ref_idx + 1:ref_idx + 14]
             path = [hist_dict[dd] for dd in path_dates]
-            out[(ticker, d)] = {"close": today, "next_close": nxt, "close_5d": c5,
-                                "close_21d": c21, "close_63d": c63, "path": path,
-                                "path_dates": path_dates}
+            fields = {"close": today, "next_close": nxt, "close_5d": c5,
+                      "close_21d": c21, "close_63d": c63, "path": path,
+                      "path_dates": path_dates,
+                      "base_date": sorted_dates[ref_idx],
+                      "date_1d": d1, "date_5d": d5, "date_21d": d21, "date_63d": d63}
+            _attach_window_divs(fields, div_events.get(ticker) or [],
+                                hist_dict, sorted_dates, ticker)
+            out[(ticker, d)] = fields
     return out
 
 
@@ -782,16 +1078,28 @@ JUDGE_RULE_VERSION = "v2"
 # 帳本裡不在版本史上的髒 rule 值(=手改/竄改,FAIL)
 JUDGE_RULE_HISTORY = ("v1", "v2")
 
+# chg 事實欄的計算基準(fact-version):settlement_chg 2026-07-17 起含窗內現金股息,
+# 帳本新舊列的 chg 從此混兩種語意——label 與 chg 自洽、rule 同為 v2,silent-drift
+# 偵測器無從分辨(驗證者第17案 F1:27 筆跨除息窗凍錯列因此永久隱形)。事實欄自帶
+# basis 章:寫入端蓋現行章,舊列由 _reconcile_row 一次性補 legacy 章,舊語意列從此
+# 可枚舉。27 筆凍錯列改寫 label 動公開勝率,清單已列待 Delvin 拍板(比照 2026-07-13
+# 9 筆前例),見 ~/autonomous/research/tr_ca_audit/ledger_27_frozen_flips.md。
+CHG_BASIS = "px+div"        # 現行:(settle+div-base)/base
+CHG_BASIS_LEGACY = "px"     # 2026-07-17 前:(settle-base)/base,不含現金股息
+
 
 def settlement_chg(rec: dict, prices: dict, horizon: str = "5d") -> float | None:
-    """結算日漲跌(原始事實):建議日收盤 → horizon 結算價的變化率;尚未到結算日回 None。"""
+    """結算日漲跌(原始事實):建議日收盤 → horizon 結算價的變化率;尚未到結算日回 None。
+    2026-07-17 起含窗內現金股息(持有人實拿;除息機械缺口不再被算成虧損):
+    chg = (settle + div - base) / base。除權(配股)/分割不加(Yahoo close 已回溯調整)。"""
     p = prices.get((rec["ticker"], rec["date"]))
     if not p:
         return None
     ref = p.get(_HORIZONS[horizon]["ref"])
     if ref is None:
         return None
-    return (ref - p["close"]) / p["close"]
+    div = p.get("div_" + horizon) or 0.0
+    return (ref + div - p["close"]) / p["close"]
 
 
 def label_from_chg(verdict_class: str, chg: float, horizon: str = "5d",
@@ -948,6 +1256,7 @@ def _personal_ledger_entries(judged_personal: list[dict], personal_sims: dict[in
         tok = r.get("_user_token") or ""
         user_hash = hashlib.sha256(tok.encode()).hexdigest()[:12] if tok else "unknown"
         sim = personal_sims.get(id(r))
+        chg = settlement_chg(r, prices, "5d")
         entries.append({
             "date": r["date"],
             "ticker": r["ticker"],
@@ -959,7 +1268,8 @@ def _personal_ledger_entries(judged_personal: list[dict], personal_sims: dict[in
             "regime": regime_by_date.get(r["date"]),
             "ret": sim["ret_pct"] if sim else None,
             "user_hash": user_hash,
-            "chg": settlement_chg(r, prices, "5d"),
+            "chg": chg,
+            **({"chg_basis": CHG_BASIS} if chg is not None else {}),
             "rule": JUDGE_RULE_VERSION,
             # 持有者框架(type="H")補記自填成本,供未來 per-position 稽核
             **({"holder_entry": r["holder_entry"]} if r.get("holder_entry") else {}),
@@ -1011,12 +1321,19 @@ def _reconcile_row(stored: dict, fresh: dict | None, prices: dict | None = None)
     if stored.get("chg") is None:
         if fresh and fresh.get("chg") is not None:
             stored["chg"] = fresh["chg"]
+            stored["chg_basis"] = fresh.get("chg_basis") or CHG_BASIS
             changed = True
         elif prices is not None:
             c = settlement_chg(stored, prices, "5d")
             if c is not None:
                 stored["chg"] = c
+                stored["chg_basis"] = CHG_BASIS
                 changed = True
+    elif "chg_basis" not in stored:
+        # 一次性 fact-version 遷移:寫入端 2026-07-17 起必蓋 basis 章,故「有 chg 無章」
+        # 的列只可能寫於語意變更前 → 補 legacy 章,讓舊語意列永遠可枚舉(驗證者 F1)
+        stored["chg_basis"] = CHG_BASIS_LEGACY
+        changed = True
     if stored.get("chg") is not None:
         derived = label_from_chg(stored.get("verdict_class"), stored["chg"], "5d",
                                  holder=stored.get("type") == "H")
