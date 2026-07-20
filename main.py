@@ -992,6 +992,7 @@ def _flush_outbox(outbox, date, send_fn, api_key):
         return 0
     sent_ok = 0
     _hold_until_send_time(MARKET)
+    _enforce_send_deadline(MARKET)   # 補班才有作用;放在 hold 之後=用「真正要寄的那一刻」判定
     # MD_SUBJECT_NOTE:人工補寄修正版時標注主旨(例:「(更新版) 」),平常不設=無作用
     note = os.environ.get("MD_SUBJECT_NOTE", "")
     for email, html, subject in outbox:
@@ -1126,6 +1127,33 @@ def _alert_if_late(market, late_sec):
                       f"log: logs/fallback_*.log")
 
 
+def _enforce_send_deadline(market):
+    """補班專用的寄出端死線閘(2026-07-20)。
+
+    為什麼需要它:班次窗口只閘得到「起跑」時刻,而生成實測 40-99 分鐘(Gemini 全 429 走 claude
+    慢路徑那天跑了 99 分),兩者差一整個生成時間。補班把合法起跑時刻往後推到 08:00 TW 之後,
+    光靠起跑閘就再也保證不了「寄出時仍在盤前」——會變成開盤後寄一封講盤前的信,那是內容錯誤。
+    所以真正的保證放在這裡:寄出前一刻比對台北時間,過線寧可不寄。
+
+    只有 run.sh 補班模式會設 MD_SEND_DEADLINE_HM(格式 HHMM,台北時間);正常班次完全不經過
+    這條路徑,行為零改變。
+    """
+    raw = os.environ.get("MD_SEND_DEADLINE_HM", "").strip()
+    if not raw.isdigit() or len(raw) != 4:
+        return
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    now_tw = datetime.now(ZoneInfo("Asia/Taipei"))
+    if now_tw.hour * 60 + now_tw.minute <= int(raw[:2]) * 60 + int(raw[2:]):
+        return
+    label = "早報" if market == "tw" else "晚報"
+    msg = (f"🟡 {label} 補班放棄寄出:生成完成時已是台北 {now_tw:%H:%M},超過內容誠實死線 "
+           f"{raw[:2]}:{raw[2:]}。此時寄出等於開盤後發一封講盤前的信,故刻意不寄。")
+    print(msg)
+    _push_admin_alert(msg + " (main.py exit=3;內容留在 logs/ 可人工檢視)")
+    raise SystemExit(3)   # 模組層沒有 import sys(只有 1321 行的區域 import),用內建例外最穩
+
+
 def _hold_until_send_time(market):
     """提早觸發只為先把日報生成好;寄出時間釘在班次整點(tw 07:00 TW=23:00 UTC / us 20:00 TW=12:00 UTC)。
     生成若拖過整點 → 不等,立刻寄(遲到比不寄好),但遲到>15分推 admin 告警。both/手動班次不等。"""
@@ -1136,6 +1164,12 @@ def _hold_until_send_time(market):
     now = datetime.now(timezone.utc)
     target = now.replace(hour=hm[0], minute=hm[1], second=0, microsecond=0)
     wait = (target - now).total_seconds()
+    # UTC 跨日校正(2026-07-20 驗證者 F2):tw 的整點 07:00 TW = 23:00 UTC,只離 UTC 換日一小時。
+    # 生成若拖到 08:00 TW 之後就已跨進隔天 UTC,`now.replace(hour=23)` 會指到【今晚】而不是今早,
+    # wait 變成 +23h,late_min 變成大負數 → 遲到告警在「補班最危險的那段」必然靜音。
+    # 差一整天就把它減回來;只影響已經 return 的那條分支,不碰 sleep 路徑。
+    if wait > 12 * 3600:
+        wait -= 24 * 3600
     # 只在「距整點 60 分內」才等:>60 分 = 手動補發/異常時段,直接寄,不白等
     if wait <= 0 or wait > 60 * 60:
         _alert_if_late(market, -wait)
