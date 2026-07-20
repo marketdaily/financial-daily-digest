@@ -11,15 +11,12 @@ workers_dev = true
 pattern = "watchdog.marketdaily.ai"
 custom_domain = true
 
-# 2026-06-30 停用(crons 清空):這隻 watchdog 整個綁死 GitHub Actions —— 查 Actions run、用
-# Actions /dispatches 重派。但 6/11 起 GitHub 帳號被 flag、Actions 停用,日報早搬去 winrig cron。
-# 結果它每班都找不到 Actions run → 誤判「cron 沒觸發」→ 想用已死的 Actions 重派 → 422 →
-# 每天誤報「守望犬已代派(失敗)」。真正的日報成敗監看已由 winrig heartbeat.sh 接手
-# (過 07:45/20:45 檢查 log 有無「發送完成」,沒有就 web push + 桌面告 admin,通道實測活著)。
-# 故清空 crons 止血。GitHub 解封、日報搬回 Actions 時再恢復;或改寫成「查公版日報新鮮度」的
-# 外部 dead-man 監看(補 winrig 整台掛掉的盲區)。詳見 memory project_github_account_flagged。
+# 2026-07-20 v2 重啟:改為「查公版日報存檔新鮮度」的外部 dead-man 監看,不依賴 GitHub/winrig。
+# 背景:6/30 因 v1 綁死已 flag 的 GitHub Actions 而清空 crons,監看改靠 winrig heartbeat.sh;
+# 7/19 winrig 整台離線 → heartbeat 與日報一起死,7/20 早報沒寄且零告警。v2 專補此盲區。
+# TW 07:30/08:00 早報、20:25/21:00 晚報(UTC 下列);只告警不代跑(runner 在 winrig)。
 [triggers]
-crons = []
+crons = ["30 23 * * *", "0 0 * * *", "25 12 * * *", "0 13 * * *"]
 
 # 與主 worker 共用 KV,只用 watchdog: 前綴(重派防重 guard)
 [[kv_namespaces]]
@@ -32,8 +29,8 @@ binding = "ALERT"
 service = "marketdaily-alert-worker"
 
 # secrets(wrangler secret put):
-#   GITHUB_TOKEN — 同 digest-cron 那把 PAT(Actions read/write)
 #   ALERT_TOKEN  — alert-worker /internal/admin-line-push 的 ADMIN_PUSH_TOKEN 同值
+#   GITHUB_TOKEN — v2 起不再使用(留著,日報若搬回 Actions 才需要)
 
 # 2026-06-12:查「cron 註冊了但 6/12 整天沒任何執行痕跡」開的持久 log
 [observability]
