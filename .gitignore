@@ -97,3 +97,7 @@ scripts/.div_cache.json
 *.bak-*
 *.sh.bak-*
 valuation/.us_cik_map.json
+
+quant_lab/auto_trade/.tx_daily.json
+quant_lab/auto_trade/.txo_iv.json
+intel/.tw_broker_calls_seen.json
