@@ -401,6 +401,24 @@ def audit_digest(
             fails.append({"check": "undefined_css_class", "severity": "high",
                           "msg": f"版型跑掉:body 用到未定義 class（{preview}{more}）— <style> 無對應規則,該區塊不會上樣式"})
 
+    # ───── 個人化區塊只准真實持股(2026-07-21 事故防線) ─────
+    # 16. 「組合透視」曾把公版 default_us 觀察清單 10 檔混進「你的持股」視角
+    #     (市場配置憑空多出美股 10 檔、DCF 偏貴列的全非用戶持股)。
+    #     鐵則:掛「你的」的個人化區塊,標的必須完全來自傳入的真實持股;
+    #     picks 公版場景 holdings 即 picks 清單,同樣受此約束。無持股公版報告不檢查。
+    lens_m = re.search(r"組合透視", html)
+    if lens_m and (us_holdings or tw_holdings):
+        lens_text = _strip_html_to_text(_section(html[lens_m.start():], "news-card"))
+        held = {str(h).upper() for h in us_holdings + tw_holdings}
+        found = set(re.findall(r"\b[A-Z]{2,5}\b", lens_text)) - {"DCF"}
+        found |= set(re.findall(r"\b\d{4,6}\b", lens_text))
+        foreign = sorted(t for t in found
+                         if t not in held and not any(t in h for h in held))
+        if foreign:
+            preview = ", ".join(foreign[:8])
+            fails.append({"check": "portfolio_lens_foreign_ticker", "severity": "high",
+                          "msg": f"組合透視混入非用戶持股標的({preview})— 個人化區塊只准列真實持股"})
+
     return fails
 
 
