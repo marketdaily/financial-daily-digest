@@ -587,7 +587,12 @@ def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks:
         lines.append("  ‼️ TLDR、結論與每張操作卡的立場必須一致:今天偏防守。"
                      "若結論寫「先觀望/等數據」,操作卡就不可同時喊「即刻買進」——買進只能以條件單形式出現(回到支撐、站穩、數據公布後)。")
     cg = regime.get("crash_gate") or {}
-    if cg.get("triggered"):
+    if cg.get("triggered") and cg.get("softened"):
+        lines.append("  ‼️ 外盤重挫閘觸發(" + "、".join(cg.get("parts") or []) +
+                     f")但台指期夜盤已反彈 {cg.get('night_pct'):+.2f}%(今晨 05:00 收盤定案):"
+                     "歷史統計外盤重挫但夜盤明確反彈時,恐慌未外溢、台股當日多收紅且無一次大跌。"
+                     "今天不必全面防守,但買進仍以分批/條件單為主,並提醒讀者若開盤跌破夜盤低點即轉回防守。")
+    elif cg.get("triggered"):
         lines.append("  ‼️ 外盤重挫閘觸發(" + "、".join(cg.get("parts") or []) +
                      "):歷史統計這種日子台股當日大跌機率為平日約 10 倍。"
                      "TLDR 開頭必須是全市場防守警告;今天所有個股禁止無條件買進,持股者重點講防守與停損。")
@@ -862,7 +867,9 @@ def _pp_crash_gate(html: str, data: dict) -> str:
     # 外盤重挫閘(deterministic,2026-07-17 -2953 點事故):_crash_gate 觸發日,所有「建議買入」
     # 卡強制降級觀望 — 該日 LLM 內文常會寫對(嚴禁搶入)但徽章仍掛 buy,只掃徽章的用戶會被誤導。
     # 統計依據見 _crash_gate docstring。不靠 LLM 自覺的死防線,與接刀閘(個股結構)互補(全市場層)。
-    if not _crash_gate(data)["triggered"]:
+    # 夜盤軟化日(softened)不降級:回測該桶(n=14)無一次大跌、均+2.18%,詳 _crash_gate docstring。
+    _cg = _crash_gate(data)
+    if not _cg["triggered"] or _cg.get("softened"):
         return html
 
     def _demote(m):
@@ -1698,6 +1705,7 @@ def _detect_macro_event(data: dict) -> bool:
 
 CRASH_GATE_SOX = -3.0
 CRASH_GATE_KOSPI = -4.0
+CRASH_GATE_NIGHT_SOFTEN = 0.5
 
 
 def _crash_gate(data: dict) -> dict:
@@ -1705,7 +1713,16 @@ def _crash_gate(data: dict) -> dict:
     → 全市場統計高危日。回測 2010-2026(3,397 交易日,yfinance 日線):觸發 197 天(約 12 天/年),
     台股當日均報酬 -1.04%、單日<=-3% 機率 10.2%(基礎率 1.06%,約 10 倍),且 2010-17/18-22/23-26
     三段年代皆成立(7.6%~12.5%),非觸發日均報酬為正。門檻為預先登記值,非掃參挑優。
-    兩訊號在日報 06:20 生成時皆已收盤定案(費半=美股昨收,KOSPI=韓股昨收),無前視偏誤。"""
+    兩訊號在日報 06:20 生成時皆已收盤定案(費半=美股昨收,KOSPI=韓股昨收),無前視偏誤。
+
+    夜盤軟化層(2026-07-21 反彈日 +3.9% 被硬閘誤壓後加):台指期夜盤(15:00~次日 05:00,
+    生成時已收盤定案)>= +0.5% 即 softened。回測 2017-2026(期交所盤後資料,觸發日 155 天):
+    夜盤>=+0.5% 共 14 天 → 台股當日均 +2.18%、P(<=-3%)=0%、最差 -0.88%,三年代皆成立;
+    夜盤<0 共 131 天(含 20240805/20250407/20260717 三大崩盤日,夜盤皆約 -2%)→ 均 -1.45%、
+    P(<=-3%)=11.5%,硬閘維持。門檻取兩個預登記候選(0 / +0.5)中較嚴者:邊界帶 0~+0.5(n=10)
+    仍髒(均 -0.67%、P(<=-3%)=10%)故不軟化。軟化=不強制 risk_off、不降級 buy 徽章,但保留
+    分批/條件單提醒。fail-closed:tx_night 缺料(源掛/晚報時窗)→ 不軟化,行為同原硬閘。
+    回測與 forward ledger 見 quant_lab/crash_gate_night/。"""
     gl = data.get("global_lead") or {}
 
     def _chg(sym):
@@ -1720,7 +1737,12 @@ def _crash_gate(data: dict) -> dict:
         parts.append(f"費半 {sox:+.2f}%")
     if kospi is not None and kospi <= CRASH_GATE_KOSPI:
         parts.append(f"韓股KOSPI {kospi:+.2f}%")
-    return {"triggered": bool(parts), "parts": parts}
+    try:
+        night = float((data.get("tx_night") or {}).get("night_pct"))
+    except (TypeError, ValueError):
+        night = None
+    softened = bool(parts) and night is not None and night >= CRASH_GATE_NIGHT_SOFTEN
+    return {"triggered": bool(parts), "parts": parts, "night_pct": night, "softened": softened}
 
 
 def _market_regime(data: dict) -> dict:
@@ -1758,7 +1780,7 @@ def _market_regime(data: dict) -> dict:
         score += 1
     crash = _crash_gate(data)
     if crash["triggered"]:
-        score -= 2
+        score -= 1 if crash.get("softened") else 2
     label = "risk_off" if score <= -2 else ("risk_on" if score >= 2 else "neutral")
     return {"label": label, "vix": vix, "spx_chg": spx, "ndx_chg": ndx, "twii_chg": twii,
             "crash_gate": crash}
