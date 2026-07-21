@@ -928,7 +928,9 @@ footer {
   if (!v) return;
   var wide = window.matchMedia('(min-width: 768px)').matches;
   var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (wide && !still) {
+  var c = navigator.connection || {};
+  var thrifty = c.saveData === true || /(^|-)2g$/.test(c.effectiveType || '');
+  if (wide && !still && !thrifty) {
     var s = v.querySelector('source');
     s.src = s.getAttribute('data-src');
     v.load();

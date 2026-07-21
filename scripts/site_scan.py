@@ -102,12 +102,35 @@ def probe_digest_archive():
 
 # ── 4. 資產健康 ────────────────────────────────────────────────────
 # 出處 2026-06-10:og 全缺(分享無預覽)、hero 9MB(手機載不動)。
+def _parse_hero_src():
+    """從實際首頁解析 .hero-video <source> 的 data-src。
+    跟隨『換片一律用新檔名』慣例,不寫死檔名——舊版寫死 hero-bg.mp4(早停用的方形舊片),
+    首頁改用 hero-bullbear.mp4 後守衛靜默脫鉤、對真正的 hero 全盲(2026-07-22 發現)。"""
+    try:
+        html = subprocess.run(["curl", "-sL", "-A", UA, "--max-time", "20", f"{BASE}/"],
+                              capture_output=True, text=True, timeout=25).stdout
+    except Exception:
+        return None
+    m = re.search(r'class="hero-video"[^>]*>\s*<source[^>]*data-src="([^"]+)"', html)
+    if not m:
+        m = re.search(r'hero-video.*?data-src="([^"]+\.mp4[^"]*)"', html, re.S)
+    return m.group(1) if m else None
+
+
 def probe_assets():
     code, size = curl_head(f"{BASE}/assets/og.png")
     check("og_image", code == 200 and size > 50_000, f"og.png http={code} size={size}")
-    code, size = curl_head(f"{BASE}/hero-bg.mp4")
-    check("hero_video", code == 200 and 0 < size < 2_500_000,
-          f"hero-bg.mp4 http={code} size={size}(>2.5MB=壓縮回歸,404=遺失)")
+    # 2026-06 起 hero 由 index.html loader 依 min-width/reduced-motion/save-data 動態載入:
+    # 手機與省流用戶完全不下載影片(只留 poster)→ 原「keep <2.5MB 免手機載不動」意圖已由 loader 承接。
+    # 桌機刻意用 ~7MB 高品質片(Delvin 15 版煉出,壓縮無免費午餐)。守:實際引用檔存在+非離譜暴肥。
+    hero_src = _parse_hero_src()
+    if not hero_src:
+        check("hero_video", False, "index.html 找不到 .hero-video 的 data-src(loader 結構變了?先查首頁 hero 區塊)")
+    else:
+        hero_url = hero_src if hero_src.startswith("http") else f"{BASE}/{hero_src.lstrip('/')}"
+        code, size = curl_head(hero_url)
+        check("hero_video", code == 200 and 0 < size < 12_000_000,
+              f"{hero_src} http={code} size={size}(404/空=遺失,>12MB=暴肥未壓縮;手機/save-data 由 loader 跳過)")
     d = subprocess.run(["curl", "-s", "-A", UA, f"{BASE}/sitemap.xml"], capture_output=True, text=True).stdout
     locs = d.count("<loc>")
     check("sitemap", locs >= 30, f"sitemap {locs} URLs(<30=生成器壞掉)", severity="med")
