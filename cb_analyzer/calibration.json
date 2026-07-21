@@ -1,9 +1,24 @@
 {
- "updated": "2026-07-20",
+ "updated": "2026-07-21",
  "n_rows": 131,
- "n_interim": 0,
+ "n_interim": 2,
  "n_final": 0,
- "details": [],
+ "details": [
+  {
+   "bond": "41904",
+   "date": "2026-07-02",
+   "age_d": 19,
+   "p_interim": 0.003,
+   "touched": false
+  },
+  {
+   "bond": "61876",
+   "date": "2026-07-02",
+   "age_d": 19,
+   "p_interim": 0.007,
+   "touched": false
+  }
+ ],
  "model": "empirical_band_v4",
  "lam": 0.8,
  "drift": 0.07,
@@ -103,10 +118,10 @@
   },
   "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);live 帳本 predictions.jsonl 持續對答案;G1_brier.oos_brier_cal 是「假設全列都拿到校準」的理想值,實際部署有 oos_frac_out_of_domain 比例落回未校準 raw(見 cb_ledger.py),誠實部署量測見 oos_brier_cal_deployment_realistic"
  },
- "brier_interim": 0.0093,
+ "brier_interim": 0.0,
  "coin_flip_brier": 0.25,
- "avg_pred_interim": 0.0641,
+ "avg_pred_interim": 0.005,
  "realized_interim": 0.0,
  "shrink": null,
- "note": "樣本 9 筆 <20,校準閘門未開(小樣本校準=雜訊)"
+ "note": "樣本 2 筆 <20,校準閘門未開(小樣本校準=雜訊)"
 }
