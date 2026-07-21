@@ -2481,7 +2481,8 @@ def _leadflow_note(data: dict) -> str:
         return ""
 
 
-def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -> str:
+def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard",
+                          market: str = "both") -> str:
     """組合透視(看深入專屬):純計算整個持股的集中度與最大組合風險,缺料/持股太少不談。
     只用既有資料(結構 prior / 政壇訊號 / 估值 / 籌碼),不編造、不經 LLM。"""
     if depth != "deep":
@@ -2529,9 +2530,12 @@ def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -
     if us_n and tw_n:
         rows.append(f"<b>市場配置</b>:美股 {us_n} 檔、台股 {tw_n} 檔")
     elif tw_n:
-        rows.append(f"<b>市場配置</b>:全部 {tw_n} 檔台股(單一市場)")
+        # 班次報告只納本班次市場持股,不能據此斷言用戶「只押單一市場」
+        note = "單一市場" if market == "both" else "本報聚焦台股持股"
+        rows.append(f"<b>市場配置</b>:全部 {tw_n} 檔台股({note})")
     else:
-        rows.append(f"<b>市場配置</b>:全部 {us_n} 檔美股(單一市場)")
+        note = "單一市場" if market == "both" else "本報聚焦美股持股"
+        rows.append(f"<b>市場配置</b>:全部 {us_n} 檔美股({note})")
     if rich:
         rows.append(f"<b>估值偏貴</b>:{', '.join(_lbl(h) for h in rich[:5])}（追高風險集中)")
     if dcf_over:
@@ -2548,7 +2552,7 @@ def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard") -
         risk = f"{len(overvalued)} 檔估值偏貴(本益比或 DCF 內在價值),追高風險集中在高估值族群 —— 高檔不加碼,等回檔再評估。"
     elif len(pol_hit) >= 2:
         risk = f"{len(pol_hit)} 檔同受今日政壇/政策訊號波及,政策面是這組持股的共同變數 —— 盯後續政策確認再決定加減碼。"
-    elif (us_n == 0) ^ (tw_n == 0):
+    elif market == "both" and ((us_n == 0) ^ (tw_n == 0)):
         risk = "持股集中單一市場,缺乏跨市場分散 —— 該市場若系統性回檔,整組一起受傷。"
     elif bull >= half:
         risk = f"{bull}/{n} 檔多頭結構,順勢但同向 —— 大盤一旦轉弱會一起拉回,設好整組停利紀律。"
@@ -3473,7 +3477,7 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
                                          prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode,
                                          positions=positions)
-    cards += _portfolio_lens_block(data, all_holdings, depth)
+    cards += _portfolio_lens_block(data, _full_holdings, depth, market)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
@@ -3600,7 +3604,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
                                          prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode,
                                          positions=positions)
-    cards += _portfolio_lens_block(data, signal_stocks, depth)
+    cards += _portfolio_lens_block(data, signal_stocks, depth, market)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
@@ -3767,7 +3771,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
                                          full_limit=DIGEST_EMAIL_MAX_HOLDINGS if email_safe else None,
                                          prefer_strong=prefer_strong, depth=depth, picks_mode=picks_mode,
                                          positions=positions)
-    cards += _portfolio_lens_block(data, all_holdings, depth)
+    cards += _portfolio_lens_block(data, _full_holdings, depth, market)
     raw = _inject_signal_cards(raw, cards)
     result = _postprocess_html(raw, data)
     if is_beginner:
