@@ -88,7 +88,8 @@ def push(gap, today, dry):
                        "gap_pct": gap, "dry": dry}).encode()
     req = urllib.request.Request(
         f"{WORKER}/internal/market-open-alert", data=body, method="POST",
-        headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"})
+        headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json",
+                 "User-Agent": "kospi-open-alert/1.0"})
     with urllib.request.urlopen(req, timeout=60) as r:
         res = json.loads(r.read().decode())
     log(f"worker 回應: {res}")
