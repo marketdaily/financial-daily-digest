@@ -491,6 +491,24 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     <div class="hz-note" data-i18n="hz_note">同一批判斷分別在次一交易日／5／21／63 個交易日後用收盤價結算;緩衝門檻按時間放大(續抱不跌破 -2%／-3%／-6%／-10%,觀望 &lt;1%／&lt;2%／&lt;4%／&lt;7%)。頭條用隔日(日報每天覆寫,量當天判斷),持有更久的視角也全公開。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。</div>
   </div>
 
+  <!-- Market split:台股 vs 美股(資料源 stats.by_market,build_track_record.py 2026-07-16 起) -->
+  <div class="method-card" id="market-split-card" style="display:none;">
+    <div class="ttl" data-i18n="mk_ttl">台股 vs 美股,各自幾勝幾敗</div>
+    <div class="hz-grid">
+      <div class="hz-box">
+        <div class="hz-h" data-i18n="mk_tw">🇹🇼 台股 · 週結 5 個交易日</div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bull">看多</span><span class="hz-val" id="mk-tw-a">—</span></div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bear">看空</span><span class="hz-val" id="mk-tw-c">—</span></div>
+      </div>
+      <div class="hz-box">
+        <div class="hz-h" data-i18n="mk_us">🇺🇸 美股 · 週結 5 個交易日</div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bull">看多</span><span class="hz-val" id="mk-us-a">—</span></div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bear">看空</span><span class="hz-val" id="mk-us-c">—</span></div>
+      </div>
+    </div>
+    <div class="hz-note" data-i18n="mk_note">與上表「週結」同一把尺,只按市場拆開;括號為(勝/樣本),區間為 Wilson 95%。原始資料(含按日聚類的保守區間)全部公開在 /data/track-record.json,歡迎自行驗算。</div>
+  </div>
+
   <!-- Method explainer -->
   <div class="method-card">
     <div class="ttl" data-i18n="method_ttl">我們怎麼算勝率(沒任何模糊空間)</div>
@@ -911,8 +929,33 @@ let dataLoaded = false;
   renderRecords(currentFilter);
   renderCombinedStats();
   renderHorizonStats();
+  renderMarketStats();
   if (NORMALIZED.length === 0) renderEmptyState();
 })();
+
+// 台股 vs 美股拆分 — stats.by_market(週結5日,與 stats 主欄同一把尺;缺資料整卡隱藏)
+function renderMarketStats() {
+  const bm = STATS && STATS.by_market;
+  if (!bm || (!bm.tw && !bm.us)) return;
+  const card = document.getElementById("market-split-card");
+  if (!card) return;
+  const MIN_N = 20;
+  const zh = currentLang !== "en";
+  const fmt = (blk, k) => {
+    if (!blk || !blk[k + "_count"]) return "—";
+    const count = blk[k + "_count"], wins = blk[k + "_wins"] || 0, ci = blk[k + "_ci95"];
+    if (count < MIN_N) return zh ? `累積中 ${count}/${MIN_N}` : `collecting ${count}/${MIN_N}`;
+    const ciHtml = Array.isArray(ci) && ci.length === 2
+      ? `<span class="ci">95% ${Number(ci[0]).toFixed(0)}–${Number(ci[1]).toFixed(0)}%</span>` : "";
+    return `${(wins / count * 100).toFixed(1)}% <span style="font-weight:600;color:rgba(255,255,255,0.45);">(${wins}/${count})</span>${ciHtml}`;
+  };
+  const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  set("mk-tw-a", fmt(bm.tw, "a"));
+  set("mk-tw-c", fmt(bm.tw, "c"));
+  set("mk-us-a", fmt(bm.us, "a"));
+  set("mk-us-c", fmt(bm.us, "c"));
+  card.style.display = "";
+}
 
 // 多週期勝率:隔日(1d)=STATS.one_day,週(5d)=STATS 主欄,月(21d)=STATS.monthly,季(63d)=STATS.quarterly(皆含訂閱者個人化樣本)
 function renderHorizonStats() {
@@ -1032,6 +1075,10 @@ const i18n = {
     hz_bull: "看多",
     hz_bear: "看空",
     hz_note: "同一批判斷分別在次一交易日／5／21／63 個交易日後用收盤價結算;緩衝門檻按時間放大(續抱不跌破 -2%／-3%／-6%／-10%,觀望 <1%／<2%／<4%／<7%)。頭條用隔日(日報每天覆寫,量當天判斷),持有更久的視角也全公開。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。",
+    mk_ttl: "台股 vs 美股,各自幾勝幾敗",
+    mk_tw: "🇹🇼 台股 · 週結 5 個交易日",
+    mk_us: "🇺🇸 美股 · 週結 5 個交易日",
+    mk_note: "與上表「週結」同一把尺,只按市場拆開;括號為(勝/樣本),區間為 Wilson 95%。原始資料(含按日聚類的保守區間)全部公開在 /data/track-record.json,歡迎自行驗算。",
     f_us: "🇺🇸 美股", f_tw: "🇹🇼 台股", f_a: "🟢 看多", f_c: "🔴 看空",
     f_win: "✅ 贏", f_loss: "❌ 輸",
     th_date: "日期", th_tic: "個股", th_call: "日報原話", th_type: "類型", th_res: "結果",
@@ -1084,6 +1131,10 @@ const i18n = {
     hz_bull: "Bullish",
     hz_bear: "Bearish",
     hz_note: "The same calls are settled at the next close and 5 / 21 / 63 trading days out; buffers scale with time (hold: no drop beyond -2% / -3% / -6% / -10%, wait <1% / <2% / <4% / <7%). The headline uses next-close settlement (each day's digest supersedes the last), with longer holding horizons fully published too. Monthly & quarterly went live on 2026-07-07 — existing calls need to mature first, shown as \"pending\" until then.",
+    mk_ttl: "Taiwan vs US, wins and losses by market",
+    mk_tw: "🇹🇼 Taiwan · 5-trading-day settlement",
+    mk_us: "🇺🇸 US · 5-trading-day settlement",
+    mk_note: "Same yardstick as the \"weekly\" column above, just split by market; parentheses show (wins/samples), intervals are Wilson 95%. Raw data (incl. conservative day-clustered intervals) is fully public at /data/track-record.json — verify it yourself.",
     f_us: "🇺🇸 US", f_tw: "🇹🇼 TW", f_a: "📐 Direction (A)", f_c: "⚠️ Risk (C)",
     f_win: "✅ Win", f_loss: "❌ Loss",
     th_date: "Date", th_tic: "Stock", th_call: "Original Call", th_type: "Type", th_res: "Result",
@@ -1125,6 +1176,7 @@ function applyLang(lang) {
   document.querySelector(".lang-btn").textContent = lang === "zh" ? "EN" : "中文";
   document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
   if (typeof renderHorizonStats === "function") renderHorizonStats(); // 動態數字隨語言重繪
+  if (typeof renderMarketStats === "function") renderMarketStats();
   if (dataLoaded) {
     // 表格/合計統計/空狀態的文字是 JS 生成,不吃 data-i18n,語言切換要手動重繪
     renderRecords(currentFilter);
