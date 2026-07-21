@@ -33,6 +33,40 @@ except ImportError:
 ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
 MODEL = "claude-haiku-4-5-20251001"
 
+AI_SLOP_LINT = Path.home() / "autonomous" / "capabilities" / "ai_slop_lint" / "logic.py"
+_slop_mod = None
+
+
+def _slop_report(body_html: str):
+    """AI 味密度檢查(離線確定性 lint)。積木缺席/壞掉回 None:lint 是品質閘不是產線依賴。"""
+    global _slop_mod
+    try:
+        if _slop_mod is None:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("ai_slop_lint_logic", AI_SLOP_LINT)
+            _slop_mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(_slop_mod)
+        return _slop_mod.score(body_html, is_html=True)
+    except Exception as e:
+        print(f"    [slop-lint unavailable: {type(e).__name__}] 跳過檢查")
+        return None
+
+
+def slop_gated(gen_fn, label: str, retries: int = 1):
+    """生成 + AI-slop 閘:sloppy 重生一次,仍 sloppy 丟棄(寧缺勿濫);watch 放行但大聲記錄。"""
+    for attempt in range(retries + 1):
+        art = gen_fn()
+        rep = _slop_report(art["body_html"])
+        if rep is None or rep["verdict"] == "clean":
+            return art
+        offenders = [h["pattern"] for h in rep["top_offenders"][:3]]
+        if rep["verdict"] == "watch":
+            print(f"    [slop-watch] {label} density={rep['slop_density']:.1f} {offenders}(放行,留觀察)")
+            return art
+        tail = "→重生一次" if attempt < retries else "→丟棄不發(寧缺勿濫)"
+        print(f"    [slop-SLOPPY] {label} density={rep['slop_density']:.1f} {offenders}{tail}")
+    return None
+
 BLOG_DIR = ROOT / "docs" / "blog"
 BLOG_DIR.mkdir(parents=True, exist_ok=True)
 SEEDS_FILE = ROOT / "scripts" / "seo_seeds.json"
@@ -2065,36 +2099,41 @@ def main():
     for term, keyword in term_seeds:
         print(f"  • 詞彙教學 — {term}")
         try:
-            art = gen_term_article(term, keyword)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_term_article(term, keyword), f"term:{term}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, market, chain_key in chain_seeds:
         print(f"  • {market.upper()} {code} {name} — {CHAIN_TOPIC}")
         try:
-            art = gen_chain_article(code, name, market, chain_key)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_chain_article(code, name, market, chain_key), f"chain:{code}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, market, rows in dividend_seeds:
         print(f"  • {market.upper()} {code} {name} — {DIVIDEND_TOPIC}")
         try:
-            art = gen_dividend_article(code, name, market, rows)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_dividend_article(code, name, market, rows), f"dividend:{code}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for indicator, keyword in macro_seeds:
         print(f"  • 總經教學 — {indicator}")
         try:
-            art = gen_macro_article(indicator, keyword)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_macro_article(indicator, keyword), f"macro:{indicator}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for topic, keyword in beginner_seeds:
         print(f"  • 新手教學 — {topic}")
         try:
-            art = gen_beginner_article(topic, keyword)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_beginner_article(topic, keyword), f"beginner:{topic}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, market, conf_entry, materials in event_seeds:
@@ -2102,23 +2141,28 @@ def main():
         kind = "重點解讀" if (materials and is_past) else "前哨" if materials else ("回顧" if is_past else "前瞻")
         print(f"  • {market.upper()} {code} {name} — 法說會{kind}")
         try:
-            art = gen_event_article(code, name, market, conf_entry, materials)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_event_article(code, name, market, conf_entry, materials),
+                             f"event:{code}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, market, date, entries in confluence_seeds:
         degree = len(set(e.get("source") for e in entries))
         print(f"  • {market.upper()} {code} {name} — {CONFLUENCE_TOPIC}(degree={degree})")
         try:
-            art = gen_confluence_article(code, name, market, date, entries)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_confluence_article(code, name, market, date, entries),
+                             f"confluence:{code}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, topic, market in stock_seeds:
         print(f"  • {market.upper()} {code} {name} — {topic}")
         try:
-            art = gen_article(code, name, topic, market)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_article(code, name, topic, market), f"stock:{code}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     print("③ 校正相關文章雙向連結...")
