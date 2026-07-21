@@ -126,6 +126,25 @@ def settle(twii_bars, today):
         log("已結算舊預測")
 
 
+def forecast_today():
+    """日報 06:20 生成時由 data_fetcher.fetch_all 呼叫:slot a 模型算今日收盤方向機率。
+    只在早報時窗(TW 04-09)計算(晚報是美股主場且韓日開盤未知);任何失敗回 {}(缺了不缺信)。
+    不寫 shadow ledger——06:25 cron 另記,雙軌對帳。"""
+    try:
+        now = datetime.now(TW)
+        if not (4 <= now.hour < 9) or now.weekday() >= 5:
+            return {}
+        model_all = json.loads(MODEL_PATH.read_text())
+        data = {k: bars(v) for k, v in SYMS.items()}
+        f = build_features("a", now.date(), data)
+        p = predict(model_all["model_a"], f)
+        return {"p_up": round(p, 3), "tier": tier(p), "slot": "a",
+                "trained_through": model_all["trained_through"]}
+    except Exception as e:
+        log(f"forecast_today failed(fail-silent): {e}")
+        return {}
+
+
 def main():
     test = "--test" in sys.argv
     slot = None

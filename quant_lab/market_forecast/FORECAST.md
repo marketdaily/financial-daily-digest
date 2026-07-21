@@ -27,7 +27,11 @@ open-to-close 版本 OOS:A 54.1%(基礎 52.7%)、B 56.2%;唯 B 最有把握 20% 
 - 凍結模型:`train.py`(全樣本 logistic,L2)→ `intel/market_forecast_model.json`;季度重訓。
 - 執行:`intel/market_forecast.py`,winrig cron 06:25(slot a)/08:16(slot b)平日,
   只記 `shadow_ledger.jsonl`(gitignored,winrig 本機),每次執行自動結算舊預測(cc+oc 都記)。
-- **轉正條件(預先登記)**:shadow 跑滿 10 個交易日後檢查——cc 方向命中與 OOS 相符
-  (整體 >=60%,高信心日不翻車),行情抓取零故障 → 才把「今日大盤:偏漲(信心 X%)/今天是雜訊日」
-  一行放進日報(大盤層級、全體相同、免費,合規)。不符 → 查明或降級。
+- **已直接轉正進日報(2026-07-21 用戶指令:「還在測試期,能是什麼就是什麼」)**:
+  `data_fetcher.fetch_all` 呼叫 `forecast_today()`(slot a,只在早報時窗有值,fail-silent 回 {}),
+  analyzer 餵 LLM 指令:TLDR 第一段帶「今日大盤:偏漲/偏跌(量化信心 X%)」,雜訊日誠實寫
+  「大盤方向難判」;標示「量化模型·測試中」;嚴禁轉譯成進場時機;與重挫閘矛盾時死防線優先。
+  shadow ledger(06:25/08:16 cron)續跑當公開記分板,累積後檢驗是否與 OOS 相符,不符即降級。
+- **後續(用戶已定方向)**:Shioaji API 接上後,「B 高信心日」桶(64.2%/+0.40% oc)走
+  backtest-validation 全流程(成本/DSR/walk-forward)評估成為交易策略;其他桶不碰。
 - 重跑回測:資料用 `../crash_gate_night/fetch_global.py` 抓;`ceiling_backtest.py` + `oc_validation.py`。

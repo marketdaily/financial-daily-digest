@@ -1417,6 +1417,15 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
     except Exception as _e:
         print(f"[intel_signals] skipped: {_e}")
 
+    # 每日大盤量化預判(slot a 隔夜模型,收盤方向機率+信心分層) — 只在早報時窗有值,
+    # 模型/回測/可操作性但書見 quant_lab/market_forecast/FORECAST.md,失敗回 {} 缺了不缺信
+    market_forecast = {}
+    try:
+        from intel.market_forecast import forecast_today
+        market_forecast = forecast_today()
+    except Exception as _e:
+        print(f"[market_forecast] skipped: {_e}")
+
     return {
         "fundamentals": fundamentals,
         "us_market": us_market,
@@ -1434,6 +1443,7 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         "earnings_impact": earnings_impact,
         "political_signals": political_signals,
         "intel_signals": intel_signals,
+        "market_forecast": market_forecast,
         # 必用 TW 時區：GH Actions runner 在 UTC，06:55 TW 寄送時 UTC 還是前一天
         # 2026-05-27 出包過：runner UTC 22:55 (= TW 5/27 06:55) datetime.now()→5/26
         # 害 _market_status() 拿 5/26 算「昨晚」變成 5/25 Memorial Day 假，日報通篇寫錯

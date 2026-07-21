@@ -597,6 +597,24 @@ def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks:
                      "):歷史統計這種日子台股當日大跌機率為平日約 10 倍。"
                      "TLDR 開頭必須是全市場防守警告;今天所有個股禁止無條件買進,持股者重點講防守與停損。")
 
+    # 每日大盤量化預判(2026-07-21 上線,walk-forward OOS 2015-2026:整體 66.6%、高信心日 84.9%、
+    # 雜訊日≈擲硬幣;詳 quant_lab/market_forecast/FORECAST.md)。定位=收盤方向統計預報,
+    # 嚴禁被 LLM 轉譯成進場時機;與重挫閘/防守層矛盾時死防線優先。
+    mf = data.get("market_forecast") or {}
+    if mf.get("p_up") is not None:
+        _p = mf["p_up"] * 100
+        if mf.get("tier") == "noise":
+            lines.append(f"【今日大盤量化預判】P(收漲)={_p:.0f}%,屬「雜訊日」——模型沒把握的日子。"
+                         "TLDR 要誠實帶一句:今天大盤方向難判,重點放個股紀律與風控,不要對大盤方向拍胸脯。")
+        else:
+            _dirw = "偏漲" if mf["p_up"] > 0.5 else "偏跌"
+            _conf = "高" if mf.get("tier") == "high" else "中"
+            lines.append(f"【今日大盤量化預判】收盤方向{_dirw},P(收漲)={_p:.0f}%(信心:{_conf};"
+                         "量化模型·測試中)。TLDR 第一段必須含這個判斷,格式如「今日大盤:"
+                         f"{_dirw}(量化信心 {_p:.0f}%)」。注意:這是收盤方向統計預報,大半資訊會反映在"
+                         "開盤跳空——嚴禁把它寫成「所以開盤買進/追price」的進場建議;"
+                         "若上方有防守/重挫閘指令,以防守指令為準,預判只作參考陳述。")
+
     index_names = {
         "^GSPC": "S&P500", "^IXIC": "NASDAQ", "^DJI": "道瓊",
         "DX-Y.NYB": "美元指數", "^TWII": "台灣加權指數"
