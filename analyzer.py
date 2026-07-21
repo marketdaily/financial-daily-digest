@@ -1106,6 +1106,45 @@ def _pp_chase_gate(html: str, _techs_gate: dict) -> str:
     )
 
 
+def _pp_uptrend_chase_gate(html: str, _techs_gate: dict, _regime_label: str) -> str:
+    import re as _re
+    # 順風追高閘(deterministic,2026-07-21,dq-519171bfa5):risk_on 市況+站上 MA20 的「建議買入」
+    # 降級觀望。帳本 14 組預先登記 cut(research/2026-07-13_buy_setup_conditional_edge):追強勢三 cut
+    # 全 certified negative_edge(regime_up 勝率 23.1%/uptrend_above_ma20 31.7%/uptrend∧prob 23.6%,
+    # 基線 47.3%,day-neutralized EV -1.7~-2.5%/日),與 KPI chase_high 稽核(1451 樣本)獨立收斂;
+    # wait 是系統唯一真 edge → 轉 wait 嚴格佔優。與 _pp_chase_gate 互補:該閘管個股過熱
+    # (>MA20 逾 6%,不分市況),本閘管順風市況追強勢(站上 MA20 即擋,只在 risk_on)。
+    # regime up 以 _regime_label=="risk_on" 代理(與 _pp_bucket_autogate 同一映射);
+    # techs 缺席 fail-open(閘門寧鬆勿誤殺,同 _quant_prior 哲學)。
+    if _regime_label != "risk_on":
+        return html
+
+    def _demote_uptrend(m):
+        block = m.group(0)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        t = _techs_gate.get(hm.group(1)) or {}
+        try:
+            p = float(t.get("price") or 0)
+            ma20 = float(t.get("ma20") or 0)
+        except (TypeError, ValueError):
+            return block
+        if not (p and ma20) or p <= ma20:
+            return block
+        block = block.replace('class="signal-card buy"', 'class="signal-card wait"', 1)
+        block = _re.sub(r'<span class="signal-verdict-chip buy">[^<]*</span>',
+                        '<span class="signal-verdict-chip wait">⚪ 觀望·多頭市況勿追強勢(回檔再進)</span>'
+                        '<!--gated:buy:uptrend_chase-->',
+                        block, count=1)
+        return block
+
+    return _re.sub(
+        r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote_uptrend, html, flags=_re.DOTALL,
+    )
+
+
 def _pp_bucket_autogate(html: str, _regime_label: str) -> str:
     import re as _re
     # 桶級自動閘門(2026-07-08):把「每日戰績稽核 → 人工分析 → 改規則」閉環成全自動。
@@ -1316,6 +1355,7 @@ def _pp_holder_wording(html: str) -> str:
         ("⚪ 觀望·跌深超賣慎追空", "⚪ 持股防守·跌深超賣別追空,守停損"),
         ("⚪ 觀望·前訊號已破止損(禁再加碼)", "⚪ 持股防守·已破止損,守紀律勿加碼"),
         ("⚪ 觀望·漲多過熱(回檔再進)", "⚪ 持股防守·漲多過熱,守停損別加碼"),
+        ("⚪ 觀望·多頭市況勿追強勢(回檔再進)", "⚪ 持股防守·多頭市況勿追高加碼,守停損"),
         ("⚪ 觀望·同型判斷近期實測失準,自動降級", "⚪ 持股防守·同型判斷近期失準,守好停損"),
         ("⚪ 觀望·今日除息(參考價已扣息)", "⚪ 持股防守·今日除息(參考價已扣息)"),
         ("🔴 建議賣出", "🔴 減碼/出場"),
@@ -1507,12 +1547,13 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_strip_rogue_cards(html)
     html = _pp_verdict_chip(html)
     _techs_gate = data.get("technicals", {}) or {}
+    _regime_label = _market_regime(data).get("label", "neutral")
     html = _pp_knife_gate(html, _techs_gate)
     html = _pp_crash_gate(html, data)
     html = _pp_rebuy_bleed_gate(html, data)
     html = _pp_chase_gate(html, _techs_gate)
+    html = _pp_uptrend_chase_gate(html, _techs_gate, _regime_label)
     html = _pp_oversold_gate(html, _techs_gate)
-    _regime_label = _market_regime(data).get("label", "neutral")
     html = _pp_extended_gate(html, _techs_gate, _regime_label)
     html = _pp_bucket_autogate(html, _regime_label)
     html = _pp_exdiv_guard(html, data)

@@ -242,7 +242,9 @@ def parse_digest_html(date_str: str, html: str) -> list[dict]:
         # (顯示的觀望 + 被擋的原判斷,見 stats.gate_effect),自動驗證閘門擋對還是擋錯。
         gated_from = gate_name = None
         for c in card.find_all(string=lambda t: isinstance(t, Comment)):
-            gm = re.match(r"\s*gated:(buy|hold|sell|wait):([a-z_]+)\s*$", str(c))
+            # 閘門名接受連字號:producer 端 rebuy-bleed 自 2026-07-13 起就帶 hyphen,
+            # 舊 charset [a-z_]+ 配不上=該閘反事實追蹤靜默漏記(2026-07-21 盤點時發現)。
+            gm = re.match(r"\s*gated:(buy|hold|sell|wait):([a-z_-]+)\s*$", str(c))
             if gm:
                 gated_from, gate_name = gm.group(1), gm.group(2)
                 break
