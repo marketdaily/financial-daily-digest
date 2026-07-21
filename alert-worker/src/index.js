@@ -1245,7 +1245,8 @@ export default {
     // 分析,全體用戶同內容(合規)。dry=true 只推 admin 不進用戶收件匣(測試/演練用)。
     if (url.pathname === "/internal/market-open-alert" && request.method === "POST") {
       const got = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
-      const candidates = [env.ADMIN_PUSH_TOKEN, env.ADMIN_PUSH_TOKEN_2, env.INTERNAL_TOKEN].filter(Boolean);
+      // 候選清單對齊 admin-line-push:winrig .env MARKETDAILY_ALERT_TOKEN 實為 MARKETING_TARGETS_TOKEN 同值
+      const candidates = [env.ADMIN_PUSH_TOKEN, env.ADMIN_PUSH_TOKEN_2, env.MARKETING_TARGETS_TOKEN, env.INTERNAL_TOKEN].filter(Boolean);
       let okAuth = false;
       for (const t of candidates) {
         if (got.length !== t.length) continue;
