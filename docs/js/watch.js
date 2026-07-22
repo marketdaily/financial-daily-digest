@@ -545,7 +545,7 @@ async function loadChain() {
   } catch { chainIdx = {}; }
   // 預產公司級鏈(Claude 批次產,零 API 費):精修 DB 優先,預產補位
   try {
-    const pg = await fetch("data/chain_pregen.json?v=20260722b").then(r => r.json());
+    const pg = await fetch("data/chain_pregen.json?v=20260722c").then(r => r.json());
     Object.entries(pg).forEach(([k, v]) => {
       if (!chainIdx[k]) chainIdx[k] = { source: "pregen", mid: { desc: v.mid },
         upstream: (v.up || []).map(x => ({ name_zh: x.n, ticker: x.t, role: x.r })),
