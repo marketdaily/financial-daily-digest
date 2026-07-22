@@ -22,6 +22,12 @@
          radial-gradient(900px 480px at 85% -8%,rgba(167,139,250,.14) 0%,transparent 60%),
          radial-gradient(1200px 620px at 15% -12%,rgba(49,46,129,.55) 0%,var(--bg) 58%) fixed var(--bg)}
   .wrap{max-width:840px;margin:0 auto}
+  .anav{display:none;position:fixed;top:0;left:0;right:0;z-index:60;gap:18px;align-items:center;
+      padding:10px 20px;background:rgba(11,15,20,.95);border-bottom:1px solid #232b36;
+      font-size:.9rem;font-weight:700;backdrop-filter:blur(6px);}
+  .anav a{color:#8b96a5;text-decoration:none;} .anav a:hover{color:var(--ink);}
+  .anav .cur{color:var(--ink);}
+  body.has-anav{padding-top:46px;}
   .top{display:flex;align-items:center;justify-content:space-between;gap:10px;
        padding:18px 2px 10px;position:sticky;top:0;z-index:20;
        background:linear-gradient(180deg,var(--bg) 62%,transparent);backdrop-filter:blur(6px)}
@@ -283,24 +289,26 @@
 </head>
 <body>
 <div class="wrap">
+  <nav id="analyst-nav" class="anav">
+    <a href="https://analyst.marketdaily.ai/">📊 工作台</a>
+    <a href="https://analyst.marketdaily.ai/cb/">🔍 個股深查</a>
+    <span class="cur">📈 看盤</span>
+  </nav>
   <div class="top">
     <h1><span data-i18n="pg_h1">📈 看盤</span></h1>
-    <nav id="analyst-nav" style="display:none;font-size:14px;font-weight:700">
-      <a href="https://analyst.marketdaily.ai/" style="margin-right:14px">📊 工作台</a>
-      <a href="https://analyst.marketdaily.ai/cb/" style="margin-right:14px">🔍 個股深查</a>
-      <span style="opacity:.55">📈 看盤(現頁)</span>
-    </nav>
     <a class="back" id="back-dash" href="dashboard.html" data-i18n="back_dash">← 回 Dashboard</a>
   </div>
   <script>
-  /* 從 analyst 站來的分析師:顯示三分頁導覽、藏「回 Dashboard」(那是會員後台,不是他們的家);
-     sessionStorage 記住,深連結換股/刷新後導覽不掉。一般 MarketDaily 用戶完全不受影響 */
+  /* 從 analyst 站來的分析師:頂部固定三分頁導覽(位置/樣式與工作台、個股深查頁一致,
+     點哪頁都待在左上角同一處);藏「回 Dashboard」(那是會員後台不是他們的家)。
+     sessionStorage 記住,換股/刷新不掉。一般 MarketDaily 用戶完全不受影響 */
   (function(){
     if (new URLSearchParams(location.search).get("src") === "analyst")
       sessionStorage.setItem("md-watch-from-analyst", "1");
     if (sessionStorage.getItem("md-watch-from-analyst") === "1") {
-      document.getElementById("analyst-nav").style.display = "block";
+      document.getElementById("analyst-nav").style.display = "flex";
       document.getElementById("back-dash").style.display = "none";
+      document.body.classList.add("has-anav");
     }
   })();
   </script>
