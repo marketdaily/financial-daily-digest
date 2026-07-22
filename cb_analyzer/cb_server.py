@@ -43,6 +43,13 @@ def _desk_password():
 DESK_PW = _desk_password()
 AUTH_TOKEN = (hmac.new(DESK_PW.encode(), b"cb-desk-auth-v1", hashlib.sha256).hexdigest()
               if DESK_PW else None)
+# desk 工作台(cb-desk/scripts/dashboard_server.py)的 cookie:同一組密碼、不同鹽。
+# 兩站掛在 analyst.marketdaily.ai 同網域下(本站在 /cb 前綴),接受 desk 的 deskauth
+# 即單一登入——在 desk 登入一次,/ 與 /cb/ 都通。
+DESK_DASH_TOKEN = (hmac.new(DESK_PW.encode(), b"cb-desk-dash-v1", hashlib.sha256).hexdigest()
+                   if DESK_PW else None)
+ANALYST_HOST = "analyst.marketdaily.ai"
+LEGACY_HOST = "cb.marketdaily.ai"
 _LOGIN_FAILS = {}
 
 LOGIN_HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
@@ -729,9 +736,36 @@ class H(BaseHTTPRequestHandler):
             k, _, v = part.strip().partition("=")
             if k == "cbauth" and hmac.compare_digest(v, AUTH_TOKEN):
                 return True
+            if k == "deskauth" and DESK_DASH_TOKEN and hmac.compare_digest(v, DESK_DASH_TOKEN):
+                return True
+        return False
+
+    def _redirect(self, code, location):
+        self.send_response(code)
+        self.send_header("Location", location)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
+    def _preroute(self):
+        """統一入口(do_GET/do_POST 最前面呼叫)。回 True = 已回應,呼叫端直接 return。
+        ① Host=cb.marketdaily.ai → 301 到 analyst.marketdaily.ai/cb+原path(舊網域收斂)。
+        ② 剝 /cb 前綴:cloudflared 的 path 路由不 strip prefix,analyst.marketdaily.ai/cb/*
+           進來的 path 都帶 /cb 開頭,剝掉後其餘路由零改動。只認 /cb、/cb/、/cb?(邊界:
+           /cbx、/cb.. 都不剝,落到原本的 404/靜態檔處理)。"""
+        host = (self.headers.get("Host") or "").split(":")[0].strip().lower()
+        if host == LEGACY_HOST:
+            self._redirect(301, f"https://{ANALYST_HOST}/cb" + self.path)
+            return True
+        self.via_cb = False
+        if self.path == "/cb" or self.path.startswith("/cb/") or self.path.startswith("/cb?"):
+            self.via_cb = True
+            rest = self.path[3:]
+            self.path = rest if rest.startswith("/") else "/" + rest
         return False
 
     def do_POST(self):
+        if self._preroute():
+            return
         u = urllib.parse.urlparse(self.path)
         if u.path != "/login":
             return self._send(404, '<div class="serr">404</div>')
@@ -748,7 +782,7 @@ class H(BaseHTTPRequestHandler):
             _LOGIN_FAILS.pop(ip, None)
             self.send_response(303)
             self.send_header("Set-Cookie",
-                             "cbauth=%s; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax" % AUTH_TOKEN)
+                             "cbauth=%s; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax; Secure" % AUTH_TOKEN)
             self.send_header("Location", "/")
             self.send_header("Content-Length", "0")
             self.end_headers()
@@ -758,12 +792,18 @@ class H(BaseHTTPRequestHandler):
         return self._send(401, LOGIN_HTML.replace("{{msg}}", "密碼錯誤"))
 
     def do_GET(self):
+        if self._preroute():
+            return
         u = urllib.parse.urlparse(self.path)
         qs = urllib.parse.parse_qs(u.query)
         g = lambda k: (qs.get(k, [None])[0])
         if not self._authed():
             if u.path.startswith("/api/"):
                 return self._send(401, '<div class="serr">未登入,請重新整理頁面登入</div>')
+            if self.via_cb:
+                # analyst.marketdaily.ai/cb/* 未登入 → 302 到 desk 登入頁(同網域根),
+                # 登入後 deskauth cookie Path=/ 兩邊通用,不用第二次登入
+                return self._redirect(302, "/")
             return self._send(401, LOGIN_HTML.replace("{{msg}}", ""))
         try:
             if u.path in ("/", "/index.html"):
@@ -793,7 +833,8 @@ class H(BaseHTTPRequestHandler):
                                                           float(dr) if dr else 0.07))
             # 其他:當靜態檔(report.html 等)
             p = os.path.join(HERE, u.path.lstrip("/"))
-            if os.path.isfile(p) and os.path.realpath(p).startswith(HERE):
+            # 前綴比對帶尾分隔符:裸 HERE 會放行名字以 cb_analyzer 開頭的兄弟目錄(cb_analyzer2/…)
+            if os.path.isfile(p) and os.path.realpath(p).startswith(HERE + os.sep):
                 ct = "image/png" if p.endswith(".png") else "text/html; charset=utf-8"
                 with open(p, "rb") as f:
                     return self._send(200, f.read(), ct)

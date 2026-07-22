@@ -2552,6 +2552,10 @@ async function init() {
   initSync().then(() => refreshAlertCtx());
   tickMkt();
   document.addEventListener("fullscreenchange", () => setTimeout(redrawChart, 80));
+  /* ?c=<代碼> 深連結（desk 工作台 analyst.marketdaily.ai 的 📈 鈕）：init 完成後自動開
+     該股詳情 sheet。白名單字元才收——sym 會進 openSheet 的 innerHTML，不吃任意字串 */
+  const dlSym = (new URLSearchParams(location.search).get("c") || "").trim().toUpperCase();
+  if (dlSym && /^[A-Z0-9.]{1,12}$/.test(dlSym)) openSheet(dlSym);
 }
 init();
 document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshNow(); });
