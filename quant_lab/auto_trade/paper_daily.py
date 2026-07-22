@@ -22,7 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PDIR = os.path.join(HERE, ".paper")
 STATE = os.path.join(PDIR, "state.json")
 LEDGER = os.path.join(PDIR, "ledger.jsonl")
-COST_B = 1.5
+COST_B = 3.3   # 台指期真實來回:期交稅1.83點(法定0.002%x2)+五折手續費~0.5點+價差~1點
 COST_A = 4.4
 START_EQUITY = 3_000_000            # 虛擬本金(用戶實際資金規模)
 PV = {"A": 50, "B": 50, "C": 50}    # paper 規模:B/C=小台1口、A=跨式1組(皆每點NT$50)
