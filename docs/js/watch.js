@@ -10,7 +10,7 @@ const I18N = {
     tab_watch: "⭐ 自選", tab_cats: "🗂 分類", tab_ranks: "🏆 排行",
     sec_tw: "台股", sec_us: "美股",
     col_sym: "代號 / 名稱", col_px: "成交", col_chg: "漲跌", col_bid: "買進", col_ask: "賣出",
-    col_hl: "高 / 低", col_vol: "量(張)", col_qty: "股數", col_avg: "均價", col_now: "現價", col_pnl: "損益",
+    col_hl: "高 / 低", col_vol: "量(張)", col_vol_us: "量(股)", col_qty: "股數", col_avg: "均價", col_now: "現價", col_pnl: "損益",
     gate_msg: "請先登入", gate_link: "前往 Dashboard →",
     empty_msg: "這個清單目前是空的。", empty_link: "去新增自選 →", more: "顯示更多 ↓",
     grp_all: "全部", grp_new: "＋新群組", grp_prompt: "群組名稱?", grp_del_confirm: "刪除這個群組?",
@@ -73,7 +73,7 @@ const I18N = {
     tab_watch: "⭐ Watchlist", tab_cats: "🗂 Sectors", tab_ranks: "🏆 Ranks",
     sec_tw: "Taiwan", sec_us: "US",
     col_sym: "Symbol / Name", col_px: "Last", col_chg: "Chg", col_bid: "Bid", col_ask: "Ask",
-    col_hl: "H / L", col_vol: "Vol", col_qty: "Shares", col_avg: "Avg", col_now: "Last", col_pnl: "P&L",
+    col_hl: "H / L", col_vol: "Vol", col_vol_us: "Vol", col_qty: "Shares", col_avg: "Avg", col_now: "Last", col_pnl: "P&L",
     gate_msg: "Please sign in first.", gate_link: "Go to Dashboard →",
     empty_msg: "This list is empty.", empty_link: "Add stocks →", more: "Show more ↓",
     grp_all: "All", grp_new: "+ New group", grp_prompt: "Group name?", grp_del_confirm: "Delete this group?",
@@ -191,13 +191,18 @@ function nameCell(sym, name) {
 }
 
 function rowHtml(sym) {
-  // 台股表格 7 欄(含五檔 ext + 高低/量);美股表格只有 3 欄(表頭無高低/量),不產多餘 td 免錯位
-  const extra = isTWSym(sym)
-    ? `<td class="ext" id="bid-${sym}">—</td><td class="ext" id="ask-${sym}">—</td>
-    <td class="hide-sm" id="hl-${sym}">—</td><td class="hide-sm" id="vol-${sym}">—</td>`
-    : "";
+  // 台股 7 欄(五檔 ext + 高低/量);美股 5 欄(高低/量,無五檔——券商即時只做台股)。
+  // 高低量兩表都有,五檔 bid/ask 只台股產(美股表頭亦無)。
+  const bidask = isTWSym(sym) ? `<td class="ext" id="bid-${sym}">—</td><td class="ext" id="ask-${sym}">—</td>` : "";
+  const hlvol = `<td class="hide-sm" id="hl-${sym}">—</td><td class="hide-sm" id="vol-${sym}">—</td>`;
   return `<tr data-sym="${sym}"><td>${nameCell(sym)}</td>
-    <td class="px" id="px-${sym}">—</td><td id="chg-${sym}" class="neutral">—</td>${extra}</tr>`;
+    <td class="px" id="px-${sym}">—</td><td id="chg-${sym}" class="neutral">—</td>${bidask}${hlvol}</tr>`;
+}
+// 成交量顯示:台股=張(逗號分隔);美股=股(M/K 縮寫,避免千萬級數字過長)
+function fmtVol(v, sym) {
+  if (v == null) return "—";
+  if (isTWSym(sym)) return v.toLocaleString();
+  return v >= 1e6 ? (v / 1e6).toFixed(1) + "M" : v >= 1e3 ? Math.round(v / 1e3) + "K" : String(v);
 }
 
 function paint(q) {
@@ -223,7 +228,7 @@ function paint(q) {
     $("hl-" + s).textContent = `${fp(q.high)} / ${fp(q.low)}`;
   }
   if (q.volume !== undefined && $("vol-" + s)) {
-    $("vol-" + s).textContent = q.volume == null ? "—" : q.volume.toLocaleString();
+    $("vol-" + s).textContent = fmtVol(q.volume, s);
   }
   if (prev !== "—" && prev !== px.textContent) {
     const tr = document.querySelector(`tr[data-sym="${s}"]`);
