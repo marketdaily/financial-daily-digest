@@ -1,8 +1,9 @@
 """衍生品/籌碼分析層:給分析師看一檔標的時,補上 cb_intel(法人流向)沒涵蓋的
 融資融券、借券賣出、個股期貨基差、選擇權隱含波動。目的=分析輔助,不是下單訊號。
 
-現在能跑的(FinMind 免費):融資融券餘額+券資比、借券賣出餘額。
-禮拜一接 Shioaji 後補:個股期貨基差、選擇權市場 IV(可回頭當 CB 定價的市場端 vol 錨)。
+全功能:融資融券+券資比、借券、個股期貨基差(Shioaji 即時,期交所官方對照表263檔)、
+個股選擇權 ATM IV(FinMind 日資料+Black-76,=CB 定價的市場端 vol 錨)。
+CB 視角:個股期貨「逆價差擴大」=拆解者期貨對沖壓力的足跡,值得盯。
 用法:cd cb_analyzer && python3 cb_derivatives.py 2330
 """
 import os
@@ -110,17 +111,151 @@ def securities_lending(code, today=None):
     return {"date": last.get("date"), "lending_bal": bal}
 
 
+_SJ = {"api": None}
+
+
+def _shioaji():
+    """懶載入 Shioaji(production,只讀報價不下單)。key 在 repo 根 .env。失敗回 None。"""
+    if _SJ["api"] is not None:
+        return _SJ["api"]
+    try:
+        env = {}
+        for base in (HERE, os.path.dirname(HERE)):
+            p = os.path.join(base, ".env")
+            if os.path.exists(p):
+                for line in open(p, encoding="utf-8"):
+                    if "=" in line and not line.startswith("#"):
+                        k, v = line.strip().split("=", 1)
+                        env.setdefault(k, v)
+        import shioaji as sj
+        import time
+        api = sj.Shioaji()
+        kw = dict(api_key=env["SHIOAJI_API_KEY"], secret_key=env["SHIOAJI_SECRET_KEY"])
+        try:
+            api.login(fetch_contract=True, **kw)
+        except TypeError:
+            api.login(**kw)
+        time.sleep(4)
+        _SJ["api"] = api
+        return api
+    except Exception:
+        return None
+
+
+MAP_CACHE = os.path.join(HERE, ".stockfut_map.json")
+
+
+def _stockfut_map():
+    """期交所官方「股票期貨/選擇權標的一覽」→ {證券代號:{fut:CDF, opt:CDO}}。快取30天。
+    (Shioaji 1.5 的 Contracts 無法列舉,官方對照表才是正解。)"""
+    import re
+    import time
+    try:
+        c = json.load(open(MAP_CACHE, encoding="utf-8"))
+        if time.time() - c.get("_fetched", 0) < 30 * 86400:
+            return c["map"]
+    except Exception:
+        pass
+    req = urllib.request.Request("https://www.taifex.com.tw/cht/2/stockLists",
+                                 headers={"User-Agent": "Mozilla/5.0"})
+    with urllib.request.urlopen(req, timeout=30) as r:
+        html_s = r.read().decode("utf-8", "ignore")
+    out = {}
+    for row in re.findall(r"<tr[^>]*>(.*?)</tr>", html_s, re.S):
+        cells = [re.sub(r"<[^>]+>", "", x).strip() for x in re.findall(r"<td[^>]*>(.*?)</td>", row, re.S)]
+        if len(cells) < 6 or not re.fullmatch(r"[A-Z]{2}", cells[0]) or not re.fullmatch(r"\d{4,6}", cells[2]):
+            continue
+        stock, pref = cells[2], cells[0]
+        is_fut = "●" in cells[4]
+        is_opt = "●" in cells[5] if len(cells) > 5 else False
+        if stock not in out and is_fut:                # 首列=標準契約(非小型)
+            out[stock] = {"fut": pref + "F", "opt": (pref + "O") if is_opt else None}
+    try:
+        json.dump({"_fetched": time.time(), "map": out}, open(MAP_CACHE, "w", encoding="utf-8"))
+    except Exception:
+        pass
+    return out
+
+
 def futures_basis(code):
-    """個股期貨基差(期貨 - 現貨)。禮拜一接 Shioaji 後實作:
-    basis>0 逆價差=看空/避險需求,<0 正價差=看多。現回 None(hook)。"""
-    return None  # TODO(Shioaji Monday): api.snapshots 個股期貨 vs 現股
+    """個股期貨基差(連續近月-現貨)。負=逆價差(避險/空方壓力)。無標的/不可用回 None。"""
+    m = _stockfut_map().get(str(code))
+    if not m or not m.get("fut"):
+        return None
+    api = _shioaji()
+    if api is None:
+        return None
+    try:
+        grp = api.Contracts.Futures.get(m["fut"])
+        f = grp[m["fut"] + "R1"]                        # 連續近月
+        stk = api.Contracts.Stocks[str(code)]
+        snaps = api.snapshots([f, stk])
+        px = {s.code: s.close for s in snaps}
+        fut_px, spot = px.get(f.code), px.get(str(code))
+        if not fut_px or not spot:
+            return None
+        return {"fut": f.code, "fut_px": fut_px, "spot": spot,
+                "basis": round(fut_px - spot, 2),
+                "basis_pct": round((fut_px / spot - 1) * 100, 2)}
+    except Exception:
+        return None
+
+
+def _bs_call(F, K, T, vol):
+    import math
+    if T <= 0 or vol <= 0:
+        return max(F - K, 0.0)
+    d1 = (math.log(F / K) + 0.5 * vol * vol * T) / (vol * math.sqrt(T))
+    d2 = d1 - vol * math.sqrt(T)
+    N = lambda x: 0.5 * (1 + math.erf(x / math.sqrt(2)))
+    return F * N(d1) - K * N(d2)
 
 
 def options_iv(code):
-    """上市選擇權市場隱含波動 + put/call skew。禮拜一接 Shioaji 後實作。
-    ⚠️ 台灣個股選擇權流動性普遍差,僅少數大型股(如 2330)+ 指數(TXO)有意義;
-    有值時可回頭當 cb_core CB 定價的『市場端 vol 錨』交叉驗證。現回 None(hook)。"""
-    return None  # TODO(Shioaji Monday): 選擇權鏈 → BS 反解 IV(接 cb_core 同一套)
+    """個股選擇權近月 ATM 隱含波動(FinMind 日資料+Black-76 反解,EOD 錨點)。
+    僅大型股有掛;有值=CB 定價的市場端 vol 錨(對照 cb_core 前瞻波動)。無則 None。"""
+    m = _stockfut_map().get(str(code))
+    if not m or not m.get("opt"):
+        return None
+    try:
+        import datetime
+        start = (datetime.date.today() - datetime.timedelta(days=7)).isoformat()
+        rows = _finmind("TaiwanOptionDaily", m["opt"], start)
+        for x in rows:                                   # 沒成交用結算價(TAIFEX 每日必標)
+            if not x.get("close"):
+                x["close"] = x.get("settlement_price") or 0
+        rows = [x for x in rows if len(str(x.get("contract_date", ""))) == 6
+                and (x.get("close") or 0) > 0]
+        if not rows:
+            return None
+        last_day = max(x["date"] for x in rows)
+        day = [x for x in rows if x["date"] == last_day]
+        near = min(x["contract_date"] for x in day)
+        chain = [x for x in day if x["contract_date"] == near]
+        pairs = {}
+        for x in chain:
+            pairs.setdefault(x["strike_price"], {})[x["call_put"]] = x["close"]
+        both = {k: v for k, v in pairs.items() if "call" in v and "put" in v}
+        if len(both) < 2:
+            return None
+        F_est = sorted(k + v["call"] - v["put"] for k, v in both.items())[len(both) // 2]
+        K = min(both, key=lambda k: abs(k - F_est))
+        y, mo = int(str(near)[:4]), int(str(near)[4:6])
+        d1 = datetime.date(y, mo, 1)
+        expiry = d1 + datetime.timedelta(days=(2 - d1.weekday()) % 7 + 14)
+        T = max((expiry - datetime.date.fromisoformat(last_day)).days, 1) / 365.0
+        px = both[K]["call"]
+        lo, hi = 0.01, 3.0
+        for _ in range(60):
+            mid = 0.5 * (lo + hi)
+            if _bs_call(F_est, K, T, mid) < px:
+                lo = mid
+            else:
+                hi = mid
+        return {"iv": round(0.5 * (lo + hi), 4), "K": K, "dte": round(T * 365),
+                "date": last_day, "F": round(F_est, 1)}
+    except Exception:
+        return None
 
 
 def derivatives_lines(code, spot=None):
@@ -142,8 +277,12 @@ def derivatives_lines(code, spot=None):
     if sl:
         lines.append(f"借券賣出餘額 {sl['lending_bal']:,}(法人空方)")
     fb = futures_basis(code)
-    if fb is not None:
-        lines.append(f"個股期貨基差 {fb:+.2f}")
+    if fb:
+        tone = "逆價差(避險/空方壓力)" if fb["basis"] < 0 else "正價差"
+        lines.append(f"個股期貨({fb['fut']})基差 {fb['basis']:+.2f}({fb['basis_pct']:+.2f}%,{tone})")
+    oi = options_iv(code)
+    if oi:
+        lines.append(f"個股選擇權 ATM 隱含波動 {oi['iv']:.0%}(K={oi['K']:.0f}, {oi['dte']}天)← 市場端 vol 錨,可對照 CB 前瞻波動")
     return lines
 
 
@@ -162,7 +301,6 @@ def main():
     print("\n報告行:")
     for ln in derivatives_lines(code):
         print(" •", ln)
-    print("\n(期貨基差 / 選擇權 IV = 禮拜一接 Shioaji 後補的 hook)")
 
 
 if __name__ == "__main__":

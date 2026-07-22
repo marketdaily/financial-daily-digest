@@ -95,3 +95,4 @@ _ig_frames/
 scripts/.price_cache.json
 *.bak-*
 *.sh.bak-*
+cb_analyzer/.stockfut_map.json
