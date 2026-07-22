@@ -1409,6 +1409,138 @@ def _pp_requalify_buy(html: str, data: dict) -> str:
     return html
 
 
+def _rotation_pairs_path():
+    import os
+    from pathlib import Path as _P
+    p = os.environ.get("MD_ROTATION_PAIRS_PATH")
+    return _P(p) if p else _P(__file__).resolve().parent / "scripts" / "rotation_pairs.jsonl"
+
+
+def _record_rotation_pairs(pairs: list) -> None:
+    import fcntl
+    import json as _json
+    # (date,from,to) 冪等 append(多用戶同持股共用一筆);flock 防並發;失敗靜默不影響日報。
+    path = _rotation_pairs_path()
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(str(path) + ".lock", "w") as lk:
+            fcntl.flock(lk, fcntl.LOCK_EX)
+            seen = set()
+            try:
+                for line in path.read_text(encoding="utf-8").splitlines():
+                    if line.strip():
+                        r = _json.loads(line)
+                        seen.add(f"{r.get('date')}|{r.get('from')}|{r.get('to')}")
+            except (OSError, ValueError):
+                pass
+            with open(path, "a", encoding="utf-8") as f:
+                for p in pairs:
+                    k = f"{p['date']}|{p['from']}|{p['to']}"
+                    if k not in seen:
+                        seen.add(k)
+                        f.write(_json.dumps(p, ensure_ascii=False) + "\n")
+    except OSError:
+        pass
+
+
+def _pp_rotation_note(html: str, data: dict) -> str:
+    import re as _re
+    # 換股思路(2026-07-22 Delvin 親令「賣掉的錢拿去買別的,比只喊賣更有操作價值」):
+    # 已持有(pos 標記)且終判「賣出/減碼」的卡,附同市場今日委員會精選中「結構較佳」的
+    # 輪動候選+可查證理由。設計原則:
+    #  · 賣方判斷是本系統唯一 certified 的能力(負edge情境識別);買方無 certified 正edge
+    #    → 候選只從既有精選池(council_top_picks,有快取)挑,且過結構閘:空頭結構或
+    #    短線過熱者不推(不把錢從一個負edge情境搬進另一個),無合格候選寧缺勿濫。
+    #  · 自我審計:配對進 rotation_pairs.jsonl,rotation_settle.py 週結算賣A買B相對表現。
+    #  · 合規:全體用戶同邏輯(免費全開),不涉報酬承諾,明示成本自行評估。
+    tech = data.get("technicals", {}) or {}
+    fund = data.get("fundamentals") or {}
+    names_all = data.get("tw_names_all", {}) or {}
+    all_mkt = {**(data.get("us_market") or {}), **(data.get("tw_market") or {})}
+
+    def _label(sym):
+        nm = names_all.get(sym) or (all_mkt.get(sym) or {}).get("name")
+        return stock_names.display_name(sym, nm)
+
+    def _sym_reasons(sym):
+        rs = []
+        if _quant_prior(tech.get(sym)) == "bear":
+            rs.append("空頭結構(價<MA20<MA50)")
+        if _is_extended(tech.get(sym)):
+            rs.append("短線過熱")
+        f = fund.get(sym) or {}
+        if f.get("val_class") == "rich":
+            rs.append("本益比位階偏貴")
+        try:
+            hi, px = f.get("dcf_high"), (all_mkt.get(sym) or {}).get("price")
+            if hi and px and float(px) > float(hi):
+                rs.append("價格高於 DCF 內在價值區間")
+        except (TypeError, ValueError):
+            pass
+        if f.get("chip_class") == "sell":
+            rs.append("籌碼面轉弱")
+        return rs or ["訊號面轉弱"]
+
+    def _candidate(sym, mkt_key):
+        try:
+            picks = council_top_picks(data, mkt_key, 3)
+        except Exception:
+            return None
+        for p in picks:
+            if p == sym:
+                continue
+            t = tech.get(p)
+            if _quant_prior(t) == "bear" or _is_extended(t):
+                continue
+            return p
+        return None
+
+    pairs = []
+
+    def _note(m):
+        block = m.group(0)
+        if "<!--pos:" not in block:
+            return block
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        sym = hm.group(1)
+        mkt_key = "tw" if sym[:1].isdigit() else "us"
+        cand = _candidate(sym, mkt_key)
+        if not cand:
+            return block
+        reasons = "、".join(_sym_reasons(sym)[:3])
+        cand_why = ("多頭結構(價>MA20>MA50)" if _quant_prior(tech.get(cand)) == "bull"
+                    else "結構中性、動能較佳")
+        note = ('<div style="color:#4338ca;font-size:12px;font-weight:600;line-height:1.7;'
+                'margin:4px 0 6px;">'
+                f"💱 換股思路:本檔壓力來自{reasons}。若執行減碼,同市場今日委員會精選中"
+                f"結構較佳的是 {_label(cand)}——{cand_why}。換股涉及交易成本與稅費,"
+                "請以自身持倉成本自行評估。</div>")
+        if '<div class="signal-reason">' in block:
+            block = block.replace('<div class="signal-reason">', note + '<div class="signal-reason">', 1)
+        else:
+            block = block.replace("<!--h:", note + "<!--h:", 1)
+        try:
+            pairs.append({"date": str(data.get("date") or ""), "market": mkt_key,
+                          "from": sym, "to": cand,
+                          "from_px": float((all_mkt.get(sym) or {}).get("price")),
+                          "to_px": float((all_mkt.get(cand) or {}).get("price"))})
+        except (TypeError, ValueError):
+            pass
+        return block
+
+    try:
+        out = _re.sub(
+            r'<div class="signal-card sell">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+            _note, html, flags=_re.DOTALL)
+        if pairs:
+            _record_rotation_pairs(pairs)
+        return out
+    except Exception:
+        return html
+
+
 def _pp_holder_wording(html: str) -> str:
     import re as _re
     # 持有者框架措辭死防線(2026-07-07 持倉客製化):帶 <!--pos:--> 標記的卡=用戶已持有,
@@ -1638,6 +1770,7 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_holder_wording(html)  # 須在 knife/extended/requalify 三閘門之後:覆蓋它們改寫的 chip
     html = _pp_scrub_earnings_notes(html, data)
     html = _pp_expand_tickers(html, tw_hint)
+    html = _pp_rotation_note(html, data)
     html = _pp_strip_empty_impact(html)
     html = _pp_drop_empty_sections(html)
     html = _pp_hoist_verdict_chip(html)
