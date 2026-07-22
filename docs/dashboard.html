@@ -986,7 +986,7 @@ nav::after {
 <style>@keyframes mdGuideBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}</style>
 
 <script src="stocks.js?v=20260528"></script>
-<script src="js/dash-core.js?v=20260722b"></script>
+<script src="js/dash-core.js?v=20260722c"></script>
 <script src="js/dash-stocks-auth.js?v=20260722b"></script>
 <script src="js/dash-notify-chat.js?v=20260714a"></script>
 <script src="js/dash-prefs-market.js?v=20260722b"></script>
@@ -1177,7 +1177,7 @@ window.mdStockTour = function () {
     <div class="md-modal-desc" data-i18n="pos_desc">選填。填了進場價後，日報對這檔的建議會改用「持有者框架」——續抱／減碼／停損，並帶上你的損益脈絡；再補上股數與總本金，日報會多一段「資金管理體檢」。</div>
     <label class="pos-label" for="pos-price" data-i18n="pos_price_label">進場價（每股成本）</label>
     <input type="number" class="pos-input" id="pos-price" min="0" step="any" inputmode="decimal" placeholder="850">
-    <label class="pos-label" for="pos-qty" data-i18n="pos_qty_label">持有股數（選填）</label>
+    <label class="pos-label" for="pos-qty" data-i18n="pos_qty_label">持有股數（選填，單位＝股，不是張；台股 1 張＝1000 股）</label>
     <input type="number" class="pos-input" id="pos-qty" min="0" step="any" inputmode="decimal" placeholder="1000">
     <label class="pos-label" for="pos-date" data-i18n="pos_date_label">進場日期（選填）</label>
     <input type="date" class="pos-input" id="pos-date">
