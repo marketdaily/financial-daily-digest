@@ -38,6 +38,20 @@ def _load_env():
             break
 
 
+def login_env(simulation=False):
+    """讀 .env 登入,相容 1.5(fetch_contract 參數)與 1.7+(已移除)。回 api。"""
+    _load_env()
+    import shioaji as sj
+    api = sj.Shioaji(simulation=simulation)
+    kw = dict(api_key=os.environ["SHIOAJI_API_KEY"],
+              secret_key=os.environ["SHIOAJI_SECRET_KEY"])
+    try:
+        api.login(fetch_contract=True, **kw)
+    except TypeError:
+        api.login(**kw)
+    return api
+
+
 class ShioajiAdapter(DataAdapter):
     def __init__(self, contracts_spec, mode: Mode, start=None, end=None,
                  simulation=True, spread=0.02, use_ticks=False, max_live=100_000):

@@ -55,12 +55,8 @@ def main():
         note("今日不進場,收工")
         return
 
-    from shioaji_adapter import _load_env
-    _load_env()
-    import shioaji as sj
-    api = sj.Shioaji()
-    api.login(api_key=os.environ["SHIOAJI_API_KEY"],
-              secret_key=os.environ["SHIOAJI_SECRET_KEY"], fetch_contract=True)
+    from shioaji_adapter import login_env
+    api = login_env()
     time.sleep(4)
     r1 = api.Contracts.Futures.TXF["TXFR1"]
     note(f"上線;近月 {r1.code} 參考 {r1.reference}")

@@ -192,12 +192,9 @@ def fish_c(bars, today, st):
     if g == 0 or not vol_ok or stop_all:
         print(f"  魚C:今日不進(閘={g}, 波動OK={vol_ok}, 煞車={stop_all})")
         return
-    from shioaji_adapter import _load_env
-    _load_env()
-    import shioaji as sj, time as _t
-    api = sj.Shioaji()
-    api.login(api_key=os.environ["SHIOAJI_API_KEY"],
-              secret_key=os.environ["SHIOAJI_SECRET_KEY"], fetch_contract=True)
+    from shioaji_adapter import login_env
+    import time as _t
+    api = login_env()
     _t.sleep(3)
     kb = api.kbars(api.Contracts.Futures.TXF["TXFR1"], start=today, end=today)
     api.logout()
