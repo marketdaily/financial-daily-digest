@@ -20,7 +20,13 @@ def _load_env():
     """讀 .env 的 SHIOAJI_* 到 os.environ(若尚未載入)。無 python-dotenv 也能跑。"""
     if os.environ.get("SHIOAJI_API_KEY"):
         return
-    for base in (os.getcwd(), os.path.dirname(os.path.abspath(__file__))):
+    bases = []
+    for start in (os.getcwd(), os.path.dirname(os.path.abspath(__file__))):
+        d = start
+        for _ in range(4):                     # 往上走找 repo 根的 .env
+            bases.append(d)
+            d = os.path.dirname(d)
+    for base in bases:
         p = os.path.join(base, ".env")
         if os.path.exists(p):
             with open(p, encoding="utf-8") as f:
