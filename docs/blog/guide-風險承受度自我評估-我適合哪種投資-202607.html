@@ -40,6 +40,16 @@ strong { color:#fbbf24; font-weight:700; }
 .cta { background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.15)); border:1px solid rgba(99,102,241,0.35); border-radius:14px; padding:24px; margin:40px 0 0; text-align:center; }
 .cta a { display:inline-block; margin-top:14px; padding:14px 28px; background:linear-gradient(135deg,#6366f1,#a855f7); color:#fff; font-weight:800; text-decoration:none; border-radius:10px; }
 .disc { font-size:12px; color:rgba(255,255,255,0.4); margin-top:32px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
+
+.ahero { height:200px; border-radius:16px; background-size:cover; background-position:center; background-repeat:no-repeat; margin:0 0 26px; border:1px solid rgba(255,255,255,0.08); position:relative; }
+.ahero::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(10,10,20,0.12),rgba(10,10,20,0.5)); }
+.ahero[data-h="stock"] { background-image:url(assets/cat/hero-stock.webp); }
+.ahero[data-h="event"] { background-image:url(assets/cat/hero-event.webp); }
+.ahero[data-h="exdiv"] { background-image:url(assets/cat/hero-exdiv.webp); }
+.ahero[data-h="guide"] { background-image:url(assets/cat/hero-guide.webp); }
+.ahero[data-h="term"] { background-image:url(assets/cat/hero-term.webp); }
+.ahero[data-h="macro"] { background-image:url(assets/cat/hero-macro.webp); }
+.ahero[data-h="supply"] { background-image:url(assets/cat/hero-supply.webp); }
 </style>
 </head>
 <body>
@@ -48,6 +58,7 @@ strong { color:#fbbf24; font-weight:700; }
   <a href="/blog/index.html">所有文章</a>
 </div>
 <article class="wrap">
+  <div class="ahero" data-h="guide"></div>
   <div class="crumb">MARKETDAILY · 新手</div>
     <h1>風險承受度自我評估：我適合哪種投資？2026 新手指南</h1>
 

@@ -47,6 +47,16 @@ strong { color:#fbbf24; font-weight:700; }
 .cta a { display:inline-block; margin-top:14px; padding:14px 30px; background:linear-gradient(135deg,#6366f1,#a855f7); color:#fff; font-weight:800; text-decoration:none; border-radius:12px; box-shadow:0 6px 22px rgba(99,102,241,0.4); transition:transform 0.18s, box-shadow 0.18s; }
 .cta a:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(99,102,241,0.55); }
 .disc { font-size:12px; color:rgba(255,255,255,0.4); margin-top:36px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
+
+.ahero { height:200px; border-radius:16px; background-size:cover; background-position:center; background-repeat:no-repeat; margin:0 0 26px; border:1px solid rgba(255,255,255,0.08); position:relative; }
+.ahero::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(10,10,20,0.12),rgba(10,10,20,0.5)); }
+.ahero[data-h="stock"] { background-image:url(assets/cat/hero-stock.webp); }
+.ahero[data-h="event"] { background-image:url(assets/cat/hero-event.webp); }
+.ahero[data-h="exdiv"] { background-image:url(assets/cat/hero-exdiv.webp); }
+.ahero[data-h="guide"] { background-image:url(assets/cat/hero-guide.webp); }
+.ahero[data-h="term"] { background-image:url(assets/cat/hero-term.webp); }
+.ahero[data-h="macro"] { background-image:url(assets/cat/hero-macro.webp); }
+.ahero[data-h="supply"] { background-image:url(assets/cat/hero-supply.webp); }
 </style>
 </head>
 <body>
@@ -55,6 +65,7 @@ strong { color:#fbbf24; font-weight:700; }
   <a href="/blog/index.html">所有文章</a>
 </div>
 <article class="wrap">
+  <div class="ahero" data-h="stock"></div>
   <div class="crumb">MARKETDAILY · 個股分析 · 美股</div>
 <h1>Uber (UBER) 技術面 vs 基本面：2026 年投資人必讀分析</h1>
 
