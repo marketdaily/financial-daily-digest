@@ -1779,6 +1779,33 @@ export default {
       } catch { return json({ news: [] }); }
     }
 
+    // 台股類股指數(熱力圖):TWSE openapi MI_INDEX,收盤資料。日期是民國曆(1150721)→轉西元。
+    if (url.pathname === "/tw-sectors" && request.method === "GET") {
+      try {
+        const r = await fetch("https://openapi.twse.com.tw/v1/exchangeReport/MI_INDEX",
+          { cf: { cacheTtl: 3600, cacheEverything: true }, headers: { "Accept": "application/json", "User-Agent": "Mozilla/5.0" } });
+        if (!r.ok) return json({ sectors: [] });
+        const rows = await r.json();
+        let date = null;
+        const sectors = [];
+        for (const row of rows) {
+          const name = row["指數"] || "";
+          if (!name.endsWith("類指數") || name.includes("報酬")) continue;
+          const roc = String(row["日期"] || "");
+          if (!date && /^\d{7}$/.test(roc)) {
+            date = `${parseInt(roc.slice(0, 3), 10) + 1911}-${roc.slice(3, 5)}-${roc.slice(5, 7)}`;
+          }
+          const pct = parseFloat(String(row["漲跌百分比"] || "").replace(/,/g, ""));
+          const sign = row["漲跌"] === "-" ? -1 : row["漲跌"] === "+" ? 1 : 0;
+          const v = parseFloat(String(row["收盤指數"] || "").replace(/,/g, ""));
+          if (!isFinite(v) || !isFinite(pct)) continue;
+          sectors.push({ n: name.replace(/類指數$/, ""), v, chg: sign * pct });
+        }
+        return new Response(JSON.stringify({ date, sectors }), {
+          headers: { ...CORS_HEADERS, "Content-Type": "application/json", "Cache-Control": "max-age=1800" } });
+      } catch { return json({ sectors: [] }); }
+    }
+
     // 看盤個人化雲端同步(自選群組+警示條件):跨裝置同步,身份=email+密碼(同 get-preferences)。
     if (url.pathname === "/watch-sync" && request.method === "POST") {
       let body;

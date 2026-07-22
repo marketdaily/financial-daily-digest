@@ -237,6 +237,22 @@
   .diag-sum b{color:var(--ink)}
   /* 繪圖工具 */
   .draw-note{font-size:10.5px;color:var(--faint);margin-top:4px}
+  /* 圖表工具列/回放 */
+  .ct-row{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;padding-bottom:2px}
+  .ct-row::-webkit-scrollbar{display:none}
+  #replay-bar{align-items:center;gap:6px}
+  #replay-bar input[type=range]{accent-color:#818cf8}
+  #chart-box{position:relative}
+  #chart-box:fullscreen{background:#080c18;padding:20px;display:flex;align-items:center}
+  #chart-box:fullscreen canvas{height:88vh !important;width:100% !important}
+  /* 熱力圖 */
+  .heat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px}
+  .heat-cell{border-radius:12px;padding:10px 11px;cursor:pointer;border:1px solid rgba(255,255,255,.06);
+      transition:transform .12s}
+  .heat-cell:hover{transform:scale(1.04)}
+  .heat-cell .hc-n{font-size:12px;font-weight:850;letter-spacing:.3px}
+  .heat-cell .hc-c{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums;margin-top:3px}
+  .heat-cell .hc-v{font-size:10px;color:rgba(255,255,255,.55);font-variant-numeric:tabular-nums;margin-top:1px}
   @media(max-width:560px){
     td,th{padding:9px 6px} .px{font-size:14px} .hide-sm{display:none}
     .ti-grid,.fd-grid{grid-template-columns:repeat(2,1fr)}
@@ -272,6 +288,7 @@
         <button class="tab" data-tab="cats" data-i18n="tab_cats">🗂 分類</button>
         <button class="tab" data-tab="ranks" id="tab-ranks" style="display:none" data-i18n="tab_ranks">🏆 排行</button>
         <button class="tab" data-tab="screen" data-i18n="tab_screen">🔎 選股</button>
+        <button class="tab" data-tab="heat" data-i18n="tab_heat">🌡 熱力</button>
         <button class="tab" data-tab="news" data-i18n="tab_news">📰 新聞</button>
       </div>
       <button class="bell-btn" id="bell" title="警示">🔔<span class="bn" id="bell-n"></span></button>
@@ -325,6 +342,11 @@
       </tr></thead><tbody></tbody></table>
     </div>
 
+    <div class="sec" id="heat-sec" style="display:none">
+      <div class="sec-title"><span id="heat-date">TWSE 類股指數 · 收盤</span><span class="cnt" data-i18n="heat_hint">點類股 → 看成分股</span></div>
+      <div class="heat-grid" id="heat-grid"></div>
+    </div>
+
     <div class="sec" id="news-sec" style="display:none">
       <div class="chips" id="news-chips"></div>
       <div id="news-list"></div>
@@ -348,6 +370,6 @@
 <script src="tw-bizdesc.js?v=20260722"></script>
 <script src="tw-chain-generic.js?v=20260722"></script>
 <script src="tw-cb.js?v=20260722"></script>
-<script src="js/watch.js?v=20260722l"></script>
+<script src="js/watch.js?v=20260722m"></script>
 </body>
 </html>

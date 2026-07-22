@@ -52,6 +52,18 @@ const I18N = {
     sync_on: "雲端同步中", exp_ok: "已匯出", imp_ok: "已匯入", imp_bad: "檔案格式不對",
     boll_lbl: "布林", sub_vol: "量", grp_tools: "⚙",
     cb_theme: "可轉債",
+    tab_heat: "🌡 熱力", heat_src: "TWSE 類股指數 · 收盤", heat_hint: "點類股 → 看成分股",
+    ct_candle: "蠟燭", ct_ha: "平均K", ct_bar: "美國線", ct_area: "面積", log_lbl: "LOG",
+    tool_trend: "╱ 趨勢線", tool_hline: "─ 水平線", tool_fib: "𝄃 斐波那契", tool_text: "T 文字", tool_erase: "⌫ 擦除", tool_clear: "🗑 清空",
+    cmp_lbl: "⇄ 比較", cmp_prompt: "輸入要比較的代號(逗號分隔,最多3檔;留空=清除):",
+    replay_lbl: "▶ 回放", replay_exit: "✕ 結束回放",
+    fs_lbl: "⛶", snap_lbl: "📷",
+    draw_hint: "點兩下圖表定位;再點工具取消",
+    al_ma20_up: "站上 MA20", al_ma20_dn: "跌破 MA20", al_ma60_up: "站上 MA60", al_ma60_dn: "跌破 MA60",
+    al_rsi_gt: "RSI ≥", al_rsi_lt: "RSI ≤", al_kd_gold: "KD 黃金交叉", al_kd_dead: "KD 死亡交叉",
+    al_boll_up: "突破布林上軌", al_boll_dn: "跌破布林下軌",
+    scr_tech: "技術條件", scr_ma20: "站上MA20", scr_ma60: "站上MA60", scr_rsi_lo: "RSI<30", scr_rsi_hi: "RSI>70", scr_volx: "量比≥2",
+    scr_calc: "技術條件計算中…",
   },
   en: {
     pg_title: "MarketDaily Watch", pg_h1: "📈 Watch", back_dash: "← Dashboard",
@@ -102,6 +114,18 @@ const I18N = {
     sync_on: "Cloud synced", exp_ok: "Exported", imp_ok: "Imported", imp_bad: "Bad file format",
     boll_lbl: "BOLL", sub_vol: "Vol", grp_tools: "⚙",
     cb_theme: "Convertible Bonds",
+    tab_heat: "🌡 Heat", heat_src: "TWSE sector indices · EOD", heat_hint: "Tap a sector → constituents",
+    ct_candle: "Candle", ct_ha: "Heikin", ct_bar: "Bar", ct_area: "Area", log_lbl: "LOG",
+    tool_trend: "╱ Trend", tool_hline: "─ H-line", tool_fib: "𝄃 Fib", tool_text: "T Text", tool_erase: "⌫ Erase", tool_clear: "🗑 Clear",
+    cmp_lbl: "⇄ Compare", cmp_prompt: "Symbols to compare (comma separated, max 3; empty = clear):",
+    replay_lbl: "▶ Replay", replay_exit: "✕ Exit replay",
+    fs_lbl: "⛶", snap_lbl: "📷",
+    draw_hint: "Click twice to place; click tool again to cancel",
+    al_ma20_up: "Above MA20", al_ma20_dn: "Below MA20", al_ma60_up: "Above MA60", al_ma60_dn: "Below MA60",
+    al_rsi_gt: "RSI ≥", al_rsi_lt: "RSI ≤", al_kd_gold: "KD golden cross", al_kd_dead: "KD death cross",
+    al_boll_up: "Break BOLL upper", al_boll_dn: "Break BOLL lower",
+    scr_tech: "Technical", scr_ma20: "Above MA20", scr_ma60: "Above MA60", scr_rsi_lo: "RSI<30", scr_rsi_hi: "RSI>70", scr_volx: "Vol ratio≥2",
+    scr_calc: "Computing technical filters…",
   }
 };
 const LANG = (localStorage.getItem("md-lang-v2") || "zh");
@@ -216,15 +240,17 @@ function renderView() {
   $("rank-sec").style.display = curTab === "ranks" ? "block" : "none";
   $("screen-sec").style.display = curTab === "screen" ? "block" : "none";
   $("news-sec").style.display = curTab === "news" ? "block" : "none";
+  $("heat-sec").style.display = curTab === "heat" ? "block" : "none";
   $("group-chips").style.display = curTab === "watch" ? "flex" : "none";
   $("cat-bar").style.display = curTab === "cats" ? "flex" : "none";
   $("rank-chips").style.display = curTab === "ranks" ? "flex" : "none";
   $("sort-chips").style.display = (curTab === "watch" || curTab === "cats") ? "flex" : "none";
   $("pos-wrap").style.display = (curTab === "watch" && isAdmin) ? "block" : "none";
-  if (curTab === "screen" || curTab === "news") {
+  if (curTab === "screen" || curTab === "news" || curTab === "heat") {
     $("tw-sec").style.display = "none"; $("us-sec").style.display = "none"; $("empty").style.display = "none";
     if (curTab === "screen") renderScreenForm();
-    else { renderNewsChips(); renderNewsTab(); }
+    else if (curTab === "news") { renderNewsChips(); renderNewsTab(); }
+    else renderHeat();
     return;
   }
   if (curTab === "ranks") {
@@ -463,6 +489,7 @@ function startSched() {
     if (bridge && curTab === "ranks" && tick % 30 === 0) fetchRanks();
     if (bridge && isAdmin && tick % 60 === 0 && curTab === "watch") tickPositions();
     if (tick % 60 === 0) tickMkt();
+    if (tick % 300 === 0) refreshAlertCtx();
   }, 1000);
 }
 
@@ -486,9 +513,17 @@ const TF_LIST = [
   { k: "m5", src: "bridge", res: 5, days: 3, mode: "candle", twOnly: true },
   { k: "m30", src: "bridge", res: 30, days: 10, mode: "candle", twOnly: true },
 ];
-let chartOpt = { boll: false, sub: "vol" };
+let chartOpt = { boll: false, sub: "vol", ctype: "candle", log: false, ema: false, sar: false, ich: false, vwap: false };
 try { chartOpt = Object.assign(chartOpt, JSON.parse(localStorage.getItem("md-watch-chartopt") || "{}")); } catch {}
 const saveChartOpt = () => localStorage.setItem("md-watch-chartopt", JSON.stringify(chartOpt));
+/* TradingView 對齊:視窗縮放/回放/比較/繪圖 狀態 */
+let chartView = null;          // {n:可見根數, o:距末端偏移} null=全顯
+let cmpSyms = [], cmpData = {}; // 比較疊圖(%正規化)
+let replay = null;             // {on, idx, timer, speed}
+let drawTool = null, drawPend = null;
+let drawings = {};
+try { drawings = JSON.parse(localStorage.getItem("md-watch-drawings") || "{}") || {}; } catch {}
+const saveDrawings = () => localStorage.setItem("md-watch-drawings", JSON.stringify(drawings));
 
 async function loadTwFund() {
   try {
@@ -642,6 +677,92 @@ function dmi14(bars, n = 14) {
   const adx = adxW.length ? adxW.reduce((a, b) => a + b, 0) / adxW.length : null;
   return { pdi, mdi, adx };
 }
+function sarArr(bars, step = 0.02, maxAf = 0.2) {
+  const n = bars.length;
+  const out = new Array(n).fill(null);
+  if (n < 5) return out;
+  let up = bars[1].c >= bars[0].c, af = step;
+  let ep = up ? bars[0].h : bars[0].l;
+  let sar = up ? bars[0].l : bars[0].h;
+  for (let i = 1; i < n; i++) {
+    sar = sar + af * (ep - sar);
+    if (up) {
+      if (bars[i].l < sar) { up = false; sar = ep; ep = bars[i].l; af = step; }
+      else { if (bars[i].h > ep) { ep = bars[i].h; af = Math.min(af + step, maxAf); } }
+    } else {
+      if (bars[i].h > sar) { up = true; sar = ep; ep = bars[i].h; af = step; }
+      else { if (bars[i].l < ep) { ep = bars[i].l; af = Math.min(af + step, maxAf); } }
+    }
+    out[i] = { v: sar, up };
+  }
+  return out;
+}
+function ichimokuArr(bars) {
+  const n = bars.length, SH = 26;
+  const hh = (i, p) => Math.max(...bars.slice(Math.max(0, i - p + 1), i + 1).map(b => b.h));
+  const ll = (i, p) => Math.min(...bars.slice(Math.max(0, i - p + 1), i + 1).map(b => b.l));
+  const tenkan = [], kijun = [];
+  for (let i = 0; i < n; i++) {
+    tenkan.push(i >= 8 ? (hh(i, 9) + ll(i, 9)) / 2 : null);
+    kijun.push(i >= 25 ? (hh(i, 26) + ll(i, 26)) / 2 : null);
+  }
+  const spanA = new Array(n + SH).fill(null), spanB = new Array(n + SH).fill(null);
+  for (let i = 0; i < n; i++) {
+    if (tenkan[i] != null && kijun[i] != null) spanA[i + SH] = (tenkan[i] + kijun[i]) / 2;
+    if (i >= 51) spanB[i + SH] = (hh(i, 52) + ll(i, 52)) / 2;
+  }
+  return { tenkan, kijun, spanA, spanB, SH };
+}
+function wprArr(bars, n = 14) {
+  return bars.map((b, i) => {
+    if (i < n - 1) return null;
+    const w = bars.slice(i - n + 1, i + 1);
+    const h = Math.max(...w.map(x => x.h)), l = Math.min(...w.map(x => x.l));
+    return h === l ? -50 : (h - b.c) / (h - l) * -100;
+  });
+}
+function cciArr(bars, n = 20) {
+  return bars.map((b, i) => {
+    if (i < n - 1) return null;
+    const w = bars.slice(i - n + 1, i + 1).map(x => (x.h + x.l + x.c) / 3);
+    const m = w.reduce((a, v) => a + v, 0) / n;
+    const md = w.reduce((a, v) => a + Math.abs(v - m), 0) / n;
+    const tp = (b.h + b.l + b.c) / 3;
+    return md === 0 ? 0 : (tp - m) / (0.015 * md);
+  });
+}
+function atr14(bars, n = 14) {
+  if (bars.length < n + 1) return null;
+  let s = 0;
+  for (let i = bars.length - n; i < bars.length; i++) {
+    const b = bars[i], pc = bars[i - 1].c;
+    s += Math.max(b.h - b.l, Math.abs(b.h - pc), Math.abs(b.l - pc));
+  }
+  return s / n;
+}
+function vwapArr(bars) {
+  const out = [];
+  let day = null, pv = 0, vv = 0;
+  for (const b of bars) {
+    const d = new Date(b.t * 1000).toISOString().slice(0, 10);
+    if (d !== day) { day = d; pv = 0; vv = 0; }
+    const tp = (b.h + b.l + b.c) / 3;
+    pv += tp * (b.v || 0); vv += b.v || 0;
+    out.push(vv ? pv / vv : null);
+  }
+  return out;
+}
+function heikinAshi(bars) {
+  const out = [];
+  let po = null, pc = null;
+  for (const b of bars) {
+    const c = (b.o + b.h + b.l + b.c) / 4;
+    const o = po === null ? (b.o + b.c) / 2 : (po + pc) / 2;
+    out.push({ t: b.t, o, h: Math.max(b.h, o, c), l: Math.min(b.l, o, c), c, v: b.v });
+    po = o; pc = c;
+  }
+  return out;
+}
 function mfi14(bars, n = 14) {
   if (bars.length < n + 1) return null;
   let pos = 0, neg = 0;
@@ -657,6 +778,13 @@ function mfi14(bars, n = 14) {
 
 /* Canvas K線(hoverIdx=十字線位置) */
 let curChart = null;
+function visWindow(bars) {
+  const total = bars.length;
+  let vn = chartView && chartView.n ? Math.max(10, Math.min(chartView.n, total)) : total;
+  let off = chartView ? Math.max(0, Math.min(chartView.o || 0, total - vn)) : 0;
+  const end = total - off, start = Math.max(0, end - vn);
+  return { start, end };
+}
 function drawChart(cv, bars, tf, hoverIdx) {
   const dpr = window.devicePixelRatio || 1;
   const W = cv.clientWidth, H = cv.clientHeight;
@@ -664,22 +792,89 @@ function drawChart(cv, bars, tf, hoverIdx) {
   const ctx = cv.getContext("2d");
   ctx.scale(dpr, dpr);
   ctx.clearRect(0, 0, W, H);
-  if (!bars.length) { ctx.fillStyle = "rgba(255,255,255,.3)"; ctx.font = "12px sans-serif"; ctx.fillText(T("chart_fail"), 16, H / 2); return; }
+  if (!bars || !bars.length) { ctx.fillStyle = "rgba(255,255,255,.3)"; ctx.font = "12px sans-serif"; ctx.fillText(T("chart_fail"), 16, H / 2); return; }
+  const full = bars;
+  let rBars = full;
+  if (replay && replay.on) rBars = full.slice(0, Math.max(10, replay.idx));
+  const candle = tf.mode !== "line";
+  const ctype = candle ? (chartOpt.ctype || "candle") : "line";
+  const plotBars = ctype === "ha" ? heikinAshi(rBars) : rBars;
+  const { start, end } = visWindow(plotBars);
+  const vis = plotBars.slice(start, end);
+  const compare = candle && cmpSyms.length > 0;
   const padR = 46, padT = 8, volH = Math.round(H * 0.18), priceH = H - volH - padT - 14;
-  const hi = Math.max(...bars.map(b => b.h)), lo = Math.min(...bars.map(b => b.l));
+  const UP = "#ef4444", DN = "#22c55e";
+  // 一目均衡表雲層要多留 26 根未來槽位
+  const ich = candle && chartOpt.ich && !compare && rBars.length >= 52 ? ichimokuArr(rBars) : null;
+  const futSlots = ich ? ich.SH : 0;
+  const n = vis.length, nSlots = n + futSlots;
+  const slotW = (W - padR - 6) / nSlots;
+  const xAt = i => 4 + slotW * (i + 0.5);
+  // 比較模式:全部轉「視窗起點=0%」的百分比線
+  let cmpSeries = null, hi, lo;
+  if (compare) {
+    const base = vis.find(b => b.c != null).c;
+    const main = vis.map(b => (b.c / base - 1) * 100);
+    cmpSeries = [{ sym: sheetSym, data: main, color: "#818cf8" }];
+    const palette = ["#fbbf24", "#38bdf8", "#f472b6"];
+    cmpSyms.forEach((cs, ci) => {
+      const cb = cmpData[cs];
+      if (!cb || !cb.length) return;
+      const map = new Map(cb.map(b => [b.t, b.c]));
+      const raw = vis.map(b => map.get(b.t) ?? null);
+      const cbase = raw.find(v => v != null);
+      if (cbase == null) return;
+      cmpSeries.push({ sym: cs, data: raw.map(v => v == null ? null : (v / cbase - 1) * 100), color: palette[ci % 3] });
+    });
+    const all = cmpSeries.flatMap(s => s.data).filter(v => v != null);
+    hi = Math.max(...all); lo = Math.min(...all);
+  } else {
+    hi = Math.max(...vis.map(b => b.h)); lo = Math.min(...vis.map(b => b.l));
+    if (ich) {
+      const cloud = ich.spanA.concat(ich.spanB).slice(start, end + futSlots).filter(v => v != null);
+      if (cloud.length) { hi = Math.max(hi, ...cloud); lo = Math.min(lo, ...cloud); }
+    }
+  }
   const span = (hi - lo) || 1;
-  const y = v => padT + (hi - v) / span * priceH;
-  const n = bars.length, slotW = (W - padR - 6) / n;
-  const maxV = Math.max(...bars.map(b => b.v || 0)) || 1;
+  const useLog = chartOpt.log && !compare && lo > 0;
+  const lgHi = useLog ? Math.log(hi) : 0, lgLo = useLog ? Math.log(lo) : 0, lgSpan = (lgHi - lgLo) || 1;
+  const y = v => useLog
+    ? padT + (lgHi - Math.log(v)) / lgSpan * priceH
+    : padT + (hi - v) / span * priceH;
+  const maxV = Math.max(...vis.map(b => b.v || 0)) || 1;
   // grid + 右軸
   ctx.font = "10px -apple-system,sans-serif"; ctx.textBaseline = "middle";
   for (let i = 0; i <= 4; i++) {
-    const v = hi - span * i / 4, gy = y(v);
+    const frac = i / 4;
+    const v = useLog ? Math.exp(lgHi - lgSpan * frac) : hi - span * frac;
+    const gy = padT + priceH * frac;
     ctx.strokeStyle = "rgba(255,255,255,.05)"; ctx.beginPath(); ctx.moveTo(4, gy); ctx.lineTo(W - padR, gy); ctx.stroke();
-    ctx.fillStyle = "rgba(255,255,255,.4)"; ctx.fillText(fp(v), W - padR + 4, gy);
+    ctx.fillStyle = "rgba(255,255,255,.4)";
+    ctx.fillText(compare ? v.toFixed(1) + "%" : fp(v), W - padR + 4, gy);
   }
-  const UP = "#ef4444", DN = "#22c55e";
-  if (tf.mode === "line") {
+  const lineSeries = (arr, col, width) => {
+    ctx.strokeStyle = col; ctx.lineWidth = width || 1; ctx.beginPath();
+    let st = false;
+    for (let i = 0; i < arr.length; i++) {
+      const v = arr[i];
+      if (v == null || !isFinite(v)) continue;
+      st ? ctx.lineTo(xAt(i), y(v)) : ctx.moveTo(xAt(i), y(v)); st = true;
+    }
+    ctx.stroke(); ctx.lineWidth = 1;
+  };
+  if (compare) {
+    const y0 = y(0);
+    if (0 >= lo && 0 <= hi) { ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(4, y0); ctx.lineTo(W - padR, y0); ctx.stroke(); ctx.setLineDash([]); }
+    cmpSeries.forEach(s => lineSeries(s.data, s.color, s.sym === sheetSym ? 1.8 : 1.3));
+    ctx.font = "10.5px -apple-system,sans-serif"; ctx.textBaseline = "alphabetic";
+    let lx = 8;
+    cmpSeries.forEach(s => {
+      const last = [...s.data].reverse().find(v => v != null);
+      const lbl = `${nameMap.get(s.sym) || s.sym} ${last == null ? "" : (last >= 0 ? "+" : "") + last.toFixed(1) + "%"}`;
+      ctx.fillStyle = s.color; ctx.fillText(lbl, lx, padT + 10);
+      lx += ctx.measureText(lbl).width + 14;
+    });
+  } else if (tf.mode === "line") {
     if (bars.prevClose != null || bars.pc != null) {
       const pc = bars.pc ?? bars.prevClose;
       if (pc >= lo && pc <= hi) {
@@ -688,53 +883,84 @@ function drawChart(cv, bars, tf, hoverIdx) {
       }
     }
     ctx.strokeStyle = "#818cf8"; ctx.lineWidth = 1.6; ctx.beginPath();
-    bars.forEach((b, i) => { const x = 4 + slotW * (i + 0.5); i ? ctx.lineTo(x, y(b.c)) : ctx.moveTo(x, y(b.c)); });
+    vis.forEach((b, i) => { const x = xAt(i); i ? ctx.lineTo(x, y(b.c)) : ctx.moveTo(x, y(b.c)); });
     ctx.stroke(); ctx.lineWidth = 1;
   } else {
-    const bw = Math.max(Math.min(slotW * 0.65, 9), 1.4);
-    bars.forEach((b, i) => {
-      const x = 4 + slotW * (i + 0.5);
-      const col = b.c >= b.o ? UP : DN;
-      ctx.strokeStyle = col; ctx.fillStyle = col;
-      ctx.beginPath(); ctx.moveTo(x, y(b.h)); ctx.lineTo(x, y(b.l)); ctx.stroke();
-      const top = y(Math.max(b.o, b.c)), bh = Math.max(Math.abs(y(b.o) - y(b.c)), 1);
-      ctx.fillRect(x - bw / 2, top, bw, bh);
-    });
-    if (tf.ma && chartOpt.boll && bars.length >= 20) {
-      const bl = bollArr(bars.map(b => b.c));
-      const xAt = i => 4 + slotW * (i + 0.5);
+    // 一目雲層(先畫,墊底)
+    if (ich) {
+      const sA = ich.spanA.slice(start, end + futSlots), sB = ich.spanB.slice(start, end + futSlots);
+      for (let i = 0; i < sA.length - 1; i++) {
+        if (sA[i] == null || sB[i] == null || sA[i + 1] == null || sB[i + 1] == null) continue;
+        ctx.fillStyle = sA[i] >= sB[i] ? "rgba(239,68,68,.09)" : "rgba(34,197,94,.09)";
+        ctx.beginPath();
+        ctx.moveTo(xAt(i), y(sA[i])); ctx.lineTo(xAt(i + 1), y(sA[i + 1]));
+        ctx.lineTo(xAt(i + 1), y(sB[i + 1])); ctx.lineTo(xAt(i), y(sB[i]));
+        ctx.closePath(); ctx.fill();
+      }
+      lineSeries(ich.tenkan.slice(start, end), "#f472b6", 1);
+      lineSeries(ich.kijun.slice(start, end), "#60a5fa", 1);
+    }
+    if (chartOpt.boll && rBars.length >= 20) {
+      const bl = bollArr(rBars.map(b => b.c));
+      const su = bl.up.slice(start, end), sd = bl.dn.slice(start, end), sm = bl.mid.slice(start, end);
       ctx.beginPath();
       let st = false;
-      bl.up.forEach((v, i) => { if (v === null) return; st ? ctx.lineTo(xAt(i), y(v)) : ctx.moveTo(xAt(i), y(v)); st = true; });
-      for (let i = bl.dn.length - 1; i >= 0; i--) if (bl.dn[i] !== null) ctx.lineTo(xAt(i), y(bl.dn[i]));
-      ctx.closePath();
-      ctx.fillStyle = "rgba(167,139,250,.08)"; ctx.fill();
-      [[bl.up, "rgba(167,139,250,.5)"], [bl.dn, "rgba(167,139,250,.5)"], [bl.mid, "rgba(167,139,250,.85)"]].forEach(([arr, col]) => {
-        ctx.strokeStyle = col; ctx.beginPath();
-        let s2 = false;
-        arr.forEach((v, i) => { if (v === null) return; s2 ? ctx.lineTo(xAt(i), y(v)) : ctx.moveTo(xAt(i), y(v)); s2 = true; });
-        ctx.stroke();
+      su.forEach((v, i) => { if (v == null) return; st ? ctx.lineTo(xAt(i), y(v)) : ctx.moveTo(xAt(i), y(v)); st = true; });
+      for (let i = sd.length - 1; i >= 0; i--) if (sd[i] != null) ctx.lineTo(xAt(i), y(sd[i]));
+      ctx.closePath(); ctx.fillStyle = "rgba(167,139,250,.08)"; ctx.fill();
+      lineSeries(su, "rgba(167,139,250,.5)"); lineSeries(sd, "rgba(167,139,250,.5)"); lineSeries(sm, "rgba(167,139,250,.85)");
+    }
+    if (ctype === "area") {
+      ctx.beginPath();
+      vis.forEach((b, i) => { const x = xAt(i); i ? ctx.lineTo(x, y(b.c)) : ctx.moveTo(x, y(b.c)); });
+      ctx.lineTo(xAt(n - 1), padT + priceH); ctx.lineTo(xAt(0), padT + priceH); ctx.closePath();
+      ctx.fillStyle = "rgba(129,140,248,.14)"; ctx.fill();
+      ctx.strokeStyle = "#818cf8"; ctx.lineWidth = 1.6; ctx.beginPath();
+      vis.forEach((b, i) => { const x = xAt(i); i ? ctx.lineTo(x, y(b.c)) : ctx.moveTo(x, y(b.c)); });
+      ctx.stroke(); ctx.lineWidth = 1;
+    } else {
+      const bw = Math.max(Math.min(slotW * 0.65, 9), 1.4);
+      vis.forEach((b, i) => {
+        const x = xAt(i);
+        const col = b.c >= b.o ? UP : DN;
+        ctx.strokeStyle = col; ctx.fillStyle = col;
+        ctx.beginPath(); ctx.moveTo(x, y(b.h)); ctx.lineTo(x, y(b.l)); ctx.stroke();
+        if (ctype === "bar") {
+          ctx.beginPath();
+          ctx.moveTo(x - bw / 2, y(b.o)); ctx.lineTo(x, y(b.o));
+          ctx.moveTo(x, y(b.c)); ctx.lineTo(x + bw / 2, y(b.c));
+          ctx.stroke();
+        } else {
+          const top = y(Math.max(b.o, b.c)), bh = Math.max(Math.abs(y(b.o) - y(b.c)), 1);
+          ctx.fillRect(x - bw / 2, top, bw, bh);
+        }
       });
     }
     if (tf.ma) {
-      const closes = bars.map(b => b.c);
+      const closes = rBars.map(b => b.c);
       [[5, "#fbbf24"], [20, "#818cf8"], [60, "#38bdf8"]].forEach(([p, col]) => {
-        if (bars.length < p) return;
-        const m = sma(closes, p);
-        ctx.strokeStyle = col; ctx.beginPath();
-        let started = false;
-        m.forEach((v, i) => {
-          if (v === null) return;
-          const x = 4 + slotW * (i + 0.5);
-          started ? ctx.lineTo(x, y(v)) : ctx.moveTo(x, y(v)); started = true;
-        });
-        ctx.stroke();
+        if (rBars.length < p) return;
+        lineSeries(sma(closes, p).slice(start, end), col, 1);
+      });
+      if (chartOpt.ema && rBars.length >= 20) {
+        lineSeries(ema(closes, 12).slice(start, end), "#f472b6", 1);
+        lineSeries(ema(closes, 26).slice(start, end), "#34d399", 1);
+      }
+    }
+    if (chartOpt.sar && rBars.length >= 5) {
+      const sr = sarArr(rBars).slice(start, end);
+      sr.forEach((s, i) => {
+        if (!s) return;
+        ctx.fillStyle = s.up ? UP : DN;
+        ctx.beginPath(); ctx.arc(xAt(i), y(s.v), 1.5, 0, Math.PI * 2); ctx.fill();
       });
     }
+    if (chartOpt.vwap && tf.src === "bridge") {
+      lineSeries(vwapArr(rBars).slice(start, end), "#fde68a", 1.4);
+    }
   }
-  // 副圖:量(預設)/MACD/KD/RSI
-  const vy0 = H - 14, subTop = vy0 - (volH - 4);
-  const xAt = i => 4 + slotW * (i + 0.5);
+  // 副圖:量(預設)/MACD/KD/RSI/W%R/CCI
+  const vy0 = H - 14;
   const sub = chartOpt.sub || "vol";
   const drawSubLine = (arr, col, lo2, hi2) => {
     const sp = (hi2 - lo2) || 1;
@@ -747,41 +973,104 @@ function drawChart(cv, bars, tf, hoverIdx) {
     });
     ctx.stroke();
   };
-  if (sub === "macd" && bars.length >= 30) {
-    const m = macdArr(bars.map(b => b.c));
-    const all = m.dif.concat(m.dea, m.hist).filter(v => v !== null);
+  const subRef = (vals) => vals.forEach(v0 => {
+    const yy = vy0 - v0.f * (volH - 4);
+    ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(4, yy); ctx.lineTo(W - padR, yy); ctx.stroke(); ctx.setLineDash([]);
+  });
+  if (sub === "macd" && rBars.length >= 30 && !compare) {
+    const m = macdArr(rBars.map(b => b.c));
+    const dif = m.dif.slice(start, end), dea = m.dea.slice(start, end), hist = m.hist.slice(start, end);
+    const all = dif.concat(dea, hist).filter(v => v != null);
     const hi2 = Math.max(...all), lo2 = Math.min(...all), sp = (hi2 - lo2) || 1;
     const zeroY = vy0 - (0 - lo2) / sp * (volH - 4);
-    m.hist.forEach((v, i) => {
+    hist.forEach((v, i) => {
       const yy = vy0 - (v - lo2) / sp * (volH - 4);
       ctx.fillStyle = v >= 0 ? UP + "88" : DN + "88";
       ctx.fillRect(xAt(i) - Math.max(slotW * 0.25, 0.6), Math.min(yy, zeroY), Math.max(slotW * 0.5, 1.2), Math.abs(zeroY - yy) || 1);
     });
-    drawSubLine(m.dif, "#fbbf24", lo2, hi2); drawSubLine(m.dea, "#38bdf8", lo2, hi2);
-  } else if (sub === "kd" && bars.length >= 12) {
-    const kd = kdArr(bars);
-    [20, 80].forEach(v => { const yy = vy0 - v / 100 * (volH - 4); ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(4, yy); ctx.lineTo(W - padR, yy); ctx.stroke(); ctx.setLineDash([]); });
-    drawSubLine(kd.K, "#fbbf24", 0, 100); drawSubLine(kd.D, "#38bdf8", 0, 100);
-  } else if (sub === "rsi" && bars.length >= 16) {
-    [30, 70].forEach(v => { const yy = vy0 - v / 100 * (volH - 4); ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(4, yy); ctx.lineTo(W - padR, yy); ctx.stroke(); ctx.setLineDash([]); });
-    drawSubLine(rsiArr(bars.map(b => b.c)), "#a78bfa", 0, 100);
+    drawSubLine(dif, "#fbbf24", lo2, hi2); drawSubLine(dea, "#38bdf8", lo2, hi2);
+  } else if (sub === "kd" && rBars.length >= 12 && !compare) {
+    const kd = kdArr(rBars);
+    subRef([{ f: 0.2 }, { f: 0.8 }]);
+    drawSubLine(kd.K.slice(start, end), "#fbbf24", 0, 100); drawSubLine(kd.D.slice(start, end), "#38bdf8", 0, 100);
+  } else if (sub === "rsi" && rBars.length >= 16 && !compare) {
+    subRef([{ f: 0.3 }, { f: 0.7 }]);
+    drawSubLine(rsiArr(rBars.map(b => b.c)).slice(start, end), "#a78bfa", 0, 100);
+  } else if (sub === "wpr" && rBars.length >= 16 && !compare) {
+    subRef([{ f: 0.2 }, { f: 0.8 }]);
+    drawSubLine(wprArr(rBars).slice(start, end), "#f472b6", -100, 0);
+  } else if (sub === "cci" && rBars.length >= 22 && !compare) {
+    const cc = cciArr(rBars).slice(start, end);
+    const vals = cc.filter(v => v != null);
+    const hi2 = Math.max(100, ...vals), lo2 = Math.min(-100, ...vals);
+    drawSubLine(cc, "#34d399", lo2, hi2);
   } else {
-    bars.forEach((b, i) => {
+    vis.forEach((b, i) => {
       const vh = (b.v || 0) / maxV * (volH - 4);
       ctx.fillStyle = (b.c >= b.o ? UP : DN) + "55";
       ctx.fillRect(xAt(i) - Math.max(slotW * 0.3, 0.7), vy0 - vh, Math.max(slotW * 0.6, 1.4), vh);
     });
   }
+  // 使用者繪圖(依 bar 時間錨定;replay/縮放下自動跟著座標走)
+  const dws = (drawings[sheetSym] || []);
+  if (dws.length && !compare) {
+    const tIdx = new Map(plotBars.map((b, i) => [b.t, i]));
+    const nearX = t => {
+      if (tIdx.has(t)) return xAt(tIdx.get(t) - start);
+      let best = -1, bd = Infinity;
+      for (let i = 0; i < plotBars.length; i++) {
+        const d = Math.abs(plotBars[i].t - t);
+        if (d < bd) { bd = d; best = i; }
+      }
+      return best < 0 ? null : xAt(best - start);
+    };
+    ctx.font = "10.5px -apple-system,sans-serif";
+    dws.forEach(d => {
+      const col = "#fde68a";
+      ctx.strokeStyle = col; ctx.fillStyle = col;
+      if (d.ty === "h") {
+        const yy = y(d.p1);
+        ctx.setLineDash([5, 3]); ctx.beginPath(); ctx.moveTo(4, yy); ctx.lineTo(W - padR, yy); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillText(fp(d.p1), 8, yy - 4);
+      } else if (d.ty === "t") {
+        const x1 = nearX(d.t1);
+        if (x1 != null) { ctx.beginPath(); ctx.moveTo(x1, y(d.p1)); ctx.lineTo(x1 + 2, y(d.p1)); ctx.stroke(); ctx.fillText(d.tx || "", x1 + 4, y(d.p1)); }
+      } else if (d.ty === "l") {
+        const x1 = nearX(d.t1), x2 = nearX(d.t2);
+        if (x1 != null && x2 != null) { ctx.beginPath(); ctx.moveTo(x1, y(d.p1)); ctx.lineTo(x2, y(d.p2)); ctx.stroke(); }
+      } else if (d.ty === "f") {
+        const x1 = nearX(d.t1), x2 = nearX(d.t2);
+        if (x1 == null || x2 == null) return;
+        const xl = Math.min(x1, x2);
+        [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1].forEach(f => {
+          const pv = d.p1 + (d.p2 - d.p1) * f;
+          const yy = y(pv);
+          ctx.globalAlpha = f === 0 || f === 1 ? 0.9 : 0.55;
+          ctx.beginPath(); ctx.moveTo(xl, yy); ctx.lineTo(W - padR, yy); ctx.stroke();
+          ctx.fillText(`${(f * 100).toFixed(1)}% ${fp(pv)}`, xl + 2, yy - 3);
+        });
+        ctx.globalAlpha = 1;
+      }
+    });
+  }
+  if (drawPend && drawPend.t1 != null) {
+    ctx.fillStyle = "#fde68a";
+    const ti = plotBars.findIndex(b => b.t === drawPend.t1);
+    if (ti >= 0) { ctx.beginPath(); ctx.arc(xAt(ti - start), y(drawPend.p1), 3, 0, Math.PI * 2); ctx.fill(); }
+  }
   // 時間軸首尾
   ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.textBaseline = "alphabetic";
   const ft = t => { const d = new Date(t * 1000); return tf.src === "bridge" || tf.range === "1D" || tf.range === "5D" ? `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}` : `${d.getFullYear().toString().slice(2)}/${d.getMonth() + 1}/${d.getDate()}`; };
-  ctx.fillText(ft(bars[0].t), 6, H - 3);
-  const lastTxt = ft(bars[n - 1].t);
-  ctx.fillText(lastTxt, W - padR - ctx.measureText(lastTxt).width - 2, H - 3);
+  if (vis.length) {
+    ctx.fillText(ft(vis[0].t), 6, H - 3);
+    const lastTxt = ft(vis[n - 1].t);
+    ctx.fillText(lastTxt, W - padR - ctx.measureText(lastTxt).width - 2, H - 3);
+  }
   // 十字線
-  if (hoverIdx != null && bars[hoverIdx]) {
-    const b = bars[hoverIdx];
-    const x = 4 + slotW * (hoverIdx + 0.5), cy = y(b.c);
+  if (hoverIdx != null && vis[hoverIdx] && !compare) {
+    const b = vis[hoverIdx];
+    const x = xAt(hoverIdx), cy = y(b.c);
     ctx.setLineDash([3, 3]); ctx.strokeStyle = "rgba(232,237,247,.4)";
     ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, H - 14); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(4, cy); ctx.lineTo(W - padR, cy); ctx.stroke();
@@ -793,7 +1082,7 @@ function drawChart(cv, bars, tf, hoverIdx) {
     ctx.fillStyle = "#dbe3ff"; ctx.textBaseline = "middle"; ctx.fillText(tag, W - padR + 4, cy);
     ctx.textBaseline = "alphabetic";
   }
-  curChart = { cv, bars, tf, slotW, n };
+  curChart = { cv, bars: full, plotBars, vis, start, tf, slotW, n, yFn: y, hi, lo, useLog, lgHi, lgLo, lgSpan, padT, priceH };
 }
 
 function barInfoHtml(bars, idx, tf, sym) {
@@ -814,25 +1103,137 @@ function barInfoHtml(bars, idx, tf, sym) {
     `　量 <b>${v.toLocaleString()}</b>`;
 }
 
+function yToPrice(yy) {
+  const c = curChart;
+  if (!c) return null;
+  const f = (yy - c.padT) / c.priceH;
+  return c.useLog ? Math.exp(c.lgHi - f * c.lgSpan) : c.hi - f * (c.hi - c.lo);
+}
+function startReplay(sym) {
+  if (!curChart || replay) return;
+  const bar = $("replay-bar");
+  if (bar) bar.style.display = "flex";
+  chartView = null;
+  replay = { on: true, idx: Math.max(10, Math.round(curChart.bars.length * 0.1)), speed: 1, paused: false };
+  replay.timer = setInterval(() => {
+    if (!replay || replay.paused || !curChart) return;
+    replay.idx += replay.speed;
+    const total = curChart.bars.length;
+    if (replay.idx >= total) { replay.idx = total; replay.paused = true; const t = $("rp-toggle"); if (t) t.textContent = "▶"; }
+    const sl = $("rp-slider");
+    if (sl) sl.value = Math.round(replay.idx / total * 100);
+    redrawChart();
+  }, 500);
+  redrawChart();
+}
+function stopReplay() {
+  if (replay && replay.timer) clearInterval(replay.timer);
+  replay = null;
+  const bar = $("replay-bar");
+  if (bar) bar.style.display = "none";
+  redrawChart();
+}
+function redrawChart() {
+  if (!curChart || !sheetSym) return;
+  drawChart(curChart.cv, curChart.bars, curChart.tf, null);
+  const strip = $("d-ohlc");
+  if (strip && curChart.vis && curChart.vis.length)
+    strip.innerHTML = barInfoHtml(curChart.vis, curChart.vis.length - 1, curChart.tf, sheetSym);
+}
 function bindChartPointer(cv, sym) {
   const strip = $("d-ohlc");
-  const move = clientX => {
-    if (!curChart || curChart.cv !== cv) return;
+  let dragging = null, pinch0 = null, moved = false;
+  const idxAt = clientX => {
     const rect = cv.getBoundingClientRect();
     let idx = Math.floor((clientX - rect.left - 4) / curChart.slotW);
-    idx = Math.max(0, Math.min(curChart.n - 1, idx));
+    return Math.max(0, Math.min(curChart.n - 1, idx));
+  };
+  const move = clientX => {
+    if (!curChart || curChart.cv !== cv || dragging) return;
+    const idx = idxAt(clientX);
     drawChart(cv, curChart.bars, curChart.tf, idx);
-    if (strip) strip.innerHTML = barInfoHtml(curChart.bars, idx, curChart.tf, sym);
+    if (strip) strip.innerHTML = barInfoHtml(curChart.vis, idx, curChart.tf, sym);
   };
   const reset = () => {
     if (!curChart || curChart.cv !== cv) return;
-    drawChart(cv, curChart.bars, curChart.tf, null);
-    if (strip) strip.innerHTML = barInfoHtml(curChart.bars, curChart.n - 1, curChart.tf, sym);
+    redrawChart();
   };
-  cv.addEventListener("mousemove", e => move(e.clientX));
-  cv.addEventListener("mouseleave", reset);
-  cv.addEventListener("touchstart", e => { move(e.touches[0].clientX); }, { passive: true });
-  cv.addEventListener("touchmove", e => { move(e.touches[0].clientX); }, { passive: true });
+  cv.addEventListener("mousemove", e => {
+    if (dragging && curChart) {
+      const dx = e.clientX - dragging.x;
+      if (Math.abs(dx) > 3) moved = true;
+      const total = curChart.plotBars.length;
+      const vn = chartView && chartView.n ? chartView.n : total;
+      let o = dragging.o + Math.round(dx / curChart.slotW);
+      o = Math.max(0, Math.min(o, total - Math.min(vn, total)));
+      chartView = { n: vn, o };
+      redrawChart();
+      return;
+    }
+    move(e.clientX);
+  });
+  cv.addEventListener("mousedown", e => { dragging = { x: e.clientX, o: (chartView && chartView.o) || 0 }; moved = false; });
+  window.addEventListener("mouseup", () => { dragging = null; });
+  cv.addEventListener("mouseleave", () => { if (!dragging) reset(); });
+  cv.addEventListener("dblclick", () => { chartView = null; redrawChart(); });
+  cv.addEventListener("wheel", e => {
+    if (!curChart) return;
+    e.preventDefault();
+    const total = curChart.plotBars.length;
+    const vn = chartView && chartView.n ? chartView.n : total;
+    const nn = Math.round(Math.max(10, Math.min(total, vn * (e.deltaY > 0 ? 1.2 : 0.83))));
+    chartView = { n: nn, o: (chartView && chartView.o) || 0 };
+    redrawChart();
+  }, { passive: false });
+  cv.addEventListener("touchstart", e => {
+    if (e.touches.length === 2 && curChart) {
+      const d = Math.abs(e.touches[0].clientX - e.touches[1].clientX);
+      const total = curChart.plotBars.length;
+      pinch0 = { d: Math.max(d, 1), n: chartView && chartView.n ? chartView.n : total };
+    } else { move(e.touches[0].clientX); }
+  }, { passive: true });
+  cv.addEventListener("touchmove", e => {
+    if (e.touches.length === 2 && pinch0 && curChart) {
+      const d = Math.max(Math.abs(e.touches[0].clientX - e.touches[1].clientX), 1);
+      const total = curChart.plotBars.length;
+      const nn = Math.round(Math.max(10, Math.min(total, pinch0.n * pinch0.d / d)));
+      chartView = { n: nn, o: (chartView && chartView.o) || 0 };
+      redrawChart();
+      return;
+    }
+    move(e.touches[0].clientX);
+  }, { passive: true });
+  cv.addEventListener("touchend", () => { pinch0 = null; });
+  // 繪圖工具:click 錨定
+  cv.addEventListener("click", e => {
+    if (!drawTool || !curChart || moved) return;
+    const rect = cv.getBoundingClientRect();
+    const idx = idxAt(e.clientX);
+    const bar = curChart.vis[idx];
+    if (!bar) return;
+    const price = yToPrice(e.clientY - rect.top);
+    if (price == null) return;
+    const list = drawings[sym] = drawings[sym] || [];
+    if (drawTool === "h") { list.push({ ty: "h", p1: Math.round(price * 100) / 100 }); }
+    else if (drawTool === "t") {
+      const tx = prompt("標註文字:");
+      if (tx) list.push({ ty: "t", t1: bar.t, p1: price, tx: tx.slice(0, 30) });
+    } else if (drawTool === "l" || drawTool === "f") {
+      if (!drawPend) { drawPend = { t1: bar.t, p1: price }; redrawChart(); return; }
+      list.push({ ty: drawTool, t1: drawPend.t1, p1: drawPend.p1, t2: bar.t, p2: price });
+      drawPend = null;
+    } else if (drawTool === "erase") {
+      let best = -1, bd = Infinity;
+      list.forEach((d, i) => {
+        const dy = d.ty === "h" ? Math.abs(curChart.yFn(d.p1) - (e.clientY - rect.top))
+          : Math.min(Math.abs((d.p1 != null ? curChart.yFn(d.p1) : 1e9) - (e.clientY - rect.top)),
+                     Math.abs((d.p2 != null ? curChart.yFn(d.p2) : 1e9) - (e.clientY - rect.top)));
+        if (dy < bd) { bd = dy; best = i; }
+      });
+      if (best >= 0 && bd < 24) list.splice(best, 1);
+    }
+    saveDrawings(); redrawChart();
+  });
 }
 
 async function renderDetailChart(sym) {
@@ -845,7 +1246,8 @@ async function renderDetailChart(sym) {
     if (tf.range === "1D") bars.pc = bars.prevClose;
     drawChart(cv, bars, tf, null);
     const strip = $("d-ohlc");
-    if (strip && bars.length) strip.innerHTML = barInfoHtml(bars, bars.length - 1, tf, sym);
+    if (strip && curChart && curChart.vis.length)
+      strip.innerHTML = barInfoHtml(curChart.vis, curChart.vis.length - 1, tf, sym);
     if (!cv.dataset.bound) { cv.dataset.bound = "1"; bindChartPointer(cv, sym); }
   } catch { drawChart(cv, [], tf, null); }
 }
@@ -883,6 +1285,10 @@ async function renderTech(sym) {
     const obv = obvArr(bars);
     const obvUp = obv.length > 10 && obv[obv.length - 1] > obv[obv.length - 10];
     const bias = m20 ? (last - m20) / m20 * 100 : null;
+    const sarL = sarArr(bars), sarLast = sarL[sarL.length - 1];
+    const atrV = atr14(bars);
+    const cciL = cciArr(bars), cciV = cciL[cciL.length - 1];
+    const wprL = wprArr(bars), wprV = wprL[wprL.length - 1];
     el.innerHTML =
       tiTile("MA5", fp(m5), maS(m5, "MA5"), last > m5 ? "up" : "down") +
       tiTile("MA20", fp(m20), maS(m20, "MA20"), last > m20 ? "up" : "down") +
@@ -895,7 +1301,11 @@ async function renderTech(sym) {
         dmi ? `+DI ${dmi.pdi.toFixed(0)} / -DI ${dmi.mdi.toFixed(0)}` : "", dmi && dmi.pdi > dmi.mdi ? "up" : "down") +
       tiTile("MFI 14", mfi == null ? "—" : mfi.toFixed(1), mfi == null ? "" : mfi >= 80 ? T("ti_over") : mfi <= 20 ? T("ti_under") : T("ti_mid"), mfi != null && mfi >= 80 ? "up" : mfi != null && mfi <= 20 ? "down" : "") +
       tiTile("OBV", obv.length ? (obvUp ? "↗" : "↘") : "—", "10日能量潮", obvUp ? "up" : "down") +
-      tiTile("乖離 20", bias == null ? "—" : `${bias >= 0 ? "+" : ""}${bias.toFixed(1)}%`, "", bias >= 0 ? "up" : "down");
+      tiTile("乖離 20", bias == null ? "—" : `${bias >= 0 ? "+" : ""}${bias.toFixed(1)}%`, "", bias >= 0 ? "up" : "down") +
+      tiTile("SAR", sarLast ? fp(sarLast.v) : "—", sarLast ? (sarLast.up ? "多方支撐" : "空方壓力") : "", sarLast && sarLast.up ? "up" : "down") +
+      tiTile("ATR 14", atrV == null ? "—" : fp(atrV), atrV != null && last ? `波動 ${(atrV / last * 100).toFixed(1)}%` : "") +
+      tiTile("CCI 20", cciV == null ? "—" : cciV.toFixed(0), cciV == null ? "" : cciV >= 100 ? T("ti_over") : cciV <= -100 ? T("ti_under") : T("ti_mid"), cciV != null && cciV >= 100 ? "up" : cciV != null && cciV <= -100 ? "down" : "") +
+      tiTile("W%R 14", wprV == null ? "—" : wprV.toFixed(0), wprV == null ? "" : wprV >= -20 ? T("ti_over") : wprV <= -80 ? T("ti_under") : T("ti_mid"), wprV != null && wprV >= -20 ? "up" : wprV != null && wprV <= -80 ? "down" : "");
     techFactors[sym] = buildTechFactors(bars, { m5, m20, m60, r, kd, mc, last });
     renderDiag(sym);
   } catch { el.innerHTML = ""; }
@@ -1307,7 +1717,35 @@ async function renderTicks(sym) {
 /* ── 到價警示 ── */
 let alerts = {};
 try { alerts = JSON.parse(localStorage.getItem("md-watch-alerts") || "{}") || {}; } catch {}
-const AL_TYPES = ["above", "below", "chg_up", "chg_dn", "vol"];
+const AL_TYPES = ["above", "below", "chg_up", "chg_dn", "vol",
+  "ma20_up", "ma20_dn", "ma60_up", "ma60_dn", "rsi_gt", "rsi_lt", "kd_gold", "kd_dead", "boll_up", "boll_dn"];
+const AL_NOVAL = new Set(["ma20_up", "ma20_dn", "ma60_up", "ma60_dn", "kd_gold", "kd_dead", "boll_up", "boll_dn"]);
+const alTypeLabel = t => ({ above: T("al_above"), below: T("al_below"), chg_up: T("al_chg_up"), chg_dn: T("al_chg_dn"), vol: T("al_vol"),
+  ma20_up: T("al_ma20_up"), ma20_dn: T("al_ma20_dn"), ma60_up: T("al_ma60_up"), ma60_dn: T("al_ma60_dn"),
+  rsi_gt: T("al_rsi_gt"), rsi_lt: T("al_rsi_lt"), kd_gold: T("al_kd_gold"), kd_dead: T("al_kd_dead"),
+  boll_up: T("al_boll_up"), boll_dn: T("al_boll_dn") }[t] || t);
+/* 指標警示的技術數值快取:每 10 分鐘用日K重算一次(站上/跌破均線等用 live 價 vs 這裡的水位) */
+let alertCtx = {};
+async function refreshAlertCtx() {
+  const need = Object.keys(alerts).filter(s =>
+    (alerts[s] || []).some(a => !["above", "below", "chg_up", "chg_dn", "vol"].includes(a.type)));
+  for (const s of need) {
+    const c = alertCtx[s];
+    if (c && Date.now() - c.at < 600000) continue;
+    try {
+      const bars = await fetchBars(s, "6M");
+      const closes = bars.map(b => b.c);
+      const kd = kd9(bars);
+      const bl = bars.length >= 20 ? bollArr(closes) : null;
+      alertCtx[s] = {
+        at: Date.now(),
+        ma20: sma(closes, 20).pop(), ma60: sma(closes, 60).pop(),
+        rsi: rsi14(closes), kGtD: kd ? kd.K > kd.D : null,
+        bollUp: bl ? bl.up[bl.up.length - 1] : null, bollDn: bl ? bl.dn[bl.dn.length - 1] : null,
+      };
+    } catch {}
+  }
+}
 function saveAlerts() { localStorage.setItem("md-watch-alerts", JSON.stringify(alerts)); renderBell(); scheduleSync(); }
 function alertCount() { return Object.values(alerts).reduce((s, a) => s + a.length, 0); }
 function renderBell() {
@@ -1316,8 +1754,7 @@ function renderBell() {
   if (bn) { bn.style.display = n ? "block" : "none"; bn.textContent = n; }
 }
 function alertLabel(a) {
-  const t = { above: T("al_above"), below: T("al_below"), chg_up: T("al_chg_up"), chg_dn: T("al_chg_dn"), vol: T("al_vol") }[a.type];
-  return `${t} ${a.val}`;
+  return AL_NOVAL.has(a.type) ? alTypeLabel(a.type) : `${alTypeLabel(a.type)} ${a.val}`;
 }
 let toastTimer = null;
 function showToast(msg) {
@@ -1346,11 +1783,22 @@ function checkAlerts(q) {
   for (const a of list) {
     if (a.fired === today) continue;
     let hit = false;
+    const cx = alertCtx[s] || {};
     if (a.type === "above" && q.price != null) hit = q.price >= a.val;
     else if (a.type === "below" && q.price != null) hit = q.price <= a.val;
     else if (a.type === "chg_up" && q.change != null) hit = q.change >= a.val;
     else if (a.type === "chg_dn" && q.change != null) hit = q.change <= -Math.abs(a.val);
     else if (a.type === "vol" && q.volume != null) hit = q.volume >= a.val;
+    else if (a.type === "ma20_up") hit = cx.ma20 != null && q.price != null && q.price >= cx.ma20;
+    else if (a.type === "ma20_dn") hit = cx.ma20 != null && q.price != null && q.price <= cx.ma20;
+    else if (a.type === "ma60_up") hit = cx.ma60 != null && q.price != null && q.price >= cx.ma60;
+    else if (a.type === "ma60_dn") hit = cx.ma60 != null && q.price != null && q.price <= cx.ma60;
+    else if (a.type === "rsi_gt") hit = cx.rsi != null && cx.rsi >= a.val;
+    else if (a.type === "rsi_lt") hit = cx.rsi != null && cx.rsi <= a.val;
+    else if (a.type === "kd_gold") hit = cx.kGtD === true;
+    else if (a.type === "kd_dead") hit = cx.kGtD === false;
+    else if (a.type === "boll_up") hit = cx.bollUp != null && q.price != null && q.price >= cx.bollUp;
+    else if (a.type === "boll_dn") hit = cx.bollDn != null && q.price != null && q.price <= cx.bollDn;
     if (!hit) continue;
     a.fired = today;
     dirty = true;
@@ -1378,7 +1826,7 @@ function renderAlerts(sym) {
   el.innerHTML =
     (list.length ? rows : `<div class="sig-item" style="color:var(--muted)">${T("al_none")}</div>`) +
     `<div class="alert-form">
-      <select id="al-type">${AL_TYPES.map(t => `<option value="${t}">${{ above: T("al_above"), below: T("al_below"), chg_up: T("al_chg_up"), chg_dn: T("al_chg_dn"), vol: T("al_vol") }[t]}</option>`).join("")}</select>
+      <select id="al-type">${AL_TYPES.map(t => `<option value="${t}">${alTypeLabel(t)}</option>`).join("")}</select>
       <input id="al-val" type="number" step="any" inputmode="decimal" placeholder="數值">
       <button id="al-add">${T("al_add")}</button>
     </div>` +
@@ -1392,13 +1840,20 @@ function renderAlerts(sym) {
     delete list[+b.dataset.re].fired;
     saveAlerts(); renderAlerts(sym);
   });
+  const sel = $("al-type"), valInp = $("al-val");
+  if (sel && valInp) {
+    const syncVal = () => { valInp.style.display = AL_NOVAL.has(sel.value) ? "none" : ""; };
+    sel.onchange = syncVal; syncVal();
+  }
   const add = $("al-add");
   if (add) add.onclick = () => {
+    const ty = $("al-type").value;
     const v = parseFloat($("al-val").value);
-    if (!isFinite(v)) return;
+    if (!AL_NOVAL.has(ty) && !isFinite(v)) return;
     if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
-    (alerts[sym] = alerts[sym] || []).push({ type: $("al-type").value, val: v });
+    (alerts[sym] = alerts[sym] || []).push(AL_NOVAL.has(ty) ? { type: ty, val: 0 } : { type: ty, val: v });
     saveAlerts(); renderAlerts(sym);
+    refreshAlertCtx();
   };
 }
 function showAllAlerts() {
@@ -1513,7 +1968,11 @@ function renderScreenForm() {
     <div><label>${T("scr_pb")}</label><input id="sc-pb" type="number" step="any" placeholder="如 1.5"></div>
     <div><label>${T("scr_px")}</label><div style="display:flex;gap:4px"><input id="sc-p0" type="number" placeholder="低"><input id="sc-p1" type="number" placeholder="高"></div></div>
     <div><label>${T("scr_sort")}</label><select id="sc-sort"><option value="dy">${T("scr_sort_dy")}</option><option value="pe">${T("scr_sort_pe")}</option><option value="pb">${T("scr_sort_pb")}</option></select></div>
+    <div style="grid-column:1/-1"><label>${T("scr_tech")}</label>
+      <div class="chips" style="margin:0">${[["ma20", T("scr_ma20")], ["ma60", T("scr_ma60")], ["rsi_lo", T("scr_rsi_lo")], ["rsi_hi", T("scr_rsi_hi")], ["volx", T("scr_volx")]].map(([k, lb]) =>
+        `<button type="button" class="chip" data-tf2="${k}">${lb}</button>`).join("")}</div></div>
     <button class="scr-run" id="sc-run">${T("scr_run")}</button>`;
+  el.querySelectorAll("[data-tf2]").forEach(c => c.onclick = () => c.classList.toggle("on"));
   $("sc-run").onclick = runScreen;
 }
 let scrSyms = [];
@@ -1561,6 +2020,82 @@ function runScreen() {
     chunks.forEach(c => fetch(`${bridge.url}/q?syms=${c.join(",")}&t=${encodeURIComponent(bridge.token)}`)
       .then(r => r.json()).then(d => (d.quotes || []).forEach(paintScr)).catch(() => {}));
   }
+  const techOn = [...document.querySelectorAll("[data-tf2].on")].map(c => c.dataset.tf2);
+  if (techOn.length) applyTechScreen(syms.slice(0, 40), techOn);
+}
+
+/* 技術條件過濾:抓 3 個月日K逐檔計算(併發 6,上限 40 檔誠實標示) */
+async function applyTechScreen(syms, conds) {
+  const cnt = $("scr-cnt");
+  if (cnt) cnt.textContent = T("scr_calc");
+  const seq = syms.slice();
+  let done = 0;
+  const passSet = new Set();
+  const worker = async () => {
+    while (seq.length) {
+      const s = seq.shift();
+      try {
+        const bars = await fetchBars(s, "3M");
+        const closes = bars.map(b => b.c);
+        const last = closes[closes.length - 1];
+        const m20 = sma(closes, 20).pop(), m60 = sma(closes, 60).pop();
+        const r = rsi14(closes);
+        const v20 = bars.length > 21 ? bars.slice(-21, -1).reduce((a, b) => a + (b.v || 0), 0) / 20 : null;
+        const volx = v20 ? (bars[bars.length - 1].v || 0) / v20 : null;
+        let ok = true;
+        if (conds.includes("ma20") && !(m20 != null && last > m20)) ok = false;
+        if (conds.includes("ma60") && !(m60 != null && last > m60)) ok = false;
+        if (conds.includes("rsi_lo") && !(r != null && r < 30)) ok = false;
+        if (conds.includes("rsi_hi") && !(r != null && r > 70)) ok = false;
+        if (conds.includes("volx") && !(volx != null && volx >= 2)) ok = false;
+        if (ok) passSet.add(s);
+      } catch {}
+      done++;
+      if (cnt) cnt.textContent = `${T("scr_calc")} ${done}/${syms.length}`;
+    }
+  };
+  await Promise.all([1, 2, 3, 4, 5, 6].map(worker));
+  document.querySelectorAll("#scr-table tbody tr[data-sym]").forEach(tr => {
+    if (!passSet.has(tr.dataset.sym)) tr.remove();
+  });
+  const left = document.querySelectorAll("#scr-table tbody tr").length;
+  if (cnt) cnt.textContent = `${left}(技術條件僅套用前40檔)`;
+}
+
+/* ── 產業熱力圖(TWSE 類股指數,收盤) ── */
+let heatCache = null;
+async function renderHeat() {
+  const el = $("heat-grid");
+  if (!el) return;
+  try {
+    if (!heatCache || Date.now() - heatCache.at > 1800000) {
+      const d = await fetch(WORKER_URL + "/tw-sectors").then(r => r.json());
+      heatCache = { at: Date.now(), d };
+    }
+    const { date, sectors } = heatCache.d;
+    if (!sectors || !sectors.length) { el.innerHTML = ""; return; }
+    $("heat-date").textContent = `${T("heat_src")}${date ? " · " + date : ""}`;
+    const maxAbs = Math.max(...sectors.map(s => Math.abs(s.chg)), 0.1);
+    el.innerHTML = sectors.slice().sort((a, b) => b.chg - a.chg).map(s => {
+      const a = Math.min(Math.abs(s.chg) / maxAbs, 1);
+      const bg = s.chg > 0 ? `rgba(239,68,68,${0.12 + a * 0.5})` : s.chg < 0 ? `rgba(34,197,94,${0.12 + a * 0.5})` : "rgba(255,255,255,.05)";
+      return `<div class="heat-cell" data-hs="${s.n}" style="background:${bg}">
+        <div class="hc-n">${s.n}</div>
+        <div class="hc-c">${s.chg > 0 ? "+" : ""}${s.chg.toFixed(2)}%</div>
+        <div class="hc-v">${s.v.toLocaleString()}</div></div>`;
+    }).join("");
+    el.querySelectorAll("[data-hs]").forEach(c => c.onclick = () => {
+      const n = c.dataset.hs;
+      const cats = Object.keys(CATEGORIES);
+      const hit = cats.find(k => k.replace(/(工業|事業|業)$/, "") === n) || cats.find(k => k.includes(n)) || cats.find(k => n.includes(k.replace(/(工業|事業|業)$/, "")));
+      if (!hit) return;
+      curTab = "cats"; curCat = hit; catPage = 1;
+      renderTabs(); renderCatSel();
+      const sel = $("cat-sel");
+      if (sel) sel.value = hit;
+      renderView();
+    });
+  } catch { el.innerHTML = ""; }
 }
 
 /* ── 市場新聞頁 ── */
@@ -1598,6 +2133,8 @@ async function renderNewsTab() {
 
 function closeSheet() {
   $("sheet").classList.remove("open"); $("sheet-bg").classList.remove("open");
+  if (replay) stopReplay();
+  drawTool = null; drawPend = null;
   sheetSym = null;
   if (depthTimer) { clearInterval(depthTimer); depthTimer = null; }
   if (ticksTimer) { clearInterval(ticksTimer); ticksTimer = null; }
@@ -1607,6 +2144,8 @@ let ticksTimer = null;
 function openSheet(sym) {
   if (depthTimer) { clearInterval(depthTimer); depthTimer = null; }
   if (ticksTimer) { clearInterval(ticksTimer); ticksTimer = null; }
+  if (replay) stopReplay();
+  chartView = null; cmpSyms = []; cmpData = {}; drawTool = null; drawPend = null;
   sheetSym = sym;
   curTf = "6M";
   const q = quotes[sym] || {};
@@ -1642,12 +2181,37 @@ function openSheet(sym) {
     <div class="tf-chips" id="tf-chips">${tfChipsHtml(sym)}</div>
     <div class="tf-chips" id="opt-chips">
       <button class="tf ${chartOpt.boll ? "on" : ""}" data-opt="boll">${T("boll_lbl")}</button>
+      <button class="tf ${chartOpt.ema ? "on" : ""}" data-ov="ema">EMA</button>
+      <button class="tf ${chartOpt.sar ? "on" : ""}" data-ov="sar">SAR</button>
+      <button class="tf ${chartOpt.ich ? "on" : ""}" data-ov="ich">一目</button>
+      ${isTWSym(sym) && bridge ? `<button class="tf ${chartOpt.vwap ? "on" : ""}" data-ov="vwap">VWAP</button>` : ""}
       <span style="width:8px"></span>
-      ${[["vol", T("sub_vol")], ["macd", "MACD"], ["kd", "KD"], ["rsi", "RSI"]].map(([k, lb]) =>
+      ${[["vol", T("sub_vol")], ["macd", "MACD"], ["kd", "KD"], ["rsi", "RSI"], ["wpr", "W%R"], ["cci", "CCI"]].map(([k, lb]) =>
         `<button class="tf ${chartOpt.sub === k ? "on" : ""}" data-sub="${k}">${lb}</button>`).join("")}
     </div>
+    <div class="tf-chips ct-row" id="ct-chips">
+      ${[["candle", T("ct_candle")], ["ha", T("ct_ha")], ["bar", T("ct_bar")], ["area", T("ct_area")]].map(([k, lb]) =>
+        `<button class="tf ${chartOpt.ctype === k ? "on" : ""}" data-ct="${k}">${lb}</button>`).join("")}
+      <button class="tf ${chartOpt.log ? "on" : ""}" data-log="1">${T("log_lbl")}</button>
+      <span style="width:8px"></span>
+      <button class="tf" data-cmp="1">${T("cmp_lbl")}</button>
+      <button class="tf" data-replay="1">${T("replay_lbl")}</button>
+      <span style="width:8px"></span>
+      ${[["l", "╱"], ["h", "─"], ["f", "𝄃"], ["t", "T"], ["erase", "⌫"]].map(([k, lb]) =>
+        `<button class="tf" data-tool="${k}" title="${{ l: T("tool_trend"), h: T("tool_hline"), f: T("tool_fib"), t: T("tool_text"), erase: T("tool_erase") }[k]}">${lb}</button>`).join("")}
+      <button class="tf" data-dclear="1" title="${T("tool_clear")}">🗑</button>
+      <span style="width:8px"></span>
+      <button class="tf" data-fs="1">${T("fs_lbl")}</button>
+      <button class="tf" data-snap="1">${T("snap_lbl")}</button>
+    </div>
+    <div class="tf-chips" id="replay-bar" style="display:none">
+      <button class="tf" id="rp-toggle">⏸</button>
+      ${[1, 3, 10].map(s => `<button class="tf rp-speed ${s === 1 ? "on" : ""}" data-spd="${s}">${s}x</button>`).join("")}
+      <input id="rp-slider" type="range" min="10" max="100" value="10" style="flex:1;min-width:80px">
+      <button class="tf" id="rp-exit">${T("replay_exit")}</button>
+    </div>
     <div class="ohlc-strip" id="d-ohlc"></div>
-    <canvas id="d-chart"></canvas>
+    <div id="chart-box"><canvas id="d-chart"></canvas></div>
     <div class="chart-note">MA5 <span style="color:#fbbf24">─</span> MA20 <span style="color:#818cf8">─</span> MA60 <span style="color:#38bdf8">─</span> · ${T("vol_note")}</div>
     <div class="g-title">${T("sec_tech")}</div>
     <div class="ti-grid" id="d-tech"></div>
@@ -1680,9 +2244,84 @@ function openSheet(sym) {
     $("opt-chips").querySelectorAll("[data-sub]").forEach(x => x.classList.toggle("on", x.dataset.sub === chartOpt.sub));
     renderDetailChart(sym);
   });
-  $("tf-chips").querySelectorAll(".tf").forEach(b => b.onclick = () => {
+  $("opt-chips").querySelectorAll("[data-ov]").forEach(b => b.onclick = () => {
+    const k = b.dataset.ov;
+    chartOpt[k] = !chartOpt[k]; saveChartOpt();
+    b.classList.toggle("on", chartOpt[k]);
+    renderDetailChart(sym);
+  });
+  $("ct-chips").querySelectorAll("[data-ct]").forEach(b => b.onclick = () => {
+    chartOpt.ctype = b.dataset.ct; saveChartOpt();
+    $("ct-chips").querySelectorAll("[data-ct]").forEach(x => x.classList.toggle("on", x.dataset.ct === chartOpt.ctype));
+    renderDetailChart(sym);
+  });
+  $("ct-chips").querySelector("[data-log]").onclick = e => {
+    chartOpt.log = !chartOpt.log; saveChartOpt();
+    e.currentTarget.classList.toggle("on", chartOpt.log);
+    renderDetailChart(sym);
+  };
+  $("ct-chips").querySelector("[data-cmp]").onclick = async e => {
+    const inp = prompt(T("cmp_prompt"), cmpSyms.join(","));
+    if (inp === null) return;
+    cmpSyms = inp.split(",").map(s => s.trim().toUpperCase()).filter(Boolean).slice(0, 3);
+    e.currentTarget.classList.toggle("on", cmpSyms.length > 0);
+    for (const cs of cmpSyms) {
+      try { cmpData[cs] = await fetchBars(cs, curTf); } catch { cmpData[cs] = []; }
+    }
+    renderDetailChart(sym);
+  };
+  $("ct-chips").querySelectorAll("[data-tool]").forEach(b => b.onclick = () => {
+    drawTool = drawTool === b.dataset.tool ? null : b.dataset.tool;
+    drawPend = null;
+    $("ct-chips").querySelectorAll("[data-tool]").forEach(x => x.classList.toggle("on", x.dataset.tool === drawTool));
+    if (drawTool) showToast(T("draw_hint"));
+  });
+  $("ct-chips").querySelector("[data-dclear]").onclick = () => {
+    if (drawings[sym] && drawings[sym].length && confirm(T("tool_clear") + "?")) {
+      delete drawings[sym]; saveDrawings(); redrawChart();
+    }
+  };
+  $("ct-chips").querySelector("[data-fs]").onclick = () => {
+    const box = $("chart-box");
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (box.requestFullscreen) box.requestFullscreen();
+  };
+  $("ct-chips").querySelector("[data-snap]").onclick = () => {
+    const cv = $("d-chart");
+    if (!cv) return;
+    cv.toBlob(bl => {
+      if (!bl) return;
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(bl);
+      a.download = `${sym}-${curTf}-${new Date().toISOString().slice(0, 10)}.png`;
+      a.click();
+    });
+  };
+  $("ct-chips").querySelector("[data-replay]").onclick = () => startReplay(sym);
+  $("rp-exit").onclick = stopReplay;
+  $("rp-toggle").onclick = () => {
+    if (!replay) return;
+    replay.paused = !replay.paused;
+    $("rp-toggle").textContent = replay.paused ? "▶" : "⏸";
+  };
+  $("sheet").querySelectorAll(".rp-speed").forEach(b => b.onclick = () => {
+    if (!replay) return;
+    replay.speed = +b.dataset.spd;
+    $("sheet").querySelectorAll(".rp-speed").forEach(x => x.classList.toggle("on", +x.dataset.spd === replay.speed));
+  });
+  $("rp-slider").oninput = () => {
+    if (!replay || !curChart) return;
+    replay.idx = Math.round(curChart.bars.length * (+$("rp-slider").value) / 100);
+    redrawChart();
+  };
+  $("tf-chips").querySelectorAll(".tf").forEach(b => b.onclick = async () => {
     curTf = b.dataset.tf;
+    chartView = null;
+    if (replay) stopReplay();
     $("tf-chips").querySelectorAll(".tf").forEach(x => x.classList.toggle("on", x.dataset.tf === curTf));
+    for (const cs of cmpSyms) {
+      try { cmpData[cs] = await fetchBars(cs, curTf); } catch { cmpData[cs] = []; }
+    }
     renderDetailChart(sym);
   });
   $("sheet").querySelectorAll("[data-sg]").forEach(c => c.onclick = () => {
@@ -1848,8 +2487,9 @@ async function init() {
   renderView();
   startSched();
   initBridge();
-  initSync();
+  initSync().then(() => refreshAlertCtx());
   tickMkt();
+  document.addEventListener("fullscreenchange", () => setTimeout(redrawChart, 80));
 }
 init();
 document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshNow(); });
