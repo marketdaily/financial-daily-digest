@@ -16,6 +16,64 @@ from urllib.parse import parse_qs, urlparse
 PORT = 8788
 SNAP_TTL = 3.0
 TW_SYM = re.compile(r"^\d{4,6}[A-Z]?$")
+DERIV_PROD = re.compile(r"^[A-Z0-9]{2,6}$")
+
+
+class UpstreamDataError(Exception):
+    """上游資料拿不到(如定 ATM 所需的 spot)→ 502 誠實回報,不觸發整段 session reset。"""
+
+
+def norm_snap_ts(ts_ns):
+    """snapshot.ts=台北牆鐘偽 epoch ns → 真 epoch 秒(同 /q,-8h)。kbars 是牆鐘分桶另一套語義,勿互抄。"""
+    return ts_ns // 1_000_000_000 - 8 * 3600 if ts_ns else None
+
+
+def snap_row(sn):
+    return {
+        "code": sn.code,
+        "price": sn.close,
+        "bid": sn.buy_price,
+        "ask": sn.sell_price,
+        "volume": sn.total_volume,
+        "ts": norm_snap_ts(sn.ts),
+    }
+
+
+def pick_near_next(contracts):
+    """期貨群 → (近月, 次月)。排除 R1/R2 連續合約(delivery_date 與真實月份重複),依 delivery_date 排序。"""
+    real = [c for c in contracts
+            if getattr(c, "delivery_date", "") and not c.code.endswith(("R1", "R2"))]
+    real.sort(key=lambda c: c.delivery_date)
+    return (real[0] if real else None, real[1] if len(real) > 1 else None)
+
+
+def pick_atm_window(strikes, spot, n):
+    """履約價集合+spot → (atm, ATM±n 檔由小到大窗口)。tie 取低履約價;無 spot → (None, [])。"""
+    ss = sorted(set(strikes))
+    if not ss or not spot:
+        return None, []
+    atm = min(ss, key=lambda k: (abs(k - spot), k))
+    i = ss.index(atm)
+    return atm, ss[max(0, i - n): i + n + 1]
+
+
+def parse_n(raw, default=8, cap=20):
+    """optchain n:未給→default;非負整數字串,超上限截到 cap(回應帶生效值);非法→None(400)。"""
+    if raw is None or raw == "":
+        return default
+    if not raw.isdecimal():
+        return None
+    return min(int(raw), cap)
+
+
+def norm_cp(right):
+    v = getattr(right, "value", right)
+    s = str(v).upper()
+    if s in ("C", "CALL") or s.endswith(".CALL"):
+        return "C"
+    if s in ("P", "PUT") or s.endswith(".PUT"):
+        return "P"
+    return None
 
 
 def load_env(path):
@@ -40,6 +98,7 @@ class Feed:
     def __init__(self):
         self._api = None
         self._lock = threading.Lock()
+        self._deriv_lock = threading.Lock()
         self._login_ts = 0.0
         self._cache = {}
         self._contracts = {}
@@ -58,6 +117,8 @@ class Feed:
         self._login_ts = time.time()
         self._bidask_cb_installed = False
         self._subs, self._depth = {}, {}
+        self._tick_cb_installed = False
+        self._ticks, self._tick_subs = {}, {}
         print(f"[bridge] login ok ts={int(self._login_ts)}", flush=True)
 
     def api(self):
@@ -190,6 +251,62 @@ class Feed:
         except Exception:
             pass
 
+    TICKS_IDLE_S = 300
+    BIG_LOT = 50
+
+    def ticks(self, sym):
+        """內外盤+大單:on-demand 訂閱 Tick 串流,idle 5 分鐘自動退訂(與五檔共用 200 檔訂閱上限)。"""
+        import shioaji as sj
+        import collections
+        api = self.api()
+        if not getattr(self, "_tick_cb_installed", False):
+            api.quote.set_on_tick_stk_v1_callback(self._on_tick)
+            self._tick_cb_installed = True
+        now = time.time()
+        if not hasattr(self, "_ticks"):
+            self._ticks, self._tick_subs = {}, {}
+        if sym not in self._tick_subs:
+            contract = self._resolve(api, sym)
+            if contract is None:
+                return None
+            self._ticks.setdefault(sym, {"ticks": collections.deque(maxlen=60),
+                                         "out": 0, "in": 0, "big_buy": 0, "big_sell": 0})
+            api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.Tick,
+                                version=sj.constant.QuoteVersion.v1)
+        self._tick_subs[sym] = now
+        for s, t0 in list(self._tick_subs.items()):
+            if s != sym and now - t0 > self.TICKS_IDLE_S:
+                try:
+                    c = self._contracts.get(s)
+                    if c is not None:
+                        api.quote.unsubscribe(c, quote_type=sj.constant.QuoteType.Tick,
+                                              version=sj.constant.QuoteVersion.v1)
+                except Exception:
+                    pass
+                self._tick_subs.pop(s, None)
+                self._ticks.pop(s, None)
+        return self._ticks.get(sym)
+
+    def _on_tick(self, exchange, tk):
+        try:
+            st = self._ticks.get(tk.code)
+            if st is None:
+                return
+            v = int(tk.volume)
+            io_t = int(getattr(tk, "tick_type", 0))  # 1=外盤 2=內盤 0=無法歸類
+            st["ticks"].append({"ts": int(time.time()), "c": float(tk.close), "v": v, "io": io_t})
+            if io_t == 1:
+                st["out"] += v
+            elif io_t == 2:
+                st["in"] += v
+            if v >= self.BIG_LOT:
+                if io_t == 1:
+                    st["big_buy"] += v
+                elif io_t == 2:
+                    st["big_sell"] += v
+        except Exception:
+            pass
+
     def kbars(self, sym, res=5, days=5):
         """近 N 日分 K(1 分 K 聚合成 res 分鐘)。ts 牆鐘偽 epoch→分桶用牆鐘、輸出真 epoch(-8h)。"""
         key = f"kb:{sym}:{res}:{days}"
@@ -295,6 +412,123 @@ class Feed:
         self._cache[key] = (now, rows)
         return rows
 
+    # 指數類商品 underlying_code 是空字串(1.5.6 實測),spot 走白名單映射;
+    # 個股期/個股選 uk='S' 帶現股代碼,走 _resolve。對不上→None,誠實回 null 不硬湊。
+    IDX_SPOT = {"TXF": ("TSE", "001"), "MXF": ("TSE", "001"), "TMF": ("TSE", "001"),
+                "TXO": ("TSE", "001"), "TX1": ("TSE", "001"), "TX2": ("TSE", "001"),
+                "TX4": ("TSE", "001"), "TX5": ("TSE", "001")}
+    FUT_TTL = 10.0
+    OPT_TTL = 60.0
+
+    def _group(self, category, prod):
+        """ContractCategory 群只能屬性存取(dict 式索引是逐合約 code);未知商品→None。"""
+        grp = getattr(category, prod, None)
+        if grp is None or callable(grp):
+            return None
+        try:
+            return list(grp)
+        except TypeError:
+            return None
+
+    def _spot_contract(self, api, prod, sample):
+        m = self.IDX_SPOT.get(prod)
+        if m:
+            try:
+                return getattr(api.Contracts.Indexs, m[0])[m[1]]
+            except Exception:
+                return None
+        uc = getattr(sample, "underlying_code", "") or ""
+        if TW_SYM.match(uc):
+            return self._resolve(api, uc)
+        return None
+
+    def fut(self, prod):
+        """近月+次月+現貨 snapshot;未知商品→None(404)。快取 10s。"""
+        key = f"fut:{prod}"
+        c = self._cache.get(key)
+        if c and time.time() - c[0] < self.FUT_TTL:
+            return c[1]
+        with self._deriv_lock:
+            c = self._cache.get(key)
+            if c and time.time() - c[0] < self.FUT_TTL:
+                return c[1]
+            api = self.api()
+            contracts = self._group(api.Contracts.Futures, prod)
+            if not contracts:
+                return None
+            near, nxt = pick_near_next(contracts)
+            if near is None:
+                return None
+            want = [near] + ([nxt] if nxt is not None else [])
+            spot_c = self._spot_contract(api, prod, near)
+            if spot_c is not None:
+                want.append(spot_c)
+            snaps = {sn.code: sn for sn in api.snapshots(want)}
+
+            def row(contract):
+                sn = snaps.get(contract.code)
+                if sn is None:
+                    return None
+                r = snap_row(sn)
+                r["delivery_date"] = contract.delivery_date
+                return r
+
+            near_row = row(near)
+            if near_row is None:
+                raise UpstreamDataError("no snapshot for near contract")
+            spot_sn = snaps.get(spot_c.code) if spot_c is not None else None
+            out = {
+                "near": near_row,
+                "next": row(nxt) if nxt is not None else None,
+                "spot": snap_row(spot_sn) if spot_sn is not None else None,
+            }
+            self._cache[key] = (time.time(), out)
+            return out
+
+    def optchain(self, prod, n):
+        """最近到期月 ATM±n 檔 call+put(單次批次 snapshots);未知商品→None(404)。快取 60s。"""
+        key = f"opt:{prod}:{n}"
+        c = self._cache.get(key)
+        if c and time.time() - c[0] < self.OPT_TTL:
+            return c[1]
+        with self._deriv_lock:
+            c = self._cache.get(key)
+            if c and time.time() - c[0] < self.OPT_TTL:
+                return c[1]
+            api = self.api()
+            contracts = self._group(api.Contracts.Options, prod)
+            if not contracts:
+                return None
+            dds = sorted({x.delivery_date for x in contracts if getattr(x, "delivery_date", "")})
+            if not dds:
+                return None
+            expiry = dds[0]
+            chain = [x for x in contracts if x.delivery_date == expiry]
+            spot_c = self._spot_contract(api, prod, chain[0])
+            spot = None
+            if spot_c is not None:
+                ssn = api.snapshots([spot_c])
+                if ssn:
+                    spot = ssn[0].close
+            atm, window = pick_atm_window({x.strike_price for x in chain}, spot, n)
+            if atm is None:
+                raise UpstreamDataError("spot unavailable, cannot locate ATM")
+            wset = set(window)
+            sel = [x for x in chain if x.strike_price in wset]
+            snaps = {sn.code: sn for sn in api.snapshots(sel)}
+            rows = []
+            for x in sorted(sel, key=lambda x: (x.strike_price, norm_cp(x.option_right) or "")):
+                sn = snaps.get(x.code)
+                if sn is None:
+                    continue
+                r = snap_row(sn)
+                r["cp"] = norm_cp(x.option_right)
+                r["strike"] = x.strike_price
+                rows.append(r)
+            out = {"expiry": expiry, "spot": spot, "atm": atm, "n": n, "chain": rows}
+            self._cache[key] = (time.time(), out)
+            return out
+
     def positions(self):
         api = self.api()
         try:
@@ -357,6 +591,18 @@ class Handler(BaseHTTPRequestHandler):
                     return self._send(400, {"error": "bad_sym"})
                 d = FEED.depth(sym)
                 return self._send(200, {"depth": d, "sym": sym, "status": "ok" if d else "pending"})
+            if u.path == "/ticks":
+                sym = (qs.get("sym") or [""])[0].strip().upper()
+                if not TW_SYM.match(sym):
+                    return self._send(400, {"error": "bad_sym"})
+                st = FEED.ticks(sym)
+                if st is None:
+                    return self._send(200, {"sym": sym, "status": "unsupported"})
+                return self._send(200, {"sym": sym, "status": "ok" if st["ticks"] else "pending",
+                                        "ticks": list(st["ticks"]),
+                                        "inout": {"out": st["out"], "in": st["in"]},
+                                        "big": {"buy": st["big_buy"], "sell": st["big_sell"],
+                                                "thresh": FEED.BIG_LOT}})
             if u.path == "/kbars":
                 sym = (qs.get("sym") or [""])[0].strip().upper()
                 res = int((qs.get("res") or ["5"])[0])
@@ -369,9 +615,28 @@ class Handler(BaseHTTPRequestHandler):
                 if rtype not in Feed.RANK_TYPES and rtype not in Feed.DERIVED_RANKS:
                     return self._send(400, {"error": "bad_type"})
                 return self._send(200, {"ranks": FEED.ranks(rtype), "type": rtype, "ts": int(time.time())})
+            if u.path == "/fut":
+                prod = (qs.get("c") or [""])[0].strip().upper()
+                if not DERIV_PROD.match(prod):
+                    return self._send(400, {"error": "bad_params"})
+                d = FEED.fut(prod)
+                if d is None:
+                    return self._send(404, {"error": "unknown product"})
+                return self._send(200, {**d, "src": "shioaji", "ts": int(time.time())})
+            if u.path == "/optchain":
+                prod = (qs.get("c") or [""])[0].strip().upper()
+                n = parse_n((qs.get("n") or [None])[0])
+                if not DERIV_PROD.match(prod) or n is None:
+                    return self._send(400, {"error": "bad_params"})
+                d = FEED.optchain(prod, n)
+                if d is None:
+                    return self._send(404, {"error": "unknown product"})
+                return self._send(200, {**d, "src": "shioaji", "ts": int(time.time())})
             if u.path == "/positions":
                 return self._send(200, FEED.positions())
             return self._send(404, {"error": "not_found"})
+        except UpstreamDataError as ex:
+            return self._send(502, {"error": str(ex)[:200]})
         except Exception as ex:
             traceback.print_exc()
             FEED.reset()
