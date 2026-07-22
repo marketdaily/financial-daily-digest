@@ -410,10 +410,11 @@ def _call_openrouter(prompt: str, system: str = None,
 
 
 def _call_cerebras(prompt: str, system: str = None,
-                   model: str = "llama-3.3-70b", max_tokens: int = 600) -> str:
+                   model: str = "gpt-oss-120b", max_tokens: int = 600) -> str:
     """Cerebras 免費層(晶圓級引擎,推理極快)。OpenAI 相容 API、獨立廠商。
-    預接線:沒設 CEREBRAS_API_KEY → raise,席次/鏈自動跳過。用戶自行註冊拿 key
-    (reCAPTCHA 擋自動註冊)後填進 .env 即自動啟用一席。"""
+    2026-07-22 帳號開通實測:llama-3.3-70b 已下架(404),現役=gpt-oss-120b/
+    gemma-4-31b/zai-glm-4.7,取最強 gpt-oss-120b。沒設 CEREBRAS_API_KEY →
+    raise,席次/鏈自動跳過。"""
     return _call_openai_style(
         "https://api.cerebras.ai/v1/chat/completions", "CEREBRAS_API_KEY",
         prompt, system, model=model, max_tokens=max_tokens)
@@ -466,7 +467,7 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     free_strong = [("groq:gpt-oss-120b", lambda p: _call_groq(p)),
                    ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000)),
                    ("openrouter:llama-70b", lambda p: _call_openrouter(p, max_tokens=8000)),
-                   ("cerebras:llama-70b", lambda p: _call_cerebras(p, max_tokens=8000))]
+                   ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
     # 2026-07-22 Delvin:「sonnet 要花錢就不要用」——付費 Claude 全退出主鏈,
     # 純免費層扛(gemini 雙 key + groq + cf + openrouter/cerebras + 本地 GPU),
     # audit 閘門/deterministic fallback 品質防線不動。openai 沒 key 自動跳過。
@@ -2364,7 +2365,7 @@ _COUNCIL_SEATS = [
     ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, system=_COUNCIL_SYS, max_tokens=300)),
     # 預接線:沒 key raise→席次自動停用;用戶註冊後填 .env 即多一席,不需改程式
     ("openrouter:llama-70b", lambda p: _call_openrouter(p, system=_COUNCIL_SYS, max_tokens=300)),
-    ("cerebras:llama-70b", lambda p: _call_cerebras(p, system=_COUNCIL_SYS, max_tokens=300)),
+    ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, system=_COUNCIL_SYS, max_tokens=300)),
     ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
 # 付費 Claude 席次改 opt-in(2026-07-22 Delvin 省錢令):council 佔 API 帳單大宗——
