@@ -103,3 +103,5 @@ quant_lab/auto_trade/.txo_iv.json
 intel/.tw_broker_calls_seen.json
 quote_bridge/shioaji.log
 quote_bridge/*.log
+quote_bridge/.signed_ok
+quant_lab/data/kbars/

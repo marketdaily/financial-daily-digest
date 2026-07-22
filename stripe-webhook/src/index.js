@@ -1556,6 +1556,20 @@ export default {
     // 寫入時把 token→email 歸戶(digest_email:{tok}),存 KV plan_trades:v1;
     // token 不落地,只有 /admin/plan-trades(admin 認證)讀得到。
     // 認證:Bearer header 比對 env.INTERNAL_TOKEN
+    // 看盤頁 intel 訊號燈:winrig patrol 後推 by_code(level/source/signal),全體用戶免費讀(合規:個股內容不分付費)
+    if (url.pathname === "/internal/watch-signals" && request.method === "POST") {
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      if (!body.by_code || typeof body.by_code !== "object") return json({ error: "no_by_code" }, 400);
+      await env.USER_PREFS.put("watch:signals", JSON.stringify({ date: body.date || null, by_code: body.by_code }), { expirationTtl: 86400 * 4 });
+      return json({ ok: true, n_codes: Object.keys(body.by_code).length });
+    }
+    if (url.pathname === "/watch-signals" && request.method === "GET") {
+      const raw = await env.USER_PREFS.get("watch:signals");
+      return json(raw ? JSON.parse(raw) : { date: null, by_code: {} });
+    }
+
     if (url.pathname === "/internal/plan-trades" && request.method === "POST") {
       if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
       let body;

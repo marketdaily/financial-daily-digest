@@ -42,6 +42,7 @@ class Feed:
         self._lock = threading.Lock()
         self._login_ts = 0.0
         self._cache = {}
+        self._contracts = {}
 
     def _login_locked(self):
         import shioaji as sj
@@ -77,6 +78,7 @@ class Feed:
                 except Exception:
                     pass
             self._api = None
+            self._contracts = {}
 
     def logged_in(self):
         return self._api is not None
@@ -94,13 +96,15 @@ class Feed:
             api = self.api()
             contracts = []
             for s in stale:
-                c = api.Contracts.Stocks[s]
+                c = self._resolve(api, s)
                 if c is not None:
                     contracts.append(c)
             snaps = api.snapshots(contracts) if contracts else []
             for sn in snaps:
+                c = self._contracts.get(sn.code)
                 q = {
                     "symbol": sn.code,
+                    "name": (getattr(c, "name", "") or "").strip() or None,
                     "price": sn.close,
                     "change": round(sn.change_rate, 2),
                     "bid": sn.buy_price,
@@ -110,11 +114,63 @@ class Feed:
                     "low": sn.low,
                     "volume": sn.total_volume,
                     "amount": sn.amount,
-                    "ts": sn.ts // 1_000_000_000 if sn.ts else None,
+                    # Shioaji snapshot.ts 是「台北牆鐘時間偽裝成 epoch ns」(1.5.6 實測,
+                    # 正式/模擬環境皆然)——減 8h 才是真 epoch,別直接當 UTC 用
+                    "ts": sn.ts // 1_000_000_000 - 8 * 3600 if sn.ts else None,
                 }
                 self._cache[sn.code] = (now, q)
                 out.append(q)
         return out
+
+    def _resolve(self, api, s):
+        """code → 合約。CB(可轉債)等不在 Contracts.Stocks 頂層索引,要逐交易所
+        (TSE/OTC/OES)找。只快取命中:暫時性失敗不可釘死成「查無」。"""
+        c = self._contracts.get(s)
+        if c is not None:
+            return c
+        stocks = api.Contracts.Stocks
+        try:
+            c = stocks[s]
+        except Exception:
+            c = None
+        if c is None:
+            for ex in ("TSE", "OTC", "OES"):
+                try:
+                    sub = getattr(stocks, ex, None)
+                    c = sub[s] if sub is not None else None
+                except Exception:
+                    c = None
+                if c is not None:
+                    break
+        if c is not None:
+            self._contracts[s] = c
+        return c
+
+    RANK_TYPES = {"change": "ChangePercentRank", "volume": "VolumeRank", "amount": "AmountRank",
+                  "range": "DayRangeRank", "tick": "TickCountRank"}
+
+    def ranks(self, rtype):
+        key = f"rank:{rtype}"
+        c = self._cache.get(key)
+        now = time.time()
+        if c and now - c[0] < 30:
+            return c[1]
+        import shioaji as sj
+        api = self.api()
+        st = getattr(sj.constant.ScannerType, self.RANK_TYPES[rtype])
+        rows = []
+        for d in api.scanners(scanner_type=st, count=50):
+            prev = d.close - d.change_price
+            rows.append({
+                "code": d.code,
+                "name": (d.name or "").strip(),
+                "close": d.close,
+                "change_pct": round(d.change_price / prev * 100, 2) if prev else None,
+                "change_price": d.change_price,
+                "volume": d.total_volume,
+            })
+        self._cache[key] = (now, rows)
+        return rows
 
     def positions(self):
         api = self.api()
@@ -172,6 +228,11 @@ class Handler(BaseHTTPRequestHandler):
                 syms = [s.strip().upper() for s in raw.split(",") if s.strip()][:60]
                 syms = [s for s in syms if TW_SYM.match(s)]
                 return self._send(200, {"quotes": FEED.quotes(syms), "src": "shioaji", "ts": int(time.time())})
+            if u.path == "/ranks":
+                rtype = (qs.get("type") or ["change"])[0]
+                if rtype not in Feed.RANK_TYPES:
+                    return self._send(400, {"error": "bad_type"})
+                return self._send(200, {"ranks": FEED.ranks(rtype), "type": rtype, "ts": int(time.time())})
             if u.path == "/positions":
                 return self._send(200, FEED.positions())
             return self._send(404, {"error": "not_found"})

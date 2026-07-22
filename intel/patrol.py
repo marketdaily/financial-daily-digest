@@ -18,7 +18,7 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch, us_analyst, us_insider, us_8k_events, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals, signal_ledger, us_13f_ledger, tw_financials, tw_leadflow, tw_analyst_ratings, tw_broker_calls
+from intel import tw_institutional, mops_watch, us_analyst, us_insider, us_8k_events, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals, signal_ledger, us_13f_ledger, tw_financials, tw_leadflow, tw_analyst_ratings, tw_broker_calls, tw_rank_scanner
 # confluence 刻意【不】在此 import——改在 confluence_section 內 lazy import,
 # 讓 confluence.py 萬一 import-time 壞掉也只降級成 fallback 段,不會整個 patrol 崩掉害 latest.json 沒產出餓死日報(驗證者 LOW-1)。
 
@@ -192,6 +192,11 @@ def run():
     except Exception as e:
         print(f"tw_broker_calls 掃描失敗(不擋巡邏):{e}")
         broker_calls = {}
+    try:
+        rank_data = tw_rank_scanner.active_signals(codes)  # 唯讀讀ledger(quote_bridge/rank_scan.py 13:50 cron快照),不觸網
+    except Exception as e:
+        print(f"tw_rank_scanner 判讀失敗(不擋巡邏):{e}")
+        rank_data = []
 
     snap = _cb_snapshot()
     snap_ok = snap.returncode == 0 and "snapshot ok" in (snap.stdout or "")
@@ -232,6 +237,8 @@ def run():
     for s in us_8k_sigs:
         line = us_8k_events.format_line(s)
         _emit(s["symbol"], s["level"], line, "us_8k")
+    for s in rank_data:
+        _emit(s["code"], s["level"], s["signal"], "tw_rank")
     for c in codes:
         m = marg.get(c)
         if not m or m["level"] in ("plain", "unknown"):
