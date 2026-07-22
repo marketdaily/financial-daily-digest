@@ -412,6 +412,16 @@ export default {
     }
 
     // --- Admin 2FA TOTP setup ---
+    // 個人看盤橋接:admin 驗證後下發 winrig quote bridge 的 URL+token(券商行情限本人使用)
+    if (url.pathname === "/watch-token" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      const admin = await requireAdmin(env, body, request);
+      if (!admin) return json({ error: "Forbidden" }, 403);
+      if (!env.QUOTE_BRIDGE_URL || !env.QUOTE_BRIDGE_TOKEN) return json({ error: "not_configured" }, 503);
+      return json({ url: env.QUOTE_BRIDGE_URL, token: env.QUOTE_BRIDGE_TOKEN });
+    }
+
     // 查詢是否已啟用 TOTP(無需密碼,僅回 boolean)
     if (url.pathname === "/admin/totp-status" && request.method === "POST") {
       let body;

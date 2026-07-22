@@ -101,3 +101,5 @@ valuation/.us_cik_map.json
 quant_lab/auto_trade/.tx_daily.json
 quant_lab/auto_trade/.txo_iv.json
 intel/.tw_broker_calls_seen.json
+quote_bridge/shioaji.log
+quote_bridge/*.log
