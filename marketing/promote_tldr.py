@@ -17,6 +17,7 @@
 跑法:python3 promote_tldr.py [限筆數,預設全部]
 """
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -37,7 +38,9 @@ MARKET_TAG = {"us": "#美股", "tw": "#台股"}
 
 def caption_for(c: dict) -> str:
     mtag = MARKET_TAG.get(c["variant"], "#財經")
-    return f"{c['caption_zh']}\n\n#市場脈搏 {mtag} #財經日報"
+    # 2026-07-22 Delvin 指令:caption 不放完整網址,一律 link in bio(佇列舊候選也在此統一改寫)
+    caption = re.sub(r"完整日報 → \S+", "完整日報 → link in bio", c["caption_zh"])
+    return f"{caption}\n\n#市場脈搏 {mtag} #財經日報"
 
 
 def png_to_jpg(png_path: Path, jpg_path: Path):

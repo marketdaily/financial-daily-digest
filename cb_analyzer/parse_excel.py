@@ -125,6 +125,9 @@ def _parse_clearing(note):
 def parse(xlsx_path):
     wb = openpyxl.load_workbook(xlsx_path, data_only=True)
     ws = wb[wb.sheetnames[0]]
+    import parse_masterlink
+    if parse_masterlink.is_masterlink(ws):          # 元富『CB初級市場資訊』格式自動委派
+        return parse_masterlink.parse_ws(ws)
     rows = list(ws.iter_rows(values_only=True))
     section = ""
     out = []

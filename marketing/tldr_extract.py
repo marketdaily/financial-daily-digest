@@ -88,8 +88,7 @@ def caption_for(date: str, variant: str, indicators: list[dict], sectors: list[d
         worst = min(sectors, key=lambda s: s["pct"])
         verb = "重挫" if worst["pct"] < 0 else "落後"
         parts.append(f"板塊輪動:{best['name']} 領漲 {best['move']}、{worst['name']} {verb} {worst['move']}")
-    suffix = "_us" if variant == "us" else ""
-    parts.append(f"完整日報 → marketdaily.ai/output/digest_{date}{suffix}.html")
+    parts.append("完整日報 → link in bio")
     return "\n".join(parts)
 
 
