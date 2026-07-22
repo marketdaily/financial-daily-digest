@@ -1437,8 +1437,9 @@ export default {
       const existing = existingRaw ? JSON.parse(existingRaw) : {};
       let digest_depth = body.digest_depth || existing.digest_depth || "standard";
       if (!["simple", "standard", "deep"].includes(digest_depth)) digest_depth = "standard";
-      // 持倉成本(選填,2026-07-07):{ ticker: { entry_price, entry_date } }。
+      // 持倉成本(選填,2026-07-07):{ ticker: { entry_price, entry_date, qty } }。
       // 有帶 positions 就整份取代(空物件=清空),沒帶則沿用既有值;只留仍在追蹤清單內的 ticker。
+      // qty(股數,2026-07-22 資金管理體檢):選填,允許小數(美股碎股);有 qty 或 entry_price 任一即存。
       let positions = existing.positions || {};
       if (body.positions !== undefined) {
         positions = {};
@@ -1449,17 +1450,26 @@ export default {
             const price = Number(p.entry_price);
             if (Number.isFinite(price) && price > 0 && price < 1e7) entry.entry_price = Math.round(price * 10000) / 10000;
             if (typeof p.entry_date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(p.entry_date)) entry.entry_date = p.entry_date;
-            if (entry.entry_price) positions[sym] = entry;
+            const qty = Number(p.qty);
+            if (Number.isFinite(qty) && qty > 0 && qty < 1e9) entry.qty = Math.round(qty * 10000) / 10000;
+            if (entry.entry_price || entry.qty) positions[sym] = entry;
           }
         }
       }
       const trackedSyms = new Set([...us, ...tw]);
       positions = Object.fromEntries(Object.entries(positions).filter(([s]) => trackedSyms.has(s)));
+      // 總本金(選填,2026-07-22):資金管理體檢的分母。有帶就取代(null/0=清空),沒帶沿用。
+      let capital = existing.capital;
+      if (body.capital !== undefined) {
+        const c = Number(body.capital);
+        capital = Number.isFinite(c) && c > 0 && c < 1e12 ? Math.round(c) : undefined;
+      }
       const prefs = {
         us_stocks: us,
         tw_stocks: tw,
         digest_depth,
         ...(Object.keys(positions).length ? { positions } : {}),
+        ...(capital ? { capital } : {}),
         updated_at: new Date().toISOString(),
       };
       await env.USER_PREFS.put(email, JSON.stringify(prefs));
@@ -1515,6 +1525,7 @@ export default {
         tw_stocks: prefs.tw_stocks || [],
         digest_depth: prefs.digest_depth || "standard",
         positions: prefs.positions || {},
+        capital: prefs.capital || null,
         plan,
         cap: cap === Infinity ? null : cap,
       });
