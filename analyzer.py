@@ -467,12 +467,11 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
                    ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000)),
                    ("openrouter:llama-70b", lambda p: _call_openrouter(p, max_tokens=8000)),
                    ("cerebras:llama-70b", lambda p: _call_cerebras(p, max_tokens=8000))]
-    # 2026-07-22 省錢令:正常鏈 Gemini 死光先走免費 70B 層,Claude 退最後付費保險
-    # (清晨 Gemini 空桶月燒 160+ 次 Sonnet 大 prompt 的主因);
-    # prefer_strong = audit fail 後的品質救援,維持 Claude 打頭陣不稀釋。
-    claude_seat = [("claude:sonnet-4.6", _call_claude)]
-    strong = ((claude_seat + free_strong) if prefer_strong
-              else (free_strong + claude_seat)) + [("openai:gpt-4o-mini", _call_openai)]
+    # 2026-07-22 Delvin:「sonnet 要花錢就不要用」——付費 Claude 全退出主鏈,
+    # 純免費層扛(gemini 雙 key + groq + cf + openrouter/cerebras + 本地 GPU),
+    # audit 閘門/deterministic fallback 品質防線不動。openai 沒 key 自動跳過。
+    # prefer_strong 語義保留:retry 時把 70B 層排到 gemini 前面(見下方 providers)。
+    strong = free_strong + [("openai:gpt-4o-mini", _call_openai)]
     # 本地 GPU 永遠排最後一張網:品質不如雲端大模型(有 audit 閘門把關),
     # 但零配額且不吃網路,全雲端斷線(DNS 瞬斷/配額同時死)時是唯一活口。
     local = [("local:qwen2.5-14b", lambda p: _call_ollama(p, max_tokens=9000))]
@@ -2380,13 +2379,12 @@ if os.environ.get("COUNCIL_PAID_SEATS") == "1":
 
 
 def _council_judge_call(p: str) -> str:
-    # 裁判免費 Gemini 優先(省錢令);空桶才退付費保底——保底用 Sonnet 非 Haiku
-    # (2026-07-22 Delvin:反正只在 Gemini 掛時花錢,就花在品質最關鍵的裁判上)。
-    # 兩者皆敗時呼叫端既有 try/except 會走「最高信念席次」fallback,行為不變。
+    # 裁判純免費鏈(2026-07-22 Delvin:會花錢的一律不用):Gemini → Groq。
+    # 兩者皆敗時呼叫端既有 try/except 會走「最高信念席次」fallback,不花一毛錢。
     try:
         return _call_gemini(p, "gemini-2.5-flash-lite", system=_COUNCIL_SYS)
     except Exception:
-        return _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")
+        return _call_groq(p, system=_COUNCIL_SYS, max_tokens=1000)
 
 
 _COUNCIL_JUDGE = _council_judge_call
