@@ -10,6 +10,8 @@ import os
 import json
 import datetime
 
+import urllib.request
+
 import tx_data
 import txo_data
 from foreign_flow_study import fetch_foreign
@@ -25,6 +27,23 @@ COST_A = 4.4
 START_EQUITY = 3_000_000            # 虛擬本金(用戶實際資金規模)
 PV = {"A": 50, "B": 50, "C": 50}    # paper 規模:B/C=小台1口、A=跨式1組(皆每點NT$50)
 HARD_DD = 0.20                      # 回撤煞車:權益回撤≥20% 停開新倉(人工複核)
+ALERT_URL = "https://marketdaily-alert-worker.delvin-12345678.workers.dev/internal/admin-line-push"
+
+
+def push(msg):
+    """web push 到用戶手機(走 MarketDaily alert-worker,token 在 .env)。失敗靜默。"""
+    from shioaji_adapter import _load_env
+    _load_env()
+    tok = os.environ.get("MARKETDAILY_ALERT_TOKEN") or os.environ.get("ALERT_TOKEN")
+    if not tok:
+        return
+    try:
+        req = urllib.request.Request(ALERT_URL,
+            data=json.dumps({"message": msg[:4900]}).encode(),
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"})
+        urllib.request.urlopen(req, timeout=10)
+    except Exception:
+        pass
 
 
 def log_ev(ev):
@@ -41,6 +60,14 @@ def realize(st, fish, pnl_pts, ev):
     st["peak"] = max(st.get("peak", START_EQUITY), st["equity"])
     ev["equity"] = st["equity"]
     log_ev(ev)
+    names = {"A": "賣跨式", "B": "外資跟隨", "C": "ORB當沖"}
+    dd = 1 - st["equity"] / st["peak"]
+    push(f"📒 paper {names.get(fish, fish)} {ev.get('date','')} "
+         f"{'獲利' if ev['pnl_ntd']>=0 else '虧損'} {ev['pnl_ntd']:+,} 元"
+         f"|權益 {st['equity']:,.0f}({st['equity']/START_EQUITY-1:+.1%})"
+         + (f"|⚠️回撤{dd:.0%}" if dd >= 0.05 else ""))
+    if dd >= HARD_DD:
+        push(f"⛔ paper 回撤煞車觸發({dd:.0%}):停開新倉,需人工複核")
 
 
 def halted(st):
