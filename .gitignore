@@ -63,6 +63,8 @@ scripts/.stockname_cache.json
 cb_analyzer/.quote_cache.json
 cb_analyzer/inbox_files/
 cb_analyzer/.mail_seen.json
+cb_analyzer/mail_ingest_status.json
+cb_analyzer/config_history.jsonl
 scripts/.tw_names_cache.json
 scripts/plan_sim_trades_internal.json
 .tw_closure_cache.json
