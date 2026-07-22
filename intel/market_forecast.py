@@ -24,6 +24,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 MODEL_PATH = REPO / "intel" / "market_forecast_model.json"
 LEDGER = REPO / "quant_lab" / "market_forecast" / "shadow_ledger.jsonl"
+LEDGER_US = REPO / "quant_lab" / "market_forecast" / "shadow_ledger_us.jsonl"
 TW = timezone(timedelta(hours=8))
 SYMS = {"sox": "^SOX", "spx": "^GSPC", "stoxx": "^STOXX50E", "kospi": "^KS11",
         "n225": "^N225", "hsi": "^HSI", "vix": "^VIX", "twii": "^TWII"}
@@ -94,10 +95,11 @@ def tier(p):
     return "noise"
 
 
-def settle(twii_bars, today):
-    if not LEDGER.exists():
+def settle(twii_bars, today, ledger=None):
+    ledger = ledger or LEDGER
+    if not ledger.exists():
         return
-    lines = LEDGER.read_text().splitlines()
+    lines = ledger.read_text().splitlines()
     by_date = {b[0].isoformat(): b for b in twii_bars}
     changed = False
     out = []
@@ -118,12 +120,85 @@ def settle(twii_bars, today):
                     rec["hit_cc"] = (rec["p_up"] > 0.5) == (cc > 0)
                     changed = True
             elif (today - datetime.strptime(rec["date"], "%Y-%m-%d").date()).days > 7:
-                rec["skipped"] = "no_twii_bar"
+                rec["skipped"] = "no_bar"
                 changed = True
         out.append(json.dumps(rec, ensure_ascii=False))
     if changed:
-        LEDGER.write_text("\n".join(out) + "\n")
+        ledger.write_text("\n".join(out) + "\n")
         log("已結算舊預測")
+
+
+US_FEATS_ASIA = [("twii_td", "twii"), ("kospi_td", "kospi"), ("n225_td", "n225"), ("hsi_td", "hsi")]
+
+
+def build_features_us(today, data):
+    """晚報 19:25 TW 生成時已定案:美股昨收(spx/sox/vix,bars 日期<today)+S&P 5日動能
+    +亞洲當日收盤(==today,休市=0 無新資訊)。今晚美股 21:30 TW 才開盤,無前視。"""
+    f = {}
+    for key, name in [("spx_prev", "spx"), ("sox_prev", "sox")]:
+        hist = [b for b in data[name] if b[0] < today]
+        if len(hist) < 2 or not hist[-2][2]:
+            raise ValueError(f"{name} 歷史不足")
+        f[key] = (hist[-1][2] / hist[-2][2] - 1) * 100
+    vh = [b for b in data["vix"] if b[0] < today]
+    if len(vh) < 2:
+        raise ValueError("vix 歷史不足")
+    f["vix_lvl"] = vh[-1][2]
+    f["vix_chg"] = (vh[-1][2] / vh[-2][2] - 1) * 100
+    sh = [b for b in data["spx"] if b[0] < today]
+    if len(sh) < 6 or not sh[-6][2]:
+        raise ValueError("spx 動能歷史不足")
+    f["spx_m5"] = (sh[-1][2] / sh[-6][2] - 1) * 100
+    for key, name in US_FEATS_ASIA:
+        tb = [b for b in data[name] if b[0] == today]
+        prev = [b for b in data[name] if b[0] < today]
+        if tb and tb[0][2] and prev and prev[-1][2]:
+            f[key] = (tb[0][2] / prev[-1][2] - 1) * 100
+        else:
+            f[key] = 0.0
+    return f
+
+
+def forecast_tonight_us(test=False):
+    """美股晚報 19:25 生成時由 data_fetcher.fetch_all 呼叫:model_us 算今晚 S&P500 收盤方向機率。
+    只在晚報時窗(TW 17-21 平日)計算;失敗回 {}(缺了不缺信)。與台股版不同,US 無獨立 cron,
+    ledger(shadow_ledger_us.jsonl)由本函數順手結算+記帳(單一觸發源=日報生成)。
+    回測(us_ceiling_backtest.py,OOS 2015-2026):命中 58.1%(基礎率 54.3%)、top20% 信心日 66.7%;
+    US-only 特徵無 edge(54.2%),增量全來自亞洲當日收盤 → 亞股是美股當晚的真領先資訊(反向成立,
+    與 GLOBAL_LEAD.md「亞股昨收對台股無資訊」不矛盾:那是隔夜舊資訊,這是當日新資訊)。
+    oc 但書同台股版:top20% 桶 open-to-close 只 55.4%,大半是隔夜跳空 → 永遠只當收盤預報。"""
+    try:
+        now = datetime.now(TW)
+        if not test and (not (17 <= now.hour < 21) or now.weekday() >= 5):
+            return {}
+        model_all = json.loads(MODEL_PATH.read_text())
+        if "model_us" not in model_all:
+            return {}
+        data = {k: bars(v) for k, v in SYMS.items()}
+        today = now.date()
+        try:
+            settle(data["spx"], today, ledger=LEDGER_US)
+        except Exception as e:
+            log(f"US ledger 結算失敗(不影響今日預測): {e}")
+        f = build_features_us(today, data)
+        p = predict(model_all["model_us"], f)
+        t = tier(p)
+        out = {"p_up": round(p, 3), "tier": t, "slot": "us", "market": "us",
+               "trained_through": model_all.get("trained_through_us", "")}
+        if not test:
+            rec = {"ts": now.isoformat(timespec="seconds"), "date": today.isoformat(),
+                   "slot": "us", "p_up": round(p, 4), "tier": t,
+                   "features": {k: round(v, 3) for k, v in f.items()},
+                   "trained_through": model_all.get("trained_through_us", "")}
+            LEDGER_US.parent.mkdir(parents=True, exist_ok=True)
+            with open(LEDGER_US, "a") as fo:
+                fo.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        else:
+            log(f"[test] features={ {k: round(v, 2) for k, v in f.items()} } p_up={p:.3f} tier={t}")
+        return out
+    except Exception as e:
+        log(f"forecast_tonight_us failed(fail-silent): {e}")
+        return {}
 
 
 def forecast_today():

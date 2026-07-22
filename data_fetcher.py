@@ -1425,6 +1425,13 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         market_forecast = forecast_today()
     except Exception as _e:
         print(f"[market_forecast] skipped: {_e}")
+    if not market_forecast:
+        # 美股晚報版(2026-07-22):時窗 TW 17-21,兩時窗互斥不會搶
+        try:
+            from intel.market_forecast import forecast_tonight_us
+            market_forecast = forecast_tonight_us()
+        except Exception as _e:
+            print(f"[market_forecast_us] skipped: {_e}")
 
     return {
         "fundamentals": fundamentals,

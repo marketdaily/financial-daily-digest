@@ -35,3 +35,17 @@ open-to-close 版本 OOS:A 54.1%(基礎 52.7%)、B 56.2%;唯 B 最有把握 20% 
 - **後續(用戶已定方向)**:Shioaji API 接上後,「B 高信心日」桶(64.2%/+0.40% oc)走
   backtest-validation 全流程(成本/DSR/walk-forward)評估成為交易策略;其他桶不碰。
 - 重跑回測:資料用 `../crash_gate_night/fetch_global.py` 抓;`ceiling_backtest.py` + `oc_validation.py`。
+
+## 美股晚報版(2026-07-22,0721 美股大漲晚報沒預判到而起)
+特徵=19:25 TW 已定案:美股昨收(spx/sox)+VIX+S&P 5日動能+**亞洲當日收盤**(台/韓/日/港)。
+目標:S&P500 收盤對收盤方向。`us_ceiling_backtest.py` walk-forward OOS 2015-2026(n=2,598):
+- **US-only 特徵無 edge(54.2%=基礎率 54.3%)——美股不能用自己昨天預測自己**
+- +亞洲當日:58.1%、Brier 0.2406;top20% 信心日 66.7%、按方向日均 +0.49%(n=520)
+- 年度穩定:2015-2025 每年 top20% 桶 60.0-87.0%;⚠️ 2026 上半年 50.0%(n=24,樣本小,ledger 續盯)
+- oc 但書同台股版:top20% 桶 open-to-close 僅 55.4%(+0.12%)→ 只當收盤預報,永不寫成進場訊號
+- 0721 回放:p_up=0.76(高信心偏漲)→ 實際 S&P +0.89%/費半 +5.21%,當晚 TLDR 卻是中性防守
+- 領先性鐵則相容:GLOBAL_LEAD.md 說「亞股**昨收**對台股無資訊」;這裡用的是亞股**當日收盤**
+  對美股**當晚**——是台股收盤後→美股開盤前產生的新資訊,方向相反、不矛盾
+落地:`train_us.py` 凍結 model_us → `forecast_tonight_us()`(時窗 TW 17-21 平日,fail-silent),
+data_fetcher 晚報自動帶入,analyzer 措辭分流「今晚美股大盤」;ledger=shadow_ledger_us.jsonl
+(無獨立 cron,日報生成順手結算+記帳,單一觸發源),不符 OOS 即降級。
