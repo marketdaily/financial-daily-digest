@@ -222,6 +222,32 @@ def audit_digest(
             fails.append({"check": "signal_reason_vague", "severity": "high",
                           "msg": f"{len(vague_cards)} 張 signal-card 的「下一步」沒附價位或時間窗(虛詞卡):{vague_cards[:10]}"})
 
+    # 9c. prompt 指令洩漏偵測 —— 卡片範本裡給 LLM 的說明文字被一字抄進成品(2026-07-22 IBM/MSFT
+    #     每張卡開頭都掛「白話講『下一步』:台股講…、美股講…該做什麼具體動作」罐頭句)。抓整個「meta
+    #     指令 tell」類別,不只那一句:同一張卡同時提「台股講/美股講」、佔位括號〔〕、命令模型的字眼。
+    #     這些字只該出現在 prompt,絕不該出現在寄給用戶的成品。寧可 false positive 也不放行。
+    leak_pats = [
+        (r"該做什麼具體動作", "卡片抄進 prompt 指令句「…該做什麼具體動作」"),
+        (r"台股講「.*?」\s*[、,].*?美股講「", "單張卡同時搬「台股講…、美股講…」(這是給 LLM 的雙市場說明,非個股內容)"),
+        (r"必含至少\s*\d+\s*個價位", "抄進 prompt 規則「必含至少 N 個價位」"),
+        (r"禁止只寫「觀望", "抄進 prompt 禁令「禁止只寫『觀望…』」"),
+        (r"〔[^〕]*〕", "留下未填的佔位符〔…〕"),
+        (r"(請|直接)?白話講「下一步」", "抄進 prompt 佔位說明「白話講『下一步』」"),
+    ]
+    leak_hits = []
+    scan_cards = signal_cards if signal_cards else []
+    for card in scan_cards:
+        reason_m = re.search(r'<div class="signal-reason"[^>]*>(.*?)</div>', card, re.S)
+        reason = reason_m.group(1) if reason_m else card
+        for pat, desc in leak_pats:
+            if re.search(pat, reason):
+                ticker_m = re.search(r'<span class="signal-ticker"[^>]*>([^<]+)</span>', card)
+                leak_hits.append(f"{ticker_m.group(1).strip() if ticker_m else '?'}:{desc}")
+                break
+    if leak_hits:
+        fails.append({"check": "prompt_instruction_leak", "severity": "high",
+                      "msg": f"{len(leak_hits)} 張卡把 prompt 指令/佔位符抄進成品(用戶可見):{leak_hits[:8]}"})
+
     # ───── 大盤覆蓋 ─────
     market_sec = _section(html, "market-summary")
     if market_sec:

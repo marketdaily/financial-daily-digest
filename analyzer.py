@@ -2687,7 +2687,7 @@ def _signal_card_format_rules(mkt_status: dict, regime: dict = None, macro_event
     <span class="signal-bias bullish">📈 BULLISH</span>
   </div>
   <div class="signal-body">
-    <div class="signal-reason">白話講「下一步」:台股講「{tw_when}」、美股講「{us_when}」該做什麼具體動作。**必含至少 1 個價位($ / NT$ / 數字+元) + 1 個時間或事件條件**。禁止只寫「觀望 / 先別動 / 保守」這種沒附條件的虛詞。</div>
+    <div class="signal-reason">〔一句白話講這檔下一步該做什麼〕</div>
     <div class="signal-battle-plan">
       <div class="battle-row"><span class="battle-label">建議買價</span><span class="battle-val">$xxx–$xxx</span></div>
       <div class="battle-row"><span class="battle-label">賺錢目標</span><span class="battle-val up">$xxx</span></div>
@@ -2702,6 +2702,7 @@ def _signal_card_format_rules(mkt_status: dict, regime: dict = None, macro_event
   </div>
 </div>
 規則:
+- ‼️ **signal-reason 內容**:直接白話講「這一檔」下一步該做什麼具體動作 —— 該股是台股就以「{tw_when}」為時機、是美股就以「{us_when}」為時機(一張卡只講它自己所屬市場,不要同時提台股又提美股)。**必含至少 1 個價位($ / NT$ / 數字+元) + 1 個時間或事件條件**;禁止只寫「觀望 / 先別動 / 保守」這種沒附條件的虛詞。**上面範本 div 裡的〔佔位說明〕本身絕對不可抄進成品**,直接寫該檔的判斷。
 - signal-ticker span 內只放純代號(例如 NVDA、2330),系統會自動補公司中英文名
 - signal-day-move 填該股單日漲跌幅,class(up/down)跟漲跌方向一致;無數據就整個 signal-day-move span 省略
 - 評分:8-10 強力買 / 6-7 偏多 / 4-5 觀望 / 2-3 偏空 / 0-1 賣出。**signal-bias、signal-badge、最外層 class 三者方向必須一致**(別 BULLISH 卻配賣出)
@@ -3084,6 +3085,29 @@ def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -
     return "\n".join(lines)
 
 
+_REASON_LEAK_PATS = [
+    r'^\s*白話講「下一步」\s*[：:].*?該做什麼具體動作[。.]?\s*',
+    r'\*\*\s*必含至少\s*1\s*個價位.*?\*\*\s*',
+    r'禁止只寫「觀望.*?虛詞[。.]?\s*',
+    r'^\s*〔[^〕]*〕\s*',
+]
+
+
+def _strip_reason_leak(card: str) -> str:
+    """確定性防護:剝掉 LLM 誤抄進 signal-reason 的指令/佔位符文字(範本洩漏根治)。"""
+    m = re.search(r'(<div class="signal-reason"[^>]*>)(.*?)(</div>)', card, re.S)
+    if not m:
+        return card
+    inner = m.group(2)
+    cleaned = inner
+    for pat in _REASON_LEAK_PATS:
+        cleaned = re.sub(pat, '', cleaned, flags=re.S)
+    cleaned = cleaned.strip()
+    if cleaned == inner.strip():
+        return card
+    return card[:m.start()] + m.group(1) + cleaned + m.group(3) + card[m.end():]
+
+
 def _card_passes_audit(card: str) -> bool:
     """跟 digest_audit 同款檢查:確保每張 LLM 卡有 3 個 battle-row + reason 含價位/時間窗。"""
     if "signal-card" not in card:
@@ -3346,6 +3370,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             if start < 0 or end < 0:
                 continue
             card = seg[start:end + 6].strip()
+            card = _strip_reason_leak(card)
             tm = re.search(r'<span class="signal-ticker">\s*([^<]+?)\s*</span>', card)
             if not tm:
                 continue
