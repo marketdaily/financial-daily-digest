@@ -2224,7 +2224,7 @@ export default {
       const givenName = (url.searchParams.get("name") || "").trim().slice(0, 40);
 
       // cache key 含公司名:台股裸代號 AI 會猜錯公司,帶名才準,故名也納入 key
-      const cacheKey = `sc:v6:${ticker}:${givenName}`;
+      const cacheKey = `sc:v7:${ticker}:${givenName}`;
       const cached = await env.USER_PREFS.get(cacheKey);
       if (cached) {
         try { return json(JSON.parse(cached)); } catch {}
@@ -2243,11 +2243,12 @@ export default {
 嚴格規則:
 - 語言:所有文字欄位(company_zh / industry / mid.desc / name_zh / category / role / criticality)一律使用「台灣繁體中文」的用字與用語,嚴禁任何簡體字,嚴禁中國大陸慣用語。半導體/科技用語一律用台灣說法:晶片(非「芯片」)、微影機或曝光機(非「光刻机」)、關鍵/命脈/難以替代(非「卡脖子」)、記憶體(非「内存」)、軟體(非「软件」)、頂尖(非「顶尖」)、供應商(非「供应商」)、設備(非「设备」)、鏡頭(非「镜头」)、製造(非「制造」)、矽晶圓、封裝測試。若不確定某詞的台灣寫法,用最通用的繁體中文。
 - 若提供了公司名稱,以「公司名稱」為準辨識這家公司,不要從代號數字臆測;若公司名稱與你認知的代號不符,以公司名稱為準。
-- 只列「真實、公認」的供應鏈關係。不確定就回空陣列,絕不亂掰、絕不臆測。
-- 關聯公司的 ticker 只在你確定它是上市公司時才填,否則填 null。
+- 只列「真實、公認」的供應鏈關係。不確定就略過,絕不亂掰、絕不臆測。
+- **每個 upstream/downstream 物件的 name_zh 必須是「具體公司名稱」**(如「環球晶」「信越化學」「輝達」),嚴禁類別泛稱(「原料供應商」「設備廠商」「電信營運商」這類不是公司名,不要輸出)。同一環節有多家關鍵公司就各列一個物件。你確定該環節重要但想不起具體公司 → 直接略過該環節。
+- 關聯公司的 ticker 只在你確定它是上市公司時才填(台股填代號如 2330,美股填代碼如 NVDA),否則填 null。
 - mid.desc 用 1~2 句繁體中文說明:這家公司做什麼 + 它在產業鏈的位置與競爭優勢(市佔、技術門檻或護城河)。
 - industry 填「大產業 › 細分」格式(如「半導體 › 晶圓代工」),不確定填空字串。
-- upstream = 它的上游供應商/原材料/設備;downstream = 它的下游客戶/應用。各盡量列 4~8 個關鍵環節,由最關鍵排到次要,別只給一兩個。
+- upstream = 它的上游供應商/原材料/設備;downstream = 它的下游客戶/應用。各盡量列 6~10 家「具體公司」,由最關鍵排到次要,別只給一兩家。
 - 每個關聯公司物件:{ "name_zh", "name_en", "ticker"(或 null), "category"(這個環節的類別,如「曝光機」「矽晶圓」「AI 伺服器」,沒有填空字串), "role"(具體說明它供應什麼或被如何使用,要具體,例如「EUV 微影機 全球獨家」而非只寫「設備」), "criticality"(對這家公司的重要程度,只能是 極高/高/中/低 其一,可加極短理由如「極高 — 無替代」) }。
 
 只輸出 JSON,不要任何其他文字,格式:
@@ -2263,10 +2264,10 @@ export default {
             "content-type": "application/json",
           },
           body: JSON.stringify({
-            // 2026-07-22 haiku→sonnet:haiku 對台股中小型股會張冠李戴(3491 昇達科被掰成封測廠、
-            // NVTS 沒帶名被猜成別家),供應鏈事實性內容用 sonnet;結果 KV 快取 30 天,成本可控
+            // 2026-07-22 定案:此端點僅剩 dashboard stories 在用(watch 已改全靜態零 API 費),
+            // sonnet=品質/成本平衡;prompt 強制具體公司名
             model: "claude-sonnet-5",
-            max_tokens: 2000,
+            max_tokens: 3000,
             system: sysPrompt,
             messages: [{ role: "user", content: `${givenName ? `公司名稱:${givenName}、` : ""}股票代號:${ticker}${isTW ? "(台股)" : "(美股)"}。輸出它的產業鏈 JSON。` }],
           }),

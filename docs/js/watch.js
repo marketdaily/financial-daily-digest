@@ -543,10 +543,19 @@ async function loadChain() {
     chainIdx = {};
     Object.entries(chainDB).forEach(([k, v]) => { chainIdx[k.replace(/\.(TW|TWO)$/, "")] = v; });
   } catch { chainIdx = {}; }
+  // 預產公司級鏈(Claude 批次產,零 API 費):精修 DB 優先,預產補位
+  try {
+    const pg = await fetch("data/chain_pregen.json?v=20260722").then(r => r.json());
+    Object.entries(pg).forEach(([k, v]) => {
+      if (!chainIdx[k]) chainIdx[k] = { source: "pregen", mid: { desc: v.mid },
+        upstream: (v.up || []).map(x => ({ name_zh: x.n, ticker: x.t, role: x.r })),
+        downstream: (v.down || []).map(x => ({ name_zh: x.n, ticker: x.t, role: x.r })) };
+    });
+  } catch {}
 }
 
 function normTicker(t) { return (t || "").replace(/\.(TW|TWO)$/, ""); }
-let aiChainCache = {};
+
 
 async function fetchBars(sym, tfk) {
   const ck = `${sym}:${tfk}`;
@@ -1390,8 +1399,7 @@ function renderProfile(sym) {
   const el = $("d-prof");
   if (!el) return;
   const entry = chainIdx && chainIdx[sym];
-  const aiC = aiChainCache[sym] && aiChainCache[sym].d;
-  const bizTxt = (entry && entry.mid && entry.mid.desc) || BIZ[sym] || (aiC && aiC.mid && aiC.mid.desc) || "";
+  const bizTxt = (entry && entry.mid && entry.mid.desc) || BIZ[sym] || "";
   const biz = bizTxt ? `<div class="biz">${bizTxt}</div>` : "";
   if (isTWSym(sym)) {
     const p = PROFILE[sym];
@@ -1427,20 +1435,6 @@ function chainChip(p) {
     ${role ? `<span class="cc-r">${role}</span>` : ""}</span>`;
 }
 
-async function fetchAiChain(sym) {
-  const c = aiChainCache[sym];
-  if (c) return c.d;
-  try {
-    const nm = nameMap.get(sym) || "";
-    const d = await fetch(`${WORKER_URL}/supply-chain?ticker=${sym}${nm ? `&name=${encodeURIComponent(nm)}` : ""}`).then(r => r.json());
-    if (d && !d.error && ((d.upstream || []).length || (d.downstream || []).length)) {
-      aiChainCache[sym] = { d };
-      return d;
-    }
-  } catch {}
-  aiChainCache[sym] = { d: null };
-  return null;
-}
 async function renderChainEvents(sym) {
   const el = $("d-chain-ev");
   if (!el) return;
@@ -1473,7 +1467,7 @@ async function renderChain(sym) {
   };
   const bchip = txt => `<span class="chip" style="cursor:default;font-size:10px;padding:2px 8px">${txt}</span>`;
   if (entry) {
-    paint(entry.upstream || [], entry.downstream || [], bchip(T("chain_verified")));
+    paint(entry.upstream || [], entry.downstream || [], bchip(entry.source === "pregen" ? "公司級產業鏈" : T("chain_verified")));
   } else if (isETF) {
     el.style.display = "none"; if (h) h.style.display = "none";
     renderProfile(sym);
@@ -1496,16 +1490,6 @@ async function renderChain(sym) {
       el.style.display = ""; if (h) h.style.display = "";
       el.innerHTML = `<div class="sig-item" style="color:var(--muted)">${T("chain_wip")}</div>`;
     }
-    fetchAiChain(sym).then(d => {
-      if (!d || sheetSym !== sym) return;
-      const convAi = arr => (arr || []).map(x => ({
-        name_zh: x.name_zh || x.name_en,
-        ticker: x.ticker ? String(x.ticker).replace(/\.(TW|TWO)$/, "") : null,
-        role: [x.category, x.role, x.criticality].filter(Boolean).join(" · "),
-      }));
-      paint(convAi(d.upstream), convAi(d.downstream), bchip(`AI 產業鏈${d.industry ? " · " + d.industry : ""}`));
-      renderProfile(sym);
-    });
   }
   renderProfile(sym);
   renderChainEvents(sym);
