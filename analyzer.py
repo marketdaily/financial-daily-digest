@@ -399,10 +399,10 @@ def _call_cf_ai(prompt: str, system: str = None,
 
 
 def _call_openrouter(prompt: str, system: str = None,
-                     model: str = "meta-llama/llama-3.3-70b-instruct:free", max_tokens: int = 600) -> str:
+                     model: str = "nvidia/nemotron-3-super-120b-a12b:free", max_tokens: int = 600) -> str:
     """OpenRouter 免費層(:free 模型每日額度)。OpenAI 相容 API、獨立廠商聚合器。
-    預接線:沒設 OPENROUTER_API_KEY → raise,席次/鏈自動跳過。用戶自行註冊拿 key
-    (Cloudflare Turnstile 擋自動註冊)後填進 .env 即自動啟用一席,不需改程式。"""
+    2026-07-22 帳號開通實測:llama-3.3-70b:free 已轉付費,免費層現役最佳=
+    nemotron-3-super-120b(0.5s 回)。沒設 OPENROUTER_API_KEY → raise 自動跳過。"""
     return _call_openai_style(
         "https://openrouter.ai/api/v1/chat/completions", "OPENROUTER_API_KEY",
         prompt, system, model=model, max_tokens=max_tokens,
@@ -466,7 +466,7 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     # OpenRouter/Cerebras 沒 key 時 raise 自動跳過,填 key 即自動補進鏈。
     free_strong = [("groq:gpt-oss-120b", lambda p: _call_groq(p)),
                    ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000)),
-                   ("openrouter:llama-70b", lambda p: _call_openrouter(p, max_tokens=8000)),
+                   ("openrouter:nemotron-120b", lambda p: _call_openrouter(p, max_tokens=8000)),
                    ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
     # 2026-07-22 Delvin:「sonnet 要花錢就不要用」——付費 Claude 全退出主鏈,
     # 純免費層扛(gemini 雙 key + groq + cf + openrouter/cerebras + 本地 GPU),
@@ -2364,7 +2364,7 @@ _COUNCIL_SEATS = [
     # Cloudflare Workers AI(免費 10k neurons/日,經 md-ai-proxy):第四家獨立廠商聲音
     ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, system=_COUNCIL_SYS, max_tokens=300)),
     # 預接線:沒 key raise→席次自動停用;用戶註冊後填 .env 即多一席,不需改程式
-    ("openrouter:llama-70b", lambda p: _call_openrouter(p, system=_COUNCIL_SYS, max_tokens=300)),
+    ("openrouter:nemotron-120b", lambda p: _call_openrouter(p, system=_COUNCIL_SYS, max_tokens=300)),
     ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, system=_COUNCIL_SYS, max_tokens=300)),
     ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
