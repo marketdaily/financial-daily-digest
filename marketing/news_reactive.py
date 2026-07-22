@@ -512,25 +512,61 @@ def cmd_scan():
     print(f"\n本輪會選:{chosen['title'][:60] if chosen else '(無達標候選)'}")
 
 
+def retry_failed(state):
+    """同日貼文的平台級失敗自動補發(首日 Threads 500字失敗靠人工補的教訓)。
+    每平台最多重試 2 次;重試耗盡仍失敗 → 回 rc=1 讓 runner 的 cron_run_and_alert 推 admin。"""
+    today = _tw_today()
+    rc = 0
+    env = None
+    for entry in state["posted"]:
+        if entry["date"] != today or "results" not in entry:
+            continue
+        for plat, r in entry["results"].items():
+            if r.get("ok") or r.get("retries", 0) >= 2 or r.get("exhausted"):
+                continue
+            env = env or load_env()
+            text = entry.get("threads_caption") if plat == "threads" and entry.get("threads_caption") \
+                else entry.get("caption", "")
+            if not text or not entry.get("image_url"):
+                r["exhausted"] = True   # 舊 schema 沒存文案,無從重試
+                continue
+            print(f"重試 {entry['id']} → {plat} (第{r.get('retries', 0) + 1}次)")
+            try:
+                ok, detail = PLATFORMS[plat](env, entry["image_url"], caption_for(text, plat))
+            except Exception as e:
+                ok, detail = False, str(e)
+            r["retries"] = r.get("retries", 0) + 1
+            r["ok"], r["detail"] = bool(ok), str(detail)[:200]
+            print(f"  {'✅' if ok else '❌'} {plat}: {str(detail)[:120]}")
+            if not ok and r["retries"] >= 2:
+                r["exhausted"] = True
+                print(f"  ⚠ {plat} 重試耗盡,交給 runner 告警")
+                rc = 1
+    if env is not None:
+        save_state(state)
+    return rc
+
+
 def cmd_run(dry=False, force=False):
     state = load_state()
     today = _tw_today()
+    retry_rc = 0 if dry else retry_failed(state)
     todays = [p for p in state["posted"] if p["date"] == today]
     if not force:
         if len(todays) >= DAILY_CAP:
             print(f"今日已發 {len(todays)}/{DAILY_CAP},收工。")
-            return 0
+            return retry_rc
         if state["posted"]:
             last_ts = state["posted"][-1].get("ts", 0)
             gap = (time.time() - last_ts) / 60
             if gap < MIN_GAP_MIN:
                 print(f"距上一篇僅 {gap:.0f} 分(<{MIN_GAP_MIN}),下輪再說。")
-                return 0
+                return retry_rc
     cands = fetch_candidates()
     cand = pick(state, cands)
     if not cand:
         print("無達標新聞候選,本輪不發。")
-        return 0
+        return retry_rc
     comp = cand["company"]
     print(f"選中:[{cand['score']}] {cand['title']}\n  → {comp['name']} {cand['url']}")
 
@@ -588,10 +624,14 @@ def cmd_run(dry=False, force=False):
     if ok_n:
         state["posted"].append({"date": today, "ts": time.time(), "id": post_id,
                                 "ticker": comp["ticker"], "etype": cand["etype"],
-                                "title": cand["title"][:80]})
+                                "title": cand["title"][:80],
+                                "image_url": image_url, "caption": caption,
+                                "threads_caption": threads_caption,
+                                "results": {p: {"ok": r["ok"], "detail": r["detail"][:200]}
+                                            for p, r in results.items()}})
     save_state(state)
     print(f"完成:{ok_n}/{len(POST_PLATFORMS)} 平台成功。")
-    return 0 if ok_n else 1
+    return (0 if ok_n else 1) or retry_rc
 
 
 def main():
