@@ -165,6 +165,17 @@ def main():
     else:
         print("  魚A:今日 TXO 資料尚未可得(FinMind 更新中),下次補")
 
+    # ---- ETF 折溢價每日快照(自建歷史,魚D 回測的原料;官方無歷史源)----
+    try:
+        from etf_inav import fetch as etf_fetch
+        snap = etf_fetch()
+        rec = {"date": today, "prem": {c: v["prem_pct"] for c, v in snap.items()}}
+        with open(os.path.join(PDIR, "etf_prem_history.jsonl"), "a", encoding="utf-8") as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        print(f"  ETF 折溢價快照:{len(rec['prem'])} 檔入庫")
+    except Exception as e:
+        print(f"  ETF 快照跳過:{e}")
+
     # ---- 魚C:MTF-ORB(用戶哲學版,盤後用 Shioaji 當日1分K重播)----
     try:
         fish_c(bars, today, st)
