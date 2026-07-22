@@ -239,6 +239,7 @@
   .draw-note{font-size:10.5px;color:var(--faint);margin-top:4px}
   /* 圖表工具列/回放 */
   .ct-row{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;padding-bottom:2px}
+  .ct-row .tf,#opt-chips .tf{white-space:nowrap;flex:0 0 auto}
   .ct-row::-webkit-scrollbar{display:none}
   #replay-bar{align-items:center;gap:6px}
   #replay-bar input[type=range]{accent-color:#818cf8}
@@ -253,6 +254,28 @@
   .heat-cell .hc-n{font-size:12px;font-weight:850;letter-spacing:.3px}
   .heat-cell .hc-c{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums;margin-top:3px}
   .heat-cell .hc-v{font-size:10px;color:rgba(255,255,255,.55);font-variant-numeric:tabular-nums;margin-top:1px}
+  .sheet-x{border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--muted);
+      border-radius:10px;padding:6px 11px;font-size:13px;font-weight:800;cursor:pointer;line-height:1}
+  .sheet-x:hover{color:var(--ink);border-color:rgba(148,163,184,.4)}
+  /* ── 桌面版(≥1180px):內容拉寬+詳情改右側面板 ── */
+  @media(min-width:1180px){
+    .wrap{max-width:1120px;transition:margin .25s ease}
+    body.sheet-open .wrap{margin-right:660px}
+    .sheet{left:auto;right:0;top:0;bottom:0;width:640px;max-height:100vh;height:100vh;
+        border-radius:0;border-left:1px solid var(--bd);border-top:none;
+        box-shadow:-18px 0 50px rgba(0,0,0,.45);padding:18px 22px 40px}
+    .sheet::before{display:none}
+    .sheet-bg{display:none !important}
+    #d-chart{height:380px}
+    .mini-card canvas{height:130px}
+    .ti-grid{grid-template-columns:repeat(3,1fr)}
+    .nm-main{max-width:260px}
+    .heat-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  }
+  @media(min-width:1600px){
+    body.sheet-open .wrap{margin-right:680px}
+    .wrap{max-width:1280px}
+  }
   @media(max-width:560px){
     td,th{padding:9px 6px} .px{font-size:14px} .hide-sm{display:none}
     .ti-grid,.fd-grid{grid-template-columns:repeat(2,1fr)}
@@ -369,7 +392,8 @@
 <script src="tw-profile.js?v=20260722b"></script>
 <script src="tw-bizdesc.js?v=20260722"></script>
 <script src="tw-chain-generic.js?v=20260722"></script>
+<script src="us-chain-generic.js?v=20260722"></script>
 <script src="tw-cb.js?v=20260722"></script>
-<script src="js/watch.js?v=20260722m"></script>
+<script src="js/watch.js?v=20260722o"></script>
 </body>
 </html>

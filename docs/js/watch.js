@@ -64,6 +64,7 @@ const I18N = {
     al_boll_up: "突破布林上軌", al_boll_dn: "跌破布林下軌",
     scr_tech: "技術條件", scr_ma20: "站上MA20", scr_ma60: "站上MA60", scr_rsi_lo: "RSI<30", scr_rsi_hi: "RSI>70", scr_volx: "量比≥2",
     scr_calc: "技術條件計算中…",
+    fd_loss: "虧損", fd_loss_sub: "近12月 EPS 為負", fd_loss_sub_tw: "近4季 EPS ≤ 0", fd_nodiv: "無配息或無資料",
   },
   en: {
     pg_title: "MarketDaily Watch", pg_h1: "📈 Watch", back_dash: "← Dashboard",
@@ -126,6 +127,7 @@ const I18N = {
     al_boll_up: "Break BOLL upper", al_boll_dn: "Break BOLL lower",
     scr_tech: "Technical", scr_ma20: "Above MA20", scr_ma60: "Above MA60", scr_rsi_lo: "RSI<30", scr_rsi_hi: "RSI>70", scr_volx: "Vol ratio≥2",
     scr_calc: "Computing technical filters…",
+    fd_loss: "Loss-making", fd_loss_sub: "Negative TTM EPS", fd_loss_sub_tw: "Trailing 4Q EPS ≤ 0", fd_nodiv: "No dividend / no data",
   }
 };
 const LANG = (localStorage.getItem("md-lang-v2") || "zh");
@@ -140,6 +142,7 @@ const isTWSym = s => /^\d{4,6}[A-Z]?$/.test(String(s || ""));
 const nameMap = new Map();
 try { US_STOCKS_FULL.forEach(([s, n]) => nameMap.set(s, n)); TW_STOCKS_FULL.forEach(([s, n]) => nameMap.set(s, n)); } catch {}
 const INDUSTRY = (typeof TW_INDUSTRY !== "undefined") ? TW_INDUSTRY : {};
+if (!INDUSTRY["6806"]) INDUSTRY["6806"] = "綠能環保";
 const CATEGORIES = (typeof TW_CATEGORIES !== "undefined") ? TW_CATEGORIES : {};
 const THEMES = (typeof TW_THEMES !== "undefined") ? TW_THEMES : {};
 
@@ -1258,8 +1261,8 @@ function tfChipsHtml(sym) {
     .map(t => `<button class="tf ${curTf === t.k ? "on" : ""}" data-tf="${t.k}">${T("tf_" + t.k)}</button>`).join("");
 }
 
-function tiTile(k, v, s, cls) {
-  return `<div class="ti"><div class="k">${k}</div><div class="v ${cls || ""}">${v}</div>${s ? `<div class="s">${s}</div>` : ""}</div>`;
+function tiTile(k, v, s, cls, id) {
+  return `<div class="ti"${id ? ` id="${id}"` : ""}><div class="k">${k}</div><div class="v ${cls || ""}">${v}</div>${s ? `<div class="s">${s}</div>` : ""}</div>`;
 }
 
 async function renderTech(sym) {
@@ -1353,7 +1356,7 @@ async function renderFund(sym) {
     const f = twFund[sym] || {};
     const prof = PROFILE[sym];
     el.innerHTML =
-      tiTile(T("fd_pe"), f.pe != null ? f.pe : "—", T("fd_asof")) +
+      tiTile(T("fd_pe"), f.pe != null ? f.pe : "—", T("fd_asof"), "", "ti-pe") +
       tiTile(T("fd_dy"), f.dy != null ? f.dy + "%" : "—", T("fd_asof")) +
       tiTile(T("fd_pb"), f.pb != null ? f.pb : "—", T("fd_asof")) +
       tiTile(T("fd_mcap"), fmtMcapTWD(prof && prof[3], q.price), "NT$");
@@ -1364,10 +1367,11 @@ async function renderFund(sym) {
     let f = usFundCache[sym];
     if (!f) { f = await fetch(`${WORKER_URL}/us-fundamentals?symbol=${sym}`).then(r => r.json()); usFundCache[sym] = f; }
     if (sheetSym !== sym || !el.isConnected) return;
+    const usLoss = f.pe == null && f.eps != null && f.eps < 0;
     el.innerHTML =
-      tiTile(T("fd_pe"), f.pe != null ? f.pe.toFixed(1) : "—") +
+      tiTile(T("fd_pe"), f.pe != null ? f.pe.toFixed(1) : (usLoss ? T("fd_loss") : "—"), usLoss ? T("fd_loss_sub") : "", usLoss ? "down" : "") +
       tiTile(T("fd_pb"), f.pb != null ? f.pb.toFixed(1) : "—") +
-      tiTile(T("fd_dy"), f.dy != null ? f.dy.toFixed(2) + "%" : "—") +
+      tiTile(T("fd_dy"), f.dy != null && f.dy > 0 ? f.dy.toFixed(2) + "%" : "—", f.dy == null || f.dy === 0 ? T("fd_nodiv") : "") +
       tiTile(T("fd_eps"), f.eps != null ? "$" + f.eps.toFixed(2) : "—") +
       tiTile(T("fd_mcap"), fmtMcapUSD(f.market_cap_m)) +
       tiTile(T("fd_52"), f.high52 ? `${fp(f.high52)} / ${fp(f.low52)}` : "—") +
@@ -1378,6 +1382,7 @@ async function renderFund(sym) {
 
 const BIZ = (typeof TW_BIZ !== "undefined") ? TW_BIZ : {};
 const CHAIN_GENERIC = (typeof TW_CHAIN_GENERIC !== "undefined") ? TW_CHAIN_GENERIC : {};
+const USCG = (typeof US_CHAIN_GENERIC !== "undefined") ? US_CHAIN_GENERIC : {};
 
 function renderProfile(sym) {
   const el = $("d-prof");
@@ -1435,6 +1440,14 @@ async function renderChain(sym) {
     const conv = arr => (arr || []).map(x => ({ name_zh: x.n, ticker: x.t, role: x.r }));
     up = conv(g.up); down = conv(g.down);
     badge = `<span class="chip" style="cursor:default;font-size:10px;padding:2px 8px">${T("chain_generic")} · ${INDUSTRY[sym]}</span>`;
+  } else if (!isTWSym(sym)) {
+    const f = usFundCache[sym];
+    const g = f && f.industry && USCG[f.industry];
+    if (g) {
+      const conv = arr => (arr || []).map(x => ({ name_zh: x.n, ticker: x.t, role: x.r }));
+      up = conv(g.up); down = conv(g.down);
+      badge = `<span class="chip" style="cursor:default;font-size:10px;padding:2px 8px">${T("chain_generic")} · ${f.industry}</span>`;
+    }
   }
   if (!up.length && !down.length) {
     if (isETF) { el.style.display = "none"; if (h) h.style.display = "none"; return; }
@@ -1645,6 +1658,14 @@ async function renderFinDeep(sym) {
       return prev && prev.v ? (r.v / prev.v - 1) * 100 : null;
     });
     const lastYoy = [...yoy].reverse().find(v => v != null);
+    const eps4 = q.length >= 4 ? q.slice(-4).reduce((s, x) => s + (x.eps || 0), 0) : (q.length ? q.reduce((s, x) => s + (x.eps || 0), 0) : null);
+    const peTile = $("ti-pe");
+    if (peTile && eps4 != null && eps4 <= 0 && peTile.querySelector(".v") && peTile.querySelector(".v").textContent === "—") {
+      peTile.querySelector(".v").textContent = T("fd_loss");
+      peTile.querySelector(".v").className = "v down";
+      const sEl = peTile.querySelector(".s");
+      if (sEl) sEl.textContent = T("fd_loss_sub_tw");
+    }
     const lastPer = per.length ? per[per.length - 1] : null;
     const perVals = per.map(p => p.per).filter(v => v != null).sort((a, b) => a - b);
     const perPctl = lastPer && lastPer.per != null && perVals.length > 10
@@ -1653,7 +1674,7 @@ async function renderFinDeep(sym) {
       `<div class="ti-grid" style="margin-bottom:10px">` +
       tiTile("最新月營收", rev.length ? (rev[rev.length - 1].v / 1e8).toFixed(1) + " 億" : "—", rev.length ? rev[rev.length - 1].m : "") +
       tiTile("營收年增", lastYoy == null ? "—" : `${lastYoy >= 0 ? "+" : ""}${lastYoy.toFixed(1)}%`, "YoY", lastYoy >= 0 ? "up" : "down") +
-      tiTile("EPS(近4季)", q.length ? q.slice(-4).reduce((s, x) => s + (x.eps || 0), 0).toFixed(2) : "—", "元") +
+      tiTile("EPS(近4季)", eps4 != null ? eps4.toFixed(2) : "—", "元", eps4 != null && eps4 < 0 ? "down" : "") +
       tiTile("PER 1年分位", perPctl == null ? "—" : perPctl + "%", lastPer && lastPer.per != null ? `目前 ${lastPer.per}` : "", perPctl != null && perPctl >= 80 ? "up" : perPctl != null && perPctl <= 20 ? "down" : "") +
       `</div>` +
       `<div class="mini-card"><div class="mc-t"><span>${T("fin_rev")}</span></div><canvas id="mc-rev"></canvas></div>` +
@@ -2133,6 +2154,7 @@ async function renderNewsTab() {
 
 function closeSheet() {
   $("sheet").classList.remove("open"); $("sheet-bg").classList.remove("open");
+  document.body.classList.remove("sheet-open");
   if (replay) stopReplay();
   drawTool = null; drawPend = null;
   sheetSym = null;
@@ -2161,8 +2183,11 @@ function openSheet(sym) {
     <div class="d-head">
       <div><span class="d-name">${nm}</span><span class="d-code">${sym}</span>
         <div class="d-ind">${ind}${sigs.length ? " " + sigDot(sym) : ""}</div></div>
-      <div class="d-price"><div class="d-px ${dir}" id="d-px">${fp(q.price)}</div>
-        <div class="d-chg ${dir}" id="d-chg">${label}</div></div>
+      <div style="display:flex;align-items:flex-start;gap:12px">
+        <div class="d-price"><div class="d-px ${dir}" id="d-px">${fp(q.price)}</div>
+          <div class="d-chg ${dir}" id="d-chg">${label}</div></div>
+        <button class="sheet-x" id="sheet-x" title="關閉">✕</button>
+      </div>
     </div>
     <div class="d-quote-strip" id="d-strip">
       ${q.open != null ? `<span>開 <b>${fp(q.open)}</b></span>` : ""}
@@ -2338,10 +2363,13 @@ function openSheet(sym) {
     if (curTab === "watch" && curGroup !== "all") renderView();
   });
   $("sheet").classList.add("open"); $("sheet-bg").classList.add("open");
+  document.body.classList.add("sheet-open");
+  const xb = $("sheet-x");
+  if (xb) xb.onclick = closeSheet;
   $("sheet").scrollTop = 0;
   renderDetailChart(sym);
   renderTech(sym);
-  renderFund(sym).then(() => { if (sheetSym === sym) renderProfile(sym); });
+  renderFund(sym).then(() => { if (sheetSym === sym) { renderProfile(sym); if (!isTWSym(sym)) renderChain(sym); } });
   renderChain(sym);
   renderNews(sym);
   renderAlerts(sym);
