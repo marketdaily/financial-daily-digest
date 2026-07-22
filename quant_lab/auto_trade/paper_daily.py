@@ -299,6 +299,25 @@ def write_report():
     if st["fishB"].get("pending"):
         p = st["fishB"]["pending"]
         posi.append(f"魚B 待執行:{p['signal_date']} 訊號 → 次交易日 {'做多' if p['side']>0 else '做空'}")
+    strat_html = """
+<h2 style="font-size:1rem;margin:22px 0 8px">📖 策略說明(給人看的版本)</h2>
+<div class="fish"><b>A|收保險費(賣跨式選擇權)</b><br>
+<span class="why">邏輯:選擇權=保險。只在「保費明顯超收」且「做市商自動對沖會壓住行情」的日子當保險公司,收權利金。</span><br>
+進場:隱含波動比實際波動貴 3% 以上+距到期 10-40 天+GEX(對沖阻尼)高於近 60 日中位。<br>
+出場:保費回歸/持有滿 5 天/虧到 1.5 倍停損/合約換月。規模:1 組。<br>
+<span class="ev">依據:800 天研究——保費超收集中在高波動期;GEX 高的日子隔天行情被壓(t=+2.6)。出手很少,一月約 0-2 次。</span></div>
+<div class="fish"><b>B|跟外資大單搭順風車</b><br>
+<span class="why">邏輯:外資建大部位要分好幾天下單,第一天的大動作後面還有續單。輸家=反應慢的資金。</span><br>
+進場:外資台指期淨部位單日變化進入歷史前 15% 大 → 次日開盤跟方向,收盤出。<br>
+<span class="ev">依據:6.5 年回測唯一通過 DSR 統計檢定的訊號(0.917),最終保留段勝率 69%;因樣本仍少,由 paper 定生死。規模:小台 1 口。</span></div>
+<div class="fish"><b>C|看長做短,一天一單(老闆您提的哲學)</b><br>
+<span class="why">邏輯:日線趨勢明確+市場不在發瘋的日子,等開盤 30 分鐘定出區間,順趨勢方向做一單:錯了小賠認,對了抱到收盤前。贏大輸小,不求高勝率。</span><br>
+進場:日線 EMA 多/空排列+波動閘(市場太瘋不進)+突破開盤區間。<br>
+出場:停損=區間另一側;否則 13:44 出(絕不留到強制平倉踩踏時段)。規模:小台 1 口。<br>
+<span class="ev">依據:回測前段+中段皆正,唯極端波動期受傷 → 加波動閘後由 paper 驗證。一月約 10-14 次。</span></div>
+<div class="fish" style="border-left-color:#9a6a22"><b>⚖️ 交易紀律(全部寫死在程式裡,不靠意志力)</b><br>
+虛擬本金 300 萬照真實規則運作;回撤 10% 減碼、20% 全面停單;策略規格已凍結不得中途調參;
+<b>裁決規則:魚C 滿 30 筆自動判生死(均值為正→升真錢 1 口小台;差→處決),魚B 滿 10 筆、魚A 滿 5 筆同理。</b></div>"""
     rows = ""
     for e in reversed(evs[-40:]):
         pnl = e.get("pnl_ntd")
@@ -316,10 +335,13 @@ h1{{font-size:1.2rem}}.cards{{display:grid;grid-template-columns:repeat(auto-fit
 table{{width:100%;border-collapse:collapse;margin-top:14px;font-size:.85rem}}
 td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
 .posi{{background:#1c1f26;border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.85rem}}
-.ft{{color:#6b7078;font-size:.75rem;margin-top:16px}}</style>
+.ft{{color:#6b7078;font-size:.75rem;margin-top:16px}}
+.fish{{background:#1c1f26;border:1px solid #2a2e37;border-left:3px solid #2f5657;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.85rem;line-height:1.65}}
+.fish .why{{color:#bfc1ba}}.fish .ev{{color:#9aa0a8;font-size:.8rem}}</style>
 <h1>📒 Paper 前測帳本(規格凍結 2026-07-17/22,真 OOS)</h1>
 <div class="cards">{cards}</div>
 <div class="posi">{'<br>'.join(posi) if posi else '目前無持倉/無待執行'}</div>
+{strat_html}
 <table><tr><th>日期</th><th>魚</th><th>事件</th><th>損益(元)</th></tr>{rows or '<tr><td colspan=4>帳本尚無事件</td></tr>'}</table>
 <div class="ft">每晚 20:10 winrig 自動更新 · 產生於 {datetime.datetime.now().isoformat(timespec='seconds')}</div>"""
     with open(os.path.join(PDIR, "index.html"), "w", encoding="utf-8") as f:
