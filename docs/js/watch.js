@@ -15,6 +15,7 @@ const I18N = {
     empty_msg: "這個清單目前是空的。", empty_link: "去新增自選 →", more: "顯示更多 ↓",
     grp_all: "全部", grp_new: "＋新群組", grp_prompt: "群組名稱?", grp_del_confirm: "刪除這個群組?",
     rank_change: "漲幅", rank_volume: "成交量", rank_amount: "成交額", rank_range: "振幅", rank_tick: "成交筆數",
+    rank_limit_up: "🔥 漲停", rank_near_up: "🚀 即將漲停", rank_limit_down: "❄️ 跌停", rank_near_dn: "⚠️ 即將跌停",
     rank_title: "排行榜", rank_src: "永豐即時 · 30s",
     pos_title: "💼 我的部位", pos_unsigned: "帳戶尚未簽署 API 服務同意書,簽署後這裡會顯示真實持股部位與未實現損益。到永豐理財網 → API 申請頁完成線上簽署即可。",
     sheet_sigs: "📡 信息差訊號", sheet_nosig: "近期無 intel 訊號(24 個信息源監測中)",
@@ -47,6 +48,7 @@ const I18N = {
     empty_msg: "This list is empty.", empty_link: "Add stocks →", more: "Show more ↓",
     grp_all: "All", grp_new: "+ New group", grp_prompt: "Group name?", grp_del_confirm: "Delete this group?",
     rank_change: "Gainers", rank_volume: "Volume", rank_amount: "Turnover", rank_range: "Range", rank_tick: "Ticks",
+    rank_limit_up: "🔥 Limit Up", rank_near_up: "🚀 Near Limit Up", rank_limit_down: "❄️ Limit Down", rank_near_dn: "⚠️ Near Limit Down",
     rank_title: "Rankings", rank_src: "SinoPac real-time · 30s",
     pos_title: "💼 My Positions", pos_unsigned: "Your brokerage account has not signed the API service agreement yet. Once signed, real positions and unrealized P&L will appear here.",
     sheet_sigs: "📡 Intel Signals", sheet_nosig: "No recent intel signals (24 sources monitored)",
@@ -295,7 +297,9 @@ function applySortDom() {
   });
 }
 
-const RANK_LABELS = { change: "rank_change", volume: "rank_volume", amount: "rank_amount", range: "rank_range", tick: "rank_tick" };
+const RANK_LABELS = { change: "rank_change", limit_up: "rank_limit_up", near_up: "rank_near_up",
+  limit_down: "rank_limit_down", near_dn: "rank_near_dn",
+  volume: "rank_volume", amount: "rank_amount", range: "rank_range", tick: "rank_tick" };
 function renderRankChips() {
   const el = $("rank-chips");
   el.innerHTML = Object.keys(RANK_LABELS).map(k =>

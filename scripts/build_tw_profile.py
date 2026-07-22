@@ -46,17 +46,20 @@ def main():
             print(f"{url} 失敗:{ex}")
             continue
         for r in rows:
-            sid = str(r.get("公司代號", "")).strip()
+            # TWSE(上市)回中文鍵、TPEx(上櫃)回英文鍵 — 兩套都吃,漏一套=整個上櫃無聲消失
+            # (2026-07-22 Delvin 抓到:精材 3374 等所有上櫃公司欄全空,就是這裡只讀中文鍵)。
+            sid = str(r.get("公司代號") or r.get("SecuritiesCompanyCode") or "").strip()
             if not (sid[:1].isdigit() and 4 <= len(sid) <= 6):
                 continue
-            shares = str(r.get("已發行普通股數或TDR原股發行股數", "")).replace(",", "").strip()
-            web = (r.get("網址") or "").strip()
+            shares = str(r.get("已發行普通股數或TDR原股發行股數")
+                         or r.get("IssueShares") or "").replace(",", "").strip()
+            web = (r.get("網址") or r.get("WebAddress") or "").strip()
             if web and not web.startswith("http"):
                 web = "https://" + web
             prof[sid] = [
-                (r.get("董事長") or "").strip()[:20],
-                (r.get("總經理") or "").strip()[:20],
-                _year(r.get("上市日期") or r.get("上櫃日期")),
+                (r.get("董事長") or r.get("Chairman") or "").strip()[:20],
+                (r.get("總經理") or r.get("GeneralManager") or "").strip()[:20],
+                _year(r.get("上市日期") or r.get("上櫃日期") or r.get("DateOfListing")),
                 int(shares) if shares.isdigit() else None,
                 web[:80],
             ]

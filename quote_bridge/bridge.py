@@ -228,18 +228,21 @@ class Feed:
 
     RANK_TYPES = {"change": "ChangePercentRank", "volume": "VolumeRank", "amount": "AmountRank",
                   "range": "DayRangeRank", "tick": "TickCountRank"}
+    # 衍生榜(2026-07-22 Delvin「三竹有的我們都要有」):漲停/即將漲停/跌停/即將跌停。
+    # Shioaji 無對應 ScannerType → 從漲跌幅雙向掃描(各200檔)以 % 門檻推導;
+    # 9.9% 當漲停近似(處置股/新上市無漲跌幅限制者會有例外,屬已知近似)。
+    DERIVED_RANKS = {
+        "limit_up": lambda p: p >= 9.9,
+        "near_up": lambda p: 9.0 <= p < 9.9,
+        "limit_down": lambda p: p <= -9.9,
+        "near_dn": lambda p: -9.9 < p <= -9.0,
+    }
 
-    def ranks(self, rtype):
-        key = f"rank:{rtype}"
-        c = self._cache.get(key)
-        now = time.time()
-        if c and now - c[0] < 30:
-            return c[1]
-        import shioaji as sj
+    def _scan_rows(self, st, **kw):
+        import shioaji as sj  # noqa: F401
         api = self.api()
-        st = getattr(sj.constant.ScannerType, self.RANK_TYPES[rtype])
         rows = []
-        for d in api.scanners(scanner_type=st, count=50):
+        for d in api.scanners(scanner_type=st, **kw):
             prev = d.close - d.change_price
             rows.append({
                 "code": d.code,
@@ -249,6 +252,46 @@ class Feed:
                 "change_price": d.change_price,
                 "volume": d.total_volume,
             })
+        return rows
+
+    def _pct_scan_both(self):
+        """漲跌幅雙向各掃 200 檔取聯集(scanners ascending 語義不賭方向,兩邊都拿)。"""
+        key = "scan:pct_both"
+        c = self._cache.get(key)
+        now = time.time()
+        if c and now - c[0] < 30:
+            return c[1]
+        import shioaji as sj
+        st = sj.constant.ScannerType.ChangePercentRank
+        seen, rows = set(), []
+        for asc in (False, True):
+            try:
+                part = self._scan_rows(st, ascending=asc, count=200)
+            except TypeError:
+                part = self._scan_rows(st, count=200)
+            for r in part:
+                if r["code"] not in seen:
+                    seen.add(r["code"])
+                    rows.append(r)
+        self._cache[key] = (now, rows)
+        return rows
+
+    def ranks(self, rtype):
+        key = f"rank:{rtype}"
+        c = self._cache.get(key)
+        now = time.time()
+        if c and now - c[0] < 30:
+            return c[1]
+        if rtype in self.DERIVED_RANKS:
+            pred = self.DERIVED_RANKS[rtype]
+            rows = [r for r in self._pct_scan_both()
+                    if r["change_pct"] is not None and pred(r["change_pct"])]
+            rows.sort(key=lambda r: (-abs(r["change_pct"]), -(r["volume"] or 0)))
+            rows = rows[:50]
+        else:
+            import shioaji as sj
+            st = getattr(sj.constant.ScannerType, self.RANK_TYPES[rtype])
+            rows = self._scan_rows(st, count=50)
         self._cache[key] = (now, rows)
         return rows
 
@@ -323,7 +366,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(200, {"bars": FEED.kbars(sym, res, days), "sym": sym, "res": res, "ts": int(time.time())})
             if u.path == "/ranks":
                 rtype = (qs.get("type") or ["change"])[0]
-                if rtype not in Feed.RANK_TYPES:
+                if rtype not in Feed.RANK_TYPES and rtype not in Feed.DERIVED_RANKS:
                     return self._send(400, {"error": "bad_type"})
                 return self._send(200, {"ranks": FEED.ranks(rtype), "type": rtype, "ts": int(time.time())})
             if u.path == "/positions":
