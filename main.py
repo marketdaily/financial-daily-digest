@@ -910,6 +910,11 @@ def run():
         us_stocks = prefs.get("us_stocks") or []
         tw_stocks = prefs.get("tw_stocks") or []
         positions = prefs.get("positions") or {}  # 持倉成本(選填)→持有者框架,全體用戶可用
+        # 總本金(選填,2026-07-22 資金體檢):以特殊鍵搭 positions 順風車進 analyzer,
+        # 免動三個 generate_*_report 簽名;卡片渲染只迭代持股代號,此鍵不會變成卡。
+        _cap = prefs.get("capital")
+        if isinstance(_cap, (int, float)) and _cap > 0:
+            positions = {**positions, "__capital__": float(_cap)}
         depth = prefs.get("digest_depth") or "standard"  # 日報深度全體用戶可選(合規結構:不依付費分級)
         is_premium = prefs.get("plan") in ("premium", "admin")  # 僅供統計/tier 標籤;禁止用來分級日報內容(COMPLIANCE_STRUCTURE.md)
 

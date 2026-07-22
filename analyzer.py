@@ -1409,6 +1409,117 @@ def _pp_requalify_buy(html: str, data: dict) -> str:
     return html
 
 
+def _pp_capital_brief(html: str, data: dict) -> str:
+    import re as _re
+    # 資金管理體檢(2026-07-22 Delvin 親令「玩股票就是資金管理,放個本金幫用戶分配風險」):
+    # 用戶在 dashboard 填了股數(<!--q:-->)±總本金(<!--capital:-->)→ 日報附一段純確定性
+    # 風險體檢:單檔集中度/現金水位/未實現損益/停損總風險佔本金比。零 LLM、全部真實數字;
+    # 設計理由:方向預測無 certified edge,凱利在 edge≈0 時的答案就是控風險 — 這段不預測,
+    # 只把「你壓多重」算清楚。沒填股數的用戶完全無感(fail-open);任何例外整段跳過不擋寄信。
+    try:
+        qty_map = {m.group(1): float(m.group(2))
+                   for m in _re.finditer(r"<!--q:([A-Z0-9.]+):([\d.]+)-->", html)}
+        if not qty_map:
+            return html
+        cap_m = _re.search(r"<!--capital:([\d.]+)-->", html)
+        capital = float(cap_m.group(1)) if cap_m else None
+        ent_map = {m.group(1): float(m.group(2))
+                   for m in _re.finditer(r"<!--pos:([A-Z0-9.]+):([\d.]+)-->", html)}
+        all_mkt = {**(data.get("us_market") or {}), **(data.get("tw_market") or {})}
+        names_all = data.get("tw_names_all", {}) or {}
+        try:
+            fx = float(((data.get("indicators") or {}).get("usdtwd") or {}).get("rate"))
+        except (TypeError, ValueError):
+            fx = None
+
+        # 每檔卡片內的停損價(deterministic 卡與 LLM 卡都有 battle-row):算「全部停損被掃」總風險
+        stops = {}
+        for m in _re.finditer(
+                r'<div class="signal-card[ "].*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer|$)',
+                html, _re.DOTALL):
+            blk = m.group(0)
+            hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", blk)
+            sm = _re.search(r'停損[^<]{0,12}</span>\s*<span class="battle-val">[^\d]*([\d,]+(?:\.\d+)?)', blk)
+            if hm and sm:
+                try:
+                    stops[hm.group(1)] = float(sm.group(1).replace(",", ""))
+                except ValueError:
+                    pass
+
+        rows, total_mv, total_pnl, stop_loss_amt, stop_cover, skipped_fx = [], 0.0, None, 0.0, 0, []
+        for sym, q in qty_map.items():
+            try:
+                px = float((all_mkt.get(sym) or {}).get("price"))
+            except (TypeError, ValueError):
+                continue
+            is_tw = sym[:1].isdigit()
+            if not is_tw and fx is None:
+                skipped_fx.append(sym)
+                continue
+            mult = 1.0 if is_tw else fx
+            mv = q * px * mult
+            total_mv += mv
+            ent = ent_map.get(sym)
+            pnl = (px - ent) * q * mult if ent else None
+            if pnl is not None:
+                total_pnl = (total_pnl or 0.0) + pnl
+            stop = stops.get(sym)
+            if stop and stop < px:
+                stop_loss_amt += (px - stop) * q * mult
+                stop_cover += 1
+            nm = names_all.get(sym) or (all_mkt.get(sym) or {}).get("name")
+            rows.append({"sym": sym, "label": stock_names.display_name(sym, nm),
+                         "mv": mv, "pnl": pnl})
+        if not rows or total_mv <= 0:
+            return html
+
+        stale_cap = bool(capital and capital < total_mv)
+        denom = capital if (capital and not stale_cap) else total_mv
+        for r in rows:
+            r["w"] = r["mv"] / denom * 100
+        rows.sort(key=lambda r: -r["mv"])
+
+        def _nt(v):
+            return f"NT${v:,.0f}"
+
+        lines = []
+        cap_line = f"持倉市值合計 {_nt(total_mv)}"
+        if capital and not stale_cap:
+            cash = capital - total_mv
+            cap_line += f"(佔本金 {total_mv / capital * 100:.0f}%)・現金水位 {_nt(cash)}({cash / capital * 100:.0f}%)"
+        lines.append(cap_line)
+        if total_pnl is not None:
+            lines.append(f"未實現損益合計 {'+' if total_pnl >= 0 else '−'}{_nt(abs(total_pnl))}(填了進場價的部位)")
+        for r in rows[:8]:
+            warn = "🔴 單檔重壓" if r["w"] >= 40 else ("⚠️ 偏集中" if r["w"] >= 25 else "")
+            lines.append(f"{r['label']}:{_nt(r['mv'])},佔{'本金' if capital and not stale_cap else '持倉'} {r['w']:.0f}%{('・' + warn) if warn else ''}")
+        if stop_cover:
+            risk_pct = stop_loss_amt / denom * 100
+            lines.append(f"停損總風險:若今日卡片停損價全部被掃,約 −{_nt(stop_loss_amt)}"
+                         f"(佔{'本金' if capital and not stale_cap else '持倉'} {risk_pct:.1f}%,涵蓋 {stop_cover} 檔有停損價的部位)")
+        if stale_cap:
+            lines.append("⚠️ 持倉市值已高於你填的總本金,佔比暫以持倉市值計 — 請到「我的專區」更新本金")
+        if skipped_fx:
+            lines.append(f"(美股 {len(skipped_fx)} 檔因今日缺匯率暫未納入市值計算)")
+        fx_note = f"・美股以 1 USD={fx:.2f} TWD 折算" if (fx and any(not r['sym'][:1].isdigit() for r in rows)) else ""
+
+        body = "".join(f'<div style="margin:3px 0;">{ln}</div>' for ln in lines)
+        section = (
+            '<div style="background:#f5f7ff;border:1px solid #c7d2fe;border-radius:12px;'
+            'padding:14px 16px;margin:14px 0;font-size:13px;color:#1e1b4b;line-height:1.7;">'
+            '<div style="font-size:14px;font-weight:800;margin-bottom:6px;">💰 資金管理體檢</div>'
+            + body +
+            f'<div style="margin-top:8px;font-size:11px;color:#6366f1;">依你在「我的專區」填的股數與本金計算{fx_note}・'
+            '風險提醒屬教育性質,買賣決策請自行評估</div></div>'
+        )
+        dm = html.find('<div class="signal-disclaimer"')
+        if dm >= 0:
+            return html[:dm] + section + html[dm:]
+        return html + section
+    except Exception:
+        return html
+
+
 def _rotation_pairs_path():
     import os
     from pathlib import Path as _P
@@ -1771,6 +1882,7 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_scrub_earnings_notes(html, data)
     html = _pp_expand_tickers(html, tw_hint)
     html = _pp_rotation_note(html, data)
+    html = _pp_capital_brief(html, data)
     html = _pp_strip_empty_impact(html)
     html = _pp_drop_empty_sections(html)
     html = _pp_hoist_verdict_chip(html)
@@ -3026,15 +3138,19 @@ def _deterministic_signal_card(sym: str, data: dict, mkt_status: dict) -> str:
     )
 
 
-def _mark_card(card: str, sym: str, entry: float = None) -> str:
+def _mark_card(card: str, sym: str, entry: float = None, qty: float = None) -> str:
     """在卡片**結尾前**塞一個隱形註解帶純代號 — 讓 audit 的 holdings_uncovered 找得到,
     因為 _postprocess_html 會把 signal-ticker 展開成公司名(台股甚至不留代號)。
     放結尾才不會打斷 _postprocess_html 加 verdict-chip 的開頭比對。
     entry(2026-07-07 持倉客製化):用戶自填進場成本 → 加 <!--pos:SYM:ENTRY--> 機器可讀標記,
-    供 _pp_holder_wording 措辭死防線與 build_track_record 持有者框架結算辨識。"""
+    供 _pp_holder_wording 措辭死防線與 build_track_record 持有者框架結算辨識。
+    qty(2026-07-22 資金體檢):股數走獨立 <!--q:SYM:QTY--> 標記 — build_track_record 的
+    pos 解析 regex 帶 $ 錨,pos 標記不可加欄位。"""
     marks = f"<!--h:{sym}-->"
     if entry:
         marks += f"<!--pos:{sym}:{entry}-->"
+    if qty:
+        marks += f"<!--q:{sym}:{qty:g}-->"
     idx = card.rfind("</div>")
     if idx < 0:
         return card + marks
@@ -3089,6 +3205,20 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                 continue
             if ep > 0:
                 pos_map[s] = {"entry_price": ep, "entry_date": p.get("entry_date")}
+    # 股數(2026-07-22 資金體檢):獨立於 pos_map(_pos_note 的持有者框架吃 entry_price,
+    # qty-only 不參與 LLM 框架,只寫 q 標記給 _pp_capital_brief 算市值/集中度)。
+    qty_map = {}
+    if positions and not picks_mode:
+        for s in seen:
+            p = positions.get(s)
+            if not isinstance(p, dict):
+                continue
+            try:
+                q = float(p.get("qty"))
+            except (TypeError, ValueError):
+                continue
+            if q > 0:
+                qty_map[s] = q
     seen.sort(key=lambda s: abs((all_market.get(s) or {}).get("change_pct", 0) or 0), reverse=True)
     llm_stocks = seen[:full_limit] if full_limit else seen
     rules = _signal_card_format_rules(mkt_status, regime=_market_regime(data),
@@ -3236,8 +3366,18 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             card = _compact_overflow_card(s, data, mkt_status)
         else:
             card = cards_by_sym.get(s) or _deterministic_signal_card(s, data, mkt_status)
-        ordered.append(_mark_card(card, s, entry=(pos_map.get(s) or {}).get("entry_price")))
-    return "\n".join(ordered)
+        ordered.append(_mark_card(card, s, entry=(pos_map.get(s) or {}).get("entry_price"),
+                                  qty=qty_map.get(s)))
+    out = "\n".join(ordered)
+    # 總本金標記(2026-07-22 資金體檢):main.py 以 positions["__capital__"] 注入(prefs.capital),
+    # 只在個人持股模式寫;精選模式(未持有)不適用。
+    try:
+        _cap = float((positions or {}).get("__capital__") or 0)
+    except (TypeError, ValueError):
+        _cap = 0.0
+    if _cap > 0 and not picks_mode:
+        out += f"<!--capital:{_cap:.0f}-->"
+    return out
 
 
 def _inject_signal_cards(raw: str, cards: str) -> str:
