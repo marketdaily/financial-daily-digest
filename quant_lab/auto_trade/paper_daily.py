@@ -22,7 +22,9 @@ STATE = os.path.join(PDIR, "state.json")
 LEDGER = os.path.join(PDIR, "ledger.jsonl")
 COST_B = 1.5
 COST_A = 4.4
-TX_POINT, TXO_POINT = 200, 50
+START_EQUITY = 3_000_000            # 虛擬本金(用戶實際資金規模)
+PV = {"A": 50, "B": 50, "C": 50}    # paper 規模:B/C=小台1口、A=跨式1組(皆每點NT$50)
+HARD_DD = 0.20                      # 回撤煞車:權益回撤≥20% 停開新倉(人工複核)
 
 
 def log_ev(ev):
@@ -32,12 +34,27 @@ def log_ev(ev):
     print(" ", json.dumps(ev, ensure_ascii=False, default=str))
 
 
+def realize(st, fish, pnl_pts, ev):
+    ev["pnl_pts"] = round(pnl_pts, 1)
+    ev["pnl_ntd"] = round(pnl_pts * PV[fish])
+    st["equity"] = st.get("equity", START_EQUITY) + ev["pnl_ntd"]
+    st["peak"] = max(st.get("peak", START_EQUITY), st["equity"])
+    ev["equity"] = st["equity"]
+    log_ev(ev)
+
+
+def halted(st):
+    dd = 1 - st.get("equity", START_EQUITY) / st.get("peak", START_EQUITY)
+    return dd >= HARD_DD, dd
+
+
 def load_state():
     try:
         with open(STATE, encoding="utf-8") as f:
             return json.load(f)
     except Exception:
-        return {"fishB": {"pending": None}, "fishA": {"held": None}}
+        return {"fishB": {"pending": None}, "fishA": {"held": None},
+                "equity": START_EQUITY, "peak": START_EQUITY}
 
 
 def main():
@@ -56,13 +73,16 @@ def main():
         exec_bar = next((x for x in bars if x["date"] > pend["signal_date"]), None)
         if exec_bar:
             pnl = pend["side"] * (exec_bar["close"] - exec_bar["open"]) - COST_B
-            log_ev({"fish": "B", "type": "fill+close", "signal_date": pend["signal_date"],
-                    "exec_date": exec_bar["date"], "side": pend["side"],
-                    "pnl_pts": round(pnl, 1), "pnl_ntd": round(pnl * TX_POINT)})
+            realize(st, "B", pnl, {"fish": "B", "type": "fill+close",
+                    "signal_date": pend["signal_date"], "exec_date": exec_bar["date"],
+                    "side": pend["side"]})
             st["fishB"]["pending"] = None
     net = fetch_foreign()
     ds = sorted(d for d in net if d in by_date)
-    if ds and ds[-1] == today and st["fishB"]["pending"] is None:
+    stop_all, dd_now = halted(st)
+    if stop_all:
+        print(f"  ⛔ 回撤煞車:權益回撤 {dd_now:.0%} ≥ {HARD_DD:.0%},停開新倉")
+    if ds and ds[-1] == today and st["fishB"]["pending"] is None and not stop_all:
         deltas = [net[ds[i]] - net[ds[i - 1]] for i in range(1, len(ds))]
         d_today = deltas[-1]
         hist = sorted(abs(x) for x in deltas[:-1] if x != 0)
@@ -96,15 +116,14 @@ def main():
                 reason, exit_px = "converged", mark
             if reason:
                 pnl = held["entry_px"] - exit_px - COST_A
-                log_ev({"fish": "A", "type": "exit", "reason": reason, "date": today,
-                        "entry": held["entry_px"], "exit": exit_px,
-                        "pnl_pts": round(pnl, 1), "pnl_ntd": round(pnl * TXO_POINT)})
+                realize(st, "A", pnl, {"fish": "A", "type": "exit", "reason": reason,
+                        "date": today, "entry": held["entry_px"], "exit": exit_px})
                 st["fishA"]["held"] = None
             else:
                 held["last_mark"] = mark
                 log_ev({"fish": "A", "type": "mark", "date": today, "mark": mark,
                         "u_pnl_pts": round(held["entry_px"] - mark, 1), "age": held["age"]})
-        if st["fishA"]["held"] is None and edge is not None:
+        if st["fishA"]["held"] is None and edge is not None and not stop_all:
             gs = sorted(gex[d]["mag"] for d in sorted(gex)[-60:])
             g_med = gs[len(gs) // 2]
             if edge > 0.03 and 10 <= rec["dte"] <= 40 and gex[today]["mag"] >= g_med:
@@ -121,7 +140,7 @@ def main():
 
     # ---- 魚C:MTF-ORB(用戶哲學版,盤後用 Shioaji 當日1分K重播)----
     try:
-        fish_c(bars, today)
+        fish_c(bars, today, st)
     except Exception as e:
         print(f"  魚C 本次跳過:{type(e).__name__} {e}")
 
@@ -129,7 +148,7 @@ def main():
         json.dump(st, f, ensure_ascii=False, default=str)
 
 
-def fish_c(bars, today):
+def fish_c(bars, today, st):
     """規格凍結 2026-07-22:日線 EMA9>21>50 閘(至昨日)+ 波動閘(20日ATR%≤近252日80分位)
     + OR30 突破順勢一單 + 停損=OR另一側 + 未掃出抱到 13:44。成本 1.5 點。"""
     closes = [b["close"] for b in bars]
@@ -148,8 +167,9 @@ def fish_c(bars, today):
            for i in range(len(bars) - 252, len(bars))]
     atr20 = sum(trs[-20:]) / 20
     vol_ok = atr20 <= sorted(sum(trs[i:i+20])/20 for i in range(len(trs)-20))[int(0.8*(len(trs)-20))]
-    if g == 0 or not vol_ok:
-        print(f"  魚C:今日不進(閘={g}, 波動OK={vol_ok})")
+    stop_all, _ = halted(st)
+    if g == 0 or not vol_ok or stop_all:
+        print(f"  魚C:今日不進(閘={g}, 波動OK={vol_ok}, 煞車={stop_all})")
         return
     from shioaji_adapter import _load_env
     _load_env()
@@ -189,9 +209,8 @@ def fish_c(bars, today):
         exit_px, reason = rows[-1][4], "eod"
     if pos:
         pnl = pos * (exit_px - entry) - COST_B
-        log_ev({"fish": "C", "type": "trade", "date": today, "side": pos,
-                "entry": entry, "exit": exit_px, "reason": reason,
-                "pnl_pts": round(pnl, 1), "pnl_ntd": round(pnl * TX_POINT)})
+        realize(st, "C", pnl, {"fish": "C", "type": "trade", "date": today, "side": pos,
+                "entry": entry, "exit": exit_px, "reason": reason})
     else:
         print("  魚C:今日無突破,未進場")
 
@@ -203,8 +222,24 @@ def write_report():
     except FileNotFoundError:
         evs = []
     st = load_state()
+    eq = st.get("equity", START_EQUITY)
+    peak = st.get("peak", START_EQUITY)
+    dd = 1 - eq / peak if peak else 0
+    ret = eq / START_EQUITY - 1
+    # 權益曲線(從事件流重建)
+    curve = [START_EQUITY] + [e["equity"] for e in evs if "equity" in e]
+    if len(curve) > 1:
+        mn, mx = min(curve), max(curve)
+        span = (mx - mn) or 1
+        pts = " ".join(f"{i*300/(len(curve)-1):.1f},{40-(v-mn)/span*36:.1f}" for i, v in enumerate(curve))
+        svg = f'<svg viewBox="0 0 300 44" style="width:100%;height:44px"><polyline points="{pts}" fill="none" stroke="{"#6dbd88" if curve[-1]>=curve[0] else "#dd7f68"}" stroke-width="1.5"/></svg>'
+    else:
+        svg = '<div style="color:#6b7078;font-size:.8rem">等第一筆結算後出現曲線</div>'
+    equity_html = (f'<div class="card" style="grid-column:1/-1"><div class="t">虛擬帳戶(本金 {START_EQUITY:,})</div>'
+                   f'<div class="v {"pos" if ret>=0 else "neg"}">{eq:,.0f} 元({ret:+.2%})</div>'
+                   f'<div class="s">回撤 {dd:.1%}(煞車線 {HARD_DD:.0%})· 規模:小台1口/跨式1組</div>{svg}</div>')
     names = {"A": "A 條件賣跨式+GEX", "B": "B 外資高信念跟隨", "C": "C MTF-ORB(老闆哲學版)"}
-    cards, cum = "", {}
+    cards, cum = equity_html, {}
     for f in ("A", "B", "C"):
         pnls = [e["pnl_ntd"] for e in evs if e.get("fish") == f and "pnl_ntd" in e]
         cum[f] = sum(pnls)
