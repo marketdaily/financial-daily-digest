@@ -618,6 +618,7 @@ def list_all(db):
 
 
 CONFIG_PATH = os.path.join(HERE, "cb_config.json")
+_CONFIG_MTIME = None
 
 
 def load_config():
@@ -628,6 +629,21 @@ def load_config():
                 cb_core.set_config(**json.load(f))
         except Exception as e:
             print(f"{C['y']}config 讀取失敗,用預設:{e}{C['x']}")
+
+
+def reload_config_if_changed():
+    """mtime 變了才重讀 config(cb_server 每個 API 請求呼叫:網頁改準則立刻生效,
+    平時每請求只多一次 stat)。檔案不存在 → 不動作。回是否真的重載了。"""
+    global _CONFIG_MTIME
+    try:
+        m = os.stat(CONFIG_PATH).st_mtime
+    except OSError:
+        return False
+    if m == _CONFIG_MTIME:
+        return False
+    _CONFIG_MTIME = m
+    load_config()
+    return True
 
 
 def pop_flag(args, name, cast=float):

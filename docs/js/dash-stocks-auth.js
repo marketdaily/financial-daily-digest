@@ -45,6 +45,7 @@ function addStock(market, sym, name) {
   document.getElementById(`${market}-search`).value = "";
   document.getElementById(`${market}-dropdown`).classList.remove("open");
   scheduleSave();
+  scheduleStoriesRefresh();
 }
 
 function removeStock(market, sym) {
@@ -52,6 +53,7 @@ function removeStock(market, sym) {
   delete positionsMap[sym];
   renderTags(market); updateStats();
   scheduleSave();
+  scheduleStoriesRefresh();
 }
 
 // ── 持倉成本(選填):進場價/進場日 → 日報改用持有者框架給建議 ──
@@ -62,6 +64,7 @@ function openPosEdit(market, sym) {
   const p = positionsMap[sym] || {};
   document.getElementById("pos-title").textContent = `${T('pos_title')} — ${sym}`;
   document.getElementById("pos-price").value = p.entry_price ?? "";
+  document.getElementById("pos-qty").value = p.qty ?? "";
   document.getElementById("pos-date").value = p.entry_date || "";
   document.getElementById("pos-err").style.display = "none";
   document.getElementById("pos-modal").classList.add("open");
@@ -88,18 +91,38 @@ function confirmPosEdit() {
   if (!sym) { closePosEdit(); return; }
   const err = document.getElementById("pos-err");
   const priceRaw = document.getElementById("pos-price").value.trim();
+  const qtyRaw = document.getElementById("pos-qty").value.trim();
   const date = document.getElementById("pos-date").value;
   const price = Number(priceRaw);
-  if (!priceRaw || !Number.isFinite(price) || price <= 0) {
+  const qty = Number(qtyRaw);
+  const priceOk = priceRaw && Number.isFinite(price) && price > 0;
+  const qtyOk = qtyRaw && Number.isFinite(qty) && qty > 0;
+  // 進場價或股數至少一項(股數單獨存在也夠算資金體檢的市值/集中度)
+  if (!priceOk && !qtyOk) {
+    err.textContent = T('pos_err_any'); err.style.display = "block"; return;
+  }
+  if (priceRaw && !priceOk) {
     err.textContent = T('pos_err_price'); err.style.display = "block"; return;
   }
   if (date && date > new Date().toISOString().slice(0, 10)) {
     err.textContent = T('pos_err_date'); err.style.display = "block"; return;
   }
-  positionsMap[sym] = { entry_price: price, ...(date ? { entry_date: date } : {}) };
+  positionsMap[sym] = {
+    ...(priceOk ? { entry_price: price } : {}),
+    ...(qtyOk ? { qty } : {}),
+    ...(date ? { entry_date: date } : {}),
+  };
   renderTags(market);
   scheduleSave();
   closePosEdit();
+}
+
+// 總本金輸入(capital-card):onchange 存檔;清空=移除設定
+function capitalChanged() {
+  const raw = (document.getElementById("capital-input").value || "").trim();
+  const v = Number(raw);
+  userCapital = raw && Number.isFinite(v) && v > 0 ? Math.round(v) : null;
+  scheduleSave();
 }
 
 // ── 一鍵套組 + 批量貼上 ──
@@ -145,7 +168,7 @@ function addBundle(market, bundleId) {
     added++;
   }
   renderTags(market); updateStats();
-  if (added > 0) scheduleSave();
+  if (added > 0) { scheduleSave(); scheduleStoriesRefresh(); }
   if (capped > 0) {
     setSaveStatus("warn", "⚠️ " + T("bundle_capped")(added, capped));
   } else if (added === 0 && dupe > 0) {
@@ -224,7 +247,7 @@ function confirmBulk() {
     added++;
   }
   renderTags(market); updateStats();
-  if (added > 0) scheduleSave();
+  if (added > 0) { scheduleSave(); scheduleStoriesRefresh(); }
   const parts = [];
   if (added > 0) parts.push(`<span class="ok">${T("bulk_added")(added)}</span>`);
   if (dupe > 0) parts.push(T("bulk_dupe")(dupe));
@@ -249,8 +272,13 @@ function renderTags(market) {
     const label = zh || name;
     const nameHtml = label && label !== sym ? `<span style="font-weight:400;opacity:0.7;font-size:11px"> ${label}</span>` : "";
     const pos = positionsMap[sym];
-    const costHtml = pos && Number(pos.entry_price) > 0
-      ? `<span class="tag-cost" onclick="openPosEdit('${market}','${sym}')" title="${T('pos_chip_title')}">@${Number(pos.entry_price)}</span>`
+    const hasPos = pos && (Number(pos.entry_price) > 0 || Number(pos.qty) > 0);
+    const posTxt = hasPos
+      ? [Number(pos.entry_price) > 0 ? `@${Number(pos.entry_price)}` : "",
+         Number(pos.qty) > 0 ? `×${Number(pos.qty)}` : ""].filter(Boolean).join(" ")
+      : "";
+    const costHtml = hasPos
+      ? `<span class="tag-cost" onclick="openPosEdit('${market}','${sym}')" title="${T('pos_chip_title')}">${posTxt}</span>`
       : `<span class="tag-cost empty" onclick="openPosEdit('${market}','${sym}')" title="${T('pos_chip_title')}">${T('pos_chip_add')}</span>`;
     return `<div class="tag">${sym}${nameHtml} ${costHtml}<span class="tag-x" onclick="removeStock('${market}','${sym}')">×</span></div>`;
   }).join("");
@@ -325,6 +353,9 @@ async function doLogin() {
     if (document.getElementById("remember-me").checked) { localStorage.setItem("md-saved-email", email); localStorage.setItem("md-saved-pwd", password); }
     else { localStorage.removeItem("md-saved-email"); localStorage.removeItem("md-saved-pwd"); }
     localStorage.setItem("md-email", email); localStorage.setItem("md-plan", data.plan || "free");
+    // 登入成功即同步 hero email:殘留的舊 md-hero-email 會讓 dash-init 切帳偵測
+    // 每次載入都誤判「換帳號」→ 清掉登入態+記住我密碼(2026-07-22 Delvin 實鍋:勾了記住我仍每次被踢回登入)
+    localStorage.setItem("md-hero-email", email);
     sessionStorage.setItem("md-pwd", password);
     showDashboard(email, data.plan || "free");
   } catch { errEl.textContent = T('err_network'); errEl.style.display = "block"; }
@@ -345,6 +376,7 @@ async function doSetPassword() {
     if (!data.ok) { errEl.textContent = T('err_set_failed'); errEl.style.display = "block"; return; }
     if (document.getElementById("remember-me") && document.getElementById("remember-me").checked) { localStorage.setItem("md-saved-email", _pendingEmail); localStorage.setItem("md-saved-pwd", password); }
     localStorage.setItem("md-email", _pendingEmail); localStorage.setItem("md-plan", data.plan || "free");
+    localStorage.setItem("md-hero-email", _pendingEmail);
     sessionStorage.setItem("md-pwd", password);
     showDashboard(_pendingEmail, data.plan || "free");
   } catch { errEl.textContent = T('err_network'); errEl.style.display = "block"; }

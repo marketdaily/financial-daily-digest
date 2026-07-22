@@ -33,6 +33,40 @@ except ImportError:
 ANTHROPIC_KEY = os.getenv("ANTHROPIC_API_KEY")
 MODEL = "claude-haiku-4-5-20251001"
 
+AI_SLOP_LINT = Path.home() / "autonomous" / "capabilities" / "ai_slop_lint" / "logic.py"
+_slop_mod = None
+
+
+def _slop_report(body_html: str):
+    """AI 味密度檢查(離線確定性 lint)。積木缺席/壞掉回 None:lint 是品質閘不是產線依賴。"""
+    global _slop_mod
+    try:
+        if _slop_mod is None:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("ai_slop_lint_logic", AI_SLOP_LINT)
+            _slop_mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(_slop_mod)
+        return _slop_mod.score(body_html, is_html=True)
+    except Exception as e:
+        print(f"    [slop-lint unavailable: {type(e).__name__}] 跳過檢查")
+        return None
+
+
+def slop_gated(gen_fn, label: str, retries: int = 1):
+    """生成 + AI-slop 閘:sloppy 重生一次,仍 sloppy 丟棄(寧缺勿濫);watch 放行但大聲記錄。"""
+    for attempt in range(retries + 1):
+        art = gen_fn()
+        rep = _slop_report(art["body_html"])
+        if rep is None or rep["verdict"] == "clean":
+            return art
+        offenders = [h["pattern"] for h in rep["top_offenders"][:3]]
+        if rep["verdict"] == "watch":
+            print(f"    [slop-watch] {label} density={rep['slop_density']:.1f} {offenders}(放行,留觀察)")
+            return art
+        tail = "→重生一次" if attempt < retries else "→丟棄不發(寧缺勿濫)"
+        print(f"    [slop-SLOPPY] {label} density={rep['slop_density']:.1f} {offenders}{tail}")
+    return None
+
 BLOG_DIR = ROOT / "docs" / "blog"
 BLOG_DIR.mkdir(parents=True, exist_ok=True)
 SEEDS_FILE = ROOT / "scripts" / "seo_seeds.json"
@@ -143,6 +177,7 @@ BEGINNER_TOPICS = [
     ("複委託與海外券商差在哪:美股投資新手指南", "複委託 海外券商 差別 美股新手 2026"),
     ("新手常見QA:零股划算嗎 股利怎麼領", "新手投資QA 零股 股利 2026"),
     ("證券開戶要準備什麼文件:新手開戶流程", "證券開戶 準備文件 流程 新手 2026"),
+    ("除權息旺季來了:7-9月除權息投資人該注意什麼", "除權息旺季 7-9月 除權息 注意事項 2026"),
 ]
 
 # 產業供應鏈全景(2026-07-05 分發瓶頸研究缺口 D:重用既有 supply_chain.json,
@@ -285,7 +320,10 @@ OG_MARKER = 'property="og:image"'
 
 
 def _inject_schema_image(html: str, image: str) -> str:
-    """把 image 加進既有 JSON-LD Article schema(冪等,robust via json)。抽不到就原樣返回。"""
+    """把 image 加進既有 JSON-LD Article schema 的 Article 節點(冪等,robust via json)。
+    2026-07-15 起 blog schema 是 `@graph[Article,BreadcrumbList]`——image 要注入 Article 節點,
+    注在 @graph 外層=Google 忽略的死標記(lesson jsonld_graph_migration_breaks_consumers)。
+    舊扁平物件維持原行為(整個 data 即 target)。抽不到就原樣返回。"""
     m = re.search(r'(<script type="application/ld\+json">)(.*?)(</script>)', html, re.S)
     if not m:
         return html
@@ -293,8 +331,13 @@ def _inject_schema_image(html: str, image: str) -> str:
         data = json.loads(m.group(2))
     except Exception:
         return html
-    if isinstance(data, dict) and "image" not in data:
-        data["image"] = [image]
+    target = data if isinstance(data, dict) else None
+    if isinstance(target, dict) and isinstance(target.get("@graph"), list):
+        target = next((n for n in target["@graph"] if isinstance(n, dict) and (
+            n.get("@type") == "Article"
+            or (isinstance(n.get("@type"), list) and "Article" in n.get("@type")))), None)
+    if isinstance(target, dict) and "image" not in target:
+        target["image"] = [image]
         new_json = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
         return html[:m.start(2)] + new_json + html[m.end(2):]
     return html
@@ -341,6 +384,278 @@ def backfill_og_cards(dry: bool) -> list:
             f.write_text(html2, encoding="utf-8")
             print(f"  ✓ og card: {f.name}")
     return done
+
+
+# 只改「宣告真正 canonical URL 的三個訊號欄」(canonical / og:url / JSON-LD @id),
+# 絕不碰 og:image(.png)、topnav 導覽連結、相關文章內連(那些是導覽,308 hop 無傷)。
+_CANON_HTML_RE = re.compile(r'(<link rel="canonical" href="https://marketdaily\.ai/blog/[^"]*?)\.html(">)')
+_OGURL_HTML_RE = re.compile(r'(<meta property="og:url" content="https://marketdaily\.ai/blog/[^"]*?)\.html(">)')
+_LDID_HTML_RE = re.compile(r'("@id": "https://marketdaily\.ai/blog/[^"]*?)\.html(")')
+_LDJSON_RE = re.compile(r'(<script type="application/ld\+json">)(.*?)(</script>)', re.S)
+
+
+def backfill_canonical(dry: bool) -> list:
+    """把既有文章的 canonical / og:url / JSON-LD @id 從 `.html` 改成 extensionless 乾淨 URL。
+    CF Pages 會把 `/blog/x.html` 308→`/blog/x`;canonical 指向 redirect URL 是 SEO 反模式
+    (Google 明文警告),且與 sitemap(本就用乾淨 URL)簽名衝突。新文章走 PAGE_TEMPLATE 已修正,
+    此函式回填上線前的舊文。冪等:已是乾淨 URL 即 no-op(regex 需 `.html"` 結尾才命中),可安全重跑。
+    index.html 特例:canonical `/blog/index.html`→`/blog/`(目錄根,非 `/blog/index`)。"""
+    changed = []
+    for f in BLOG_DIR.glob("*.html"):
+        html = f.read_text(encoding="utf-8")
+        orig = html
+        if f.stem == "index":
+            html = html.replace(
+                '<link rel="canonical" href="https://marketdaily.ai/blog/index.html">',
+                '<link rel="canonical" href="https://marketdaily.ai/blog/">')
+        else:
+            html = _CANON_HTML_RE.sub(r"\1\2", html)
+            html = _OGURL_HTML_RE.sub(r"\1\2", html)
+            html = _LDID_HTML_RE.sub(r"\1\2", html)
+        if html != orig:
+            changed.append(f.stem)
+            if dry:
+                print(f"  [dry] would fix canonical: {f.name}")
+            else:
+                f.write_text(html, encoding="utf-8")
+                print(f"  ✓ canonical→clean: {f.name}")
+    return changed
+
+
+def backfill_breadcrumb(dry: bool) -> list:
+    """把上線前只含 bare Article 的 JSON-LD 升級成 @graph[Article, BreadcrumbList]。
+    BreadcrumbList 讓 Google SERP 顯示麵包屑(首頁 › 財經知識庫 › 文章),提升 CTR 與爬取。
+    新文章走 _article_schema_json 已含 @graph,此函式回填舊文。
+    冪等:已是 @graph 即 skip;無法解析或非 Article 亦 skip(fail-safe,絕不破壞原檔)。
+    麵包屑末項名稱直接取自該檔 Article 的 headline,保證與頁面標題一致。"""
+    changed = []
+    for f in BLOG_DIR.glob("*.html"):
+        if f.stem == "index":
+            continue
+        html = f.read_text(encoding="utf-8")
+        m = _LDJSON_RE.search(html)
+        if not m:
+            continue
+        try:
+            data = json.loads(m.group(2).strip())
+        except Exception:
+            print(f"  [skip] ld+json 無法解析: {f.name}")
+            continue
+        if "@graph" in data or data.get("@type") != "Article":
+            continue
+        title = data.get("headline", "")
+        article = {k: v for k, v in data.items() if k != "@context"}
+        new_obj = {"@context": "https://schema.org",
+                   "@graph": [article, _breadcrumb_schema(title)]}
+        new_json = json.dumps(new_obj, ensure_ascii=False).replace("</", "<\\/")
+        new_html = html[:m.start(2)] + new_json + html[m.end(2):]
+        if new_html != html:
+            changed.append(f.stem)
+            if dry:
+                print(f"  [dry] would add breadcrumb: {f.name}")
+            else:
+                f.write_text(new_html, encoding="utf-8")
+                print(f"  ✓ breadcrumb added: {f.name}")
+    return changed
+
+
+_CRUMB_RE = re.compile(r'(<div class="crumb">MARKETDAILY · )([^<]*)(</div>)')
+
+
+def backfill_crumb(dry: bool) -> list:
+    """.crumb 舊版寫死「個股分析 · {market}」,對 term/macro/guide/event/exdiv/supply 類文章
+    語意不符(它們不是個股分析;index.html 分類徽章早已用 _blog_classify 正確分類七種類型,
+    只有文章內頁麵包屑沒同步)。改用同一顆分類器當單一真源:stock 類維持原樣(個股分析 · 美股/
+    台股,不動,避免無謂 diff);其餘類別改印各自正確分類文字(如「供應鏈」「除權息」「法說會」)。"""
+    changed = []
+    for f in BLOG_DIR.glob("*.html"):
+        if f.stem == "index":
+            continue
+        cat = _blog_classify(f.stem)
+        if cat == "stock":
+            continue
+        label = BLOG_CATS[cat][0]
+        html = f.read_text(encoding="utf-8")
+        new_html, n = _CRUMB_RE.subn(lambda m: f"{m.group(1)}{label}{m.group(3)}", html)
+        if n and new_html != html:
+            changed.append(f.stem)
+            if dry:
+                print(f"  [dry] would fix crumb: {f.name} → {label}")
+            else:
+                f.write_text(new_html, encoding="utf-8")
+                print(f"  ✓ crumb fixed: {f.name} → {label}")
+    return changed
+
+
+# ── meta description 從文章自身 prose 擴寫(零捏造)────────────────────────────
+# 動機(MEASURED 2026-07-15):43 篇 blog 的 meta description 全是 25–45 CJK 字的 template
+# stub(如「台積電 (2330) 法說會前瞻 — MarketDaily 整理。」),Google SERP 約可顯示 78 CJK
+# 字,這些 stub 浪費 >40% 版面且讀起來像樣板。修法=從文章「自身第一段實質 prose」擴寫到
+# SERP 甜蜜區,零捏造(只截既有正文)。content_seo 稽核器 C2 精確標出此缺陷,本函式是修復。
+_DANGER_ASCII = set('"<>&\\')
+_SENT_END = "。！？!?"
+_CLAUSE_PUNCT = "。！？，、；：!?,;:"
+_TRAIL_SEP = "，、；：,;:"
+
+
+def _desc_dw(s: str) -> int:
+    """SERP display width 近似:CJK/全形 2、ASCII 1(與 content_seo 稽核器同一把尺)。"""
+    return sum(2 if ord(c) > 0x2E7F else 1 for c in s)
+
+
+def _first_prose(source_html: str) -> str:
+    """抽文章正文第一段實質 prose(去空白後 ≥30 字元),空白 collapse 成單一空格。
+    source 可為完整頁面(backfill 路徑,取 <article> 區並剝 CTA/disclaimer chrome)或
+    生成階段的 body_html(無 <article> 包裹,直接掃第一個 <p>)。抽不到回空字串。"""
+    m = re.search(r"<article\b[^>]*>(.*?)</article>", source_html, re.S)
+    region = m.group(1) if m else source_html
+    region = re.sub(r'<div class="cta">.*?</div>', "", region, flags=re.S)
+    region = re.sub(r'<p class="disc">.*?</p>', "", region, flags=re.S)
+    for pm in re.finditer(r"<p\b[^>]*>(.*?)</p>", region, re.S):
+        inner = re.sub(r"<[^>]+>", "", pm.group(1))
+        if len(re.sub(r"\s+", "", inner)) >= 30:
+            return re.sub(r"\s+", " ", inner).strip()
+    return ""
+
+
+def _hard_cut(s: str, maxw: int) -> int:
+    w = 0
+    for i, ch in enumerate(s):
+        w += 2 if ord(ch) > 0x2E7F else 1
+        if w > maxw:
+            return i
+    return len(s)
+
+
+def _truncate_to_desc(cand: str, fallback: str, title: str = "",
+                      min_w: int = 110, max_w: int = 320, target: int = 240,
+                      danger_chars: frozenset = frozenset()) -> str:
+    """把任意抽出的候選正文(cand)截到 SERP 甜蜜區 display-width ∈[min_w,max_w],
+    零捏造(只截既有文字,不改寫內容)。抽不到 / 含危險字元 / 結果過短或等於標題 → 回
+    fallback(呼叫端提供的已知安全 template desc)。與抽取候選文字的來源(第一段 prose /
+    其他結構如 TL;DR 條列)無關,供 `_prose_meta_desc`(blog 文章)與
+    `scripts/site_structured_data.py`(日報 archive 頁)共用同一套截斷邏輯,避免各自維護
+    一份易漂移的句界截斷演算法。
+    `danger_chars` 預設空集合(呼叫端各自決定要擋哪些字元,見下方 `_prose_meta_desc`
+    對 " < > & \\ 全擋的原因)——blog 用法把這 4 字元一律整體回退而非部分清洗,因為
+    blog 端把同一個 desc 字串直接塞進 3 個 HTML 屬性槽與 1 個 JSON 字串槽,無各自轉義;
+    其他呼叫端(如日報 archive)若有能力對 HTML 屬性槽單獨做 `html.escape()`、對
+    JSON-LD 槽保留字面字元,可傳入較寬鬆的 `danger_chars`(例如只擋 < > \\,允許 & 這種
+    可安全轉義的字元通過,避免像「S&P 500」這種常見市場詞彙被整篇回退成罐頭文案)。"""
+    if not cand or any(c in danger_chars for c in cand):
+        return fallback
+    if _desc_dw(cand) <= max_w:
+        chosen = cand
+    else:
+        pick = None
+        for pset in (_SENT_END, _CLAUSE_PUNCT):   # 先找句末標點,再退而求其次任何分句標點
+            best = None
+            w = 0
+            for i, ch in enumerate(cand):
+                w += 2 if ord(ch) > 0x2E7F else 1
+                if ch in pset and min_w <= w <= target:
+                    best = i + 1
+            if best:
+                pick = best
+                break
+        if pick is None:
+            pick = _hard_cut(cand, max_w)
+        chosen = cand[:pick]
+        if chosen and chosen[-1] in _TRAIL_SEP:   # 不以懸空逗號/頓號結尾
+            chosen = chosen[:-1]
+    if _desc_dw(chosen) < min_w or chosen == title:
+        return fallback
+    return chosen
+
+
+def _prose_meta_desc(source_html: str, fallback: str, title: str = "",
+                     min_w: int = 110, max_w: int = 320, target: int = 240) -> str:
+    """從文章自身第一段 prose 擴寫 SERP 甜蜜區 meta desc,見 `_truncate_to_desc` docstring。
+    blog 用法擋 " < > & \\ 全部(同一字串直塞 4 個槽,無各自轉義能力)。"""
+    return _truncate_to_desc(_first_prose(source_html), fallback, title, min_w, max_w, target,
+                             danger_chars=_DANGER_ASCII)
+
+
+def _set_schema_description(html: str, new_desc: str):
+    """把 JSON-LD Article 節點的 description 改成 new_desc,回傳 (html, applied)。
+    robust via json,與 _inject_schema_image 同一路徑。@graph[Article,...] 改 Article 節點;
+    舊扁平物件改整個 data。applied=True 只在「JSON-LD Article.description 事後保證 == new_desc」
+    (現改 or 本就相同);applied=False 代表無可解析的 Article-with-description(無 ld+json /
+    無法解析 / 非 Article / 缺 description 鍵)——呼叫端必須據此把整篇更新視為失敗、不落盤,
+    以保 4 槽一致(不可只改 3 個 meta 槽卻留 stale JSON)。new_desc 保證無危險 ASCII 故 json 安全。"""
+    m = _LDJSON_RE.search(html)
+    if not m:
+        return html, False
+    try:
+        data = json.loads(m.group(2).strip())
+    except Exception:
+        return html, False
+    target = data if isinstance(data, dict) else None
+    if isinstance(target, dict) and isinstance(target.get("@graph"), list):
+        target = next((n for n in target["@graph"] if isinstance(n, dict) and (
+            n.get("@type") == "Article"
+            or (isinstance(n.get("@type"), list) and "Article" in n.get("@type")))), None)
+    if not isinstance(target, dict) or "description" not in target:
+        return html, False
+    if target["description"] == new_desc:
+        return html, True
+    target["description"] = new_desc
+    new_json = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
+    return html[:m.start(2)] + new_json + html[m.end(2):], True
+
+
+_DESC_META_RES = (
+    re.compile(r'(<meta name="description" content=")([^"]*)(">)'),
+    re.compile(r'(<meta property="og:description" content=")([^"]*)(">)'),
+    re.compile(r'(<meta name="twitter:description" content=")([^"]*)(">)'),
+)
+
+
+def backfill_meta_desc(dry: bool) -> list:
+    """把既有文章短 template stub 的 meta description 擴寫成文章自身第一段 prose(零捏造,
+    SERP 甜蜜區 display-width)。四槽一致改寫:name=description / og:description /
+    twitter:description / JSON-LD Article.description。新文章走 write_article 已自帶,
+    此函式回填舊文。
+    冪等:new_desc 與現值相同即整篇 skip(抽不到 prose 或含危險 ASCII 時 _prose_meta_desc
+    回傳現值 fallback → 亦相同 → skip)。fail-safe:個別檔任何例外只印警告不中斷管線。"""
+    changed = []
+    for f in BLOG_DIR.glob("*.html"):
+        if f.stem == "index":
+            continue
+        try:
+            html = f.read_text(encoding="utf-8")
+            cm = _DESC_META_RES[0].search(html)
+            cur = cm.group(2) if cm else ""
+            tm = re.search(r"<title>(.+?)\s*\|", html)
+            title = tm.group(1).strip() if tm else ""
+            new_desc = _prose_meta_desc(html, fallback=cur, title=title)
+            if new_desc == cur:
+                continue
+            # 全篇更新必須原子:3 個 meta 槽與 JSON-LD Article.description 要嘛全改、要嘛整篇
+            # 不動——絕不落盤「只改 3 meta 卻留 stale JSON」的 4 槽不一致檔(驗證者 Finding 1)。
+            html2 = html
+            ok = True
+            for rex in _DESC_META_RES:
+                html2, n = rex.subn(lambda mm: mm.group(1) + new_desc + mm.group(3), html2, count=1)
+                if n != 1:                       # 缺某個 meta desc 槽 → 放棄整篇(保持原一致值)
+                    ok = False
+                    break
+            if not ok:
+                print(f"  [skip] {f.name}: 缺 meta description 槽,整篇不改(保 4 槽一致)")
+                continue
+            html2, applied = _set_schema_description(html2, new_desc)
+            if not applied:                      # JSON-LD 無法一致更新 → 放棄整篇
+                print(f"  [skip] {f.name}: JSON-LD Article.description 無法更新,整篇不改(保 4 槽一致)")
+                continue
+            changed.append(f.stem)
+            if dry:
+                print(f"  [dry] would expand meta desc: {f.name}(→w{_desc_dw(new_desc)})")
+            else:
+                f.write_text(html2, encoding="utf-8")
+                print(f"  ✓ meta desc expanded: {f.name}")
+        except Exception as e:
+            print(f"  [skip] meta desc backfill {f.name}: {type(e).__name__}: {e}")
+    return changed
 
 
 def call_claude(system: str, user: str, max_tokens: int = 2000) -> str:
@@ -1230,7 +1545,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta property="og:title" content="{title}">
 <meta property="og:description" content="{desc}">
 <meta property="og:type" content="article">
-<meta property="og:url" content="https://marketdaily.ai/blog/{slug}.html">
+<meta property="og:url" content="https://marketdaily.ai/blog/{slug}">
 <meta property="og:site_name" content="MarketDaily">
 <meta property="og:image" content="{og_image}">
 <meta property="og:image:width" content="1200">
@@ -1239,7 +1554,7 @@ PAGE_TEMPLATE = """<!DOCTYPE html>
 <meta name="twitter:title" content="{title}">
 <meta name="twitter:description" content="{desc}">
 <meta name="twitter:image" content="{og_image}">
-<link rel="canonical" href="https://marketdaily.ai/blog/{slug}.html">
+<link rel="canonical" href="https://marketdaily.ai/blog/{slug}">
 <link rel="alternate" type="application/rss+xml" title="MarketDaily 個股分析" href="/feed.xml">
 <script type="application/ld+json">{schema_json}</script>
 <style>
@@ -1260,6 +1575,16 @@ strong {{ color:#fbbf24; font-weight:700; }}
 .cta {{ background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.15)); border:1px solid rgba(99,102,241,0.35); border-radius:14px; padding:24px; margin:40px 0 0; text-align:center; }}
 .cta a {{ display:inline-block; margin-top:14px; padding:14px 28px; background:linear-gradient(135deg,#6366f1,#a855f7); color:#fff; font-weight:800; text-decoration:none; border-radius:10px; }}
 .disc {{ font-size:12px; color:rgba(255,255,255,0.4); margin-top:32px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }}
+
+.ahero {{ height:200px; border-radius:16px; background-size:cover; background-position:center; background-repeat:no-repeat; margin:0 0 26px; border:1px solid rgba(255,255,255,0.08); position:relative; }}
+.ahero::after {{ content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(10,10,20,0.12),rgba(10,10,20,0.5)); }}
+.ahero[data-h="stock"] {{ background-image:url(assets/cat/hero-stock.webp?v=2); }}
+.ahero[data-h="event"] {{ background-image:url(assets/cat/hero-event.webp?v=2); }}
+.ahero[data-h="exdiv"] {{ background-image:url(assets/cat/hero-exdiv.webp?v=2); }}
+.ahero[data-h="guide"] {{ background-image:url(assets/cat/hero-guide.webp?v=2); }}
+.ahero[data-h="term"] {{ background-image:url(assets/cat/hero-term.webp?v=2); }}
+.ahero[data-h="macro"] {{ background-image:url(assets/cat/hero-macro.webp?v=2); }}
+.ahero[data-h="supply"] {{ background-image:url(assets/cat/hero-supply.webp?v=2); }}
 </style>
 </head>
 <body>
@@ -1268,7 +1593,8 @@ strong {{ color:#fbbf24; font-weight:700; }}
   <a href="/blog/index.html">所有文章</a>
 </div>
 <article class="wrap">
-  <div class="crumb">MARKETDAILY · 個股分析 · {market_label}</div>
+  <div class="ahero" data-h="{cat}"></div>
+  <div class="crumb">MARKETDAILY · {crumb_label}</div>
   {body}
 {related}
   <div class="cta">
@@ -1339,8 +1665,7 @@ def og_image_for(slug: str, ticker: str, market_label: str, title: str) -> str:
 
 def _article_schema_json(title: str, desc: str, slug: str, date_published: str,
                          date_modified: str, image: str = DEFAULT_OG_IMAGE) -> str:
-    schema = {
-        "@context": "https://schema.org",
+    article = {
         "@type": "Article",
         "headline": title,
         "description": desc,
@@ -1353,26 +1678,47 @@ def _article_schema_json(title: str, desc: str, slug: str, date_published: str,
             "name": "MarketDaily",
             "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"},
         },
-        "mainEntityOfPage": {"@type": "WebPage", "@id": f"https://marketdaily.ai/blog/{slug}.html"},
+        "mainEntityOfPage": {"@type": "WebPage", "@id": f"https://marketdaily.ai/blog/{slug}"},
     }
+    breadcrumb = _breadcrumb_schema(title)
+    schema = {"@context": "https://schema.org", "@graph": [article, breadcrumb]}
     return json.dumps(schema, ensure_ascii=False).replace("</", "<\\/")
+
+
+def _breadcrumb_schema(title: str) -> dict:
+    """導覽麵包屑:首頁 › 財經知識庫 › {文章};末項(當前頁)省略 item 為最佳實踐。
+    URL 一律用最終回 200 的乾淨 URL(與 canonical 一致,絕不指向 3xx)。"""
+    return {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "首頁",
+             "item": "https://marketdaily.ai/"},
+            {"@type": "ListItem", "position": 2, "name": "財經知識庫",
+             "item": "https://marketdaily.ai/blog/"},
+            {"@type": "ListItem", "position": 3, "name": title},
+        ],
+    }
 
 
 def write_article(art: dict, dry: bool) -> Path:
     slug = art["slug"]
     fname = BLOG_DIR / f"{slug}.html"
     if art["market"] == "term":
-        desc = f"{art['name']} — MarketDaily 投資知識整理。"
+        template_desc = f"{art['name']} — MarketDaily 投資知識整理。"
     elif art["market"] == "macro":
-        desc = f"{art['name']} — MarketDaily 總體經濟指標整理。"
+        template_desc = f"{art['name']} — MarketDaily 總體經濟指標整理。"
     elif art["market"] == "guide":
-        desc = f"{art['name']} — MarketDaily 新手投資教學整理。"
+        template_desc = f"{art['name']} — MarketDaily 新手投資教學整理。"
     else:
-        desc = f"{art['name']} ({art['ticker']}) {art['topic']} — MarketDaily 整理。"
+        template_desc = f"{art['name']} ({art['ticker']}) {art['topic']} — MarketDaily 整理。"
+    # 從文章自身第一段 prose 擴寫到 SERP 甜蜜區(零捏造);抽不到就回退 template stub。
+    desc = _prose_meta_desc(art["body_html"], fallback=template_desc, title=art["title"])
     related = related_html(art["ticker"], slug, scan_articles())
     date_modified = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d")
     date_published = _existing_date_published(fname) or _git_first_commit_date(fname) or date_modified
     market_label = MARKET_LABELS.get(art["market"], "台股")
+    cat = _blog_classify(slug)
+    crumb_label = f"個股分析 · {market_label}" if cat == "stock" else BLOG_CATS[cat][0]
     og_image = DEFAULT_OG_IMAGE if dry else og_image_for(slug, art["ticker"], market_label, art["title"])
     schema_json = _article_schema_json(art["title"], desc, slug, date_published, date_modified, og_image)
     html = PAGE_TEMPLATE.format(
@@ -1380,7 +1726,8 @@ def write_article(art: dict, dry: bool) -> Path:
         desc=desc,
         slug=slug,
         slug_short=slug[:32],
-        market_label=market_label,
+        crumb_label=crumb_label,
+        cat=cat,
         body=art["body_html"],
         related=related,
         updated=date_modified,
@@ -1497,7 +1844,7 @@ def regenerate_blog_index(dry: bool):
 <meta name="description" content="MarketDaily 財經知識庫:個股拆解、法說會前瞻、除權息、供應鏈全景,到總經指標與新手入門,涵蓋美股、台股。">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
 <link rel="alternate" type="application/rss+xml" title="MarketDaily 財經知識庫" href="/feed.xml">
-<link rel="canonical" href="https://marketdaily.ai/blog/index.html">
+<link rel="canonical" href="https://marketdaily.ai/blog/">
 <style>
 :root{ color-scheme:dark; --bg:#060611; --ink:#e8ebf5; --muted:#9aa3bd;
   --indigo:#818cf8; --indigo-l:#a5b4fc; --line:rgba(255,255,255,.08); --line-h:rgba(129,140,248,.42); }
@@ -1764,36 +2111,41 @@ def main():
     for term, keyword in term_seeds:
         print(f"  • 詞彙教學 — {term}")
         try:
-            art = gen_term_article(term, keyword)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_term_article(term, keyword), f"term:{term}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, market, chain_key in chain_seeds:
         print(f"  • {market.upper()} {code} {name} — {CHAIN_TOPIC}")
         try:
-            art = gen_chain_article(code, name, market, chain_key)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_chain_article(code, name, market, chain_key), f"chain:{code}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, market, rows in dividend_seeds:
         print(f"  • {market.upper()} {code} {name} — {DIVIDEND_TOPIC}")
         try:
-            art = gen_dividend_article(code, name, market, rows)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_dividend_article(code, name, market, rows), f"dividend:{code}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for indicator, keyword in macro_seeds:
         print(f"  • 總經教學 — {indicator}")
         try:
-            art = gen_macro_article(indicator, keyword)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_macro_article(indicator, keyword), f"macro:{indicator}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for topic, keyword in beginner_seeds:
         print(f"  • 新手教學 — {topic}")
         try:
-            art = gen_beginner_article(topic, keyword)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_beginner_article(topic, keyword), f"beginner:{topic}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, market, conf_entry, materials in event_seeds:
@@ -1801,23 +2153,28 @@ def main():
         kind = "重點解讀" if (materials and is_past) else "前哨" if materials else ("回顧" if is_past else "前瞻")
         print(f"  • {market.upper()} {code} {name} — 法說會{kind}")
         try:
-            art = gen_event_article(code, name, market, conf_entry, materials)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_event_article(code, name, market, conf_entry, materials),
+                             f"event:{code}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, market, date, entries in confluence_seeds:
         degree = len(set(e.get("source") for e in entries))
         print(f"  • {market.upper()} {code} {name} — {CONFLUENCE_TOPIC}(degree={degree})")
         try:
-            art = gen_confluence_article(code, name, market, date, entries)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_confluence_article(code, name, market, date, entries),
+                             f"confluence:{code}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     for code, name, topic, market in stock_seeds:
         print(f"  • {market.upper()} {code} {name} — {topic}")
         try:
-            art = gen_article(code, name, topic, market)
-            write_article(art, args.dry)
+            art = slop_gated(lambda: gen_article(code, name, topic, market), f"stock:{code}")
+            if art:
+                write_article(art, args.dry)
         except Exception as e:
             print(f"    ✗ failed: {e}")
     print("③ 校正相關文章雙向連結...")
@@ -1827,6 +2184,14 @@ def main():
 
     print("④ 補社群卡 og:image...")
     backfill_og_cards(args.dry)
+    print("④ 校正 canonical/og:url→乾淨 URL(免 .html 308 redirect,冪等)...")
+    backfill_canonical(args.dry)
+    print("④ 回填 BreadcrumbList(bare Article→@graph,冪等)...")
+    backfill_breadcrumb(args.dry)
+    print("④ 校正麵包屑 .crumb 分類文字(term/macro/guide/event/exdiv/supply,冪等)...")
+    backfill_crumb(args.dry)
+    print("④ 擴寫 meta description(從文章自身 prose,零捏造,冪等)...")
+    backfill_meta_desc(args.dry)
     print("⑤ 更新 blog index...")
     regenerate_blog_index(args.dry)
     print("⑥ 更新 RSS feed(docs/feed.xml)...")

@@ -48,7 +48,7 @@ function curPayload() {
   const email = localStorage.getItem("md-email") || "";
   // 帶 password 給 /save-preferences (worker 需驗證,否則任何人能改別人偏好)
   const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
-  return JSON.stringify({ email, password, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym), digest_depth: selectedDepth, positions: positionsMap });
+  return JSON.stringify({ email, password, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym), digest_depth: selectedDepth, positions: positionsMap, capital: userCapital });
 }
 
 // 日報深度卡(全體用戶可選;合規結構 COMPLIANCE_STRUCTURE.md:個股分析內容不得依付費分級)
@@ -56,6 +56,9 @@ function setupDepthCard() {
   const card = document.getElementById("digest-depth-card");
   if (!card) return;
   card.style.display = "block";
+  // 總本金卡與深度卡同一登入時點顯示(2026-07-22 資金管理體檢)
+  const capCard = document.getElementById("capital-card");
+  if (capCard) capCard.style.display = "block";
   const lock = document.getElementById("depth-lock");
   if (lock) lock.style.display = "none";
   document.getElementById("depth-opts").classList.remove("locked");
@@ -205,3 +208,24 @@ async function init() {
   if (email) showDashboard(email, plan);
 }
 init();
+
+// ── 加到主畫面(PWA)/長開分頁的舊頁救援:回到前景時自動補同步 ──
+// standalone PWA 重開不會重新載入頁面,舊頁面實例可活好幾天:
+// ①別台裝置加的股看不到 ②網站新版本吃不到。visibilitychange 是唯一可靠的補救點。
+const _pageLoadTs = Date.now();
+let _lastHiddenTs = 0;
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") { _lastHiddenTs = Date.now(); return; }
+  const email = localStorage.getItem("md-email");
+  if (!email || !_lastHiddenTs) return;
+  const awayMs = Date.now() - _lastHiddenTs;
+  // 頁面實例超過 24h 且離開超過 1 分鐘 → 直接重載吃新部署(不打斷使用中的人)
+  if (Date.now() - _pageLoadTs > 86400e3 && awayMs > 60e3) { location.reload(); return; }
+  // 離開超過 30s → 重拉伺服器偏好(跨裝置加的股)+重建限時動態+大盤
+  if (awayMs > 30e3) {
+    loadPreferences(email).then(() => { loadStories(email); });
+    loadMarketOverview();
+  } else if (typeof refreshQuotes === "function") {
+    refreshQuotes();
+  }
+});

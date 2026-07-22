@@ -11,12 +11,16 @@ workers_dev = true
 pattern = "watchdog.marketdaily.ai"
 custom_domain = true
 
-# 2026-07-20 v2 重啟:改為「查公版日報存檔新鮮度」的外部 dead-man 監看,不依賴 GitHub/winrig。
-# 背景:6/30 因 v1 綁死已 flag 的 GitHub Actions 而清空 crons,監看改靠 winrig heartbeat.sh;
-# 7/19 winrig 整台離線 → heartbeat 與日報一起死,7/20 早報沒寄且零告警。v2 專補此盲區。
-# TW 07:30/08:00 早報、20:25/21:00 晚報(UTC 下列);只告警不代跑(runner 在 winrig)。
+# 歷史:v1 綁死 GitHub Actions,6/11 帳號被 flag 後全瞎,6/30 清空 crons 止血
+# (詳見 memory project_github_account_flagged;GH 程式碼已隨 v2 移除,解封要重做請翻 git)。
+# 2026-07-20 v3 重啟(winrig 07-18 斷電 41h、日報 miss 零通知事故),雙層 dead-man:
+# ①心跳 */20:驗 KV watchdog:hb:winrig(winrig heartbeat.sh 每 10 分 POST /hb),
+#   >45 分未更新 → 推播 admin「winrig 離線」——主機一死 45 分內就知道。
+# ②存檔新鮮度(Mac 晨間 session 的 v2,已合併):TW 07:30/08:00 查早報、20:25/21:00
+#   查晚報公版存檔(marketdaily.ai/output/digest_*.html),缺 → 🟠 預警/🔴 確認。
+# 皆不依賴 GitHub、不依賴 winrig。GH Actions 班次檢查程式碼已隨 v2 移除(帳號仍 flag 中)。
 [triggers]
-crons = ["30 23 * * *", "0 0 * * *", "25 12 * * *", "0 13 * * *"]
+crons = ["*/20 * * * *", "30 23 * * *", "0 0 * * *", "25 12 * * *", "0 13 * * *"]
 
 # 與主 worker 共用 KV,只用 watchdog: 前綴(重派防重 guard)
 [[kv_namespaces]]
@@ -30,7 +34,8 @@ service = "marketdaily-alert-worker"
 
 # secrets(wrangler secret put):
 #   ALERT_TOKEN  — alert-worker /internal/admin-line-push 的 ADMIN_PUSH_TOKEN 同值
-#   GITHUB_TOKEN — v2 起不再使用(留著,日報若搬回 Actions 才需要)
+#                  (= winrig .env MARKETDAILY_ALERT_TOKEN,/hb 心跳也用它驗;旋轉要四端一起)
+#   GITHUB_TOKEN — v1 遺留(v3 不再用),留著無害,GH 解封重做班次檢查時可複用
 
 # 2026-06-12:查「cron 註冊了但 6/12 整天沒任何執行痕跡」開的持久 log
 [observability]

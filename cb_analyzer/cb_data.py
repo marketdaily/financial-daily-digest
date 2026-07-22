@@ -10,7 +10,26 @@ import urllib.request
 import cb_quote
 
 FINMIND = "https://api.finmindtrade.com/api/v4/data"
-FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "").strip()
+
+
+def _finmind_token():
+    """env 優先;未設則退回 repo 根 .env——呼叫端(cb_server/cb-desk/輪詢腳本)沒有共通的
+    .env 載入機制,token 不自己撈的話等於只有部分入口有帳號額度(其餘繼續匿名被 IP ban)。"""
+    t = os.environ.get("FINMIND_TOKEN", "").strip()
+    if t:
+        return t
+    env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+    try:
+        with open(env_path, encoding="utf-8") as f:
+            for line in f:
+                if line.startswith("FINMIND_TOKEN="):
+                    return line.split("=", 1)[1].strip()
+    except OSError:
+        pass
+    return ""
+
+
+FINMIND_TOKEN = _finmind_token()
 CACHE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".price_cache.json")
 
 

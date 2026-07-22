@@ -18,7 +18,7 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch, us_analyst, us_insider, us_8k_events, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals, signal_ledger, us_13f_ledger, tw_financials, tw_leadflow, tw_analyst_ratings, tw_broker_calls
+from intel import tw_institutional, mops_watch, us_analyst, us_insider, us_8k_events, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals, signal_ledger, us_13f_ledger, tw_financials, tw_leadflow, tw_analyst_ratings, tw_broker_calls, tw_rank_scanner
 # confluence 刻意【不】在此 import——改在 confluence_section 內 lazy import,
 # 讓 confluence.py 萬一 import-time 壞掉也只降級成 fallback 段,不會整個 patrol 崩掉害 latest.json 沒產出餓死日報(驗證者 LOW-1)。
 
@@ -52,8 +52,9 @@ def _cjk_numeral(n):
 def _stock_display_name(it):
     """CB 資料庫的 `name` 是【可轉債名】(創見二/宏致四/聚賢研發一創=公司+期別[+板別]),
     但 stock-level 訊號要顯示【股票名】。優先用 bond_code 減 stock_code 得精確期別號,只剝除
-    (KY/創 尾標前的)與該期別吻合的中文數字;bond_code 缺損時退回剝單一結尾期別字(本 db 每個
-    name 恆為債名=公司+期別,此保底安全)。期別號不在預期位置→原樣返回(fail-safe,不 over-strip)。"""
+    (KY/創 尾標前的)與該期別吻合的中文數字;bond_code 缺損【或與名期別不符】時退回剝單一結尾
+    期別字(本 db 每個 name 恆為債名=公司+期別,此保底安全)。尾字非期別 numeral→原樣返回
+    (fail-safe,不 over-strip,如「台積電」numeral="二" 但尾"電"不動)。"""
     name = str(it.get("name") or "").strip()
     if not name:
         return name
@@ -68,8 +69,11 @@ def _stock_display_name(it):
     numeral = _cjk_numeral(int(issue)) if issue.isdigit() and issue else ""
     if numeral and len(name) > len(numeral) and name.endswith(numeral):
         name = name[:-len(numeral)]
-    elif not numeral and len(name) > 1 and name[-1] in _ISSUE_CHARS:
-        name = name[:-1]  # bond_code 缺損保底
+    elif len(name) > 1 and name[-1] in _ISSUE_CHARS:
+        # 保底剝單一結尾期別字:①bond_code 缺損(issue=="")②bond_code 與名期別不符
+        # (如 邑昇二 stock=5291/bond=52911→numeral="一" 但名尾為"二",精確路徑落空)。
+        # 本 db 每個 name 恆為債名=公司+期別,尾字為期別 numeral 即可安全剝除。
+        name = name[:-1]
     return name + tail
 
 
@@ -188,6 +192,11 @@ def run():
     except Exception as e:
         print(f"tw_broker_calls 掃描失敗(不擋巡邏):{e}")
         broker_calls = {}
+    try:
+        rank_data = tw_rank_scanner.active_signals(codes)  # 唯讀讀ledger(quote_bridge/rank_scan.py 13:50 cron快照),不觸網
+    except Exception as e:
+        print(f"tw_rank_scanner 判讀失敗(不擋巡邏):{e}")
+        rank_data = []
 
     snap = _cb_snapshot()
     snap_ok = snap.returncode == 0 and "snapshot ok" in (snap.stdout or "")
@@ -228,6 +237,8 @@ def run():
     for s in us_8k_sigs:
         line = us_8k_events.format_line(s)
         _emit(s["symbol"], s["level"], line, "us_8k")
+    for s in rank_data:
+        _emit(s["code"], s["level"], s["signal"], "tw_rank")
     for c in codes:
         m = marg.get(c)
         if not m or m["level"] in ("plain", "unknown"):

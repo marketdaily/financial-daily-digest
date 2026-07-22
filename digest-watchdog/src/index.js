@@ -1,12 +1,16 @@
-// MarketDaily 日報寄出守望犬(digest-watchdog)v2 — 外部 dead-man 監看
+// MarketDaily 日報寄出守望犬(digest-watchdog)v3 — 外部 dead-man 監看(雙層)
 //
-// 2026-07-20 重寫:v1 綁死 GitHub Actions(帳號被 flag 後全瞎,6/30 停用 crons)。
-// 期間監看由 winrig heartbeat.sh 負責,但 7/19 winrig 整台離線 → 監看與日報一起死,
-// 7/20 早報沒寄、零告警(本次事故)。v2 = wrangler.toml 註解預留的修法:
-// 只查「公版日報存檔在 marketdaily.ai 上的新鮮度」,不依賴 GitHub、不依賴 winrig,
-// 專補 winrig 整台掛掉的盲區。與 winrig heartbeat.sh 並存(那邊看 log 細節,這邊看死人開關)。
+// 2026-07-20 v2 重寫(Mac 晨間 session):v1 綁死 GitHub Actions(帳號被 flag 後全瞎,
+// 6/30 停用 crons)。期間監看由 winrig heartbeat.sh 負責,但 7/18 晚 winrig 整台斷電
+// → 監看與日報一起死,7/20 早報沒寄、41 小時零告警(本次事故)。
+// v2 = 查「公版日報存檔在 marketdaily.ai 上的新鮮度」,不依賴 GitHub、不依賴 winrig。
+// v3 = 同日主視窗 session 合併:再加 winrig 反向心跳層(heartbeat.sh 每 10 分 POST /hb,
+// 這裡每 20 分驗新鮮度,>45 分 → 推播),主機一死 45 分內就知道,不用等到下一班日報。
 //
-// 檢查點(TW 時間):早報 07:30 + 08:00;晚報 20:25 + 21:00。
+// 兩層分工:心跳=「主機還活著嗎」(快,45min);存檔=「日報真的出來了嗎」(準,班次時刻)。
+// 與 winrig heartbeat.sh 並存(那邊看 log 細節,這邊看死人開關)。
+//
+// 檢查點(TW 時間):早報 07:30 + 08:00;晚報 20:25 + 21:00;心跳 */20。
 // 存檔缺席 → web push admin(KV 防重:每班每檢最多推一次);第二檢仍缺 → 🔴 判定需人工看主機。
 // 無法自動補救(runner 在 winrig,Actions 已死)——這隻只負責「絕不靜默」。
 
@@ -17,6 +21,9 @@ const CRON_TW_1 = "30 23 * * *";
 const CRON_TW_2 = "0 0 * * *";
 const CRON_US_1 = "25 12 * * *";
 const CRON_US_2 = "0 13 * * *";
+const CRON_HB = "*/20 * * * *";
+const HB_STALE_MIN = 45;
+const HB_REALERT_MS = 6 * 3600 * 1000; // 持續離線時每 6h 再提醒一次
 
 function twNow(now = new Date()) { return new Date(now.getTime() + 8 * 3600 * 1000); }
 function twDay(now = new Date()) { return twNow(now).getUTCDay(); }
@@ -62,6 +69,46 @@ async function push(env, message) {
 async function kvGet(env, k) { return env.USER_PREFS.get(`watchdog:${k}`); }
 async function kvSet(env, k, v) { return env.USER_PREFS.put(`watchdog:${k}`, v, { expirationTtl: 172800 }); }
 
+// timing-safe token 比對(feedback_shared_secret_grep 鐵則)
+function tsEqual(a, b) {
+  const ea = new TextEncoder().encode(String(a)), eb = new TextEncoder().encode(String(b));
+  if (ea.length !== eb.length) return false;
+  let d = 0;
+  for (let i = 0; i < ea.length; i++) d |= ea[i] ^ eb[i];
+  return d === 0;
+}
+
+function authed(request, env) {
+  const got = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  return !!env.ALERT_TOKEN && tsEqual(got, env.ALERT_TOKEN);
+}
+
+// ── 層1:winrig 反向心跳(2026-07-20 斷電 41h 事故) ──
+async function checkHeartbeat(env, now = Date.now()) {
+  const raw = await env.USER_PREFS.get("watchdog:hb:winrig");
+  const last = Number(raw || 0);
+  const ageMin = raw ? Math.round((now - last) / 60000) : null;
+  const stale = !raw || ageMin > HB_STALE_MIN;
+  const stRaw = await env.USER_PREFS.get("watchdog:hb_state");
+  let st = { stale: false, lastAlert: 0 };
+  try { if (stRaw) st = JSON.parse(stRaw); } catch (e) { /* 壞狀態當 fresh 起算 */ }
+  const putState = (s) => env.USER_PREFS.put("watchdog:hb_state", JSON.stringify(s));
+  const twStr = raw ? new Date(last + 8 * 3600 * 1000).toISOString().slice(5, 16).replace("T", " ") : "從未收到";
+
+  if (stale && (!st.stale || now - st.lastAlert > HB_REALERT_MS)) {
+    await push(env, `🔴 winrig 離線:心跳${raw ? `已 ${ageMin} 分鐘未更新(最後 ${twStr} TW)` : "從未收到"}。日報與所有 cron 全部停擺——請確認主機電源/網路。恢復後會自動回報。`);
+    await putState({ stale: true, lastAlert: now });
+    return { stale, ageMin, alerted: true };
+  }
+  if (!stale && st.stale) {
+    await push(env, `🟢 winrig 心跳恢復(最後心跳 ${twStr} TW),cron 已續跑。留意離線期間 missed 的班次。`);
+    await putState({ stale: false, lastAlert: 0 });
+    return { stale, ageMin, recovered: true };
+  }
+  return { stale, ageMin };
+}
+
+// ── 層2:公版存檔新鮮度(v2 原封語意) ──
 async function checkShift(env, shift, phase, now = new Date()) {
   if (shiftSkipped(shift, now)) { console.log(`skip ${shift}(weekend)`); return; }
   const date = twDate(now);
@@ -103,21 +150,35 @@ export default {
       [CRON_TW_2]: () => checkShift(env, "tw", 2),
       [CRON_US_1]: () => checkShift(env, "us", 1),
       [CRON_US_2]: () => checkShift(env, "us", 2),
+      [CRON_HB]: () => checkHeartbeat(env),
     }[event.cron];
     if (job) ctx.waitUntil(job());
   },
 
   async fetch(request, env) {
     const url = new URL(request.url);
+
+    // winrig 反向心跳:heartbeat.sh 每 10 分打一次
+    if (url.pathname === "/hb" && request.method === "POST") {
+      if (!authed(request, env)) return new Response("forbidden", { status: 403 });
+      await env.USER_PREFS.put("watchdog:hb:winrig", String(Date.now()), { expirationTtl: 604800 });
+      return new Response(JSON.stringify({ ok: true }), { headers: { "content-type": "application/json" } });
+    }
+    // 手動觸發一次心跳檢查(部署驗證/演練用,與 cron 同一條邏輯)
+    if (url.pathname === "/check-hb" && request.method === "POST") {
+      if (!authed(request, env)) return new Response("forbidden", { status: 403 });
+      const r = await checkHeartbeat(env);
+      return new Response(JSON.stringify(r), { headers: { "content-type": "application/json" } });
+    }
+
     if (url.pathname === "/test-line" && request.method === "POST") {
       // 驗證 worker→alert-worker push 通道(需 ALERT_TOKEN bearer;只推固定測試訊息給 admin)
-      const got = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
-      if (!env.ALERT_TOKEN || got !== env.ALERT_TOKEN) return new Response("forbidden", { status: 403 });
+      if (!authed(request, env)) return new Response("forbidden", { status: 403 });
       try {
         const r = await env.ALERT.fetch(`${ALERT_WORKER}/internal/admin-line-push`, {
           method: "POST",
           headers: { "content-type": "application/json", "authorization": "Bearer " + env.ALERT_TOKEN },
-          body: JSON.stringify({ message: "🐕 [watchdog] push 通道測試 OK — v2 dead-man 監看已上線(早報 07:30/08:00、晚報 20:25/21:00 查公版存檔新鮮度)" }),
+          body: JSON.stringify({ message: "🐕 [watchdog] push 通道測試 OK — v3 dead-man 監看已上線(心跳 */20 + 早報 07:30/08:00、晚報 20:25/21:00 查公版存檔)" }),
         });
         return new Response(JSON.stringify({ ok: r.ok, status: r.status, body: await r.text() }), { headers: { "content-type": "application/json" } });
       } catch (e) {
@@ -125,7 +186,7 @@ export default {
       }
     }
     if (url.pathname === "/status") {
-      // 唯讀:回當天兩班存檔新鮮度,診斷用
+      // 唯讀:回當天兩班存檔新鮮度 + winrig 心跳年齡,診斷用
       const date = twDate();
       const out = { date };
       for (const shift of ["tw", "us"]) {
@@ -135,11 +196,15 @@ export default {
             : { archived: await archiveExists(shift, date), url: archiveUrl(shift, date) };
         } catch (e) { out[shift] = { error: e.message }; }
       }
+      const raw = await env.USER_PREFS.get("watchdog:hb:winrig");
+      const ageMin = raw ? Math.round((Date.now() - Number(raw)) / 60000) : null;
+      const stRaw = await env.USER_PREFS.get("watchdog:hb_state");
+      out.hb = { ageMin, stale: !raw || ageMin > HB_STALE_MIN, state: stRaw ? JSON.parse(stRaw) : null };
       return new Response(JSON.stringify(out, null, 2), { headers: { "content-type": "application/json" } });
     }
     return new Response(JSON.stringify({
-      ok: true, service: "marketdaily-digest-watchdog", mode: "dead-man archive freshness v2",
-      checks: "TW 07:30/08:00 早報、20:25/21:00 晚報(查 marketdaily.ai 公版存檔)",
+      ok: true, service: "marketdaily-digest-watchdog", mode: "dead-man v3(心跳+存檔新鮮度)",
+      checks: "winrig 心跳 */20(>45分推播);TW 07:30/08:00 早報、20:25/21:00 晚報(查 marketdaily.ai 公版存檔)",
     }), { headers: { "content-type": "application/json" } });
   },
 };

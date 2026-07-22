@@ -102,12 +102,35 @@ def probe_digest_archive():
 
 # ── 4. 資產健康 ────────────────────────────────────────────────────
 # 出處 2026-06-10:og 全缺(分享無預覽)、hero 9MB(手機載不動)。
+def _parse_hero_src():
+    """從實際首頁解析 .hero-video <source> 的 data-src。
+    跟隨『換片一律用新檔名』慣例,不寫死檔名——舊版寫死 hero-bg.mp4(早停用的方形舊片),
+    首頁改用 hero-bullbear.mp4 後守衛靜默脫鉤、對真正的 hero 全盲(2026-07-22 發現)。"""
+    try:
+        html = subprocess.run(["curl", "-sL", "-A", UA, "--max-time", "20", f"{BASE}/"],
+                              capture_output=True, text=True, timeout=25).stdout
+    except Exception:
+        return None
+    m = re.search(r'class="hero-video"[^>]*>\s*<source[^>]*data-src="([^"]+)"', html)
+    if not m:
+        m = re.search(r'hero-video.*?data-src="([^"]+\.mp4[^"]*)"', html, re.S)
+    return m.group(1) if m else None
+
+
 def probe_assets():
     code, size = curl_head(f"{BASE}/assets/og.png")
     check("og_image", code == 200 and size > 50_000, f"og.png http={code} size={size}")
-    code, size = curl_head(f"{BASE}/hero-bg.mp4")
-    check("hero_video", code == 200 and 0 < size < 2_500_000,
-          f"hero-bg.mp4 http={code} size={size}(>2.5MB=壓縮回歸,404=遺失)")
+    # 2026-06 起 hero 由 index.html loader 依 min-width/reduced-motion/save-data 動態載入:
+    # 手機與省流用戶完全不下載影片(只留 poster)→ 原「keep <2.5MB 免手機載不動」意圖已由 loader 承接。
+    # 桌機刻意用 ~7MB 高品質片(Delvin 15 版煉出,壓縮無免費午餐)。守:實際引用檔存在+非離譜暴肥。
+    hero_src = _parse_hero_src()
+    if not hero_src:
+        check("hero_video", False, "index.html 找不到 .hero-video 的 data-src(loader 結構變了?先查首頁 hero 區塊)")
+    else:
+        hero_url = hero_src if hero_src.startswith("http") else f"{BASE}/{hero_src.lstrip('/')}"
+        code, size = curl_head(hero_url)
+        check("hero_video", code == 200 and 0 < size < 12_000_000,
+              f"{hero_src} http={code} size={size}(404/空=遺失,>12MB=暴肥未壓縮;手機/save-data 由 loader 跳過)")
     d = subprocess.run(["curl", "-s", "-A", UA, f"{BASE}/sitemap.xml"], capture_output=True, text=True).stdout
     locs = d.count("<loc>")
     check("sitemap", locs >= 30, f"sitemap {locs} URLs(<30=生成器壞掉)", severity="med")
@@ -191,6 +214,27 @@ def probe_blog_hygiene():
 # 出處 2026-07-05:35 篇文章上線至今 0 篇有 schema.org Article markup,
 # 搜尋引擎 rich snippet/知識圖譜零命中,是純技術債(非內容問題)。補上後
 # 此檢查防未來新文章類型漏接 schema(seo_articles.py::write_article 統一注入)。
+def _find_article_node(obj):
+    """把 blog JSON-LD 攤平成單一 Article 視圖。支援 2026-07-15 起的
+    `@graph[Article,BreadcrumbList]` 版與舊扁平物件——@graph 版 headline/date 收在
+    Article 節點內、@context 只在頂層宣告,故回填進 Article 視圖讓 required 檢查一致。
+    找不到 Article 節點回 None(=壞 schema)。同款扁平化亦在 seo_health H5 做過
+    (lesson jsonld_graph_migration_breaks_consumers:改 emit 成 @graph 要 grep 全部消費者)。"""
+    if not isinstance(obj, dict):
+        return None
+    graph = obj.get("@graph")
+    if isinstance(graph, list):
+        for node in graph:
+            t = node.get("@type") if isinstance(node, dict) else None
+            if t == "Article" or (isinstance(t, list) and "Article" in t):
+                merged = dict(node)
+                if "@context" not in merged and "@context" in obj:
+                    merged["@context"] = obj["@context"]
+                return merged
+        return None
+    return obj  # 舊扁平版:整個物件即 Article
+
+
 def probe_blog_schema():
     blog_dir = Path(__file__).resolve().parents[1] / "docs" / "blog"
     files = [f for f in blog_dir.glob("*.html") if f.name != "index.html"]
@@ -204,13 +248,54 @@ def probe_blog_schema():
             continue
         try:
             obj = json.loads(m.group(1))
-            if any(k not in obj for k in required):
+            article = _find_article_node(obj)
+            if article is None or any(k not in article for k in required):
                 invalid.append(f.name)
         except Exception:
             invalid.append(f.name)
     ok = not missing and not invalid
     msg = f"{len(files)} 篇皆有效" if ok else f"缺 schema:{missing};壞 schema:{invalid}"
     check("blog_schema_present", ok, msg)
+
+
+# ── 9. 頂層行銷頁 + 日報 archive 長尾頁 canonical/JSON-LD ──────────────
+# 出處 2026-07-16:pricing/track-record/guide/about/contact/vs/vs-chatgpt/testimonials
+# 與 docs/output/digest_*.html(sitemap 長尾頁)過去 canonical=0、JSON-LD=0,唯讀稽核
+# 發現後補上(scripts/site_structured_data.py)。此檢查防未來新增/改版頁面漏接。
+# 頁面清單單一事實來源=site_structured_data.CORE_PAGES,不在此另存一份易漂移的清單。
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from site_structured_data import CORE_PAGES as _CORE_SEO_PAGE_PATHS  # noqa: E402
+
+
+def probe_core_pages_schema():
+    docs = Path(__file__).resolve().parents[1] / "docs"
+    fnames = list(_CORE_SEO_PAGE_PATHS.values())
+    missing = []
+    for name in fnames:
+        html = (docs / name).read_text(encoding="utf-8")
+        if not ('rel="canonical"' in html and "application/ld+json" in html):
+            missing.append(name)
+    check("core_pages_schema", not missing,
+          f"{len(fnames)} 頁皆有 canonical+JSON-LD" if not missing else f"缺:{missing}")
+
+
+def probe_digest_archive_schema():
+    """只驗最近幾篇(archive 會一直長大,不逐篇全歷史驗)——抓「今天/最近沒接上每日
+    wiring」才有價值,舊檔已一次性 backfill、新檔靠獨立 cron 補,見
+    ~/.marketdaily-fallback/digest_archive_seo_runner.sh。"""
+    out_dir = Path(__file__).resolve().parents[1] / "docs" / "output"
+    files = sorted(out_dir.glob("digest_*.html"))
+    files = [f for f in files if "_us" not in f.name and "_personal_" not in f.name]
+    recent = files[-5:]
+    missing = []
+    for f in recent:
+        html = f.read_text(encoding="utf-8")
+        if not ('rel="canonical"' in html and "application/ld+json" in html
+                and 'meta name="description"' in html):
+            missing.append(f.name)
+    check("digest_archive_schema", not missing,
+          f"最近 {len(recent)} 篇皆有 canonical/meta-desc/JSON-LD" if not missing else f"缺:{missing}",
+          severity="med")
 
 
 def main():
@@ -222,6 +307,8 @@ def main():
     probe_fabricated_content()
     probe_blog_hygiene()
     probe_blog_schema()
+    probe_core_pages_schema()
+    probe_digest_archive_schema()
     fails = [r for r in RESULTS if not r["ok"]]
     if "--json" in sys.argv:
         print(json.dumps(RESULTS, ensure_ascii=False, indent=1))

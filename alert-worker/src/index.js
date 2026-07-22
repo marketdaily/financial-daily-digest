@@ -583,9 +583,19 @@ function alertMessage(news, ticker, severity, reason, meta = {}) {
 
 // 主動告訴 admin:推播出狀況。通道 = 自有 web push 到所有 admin 裝置(LINE 已退役,不再備援)。
 // 節流:同小時最多 1 則,避免炸訊息。
-async function alertAdmin(env, summary) {
-  const hourKey = `admin_alert:${new Date().toISOString().slice(0, 13)}`;
+// channel:預設共用 admin_alert:<hour> 節流閘(既有呼叫端行為不變)。
+// 傳 channel 可讓某個子系統(如 political)有自己獨立的節流閘,不會被別條管線
+// (如 news pipeline,*/2 觸發頻率高很多)搶先卡位同一小時的額度而被靜默吞掉。
+async function alertAdmin(env, summary, { channel = "" } = {}) {
+  const hourKey = `admin_alert:${channel ? channel + ":" : ""}${new Date().toISOString().slice(0, 13)}`;
   if (await env.USER_PREFS.get(hourKey)) return;
+  // 一模一樣的告警內容 24h 只推一次:永久性故障(如 xAI 無 credits 的 403)在每小時節流下
+  // 仍是 24 則/天轟炸;轟炸讓用戶關通知,真告警就再也到不了(2026-07-17 政壇 403 事故修)。
+  let sig = 5381;
+  const sigSrc = `${channel}|${summary}`;
+  for (let i = 0; i < sigSrc.length; i++) sig = ((sig << 5) + sig + sigSrc.charCodeAt(i)) >>> 0;
+  const sigKey = `admin_alert_sig:${sig.toString(36)}`;
+  if (await env.USER_PREFS.get(sigKey)) return;
   let delivered = false;
   if (await webPushAdmin(env, JSON.stringify({
     title: "🚨 MarketDaily Alert",
@@ -594,6 +604,7 @@ async function alertAdmin(env, summary) {
   }))) delivered = true;
   if (delivered) {
     await env.USER_PREFS.put(hourKey, "1", { expirationTtl: 3700 });
+    await env.USER_PREFS.put(sigKey, "1", { expirationTtl: 24 * 3600 });
   } else {
     await env.USER_PREFS.put(`admin_alert_failed:${Date.now()}`,
       JSON.stringify({ summary, reason: "all channels failed" }),
@@ -880,7 +891,13 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
   if (sigList === null) {
     const res = await fetchPoliticalSignals(env, 2);
     if (res.skipped) { report.skipped = res.skipped; return done(); }
-    if (res.error) { report.errors.push(res.error); return done(); }
+    if (res.error) {
+      report.errors.push(res.error);
+      // 這條管線之前只把錯誤寫進 alert:pol_laststatus 沒人看,靜默壞掉不會被發現
+      // (news 管線早就有等價的 alertAdmin,political 管線是漏網的那條)。
+      if (push) await alertAdmin(env, `政壇訊號抓取失敗(*/15 cron)\n${res.error}`, { channel: "political" });
+      return done();
+    }
     sigList = res.signals;
   }
   const res = { signals: sigList };
@@ -935,6 +952,24 @@ async function runPoliticalPipeline(env, { push, signals = null, source = "grok"
     await env.USER_PREFS.put(seenKey, "1", { expirationTtl: SEEN_TTL });
     await env.USER_PREFS.put(capKey, String(sent + 1), { expirationTtl: COUNT_TTL });
   }
+  // 推播炸了就告訴 admin(對齊 runPipeline 既有邏輯——political 管線之前完全沒有這段,
+  // VAPID/push 若壞掉,這條頻道會一直沒人知道訂閱者早就收不到)。
+  if (push) {
+    const failed = [];
+    for (const f of report.fired) {
+      for (const r of f.recipients || []) {
+        const s = r.status || "";
+        if (s.startsWith("fail:")) failed.push({ email: r.email, status: s, headline: f.headline });
+      }
+    }
+    if (failed.length) {
+      const lines = failed.slice(0, 3).map((f) =>
+        `• ${f.email} ${f.status}\n  ${(f.headline || "").slice(0, 50)}`);
+      await alertAdmin(env,
+        `政壇推播失敗 ${failed.length} 筆(/${report.fired.length} 達標事件)\n${lines.join("\n")}` +
+        (failed.length > 3 ? `\n…還有 ${failed.length - 3} 筆` : ""), { channel: "political" });
+    }
+  }
   return done();
 }
 
@@ -980,6 +1015,7 @@ export default {
       }
       const lastRaw = await env.USER_PREFS.get("alert:laststatus");
       const canaryRaw = await env.USER_PREFS.get("alert:lastcanary");
+      const lastPolRaw = await env.USER_PREFS.get("alert:pol_laststatus");
       return json({
         ok: true,
         ts: new Date().toISOString(),
@@ -992,14 +1028,17 @@ export default {
           LINE_CHANNEL_SECRET: !!env.LINE_CHANNEL_SECRET,
           ADMIN_LINE_USER_ID: !!env.ADMIN_LINE_USER_ID,
           INTERNAL_TOKEN: !!env.INTERNAL_TOKEN,
+          XAI_API_KEY: !!env.XAI_API_KEY,
         },
         config: {
           severityThreshold: SEVERITY_THRESHOLD, speculativeThreshold: SPECULATIVE_THRESHOLD,
           dailyCap: DAILY_CAP, maxAgeHours: MAX_AGE_HOURS, preScoreFloor: PRESCORE_FLOOR,
-          crons: ["*/2 * * * *(pipeline)", "0 * * * *(canary)"],
+          // LINE canary 已隨 LINE 退役移除,現行兩條 cron 見 wrangler.toml [triggers]
+          crons: ["*/2 * * * *(pipeline)", "*/15 * * * *(political)"],
         },
         lastRun: lastRaw ? JSON.parse(lastRaw) : null,
         lastCanary: canaryRaw ? JSON.parse(canaryRaw) : null,
+        lastPolitical: lastPolRaw ? JSON.parse(lastPolRaw) : null,
       });
     }
 
@@ -1199,6 +1238,75 @@ export default {
       return json({ ok: true, results });
     }
 
+    // 08:15 韓股開盤預警(外盤重挫閘 phase 2,2026-07-21):winrig intel/kospi_open_alert.py
+    // 於 08:05-08:25 TW 掃 KOSPI 開盤 gap,<= -2%(預先登記門檻)即打這支推全體。
+    // 回測 16.5 年(quant_lab/crash_gate_night/GLOBAL_LEAD.md):gap<=-2% 共 64 天,台股當日
+    // 均 -2.21%、95% 收黑、P(<=-3%)=29.7%;頻率約 3.9 次/年,無轟炸疑慮。市場級警報非個股
+    // 分析,全體用戶同內容(合規)。dry=true 只推 admin 不進用戶收件匣(測試/演練用)。
+    if (url.pathname === "/internal/market-open-alert" && request.method === "POST") {
+      const got = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+      // 候選清單對齊 admin-line-push:winrig .env MARKETDAILY_ALERT_TOKEN 實為 MARKETING_TARGETS_TOKEN 同值
+      const candidates = [env.ADMIN_PUSH_TOKEN, env.ADMIN_PUSH_TOKEN_2, env.MARKETING_TARGETS_TOKEN, env.INTERNAL_TOKEN].filter(Boolean);
+      let okAuth = false;
+      for (const t of candidates) {
+        if (got.length !== t.length) continue;
+        let diff = 0;
+        for (let i = 0; i < got.length; i++) diff |= got.charCodeAt(i) ^ t.charCodeAt(i);
+        if (diff === 0) { okAuth = true; break; }
+      }
+      if (!okAuth) return json({ error: "forbidden" }, 403);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      const id = String(body.id || "").replace(/[^a-z0-9-]/gi, "").slice(0, 40);
+      const gap = Number(body.gap_pct);
+      const dry = body.dry === true;
+      if (!id || !Number.isFinite(gap)) return json({ error: "bad_event" }, 400);
+      // 門檻在 worker 端二次強制:scanner 出 bug 亂送也推不出去
+      if (gap > -2.0) return json({ ok: true, skipped: "below_threshold", gap });
+      if (!dry && (await env.USER_PREFS.get(`moadone:${id}`))) {
+        return json({ ok: true, dup: true });
+      }
+      const gapStr = gap.toFixed(2);
+      const anchor = alertAnchor(`moa-${id}`);
+      const notifStr = JSON.stringify({
+        title: `⚠️ 韓股開盤重挫 ${gapStr}%｜台股開盤前警報`,
+        body: `台股 09:00 開盤前訊號:KOSPI 今晨開盤下殺 ${gapStr}%。` +
+              `歷史統計(16 年)這種日子台股 95% 收黑、約三成跌逾 3%。` +
+              `立場:防守｜動作:開盤別急著進場,持股守好停損,等企穩再考慮。`,
+        url: "https://marketdaily.ai/dashboard.html#alerts",
+        tag: `md-moa-${id}`,
+      });
+      const inboxRec = {
+        id: anchor, ts: new Date().toISOString(), kind: "market_open", ticker: "TWII",
+        name: "台股大盤", title: `韓股開盤重挫 ${gapStr}%——台股開盤前防守警報`,
+        url: null, reason: `KOSPI 開盤 gap ${gapStr}%(門檻 -2%);16 年回測:此情境台股當日均 -2.21%、95% 收黑`,
+        severity: 8, category: "market", speculative: false,
+      };
+      let pushed = 0, total = 0;
+      if (dry) {
+        await webPushAdmin(env, JSON.stringify({
+          title: `[DRY] 韓股開盤預警演練 ${gapStr}%`,
+          body: "dry run:未推任何用戶。管線端到端正常。",
+          url: "https://marketdaily.ai/dashboard.html#alerts",
+        }));
+        return json({ ok: true, dry: true, gap });
+      }
+      const recipients = await premiumRecipients(env);
+      total = recipients.length;
+      for (const r of recipients) {
+        const dr = await deliverAlert(env, r, notifStr);
+        if (dr.ok) pushed++;
+        await recordAlertInbox(env, r.email, inboxRec);
+      }
+      await env.USER_PREFS.put(`moadone:${id}`, "1", { expirationTtl: 7 * 24 * 3600 });
+      await webPushAdmin(env, JSON.stringify({
+        title: `⚠️ 韓股開盤預警已推全體(${pushed}/${total})`,
+        body: `KOSPI 開盤 gap ${gapStr}%。id=${id}`,
+        url: "https://marketdaily.ai/dashboard.html#alerts",
+      }));
+      return json({ ok: true, pushed, total, gap });
+    }
+
     // 行銷貼文 multicast 目標清單:列出所有綁過 LINE 但 plan != premium 的 userId。
     // marketing/auto_post.py post_line 會打這支取得排除 premium 的 multicast targets。
     if (url.pathname === "/internal/marketing-line-targets") {
@@ -1254,7 +1362,7 @@ export default {
       try { body = await request.json(); } catch { return json({ error: "bad json" }, 400); }
       // X 掃描器回報 session 失效 → 通知 admin 重登(web push 優先,alertAdmin 自帶每小時節流)
       if (body.session_dead) {
-        await alertAdmin(env, "⚠️ 政壇 X 掃描器 session 失效，winrig 抓不到貼文。請在 Mac 跑 `python3 watch_x.py --login` 重登 X，再把 auth_state.json 搬回 winrig。");
+        await alertAdmin(env, "⚠️ 政壇 X 掃描器 session 失效，winrig 抓不到貼文。請在 Mac 跑 `python3 watch_x.py --login` 重登 X，再把 auth_state.json 搬回 winrig。", { channel: "political" });
         return json({ ok: true, alerted: true });
       }
       const posts = (body.posts || []).filter(p => p && p.handle && p.text).slice(0, 30);

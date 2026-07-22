@@ -12,6 +12,21 @@
 import re
 from typing import List, Dict
 
+import stock_names
+
+# 台股早報「晨間動作窗口」字眼(check#15 與 main._fix_tw_morning_action_wording 共用,單一事實來源)。
+# 2026-07-17:原 `9.{0,2}開盤` 吃不下「9:00開盤」(9 與開盤之間 3 字元)→ 07-15 實鍋假陽性;
+# 放寬成 9[:：點時.]?[0-5]?\d?開盤 並接受「今日開盤」。「明日開盤」刻意不收 — 早報在開盤前
+# 寄出,寫「明日開盤」是時序錯亂,屬真違規(main 的確定性防線會改寫成「今早開盤」)。
+# 驗證者第14案修正:①早盤 前綴 明日/明天/明/昨日/昨天/昨 不算合規(「明日早盤」同屬時序錯亂、
+# 「昨日早盤」是回顧非動作窗口);②9 前面是數字/千分位/小數點不算(「以1090開盤」是價格回顧)。
+TW_MORNING_ACTION_RE = re.compile(
+    r"今早"
+    r"|(?<!明日)(?<!明天)(?<!明)(?<!昨日)(?<!昨天)(?<!昨)早盤"
+    r"|今日開盤"
+    r"|(?<![\d,,.．])0?9\s*[:：點時.]?\s*[0-5]?\d?\s*開盤"
+)
+
 
 def _strip_html_to_text(html: str) -> str:
     """粗略去 tag,留下純文字供 keyword 比對。"""
@@ -243,17 +258,32 @@ def audit_digest(
                           "msg": "「大盤怎麼了」沒提到台股大盤(用戶持有台股)"})
 
     # ───── 中英文股名 ─────
-    # 11. 內文出現純代號(NVDA / 2330) 沒有中英文公司名
+    # 11. 內文出現純代號(NVDA / 2330) 沒有中英文公司名。
+    #     2026-07-17:Meta/Alphabet 這類中文媒體慣用拉丁字母名的公司,「Meta（META）」是正確寫法,
+    #     只認 ≥2 連續中文會結構性誤判(07-10~16 復發根因之一)→ 同時接受 stock_names.US_NAMES
+    #     的中/英公司名(word-boundary;en 名等同代號者如 AMD 不能拿代號自己當名字)。
+    #     定位第一次出現也改 word-boundary(text.find 會誤中 METALS 這類子字串位置)。
     code_only_us = re.findall(r"(?<![A-Za-z])(NVDA|AAPL|MSFT|TSLA|GOOGL|META|AMD|TSM|JPM|AMZN)(?![A-Za-z])", text)
     if code_only_us:
-        # 抽樣檢查:每個代號前後 12 字是否有中文公司名
+        # 抽樣檢查:每個代號前後 12 字是否有中英文公司名
         for code in set(code_only_us[:5]):
-            idx = text.find(code)
+            m = re.search(r"(?<![A-Za-z])" + code + r"(?![A-Za-z])", text)
+            if not m:
+                continue
+            idx = m.start()
             ctx = text[max(0, idx - 12):idx + 12]
-            has_zh = re.search(r"[一-鿿]{2,}", ctx)
-            if not has_zh:
+            has_name = re.search(r"[一-鿿]{2,}", ctx)
+            if not has_name:
+                # 守衛=名字字串不可正好等於代號本身(AMD),否則代號自己救自己;
+                # 大小寫不同(Meta vs META)是合法名字,regex 區分大小寫不會誤中代號。
+                for nm in stock_names.US_NAMES.get(code, ()):
+                    if nm and nm != code and re.search(
+                            r"(?<![A-Za-z])" + re.escape(nm) + r"(?![A-Za-z])", ctx):
+                        has_name = True
+                        break
+            if not has_name:
                 fails.append({"check": "ticker_no_zh_name", "severity": "low",
-                              "msg": f"代號 {code} 附近沒有中文公司名"})
+                              "msg": f"代號 {code} 附近沒有中英文公司名"})
                 break  # 抽樣一個就夠
 
     # 11b. 台股 signal-card 的 ticker 是裸代號(如 6907)沒展開成中文公司名。
@@ -367,7 +397,7 @@ def audit_digest(
     # 15. 若今早台股將開盤,signal-card 應該有「今早 / 開盤」字眼(us 晚報台股非主軸,不檢查)
     if market != "us" and mkt_status.get("tw_will_open_today") and tw_holdings and signal_cards:
         signal_text = " ".join(signal_cards)
-        if not re.search(r"今早|早盤|9.{0,2}開盤", signal_text):
+        if not TW_MORNING_ACTION_RE.search(signal_text):
             fails.append({"check": "tw_morning_action_missing", "severity": "med",
                           "msg": "今早台股將開盤,但 signal-card 沒有「今早開盤後」動作指示"})
 

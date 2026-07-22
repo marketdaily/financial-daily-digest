@@ -149,10 +149,66 @@ def _fix_closed_market_wording(date: str, html_report: str) -> str:
     return html_report
 
 
+# signal-card 區塊切分(同 analyzer._pp_* 系列的邊界慣例:下一張卡 / disclaimer / section-label / 結尾)
+_SIGNAL_CARD_BLOCK_RE = re.compile(
+    r'<div class="signal-card[ "].*?'
+    r'(?=<div class="signal-card[ "]|<div class="signal-disclaimer|<div class="section-label|$)',
+    re.S)
+
+
+def _fix_tw_morning_action_wording(date: str, html_report: str) -> str:
+    """台股早報動作窗口確定性防線(audit#15 tw_morning_action_missing 根治,2026-07-17)。
+    prompt 已要求台股卡講「今早 9:00 開盤後」動作,但 LLM 遵從隨機(07-13/17 實鍋 5 封),
+    且 med severity 不觸發 retry → 不依賴 LLM 聽話:
+    ①台股卡裡「明日/明天開盤」= 時序錯亂(這封信在今早開盤前寄出)→ 改寫「今早開盤」
+    ②整批台股卡皆無晨間窗口字眼 → 第一張帶 signal-reason 的台股卡開頭補「今早 9:00 開盤後:」。
+    只在台股開盤日的非 us 班次生效;美股卡(h-mark 非純數字)零觸碰;已合規日報 no-op。
+    audit#15 是這層的獨立驗證者(TW_MORNING_ACTION_RE 兩邊共用,不會 guard 過了 audit 卻紅)。"""
+    if MARKET == "us":
+        return html_report
+    try:
+        from analyzer import _market_status
+        from digest_audit import TW_MORNING_ACTION_RE
+        mkt = _market_status(date)
+    except Exception:
+        return html_report
+    if not mkt.get("tw_will_open_today"):
+        return html_report
+
+    def _tw_blocks(html: str):
+        return [m for m in _SIGNAL_CARD_BLOCK_RE.finditer(html)
+                if re.search(r"<!--h:\d+-->", m.group(0))]
+
+    # ① 時序錯字修正(從後往前替換,前面 match 的 offset 不失效)。
+    #    只修「整塊沒有任何晨間窗口字眼」的卡(驗證者第14案 F1):已合規卡裡的
+    #    「明日開盤前重新評估」是合法的收盤後前瞻,不可改寫製造新時序錯亂。
+    #    pattern 要求 明+日/天/早(F2:涵蓋「明早開盤」),不吃「說明開盤」這類複合詞。
+    for m in reversed(_tw_blocks(html_report)):
+        blk = m.group(0)
+        if TW_MORNING_ACTION_RE.search(blk):
+            continue
+        fixed = re.sub(r"明(?:[日天]\s*(?:一早\s*)?|早)開盤", "今早開盤", blk)
+        fixed = re.sub(r"明[日天]\s*早盤", "今日早盤", fixed)
+        if fixed != blk:
+            html_report = html_report[:m.start()] + fixed + html_report[m.end():]
+
+    # ② 樓地板保證:整批台股卡仍無晨間窗口 → 首張有 reason 的台股卡補開場
+    blocks = _tw_blocks(html_report)
+    if blocks and not any(TW_MORNING_ACTION_RE.search(m.group(0)) for m in blocks):
+        for m in blocks:
+            injected = re.sub(r'(<div class="signal-reason"[^>]*>)',
+                              r"\g<1>今早 9:00 開盤後:", m.group(0), count=1)
+            if injected != m.group(0):
+                html_report = html_report[:m.start()] + injected + html_report[m.end():]
+                break
+    return html_report
+
+
 def render_email_shell(date: str, html_report: str) -> str:
     """Email/本地存檔共用的完整 HTML 骨架(原 build_email_html 與 save_local 各持
     一份逐字節相同的複本,2026-07-03 P3 收斂)。<style> 內容 byte 級凍結於 golden。"""
     html_report = _fix_closed_market_wording(date, html_report)
+    html_report = _fix_tw_morning_action_wording(date, html_report)
     # 週六早報=週末回顧,媒體產線週末不產語音(video_brief_runner 週末防線)→
     # header 不放「3 分鐘語音版」承諾,footer 連結拿掉 ?date= 改聽最新一集,
     # 否則 audio.html?date=週六 會顯示等不到的「生成中」。
@@ -854,6 +910,11 @@ def run():
         us_stocks = prefs.get("us_stocks") or []
         tw_stocks = prefs.get("tw_stocks") or []
         positions = prefs.get("positions") or {}  # 持倉成本(選填)→持有者框架,全體用戶可用
+        # 總本金(選填,2026-07-22 資金體檢):以特殊鍵搭 positions 順風車進 analyzer,
+        # 免動三個 generate_*_report 簽名;卡片渲染只迭代持股代號,此鍵不會變成卡。
+        _cap = prefs.get("capital")
+        if isinstance(_cap, (int, float)) and _cap > 0:
+            positions = {**positions, "__capital__": float(_cap)}
         depth = prefs.get("digest_depth") or "standard"  # 日報深度全體用戶可選(合規結構:不依付費分級)
         is_premium = prefs.get("plan") in ("premium", "admin")  # 僅供統計/tier 標籤;禁止用來分級日報內容(COMPLIANCE_STRUCTURE.md)
 
@@ -936,6 +997,7 @@ def _flush_outbox(outbox, date, send_fn, api_key):
         return 0
     sent_ok = 0
     _hold_until_send_time(MARKET)
+    _enforce_send_deadline(MARKET)   # 補班才有作用;放在 hold 之後=用「真正要寄的那一刻」判定
     # MD_SUBJECT_NOTE:人工補寄修正版時標注主旨(例:「(更新版) 」),平常不設=無作用
     note = os.environ.get("MD_SUBJECT_NOTE", "")
     for email, html, subject in outbox:
@@ -1070,6 +1132,33 @@ def _alert_if_late(market, late_sec):
                       f"log: logs/fallback_*.log")
 
 
+def _enforce_send_deadline(market):
+    """補班專用的寄出端死線閘(2026-07-20)。
+
+    為什麼需要它:班次窗口只閘得到「起跑」時刻,而生成實測 40-99 分鐘(Gemini 全 429 走 claude
+    慢路徑那天跑了 99 分),兩者差一整個生成時間。補班把合法起跑時刻往後推到 08:00 TW 之後,
+    光靠起跑閘就再也保證不了「寄出時仍在盤前」——會變成開盤後寄一封講盤前的信,那是內容錯誤。
+    所以真正的保證放在這裡:寄出前一刻比對台北時間,過線寧可不寄。
+
+    只有 run.sh 補班模式會設 MD_SEND_DEADLINE_HM(格式 HHMM,台北時間);正常班次完全不經過
+    這條路徑,行為零改變。
+    """
+    raw = os.environ.get("MD_SEND_DEADLINE_HM", "").strip()
+    if not raw.isdigit() or len(raw) != 4:
+        return
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    now_tw = datetime.now(ZoneInfo("Asia/Taipei"))
+    if now_tw.hour * 60 + now_tw.minute <= int(raw[:2]) * 60 + int(raw[2:]):
+        return
+    label = "早報" if market == "tw" else "晚報"
+    msg = (f"🟡 {label} 補班放棄寄出:生成完成時已是台北 {now_tw:%H:%M},超過內容誠實死線 "
+           f"{raw[:2]}:{raw[2:]}。此時寄出等於開盤後發一封講盤前的信,故刻意不寄。")
+    print(msg)
+    _push_admin_alert(msg + " (main.py exit=3;內容留在 logs/ 可人工檢視)")
+    raise SystemExit(3)   # 模組層沒有 import sys(只有 1321 行的區域 import),用內建例外最穩
+
+
 def _hold_until_send_time(market):
     """提早觸發只為先把日報生成好;寄出時間釘在班次整點(tw 07:00 TW=23:00 UTC / us 20:00 TW=12:00 UTC)。
     生成若拖過整點 → 不等,立刻寄(遲到比不寄好),但遲到>15分推 admin 告警。both/手動班次不等。"""
@@ -1080,6 +1169,12 @@ def _hold_until_send_time(market):
     now = datetime.now(timezone.utc)
     target = now.replace(hour=hm[0], minute=hm[1], second=0, microsecond=0)
     wait = (target - now).total_seconds()
+    # UTC 跨日校正(2026-07-20 驗證者 F2):tw 的整點 07:00 TW = 23:00 UTC,只離 UTC 換日一小時。
+    # 生成若拖到 08:00 TW 之後就已跨進隔天 UTC,`now.replace(hour=23)` 會指到【今晚】而不是今早,
+    # wait 變成 +23h,late_min 變成大負數 → 遲到告警在「補班最危險的那段」必然靜音。
+    # 差一整天就把它減回來;只影響已經 return 的那條分支,不碰 sleep 路徑。
+    if wait > 12 * 3600:
+        wait -= 24 * 3600
     # 只在「距整點 60 分內」才等:>60 分 = 手動補發/異常時段,直接寄,不白等
     if wait <= 0 or wait > 60 * 60:
         _alert_if_late(market, -wait)

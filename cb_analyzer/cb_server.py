@@ -5,6 +5,7 @@
 啟動:python3 cb_server.py [port]   預設 8911。"""
 import os
 import sys
+import copy
 import hmac
 import html
 import json
@@ -12,6 +13,8 @@ import math
 import time
 import hashlib
 import datetime
+import threading
+import zoneinfo
 import urllib.parse
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import cb_core
@@ -43,6 +46,13 @@ def _desk_password():
 DESK_PW = _desk_password()
 AUTH_TOKEN = (hmac.new(DESK_PW.encode(), b"cb-desk-auth-v1", hashlib.sha256).hexdigest()
               if DESK_PW else None)
+# desk 工作台(cb-desk/scripts/dashboard_server.py)的 cookie:同一組密碼、不同鹽。
+# 兩站掛在 analyst.marketdaily.ai 同網域下(本站在 /cb 前綴),接受 desk 的 deskauth
+# 即單一登入——在 desk 登入一次,/ 與 /cb/ 都通。
+DESK_DASH_TOKEN = (hmac.new(DESK_PW.encode(), b"cb-desk-dash-v1", hashlib.sha256).hexdigest()
+                   if DESK_PW else None)
+ANALYST_HOST = "analyst.marketdaily.ai"
+LEGACY_HOST = "cb.marketdaily.ai"
 _LOGIN_FAILS = {}
 
 LOGIN_HTML = """<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8">
@@ -64,8 +74,138 @@ color:#fff;font-size:.95rem;font-weight:600;cursor:pointer}button:hover{backgrou
 <input type="password" name="password" placeholder="密碼" autofocus autocomplete="current-password">
 <button>登入</button><div class="err">{{msg}}</div></form></body></html>"""
 
+# ── 拆解準則 config(cb_config.json 網頁可調)────────────────────────
+# CONFIG_DEFAULTS 必須在 load_config 之前快照:這是「還原預設」的真源(程式內建值)
+CONFIG_KEYS = ("rf", "asset_swap_spread", "vol_w_short", "vol_w_long",
+               "elig_tcri", "elig_min_size", "tcri_spread")
+CONFIG_DEFAULTS = copy.deepcopy({k: cb_core.ASSUMPTIONS[k] for k in CONFIG_KEYS})
+CONFIG_HISTORY_PATH = os.path.join(HERE, "config_history.jsonl")
+STATUS_PATH = os.path.join(HERE, "mail_ingest_status.json")
+TAIPEI = zoneinfo.ZoneInfo("Asia/Taipei")
+_CONFIG_LOCK = threading.Lock()
+cb.reload_config_if_changed()          # 啟動即載入檔案值(舊版從未讀,config 對網頁形同虛設)
+
 DB = cb.load_db()
 VW = lambda: (cb_core.ASSUMPTIONS["vol_w_short"], cb_core.ASSUMPTIONS["vol_w_long"])
+
+
+def _cfg_view(d):
+    """config dict → 對外 JSON 形狀(tcri_spread 鍵一律字串、1..9 排序)。"""
+    out = {k: d[k] for k in CONFIG_KEYS if k != "tcri_spread"}
+    sp = d["tcri_spread"]
+    out["tcri_spread"] = {str(i): sp.get(i, sp.get(str(i))) for i in range(1, 10)}
+    out["elig_tcri"] = sorted(out["elig_tcri"])
+    return out
+
+
+def validate_config(raw):
+    """整包驗證:任一欄位非法 → (None, [點名錯誤]);合法 → (正規化 dict, [])。
+    口徑:利率/利差為小數(0.02=2%);vol 兩權重和≈1(容差0.01);tcri_spread 9 鍵
+    齊全且 1→9 不可反轉(等級越差利差不可變低)。"""
+    if not isinstance(raw, dict):
+        return None, ["整包必須是 JSON 物件"]
+    errs, clean = [], {}
+
+    def num(key, lo, hi, note, src=None):
+        v = (src if src is not None else raw).get(key)
+        if isinstance(v, bool) or not isinstance(v, (int, float)) or not (lo <= v <= hi):
+            errs.append(f"{key}:需為 {lo}~{hi} 的數字({note}),收到 {v!r}")
+            return None
+        return float(v)
+
+    clean["rf"] = num("rf", 0.0, 0.5, "小數,0.013=1.3%")
+    clean["asset_swap_spread"] = num("asset_swap_spread", 0.0, 0.5, "小數,0.02=2%")
+    ws = num("vol_w_short", 0.0, 1.0, "小數權重")
+    wl = num("vol_w_long", 0.0, 1.0, "小數權重")
+    if ws is not None and wl is not None and abs(ws + wl - 1.0) > 0.01:
+        errs.append(f"vol_w_short+vol_w_long 需≈1(容差0.01),目前 {ws + wl:.3f}")
+    clean["vol_w_short"], clean["vol_w_long"] = ws, wl
+    et = raw.get("elig_tcri")
+    if (not isinstance(et, list) or not et
+            or any(isinstance(x, bool) or not isinstance(x, int) or not 1 <= x <= 9 for x in et)):
+        errs.append(f"elig_tcri:需為 1~9 整數的非空清單,收到 {et!r}")
+    else:
+        clean["elig_tcri"] = sorted(set(et))
+    clean["elig_min_size"] = num("elig_min_size", 0.0, 1000.0, "億")
+    sp = raw.get("tcri_spread")
+    if not isinstance(sp, dict):
+        errs.append(f"tcri_spread:需為 9 鍵物件,收到 {type(sp).__name__}")
+    else:
+        cs, prev = {}, None
+        for i in range(1, 10):
+            v = num(f"tcri_spread[{i}]", 0.0, 0.5, "小數利差",
+                    src={f"tcri_spread[{i}]": sp.get(str(i), sp.get(i))})
+            if v is None:
+                continue
+            if prev is not None and v < prev:
+                errs.append(f"tcri_spread[{i}]:利差 {v} 低於等級 {i - 1} 的 {prev}(1→9 須遞增,信用越差利差越高)")
+            cs[str(i)] = v
+            prev = v
+        clean["tcri_spread"] = cs
+    return (None, errs) if errs else (clean, [])
+
+
+def _config_mtime_str(path=None):
+    try:
+        m = os.stat(path or cb.CONFIG_PATH).st_mtime
+        return datetime.datetime.fromtimestamp(m, TAIPEI).strftime("%Y-%m-%d %H:%M:%S")
+    except OSError:
+        return None
+
+
+def save_config(clean, path=None, history_path=None):
+    """備份(當日首份不覆蓋)→ tmp+os.replace 原子寫入 → config_history.jsonl 追加 diff。
+    半寫壞檔=整站分析掛掉,所以絕不直接開檔覆寫。回 {欄位: {old, new}} 只含真的變了的。"""
+    path = path or cb.CONFIG_PATH
+    history_path = history_path or CONFIG_HISTORY_PATH
+    note = "改這裡就能調全系統假設,不用動程式。CLI --swap/--rf/--vol-short/--vol-long 會再覆寫這裡。"
+    old = {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            old = json.load(f)
+        note = old.get("_說明") or note
+    except (OSError, ValueError):
+        pass
+    old_view = _cfg_view({**CONFIG_DEFAULTS, **{k: old[k] for k in CONFIG_KEYS if k in old}})
+    new_view = _cfg_view(clean)
+    changes = {k: {"old": old_view[k], "new": new_view[k]}
+               for k in CONFIG_KEYS if old_view[k] != new_view[k]}
+    if not changes:
+        return {}
+    if os.path.exists(path):
+        bak = f"{path}.bak-{datetime.datetime.now(TAIPEI):%Y%m%d}"
+        if not os.path.exists(bak):
+            with open(path, "rb") as f, open(bak, "wb") as g:
+                g.write(f.read())
+    body = json.dumps({"_說明": note, **new_view}, ensure_ascii=False, indent=2)
+    tmp = f"{path}.tmp.{os.getpid()}"
+    with open(tmp, "w", encoding="utf-8") as f:
+        f.write(body + "\n")
+    os.replace(tmp, path)
+    with open(history_path, "a", encoding="utf-8") as f:
+        f.write(json.dumps({"ts": datetime.datetime.now(TAIPEI).isoformat(timespec="seconds"),
+                            "source": "web", "changes": changes}, ensure_ascii=False) + "\n")
+    return changes
+
+
+def _mail_freshness_line(path=None):
+    """📬 元大郵件資料新鮮度一行(mail_ingest_status.json 由 cb_mail_ingest 寫)。
+    狀態檔缺席/壞檔回空字串——簡報不能因它出錯。"""
+    try:
+        with open(path or STATUS_PATH, encoding="utf-8") as f:
+            st = json.load(f)
+        ts = str(st.get("last_success") or "")[:16].replace("T", " ")
+        if not ts:
+            return ""
+        lm = st.get("latest_mail") or {}
+        subj = str(lm.get("subject") or "").strip()
+        tail = (f'(最新:{html.escape(subj[:48])} · {html.escape(str(lm.get("date") or ""))})'
+                if subj else "")
+        new = st.get("new_items") or 0
+        newtxt = f" · 本輪新入 {new} 封" if new else ""
+        return f'<div class="bone">📬 元大郵件資料:截至 {html.escape(ts)}{newtxt}{tail}</div>'
+    except Exception:
+        return ""
 
 
 def _auto_cb_price(it):
@@ -398,10 +538,12 @@ def brief_fragment():
     if watch:
         head += (f' 另有 <b style="color:#a5b4fc">{len(watch)} 檔符合準則、正在等承銷定價</b>:'
                  f'{wnames} —— 定價一公布,輸入代碼馬上出結論。')
+    crit = "/".join(str(t) for t in sorted(A["elig_tcri"]))
     return (
-        '<div class="bhead">📌 今日結論　<span class="bsub">報價日 %s · 產生於 %s · 準則:TCRI 3-4 且 ≥10億</span></div>'
-        '<div class="blead">%s</div>%s%s'
-        % (qdate or "—", now, head, "".join(rows), _holdings_section()))
+        '<div class="bhead">📌 今日結論　<span class="bsub">報價日 %s · 產生於 %s · 準則:TCRI %s 且 ≥%g億</span></div>'
+        '%s<div class="blead">%s</div>%s%s'
+        % (qdate or "—", now, crit, A["elig_min_size"],
+           _mail_freshness_line(), head, "".join(rows), _holdings_section()))
 
 
 def _sim_verdict(base):
@@ -729,10 +871,60 @@ class H(BaseHTTPRequestHandler):
             k, _, v = part.strip().partition("=")
             if k == "cbauth" and hmac.compare_digest(v, AUTH_TOKEN):
                 return True
+            if k == "deskauth" and DESK_DASH_TOKEN and hmac.compare_digest(v, DESK_DASH_TOKEN):
+                return True
         return False
 
+    def _redirect(self, code, location):
+        self.send_response(code)
+        self.send_header("Location", location)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
+    def _preroute(self):
+        """統一入口(do_GET/do_POST 最前面呼叫)。回 True = 已回應,呼叫端直接 return。
+        ① Host=cb.marketdaily.ai → 301 到 analyst.marketdaily.ai/cb+原path(舊網域收斂)。
+        ② 剝 /cb 前綴:cloudflared 的 path 路由不 strip prefix,analyst.marketdaily.ai/cb/*
+           進來的 path 都帶 /cb 開頭,剝掉後其餘路由零改動。只認 /cb、/cb/、/cb?(邊界:
+           /cbx、/cb.. 都不剝,落到原本的 404/靜態檔處理)。"""
+        host = (self.headers.get("Host") or "").split(":")[0].strip().lower()
+        if host == LEGACY_HOST:
+            self._redirect(301, f"https://{ANALYST_HOST}/cb" + self.path)
+            return True
+        self.via_cb = False
+        if self.path == "/cb" or self.path.startswith("/cb/") or self.path.startswith("/cb?"):
+            self.via_cb = True
+            rest = self.path[3:]
+            self.path = rest if rest.startswith("/") else "/" + rest
+        return False
+
+    def _send_json(self, code, obj):
+        return self._send(code, json.dumps(obj, ensure_ascii=False),
+                          "application/json; charset=utf-8")
+
     def do_POST(self):
+        if self._preroute():
+            return
         u = urllib.parse.urlparse(self.path)
+        if u.path == "/api/config":
+            if not self._authed():
+                return self._send_json(401, {"ok": False, "errors": ["未登入"]})
+            ln = int(self.headers.get("Content-Length", 0) or 0)
+            if not 0 < ln <= 65536:
+                return self._send_json(413, {"ok": False, "errors": ["body 大小異常"]})
+            try:
+                raw = json.loads(self.rfile.read(ln).decode("utf-8"))
+            except (ValueError, UnicodeDecodeError):
+                return self._send_json(400, {"ok": False, "errors": ["JSON 解析失敗"]})
+            clean, errs = validate_config(raw)
+            if errs:
+                return self._send_json(400, {"ok": False, "errors": errs})
+            with _CONFIG_LOCK:
+                changes = save_config(clean)
+                cb.reload_config_if_changed()   # 寫完立刻套用,不等下一個請求
+            return self._send_json(200, {"ok": True, "changed": sorted(changes),
+                                         "values": _cfg_view(cb_core.ASSUMPTIONS),
+                                         "mtime": _config_mtime_str()})
         if u.path != "/login":
             return self._send(404, '<div class="serr">404</div>')
         ip = self._client_ip()
@@ -748,7 +940,7 @@ class H(BaseHTTPRequestHandler):
             _LOGIN_FAILS.pop(ip, None)
             self.send_response(303)
             self.send_header("Set-Cookie",
-                             "cbauth=%s; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax" % AUTH_TOKEN)
+                             "cbauth=%s; Max-Age=2592000; Path=/; HttpOnly; SameSite=Lax; Secure" % AUTH_TOKEN)
             self.send_header("Location", "/")
             self.send_header("Content-Length", "0")
             self.end_headers()
@@ -758,17 +950,29 @@ class H(BaseHTTPRequestHandler):
         return self._send(401, LOGIN_HTML.replace("{{msg}}", "密碼錯誤"))
 
     def do_GET(self):
+        if self._preroute():
+            return
         u = urllib.parse.urlparse(self.path)
         qs = urllib.parse.parse_qs(u.query)
         g = lambda k: (qs.get(k, [None])[0])
         if not self._authed():
             if u.path.startswith("/api/"):
                 return self._send(401, '<div class="serr">未登入,請重新整理頁面登入</div>')
+            if self.via_cb:
+                # analyst.marketdaily.ai/cb/* 未登入 → 302 到 desk 登入頁(同網域根),
+                # 登入後 deskauth cookie Path=/ 兩邊通用,不用第二次登入
+                return self._redirect(302, "/")
             return self._send(401, LOGIN_HTML.replace("{{msg}}", ""))
         try:
+            if u.path.startswith("/api/") or u.path in ("/", "/index.html"):
+                cb.reload_config_if_changed()   # 網頁/檔案改了準則 → 本請求就用新值
             if u.path in ("/", "/index.html"):
                 with open(os.path.join(HERE, "index.html"), encoding="utf-8") as f:
                     return self._send(200, f.read())
+            if u.path == "/api/config":
+                return self._send_json(200, {"values": _cfg_view(cb_core.ASSUMPTIONS),
+                                             "defaults": _cfg_view(CONFIG_DEFAULTS),
+                                             "mtime": _config_mtime_str()})
             if u.path == "/api/brief":
                 return self._send(200, brief_fragment())
             if u.path == "/api/analyze":
@@ -793,7 +997,8 @@ class H(BaseHTTPRequestHandler):
                                                           float(dr) if dr else 0.07))
             # 其他:當靜態檔(report.html 等)
             p = os.path.join(HERE, u.path.lstrip("/"))
-            if os.path.isfile(p) and os.path.realpath(p).startswith(HERE):
+            # 前綴比對帶尾分隔符:裸 HERE 會放行名字以 cb_analyzer 開頭的兄弟目錄(cb_analyzer2/…)
+            if os.path.isfile(p) and os.path.realpath(p).startswith(HERE + os.sep):
                 ct = "image/png" if p.endswith(".png") else "text/html; charset=utf-8"
                 with open(p, "rb") as f:
                     return self._send(200, f.read(), ct)

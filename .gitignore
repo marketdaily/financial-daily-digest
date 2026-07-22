@@ -52,6 +52,7 @@ cb_analyzer/search_result.png
 intel/.inst_cache.json
 intel/.rev_cache.json
 intel/.margin_cache.json
+intel/.ca_scan_cache.json
 intel/.sbl_cache.json
 intel/.holders_cache.json
 intel/.investor_conf_cache.json
@@ -62,6 +63,8 @@ scripts/.stockname_cache.json
 cb_analyzer/.quote_cache.json
 cb_analyzer/inbox_files/
 cb_analyzer/.mail_seen.json
+cb_analyzer/mail_ingest_status.json
+cb_analyzer/config_history.jsonl
 scripts/.tw_names_cache.json
 scripts/plan_sim_trades_internal.json
 .tw_closure_cache.json
@@ -92,9 +95,15 @@ _ig_frames/
 /*.yml
 # 雜項 cache / 備份
 scripts/.price_cache.json
+scripts/.div_cache.json
 *.bak-*
 *.sh.bak-*
+valuation/.us_cik_map.json
 
 quant_lab/auto_trade/.tx_daily.json
 quant_lab/auto_trade/.txo_iv.json
 intel/.tw_broker_calls_seen.json
+quote_bridge/shioaji.log
+quote_bridge/*.log
+quote_bridge/.signed_ok
+quant_lab/data/kbars/

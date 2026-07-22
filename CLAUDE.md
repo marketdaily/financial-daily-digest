@@ -134,6 +134,7 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 - 坑:workers.dev 同帳號互打被 1042 擋（用 service binding）;GH Actions skip 步驟 output=null,`null=='0'` 數字強轉=true。
 
 ## 重要慣例（從過去 session 學到）
+- **🧠 記憶單機主寫制（2026-07-22 Delvin 拍板）**：記憶索引 `MEMORY.md` 唯一寫者=winrig；Mac 上任何 session 禁改 MEMORY.md，新增記憶寫 topic 檔+登記同目錄 `MEMORY_INBOX_MAC.md`（winrig 每 2h `scripts/memory_inbox_pull.sh` 拉走合併）；跨機同名 topic 檔以 frontmatter `modified:` 新者勝。winrig 端改索引也只准 Edit 錨定，禁整檔 Write。詳見 memory `feedback_memory_single_writer`。
 - **🔁 模型交接手冊（2026-07-07 建立）**：換模型接手（Fable 週額度見底改用 Opus 4.8 等）的**第一個 session,開工前先讀 memory `feedback_model_handoff_playbook.md` 全文**——Fable 隱性工作法一頁版（十鐵則/驗證者分離/e2e驗證/收工四件套/武器庫/陷阱Top清單）。CLAUDE.md+記憶+skills 換模型自動繼承,手冊補的是「工作法靈魂」。
 - **⚖️ 合規鐵則：個股分析內容永不與付費掛鉤（2026-07-02 上線,COMPLIANCE_STRUCTURE.md）**：MarketDaily 無投顧牌,依法(投信投顧法§4/§107,橋頭111金訴235判例)任何含「個別有價證券分析/建議/買賣價位」的內容必須**免費開放全體用戶且完全相同**——不得因付費差異化數量、深度、速度、先後;行銷文案不得把個股功能與付費連結;新功能開發前先對照 COMPLIANCE_STRUCTURE.md 永久規則。已拆閘門:持股上限統一80、深度全開、AI對話全開(30則/日)、推播全開。
 - **💸 全面免費化＋早鳥口徑（2026-07-09,用戶指令,法律風險考量）**：Premium 付費方案與 Stripe 金流全部下架,全站零收費。對外唯一口徑=**「限時免費＋早鳥鎖定」**:「目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權」。未來若恢復收費只能收非分析類價值(或拿牌後另議),**個股分析依法永遠免費,任何文案不得暗示未來分析內容會收費**。後端:`/stripe/checkout-trial` 已 410、D7/D14/D21/D45 升級信全停(模板保留)、welcome/客服 AI 口徑已改、推薦獎勵不再承諾任何回報(純分享)。既有 Stripe 訂戶皆親友未付錢,無退款議題。詳見 memory `project_marketdaily_free_earlybird`。

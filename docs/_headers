@@ -1,0 +1,6 @@
+# watch.html 迭代頻繁:HTML 一律回源驗證,避免舊 HTML 配新 JS 的版本錯配白屏
+# (JS/資料檔靠 ?v= cache-bust,不受影響)
+/watch
+  Cache-Control: no-cache
+/watch.html
+  Cache-Control: no-cache

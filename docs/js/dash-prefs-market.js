@@ -32,6 +32,9 @@ async function loadPreferences(email) {
     setupDepthCard();
     selected.us = []; selected.tw = [];
     positionsMap = (data.positions && typeof data.positions === "object") ? data.positions : {};
+    userCapital = (typeof data.capital === "number" && data.capital > 0) ? data.capital : null;
+    const capEl = document.getElementById("capital-input");
+    if (capEl) capEl.value = userCapital ?? "";
     (data.us_stocks || []).forEach(sym => { const f = US_STOCKS.find(([s])=>s===sym); selected.us.push({ sym, name: f ? f[1] : sym }); });
     (data.tw_stocks || []).forEach(sym => { const f = TW_STOCKS.find(([s])=>s===sym); selected.tw.push({ sym, name: f ? f[1] : sym }); });
     renderTags("us"); renderTags("tw"); updateStats();
@@ -78,19 +81,21 @@ let _stories = [];
 let _storyIdx = 0;
 let _quotesRefreshTimer = null;
 let _countdownTimer = null;
-let _countdownVal = 60;
+// 報價實際每 15s 刷新(worker 端也是 15s 快取);倒數必須跟真實頻率一致,寫 60 會讓用戶以為 1 分鐘才更新
+const QUOTES_REFRESH_SEC = 15;
+let _countdownVal = QUOTES_REFRESH_SEC;
 
 function startCountdown() {
   const el = document.getElementById("sync-counter");
   const wrap = document.getElementById("sync-countdown");
   if (!el || !wrap) return;
   if (_countdownTimer) clearInterval(_countdownTimer);
-  _countdownVal = 60;
+  _countdownVal = QUOTES_REFRESH_SEC;
   wrap.style.display = "flex";
   el.textContent = _countdownVal;
   _countdownTimer = setInterval(() => {
     _countdownVal--;
-    if (_countdownVal <= 0) _countdownVal = 60;
+    if (_countdownVal <= 0) _countdownVal = QUOTES_REFRESH_SEC;
     el.textContent = _countdownVal;
   }, 1000);
 }
