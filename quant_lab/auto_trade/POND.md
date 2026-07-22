@@ -37,6 +37,8 @@
 ## Paper 前測(真 OOS,規格 2026-07-17 凍結,winrig cron 20:10 每晚自動記帳)
 魚A=條件賣跨式(IV−EWMA>3%+dte10-40+GEX≥60日中位;出場 converged/5天/1.5x停損/換月)
 魚B=外資高信念跟隨(|Δ淨OI|≥85分位擴張窗→次日開到收)
+魚C=MTF-ORB 老闆哲學版(日線EMA閘+波動閘20日ATR%≤252日80分位+OR30順勢一單+停損OR另一側+抱到13:44;⚠️波動閘=lockbox失敗後補的假說)
+即時帳本=http://100.79.132.42:8912(Tailscale;winrig 8912 tailscale serve+keepalive cron)
 帳本=winrig ~/paper_trade/quant_lab/auto_trade/.paper/ledger.jsonl;⚠️ 不得再調參,等樣本裁決。
 
 ## Tier D:週一 Shioaji 解鎖
@@ -64,4 +66,5 @@
 | 2026-07-22 | 馬克羊#1 尾盤(正式,n=367) | 9 | ⚖️ 「13:44出場」方向一致但不顯著→採納為免費執行規則;「燃料延續」交易版前半 -19點/勝率24% vs 後半 +12.6=regime翻臉 → ❌ 不可交易 |
 | 2026-07-22 | SuperTrend 日內 battery | 48 | ❌ train+134萬/DSR 0.590 → oos -30萬/lockbox -39萬,與日線版同死 |
 | 2026-07-22 | 結算日日內足跡 | 4 | ⏸️ n=19 全不顯著;TXFR1 已換倉看不到 pinning;待樣本 |
-| 累計 trials | | **121** | 池越大,下一條的 DSR 門檻越高 |
+| 2026-07-22 | MTF-ORB(用戶哲學:看長做短/一天一單/贏大輸小) | 3 | 🟡 train+47萬/DSR 0.815/oos+26.8萬,lockbox -55萬(極端波動段掃停損)→ 加波動閘凍結為魚C 進 paper |
+| 累計 trials | | **124** | 池越大,下一條的 DSR 門檻越高 |
