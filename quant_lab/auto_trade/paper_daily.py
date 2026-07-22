@@ -148,13 +148,10 @@ def main():
         json.dump(st, f, ensure_ascii=False, default=str)
 
 
-def fish_c(bars, today, st):
-    """規格凍結 2026-07-22:日線 EMA9>21>50 閘(至昨日)+ 波動閘(20日ATR%≤近252日80分位)
-    + OR30 突破順勢一單 + 停損=OR另一側 + 未掃出抱到 13:44。成本 1.5 點。"""
+def c_gates(bars):
+    """魚C 兩道閘(規格凍結 2026-07-22):日線 EMA9>21>50 排列(只用昨日以前)
+    + 波動閘(20日ATR%≤近252日80分位)。回 (gate, vol_ok)。"""
     closes = [b["close"] for b in bars]
-    dates = [b["date"] for b in bars]
-    if dates[-1] != today or len(bars) < 300:
-        return
     def ema(n):
         e, k = None, 2 / (n + 1)
         for c in closes[:-1]:
@@ -167,6 +164,30 @@ def fish_c(bars, today, st):
            for i in range(len(bars) - 252, len(bars))]
     atr20 = sum(trs[-20:]) / 20
     vol_ok = atr20 <= sorted(sum(trs[i:i+20])/20 for i in range(len(trs)-20))[int(0.8*(len(trs)-20))]
+    return g, vol_ok
+
+
+def c_done_today(today):
+    """live 盤中已記錄今天的魚C → 晚間重播跳過(live 主、重播備)。"""
+    try:
+        for l in open(LEDGER, encoding="utf-8"):
+            e = json.loads(l)
+            if e.get("fish") == "C" and e.get("date") == today:
+                return True
+    except FileNotFoundError:
+        pass
+    return False
+
+
+def fish_c(bars, today, st):
+    """規格凍結 2026-07-22:閘門見 c_gates;OR30 突破順勢一單+停損OR另一側+抱到13:44。"""
+    dates = [b["date"] for b in bars]
+    if dates[-1] != today or len(bars) < 300:
+        return
+    if c_done_today(today):
+        print("  魚C:盤中 live 已記錄今日,重播跳過")
+        return
+    g, vol_ok = c_gates(bars)
     stop_all, _ = halted(st)
     if g == 0 or not vol_ok or stop_all:
         print(f"  魚C:今日不進(閘={g}, 波動OK={vol_ok}, 煞車={stop_all})")
