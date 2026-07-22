@@ -257,9 +257,10 @@
   .sheet-x{border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--muted);
       border-radius:10px;padding:6px 11px;font-size:13px;font-weight:800;cursor:pointer;line-height:1}
   .sheet-x:hover{color:var(--ink);border-color:rgba(148,163,184,.4)}
-  /* ── 桌面版(≥1180px):內容拉寬+詳情改右側面板 ── */
-  @media(min-width:1180px){
-    .wrap{max-width:1120px;transition:margin .25s ease}
+  /* ── 桌面版(≥1280px):內容拉寬 min(96vw,1720px)+詳情改右側面板;<1280px 手機版不變 ── */
+  @media(min-width:1280px){
+    .wrap{max-width:min(96vw,1720px);transition:margin .25s ease}
+    td,th{padding:8px 10px}
     body.sheet-open .wrap{margin-right:660px}
     .sheet{left:auto;right:0;top:0;bottom:0;width:640px;max-height:100vh;height:100vh;
         border-radius:0;border-left:1px solid var(--bd);border-top:none;
@@ -271,10 +272,6 @@
     .ti-grid{grid-template-columns:repeat(3,1fr)}
     .nm-main{max-width:260px}
     .heat-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
-  }
-  @media(min-width:1600px){
-    body.sheet-open .wrap{margin-right:680px}
-    .wrap{max-width:1280px}
   }
   @media(max-width:560px){
     td,th{padding:9px 6px} .px{font-size:14px} .hide-sm{display:none}
@@ -394,6 +391,6 @@
 <script src="tw-chain-generic.js?v=20260722b"></script>
 <script src="us-chain-generic.js?v=20260722"></script>
 <script src="tw-cb.js?v=20260722"></script>
-<script src="js/watch.js?v=20260722t"></script>
+<script src="js/watch.js?v=20260722u"></script>
 </body>
 </html>
