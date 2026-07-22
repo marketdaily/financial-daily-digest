@@ -29,6 +29,9 @@ const I18N = {
     prof_chair: "董事長", prof_gm: "總經理", prof_listed: "上市", prof_web: "官網",
     ti_over: "超買", ti_under: "超賣", ti_mid: "中性", ti_gold: "多方", ti_dead: "空方",
     ti_above: "站上", ti_below: "跌破",
+    sec_depth: "📶 五檔報價", depth_bid: "買盤", depth_ask: "賣盤", depth_pending: "訂閱中…",
+    sec_news: "📰 新聞", news_none: "近兩週無相關新聞",
+    sort_def: "預設", sort_gain: "漲幅", sort_lose: "跌幅", sort_sig: "燈號優先",
     loading: "載入中…", chart_fail: "圖表載入失敗", vol_note: "下方=成交量",
   },
   en: {
@@ -57,6 +60,9 @@ const I18N = {
     prof_chair: "Chairman", prof_gm: "CEO/GM", prof_listed: "Listed", prof_web: "Web",
     ti_over: "Overbought", ti_under: "Oversold", ti_mid: "Neutral", ti_gold: "Bullish", ti_dead: "Bearish",
     ti_above: "above ", ti_below: "below ",
+    sec_depth: "📶 Order Book", depth_bid: "Bids", depth_ask: "Asks", depth_pending: "Subscribing…",
+    sec_news: "📰 News", news_none: "No recent news (2 weeks)",
+    sort_def: "Default", sort_gain: "Gainers", sort_lose: "Losers", sort_sig: "Signals first",
     loading: "Loading…", chart_fail: "Chart failed to load", vol_note: "bottom = volume",
   }
 };
@@ -166,6 +172,7 @@ function renderView() {
   $("group-chips").style.display = curTab === "watch" ? "flex" : "none";
   $("cat-bar").style.display = curTab === "cats" ? "flex" : "none";
   $("rank-chips").style.display = curTab === "ranks" ? "flex" : "none";
+  $("sort-chips").style.display = curTab === "ranks" ? "none" : "flex";
   $("pos-wrap").style.display = (curTab === "watch" && isAdmin) ? "block" : "none";
   if (curTab === "ranks") {
     $("tw-sec").style.display = "none"; $("us-sec").style.display = "none"; $("empty").style.display = "none";
@@ -183,6 +190,7 @@ function renderView() {
   const fullList = curTab === "cats" ? (CATEGORIES[curCat] || THEMES[curCat] || []) : [];
   $("tw-more").style.display = (curTab === "cats" && fullList.length > syms.length) ? "block" : "none";
   Object.values(quotes).forEach(q => paint(q));
+  applySortDom();
   refreshNow();
 }
 
@@ -225,6 +233,38 @@ function renderCatSel() {
   sel.onchange = () => { curCat = sel.value; catPage = 1; renderView(); };
 }
 
+/* 智慧排序 */
+const SORT_MODES = ["def", "gain", "lose", "sig"];
+function sortKey(s) {
+  const ch = quotes[s] && quotes[s].change != null ? quotes[s].change : null;
+  const sg = signals[s] || [];
+  const lvl = sg.some(i => i.level === "red") ? 0 : sg.length ? 1 : 2;
+  if (sortMode === "gain") return ch == null ? 999 : -ch;
+  if (sortMode === "lose") return ch == null ? 999 : ch;
+  if (sortMode === "sig") return lvl * 1000 - Math.abs(ch || 0);
+  return 0;
+}
+function renderSortChips() {
+  const el = $("sort-chips");
+  el.innerHTML = SORT_MODES.map(m =>
+    `<button class="chip ${sortMode === m ? "on" : ""}" data-so="${m}">${T("sort_" + m)}</button>`).join("");
+  el.querySelectorAll(".chip").forEach(c => c.onclick = () => {
+    sortMode = c.dataset.so;
+    localStorage.setItem("md-watch-sort", sortMode);
+    renderSortChips(); applySortDom();
+  });
+}
+function applySortDom() {
+  if (sortMode === "def" || curTab === "ranks") return;
+  ["tw-table", "us-table"].forEach(id => {
+    const tb = document.querySelector(`#${id} tbody`);
+    if (!tb) return;
+    Array.from(tb.querySelectorAll("tr[data-sym]"))
+      .sort((a, b) => sortKey(a.dataset.sym) - sortKey(b.dataset.sym))
+      .forEach(tr => tb.appendChild(tr));
+  });
+}
+
 const RANK_LABELS = { change: "rank_change", volume: "rank_volume", amount: "rank_amount", range: "rank_range", tick: "rank_tick" };
 function renderRankChips() {
   const el = $("rank-chips");
@@ -260,6 +300,7 @@ async function tickFree() {
   const target = bridgeOk ? syms.filter(s => !isTWSym(s)) : syms;
   if (!target.length) return;
   (await fetchFree(target.slice(0, 120))).forEach(paint);
+  applySortDom();
 }
 
 async function tickLive() {
@@ -271,6 +312,7 @@ async function tickLive() {
     if (!r.ok) throw new Error(r.status);
     (await r.json()).quotes.forEach(paint);
     bridgeFails = 0;
+    applySortDom();
   } catch { bridgeFails++; }
 }
 
@@ -339,6 +381,9 @@ let usFundCache = {};
 let chainDB = null, chainIdx = null;
 let chartCache = {};
 let curTf = "6M";
+let sortMode = localStorage.getItem("md-watch-sort") || "def";
+let depthTimer = null;
+let newsCache = {};
 const TF_LIST = [
   { k: "1D", src: "worker", range: "1D", mode: "line" },
   { k: "5D", src: "worker", range: "5D", mode: "candle" },
@@ -636,7 +681,59 @@ async function renderChain(sym) {
   renderProfile(sym);
 }
 
+/* 五檔 */
+async function renderDepth(sym) {
+  if (!bridge || !isTWSym(sym) || sheetSym !== sym) return;
+  const wrap = $("d-depth-wrap"), el = $("d-depth");
+  if (!wrap || !el) return;
+  try {
+    const d = await fetch(`${bridge.url}/depth?sym=${sym}&t=${encodeURIComponent(bridge.token)}`).then(r => r.json());
+    if (sheetSym !== sym || !el.isConnected) return;
+    wrap.style.display = "";
+    if (!d.depth) { el.innerHTML = `<div class="dp-col" style="grid-column:1/-1;color:var(--muted);font-size:12px">${T("depth_pending")}</div>`; return; }
+    const maxV = Math.max(...d.depth.bid.map(x => x[1]), ...d.depth.ask.map(x => x[1]), 1);
+    const rows = (arr, col) => arr.map(([p, v]) =>
+      `<div class="dp-row"><div class="bar" style="width:${Math.round(v / maxV * 100)}%;background:${col}"></div>
+       <b>${fp(p)}</b><span>${v.toLocaleString()}</span></div>`).join("");
+    el.innerHTML =
+      `<div class="dp-col"><div class="dp-h">${T("depth_bid")}</div>${rows(d.depth.bid, "#ef4444")}</div>` +
+      `<div class="dp-col"><div class="dp-h">${T("depth_ask")}</div>${rows(d.depth.ask, "#22c55e")}</div>`;
+  } catch {}
+}
+
+/* 新聞流 */
+async function renderNews(sym) {
+  const el = $("d-news");
+  if (!el) return;
+  try {
+    let items = newsCache[sym] && Date.now() - newsCache[sym].at < 600000 ? newsCache[sym].items : null;
+    if (!items) {
+      const q = isTWSym(sym) ? `&q=${encodeURIComponent((nameMap.get(sym) || sym).slice(0, 12))}` : "";
+      const d = await fetch(`${WORKER_URL}/stock-news?symbol=${sym}${q}`).then(r => r.json());
+      items = d.news || [];
+      newsCache[sym] = { at: Date.now(), items };
+    }
+    if (sheetSym !== sym || !el.isConnected) return;
+    if (!items.length) { el.innerHTML = `<div class="sig-item" style="color:var(--muted)">${T("news_none")}</div>`; return; }
+    const ago = ts => {
+      if (!ts) return "";
+      const h = (Date.now() / 1000 - ts) / 3600;
+      return h < 1 ? `${Math.max(Math.round(h * 60), 1)}m` : h < 24 ? `${Math.round(h)}h` : `${Math.round(h / 24)}d`;
+    };
+    el.innerHTML = items.map(n =>
+      `<a class="news-item" href="${n.url}" target="_blank" rel="noopener">
+        <div class="news-t">${n.title}</div><div class="news-m">${n.source || ""} · ${ago(n.ts)}</div></a>`).join("");
+  } catch { el.innerHTML = ""; }
+}
+
+function closeSheet() {
+  $("sheet").classList.remove("open"); $("sheet-bg").classList.remove("open");
+  sheetSym = null;
+  if (depthTimer) { clearInterval(depthTimer); depthTimer = null; }
+}
+
 function openSheet(sym) {
+  if (depthTimer) { clearInterval(depthTimer); depthTimer = null; }
   sheetSym = sym;
   curTf = "6M";
   const q = quotes[sym] || {};
@@ -661,6 +758,10 @@ function openSheet(sym) {
       ${q.bid != null ? `<span>買 <b>${fp(q.bid)}</b></span><span>賣 <b>${fp(q.ask)}</b></span>` : ""}
       ${q.volume != null ? `<span>量 <b>${(q.volume || 0).toLocaleString()}</b></span>` : ""}
     </div>
+    <div id="d-depth-wrap" style="display:none">
+      <div class="g-title">${T("sec_depth")}</div>
+      <div class="depth-wrap" id="d-depth"></div>
+    </div>
     <div class="tf-chips" id="tf-chips">${tfChipsHtml(sym)}</div>
     <canvas id="d-chart"></canvas>
     <div class="chart-note">MA5 <span style="color:#fbbf24">─</span> MA20 <span style="color:#818cf8">─</span> MA60 <span style="color:#38bdf8">─</span> · ${T("vol_note")}</div>
@@ -672,6 +773,8 @@ function openSheet(sym) {
     <div id="d-prof"></div>
     <div class="g-title" id="d-chain-h">${T("sec_chain")}</div>
     <div id="d-chain"></div>
+    <div class="g-title">${T("sec_news")}</div>
+    <div id="d-news"><div class="sig-item" style="color:var(--muted)">${T("loading")}</div></div>
     <div class="g-title">${T("sheet_sigs")}</div>
     ${sigs.length ? sigs.map(s => `<div class="sig-item"><div class="src">${s.level === "red" ? "🔴" : "🟡"} ${s.source}</div>${s.signal}</div>`).join("")
       : `<div class="sig-item" style="color:var(--muted)">${T("sheet_nosig")}</div>`}
@@ -701,6 +804,11 @@ function openSheet(sym) {
   renderTech(sym);
   renderFund(sym).then(() => { if (sheetSym === sym) renderProfile(sym); });
   renderChain(sym);
+  renderNews(sym);
+  if (bridge && isTWSym(sym)) {
+    renderDepth(sym);
+    depthTimer = setInterval(() => renderDepth(sym), 3000);
+  }
   if (!quotes[sym]) {
     fetchFree([sym]).then(qs => { qs.forEach(paint); if (sheetSym === sym) refreshSheetHead(sym); });
     if (bridge && isTWSym(sym)) {
@@ -717,7 +825,7 @@ function refreshSheetHead(sym) {
   if (px) { px.textContent = fp(q.price); px.className = "d-px " + dir; }
   if (chg) { chg.textContent = label; chg.className = "d-chg " + dir; }
 }
-$("sheet-bg").onclick = () => { $("sheet").classList.remove("open"); $("sheet-bg").classList.remove("open"); sheetSym = null; };
+$("sheet-bg").onclick = closeSheet;
 
 document.addEventListener("click", e => {
   const tr = e.target.closest("tbody tr[data-sym]");
@@ -793,7 +901,7 @@ async function init() {
     curTab = b.dataset.tab; catPage = 1; renderTabs(); renderView();
   });
   $("tw-more").onclick = () => { catPage++; renderView(); };
-  renderTabs(); renderGroupChips(); renderCatSel(); renderRankChips();
+  renderTabs(); renderGroupChips(); renderCatSel(); renderRankChips(); renderSortChips();
   loadTwFund();
   await loadSignals();
   renderView();

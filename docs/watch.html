@@ -119,6 +119,18 @@
       border-radius:10px;padding:6px 10px;margin:0 6px 6px 0;font-size:12px;cursor:pointer;max-width:100%}
   .chain-chip .cc-n{font-weight:700}
   .chain-chip .cc-r{display:block;font-size:10.5px;color:var(--muted);max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .depth-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .dp-col{background:rgba(255,255,255,.03);border:1px solid var(--bd);border-radius:12px;padding:8px 10px}
+  .dp-h{font-size:11px;font-weight:800;color:var(--muted);margin-bottom:6px;letter-spacing:.5px}
+  .dp-row{position:relative;display:flex;justify-content:space-between;font-size:12.5px;padding:3px 6px;
+          font-variant-numeric:tabular-nums;border-radius:5px;overflow:hidden}
+  .dp-row .bar{position:absolute;top:0;bottom:0;right:0;opacity:.14;border-radius:5px}
+  .dp-row b{font-weight:800;z-index:1}.dp-row span{z-index:1;color:var(--muted)}
+  .news-item{display:block;background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:10px;
+             padding:9px 12px;margin-bottom:7px;text-decoration:none;color:var(--ink)}
+  .news-item:hover{background:rgba(129,140,248,.08)}
+  .news-t{font-size:12.5px;line-height:1.5;font-weight:600}
+  .news-m{font-size:10.5px;color:var(--muted);margin-top:3px}
   @media(max-width:560px){ td,th{padding:8px 5px} .px{font-size:14px} .hide-sm{display:none}
     .ti-grid,.fd-grid{grid-template-columns:repeat(2,1fr)} .d-px{font-size:22px} .d-name{font-size:19px} }
 </style>
@@ -154,6 +166,7 @@
       <select class="catsel" id="cat-sel"></select>
     </div>
     <div class="chips" id="rank-chips" style="display:none"></div>
+    <div class="chips" id="sort-chips" style="display:none"></div>
 
     <div id="pos-wrap" style="display:none"></div>
 
@@ -196,6 +209,6 @@
 <script src="stocks.js?v=20260528"></script>
 <script src="tw-industry.js?v=20260722"></script>
 <script src="tw-profile.js?v=20260722"></script>
-<script src="js/watch.js?v=20260722c"></script>
+<script src="js/watch.js?v=20260722d"></script>
 </body>
 </html>

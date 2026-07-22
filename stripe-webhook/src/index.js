@@ -1584,6 +1584,44 @@ export default {
       return json(raw ? JSON.parse(raw) : { date: null, by_code: {} }, 200);
     }
 
+    // 個股新聞流:台股 cnyes 關鍵字搜尋(q=中文名),美股 Finnhub company-news;CF cache 10min
+    if (url.pathname === "/stock-news" && request.method === "GET") {
+      const sym = (url.searchParams.get("symbol") || "").trim().toUpperCase();
+      const isTW = /^\d{4,6}[A-Z]?$/.test(sym);
+      const cf = { cf: { cacheTtl: 600, cacheEverything: true } };
+      try {
+        if (isTW) {
+          const q = (url.searchParams.get("q") || "").trim().slice(0, 30) || sym;
+          const r = await fetch(`https://ess.api.cnyes.com/ess/api/v1/news/keyword?q=${encodeURIComponent(q)}&limit=12`,
+            { ...cf, headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" } });
+          if (!r.ok) return json({ news: [] });
+          const items = ((await r.json()).data || {}).items || [];
+          return json({
+            news: items.slice(0, 10).map(it => ({
+              title: String(it.title || "").replace(/<[^>]*>/g, "").trim(),
+              url: `https://news.cnyes.com/news/id/${it.newsId}`,
+              ts: it.publishAt || it.newsPublishAt || null,
+              source: "鉅亨網",
+            })).filter(n => n.title),
+          });
+        }
+        const fh = env.FINNHUB_API_KEY;
+        if (!fh || !/^[A-Z.\-]{1,10}$/.test(sym)) return json({ news: [] });
+        const to = new Date().toISOString().slice(0, 10);
+        const from = new Date(Date.now() - 14 * 86400e3).toISOString().slice(0, 10);
+        const r = await fetch(`https://finnhub.io/api/v1/company-news?symbol=${sym}&from=${from}&to=${to}&token=${fh}`, cf);
+        if (!r.ok) return json({ news: [] });
+        const items = await r.json();
+        return json({
+          news: (Array.isArray(items) ? items : []).slice(0, 10).map(it => ({
+            title: it.headline, url: it.url, ts: it.datetime || null, source: it.source || "",
+          })).filter(n => n.title && n.url),
+        });
+      } catch {
+        return json({ news: [] });
+      }
+    }
+
     // 美股基本面:Finnhub metric+profile2 proxy(CF cache 3h)
     if (url.pathname === "/us-fundamentals" && request.method === "GET") {
       const sym = (url.searchParams.get("symbol") || "").trim().toUpperCase();

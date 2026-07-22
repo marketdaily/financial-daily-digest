@@ -56,6 +56,8 @@ class Feed:
         )
         self._api = api
         self._login_ts = time.time()
+        self._bidask_cb_installed = False
+        self._subs, self._depth = {}, {}
         print(f"[bridge] login ok ts={int(self._login_ts)}", flush=True)
 
     def api(self):
@@ -145,6 +147,48 @@ class Feed:
         if c is not None:
             self._contracts[s] = c
         return c
+
+    DEPTH_IDLE_S = 300
+
+    def depth(self, sym):
+        """五檔:on-demand 訂閱 BidAsk 串流,idle 5 分鐘自動退訂(訂閱上限 200 檔)。"""
+        import shioaji as sj
+        api = self.api()
+        if not getattr(self, "_bidask_cb_installed", False):
+            api.quote.set_on_bidask_stk_v1_callback(self._on_bidask)
+            self._bidask_cb_installed = True
+        now = time.time()
+        if not hasattr(self, "_depth"):
+            self._depth, self._subs = {}, {}
+        if sym not in self._subs:
+            contract = self._resolve(api, sym)
+            if contract is None:
+                return None
+            api.quote.subscribe(contract, quote_type=sj.constant.QuoteType.BidAsk,
+                                version=sj.constant.QuoteVersion.v1)
+        self._subs[sym] = now
+        for s, t0 in list(self._subs.items()):
+            if s != sym and now - t0 > self.DEPTH_IDLE_S:
+                try:
+                    c = self._contracts.get(s)
+                    if c is not None:
+                        api.quote.unsubscribe(c, quote_type=sj.constant.QuoteType.BidAsk,
+                                              version=sj.constant.QuoteVersion.v1)
+                except Exception:
+                    pass
+                self._subs.pop(s, None)
+                self._depth.pop(s, None)
+        return self._depth.get(sym)
+
+    def _on_bidask(self, exchange, ba):
+        try:
+            self._depth[ba.code] = {
+                "ts": int(time.time()),
+                "bid": [[float(p), int(v)] for p, v in zip(ba.bid_price, ba.bid_volume)],
+                "ask": [[float(p), int(v)] for p, v in zip(ba.ask_price, ba.ask_volume)],
+            }
+        except Exception:
+            pass
 
     def kbars(self, sym, res=5, days=5):
         """近 N 日分 K(1 分 K 聚合成 res 分鐘)。ts 牆鐘偽 epoch→分桶用牆鐘、輸出真 epoch(-8h)。"""
@@ -264,6 +308,12 @@ class Handler(BaseHTTPRequestHandler):
                 syms = [s.strip().upper() for s in raw.split(",") if s.strip()][:60]
                 syms = [s for s in syms if TW_SYM.match(s)]
                 return self._send(200, {"quotes": FEED.quotes(syms), "src": "shioaji", "ts": int(time.time())})
+            if u.path == "/depth":
+                sym = (qs.get("sym") or [""])[0].strip().upper()
+                if not TW_SYM.match(sym):
+                    return self._send(400, {"error": "bad_sym"})
+                d = FEED.depth(sym)
+                return self._send(200, {"depth": d, "sym": sym, "status": "ok" if d else "pending"})
             if u.path == "/kbars":
                 sym = (qs.get("sym") or [""])[0].strip().upper()
                 res = int((qs.get("res") or ["5"])[0])
