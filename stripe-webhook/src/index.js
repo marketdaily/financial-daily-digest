@@ -1668,6 +1668,136 @@ export default {
       }
     }
 
+    // 台股籌碼面(看盤詳情):FinMind 官方彙整資料 proxy。法人買賣超/融資券/大戶持股/當沖率。
+    // 全體用戶免費(合規:個股內容不分付費)。CF cache 6h,FinMind token 600 req/hr 綽綽有餘。
+    if (url.pathname === "/tw-chips" && request.method === "GET") {
+      const code = (url.searchParams.get("code") || "").trim().toUpperCase();
+      if (!/^\d{4,6}[A-Z]?$/.test(code)) return json({ error: "bad_code" }, 400);
+      if (!env.FINMIND_TOKEN) return json({ error: "not_configured" }, 503);
+      const day = 86400e3, now = Date.now();
+      const d0 = ms => new Date(ms).toISOString().slice(0, 10);
+      try {
+        const [inst, margin, holders, dtr, px] = await Promise.all([
+          finmind(env, "TaiwanStockInstitutionalInvestorsBuySell", code, d0(now - 100 * day)),
+          finmind(env, "TaiwanStockMarginPurchaseShortSale", code, d0(now - 100 * day)),
+          finmind(env, "TaiwanStockShareholding", code, d0(now - 100 * day)),
+          finmind(env, "TaiwanStockDayTrading", code, d0(now - 100 * day)),
+          finmind(env, "TaiwanStockPrice", code, d0(now - 100 * day)),
+        ]);
+        // 法人:同日多法人列 → 併成 {d, f外資, t投信, dl自營}(單位:張,net=buy-sell)
+        const instMap = {};
+        for (const r of inst) {
+          const e = instMap[r.date] || (instMap[r.date] = { d: r.date, f: 0, t: 0, dl: 0 });
+          const net = Math.round(((r.buy || 0) - (r.sell || 0)) / 1000);
+          const n = r.name || "";
+          if (n.startsWith("Foreign")) e.f += net;
+          else if (n === "Investment_Trust") e.t += net;
+          else if (n.startsWith("Dealer")) e.dl += net;
+        }
+        // 外資持股比(TDCC 400張大戶級距是 FinMind 贊助級拿不到,用官方外資持股比呈現集中度趨勢)
+        const volMap = {};
+        for (const r of px) volMap[r.date] = r.Trading_Volume || 0;
+        return new Response(JSON.stringify({
+          code,
+          inst: Object.values(instMap).sort((a, b) => a.d < b.d ? -1 : 1).slice(-45),
+          margin: margin.map(r => ({
+            d: r.date,
+            mb: r.MarginPurchaseTodayBalance ?? null,
+            sb: r.ShortSaleTodayBalance ?? null,
+          })).slice(-45),
+          foreign: holders.map(r => ({ d: r.date, fr: r.ForeignInvestmentSharesRatio ?? null }))
+            .filter(x => x.fr != null).slice(-45),
+          daytrade: dtr.map(r => ({
+            d: r.date,
+            r: volMap[r.date] ? Math.round((r.Volume || 0) / volMap[r.date] * 1000) / 10 : null,
+          })).filter(x => x.r != null).slice(-45),
+          px: px.map(r => ({ d: r.date, c: r.close })).slice(-45),
+        }), { headers: { ...CORS_HEADERS, "Content-Type": "application/json", "Cache-Control": "max-age=3600" } });
+      } catch { return json({ error: "upstream" }, 502); }
+    }
+
+    // 台股財務面(看盤詳情):月營收 3 年/季 EPS 與三率/本益比河流(PER PBR 殖利率 1 年)。
+    if (url.pathname === "/tw-fin" && request.method === "GET") {
+      const code = (url.searchParams.get("code") || "").trim().toUpperCase();
+      if (!/^\d{4,6}[A-Z]?$/.test(code)) return json({ error: "bad_code" }, 400);
+      if (!env.FINMIND_TOKEN) return json({ error: "not_configured" }, 503);
+      const day = 86400e3, now = Date.now();
+      const d0 = ms => new Date(ms).toISOString().slice(0, 10);
+      try {
+        const [rev, fs, per] = await Promise.all([
+          finmind(env, "TaiwanStockMonthRevenue", code, d0(now - 1140 * day), 43200),
+          finmind(env, "TaiwanStockFinancialStatements", code, d0(now - 1000 * day), 43200),
+          finmind(env, "TaiwanStockPER", code, d0(now - 380 * day), 43200),
+        ]);
+        // 季報:date=季末 → {q, eps, gm 毛利率, om 營益率, nm 淨利率}
+        const qMap = {};
+        for (const r of fs) {
+          const m = String(r.date || "").slice(0, 7);
+          const qn = { "03": "Q1", "06": "Q2", "09": "Q3", "12": "Q4" }[m.slice(5)] || "";
+          if (!qn) continue;
+          const key = m.slice(0, 4) + qn;
+          const e = qMap[key] || (qMap[key] = { q: key, d: r.date });
+          if (r.type === "EPS") e.eps = r.value;
+          else if (r.type === "Revenue") e.rev = r.value;
+          else if (r.type === "GrossProfit") e.gp = r.value;
+          else if (r.type === "OperatingIncome") e.oi = r.value;
+          else if (r.type === "IncomeAfterTaxes") e.ni = r.value;
+        }
+        const quarters = Object.values(qMap).sort((a, b) => a.d < b.d ? -1 : 1).map(e => ({
+          q: e.q, eps: e.eps ?? null,
+          gm: e.rev && e.gp != null ? Math.round(e.gp / e.rev * 1000) / 10 : null,
+          om: e.rev && e.oi != null ? Math.round(e.oi / e.rev * 1000) / 10 : null,
+          nm: e.rev && e.ni != null ? Math.round(e.ni / e.rev * 1000) / 10 : null,
+        })).slice(-9);
+        return new Response(JSON.stringify({
+          code,
+          rev: rev.map(r => ({ m: String(r.date || "").slice(0, 7), v: r.revenue || 0 })).slice(-37),
+          quarters,
+          per: per.map(r => ({ d: r.date, per: r.PER ?? null, pbr: r.PBR ?? null, dy: r.dividend_yield ?? null })),
+        }), { headers: { ...CORS_HEADERS, "Content-Type": "application/json", "Cache-Control": "max-age=7200" } });
+      } catch { return json({ error: "upstream" }, 502); }
+    }
+
+    // 市場新聞流(看盤新聞頁籤):cnyes 分類新聞。cat 白名單防 open proxy。
+    if (url.pathname === "/market-news" && request.method === "GET") {
+      const cat = url.searchParams.get("cat") || "headline";
+      if (!["headline", "tw_stock", "wd_stock", "forex", "future"].includes(cat)) return json({ error: "bad_cat" }, 400);
+      try {
+        const r = await fetch(`https://api.cnyes.com/media/api/v1/newslist/category/${cat}?page=1&limit=30`,
+          { cf: { cacheTtl: 600, cacheEverything: true }, headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" } });
+        if (!r.ok) return json({ news: [] });
+        const j = await r.json();
+        const items = (j.items && j.items.data) || (j.data && j.data.items) || [];
+        return new Response(JSON.stringify({
+          news: items.slice(0, 25).map(it => ({
+            title: String(it.title || "").replace(/<[^>]*>/g, "").trim(),
+            url: `https://news.cnyes.com/news/id/${it.newsId}`,
+            ts: it.publishAt || null,
+            source: it.categoryName || "鉅亨網",
+          })).filter(n => n.title),
+        }), { headers: { ...CORS_HEADERS, "Content-Type": "application/json", "Cache-Control": "max-age=300" } });
+      } catch { return json({ news: [] }); }
+    }
+
+    // 看盤個人化雲端同步(自選群組+警示條件):跨裝置同步,身份=email+密碼(同 get-preferences)。
+    if (url.pathname === "/watch-sync" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      const email = String(body.email || "").trim().toLowerCase();
+      if (!email) return json({ error: "invalid_email" }, 400);
+      const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
+      if (!storedHash || !(await verifyPwd(String(body.password || ""), storedHash))) return json({ error: "auth" }, 403);
+      if (body.action === "save") {
+        const data = body.data || {};
+        const payload = JSON.stringify({ groups: data.groups || {}, alerts: data.alerts || {}, ts: Date.now() });
+        if (payload.length > 100000) return json({ error: "too_big" }, 400);
+        await env.USER_PREFS.put(`watchsync:${email}`, payload);
+        return json({ ok: true });
+      }
+      const raw = await env.USER_PREFS.get(`watchsync:${email}`);
+      return json(raw ? JSON.parse(raw) : { groups: null, alerts: null, ts: 0 });
+    }
+
     if (url.pathname === "/internal/plan-trades" && request.method === "POST") {
       if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
       let body;
@@ -1975,6 +2105,7 @@ export default {
         "3M": { interval: "1d",  range: "3mo" },
         "6M": { interval: "1d",  range: "6mo" },
         "1Y": { interval: "1wk", range: "1y"  },
+        "5Y": { interval: "1mo", range: "5y"  },
       }[url.searchParams.get("range") || "1M"] || { interval: "1d", range: "1mo" };
       const wantOhlc = url.searchParams.get("ohlc") === "1";
       const isTW = /^\d{4,6}$/.test(t);
@@ -2436,6 +2567,15 @@ function json(data, status = 200) {
     status,
     headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
   });
+}
+
+// FinMind v4 data proxy(台股籌碼/財務官方彙整)。token 600 req/hr;CF edge cache 讓熱門股全球共用。
+async function finmind(env, dataset, dataId, startDate, ttl = 21600) {
+  const u = `https://api.finmindtrade.com/api/v4/data?dataset=${dataset}&data_id=${encodeURIComponent(dataId)}&start_date=${startDate}&token=${env.FINMIND_TOKEN}`;
+  const r = await fetch(u, { cf: { cacheTtl: ttl, cacheEverything: true } });
+  if (!r.ok) return [];
+  const d = await r.json();
+  return Array.isArray(d.data) ? d.data : [];
 }
 
 // 抓 Yahoo Finance chart。台股先試 .TW(上市)再試 .TWO(上櫃),
