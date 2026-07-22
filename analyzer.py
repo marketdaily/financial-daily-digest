@@ -2380,12 +2380,13 @@ if os.environ.get("COUNCIL_PAID_SEATS") == "1":
 
 
 def _council_judge_call(p: str) -> str:
-    # 裁判免費 Gemini 優先(同省錢令);空桶才退付費 Haiku 保底。
+    # 裁判免費 Gemini 優先(省錢令);空桶才退付費保底——保底用 Sonnet 非 Haiku
+    # (2026-07-22 Delvin:反正只在 Gemini 掛時花錢,就花在品質最關鍵的裁判上)。
     # 兩者皆敗時呼叫端既有 try/except 會走「最高信念席次」fallback,行為不變。
     try:
         return _call_gemini(p, "gemini-2.5-flash-lite", system=_COUNCIL_SYS)
     except Exception:
-        return _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)
+        return _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")
 
 
 _COUNCIL_JUDGE = _council_judge_call
