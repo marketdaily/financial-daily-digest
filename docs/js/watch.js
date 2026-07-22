@@ -2525,15 +2525,32 @@ async function initBridge() {
 }
 
 async function init() {
-  if (!email || !pwd) { $("gate").style.display = "block"; return; }
-  let data;
-  try {
-    const r = await fetch(WORKER_URL + "/get-preferences", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password: pwd }) });
-    data = await r.json();
-    if (r.status === 403 || data.error) { $("gate").style.display = "block"; return; }
-  } catch { $("gate").style.display = "block"; return; }
-  prefsTw = data.tw_stocks || [];
-  prefsUs = data.us_stocks || [];
+  /* 分析師 guest 模式(analyst.marketdaily.ai 過來帶 ?src=analyst):免會員登入,
+     走免費延遲源;sessionStorage 記住,站內換頁不掉。合規不變:guest 永遠拿不到 bridge 即時源 */
+  /* 看盤頁預設免登入直接可用(guest):未登入只影響「自選雲端同步/持股偏好」,
+     用一條小提示取代整頁登入牆(擋牆=分析師與新用戶第一眼死路,2026-07-22 Delvin 截圖打槍)。
+     合規不變:guest 永遠只有免費延遲源,bridge 即時源仍需 admin/白名單 token */
+  function guestHint() {
+    const g = $("gate");
+    g.innerHTML = '💡 未登入:自選清單只存在這台裝置。<a href="dashboard.html">登入即可雲端同步 →</a>';
+    g.style.display = "block";
+  }
+  if (!email || !pwd) {
+    guestHint(); prefsTw = []; prefsUs = [];
+  } else {
+    let data = null;
+    try {
+      const r = await fetch(WORKER_URL + "/get-preferences", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password: pwd }) });
+      data = await r.json();
+      if (r.status === 403 || data.error) data = null;
+    } catch { data = null; }
+    if (!data) {
+      guestHint(); prefsTw = []; prefsUs = [];
+    } else {
+      prefsTw = data.tw_stocks || [];
+      prefsUs = data.us_stocks || [];
+    }
+  }
   $("app").style.display = "block";
   document.querySelectorAll(".tab").forEach(b => b.onclick = () => {
     curTab = b.dataset.tab; catPage = 1; renderTabs(); renderView();
