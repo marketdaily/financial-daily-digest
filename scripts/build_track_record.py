@@ -1044,11 +1044,12 @@ def match_tokens_to_users(personal_records: list[dict]) -> dict[str, str]:
     return tok_user
 
 
-def fetch_spx_regime() -> dict[str, str]:
+def fetch_spx_regime(closes: dict[str, float] | None = None) -> dict[str, str]:
     """日期 → 大盤趨勢標記(SPX 收盤 vs 5 個交易日前:up/down)。
     用來把勝率按 regime 拆開 — 驗證「下跌 regime 整批喊買 = 主要虧損源」假設,
     並追蹤 2026-06-10 上線的 regime 閘門有沒有真的把 down-regime 勝率拉起來。"""
-    closes = yahoo_chart("^GSPC", "", "")
+    if closes is None:
+        closes = yahoo_chart("^GSPC", "", "")
     if not closes:
         return {}
     ds = sorted(closes)
@@ -1056,6 +1057,52 @@ def fetch_spx_regime() -> dict[str, str]:
     for i, d in enumerate(ds):
         if i >= 5:
             out[d] = "down" if closes[d] < closes[ds[i - 5]] else "up"
+    return out
+
+
+# 前夜 SPX 漲跌桶(2026-07-22,Delvin「看多勝率可悲——夜盤的影響」根因診斷):
+# 「前夜」= call 日之前最後一個已完成 SPX session 的單日漲跌%。TW 早報 07:00 與 US 晚報
+# 20:00 生成當下這都是已知資訊(analyzer 端即 us_market["^GSPC"].change_pct)。
+# 帳本實證(702 筆去重 buy):SPX 收漲夜隔日追買 = 看多最大毒桶(0~+0.5% 桶勝率 17.8%/n=163),
+# 既有 regime/追高閘全漏接(小漲夜不觸發 risk_on);收跌夜看多 50.7~78.3% 照常會贏。
+# OOS 拆半與日 cluster 皆同向(日中位數 18% vs 70%)。桶邊界隨 JSON 下發,analyzer 讀同一份,
+# 兩端永不漂移。up 桶不再細分 0~0.5/0.5+:era 世代天數不足會讓讀取端 day floor 永遠關門。
+OVERNIGHT_BUCKET_EDGES: dict[str, tuple[float, float]] = {
+    "dn_deep": (-999.0, -1.0),
+    "dn": (-1.0, 0.0),
+    "up": (0.0, 999.0),
+}
+
+
+def era_overnight_buckets(recs: list[dict], closes: dict[str, float]) -> dict:
+    """era 記錄 × 前夜 SPX 桶 → analyzer._pp_overnight_autogate 的資料源。
+    days 欄必帶:同夜記錄高度相關,n 會虛胖(day-cluster 教訓),讀取端必須用 day floor。
+    closes 只有 3M(yahoo_chart range 上限,與 fetch_spx_regime 同一限制)→ 桶天然帶
+    recency,更舊的 era 記錄自動淡出,不需另設衰減。"""
+    ds = sorted(closes)
+
+    def _bucket(d: str) -> str | None:
+        i = bisect.bisect_left(ds, d)
+        if i < 2:
+            return None
+        pct = (closes[ds[i - 1]] / closes[ds[i - 2]] - 1) * 100
+        return next((k for k, (lo, hi) in OVERNIGHT_BUCKET_EDGES.items() if lo <= pct < hi), None)
+
+    bmap = {d: _bucket(d) for d in {r["date"] for r in recs}}
+    out: dict = {"buckets": {k: list(v) for k, v in OVERNIGHT_BUCKET_EDGES.items()}}
+    for mk in ("tw", "us"):
+        blk = {}
+        for vc in ("buy", "hold", "sell", "wait"):
+            for bn in OVERNIGHT_BUCKET_EDGES:
+                sub = [r for r in recs if r.get("market") == mk and r["verdict_class"] == vc
+                       and bmap.get(r["date"]) == bn]
+                w = sum(1 for r in sub if r["outcome"] == "win")
+                n = len(sub)
+                blk[f"{vc}|{bn}"] = {
+                    "count": n, "wins": w, "days": len({r["date"] for r in sub}),
+                    "rate": round(w / n * 100, 1) if n >= 15 else None,
+                    "status": "insufficient_data" if n < 15 else None}
+        out[mk] = blk
     return out
 
 
@@ -1649,7 +1696,8 @@ def main() -> int:
     # ── 校準 / regime 拆解 / level-based 操作模擬(2026-06-10 自學三件套)──
     calib = calibration_stats(a_recs)
 
-    regime_by_date = fetch_spx_regime()
+    spx_closes = yahoo_chart("^GSPC", "", "") or {}
+    regime_by_date = fetch_spx_regime(spx_closes)
     by_regime = {}
     for trend in ("up", "down"):
         sub = [r for r in a_recs if regime_by_date.get(r["date"]) == trend]
@@ -1703,6 +1751,7 @@ def main() -> int:
         "c_ci95_day_cluster": day_cluster_ci(era_c),
         "by_regime": era_by_regime,
         "by_verdict_regime": era_by_verdict_regime,
+        "by_verdict_overnight": era_overnight_buckets(era_a + era_c, spx_closes),
         "calibration": calibration_stats(era_a),
         "days": len({r["date"] for r in era_a + era_c}),
     }

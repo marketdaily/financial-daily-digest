@@ -1186,6 +1186,75 @@ def _pp_bucket_autogate(html: str, _regime_label: str) -> str:
     return html
 
 
+def _pp_overnight_autogate(html: str, data: dict) -> str:
+    import re as _re
+    # 夜盤情境自動閘門(2026-07-22,Delvin「看多勝率可悲,想怎麼變高——夜盤的影響」實證):
+    # 帳本 702 筆去重 buy:前晚 SPX 收漲後隔日追買 = 看多最大毒桶(0~+0.5% 桶 17.8%/n=163),
+    # 既有閘門全漏接(小漲夜不觸發 risk_on,追高/桶閘都咬不到);SPX 收跌夜看多 50.7~78.3%
+    # 照常放行 — 這不是「全部看多改觀望」,是把看多集中到歷史上真的會贏的夜盤情境
+    # (毒桶裡 wait 卡實測 85% = 轉觀望是對的 call)。同 _pp_bucket_autogate 哲學:桶由
+    # track-record 每日重算,失準自動武裝、回到縮後 ≥45 自動解除,不寫死方向。
+    # day floor(days≥8)+n≥30 比桶閘更嚴:同夜記錄高度相關,n 虛胖(day-cluster 教訓)。
+    # 桶邊界跟 stats JSON 下發(builder OVERNIGHT_BUCKET_EDGES 單一真源),兩端永不漂移。
+    s = _track_stats() or {}
+    ov = ((s.get("era") or {}).get("by_verdict_overnight")) or {}
+    edges = ov.get("buckets") or {}
+    if not edges:
+        return html
+    try:
+        spx = float(((data.get("us_market") or {}).get("^GSPC") or {}).get("change_pct"))
+    except (TypeError, ValueError):
+        return html
+    bname = next((k for k, v in edges.items()
+                  if isinstance(v, (list, tuple)) and len(v) == 2 and v[0] <= spx < v[1]), None)
+    if not bname:
+        return html
+    _REASON = {
+        "up": "⚪ 觀望·美股前夜收漲慎追買(回檔再進)",
+        "dn": "⚪ 觀望·此夜盤情境近期實測失準(企穩再進)",
+        "dn_deep": "⚪ 觀望·此夜盤情境近期實測失準(企穩再進)",
+    }
+    tw_syms = set((data.get("tw_market") or {}).keys())
+    K = 20.0
+
+    def _shrunk(mkt: str, bn: str):
+        b = (ov.get(mkt) or {}).get(f"buy|{bn}") or {}
+        n, w, days = b.get("count") or 0, b.get("wins") or 0, b.get("days") or 0
+        if n < 30 or days < 8:
+            return None
+        return (w + K * 0.5) / (n + K) * 100
+
+    def _demote(m):
+        block = m.group(0)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        sym = hm.group(1)
+        mkt = "tw" if (sym in tw_syms or sym[:1].isdigit()) else "us"
+        cur = _shrunk(mkt, bname)
+        if cur is None or cur >= 45:
+            return block
+        # 相對最佳桶保險(Delvin 紅線「不要把所有看多變觀望」的結構性保證):就算哪天
+        # 全部夜盤桶都跌破 45,相對最會贏的那桶永不降級 — 看多集中到最佳情境,不會歸零;
+        # 該桶的絕對勝率問題屬選股 alpha,不歸這道時機閘管。
+        rivals = [v for bn2 in edges if bn2 != bname
+                  for v in [_shrunk(mkt, bn2)] if v is not None]
+        if rivals and cur >= max(rivals):
+            return block
+        block = block.replace('class="signal-card buy"', 'class="signal-card wait"', 1)
+        block = _re.sub(r'<span class="signal-verdict-chip buy">[^<]*</span>',
+                        '<span class="signal-verdict-chip wait">'
+                        + _REASON.get(bname, _REASON["up"]) + '</span>'
+                        '<!--gated:buy:overnight-->',
+                        block, count=1)
+        return block
+
+    return _re.sub(
+        r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote, html, flags=_re.DOTALL,
+    )
+
+
 def _pp_exdiv_guard(html: str, data: dict) -> str:
     import re as _re
     # 除息日閘門(2026-07-13 聯詠 3034 事故根治):除息當天參考價已扣現金股利,
@@ -1358,6 +1427,8 @@ def _pp_holder_wording(html: str) -> str:
         ("⚪ 觀望·漲多過熱(回檔再進)", "⚪ 持股防守·漲多過熱,守停損別加碼"),
         ("⚪ 觀望·多頭市況勿追強勢(回檔再進)", "⚪ 持股防守·多頭市況勿追高加碼,守停損"),
         ("⚪ 觀望·同型判斷近期實測失準,自動降級", "⚪ 持股防守·同型判斷近期失準,守好停損"),
+        ("⚪ 觀望·美股前夜收漲慎追買(回檔再進)", "⚪ 持股防守·美股前夜收漲勿追高加碼,守停損"),
+        ("⚪ 觀望·此夜盤情境近期實測失準(企穩再進)", "⚪ 持股防守·此夜盤情境近期失準,守好停損"),
         ("⚪ 觀望·今日除息(參考價已扣息)", "⚪ 持股防守·今日除息(參考價已扣息)"),
         ("🔴 建議賣出", "🔴 減碼/出場"),
     )
@@ -1557,6 +1628,7 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_oversold_gate(html, _techs_gate)
     html = _pp_extended_gate(html, _techs_gate, _regime_label)
     html = _pp_bucket_autogate(html, _regime_label)
+    html = _pp_overnight_autogate(html, data)
     html = _pp_exdiv_guard(html, data)
     html = _pp_strip_badges(html)
     html = _pp_clamp_confidence(html)
