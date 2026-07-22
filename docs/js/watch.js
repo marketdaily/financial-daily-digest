@@ -546,6 +546,7 @@ async function loadChain() {
 }
 
 function normTicker(t) { return (t || "").replace(/\.(TW|TWO)$/, ""); }
+let aiChainCache = {};
 
 async function fetchBars(sym, tfk) {
   const ck = `${sym}:${tfk}`;
@@ -1389,7 +1390,8 @@ function renderProfile(sym) {
   const el = $("d-prof");
   if (!el) return;
   const entry = chainIdx && chainIdx[sym];
-  const bizTxt = (entry && entry.mid && entry.mid.desc) || BIZ[sym] || "";
+  const aiC = aiChainCache[sym] && aiChainCache[sym].d;
+  const bizTxt = (entry && entry.mid && entry.mid.desc) || BIZ[sym] || (aiC && aiC.mid && aiC.mid.desc) || "";
   const biz = bizTxt ? `<div class="biz">${bizTxt}</div>` : "";
   if (isTWSym(sym)) {
     const p = PROFILE[sym];
@@ -1425,6 +1427,35 @@ function chainChip(p) {
     ${role ? `<span class="cc-r">${role}</span>` : ""}</span>`;
 }
 
+async function fetchAiChain(sym) {
+  const c = aiChainCache[sym];
+  if (c) return c.d;
+  try {
+    const nm = nameMap.get(sym) || "";
+    const d = await fetch(`${WORKER_URL}/supply-chain?ticker=${sym}${nm ? `&name=${encodeURIComponent(nm)}` : ""}`).then(r => r.json());
+    if (d && !d.error && ((d.upstream || []).length || (d.downstream || []).length)) {
+      aiChainCache[sym] = { d };
+      return d;
+    }
+  } catch {}
+  aiChainCache[sym] = { d: null };
+  return null;
+}
+async function renderChainEvents(sym) {
+  const el = $("d-chain-ev");
+  if (!el) return;
+  try {
+    const d = await fetch(`${WORKER_URL}/supply-chain-updates?ticker=${sym}`).then(r => r.json());
+    if (sheetSym !== sym || !el.isConnected) return;
+    const evs = d.events || [];
+    if (!evs.length) { el.innerHTML = ""; return; }
+    el.innerHTML = `<div class="chain-lbl" style="margin-top:12px">🆕 供應鏈動態(官方公告)</div>` + evs.map(e => {
+      const inner = `<div class="news-t">${escAttr(e.headline || "")}</div>
+        <div class="news-m">${e.date || ""}${e.counterparty ? " · 對象:" + escAttr(e.counterparty) : ""}${e.source_type ? " · " + escAttr(e.source_type) : ""}</div>`;
+      return e.url ? `<a class="news-item" href="${e.url}" target="_blank" rel="noopener">${inner}</a>` : `<div class="news-item">${inner}</div>`;
+    }).join("");
+  } catch {}
+}
 async function renderChain(sym) {
   await loadChain();
   const el = $("d-chain");
@@ -1432,37 +1463,52 @@ async function renderChain(sym) {
   const h = $("d-chain-h");
   const entry = chainIdx[sym];
   const isETF = INDUSTRY[sym] === "ETF";
-  let up = [], down = [], badge = "";
-  if (entry) {
-    up = entry.upstream || []; down = entry.downstream || [];
-    badge = `<span class="chip" style="cursor:default;font-size:10px;padding:2px 8px">${T("chain_verified")}</span>`;
-  } else if (isTWSym(sym) && !isETF && CHAIN_GENERIC[INDUSTRY[sym]]) {
-    const g = CHAIN_GENERIC[INDUSTRY[sym]];
-    const conv = arr => (arr || []).map(x => ({ name_zh: x.n, ticker: x.t, role: x.r }));
-    up = conv(g.up); down = conv(g.down);
-    badge = `<span class="chip" style="cursor:default;font-size:10px;padding:2px 8px">${T("chain_generic")} · ${INDUSTRY[sym]}</span>`;
-  } else if (!isTWSym(sym)) {
-    const f = usFundCache[sym];
-    const g = f && f.industry && USCG[f.industry];
-    if (g) {
-      const conv = arr => (arr || []).map(x => ({ name_zh: x.n, ticker: x.t, role: x.r }));
-      up = conv(g.up); down = conv(g.down);
-      badge = `<span class="chip" style="cursor:default;font-size:10px;padding:2px 8px">${T("chain_generic")} · ${f.industry}</span>`;
-    }
-  }
-  if (!up.length && !down.length) {
-    if (isETF) { el.style.display = "none"; if (h) h.style.display = "none"; return; }
+  const paint = (up, down, badge) => {
+    if (sheetSym !== sym || !el.isConnected) return;
     el.style.display = ""; if (h) h.style.display = "";
-    el.innerHTML = `<div class="sig-item" style="color:var(--muted)">${T("chain_wip")}</div>`;
+    el.innerHTML = `<div style="margin-bottom:8px">${badge}</div>` +
+      (up.length ? `<div class="chain-col"><div class="chain-lbl">⬆ ${T("chain_up")}</div>${up.map(chainChip).join("")}</div>` : "") +
+      (down.length ? `<div class="chain-col"><div class="chain-lbl">⬇ ${T("chain_down")}</div>${down.map(chainChip).join("")}</div>` : "");
+    el.querySelectorAll("[data-cs]").forEach(c => c.onclick = e => { e.stopPropagation(); openSheet(c.dataset.cs); });
+  };
+  const bchip = txt => `<span class="chip" style="cursor:default;font-size:10px;padding:2px 8px">${txt}</span>`;
+  if (entry) {
+    paint(entry.upstream || [], entry.downstream || [], bchip(T("chain_verified")));
+  } else if (isETF) {
+    el.style.display = "none"; if (h) h.style.display = "none";
     renderProfile(sym);
+    renderChainEvents(sym);
     return;
+  } else {
+    // 先墊產業通用鏈(或整理中),背景打既有 /supply-chain 管線升級成公司級 AI 鏈
+    const conv = arr => (arr || []).map(x => ({ name_zh: x.n, ticker: x.t, role: x.r }));
+    let painted = false;
+    if (isTWSym(sym) && CHAIN_GENERIC[INDUSTRY[sym]]) {
+      const g = CHAIN_GENERIC[INDUSTRY[sym]];
+      paint(conv(g.up), conv(g.down), bchip(`${T("chain_generic")} · ${INDUSTRY[sym]}`));
+      painted = true;
+    } else if (!isTWSym(sym)) {
+      const f = usFundCache[sym];
+      const g = f && f.industry && USCG[f.industry];
+      if (g) { paint(conv(g.up), conv(g.down), bchip(`${T("chain_generic")} · ${f.industry}`)); painted = true; }
+    }
+    if (!painted) {
+      el.style.display = ""; if (h) h.style.display = "";
+      el.innerHTML = `<div class="sig-item" style="color:var(--muted)">${T("chain_wip")}</div>`;
+    }
+    fetchAiChain(sym).then(d => {
+      if (!d || sheetSym !== sym) return;
+      const convAi = arr => (arr || []).map(x => ({
+        name_zh: x.name_zh || x.name_en,
+        ticker: x.ticker ? String(x.ticker).replace(/\.(TW|TWO)$/, "") : null,
+        role: [x.category, x.role, x.criticality].filter(Boolean).join(" · "),
+      }));
+      paint(convAi(d.upstream), convAi(d.downstream), bchip(`AI 產業鏈${d.industry ? " · " + d.industry : ""}`));
+      renderProfile(sym);
+    });
   }
-  el.style.display = ""; if (h) h.style.display = "";
-  el.innerHTML = `<div style="margin-bottom:8px">${badge}</div>` +
-    (up.length ? `<div class="chain-col"><div class="chain-lbl">⬆ ${T("chain_up")}</div>${up.map(chainChip).join("")}</div>` : "") +
-    (down.length ? `<div class="chain-col"><div class="chain-lbl">⬇ ${T("chain_down")}</div>${down.map(chainChip).join("")}</div>` : "");
-  el.querySelectorAll("[data-cs]").forEach(c => c.onclick = e => { e.stopPropagation(); openSheet(c.dataset.cs); });
   renderProfile(sym);
+  renderChainEvents(sym);
 }
 
 /* 五檔 */
@@ -2253,6 +2299,7 @@ function openSheet(sym) {
     <div id="d-prof"></div>
     <div class="g-title" id="d-chain-h">${T("sec_chain")}</div>
     <div id="d-chain"></div>
+    <div id="d-chain-ev"></div>
     <div class="g-title">${T("sec_news")}</div>
     <div id="d-news"><div class="sig-item" style="color:var(--muted)">${T("loading")}</div></div>
     <div class="g-title">${T("sheet_sigs")}</div>

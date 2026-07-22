@@ -353,6 +353,9 @@ async function doLogin() {
     if (document.getElementById("remember-me").checked) { localStorage.setItem("md-saved-email", email); localStorage.setItem("md-saved-pwd", password); }
     else { localStorage.removeItem("md-saved-email"); localStorage.removeItem("md-saved-pwd"); }
     localStorage.setItem("md-email", email); localStorage.setItem("md-plan", data.plan || "free");
+    // 登入成功即同步 hero email:殘留的舊 md-hero-email 會讓 dash-init 切帳偵測
+    // 每次載入都誤判「換帳號」→ 清掉登入態+記住我密碼(2026-07-22 Delvin 實鍋:勾了記住我仍每次被踢回登入)
+    localStorage.setItem("md-hero-email", email);
     sessionStorage.setItem("md-pwd", password);
     showDashboard(email, data.plan || "free");
   } catch { errEl.textContent = T('err_network'); errEl.style.display = "block"; }
@@ -373,6 +376,7 @@ async function doSetPassword() {
     if (!data.ok) { errEl.textContent = T('err_set_failed'); errEl.style.display = "block"; return; }
     if (document.getElementById("remember-me") && document.getElementById("remember-me").checked) { localStorage.setItem("md-saved-email", _pendingEmail); localStorage.setItem("md-saved-pwd", password); }
     localStorage.setItem("md-email", _pendingEmail); localStorage.setItem("md-plan", data.plan || "free");
+    localStorage.setItem("md-hero-email", _pendingEmail);
     sessionStorage.setItem("md-pwd", password);
     showDashboard(_pendingEmail, data.plan || "free");
   } catch { errEl.textContent = T('err_network'); errEl.style.display = "block"; }

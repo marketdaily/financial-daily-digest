@@ -2224,7 +2224,7 @@ export default {
       const givenName = (url.searchParams.get("name") || "").trim().slice(0, 40);
 
       // cache key 含公司名:台股裸代號 AI 會猜錯公司,帶名才準,故名也納入 key
-      const cacheKey = `sc:v5:${ticker}:${givenName}`;
+      const cacheKey = `sc:v6:${ticker}:${givenName}`;
       const cached = await env.USER_PREFS.get(cacheKey);
       if (cached) {
         try { return json(JSON.parse(cached)); } catch {}
@@ -2263,7 +2263,9 @@ export default {
             "content-type": "application/json",
           },
           body: JSON.stringify({
-            model: "claude-haiku-4-5-20251001",
+            // 2026-07-22 haiku→sonnet:haiku 對台股中小型股會張冠李戴(3491 昇達科被掰成封測廠、
+            // NVTS 沒帶名被猜成別家),供應鏈事實性內容用 sonnet;結果 KV 快取 30 天,成本可控
+            model: "claude-sonnet-5",
             max_tokens: 2000,
             system: sysPrompt,
             messages: [{ role: "user", content: `${givenName ? `公司名稱:${givenName}、` : ""}股票代號:${ticker}${isTW ? "(台股)" : "(美股)"}。輸出它的產業鏈 JSON。` }],
