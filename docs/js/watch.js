@@ -26,6 +26,7 @@ const I18N = {
     tf_1D: "分時", tf_5D: "5日", tf_3M: "日K·3月", tf_6M: "日K·6月", tf_1Y: "週K·1年", tf_m5: "5分K", tf_m30: "30分K",
     sec_tech: "📐 技術指標", sec_fund: "📊 基本面", sec_prof: "🏢 公司", sec_chain: "🔗 上下游產業鏈",
     chain_up: "上游", chain_down: "下游", chain_self: "本業",
+    chain_verified: "✓ 公司級精修鏈", chain_generic: "產業通用鏈", chain_wip: "公司級產業鏈整理中,先參考公司簡介",
     fd_pe: "本益比", fd_dy: "殖利率", fd_pb: "股價淨值比", fd_mcap: "市值", fd_eps: "EPS(TTM)",
     fd_52: "52週高低", fd_beta: "Beta", fd_ind: "產業", fd_asof: "官方日更",
     prof_chair: "董事長", prof_gm: "總經理", prof_listed: "上市", prof_web: "官網",
@@ -59,6 +60,7 @@ const I18N = {
     tf_1D: "1D", tf_5D: "5D", tf_3M: "3M·D", tf_6M: "6M·D", tf_1Y: "1Y·W", tf_m5: "5min", tf_m30: "30min",
     sec_tech: "📐 Technicals", sec_fund: "📊 Fundamentals", sec_prof: "🏢 Company", sec_chain: "🔗 Supply Chain",
     chain_up: "Upstream", chain_down: "Downstream", chain_self: "Core",
+    chain_verified: "✓ Company-verified chain", chain_generic: "Industry chain", chain_wip: "Company-level chain coming soon",
     fd_pe: "P/E", fd_dy: "Div Yield", fd_pb: "P/B", fd_mcap: "Mkt Cap", fd_eps: "EPS (TTM)",
     fd_52: "52W H/L", fd_beta: "Beta", fd_ind: "Industry", fd_asof: "official daily",
     prof_chair: "Chairman", prof_gm: "CEO/GM", prof_listed: "Listed", prof_web: "Web",
@@ -729,11 +731,15 @@ async function renderFund(sym) {
   } catch { el.innerHTML = ""; }
 }
 
+const BIZ = (typeof TW_BIZ !== "undefined") ? TW_BIZ : {};
+const CHAIN_GENERIC = (typeof TW_CHAIN_GENERIC !== "undefined") ? TW_CHAIN_GENERIC : {};
+
 function renderProfile(sym) {
   const el = $("d-prof");
   if (!el) return;
   const entry = chainIdx && chainIdx[sym];
-  const biz = entry && entry.mid && entry.mid.desc ? `<div class="biz">${entry.mid.desc}</div>` : "";
+  const bizTxt = (entry && entry.mid && entry.mid.desc) || BIZ[sym] || "";
+  const biz = bizTxt ? `<div class="biz">${bizTxt}</div>` : "";
   if (isTWSym(sym)) {
     const p = PROFILE[sym];
     if (!p && !biz) { el.style.display = "none"; return; }
@@ -772,10 +778,28 @@ async function renderChain(sym) {
   await loadChain();
   const el = $("d-chain");
   if (!el || sheetSym !== sym) return;
+  const h = $("d-chain-h");
   const entry = chainIdx[sym];
-  if (!entry) { el.style.display = "none"; const h = $("d-chain-h"); if (h) h.style.display = "none"; return; }
-  const up = entry.upstream || [], down = entry.downstream || [];
-  el.innerHTML =
+  const isETF = INDUSTRY[sym] === "ETF";
+  let up = [], down = [], badge = "";
+  if (entry) {
+    up = entry.upstream || []; down = entry.downstream || [];
+    badge = `<span class="chip" style="cursor:default;font-size:10px;padding:2px 8px">${T("chain_verified")}</span>`;
+  } else if (isTWSym(sym) && !isETF && CHAIN_GENERIC[INDUSTRY[sym]]) {
+    const g = CHAIN_GENERIC[INDUSTRY[sym]];
+    const conv = arr => (arr || []).map(x => ({ name_zh: x.n, ticker: x.t, role: x.r }));
+    up = conv(g.up); down = conv(g.down);
+    badge = `<span class="chip" style="cursor:default;font-size:10px;padding:2px 8px">${T("chain_generic")} · ${INDUSTRY[sym]}</span>`;
+  }
+  if (!up.length && !down.length) {
+    if (isETF) { el.style.display = "none"; if (h) h.style.display = "none"; return; }
+    el.style.display = ""; if (h) h.style.display = "";
+    el.innerHTML = `<div class="sig-item" style="color:var(--muted)">${T("chain_wip")}</div>`;
+    renderProfile(sym);
+    return;
+  }
+  el.style.display = ""; if (h) h.style.display = "";
+  el.innerHTML = `<div style="margin-bottom:8px">${badge}</div>` +
     (up.length ? `<div class="chain-col"><div class="chain-lbl">⬆ ${T("chain_up")}</div>${up.map(chainChip).join("")}</div>` : "") +
     (down.length ? `<div class="chain-col"><div class="chain-lbl">⬇ ${T("chain_down")}</div>${down.map(chainChip).join("")}</div>` : "");
   el.querySelectorAll("[data-cs]").forEach(c => c.onclick = e => { e.stopPropagation(); openSheet(c.dataset.cs); });

@@ -34,8 +34,15 @@ THEMES = {
 
 def _fetch(url):
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return json.loads(r.read().decode())
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.loads(r.read().decode())
+    except Exception:
+        # TPEx 憑證鏈缺 SKI,python3.14 urllib 拒收 → curl fallback(同 push_tw_fundamentals)
+        import subprocess
+        out = subprocess.run(["curl", "-s", "--max-time", "30", "-H", "User-Agent: Mozilla/5.0",
+                              "-H", "Accept: application/json", url], capture_output=True, timeout=40)
+        return json.loads(out.stdout.decode())
 
 
 def _etf_codes():
@@ -51,8 +58,10 @@ def main():
     ind = {}
     for url in (TWSE, TPEX):
         for r in _fetch(url):
-            sid = str(r.get("公司代號", "")).strip()
-            code = str(r.get("產業別", "")).strip().zfill(2)
+            # TWSE 回中文鍵、TPEx 回英文鍵(SecuritiesCompanyCode/SecuritiesIndustryCode)——
+            # 漏一套=整個上櫃無聲消失(2026-07-22 精材 3374 無產業分類的根因,同 build_tw_profile 坑)
+            sid = str(r.get("公司代號") or r.get("SecuritiesCompanyCode") or "").strip()
+            code = str(r.get("產業別") or r.get("SecuritiesIndustryCode") or "").strip().zfill(2)
             if not (sid[:1].isdigit() and 4 <= len(sid) <= 6):
                 continue
             cat = IND_CODE.get(code)
