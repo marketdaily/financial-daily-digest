@@ -18,6 +18,7 @@ const I18N = {
     rank_title: "排行榜", rank_src: "永豐即時 · 30s",
     pos_title: "💼 我的部位", pos_unsigned: "帳戶尚未簽署 API 服務同意書,簽署後這裡會顯示真實持股部位與未實現損益。到永豐理財網 → API 申請頁完成線上簽署即可。",
     sheet_sigs: "📡 信息差訊號", sheet_nosig: "近期無 intel 訊號(24 個信息源監測中)",
+    sig_pop_foot: "🔴 強訊號 · 🟡 留意級|24 信息源自動偵測,非投資建議",
     sheet_groups: "加入群組", limit_up: "🔥 漲停", limit_down: "❄️ 跌停",
     foot_note: "報價僅供參考,非即時交易依據。個股資訊與訊號為系統自動彙整,不構成投資建議。",
     theme_tag: "主題", ind_group: "產業別",
@@ -49,6 +50,7 @@ const I18N = {
     rank_title: "Rankings", rank_src: "SinoPac real-time · 30s",
     pos_title: "💼 My Positions", pos_unsigned: "Your brokerage account has not signed the API service agreement yet. Once signed, real positions and unrealized P&L will appear here.",
     sheet_sigs: "📡 Intel Signals", sheet_nosig: "No recent intel signals (24 sources monitored)",
+    sig_pop_foot: "🔴 strong · 🟡 watch-level — auto-detected from 24 intel sources; not investment advice",
     sheet_groups: "Add to group", limit_up: "🔥 Limit Up", limit_down: "❄️ Limit Down",
     foot_note: "Quotes are for reference only, not a basis for live trading. Stock info and signals are auto-aggregated and are not investment advice.",
     theme_tag: "Theme", ind_group: "Industry",
@@ -94,6 +96,7 @@ let curTab = "watch", curGroup = "all", curCat = "", curRank = "change", catPage
 const CAT_PAGE = 60;
 let quotes = {};
 let signals = {};
+let sigDate = null;
 let bridge = null, bridgeFails = 0;
 let tick = 0, schedTimer = null, sheetSym = null;
 
@@ -106,11 +109,15 @@ function fmtChg(c, sym) {
 }
 const fp = v => v == null ? "—" : (v >= 1000 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : (v >= 100 ? v.toFixed(1) : v.toFixed(2)));
 
+const escAttr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+
 function sigDot(sym) {
   const items = signals[sym];
   if (!items || !items.length) return "";
   const lvl = items.some(i => i.level === "red") ? "red" : "yellow";
-  return `<span class="sig-dot ${lvl}"></span>`;
+  // data-sig=可點(手機 tap 彈出說明);title=桌面 hover 原生提示(2026-07-22 Delvin:點了要講這是什麼)
+  const tip = items.map(i => i.signal || i.source || "").filter(Boolean).join("\n");
+  return `<span class="sig-dot ${lvl}" data-sig="${sym}" title="${escAttr(tip)}"></span>`;
 }
 
 function nameCell(sym, name) {
@@ -385,6 +392,7 @@ async function loadSignals() {
     const r = await fetch(WORKER_URL + "/watch-signals");
     const d = await r.json();
     signals = d.by_code || {};
+    sigDate = d.date || null;
   } catch {}
 }
 
@@ -921,6 +929,31 @@ document.addEventListener("click", e => {
   const tr = e.target.closest("tbody tr[data-sym]");
   if (tr) openSheet(tr.dataset.sym);
 });
+
+/* ── 訊號燈說明 popover(2026-07-22):點/tap 紅黃點 → 白話講這顆燈是什麼訊號 ──
+   capture 層攔截:row 的 openSheet 綁在 bubble 層,stopPropagation 才不會點燈誤開個股詳情 */
+let sigPopEl = null;
+function hideSigPop() { if (sigPopEl) { sigPopEl.remove(); sigPopEl = null; } }
+function showSigPop(dot, sym) {
+  hideSigPop();
+  const items = signals[sym] || [];
+  if (!items.length) return;
+  const el = document.createElement("div");
+  el.className = "sig-pop";
+  el.innerHTML = items.map(i =>
+    `<div class="sp-row"><span class="sig-dot ${i.level === "red" ? "red" : "yellow"}"></span>${escAttr(i.signal || i.source || "")}</div>`).join("")
+    + `<div class="sp-foot">${T("sig_pop_foot")}${sigDate ? ` · ${sigDate}` : ""}</div>`;
+  document.body.appendChild(el);
+  const r = dot.getBoundingClientRect();
+  el.style.top = `${Math.min(window.innerHeight - el.offsetHeight - 12, r.bottom + 8)}px`;
+  el.style.left = `${Math.max(8, Math.min(r.left - 10, window.innerWidth - el.offsetWidth - 8))}px`;
+  sigPopEl = el;
+}
+document.addEventListener("click", e => {
+  const d = e.target.closest(".sig-dot[data-sig]");
+  if (d) { e.stopPropagation(); e.preventDefault(); showSigPop(d, d.dataset.sig); return; }
+  hideSigPop();
+}, true);
 
 /* ── search ── */
 function searchUniverse(qstr) {

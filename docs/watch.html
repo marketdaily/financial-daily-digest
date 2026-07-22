@@ -94,6 +94,13 @@
   .nm-main{font-size:15px;font-weight:750;display:block;max-width:172px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.2px}
   .code-sub{font-size:10.5px;color:var(--muted);font-weight:650;letter-spacing:.3px}
   .sig-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+  .sig-dot[data-sig]{cursor:pointer;position:relative}
+  .sig-dot[data-sig]::after{content:"";position:absolute;inset:-9px}/* 手機 tap 熱區放大 */
+  .sig-pop{position:fixed;z-index:220;max-width:320px;background:#14142b;border:1px solid rgba(129,140,248,.4);
+    border-radius:12px;padding:11px 13px;font-size:12.5px;line-height:1.65;color:#e2e4f5;
+    box-shadow:0 12px 36px rgba(0,0,0,.55)}
+  .sig-pop .sp-row{margin:2px 0}
+  .sig-pop .sp-foot{margin-top:7px;font-size:10.5px;color:#8b8fb5}
   .sig-dot.red{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.8)}
   .sig-dot.yellow{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.8)}
   .empty,.gate{padding:38px 20px;text-align:center;color:var(--muted);font-size:14px;
@@ -260,6 +267,6 @@
 <script src="stocks.js?v=20260528"></script>
 <script src="tw-industry.js?v=20260722"></script>
 <script src="tw-profile.js?v=20260722"></script>
-<script src="js/watch.js?v=20260722g"></script>
+<script src="js/watch.js?v=20260722h"></script>
 </body>
 </html>
