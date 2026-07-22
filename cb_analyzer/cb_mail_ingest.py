@@ -95,14 +95,20 @@ def _rebuild_db(xlsx_path):
 
 
 def _looks_like_cb_db(xlsx_path):
-    """試解析:像 CB 發行清單(有效數字代碼≥5檔)才准重建,防未知格式靜默洗空 live DB。"""
+    """試解析:像 CB 發行清單才准重建,防未知格式靜默洗空 live DB。
+    2026-07-17 事故:CBAS報價表被誤當發行清單重建(它恰好在 stock_code 欄放了
+    債券代碼樣的數字,舊版只驗 isdigit 就放行,120 筆全錯位蓋掉 live 五天)。
+    加嚴:正股 4 碼 + 債券代碼 5-6 碼都對得上才算有效檔(董事會通過段還沒有
+    債券代碼,靠掛牌/送件段就遠超門檻,不受影響)。"""
     try:
         from parse_excel import parse as _parse
         items = _parse(xlsx_path)
     except Exception:
         return False, 0
     good = sum(1 for i in items
-               if str(i.get("stock_code") or "").isdigit() and i.get("name"))
+               if re.fullmatch(r"\d{4}", str(i.get("stock_code") or ""))
+               and re.fullmatch(r"\d{5,6}", str(i.get("bond_code") or ""))
+               and i.get("name"))
     return (good >= 5), good
 
 
