@@ -308,6 +308,11 @@ news in <facts>, plus a short image-card headline. Structure of caption, in orde
    may be described as limited-time free.
 6. CTA line containing the exact URL from site_url.
 7. 3-5 hashtags in Chinese, none containing digits.
+Also produce caption_threads_zh: a standalone condensed version for Threads (hard API
+limit 500 chars total): hook + core fact + ONE technical or viewpoint line + the exact
+site_url + at most 2 hashtags. Max 360 Chinese characters BEFORE the URL. Same rules.
+When citing the source, name it (e.g. 據鉅亨網報導); never write 連結/link about the
+source since no source link is attached to the post.
 </task>
 
 <constraints>
@@ -326,9 +331,9 @@ news in <facts>, plus a short image-card headline. Structure of caption, in orde
 
 <output_format>
 Reply with STRICT JSON only, no markdown fences, exactly:
-{"caption_zh": "...", "card_headline": "..."}
+{"caption_zh": "...", "caption_threads_zh": "...", "card_headline": "..."}
 Example shape (placeholder text, do not reuse its wording):
-{"caption_zh": "輝達又出手了…(全文)…完整分析 → https://example…\\n\\n#美股 #AI", "card_headline": "輝達出手投資雲端新星"}
+{"caption_zh": "輝達又出手了…(全文)…完整分析 → https://example…\\n\\n#美股 #AI", "caption_threads_zh": "輝達又出手了…(短版)… https://example… #美股", "card_headline": "輝達出手投資雲端新星"}
 </output_format>
 
 <facts>
@@ -404,10 +409,10 @@ def _digits_in(obj, acc):
     return acc
 
 
-def caption_gate(caption, headline, facts):
+def caption_gate(caption, threads_caption, headline, facts):
     """確定性閘:LLM prompt 永遠不是唯一防線(feedback_zero_error_no_miss)。回 violations list。"""
     v = []
-    text = caption + "\n" + headline
+    text = caption + "\n" + (threads_caption or "") + "\n" + headline
     for w in FORBIDDEN:
         if w in text:
             v.append(f"禁詞:{w}")
@@ -422,6 +427,13 @@ def caption_gate(caption, headline, facts):
         v.append(f"長度異常:{body_len}")
     if len(re.findall(r"#\S+", caption)) > 6:
         v.append("hashtag 過多")
+    if threads_caption:
+        if SITE_URL not in threads_caption:
+            v.append("threads 版缺 site_url")
+        if len(threads_caption) > 495:
+            v.append(f"threads 版超長:{len(threads_caption)}(API上限500)")
+    else:
+        v.append("缺 caption_threads_zh")
     return v
 
 
@@ -467,14 +479,16 @@ def upload_media(jpg, key):
     raise RuntimeError(f"上傳後 {url} 驗不到正確檔案")
 
 
-def post_direct(env, post_id, image_url, caption):
-    """直發(不入 social_posts.json 品牌佇列——兩條內容流分開);冪等靠 LOG_FILE。"""
+def post_direct(env, post_id, image_url, caption, threads_caption=None):
+    """直發(不入 social_posts.json 品牌佇列——兩條內容流分開);冪等靠 LOG_FILE。
+    Threads API 上限 500 字 → 用 draft 一起產出並過同一套閘門的短版。"""
     results = {}
     print(f"發布 [{post_id}] → {image_url}")
     for plat in POST_PLATFORMS:
         fn = PLATFORMS[plat]
+        text = threads_caption if (plat == "threads" and threads_caption) else caption
         try:
-            ok, detail = fn(env, image_url, caption_for(caption, plat))
+            ok, detail = fn(env, image_url, caption_for(text, plat))
         except KeyError as e:
             ok, detail = False, f".env 缺少 {e}"
         results[plat] = {"ok": ok, "detail": str(detail)}
@@ -531,9 +545,10 @@ def cmd_run(dry=False, force=False):
 
     draft = call_claude(DRAFT_PROMPT.replace("{FACTS}", facts_json), 300)
     caption, headline = draft["caption_zh"], draft["card_headline"]
-    print(f"\n--- caption ---\n{caption}\n--- card: {headline} ---\n")
+    threads_caption = draft.get("caption_threads_zh", "")
+    print(f"\n--- caption ---\n{caption}\n--- threads({len(threads_caption)}字) ---\n{threads_caption}\n--- card: {headline} ---\n")
 
-    gate_v = caption_gate(caption, headline, facts)
+    gate_v = caption_gate(caption, threads_caption, headline, facts)
     if gate_v:
         print(f"❌ 確定性閘未過:{gate_v}")
         if not dry:
@@ -567,7 +582,7 @@ def cmd_run(dry=False, force=False):
     _png_to_jpg_playwright(png, jpg)
     image_url = upload_media(jpg, f"social/{post_id}.jpg")
     env = load_env()
-    results = post_direct(env, post_id, image_url, caption)
+    results = post_direct(env, post_id, image_url, caption, threads_caption)
     ok_n = sum(1 for r in results.values() if r["ok"])
     state["seen"][cand["key"]] = today
     if ok_n:
