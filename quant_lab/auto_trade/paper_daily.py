@@ -119,19 +119,131 @@ def main():
     else:
         print("  魚A:今日 TXO 資料尚未可得(FinMind 更新中),下次補")
 
+    # ---- 魚C:MTF-ORB(用戶哲學版,盤後用 Shioaji 當日1分K重播)----
+    try:
+        fish_c(bars, today)
+    except Exception as e:
+        print(f"  魚C 本次跳過:{type(e).__name__} {e}")
+
     with open(STATE, "w", encoding="utf-8") as f:
         json.dump(st, f, ensure_ascii=False, default=str)
 
-    # ---- 累計摘要 ----
+
+def fish_c(bars, today):
+    """規格凍結 2026-07-22:日線 EMA9>21>50 閘(至昨日)+ 波動閘(20日ATR%≤近252日80分位)
+    + OR30 突破順勢一單 + 停損=OR另一側 + 未掃出抱到 13:44。成本 1.5 點。"""
+    closes = [b["close"] for b in bars]
+    dates = [b["date"] for b in bars]
+    if dates[-1] != today or len(bars) < 300:
+        return
+    def ema(n):
+        e, k = None, 2 / (n + 1)
+        for c in closes[:-1]:
+            e = c if e is None else c * k + e * (1 - k)
+        return e
+    e9, e21, e50 = ema(9), ema(21), ema(50)
+    g = 1 if e9 > e21 > e50 else (-1 if e9 < e21 < e50 else 0)
+    trs = [max(bars[i]["high"] - bars[i]["low"], abs(bars[i]["high"] - bars[i-1]["close"]),
+               abs(bars[i]["low"] - bars[i-1]["close"])) / bars[i]["close"]
+           for i in range(len(bars) - 252, len(bars))]
+    atr20 = sum(trs[-20:]) / 20
+    vol_ok = atr20 <= sorted(sum(trs[i:i+20])/20 for i in range(len(trs)-20))[int(0.8*(len(trs)-20))]
+    if g == 0 or not vol_ok:
+        print(f"  魚C:今日不進(閘={g}, 波動OK={vol_ok})")
+        return
+    from shioaji_adapter import _load_env
+    _load_env()
+    import shioaji as sj, time as _t
+    api = sj.Shioaji()
+    api.login(api_key=os.environ["SHIOAJI_API_KEY"],
+              secret_key=os.environ["SHIOAJI_SECRET_KEY"], fetch_contract=True)
+    _t.sleep(3)
+    kb = api.kbars(api.Contracts.Futures.TXF["TXFR1"], start=today, end=today)
+    api.logout()
+    rows = []
+    for ts, o, h, l, c in zip(kb.ts, kb.Open, kb.High, kb.Low, kb.Close):
+        t = datetime.datetime.utcfromtimestamp(int(ts) / 1e9)
+        hm = t.strftime("%H:%M")
+        if "08:46" <= hm <= "13:45":
+            rows.append((hm, o, h, l, c))
+    if len(rows) < 40:
+        return
+    orh, orl = max(x[2] for x in rows[:30]), min(x[3] for x in rows[:30])
+    pos, entry, stop, exit_px, reason = 0, 0.0, 0.0, None, None
+    for hm, o, h, l, c in rows[30:]:
+        if pos == 0:
+            if hm >= "13:30":
+                break
+            if g > 0 and c > orh:
+                pos, entry, stop = 1, c, orl
+            elif g < 0 and c < orl:
+                pos, entry, stop = -1, c, orh
+            continue
+        if (pos > 0 and l <= stop) or (pos < 0 and h >= stop):
+            exit_px, reason = stop, "stop"
+            break
+        if hm >= "13:44":
+            exit_px, reason = c, "eod"
+            break
+    if pos and exit_px is None:
+        exit_px, reason = rows[-1][4], "eod"
+    if pos:
+        pnl = pos * (exit_px - entry) - COST_B
+        log_ev({"fish": "C", "type": "trade", "date": today, "side": pos,
+                "entry": entry, "exit": exit_px, "reason": reason,
+                "pnl_pts": round(pnl, 1), "pnl_ntd": round(pnl * TX_POINT)})
+    else:
+        print("  魚C:今日無突破,未進場")
+
+
+def write_report():
+    """帳本 → .paper/index.html(自足式,winrig 8912 端口對 Tailscale 供瀏覽)。"""
     try:
         evs = [json.loads(l) for l in open(LEDGER, encoding="utf-8")]
-        for fish in ("A", "B"):
-            pnls = [e["pnl_ntd"] for e in evs if e.get("fish") == fish and "pnl_ntd" in e]
-            if pnls:
-                wr = sum(1 for x in pnls if x > 0) / len(pnls)
-                print(f"  魚{fish} 累計:{len(pnls)}筆 {sum(pnls):+,} 元 勝率 {wr:.0%}")
     except FileNotFoundError:
-        pass
+        evs = []
+    st = load_state()
+    names = {"A": "A 條件賣跨式+GEX", "B": "B 外資高信念跟隨", "C": "C MTF-ORB(老闆哲學版)"}
+    cards, cum = "", {}
+    for f in ("A", "B", "C"):
+        pnls = [e["pnl_ntd"] for e in evs if e.get("fish") == f and "pnl_ntd" in e]
+        cum[f] = sum(pnls)
+        wr = (sum(1 for x in pnls if x > 0) / len(pnls)) if pnls else 0
+        cards += (f'<div class="card"><div class="t">{names[f]}</div>'
+                  f'<div class="v {"pos" if cum[f]>=0 else "neg"}">{cum[f]:+,} 元</div>'
+                  f'<div class="s">{len(pnls)} 筆 · 勝率 {wr:.0%}</div></div>')
+    posi = []
+    if st["fishA"].get("held"):
+        h = st["fishA"]["held"]
+        posi.append(f"魚A 持倉:{h['contract']} K={h['K']} 進 {h['entry_px']} 最新mark {h['last_mark']}(第{h['age']}天)")
+    if st["fishB"].get("pending"):
+        p = st["fishB"]["pending"]
+        posi.append(f"魚B 待執行:{p['signal_date']} 訊號 → 次交易日 {'做多' if p['side']>0 else '做空'}")
+    rows = ""
+    for e in reversed(evs[-40:]):
+        pnl = e.get("pnl_ntd")
+        cls = "" if pnl is None else (' class="pos"' if pnl >= 0 else ' class="neg"')
+        rows += (f"<tr><td>{e.get('date', e.get('exec_date',''))}</td><td>{e['fish']}</td>"
+                 f"<td>{e['type']}{('/'+e['reason']) if e.get('reason') else ''}</td>"
+                 f"<td{cls}>{f'{pnl:+,}' if pnl is not None else '—'}</td></tr>")
+    html = f"""<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="refresh" content="600"><title>Paper 帳本</title><style>
+body{{background:#14161b;color:#e8e6df;font:15px/1.6 -apple-system,"PingFang TC",sans-serif;max-width:640px;margin:0 auto;padding:20px}}
+h1{{font-size:1.2rem}}.cards{{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}}
+.card{{background:#1c1f26;border:1px solid #2a2e37;border-radius:10px;padding:12px 14px}}
+.card .t{{font-size:.78rem;color:#9a9e a6;color:#9aa0a8}}.card .v{{font-size:1.3rem;font-weight:600}}
+.card .s{{font-size:.78rem;color:#9aa0a8}}.pos{{color:#6dbd88}}.neg{{color:#dd7f68}}
+table{{width:100%;border-collapse:collapse;margin-top:14px;font-size:.85rem}}
+td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
+.posi{{background:#1c1f26;border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.85rem}}
+.ft{{color:#6b7078;font-size:.75rem;margin-top:16px}}</style>
+<h1>📒 Paper 前測帳本(規格凍結 2026-07-17/22,真 OOS)</h1>
+<div class="cards">{cards}</div>
+<div class="posi">{'<br>'.join(posi) if posi else '目前無持倉/無待執行'}</div>
+<table><tr><th>日期</th><th>魚</th><th>事件</th><th>損益(元)</th></tr>{rows or '<tr><td colspan=4>帳本尚無事件</td></tr>'}</table>
+<div class="ft">每晚 20:10 winrig 自動更新 · 產生於 {datetime.datetime.now().isoformat(timespec='seconds')}</div>"""
+    with open(os.path.join(PDIR, "index.html"), "w", encoding="utf-8") as f:
+        f.write(html)
 
 
 if __name__ == "__main__":
@@ -140,3 +252,9 @@ if __name__ == "__main__":
     except Exception as e:
         # FinMind 限流/網路瞬斷等:不炸 cron,明天自然補跑(魚B結算用「訊號日後第一根」不會漏)
         print(f"paper_daily 跳過本次:{type(e).__name__} {e}")
+    finally:
+        os.makedirs(PDIR, exist_ok=True)
+        try:
+            write_report()
+        except Exception as e:
+            print(f"report 產生失敗:{e}")
