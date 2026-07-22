@@ -1570,6 +1570,55 @@ export default {
       return json(raw ? JSON.parse(raw) : { date: null, by_code: {} });
     }
 
+    // 台股基本面(本益比/殖利率/淨值比):winrig 每交易日從 TWSE/TPEx openapi 推 → KV
+    if (url.pathname === "/internal/watch-fundamentals" && request.method === "POST") {
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      if (!body.by_code || typeof body.by_code !== "object") return json({ error: "no_by_code" }, 400);
+      await env.USER_PREFS.put("watch:fundamentals", JSON.stringify({ date: body.date || null, by_code: body.by_code }), { expirationTtl: 86400 * 7 });
+      return json({ ok: true, n_codes: Object.keys(body.by_code).length });
+    }
+    if (url.pathname === "/watch-fundamentals" && request.method === "GET") {
+      const raw = await env.USER_PREFS.get("watch:fundamentals");
+      return json(raw ? JSON.parse(raw) : { date: null, by_code: {} }, 200);
+    }
+
+    // 美股基本面:Finnhub metric+profile2 proxy(CF cache 3h)
+    if (url.pathname === "/us-fundamentals" && request.method === "GET") {
+      const sym = (url.searchParams.get("symbol") || "").trim().toUpperCase();
+      if (!/^[A-Z.\-]{1,10}$/.test(sym)) return json({ error: "bad_symbol" }, 400);
+      const fh = env.FINNHUB_API_KEY;
+      if (!fh) return json({ error: "not_configured" }, 503);
+      const cf = { cf: { cacheTtl: 10800, cacheEverything: true } };
+      try {
+        const [mRes, pRes] = await Promise.all([
+          fetch(`https://finnhub.io/api/v1/stock/metric?symbol=${sym}&metric=all&token=${fh}`, cf),
+          fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${sym}&token=${fh}`, cf),
+        ]);
+        const m = mRes.ok ? (await mRes.json()).metric || {} : {};
+        const p = pRes.ok ? await pRes.json() : {};
+        return json({
+          symbol: sym,
+          pe: m.peTTM ?? m.peBasicExclExtraTTM ?? null,
+          pb: m.pbQuarterly ?? m.pb ?? null,
+          dy: m.currentDividendYieldTTM ?? m.dividendYieldIndicatedAnnual ?? null,
+          eps: m.epsTTM ?? null,
+          high52: m["52WeekHigh"] ?? null,
+          low52: m["52WeekLow"] ?? null,
+          beta: m.beta ?? null,
+          market_cap_m: p.marketCapitalization ?? null,
+          name: p.name ?? null,
+          industry: p.finnhubIndustry ?? null,
+          ipo: p.ipo ?? null,
+          weburl: p.weburl ?? null,
+          logo: p.logo ?? null,
+        });
+      } catch {
+        return json({ error: "upstream" }, 502);
+      }
+    }
+
     if (url.pathname === "/internal/plan-trades" && request.method === "POST") {
       if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
       let body;
@@ -1875,7 +1924,10 @@ export default {
         "5D": { interval: "30m", range: "5d"  },
         "1M": { interval: "1d",  range: "1mo" },
         "3M": { interval: "1d",  range: "3mo" },
+        "6M": { interval: "1d",  range: "6mo" },
+        "1Y": { interval: "1wk", range: "1y"  },
       }[url.searchParams.get("range") || "1M"] || { interval: "1d", range: "1mo" };
+      const wantOhlc = url.searchParams.get("ohlc") === "1";
       const isTW = /^\d{4,6}$/.test(t);
       const yfHeaders = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -1886,10 +1938,18 @@ export default {
         const r = await fetchYahooChart(t, isTW, cfg.interval, cfg.range, yfHeaders, 300);
         if (!r) return json({ error: "no data" }, 404);
         const ts = r.timestamp || [];
-        const closes = r.indicators?.quote?.[0]?.close || [];
+        const q0 = r.indicators?.quote?.[0] || {};
+        const closes = q0.close || [];
         const points = [];
         for (let i = 0; i < ts.length; i++) {
-          if (closes[i] !== null && closes[i] !== undefined) points.push({ t: ts[i], c: closes[i] });
+          if (closes[i] !== null && closes[i] !== undefined) {
+            const p = { t: ts[i], c: closes[i] };
+            if (wantOhlc) {
+              p.o = q0.open?.[i] ?? closes[i]; p.h = q0.high?.[i] ?? closes[i];
+              p.l = q0.low?.[i] ?? closes[i]; p.v = q0.volume?.[i] ?? 0;
+            }
+            points.push(p);
+          }
         }
         // prevClose 語意 = 「昨日收盤」(作為圖表上「前一日收盤水平線」用):
         //   - 1D range (intraday 5m):chartPreviousClose 剛好是昨日 ✓
@@ -1909,7 +1969,7 @@ export default {
             const mtDay = new Date(mt * 1000).toISOString().slice(0, 10);
             if (mtDay > lastDay) {
               prevClose = points[points.length - 1].c;
-              points.push({ t: mt, c: mp });
+              points.push(wantOhlc ? { t: mt, c: mp, o: mp, h: mp, l: mp, v: 0 } : { t: mt, c: mp });
             }
           }
         }

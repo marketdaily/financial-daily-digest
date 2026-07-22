@@ -146,6 +146,42 @@ class Feed:
             self._contracts[s] = c
         return c
 
+    def kbars(self, sym, res=5, days=5):
+        """近 N 日分 K(1 分 K 聚合成 res 分鐘)。ts 牆鐘偽 epoch→分桶用牆鐘、輸出真 epoch(-8h)。"""
+        key = f"kb:{sym}:{res}:{days}"
+        c = self._cache.get(key)
+        now = time.time()
+        if c and now - c[0] < 60:
+            return c[1]
+        import datetime as dt
+        api = self.api()
+        contract = self._resolve(api, sym)
+        if contract is None:
+            return []
+        end = dt.date.today()
+        kb = api.kbars(contract, start=(end - dt.timedelta(days=days + 4)).isoformat(), end=end.isoformat())
+        bars, bucket = [], None
+        for i in range(len(kb.ts)):
+            wall = kb.ts[i] // 1_000_000_000
+            b0 = wall - (wall % (res * 60))
+            if bucket is None or bucket["t0"] != b0:
+                if bucket:
+                    bars.append(bucket)
+                bucket = {"t0": b0, "t": b0 - 8 * 3600, "o": kb.Open[i], "h": kb.High[i],
+                          "l": kb.Low[i], "c": kb.Close[i], "v": kb.Volume[i]}
+            else:
+                bucket["h"] = max(bucket["h"], kb.High[i])
+                bucket["l"] = min(bucket["l"], kb.Low[i])
+                bucket["c"] = kb.Close[i]
+                bucket["v"] += kb.Volume[i]
+        if bucket:
+            bars.append(bucket)
+        for b in bars:
+            b.pop("t0", None)
+        out = bars[-400:]
+        self._cache[key] = (now, out)
+        return out
+
     RANK_TYPES = {"change": "ChangePercentRank", "volume": "VolumeRank", "amount": "AmountRank",
                   "range": "DayRangeRank", "tick": "TickCountRank"}
 
@@ -228,6 +264,13 @@ class Handler(BaseHTTPRequestHandler):
                 syms = [s.strip().upper() for s in raw.split(",") if s.strip()][:60]
                 syms = [s for s in syms if TW_SYM.match(s)]
                 return self._send(200, {"quotes": FEED.quotes(syms), "src": "shioaji", "ts": int(time.time())})
+            if u.path == "/kbars":
+                sym = (qs.get("sym") or [""])[0].strip().upper()
+                res = int((qs.get("res") or ["5"])[0])
+                days = min(int((qs.get("days") or ["5"])[0]), 10)
+                if not TW_SYM.match(sym) or res not in (1, 5, 15, 30, 60):
+                    return self._send(400, {"error": "bad_params"})
+                return self._send(200, {"bars": FEED.kbars(sym, res, days), "sym": sym, "res": res, "ts": int(time.time())})
             if u.path == "/ranks":
                 rtype = (qs.get("type") or ["change"])[0]
                 if rtype not in Feed.RANK_TYPES:

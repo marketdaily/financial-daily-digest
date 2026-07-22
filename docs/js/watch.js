@@ -21,6 +21,15 @@ const I18N = {
     sheet_groups: "加入群組", limit_up: "🔥 漲停", limit_down: "❄️ 跌停",
     foot_note: "報價僅供參考,非即時交易依據。個股資訊與訊號為系統自動彙整,不構成投資建議。",
     theme_tag: "主題", ind_group: "產業別",
+    tf_1D: "分時", tf_5D: "5日", tf_3M: "日K·3月", tf_6M: "日K·6月", tf_1Y: "週K·1年", tf_m5: "5分K", tf_m30: "30分K",
+    sec_tech: "📐 技術指標", sec_fund: "📊 基本面", sec_prof: "🏢 公司", sec_chain: "🔗 上下游產業鏈",
+    chain_up: "上游", chain_down: "下游", chain_self: "本業",
+    fd_pe: "本益比", fd_dy: "殖利率", fd_pb: "股價淨值比", fd_mcap: "市值", fd_eps: "EPS(TTM)",
+    fd_52: "52週高低", fd_beta: "Beta", fd_ind: "產業", fd_asof: "官方日更",
+    prof_chair: "董事長", prof_gm: "總經理", prof_listed: "上市", prof_web: "官網",
+    ti_over: "超買", ti_under: "超賣", ti_mid: "中性", ti_gold: "多方", ti_dead: "空方",
+    ti_above: "站上", ti_below: "跌破",
+    loading: "載入中…", chart_fail: "圖表載入失敗", vol_note: "下方=成交量",
   },
   en: {
     pg_title: "MarketDaily Watch", pg_h1: "📈 Watch", back_dash: "← Dashboard",
@@ -40,6 +49,15 @@ const I18N = {
     sheet_groups: "Add to group", limit_up: "🔥 Limit Up", limit_down: "❄️ Limit Down",
     foot_note: "Quotes are for reference only, not a basis for live trading. Stock info and signals are auto-aggregated and are not investment advice.",
     theme_tag: "Theme", ind_group: "Industry",
+    tf_1D: "1D", tf_5D: "5D", tf_3M: "3M·D", tf_6M: "6M·D", tf_1Y: "1Y·W", tf_m5: "5min", tf_m30: "30min",
+    sec_tech: "📐 Technicals", sec_fund: "📊 Fundamentals", sec_prof: "🏢 Company", sec_chain: "🔗 Supply Chain",
+    chain_up: "Upstream", chain_down: "Downstream", chain_self: "Core",
+    fd_pe: "P/E", fd_dy: "Div Yield", fd_pb: "P/B", fd_mcap: "Mkt Cap", fd_eps: "EPS (TTM)",
+    fd_52: "52W H/L", fd_beta: "Beta", fd_ind: "Industry", fd_asof: "official daily",
+    prof_chair: "Chairman", prof_gm: "CEO/GM", prof_listed: "Listed", prof_web: "Web",
+    ti_over: "Overbought", ti_under: "Oversold", ti_mid: "Neutral", ti_gold: "Bullish", ti_dead: "Bearish",
+    ti_above: "above ", ti_below: "below ",
+    loading: "Loading…", chart_fail: "Chart failed to load", vol_note: "bottom = volume",
   }
 };
 const LANG = (localStorage.getItem("md-lang-v2") || "zh");
@@ -89,10 +107,14 @@ function sigDot(sym) {
   return `<span class="sig-dot ${lvl}"></span>`;
 }
 
+function nameCell(sym, name) {
+  const nm = name || nameMap.get(sym) || sym;
+  const ind = INDUSTRY[sym] ? ` · ${INDUSTRY[sym]}` : "";
+  return `${sigDot(sym)}<span class="nm-main">${nm}</span><span class="code-sub">${sym}${ind}</span>`;
+}
+
 function rowHtml(sym) {
-  const nm = nameMap.get(sym) || "";
-  const ind = INDUSTRY[sym] ? `<span class="ind-tag">${INDUSTRY[sym]}</span>` : "";
-  return `<tr data-sym="${sym}"><td>${sigDot(sym)}<span class="sym">${sym}</span>${ind}<span class="nm">${nm}</span></td>
+  return `<tr data-sym="${sym}"><td>${nameCell(sym)}</td>
     <td class="px" id="px-${sym}">—</td><td id="chg-${sym}" class="neutral">—</td>
     <td class="ext" id="bid-${sym}">—</td><td class="ext" id="ask-${sym}">—</td>
     <td class="ext hide-sm" id="hl-${sym}">—</td><td class="ext hide-sm" id="vol-${sym}">—</td></tr>`;
@@ -120,6 +142,7 @@ function paint(q) {
     const tr = document.querySelector(`tr[data-sym="${s}"]`);
     if (tr) { tr.classList.remove("flash"); void tr.offsetWidth; tr.classList.add("flash"); }
   }
+  if (sheetSym === s) refreshSheetHead(s);
 }
 
 /* ── current view symbols ── */
@@ -215,7 +238,7 @@ function renderRanks(rows) {
   document.querySelector("#rank-table tbody").innerHTML = rows.map((r, i) => {
     const { dir, label } = fmtChg(r.change_pct, r.code);
     return `<tr data-sym="${r.code}"><td>${i + 1}</td>
-      <td>${sigDot(r.code)}<span class="sym">${r.code}</span><span class="nm">${r.name || nameMap.get(r.code) || ""}</span></td>
+      <td>${nameCell(r.code, r.name)}</td>
       <td class="px ${dir}">${fp(r.close)}</td><td class="${dir}">${label}</td>
       <td class="hide-sm">${r.volume == null ? "—" : r.volume.toLocaleString()}</td></tr>`;
   }).join("");
@@ -274,7 +297,7 @@ async function tickPositions() {
     if (d.status === "ok") {
       const rows = d.positions.map(p => {
         const dir = (p.pnl || 0) >= 0 ? "up" : "down";
-        return `<tr data-sym="${p.code}"><td>${sigDot(p.code)}<span class="sym">${p.code}</span><span class="nm">${nameMap.get(p.code) || ""}</span></td>
+        return `<tr data-sym="${p.code}"><td>${nameCell(p.code)}</td>
           <td>${p.quantity}</td><td>${fp(p.avg_price)}</td><td class="px">${fp(p.last_price)}</td>
           <td class="${dir}">${(p.pnl || 0) >= 0 ? "+" : ""}${Math.round(p.pnl || 0).toLocaleString()}</td></tr>`;
       }).join("");
@@ -309,32 +332,356 @@ function startSched() {
   }, 1000);
 }
 
-/* ── sheet(個股詳情) ── */
+/* ── 個股詳情:K線/技術指標/基本面/公司/上下游 ── */
+const PROFILE = (typeof TW_PROFILE !== "undefined") ? TW_PROFILE : {};
+let twFund = {}, twFundDate = null;
+let usFundCache = {};
+let chainDB = null, chainIdx = null;
+let chartCache = {};
+let curTf = "6M";
+const TF_LIST = [
+  { k: "1D", src: "worker", range: "1D", mode: "line" },
+  { k: "5D", src: "worker", range: "5D", mode: "candle" },
+  { k: "3M", src: "worker", range: "3M", mode: "candle", ma: true },
+  { k: "6M", src: "worker", range: "6M", mode: "candle", ma: true },
+  { k: "1Y", src: "worker", range: "1Y", mode: "candle", ma: true },
+  { k: "m5", src: "bridge", res: 5, days: 3, mode: "candle", twOnly: true },
+  { k: "m30", src: "bridge", res: 30, days: 10, mode: "candle", twOnly: true },
+];
+
+async function loadTwFund() {
+  try {
+    const d = await fetch(WORKER_URL + "/watch-fundamentals").then(r => r.json());
+    twFund = d.by_code || {}; twFundDate = d.date;
+  } catch {}
+}
+
+async function loadChain() {
+  if (chainIdx) return;
+  try {
+    chainDB = await fetch("data/supply_chain.json").then(r => r.json());
+    chainIdx = {};
+    Object.entries(chainDB).forEach(([k, v]) => { chainIdx[k.replace(/\.(TW|TWO)$/, "")] = v; });
+  } catch { chainIdx = {}; }
+}
+
+function normTicker(t) { return (t || "").replace(/\.(TW|TWO)$/, ""); }
+
+async function fetchBars(sym, tfk) {
+  const ck = `${sym}:${tfk}`;
+  const hit = chartCache[ck];
+  if (hit && Date.now() - hit.at < 60000) return hit.bars;
+  const tf = TF_LIST.find(t => t.k === tfk);
+  let bars = [];
+  if (tf.src === "bridge" && bridge) {
+    const d = await fetch(`${bridge.url}/kbars?sym=${sym}&res=${tf.res}&days=${tf.days}&t=${encodeURIComponent(bridge.token)}`).then(r => r.json());
+    bars = d.bars || [];
+  } else {
+    const d = await fetch(`${WORKER_URL}/stock-chart?ticker=${sym}&range=${tf.range}&ohlc=1`).then(r => r.json());
+    bars = (d.points || []).map(p => ({ t: p.t, o: p.o ?? p.c, h: p.h ?? p.c, l: p.l ?? p.c, c: p.c, v: p.v ?? 0 }));
+    bars.prevClose = d.prevClose;
+  }
+  chartCache[ck] = { at: Date.now(), bars };
+  return bars;
+}
+
+/* 技術指標(純計算) */
+function sma(vals, n) { const out = []; let s = 0; for (let i = 0; i < vals.length; i++) { s += vals[i]; if (i >= n) s -= vals[i - n]; out.push(i >= n - 1 ? s / n : null); } return out; }
+function ema(vals, n) { const k = 2 / (n + 1); const out = []; let e = null; for (const v of vals) { e = e === null ? v : v * k + e * (1 - k); out.push(e); } return out; }
+function rsi14(closes) {
+  if (closes.length < 15) return null;
+  let g = 0, l = 0;
+  for (let i = 1; i <= 14; i++) { const d = closes[i] - closes[i - 1]; if (d > 0) g += d; else l -= d; }
+  let ag = g / 14, al = l / 14;
+  for (let i = 15; i < closes.length; i++) {
+    const d = closes[i] - closes[i - 1];
+    ag = (ag * 13 + Math.max(d, 0)) / 14; al = (al * 13 + Math.max(-d, 0)) / 14;
+  }
+  return al === 0 ? 100 : 100 - 100 / (1 + ag / al);
+}
+function kd9(bars) {
+  if (bars.length < 9) return null;
+  let K = 50, D = 50;
+  for (let i = 8; i < bars.length; i++) {
+    const w = bars.slice(i - 8, i + 1);
+    const h9 = Math.max(...w.map(b => b.h)), l9 = Math.min(...w.map(b => b.l));
+    const rsv = h9 === l9 ? 50 : (bars[i].c - l9) / (h9 - l9) * 100;
+    K = K * 2 / 3 + rsv / 3; D = D * 2 / 3 + K / 3;
+  }
+  return { K, D };
+}
+function macd(closes) {
+  if (closes.length < 30) return null;
+  const e12 = ema(closes, 12), e26 = ema(closes, 26);
+  const dif = e12.map((v, i) => v - e26[i]);
+  const dea = ema(dif, 9);
+  const i = closes.length - 1;
+  return { dif: dif[i], dea: dea[i], hist: dif[i] - dea[i] };
+}
+
+/* Canvas K線 */
+function drawChart(cv, bars, tf, sym) {
+  const dpr = window.devicePixelRatio || 1;
+  const W = cv.clientWidth, H = cv.clientHeight;
+  cv.width = W * dpr; cv.height = H * dpr;
+  const ctx = cv.getContext("2d");
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+  if (!bars.length) { ctx.fillStyle = "rgba(255,255,255,.3)"; ctx.font = "12px sans-serif"; ctx.fillText(T("chart_fail"), 16, H / 2); return; }
+  const padR = 46, padT = 8, volH = Math.round(H * 0.18), priceH = H - volH - padT - 14;
+  const hi = Math.max(...bars.map(b => b.h)), lo = Math.min(...bars.map(b => b.l));
+  const span = (hi - lo) || 1;
+  const y = v => padT + (hi - v) / span * priceH;
+  const n = bars.length, slotW = (W - padR - 6) / n;
+  const maxV = Math.max(...bars.map(b => b.v || 0)) || 1;
+  // grid + 右軸
+  ctx.font = "10px -apple-system,sans-serif"; ctx.textBaseline = "middle";
+  for (let i = 0; i <= 4; i++) {
+    const v = hi - span * i / 4, gy = y(v);
+    ctx.strokeStyle = "rgba(255,255,255,.05)"; ctx.beginPath(); ctx.moveTo(4, gy); ctx.lineTo(W - padR, gy); ctx.stroke();
+    ctx.fillStyle = "rgba(255,255,255,.4)"; ctx.fillText(fp(v), W - padR + 4, gy);
+  }
+  const UP = "#ef4444", DN = "#22c55e";
+  if (tf.mode === "line") {
+    if (bars.prevClose != null || bars.pc != null) {
+      const pc = bars.pc ?? bars.prevClose;
+      if (pc >= lo && pc <= hi) {
+        ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(4, y(pc)); ctx.lineTo(W - padR, y(pc)); ctx.stroke(); ctx.setLineDash([]);
+      }
+    }
+    ctx.strokeStyle = "#818cf8"; ctx.lineWidth = 1.6; ctx.beginPath();
+    bars.forEach((b, i) => { const x = 4 + slotW * (i + 0.5); i ? ctx.lineTo(x, y(b.c)) : ctx.moveTo(x, y(b.c)); });
+    ctx.stroke(); ctx.lineWidth = 1;
+  } else {
+    const bw = Math.max(Math.min(slotW * 0.65, 9), 1.4);
+    bars.forEach((b, i) => {
+      const x = 4 + slotW * (i + 0.5);
+      const col = b.c >= b.o ? UP : DN;
+      ctx.strokeStyle = col; ctx.fillStyle = col;
+      ctx.beginPath(); ctx.moveTo(x, y(b.h)); ctx.lineTo(x, y(b.l)); ctx.stroke();
+      const top = y(Math.max(b.o, b.c)), bh = Math.max(Math.abs(y(b.o) - y(b.c)), 1);
+      ctx.fillRect(x - bw / 2, top, bw, bh);
+    });
+    if (tf.ma) {
+      const closes = bars.map(b => b.c);
+      [[5, "#fbbf24"], [20, "#818cf8"], [60, "#38bdf8"]].forEach(([p, col]) => {
+        if (bars.length < p) return;
+        const m = sma(closes, p);
+        ctx.strokeStyle = col; ctx.beginPath();
+        let started = false;
+        m.forEach((v, i) => {
+          if (v === null) return;
+          const x = 4 + slotW * (i + 0.5);
+          started ? ctx.lineTo(x, y(v)) : ctx.moveTo(x, y(v)); started = true;
+        });
+        ctx.stroke();
+      });
+    }
+  }
+  // 成交量
+  const vy0 = H - 14;
+  bars.forEach((b, i) => {
+    const x = 4 + slotW * (i + 0.5);
+    const vh = (b.v || 0) / maxV * (volH - 4);
+    ctx.fillStyle = (b.c >= b.o ? UP : DN) + "55";
+    ctx.fillRect(x - Math.max(slotW * 0.3, 0.7), vy0 - vh, Math.max(slotW * 0.6, 1.4), vh);
+  });
+  // 時間軸首尾
+  ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.textBaseline = "alphabetic";
+  const ft = t => { const d = new Date(t * 1000); return tf.src === "bridge" || tf.range === "1D" || tf.range === "5D" ? `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}` : `${d.getFullYear().toString().slice(2)}/${d.getMonth() + 1}/${d.getDate()}`; };
+  ctx.fillText(ft(bars[0].t), 6, H - 3);
+  const lastTxt = ft(bars[n - 1].t);
+  ctx.fillText(lastTxt, W - padR - ctx.measureText(lastTxt).width - 2, H - 3);
+}
+
+async function renderDetailChart(sym) {
+  const cv = $("d-chart");
+  if (!cv) return;
+  const tf = TF_LIST.find(t => t.k === curTf);
+  try {
+    const bars = await fetchBars(sym, curTf);
+    if (sheetSym !== sym) return;
+    if (tf.range === "1D") bars.pc = bars.prevClose;
+    drawChart(cv, bars, tf, sym);
+  } catch { drawChart(cv, [], tf, sym); }
+}
+
+function tfChipsHtml(sym) {
+  const isTW = isTWSym(sym);
+  return TF_LIST.filter(t => !(t.twOnly && (!isTW || !bridge)))
+    .map(t => `<button class="tf ${curTf === t.k ? "on" : ""}" data-tf="${t.k}">${T("tf_" + t.k)}</button>`).join("");
+}
+
+function tiTile(k, v, s, cls) {
+  return `<div class="ti"><div class="k">${k}</div><div class="v ${cls || ""}">${v}</div>${s ? `<div class="s">${s}</div>` : ""}</div>`;
+}
+
+async function renderTech(sym) {
+  const el = $("d-tech");
+  if (!el) return;
+  try {
+    const bars = await fetchBars(sym, "6M");
+    if (sheetSym !== sym || !el.isConnected) return;
+    const closes = bars.map(b => b.c);
+    const last = closes[closes.length - 1];
+    const m5 = sma(closes, 5).pop(), m20 = sma(closes, 20).pop(), m60 = sma(closes, 60).pop();
+    const r = rsi14(closes), kd = kd9(bars), mc = macd(closes);
+    const rState = r == null ? "" : r >= 70 ? T("ti_over") : r <= 30 ? T("ti_under") : T("ti_mid");
+    const rCls = r == null ? "" : r >= 70 ? "up" : r <= 30 ? "down" : "";
+    const kdState = kd ? (kd.K > kd.D ? T("ti_gold") : T("ti_dead")) : "";
+    const mState = mc ? (mc.hist > 0 ? T("ti_gold") : T("ti_dead")) : "";
+    const maS = (m, lbl) => m == null ? "" : (last > m ? `${T("ti_above")}${lbl}` : `${T("ti_below")}${lbl}`);
+    el.innerHTML =
+      tiTile("MA5", fp(m5), maS(m5, "MA5"), last > m5 ? "up" : "down") +
+      tiTile("MA20", fp(m20), maS(m20, "MA20"), last > m20 ? "up" : "down") +
+      tiTile("MA60", fp(m60), maS(m60, "MA60"), m60 ? (last > m60 ? "up" : "down") : "") +
+      tiTile("RSI 14", r == null ? "—" : r.toFixed(1), rState, rCls) +
+      tiTile("KD 9", kd ? `${kd.K.toFixed(0)} / ${kd.D.toFixed(0)}` : "—", kdState, kd && kd.K > kd.D ? "up" : "down") +
+      tiTile("MACD", mc ? mc.hist.toFixed(2) : "—", mState, mc && mc.hist > 0 ? "up" : "down");
+  } catch { el.innerHTML = ""; }
+}
+
+function fmtMcapTWD(shares, price) {
+  if (!shares || !price) return "—";
+  const yi = shares * price / 1e8;
+  return yi >= 10000 ? (yi / 10000).toFixed(2) + " 兆" : Math.round(yi).toLocaleString() + " 億";
+}
+function fmtMcapUSD(m) {
+  if (!m) return "—";
+  return m >= 1e6 ? "$" + (m / 1e6).toFixed(2) + "T" : m >= 1000 ? "$" + (m / 1000).toFixed(1) + "B" : "$" + Math.round(m) + "M";
+}
+
+async function renderFund(sym) {
+  const el = $("d-fund");
+  if (!el) return;
+  const q = quotes[sym] || {};
+  if (isTWSym(sym)) {
+    const f = twFund[sym] || {};
+    const prof = PROFILE[sym];
+    el.innerHTML =
+      tiTile(T("fd_pe"), f.pe != null ? f.pe : "—", T("fd_asof")) +
+      tiTile(T("fd_dy"), f.dy != null ? f.dy + "%" : "—", T("fd_asof")) +
+      tiTile(T("fd_pb"), f.pb != null ? f.pb : "—", T("fd_asof")) +
+      tiTile(T("fd_mcap"), fmtMcapTWD(prof && prof[3], q.price), "NT$");
+    return;
+  }
+  el.innerHTML = `<div class="ti" style="grid-column:1/-1;color:var(--muted)">${T("loading")}</div>`;
+  try {
+    let f = usFundCache[sym];
+    if (!f) { f = await fetch(`${WORKER_URL}/us-fundamentals?symbol=${sym}`).then(r => r.json()); usFundCache[sym] = f; }
+    if (sheetSym !== sym || !el.isConnected) return;
+    el.innerHTML =
+      tiTile(T("fd_pe"), f.pe != null ? f.pe.toFixed(1) : "—") +
+      tiTile(T("fd_pb"), f.pb != null ? f.pb.toFixed(1) : "—") +
+      tiTile(T("fd_dy"), f.dy != null ? f.dy.toFixed(2) + "%" : "—") +
+      tiTile(T("fd_eps"), f.eps != null ? "$" + f.eps.toFixed(2) : "—") +
+      tiTile(T("fd_mcap"), fmtMcapUSD(f.market_cap_m)) +
+      tiTile(T("fd_52"), f.high52 ? `${fp(f.high52)} / ${fp(f.low52)}` : "—") +
+      tiTile(T("fd_beta"), f.beta != null ? f.beta.toFixed(2) : "—") +
+      tiTile(T("fd_ind"), f.industry || "—");
+  } catch { el.innerHTML = ""; }
+}
+
+function renderProfile(sym) {
+  const el = $("d-prof");
+  if (!el) return;
+  const entry = chainIdx && chainIdx[sym];
+  const biz = entry && entry.mid && entry.mid.desc ? `<div class="biz">${entry.mid.desc}</div>` : "";
+  if (isTWSym(sym)) {
+    const p = PROFILE[sym];
+    if (!p && !biz) { el.style.display = "none"; return; }
+    el.style.display = "";
+    const rows = [];
+    if (p) {
+      if (p[0]) rows.push(`${T("prof_chair")} <b>${p[0]}</b>`);
+      if (p[1]) rows.push(`${T("prof_gm")} <b>${p[1]}</b>`);
+      if (p[2]) rows.push(`${T("prof_listed")} <b>${p[2]}</b>`);
+      if (p[4]) rows.push(`<a href="${p[4]}" target="_blank" rel="noopener">${T("prof_web")} ↗</a>`);
+    }
+    el.innerHTML = `<div class="prof">${biz}${rows.length ? `<div class="kv">${rows.join("　")}</div>` : ""}</div>`;
+    return;
+  }
+  const f = usFundCache[sym];
+  const rows = [];
+  if (f) {
+    if (f.ipo) rows.push(`${T("prof_listed")} <b>${f.ipo.slice(0, 4)}</b>`);
+    if (f.weburl) rows.push(`<a href="${f.weburl}" target="_blank" rel="noopener">${T("prof_web")} ↗</a>`);
+  }
+  if (!biz && !rows.length) { el.style.display = "none"; return; }
+  el.style.display = "";
+  el.innerHTML = `<div class="prof">${biz}${rows.length ? `<div class="kv">${rows.join("　")}</div>` : ""}</div>`;
+}
+
+function chainChip(p) {
+  const tk = normTicker(p.ticker);
+  const clickable = tk && nameMap.has(tk);
+  const role = p.role || p.category || "";
+  return `<span class="chain-chip" ${clickable ? `data-cs="${tk}"` : 'style="cursor:default;opacity:.8"'}>
+    <span class="cc-n">${p.name_zh || p.name_en}</span>${tk ? ` <span class="code-sub">${tk}</span>` : ""}
+    ${role ? `<span class="cc-r">${role}</span>` : ""}</span>`;
+}
+
+async function renderChain(sym) {
+  await loadChain();
+  const el = $("d-chain");
+  if (!el || sheetSym !== sym) return;
+  const entry = chainIdx[sym];
+  if (!entry) { el.style.display = "none"; const h = $("d-chain-h"); if (h) h.style.display = "none"; return; }
+  const up = entry.upstream || [], down = entry.downstream || [];
+  el.innerHTML =
+    (up.length ? `<div class="chain-col"><div class="chain-lbl">⬆ ${T("chain_up")}</div>${up.map(chainChip).join("")}</div>` : "") +
+    (down.length ? `<div class="chain-col"><div class="chain-lbl">⬇ ${T("chain_down")}</div>${down.map(chainChip).join("")}</div>` : "");
+  el.querySelectorAll("[data-cs]").forEach(c => c.onclick = e => { e.stopPropagation(); openSheet(c.dataset.cs); });
+  renderProfile(sym);
+}
+
 function openSheet(sym) {
   sheetSym = sym;
+  curTf = "6M";
   const q = quotes[sym] || {};
-  const nm = nameMap.get(sym) || "";
+  const nm = nameMap.get(sym) || sym;
   const ind = INDUSTRY[sym] || "";
   const sigs = signals[sym] || [];
-  const gNames = Object.keys(groups);
-  const gChips = gNames.map(g => {
+  const { dir, label } = fmtChg(q.change, sym);
+  const gChips = Object.keys(groups).map(g => {
     const on = (groups[g] || []).includes(sym);
     return `<button class="chip ${on ? "on" : ""}" data-sg="${g}">${on ? "✓ " : ""}${g}</button>`;
   }).join("") + `<button class="chip" data-sg="__new">${T("grp_new")}</button>`;
   $("sheet").innerHTML = `
-    <h3>${sym} <span style="font-size:13px;color:var(--muted)">${nm}</span></h3>
-    <div class="s-ind">${ind}</div>
-    <div class="s-q">
-      <span>${T("col_px")} <b id="sh-px">${fp(q.price)}</b></span>
-      <span>${T("col_chg")} <b>${fmtChg(q.change, sym).label}</b></span>
-      ${q.high != null ? `<span>${T("col_hl")} <b>${fp(q.high)} / ${fp(q.low)}</b></span>` : ""}
-      ${q.volume != null ? `<span>${T("col_vol")} <b>${(q.volume || 0).toLocaleString()}</b></span>` : ""}
+    <div class="d-head">
+      <div><span class="d-name">${nm}</span><span class="d-code">${sym}</span>
+        <div class="d-ind">${ind}${sigs.length ? " " + sigDot(sym) : ""}</div></div>
+      <div class="d-price"><div class="d-px ${dir}" id="d-px">${fp(q.price)}</div>
+        <div class="d-chg ${dir}" id="d-chg">${label}</div></div>
     </div>
+    <div class="d-quote-strip" id="d-strip">
+      ${q.open != null ? `<span>開 <b>${fp(q.open)}</b></span>` : ""}
+      ${q.high != null ? `<span>高 <b>${fp(q.high)}</b></span><span>低 <b>${fp(q.low)}</b></span>` : ""}
+      ${q.bid != null ? `<span>買 <b>${fp(q.bid)}</b></span><span>賣 <b>${fp(q.ask)}</b></span>` : ""}
+      ${q.volume != null ? `<span>量 <b>${(q.volume || 0).toLocaleString()}</b></span>` : ""}
+    </div>
+    <div class="tf-chips" id="tf-chips">${tfChipsHtml(sym)}</div>
+    <canvas id="d-chart"></canvas>
+    <div class="chart-note">MA5 <span style="color:#fbbf24">─</span> MA20 <span style="color:#818cf8">─</span> MA60 <span style="color:#38bdf8">─</span> · ${T("vol_note")}</div>
+    <div class="g-title">${T("sec_tech")}</div>
+    <div class="ti-grid" id="d-tech"></div>
+    <div class="g-title">${T("sec_fund")}</div>
+    <div class="ti-grid fd-grid" id="d-fund"></div>
+    <div class="g-title">${T("sec_prof")}</div>
+    <div id="d-prof"></div>
+    <div class="g-title" id="d-chain-h">${T("sec_chain")}</div>
+    <div id="d-chain"></div>
     <div class="g-title">${T("sheet_sigs")}</div>
     ${sigs.length ? sigs.map(s => `<div class="sig-item"><div class="src">${s.level === "red" ? "🔴" : "🟡"} ${s.source}</div>${s.signal}</div>`).join("")
       : `<div class="sig-item" style="color:var(--muted)">${T("sheet_nosig")}</div>`}
     <div class="g-title">${T("sheet_groups")}</div>
     <div class="g-row">${gChips}</div>`;
+  $("tf-chips").querySelectorAll(".tf").forEach(b => b.onclick = () => {
+    curTf = b.dataset.tf;
+    $("tf-chips").querySelectorAll(".tf").forEach(x => x.classList.toggle("on", x.dataset.tf === curTf));
+    renderDetailChart(sym);
+  });
   $("sheet").querySelectorAll("[data-sg]").forEach(c => c.onclick = () => {
     let g = c.dataset.sg;
     if (g === "__new") {
@@ -349,6 +696,26 @@ function openSheet(sym) {
     if (curTab === "watch" && curGroup !== "all") renderView();
   });
   $("sheet").classList.add("open"); $("sheet-bg").classList.add("open");
+  $("sheet").scrollTop = 0;
+  renderDetailChart(sym);
+  renderTech(sym);
+  renderFund(sym).then(() => { if (sheetSym === sym) renderProfile(sym); });
+  renderChain(sym);
+  if (!quotes[sym]) {
+    fetchFree([sym]).then(qs => { qs.forEach(paint); if (sheetSym === sym) refreshSheetHead(sym); });
+    if (bridge && isTWSym(sym)) {
+      fetch(`${bridge.url}/q?syms=${sym}&t=${encodeURIComponent(bridge.token)}`)
+        .then(r => r.json()).then(d => { (d.quotes || []).forEach(paint); if (sheetSym === sym) refreshSheetHead(sym); }).catch(() => {});
+    }
+  }
+}
+
+function refreshSheetHead(sym) {
+  const q = quotes[sym] || {};
+  const { dir, label } = fmtChg(q.change, sym);
+  const px = $("d-px"), chg = $("d-chg");
+  if (px) { px.textContent = fp(q.price); px.className = "d-px " + dir; }
+  if (chg) { chg.textContent = label; chg.className = "d-chg " + dir; }
 }
 $("sheet-bg").onclick = () => { $("sheet").classList.remove("open"); $("sheet-bg").classList.remove("open"); sheetSym = null; };
 
@@ -376,7 +743,7 @@ $("search").addEventListener("input", () => {
   const drop = $("sr-drop");
   if (!res.length) { drop.style.display = "none"; return; }
   drop.innerHTML = res.map(([c, n]) =>
-    `<div class="sr-item" data-s="${c}"><span class="c">${sigDot(c)}${c}</span><span class="n">${n}</span></div>`).join("");
+    `<div class="sr-item" data-s="${c}"><span class="c">${sigDot(c)}${n || c}</span><span class="n">${c}${INDUSTRY[c] ? " · " + INDUSTRY[c] : ""}</span></div>`).join("");
   drop.style.display = "block";
   drop.querySelectorAll(".sr-item").forEach(it => it.onclick = () => {
     drop.style.display = "none"; $("search").value = "";
@@ -427,6 +794,7 @@ async function init() {
   });
   $("tw-more").onclick = () => { catPage++; renderView(); };
   renderTabs(); renderGroupChips(); renderCatSel(); renderRankChips();
+  loadTwFund();
   await loadSignals();
   renderView();
   startSched();
