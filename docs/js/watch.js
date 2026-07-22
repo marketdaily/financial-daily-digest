@@ -237,27 +237,28 @@ function viewSyms() {
 }
 
 /* ── rendering ── */
+const show = (id, disp) => { const el = $(id); if (el) el.style.display = disp; };
 function renderView() {
   const syms = viewSyms();
   const tw = syms.filter(isTWSym), us = syms.filter(s => !isTWSym(s));
-  $("rank-sec").style.display = curTab === "ranks" ? "block" : "none";
-  $("screen-sec").style.display = curTab === "screen" ? "block" : "none";
-  $("news-sec").style.display = curTab === "news" ? "block" : "none";
-  $("heat-sec").style.display = curTab === "heat" ? "block" : "none";
-  $("group-chips").style.display = curTab === "watch" ? "flex" : "none";
-  $("cat-bar").style.display = curTab === "cats" ? "flex" : "none";
-  $("rank-chips").style.display = curTab === "ranks" ? "flex" : "none";
-  $("sort-chips").style.display = (curTab === "watch" || curTab === "cats") ? "flex" : "none";
-  $("pos-wrap").style.display = (curTab === "watch" && isAdmin) ? "block" : "none";
+  show("rank-sec", curTab === "ranks" ? "block" : "none");
+  show("screen-sec", curTab === "screen" ? "block" : "none");
+  show("news-sec", curTab === "news" ? "block" : "none");
+  show("heat-sec", curTab === "heat" ? "block" : "none");
+  show("group-chips", curTab === "watch" ? "flex" : "none");
+  show("cat-bar", curTab === "cats" ? "flex" : "none");
+  show("rank-chips", curTab === "ranks" ? "flex" : "none");
+  show("sort-chips", (curTab === "watch" || curTab === "cats") ? "flex" : "none");
+  show("pos-wrap", (curTab === "watch" && isAdmin) ? "block" : "none");
   if (curTab === "screen" || curTab === "news" || curTab === "heat") {
-    $("tw-sec").style.display = "none"; $("us-sec").style.display = "none"; $("empty").style.display = "none";
+    show("tw-sec", "none"); show("us-sec", "none"); show("empty", "none");
     if (curTab === "screen") renderScreenForm();
     else if (curTab === "news") { renderNewsChips(); renderNewsTab(); }
     else renderHeat();
     return;
   }
   if (curTab === "ranks") {
-    $("tw-sec").style.display = "none"; $("us-sec").style.display = "none"; $("empty").style.display = "none";
+    show("tw-sec", "none"); show("us-sec", "none"); show("empty", "none");
     renderRanks([]);
     fetchRanks();
     return;
@@ -2095,7 +2096,8 @@ async function renderHeat() {
     }
     const { date, sectors } = heatCache.d;
     if (!sectors || !sectors.length) { el.innerHTML = ""; return; }
-    $("heat-date").textContent = `${T("heat_src")}${date ? " · " + date : ""}`;
+    const hd = $("heat-date");
+    if (hd) hd.textContent = `${T("heat_src")}${date ? " · " + date : ""}`;
     const maxAbs = Math.max(...sectors.map(s => Math.abs(s.chg)), 0.1);
     el.innerHTML = sectors.slice().sort((a, b) => b.chg - a.chg).map(s => {
       const a = Math.min(Math.abs(s.chg) / maxAbs, 1);
@@ -2125,6 +2127,7 @@ let mktNewsCache = {};
 const NEWS_CATS = [["headline", "nw_headline"], ["tw_stock", "nw_tw"], ["wd_stock", "nw_wd"], ["forex", "nw_forex"], ["future", "nw_future"]];
 function renderNewsChips() {
   const el = $("news-chips");
+  if (!el) return;
   el.innerHTML = NEWS_CATS.map(([k, lk]) =>
     `<button class="chip ${curNewsCat === k ? "on" : ""}" data-nc="${k}">${T(lk)}</button>`).join("");
   el.querySelectorAll(".chip").forEach(c => c.onclick = () => { curNewsCat = c.dataset.nc; renderNewsChips(); renderNewsTab(); });
