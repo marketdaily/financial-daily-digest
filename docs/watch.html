@@ -285,8 +285,25 @@
 <div class="wrap">
   <div class="top">
     <h1><span data-i18n="pg_h1">📈 看盤</span></h1>
-    <a class="back" href="dashboard.html" data-i18n="back_dash">← 回 Dashboard</a>
+    <nav id="analyst-nav" style="display:none;font-size:14px;font-weight:700">
+      <a href="https://analyst.marketdaily.ai/" style="margin-right:14px">📊 工作台</a>
+      <a href="https://analyst.marketdaily.ai/cb/" style="margin-right:14px">🔍 個股深查</a>
+      <span style="opacity:.55">📈 看盤(現頁)</span>
+    </nav>
+    <a class="back" id="back-dash" href="dashboard.html" data-i18n="back_dash">← 回 Dashboard</a>
   </div>
+  <script>
+  /* 從 analyst 站來的分析師:顯示三分頁導覽、藏「回 Dashboard」(那是會員後台,不是他們的家);
+     sessionStorage 記住,深連結換股/刷新後導覽不掉。一般 MarketDaily 用戶完全不受影響 */
+  (function(){
+    if (new URLSearchParams(location.search).get("src") === "analyst")
+      sessionStorage.setItem("md-watch-from-analyst", "1");
+    if (sessionStorage.getItem("md-watch-from-analyst") === "1") {
+      document.getElementById("analyst-nav").style.display = "block";
+      document.getElementById("back-dash").style.display = "none";
+    }
+  })();
+  </script>
   <p class="sub">
     <span class="src-badge" id="src-badge"><span class="dot"></span><span id="src-label" data-i18n="src_delayed">參考報價 · 15s 更新</span></span>
   </p>
@@ -391,6 +408,6 @@
 <script src="tw-chain-generic.js?v=20260722b"></script>
 <script src="us-chain-generic.js?v=20260722"></script>
 <script src="tw-cb.js?v=20260722"></script>
-<script src="js/watch.js?v=20260722u"></script>
+<script src="js/watch.js?v=20260722v"></script>
 </body>
 </html>
