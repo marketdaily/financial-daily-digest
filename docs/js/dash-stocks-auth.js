@@ -45,6 +45,7 @@ function addStock(market, sym, name) {
   document.getElementById(`${market}-search`).value = "";
   document.getElementById(`${market}-dropdown`).classList.remove("open");
   scheduleSave();
+  scheduleStoriesRefresh();
 }
 
 function removeStock(market, sym) {
@@ -52,6 +53,7 @@ function removeStock(market, sym) {
   delete positionsMap[sym];
   renderTags(market); updateStats();
   scheduleSave();
+  scheduleStoriesRefresh();
 }
 
 // ── 持倉成本(選填):進場價/進場日 → 日報改用持有者框架給建議 ──
@@ -145,7 +147,7 @@ function addBundle(market, bundleId) {
     added++;
   }
   renderTags(market); updateStats();
-  if (added > 0) scheduleSave();
+  if (added > 0) { scheduleSave(); scheduleStoriesRefresh(); }
   if (capped > 0) {
     setSaveStatus("warn", "⚠️ " + T("bundle_capped")(added, capped));
   } else if (added === 0 && dupe > 0) {
@@ -224,7 +226,7 @@ function confirmBulk() {
     added++;
   }
   renderTags(market); updateStats();
-  if (added > 0) scheduleSave();
+  if (added > 0) { scheduleSave(); scheduleStoriesRefresh(); }
   const parts = [];
   if (added > 0) parts.push(`<span class="ok">${T("bulk_added")(added)}</span>`);
   if (dupe > 0) parts.push(T("bulk_dupe")(dupe));

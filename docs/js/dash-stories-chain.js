@@ -1,10 +1,30 @@
 // dashboard.html 內嵌 JS 抽出(dash-stories-chain.js);7 檔按原始順序載入,順序不可換(全域相依)。2026-07-03 P5。
+
+// 選股增減後即時重建限時動態,不必整頁刷新;debounce 讓連續加股(套組/批量貼上)只重建一次。
+let _storiesRefreshTimer = null;
+function scheduleStoriesRefresh() {
+  clearTimeout(_storiesRefreshTimer);
+  _storiesRefreshTimer = setTimeout(() => {
+    const email = localStorage.getItem("md-email");
+    if (email) loadStories(email);
+  }, 350);
+}
+
 async function loadStories(email) {
   const row = document.getElementById("stories-row");
   const section = document.getElementById("stories-section");
   const allSelected = [...(selected.us || []), ...(selected.tw || [])];
   const tickers = allSelected.map(s => s.sym);
-  if (!tickers.length) return;
+  if (!tickers.length) {
+    // 最後一支也移除時把區塊收掉,不留舊泡泡
+    if (_quotesRefreshTimer) { clearInterval(_quotesRefreshTimer); _quotesRefreshTimer = null; }
+    if (_countdownTimer) { clearInterval(_countdownTimer); _countdownTimer = null; }
+    const wrap = document.getElementById("sync-countdown"); if (wrap) wrap.style.display = "none";
+    _stories = [];
+    row.innerHTML = "";
+    section.style.display = "none";
+    return;
+  }
 
   // Build sym→Chinese name map from local preferences
   const nameMap = {};
@@ -30,7 +50,7 @@ async function loadStories(email) {
     } catch {}
     _stories = quotes;
     if (_quotesRefreshTimer) clearInterval(_quotesRefreshTimer);
-    _quotesRefreshTimer = setInterval(refreshQuotes, 15000);
+    _quotesRefreshTimer = setInterval(refreshQuotes, QUOTES_REFRESH_SEC * 1000);
     // 初次載入有股票還沒抓到價(Yahoo 偶發限流),4s/9s 各補抓一次,不乾等 15s
     if (quotes.some(q => q.price == null)) { setTimeout(refreshQuotes, 4000); setTimeout(refreshQuotes, 9000); }
     startCountdown();

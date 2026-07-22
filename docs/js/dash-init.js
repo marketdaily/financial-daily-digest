@@ -205,3 +205,24 @@ async function init() {
   if (email) showDashboard(email, plan);
 }
 init();
+
+// ── 加到主畫面(PWA)/長開分頁的舊頁救援:回到前景時自動補同步 ──
+// standalone PWA 重開不會重新載入頁面,舊頁面實例可活好幾天:
+// ①別台裝置加的股看不到 ②網站新版本吃不到。visibilitychange 是唯一可靠的補救點。
+const _pageLoadTs = Date.now();
+let _lastHiddenTs = 0;
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") { _lastHiddenTs = Date.now(); return; }
+  const email = localStorage.getItem("md-email");
+  if (!email || !_lastHiddenTs) return;
+  const awayMs = Date.now() - _lastHiddenTs;
+  // 頁面實例超過 24h 且離開超過 1 分鐘 → 直接重載吃新部署(不打斷使用中的人)
+  if (Date.now() - _pageLoadTs > 86400e3 && awayMs > 60e3) { location.reload(); return; }
+  // 離開超過 30s → 重拉伺服器偏好(跨裝置加的股)+重建限時動態+大盤
+  if (awayMs > 30e3) {
+    loadPreferences(email).then(() => { loadStories(email); });
+    loadMarketOverview();
+  } else if (typeof refreshQuotes === "function") {
+    refreshQuotes();
+  }
+});
