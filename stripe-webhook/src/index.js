@@ -2067,21 +2067,28 @@ export default {
           fetchYahooChart(t, isTW, "5m", "1d", yfHeaders, 15),
           fhQuote
         ]);
-        let price = null, prev = null, name = t;
+        let price = null, prev = null, name = t, high = null, low = null, volume = null;
         if (r) {
           const meta = r.meta;
           const closes = (r.indicators?.quote?.[0]?.close || []).filter(c => c !== null && c !== undefined);
           price = meta?.regularMarketPrice ?? (closes.length ? closes[closes.length - 1] : null);
           prev = meta?.chartPreviousClose ?? null;
           name = meta?.shortName || meta?.longName || t;
+          // 當日最高/最低/量:公開資訊(非券商即時五檔),訂閱者亦可見。
+          // 台股 Yahoo 量=股數→張(/1000);美股量欄不顯示,原值即可。
+          high = meta?.regularMarketDayHigh ?? null;
+          low = meta?.regularMarketDayLow ?? null;
+          const rawVol = meta?.regularMarketVolume ?? null;
+          volume = rawVol == null ? null : (isTW ? Math.round(rawVol / 1000) : rawVol);
         }
         if (fd && typeof fd.c === "number" && fd.c > 0) price = fd.c;  // Finnhub 即時價覆蓋(前收仍用 Yahoo)
+        if (!isTW && fd) { if (fd.h > 0) high = fd.h; if (fd.l > 0) low = fd.l; }  // 美股高低用 Finnhub 較即時
         let change = (price !== null && prev !== null && prev !== 0) ? ((price - prev) / prev * 100) : null;
         // Yahoo 全掛的最終後援:退回 Finnhub 自己的 c/dp(次佳,前收可能錯位但聊勝於無)
         if (price === null && fd && typeof fd.c === "number" && fd.c > 0) {
           price = fd.c; change = typeof fd.dp === "number" ? fd.dp : null;
         }
-        return { symbol: t, name, price, change };
+        return { symbol: t, name, price, change, high, low, volume };
       };
       const settleChunk = (arr, syms) => arr.map((r, i) => r.status === "fulfilled" ? r.value : { symbol: syms[i], name: syms[i], price: null, change: null });
       // 持倉多時(10+ 檔)同時開 N 條會觸發 Yahoo burst 限流 → 改 4 檔一批、批間 120ms,

@@ -191,10 +191,13 @@ function nameCell(sym, name) {
 }
 
 function rowHtml(sym) {
+  // 台股表格 7 欄(含五檔 ext + 高低/量);美股表格只有 3 欄(表頭無高低/量),不產多餘 td 免錯位
+  const extra = isTWSym(sym)
+    ? `<td class="ext" id="bid-${sym}">—</td><td class="ext" id="ask-${sym}">—</td>
+    <td class="hide-sm" id="hl-${sym}">—</td><td class="hide-sm" id="vol-${sym}">—</td>`
+    : "";
   return `<tr data-sym="${sym}"><td>${nameCell(sym)}</td>
-    <td class="px" id="px-${sym}">—</td><td id="chg-${sym}" class="neutral">—</td>
-    <td class="ext" id="bid-${sym}">—</td><td class="ext" id="ask-${sym}">—</td>
-    <td class="ext hide-sm" id="hl-${sym}">—</td><td class="ext hide-sm" id="vol-${sym}">—</td></tr>`;
+    <td class="px" id="px-${sym}">—</td><td id="chg-${sym}" class="neutral">—</td>${extra}</tr>`;
 }
 
 function paint(q) {
@@ -210,10 +213,16 @@ function paint(q) {
   px.className = "px " + dir;
   const chg = $("chg-" + s);
   if (chg) { chg.textContent = label; chg.className = dir; }
+  // 買賣五檔:券商即時(admin)才有
   if (q.bid !== undefined && $("bid-" + s)) {
     $("bid-" + s).textContent = fp(q.bid);
     $("ask-" + s).textContent = fp(q.ask);
+  }
+  // 高/低、量:公開資訊,免費源與券商源皆填(訂閱者也看得到)
+  if (q.high !== undefined && $("hl-" + s)) {
     $("hl-" + s).textContent = `${fp(q.high)} / ${fp(q.low)}`;
+  }
+  if (q.volume !== undefined && $("vol-" + s)) {
     $("vol-" + s).textContent = q.volume == null ? "—" : q.volume.toLocaleString();
   }
   if (prev !== "—" && prev !== px.textContent) {
