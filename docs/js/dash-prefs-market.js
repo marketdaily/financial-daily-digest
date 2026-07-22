@@ -32,6 +32,9 @@ async function loadPreferences(email) {
     setupDepthCard();
     selected.us = []; selected.tw = [];
     positionsMap = (data.positions && typeof data.positions === "object") ? data.positions : {};
+    userCapital = (typeof data.capital === "number" && data.capital > 0) ? data.capital : null;
+    const capEl = document.getElementById("capital-input");
+    if (capEl) capEl.value = userCapital ?? "";
     (data.us_stocks || []).forEach(sym => { const f = US_STOCKS.find(([s])=>s===sym); selected.us.push({ sym, name: f ? f[1] : sym }); });
     (data.tw_stocks || []).forEach(sym => { const f = TW_STOCKS.find(([s])=>s===sym); selected.tw.push({ sym, name: f ? f[1] : sym }); });
     renderTags("us"); renderTags("tw"); updateStats();

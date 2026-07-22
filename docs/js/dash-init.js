@@ -48,7 +48,7 @@ function curPayload() {
   const email = localStorage.getItem("md-email") || "";
   // 帶 password 給 /save-preferences (worker 需驗證,否則任何人能改別人偏好)
   const password = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
-  return JSON.stringify({ email, password, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym), digest_depth: selectedDepth, positions: positionsMap });
+  return JSON.stringify({ email, password, us_stocks: selected.us.map(s=>s.sym), tw_stocks: selected.tw.map(s=>s.sym), digest_depth: selectedDepth, positions: positionsMap, capital: userCapital });
 }
 
 // 日報深度卡(全體用戶可選;合規結構 COMPLIANCE_STRUCTURE.md:個股分析內容不得依付費分級)
@@ -56,6 +56,9 @@ function setupDepthCard() {
   const card = document.getElementById("digest-depth-card");
   if (!card) return;
   card.style.display = "block";
+  // 總本金卡與深度卡同一登入時點顯示(2026-07-22 資金管理體檢)
+  const capCard = document.getElementById("capital-card");
+  if (capCard) capCard.style.display = "block";
   const lock = document.getElementById("depth-lock");
   if (lock) lock.style.display = "none";
   document.getElementById("depth-opts").classList.remove("locked");

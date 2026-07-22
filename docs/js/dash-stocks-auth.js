@@ -64,6 +64,7 @@ function openPosEdit(market, sym) {
   const p = positionsMap[sym] || {};
   document.getElementById("pos-title").textContent = `${T('pos_title')} — ${sym}`;
   document.getElementById("pos-price").value = p.entry_price ?? "";
+  document.getElementById("pos-qty").value = p.qty ?? "";
   document.getElementById("pos-date").value = p.entry_date || "";
   document.getElementById("pos-err").style.display = "none";
   document.getElementById("pos-modal").classList.add("open");
@@ -90,18 +91,38 @@ function confirmPosEdit() {
   if (!sym) { closePosEdit(); return; }
   const err = document.getElementById("pos-err");
   const priceRaw = document.getElementById("pos-price").value.trim();
+  const qtyRaw = document.getElementById("pos-qty").value.trim();
   const date = document.getElementById("pos-date").value;
   const price = Number(priceRaw);
-  if (!priceRaw || !Number.isFinite(price) || price <= 0) {
+  const qty = Number(qtyRaw);
+  const priceOk = priceRaw && Number.isFinite(price) && price > 0;
+  const qtyOk = qtyRaw && Number.isFinite(qty) && qty > 0;
+  // 進場價或股數至少一項(股數單獨存在也夠算資金體檢的市值/集中度)
+  if (!priceOk && !qtyOk) {
+    err.textContent = T('pos_err_any'); err.style.display = "block"; return;
+  }
+  if (priceRaw && !priceOk) {
     err.textContent = T('pos_err_price'); err.style.display = "block"; return;
   }
   if (date && date > new Date().toISOString().slice(0, 10)) {
     err.textContent = T('pos_err_date'); err.style.display = "block"; return;
   }
-  positionsMap[sym] = { entry_price: price, ...(date ? { entry_date: date } : {}) };
+  positionsMap[sym] = {
+    ...(priceOk ? { entry_price: price } : {}),
+    ...(qtyOk ? { qty } : {}),
+    ...(date ? { entry_date: date } : {}),
+  };
   renderTags(market);
   scheduleSave();
   closePosEdit();
+}
+
+// 總本金輸入(capital-card):onchange 存檔;清空=移除設定
+function capitalChanged() {
+  const raw = (document.getElementById("capital-input").value || "").trim();
+  const v = Number(raw);
+  userCapital = raw && Number.isFinite(v) && v > 0 ? Math.round(v) : null;
+  scheduleSave();
 }
 
 // ── 一鍵套組 + 批量貼上 ──
@@ -251,8 +272,13 @@ function renderTags(market) {
     const label = zh || name;
     const nameHtml = label && label !== sym ? `<span style="font-weight:400;opacity:0.7;font-size:11px"> ${label}</span>` : "";
     const pos = positionsMap[sym];
-    const costHtml = pos && Number(pos.entry_price) > 0
-      ? `<span class="tag-cost" onclick="openPosEdit('${market}','${sym}')" title="${T('pos_chip_title')}">@${Number(pos.entry_price)}</span>`
+    const hasPos = pos && (Number(pos.entry_price) > 0 || Number(pos.qty) > 0);
+    const posTxt = hasPos
+      ? [Number(pos.entry_price) > 0 ? `@${Number(pos.entry_price)}` : "",
+         Number(pos.qty) > 0 ? `×${Number(pos.qty)}` : ""].filter(Boolean).join(" ")
+      : "";
+    const costHtml = hasPos
+      ? `<span class="tag-cost" onclick="openPosEdit('${market}','${sym}')" title="${T('pos_chip_title')}">${posTxt}</span>`
       : `<span class="tag-cost empty" onclick="openPosEdit('${market}','${sym}')" title="${T('pos_chip_title')}">${T('pos_chip_add')}</span>`;
     return `<div class="tag">${sym}${nameHtml} ${costHtml}<span class="tag-x" onclick="removeStock('${market}','${sym}')">×</span></div>`;
   }).join("");
