@@ -14,6 +14,7 @@ import hashlib
 import hmac
 import json
 import os
+import re
 import secrets
 import shutil
 import subprocess
@@ -603,9 +604,20 @@ UTM_SRC = {"instagram": "ig", "facebook": "fb", "threads": "threads",
            "x": "x", "tiktok": "tiktok", "youtube": "youtube"}
 
 
+NO_LINK_CAPTION = {"instagram", "tiktok"}  # caption 內網址不可點的平台
+
+
 def caption_for(caption, plat, line_url=None):
     # Per-platform UTM source swap so attribution can tell which network drove the click
     # (LINE 已全面退役 2026-07-06,不再注入加 LINE CTA;line_url 參數保留只為相容舊呼叫)
+    if plat in NO_LINK_CAPTION:
+        # IG/TikTok caption 網址平台規定不可點:長 UTM 網址只會變一坨斷行亂碼。
+        # 換成乾淨網域+導個人檔案;歸因走 bio 連結(marketdaily.ai/ig 帶 utm_medium=bio)。
+        count = [0]
+        def _clean(m):
+            count[0] += 1
+            return "marketdaily.ai(🔗 連結在個人檔案)" if count[0] == 1 else "marketdaily.ai"
+        return re.sub(r"https?://(?:www\.)?marketdaily\.ai[!-~]*", _clean, caption)
     src = UTM_SRC.get(plat, "social")
     return caption.replace("utm_source=social&", f"utm_source={src}&")
 
