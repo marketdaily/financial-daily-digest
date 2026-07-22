@@ -44,6 +44,8 @@ SOURCE_MEANING = {
     "investor_conf": {"label": "法說會時程/簡報摘要", "action": "法說會逼近=財測/展望修正機率上升的事件窗口,有簡報摘要時參考highlights", "direction": "event_window"},
     "us_13f": {"label": "美股13F機構持股季度變動", "action": "機構總持股季增/減達notable門檻,提示法人資金流向,方向本身不下多空判斷(需配合signal_backtest_harness事後驗證)", "direction": "context"},
     "tw_financials": {"label": "台股財報結構化(綜合損益表+資產負債表)", "action": "由盈轉虧/營收YoY年減≥20%/毛利率QoQ驟降=基本面轉弱警訊;負債比率過高=財務風險升溫,方向本身不下多空判斷(內容型信息差覆蓋,非已驗證統計edge)", "direction": "context"},
+    "tw_analyst": {"label": "台股FactSet共識目標價/EPS預估異動(cnyes tw_forecast)", "action": "共識目標價調升/EPS上修=分析師情緒轉多;調降/下修=轉空(內容型事實轉述,幅度≥8%紅/4-8%黃,非已驗證統計edge)", "direction": "sentiment"},
+    "tw_rank": {"label": "台股排行異動(Shioaji scanners 收盤前快照)", "action": "量能竄榜=無預警量能regime轉變,常伴消息/籌碼異動需查原因;自選股上榜=今日異常活躍提示(資訊型,非方向訊號)", "direction": "context"},
 }
 
 DIRECTION_LABEL_ZH = {

@@ -412,6 +412,16 @@ export default {
     }
 
     // --- Admin 2FA TOTP setup ---
+    // 個人看盤橋接:admin 驗證後下發 winrig quote bridge 的 URL+token(券商行情限本人使用)
+    if (url.pathname === "/watch-token" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      const admin = await requireAdmin(env, body, request);
+      if (!admin) return json({ error: "Forbidden" }, 403);
+      if (!env.QUOTE_BRIDGE_URL || !env.QUOTE_BRIDGE_TOKEN) return json({ error: "not_configured" }, 503);
+      return json({ url: env.QUOTE_BRIDGE_URL, token: env.QUOTE_BRIDGE_TOKEN });
+    }
+
     // 查詢是否已啟用 TOTP(無需密碼,僅回 boolean)
     if (url.pathname === "/admin/totp-status" && request.method === "POST") {
       let body;
@@ -1427,8 +1437,9 @@ export default {
       const existing = existingRaw ? JSON.parse(existingRaw) : {};
       let digest_depth = body.digest_depth || existing.digest_depth || "standard";
       if (!["simple", "standard", "deep"].includes(digest_depth)) digest_depth = "standard";
-      // 持倉成本(選填,2026-07-07):{ ticker: { entry_price, entry_date } }。
+      // 持倉成本(選填,2026-07-07):{ ticker: { entry_price, entry_date, qty } }。
       // 有帶 positions 就整份取代(空物件=清空),沒帶則沿用既有值;只留仍在追蹤清單內的 ticker。
+      // qty(股數,2026-07-22 資金管理體檢):選填,允許小數(美股碎股);有 qty 或 entry_price 任一即存。
       let positions = existing.positions || {};
       if (body.positions !== undefined) {
         positions = {};
@@ -1439,17 +1450,26 @@ export default {
             const price = Number(p.entry_price);
             if (Number.isFinite(price) && price > 0 && price < 1e7) entry.entry_price = Math.round(price * 10000) / 10000;
             if (typeof p.entry_date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(p.entry_date)) entry.entry_date = p.entry_date;
-            if (entry.entry_price) positions[sym] = entry;
+            const qty = Number(p.qty);
+            if (Number.isFinite(qty) && qty > 0 && qty < 1e9) entry.qty = Math.round(qty * 10000) / 10000;
+            if (entry.entry_price || entry.qty) positions[sym] = entry;
           }
         }
       }
       const trackedSyms = new Set([...us, ...tw]);
       positions = Object.fromEntries(Object.entries(positions).filter(([s]) => trackedSyms.has(s)));
+      // 總本金(選填,2026-07-22):資金管理體檢的分母。有帶就取代(null/0=清空),沒帶沿用。
+      let capital = existing.capital;
+      if (body.capital !== undefined) {
+        const c = Number(body.capital);
+        capital = Number.isFinite(c) && c > 0 && c < 1e12 ? Math.round(c) : undefined;
+      }
       const prefs = {
         us_stocks: us,
         tw_stocks: tw,
         digest_depth,
         ...(Object.keys(positions).length ? { positions } : {}),
+        ...(capital ? { capital } : {}),
         updated_at: new Date().toISOString(),
       };
       await env.USER_PREFS.put(email, JSON.stringify(prefs));
@@ -1505,6 +1525,7 @@ export default {
         tw_stocks: prefs.tw_stocks || [],
         digest_depth: prefs.digest_depth || "standard",
         positions: prefs.positions || {},
+        capital: prefs.capital || null,
         plan,
         cap: cap === Infinity ? null : cap,
       });
@@ -1546,6 +1567,264 @@ export default {
     // 寫入時把 token→email 歸戶(digest_email:{tok}),存 KV plan_trades:v1;
     // token 不落地,只有 /admin/plan-trades(admin 認證)讀得到。
     // 認證:Bearer header 比對 env.INTERNAL_TOKEN
+    // 看盤頁 intel 訊號燈:winrig patrol 後推 by_code(level/source/signal),全體用戶免費讀(合規:個股內容不分付費)
+    if (url.pathname === "/internal/watch-signals" && request.method === "POST") {
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      if (!body.by_code || typeof body.by_code !== "object") return json({ error: "no_by_code" }, 400);
+      await env.USER_PREFS.put("watch:signals", JSON.stringify({ date: body.date || null, by_code: body.by_code }), { expirationTtl: 86400 * 4 });
+      return json({ ok: true, n_codes: Object.keys(body.by_code).length });
+    }
+    if (url.pathname === "/watch-signals" && request.method === "GET") {
+      const raw = await env.USER_PREFS.get("watch:signals");
+      return json(raw ? JSON.parse(raw) : { date: null, by_code: {} });
+    }
+
+    // 台股基本面(本益比/殖利率/淨值比):winrig 每交易日從 TWSE/TPEx openapi 推 → KV
+    if (url.pathname === "/internal/watch-fundamentals" && request.method === "POST") {
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      if (!body.by_code || typeof body.by_code !== "object") return json({ error: "no_by_code" }, 400);
+      await env.USER_PREFS.put("watch:fundamentals", JSON.stringify({ date: body.date || null, by_code: body.by_code }), { expirationTtl: 86400 * 7 });
+      return json({ ok: true, n_codes: Object.keys(body.by_code).length });
+    }
+    if (url.pathname === "/watch-fundamentals" && request.method === "GET") {
+      const raw = await env.USER_PREFS.get("watch:fundamentals");
+      return json(raw ? JSON.parse(raw) : { date: null, by_code: {} }, 200);
+    }
+
+    // 個股新聞流:台股 cnyes 關鍵字搜尋(q=中文名),美股 Finnhub company-news;CF cache 10min
+    if (url.pathname === "/stock-news" && request.method === "GET") {
+      const sym = (url.searchParams.get("symbol") || "").trim().toUpperCase();
+      const isTW = /^\d{4,6}[A-Z]?$/.test(sym);
+      const cf = { cf: { cacheTtl: 600, cacheEverything: true } };
+      try {
+        if (isTW) {
+          const q = (url.searchParams.get("q") || "").trim().slice(0, 30) || sym;
+          const r = await fetch(`https://ess.api.cnyes.com/ess/api/v1/news/keyword?q=${encodeURIComponent(q)}&limit=12`,
+            { ...cf, headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" } });
+          if (!r.ok) return json({ news: [] });
+          const items = ((await r.json()).data || {}).items || [];
+          return json({
+            news: items.slice(0, 10).map(it => ({
+              title: String(it.title || "").replace(/<[^>]*>/g, "").trim(),
+              url: `https://news.cnyes.com/news/id/${it.newsId}`,
+              ts: it.publishAt || it.newsPublishAt || null,
+              source: "鉅亨網",
+            })).filter(n => n.title),
+          });
+        }
+        const fh = env.FINNHUB_API_KEY;
+        if (!fh || !/^[A-Z.\-]{1,10}$/.test(sym)) return json({ news: [] });
+        const to = new Date().toISOString().slice(0, 10);
+        const from = new Date(Date.now() - 14 * 86400e3).toISOString().slice(0, 10);
+        const r = await fetch(`https://finnhub.io/api/v1/company-news?symbol=${sym}&from=${from}&to=${to}&token=${fh}`, cf);
+        if (!r.ok) return json({ news: [] });
+        const items = await r.json();
+        return json({
+          news: (Array.isArray(items) ? items : []).slice(0, 10).map(it => ({
+            title: it.headline, url: it.url, ts: it.datetime || null, source: it.source || "",
+          })).filter(n => n.title && n.url),
+        });
+      } catch {
+        return json({ news: [] });
+      }
+    }
+
+    // 美股基本面:Finnhub metric+profile2 proxy(CF cache 3h)
+    if (url.pathname === "/us-fundamentals" && request.method === "GET") {
+      const sym = (url.searchParams.get("symbol") || "").trim().toUpperCase();
+      if (!/^[A-Z.\-]{1,10}$/.test(sym)) return json({ error: "bad_symbol" }, 400);
+      const fh = env.FINNHUB_API_KEY;
+      if (!fh) return json({ error: "not_configured" }, 503);
+      const cf = { cf: { cacheTtl: 10800, cacheEverything: true } };
+      try {
+        const [mRes, pRes] = await Promise.all([
+          fetch(`https://finnhub.io/api/v1/stock/metric?symbol=${sym}&metric=all&token=${fh}`, cf),
+          fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${sym}&token=${fh}`, cf),
+        ]);
+        const m = mRes.ok ? (await mRes.json()).metric || {} : {};
+        const p = pRes.ok ? await pRes.json() : {};
+        return json({
+          symbol: sym,
+          pe: m.peTTM ?? m.peBasicExclExtraTTM ?? null,
+          pb: m.pbQuarterly ?? m.pb ?? null,
+          dy: m.currentDividendYieldTTM ?? m.dividendYieldIndicatedAnnual ?? null,
+          eps: m.epsTTM ?? null,
+          high52: m["52WeekHigh"] ?? null,
+          low52: m["52WeekLow"] ?? null,
+          beta: m.beta ?? null,
+          market_cap_m: p.marketCapitalization ?? null,
+          name: p.name ?? null,
+          industry: p.finnhubIndustry ?? null,
+          ipo: p.ipo ?? null,
+          weburl: p.weburl ?? null,
+          logo: p.logo ?? null,
+        });
+      } catch {
+        return json({ error: "upstream" }, 502);
+      }
+    }
+
+    // 台股籌碼面(看盤詳情):FinMind 官方彙整資料 proxy。法人買賣超/融資券/大戶持股/當沖率。
+    // 全體用戶免費(合規:個股內容不分付費)。CF cache 6h,FinMind token 600 req/hr 綽綽有餘。
+    if (url.pathname === "/tw-chips" && request.method === "GET") {
+      const code = (url.searchParams.get("code") || "").trim().toUpperCase();
+      if (!/^\d{4,6}[A-Z]?$/.test(code)) return json({ error: "bad_code" }, 400);
+      if (!env.FINMIND_TOKEN) return json({ error: "not_configured" }, 503);
+      const day = 86400e3, now = Date.now();
+      const d0 = ms => new Date(ms).toISOString().slice(0, 10);
+      try {
+        const [inst, margin, holders, dtr, px] = await Promise.all([
+          finmind(env, "TaiwanStockInstitutionalInvestorsBuySell", code, d0(now - 100 * day)),
+          finmind(env, "TaiwanStockMarginPurchaseShortSale", code, d0(now - 100 * day)),
+          finmind(env, "TaiwanStockShareholding", code, d0(now - 100 * day)),
+          finmind(env, "TaiwanStockDayTrading", code, d0(now - 100 * day)),
+          finmind(env, "TaiwanStockPrice", code, d0(now - 100 * day)),
+        ]);
+        // 法人:同日多法人列 → 併成 {d, f外資, t投信, dl自營}(單位:張,net=buy-sell)
+        const instMap = {};
+        for (const r of inst) {
+          const e = instMap[r.date] || (instMap[r.date] = { d: r.date, f: 0, t: 0, dl: 0 });
+          const net = Math.round(((r.buy || 0) - (r.sell || 0)) / 1000);
+          const n = r.name || "";
+          if (n.startsWith("Foreign")) e.f += net;
+          else if (n === "Investment_Trust") e.t += net;
+          else if (n.startsWith("Dealer")) e.dl += net;
+        }
+        // 外資持股比(TDCC 400張大戶級距是 FinMind 贊助級拿不到,用官方外資持股比呈現集中度趨勢)
+        const volMap = {};
+        for (const r of px) volMap[r.date] = r.Trading_Volume || 0;
+        return new Response(JSON.stringify({
+          code,
+          inst: Object.values(instMap).sort((a, b) => a.d < b.d ? -1 : 1).slice(-45),
+          margin: margin.map(r => ({
+            d: r.date,
+            mb: r.MarginPurchaseTodayBalance ?? null,
+            sb: r.ShortSaleTodayBalance ?? null,
+          })).slice(-45),
+          foreign: holders.map(r => ({ d: r.date, fr: r.ForeignInvestmentSharesRatio ?? null }))
+            .filter(x => x.fr != null).slice(-45),
+          daytrade: dtr.map(r => ({
+            d: r.date,
+            r: volMap[r.date] ? Math.round((r.Volume || 0) / volMap[r.date] * 1000) / 10 : null,
+          })).filter(x => x.r != null).slice(-45),
+          px: px.map(r => ({ d: r.date, c: r.close })).slice(-45),
+        }), { headers: { ...CORS_HEADERS, "Content-Type": "application/json", "Cache-Control": "max-age=3600" } });
+      } catch { return json({ error: "upstream" }, 502); }
+    }
+
+    // 台股財務面(看盤詳情):月營收 3 年/季 EPS 與三率/本益比河流(PER PBR 殖利率 1 年)。
+    if (url.pathname === "/tw-fin" && request.method === "GET") {
+      const code = (url.searchParams.get("code") || "").trim().toUpperCase();
+      if (!/^\d{4,6}[A-Z]?$/.test(code)) return json({ error: "bad_code" }, 400);
+      if (!env.FINMIND_TOKEN) return json({ error: "not_configured" }, 503);
+      const day = 86400e3, now = Date.now();
+      const d0 = ms => new Date(ms).toISOString().slice(0, 10);
+      try {
+        const [rev, fs, per] = await Promise.all([
+          finmind(env, "TaiwanStockMonthRevenue", code, d0(now - 1140 * day), 43200),
+          finmind(env, "TaiwanStockFinancialStatements", code, d0(now - 1000 * day), 43200),
+          finmind(env, "TaiwanStockPER", code, d0(now - 380 * day), 43200),
+        ]);
+        // 季報:date=季末 → {q, eps, gm 毛利率, om 營益率, nm 淨利率}
+        const qMap = {};
+        for (const r of fs) {
+          const m = String(r.date || "").slice(0, 7);
+          const qn = { "03": "Q1", "06": "Q2", "09": "Q3", "12": "Q4" }[m.slice(5)] || "";
+          if (!qn) continue;
+          const key = m.slice(0, 4) + qn;
+          const e = qMap[key] || (qMap[key] = { q: key, d: r.date });
+          if (r.type === "EPS") e.eps = r.value;
+          else if (r.type === "Revenue") e.rev = r.value;
+          else if (r.type === "GrossProfit") e.gp = r.value;
+          else if (r.type === "OperatingIncome") e.oi = r.value;
+          else if (r.type === "IncomeAfterTaxes") e.ni = r.value;
+        }
+        const quarters = Object.values(qMap).sort((a, b) => a.d < b.d ? -1 : 1).map(e => ({
+          q: e.q, eps: e.eps ?? null,
+          gm: e.rev && e.gp != null ? Math.round(e.gp / e.rev * 1000) / 10 : null,
+          om: e.rev && e.oi != null ? Math.round(e.oi / e.rev * 1000) / 10 : null,
+          nm: e.rev && e.ni != null ? Math.round(e.ni / e.rev * 1000) / 10 : null,
+        })).slice(-9);
+        return new Response(JSON.stringify({
+          code,
+          rev: rev.map(r => ({ m: String(r.date || "").slice(0, 7), v: r.revenue || 0 })).slice(-37),
+          quarters,
+          per: per.map(r => ({ d: r.date, per: r.PER ?? null, pbr: r.PBR ?? null, dy: r.dividend_yield ?? null })),
+        }), { headers: { ...CORS_HEADERS, "Content-Type": "application/json", "Cache-Control": "max-age=7200" } });
+      } catch { return json({ error: "upstream" }, 502); }
+    }
+
+    // 市場新聞流(看盤新聞頁籤):cnyes 分類新聞。cat 白名單防 open proxy。
+    if (url.pathname === "/market-news" && request.method === "GET") {
+      const cat = url.searchParams.get("cat") || "headline";
+      if (!["headline", "tw_stock", "wd_stock", "forex", "future"].includes(cat)) return json({ error: "bad_cat" }, 400);
+      try {
+        const r = await fetch(`https://api.cnyes.com/media/api/v1/newslist/category/${cat}?page=1&limit=30`,
+          { cf: { cacheTtl: 600, cacheEverything: true }, headers: { "User-Agent": "Mozilla/5.0", "Accept": "application/json" } });
+        if (!r.ok) return json({ news: [] });
+        const j = await r.json();
+        const items = (j.items && j.items.data) || (j.data && j.data.items) || [];
+        return new Response(JSON.stringify({
+          news: items.slice(0, 25).map(it => ({
+            title: String(it.title || "").replace(/<[^>]*>/g, "").trim(),
+            url: `https://news.cnyes.com/news/id/${it.newsId}`,
+            ts: it.publishAt || null,
+            source: it.categoryName || "鉅亨網",
+          })).filter(n => n.title),
+        }), { headers: { ...CORS_HEADERS, "Content-Type": "application/json", "Cache-Control": "max-age=300" } });
+      } catch { return json({ news: [] }); }
+    }
+
+    // 台股類股指數(熱力圖):TWSE openapi MI_INDEX,收盤資料。日期是民國曆(1150721)→轉西元。
+    if (url.pathname === "/tw-sectors" && request.method === "GET") {
+      try {
+        const r = await fetch("https://openapi.twse.com.tw/v1/exchangeReport/MI_INDEX",
+          { cf: { cacheTtl: 3600, cacheEverything: true }, headers: { "Accept": "application/json", "User-Agent": "Mozilla/5.0" } });
+        if (!r.ok) return json({ sectors: [] });
+        const rows = await r.json();
+        let date = null;
+        const sectors = [];
+        for (const row of rows) {
+          const name = row["指數"] || "";
+          if (!name.endsWith("類指數") || name.includes("報酬")) continue;
+          const roc = String(row["日期"] || "");
+          if (!date && /^\d{7}$/.test(roc)) {
+            date = `${parseInt(roc.slice(0, 3), 10) + 1911}-${roc.slice(3, 5)}-${roc.slice(5, 7)}`;
+          }
+          const pct = parseFloat(String(row["漲跌百分比"] || "").replace(/,/g, ""));
+          const sign = row["漲跌"] === "-" ? -1 : row["漲跌"] === "+" ? 1 : 0;
+          const v = parseFloat(String(row["收盤指數"] || "").replace(/,/g, ""));
+          if (!isFinite(v) || !isFinite(pct)) continue;
+          sectors.push({ n: name.replace(/類指數$/, ""), v, chg: sign * pct });
+        }
+        return new Response(JSON.stringify({ date, sectors }), {
+          headers: { ...CORS_HEADERS, "Content-Type": "application/json", "Cache-Control": "max-age=1800" } });
+      } catch { return json({ sectors: [] }); }
+    }
+
+    // 看盤個人化雲端同步(自選群組+警示條件):跨裝置同步,身份=email+密碼(同 get-preferences)。
+    if (url.pathname === "/watch-sync" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      const email = String(body.email || "").trim().toLowerCase();
+      if (!email) return json({ error: "invalid_email" }, 400);
+      const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
+      if (!storedHash || !(await verifyPwd(String(body.password || ""), storedHash))) return json({ error: "auth" }, 403);
+      if (body.action === "save") {
+        const data = body.data || {};
+        const payload = JSON.stringify({ groups: data.groups || {}, alerts: data.alerts || {}, ts: Date.now() });
+        if (payload.length > 100000) return json({ error: "too_big" }, 400);
+        await env.USER_PREFS.put(`watchsync:${email}`, payload);
+        return json({ ok: true });
+      }
+      const raw = await env.USER_PREFS.get(`watchsync:${email}`);
+      return json(raw ? JSON.parse(raw) : { groups: null, alerts: null, ts: 0 });
+    }
+
     if (url.pathname === "/internal/plan-trades" && request.method === "POST") {
       if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
       let body;
@@ -1851,7 +2130,11 @@ export default {
         "5D": { interval: "30m", range: "5d"  },
         "1M": { interval: "1d",  range: "1mo" },
         "3M": { interval: "1d",  range: "3mo" },
+        "6M": { interval: "1d",  range: "6mo" },
+        "1Y": { interval: "1wk", range: "1y"  },
+        "5Y": { interval: "1mo", range: "5y"  },
       }[url.searchParams.get("range") || "1M"] || { interval: "1d", range: "1mo" };
+      const wantOhlc = url.searchParams.get("ohlc") === "1";
       const isTW = /^\d{4,6}$/.test(t);
       const yfHeaders = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -1862,10 +2145,18 @@ export default {
         const r = await fetchYahooChart(t, isTW, cfg.interval, cfg.range, yfHeaders, 300);
         if (!r) return json({ error: "no data" }, 404);
         const ts = r.timestamp || [];
-        const closes = r.indicators?.quote?.[0]?.close || [];
+        const q0 = r.indicators?.quote?.[0] || {};
+        const closes = q0.close || [];
         const points = [];
         for (let i = 0; i < ts.length; i++) {
-          if (closes[i] !== null && closes[i] !== undefined) points.push({ t: ts[i], c: closes[i] });
+          if (closes[i] !== null && closes[i] !== undefined) {
+            const p = { t: ts[i], c: closes[i] };
+            if (wantOhlc) {
+              p.o = q0.open?.[i] ?? closes[i]; p.h = q0.high?.[i] ?? closes[i];
+              p.l = q0.low?.[i] ?? closes[i]; p.v = q0.volume?.[i] ?? 0;
+            }
+            points.push(p);
+          }
         }
         // prevClose 語意 = 「昨日收盤」(作為圖表上「前一日收盤水平線」用):
         //   - 1D range (intraday 5m):chartPreviousClose 剛好是昨日 ✓
@@ -1885,7 +2176,7 @@ export default {
             const mtDay = new Date(mt * 1000).toISOString().slice(0, 10);
             if (mtDay > lastDay) {
               prevClose = points[points.length - 1].c;
-              points.push({ t: mt, c: mp });
+              points.push(wantOhlc ? { t: mt, c: mp, o: mp, h: mp, l: mp, v: 0 } : { t: mt, c: mp });
             }
           }
         }
@@ -1933,7 +2224,7 @@ export default {
       const givenName = (url.searchParams.get("name") || "").trim().slice(0, 40);
 
       // cache key 含公司名:台股裸代號 AI 會猜錯公司,帶名才準,故名也納入 key
-      const cacheKey = `sc:v5:${ticker}:${givenName}`;
+      const cacheKey = `sc:v7:${ticker}:${givenName}`;
       const cached = await env.USER_PREFS.get(cacheKey);
       if (cached) {
         try { return json(JSON.parse(cached)); } catch {}
@@ -1952,11 +2243,12 @@ export default {
 嚴格規則:
 - 語言:所有文字欄位(company_zh / industry / mid.desc / name_zh / category / role / criticality)一律使用「台灣繁體中文」的用字與用語,嚴禁任何簡體字,嚴禁中國大陸慣用語。半導體/科技用語一律用台灣說法:晶片(非「芯片」)、微影機或曝光機(非「光刻机」)、關鍵/命脈/難以替代(非「卡脖子」)、記憶體(非「内存」)、軟體(非「软件」)、頂尖(非「顶尖」)、供應商(非「供应商」)、設備(非「设备」)、鏡頭(非「镜头」)、製造(非「制造」)、矽晶圓、封裝測試。若不確定某詞的台灣寫法,用最通用的繁體中文。
 - 若提供了公司名稱,以「公司名稱」為準辨識這家公司,不要從代號數字臆測;若公司名稱與你認知的代號不符,以公司名稱為準。
-- 只列「真實、公認」的供應鏈關係。不確定就回空陣列,絕不亂掰、絕不臆測。
-- 關聯公司的 ticker 只在你確定它是上市公司時才填,否則填 null。
+- 只列「真實、公認」的供應鏈關係。不確定就略過,絕不亂掰、絕不臆測。
+- **每個 upstream/downstream 物件的 name_zh 必須是「具體公司名稱」**(如「環球晶」「信越化學」「輝達」),嚴禁類別泛稱(「原料供應商」「設備廠商」「電信營運商」這類不是公司名,不要輸出)。同一環節有多家關鍵公司就各列一個物件。你確定該環節重要但想不起具體公司 → 直接略過該環節。
+- 關聯公司的 ticker 只在你確定它是上市公司時才填(台股填代號如 2330,美股填代碼如 NVDA),否則填 null。
 - mid.desc 用 1~2 句繁體中文說明:這家公司做什麼 + 它在產業鏈的位置與競爭優勢(市佔、技術門檻或護城河)。
 - industry 填「大產業 › 細分」格式(如「半導體 › 晶圓代工」),不確定填空字串。
-- upstream = 它的上游供應商/原材料/設備;downstream = 它的下游客戶/應用。各盡量列 4~8 個關鍵環節,由最關鍵排到次要,別只給一兩個。
+- upstream = 它的上游供應商/原材料/設備;downstream = 它的下游客戶/應用。各盡量列 6~10 家「具體公司」,由最關鍵排到次要,別只給一兩家。
 - 每個關聯公司物件:{ "name_zh", "name_en", "ticker"(或 null), "category"(這個環節的類別,如「曝光機」「矽晶圓」「AI 伺服器」,沒有填空字串), "role"(具體說明它供應什麼或被如何使用,要具體,例如「EUV 微影機 全球獨家」而非只寫「設備」), "criticality"(對這家公司的重要程度,只能是 極高/高/中/低 其一,可加極短理由如「極高 — 無替代」) }。
 
 只輸出 JSON,不要任何其他文字,格式:
@@ -1972,8 +2264,10 @@ export default {
             "content-type": "application/json",
           },
           body: JSON.stringify({
-            model: "claude-haiku-4-5-20251001",
-            max_tokens: 2000,
+            // 2026-07-22 定案:此端點僅剩 dashboard stories 在用(watch 已改全靜態零 API 費),
+            // sonnet=品質/成本平衡;prompt 強制具體公司名
+            model: "claude-sonnet-5",
+            max_tokens: 3000,
             system: sysPrompt,
             messages: [{ role: "user", content: `${givenName ? `公司名稱:${givenName}、` : ""}股票代號:${ticker}${isTW ? "(台股)" : "(美股)"}。輸出它的產業鏈 JSON。` }],
           }),
@@ -2303,6 +2597,15 @@ function json(data, status = 200) {
     status,
     headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
   });
+}
+
+// FinMind v4 data proxy(台股籌碼/財務官方彙整)。token 600 req/hr;CF edge cache 讓熱門股全球共用。
+async function finmind(env, dataset, dataId, startDate, ttl = 21600) {
+  const u = `https://api.finmindtrade.com/api/v4/data?dataset=${dataset}&data_id=${encodeURIComponent(dataId)}&start_date=${startDate}&token=${env.FINMIND_TOKEN}`;
+  const r = await fetch(u, { cf: { cacheTtl: ttl, cacheEverything: true } });
+  if (!r.ok) return [];
+  const d = await r.json();
+  return Array.isArray(d.data) ? d.data : [];
 }
 
 // 抓 Yahoo Finance chart。台股先試 .TW(上市)再試 .TWO(上櫃),

@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>戰績紀錄 — MarketDaily</title>
+<!-- site_structured_data:start -->
+<link rel="canonical" href="https://marketdaily.ai/track-record">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebPage", "name": "戰績紀錄 — MarketDaily", "description": "MarketDaily 過去 30 天日報點到的個股,公開避坑勝率與方向勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。", "url": "https://marketdaily.ai/track-record", "image": "https://marketdaily.ai/assets/og.png", "publisher": {"@type": "Organization", "name": "MarketDaily", "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"}}}]}</script>
+<!-- site_structured_data:end -->
 <meta name="description" content="MarketDaily 過去 30 天日報點到的個股,公開避坑勝率與方向勝率紀錄,錯的也列出來。不空談 AI,讓紀錄說話。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MarketDaily">
@@ -487,6 +491,24 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     <div class="hz-note" data-i18n="hz_note">同一批判斷分別在次一交易日／5／21／63 個交易日後用收盤價結算;緩衝門檻按時間放大(續抱不跌破 -2%／-3%／-6%／-10%,觀望 &lt;1%／&lt;2%／&lt;4%／&lt;7%)。頭條用隔日(日報每天覆寫,量當天判斷),持有更久的視角也全公開。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。</div>
   </div>
 
+  <!-- Market split:台股 vs 美股(資料源 stats.by_market,build_track_record.py 2026-07-16 起) -->
+  <div class="method-card" id="market-split-card" style="display:none;">
+    <div class="ttl" data-i18n="mk_ttl">台股 vs 美股,各自幾勝幾敗</div>
+    <div class="hz-grid">
+      <div class="hz-box">
+        <div class="hz-h" data-i18n="mk_tw">🇹🇼 台股 · 週結 5 個交易日</div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bull">看多</span><span class="hz-val" id="mk-tw-a">—</span></div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bear">看空</span><span class="hz-val" id="mk-tw-c">—</span></div>
+      </div>
+      <div class="hz-box">
+        <div class="hz-h" data-i18n="mk_us">🇺🇸 美股 · 週結 5 個交易日</div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bull">看多</span><span class="hz-val" id="mk-us-a">—</span></div>
+        <div class="hz-row"><span class="hz-lbl" data-i18n="hz_bear">看空</span><span class="hz-val" id="mk-us-c">—</span></div>
+      </div>
+    </div>
+    <div class="hz-note" data-i18n="mk_note">與上表「週結」同一把尺,只按市場拆開;括號為(勝/樣本),區間為 Wilson 95%。原始資料(含按日聚類的保守區間)全部公開在 /data/track-record.json,歡迎自行驗算。</div>
+  </div>
+
   <!-- Method explainer -->
   <div class="method-card">
     <div class="ttl" data-i18n="method_ttl">我們怎麼算勝率(沒任何模糊空間)</div>
@@ -672,6 +694,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     <a href="about.html" data-i18n="f_about">主編</a>
     <a href="pricing.html" data-i18n="f_pricing">定價</a>
     <a href="contact.html" data-i18n="f_contact">聯絡客服</a>
+    <a href="blog/" data-i18n="f_blog">投資學堂</a>
   </div>
   <span data-i18n="footer_note">紀錄每週更新 · 資料來源:MarketDaily 日報歷史 · For informational purposes only · Not financial advice.</span>
 </footer>
@@ -906,8 +929,33 @@ let dataLoaded = false;
   renderRecords(currentFilter);
   renderCombinedStats();
   renderHorizonStats();
+  renderMarketStats();
   if (NORMALIZED.length === 0) renderEmptyState();
 })();
+
+// 台股 vs 美股拆分 — stats.by_market(週結5日,與 stats 主欄同一把尺;缺資料整卡隱藏)
+function renderMarketStats() {
+  const bm = STATS && STATS.by_market;
+  if (!bm || (!bm.tw && !bm.us)) return;
+  const card = document.getElementById("market-split-card");
+  if (!card) return;
+  const MIN_N = 20;
+  const zh = currentLang !== "en";
+  const fmt = (blk, k) => {
+    if (!blk || !blk[k + "_count"]) return "—";
+    const count = blk[k + "_count"], wins = blk[k + "_wins"] || 0, ci = blk[k + "_ci95"];
+    if (count < MIN_N) return zh ? `累積中 ${count}/${MIN_N}` : `collecting ${count}/${MIN_N}`;
+    const ciHtml = Array.isArray(ci) && ci.length === 2
+      ? `<span class="ci">95% ${Number(ci[0]).toFixed(0)}–${Number(ci[1]).toFixed(0)}%</span>` : "";
+    return `${(wins / count * 100).toFixed(1)}% <span style="font-weight:600;color:rgba(255,255,255,0.45);">(${wins}/${count})</span>${ciHtml}`;
+  };
+  const set = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  set("mk-tw-a", fmt(bm.tw, "a"));
+  set("mk-tw-c", fmt(bm.tw, "c"));
+  set("mk-us-a", fmt(bm.us, "a"));
+  set("mk-us-c", fmt(bm.us, "c"));
+  card.style.display = "";
+}
 
 // 多週期勝率:隔日(1d)=STATS.one_day,週(5d)=STATS 主欄,月(21d)=STATS.monthly,季(63d)=STATS.quarterly(皆含訂閱者個人化樣本)
 function renderHorizonStats() {
@@ -1027,6 +1075,10 @@ const i18n = {
     hz_bull: "看多",
     hz_bear: "看空",
     hz_note: "同一批判斷分別在次一交易日／5／21／63 個交易日後用收盤價結算;緩衝門檻按時間放大(續抱不跌破 -2%／-3%／-6%／-10%,觀望 <1%／<2%／<4%／<7%)。頭條用隔日(日報每天覆寫,量當天判斷),持有更久的視角也全公開。月結/季結 2026-07-07 上線,需等既有判斷到期才有數字,期間顯示「待結」。",
+    mk_ttl: "台股 vs 美股,各自幾勝幾敗",
+    mk_tw: "🇹🇼 台股 · 週結 5 個交易日",
+    mk_us: "🇺🇸 美股 · 週結 5 個交易日",
+    mk_note: "與上表「週結」同一把尺,只按市場拆開;括號為(勝/樣本),區間為 Wilson 95%。原始資料(含按日聚類的保守區間)全部公開在 /data/track-record.json,歡迎自行驗算。",
     f_us: "🇺🇸 美股", f_tw: "🇹🇼 台股", f_a: "🟢 看多", f_c: "🔴 看空",
     f_win: "✅ 贏", f_loss: "❌ 輸",
     th_date: "日期", th_tic: "個股", th_call: "日報原話", th_type: "類型", th_res: "結果",
@@ -1037,7 +1089,7 @@ const i18n = {
     cta_pri: "免費訂閱,鎖定早鳥權益 →", cta_vs: "先看 vs 對手比較",
     footer_note: "紀錄每週更新 · 資料來源:MarketDaily 日報歷史 · 僅供參考,非投資建議",
     rsn_label: "👥 含全部訂閱者個人化日報",
-    f_tic: "戰績紀錄", f_vs: "vs 對手", f_about: "主編", f_pricing: "定價", f_contact: "聯絡客服",
+    f_tic: "戰績紀錄", f_vs: "vs 對手", f_about: "主編", f_pricing: "定價", f_contact: "聯絡客服", f_blog: "投資學堂",
     faq_h2: "常見問題 · 給認真讀紀錄的人",
     faq_q1: "🟢 看多 vs 🔴 看空 是什麼意思?",
     faq_a1: "<strong>🟢 看多</strong>:日報判斷這支「可以買 / 繼續抱」(偏多)→ 5 個交易日後股價真的往上就算贏。<br><strong>🔴 看空</strong>:日報示警這支「觀望 / 拉回 / 短期過熱」(偏空)→ 5 個交易日後股價真的沒漲就算贏(代表我們幫你避開了一次坑)。<br><br>簡單講:<code>看多看的是「跟對」</code>,<code>看空看的是「躲過」</code>。",
@@ -1079,6 +1131,10 @@ const i18n = {
     hz_bull: "Bullish",
     hz_bear: "Bearish",
     hz_note: "The same calls are settled at the next close and 5 / 21 / 63 trading days out; buffers scale with time (hold: no drop beyond -2% / -3% / -6% / -10%, wait <1% / <2% / <4% / <7%). The headline uses next-close settlement (each day's digest supersedes the last), with longer holding horizons fully published too. Monthly & quarterly went live on 2026-07-07 — existing calls need to mature first, shown as \"pending\" until then.",
+    mk_ttl: "Taiwan vs US, wins and losses by market",
+    mk_tw: "🇹🇼 Taiwan · 5-trading-day settlement",
+    mk_us: "🇺🇸 US · 5-trading-day settlement",
+    mk_note: "Same yardstick as the \"weekly\" column above, just split by market; parentheses show (wins/samples), intervals are Wilson 95%. Raw data (incl. conservative day-clustered intervals) is fully public at /data/track-record.json — verify it yourself.",
     f_us: "🇺🇸 US", f_tw: "🇹🇼 TW", f_a: "📐 Direction (A)", f_c: "⚠️ Risk (C)",
     f_win: "✅ Win", f_loss: "❌ Loss",
     th_date: "Date", th_tic: "Stock", th_call: "Original Call", th_type: "Type", th_res: "Result",
@@ -1089,7 +1145,7 @@ const i18n = {
     cta_pri: "Subscribe free — lock in early-bird access →", cta_vs: "See vs. competitors first",
     footer_note: "Updated weekly · Source: MarketDaily digest history · Informational only, not financial advice",
     rsn_label: "👥 Includes all subscribers' personalized digests",
-    f_tic: "Track Record", f_vs: "vs Rivals", f_about: "About", f_pricing: "Pricing", f_contact: "Contact",
+    f_tic: "Track Record", f_vs: "vs Rivals", f_about: "About", f_pricing: "Pricing", f_contact: "Contact", f_blog: "Learn",
     faq_h2: "FAQ · For the careful reader",
     faq_q1: "🟢 Bullish vs 🔴 Bearish — what do they mean?",
     faq_a1: "<strong>🟢 Bullish</strong>: the digest calls a stock \"buy / keep holding\" → win if the price is actually higher 5 trading days later.<br><strong>🔴 Bearish</strong>: the digest warns \"wait / pullback / overheated\" → win if the price didn't actually rise 5 trading days later (meaning we helped you dodge a drop).<br><br>In short: <code>bullish scores \"did we call it right\"</code>, <code>bearish scores \"did we help you avoid it\"</code>.",
@@ -1120,6 +1176,7 @@ function applyLang(lang) {
   document.querySelector(".lang-btn").textContent = lang === "zh" ? "EN" : "中文";
   document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
   if (typeof renderHorizonStats === "function") renderHorizonStats(); // 動態數字隨語言重繪
+  if (typeof renderMarketStats === "function") renderMarketStats();
   if (dataLoaded) {
     // 表格/合計統計/空狀態的文字是 JS 生成,不吃 data-i18n,語言切換要手動重繪
     renderRecords(currentFilter);

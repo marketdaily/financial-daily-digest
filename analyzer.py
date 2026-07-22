@@ -399,10 +399,10 @@ def _call_cf_ai(prompt: str, system: str = None,
 
 
 def _call_openrouter(prompt: str, system: str = None,
-                     model: str = "meta-llama/llama-3.3-70b-instruct:free", max_tokens: int = 600) -> str:
+                     model: str = "nvidia/nemotron-3-super-120b-a12b:free", max_tokens: int = 600) -> str:
     """OpenRouter 免費層(:free 模型每日額度)。OpenAI 相容 API、獨立廠商聚合器。
-    預接線:沒設 OPENROUTER_API_KEY → raise,席次/鏈自動跳過。用戶自行註冊拿 key
-    (Cloudflare Turnstile 擋自動註冊)後填進 .env 即自動啟用一席,不需改程式。"""
+    2026-07-22 帳號開通實測:llama-3.3-70b:free 已轉付費,免費層現役最佳=
+    nemotron-3-super-120b(0.5s 回)。沒設 OPENROUTER_API_KEY → raise 自動跳過。"""
     return _call_openai_style(
         "https://openrouter.ai/api/v1/chat/completions", "OPENROUTER_API_KEY",
         prompt, system, model=model, max_tokens=max_tokens,
@@ -410,10 +410,11 @@ def _call_openrouter(prompt: str, system: str = None,
 
 
 def _call_cerebras(prompt: str, system: str = None,
-                   model: str = "llama-3.3-70b", max_tokens: int = 600) -> str:
+                   model: str = "gpt-oss-120b", max_tokens: int = 600) -> str:
     """Cerebras 免費層(晶圓級引擎,推理極快)。OpenAI 相容 API、獨立廠商。
-    預接線:沒設 CEREBRAS_API_KEY → raise,席次/鏈自動跳過。用戶自行註冊拿 key
-    (reCAPTCHA 擋自動註冊)後填進 .env 即自動啟用一席。"""
+    2026-07-22 帳號開通實測:llama-3.3-70b 已下架(404),現役=gpt-oss-120b/
+    gemma-4-31b/zai-glm-4.7,取最強 gpt-oss-120b。沒設 CEREBRAS_API_KEY →
+    raise,席次/鏈自動跳過。"""
     return _call_openai_style(
         "https://api.cerebras.ai/v1/chat/completions", "CEREBRAS_API_KEY",
         prompt, system, model=model, max_tokens=max_tokens)
@@ -461,15 +462,17 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     2026-07-01:全鏈失敗且屬 DNS 瞬斷(整台 WSL 幾秒解不到,連 Groq 也救不了,因走同條
     Windows DNS)→ 等 8s 讓瞬斷過去、重試整輪一次(Gemini 已熔斷的維持快跳過不再撞 429)。"""
     gemini = [(f"gemini:{m}", lambda p, mm=m: _call_gemini(p, mm)) for m in GEMINI_MODELS]
-    # Groq(Llama70B,免費)排在付費 OpenAI 前:Gemini 配額死 + Claude 抖時的免費接手層。
-    strong = [("claude:sonnet-4.6", _call_claude),
-              ("groq:gpt-oss-120b", lambda p: _call_groq(p)),
-              # 免費雲端 70B 層(獨立廠商/網路路徑):CF Workers AI 一定在;
-              # OpenRouter/Cerebras 沒 key 時 raise 自動跳過,填 key 即自動補進鏈。
-              ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000)),
-              ("openrouter:llama-70b", lambda p: _call_openrouter(p, max_tokens=8000)),
-              ("cerebras:llama-70b", lambda p: _call_cerebras(p, max_tokens=8000)),
-              ("openai:gpt-4o-mini", _call_openai)]
+    # 免費雲端層(獨立廠商/網路路徑):CF Workers AI 一定在;
+    # OpenRouter/Cerebras 沒 key 時 raise 自動跳過,填 key 即自動補進鏈。
+    free_strong = [("groq:gpt-oss-120b", lambda p: _call_groq(p)),
+                   ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000)),
+                   ("openrouter:nemotron-120b", lambda p: _call_openrouter(p, max_tokens=8000)),
+                   ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
+    # 2026-07-22 Delvin:「sonnet 要花錢就不要用」——付費 Claude 全退出主鏈,
+    # 純免費層扛(gemini 雙 key + groq + cf + openrouter/cerebras + 本地 GPU),
+    # audit 閘門/deterministic fallback 品質防線不動。openai 沒 key 自動跳過。
+    # prefer_strong 語義保留:retry 時把 70B 層排到 gemini 前面(見下方 providers)。
+    strong = free_strong + [("openai:gpt-4o-mini", _call_openai)]
     # 本地 GPU 永遠排最後一張網:品質不如雲端大模型(有 audit 閘門把關),
     # 但零配額且不吃網路,全雲端斷線(DNS 瞬斷/配額同時死)時是唯一活口。
     local = [("local:qwen2.5-14b", lambda p: _call_ollama(p, max_tokens=9000))]
@@ -586,6 +589,35 @@ def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks:
     if regime["label"] == "risk_off":
         lines.append("  ‼️ TLDR、結論與每張操作卡的立場必須一致:今天偏防守。"
                      "若結論寫「先觀望/等數據」,操作卡就不可同時喊「即刻買進」——買進只能以條件單形式出現(回到支撐、站穩、數據公布後)。")
+    cg = regime.get("crash_gate") or {}
+    if cg.get("triggered") and cg.get("softened"):
+        lines.append("  ‼️ 外盤重挫閘觸發(" + "、".join(cg.get("parts") or []) +
+                     f")但台指期夜盤已反彈 {cg.get('night_pct'):+.2f}%(今晨 05:00 收盤定案):"
+                     "歷史統計外盤重挫但夜盤明確反彈時,恐慌未外溢、台股當日多收紅且無一次大跌。"
+                     "今天不必全面防守,但買進仍以分批/條件單為主,並提醒讀者若開盤跌破夜盤低點即轉回防守。")
+    elif cg.get("triggered"):
+        lines.append("  ‼️ 外盤重挫閘觸發(" + "、".join(cg.get("parts") or []) +
+                     "):歷史統計這種日子台股當日大跌機率為平日約 10 倍。"
+                     "TLDR 開頭必須是全市場防守警告;今天所有個股禁止無條件買進,持股者重點講防守與停損。")
+
+    # 每日大盤量化預判(2026-07-21 上線,walk-forward OOS 2015-2026:整體 66.6%、高信心日 84.9%、
+    # 雜訊日≈擲硬幣;詳 quant_lab/market_forecast/FORECAST.md)。定位=收盤方向統計預報,
+    # 嚴禁被 LLM 轉譯成進場時機;與重挫閘/防守層矛盾時死防線優先。
+    mf = data.get("market_forecast") or {}
+    if mf.get("p_up") is not None:
+        _p = mf["p_up"] * 100
+        _hdr = "今晚美股大盤" if mf.get("market") == "us" else "今日大盤"
+        if mf.get("tier") == "noise":
+            lines.append(f"【{_hdr}量化預判】P(收漲)={_p:.0f}%,屬「雜訊日」——模型沒把握的日子。"
+                         "TLDR 要誠實帶一句:大盤方向難判,重點放個股紀律與風控,不要對大盤方向拍胸脯。")
+        else:
+            _dirw = "偏漲" if mf["p_up"] > 0.5 else "偏跌"
+            _conf = "高" if mf.get("tier") == "high" else "中"
+            lines.append(f"【{_hdr}量化預判】收盤方向{_dirw},P(收漲)={_p:.0f}%(信心:{_conf};"
+                         f"量化模型·測試中)。TLDR 第一段必須含這個判斷,格式如「{_hdr}:"
+                         f"{_dirw}(量化信心 {_p:.0f}%)」。注意:這是收盤方向統計預報,大半資訊會反映在"
+                         "開盤跳空——嚴禁把它寫成「所以開盤買進/追price」的進場建議;"
+                         "若上方有防守/重挫閘指令,以防守指令為準,預判只作參考陳述。")
 
     index_names = {
         "^GSPC": "S&P500", "^IXIC": "NASDAQ", "^DJI": "道瓊",
@@ -852,6 +884,30 @@ def _pp_verdict_chip(html: str) -> str:
     return html
 
 
+def _pp_crash_gate(html: str, data: dict) -> str:
+    import re as _re
+    # 外盤重挫閘(deterministic,2026-07-17 -2953 點事故):_crash_gate 觸發日,所有「建議買入」
+    # 卡強制降級觀望 — 該日 LLM 內文常會寫對(嚴禁搶入)但徽章仍掛 buy,只掃徽章的用戶會被誤導。
+    # 統計依據見 _crash_gate docstring。不靠 LLM 自覺的死防線,與接刀閘(個股結構)互補(全市場層)。
+    # 夜盤軟化日(softened)不降級:回測該桶(n=14)無一次大跌、均+2.18%,詳 _crash_gate docstring。
+    _cg = _crash_gate(data)
+    if not _cg["triggered"] or _cg.get("softened"):
+        return html
+
+    def _demote(m):
+        block = m.group(0)
+        block = block.replace('class="signal-card buy"', 'class="signal-card wait"', 1)
+        block = block.replace('<span class="signal-verdict-chip buy">🟢 建議買入</span>',
+                              '<span class="signal-verdict-chip wait">⚪ 觀望·外盤重挫(企穩再進)</span>'
+                              '<!--gated:buy:crash-->', 1)
+        return block
+
+    return _re.sub(
+        r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote, html, flags=_re.DOTALL,
+    )
+
+
 def _pp_knife_gate(html: str, _techs_gate: dict) -> str:
     import re as _re
     # 接刀閘門(deterministic):空頭結構(價<MA20<MA50)的個股若卡片還是「建議買入」,
@@ -1054,6 +1110,45 @@ def _pp_chase_gate(html: str, _techs_gate: dict) -> str:
     )
 
 
+def _pp_uptrend_chase_gate(html: str, _techs_gate: dict, _regime_label: str) -> str:
+    import re as _re
+    # 順風追高閘(deterministic,2026-07-21,dq-519171bfa5):risk_on 市況+站上 MA20 的「建議買入」
+    # 降級觀望。帳本 14 組預先登記 cut(research/2026-07-13_buy_setup_conditional_edge):追強勢三 cut
+    # 全 certified negative_edge(regime_up 勝率 23.1%/uptrend_above_ma20 31.7%/uptrend∧prob 23.6%,
+    # 基線 47.3%,day-neutralized EV -1.7~-2.5%/日),與 KPI chase_high 稽核(1451 樣本)獨立收斂;
+    # wait 是系統唯一真 edge → 轉 wait 嚴格佔優。與 _pp_chase_gate 互補:該閘管個股過熱
+    # (>MA20 逾 6%,不分市況),本閘管順風市況追強勢(站上 MA20 即擋,只在 risk_on)。
+    # regime up 以 _regime_label=="risk_on" 代理(與 _pp_bucket_autogate 同一映射);
+    # techs 缺席 fail-open(閘門寧鬆勿誤殺,同 _quant_prior 哲學)。
+    if _regime_label != "risk_on":
+        return html
+
+    def _demote_uptrend(m):
+        block = m.group(0)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        t = _techs_gate.get(hm.group(1)) or {}
+        try:
+            p = float(t.get("price") or 0)
+            ma20 = float(t.get("ma20") or 0)
+        except (TypeError, ValueError):
+            return block
+        if not (p and ma20) or p <= ma20:
+            return block
+        block = block.replace('class="signal-card buy"', 'class="signal-card wait"', 1)
+        block = _re.sub(r'<span class="signal-verdict-chip buy">[^<]*</span>',
+                        '<span class="signal-verdict-chip wait">⚪ 觀望·多頭市況勿追強勢(回檔再進)</span>'
+                        '<!--gated:buy:uptrend_chase-->',
+                        block, count=1)
+        return block
+
+    return _re.sub(
+        r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote_uptrend, html, flags=_re.DOTALL,
+    )
+
+
 def _pp_bucket_autogate(html: str, _regime_label: str) -> str:
     import re as _re
     # 桶級自動閘門(2026-07-08):把「每日戰績稽核 → 人工分析 → 改規則」閉環成全自動。
@@ -1092,6 +1187,75 @@ def _pp_bucket_autogate(html: str, _regime_label: str) -> str:
             _demote, html, flags=_re.DOTALL,
         )
     return html
+
+
+def _pp_overnight_autogate(html: str, data: dict) -> str:
+    import re as _re
+    # 夜盤情境自動閘門(2026-07-22,Delvin「看多勝率可悲,想怎麼變高——夜盤的影響」實證):
+    # 帳本 702 筆去重 buy:前晚 SPX 收漲後隔日追買 = 看多最大毒桶(0~+0.5% 桶 17.8%/n=163),
+    # 既有閘門全漏接(小漲夜不觸發 risk_on,追高/桶閘都咬不到);SPX 收跌夜看多 50.7~78.3%
+    # 照常放行 — 這不是「全部看多改觀望」,是把看多集中到歷史上真的會贏的夜盤情境
+    # (毒桶裡 wait 卡實測 85% = 轉觀望是對的 call)。同 _pp_bucket_autogate 哲學:桶由
+    # track-record 每日重算,失準自動武裝、回到縮後 ≥45 自動解除,不寫死方向。
+    # day floor(days≥8)+n≥30 比桶閘更嚴:同夜記錄高度相關,n 虛胖(day-cluster 教訓)。
+    # 桶邊界跟 stats JSON 下發(builder OVERNIGHT_BUCKET_EDGES 單一真源),兩端永不漂移。
+    s = _track_stats() or {}
+    ov = ((s.get("era") or {}).get("by_verdict_overnight")) or {}
+    edges = ov.get("buckets") or {}
+    if not edges:
+        return html
+    try:
+        spx = float(((data.get("us_market") or {}).get("^GSPC") or {}).get("change_pct"))
+    except (TypeError, ValueError):
+        return html
+    bname = next((k for k, v in edges.items()
+                  if isinstance(v, (list, tuple)) and len(v) == 2 and v[0] <= spx < v[1]), None)
+    if not bname:
+        return html
+    _REASON = {
+        "up": "⚪ 觀望·美股前夜收漲慎追買(回檔再進)",
+        "dn": "⚪ 觀望·此夜盤情境近期實測失準(企穩再進)",
+        "dn_deep": "⚪ 觀望·此夜盤情境近期實測失準(企穩再進)",
+    }
+    tw_syms = set((data.get("tw_market") or {}).keys())
+    K = 20.0
+
+    def _shrunk(mkt: str, bn: str):
+        b = (ov.get(mkt) or {}).get(f"buy|{bn}") or {}
+        n, w, days = b.get("count") or 0, b.get("wins") or 0, b.get("days") or 0
+        if n < 30 or days < 8:
+            return None
+        return (w + K * 0.5) / (n + K) * 100
+
+    def _demote(m):
+        block = m.group(0)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        sym = hm.group(1)
+        mkt = "tw" if (sym in tw_syms or sym[:1].isdigit()) else "us"
+        cur = _shrunk(mkt, bname)
+        if cur is None or cur >= 45:
+            return block
+        # 相對最佳桶保險(Delvin 紅線「不要把所有看多變觀望」的結構性保證):就算哪天
+        # 全部夜盤桶都跌破 45,相對最會贏的那桶永不降級 — 看多集中到最佳情境,不會歸零;
+        # 該桶的絕對勝率問題屬選股 alpha,不歸這道時機閘管。
+        rivals = [v for bn2 in edges if bn2 != bname
+                  for v in [_shrunk(mkt, bn2)] if v is not None]
+        if rivals and cur >= max(rivals):
+            return block
+        block = block.replace('class="signal-card buy"', 'class="signal-card wait"', 1)
+        block = _re.sub(r'<span class="signal-verdict-chip buy">[^<]*</span>',
+                        '<span class="signal-verdict-chip wait">'
+                        + _REASON.get(bname, _REASON["up"]) + '</span>'
+                        '<!--gated:buy:overnight-->',
+                        block, count=1)
+        return block
+
+    return _re.sub(
+        r'<div class="signal-card buy">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _demote, html, flags=_re.DOTALL,
+    )
 
 
 def _pp_exdiv_guard(html: str, data: dict) -> str:
@@ -1248,6 +1412,249 @@ def _pp_requalify_buy(html: str, data: dict) -> str:
     return html
 
 
+def _pp_capital_brief(html: str, data: dict) -> str:
+    import re as _re
+    # 資金管理體檢(2026-07-22 Delvin 親令「玩股票就是資金管理,放個本金幫用戶分配風險」):
+    # 用戶在 dashboard 填了股數(<!--q:-->)±總本金(<!--capital:-->)→ 日報附一段純確定性
+    # 風險體檢:單檔集中度/現金水位/未實現損益/停損總風險佔本金比。零 LLM、全部真實數字;
+    # 設計理由:方向預測無 certified edge,凱利在 edge≈0 時的答案就是控風險 — 這段不預測,
+    # 只把「你壓多重」算清楚。沒填股數的用戶完全無感(fail-open);任何例外整段跳過不擋寄信。
+    try:
+        qty_map = {m.group(1): float(m.group(2))
+                   for m in _re.finditer(r"<!--q:([A-Z0-9.]+):([\d.]+)-->", html)}
+        if not qty_map:
+            return html
+        cap_m = _re.search(r"<!--capital:([\d.]+)-->", html)
+        capital = float(cap_m.group(1)) if cap_m else None
+        ent_map = {m.group(1): float(m.group(2))
+                   for m in _re.finditer(r"<!--pos:([A-Z0-9.]+):([\d.]+)-->", html)}
+        all_mkt = {**(data.get("us_market") or {}), **(data.get("tw_market") or {})}
+        names_all = data.get("tw_names_all", {}) or {}
+        try:
+            fx = float(((data.get("indicators") or {}).get("usdtwd") or {}).get("rate"))
+        except (TypeError, ValueError):
+            fx = None
+
+        # 每檔卡片內的停損價(deterministic 卡與 LLM 卡都有 battle-row):算「全部停損被掃」總風險
+        stops = {}
+        for m in _re.finditer(
+                r'<div class="signal-card[ "].*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer|$)',
+                html, _re.DOTALL):
+            blk = m.group(0)
+            hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", blk)
+            sm = _re.search(r'停損[^<]{0,12}</span>\s*<span class="battle-val">[^\d]*([\d,]+(?:\.\d+)?)', blk)
+            if hm and sm:
+                try:
+                    stops[hm.group(1)] = float(sm.group(1).replace(",", ""))
+                except ValueError:
+                    pass
+
+        rows, total_mv, total_pnl, stop_loss_amt, stop_cover, skipped_fx = [], 0.0, None, 0.0, 0, []
+        for sym, q in qty_map.items():
+            try:
+                px = float((all_mkt.get(sym) or {}).get("price"))
+            except (TypeError, ValueError):
+                continue
+            is_tw = sym[:1].isdigit()
+            if not is_tw and fx is None:
+                skipped_fx.append(sym)
+                continue
+            mult = 1.0 if is_tw else fx
+            mv = q * px * mult
+            total_mv += mv
+            ent = ent_map.get(sym)
+            pnl = (px - ent) * q * mult if ent else None
+            if pnl is not None:
+                total_pnl = (total_pnl or 0.0) + pnl
+            stop = stops.get(sym)
+            if stop and stop < px:
+                stop_loss_amt += (px - stop) * q * mult
+                stop_cover += 1
+            nm = names_all.get(sym) or (all_mkt.get(sym) or {}).get("name")
+            rows.append({"sym": sym, "label": stock_names.display_name(sym, nm),
+                         "mv": mv, "pnl": pnl})
+        if not rows or total_mv <= 0:
+            return html
+
+        stale_cap = bool(capital and capital < total_mv)
+        denom = capital if (capital and not stale_cap) else total_mv
+        for r in rows:
+            r["w"] = r["mv"] / denom * 100
+        rows.sort(key=lambda r: -r["mv"])
+
+        def _nt(v):
+            return f"NT${v:,.0f}"
+
+        lines = []
+        cap_line = f"持倉市值合計 {_nt(total_mv)}"
+        if capital and not stale_cap:
+            cash = capital - total_mv
+            cap_line += f"(佔本金 {total_mv / capital * 100:.0f}%)・現金水位 {_nt(cash)}({cash / capital * 100:.0f}%)"
+        lines.append(cap_line)
+        if total_pnl is not None:
+            lines.append(f"未實現損益合計 {'+' if total_pnl >= 0 else '−'}{_nt(abs(total_pnl))}(填了進場價的部位)")
+        for r in rows[:8]:
+            warn = "🔴 單檔重壓" if r["w"] >= 40 else ("⚠️ 偏集中" if r["w"] >= 25 else "")
+            lines.append(f"{r['label']}:{_nt(r['mv'])},佔{'本金' if capital and not stale_cap else '持倉'} {r['w']:.0f}%{('・' + warn) if warn else ''}")
+        if stop_cover:
+            risk_pct = stop_loss_amt / denom * 100
+            lines.append(f"停損總風險:若今日卡片停損價全部被掃,約 −{_nt(stop_loss_amt)}"
+                         f"(佔{'本金' if capital and not stale_cap else '持倉'} {risk_pct:.1f}%,涵蓋 {stop_cover} 檔有停損價的部位)")
+        if stale_cap:
+            lines.append("⚠️ 持倉市值已高於你填的總本金,佔比暫以持倉市值計 — 請到「我的專區」更新本金")
+        if skipped_fx:
+            lines.append(f"(美股 {len(skipped_fx)} 檔因今日缺匯率暫未納入市值計算)")
+        fx_note = f"・美股以 1 USD={fx:.2f} TWD 折算" if (fx and any(not r['sym'][:1].isdigit() for r in rows)) else ""
+
+        body = "".join(f'<div style="margin:3px 0;">{ln}</div>' for ln in lines)
+        section = (
+            '<div style="background:#f5f7ff;border:1px solid #c7d2fe;border-radius:12px;'
+            'padding:14px 16px;margin:14px 0;font-size:13px;color:#1e1b4b;line-height:1.7;">'
+            '<div style="font-size:14px;font-weight:800;margin-bottom:6px;">💰 資金管理體檢</div>'
+            + body +
+            f'<div style="margin-top:8px;font-size:11px;color:#6366f1;">依你在「我的專區」填的股數與本金計算{fx_note}・'
+            '風險提醒屬教育性質,買賣決策請自行評估</div></div>'
+        )
+        dm = html.find('<div class="signal-disclaimer"')
+        if dm >= 0:
+            return html[:dm] + section + html[dm:]
+        return html + section
+    except Exception:
+        return html
+
+
+def _rotation_pairs_path():
+    import os
+    from pathlib import Path as _P
+    p = os.environ.get("MD_ROTATION_PAIRS_PATH")
+    return _P(p) if p else _P(__file__).resolve().parent / "scripts" / "rotation_pairs.jsonl"
+
+
+def _record_rotation_pairs(pairs: list) -> None:
+    import fcntl
+    import json as _json
+    # (date,from,to) 冪等 append(多用戶同持股共用一筆);flock 防並發;失敗靜默不影響日報。
+    path = _rotation_pairs_path()
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(str(path) + ".lock", "w") as lk:
+            fcntl.flock(lk, fcntl.LOCK_EX)
+            seen = set()
+            try:
+                for line in path.read_text(encoding="utf-8").splitlines():
+                    if line.strip():
+                        r = _json.loads(line)
+                        seen.add(f"{r.get('date')}|{r.get('from')}|{r.get('to')}")
+            except (OSError, ValueError):
+                pass
+            with open(path, "a", encoding="utf-8") as f:
+                for p in pairs:
+                    k = f"{p['date']}|{p['from']}|{p['to']}"
+                    if k not in seen:
+                        seen.add(k)
+                        f.write(_json.dumps(p, ensure_ascii=False) + "\n")
+    except OSError:
+        pass
+
+
+def _pp_rotation_note(html: str, data: dict) -> str:
+    import re as _re
+    # 換股思路(2026-07-22 Delvin 親令「賣掉的錢拿去買別的,比只喊賣更有操作價值」):
+    # 已持有(pos 標記)且終判「賣出/減碼」的卡,附同市場今日委員會精選中「結構較佳」的
+    # 輪動候選+可查證理由。設計原則:
+    #  · 賣方判斷是本系統唯一 certified 的能力(負edge情境識別);買方無 certified 正edge
+    #    → 候選只從既有精選池(council_top_picks,有快取)挑,且過結構閘:空頭結構或
+    #    短線過熱者不推(不把錢從一個負edge情境搬進另一個),無合格候選寧缺勿濫。
+    #  · 自我審計:配對進 rotation_pairs.jsonl,rotation_settle.py 週結算賣A買B相對表現。
+    #  · 合規:全體用戶同邏輯(免費全開),不涉報酬承諾,明示成本自行評估。
+    tech = data.get("technicals", {}) or {}
+    fund = data.get("fundamentals") or {}
+    names_all = data.get("tw_names_all", {}) or {}
+    all_mkt = {**(data.get("us_market") or {}), **(data.get("tw_market") or {})}
+
+    def _label(sym):
+        nm = names_all.get(sym) or (all_mkt.get(sym) or {}).get("name")
+        return stock_names.display_name(sym, nm)
+
+    def _sym_reasons(sym):
+        rs = []
+        if _quant_prior(tech.get(sym)) == "bear":
+            rs.append("空頭結構(價<MA20<MA50)")
+        if _is_extended(tech.get(sym)):
+            rs.append("短線過熱")
+        f = fund.get(sym) or {}
+        if f.get("val_class") == "rich":
+            rs.append("本益比位階偏貴")
+        try:
+            hi, px = f.get("dcf_high"), (all_mkt.get(sym) or {}).get("price")
+            if hi and px and float(px) > float(hi):
+                rs.append("價格高於 DCF 內在價值區間")
+        except (TypeError, ValueError):
+            pass
+        if f.get("chip_class") == "sell":
+            rs.append("籌碼面轉弱")
+        return rs or ["訊號面轉弱"]
+
+    def _candidate(sym, mkt_key):
+        try:
+            picks = council_top_picks(data, mkt_key, 3)
+        except Exception:
+            return None
+        for p in picks:
+            if p == sym:
+                continue
+            t = tech.get(p)
+            if _quant_prior(t) == "bear" or _is_extended(t):
+                continue
+            return p
+        return None
+
+    pairs = []
+
+    def _note(m):
+        block = m.group(0)
+        if "<!--pos:" not in block:
+            return block
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        sym = hm.group(1)
+        mkt_key = "tw" if sym[:1].isdigit() else "us"
+        cand = _candidate(sym, mkt_key)
+        if not cand:
+            return block
+        reasons = "、".join(_sym_reasons(sym)[:3])
+        cand_why = ("多頭結構(價>MA20>MA50)" if _quant_prior(tech.get(cand)) == "bull"
+                    else "結構中性、動能較佳")
+        note = ('<div style="color:#4338ca;font-size:12px;font-weight:600;line-height:1.7;'
+                'margin:4px 0 6px;">'
+                f"💱 換股思路:本檔壓力來自{reasons}。若執行減碼,同市場今日委員會精選中"
+                f"結構較佳的是 {_label(cand)}——{cand_why}。換股涉及交易成本與稅費,"
+                "請以自身持倉成本自行評估。</div>")
+        if '<div class="signal-reason">' in block:
+            block = block.replace('<div class="signal-reason">', note + '<div class="signal-reason">', 1)
+        else:
+            block = block.replace("<!--h:", note + "<!--h:", 1)
+        try:
+            pairs.append({"date": str(data.get("date") or ""), "market": mkt_key,
+                          "from": sym, "to": cand,
+                          "from_px": float((all_mkt.get(sym) or {}).get("price")),
+                          "to_px": float((all_mkt.get(cand) or {}).get("price"))})
+        except (TypeError, ValueError):
+            pass
+        return block
+
+    try:
+        out = _re.sub(
+            r'<div class="signal-card sell">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+            _note, html, flags=_re.DOTALL)
+        if pairs:
+            _record_rotation_pairs(pairs)
+        return out
+    except Exception:
+        return html
+
+
 def _pp_holder_wording(html: str) -> str:
     import re as _re
     # 持有者框架措辭死防線(2026-07-07 持倉客製化):帶 <!--pos:--> 標記的卡=用戶已持有,
@@ -1260,10 +1667,14 @@ def _pp_holder_wording(html: str) -> str:
         ("🟢 買入·漲多勿追高", "🟢 加碼·漲多勿追高"),
         ("⚪ 暫時觀望", "⚪ 持股防守·守好停損"),
         ("⚪ 觀望·空頭結構(站回 MA20 再議)", "⚪ 防守·空頭結構(守停損,站回 MA20 再議)"),
+        ("⚪ 觀望·外盤重挫(企穩再進)", "⚪ 持股防守·外盤重挫,守好停損"),
         ("⚪ 觀望·跌深超賣慎追空", "⚪ 持股防守·跌深超賣別追空,守停損"),
         ("⚪ 觀望·前訊號已破止損(禁再加碼)", "⚪ 持股防守·已破止損,守紀律勿加碼"),
         ("⚪ 觀望·漲多過熱(回檔再進)", "⚪ 持股防守·漲多過熱,守停損別加碼"),
+        ("⚪ 觀望·多頭市況勿追強勢(回檔再進)", "⚪ 持股防守·多頭市況勿追高加碼,守停損"),
         ("⚪ 觀望·同型判斷近期實測失準,自動降級", "⚪ 持股防守·同型判斷近期失準,守好停損"),
+        ("⚪ 觀望·美股前夜收漲慎追買(回檔再進)", "⚪ 持股防守·美股前夜收漲勿追高加碼,守停損"),
+        ("⚪ 觀望·此夜盤情境近期實測失準(企穩再進)", "⚪ 持股防守·此夜盤情境近期失準,守好停損"),
         ("⚪ 觀望·今日除息(參考價已扣息)", "⚪ 持股防守·今日除息(參考價已扣息)"),
         ("🔴 建議賣出", "🔴 減碼/出場"),
     )
@@ -1454,13 +1865,16 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_strip_rogue_cards(html)
     html = _pp_verdict_chip(html)
     _techs_gate = data.get("technicals", {}) or {}
+    _regime_label = _market_regime(data).get("label", "neutral")
     html = _pp_knife_gate(html, _techs_gate)
+    html = _pp_crash_gate(html, data)
     html = _pp_rebuy_bleed_gate(html, data)
     html = _pp_chase_gate(html, _techs_gate)
+    html = _pp_uptrend_chase_gate(html, _techs_gate, _regime_label)
     html = _pp_oversold_gate(html, _techs_gate)
-    _regime_label = _market_regime(data).get("label", "neutral")
     html = _pp_extended_gate(html, _techs_gate, _regime_label)
     html = _pp_bucket_autogate(html, _regime_label)
+    html = _pp_overnight_autogate(html, data)
     html = _pp_exdiv_guard(html, data)
     html = _pp_strip_badges(html)
     html = _pp_clamp_confidence(html)
@@ -1470,6 +1884,8 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_holder_wording(html)  # 須在 knife/extended/requalify 三閘門之後:覆蓋它們改寫的 chip
     html = _pp_scrub_earnings_notes(html, data)
     html = _pp_expand_tickers(html, tw_hint)
+    html = _pp_rotation_note(html, data)
+    html = _pp_capital_brief(html, data)
     html = _pp_strip_empty_impact(html)
     html = _pp_drop_empty_sections(html)
     html = _pp_hoist_verdict_chip(html)
@@ -1667,6 +2083,48 @@ def _detect_macro_event(data: dict) -> bool:
     return any(_MACRO_EVENT_RE.search(a.get("title", "") or "") for a in arts[:20])
 
 
+CRASH_GATE_SOX = -3.0
+CRASH_GATE_KOSPI = -4.0
+CRASH_GATE_NIGHT_SOFTEN = 0.5
+
+
+def _crash_gate(data: dict) -> dict:
+    """外盤重挫閘(deterministic,2026-07-17 台股 -2953 點事故):費半隔夜<=-3% 或 KOSPI 前日<=-4%
+    → 全市場統計高危日。回測 2010-2026(3,397 交易日,yfinance 日線):觸發 197 天(約 12 天/年),
+    台股當日均報酬 -1.04%、單日<=-3% 機率 10.2%(基礎率 1.06%,約 10 倍),且 2010-17/18-22/23-26
+    三段年代皆成立(7.6%~12.5%),非觸發日均報酬為正。門檻為預先登記值,非掃參挑優。
+    兩訊號在日報 06:20 生成時皆已收盤定案(費半=美股昨收,KOSPI=韓股昨收),無前視偏誤。
+
+    夜盤軟化層(2026-07-21 反彈日 +3.9% 被硬閘誤壓後加):台指期夜盤(15:00~次日 05:00,
+    生成時已收盤定案)>= +0.5% 即 softened。回測 2017-2026(期交所盤後資料,觸發日 155 天):
+    夜盤>=+0.5% 共 14 天 → 台股當日均 +2.18%、P(<=-3%)=0%、最差 -0.88%,三年代皆成立;
+    夜盤<0 共 131 天(含 20240805/20250407/20260717 三大崩盤日,夜盤皆約 -2%)→ 均 -1.45%、
+    P(<=-3%)=11.5%,硬閘維持。門檻取兩個預登記候選(0 / +0.5)中較嚴者:邊界帶 0~+0.5(n=10)
+    仍髒(均 -0.67%、P(<=-3%)=10%)故不軟化。軟化=不強制 risk_off、不降級 buy 徽章,但保留
+    分批/條件單提醒。fail-closed:tx_night 缺料(源掛/晚報時窗)→ 不軟化,行為同原硬閘。
+    回測與 forward ledger 見 quant_lab/crash_gate_night/。"""
+    gl = data.get("global_lead") or {}
+
+    def _chg(sym):
+        try:
+            return float((gl.get(sym) or {}).get("change_pct"))
+        except (TypeError, ValueError):
+            return None
+
+    sox, kospi = _chg("^SOX"), _chg("^KS11")
+    parts = []
+    if sox is not None and sox <= CRASH_GATE_SOX:
+        parts.append(f"費半 {sox:+.2f}%")
+    if kospi is not None and kospi <= CRASH_GATE_KOSPI:
+        parts.append(f"韓股KOSPI {kospi:+.2f}%")
+    try:
+        night = float((data.get("tx_night") or {}).get("night_pct"))
+    except (TypeError, ValueError):
+        night = None
+    softened = bool(parts) and night is not None and night >= CRASH_GATE_NIGHT_SOFTEN
+    return {"triggered": bool(parts), "parts": parts, "night_pct": night, "softened": softened}
+
+
 def _market_regime(data: dict) -> dict:
     """大盤狀態粗分類:risk_on / neutral / risk_off(指數日變動 + VIX)。
     目的:擋「全市場下殺日每支機械式喊低接買進」的同質性 — 歷史戰績顯示這種日子逆勢
@@ -1700,8 +2158,12 @@ def _market_regime(data: dict) -> dict:
         score -= 1
     elif 0 < vix < 16:
         score += 1
+    crash = _crash_gate(data)
+    if crash["triggered"]:
+        score -= 1 if crash.get("softened") else 2
     label = "risk_off" if score <= -2 else ("risk_on" if score >= 2 else "neutral")
-    return {"label": label, "vix": vix, "spx_chg": spx, "ndx_chg": ndx, "twii_chg": twii}
+    return {"label": label, "vix": vix, "spx_chg": spx, "ndx_chg": ndx, "twii_chg": twii,
+            "crash_gate": crash}
 
 
 def _quant_prior(t: dict) -> str:
@@ -1896,20 +2358,37 @@ _COUNCIL_SEATS = [
     # max_tokens 必須壓小,否則 prompt+max_tokens 超過每分鐘 token 預算 → 全數 413
     # (2026-07-01 換模型後連兩天 36/36 全滅的根因)
     ("groq:gpt-oss-120b", lambda p: _call_groq(p, system=_COUNCIL_SYS, max_tokens=1000)),
-    ("claude:haiku", lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)),
-    # Sonnet 當第二把 Claude 聲音:Gemini 全 429 時仍湊得到 ≥2 席,council 不會整個熄火
-    ("claude:sonnet", lambda p: _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")),
     # winrig 本地 5080(零配額零429):清晨 Gemini 必空桶時保底的第三把獨立聲音;
     # 雲端 CI 環境連不上 localhost → 席次熔斷自動停用,不影響
     ("local:qwen2.5-14b", lambda p: _call_ollama(p, system=_COUNCIL_SYS, max_tokens=300)),
     # Cloudflare Workers AI(免費 10k neurons/日,經 md-ai-proxy):第四家獨立廠商聲音
     ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, system=_COUNCIL_SYS, max_tokens=300)),
     # 預接線:沒 key raise→席次自動停用;用戶註冊後填 .env 即多一席,不需改程式
-    ("openrouter:llama-70b", lambda p: _call_openrouter(p, system=_COUNCIL_SYS, max_tokens=300)),
-    ("cerebras:llama-70b", lambda p: _call_cerebras(p, system=_COUNCIL_SYS, max_tokens=300)),
+    ("openrouter:nemotron-120b", lambda p: _call_openrouter(p, system=_COUNCIL_SYS, max_tokens=300)),
+    ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, system=_COUNCIL_SYS, max_tokens=300)),
     ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
-_COUNCIL_JUDGE = lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)
+# 付費 Claude 席次改 opt-in(2026-07-22 Delvin 省錢令):council 佔 API 帳單大宗——
+# 每檔×每天兩班×(兩席+裁判) ≈ 200+ 次付費呼叫/日 ≈ $1.5-2/日。免費席仍有
+# gemini×2/groq/local/cf 五把獨立聲音,quorum(≥2)與廠商多樣性不受影響。
+# 要恢復付費席:.env 設 COUNCIL_PAID_SEATS=1 即回原陣容,不需改程式。
+if os.environ.get("COUNCIL_PAID_SEATS") == "1":
+    _COUNCIL_SEATS[3:3] = [
+        ("claude:haiku", lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)),
+        ("claude:sonnet", lambda p: _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")),
+    ]
+
+
+def _council_judge_call(p: str) -> str:
+    # 裁判純免費鏈(2026-07-22 Delvin:會花錢的一律不用):Gemini → Groq。
+    # 兩者皆敗時呼叫端既有 try/except 會走「最高信念席次」fallback,不花一毛錢。
+    try:
+        return _call_gemini(p, "gemini-2.5-flash-lite", system=_COUNCIL_SYS)
+    except Exception:
+        return _call_groq(p, system=_COUNCIL_SYS, max_tokens=1000)
+
+
+_COUNCIL_JUDGE = _council_judge_call
 # 席次級熔斷:某席配額耗盡/沒 key/連敗 3 次 → 本輪剩餘標的直接跳過該席,
 # 只在停用當下印一行。否則 36 支持股 × 3 個死席 = 百餘行失敗 log,
 # council_check 的 q429 門檻天天爆表誤判紅色(2026-07-02 用戶反映的洗版根因)。
@@ -2459,6 +2938,14 @@ def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard",
             dcf_over.append(h)
     overvalued = [h for h in holds if h in rich or h in dcf_over]  # 本益比或DCF任一偏貴
 
+    # 2026-07-17:清單不可裸代號(audit ticker_no_zh_name 07-14/15 大宗來源),
+    # 用 stock_names 單一真源展開成「名稱+代號」(台股中文名);無資料 fail-safe 回代號。
+    names_all = data.get("tw_names_all", {}) or {}
+
+    def _lbl(h):
+        hint = names_all.get(h) or (allm.get(h) or {}).get("name")
+        return stock_names.label_with_code(h, hint)
+
     rows = [f"<b>結構分佈</b>:多頭 {bull} / 盤整 {neu} / 空頭 {bear}（共 {n} 檔）"]
     if us_n and tw_n:
         rows.append(f"<b>市場配置</b>:美股 {us_n} 檔、台股 {tw_n} 檔")
@@ -2470,13 +2957,13 @@ def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard",
         note = "單一市場" if market == "both" else "本報聚焦美股持股"
         rows.append(f"<b>市場配置</b>:全部 {us_n} 檔美股({note})")
     if rich:
-        rows.append(f"<b>估值偏貴</b>:{', '.join(rich[:5])}（追高風險集中)")
+        rows.append(f"<b>估值偏貴</b>:{', '.join(_lbl(h) for h in rich[:5])}（追高風險集中)")
     if dcf_over:
-        rows.append(f"<b>DCF 內在價值偏貴</b>:{', '.join(dcf_over[:5])}（現價高於折現合理區間上緣)")
+        rows.append(f"<b>DCF 內在價值偏貴</b>:{', '.join(_lbl(h) for h in dcf_over[:5])}（現價高於折現合理區間上緣)")
     if sell_chips:
-        rows.append(f"<b>法人/內部人偏賣</b>:{', '.join(sell_chips[:5])}")
+        rows.append(f"<b>法人/內部人偏賣</b>:{', '.join(_lbl(h) for h in sell_chips[:5])}")
     if pol_hit:
-        rows.append(f"<b>政策面曝險</b>:{', '.join(pol_hit[:5])} 同受今日政壇訊號波及")
+        rows.append(f"<b>政策面曝險</b>:{', '.join(_lbl(h) for h in pol_hit[:5])} 同受今日政壇訊號波及")
 
     half = max(2, round(n * 0.5))
     if bear >= half:
@@ -2607,7 +3094,7 @@ _REASON_LEAK_PATS = [
 
 
 def _strip_reason_leak(card: str) -> str:
-    """確定性防護:剝掉 LLM 誤抄進 signal-reason 的指令/佔位符文字(2211 範本洩漏根治)。"""
+    """確定性防護:剝掉 LLM 誤抄進 signal-reason 的指令/佔位符文字(範本洩漏根治)。"""
     m = re.search(r'(<div class="signal-reason"[^>]*>)(.*?)(</div>)', card, re.S)
     if not m:
         return card
@@ -2695,15 +3182,19 @@ def _deterministic_signal_card(sym: str, data: dict, mkt_status: dict) -> str:
     )
 
 
-def _mark_card(card: str, sym: str, entry: float = None) -> str:
+def _mark_card(card: str, sym: str, entry: float = None, qty: float = None) -> str:
     """在卡片**結尾前**塞一個隱形註解帶純代號 — 讓 audit 的 holdings_uncovered 找得到,
     因為 _postprocess_html 會把 signal-ticker 展開成公司名(台股甚至不留代號)。
     放結尾才不會打斷 _postprocess_html 加 verdict-chip 的開頭比對。
     entry(2026-07-07 持倉客製化):用戶自填進場成本 → 加 <!--pos:SYM:ENTRY--> 機器可讀標記,
-    供 _pp_holder_wording 措辭死防線與 build_track_record 持有者框架結算辨識。"""
+    供 _pp_holder_wording 措辭死防線與 build_track_record 持有者框架結算辨識。
+    qty(2026-07-22 資金體檢):股數走獨立 <!--q:SYM:QTY--> 標記 — build_track_record 的
+    pos 解析 regex 帶 $ 錨,pos 標記不可加欄位。"""
     marks = f"<!--h:{sym}-->"
     if entry:
         marks += f"<!--pos:{sym}:{entry}-->"
+    if qty:
+        marks += f"<!--q:{sym}:{qty:g}-->"
     idx = card.rfind("</div>")
     if idx < 0:
         return card + marks
@@ -2758,6 +3249,20 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                 continue
             if ep > 0:
                 pos_map[s] = {"entry_price": ep, "entry_date": p.get("entry_date")}
+    # 股數(2026-07-22 資金體檢):獨立於 pos_map(_pos_note 的持有者框架吃 entry_price,
+    # qty-only 不參與 LLM 框架,只寫 q 標記給 _pp_capital_brief 算市值/集中度)。
+    qty_map = {}
+    if positions and not picks_mode:
+        for s in seen:
+            p = positions.get(s)
+            if not isinstance(p, dict):
+                continue
+            try:
+                q = float(p.get("qty"))
+            except (TypeError, ValueError):
+                continue
+            if q > 0:
+                qty_map[s] = q
     seen.sort(key=lambda s: abs((all_market.get(s) or {}).get("change_pct", 0) or 0), reverse=True)
     llm_stocks = seen[:full_limit] if full_limit else seen
     rules = _signal_card_format_rules(mkt_status, regime=_market_regime(data),
@@ -2822,6 +3327,17 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
 
     def _mk_prompt(sub: list) -> str:
         block = _chunk_market_tech_block(data, sub, depth)
+        # 台股早盤動作窗口強規則(2026-07-17,audit#15 失分榜首根治):格式規格 2211 行那句
+        # 埋在範例裡 LLM 遵從隨機(07-13 三封/07-17 兩封整批無晨間框架實鍋)→ 拉出來當獨立鐵則。
+        # 只在「台股今日將開盤 且 本批含台股標的」時注入;晚報批次全美股,永不觸發。
+        tw_morning_note = ""
+        if mkt_status.get("tw_will_open_today") and any(str(s).isdigit() for s in sub):
+            tw_morning_note = (
+                "\n【‼️ 台股早盤動作窗口】台股今日 9:00 將開盤,這封信在開盤前送達:"
+                "每張台股卡 signal-reason 第一句就要給「今早 9:00 開盤後」的具體動作"
+                "(例:「今早 9:00 開盤後現價勿追,等回測 NT$X 不破再分批」"
+                "「今早 9:00 開盤後若跳空跌破 NT$X,先減碼控風險」)。"
+                "嚴禁寫「明日開盤」「明天開盤」— 開盤就是今天早上,那是時序錯亂。\n")
         if picks_mode:
             _tw_open = "今早 9:00 開盤後" if mkt_status.get("tw_will_open_today") else "下個台股交易日"
             _us_open = "今晚開盤後" if mkt_status.get("us_will_open_tonight") else "下個美股交易日"
@@ -2835,7 +3351,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             lead +
             f"標的({len(sub)} 支,一支都不能少、不能合併):{', '.join(sub)}\n\n"
             f"【這幾支的真實市場 / 技術數據 — 進出場價位必須參考,嚴禁編造】\n{block}\n{deep_tech_note}{macro_note}{options_note}{social_note}{leadflow_note}{_pos_note(sub)}{_council_prompt_block(council, sub)}\n"
-            f"{rules}\n\n"
+            f"{rules}\n{tw_morning_note}\n"
             f"只輸出這 {len(sub)} 支的 <div class=\"signal-card ...\"> 區塊;每張卡前面**獨立一行**寫 <!--CARD--> 當分隔。\n"
             f"不要輸出 signal-grid 外框、不要任何說明文字、不要 markdown 反引號。"
         )
@@ -2895,8 +3411,18 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             card = _compact_overflow_card(s, data, mkt_status)
         else:
             card = cards_by_sym.get(s) or _deterministic_signal_card(s, data, mkt_status)
-        ordered.append(_mark_card(card, s, entry=(pos_map.get(s) or {}).get("entry_price")))
-    return "\n".join(ordered)
+        ordered.append(_mark_card(card, s, entry=(pos_map.get(s) or {}).get("entry_price"),
+                                  qty=qty_map.get(s)))
+    out = "\n".join(ordered)
+    # 總本金標記(2026-07-22 資金體檢):main.py 以 positions["__capital__"] 注入(prefs.capital),
+    # 只在個人持股模式寫;精選模式(未持有)不適用。
+    try:
+        _cap = float((positions or {}).get("__capital__") or 0)
+    except (TypeError, ValueError):
+        _cap = 0.0
+    if _cap > 0 and not picks_mode:
+        out += f"<!--capital:{_cap:.0f}-->"
+    return out
 
 
 def _inject_signal_cards(raw: str, cards: str) -> str:

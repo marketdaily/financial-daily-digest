@@ -1171,7 +1171,7 @@ def fetch_indicators() -> dict:
 
 # 全球領先脈絡指數:鄰近市場開盤早於台股(東京/首爾 08:00 TW 早於台股 09:00),半導體鏈跨市連動,
 # 這些市場的當日/隔夜漲跌是台股(尤其科技鏈)與美股當日的領先脈絡。只當「內容型 context」餵 reason
-# (同 news_tw/us_13f 等級,非已驗證統計 edge),刻意不接進 _market_regime 確定性閘門(未經 walk-forward 回測)。
+# 餵 reason;其中 ^SOX/^KS11 已於 2026-07-17 完成 16 年回測(見 analyzer._crash_gate),接進 _market_regime 確定性閘門,其餘指數仍僅為內容型 context。
 _GLOBAL_LEAD_INDICES = [
     ("^SOX", "費城半導體", "semi"),
     ("^N225", "日經225", "asia"),
@@ -1198,6 +1198,77 @@ def fetch_global_lead() -> dict:
         out[sym] = {"name": name, "region": region,
                     "price": d["price"], "change_pct": d["change_pct"]}
     return out
+
+
+def fetch_tx_night() -> dict:
+    """台指期夜盤(盤後交易 15:00~次日 05:00)收盤報酬 — 外盤重挫閘(_crash_gate)的軟化訊號源。
+    早報 06:20 生成時夜盤已於 05:00 收盤定案,無前視。只在早報時窗(TW 04:00~09:00)計算:
+    晚報時段夜盤還在跑、訊號未定案,回 {} 維持原硬閘行為。
+    主源=期交所每日行情 CSV(與 2017-2026 回測同基準:夜盤收盤 vs 前一一般時段同月合約收盤);
+    備援=期交所 MIS API(基準=前日參考價,與主源差~0.05%)。兩源皆失敗回 {} → 閘門 fail-closed 硬防守。"""
+    now_tw = datetime.now(timezone.utc) + timedelta(hours=8)
+    if not (4 <= now_tw.hour < 9):
+        return {}
+    today = now_tw.strftime("%Y/%m/%d")
+    start = (now_tw - timedelta(days=10)).strftime("%Y/%m/%d")
+    try:
+        r = requests.post(
+            "https://www.taifex.com.tw/cht/3/futDataDown",
+            data={"down_type": "1", "commodity_id": "TX",
+                  "queryStartDate": start, "queryEndDate": today},
+            headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
+        rows = {}
+        for line in r.content.decode("big5", errors="replace").splitlines()[1:]:
+            c = line.split(",")
+            if len(c) < 18:
+                continue
+            month = c[2].strip()
+            if not (len(month) == 6 and month.isdigit()):
+                continue
+            try:
+                close, vol = float(c[6]), int(c[9] or 0)
+            except ValueError:
+                continue
+            rows.setdefault((c[0].strip(), c[17].strip()), {})[month] = (close, vol)
+        night = rows.get((today, "盤後"))
+        if night:
+            g_dates = sorted(d for d, s in rows if s == "一般" and d < today)
+            if g_dates:
+                prev = rows[(g_dates[-1], "一般")]
+                month = max(night, key=lambda m: night[m][1])
+                if month in prev and prev[month][0] > 0 and night[month][0] > 0:
+                    pct = (night[month][0] / prev[month][0] - 1) * 100
+                    return {"night_pct": round(pct, 2), "src": "taifex_csv",
+                            "close": night[month][0], "prev_close": prev[month][0]}
+        print("[tx_night] csv: 今日盤後列尚未發布,改走 MIS 備援")
+    except Exception as e:
+        print(f"[tx_night] csv failed: {e}")
+    try:
+        r = requests.post(
+            "https://mis.taifex.com.tw/futures/api/getQuoteList",
+            json={"MarketType": "1", "SymbolType": "F", "KindID": "1", "CID": "TXF",
+                  "ExpireMonth": "", "RowSize": "全部", "PageNo": "",
+                  "SortColumn": "", "AscDesc": "A"},
+            headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
+        best = None
+        for q in (r.json().get("RtData") or {}).get("QuoteList") or []:
+            try:
+                last = float(q.get("CLastPrice") or 0)
+                ref = float(q.get("CRefPrice") or 0)
+                vol = int(q.get("CTotalVolume") or 0)
+                age = (now_tw.date() - datetime.strptime(q.get("CDate") or "", "%Y%m%d").date()).days
+            except (TypeError, ValueError):
+                continue
+            # CDate=夜盤起始日(上一交易日);age>4=陳舊資料(連假後首日容忍週五起始的夜盤)
+            if last <= 0 or ref <= 0 or age > 4:
+                continue
+            if best is None or vol > best[1]:
+                best = ((last / ref - 1) * 100, vol)
+        if best:
+            return {"night_pct": round(best[0], 2), "src": "mis"}
+    except Exception as e:
+        print(f"[tx_night] mis failed: {e}")
+    return {}
 
 
 def fetch_crypto() -> dict:
@@ -1346,6 +1417,22 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
     except Exception as _e:
         print(f"[intel_signals] skipped: {_e}")
 
+    # 每日大盤量化預判(slot a 隔夜模型,收盤方向機率+信心分層) — 只在早報時窗有值,
+    # 模型/回測/可操作性但書見 quant_lab/market_forecast/FORECAST.md,失敗回 {} 缺了不缺信
+    market_forecast = {}
+    try:
+        from intel.market_forecast import forecast_today
+        market_forecast = forecast_today()
+    except Exception as _e:
+        print(f"[market_forecast] skipped: {_e}")
+    if not market_forecast:
+        # 美股晚報版(2026-07-22):時窗 TW 17-21,兩時窗互斥不會搶
+        try:
+            from intel.market_forecast import forecast_tonight_us
+            market_forecast = forecast_tonight_us()
+        except Exception as _e:
+            print(f"[market_forecast_us] skipped: {_e}")
+
     return {
         "fundamentals": fundamentals,
         "us_market": us_market,
@@ -1356,12 +1443,14 @@ def fetch_all(extra_us_stocks: list = None, extra_tw_stocks: list = None):
         "tw_news": fetch_tw_news(extra_tw_stocks),
         "indicators": fetch_indicators(),
         "global_lead": fetch_global_lead(),
+        "tx_night": fetch_tx_night(),
         "crypto": fetch_crypto(),
         "sectors": fetch_sector_performance(),
         "earnings": fetch_earnings_calendar(),
         "earnings_impact": earnings_impact,
         "political_signals": political_signals,
         "intel_signals": intel_signals,
+        "market_forecast": market_forecast,
         # 必用 TW 時區：GH Actions runner 在 UTC，06:55 TW 寄送時 UTC 還是前一天
         # 2026-05-27 出包過：runner UTC 22:55 (= TW 5/27 06:55) datetime.now()→5/26
         # 害 _market_status() 拿 5/26 算「昨晚」變成 5/25 Memorial Day 假，日報通篇寫錯

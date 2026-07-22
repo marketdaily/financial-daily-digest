@@ -40,6 +40,7 @@ const i18n = {
     hero_sub: "台股日報早上 7:00、美股日報晚上 8:00，個人化送到你信箱",
     stories_label: "📊 持倉即時動態",
     sync_suffix: "s 後同步",
+    watch_link: "📈 看盤模式",
     market_label: "🌐 今日大盤",
     admin_panel_title: "👑 管理員面板",
     admin_enter_console: "進入後台 →",
@@ -133,10 +134,14 @@ const i18n = {
     pos_chip_add: "＋成本",
     pos_chip_title: "設定進場成本（選填）",
     pos_title: "持倉成本",
-    pos_desc: "選填。填了進場價後，日報對這檔的建議會改用「持有者框架」——續抱／減碼／停損，並帶上你的損益脈絡；不填則維持一般分析。",
+    pos_desc: "選填。填了進場價後，日報對這檔的建議會改用「持有者框架」——續抱／減碼／停損，並帶上你的損益脈絡；再補上股數與總本金，日報會多一段「資金管理體檢」。",
     pos_price_label: "進場價（每股成本）",
+    pos_qty_label: "持有股數（選填，單位＝股，不是張；台股 1 張＝1000 股）",
     pos_date_label: "進場日期（選填）",
     pos_err_price: "請輸入有效的進場價",
+    pos_err_any: "進場價或股數至少填一項",
+    capital_title: "總本金（選填）",
+    capital_desc: "填了總本金、並在持股標籤上補「股數」後，日報會多一段「資金管理體檢」——單檔集中度、現金水位、停損總風險佔本金比例。只用於你的日報計算，不對外顯示。",
     pos_err_date: "進場日期不能是未來",
     pos_save: "儲存",
     pos_clear: "清除成本",
@@ -274,6 +279,7 @@ const i18n = {
     hero_sub: "TW digest at 7:00 AM, US digest at 8:00 PM — your personalized briefing lands in your inbox.",
     stories_label: "📊 Live Portfolio Updates",
     sync_suffix: "s to sync",
+    watch_link: "📈 Watch",
     market_label: "🌐 Today's Markets",
     admin_panel_title: "👑 Admin Panel",
     admin_enter_console: "Open Console →",
@@ -367,10 +373,14 @@ const i18n = {
     pos_chip_add: "+ cost",
     pos_chip_title: "Set entry cost (optional)",
     pos_title: "Position cost",
-    pos_desc: "Optional. With an entry price set, the digest switches to holder-framed advice for this stock — hold / trim / stop-loss with your P&L context. Leave it empty for standard analysis.",
+    pos_desc: "Optional. With an entry price set, the digest switches to holder-framed advice for this stock — hold / trim / stop-loss with your P&L context. Add share count and total capital to unlock the money-management checkup section.",
     pos_price_label: "Entry price (per share)",
+    pos_qty_label: "Shares held (optional — in shares, not lots; 1 TW lot = 1,000 shares)",
     pos_date_label: "Entry date (optional)",
     pos_err_price: "Please enter a valid entry price",
+    pos_err_any: "Enter at least an entry price or share count",
+    capital_title: "Total capital (optional)",
+    capital_desc: "With total capital plus share counts on your holdings, the digest adds a money-management checkup — position concentration, cash level, and total stop-loss risk as % of capital. Used only for your digest; never shown publicly.",
     pos_err_date: "Entry date can't be in the future",
     pos_save: "Save",
     pos_clear: "Clear cost",
@@ -496,7 +506,7 @@ function applyLang(lang) {
     const v = t[el.dataset.i18nPlaceholder];
     if (typeof v === 'string') el.placeholder = v;
   });
-  const langBtn = document.querySelector('.lang-btn');
+  const langBtn = document.querySelector('button.lang-btn[onclick="toggleLang()"]');
   if (langBtn) langBtn.textContent = currentLang === 'zh' ? 'EN' : '中文';
   localStorage.setItem('md-lang-v2', currentLang);
   if (typeof refreshDynamicLang === 'function') refreshDynamicLang();
@@ -541,8 +551,10 @@ function refreshDynamicLang() {
 
 let US_STOCKS = [], TW_STOCKS = [];
 const selected = { us: [], tw: [] };
-// 持倉成本(選填):{ sym: { entry_price, entry_date } },隨 /save-preferences 的 positions 存取
+// 持倉成本(選填):{ sym: { entry_price, entry_date, qty } },隨 /save-preferences 的 positions 存取
 let positionsMap = {};
+// 總本金(選填,2026-07-22 資金管理體檢):null=未設定
+let userCapital = null;
 let userCap = 3;
 let userPlan = "free";
 let selectedDepth = "standard";

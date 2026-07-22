@@ -11,6 +11,10 @@
   「看多/看空」——不同來源方向語意差很多(例如 us_insider 的 red 是內部人群聚買進偏多方,
   tw_institutional 的 red 常是法人連賣偏空方),誤加統一方向標籤反而製造假結論,方向判斷留給
   人工逐 source 深攻。
+- 結算端 CA 守衛(2026-07-17,price_integrity 稽核前置):price_at_signal→price_now 皆 raw
+  未還原價,持有窗跨分割/減資/大額配股=假報酬(0050 分割 raw -74.8% 假懸崖同款)。score()
+  預設逐列掃窗內 CA(intel/ca_settlement_guard.py),嫌疑/無法核實列排除統計但分開計數可見
+  (feedback_no_silent_limits:不靜默丟)。
 
 CLI: python3 -m intel.signal_ledger score
 """
@@ -152,17 +156,34 @@ def _daycluster_ci(day_buckets, n_boot=2000, seed=1729, lo=5, hi=95):
     return lo_v, hi_v
 
 
+_CA_GUARD_DEFAULT = object()  # sentinel:預設接真守衛;顯式傳 None=關(輸出會標 ca_guard=off)
+
+
 def score(min_age_days=MIN_AGE_DAYS, rows=None, price_fn=price_now, today=None,
-          min_distinct_days=MIN_DISTINCT_DAYS):
+          min_distinct_days=MIN_DISTINCT_DAYS, ca_check_fn=_CA_GUARD_DEFAULT):
     """純函式,不改帳本——每次呼叫即時查現價算事後報酬。樣本不足誠實回 n=0。
 
-    兩道誠實閘(缺一就會用小樣本假信心誤導判斷):
+    三道誠實閘(缺一就會用小樣本假信心誤導判斷):
     1. n<MIN_SUBGROUP → insufficient_data(子分組樣本太少)。
     2. eff_days<min_distinct_days → insufficient_day_diversity:有效獨立日(Herfindahl (Σn)²/Σn²)
        不足,mean/pct_positive 其實只是「那幾天大盤 beta」量了 n 次,不呈現為有效數字;naive 值
-       降級標示保留(不靜默丟)。通過兩閘的組另附日叢集 bootstrap 90% CI(零寬退化時回 None)。"""
+       降級標示保留(不靜默丟)。通過兩閘的組另附日叢集 bootstrap 90% CI(零寬退化時回 None)。
+    3. 結算端 CA 守衛:持有窗內有分割/減資/大額配股簽名(suspect)或無法核實(unknown)的列
+       排除統計——raw 價跨 CA 的報酬是機械假象非市場反應。排除列仍留在 detail(帶 ca_status)
+       且逐組計數 n_ca_suspect/n_ca_unknown,絕不靜默丟。ca_check_fn 顯式傳 None=關守衛
+       (輸出 ca_guard=off,列標 unchecked);預設自動接 intel/ca_settlement_guard(ca_guard=on;
+       建構失敗=unavailable,同樣可見)。"""
     rows = rows if rows is not None else load_rows()
     today = today or datetime.date.today()
+    guard_mode = "on"
+    if ca_check_fn is _CA_GUARD_DEFAULT:
+        try:
+            from intel.ca_settlement_guard import make_ca_check_fn
+            ca_check_fn = make_ca_check_fn(today=today)
+        except Exception:
+            ca_check_fn, guard_mode = None, "unavailable"
+    elif ca_check_fn is None:
+        guard_mode = "off"
     detail = []
     for r in rows:
         if not _finite_positive(r.get("price_at_signal")):
@@ -181,14 +202,30 @@ def score(min_age_days=MIN_AGE_DAYS, rows=None, price_fn=price_now, today=None,
         if not _finite_positive(cur):
             continue
         pct = round((cur - r["price_at_signal"]) / r["price_at_signal"] * 100, 2)
+        ca_status = "unchecked"
+        if ca_check_fn is not None:
+            try:
+                ca = ca_check_fn(r["code"], r["date"])
+                ca_status = ca.get("status") if isinstance(ca, dict) else "unknown"
+            except Exception:
+                ca_status = "unknown"
+            if ca_status not in ("clean", "suspect", "unknown"):
+                ca_status = "unknown"  # 守衛回怪值不可默認乾淨(fail-closed)
         detail.append({
             "code": r["code"], "source": r["source"], "level": r["level"],
             "date": r["date"], "age_days": age,
             "price_at_signal": r["price_at_signal"], "price_now": cur, "outcome_pct": pct,
+            "ca_status": ca_status,
         })
     groups = {}
+    ca_excluded = {}  # key -> {"suspect": n, "unknown": n}(排除統計但逐組可見)
     for row in detail:
-        groups.setdefault(f"{row['source']}|{row['level']}", []).append(row)
+        k = f"{row['source']}|{row['level']}"
+        if row["ca_status"] in ("suspect", "unknown"):
+            c = ca_excluded.setdefault(k, {"suspect": 0, "unknown": 0})
+            c[row["ca_status"]] += 1
+            continue
+        groups.setdefault(k, []).append(row)
     summary = {}
     for k, rowset in groups.items():
         vals = sorted(r["outcome_pct"] for r in rowset)
@@ -228,8 +265,23 @@ def score(min_age_days=MIN_AGE_DAYS, rows=None, price_fn=price_now, today=None,
             "mean_pct": naive_mean, "median_pct": naive_median, "pct_positive": naive_pos,
             "ci90_pct": [ci_lo, ci_hi] if ci_lo is not None else None,  # None=退化零寬,見 _daycluster_ci
         }
+    for k, c in ca_excluded.items():
+        if k not in summary:  # 該組全數被守衛排除:仍要有條目,計數不可消失
+            summary[k] = {"n": 0, "distinct_days": 0, "eff_days": 0.0,
+                          "status": "insufficient_data", "mean_pct": None,
+                          "median_pct": None, "pct_positive": None, "ci90_pct": None}
+        summary[k]["n_ca_suspect"] = c["suspect"]
+        summary[k]["n_ca_unknown"] = c["unknown"]
+    for k in summary:
+        summary[k].setdefault("n_ca_suspect", 0)
+        summary[k].setdefault("n_ca_unknown", 0)
+    n_included = sum(1 for r in detail if r["ca_status"] in ("clean", "unchecked"))
     return {"min_age_days": min_age_days, "min_distinct_days": min_distinct_days,
-            "n_scored": len(detail), "groups": summary, "detail": detail}
+            "ca_guard": guard_mode,
+            "n_scored": n_included,
+            "n_ca_suspect": sum(c["suspect"] for c in ca_excluded.values()),
+            "n_ca_unknown": sum(c["unknown"] for c in ca_excluded.values()),
+            "groups": summary, "detail": detail}
 
 
 def audit(rows=None, today=None, min_age_days=MIN_AGE_DAYS):
@@ -269,6 +321,13 @@ if __name__ == "__main__":
         result = score()
         summary = {k: v for k, v in result.items() if k != "detail"}
         print(json.dumps(summary, ensure_ascii=False, indent=2))
+        if result.get("ca_guard") != "on":
+            print(f"(⚠️ CA 守衛未生效(ca_guard={result.get('ca_guard')}):事後報酬未經"
+                  f"公司行動核實,跨分割/減資/大額配股的列是假報酬,勿據此下結論。)")
+        if result.get("n_ca_suspect") or result.get("n_ca_unknown"):
+            print(f"(🛡️ CA守衛:{result['n_ca_suspect']} 筆持有窗內有公司行動嫌疑"
+                  f"+{result['n_ca_unknown']} 筆無法核實,已排除統計(raw 價跨分割/減資/大額配股"
+                  f"=假報酬)。unknown 多半是資料源暫時抓不到,下次執行自動重試。)")
         if result["n_scored"] == 0:
             print(f"(n=0,尚無 >= {MIN_AGE_DAYS} 天齡且有 price_at_signal 的紀錄可計分)")
         else:

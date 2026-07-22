@@ -179,8 +179,12 @@ def build():
     }
 
     os.makedirs(os.path.dirname(OUT_JSON), exist_ok=True)
-    with open(OUT_JSON, "w", encoding="utf-8") as f:
+    # temp+rename 原子寫入:mid-write 死掉不可留下截斷 board.json(會被 runner persist 進庫,
+    # 再被任一 runner 的 docs deploy 帶上站——2026-07-18 fleet_deploy_gate 驗證者 F1)
+    tmp_path = OUT_JSON + ".tmp"
+    with open(tmp_path, "w", encoding="utf-8") as f:
         json.dump(board, f, ensure_ascii=False, indent=None)
+    os.replace(tmp_path, OUT_JSON)
     print(f"✅ board.json 已更新 — 近7天完成 {board['stats']['done_7d']} 項 · "
           f"能力庫 {board['stats']['capabilities_total']} 個 · 失敗 {failed_total}")
     return board

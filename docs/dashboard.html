@@ -685,9 +685,10 @@ nav::after {
   <div class="stories-section" id="stories-section" style="display:none;">
     <div class="stories-label-row">
       <div class="stories-label" data-i18n="stories_label">📊 持倉即時動態</div>
+      <a href="watch.html" data-i18n="watch_link" style="font-size:11px;font-weight:700;color:#818cf8;text-decoration:none;margin-left:auto;margin-right:10px;">📈 看盤模式</a>
       <div class="sync-countdown" id="sync-countdown" style="display:none;">
         <div class="sync-dot"></div>
-        <span id="sync-counter">60</span><span data-i18n="sync_suffix">s 後同步</span>
+        <span id="sync-counter">15</span><span data-i18n="sync_suffix">s 後同步</span>
       </div>
     </div>
     <div class="stories-scroller">
@@ -822,6 +823,13 @@ nav::after {
         </button>
       </div>
       <div id="depth-lock" style="display:none;"></div>
+    </div>
+
+    <!-- 總本金(選填,2026-07-22 資金管理體檢):填了本金+股數,日報多一段風險體檢;登入後顯示 -->
+    <div class="card" id="capital-card" style="margin-top:8px;display:none;">
+      <div class="card-title">💰 <span data-i18n="capital_title">總本金（選填）</span></div>
+      <div class="card-desc" data-i18n="capital_desc">填了總本金、並在持股標籤上補「股數」後，日報會多一段「資金管理體檢」——單檔集中度、現金水位、停損總風險佔本金比例。只用於你的日報計算，不對外顯示。</div>
+      <input type="number" class="pos-input" id="capital-input" min="0" step="any" inputmode="decimal" placeholder="1000000" onchange="capitalChanged()" style="max-width:260px;">
     </div>
 
     <!-- Password confirm modal(敏感操作再次驗證密碼用) -->
@@ -978,13 +986,13 @@ nav::after {
 <style>@keyframes mdGuideBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}</style>
 
 <script src="stocks.js?v=20260528"></script>
-<script src="js/dash-core.js?v=20260714"></script>
-<script src="js/dash-stocks-auth.js?v=20260709a"></script>
+<script src="js/dash-core.js?v=20260722c"></script>
+<script src="js/dash-stocks-auth.js?v=20260722c"></script>
 <script src="js/dash-notify-chat.js?v=20260714a"></script>
-<script src="js/dash-prefs-market.js?v=20260707b"></script>
-<script src="js/dash-stories-chain.js?v=20260707"></script>
+<script src="js/dash-prefs-market.js?v=20260722b"></script>
+<script src="js/dash-stories-chain.js?v=20260722"></script>
 <script src="js/dash-chart.js?v=20260703"></script>
-<script src="js/dash-init.js?v=20260709a"></script>
+<script src="js/dash-init.js?v=20260722b"></script>
 <script>window.META_PIXEL_ID = "1497334655104185";</script>
 <script src="meta-pixel.js"></script>
 <script src="analytics.js?v=20260708a"></script>
@@ -1166,9 +1174,11 @@ window.mdStockTour = function () {
 <div class="md-modal-backdrop" id="pos-modal" onclick="if(event.target===this)closePosEdit()">
   <div class="md-modal-card">
     <div class="md-modal-title" id="pos-title">持倉成本</div>
-    <div class="md-modal-desc" data-i18n="pos_desc">選填。填了進場價後，日報對這檔的建議會改用「持有者框架」——續抱／減碼／停損，並帶上你的損益脈絡；不填則維持一般分析。</div>
+    <div class="md-modal-desc" data-i18n="pos_desc">選填。填了進場價後，日報對這檔的建議會改用「持有者框架」——續抱／減碼／停損，並帶上你的損益脈絡；再補上股數與總本金，日報會多一段「資金管理體檢」。</div>
     <label class="pos-label" for="pos-price" data-i18n="pos_price_label">進場價（每股成本）</label>
     <input type="number" class="pos-input" id="pos-price" min="0" step="any" inputmode="decimal" placeholder="850">
+    <label class="pos-label" for="pos-qty" data-i18n="pos_qty_label">持有股數（選填，單位＝股，不是張；台股 1 張＝1000 股）</label>
+    <input type="number" class="pos-input" id="pos-qty" min="0" step="any" inputmode="decimal" placeholder="1000">
     <label class="pos-label" for="pos-date" data-i18n="pos_date_label">進場日期（選填）</label>
     <input type="date" class="pos-input" id="pos-date">
     <div class="md-modal-result" id="pos-err" style="display:none;"></div>

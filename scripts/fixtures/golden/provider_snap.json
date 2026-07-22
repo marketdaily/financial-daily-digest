@@ -1,11 +1,11 @@
 {
  "_chain_order_default": [
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
-  "https://api.anthropic.com/v1/messages",
   "https://api.groq.com/openai/v1/chat/completions",
   "https://cf-proxy.test/ai",
   "https://openrouter.ai/api/v1/chat/completions",
@@ -14,17 +14,17 @@
   "http://localhost:11434/api/chat"
  ],
  "_chain_order_strong": [
-  "https://api.anthropic.com/v1/messages",
   "https://api.groq.com/openai/v1/chat/completions",
   "https://cf-proxy.test/ai",
   "https://openrouter.ai/api/v1/chat/completions",
   "https://api.cerebras.ai/v1/chat/completions",
   "https://api.openai.com/v1/chat/completions",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
   "http://localhost:11434/api/chat"
  ],
  "cerebras_custom": {
@@ -45,7 +45,7 @@
        "role": "user"
       }
      ],
-     "model": "llama-3.3-70b",
+     "model": "gpt-oss-120b",
      "temperature": 0.4
     },
     "timeout": 120,
@@ -72,7 +72,7 @@
        "role": "user"
       }
      ],
-     "model": "llama-3.3-70b",
+     "model": "gpt-oss-120b",
      "temperature": 0.4
     },
     "timeout": 120,
@@ -445,7 +445,7 @@
        "role": "user"
       }
      ],
-     "model": "meta-llama/llama-3.3-70b-instruct:free",
+     "model": "nvidia/nemotron-3-super-120b-a12b:free",
      "temperature": 0.4
     },
     "timeout": 120,
@@ -474,7 +474,7 @@
        "role": "user"
       }
      ],
-     "model": "meta-llama/llama-3.3-70b-instruct:free",
+     "model": "nvidia/nemotron-3-super-120b-a12b:free",
      "temperature": 0.4
     },
     "timeout": 120,

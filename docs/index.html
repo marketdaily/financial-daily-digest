@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="Dmue4XJrjV3lfmoI2N6t7x3301zt61-csJUI13pvoaI" />
 <title>MarketDaily — 台灣投資人的每日 AI 財經日報</title>
 <meta name="description" content="台股早上 7 點、美股晚上 8 點，AI 為你精選市場簡報。假訊息全過濾，像聰明朋友傳訊息給你一樣好懂，30 秒掌握市場大事。">
 <meta property="og:type" content="website">
@@ -18,6 +19,34 @@
 <meta name="twitter:description" content="台股早上 7 點、美股晚上 8 點，AI 為你精選市場簡報。假訊息全過濾，像聰明朋友傳訊息給你一樣好懂，30 秒掌握市場大事。">
 <meta name="twitter:image" content="https://marketdaily.ai/assets/og.png">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
+<link rel="canonical" href="https://marketdaily.ai/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://marketdaily.ai/#organization",
+      "name": "MarketDaily",
+      "url": "https://marketdaily.ai/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://marketdaily.ai/logo-icon.svg"
+      },
+      "image": "https://marketdaily.ai/assets/og.png",
+      "description": "台灣投資人的每日 AI 財經日報:台股早上 7 點、美股晚上 8 點,AI 精選市場簡報,假訊息全過濾。"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://marketdaily.ai/#website",
+      "name": "MarketDaily",
+      "url": "https://marketdaily.ai/",
+      "inLanguage": "zh-TW",
+      "publisher": { "@id": "https://marketdaily.ai/#organization" }
+    }
+  ]
+}
+</script>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#6366f1">
 <meta name="mobile-web-app-capable" content="yes">
@@ -900,7 +929,9 @@ footer {
   if (!v) return;
   var wide = window.matchMedia('(min-width: 768px)').matches;
   var still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (wide && !still) {
+  var c = navigator.connection || {};
+  var thrifty = c.saveData === true || /(^|-)2g$/.test(c.effectiveType || '');
+  if (wide && !still && !thrifty) {
     var s = v.querySelector('source');
     s.src = s.getAttribute('data-src');
     v.load();

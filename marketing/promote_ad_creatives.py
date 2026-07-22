@@ -42,6 +42,24 @@ AUTO = Path.home() / "autonomous"
 sys.path.insert(0, str(AUTO / "capabilities" / "marketing_agents_pipeline"))
 import compliance_selfcheck as cc  # noqa: E402
 
+AI_SLOP_LINT = AUTO / "capabilities" / "ai_slop_lint" / "logic.py"
+_slop_mod = None
+
+
+def _slop_verdict(caption: str):
+    """AI 味密度檢查(離線確定性 lint)。積木缺席回 (None, None) 不擋佇列。"""
+    global _slop_mod
+    try:
+        if _slop_mod is None:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("ai_slop_lint_logic", AI_SLOP_LINT)
+            _slop_mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(_slop_mod)
+        rep = _slop_mod.score(caption, is_html=False)
+        return rep["verdict"], rep
+    except Exception:  # noqa: BLE001
+        return None, None
+
 DRAFTS_FILE = HERE / "ad_creative_drafts.json"
 PNG_DIR = HERE / "assets" / "posts" / "ad_creative"
 JPG_DIR = HERE.parent / "docs" / "social"
@@ -134,6 +152,16 @@ def eligible(drafts: list, already: set) -> list:
             out.append((d, f"重新掃描仍未過合規檢查:{failed}"))
             seen.add(draft_id)
             continue
+        caption_all = "\n".join(filter(None, [d.get("caption_zh"), d.get("caption_en")]))
+        verdict, rep = _slop_verdict(caption_all)
+        if verdict == "sloppy":
+            offenders = [h["pattern"] for h in rep["top_offenders"][:3]]
+            out.append((d, f"AI-slop 密度超標(density={rep['slop_density']:.1f} {offenders})——"
+                           "caption 要重寫成人話再 approve"))
+            seen.add(draft_id)
+            continue
+        if verdict == "watch":
+            print(f"⚠️ [slop-watch] {draft_id} density={rep['slop_density']:.1f}(放行,留觀察)")
         if _is_gated(d["caption_zh"]) and not _funnel_ready():
             out.append((d, "留言閘門型但漏斗未就緒(token 缺 instagram_manage_comments)——"
                            "先不入佇列,重授權後下次 promote 自動放行"))
