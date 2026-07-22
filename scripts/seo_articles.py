@@ -1578,13 +1578,13 @@ strong {{ color:#fbbf24; font-weight:700; }}
 
 .ahero {{ height:200px; border-radius:16px; background-size:cover; background-position:center; background-repeat:no-repeat; margin:0 0 26px; border:1px solid rgba(255,255,255,0.08); position:relative; }}
 .ahero::after {{ content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(10,10,20,0.12),rgba(10,10,20,0.5)); }}
-.ahero[data-h="stock"] {{ background-image:url(assets/cat/hero-stock.webp); }}
-.ahero[data-h="event"] {{ background-image:url(assets/cat/hero-event.webp); }}
-.ahero[data-h="exdiv"] {{ background-image:url(assets/cat/hero-exdiv.webp); }}
-.ahero[data-h="guide"] {{ background-image:url(assets/cat/hero-guide.webp); }}
-.ahero[data-h="term"] {{ background-image:url(assets/cat/hero-term.webp); }}
-.ahero[data-h="macro"] {{ background-image:url(assets/cat/hero-macro.webp); }}
-.ahero[data-h="supply"] {{ background-image:url(assets/cat/hero-supply.webp); }}
+.ahero[data-h="stock"] {{ background-image:url(assets/cat/hero-stock.webp?v=2); }}
+.ahero[data-h="event"] {{ background-image:url(assets/cat/hero-event.webp?v=2); }}
+.ahero[data-h="exdiv"] {{ background-image:url(assets/cat/hero-exdiv.webp?v=2); }}
+.ahero[data-h="guide"] {{ background-image:url(assets/cat/hero-guide.webp?v=2); }}
+.ahero[data-h="term"] {{ background-image:url(assets/cat/hero-term.webp?v=2); }}
+.ahero[data-h="macro"] {{ background-image:url(assets/cat/hero-macro.webp?v=2); }}
+.ahero[data-h="supply"] {{ background-image:url(assets/cat/hero-supply.webp?v=2); }}
 </style>
 </head>
 <body>
