@@ -233,25 +233,47 @@ function renderCatSel() {
   sel.onchange = () => { curCat = sel.value; catPage = 1; renderView(); };
 }
 
-/* 智慧排序 */
-const SORT_MODES = ["def", "gain", "lose", "sig"];
+/* 智慧排序:chips(預設/燈號)+表頭欄位排序(價/漲跌/量,點一下降冪再點升冪) */
+const SORT_CHIP_MODES = ["def", "sig"];
 function sortKey(s) {
-  const ch = quotes[s] && quotes[s].change != null ? quotes[s].change : null;
+  const q = quotes[s] || {};
+  const ch = q.change, px = q.price, vol = q.volume;
   const sg = signals[s] || [];
   const lvl = sg.some(i => i.level === "red") ? 0 : sg.length ? 1 : 2;
-  if (sortMode === "gain") return ch == null ? 999 : -ch;
-  if (sortMode === "lose") return ch == null ? 999 : ch;
-  if (sortMode === "sig") return lvl * 1000 - Math.abs(ch || 0);
-  return 0;
+  switch (sortMode) {
+    case "sig": return lvl * 1000 - Math.abs(ch || 0);
+    case "chg_desc": return ch == null ? 999 : -ch;
+    case "chg_asc": return ch == null ? 999 : ch;
+    case "px_desc": return px == null ? 1e12 : -px;
+    case "px_asc": return px == null ? 1e12 : px;
+    case "vol_desc": return vol == null ? 1e15 : -vol;
+    case "vol_asc": return vol == null ? 1e15 : vol;
+    default: return 0;
+  }
+}
+function setSort(mode) {
+  sortMode = mode;
+  localStorage.setItem("md-watch-sort", sortMode);
+  renderSortChips(); renderSortHeaders(); applySortDom();
 }
 function renderSortChips() {
   const el = $("sort-chips");
-  el.innerHTML = SORT_MODES.map(m =>
+  el.innerHTML = SORT_CHIP_MODES.map(m =>
     `<button class="chip ${sortMode === m ? "on" : ""}" data-so="${m}">${T("sort_" + m)}</button>`).join("");
-  el.querySelectorAll(".chip").forEach(c => c.onclick = () => {
-    sortMode = c.dataset.so;
-    localStorage.setItem("md-watch-sort", sortMode);
-    renderSortChips(); applySortDom();
+  el.querySelectorAll(".chip").forEach(c => c.onclick = () => setSort(c.dataset.so));
+}
+function renderSortHeaders() {
+  document.querySelectorAll("th[data-sort]").forEach(th => {
+    const col = th.dataset.sort;
+    const on = sortMode === col + "_desc" || sortMode === col + "_asc";
+    th.classList.toggle("s-on", on);
+    th.querySelector(".arr").textContent = on ? (sortMode.endsWith("_desc") ? "▼" : "▲") : "";
+  });
+}
+function bindSortHeaders() {
+  document.querySelectorAll("th[data-sort]").forEach(th => th.onclick = () => {
+    const col = th.dataset.sort;
+    setSort(sortMode === col + "_desc" ? col + "_asc" : col + "_desc");
   });
 }
 function applySortDom() {
@@ -381,7 +403,7 @@ let usFundCache = {};
 let chainDB = null, chainIdx = null;
 let chartCache = {};
 let curTf = "6M";
-let sortMode = localStorage.getItem("md-watch-sort") || "def";
+let sortMode = { gain: "chg_desc", lose: "chg_asc" }[localStorage.getItem("md-watch-sort")] || localStorage.getItem("md-watch-sort") || "def";
 let depthTimer = null;
 let newsCache = {};
 const TF_LIST = [
@@ -464,8 +486,9 @@ function macd(closes) {
   return { dif: dif[i], dea: dea[i], hist: dif[i] - dea[i] };
 }
 
-/* Canvas K線 */
-function drawChart(cv, bars, tf, sym) {
+/* Canvas K線(hoverIdx=十字線位置) */
+let curChart = null;
+function drawChart(cv, bars, tf, hoverIdx) {
   const dpr = window.devicePixelRatio || 1;
   const W = cv.clientWidth, H = cv.clientHeight;
   cv.width = W * dpr; cv.height = H * dpr;
@@ -538,6 +561,61 @@ function drawChart(cv, bars, tf, sym) {
   ctx.fillText(ft(bars[0].t), 6, H - 3);
   const lastTxt = ft(bars[n - 1].t);
   ctx.fillText(lastTxt, W - padR - ctx.measureText(lastTxt).width - 2, H - 3);
+  // 十字線
+  if (hoverIdx != null && bars[hoverIdx]) {
+    const b = bars[hoverIdx];
+    const x = 4 + slotW * (hoverIdx + 0.5), cy = y(b.c);
+    ctx.setLineDash([3, 3]); ctx.strokeStyle = "rgba(232,237,247,.4)";
+    ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, H - 14); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(4, cy); ctx.lineTo(W - padR, cy); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "#818cf8"; ctx.beginPath(); ctx.arc(x, cy, 3.2, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = "rgba(232,237,247,.9)"; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(x, cy, 3.2, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1;
+    const tag = fp(b.c), tw2 = ctx.measureText(tag).width + 8;
+    ctx.fillStyle = "#312e81"; ctx.fillRect(W - padR + 1, cy - 8, Math.max(tw2, padR - 2), 16);
+    ctx.fillStyle = "#dbe3ff"; ctx.textBaseline = "middle"; ctx.fillText(tag, W - padR + 4, cy);
+    ctx.textBaseline = "alphabetic";
+  }
+  curChart = { cv, bars, tf, slotW, n };
+}
+
+function barInfoHtml(bars, idx, tf, sym) {
+  const b = bars[idx];
+  if (!b) return "";
+  const prev = idx > 0 ? bars[idx - 1].c : (bars.pc != null ? bars.pc : b.o);
+  const chg = prev ? (b.c - prev) / prev * 100 : null;
+  const dir = chg == null ? "" : chg >= 0 ? "up" : "down";
+  const d = new Date(b.t * 1000);
+  const intraday = tf.src === "bridge" || tf.range === "1D" || tf.range === "5D";
+  const ts = intraday
+    ? `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`
+    : `${d.getFullYear()}/${d.getMonth() + 1}/${d.getDate()}`;
+  let v = b.v || 0;
+  if (isTWSym(sym) && tf.src !== "bridge") v = Math.round(v / 1000);
+  return `<b>${ts}</b>　開 <b>${fp(b.o)}</b>　高 <b>${fp(b.h)}</b>　低 <b>${fp(b.l)}</b>　收 <b class="${dir}">${fp(b.c)}</b>` +
+    (chg == null ? "" : `　<b class="${dir}">${chg >= 0 ? "+" : ""}${chg.toFixed(2)}%</b>`) +
+    `　量 <b>${v.toLocaleString()}</b>`;
+}
+
+function bindChartPointer(cv, sym) {
+  const strip = $("d-ohlc");
+  const move = clientX => {
+    if (!curChart || curChart.cv !== cv) return;
+    const rect = cv.getBoundingClientRect();
+    let idx = Math.floor((clientX - rect.left - 4) / curChart.slotW);
+    idx = Math.max(0, Math.min(curChart.n - 1, idx));
+    drawChart(cv, curChart.bars, curChart.tf, idx);
+    if (strip) strip.innerHTML = barInfoHtml(curChart.bars, idx, curChart.tf, sym);
+  };
+  const reset = () => {
+    if (!curChart || curChart.cv !== cv) return;
+    drawChart(cv, curChart.bars, curChart.tf, null);
+    if (strip) strip.innerHTML = barInfoHtml(curChart.bars, curChart.n - 1, curChart.tf, sym);
+  };
+  cv.addEventListener("mousemove", e => move(e.clientX));
+  cv.addEventListener("mouseleave", reset);
+  cv.addEventListener("touchstart", e => { move(e.touches[0].clientX); }, { passive: true });
+  cv.addEventListener("touchmove", e => { move(e.touches[0].clientX); }, { passive: true });
 }
 
 async function renderDetailChart(sym) {
@@ -548,8 +626,11 @@ async function renderDetailChart(sym) {
     const bars = await fetchBars(sym, curTf);
     if (sheetSym !== sym) return;
     if (tf.range === "1D") bars.pc = bars.prevClose;
-    drawChart(cv, bars, tf, sym);
-  } catch { drawChart(cv, [], tf, sym); }
+    drawChart(cv, bars, tf, null);
+    const strip = $("d-ohlc");
+    if (strip && bars.length) strip.innerHTML = barInfoHtml(bars, bars.length - 1, tf, sym);
+    if (!cv.dataset.bound) { cv.dataset.bound = "1"; bindChartPointer(cv, sym); }
+  } catch { drawChart(cv, [], tf, null); }
 }
 
 function tfChipsHtml(sym) {
@@ -763,6 +844,7 @@ function openSheet(sym) {
       <div class="depth-wrap" id="d-depth"></div>
     </div>
     <div class="tf-chips" id="tf-chips">${tfChipsHtml(sym)}</div>
+    <div class="ohlc-strip" id="d-ohlc"></div>
     <canvas id="d-chart"></canvas>
     <div class="chart-note">MA5 <span style="color:#fbbf24">─</span> MA20 <span style="color:#818cf8">─</span> MA60 <span style="color:#38bdf8">─</span> · ${T("vol_note")}</div>
     <div class="g-title">${T("sec_tech")}</div>
@@ -902,6 +984,7 @@ async function init() {
   });
   $("tw-more").onclick = () => { catPage++; renderView(); };
   renderTabs(); renderGroupChips(); renderCatSel(); renderRankChips(); renderSortChips();
+  bindSortHeaders(); renderSortHeaders();
   loadTwFund();
   await loadSignals();
   renderView();
