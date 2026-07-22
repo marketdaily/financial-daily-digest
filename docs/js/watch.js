@@ -116,7 +116,8 @@ function sigDot(sym) {
 function nameCell(sym, name) {
   const nm = name || nameMap.get(sym) || sym;
   const ind = INDUSTRY[sym] ? ` · ${INDUSTRY[sym]}` : "";
-  return `${sigDot(sym)}<span class="nm-main">${nm}</span><span class="code-sub">${sym}${ind}</span>`;
+  // 訊號燈放進 nm-main 內:nm-main 是 block,inline 的點放外面會被擠成獨立一行浮在名字上方(版型破)
+  return `<span class="nm-main">${sigDot(sym)}${nm}</span><span class="code-sub">${sym}${ind}</span>`;
 }
 
 function rowHtml(sym) {
@@ -321,18 +322,25 @@ async function tickFree() {
   const bridgeOk = bridge && bridgeFails < 3;
   const target = bridgeOk ? syms.filter(s => !isTWSym(s)) : syms;
   if (!target.length) return;
-  (await fetchFree(target.slice(0, 120))).forEach(paint);
+  // 同 tickLive:分類頁翻頁後超過舊上限的檔位要吃得到報價(fetchFree 內部本就 25 檔一批)
+  (await fetchFree(target.slice(0, 300))).forEach(paint);
   applySortDom();
 }
 
 async function tickLive() {
   if (!bridge) return;
-  const tw = viewSyms().filter(isTWSym);
+  // bridge /q 單次上限 60(server 端硬切)→ 必須分塊,否則分類頁「顯示更多」後
+  // 第 61 檔起永遠抓不到報價整排「—」(2026-07-22 Delvin 回報)。總量 300 防巨型分類打爆 bridge。
+  const tw = viewSyms().filter(isTWSym).slice(0, 300);
   if (!tw.length) return;
   try {
-    const r = await fetch(`${bridge.url}/q?syms=${tw.slice(0, 60).join(",")}&t=${encodeURIComponent(bridge.token)}`);
-    if (!r.ok) throw new Error(r.status);
-    (await r.json()).quotes.forEach(paint);
+    const chunks = [];
+    for (let i = 0; i < tw.length; i += 60) chunks.push(tw.slice(i, i + 60));
+    const parts = await Promise.all(chunks.map(c =>
+      fetch(`${bridge.url}/q?syms=${c.join(",")}&t=${encodeURIComponent(bridge.token)}`)
+        .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    ));
+    parts.flatMap(p => p.quotes || []).forEach(paint);
     bridgeFails = 0;
     applySortDom();
   } catch { bridgeFails++; }
