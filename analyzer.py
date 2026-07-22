@@ -461,15 +461,18 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     2026-07-01:全鏈失敗且屬 DNS 瞬斷(整台 WSL 幾秒解不到,連 Groq 也救不了,因走同條
     Windows DNS)→ 等 8s 讓瞬斷過去、重試整輪一次(Gemini 已熔斷的維持快跳過不再撞 429)。"""
     gemini = [(f"gemini:{m}", lambda p, mm=m: _call_gemini(p, mm)) for m in GEMINI_MODELS]
-    # Groq(Llama70B,免費)排在付費 OpenAI 前:Gemini 配額死 + Claude 抖時的免費接手層。
-    strong = [("claude:sonnet-4.6", _call_claude),
-              ("groq:gpt-oss-120b", lambda p: _call_groq(p)),
-              # 免費雲端 70B 層(獨立廠商/網路路徑):CF Workers AI 一定在;
-              # OpenRouter/Cerebras 沒 key 時 raise 自動跳過,填 key 即自動補進鏈。
-              ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000)),
-              ("openrouter:llama-70b", lambda p: _call_openrouter(p, max_tokens=8000)),
-              ("cerebras:llama-70b", lambda p: _call_cerebras(p, max_tokens=8000)),
-              ("openai:gpt-4o-mini", _call_openai)]
+    # 免費雲端層(獨立廠商/網路路徑):CF Workers AI 一定在;
+    # OpenRouter/Cerebras 沒 key 時 raise 自動跳過,填 key 即自動補進鏈。
+    free_strong = [("groq:gpt-oss-120b", lambda p: _call_groq(p)),
+                   ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000)),
+                   ("openrouter:llama-70b", lambda p: _call_openrouter(p, max_tokens=8000)),
+                   ("cerebras:llama-70b", lambda p: _call_cerebras(p, max_tokens=8000))]
+    # 2026-07-22 省錢令:正常鏈 Gemini 死光先走免費 70B 層,Claude 退最後付費保險
+    # (清晨 Gemini 空桶月燒 160+ 次 Sonnet 大 prompt 的主因);
+    # prefer_strong = audit fail 後的品質救援,維持 Claude 打頭陣不稀釋。
+    claude_seat = [("claude:sonnet-4.6", _call_claude)]
+    strong = ((claude_seat + free_strong) if prefer_strong
+              else (free_strong + claude_seat)) + [("openai:gpt-4o-mini", _call_openai)]
     # 本地 GPU 永遠排最後一張網:品質不如雲端大模型(有 audit 閘門把關),
     # 但零配額且不吃網路,全雲端斷線(DNS 瞬斷/配額同時死)時是唯一活口。
     local = [("local:qwen2.5-14b", lambda p: _call_ollama(p, max_tokens=9000))]
@@ -2355,9 +2358,6 @@ _COUNCIL_SEATS = [
     # max_tokens 必須壓小,否則 prompt+max_tokens 超過每分鐘 token 預算 → 全數 413
     # (2026-07-01 換模型後連兩天 36/36 全滅的根因)
     ("groq:gpt-oss-120b", lambda p: _call_groq(p, system=_COUNCIL_SYS, max_tokens=1000)),
-    ("claude:haiku", lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)),
-    # Sonnet 當第二把 Claude 聲音:Gemini 全 429 時仍湊得到 ≥2 席,council 不會整個熄火
-    ("claude:sonnet", lambda p: _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")),
     # winrig 本地 5080(零配額零429):清晨 Gemini 必空桶時保底的第三把獨立聲音;
     # 雲端 CI 環境連不上 localhost → 席次熔斷自動停用,不影響
     ("local:qwen2.5-14b", lambda p: _call_ollama(p, system=_COUNCIL_SYS, max_tokens=300)),
@@ -2368,7 +2368,27 @@ _COUNCIL_SEATS = [
     ("cerebras:llama-70b", lambda p: _call_cerebras(p, system=_COUNCIL_SYS, max_tokens=300)),
     ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
-_COUNCIL_JUDGE = lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)
+# 付費 Claude 席次改 opt-in(2026-07-22 Delvin 省錢令):council 佔 API 帳單大宗——
+# 每檔×每天兩班×(兩席+裁判) ≈ 200+ 次付費呼叫/日 ≈ $1.5-2/日。免費席仍有
+# gemini×2/groq/local/cf 五把獨立聲音,quorum(≥2)與廠商多樣性不受影響。
+# 要恢復付費席:.env 設 COUNCIL_PAID_SEATS=1 即回原陣容,不需改程式。
+if os.environ.get("COUNCIL_PAID_SEATS") == "1":
+    _COUNCIL_SEATS[3:3] = [
+        ("claude:haiku", lambda p: _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)),
+        ("claude:sonnet", lambda p: _call_claude(p, system=_COUNCIL_SYS, model="claude-sonnet-4-6")),
+    ]
+
+
+def _council_judge_call(p: str) -> str:
+    # 裁判免費 Gemini 優先(同省錢令);空桶才退付費 Haiku 保底。
+    # 兩者皆敗時呼叫端既有 try/except 會走「最高信念席次」fallback,行為不變。
+    try:
+        return _call_gemini(p, "gemini-2.5-flash-lite", system=_COUNCIL_SYS)
+    except Exception:
+        return _call_claude(p, system=_COUNCIL_SYS, model=_COUNCIL_HAIKU)
+
+
+_COUNCIL_JUDGE = _council_judge_call
 # 席次級熔斷:某席配額耗盡/沒 key/連敗 3 次 → 本輪剩餘標的直接跳過該席,
 # 只在停用當下印一行。否則 36 支持股 × 3 個死席 = 百餘行失敗 log,
 # council_check 的 q429 門檻天天爆表誤判紅色(2026-07-02 用戶反映的洗版根因)。

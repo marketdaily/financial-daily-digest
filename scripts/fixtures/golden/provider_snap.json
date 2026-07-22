@@ -6,11 +6,11 @@
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
-  "https://api.anthropic.com/v1/messages",
   "https://api.groq.com/openai/v1/chat/completions",
   "https://cf-proxy.test/ai",
   "https://openrouter.ai/api/v1/chat/completions",
   "https://api.cerebras.ai/v1/chat/completions",
+  "https://api.anthropic.com/v1/messages",
   "https://api.openai.com/v1/chat/completions",
   "http://localhost:11434/api/chat"
  ],
