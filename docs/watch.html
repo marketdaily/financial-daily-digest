@@ -285,6 +285,10 @@
     .d-px{font-size:23px} .d-name{font-size:19px} .nm-main{max-width:132px}
     body{padding:0 10px 90px}
   }
+.mkt-seg{display:inline-flex;background:var(--card-flat);border:1px solid var(--bd);border-radius:10px;padding:2px;gap:2px;}
+.mkt-seg .mkt{background:none;border:0;color:var(--muted);font-size:.82rem;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer;}
+.mkt-seg .mkt.on{background:var(--acc);color:#fff;}
+.us-gate{padding:28px 20px;text-align:center;color:var(--muted);font-size:.9rem;line-height:1.7;}
 </style>
 </head>
 <body>
@@ -328,6 +332,10 @@
     </div>
 
     <div style="display:flex;gap:8px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap">
+      <div class="mkt-seg" id="mkt-seg">
+        <button class="mkt on" data-mkt="tw">🇹🇼 台股</button>
+        <button class="mkt" data-mkt="us">🇺🇸 美股</button>
+      </div>
       <div class="tabs" id="tabs">
         <button class="tab on" data-tab="watch" data-i18n="tab_watch">⭐ 自選</button>
         <button class="tab" data-tab="cats" data-i18n="tab_cats">🗂 分類</button>
@@ -399,6 +407,7 @@
       <div id="news-list"></div>
     </div>
 
+    <div id="us-gate" class="us-gate" style="display:none">🇺🇸 這個功能目前只支援台股。<br>美股的<b>選股/熱力</b>需要付費美股數據源；美股的<b>搜尋、自選、報價、K線、新聞、分類、排行</b>都可正常使用。</div>
     <div id="empty" class="empty" style="display:none">
       <span data-i18n="empty_msg">這個清單目前是空的。</span> <a href="dashboard.html?focus=stocks" data-i18n="empty_link">去新增自選 →</a>
     </div>
@@ -413,11 +422,12 @@
 
 <script src="stocks.js?v=20260528"></script>
 <script src="tw-industry.js?v=20260722"></script>
+<script src="us-industry.js?v=20260722"></script>
 <script src="tw-profile.js?v=20260722b"></script>
 <script src="tw-bizdesc.js?v=20260722"></script>
 <script src="tw-chain-generic.js?v=20260722b"></script>
 <script src="us-chain-generic.js?v=20260722"></script>
 <script src="tw-cb.js?v=20260722"></script>
-<script src="js/watch.js?v=20260722z"></script>
+<script src="js/watch.js?v=20260723a"></script>
 </body>
 </html>

@@ -143,8 +143,8 @@ const nameMap = new Map();
 try { US_STOCKS_FULL.forEach(([s, n]) => nameMap.set(s, n)); TW_STOCKS_FULL.forEach(([s, n]) => nameMap.set(s, n)); } catch {}
 const INDUSTRY = (typeof TW_INDUSTRY !== "undefined") ? TW_INDUSTRY : {};
 if (!INDUSTRY["6806"]) INDUSTRY["6806"] = "綠能環保";
-const CATEGORIES = (typeof TW_CATEGORIES !== "undefined") ? TW_CATEGORIES : {};
-const THEMES = (typeof TW_THEMES !== "undefined") ? TW_THEMES : {};
+let CATEGORIES = (typeof TW_CATEGORIES !== "undefined") ? TW_CATEGORIES : (typeof TW_INDUSTRY !== "undefined" ? TW_INDUSTRY : {});
+let THEMES = (typeof TW_THEMES !== "undefined") ? TW_THEMES : {};
 
 const email = localStorage.getItem("md-email");
 const pwd = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
@@ -156,6 +156,16 @@ try { groups = JSON.parse(localStorage.getItem("md-watch-groups") || "{}") || {}
 const saveGroups = () => { localStorage.setItem("md-watch-groups", JSON.stringify(groups)); scheduleSync(); };
 
 let curTab = "watch", curGroup = "all", curCat = "", curRank = "change", catPage = 1;
+let curMkt = localStorage.getItem("md-watch-mkt") === "us" ? "us" : "tw";
+function applyMkt() {
+  const us = curMkt === "us";
+  const tr = document.getElementById("tab-ranks");
+  if (tr && us) tr.style.display = "";
+  if (us && !["gainers","losers","actives"].includes(curRank)) curRank = "gainers";
+  if (!us && ["gainers","losers","actives"].includes(curRank)) curRank = "change";
+  CATEGORIES = us ? (typeof US_INDUSTRY !== "undefined" ? US_INDUSTRY : {}) : (typeof TW_INDUSTRY !== "undefined" ? TW_INDUSTRY : {});
+  THEMES = us ? (typeof US_THEMES !== "undefined" ? US_THEMES : {}) : (typeof TW_THEMES !== "undefined" ? TW_THEMES : {});
+}
 const CAT_PAGE = 60;
 let quotes = {};
 let signals = {};
@@ -240,8 +250,8 @@ function paint(q) {
 /* ── current view symbols ── */
 function viewSyms() {
   if (curTab === "watch") {
-    if (curGroup === "all") return prefsTw.concat(prefsUs);
-    return (groups[curGroup] || []).slice();
+    const base = curGroup === "all" ? prefsTw.concat(prefsUs) : (groups[curGroup] || []).slice();
+    return base.filter(s => curMkt === "us" ? !isTWSym(s) : isTWSym(s));
   }
   if (curTab === "cats") {
     const list = CATEGORIES[curCat] || THEMES[curCat] || [];
@@ -264,6 +274,14 @@ function renderView() {
   show("rank-chips", curTab === "ranks" ? "flex" : "none");
   show("sort-chips", (curTab === "watch" || curTab === "cats") ? "flex" : "none");
   show("pos-wrap", (curTab === "watch" && isAdmin) ? "block" : "none");
+  show("us-gate", "none");
+  const gated = curMkt === "us" && (curTab === "screen" || curTab === "heat");
+  if (gated) {
+    show("tw-sec", "none"); show("us-sec", "none"); show("empty", "none");
+    show("rank-sec", "none"); show("screen-sec", "none"); show("heat-sec", "none");
+    show("us-gate", "block");
+    return;
+  }
   if (curTab === "screen" || curTab === "news" || curTab === "heat") {
     show("tw-sec", "none"); show("us-sec", "none"); show("empty", "none");
     if (curTab === "screen") renderScreenForm();
@@ -390,7 +408,19 @@ function applySortDom() {
 const RANK_LABELS = { change: "rank_change", limit_up: "rank_limit_up", near_up: "rank_near_up",
   limit_down: "rank_limit_down", near_dn: "rank_near_dn",
   volume: "rank_volume", amount: "rank_amount", range: "rank_range", tick: "rank_tick" };
+const US_RANK_KINDS = ["gainers", "losers", "actives"];
+const US_RANK_LABEL = { gainers: "🚀 漲幅榜", losers: "📉 跌幅榜", actives: "🔥 成交量" };
 function renderRankChips() {
+  if (curMkt === "us") {
+    const el = $("rank-chips");
+    el.innerHTML = US_RANK_KINDS.map(k =>
+      `<button class="chip ${curRank === k ? "on" : ""}" data-r="${k}">${US_RANK_LABEL[k]}</button>`).join("");
+    el.querySelectorAll(".chip").forEach(c => c.onclick = () => { curRank = c.dataset.r; renderRankChips(); renderView(); });
+    return;
+  }
+  return renderRankChipsTw();
+}
+function renderRankChipsTw() {
   const el = $("rank-chips");
   el.innerHTML = Object.keys(RANK_LABELS).map(k =>
     `<button class="chip ${curRank === k ? "on" : ""}" data-r="${k}">${T(RANK_LABELS[k])}</button>`).join("");
@@ -451,7 +481,19 @@ async function tickLive() {
 }
 
 async function fetchRanks() {
-  if (!bridge || curTab !== "ranks") return;
+  if (curTab !== "ranks") return;
+  if (curMkt === "us") {
+    try {
+      const r = await fetch(`${WORKER_URL}/us-ranks?kind=${encodeURIComponent(curRank)}`);
+      if (!r.ok) throw new Error(r.status);
+      const d = await r.json();
+      if (curTab === "ranks") renderRanks((d.rows || []).map(x => ({
+        code: x.symbol, name: x.name, close: x.price, change_pct: x.change, volume: x.volume
+      })));
+    } catch {}
+    return;
+  }
+  if (!bridge) return;
   try {
     const r = await fetch(`${bridge.url}/ranks?type=${curRank}&t=${encodeURIComponent(bridge.token)}`);
     if (!r.ok) throw new Error(r.status);
@@ -2570,6 +2612,21 @@ async function init() {
     curTab = b.dataset.tab; catPage = 1; renderTabs(); renderView();
   });
   $("tw-more").onclick = () => { catPage++; renderView(); };
+  applyMkt();
+  (function bindMkt() {
+    const seg = $("mkt-seg");
+    if (!seg) return;
+    seg.querySelectorAll(".mkt").forEach(function (btn) {
+      if (btn.dataset.mkt === curMkt) btn.classList.add("on"); else btn.classList.remove("on");
+      btn.onclick = function () {
+        curMkt = btn.dataset.mkt === "us" ? "us" : "tw";
+        localStorage.setItem("md-watch-mkt", curMkt);
+        seg.querySelectorAll(".mkt").forEach(function (b) { b.classList.toggle("on", b.dataset.mkt === curMkt); });
+        applyMkt(); curCat = ""; catPage = 1;
+        renderCatSel(); renderRankChips(); renderView();
+      };
+    });
+  })();
   renderTabs(); renderGroupChips(); renderCatSel(); renderRankChips(); renderSortChips();
   bindSortHeaders(); renderSortHeaders();
   renderBell();
