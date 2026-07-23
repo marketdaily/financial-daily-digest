@@ -179,6 +179,26 @@ def cascade_text(model, f):
     return "\n".join(lines)
 
 
+# ── 個股因果鏈:台積電 ADR(TSM)→ 2330(旗艦,你手上這支)──
+# 常數凍結自 quant_lab/market_forecast/adr_lead_lag.py 實測(26.5年 N=6,601,已驗證可重跑)。
+# 方向強且逐年增強;但 100% 傳導落在開盤跳空、盤中追不到(近年小幅倒貼)——誠實鐵則。
+ADR_PASSTHROUGH = 0.32  # 2330 開盤 gap ≈ 0.32 × TSM 隔夜%
+
+
+def adr_2330_statement(tsm_overnight_pct):
+    """給持有 2330 的用戶:台積電 ADR 隔夜 → 2330 今日開盤的『看懂為什麼 + 能不能進場』。"""
+    a = abs(tsm_overnight_pct)
+    hit = 83 if a > 3 else 81 if a > 2 else 76 if a > 1 else 69
+    direction = "開高" if tsm_overnight_pct > 0 else "開低" if tsm_overnight_pct < 0 else "開平"
+    est_gap = ADR_PASSTHROUGH * tsm_overnight_pct
+    why = (f"台積電 ADR 昨晚 {tsm_overnight_pct:+.1f}% → 2330 今天大概{direction}"
+           f"(26 年歷史同向 {hit}%,約反映 {est_gap:+.1f}% 的開盤跳空)")
+    entry = ("但這條在開盤那一秒就反映完——盤中追進吃不到(近年甚至小幅倒貼),"
+             "當『開盤方向』參考,不是進場訊號。")
+    return {"why": why, "entry": entry, "hit": hit, "est_gap": round(est_gap, 2),
+            "direction": direction}
+
+
 def _load_models():
     return json.loads(MODEL_PATH.read_text())
 
