@@ -2648,6 +2648,52 @@ async function init() {
     dockRszTimer = setTimeout(redrawChart, 180);
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && sheetSym) closeSheet(); });
+  /* 桌機詳情面板:左緣拖拉分隔桿調整「清單↔詳情」兩窗格寬度,寬度記憶於 localStorage。
+     #sheet 每次 openSheet 會整段重繪,故拖拉桿是獨立兄弟元素,寬度走 CSS 變數 --sheet-w */
+  (function initSheetResizer() {
+    const rz = $("sheet-resizer"); if (!rz) return;
+    const MIN = 380;
+    const maxW = () => Math.round(window.innerWidth * 0.72);
+    const clamp = w => Math.max(MIN, Math.min(maxW(), w));
+    const apply = w => document.documentElement.style.setProperty("--sheet-w", w + "px");
+    const saved = parseInt(localStorage.getItem("md-watch-sheet-w") || "", 10);
+    if (saved) apply(clamp(saved));
+    let dragging = false, rafPend = false;
+    const onMove = e => {
+      if (!dragging) return;
+      if (e.cancelable) e.preventDefault();
+      const x = e.touches ? e.touches[0].clientX : e.clientX;
+      apply(clamp(window.innerWidth - x));
+      if (!rafPend && sheetSym) { rafPend = true; requestAnimationFrame(() => { rafPend = false; redrawChart(); }); }
+    };
+    const onUp = () => {
+      if (!dragging) return;
+      dragging = false;
+      rz.classList.remove("dragging");
+      document.body.classList.remove("sheet-resizing");
+      const w = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sheet-w"), 10);
+      if (w) localStorage.setItem("md-watch-sheet-w", String(w));
+      if (sheetSym) redrawChart();
+    };
+    const onDown = e => {
+      dragging = true;
+      rz.classList.add("dragging");
+      document.body.classList.add("sheet-resizing");
+      if (e.cancelable) e.preventDefault();
+    };
+    rz.addEventListener("mousedown", onDown);
+    rz.addEventListener("touchstart", onDown, { passive: false });
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("touchmove", onMove, { passive: false });
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("touchend", onUp);
+    /* 拖拉桿雙擊 → 回復預設寬度 */
+    rz.addEventListener("dblclick", () => {
+      localStorage.removeItem("md-watch-sheet-w");
+      document.documentElement.style.removeProperty("--sheet-w");
+      if (sheetSym) redrawChart();
+    });
+  })();
   /* ?c=<代碼> 深連結（desk 工作台 analyst.marketdaily.ai 的 📈 鈕）：init 完成後自動開
      該股詳情 sheet。白名單字元才收——sym 會進 openSheet 的 innerHTML，不吃任意字串 */
   const dlSym = (new URLSearchParams(location.search).get("c") || "").trim().toUpperCase();
