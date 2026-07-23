@@ -265,6 +265,12 @@
   .sheet-x{border:1px solid var(--bd);background:rgba(255,255,255,.04);color:var(--muted);
       border-radius:10px;padding:6px 11px;font-size:13px;font-weight:800;cursor:pointer;line-height:1}
   .sheet-x:hover{color:var(--ink);border-color:rgba(148,163,184,.4)}
+  /* 彈出獨立視窗模式(?popout=1):只顯示該股詳情填滿整個視窗(不分螢幕寬窄一律全屏) */
+  body.popout{padding:0}
+  body.popout .wrap,body.popout .sheet-bg,body.popout .sheet-resizer{display:none !important}
+  body.popout .sheet{position:fixed;inset:0;width:100%;max-width:100%;height:100vh;max-height:100vh;
+      border:none;border-radius:0;box-shadow:none;padding:16px 20px 40px;overflow-y:auto;display:block}
+  body.popout .sheet::before{display:none}
   /* ── 桌面版(≥1280px):內容拉寬 min(96vw,1720px)+詳情改右側面板;<1280px 手機版不變 ── */
   @media(min-width:1280px){
     .wrap{max-width:min(96vw,1720px);transition:margin .25s ease}
@@ -324,7 +330,10 @@
      點哪頁都待在左上角同一處);藏「回 Dashboard」(那是會員後台不是他們的家)。
      sessionStorage 記住,換股/刷新不掉。一般 MarketDaily 用戶完全不受影響 */
   (function(){
-    if (new URLSearchParams(location.search).get("src") === "analyst")
+    var qs = new URLSearchParams(location.search);
+    /* 彈出獨立視窗模式:盡早掛 class 避免整頁閃一下才收起 */
+    if (qs.get("popout") === "1") document.body.classList.add("popout");
+    if (qs.get("src") === "analyst")
       sessionStorage.setItem("md-watch-from-analyst", "1");
     if (sessionStorage.getItem("md-watch-from-analyst") === "1") {
       document.getElementById("analyst-nav").style.display = "flex";
@@ -446,6 +455,6 @@
 <script src="tw-chain-generic.js?v=20260722b"></script>
 <script src="us-chain-generic.js?v=20260722"></script>
 <script src="tw-cb.js?v=20260722"></script>
-<script src="js/watch.js?v=20260723r"></script>
+<script src="js/watch.js?v=20260723p"></script>
 </body>
 </html>

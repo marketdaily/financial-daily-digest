@@ -2275,6 +2275,7 @@ function openSheet(sym) {
       <div style="display:flex;align-items:flex-start;gap:12px">
         <div class="d-price"><div class="d-px ${dir}" id="d-px">${fp(q.price)}</div>
           <div class="d-chg ${dir}" id="d-chg">${label}</div></div>
+        <button class="sheet-x" id="sheet-pop" title="彈出獨立視窗(可拖到另一個螢幕)">⧉</button>
         <button class="sheet-x" id="sheet-x" title="關閉">✕</button>
       </div>
     </div>
@@ -2456,6 +2457,24 @@ function openSheet(sym) {
   document.body.classList.add("sheet-open");
   const xb = $("sheet-x");
   if (xb) xb.onclick = closeSheet;
+  /* ⧉ 彈出:把該股詳情開成獨立視窗(?popout=1 全屏模式),可拖到另一個螢幕。
+     視窗以 sym 命名,重複點同一股會聚焦既有視窗而非開新的 */
+  const popout = document.body.classList.contains("popout");
+  const pb = $("sheet-pop");
+  if (pb) {
+    if (popout) pb.style.display = "none";
+    else pb.onclick = () => {
+      const u = location.pathname + "?c=" + encodeURIComponent(sym) + "&popout=1";
+      window.open(u, "md_stock_" + sym.replace(/[^A-Z0-9]/g, "_"),
+        "width=720,height=940,menubar=no,toolbar=no,location=no");
+    };
+  }
+  if (popout) {
+    /* 獨立視窗:✕ 關閉整個視窗;標題與網址跟著目前這支股票(視窗內換股/刷新不掉) */
+    if (xb) { xb.title = "關閉視窗"; xb.onclick = () => window.close(); }
+    document.title = nm + " " + sym + " · MarketDaily";
+    try { history.replaceState(null, "", location.pathname + "?c=" + encodeURIComponent(sym) + "&popout=1"); } catch (e) {}
+  }
   $("sheet").scrollTop = 0;
   renderDetailChart(sym);
   renderTech(sym);
