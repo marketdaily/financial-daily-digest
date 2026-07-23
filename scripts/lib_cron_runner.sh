@@ -102,9 +102,15 @@ cron_git_persist() {
     git add "${paths[@]}" 2>/dev/null
     git -c user.name=winrig -c user.email=winrig@marketdaily commit -m "$msg" -- "${paths[@]}" >/dev/null 2>&1 || exit 0
     if ! git status --porcelain 2>/dev/null | grep -qv '^??'; then
-      git pull --rebase origin main 2>/dev/null
+      # 衝突時 abort:保住本機 commit 完整,絕不停在半途 broken rebase 狀態
+      # (broken 狀態會誘發別的 actor 用「退回舊版」收拾→丟掉未 push 的工作,2026-07-22 事故根因)
+      git pull --rebase origin main 2>/dev/null || git rebase --abort 2>/dev/null
     fi
-    git push origin HEAD:main 2>/dev/null
+    # push 被拒(別人搶先)→ 再同步一次重試;仍衝突就 abort 保本機,下輪再試
+    git push origin HEAD:main 2>/dev/null || {
+      git pull --rebase origin main 2>/dev/null || git rebase --abort 2>/dev/null
+      git push origin HEAD:main 2>/dev/null || true
+    }
   ) || true
 }
 
@@ -114,7 +120,7 @@ cron_git_persist() {
 cron_safe_pull() {
   ( cd "$CRON_LIB_REPO" || exit 0
     if ! git status --porcelain 2>/dev/null | grep -qv '^??'; then
-      git pull --rebase origin main 2>/dev/null
+      git pull --rebase origin main 2>/dev/null || git rebase --abort 2>/dev/null
     fi
   ) || true
 }
