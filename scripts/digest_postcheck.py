@@ -35,6 +35,10 @@ sys.path.insert(0, str(REPO))
 
 TENSE_CHECKS = {"tw_pre_market_tense", "tw_pre_market_tense_zaoshen",
                 "us_holiday_tense", "tw_holiday_open_tense", "us_holiday_tonight_tense"}
+# 內容深度類 HIGH:寄後也要抓(2026-07-23 免費 council 429 降級致 signal-reason 從 ~130 字
+# 塌到 ~48 字、寄前 9b vague 放行、Delvin 本人先抓到)。寄前偵測器已補(digest_audit#9b-2),
+# 這裡是第二道閘——對「實際落地的公版 archive」再驗一次,漏了就 exit 1 → 呼叫端推 admin。
+CONTENT_HIGH_CHECKS = {"signal_reason_shallow"}
 EMOJI_RE = re.compile("[☀-➿️⬀-⯿\U0001f000-\U0001faff]")
 
 
@@ -163,7 +167,7 @@ def main():
     # ── 2. 市場時序/休市措辭(digest_audit 單一事實來源) ──
     fails = audit_digest(html, date, mkt_status=mkt, market=edition)
     for f in fails:
-        if f["check"] in TENSE_CHECKS:
+        if f["check"] in TENSE_CHECKS or f["check"] in CONTENT_HIGH_CHECKS:
             problems.append(f"[archive] {f['check']}: {f['msg']}")
 
     # ── 3b. 平日該有語音卻沒有=產線沒跑,不准靜默(2026-07-11 事故) ──
