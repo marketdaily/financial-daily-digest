@@ -382,6 +382,7 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
 .ft{{color:#6b7078;font-size:.75rem;margin-top:16px}}
 .fish{{background:#1c1f26;border:1px solid #2a2e37;border-left:3px solid #2f5657;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.85rem;line-height:1.65}}
 .fish .why{{color:#bfc1ba}}.fish .ev{{color:#9aa0a8;font-size:.8rem}}
+.btnote{{background:#2c2617;border:1px solid #4a3f1c;border-radius:8px;padding:9px 13px;font-size:.8rem;color:#d3a656;margin:6px 0 10px;line-height:1.6}}
 .dlog{{font-size:.8rem}}.dl{{padding:4px 8px;border-bottom:1px solid #2a2e37;color:#9aa0a8}}.dl.t{{color:#6dbd88}}.dl .dd{{color:#6b7078;margin-right:8px;font-variant-numeric:tabular-nums}}</style>
 <h1>📒 Paper 前測帳本(規格凍結 2026-07-17/22,真 OOS)</h1>
 <div class="cards">{cards}</div>
@@ -405,6 +406,31 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
         panel = f'<h2 style="font-size:1rem;margin:20px 0 6px">🕗 魚C 每日決策日誌(空手也是決策)</h2><div class="dlog">{dlog}</div>'
         anchor = '<h2 style="font-size:1rem;margin:22px 0 8px">📖 策略說明'
         html = html.replace(anchor, panel + anchor, 1) if anchor in html else html + panel
+    # 回測示意面板(策略在歷史上怎麼跑;明確標非真實績效)
+    try:
+        bt = json.load(open(os.path.join(PDIR, "backtest.json"), encoding="utf-8"))
+        cv = bt["curve"]
+        if len(cv) > 1:
+            mn, mx = min(cv), max(cv); sp = (mx - mn) or 1
+            pts = " ".join(f"{i*300/(len(cv)-1):.1f},{50-(v-mn)/sp*46:.1f}" for i, v in enumerate(cv))
+            col = "#6dbd88" if cv[-1] >= START_EQUITY else "#dd7f68"
+            svg = f'<svg viewBox="0 0 300 54" style="width:100%;height:70px"><polyline points="{pts}" fill="none" stroke="{col}" stroke-width="1.5"/></svg>'
+        else:
+            svg = ""
+        trows = ""
+        for t in bt["trades"][::-1]:
+            cls = "pos" if t["pnl"] >= 0 else "neg"
+            trows += f'<tr><td>{t["date"]}</td><td>魚{t["fish"]}</td><td>{t["side"]}</td><td class="{cls}">{t["pnl"]:+,}</td></tr>'
+        btpanel = (f'<h2 style="font-size:1rem;margin:22px 0 6px">📉 策略回測示意(非真實績效·含後見之明)</h2>'
+                   f'<div class="btnote">⚠️ 這是 C+E 策略在 2025-01→今 的歷史重播,幫你「看到策略怎麼動」。'
+                   f'因規則是看過這段歷史後設計的,<b>不代表未來、不是承諾</b>。真實績效看上方「虛擬帳戶」(今天起累積)。</div>'
+                   f'<div class="card" style="grid-column:1/-1"><div class="t">回測 {bt["n"]} 筆 · 勝率 {bt["win_rate"]}%</div>'
+                   f'<div class="v {"pos" if bt["ret_pct"]>=0 else "neg"}">{bt["final_equity"]:,}（{bt["ret_pct"]:+}%）</div>{svg}</div>'
+                   f'<table><tr><th>日期</th><th>魚</th><th>方向</th><th>損益</th></tr>{trows}</table>')
+        anchor = '<h2 style="font-size:1rem;margin:22px 0 8px">📖 策略說明'
+        html = html.replace(anchor, btpanel + anchor, 1) if anchor in html else html + btpanel
+    except FileNotFoundError:
+        pass
     with open(os.path.join(PDIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(html)
 
