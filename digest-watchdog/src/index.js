@@ -123,6 +123,8 @@ async function checkShift(env, shift, phase, now = new Date()) {
   }
 
   if (exists) {
+    // 記下「這班存檔今天確認上線過」→ 讓層3 能偵測它之後中途消失(2026-07-23 事故)
+    await kvSet(env, `seen:${date}:${shift}`, "1");
     // 第一檢曾告警、第二檢補上了 → 回報解除
     if (phase === 2 && (await kvGet(env, `miss:${date}:${shift}:1`))) {
       await push(env, `✅ ${label} ${date}:存檔已補上,解除警報`);
@@ -143,6 +145,28 @@ async function checkShift(env, shift, phase, now = new Date()) {
   }
 }
 
+// ── 層3:已上線存檔中途消失偵測(2026-07-23 事故:git rebase 卡死→未推的當日存檔 commit
+// 被 `git checkout -B main origin/main` 復原時丟掉→存檔在 07:30/08:00 檢查【之後】才 404,
+// 落在班次窗外整天零告警,Delvin 親手抓到)。語義:只有「今天這班曾確認上線(seen)」後才管,
+// 之後任一 */20 心跳跳發現它不見了 → 告警一次(dedupe 每班每天一次)。查詢失敗不誤報。──
+async function checkArchivePersistence(env, now = new Date()) {
+  const date = twDate(now);
+  for (const shift of ["tw", "us"]) {
+    if (shiftSkipped(shift, now)) continue;
+    if (!(await kvGet(env, `seen:${date}:${shift}`))) continue;   // 還沒確認上線過→班次檢查在管,這層不插手
+    const vanishKey = `vanished:${date}:${shift}`;
+    if (await kvGet(env, vanishKey)) continue;                    // 今天這班已告警過
+    let stillThere;
+    try { stillThere = await archiveExists(shift, date); }
+    catch (e) { continue; }                                       // 查詢失敗→不誤報,下一跳再試
+    if (!stillThere) {
+      await kvSet(env, vanishKey, "1");
+      const label = shift === "tw" ? "早報" : "晚報";
+      await push(env, `🔴 ${label} ${date}:公版存檔【曾上線後又消失】(git 復原丟掉未推的存檔 commit,或誤部署覆蓋)→ marketdaily.ai 上該日報現在 404,信裡網頁版連結壞掉,需人工補存檔+部署`);
+    }
+  }
+}
+
 export default {
   async scheduled(event, env, ctx) {
     const job = {
@@ -150,7 +174,8 @@ export default {
       [CRON_TW_2]: () => checkShift(env, "tw", 2),
       [CRON_US_1]: () => checkShift(env, "us", 1),
       [CRON_US_2]: () => checkShift(env, "us", 2),
-      [CRON_HB]: () => checkHeartbeat(env),
+      // 心跳跳同時做:①winrig 死人開關 ②已上線存檔中途消失偵測(層3)
+      [CRON_HB]: () => Promise.all([checkHeartbeat(env), checkArchivePersistence(env)]),
     }[event.cron];
     if (job) ctx.waitUntil(job());
   },
