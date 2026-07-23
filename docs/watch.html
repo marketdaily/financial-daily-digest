@@ -13,6 +13,7 @@
     --bd:rgba(148,163,184,.14);--bd-soft:rgba(148,163,184,.08);
     --up:#ef4444;--down:#22c55e;--acc:#818cf8;--acc2:#a78bfa;--amber:#fde68a;
     --acc-grad:linear-gradient(135deg,rgba(129,140,248,.22),rgba(167,139,250,.16));
+    --sheet-w:640px;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html{scroll-behavior:smooth}
@@ -120,6 +121,7 @@
          border:1px solid var(--bd);border-bottom:none;padding:10px 16px 36px;display:none;max-height:93vh;
          overflow-y:auto;box-shadow:0 -20px 60px rgba(0,0,0,.5)}
   .sheet.open,.sheet-bg.open{display:block}
+  .sheet-resizer{display:none}/* 手機版永不顯示;桌機版由下方 media query 開啟 */
   .sheet::before{content:"";display:block;width:40px;height:4px;border-radius:2px;
          background:rgba(255,255,255,.18);margin:2px auto 14px}
   .d-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
@@ -261,11 +263,24 @@
   @media(min-width:1280px){
     .wrap{max-width:min(96vw,1720px);transition:margin .25s ease}
     td,th{padding:8px 10px}
-    body.sheet-open .wrap{margin-right:660px}
-    .sheet{left:auto;right:0;top:0;bottom:0;width:640px;max-height:100vh;height:100vh;
+    body.sheet-open .wrap{margin-right:calc(var(--sheet-w) + 20px)}
+    .sheet{left:auto;right:0;top:0;bottom:0;width:var(--sheet-w);max-height:100vh;height:100vh;
         border-radius:0;border-left:1px solid var(--bd);border-top:none;
         box-shadow:-18px 0 50px rgba(0,0,0,.45);padding:18px 22px 40px}
     .sheet::before{display:none}
+    /* 左緣可拖拉分隔桿:調整清單↔詳情兩窗格寬度(記憶於 localStorage) */
+    .sheet-resizer{display:none}
+    body.sheet-open .sheet-resizer{display:block;position:fixed;top:0;bottom:0;
+        right:var(--sheet-w);width:12px;z-index:42;cursor:col-resize;transform:translateX(6px)}
+    .sheet-resizer::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;
+        transform:translateX(-50%);background:var(--bd);transition:background .15s,width .15s,box-shadow .15s}
+    .sheet-resizer:hover::before,.sheet-resizer.dragging::before{
+        width:3px;background:var(--acc);box-shadow:0 0 12px rgba(129,140,248,.55)}
+    .sheet-resizer::after{content:"⋮";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+        font-size:15px;line-height:1;color:var(--faint);pointer-events:none}
+    .sheet-resizer:hover::after,.sheet-resizer.dragging::after{color:#c7d2fe}
+    body.sheet-resizing{cursor:col-resize;user-select:none}
+    body.sheet-resizing .wrap,body.sheet-resizing .sheet{transition:none}
     .sheet-bg{display:none !important}
     #d-chart{height:380px}
     .mini-card canvas{height:130px}
@@ -398,6 +413,7 @@
 </div>
 
 <div class="sheet-bg" id="sheet-bg"></div>
+<div class="sheet-resizer" id="sheet-resizer" title="拖拉調整面板寬度"></div>
 <div class="sheet" id="sheet"></div>
 <div class="toast" id="toast"></div>
 
@@ -408,6 +424,6 @@
 <script src="tw-chain-generic.js?v=20260722b"></script>
 <script src="us-chain-generic.js?v=20260722"></script>
 <script src="tw-cb.js?v=20260722"></script>
-<script src="js/watch.js?v=20260722w"></script>
+<script src="js/watch.js?v=20260723r"></script>
 </body>
 </html>
