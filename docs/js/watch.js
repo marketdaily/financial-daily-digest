@@ -259,8 +259,9 @@ async function enrichUsIndustry(syms) {
       usFundCache[s] = f;
       usIndustry[s] = (f && f.industry) ? f.industry : "";  // 空字串也快取,避免無分類的股一直重抓
       changed = true;
-      const el = $("ind-" + s);
-      if (el) { const lbl = indLabel(s); el.textContent = lbl ? ` · ${lbl}` : ""; }
+      const lbl = indLabel(s), txt = lbl ? ` · ${lbl}` : "";
+      // 同一代號可能同時存在於排行表與(隱藏的)自選表 → 更新所有同 id 佔位,不只第一個
+      document.querySelectorAll(`[id="ind-${s}"]`).forEach(el => { el.textContent = txt; });
     } catch { /* 失敗不寫快取,下次再試 */ }
   }
   if (changed) { try { localStorage.setItem("md-us-industry", JSON.stringify(usIndustry)); } catch {} }
@@ -503,6 +504,8 @@ function renderRanks(rows) {
       <td class="px ${dir}">${fp(r.close)}</td><td class="${dir}">${label}</td>
       <td class="hide-sm">${r.volume == null ? "—" : r.volume.toLocaleString()}</td></tr>`;
   }).join("");
+  // 排行表的美股列也要補產業分類(nameCell 已放 ind-<code> 佔位,這裡非同步補抓填入)
+  if (curMkt === "us") enrichUsIndustry(rows.map(r => r.code));
 }
 
 /* ── data fetching ── */
@@ -1504,8 +1507,8 @@ async function renderFund(sym) {
     if (f && !(sym in usIndustry)) {
       usIndustry[sym] = f.industry || "";
       try { localStorage.setItem("md-us-industry", JSON.stringify(usIndustry)); } catch {}
-      const it = $("ind-" + sym);
-      if (it) { const lbl = indLabel(sym); it.textContent = lbl ? ` · ${lbl}` : ""; }
+      const lbl = indLabel(sym), txt = lbl ? ` · ${lbl}` : "";
+      document.querySelectorAll(`[id="ind-${sym}"]`).forEach(it => { it.textContent = txt; });
     }
     if (sheetSym !== sym || !el.isConnected) return;
     const usLoss = f.pe == null && f.eps != null && f.eps < 0;
