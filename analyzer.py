@@ -479,9 +479,9 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
     local = [("local:qwen2.5-14b", lambda p: _call_ollama(p, max_tokens=9000))]
     # 2026-07-23 Delvin 核可:「生卡」這步(用戶唯一看到的操作卡)改用付費 Sonnet 5 打頭陣。
     # 背景事故:純免費鏈今早 Gemini 雙 key 429 全熔斷 → 每張卡掉到 llama-70b/nemotron 這種最弱的網,
-    # 弱模型不寫分析、直接抄 prompt 範例句型,reason 從 129-165 字塌到 48-64 字(-60%)。只有帶
-    # prefer_paid=True 的呼叫端(_render_signal_cards_batched)花錢;council 辯論仍全免費。Claude 失敗
-    # 仍往下掉回免費鏈 → deterministic,不破壞「永不掉 deterministic」保證。sonnet-5 禁非預設 temperature,
+    # 弱模型不寫分析、直接抄 prompt 範例句型,reason 從 129-165 字塌到 48-64 字(-60%)。帶 prefer_paid=True
+    # 的呼叫端(生卡 _render_signal_cards_batched + 日報本體 generate_report/weekend/monday)花錢;council 辯論
+    # 仍全免費。Claude 失敗仍往下掉回免費鏈 → deterministic,不破壞「永不掉 deterministic」保證。sonnet-5 禁非預設 temperature,
     # _call_claude 本來就不送 temperature,現成相容。
     paid = [("claude:sonnet-5", lambda p: _call_claude(p, model="claude-sonnet-5"))] if prefer_paid else []
     providers = paid + ((strong + gemini) if prefer_strong else (gemini + strong)) + local
@@ -3949,7 +3949,7 @@ def generate_report(data: dict, user_us_stocks: list = None, user_tw_stocks: lis
 
     if picks_mode:
         prompt = _PICKS_PROMPT_NOTE + prompt
-    raw = _llm_generate(prompt, prefer_strong)
+    raw = _llm_generate(prompt, prefer_strong, prefer_paid=True)
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
@@ -4073,7 +4073,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 
     if picks_mode:
         prompt = _PICKS_PROMPT_NOTE + prompt
-    raw = _llm_generate(prompt, prefer_strong)
+    raw = _llm_generate(prompt, prefer_strong, prefer_paid=True)
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
@@ -4243,7 +4243,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 
     if picks_mode:
         prompt = _PICKS_PROMPT_NOTE + prompt
-    raw = _llm_generate(prompt, prefer_strong)
+    raw = _llm_generate(prompt, prefer_strong, prefer_paid=True)
     if raw.startswith("```"):
         raw = re.sub(r'^```[a-zA-Z]*\n?', '', raw)
         raw = re.sub(r'\n?```$', '', raw)
