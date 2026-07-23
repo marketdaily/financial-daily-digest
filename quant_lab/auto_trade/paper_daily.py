@@ -482,6 +482,37 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
                 f'<tr><th>機制(門)</th><th>walk-forward 結果</th><th>判定</th></tr>{crows}</table></div>')
     html = html.replace(anchor, crypanel + anchor, 1) if anchor in html else html + crypanel
 
+    # 📈 加碼階梯進度面板(魚B/C 放大;Delvin 30-40% 回撤胃納,口數用 forward 真實回撤算)
+    try:
+        APPETITE = 0.35
+        lp = os.path.join(PDIR, "ledger.jsonl")
+        evs = [json.loads(l) for l in open(lp, encoding="utf-8")] if os.path.exists(lp) else []
+        def _ramp(f):
+            tr = [e for e in evs if e.get("fish") == f and "pnl_ntd" in e]
+            n = len(tr)
+            if n == 0:
+                return (f, 0, "🕐 等待起跑", "0 筆 forward · 期貨戶未核", "起跑 2-3 口量測")
+            cum = peak = mdd = 0
+            for e in tr:
+                cum += e["pnl_ntd"]; peak = max(peak, cum); mdd = max(mdd, peak - cum)
+            lots_to = int((APPETITE * START_EQUITY) / mdd) if mdd > 0 else None
+            cap = 0.7 if f == "B" else 1.0
+            lots_to = int(lots_to * cap) if lots_to else None
+            stage = "① 量測期(2-3口)" if n < 20 else "② 可依胃納加碼"
+            return (f, n, stage, f"真實1口回撤 {mdd:,.0f}元",
+                    f"{lots_to}口" if lots_to else "待真實回撤")
+        rr = "".join(f'<tr><td>魚{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td>'
+                     f'<td>{r[3]}</td><td>{r[4]}</td></tr>' for r in (_ramp("B"), _ramp("C")))
+        ramppanel = ('<h2 style="font-size:1rem;margin:22px 0 6px">📈 加碼階梯進度(魚B/C 放大)</h2>'
+                     '<div class="btnote">目標回撤胃納 30-40%。口數用 <b>forward 真實回撤</b>算(非回測——回測 1 口僅 2.1% 必低估)。'
+                     '⚠️ 期貨戶未核 + 0 forward 筆 = 尚未起跑;起跑 2-3 口量測真實回撤後,才依胃納分批放大。</div>'
+                     '<div class="card" style="grid-column:1/-1;overflow-x:auto"><table>'
+                     '<tr><th>魚</th><th>forward筆</th><th>階段</th><th>真實回撤(1口)</th><th>目標胃納可加至</th></tr>'
+                     f'{rr}</table></div>')
+        html = html.replace(anchor, ramppanel + anchor, 1) if anchor in html else html + ramppanel
+    except Exception:
+        pass
+
     with open(os.path.join(PDIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(html)
 
