@@ -1617,6 +1617,13 @@ def main() -> int:
         r["outcome_1d"] = jfn(r, prices, "1d")
         r["outcome_21d"] = jfn(r, prices, "21d")
         r["outcome_63d"] = jfn(r, prices, "63d")
+        # 幅度事實欄(2026-07-23):除 win/loss 外,存各期還原後實際漲跌率(chg),
+        # 讓下游能算期望值/少輸多贏(賺賠比),而非只有勝率——勝率無幅度會騙人(見個股訊號回測)。
+        # chg 已含窗內現金股息還原(settlement_chg 語義),與 label 同源不再另抓價。
+        for _h in ("1d", "5d", "21d", "63d"):
+            _c = settlement_chg(r, prices, _h)
+            if _c is not None:
+                r[f"ret_{_h}"] = round(_c, 4)
 
     judged_public = []
     for r in all_records:
