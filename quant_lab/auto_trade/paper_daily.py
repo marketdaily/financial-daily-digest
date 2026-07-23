@@ -428,11 +428,14 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
         btpanel = (f'<h2 style="font-size:1rem;margin:22px 0 6px">📉 策略回測示意(非真實績效·含後見之明)</h2>'
                    f'<div class="btnote">⚠️ 這是 C+E 策略在 2025-01→今 的歷史重播,幫你「看到策略怎麼動」。'
                    f'因規則是看過這段歷史後設計的,<b>不代表未來、不是承諾</b>。真實績效看上方「虛擬帳戶」(今天起累積)。</div>'
-                   f'<div class="card" style="grid-column:1/-1"><div class="t">回測 {bt["n"]} 筆 · 勝率 {bt["win_rate"]}%</div>'
-                   f'<div class="v {"pos" if bt["ret_pct"]>=0 else "neg"}">{bt["final_equity"]:,}（{bt["ret_pct"]:+}%）</div>{svg}</div>'
+                   f'<div class="card" style="grid-column:1/-1"><div class="t">回測 {bt["n"]} 筆 · 勝率 {bt["win_rate"]}%（{bt.get("start","?")} → {bt.get("generated","?")}）</div>'
+                   f'<div class="v {"pos" if bt["ret_pct"]>=0 else "neg"}">{bt["final_equity"]:,}（{bt["ret_pct"]:+}%）</div>{svg}'
+                   f'<div style="display:flex;justify-content:space-between;color:#6b7078;font-size:.72rem;margin-top:-4px">'
+                   f'<span>{bt.get("start","?")}</span><span>共 {bt["n"]} 筆 · 曲線=全期</span><span>{bt.get("generated","?")}</span></div></div>'
                    + '<div class="btnote" style="color:#9aa0a8;background:#1c1f26;border-color:#2a2e37">🎯 少輸多贏檢查(賺賠比＝平均贏÷平均輸):'
                    + ' ｜ '.join(f'魚{ff} 勝率{a["wr"]}% 贏{a["avg_win"]:+,}/輸{a["avg_loss"]:+,} <b>賺賠比{a["ratio"]}x</b> 期望{a["exp"]:+,}'
                                  for ff, a in bt.get("fish_asym", {}).items()) + '</div>'
+                   f'<div style="color:#6b7078;font-size:.78rem;margin:8px 0 2px">最近 {len(bt["trades"])} 筆(非全期;完整績效看上方曲線)</div>'
                    f'<table><tr><th>日期</th><th>魚</th><th>方向</th><th>損益</th></tr>{trows}</table>')
         anchor = '<h2 style="font-size:1rem;margin:22px 0 8px">📖 策略說明'
         html = html.replace(anchor, btpanel + anchor, 1) if anchor in html else html + btpanel

@@ -56,6 +56,7 @@ def main():
     wins = [t for t in trades if t["pnl"] > 0]
     out = {
         "fish_asym": {f: asym(v) for f,v in _byf.items()},
+        "start": trades[0]["date"] if trades else None,
         "generated": dates[-1].isoformat(),
         "n": len(trades),
         "final_equity": eq,
