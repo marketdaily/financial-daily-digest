@@ -26,7 +26,7 @@ LOG_LIVE = os.path.join(PDIR, "live_log.txt")
 COST_B = 3.3   # 台指期真實來回:期交稅1.83點(法定0.002%x2)+五折手續費~0.5點+價差~1點
 COST_A = 4.4
 START_EQUITY = 3_000_000            # 虛擬本金(用戶實際資金規模)
-PV = {"A": 50, "B": 50, "C": 50}    # paper 規模:B/C=小台1口、A=跨式1組(皆每點NT$50)
+PV = {"A": 50, "B": 50, "C": 50, "E": 50}  # 小台1口/跨式1組,皆每點NT$50
 HARD_DD = 0.20                      # 回撤煞車:權益回撤≥20% 停開新倉(人工複核)
 ALERT_URL = "https://marketdaily-alert-worker.delvin-12345678.workers.dev/internal/admin-line-push"
 
@@ -61,7 +61,7 @@ def realize(st, fish, pnl_pts, ev):
     st["peak"] = max(st.get("peak", START_EQUITY), st["equity"])
     ev["equity"] = st["equity"]
     log_ev(ev)
-    names = {"A": "賣跨式", "B": "外資跟隨", "C": "ORB當沖"}
+    names = {"A": "賣跨式", "B": "外資跟隨", "C": "ORB順勢當沖", "E": "高波動fade當沖"}
     dd = 1 - st["equity"] / st["peak"]
     push(f"📒 paper {names.get(fish, fish)} {ev.get('date','')} "
          f"{'獲利' if ev['pnl_ntd']>=0 else '虧損'} {ev['pnl_ntd']:+,} 元"
@@ -179,12 +179,57 @@ def main():
 
     # ---- 魚C:MTF-ORB(用戶哲學版,盤後用 Shioaji 當日1分K重播)----
     try:
-        fish_c(bars, today, st)
+        fish_ce(bars, today, st)
     except Exception as e:
         print(f"  魚C 本次跳過:{type(e).__name__} {e}")
 
     with open(STATE, "w", encoding="utf-8") as f:
         json.dump(st, f, ensure_ascii=False, default=str)
+
+
+def pick_mode(bars):
+    """regime 路由:平靜+趨勢明→魚C breakout;高波動→魚E fade(相反);其餘觀望。
+    回 (fish, dir) 或 (None, 0)。dir 對 fade 無意義(對稱)。"""
+    g, vol_ok = c_gates(bars)
+    if vol_ok and g != 0:
+        return "C", g          # 平靜趨勢日:順勢突破
+    if not vol_ok:
+        return "E", 0          # 高波動亂盤日:fade 突破(規格凍結 2026-07-23,弱證據 t=0.45,paper 驗)
+    return None, 0             # 平靜但無趨勢:觀望
+
+
+def replay_intraday(rows, fish, dir):
+    """盤後用當日1分K重播一筆。rows=[(hm,o,h,l,c)]。回 dict(entry/exit/pnl/reason) 或 None。
+    魚C:突破OR順勢,停損OR另一側。魚E:突破OR反手,停損突破外緣+30。皆13:44出。"""
+    if len(rows) < 40:
+        return None
+    orh = max(x[2] for x in rows[:30])
+    orl = min(x[3] for x in rows[:30])
+    pos = 0
+    entry = stop = 0.0
+    ehm = ""
+    for hm, o, h, l, c in rows[30:]:
+        if pos == 0:
+            if hm >= "13:30":
+                break
+            if fish == "C":
+                if dir > 0 and c > orh:
+                    pos, entry, stop, ehm = 1, c, orl, hm
+                elif dir < 0 and c < orl:
+                    pos, entry, stop, ehm = -1, c, orh, hm
+            else:  # E fade
+                if c > orh:
+                    pos, entry, stop, ehm = -1, c, orh + 30, hm
+                elif c < orl:
+                    pos, entry, stop, ehm = 1, c, orl - 30, hm
+            continue
+        if (pos > 0 and l <= stop) or (pos < 0 and h >= stop):
+            return {"side": pos, "entry": entry, "exit": stop, "reason": "stop", "ehm": ehm, "xhm": hm}
+        if hm >= "13:44":
+            return {"side": pos, "entry": entry, "exit": c, "reason": "eod", "ehm": ehm, "xhm": hm}
+    if pos:
+        return {"side": pos, "entry": entry, "exit": rows[-1][4], "reason": "eod", "ehm": ehm, "xhm": rows[-1][0]}
+    return None
 
 
 def c_gates(bars):
@@ -211,25 +256,27 @@ def c_done_today(today):
     try:
         for l in open(LEDGER, encoding="utf-8"):
             e = json.loads(l)
-            if e.get("fish") == "C" and e.get("date") == today:
+            if e.get("fish") in ("C", "E") and e.get("date") == today:
                 return True
     except FileNotFoundError:
         pass
     return False
 
 
-def fish_c(bars, today, st):
-    """規格凍結 2026-07-22:閘門見 c_gates;OR30 突破順勢一單+停損OR另一側+抱到13:44。"""
+def fish_ce(bars, today, st):
+    """魚C(平靜趨勢日 breakout)/魚E(高波動日 fade)regime 路由,盤後重播。
+    live_intraday 盤中已記錄則跳過(live 主、重播備援)。"""
     dates = [b["date"] for b in bars]
     if dates[-1] != today or len(bars) < 300:
         return
     if c_done_today(today):
-        print("  魚C:盤中 live 已記錄今日,重播跳過")
+        print("  魚C/E:盤中 live 已記錄今日,重播跳過")
         return
-    g, vol_ok = c_gates(bars)
     stop_all, _ = halted(st)
-    if g == 0 or not vol_ok or stop_all:
-        print(f"  魚C:今日不進(閘={g}, 波動OK={vol_ok}, 煞車={stop_all})")
+    fish, dir = pick_mode(bars)
+    if fish is None or stop_all:
+        g, vok = c_gates(bars)
+        print(f"  魚C/E:今日觀望(方向={g}, 波動OK={vok}, 煞車={stop_all})")
         return
     from shioaji_adapter import login_env
     import time as _t
@@ -243,33 +290,14 @@ def fish_c(bars, today, st):
         hm = t.strftime("%H:%M")
         if "08:46" <= hm <= "13:45":
             rows.append((hm, o, h, l, c))
-    if len(rows) < 40:
-        return
-    orh, orl = max(x[2] for x in rows[:30]), min(x[3] for x in rows[:30])
-    pos, entry, stop, exit_px, reason = 0, 0.0, 0.0, None, None
-    for hm, o, h, l, c in rows[30:]:
-        if pos == 0:
-            if hm >= "13:30":
-                break
-            if g > 0 and c > orh:
-                pos, entry, stop = 1, c, orl
-            elif g < 0 and c < orl:
-                pos, entry, stop = -1, c, orh
-            continue
-        if (pos > 0 and l <= stop) or (pos < 0 and h >= stop):
-            exit_px, reason = stop, "stop"
-            break
-        if hm >= "13:44":
-            exit_px, reason = c, "eod"
-            break
-    if pos and exit_px is None:
-        exit_px, reason = rows[-1][4], "eod"
-    if pos:
-        pnl = pos * (exit_px - entry) - COST_B
-        realize(st, "C", pnl, {"fish": "C", "type": "trade", "date": today, "side": pos,
-                "entry": entry, "exit": exit_px, "reason": reason})
+    r = replay_intraday(rows, fish, dir)
+    if r:
+        pnl = r["side"] * (r["exit"] - r["entry"]) - COST_B
+        realize(st, fish, pnl, {"fish": fish, "type": "trade", "date": today, "side": r["side"],
+                "entry": r["entry"], "exit": r["exit"], "reason": r["reason"], "mode":
+                ("breakout" if fish == "C" else "fade")})
     else:
-        print("  魚C:今日無突破,未進場")
+        print(f"  魚{fish}({'突破' if fish=='C' else 'fade'}):今日無觸發,未進場")
 
 
 def write_report():
@@ -295,9 +323,9 @@ def write_report():
     equity_html = (f'<div class="card" style="grid-column:1/-1"><div class="t">虛擬帳戶(本金 {START_EQUITY:,})</div>'
                    f'<div class="v {"pos" if ret>=0 else "neg"}">{eq:,.0f} 元({ret:+.2%})</div>'
                    f'<div class="s">回撤 {dd:.1%}(煞車線 {HARD_DD:.0%})· 規模:小台1口/跨式1組</div>{svg}</div>')
-    names = {"A": "A 條件賣跨式+GEX", "B": "B 外資高信念跟隨", "C": "C MTF-ORB(老闆哲學版)"}
+    names = {"A": "A 條件賣跨式+GEX", "B": "B 外資高信念跟隨", "C": "C ORB順勢(平靜趨勢日)", "E": "E fade(高波動亂盤日)"}
     cards, cum = equity_html, {}
-    for f in ("A", "B", "C"):
+    for f in ("A", "B", "C", "E"):
         pnls = [e["pnl_ntd"] for e in evs if e.get("fish") == f and "pnl_ntd" in e]
         cum[f] = sum(pnls)
         wr = (sum(1 for x in pnls if x > 0) / len(pnls)) if pnls else 0
@@ -326,7 +354,11 @@ def write_report():
 <span class="why">邏輯:日線趨勢明確+市場不在發瘋的日子,等開盤 30 分鐘定出區間,順趨勢方向做一單:錯了小賠認,對了抱到收盤前。贏大輸小,不求高勝率。</span><br>
 進場:日線 EMA 多/空排列+波動閘(市場太瘋不進)+突破開盤區間。<br>
 出場:停損=區間另一側;否則 13:44 出(絕不留到強制平倉踩踏時段)。規模:小台 1 口。<br>
-<span class="ev">依據:回測前段+中段皆正,唯極端波動期受傷 → 加波動閘後由 paper 驗證。一月約 10-14 次。</span></div>
+<span class="ev">依據:平靜趨勢日回測正;高波動年出手稀疏(月2-3次)。</span></div>
+<div class="fish" style="border-left-color:#8a5f1c"><b>E|高波動日反手 fade(regime 互補,弱候選測試中)</b><br>
+<span class="why">邏輯:魚C 空手的高波動亂盤日不再枯坐——突破多半是假的,反手做(fade),贏大輸小。</span><br>
+進場:波動閘擋下的日子(最兇20%),突破OR30就反向進,停損=突破外緣+30點,13:44出。<br>
+<span class="ev">⚠️ 依據弱(高波動日回測 +3.9點/筆但 t=0.45=可能是運氣),明確標為「測試中」由 paper 裁決;高波動年出手頻繁(月~20次),裁決快。</span></div>
 <div class="fish" style="border-left-color:#9a6a22"><b>⚖️ 交易紀律(全部寫死在程式裡,不靠意志力)</b><br>
 虛擬本金 300 萬照真實規則運作;回撤 10% 減碼、20% 全面停單;策略規格已凍結不得中途調參;
 <b>裁決規則:魚C 滿 30 筆自動判生死(均值為正→升真錢 1 口小台;差→處決),魚B 滿 10 筆、魚A 滿 5 筆同理。</b></div>"""

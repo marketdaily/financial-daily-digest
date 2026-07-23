@@ -10,7 +10,7 @@ import datetime
 
 import tx_data
 from paper_daily import (load_state, realize, halted, write_report, log_ev,
-                         c_gates, c_done_today, STATE, PDIR, COST_B)
+                         c_gates, pick_mode, c_done_today, STATE, PDIR, COST_B)
 import json
 
 SLIP = 0.5           # 虛擬成交滑價(點)
@@ -50,8 +50,10 @@ def main():
         return
     g, vol_ok = c_gates(bars)
     stop_all, dd = halted(st)
-    note(f"閘門:方向={g} 波動OK={vol_ok} 煞車={stop_all}(回撤{dd:.1%})")
-    if g == 0 or not vol_ok or stop_all:
+    fish, fdir = pick_mode(bars)
+    note(f"閘門:方向={g} 波動OK={vol_ok} 煞車={stop_all}(回撤{dd:.1%}) → "
+         + ("觀望" if (fish is None or stop_all) else f"魚{fish}({'順勢突破' if fish=='C' else 'fade反手'})"))
+    if fish is None or stop_all:
         note("今日不進場,收工")
         return
 
@@ -87,15 +89,21 @@ def main():
                 if pos == 0:
                     if hm >= "13:30":
                         break
-                    if g > 0 and c > orh:
-                        pos, entry, stop, entry_hm = 1, c + SLIP, orl, hm
-                        note(f"⚡ 進場 多 @{entry:.0f}(bar {hm})停損 {stop:.0f}")
-                    elif g < 0 and c < orl:
-                        pos, entry, stop, entry_hm = -1, c - SLIP, orh, hm
-                        note(f"⚡ 進場 空 @{entry:.0f}(bar {hm})停損 {stop:.0f}")
+                    if fish == "C":
+                        if fdir > 0 and c > orh:
+                            pos, entry, stop, entry_hm = 1, c + SLIP, orl, hm
+                        elif fdir < 0 and c < orl:
+                            pos, entry, stop, entry_hm = -1, c - SLIP, orh, hm
+                    else:  # E fade:突破反手
+                        if c > orh:
+                            pos, entry, stop, entry_hm = -1, c - SLIP, orh + 30, hm
+                        elif c < orl:
+                            pos, entry, stop, entry_hm = 1, c + SLIP, orl - 30, hm
+                    if pos:
+                        note(f"⚡ 魚{fish} 進場 {'多' if pos>0 else '空'} @{entry:.0f}(bar {hm})停損 {stop:.0f}")
                 elif (pos > 0 and l <= stop) or (pos < 0 and h >= stop):
                     pnl = pos * (stop - entry) - COST_B
-                    realize(st, "C", pnl, {"fish": "C", "type": "trade", "mode": "live",
+                    realize(st, fish, pnl, {"fish": fish, "type": "trade", "mode": "live",
                             "date": today, "side": pos, "entry": entry, "exit": stop,
                             "entry_hm": entry_hm, "exit_hm": hm, "reason": "stop"})
                     with open(STATE, "w", encoding="utf-8") as f:
@@ -106,7 +114,7 @@ def main():
                     return
                 elif hm >= "13:44":
                     pnl = pos * (c - entry) - COST_B
-                    realize(st, "C", pnl, {"fish": "C", "type": "trade", "mode": "live",
+                    realize(st, fish, pnl, {"fish": fish, "type": "trade", "mode": "live",
                             "date": today, "side": pos, "entry": entry, "exit": c,
                             "entry_hm": entry_hm, "exit_hm": hm, "reason": "eod"})
                     with open(STATE, "w", encoding="utf-8") as f:
