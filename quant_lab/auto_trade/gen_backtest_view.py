@@ -44,8 +44,18 @@ def main():
                        "side": "多" if r["side"] > 0 else "空",
                        "reason": r["reason"], "pnl": pnl})
         curve.append(eq)
+    def asym(sub):
+        w=[t["pnl"] for t in sub if t["pnl"]>0]; l=[t["pnl"] for t in sub if t["pnl"]<=0]
+        aw=sum(w)/len(w) if w else 0; al=sum(l)/len(l) if l else 0
+        return {"n":len(sub),"wr":round(len(w)/len(sub)*100) if sub else 0,
+                "avg_win":round(aw),"avg_loss":round(al),
+                "ratio":round(aw/abs(al),1) if al else 0,"exp":round(sum(t["pnl"] for t in sub)/len(sub)) if sub else 0}
+    from collections import defaultdict as _dd
+    _byf=_dd(list)
+    for t in trades: _byf[t["fish"]].append(t)
     wins = [t for t in trades if t["pnl"] > 0]
     out = {
+        "fish_asym": {f: asym(v) for f,v in _byf.items()},
         "generated": dates[-1].isoformat(),
         "n": len(trades),
         "final_equity": eq,

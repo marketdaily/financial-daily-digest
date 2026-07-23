@@ -329,9 +329,13 @@ def write_report():
         pnls = [e["pnl_ntd"] for e in evs if e.get("fish") == f and "pnl_ntd" in e]
         cum[f] = sum(pnls)
         wr = (sum(1 for x in pnls if x > 0) / len(pnls)) if pnls else 0
+        w=[x for x in pnls if x>0]; ll=[x for x in pnls if x<=0]
+        aw=sum(w)/len(w) if w else 0; al=sum(ll)/len(ll) if ll else 0
+        ratio=f"{aw/abs(al):.1f}x" if al else "—"
+        extra=f' · 賺賠比 {ratio}' if pnls else ''
         cards += (f'<div class="card"><div class="t">{names[f]}</div>'
                   f'<div class="v {"pos" if cum[f]>=0 else "neg"}">{cum[f]:+,} 元</div>'
-                  f'<div class="s">{len(pnls)} 筆 · 勝率 {wr:.0%}</div></div>')
+                  f'<div class="s">{len(pnls)} 筆 · 勝率 {wr:.0%}{extra}</div></div>')
     posi = []
     if st["fishA"].get("held"):
         h = st["fishA"]["held"]
@@ -426,6 +430,9 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
                    f'因規則是看過這段歷史後設計的,<b>不代表未來、不是承諾</b>。真實績效看上方「虛擬帳戶」(今天起累積)。</div>'
                    f'<div class="card" style="grid-column:1/-1"><div class="t">回測 {bt["n"]} 筆 · 勝率 {bt["win_rate"]}%</div>'
                    f'<div class="v {"pos" if bt["ret_pct"]>=0 else "neg"}">{bt["final_equity"]:,}（{bt["ret_pct"]:+}%）</div>{svg}</div>'
+                   + '<div class="btnote" style="color:#9aa0a8;background:#1c1f26;border-color:#2a2e37">🎯 少輸多贏檢查(賺賠比＝平均贏÷平均輸):'
+                   + ' ｜ '.join(f'魚{ff} 勝率{a["wr"]}% 贏{a["avg_win"]:+,}/輸{a["avg_loss"]:+,} <b>賺賠比{a["ratio"]}x</b> 期望{a["exp"]:+,}'
+                                 for ff, a in bt.get("fish_asym", {}).items()) + '</div>'
                    f'<table><tr><th>日期</th><th>魚</th><th>方向</th><th>損益</th></tr>{trows}</table>')
         anchor = '<h2 style="font-size:1rem;margin:22px 0 8px">📖 策略說明'
         html = html.replace(anchor, btpanel + anchor, 1) if anchor in html else html + btpanel
