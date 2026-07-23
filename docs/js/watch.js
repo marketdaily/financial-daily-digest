@@ -209,7 +209,7 @@ function applyMkt() {
   if (tr && us) tr.style.display = "";
   if (us && !["gainers","losers","actives"].includes(curRank)) curRank = "gainers";
   if (!us && ["gainers","losers","actives"].includes(curRank)) curRank = "change";
-  CATEGORIES = us ? (typeof US_INDUSTRY !== "undefined" ? US_INDUSTRY : {}) : (typeof TW_INDUSTRY !== "undefined" ? TW_INDUSTRY : {});
+  CATEGORIES = us ? (typeof US_INDUSTRY !== "undefined" ? US_INDUSTRY : {}) : (typeof TW_CATEGORIES !== "undefined" ? TW_CATEGORIES : (typeof TW_INDUSTRY !== "undefined" ? TW_INDUSTRY : {}));
   THEMES = us ? (typeof US_THEMES !== "undefined" ? US_THEMES : {}) : (typeof TW_THEMES !== "undefined" ? TW_THEMES : {});
 }
 const CAT_PAGE = 60;
