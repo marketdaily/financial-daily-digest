@@ -269,7 +269,8 @@
   @media(min-width:1280px){
     .wrap{max-width:min(96vw,1720px);transition:margin .25s ease}
     td,th{padding:8px 10px}
-    /* 兩欄貼合,無黑縫:左欄 margin 剛好等於面板寬,右欄陰影收淡只留 1px 細邊 */
+    /* 兩欄貼合,無黑縫:清掉 body 右內距 + 左欄 margin 剛好等於面板寬,右欄陰影收淡只留 1px 細邊 */
+    body.sheet-open{padding-right:0}
     body.sheet-open .wrap{margin-right:var(--sheet-w)}
     .sheet{left:auto;right:0;top:0;bottom:0;width:var(--sheet-w);max-height:100vh;height:100vh;
         border-radius:0;border-left:1px solid var(--bd-soft);border-top:none;
