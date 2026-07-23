@@ -265,10 +265,10 @@ async function enrichUsIndustry(syms) {
       if (!s) return;
       try {
         const f = usFundCache[s] || await fetch(`${WORKER_URL}/us-fundamentals?symbol=${s}`).then(r => r.json());
-        usFundCache[s] = f;
-        usIndustry[s] = (f && f.industry) ? f.industry : "";  // 空字串也快取,避免無分類的股一直重抓
-        changed = true;
-        paintOne(s);
+        // 只在 profile 真的成功時才寫快取:有 industry → 存分類;有 name 但無 industry → 確實無分類存空;
+        // 兩者皆無(上游失敗/Finnhub 限流回空)→ 不快取,下次重試,避免一次限流就永久缺格。
+        if (f && f.industry) { usFundCache[s] = f; usIndustry[s] = f.industry; changed = true; paintOne(s); }
+        else if (f && f.name) { usFundCache[s] = f; usIndustry[s] = ""; changed = true; }
       } catch { /* 失敗不寫快取,下次再試 */ }
     }
   };
