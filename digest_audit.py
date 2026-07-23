@@ -222,6 +222,28 @@ def audit_digest(
             fails.append({"check": "signal_reason_vague", "severity": "high",
                           "msg": f"{len(vague_cards)} 張 signal-card 的「下一步」沒附價位或時間窗(虛詞卡):{vague_cards[:10]}"})
 
+    # 9b-2. signal-reason「深度塌陷」偵測(2026-07-23 免費 council 429→模型降級,理由從 ~130 字塌到 ~48 字,
+    #       但仍帶價位所以 9b vague 放行、用戶親自抓到而非機器)。校準:07-20~22 正常日 median 107~197、
+    #       min≥97、零卡 <80;07-23 壞日 median 48、min 46、5/7 卡 <60。門檻取中間留大 margin,抓「整批降級」
+    #       的系統性塌陷而非誤殺單張天生短的卡。命中→HIGH→retry 換強模型→deterministic fallback+systemic 熔斷。
+    if signal_cards:
+        reason_lens = []
+        for card in signal_cards:
+            if re.search(r"備援|個人化生成異常|fallback|主編將.{0,8}修復|無即時報價|見網頁", card):
+                continue
+            reason_m = re.search(r'<div class="signal-reason"[^>]*>(.*?)</div>', card, re.S)
+            if not reason_m:
+                continue
+            reason_lens.append(len(_strip_html_to_text(reason_m.group(1)).strip()))
+        if len(reason_lens) >= 3:
+            sl = sorted(reason_lens)
+            n = len(sl)
+            median_len = sl[n // 2] if n % 2 else (sl[n // 2 - 1] + sl[n // 2]) / 2
+            n_below = sum(1 for x in reason_lens if x < 60)
+            if median_len < 80 or n_below >= (n + 1) // 2:
+                fails.append({"check": "signal_reason_shallow", "severity": "high",
+                              "msg": f"signal-reason 深度塌陷(疑模型降級):{n} 張理由 median={median_len:.0f} 字、{n_below} 張<60(正常日 median≥100)。長度 {sl}"})
+
     # 9c. prompt 指令洩漏偵測 —— 卡片範本裡給 LLM 的說明文字被一字抄進成品(2026-07-22 IBM/MSFT
     #     每張卡開頭都掛「白話講『下一步』:台股講…、美股講…該做什麼具體動作」罐頭句)。抓整個「meta
     #     指令 tell」類別,不只那一句:同一張卡同時提「台股講/美股講」、佔位括號〔〕、命令模型的字眼。
