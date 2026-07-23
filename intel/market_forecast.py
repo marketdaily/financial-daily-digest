@@ -185,6 +185,11 @@ def forecast_tonight_us(test=False):
         t = tier(p)
         out = {"p_up": round(p, 3), "tier": t, "slot": "us", "market": "us",
                "trained_through": model_all.get("trained_through_us", "")}
+        try:
+            from intel.forecast_explain import cascade_text
+            out["cascade"] = cascade_text(model_all["model_us"], f)
+        except Exception as e:
+            log(f"cascade 附掛失敗(不影響預判): {e}")
         if not test:
             rec = {"ts": now.isoformat(timespec="seconds"), "date": today.isoformat(),
                    "slot": "us", "p_up": round(p, 4), "tier": t,
@@ -213,8 +218,14 @@ def forecast_today():
         data = {k: bars(v) for k, v in SYMS.items()}
         f = build_features("a", now.date(), data)
         p = predict(model_all["model_a"], f)
-        return {"p_up": round(p, 3), "tier": tier(p), "slot": "a",
-                "trained_through": model_all["trained_through"]}
+        out = {"p_up": round(p, 3), "tier": tier(p), "slot": "a",
+               "trained_through": model_all["trained_through"]}
+        try:
+            from intel.forecast_explain import cascade_text
+            out["cascade"] = cascade_text(model_all["model_a"], f)
+        except Exception as e:
+            log(f"cascade 附掛失敗(不影響預判): {e}")
+        return out
     except Exception as e:
         log(f"forecast_today failed(fail-silent): {e}")
         return {}

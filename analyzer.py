@@ -626,6 +626,24 @@ def _format_market_data(data: dict, user_us_stocks: list = None, user_tw_stocks:
                          f"{_dirw}(量化信心 {_p:.0f}%)」。注意:這是收盤方向統計預報,大半資訊會反映在"
                          "開盤跳空——嚴禁把它寫成「所以開盤買進/追price」的進場建議;"
                          "若上方有防守/重挫閘指令,以防守指令為準,預判只作參考陳述。")
+        if mf.get("cascade"):
+            lines.append("【大盤·全球因果鏈拆解(寫『為什麼』用,非照抄格式)】\n" + mf["cascade"] +
+                         "\n→ TLDR 講大盤時點出『今天的源頭是哪個市場』並帶因果(例:美股費半大漲→台股半導體),"
+                         "讓讀者看懂為什麼、而非只給機率;標『方向多已反映』的亞股鄰居昨收不要當今天理由。"
+                         "這是收盤方向、開盤跳空吃掉大半,不得寫成開盤買進。")
+
+    # 個股因果鏈:持有 2330 的用戶帶台積電 ADR→2330 開盤方向(實測 26.5 年,方向強但盤中追不到)
+    if "2330" in (user_tw_stocks or []):
+        _tsm = (us.get("TSM") or {}).get("change_pct")
+        if _tsm is not None:
+            try:
+                from intel.forecast_explain import adr_2330_statement
+                _adr = adr_2330_statement(_tsm)
+                lines.append("【台積電 ADR→2330 個股因果鏈(用戶持有 2330,26 年實測)】"
+                             + _adr["why"] + "。" + _adr["entry"]
+                             + " → 寫進 2330 卡片,凸顯『看懂為什麼+能不能進場』的差異化。")
+            except Exception:
+                pass
 
     index_names = {
         "^GSPC": "S&P500", "^IXIC": "NASDAQ", "^DJI": "道瓊",
