@@ -146,6 +146,43 @@ if (!INDUSTRY["6806"]) INDUSTRY["6806"] = "綠能環保";
 let CATEGORIES = (typeof TW_CATEGORIES !== "undefined") ? TW_CATEGORIES : (typeof TW_INDUSTRY !== "undefined" ? TW_INDUSTRY : {});
 let THEMES = (typeof TW_THEMES !== "undefined") ? TW_THEMES : {};
 
+// 美股產業分類:Finnhub finnhubIndustry(英文)→ 中文對照;查無對照就顯示原英文
+const US_IND_ZH = {
+  "Technology": "科技", "Semiconductors": "半導體", "Software": "軟體",
+  "Internet": "網路", "IT Services": "資訊服務", "Hardware": "硬體",
+  "Electronic Equipment Instruments": "電子設備", "Communications": "通訊",
+  "Telecommunication": "電信", "Wireless Telecommunication Services": "無線電信",
+  "Media": "媒體", "Communication Services": "通訊服務",
+  "Retail": "零售", "E-commerce": "電商", "Distributors": "通路",
+  "Trading Companies & Distributors": "貿易通路",
+  "Automobiles": "汽車", "Auto Components": "汽車零組件",
+  "Consumer products": "消費性產品", "Consumer Discretionary": "非必需消費",
+  "Consumer Staples": "必需消費", "Household Products": "家用品",
+  "Household Durables": "耐久消費財", "Leisure Products": "休閒用品",
+  "Textiles Apparel & Luxury Goods": "紡織服飾精品",
+  "Hotels Restaurants & Leisure": "旅遊餐飲休閒",
+  "Food Products": "食品", "Beverages": "飲料", "Tobacco": "菸草",
+  "Banking": "銀行", "Financial Services": "金融服務", "Financial": "金融",
+  "Insurance": "保險", "Real Estate": "不動產", "REITs": "不動產信託",
+  "Diversified Financials": "綜合金融",
+  "Health Care": "醫療保健", "Health": "醫療", "Pharmaceuticals": "製藥",
+  "Biotechnology": "生技", "Life Sciences Tools & Services": "生命科學工具",
+  "Medical Devices": "醫療器材",
+  "Energy": "能源", "Oil & Gas": "石油天然氣", "Utilities": "公用事業",
+  "Water": "水資源", "Renewable Energy": "再生能源",
+  "Industrial Conglomerates": "工業集團", "Machinery": "機械",
+  "Aerospace & Defense": "航太國防", "Electrical Equipment": "電機設備",
+  "Construction & Engineering": "營建工程", "Building": "建材營造",
+  "Commercial Services & Supplies": "商業服務", "Professional Services": "專業服務",
+  "Chemicals": "化學", "Metals & Mining": "金屬礦業", "Metals": "金屬",
+  "Basic Materials": "原物料", "Paper & Forest": "造紙林業", "Packaging": "包裝",
+  "Airlines": "航空", "Marine": "海運", "Road & Rail": "陸運鐵路",
+  "Logistics & Transportation": "物流運輸", "Transportation": "運輸",
+  "Industrial": "工業", "Agriculture": "農業",
+};
+let usIndustry = {};
+try { usIndustry = JSON.parse(localStorage.getItem("md-us-industry") || "{}") || {}; } catch {}
+
 const email = localStorage.getItem("md-email");
 const pwd = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
 const isAdmin = localStorage.getItem("md-plan") === "admin";
@@ -193,11 +230,40 @@ function sigDot(sym) {
   return `<span class="sig-dot ${lvl}" data-sig="${sym}" title="${escAttr(tip)}"></span>`;
 }
 
+// 產業分類標籤:台股用 TW_INDUSTRY;美股用 Finnhub industry(usIndustry,非同步補),中文模式套 US_IND_ZH 對照
+function indLabel(sym) {
+  if (isTWSym(sym)) return INDUSTRY[sym] || "";
+  const raw = usIndustry[sym];
+  if (!raw) return "";
+  return (LANG === "zh" && US_IND_ZH[raw]) ? US_IND_ZH[raw] : raw;
+}
+
 function nameCell(sym, name) {
   const nm = name || nameMap.get(sym) || sym;
-  const ind = INDUSTRY[sym] ? ` · ${INDUSTRY[sym]}` : "";
+  const lbl = indLabel(sym);
+  // 產業標籤獨立 span(id=ind-<sym>):美股分類非同步抓到後就地更新,不必重繪整列
+  const ind = `<span class="ind-tag" id="ind-${sym}">${lbl ? ` · ${lbl}` : ""}</span>`;
   // 訊號燈放進 nm-main 內:nm-main 是 block,inline 的點放外面會被擠成獨立一行浮在名字上方(版型破)
   return `<span class="nm-main">${sigDot(sym)}${nm}</span><span class="code-sub">${sym}${ind}</span>`;
+}
+
+// 美股清單:代號旁補上產業分類。Finnhub industry 由 /us-fundamentals 提供(server 端 CF cache 3h),
+// 抓到後寫進 usIndustry 並持久化,避免每次重抓;就地更新對應 ind-<sym> span。
+async function enrichUsIndustry(syms) {
+  const todo = syms.filter(s => !isTWSym(s) && !(s in usIndustry));
+  if (!todo.length) return;
+  let changed = false;
+  for (const s of todo) {
+    try {
+      const f = usFundCache[s] || await fetch(`${WORKER_URL}/us-fundamentals?symbol=${s}`).then(r => r.json());
+      usFundCache[s] = f;
+      usIndustry[s] = (f && f.industry) ? f.industry : "";  // 空字串也快取,避免無分類的股一直重抓
+      changed = true;
+      const el = $("ind-" + s);
+      if (el) { const lbl = indLabel(s); el.textContent = lbl ? ` · ${lbl}` : ""; }
+    } catch { /* 失敗不寫快取,下次再試 */ }
+  }
+  if (changed) { try { localStorage.setItem("md-us-industry", JSON.stringify(usIndustry)); } catch {} }
 }
 
 function rowHtml(sym) {
@@ -302,6 +368,7 @@ function renderView() {
   $("us-cnt").textContent = us.length || "";
   document.querySelector("#tw-table tbody").innerHTML = tw.map(rowHtml).join("");
   document.querySelector("#us-table tbody").innerHTML = us.map(rowHtml).join("");
+  if (us.length) enrichUsIndustry(us);
   const fullList = curTab === "cats" ? (CATEGORIES[curCat] || THEMES[curCat] || []) : [];
   $("tw-more").style.display = (curTab === "cats" && fullList.length > syms.length) ? "block" : "none";
   Object.values(quotes).forEach(q => paint(q));
@@ -1433,6 +1500,13 @@ async function renderFund(sym) {
   try {
     let f = usFundCache[sym];
     if (!f) { f = await fetch(`${WORKER_URL}/us-fundamentals?symbol=${sym}`).then(r => r.json()); usFundCache[sym] = f; }
+    // 順手把產業分類餵進清單快取,回到清單時代號旁就有標籤(且更新已顯示的那列)
+    if (f && !(sym in usIndustry)) {
+      usIndustry[sym] = f.industry || "";
+      try { localStorage.setItem("md-us-industry", JSON.stringify(usIndustry)); } catch {}
+      const it = $("ind-" + sym);
+      if (it) { const lbl = indLabel(sym); it.textContent = lbl ? ` · ${lbl}` : ""; }
+    }
     if (sheetSym !== sym || !el.isConnected) return;
     const usLoss = f.pe == null && f.eps != null && f.eps < 0;
     el.innerHTML =
