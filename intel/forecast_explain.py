@@ -45,7 +45,7 @@ DRIVER_META = {
 
 def _fmt_val(feat, v):
     unit = DRIVER_META.get(feat, ("", "", "pct"))[2]
-    return f"水位 {v:.1f}" if unit == "lvl" else f"{v:+.1f}%"
+    return f"{v:.1f}" if unit == "lvl" else f"{v:+.1f}%"
 
 
 def explain(model, f):
@@ -73,11 +73,12 @@ def _tier(p):
     return "noise"
 
 
-def entry_line(slot, tier, p_up):
+def entry_line(slot, tier, p_up, market="tw"):
     """『能不能進場』誠實層:FORECAST.md 鐵則=收盤預報,準的部分大半在開盤跳空,
     盤中追進吃不到;唯 slot b 高把握日 OOS 開盤後仍約 64%。永不寫成『開盤買進』。"""
     dir_word = "偏漲" if p_up >= 0.5 else "偏跌"
-    base = "這是『收盤方向』預報——準的部分大半在開盤那一跳,09:00 後追進通常吃不到。"
+    base = ("這是『今晚美股收盤方向』預報——漲跌大半也在開盤那一跳,盤中追進吃不到。" if market == "us"
+            else "這是『收盤方向』預報——準的部分大半在開盤那一跳,09:00 後追進通常吃不到。")
     if slot == "b" and tier == "high":
         extra = (f"今天是少數『高把握開盤日』,方向{dir_word},盤中仍留有一點真優勢"
                  f"(OOS≈64%);但仍先確認沒過度跳空再考慮。")
@@ -107,6 +108,74 @@ def panel_text(model, f, slot="a"):
         for d in dns:
             lines.append(f"  ▼ {d['name']} {_fmt_val(d['feat'], d['value'])} — {d['mech']}")
     lines.append(entry_line(slot, t, p))
+    return "\n".join(lines)
+
+
+# ── 全球級聯鏈(follow-the-sun:順著地球自轉,消息一個時區傳一個時區,最後傳到台股)──
+# 順序=自台股上次收盤後、依「新資訊產生的時間」排;kind: self=起點 / fresh=西方隔夜真領先 /
+# fresh_am=今晨最新 / stale=同時段已反映(GLOBAL_LEAD 16 年證『鄰居昨收』方向資訊≈0)。
+CHAIN_TW = [
+    {"key": "tw_self", "label": "台股自身(起點)", "feats": ["twii_prev", "twii_m5"],
+     "kind": "self", "note": "昨天漲多/跌深,今天常有回拉(均值回歸)"},
+    {"key": "europe", "label": "歐股 歐洲盤", "feats": ["stoxx"],
+     "kind": "fresh", "note": "台股入夜後、美股之前交易,傳給美國也傳給台灣"},
+    {"key": "us", "label": "美股隔夜 ⭐最大源頭", "feats": ["sox", "spx", "vix_lvl", "vix_chg"],
+     "kind": "fresh", "note": "台股睡覺時最新最大的消息;費半直接牽動台股半導體(權重約六成)"},
+    {"key": "asia_prev", "label": "亞股鄰居 昨收", "feats": ["kospi", "n225", "hsi"],
+     "kind": "stale", "note": "同時段交易、方向多已反映——只當波動預告(16 年數據證『他們跌我們就跌』是假的)"},
+    {"key": "asia_am", "label": "今晨亞股開盤 ⚡最新", "feats": ["kospi_gap", "n225_gap"],
+     "kind": "fresh_am", "note": "台股開盤前最新的即時反應(08:15 版才有)"},
+]
+CHAIN_US = [
+    {"key": "us_self", "label": "美股自身 昨日動能",
+     "feats": ["spx_prev", "sox_prev", "spx_m5", "vix_lvl", "vix_chg"],
+     "kind": "stale", "note": "美股用自己昨天預測自己≈沒 edge(16 年數據)"},
+    {"key": "asia_today", "label": "亞股今日收盤 ⭐關鍵",
+     "feats": ["twii_td", "kospi_td", "n225_td", "hsi_td"],
+     "kind": "fresh", "note": "台股收盤後→美股當晚,亞洲當日收盤才是真新資訊"},
+]
+_MARK = {"self": "◇", "fresh": "●", "fresh_am": "◉", "stale": "○"}
+
+
+def cascade(model, f):
+    """把 explain 的 per-driver 貢獻依 follow-the-sun 鏈『分組』(順手把長得像的鄰居合併),
+    回傳 (p_up, [{label,kind,note,net,members}...] 依鏈的時間序)。"""
+    ex = explain(model, f)
+    by_feat = {d["feat"]: d for d in ex["drivers"]}
+    chain = CHAIN_US if "twii_td" in model["feats"] else CHAIN_TW
+    groups = []
+    for node in chain:
+        members = [by_feat[k] for k in node["feats"] if k in by_feat]
+        if not members:
+            continue
+        groups.append({**node, "net": sum(m["contrib"] for m in members), "members": members})
+    return ex["p_up"], groups
+
+
+def cascade_text(model, f):
+    """時間序級聯鏈 + 今日源頭 + 誠實進場層。這是要給用戶看的『看懂為什麼』主檢視。"""
+    p, groups = cascade(model, f)
+    t = _tier(p)
+    market = "us" if "twii_td" in model["feats"] else "tw"
+    slot = "b" if "kospi_gap" in model["feats"] else "a"
+    dir_word = "偏漲" if p >= 0.5 else "偏跌"
+    conf = {"high": "高把握", "mid": "中等把握", "noise": "雜訊日·方向難判"}[t]
+    fresh = [g for g in groups if g["kind"] in ("fresh", "fresh_am")]
+    root = max(fresh, key=lambda g: abs(g["net"]), default=None)
+    lines = [f"今日大盤預判(收盤方向):{dir_word} {p * 100:.0f}%  ·  {conf}"]
+    if t == "noise":
+        lines.append("今天沒有明顯源頭:各市場都小動,方向難判")
+    elif root:
+        lines.append(f"今天的源頭:{root['label'].split(' ')[0]}"
+                     f"({'推漲' if root['net'] > 0 else '拉跌'}最力)")
+    lines.append("── 全球級聯鏈(順著時間往台股傳)──")
+    for g in groups:
+        arrow = "▲推漲" if g["net"] > 0 else "▼拉跌"
+        strength = "(方向多已反映)" if g["kind"] == "stale" else f"(力道 {abs(g['net']):.2f})"
+        detail = "、".join(f"{m['name']} {_fmt_val(m['feat'], m['value'])}" for m in g["members"])
+        lines.append(f"  {_MARK[g['kind']]} {g['label']}:{arrow}{strength}")
+        lines.append(f"      {detail} — {g['note']}")
+    lines.append(entry_line(slot, t, p, market=market))
     return "\n".join(lines)
 
 
@@ -156,7 +225,7 @@ def main():
             continue
         rec = json.loads(lines[-1])
         print(f"\n===== {label}({rec.get('date')}) =====")
-        print(panel_text(m[mk], rec["features"], slot=rec.get("slot", slot)))
+        print(cascade_text(m[mk], rec["features"]))
 
 
 if __name__ == "__main__":
