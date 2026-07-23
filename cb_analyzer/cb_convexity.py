@@ -55,7 +55,8 @@ def main():
             skipped["取價失敗"] += 1
             continue
         mp = mkt.get(str(it.get("bond_code")))
-        hv = st.get("vol_blend") or st.get("v60")
+        vw = st.get("vols") or {}       # 波動窗巢狀在 st["vols"](非頂層)
+        hv = st.get("vol_blend") or vw.get("v60")
         m = cb_core.analyze(it, st["spot"], hv, market_price=mp)
         if not m.get("ok"):
             continue
@@ -65,7 +66,7 @@ def main():
             "elig": m["eligible"], "spot": m["spot"], "K": m["conv_price"],
             "parity": m["parity"], "floor": m["bond_floor"], "opt": m["option_value"],
             "iv": m["implied_vol"], "iv_src": m["iv_source"],
-            "hv": hv, "v60": st.get("v60"), "v120": st.get("v120"),
+            "hv": hv, "v60": vw.get("v60"), "v120": vw.get("v120"),
             "vol_edge": m["vol_edge"], "delta": m["eff_delta"], "gamma": m["gamma"],
             "vega": m["vega"], "lev": m["leverage"],
             "theo": m["theoretical"], "buy": m["buy_price"], "buy_src": m["buy_source"],
