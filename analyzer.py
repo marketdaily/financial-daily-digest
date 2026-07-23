@@ -14,8 +14,9 @@ from config import GEMINI_API_KEY, GEMINI_API_KEY_2
 # 404/429 皆按 (model,key) 熔斷,打不到的組合每輪最多白打一次。
 # 另:免費額度只發給 AI Studio 自動建的專案(gen-lang-client-*),CLI/console 手開專案 limit=0;
 # 新版 key 格式為 AQ. 開頭(舊 AIzaSy 仍有效)。gemini-3-*-preview 可用但 preview 不進生產階梯。
-GEMINI_MODELS = ["gemini-2.5-flash", "gemini-flash-latest",
-                 "gemini-2.5-flash-lite", "gemini-flash-lite-latest",
+# 2026-07-23: 移除 gemini-flash-latest / gemini-flash-lite-latest —— v1beta 端點不存在這兩個
+# alias,每次呼叫恆 400(見 07-23 早報事故 log),白佔鏈上的位子拖慢 fallback。留 4 個有效版本號模型。
+GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite",
                  "gemini-2.0-flash", "gemini-2.0-flash-lite"]
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
@@ -451,7 +452,7 @@ def _is_transient_dns_error(e) -> bool:
             or "temporary failure in name resolution" in s)
 
 
-def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
+def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = False) -> str:
     """多 provider LLM 鏈:Gemini(多 model)→ Claude Sonnet → Groq Llama70B(免費)→ OpenAI。
     四層 LLM,任一可用就成功 — deterministic fallback 在現實中應該永遠跑不到。
     2026-05-26:用戶要求不能有「最差情況」,LLM 路徑必須近 100%。
@@ -476,7 +477,14 @@ def _llm_generate(prompt: str, prefer_strong: bool = False) -> str:
     # 本地 GPU 永遠排最後一張網:品質不如雲端大模型(有 audit 閘門把關),
     # 但零配額且不吃網路,全雲端斷線(DNS 瞬斷/配額同時死)時是唯一活口。
     local = [("local:qwen2.5-14b", lambda p: _call_ollama(p, max_tokens=9000))]
-    providers = ((strong + gemini) if prefer_strong else (gemini + strong)) + local
+    # 2026-07-23 Delvin 核可:「生卡」這步(用戶唯一看到的操作卡)改用付費 Sonnet 5 打頭陣。
+    # 背景事故:純免費鏈今早 Gemini 雙 key 429 全熔斷 → 每張卡掉到 llama-70b/nemotron 這種最弱的網,
+    # 弱模型不寫分析、直接抄 prompt 範例句型,reason 從 129-165 字塌到 48-64 字(-60%)。只有帶
+    # prefer_paid=True 的呼叫端(_render_signal_cards_batched)花錢;council 辯論仍全免費。Claude 失敗
+    # 仍往下掉回免費鏈 → deterministic,不破壞「永不掉 deterministic」保證。sonnet-5 禁非預設 temperature,
+    # _call_claude 本來就不送 temperature,現成相容。
+    paid = [("claude:sonnet-5", lambda p: _call_claude(p, model="claude-sonnet-5"))] if prefer_paid else []
+    providers = paid + ((strong + gemini) if prefer_strong else (gemini + strong)) + local
     last_err = None
     for rnd in range(2):
         dns_blip = False
@@ -3382,7 +3390,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
     for i in range(0, len(llm_stocks), CHUNK):
         chunk = llm_stocks[i:i + CHUNK]
         try:
-            _collect(_llm_generate(_mk_prompt(chunk), prefer_strong), chunk)
+            _collect(_llm_generate(_mk_prompt(chunk), prefer_strong, prefer_paid=True), chunk)
         except Exception as e:
             # chunk(10支)全鏈失敗 → 先拆單支重試再認輸:大 prompt 是 Groq 免費層
             # 8000 TPM 放不下的(gpt-oss-120b),單支小 prompt 那張免費網就接得住;
@@ -3396,7 +3404,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                     print(f"  [signal-batch] 連 {misses} 支單支重試也失敗,本 chunk 其餘改 deterministic")
                     break
                 try:
-                    _collect(_llm_generate(_mk_prompt([s]), prefer_strong), [s])
+                    _collect(_llm_generate(_mk_prompt([s]), prefer_strong, prefer_paid=True), [s])
                     misses = 0
                 except Exception as e2:
                     misses += 1
