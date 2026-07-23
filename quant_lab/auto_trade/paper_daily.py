@@ -22,6 +22,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 PDIR = os.path.join(HERE, ".paper")
 STATE = os.path.join(PDIR, "state.json")
 LEDGER = os.path.join(PDIR, "ledger.jsonl")
+LOG_LIVE = os.path.join(PDIR, "live_log.txt")
 COST_B = 3.3   # 台指期真實來回:期交稅1.83點(法定0.002%x2)+五折手續費~0.5點+價差~1點
 COST_A = 4.4
 START_EQUITY = 3_000_000            # 虛擬本金(用戶實際資金規模)
@@ -348,13 +349,30 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
 .posi{{background:#1c1f26;border-radius:8px;padding:10px 14px;margin:12px 0;font-size:.85rem}}
 .ft{{color:#6b7078;font-size:.75rem;margin-top:16px}}
 .fish{{background:#1c1f26;border:1px solid #2a2e37;border-left:3px solid #2f5657;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:.85rem;line-height:1.65}}
-.fish .why{{color:#bfc1ba}}.fish .ev{{color:#9aa0a8;font-size:.8rem}}</style>
+.fish .why{{color:#bfc1ba}}.fish .ev{{color:#9aa0a8;font-size:.8rem}}
+.dlog{{font-size:.8rem}}.dl{{padding:4px 8px;border-bottom:1px solid #2a2e37;color:#9aa0a8}}.dl.t{{color:#6dbd88}}.dl .dd{{color:#6b7078;margin-right:8px;font-variant-numeric:tabular-nums}}</style>
 <h1>📒 Paper 前測帳本(規格凍結 2026-07-17/22,真 OOS)</h1>
 <div class="cards">{cards}</div>
 <div class="posi">{'<br>'.join(posi) if posi else '目前無持倉/無待執行'}</div>
 {strat_html}
 <table><tr><th>日期</th><th>魚</th><th>事件</th><th>損益(元)</th></tr>{rows or '<tr><td colspan=4>帳本尚無事件</td></tr>'}</table>
 <div class="ft">每晚 20:10 winrig 自動更新 · 產生於 {datetime.datetime.now().isoformat(timespec='seconds')}</div>"""
+    # 近期每日決策(讀 live_log.txt,讓空手日也看得見系統在運作)
+    dlog = ""
+    try:
+        lines = [l.strip() for l in open(LOG_LIVE, encoding="utf-8") if l.strip()]
+        keep = [l for l in lines if any(k in l for k in ("閘門", "進場", "出場", "收工", "不進場"))]
+        for l in keep[-12:][::-1]:
+            ts, msg = (l.split(" ", 1) + [""])[:2]
+            d = ts[:10] + " " + ts[11:16]
+            traded = ("進場" in msg or "出場" in msg)
+            dlog += f'<div class="dl {"t" if traded else ""}"><span class="dd">{d}</span> {msg}</div>'
+    except Exception:
+        pass
+    if dlog:
+        panel = f'<h2 style="font-size:1rem;margin:20px 0 6px">🕗 魚C 每日決策日誌(空手也是決策)</h2><div class="dlog">{dlog}</div>'
+        anchor = '<h2 style="font-size:1rem;margin:22px 0 8px">📖 策略說明'
+        html = html.replace(anchor, panel + anchor, 1) if anchor in html else html + panel
     with open(os.path.join(PDIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(html)
 
