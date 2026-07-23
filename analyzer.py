@@ -2375,6 +2375,12 @@ def _calibrated_confidence(card_cls: str, regime_label: str, sym: str = ""):
 _COUNCIL_CACHE: dict = {}
 _COUNCIL_ENABLED = os.environ.get("DIGEST_COUNCIL", "1") != "0"
 _COUNCIL_MAX = int(os.environ.get("DIGEST_COUNCIL_MAX", "40") or "40")
+# 時間預算(2026-07-23 晚報遲寄事故):傍晚 Gemini 免費配額整日耗盡→council 全落到慢席
+# (本地 qwen/cf)+死席重試,逐支拖長。給 council 整班一個牆鐘上限當 backstop:用盡就讓
+# 剩餘標的走原單模型路徑(build_council 本就 fail-safe 回部分結果,絕不擋寄信)。預設寬鬆
+# (600s),只擋病態拖延、不砍正常品質;要更嚴設 DIGEST_COUNCIL_BUDGET_S。
+_COUNCIL_BUDGET_S = int(os.environ.get("DIGEST_COUNCIL_BUDGET_S", "600") or "600")
+_COUNCIL_RUN_DEADLINE = None  # 每個 process(每班)首次 build_council 時設定,per-run 全域上限
 _COUNCIL_SYS = "你是嚴謹務實的台美股短線分析師。只輸出被要求的 JSON,不寫任何多餘文字、不要 HTML、不要 markdown。"
 _COUNCIL_HAIKU = "claude-haiku-4-5-20251001"
 _COUNCIL_SEATS = [
@@ -2420,7 +2426,10 @@ _COUNCIL_JUDGE = _council_judge_call
 # council_check 的 q429 門檻天天爆表誤判紅色(2026-07-02 用戶反映的洗版根因)。
 _COUNCIL_SEAT_DEAD: dict = {}
 _COUNCIL_SEAT_FAILS: dict = {}
-_COUNCIL_DEAD_MARKERS = ("熔斷", "未設定", "配額耗盡", "413", "連不上")
+# 402/Payment Required=帳號沒 credits(如 cerebras),是帳單牆非暫態→首刀斃命,不必連敗 3 次。
+# 「no json」刻意不列:那是通用解析失敗,好席次偶發也會中,列進去會誤殺(openrouter 的持續 no-json
+# 由下方 3-strike 規則收,每輪最多浪費 3 支,可接受)。
+_COUNCIL_DEAD_MARKERS = ("熔斷", "未設定", "配額耗盡", "413", "連不上", "402", "Payment Required")
 
 
 def _council_seat_call(nm, fn, prompt: str):
@@ -2524,6 +2533,9 @@ def build_council(data: dict, stocks: list, depth: str = "standard") -> dict:
     fail-safe:停用 / 任何失敗 → 回傳當下已有的結果(可能空),絕不擋管線。"""
     if not _COUNCIL_ENABLED:
         return {}
+    global _COUNCIL_RUN_DEADLINE
+    if _COUNCIL_RUN_DEADLINE is None:
+        _COUNCIL_RUN_DEADLINE = time.monotonic() + _COUNCIL_BUDGET_S
     tech = data.get("technicals", {}) or {}
     all_m = {**(data.get("us_market", {}) or {}), **(data.get("tw_market", {}) or {})}
     seen = [s for s in dict.fromkeys([x for x in (stocks or []) if x])]
@@ -2531,7 +2543,10 @@ def build_council(data: dict, stocks: list, depth: str = "standard") -> dict:
     capped = todo[:_COUNCIL_MAX]
     if len(todo) > _COUNCIL_MAX:
         print(f"  [council] 本輪 {len(todo)} 支新標的超過上限 {_COUNCIL_MAX},只跑前 {_COUNCIL_MAX} 支(其餘走原單模型路徑)")
-    for sym in capped:
+    for i, sym in enumerate(capped):
+        if time.monotonic() > _COUNCIL_RUN_DEADLINE:
+            print(f"  [council] ⏱ 本班時間預算 {_COUNCIL_BUDGET_S}s 用盡,剩 {len(capped) - i} 支跳過 council(走原單模型路徑,不擋寄信)")
+            break
         try:
             block = _chunk_market_tech_block(data, [sym], depth).strip()
             prior = _quant_prior(tech.get(sym))
