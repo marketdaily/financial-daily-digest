@@ -438,8 +438,8 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
             comp_block = (
                 '<h3 style="font-size:.92rem;margin:16px 0 4px">💹 激進加碼複利示意(起2-3口→隨權益加碼·利潤滾入)</h3>'
                 '<div class="btnote" style="background:#2a1a1a;border-color:#5a2e2e;color:#d89a9a">'
-                '⚠️ hindsight + 複利槓桿放大回撤(真實更大)、且此 edge <b>未經 forward 證明</b>——'
-                '這是「<b>若 edge 為真</b>」的樣子,不是承諾;沒證明就開這口數=賭。</div>'
+                '⚠️ 這是<b>題庫/模擬考</b>(讀過往題型、算給你看),不是承諾——hindsight + 複利槓桿放大回撤(真實更大)。'
+                '紀律=<b>先過 forward「模擬考」再上真錢「正式考」</b>;跳過模擬考直接開這口數才叫賭。</div>'
                 f'<div class="card" style="grid-column:1/-1"><div class="t">胃納加碼(起{cA["lots_start"]}口→峰{cA["lots_max"]}口·含40%回撤煞車)</div>'
                 f'<div class="v {"pos" if cA["ret_pct"]>=0 else "neg"}">{cA["final"]:,}（{cA["ret_pct"]:+}%）· 最大回撤 {cA["mdd_pct"]}%</div>{svgA}</div>'
                 '<table><tr><th>加碼版本</th><th>報酬</th><th>最大回撤</th><th>口數</th></tr>'
