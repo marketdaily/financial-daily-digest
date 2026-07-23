@@ -250,20 +250,29 @@ function nameCell(sym, name) {
 // 美股清單:代號旁補上產業分類。Finnhub industry 由 /us-fundamentals 提供(server 端 CF cache 3h),
 // 抓到後寫進 usIndustry 並持久化,避免每次重抓;就地更新對應 ind-<sym> span。
 async function enrichUsIndustry(syms) {
-  const todo = syms.filter(s => !isTWSym(s) && !(s in usIndustry));
+  const todo = [...new Set(syms.filter(s => !isTWSym(s) && !(s in usIndustry)))];
   if (!todo.length) return;
   let changed = false;
-  for (const s of todo) {
-    try {
-      const f = usFundCache[s] || await fetch(`${WORKER_URL}/us-fundamentals?symbol=${s}`).then(r => r.json());
-      usFundCache[s] = f;
-      usIndustry[s] = (f && f.industry) ? f.industry : "";  // 空字串也快取,避免無分類的股一直重抓
-      changed = true;
-      const lbl = indLabel(s), txt = lbl ? ` · ${lbl}` : "";
-      // 同一代號可能同時存在於排行表與(隱藏的)自選表 → 更新所有同 id 佔位,不只第一個
-      document.querySelectorAll(`[id="ind-${s}"]`).forEach(el => { el.textContent = txt; });
-    } catch { /* 失敗不寫快取,下次再試 */ }
-  }
+  const paintOne = (s) => {
+    const lbl = indLabel(s), txt = lbl ? ` · ${lbl}` : "";
+    // 同一代號可能同時存在於排行表與(隱藏的)自選表 → 更新所有同 id 佔位,不只第一個
+    document.querySelectorAll(`[id="ind-${s}"]`).forEach(el => { el.textContent = txt; });
+  };
+  // 有限並發(排行表一次 40 檔,序列補抓要拖很久;6 條並行幾秒填滿,server 端 CF 已快取)
+  const worker = async () => {
+    for (;;) {
+      const s = todo.shift();
+      if (!s) return;
+      try {
+        const f = usFundCache[s] || await fetch(`${WORKER_URL}/us-fundamentals?symbol=${s}`).then(r => r.json());
+        usFundCache[s] = f;
+        usIndustry[s] = (f && f.industry) ? f.industry : "";  // 空字串也快取,避免無分類的股一直重抓
+        changed = true;
+        paintOne(s);
+      } catch { /* 失敗不寫快取,下次再試 */ }
+    }
+  };
+  await Promise.all(Array.from({ length: Math.min(6, todo.length) }, worker));
   if (changed) { try { localStorage.setItem("md-us-industry", JSON.stringify(usIndustry)); } catch {} }
 }
 
