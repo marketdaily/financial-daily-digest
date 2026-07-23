@@ -425,6 +425,28 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
         for t in bt["trades"][::-1]:
             cls = "pos" if t["pnl"] >= 0 else "neg"
             trows += f'<tr><td>{t["date"]}</td><td>魚{t["fish"]}</td><td>{t["side"]}</td><td class="{cls}">{t["pnl"]:+,}</td></tr>'
+        # 💹 激進加碼複利示意(三情境:1口/穩健/胃納)
+        comp_block = ""
+        cA, cS = bt.get("compound_aggr"), bt.get("compound")
+        if cA and cA.get("curve") and len(cA["curve"]) > 1 and cS:
+            cvA = cA["curve"]; mn, mx = min(cvA), max(cvA); sp = (mx - mn) or 1
+            ptsA = " ".join(f"{i*300/(len(cvA)-1):.1f},{50-(v-mn)/sp*46:.1f}"
+                            for i, v in enumerate(cvA))
+            colA = "#6dbd88" if cvA[-1] >= START_EQUITY else "#dd7f68"
+            svgA = (f'<svg viewBox="0 0 300 54" style="width:100%;height:70px">'
+                    f'<polyline points="{ptsA}" fill="none" stroke="{colA}" stroke-width="1.5"/></svg>')
+            comp_block = (
+                '<h3 style="font-size:.92rem;margin:16px 0 4px">💹 激進加碼複利示意(起2-3口→隨權益加碼·利潤滾入)</h3>'
+                '<div class="btnote" style="background:#2a1a1a;border-color:#5a2e2e;color:#d89a9a">'
+                '⚠️ hindsight + 複利槓桿放大回撤(真實更大)、且此 edge <b>未經 forward 證明</b>——'
+                '這是「<b>若 edge 為真</b>」的樣子,不是承諾;沒證明就開這口數=賭。</div>'
+                f'<div class="card" style="grid-column:1/-1"><div class="t">胃納加碼(起{cA["lots_start"]}口→峰{cA["lots_max"]}口·含40%回撤煞車)</div>'
+                f'<div class="v {"pos" if cA["ret_pct"]>=0 else "neg"}">{cA["final"]:,}（{cA["ret_pct"]:+}%）· 最大回撤 {cA["mdd_pct"]}%</div>{svgA}</div>'
+                '<table><tr><th>加碼版本</th><th>報酬</th><th>最大回撤</th><th>口數</th></tr>'
+                f'<tr><td>1口(驗證基準)</td><td class="pos">{bt["ret_pct"]:+}%</td><td>2.1%</td><td>1</td></tr>'
+                f'<tr><td>穩健(3口起)</td><td class="{"pos" if cS["ret_pct"]>=0 else "neg"}">{cS["ret_pct"]:+}%</td><td>{cS["mdd_pct"]}%</td><td>{cS["lots_start"]}→{cS["lots_max"]}</td></tr>'
+                f'<tr><td>胃納(30-40%)</td><td class="{"pos" if cA["ret_pct"]>=0 else "neg"}">{cA["ret_pct"]:+}%</td><td>{cA["mdd_pct"]}%</td><td>{cA["lots_start"]}→{cA["lots_max"]}</td></tr>'
+                '</table>')
         btpanel = (f'<h2 style="font-size:1rem;margin:22px 0 6px">📉 策略回測示意(非真實績效·含後見之明)</h2>'
                    f'<div class="btnote">⚠️ 這是 C+E 策略在 2025-01→今 的歷史重播,幫你「看到策略怎麼動」。'
                    f'因規則是看過這段歷史後設計的,<b>不代表未來、不是承諾</b>。真實績效看上方「虛擬帳戶」(今天起累積)。</div>'
@@ -432,6 +454,7 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
                    f'<div class="v {"pos" if bt["ret_pct"]>=0 else "neg"}">{bt["final_equity"]:,}（{bt["ret_pct"]:+}%）</div>{svg}'
                    f'<div style="display:flex;justify-content:space-between;color:#6b7078;font-size:.72rem;margin-top:-4px">'
                    f'<span>{bt.get("start","?")}</span><span>共 {bt["n"]} 筆 · 曲線=全期</span><span>{bt.get("generated","?")}</span></div></div>'
+                   + comp_block
                    + '<div class="btnote" style="color:#9aa0a8;background:#1c1f26;border-color:#2a2e37">🎯 少輸多贏檢查(賺賠比＝平均贏÷平均輸):'
                    + ' ｜ '.join(f'魚{ff} 勝率{a["wr"]}% 贏{a["avg_win"]:+,}/輸{a["avg_loss"]:+,} <b>賺賠比{a["ratio"]}x</b> 期望{a["exp"]:+,}'
                                  for ff, a in bt.get("fish_asym", {}).items()) + '</div>'

@@ -54,6 +54,28 @@ def main():
     _byf=_dd(list)
     for t in trades: _byf[t["fish"]].append(t)
     wins = [t for t in trades if t["pnl"] > 0]
+
+    # 激進加碼複利示意:口數=權益÷CAP(權益漲自動加碼、跌自動減碼),利潤滾入複利。
+    # ⚠️ hindsight;複利+槓桿放大報酬也放大回撤;真實回撤比這更大。含 40% 回撤煞車(減半)。
+    def compound_sim(cap, brake=0.40):
+        ce = START_EQUITY; cur = []; seq = []; peak = ce; mdd = 0.0; braked = False
+        for t in trades:
+            lots = max(2, int(ce / cap))
+            if braked:
+                lots = max(1, lots // 2)          # 觸煞車後口數減半續跑(不歸零)
+            ce += lots * t["pnl"]
+            peak = max(peak, ce); dd = 1 - ce / peak if peak > 0 else 0
+            mdd = max(mdd, dd)
+            braked = dd >= brake                  # 回撤破胃納→減半
+            cur.append(round(ce)); seq.append(lots)
+        return {"curve": cur, "final": round(ce),
+                "ret_pct": round((ce / START_EQUITY - 1) * 100, 1),
+                "mdd_pct": round(mdd * 100, 1),
+                "lots_start": seq[0] if seq else 0, "lots_max": max(seq) if seq else 0,
+                "cap_per_lot": cap}
+    compound = compound_sim(1_000_000)            # 穩健:起3口
+    compound_aggr = compound_sim(180_000)         # 胃納:起~16口,吃到30-40%回撤
+
     out = {
         "fish_asym": {f: asym(v) for f,v in _byf.items()},
         "start": trades[0]["date"] if trades else None,
@@ -63,6 +85,8 @@ def main():
         "ret_pct": round((eq / START_EQUITY - 1) * 100, 1),
         "win_rate": round(len(wins) / len(trades) * 100) if trades else 0,
         "curve": curve,
+        "compound": compound,
+        "compound_aggr": compound_aggr,
         "trades": trades[-25:],
     }
     os.makedirs(PDIR, exist_ok=True)
