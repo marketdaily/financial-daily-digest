@@ -31,6 +31,7 @@ def load_market_prices():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--tcri", type=int, default=None, help="對缺 TCRI 者帶入評等試算")
+    ap.add_argument("--json", action="store_true", help="寫 cb_convexity.json 供儀表板讀")
     a = ap.parse_args()
 
     db = json.load(open(os.path.join(HERE, "cb_database.json"), encoding="utf-8"))
@@ -60,6 +61,7 @@ def main():
             continue
         rows.append({
             "name": it.get("name"), "code": it.get("stock_code"),
+            "tcri": it.get("tcri"), "size": it.get("size_yi"),
             "elig": m["eligible"], "spot": m["spot"], "K": m["conv_price"],
             "parity": m["parity"], "floor": m["bond_floor"], "opt": m["option_value"],
             "iv": m["implied_vol"], "iv_src": m["iv_source"],
@@ -72,8 +74,28 @@ def main():
 
     # 凸性便宜度排序:vol_edge 高=內嵌選擇權相對標的實現波動便宜。無 vol_edge 者殿後。
     rows.sort(key=lambda r: (r["vol_edge"] is not None, r["vol_edge"] or -9), reverse=True)
-    elig_rows = [r for r in rows if r["elig"]]
-    other = [r for r in rows if not r["elig"]]
+    # 誠實三層:①過硬門檻(TCRI∈{3,4}且≥10億) ②過規模但信用弱(TCRI≥5) ③其餘/小規模
+    def tier(r):
+        t, s = r["tcri"], r["size"]
+        if r["elig"]:
+            return 1
+        if s and s >= 10:
+            return 2
+        return 3
+    for r in rows:
+        r["tier"] = tier(r)
+    t1 = [r for r in rows if r["tier"] == 1]
+    t2 = [r for r in rows if r["tier"] == 2]
+    t3 = [r for r in rows if r["tier"] == 3]
+
+    if a.json:
+        out = {"generated": db.get("parsed_at"), "source": db.get("source_file"),
+               "n_total": len(items), "n_priced": len(rows), "skipped": skipped,
+               "rows": rows}
+        outp = os.path.join(HERE, "cb_convexity.json")
+        json.dump(out, open(outp, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        print(f"→ 已寫 {outp}({len(rows)} 檔)")
+        return
 
     print(f"CB 凸性彈藥清單:{len(items)} 檔中 {len(rows)} 檔可定價"
           f"(跳過:{skipped})\n")
@@ -89,13 +111,16 @@ def main():
                 f"實波{hv:>4}/內隱{iv:>4}({r['iv_src'][:2]}) 便宜度{ve:>6} | "
                 f"Δ{r['delta']:>5.2f} 理論vs買價{r['edge_theo']:>+5.1f}")
 
-    print(f"── 符合老闆硬門檻({len(elig_rows)} 檔,依凸性便宜度排序)──")
-    for r in elig_rows:
+    print(f"── ①符合老闆硬門檻 TCRI∈{{3,4}}且≥10億({len(t1)} 檔)──")
+    for r in t1:
         print(fmt(r))
-    if not elig_rows:
-        print("  (無;多數 CB 缺 TCRI 評等,用 --tcri N 試算)")
-    print(f"\n── 不符/待定價({len(other)} 檔,參考)──")
-    for r in other[:12]:
+    if not t1:
+        print("  (無:12 檔可拆 CB 全是 TCRI 5-7 中弱信用,無一達投資級門檻——現階段可拆池信用偏弱)")
+    print(f"\n── ②過規模≥10億但信用弱 TCRI≥5({len(t2)} 檔,可接受信用風險時的候選)──")
+    for r in t2:
+        print(fmt(r))
+    print(f"\n── ③小規模/其餘({len(t3)} 檔,參考)──")
+    for r in t3[:10]:
         print(fmt(r))
 
     print("\n誠實提醒:①vol_edge 用『CB承銷價/市價反解隱波』非交易所選擇權IV(中小型標的多無掛牌選擇權)")

@@ -441,6 +441,47 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
         html = html.replace(anchor, btpanel + anchor, 1) if anchor in html else html + btpanel
     except FileNotFoundError:
         pass
+
+    anchor = '<h2 style="font-size:1rem;margin:22px 0 8px">📖 策略說明'
+    # 💎 CB 凸性彈藥清單面板(讀 cb_analyzer/cb_convexity.json;老闆可轉債的便宜凸性)
+    try:
+        cbp = os.path.join(HERE, "..", "..", "cb_analyzer", "cb_convexity.json")
+        cb = json.load(open(cbp, encoding="utf-8"))
+        tnm = {1: "✅門檻", 2: "⚠️規模夠·信用弱", 3: "小規模"}
+        def _cbrow(r):
+            ve = f'{r["vol_edge"]*100:+.1f}%' if r.get("vol_edge") is not None else "—"
+            cls = "pos" if (r.get("vol_edge") or 0) > 0 else "neg"
+            iv = f'{r["iv"]*100:.0f}%' if r.get("iv") else "—"
+            hv = f'{r["hv"]*100:.0f}%' if r.get("hv") else "—"
+            return (f'<tr><td>{r["name"]}</td><td>{r["code"]}</td><td>{r["spot"]:.1f}</td>'
+                    f'<td>{r["K"]:.1f}</td><td>{r["parity"]:.0f}</td><td>{r["floor"]:.0f}</td>'
+                    f'<td>{hv}/{iv}</td><td class="{cls}">{ve}</td><td>{r["edge_theo"]:+.1f}</td>'
+                    f'<td>{r.get("tcri")}</td><td>{r.get("size")}億</td><td>{tnm.get(r.get("tier"),"")}</td></tr>')
+        cbrows = "".join(_cbrow(r) for r in cb.get("rows", []))
+        cbpanel = (f'<h2 style="font-size:1rem;margin:22px 0 6px">💎 CB 凸性彈藥清單(老闆的可轉債)</h2>'
+                   f'<div class="btnote">「便宜度」= 標的實現波動 − CB反解隱波(正=內嵌選擇權被賤賣:下檔債底撐、上檔吃股票波動=高信念集中壓的彈藥)。'
+                   f'⚠️ 隱波從承銷價反解非交易所IV;{cb.get("n_priced")}/{cb.get("n_total")}檔可定價;現階段可拆池全是 TCRI 5-7 中弱信用(無一過投資級門檻)。</div>'
+                   f'<div class="card" style="grid-column:1/-1;overflow-x:auto"><table>'
+                   f'<tr><th>名稱</th><th>股</th><th>現股</th><th>轉換價</th><th>parity</th><th>債底</th>'
+                   f'<th>實波/內隱</th><th>便宜度</th><th>理論edge</th><th>TCRI</th><th>規模</th><th>層</th></tr>'
+                   f'{cbrows}</table></div>')
+        html = html.replace(anchor, cbpanel + anchor, 1) if anchor in html else html + cbpanel
+    except (FileNotFoundError, KeyError, ValueError):
+        pass
+
+    # 🪙 Crypto 量化研究面板(四扇門誠實記分;靜態研究定論)
+    crypto = [("裸趨勢突破", "BTC WF夏普+0.27 / +2%年 / 46%回撤", "🟡弱"),
+              ("均值回歸", "全負(夏普-1.2~-2.2)= 動能主導不回歸", "🔴無"),
+              ("無腦持有", "BTC-1% / ETH-44%(此2年盤整偏空)", "🔴虧"),
+              ("資金費率套利", "淨carry +4.7%/年 · 80%期為正 · 夏普高", "🟢真但低")]
+    crows = "".join(f'<tr><td>{n}</td><td>{d}</td><td>{v}</td></tr>' for n, d, v in crypto)
+    crypanel = (f'<h2 style="font-size:1rem;margin:22px 0 6px">🪙 Crypto 量化研究(誠實記分)</h2>'
+                f'<div class="btnote">crypto 沒有躺賺演算法:純價格門(趨勢/回歸)此窗口難,唯一真 edge 是資金費率套利但只 +4.7%(債券型底倉)。'
+                f'⚠️ crypto native vol 極高(持有就54-69%回撤)→ 槓桿=爆倉。高報酬=小edge×槓桿 或 CB凸性×高信念。</div>'
+                f'<div class="card" style="grid-column:1/-1;overflow-x:auto"><table>'
+                f'<tr><th>機制(門)</th><th>walk-forward 結果</th><th>判定</th></tr>{crows}</table></div>')
+    html = html.replace(anchor, crypanel + anchor, 1) if anchor in html else html + crypanel
+
     with open(os.path.join(PDIR, "index.html"), "w", encoding="utf-8") as f:
         f.write(html)
 
