@@ -182,6 +182,15 @@ const US_IND_ZH = {
 };
 let usIndustry = {};
 try { usIndustry = JSON.parse(localStorage.getItem("md-us-industry") || "{}") || {}; } catch {}
+// 美股大型股靜態分類反查(us-industry.js 的 GICS 11 類 → 代號→類別):零 API 即時顯示;排行長尾才 fallback Finnhub
+const US_IND_BY_SYM = {};
+try {
+  if (typeof US_INDUSTRY !== "undefined") {
+    for (const k in US_INDUSTRY) for (const sym of US_INDUSTRY[k]) if (!US_IND_BY_SYM[sym]) US_IND_BY_SYM[sym] = k;
+  }
+} catch {}
+// US_INDUSTRY 鍵格式「中文 English」(中文段無空格)→ 依語言取半
+function usSectorLabel(key) { const i = key.indexOf(" "); return i < 0 ? key : (LANG === "zh" ? key.slice(0, i) : key.slice(i + 1)); }
 
 const email = localStorage.getItem("md-email");
 const pwd = sessionStorage.getItem("md-pwd") || localStorage.getItem("md-saved-pwd") || "";
@@ -234,8 +243,10 @@ function sigDot(sym) {
 function indLabel(sym) {
   if (isTWSym(sym)) return INDUSTRY[sym] || "";
   const raw = usIndustry[sym];
-  if (!raw) return "";
-  return (LANG === "zh" && US_IND_ZH[raw]) ? US_IND_ZH[raw] : raw;
+  if (raw) return (LANG === "zh" && US_IND_ZH[raw]) ? US_IND_ZH[raw] : raw;  // Finnhub 細分類優先
+  const k = US_IND_BY_SYM[sym];
+  if (k) return usSectorLabel(k);  // 靜態 GICS 大類(大型股),零 API 即時
+  return "";
 }
 
 function nameCell(sym, name) {
@@ -250,7 +261,7 @@ function nameCell(sym, name) {
 // 美股清單:代號旁補上產業分類。Finnhub industry 由 /us-fundamentals 提供(server 端 CF cache 3h),
 // 抓到後寫進 usIndustry 並持久化,避免每次重抓;就地更新對應 ind-<sym> span。
 async function enrichUsIndustry(syms) {
-  const todo = [...new Set(syms.filter(s => !isTWSym(s) && !(s in usIndustry)))];
+  const todo = [...new Set(syms.filter(s => !isTWSym(s) && !(s in usIndustry) && !US_IND_BY_SYM[s]))];
   if (!todo.length) return;
   let changed = false;
   const paintOne = (s) => {
