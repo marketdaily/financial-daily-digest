@@ -1125,7 +1125,8 @@ def _push_admin_alert(msg):
         req = urllib.request.Request(
             f"{worker.rstrip('/')}/internal/admin-line-push",
             data=_json.dumps({"message": msg}).encode("utf-8"),
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"},
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}",
+                     "User-Agent": "md-digest-alert/1.0"},
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -1219,7 +1220,8 @@ def _push_systemic_alert(date_str, check, sample_email):
         req = urllib.request.Request(
             f"{worker.rstrip('/')}/internal/admin-line-push",
             data=_json.dumps({"message": msg}).encode("utf-8"),
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"},
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}",
+                     "User-Agent": "md-digest-alert/1.0"},
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=10) as resp:
@@ -1253,7 +1255,8 @@ def _push_preflight_alert(date_str, high_fails, total_subscribers):
     req = urllib.request.Request(
         f"{worker.rstrip('/')}/internal/admin-line-push",
         data=_json.dumps({"message": msg}).encode("utf-8"),
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"},
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}",
+                     "User-Agent": "md-digest-alert/1.0"},
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=10) as resp:
