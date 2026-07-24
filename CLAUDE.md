@@ -130,7 +130,12 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 - **site_scan.yml**：scan（`scripts/site_scan.py`,14 項,源頭=site-doctor skill 的 scan.py,改 skill 版要同步）→ fail 即推播告警 → Claude 在 CI 按 `scripts/site_fix_playbook.md` 自動修（只准動 docs/,guard 強制）→ 重掃全過才部署+push,否則 revert+推播告警。
 - **⚠️ LINE 已全面退役（2026-07-06 連 admin 備援也拔了）**：admin 告警唯一通道 = 自有 web push（alert-worker `/internal/admin-line-push`,路徑名沿用但只發 web push）。任何 session 不得再向用戶提 LINE、不得重接 LINE。
 - **日報整點寄出**：cron 06:20/19:25 TW 觸發只為生成,main.py `_hold_until_send_time` 等到 07:00/20:00 整點一齊寄。⚠️ 05:30 preflight 已隨 GitHub Actions 停擺退役(2026-07-06 才發現,勿當它還在);寄前防線=①`build_email_html` 未定義 CSS class 確定性修復層 ②同一 HIGH audit check 生成中連中 3 位即熔斷推 admin(`_push_systemic_alert`,趕在整點寄出前)。
-- 相關 token:alert-worker `ADMIN_PUSH_TOKEN` = GH `MARKETDAILY_ALERT_TOKEN` = watchdog `ALERT_TOKEN`（同值,旋轉要三端一起）。
+- 相關 token（同一把值,**旋轉要「七處」一起**,2026-07-24 實測校正,原記「三端」不完整）：
+  - **alert-worker 四把 secret**：`ADMIN_PUSH_TOKEN`、`ADMIN_PUSH_TOKEN_2`、`MARKETING_TARGETS_TOKEN`、`INTERNAL_TOKEN`（admin-line-push 的候選清單全接受同值 → 漏換任一把舊 token 就還活）
+  - **watchdog** `ALERT_TOKEN`（/hb 心跳驗證 + 反向推 alert-worker）
+  - **winrig `.env`** `MARKETDAILY_ALERT_TOKEN` + `MARKETDAILY_INTERNAL_TOKEN`（`heartbeat.sh` 直讀前者,改 .env 自動跟上不用改腳本）
+  - GH secret `MARKETDAILY_ALERT_TOKEN`（Actions 已死→runtime 無關,可略）
+  - ⚠️ 旋轉法：`wrangler secret put` 後 **CF 傳播 30–60s**（首測太早會假陰,舊 token 看似還活）；驗證=舊 token 打兩 worker 皆須 403、新 token 皆 200 + 真實 `main._push_admin_alert` status=200。
 - 坑:workers.dev 同帳號互打被 1042 擋（用 service binding）;GH Actions skip 步驟 output=null,`null=='0'` 數字強轉=true。
 
 ## 重要慣例（從過去 session 學到）
