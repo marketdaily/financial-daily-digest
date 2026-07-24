@@ -1277,10 +1277,19 @@ def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails, dry_run=False):
         return
     prefix = "🧪 [PRE-FLIGHT]" if dry_run else "🛡️"
     lines = [f"{prefix} MarketDaily 日報品質告警 {date_str}"]
+    # 老闆本人掉降級/備援版 = 紅色 canary(2026-07-24:delvin 掉 portfolio_lens 誤殺備援,
+    # 舊告警只說「1 位掉備援」跟其他品質告警一模一樣→淹沒沒被抓到)。老闆是老手多持股,
+    # 他掉多半是系統性問題的金絲雀;最上方插刺眼獨立警示,不可能再與雜訊混淆。
+    owner_emails = {e.strip().lower() for e in os.environ.get(
+        "MARKETDAILY_OWNER_EMAIL", "delvin.12345678@gmail.com").split(",") if e.strip()}
+    owner_hit = sorted({em for em in (list(det_fallbacks) + [e for e, _ in perso_fails])
+                        if str(em).strip().lower() in owner_emails})
+    if owner_hit:
+        lines.insert(0, "🚨🚨🚨 老闆本人今天收到降級/備援版日報 — 幾乎必是系統性問題的金絲雀,務必當天查根因!")
     if det_fallbacks:
         lines.append(f"⬇️ {len(det_fallbacks)} 位走 deterministic fallback(retry 仍 HIGH fail):")
         for em in det_fallbacks[:8]:
-            lines.append(f"  • {em}")
+            lines.append(f"  • {em}" + ("  ← 老闆本人" if str(em).strip().lower() in owner_emails else ""))
         if len(det_fallbacks) > 8:
             lines.append(f"  …另 {len(det_fallbacks) - 8} 位")
     if perso_fails:
@@ -1298,8 +1307,24 @@ def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails, dry_run=False):
                  "User-Agent": "md-digest-alert/1.0"},
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=10) as resp:
-        print(f"   admin push status={resp.status}")
+    # 重試 3 次:間歇 403(WAF)/timeout 不再讓告警默默蒸發。全敗 = 守衛掛掉也要看得見,
+    # 大聲印到 cron log(尤其含老闆本人時),再往上拋讓呼叫端記錄。
+    last_err = None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                print(f"   admin push status={resp.status}"
+                      + ("  🚨含老闆本人掉備援" if owner_hit else ""))
+                return
+        except Exception as e:
+            last_err = e
+            print(f"   ⚠️ admin push 第 {attempt + 1}/3 次失敗:{e}")
+            if attempt < 2:
+                time.sleep(2 * (attempt + 1))
+    print("🚨🚨 ADMIN 日報品質告警推播 3 次全失敗,這則告警沒送出去!"
+          + ("(且含老闆本人掉備援!)" if owner_hit else "")
+          + f" last_err={last_err}")
+    raise last_err if last_err else RuntimeError("admin push failed after 3 retries")
 
 
 def _push_admin_coverage_alert(date_str, missing_codes, dry_run=False):
