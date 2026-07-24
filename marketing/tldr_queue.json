@@ -2,6 +2,138 @@
   "_comment": "日報自動裂變候選佇列(P2.5打法6資料層)——只含公版存檔結構化數字區塊萃取的短文,發文前仍須逐字核對 caption_zh(feedback_social_post_verify)。本檔不會被自動發文流程讀取。",
   "candidates": [
     {
+      "date": "2026-07-24",
+      "variant": "us",
+      "indicators": [
+        {
+          "label": "VIX 恐慌指數",
+          "value": "18.88",
+          "sub": "平靜"
+        },
+        {
+          "label": "恐貪指數",
+          "value": "65/100",
+          "sub": "Greed"
+        },
+        {
+          "label": "美國10年債",
+          "value": "4.7%",
+          "sub": "殖利率仍貼近高點，留意升息預期"
+        },
+        {
+          "label": "黃金 / 原油",
+          "value": "$4061.6 / $90.02",
+          "sub": "黃金+0.28% / 原油-2.35%"
+        },
+        {
+          "label": "USD/TWD 匯率",
+          "value": "32.34",
+          "sub": "台幣小幅貶值+0.12%"
+        }
+      ],
+      "sectors": [
+        {
+          "name": "XLI 工業",
+          "move": "▲ +1.73%",
+          "pct": 1.73
+        },
+        {
+          "name": "XLV 醫療",
+          "move": "▲ +1.26%",
+          "pct": 1.26
+        },
+        {
+          "name": "XLE 能源",
+          "move": "▲ +0.30%",
+          "pct": 0.3
+        },
+        {
+          "name": "XLY 非必需消費",
+          "move": "▼ -4.61%",
+          "pct": -4.61
+        },
+        {
+          "name": "XLC 通訊",
+          "move": "▼ -3.50%",
+          "pct": -3.5
+        },
+        {
+          "name": "XLP 必需消費",
+          "move": "▼ -1.39%",
+          "pct": -1.39
+        }
+      ],
+      "caption_zh": "📊 2026-07-24 美股盤後市場脈搏\nVIX 18.88(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.7% · USD/TWD 32.34\n板塊輪動:XLI 工業 領漲 ▲ +1.73%、XLY 非必需消費 重挫 ▼ -4.61%\n完整日報 → link in bio",
+      "caption_len": 150,
+      "source_archive": "docs/output/digest_2026-07-24_us.html"
+    },
+    {
+      "date": "2026-07-24",
+      "variant": "tw",
+      "indicators": [
+        {
+          "label": "VIX 恐慌指數",
+          "value": "18.7",
+          "sub": "平靜（但一夜跳升12.4%要留意）"
+        },
+        {
+          "label": "恐貪指數",
+          "value": "65/100",
+          "sub": "Greed"
+        },
+        {
+          "label": "美國10年債",
+          "value": "4.7%",
+          "sub": "升至2025年1月以來新高，通膨疑慮升溫"
+        },
+        {
+          "label": "黃金 / 原油",
+          "value": "$4051.8 / $92.22",
+          "sub": "黃金 +0.04% / 原油 +0.03%"
+        },
+        {
+          "label": "USD/TWD 匯率",
+          "value": "32.3",
+          "sub": "台幣小升 0.24%"
+        }
+      ],
+      "sectors": [
+        {
+          "name": "XLI 工業",
+          "move": "▲ +1.73%",
+          "pct": 1.73
+        },
+        {
+          "name": "XLV 醫療",
+          "move": "▲ +1.26%",
+          "pct": 1.26
+        },
+        {
+          "name": "XLE 能源",
+          "move": "▲ +0.30%",
+          "pct": 0.3
+        },
+        {
+          "name": "XLY 非必需消費",
+          "move": "▼ -4.61%",
+          "pct": -4.61
+        },
+        {
+          "name": "XLC 通訊",
+          "move": "▼ -3.50%",
+          "pct": -3.5
+        },
+        {
+          "name": "XLP 必需消費",
+          "move": "▼ -1.39%",
+          "pct": -1.39
+        }
+      ],
+      "caption_zh": "📊 2026-07-24 台股盤後市場脈搏\nVIX 18.7(平靜（但一夜跳升12.4%要留意）) · 恐貪指數 65/100(Greed) · 美10年債 4.7% · USD/TWD 32.3\n板塊輪動:XLI 工業 領漲 ▲ +1.73%、XLY 非必需消費 重挫 ▼ -4.61%\n完整日報 → link in bio",
+      "caption_len": 163,
+      "source_archive": "docs/output/digest_2026-07-24.html"
+    },
+    {
       "date": "2026-07-22",
       "variant": "us",
       "indicators": [
