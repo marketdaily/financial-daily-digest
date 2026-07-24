@@ -1062,12 +1062,25 @@ def _emit_run_report(data, subscribers, processed, success_count, tier_counts,
             print(f"   - {em}: {err}")
 
     # audit 結果彙整 → 印 cron log + 寫報告檔(下一輪我會看)
-    if audit_failures_by_email or personalization_failures:
+    # 2026-07-24:掉 deterministic 備援版是最嚴重的使用者可見後果(收到閹割版),但原本
+    # 完全沒寫進報告(備援版重稽核 fails=空 → 不進 by_email),也不觸發寫檔 →「報告全綠、
+    # 實際收到備援版」的落差(delvin 實鍋)。三類失敗(備援/個人化拋錯/audit失分)都要浮上來。
+    if audit_failures_by_email or personalization_failures or deterministic_fallbacks:
         all_checks = {}
         for em, fs in audit_failures_by_email.items():
             for f in fs:
                 all_checks.setdefault(f["check"], []).append((em, f))
-        summary_lines = [f"🚨 日報 audit:{len(audit_failures_by_email)}/{len(subscribers)} 位用戶的日報失分"]
+        summary_lines = []
+        if deterministic_fallbacks:
+            summary_lines.append(
+                f"🛡️ [deterministic_fallback] {len(deterministic_fallbacks)} 位收到備援版"
+                f"(個人化生成連 retry 都失敗):{', '.join(deterministic_fallbacks)}")
+        if personalization_failures:
+            summary_lines.append(
+                f"❌ [personalization_failed] {len(personalization_failures)} 位個人化生成拋錯:"
+                f"{', '.join(em for em, _ in personalization_failures)}")
+        if audit_failures_by_email:
+            summary_lines.append(f"🚨 日報 audit:{len(audit_failures_by_email)}/{len(subscribers)} 位用戶的日報失分")
         for check, items in sorted(all_checks.items(), key=lambda x: -len(x[1])):
             sev = items[0][1].get("severity", "med")
             tag = {"high": "🔴", "med": "🟡", "low": "🔵"}.get(sev, "🟡")
@@ -1086,8 +1099,10 @@ def _emit_run_report(data, subscribers, processed, success_count, tier_counts,
                     "total_subscribers": len(subscribers),
                     "personalization_failed_count": len(personalization_failures),
                     "personalization_failures": personalization_failures,
+                    "deterministic_fallback_count": len(deterministic_fallbacks),
+                    "deterministic_fallbacks": list(deterministic_fallbacks),
                     "audit_failed_count": len(audit_failures_by_email),
-                    "summary": summary if audit_failures_by_email else "",
+                    "summary": summary,
                     "by_email": {em: fs for em, fs in audit_failures_by_email.items()},
                 }, f, ensure_ascii=False, indent=2)
             print(f"📋 audit 報告寫到 {report_path}")

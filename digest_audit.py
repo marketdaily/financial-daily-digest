@@ -27,6 +27,44 @@ TW_MORNING_ACTION_RE = re.compile(
     r"|(?<![\d,,.．])0?9\s*[:：點時.]?\s*[0-5]?\d?\s*開盤"
 )
 
+# ── 真實上市證券代號驗證(2026-07-24:portfolio_lens_foreign_ticker 誤判根治)──
+# 原檢查把「像代號」的 token 一律當外來標的,結果年份(2026)/指數點位(23150)/
+# 價位(1085)/名詞縮寫(AI/GDP/CPI/ETF)全被誤殺 → 老手+台股用戶每天被逼降備援版
+# (delvin 07-24 實鍋:retry 換強模型重生仍踩到別的數字,連 2 版都被誤殺→備援)。
+# 改成「必須是真實上市證券」才算外來:台股比對 .tw_names_cache.json(12k 代號),
+# 美股比對 stock_names(涵蓋 2026-07-21 洩漏的公版觀察清單)。洩漏進來的真標的
+# (AAPL/2330)仍在名表 → 照抓,防線不弱化;年份/價位/縮寫不在名表 → 放行。
+_TW_TICKER_UNIVERSE = None
+
+
+def _tw_ticker_universe():
+    global _TW_TICKER_UNIVERSE
+    if _TW_TICKER_UNIVERSE is None:
+        import os
+        import json
+        uni = set()
+        for p in (os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               "scripts", ".tw_names_cache.json"),
+                  "scripts/.tw_names_cache.json"):
+            try:
+                with open(p, encoding="utf-8") as f:
+                    uni = set(json.load(f).keys())
+                break
+            except Exception:
+                continue
+        _TW_TICKER_UNIVERSE = uni
+    return _TW_TICKER_UNIVERSE
+
+
+def _is_real_ticker(tok):
+    """token 是否為真實上市證券代號(排除年份/指數/價位/名詞縮寫等非證券數字)。"""
+    t = (tok or "").strip().upper()
+    if not t:
+        return False
+    if t.isdigit():
+        return t in _tw_ticker_universe() or t in stock_names.TW_NAMES
+    return stock_names.is_known(t)
+
 
 def _strip_html_to_text(html: str) -> str:
     """粗略去 tag,留下純文字供 keyword 比對。"""
@@ -461,7 +499,8 @@ def audit_digest(
         found = set(re.findall(r"\b[A-Z]{2,5}\b", lens_text)) - {"DCF"}
         found |= set(re.findall(r"\b\d{4,6}\b", lens_text))
         foreign = sorted(t for t in found
-                         if t not in held and not any(t in h for h in held))
+                         if _is_real_ticker(t)
+                         and t not in held and not any(t in h for h in held))
         if foreign:
             preview = ", ".join(foreign[:8])
             fails.append({"check": "portfolio_lens_foreign_ticker", "severity": "high",
