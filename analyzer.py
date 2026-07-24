@@ -20,6 +20,14 @@ GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite",
                  "gemini-2.0-flash", "gemini-2.0-flash-lite"]
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
+# 2026-07-24:LLM provider 例外字串含 `?key=AIza…` 的完整 URL,原樣 print/raise 會把
+# API key 明文寫進 cron log(logs/fallback_*.log 已中招)。記錄前一律過此 scrub。
+_SECRET_RE = re.compile(r"([?&]key=)[^&\s\"']+|AIza[0-9A-Za-z_\-]{20,}|AQ\.[0-9A-Za-z._\-]{20,}")
+
+
+def _redact_secrets(s) -> str:
+    return _SECRET_RE.sub(lambda m: (m.group(1) + "***") if m.group(1) else "***REDACTED***", str(s))
+
 # ── 近端價位錨定參數(_near_term_levels / _postprocess_html 買點分流共用)──
 NEAR_HIGH_RATIO = 0.985      # 建議買區上緣低於現價 1.5% 以上 → chip 改「回檔再買」
 ATR_MAX_RATIO = 0.15         # ATR 超過現價 15% 視為異常
@@ -497,14 +505,14 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
                 last_err = e
                 if _is_transient_dns_error(e):
                     dns_blip = True
-                print(f"  [LLM] {name} 失敗({str(e)[:120]})")
+                print(f"  [LLM] {name} 失敗({_redact_secrets(str(e))[:120]})")
         # 全 provider 失敗:只有『疑似 DNS 瞬斷』才值得等 8s 重試整輪(配額/認證錯重試也沒用)
         if dns_blip and rnd == 0:
             print("  [LLM] 全鏈失敗且疑似 DNS 瞬斷(WSL→Windows DNS 抖),等 8s 重試整輪")
             time.sleep(8)
             continue
         break
-    raise RuntimeError(f"所有 LLM provider 都失敗:{last_err}")
+    raise RuntimeError(f"所有 LLM provider 都失敗:{_redact_secrets(last_err)}")
 
 
 def get_personalized_subject(data: dict, us_stocks: list, tw_stocks: list, date: str) -> str:
