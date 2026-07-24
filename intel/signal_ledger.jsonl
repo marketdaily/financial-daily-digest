@@ -405,3 +405,18 @@
 {"date": "2026-07-23", "code": "5345", "source": "leadflow", "level": "red", "signal": "馥鴻(5345) 無消息近漲停+9.8%(連3根,5日+23.5%),疑資訊先行資金|外資+投信近3日僅-7張,法人未同步=隱形買盤", "price_at_signal": 25.2}
 {"date": "2026-07-23", "code": "3523", "source": "leadflow", "level": "red", "signal": "迎輝(3523) 無消息近漲停+9.7%(連2根,5日+9.7%),疑資訊先行資金|外資+投信近3日僅+2張,法人未同步=隱形買盤", "price_at_signal": 16.9}
 {"date": "2026-07-23", "code": "5312", "source": "leadflow", "level": "red", "signal": "寶島科(5312) 無消息近漲停+9.2%(量能20.1×,5日+11.1%),疑資訊先行資金|外資+投信近3日僅+42張,法人未同步=隱形買盤", "price_at_signal": 100.0}
+{"date": "2026-07-24", "code": "1560", "source": "investor_conf", "level": "yellow", "signal": "中砂(1560):法說會18天後召開", "price_at_signal": 672.0}
+{"date": "2026-07-24", "code": "2303", "source": "investor_conf", "level": "red", "signal": "聯電(2303):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": 128.0}
+{"date": "2026-07-24", "code": "2451", "source": "institutional", "level": "yellow", "signal": "創見(2451):法人 20 日淨賣超 -12,743 張(未成連續型態)", "price_at_signal": 264.0}
+{"date": "2026-07-24", "code": "2451", "source": "tw_rank", "level": "yellow", "signal": "創見(2451) 今日漲幅排行第20(+8.0%),異常活躍", "price_at_signal": 264.0}
+{"date": "2026-07-24", "code": "3141", "source": "institutional", "level": "red", "signal": "晶宏(3141):外資連 5 日買超(5日淨買 +187 張)", "price_at_signal": 65.4}
+{"date": "2026-07-24", "code": "3141", "source": "mops_news", "level": "red", "signal": "晶宏(3141) 重訊[2026-07-23]:公告本公司國內第四次無擔保轉換公司債代收債款 及存儲專戶行庫", "price_at_signal": 65.4}
+{"date": "2026-07-24", "code": "3339", "source": "institutional", "level": "yellow", "signal": "泰谷(3339):法人 20 日淨買超 +363 張(未成連續型態)", "price_at_signal": 34.3}
+{"date": "2026-07-24", "code": "8222", "source": "sbl", "level": "red", "signal": "寶一(8222):機構借券賣出5日遽增20.8%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": 38.9}
+{"date": "2026-07-24", "code": "8299", "source": "investor_conf", "level": "yellow", "signal": "群聯(8299):法說會20天後召開", "price_at_signal": 1825.0}
+{"date": "2026-07-24", "code": "8916", "source": "institutional", "level": "yellow", "signal": "光隆(8916):法人 20 日淨買超 +450 張(未成連續型態)", "price_at_signal": 41.95}
+{"date": "2026-07-24", "code": "9958", "source": "mops_news", "level": "yellow", "signal": "世紀鋼(9958) 重訊[2026-07-23]:更正115年4月、5月及6月背書保證資訊揭露明細表", "price_at_signal": 110.5}
+{"date": "2026-07-24", "code": "1799", "source": "leadflow", "level": "yellow", "signal": "易威(1799) 無消息近漲停+10.0%(量能2.7×,5日+10.9%),疑資訊先行資金", "price_at_signal": 35.75}
+{"date": "2026-07-24", "code": "6588", "source": "leadflow", "level": "red", "signal": "東典光電(6588) 無消息近漲停+10.0%(量能3.7×,5日+13.8%),疑資訊先行資金|外資+投信近3日僅-81張,法人未同步=隱形買盤", "price_at_signal": 81.5}
+{"date": "2026-07-24", "code": "6461", "source": "leadflow", "level": "red", "signal": "益得(6461) 無消息近漲停+9.4%(量能12.6×,5日+12.6%),疑資訊先行資金|外資+投信近3日僅+86張,法人未同步=隱形買盤", "price_at_signal": 17.4}
+{"date": "2026-07-24", "code": "6103", "source": "leadflow", "level": "yellow", "signal": "合邦(6103) 無消息近漲停+8.6%(量能2.6×,5日+8.6%),疑資訊先行資金", "price_at_signal": 32.8}
