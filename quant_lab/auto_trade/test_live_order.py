@@ -28,9 +28,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--yes", action="store_true", help="明確確認要對真實帳戶操作")
     ap.add_argument("--mode", choices=["submit-cancel", "fill-close"], default="submit-cancel")
+    ap.add_argument("--check-only", action="store_true",
+                    help="只驗登入+CA啟用,絕不下任何單(驗憑證/密碼/身分證字號對不對)")
     a = ap.parse_args()
-    if not a.yes:
-        _die("這會連上你的真實期貨帳戶。確定請加 --yes(fill-close 會真的成交1口)。")
+    if not a.yes and not a.check_only:
+        _die("這會連上你的真實期貨帳戶。確定請加 --yes(fill-close 會真的成交1口),或 --check-only 只驗登入+CA。")
 
     from shioaji_adapter import _load_env
     _load_env()
@@ -59,6 +61,17 @@ def main():
     if not ok:
         _die("CA 啟用失敗(檢查 .pfx / 密碼 / 身分證字號)")
     print("   ✅ 登入 + CA 完成")
+    if a.check_only:
+        try:
+            print(f"   期貨帳戶:{api.futopt_account}")
+        except Exception as e:
+            print(f"   (帳戶查詢:{e})")
+        print("\n✅ 憑證/密碼/身分證字號全部正確,真實下單管線可用(本次未下任何單)。")
+        try:
+            api.logout()
+        except Exception:
+            pass
+        return
 
     # 取近月小台合約
     try:
