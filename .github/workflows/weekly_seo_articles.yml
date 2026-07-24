@@ -1,9 +1,12 @@
 name: 每週 SEO 個股文章
 
 on:
-  schedule:
-    # 每週日 17:00 UTC = 週一 01:00 TWT(網站冷時段跑,週一早上才有新內容上線)
-    - cron: "0 17 * * 0"
+  # 2026-07-24 GitHub 帳號解封後停用 schedule:SEO 文章已改由 winrig cron
+  # seo_runner.sh 單一來源生成,避免 Actions 復活雙頭 commit 打架。
+  # 需臨時補生用 workflow_dispatch。(防雙發設計,同 social_post.yml)
+  # schedule:
+  #   # 每週日 17:00 UTC = 週一 01:00 TWT(網站冷時段跑,週一早上才有新內容上線)
+  #   - cron: "0 17 * * 0"
   workflow_dispatch:
     inputs:
       count:

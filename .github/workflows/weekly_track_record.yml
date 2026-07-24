@@ -6,9 +6,12 @@ name: 戰績紀錄刷新
 #  2) 每週日 15:00 UTC = TW 週日 23:00:全量回掃 + 週末總整理
 # 跑完更新 docs/data/track-record.json,commit 回 main 並用 wrangler 部署 Pages
 on:
-  schedule:
-    - cron: "7 22 * * 1-5"   # 美股交易日收盤 +2 小時
-    - cron: "0 15 * * 0"     # 每週日 23:00 TWT 全量回掃
+  # 2026-07-24 GitHub 帳號解封後停用 schedule:track-record 已改由 winrig cron
+  # refresh_track_record.sh 單一來源刷新,避免 Actions 復活雙頭 commit 打架。
+  # 需臨時補刷用 workflow_dispatch。(防雙發設計,同 social_post.yml)
+  # schedule:
+  #   - cron: "7 22 * * 1-5"   # 美股交易日收盤 +2 小時
+  #   - cron: "0 15 * * 0"     # 每週日 23:00 TWT 全量回掃
   workflow_dispatch:          # 手動觸發備援
 
 permissions:
