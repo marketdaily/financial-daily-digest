@@ -780,6 +780,24 @@ def _generate_user_email(data, email, gen_us, gen_tw, depth, is_premium, picks_m
     return inner, subject, web_url, shown, ai_calls
 
 
+# 👑 老闆護盾(2026-07-24 Delvin 親令「絕對不要再看到閹割版」):把 HIGH 檢查分兩類——
+# 「軟錯」= 內容完整且正確、只是不夠深(理由偏短/偏籠統/TLDR 偏短);其餘全是「硬錯」
+# (版面壞/假數字/裸代號/截斷/漏持股/時序錯/真洩漏,寄出=壞或錯的信)。老闆本人的日報
+# 若只因軟錯要被閹割 → 改寄 AI 完整版(寧可完整帶小瑕,不要閹割);硬錯仍走備援。
+_SOFT_HIGH_CHECKS = {"signal_reason_shallow", "signal_reason_vague", "tldr_too_short"}
+
+
+def _owner_emails():
+    return {e.strip().lower() for e in os.environ.get(
+        "MARKETDAILY_OWNER_EMAIL", "delvin.12345678@gmail.com").split(",") if e.strip()}
+
+
+def _owner_shield_applies(high_checks, email):
+    """老闆護盾:是老闆本人 + 剩餘 HIGH 全為軟錯 → 該寄 AI 完整版取代閹割備援版。"""
+    return (bool(high_checks) and all(c in _SOFT_HIGH_CHECKS for c in high_checks)
+            and str(email).strip().lower() in _owner_emails())
+
+
 def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, picks_mode,
                       picks_banner, ai_calls, deterministic_fallbacks,
                       systemic_high_counts=None, positions=None):
@@ -828,13 +846,19 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
                 fails = retry_fails
             else:
                 retry_high_checks = sorted({f["check"] for f in retry_fails if f.get("severity") == "high"})
-                print(f"   🛡️ retry 仍 HIGH fail({','.join(retry_high_checks)}) → 切 deterministic fallback")
-                det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
-                if picks_mode:
-                    det_inner = picks_banner + _sanitize_picks_wording(det_inner)
-                html = build_email_html(data["date"], det_inner)
-                fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est, base_css=CSS)
-                deterministic_fallbacks.append(email)
+                # 👑 老闆護盾:你本人 + 剩下的 HIGH 全是軟錯 → 寄 AI 完整版而非閹割備援版。
+                if _owner_shield_applies(retry_high_checks, email):
+                    print(f"   👑 老闆護盾:僅軟性 HIGH({','.join(retry_high_checks)}) → 寄 AI 完整版(不閹割,睡著也生效)")
+                    html = retry_html
+                    fails = retry_fails
+                else:
+                    print(f"   🛡️ retry 仍 HIGH fail({','.join(retry_high_checks)}) → 切 deterministic fallback")
+                    det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
+                    if picks_mode:
+                        det_inner = picks_banner + _sanitize_picks_wording(det_inner)
+                    html = build_email_html(data["date"], det_inner)
+                    fails = audit_digest(html, data["date"], gen_us or [], gen_tw or [], mkt, market=MARKET, earnings_estimates=_earn_est, base_css=CSS)
+                    deterministic_fallbacks.append(email)
         except Exception as e:
             print(f"   🛡️ retry 異常 → deterministic fallback ({e})")
             det_inner = _postprocess_html(generate_deterministic_fallback(data, gen_us or [], gen_tw or [], mkt), data)
@@ -1283,8 +1307,7 @@ def _push_admin_halt_alert(date_str, det_fallbacks, perso_fails, dry_run=False):
     # 老闆本人掉降級/備援版 = 紅色 canary(2026-07-24:delvin 掉 portfolio_lens 誤殺備援,
     # 舊告警只說「1 位掉備援」跟其他品質告警一模一樣→淹沒沒被抓到)。老闆是老手多持股,
     # 他掉多半是系統性問題的金絲雀;最上方插刺眼獨立警示,不可能再與雜訊混淆。
-    owner_emails = {e.strip().lower() for e in os.environ.get(
-        "MARKETDAILY_OWNER_EMAIL", "delvin.12345678@gmail.com").split(",") if e.strip()}
+    owner_emails = _owner_emails()
     owner_hit = sorted({em for em in (list(det_fallbacks) + [e for e, _ in perso_fails])
                         if str(em).strip().lower() in owner_emails})
     if owner_hit:
