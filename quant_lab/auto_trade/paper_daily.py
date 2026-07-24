@@ -280,7 +280,7 @@ def fish_ce(bars, today, st):
         return
     from shioaji_adapter import login_env
     import time as _t
-    api = login_env()
+    api = login_env(simulation=False)   # 明確:拉真實 kbars 資料(唯讀,不下單)
     _t.sleep(3)
     kb = api.kbars(api.Contracts.Futures.TXF["TXFR1"], start=today, end=today)
     api.logout()

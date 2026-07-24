@@ -58,7 +58,7 @@ def main():
         return
 
     from shioaji_adapter import login_env
-    api = login_env()
+    api = login_env(simulation=False)   # 明確:真實 kbars 即時資料(唯讀;下單仍走 _virtual_fill)
     time.sleep(4)
     r1 = api.Contracts.Futures.TXF["TXFR1"]
     note(f"上線;近月 {r1.code} 參考 {r1.reference}")

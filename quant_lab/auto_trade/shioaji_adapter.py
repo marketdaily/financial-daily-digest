@@ -38,8 +38,11 @@ def _load_env():
             break
 
 
-def login_env(simulation=False):
-    """讀 .env 登入,相容 1.5(fetch_contract 參數)與 1.7+(已移除)。回 api。"""
+def login_env(simulation=True):
+    """讀 .env 登入,相容 1.5(fetch_contract 參數)與 1.7+(已移除)。回 api。
+    ⚠️ 安全預設=simulation=True(模擬環境,絕不下真單)。要真實環境的呼叫端**必須明確**
+    傳 simulation=False——防止新/手滑程式碼誤登真實環境(記憶 DI 暗門 CRITICAL 根治)。
+    注意:真實環境僅供拉資料/真下單;下真單另需 activate_ca 且訂單路徑明確切 place_order。"""
     _load_env()
     import shioaji as sj
     api = sj.Shioaji(simulation=simulation)
