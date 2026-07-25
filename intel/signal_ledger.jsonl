@@ -420,3 +420,8 @@
 {"date": "2026-07-24", "code": "6588", "source": "leadflow", "level": "red", "signal": "東典光電(6588) 無消息近漲停+10.0%(量能3.7×,5日+13.8%),疑資訊先行資金|外資+投信近3日僅-81張,法人未同步=隱形買盤", "price_at_signal": 81.5}
 {"date": "2026-07-24", "code": "6461", "source": "leadflow", "level": "red", "signal": "益得(6461) 無消息近漲停+9.4%(量能12.6×,5日+12.6%),疑資訊先行資金|外資+投信近3日僅+86張,法人未同步=隱形買盤", "price_at_signal": 17.4}
 {"date": "2026-07-24", "code": "6103", "source": "leadflow", "level": "yellow", "signal": "合邦(6103) 無消息近漲停+8.6%(量能2.6×,5日+8.6%),疑資訊先行資金", "price_at_signal": 32.8}
+{"date": "2026-07-25", "code": "2303", "source": "sbl", "level": "yellow", "signal": "聯電(2303):機構借券賣出5日遽減-25.9%(回補潮,空頭力道減弱)", "price_at_signal": 128.0}
+{"date": "2026-07-25", "code": "3028", "source": "sbl", "level": "yellow", "signal": "增你強(3028):機構借券賣出5日增14.6%(溫和加碼放空)", "price_at_signal": 67.3}
+{"date": "2026-07-25", "code": "6869", "source": "mops_news", "level": "yellow", "signal": "雲豹能源(6869) 重訊[2026-07-24]:公告本公司董事長訂定現金股利除息基準日", "price_at_signal": 67.0}
+{"date": "2026-07-25", "code": "8916", "source": "holders", "level": "yellow", "signal": "光隆(8916):千張大戶持股比週減-1.31個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 41.95}
+{"date": "2026-07-25", "code": "8936", "source": "mops_news", "level": "red", "signal": "國統(8936) 重訊[2026-07-24]:公告本公司國內第五次有擔保轉換公司債暨 第六次無擔保轉換公司債代收價款行庫及存儲專戶行庫", "price_at_signal": 52.5}
