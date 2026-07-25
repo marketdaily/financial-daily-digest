@@ -9,6 +9,28 @@ from config import (
 )
 from config_loader import get_us_stocks, get_tw_stocks, get_us_feeds, get_tw_feeds, get_domains
 
+
+def _yf_guard(fn, timeout=12, default=None):
+    """任意 yfinance/Yahoo 呼叫加硬 wall-clock timeout(daemon thread + join)。防 Yahoo
+    收了連線卻不回應→永久卡在 socket poll:2026-07-25 週六早報 06:34 卡死 yfinance 抓台股
+    (e1-bmr.ycpi Yahoo host)1.5h 未寄的根因;yfinance 1.4.1 的 history/news/calendar 都
+    無可靠 timeout。逾時/例外回 default(呼叫端視同無資料);卡死的 daemon thread 不擋主程序
+    退出。⚠️所有 yf.Ticker(...).history/news/calendar 一律經此守衛,別直接裸呼叫。"""
+    import threading
+    box = {"r": default}
+
+    def _work():
+        try:
+            box["r"] = fn()
+        except Exception:
+            box["r"] = default
+
+    t = threading.Thread(target=_work, daemon=True)
+    t.start()
+    t.join(timeout)
+    return box["r"]
+
+
 RSS_FEEDS = [
     # 美股財經
     ("reuters.com",     "https://feeds.reuters.com/reuters/businessNews"),
@@ -235,8 +257,8 @@ def _batch_prices(symbols: list) -> dict:
         # yahooquery 沒補齊的,逐檔用 yfinance 歷史價備援(不同 endpoint,常在 quote API 被擋時仍可用)
         for sym in [s for s in symbols if s not in result]:
             try:
-                hist = yf.Ticker(sym).history(period="5d")
-                if len(hist) >= 2:
+                hist = _yf_guard(lambda: yf.Ticker(sym).history(period="5d"))
+                if hist is not None and len(hist) >= 2:
                     price = float(hist["Close"].iloc[-1])
                     prev = float(hist["Close"].iloc[-2])
                     if price and prev and prev != 0:
@@ -928,7 +950,7 @@ def fetch_ticker_news(extra_symbols: list = None) -> list:
     for symbol in all_symbols:
         try:
             ticker = yf.Ticker(symbol)
-            for item in ticker.news[:5]:
+            for item in (_yf_guard(lambda: ticker.news, default=[]) or [])[:5]:
                 title = item.get("title", "")
                 if title in seen:
                     continue
@@ -1336,7 +1358,7 @@ def fetch_earnings_calendar() -> list:
     for symbol in watchlist:
         try:
             ticker = yf.Ticker(symbol)
-            cal = ticker.calendar
+            cal = _yf_guard(lambda: ticker.calendar)
             if cal is None:
                 continue
             if isinstance(cal, dict):
