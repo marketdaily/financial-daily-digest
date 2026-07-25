@@ -1,18 +1,18 @@
 {
   "stats": {
-    "generated_at": "2026-07-24T08:10:31",
+    "generated_at": "2026-07-25T08:10:48",
     "horizon": "5d",
     "records_since": "2026-06-12",
-    "days_covered": 25,
-    "total_records": 2024,
-    "judged_records": 1449,
+    "days_covered": 26,
+    "total_records": 2100,
+    "judged_records": 1540,
     "one_day": {
-      "a_count": 710,
-      "a_wins": 409,
-      "a_rate": 57.6,
-      "c_count": 1088,
-      "c_wins": 697,
-      "c_rate": 64.1
+      "a_count": 747,
+      "a_wins": 422,
+      "a_rate": 56.5,
+      "c_count": 1143,
+      "c_wins": 745,
+      "c_rate": 65.2
     },
     "monthly": {
       "a_count": 48,
@@ -22,7 +22,7 @@
         14.9,
         38.8
       ],
-      "a_pending": 709,
+      "a_pending": 723,
       "c_count": 38,
       "c_wins": 33,
       "c_rate": 86.8,
@@ -30,7 +30,7 @@
         72.7,
         94.2
       ],
-      "c_pending": 1142
+      "c_pending": 1186
     },
     "quarterly": {
       "a_count": 0,
@@ -40,7 +40,7 @@
         0.0,
         0.0
       ],
-      "a_pending": 757,
+      "a_pending": 771,
       "c_count": 0,
       "c_wins": 0,
       "c_rate": 0.0,
@@ -48,49 +48,49 @@
         0.0,
         0.0
       ],
-      "c_pending": 1180
+      "c_pending": 1224
     },
     "holder": {
       "note": "持有者框架建議(用戶自填進場成本):judge_holder 獨立結算,不計入 A/C 頭條",
-      "count": 7,
-      "wins": 2,
-      "rate": 28.6,
+      "count": 20,
+      "wins": 12,
+      "rate": 60.0,
       "ci95": [
-        8.2,
-        64.1
+        38.7,
+        78.1
       ],
-      "pending": 80
+      "pending": 85
     },
-    "a_count": 601,
-    "a_wins": 259,
-    "a_rate": 43.1,
+    "a_count": 638,
+    "a_wins": 285,
+    "a_rate": 44.7,
     "a_ci95": [
-      39.2,
-      47.1
+      40.9,
+      48.5
     ],
-    "c_count": 848,
-    "c_wins": 663,
-    "c_rate": 78.2,
+    "c_count": 902,
+    "c_wins": 695,
+    "c_rate": 77.1,
     "c_ci95": [
-      75.3,
-      80.8
+      74.2,
+      79.7
     ],
     "calibration": {
-      "n": 601,
-      "brier": 0.2505,
+      "n": 638,
+      "brier": 0.252,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
-          "n": 158,
-          "hit_rate": 50.0
+          "n": 165,
+          "hit_rate": 49.7
         },
         "61-70": {
           "n": 25,
           "hit_rate": 28.0
         },
         "<=50": {
-          "n": 418,
-          "hit_rate": 41.4
+          "n": 448,
+          "hit_rate": 43.8
         }
       }
     },
@@ -105,101 +105,101 @@
         ]
       },
       "down": {
-        "a_count": 165,
-        "a_wins": 84,
-        "a_rate": 50.9,
+        "a_count": 202,
+        "a_wins": 110,
+        "a_rate": 54.5,
         "ci95": [
-          43.3,
-          58.4
+          47.6,
+          61.2
         ]
       }
     },
     "by_market": {
       "tw": {
-        "a_count": 339,
-        "a_wins": 132,
-        "a_rate": 38.9,
+        "a_count": 370,
+        "a_wins": 157,
+        "a_rate": 42.4,
         "a_ci95": [
-          33.9,
-          44.2
+          37.5,
+          47.5
         ],
-        "c_count": 385,
-        "c_wins": 308,
-        "c_rate": 80.0,
+        "c_count": 410,
+        "c_wins": 319,
+        "c_rate": 77.8,
         "c_ci95": [
-          75.7,
-          83.7
+          73.5,
+          81.6
         ],
         "era": {
           "since": "2026-06-12",
-          "a_count": 339,
-          "a_wins": 132,
-          "a_rate": 38.9,
+          "a_count": 370,
+          "a_wins": 157,
+          "a_rate": 42.4,
           "a_ci95_day_cluster": [
-            27.8,
-            51.3
+            29.7,
+            54.4
           ],
-          "c_count": 385,
-          "c_wins": 308,
-          "c_rate": 80.0,
+          "c_count": 410,
+          "c_wins": 319,
+          "c_rate": 77.8,
           "c_ci95_day_cluster": [
-            67.5,
-            88.9
+            65.6,
+            87.2
           ],
-          "days": 19
+          "days": 20
         }
       },
       "us": {
-        "a_count": 262,
-        "a_wins": 127,
-        "a_rate": 48.5,
+        "a_count": 268,
+        "a_wins": 128,
+        "a_rate": 47.8,
         "a_ci95": [
-          42.5,
-          54.5
+          41.9,
+          53.7
         ],
-        "c_count": 463,
-        "c_wins": 355,
-        "c_rate": 76.7,
+        "c_count": 492,
+        "c_wins": 376,
+        "c_rate": 76.4,
         "c_ci95": [
-          72.6,
-          80.3
+          72.5,
+          80.0
         ],
         "era": {
           "since": "2026-06-12",
-          "a_count": 262,
-          "a_wins": 127,
-          "a_rate": 48.5,
+          "a_count": 268,
+          "a_wins": 128,
+          "a_rate": 47.8,
           "a_ci95_day_cluster": [
-            40.7,
-            56.0
+            39.6,
+            55.5
           ],
-          "c_count": 463,
-          "c_wins": 355,
-          "c_rate": 76.7,
+          "c_count": 492,
+          "c_wins": 376,
+          "c_rate": 76.4,
           "c_ci95_day_cluster": [
-            68.6,
-            83.5
+            69.1,
+            82.8
           ],
-          "days": 19
+          "days": 20
         }
       }
     },
     "era": {
       "note": "僅計 2026-06-12 起(結構prior+校準信心上線後)的現行模型;信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
       "since": "2026-06-12",
-      "a_count": 601,
-      "a_wins": 259,
-      "a_rate": 43.1,
+      "a_count": 638,
+      "a_wins": 285,
+      "a_rate": 44.7,
       "a_ci95_day_cluster": [
-        36.2,
-        50.6
+        36.9,
+        52.4
       ],
-      "c_count": 848,
-      "c_wins": 663,
-      "c_rate": 78.2,
+      "c_count": 902,
+      "c_wins": 695,
+      "c_rate": 77.1,
       "c_ci95_day_cluster": [
-        69.0,
-        85.9
+        68.0,
+        84.6
       ],
       "by_regime": {
         "up": {
@@ -212,12 +212,12 @@
           ]
         },
         "down": {
-          "a_count": 165,
-          "a_wins": 84,
-          "a_rate": 50.9,
+          "a_count": 202,
+          "a_wins": 110,
+          "a_rate": 54.5,
           "a_ci95": [
-            43.3,
-            58.4
+            47.6,
+            61.2
           ]
         }
       },
@@ -229,9 +229,9 @@
           "status": null
         },
         "buy|down": {
-          "count": 80,
-          "wins": 37,
-          "rate": 46.2,
+          "count": 85,
+          "wins": 39,
+          "rate": 45.9,
           "status": null
         },
         "hold|up": {
@@ -241,9 +241,9 @@
           "status": null
         },
         "hold|down": {
-          "count": 85,
-          "wins": 47,
-          "rate": 55.3,
+          "count": 117,
+          "wins": 71,
+          "rate": 60.7,
           "status": null
         },
         "sell|up": {
@@ -265,9 +265,9 @@
           "status": null
         },
         "wait|down": {
-          "count": 273,
-          "wins": 179,
-          "rate": 65.6,
+          "count": 327,
+          "wins": 211,
+          "rate": 64.5,
           "status": null
         }
       },
@@ -295,10 +295,10 @@
             "status": "insufficient_data"
           },
           "buy|dn": {
-            "count": 75,
-            "wins": 30,
-            "days": 7,
-            "rate": 40.0,
+            "count": 79,
+            "wins": 32,
+            "days": 8,
+            "rate": 40.5,
             "status": null
           },
           "buy|up": {
@@ -316,10 +316,10 @@
             "status": "insufficient_data"
           },
           "hold|dn": {
-            "count": 42,
-            "wins": 28,
-            "days": 8,
-            "rate": 66.7,
+            "count": 69,
+            "wins": 51,
+            "days": 9,
+            "rate": 73.9,
             "status": null
           },
           "hold|up": {
@@ -358,10 +358,10 @@
             "status": "insufficient_data"
           },
           "wait|dn": {
-            "count": 156,
-            "wins": 109,
-            "days": 7,
-            "rate": 69.9,
+            "count": 181,
+            "wins": 120,
+            "days": 8,
+            "rate": 66.3,
             "status": null
           },
           "wait|up": {
@@ -381,10 +381,10 @@
             "status": "insufficient_data"
           },
           "buy|dn": {
-            "count": 60,
+            "count": 61,
             "wins": 29,
-            "days": 7,
-            "rate": 48.3,
+            "days": 8,
+            "rate": 47.5,
             "status": null
           },
           "buy|up": {
@@ -402,10 +402,10 @@
             "status": "insufficient_data"
           },
           "hold|dn": {
-            "count": 37,
-            "wins": 23,
-            "days": 7,
-            "rate": 62.2,
+            "count": 42,
+            "wins": 24,
+            "days": 8,
+            "rate": 57.1,
             "status": null
           },
           "hold|up": {
@@ -444,10 +444,10 @@
             "status": "insufficient_data"
           },
           "wait|dn": {
-            "count": 176,
-            "wins": 131,
-            "days": 8,
-            "rate": 74.4,
+            "count": 205,
+            "wins": 152,
+            "days": 9,
+            "rate": 74.1,
             "status": null
           },
           "wait|up": {
@@ -460,35 +460,35 @@
         }
       },
       "calibration": {
-        "n": 601,
-        "brier": 0.2505,
+        "n": 638,
+        "brier": 0.252,
         "coin_flip_brier": 0.25,
         "bins": {
           "51-60": {
-            "n": 158,
-            "hit_rate": 50.0
+            "n": 165,
+            "hit_rate": 49.7
           },
           "61-70": {
             "n": 25,
             "hit_rate": 28.0
           },
           "<=50": {
-            "n": 418,
-            "hit_rate": 41.4
+            "n": 448,
+            "hit_rate": 43.8
           }
         }
       },
-      "days": 19
+      "days": 20
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 343,
-      "no_fill": 170,
-      "pending": 32,
+      "simulated": 360,
+      "no_fill": 177,
+      "pending": 40,
       "hit_target": 8,
-      "hit_stop": 118,
+      "hit_stop": 120,
       "expired": 15,
-      "avg_ret_pct": -5.04,
+      "avg_ret_pct": -4.99,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值",
       "by_day": [
         {
@@ -716,8 +716,9 @@
         },
         {
           "d": "2026-07-15",
-          "n_cards": 7,
+          "n_cards": 8,
           "rets": [
+            -1.54,
             -3.67,
             19.05,
             -7.53
@@ -741,12 +742,19 @@
         },
         {
           "d": "2026-07-21",
-          "n_cards": 1,
-          "rets": []
+          "n_cards": 2,
+          "rets": [
+            -0.66
+          ]
         },
         {
           "d": "2026-07-22",
-          "n_cards": 4,
+          "n_cards": 3,
+          "rets": []
+        },
+        {
+          "d": "2026-07-23",
+          "n_cards": 8,
           "rets": []
         }
       ],
@@ -1596,6 +1604,18 @@
           "e": "2026-07-20",
           "x": "2026-07-21",
           "ret": 3.14
+        },
+        {
+          "c": "2026-07-15",
+          "e": "2026-07-20",
+          "x": "2026-07-24",
+          "ret": -1.54
+        },
+        {
+          "c": "2026-07-21",
+          "e": "2026-07-23",
+          "x": "2026-07-24",
+          "ret": -0.66
         }
       ]
     },
@@ -1603,11 +1623,18 @@
       "note": "降級卡雙軌結算:shown=降級後顯示判斷勝率,blocked=若沒降級原判斷勝率;shown>blocked=閘門擋對",
       "gates": {
         "chase": {
-          "n": 17,
-          "shown_wins": 14,
+          "n": 20,
+          "shown_wins": 17,
           "blocked_wins": 4,
-          "shown_rate": 82.4,
-          "blocked_rate": 23.5
+          "shown_rate": 85.0,
+          "blocked_rate": 20.0
+        },
+        "crash": {
+          "n": 2,
+          "shown_wins": 2,
+          "blocked_wins": 1,
+          "shown_rate": 100.0,
+          "blocked_rate": 50.0
         },
         "exdiv": {
           "n": 2,
@@ -1626,17 +1653,1162 @@
       }
     },
     "public_only": {
-      "a_count": 58,
-      "a_wins": 33,
-      "a_rate": 56.9,
-      "c_count": 57,
-      "c_wins": 36,
-      "c_rate": 63.2
+      "a_count": 60,
+      "a_wins": 34,
+      "a_rate": 56.7,
+      "c_count": 62,
+      "c_wins": 39,
+      "c_rate": 62.9
     },
-    "personal_samples_added": 1867,
-    "visible_personal_added": 1780
+    "personal_samples_added": 1936,
+    "visible_personal_added": 1831
   },
   "records": [
+    {
+      "date": "2026-07-25",
+      "name": "台積電 ADR TSMC",
+      "ticker": "TSM",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "現價勿追，觀察台積電 ADR 是否能站穩 386.02，若收盤收復 403.41 再考慮接回，目標 434.19，止損 364.94。基本面背景季報正面，技術結構尚未明確。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 53,
+      "entry_lo": 386.02,
+      "entry_hi": 403.41,
+      "target": 434.19,
+      "stop": 364.94,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "台積電 ADR TSMC",
+      "ticker": "TSM",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "現價勿追,台積電ADR剛公布季報YoY+36%表現正面,但股價現於MA20($428.62)下方整理;下個美股交易日若回測$386.02不破、收盤收復$400以上,可分批低接看$434.19,跌破$364.94則停損離場。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 53,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 386.02,
+      "entry_hi": 400.0,
+      "target": 434.19,
+      "stop": 364.94,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📉 BEARISH",
+      "reason": "TSLA現價313.03美元已跌破MA20 388.72維持空頭結構,且價跌量增(相對量1.4x)顯示賣壓沉重,下個美股交易日先觀望,須等收盤站穩$320之上、收復$346再評估進場,現階段不介入。季報YoY+25.5%雖偏正面,但短線動能仍偏弱。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 346.0,
+      "entry_hi": 346.0,
+      "target": 346.59,
+      "stop": 275.47,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-25",
+      "name": "特斯拉 Tesla",
+      "ticker": "TSLA",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📈 BEARISH",
+      "reason": "美股下個交易日不加碼：313.03美元仍在MA20 388.72下方維持空頭結構，即使季報年增25.5%偏正面，既有持股續抱並設好停損，新進場者等收盤站回MA20再說。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 388.72,
+      "entry_hi": 388.72,
+      "target": 346.59,
+      "stop": 275.47,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "",
+      "ticker": "NVTS",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "現價勿追,NVTS空頭結構未改(價<MA20<MA50),下個美股交易日除非收盤站回MA20($13.83)之上,否則仍以觀望為主;目前價跌量縮顯示賣壓趨緩,但結構未變不足以轉多。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 49,
+      "entry_lo": 10.74,
+      "entry_hi": 20.0,
+      "target": 12.56,
+      "stop": 9.61,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "",
+      "ticker": "NVTS",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📉 BEARISH",
+      "reason": "NVTS(NVTS) 收 $10.92(-9.23%),目前空頭結構(價＜MA20＜MA50),先不接。下個交易日後站回 $13.83 之上並收穩再評估分批;持有者跌破 $9.61 先減碼控風險。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 49,
+      "entry_lo": 10.74,
+      "entry_hi": 10.83,
+      "target": 12.56,
+      "stop": 9.61,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "NVDA現價206.84美元勿追高,下個美股交易日等回測$203.33(MA20)不破、收盤收復$208之上再分批接,基本面YoY+85.2%、EPS YoY+214.5%強勁撐腰,短期仍看多續攻前高$214.39。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 50,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 203.33,
+      "entry_hi": 208.0,
+      "target": 214.39,
+      "stop": 187.84,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-25",
+      "name": "網飛 Netflix",
+      "ticker": "NFLX",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "現價勿追,NFLX今日雖反彈+1.74%且季報營收YoY+13.4%偏正面,但技術結構仍為空頭(價<MA20<MA50);下個美股交易日需收盤站回MA20($72.78)之上才具備轉多條件,目前僅先觀察不進場。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 51,
+      "entry_lo": 20.0,
+      "entry_hi": 66.2,
+      "target": 75.27,
+      "stop": 63.61,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "美光 Micron",
+      "ticker": "MU",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "現價920.95勿追,今天雖重挫6.99%但結構仍屬盤整、非空頭排列,不是禁買標的但也別現在硬接刀;等回測$828.86不破、收盤收復MA20($975.8)附近再分批低接,目標看$1059.09。若跌破$810.44則轉弱、若始終站不上975.8就代表反彈無力,兩條路都要盯緊。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 828.86,
+      "entry_hi": 860.0,
+      "target": 1059.09,
+      "stop": 810.44,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "微軟 Microsoft",
+      "ticker": "MSFT",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📉 BEARISH",
+      "reason": "MSFT現價381.7美元已跌破MA20 386.89維持空頭結構,下個美股交易日先觀望,須等收盤收復$387(MA20)之上再考慮分批接手,現階段不追價;選擇權P/C 1.44偏空避險濃厚,反映市場仍謹慎。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 387.0,
+      "entry_hi": 387.0,
+      "target": 403.96,
+      "stop": 353.88,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-25",
+      "name": "邁威爾 Marvell",
+      "ticker": "MRVL",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "現價勿追,MRVL單日跌7.21%續處空頭結構(價<MA20<MA50),DCF估算合理價僅$22.4–$31.9,現價194.23遠高於合理區間,反彈時更不宜重壓;下個美股交易日等收盤收復$223.36反彈目標再看偏多,若續破$177.95新低則測$170.92止損,若收復$223.36則偏多看$229.56(MA20)。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 53,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 223.36,
+      "stop": 170.92,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "Meta",
+      "ticker": "META",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "現價勿追，觀察 Meta 是否能站穩 554.96，若收盤收復 595.19 再考慮接回，目標 648.83，止損 528.14。基本面背景近期 YoY +33.1%，但估值偏貴，需謹慎。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 43,
+      "entry_lo": 554.96,
+      "entry_hi": 595.19,
+      "target": 648.83,
+      "stop": 528.14,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "Meta",
+      "ticker": "META",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "現價595.19勿追,MA20 620.97尚未收復,下個美股交易日等拉回554.96不破、或收盤站穩620.97再分批操作,反彈目標648.83,跌破528.14就出場。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 43,
+      "entry_lo": 554.96,
+      "entry_hi": 570.0,
+      "target": 648.83,
+      "stop": 528.14,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "",
+      "ticker": "IREN",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📉 BEARISH",
+      "reason": "現價37.07已跌破MA20(40.76)且維持空頭排列,今天單日重挫8.65%,下個美股交易日別猜底、不追殺也不搶進;等回測$33.36不破、收盤收復$40.76(MA20)再分批低接。若站上40.76則偏多看$42.63;若跌破$32.62代表破位加速轉弱、看回20日低$32.22。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 33.36,
+      "entry_hi": 34.0,
+      "target": 42.63,
+      "stop": 32.62,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "谷歌 Alphabet",
+      "ticker": "GOOGL",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "GOOGL收319.74已跌破布林下軌(323.96)，RSI26.5、KD12.3/21.3雙雙超賣但空頭結構未變(價<MA20<MA50)，不建議現在低接；下個美股交易日留意是否收在314.9之上止跌，能收復342.88才轉偏多，若續破314.9則看290.81。季報年增24.2%偏正面為基本面支撐，但DCF合理價僅$83–112，現價遠高於區間，追價風險大。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 52,
+      "entry_lo": 314.9,
+      "entry_hi": 314.9,
+      "target": 342.88,
+      "stop": 290.81,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "谷歌 Alphabet",
+      "ticker": "GOOGL",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📈 BULLISH",
+      "reason": "谷歌 Alphabet(GOOGL) 收 $319.74(+0.65%),目前空頭結構(價＜MA20＜MA50),先不接。下個交易日後站回 $352.19 之上並收穩再評估分批;持有者跌破 $290.81 先減碼控風險。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 52,
+      "entry_lo": 314.9,
+      "entry_hi": 317.32,
+      "target": 342.88,
+      "stop": 290.81,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "",
+      "ticker": "DPRO",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📉 BEARISH",
+      "reason": "現價4.22已跌破MA20(4.72),空頭排列未變,下個美股交易日不進場承接;等回測$4.00不破、收盤收復$4.72(MA20)才分批考慮。若跌破$3.71則空頭結構持續破功、續探新低;若站穩4.72之上才轉偏多看下一波。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 4.0,
+      "entry_hi": 4.0,
+      "target": 4.72,
+      "stop": 3.71,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "",
+      "ticker": "BE",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "現價勿追,BE單日重挫14.91%跌破MA20(244.62),價<MA20<MA50空頭結構下禁止進場,下個美股交易日先觀望,等收盤收復212.62反彈目標之上再談偏多;若收復$212.62則偏多可看$244.62(MA20),若續破$183.22新低則測$162.7止損。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 49,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 212.62,
+      "stop": 162.7,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "博通 Broadcom",
+      "ticker": "AVGO",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "現價勿追，觀察博通是否能站穩 381.4，若收盤收復 381.92 再考慮接回，目標 407.52，止損 343.57。基本面背景技術結構尚未明確，但估值偏貴，需謹慎。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 42,
+      "entry_lo": 381.4,
+      "entry_hi": 381.92,
+      "target": 407.52,
+      "stop": 343.57,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "博通 Broadcom",
+      "ticker": "AVGO",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "現價勿追,AVGO收在MA20($381.4)附近震盪且出現價漲量縮背離(相對量0.63x),缺乏明確上行動能;下個美股交易日需收盤站穩$400之上並帶量確認,才具備再進場看$407.52的條件,目前分歧較大先以觀望為主。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 42,
+      "entry_lo": 381.4,
+      "entry_hi": 400.0,
+      "target": 407.52,
+      "stop": 343.57,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "亞馬遜 Amazon",
+      "ticker": "AMZN",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "AMZN收232.11持續在MA20(243.84)與MA50之下，空頭排列且死亡交叉未解，禁止現在低接買入；下個美股交易日盯是否收盤站回243.84之上，站穩才轉偏多看245.71，若跌破226.13則續弱看215.11。EPS年增74.8%基本面仍強，但技術結構未修復前不宜搶反彈。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 49,
+      "entry_lo": 243.84,
+      "entry_hi": 243.84,
+      "target": 245.71,
+      "stop": 215.11,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "超微 AMD",
+      "ticker": "AMD",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "現價勿追，觀察超微是否能站穩 469.76，若收盤收復 521.95 再考慮接回，目標 584.73，止損 459.32。基本面背景近期 YoY +37.8%，但技術結構尚未明確。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 42,
+      "entry_lo": 469.76,
+      "entry_hi": 521.95,
+      "target": 584.73,
+      "stop": 459.32,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "超微 AMD",
+      "ticker": "AMD",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "現價勿追,AMD收521.95已跌破MA20($533.06),短線動能偏弱;即便近期營收YoY+37.8%、EPS YoY+90.9%基本面強勁,下個美股交易日仍需收盤站回$533之上才轉偏多,盤整格局下先觀望,等關鍵支撐站穩或利空消化再進場為主。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 42,
+      "entry_lo": 20.0,
+      "entry_hi": 469.76,
+      "target": 584.73,
+      "stop": 459.32,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "現價333.02美元勿追高,下個美股交易日等回測$321.25不破、收盤收復$325之上再分批接,多頭結構下(價>MA20>MA50)順勢操作,基本面YoY+16.6%/EPS+21.8%撐腰,續攻前高$334.99。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 53,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 321.25,
+      "entry_hi": 325.0,
+      "target": 334.99,
+      "stop": 313.39,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-25",
+      "name": "群聯",
+      "ticker": "8299",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "群聯今天跌4.95%來到1825,逼近月低區間,現價勿追;等下個交易日回測1685不破、收盤收復2094以上再分批接,反彈目標看2094.28、跌破1606停損。基本面連15月營收正成長(累計YoY +243.1%)撐長線,但技術結構仍是空頭,勿貿然抢反彈。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 50,
+      "entry_lo": 1685.0,
+      "entry_hi": 1750.0,
+      "target": 2094.0,
+      "stop": 1606.0,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "群聯",
+      "ticker": "8299",
+      "market": "tw",
+      "verdict_class": "hold",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "群聯結構仍偏空(價1825元<MA20 2094<MA50),現價勿追加碼,但累計營收YoY+243%基本面撐腰,若已持有可續抱並設好停損;下個台股交易日觀察能否收盤站回2094元MA20之上,站上才轉積極,否則維持區間操作。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 50,
+      "entry_lo": 1685.0,
+      "entry_hi": 1685.0,
+      "target": 2094.28,
+      "stop": 1606.0,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "勤誠",
+      "ticker": "8210",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📉 BEARISH",
+      "reason": "現價勿追，8210昨日重挫7.2%且跌破MA20($1187.5)，空頭結構未解；下個台股交易日先觀察能否收復1187.5以上，若續破963.6下方即是加速出貨訊號，營收連18個月正成長(+55.6% YoY)僅是背景支撐，非今天進場理由。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 1187.5,
+      "entry_hi": 1187.5,
+      "target": 1237.86,
+      "stop": 963.6,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "尖點",
+      "ticker": "8021",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "現價370元勿追,尖點今日爆量下殺近9%且價跌量增顯示賣壓沉重,雖有月產能上修、中壢新廠Q4投產的利多消息,但結構面尚未止穩;下個台股交易日留意367.5元支撐能否收盤站穩,若跌破恐續探325.6,站穩後才分批接。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 367.5,
+      "entry_hi": 390.0,
+      "target": 425.5,
+      "stop": 325.6,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "雅特力-KY",
+      "ticker": "6907",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "現價203勿追，雅特力雖單日重挫6.45%，但股價仍守在MA20(190.8)之上、多頭結構未破，且量能明顯縮量、價跌量縮顯示賣壓趨緩；下個台股交易日等回測190.8不破、收盤收復198以上再分批低接較穩健。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 51,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 190.8,
+      "entry_hi": 198.0,
+      "target": 233.45,
+      "stop": 178.64,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "台燿",
+      "ticker": "6274",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "台燿今天重挫收1250、單日跌6.37%且跌破所有均線,現價勿追;下個交易日盯是否守住1125支撐、收盤收復1300再分批試單,反彈目標看1437.5、跌破1100就停損。基本面連28月營收正成長(累計YoY +84.3%)是中期撐腰,但短線結構仍是空頭,別急著抢反彈。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 1125.0,
+      "entry_hi": 1180.0,
+      "target": 1437.5,
+      "stop": 1100.0,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "旺矽",
+      "ticker": "6223",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "現價勿追,旺矽今日重挫8.72%已跌破MA20(6384),雖營收連31月正成長(累計YoY+49.6%)長線體質有撐,但本益比151.9倍處近一年82百分位偏貴,不宜在高檔追價;下個台股交易日等收盤站回6000附近或至少站穩$6560.75反彈目標再分批介入,若收復$6560.75則偏多看$6384(MA20),若續破$5145新低則測$5020.4止損。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 49,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 6560.75,
+      "stop": 5020.4,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "高技",
+      "ticker": "5439",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "高技今天再跌5.42%來到年度低點234.5附近,現價勿追;先觀察下個交易日是否守穩234.5不破、收盤收復269再進場,反彈目標269、跌破207.24停損。近期賣壓隨量縮趨緩(相對量0.65x,價跌量縮),加上營收連20月正成長(累計YoY +50.6%)提供支撐,但均線仍空頭排列,不宜貿然抢進。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 50,
+      "entry_lo": 234.5,
+      "entry_hi": 250.0,
+      "target": 269.0,
+      "stop": 207.24,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "十銓",
+      "ticker": "4967",
+      "market": "tw",
+      "verdict_class": "hold",
+      "verdict_text": "📈 BULLISH",
+      "reason": "十銓 收 $218.5元(+0.69%),目前空頭結構(價＜MA20＜MA50),先不接。下個交易日後站回 $234.95元 之上並收穩再評估分批;持有者跌破 $192.28元 先減碼控風險。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 201.84,
+      "entry_hi": 210.17,
+      "target": 240.72,
+      "stop": 192.28,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "十銓",
+      "ticker": "4967",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "十銓結構仍空頭(價218.5元<MA20 234.95),今日價漲量縮(相對量1.36倍)呈現價量背離,追高風險偏高,現價勿追;下個台股交易日留意能否收盤收復235元站回MA20之上,站穩才轉買進,否則續觀望。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 201.84,
+      "entry_hi": 201.84,
+      "target": 240.72,
+      "stop": 192.28,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "日月光投控",
+      "ticker": "3711",
+      "market": "tw",
+      "verdict_class": "hold",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "現價勿追，觀察日月光投控是否能站穩 577，若收盤收復 613 再考慮接回，目標 694.58，止損 539.44。基本面背景營收連 11 月正成長，但估值偏貴，需謹慎。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 577.0,
+      "entry_hi": 613.0,
+      "target": 694.58,
+      "stop": 539.44,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "日月光投控",
+      "ticker": "3711",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "台股下個交易日不掛單追進：613元跌破多條均線，先等回測577不破、收盤收復635以上，帶量確認再分批接手。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 577.0,
+      "entry_hi": 635.0,
+      "target": 694.58,
+      "stop": 539.44,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "雙鴻",
+      "ticker": "3324",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "雙鴻今日+2.17%收943元站上MA20(942.9),量價齊揚(相對量2.09倍)確認買盤,水冷動能正向消息面加持,但現價已貼近前高不宜追高;下個台股交易日等回測942.9不破、收盤收復950元以上再分批加碼。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 942.9,
+      "entry_hi": 950.0,
+      "target": 1040.0,
+      "stop": 829.84,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "威剛",
+      "ticker": "3260",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "威剛今天小漲1.19%收383,但仍在季線之下、結構未轉多,現價勿追高;等下個交易日收盤站穩MA20 395.52之上再追價,或回測355.52不破再分批低接,反彈目標419.64、跌破337.2停損。基本面連15月營收正成長(累計YoY +183.3%)是背景支撐,今日新聞點名威剛布局90天期權證市場,可留意期貨/權證資金是否延續帶動買盤,但相對量1.49x放大仍待確認方向。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 355.52,
+      "entry_hi": 383.0,
+      "target": 419.64,
+      "stop": 337.2,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "聯詠",
+      "ticker": "3034",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "現價507元勿追，3034貼近MA20(507.82)呈盤整，下個台股交易日等回測475.39不破、或收盤站穩507.82之上再分批接；營收連3月正成長可撐基本面，但本益比20.8倍處近一年94百分位偏貴，倉位不宜重壓。若站穩507.82以上偏多看549.14；若跌破454.32則結構轉弱看441.97下軌。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 53,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 475.39,
+      "entry_hi": 507.0,
+      "target": 549.14,
+      "stop": 454.32,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "聯發科",
+      "ticker": "2454",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📉 BEARISH",
+      "reason": "2454現價3750元已跌破MA20 3890.5維持空頭結構,下個台股交易日先觀望,須等收盤收復$3890(MA20)之上再考慮分批接手,現階段不追價;營收連2月正成長但累計YoY-0.8%,法說會倒數(法人喊6150元)是潛在催化但結構未翻多前不輕易進場。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 51,
+      "entry_lo": 3890.0,
+      "entry_hi": 3890.0,
+      "target": 4182.86,
+      "stop": 3300.0,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-25",
+      "name": "聯發科",
+      "ticker": "2454",
+      "market": "tw",
+      "verdict_class": "sell",
+      "verdict_text": "⬇️ BEARISH",
+      "reason": "現價勿追，觀察聯發科是否能跌破 3425.36，若收盤跌破 3750 再考慮減碼，目標 3300，止損 4182.86。基本面背景營收連 2 月正成長，但估值偏貴，需謹慎。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 75,
+      "entry_lo": null,
+      "entry_hi": null,
+      "target": 3300.0,
+      "stop": 4182.86,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "中華電",
+      "ticker": "2412",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "中華電月營收YoY+11.4%偏正面,股價139元已站上MA20(138.15),下個台股交易日回測138.15不破、收盤站穩可分批接,反彈目標143.86,跌破132.93就出場。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 52,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 138.15,
+      "entry_hi": 139.0,
+      "target": 143.86,
+      "stop": 132.93,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "廣達",
+      "ticker": "2382",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "廣達跌破月線且量縮,還沒跌到近端低接區$309,下個台股交易日先別追,等回測$309不破或收盤收復$353.92再分批布局;連29月營收正成長、累計YoY +86.5%可當回檔的長線靠山,但不是今天買進的理由。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 51,
+      "entry_lo": 309.0,
+      "entry_hi": 317.0,
+      "target": 353.92,
+      "stop": 295.6,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "台積電",
+      "ticker": "2330",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "2330現價2350元勿追高,盤整格局下等回測$2290不破、收盤收復$2380再分批接,下個台股交易日留意月營收YoY+67.9%強勁基本面能否止跌,惟市場避險情緒濃(台股44K得而復失),此波動仍受盤整限制。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 46,
+      "entry_lo": 2290.0,
+      "entry_hi": 2380.0,
+      "target": 2470.72,
+      "stop": 2199.1,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-25",
+      "name": "台積電",
+      "ticker": "2330",
+      "market": "tw",
+      "verdict_class": "hold",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "現價勿追，觀察台積電是否能站穩 2290，若收盤收復 2350 再考慮接回，目標 2470.72，止損 2199.1。基本面背景營收強勁，但估值偏貴，需謹慎。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 46,
+      "entry_lo": 2290.0,
+      "entry_hi": 2350.0,
+      "target": 2470.72,
+      "stop": 2199.1,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "鴻海",
+      "ticker": "2317",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "2317現價252.5元勿追高,下個台股交易日等回測$242.3(MA20)不破、收盤站穩$248之上再分批接,營收連28月正成長、累計YoY+35.0%基本面撐腰,加上外資回補重登200大關新聞帶動動能。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 44,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 242.3,
+      "entry_hi": 248.0,
+      "target": 259.5,
+      "stop": 234.55,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null
+    },
+    {
+      "date": "2026-07-25",
+      "name": "台達電",
+      "ticker": "2308",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BEARISH",
+      "reason": "台股下個交易日禁止現價承接：2308為空頭結構(價<MA20<MA50)，1785元遠低於MA20 1889.25，唯有收盤站回1889以上才轉觀察偏多，目前只做觀望。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 49,
+      "entry_lo": 1889.0,
+      "entry_hi": 1889.0,
+      "target": 1996.42,
+      "stop": 1570.8,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "聯電",
+      "ticker": "2303",
+      "market": "tw",
+      "verdict_class": "hold",
+      "verdict_text": "⚖️ NEUTRAL",
+      "reason": "現價勿追，觀察聯電是否能站穩 125.5，若收盤收復 128 再考慮接回，目標 147.2，止損 112.64。基本面背景營收連 8 月正成長，但估值偏貴，需謹慎。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 51,
+      "entry_lo": 125.5,
+      "entry_hi": 128.0,
+      "target": 147.2,
+      "stop": 112.64,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "聯電",
+      "ticker": "2303",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "台股下個交易日別追空也別搶反彈：128元單日重挫7.58%、遠離MA20 153.7，先觀望,等關鍵支撐站穩或利空消化再進場，等回測125.5不破、收盤收復135以上再分批低接。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 51,
+      "entry_lo": 125.5,
+      "entry_hi": 135.0,
+      "target": 147.2,
+      "stop": 112.64,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "台塑",
+      "ticker": "1301",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "⚪ NEUTRAL",
+      "reason": "現價62.7暫不追，台塑雖仍守在MA20(60.15)之上、多頭結構未破，但外資單日大砍台塑集團609億元調節籌碼，加上累計營收年減3.6%基本面轉弱，下個台股交易日先觀望，等收盤站穩63以上再考慮分批介入，避免現在承接賣壓。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 60.15,
+      "entry_hi": 63.0,
+      "target": 69.8,
+      "stop": 55.18,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "群益台灣精選高息",
+      "ticker": "00919",
+      "market": "tw",
+      "verdict_class": "hold",
+      "verdict_text": "📉 BEARISH",
+      "reason": "群益台灣精選高息(00919) 收 $29.49元(-0.03%)。下個交易日後若回測 $28.75元 不破、收盤收復 $29.12元 再分批接,跌破 $28.26元 先停損;本週留意 $30.17元 壓力。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 28.75,
+      "entry_hi": 29.12,
+      "target": 30.17,
+      "stop": 28.26,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "國泰永續高股息",
+      "ticker": "00878",
+      "market": "tw",
+      "verdict_class": "hold",
+      "verdict_text": "📉 BEARISH",
+      "reason": "國泰永續高股息 Cathay 00878(00878) 收 $32.61元(-0.37%)。下個交易日後若回測 $31.63元 不破、收盤收復 $32.12元 再分批接,跌破 $30.98元 先停損;本週留意 $33.83元 壓力。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 51,
+      "entry_lo": 31.63,
+      "entry_hi": 32.12,
+      "target": 33.83,
+      "stop": 30.98,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "富邦台50",
+      "ticker": "006208",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 NEUTRAL",
+      "reason": "台股下個交易日不追買：233元跌破MA20 243.33，先等回測229.2不破、收盤收復238以上再分批進場，大盤風險偏空下不宜貿然承接。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 50,
+      "entry_lo": 229.2,
+      "entry_hi": 238.0,
+      "target": 249.5,
+      "stop": 223.4,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "元大台灣50",
+      "ticker": "0050",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BEARISH",
+      "reason": "台股下個交易日別現價承接：101.7元已跌破MA20 105.33且量價背離，賣壓未歇，等回測100.24不破、收盤收復105以上再分批進場。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 100.24,
+      "entry_hi": 105.0,
+      "target": 108.78,
+      "stop": 97.8,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
     {
       "date": "2026-07-24",
       "name": "特斯拉 Tesla",
@@ -1679,6 +2851,27 @@
     },
     {
       "date": "2026-07-24",
+      "name": "輝達 Nvidia",
+      "ticker": "NVDA",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "➖ NEUTRAL",
+      "reason": "今晚開盤後NVDA仍在箱型整理，MA20 $202.78是關鍵支撐，三方模型對後續方向分歧稍大，先別追價，等收盤站穩$202.78以上再分批接，跌破則暫離場觀察。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 45,
+      "entry_lo": 202.78,
+      "entry_hi": 202.78,
+      "target": 214.39,
+      "stop": 190.38,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-24",
       "name": "微軟 Microsoft",
       "ticker": "MSFT",
       "market": "us",
@@ -1699,6 +2892,52 @@
     },
     {
       "date": "2026-07-24",
+      "name": "摩根大通 JPMorgan",
+      "ticker": "JPM",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "現價勿追,今晚開盤後先確認JPM能否守住MA20($337.99)——若回測$338.57支撐不破,且收盤收復$345以上再分批進場,多頭結構已確立、站穩MA20之上;美10年債殖利率維持4.7%高檔,對銀行淨利差偏有利,是這檔回檔有撐的背景因素之一,但仍非今日追價理由。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 47,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 338.57,
+      "entry_hi": 345.0,
+      "target": 351.24,
+      "stop": 331.02,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-24",
+      "name": "超微 AMD",
+      "ticker": "AMD",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "現價勿追,今晚開盤後先盯AMD能否守穩MA20($533.59)不破——若回測533附近不破、且收盤收復$545以上,再分批進場續搭多頭結構;今日相對量僅0.96x屬量平,尚未有量能背離疑慮,但大盤風險偏空下不宜貿然追價。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 47,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 533.0,
+      "entry_hi": 540.0,
+      "target": 584.73,
+      "stop": 474.93,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-24",
       "name": "蘋果 Apple",
       "ticker": "AAPL",
       "market": "us",
@@ -1716,6 +2955,29 @@
       "outcome_1d": null,
       "outcome_21d": null,
       "outcome_63d": null
+    },
+    {
+      "date": "2026-07-24",
+      "name": "蘋果 Apple",
+      "ticker": "AAPL",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "現價勿追,今晚開盤後留意AAPL在MA20($311.49)支撐區是否止穩——今日價跌但相對量僅0.63x屬價跌量縮,賣壓有趨緩跡象,若回測311附近不破、收盤收復$318以上再分批布局,順著多頭結構操作;選擇權P/C比僅0.26顯示市場仍偏多押注,可作情緒佐證但非進場理由。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 53,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 311.0,
+      "entry_hi": 318.0,
+      "target": 334.99,
+      "stop": 303.04,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
     },
     {
       "date": "2026-07-24",
@@ -2637,9 +3899,10 @@
       "target": 456.79,
       "stop": 376.73,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0293,
       "scope": "aggregate"
     },
     {
@@ -2658,9 +3921,10 @@
       "target": 407.25,
       "stop": 332.46,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
-      "outcome_63d": null
+      "outcome_63d": null,
+      "ret_1d": -0.0208
     },
     {
       "date": "2026-07-23",
@@ -2678,9 +3942,10 @@
       "target": 1839.16,
       "stop": 1407.36,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.1079,
       "scope": "aggregate"
     },
     {
@@ -2699,9 +3964,10 @@
       "target": 80.21,
       "stop": 61.38,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0869,
       "scope": "aggregate"
     },
     {
@@ -2722,9 +3988,10 @@
       "target": 9.05,
       "stop": 6.96,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0547,
       "scope": "aggregate"
     },
     {
@@ -2743,9 +4010,10 @@
       "target": 13.41,
       "stop": 10.26,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.039,
       "scope": "aggregate"
     },
     {
@@ -2764,9 +4032,10 @@
       "target": 192.39,
       "stop": 154.68,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0242,
       "scope": "aggregate"
     },
     {
@@ -2785,9 +4054,10 @@
       "target": 138.31,
       "stop": 109.62,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0036,
       "scope": "aggregate"
     },
     {
@@ -2806,9 +4076,10 @@
       "target": 14.57,
       "stop": 11.15,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0923,
       "scope": "aggregate"
     },
     {
@@ -2827,9 +4098,10 @@
       "target": 214.39,
       "stop": 193.41,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
-      "outcome_63d": null
+      "outcome_63d": null,
+      "ret_1d": -0.0092
     },
     {
       "date": "2026-07-23",
@@ -2847,9 +4119,10 @@
       "target": 214.39,
       "stop": 193.41,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0092,
       "scope": "aggregate"
     },
     {
@@ -2868,9 +4141,10 @@
       "target": 214.39,
       "stop": 193.41,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0092,
       "scope": "aggregate"
     },
     {
@@ -2889,9 +4163,10 @@
       "target": 58.1,
       "stop": 47.44,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0458,
       "scope": "aggregate"
     },
     {
@@ -2912,9 +4187,10 @@
       "target": 107.16,
       "stop": 84.0,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0744,
       "scope": "aggregate"
     },
     {
@@ -2933,9 +4209,10 @@
       "target": 74.01,
       "stop": 61.68,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0174,
       "scope": "aggregate"
     },
     {
@@ -2954,9 +4231,10 @@
       "target": 74.01,
       "stop": 61.68,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0174,
       "scope": "aggregate"
     },
     {
@@ -2975,9 +4253,10 @@
       "target": 250.88,
       "stop": 191.98,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.1502,
       "scope": "aggregate"
     },
     {
@@ -2996,9 +4275,10 @@
       "target": 1103.4,
       "stop": 844.34,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0699,
       "scope": "aggregate"
     },
     {
@@ -3017,9 +4297,10 @@
       "target": 405.99,
       "stop": 363.39,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
-      "outcome_63d": null
+      "outcome_63d": null,
+      "ret_1d": 0.0003
     },
     {
       "date": "2026-07-23",
@@ -3037,9 +4318,10 @@
       "target": 405.99,
       "stop": 363.39,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0003,
       "scope": "aggregate"
     },
     {
@@ -3058,9 +4340,10 @@
       "target": 242.64,
       "stop": 185.67,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0721,
       "scope": "aggregate"
     },
     {
@@ -3079,9 +4362,10 @@
       "target": 682.09,
       "stop": 558.52,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.018,
       "scope": "aggregate"
     },
     {
@@ -3100,9 +4384,10 @@
       "target": 682.0,
       "stop": 558.52,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.018,
       "scope": "aggregate"
     },
     {
@@ -3121,9 +4406,10 @@
       "target": 47.47,
       "stop": 36.33,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0865,
       "scope": "aggregate"
     },
     {
@@ -3142,9 +4428,10 @@
       "target": 39.88,
       "stop": 30.52,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0361,
       "scope": "aggregate"
     },
     {
@@ -3163,9 +4450,10 @@
       "target": 118.01,
       "stop": 90.31,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0789,
       "scope": "aggregate"
     },
     {
@@ -3186,9 +4474,10 @@
       "target": 236.64,
       "stop": 181.08,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0365,
       "scope": "aggregate"
     },
     {
@@ -3207,9 +4496,10 @@
       "target": 363.43,
       "stop": 315.41,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0065,
       "scope": "aggregate"
     },
     {
@@ -3228,9 +4518,10 @@
       "target": 363.43,
       "stop": 315.41,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0065,
       "scope": "aggregate"
     },
     {
@@ -3249,9 +4540,10 @@
       "target": 177.17,
       "stop": 135.57,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0603,
       "scope": "aggregate"
     },
     {
@@ -3270,9 +4562,10 @@
       "target": 1993.38,
       "stop": 1576.13,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0533,
       "scope": "aggregate"
     },
     {
@@ -3291,9 +4584,10 @@
       "target": 4.85,
       "stop": 3.79,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0365,
       "scope": "aggregate"
     },
     {
@@ -3312,9 +4606,10 @@
       "target": 463.0,
       "stop": 388.78,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0042,
       "scope": "aggregate"
     },
     {
@@ -3333,9 +4628,10 @@
       "target": 250.95,
       "stop": 192.03,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.1491,
       "scope": "aggregate"
     },
     {
@@ -3354,9 +4650,10 @@
       "target": 407.52,
       "stop": 355.63,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0269,
       "scope": "aggregate"
     },
     {
@@ -3375,9 +4672,10 @@
       "target": 257.65,
       "stop": 228.85,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0066,
       "scope": "aggregate"
     },
     {
@@ -3396,9 +4694,10 @@
       "target": 257.65,
       "stop": 228.85,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0066,
       "scope": "aggregate"
     },
     {
@@ -3417,9 +4716,10 @@
       "target": 584.73,
       "stop": 486.05,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0329,
       "scope": "aggregate"
     },
     {
@@ -3438,9 +4738,10 @@
       "target": 334.99,
       "stop": 305.61,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
-      "outcome_63d": null
+      "outcome_63d": null,
+      "ret_1d": 0.0353
     },
     {
       "date": "2026-07-23",
@@ -3458,9 +4759,10 @@
       "target": 334.99,
       "stop": 305.61,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0353,
       "scope": "aggregate"
     },
     {
@@ -3479,9 +4781,10 @@
       "target": 127.1,
       "stop": 97.26,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.106,
       "scope": "aggregate"
     },
     {
@@ -3502,9 +4805,10 @@
       "target": 287.36,
       "stop": 221.32,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0651,
       "scope": "aggregate"
     },
     {
@@ -3525,9 +4829,10 @@
       "target": 2194.28,
       "stop": 1685.2,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0495,
       "scope": "aggregate"
     },
     {
@@ -3546,9 +4851,10 @@
       "target": 2194.28,
       "stop": 1685.2,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0495,
       "scope": "aggregate"
     },
     {
@@ -3567,9 +4873,10 @@
       "target": 1283.58,
       "stop": 1012.0,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.072,
       "scope": "aggregate"
     },
     {
@@ -3588,9 +4895,10 @@
       "target": 1283.58,
       "stop": 1012.0,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.072,
       "scope": "aggregate"
     },
     {
@@ -3609,9 +4917,10 @@
       "target": 481.27,
       "stop": 368.28,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0898,
       "scope": "aggregate"
     },
     {
@@ -3632,9 +4941,10 @@
       "target": 241.5,
       "stop": 184.8,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0645,
       "scope": "aggregate"
     },
     {
@@ -3655,9 +4965,10 @@
       "target": 3083.58,
       "stop": 2384.8,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0616,
       "scope": "aggregate"
     },
     {
@@ -3676,9 +4987,10 @@
       "target": 1426.0,
       "stop": 1091.2,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0804,
       "scope": "aggregate"
     },
     {
@@ -3697,9 +5009,10 @@
       "target": 1426.0,
       "stop": 1091.2,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0804,
       "scope": "aggregate"
     },
     {
@@ -3720,9 +5033,10 @@
       "target": 1060.0,
       "stop": 941.0,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0637,
       "scope": "aggregate"
     },
     {
@@ -3741,9 +5055,10 @@
       "target": 258.72,
       "stop": 258.72,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0493,
       "scope": "aggregate"
     },
     {
@@ -3762,9 +5077,10 @@
       "target": 6900.0,
       "stop": 5280.0,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0872,
       "scope": "aggregate"
     },
     {
@@ -3785,9 +5101,10 @@
       "target": 287.36,
       "stop": 221.32,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0542,
       "scope": "aggregate"
     },
     {
@@ -3806,9 +5123,10 @@
       "target": 83.38,
       "stop": 63.8,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0725,
       "scope": "aggregate"
     },
     {
@@ -3827,9 +5145,10 @@
       "target": 240.64,
       "stop": 192.28,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0069,
       "scope": "aggregate"
     },
     {
@@ -3850,9 +5169,10 @@
       "target": 240.64,
       "stop": 192.28,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0069,
       "scope": "aggregate"
     },
     {
@@ -3871,9 +5191,10 @@
       "target": 385.25,
       "stop": 294.8,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0511,
       "scope": "aggregate"
     },
     {
@@ -3892,9 +5213,10 @@
       "target": 729.0,
       "stop": 577.28,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0555,
       "scope": "aggregate"
     },
     {
@@ -3913,9 +5235,10 @@
       "target": 729.0,
       "stop": 577.28,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0555,
       "scope": "aggregate"
     },
     {
@@ -3936,9 +5259,10 @@
       "target": 4077.86,
       "stop": 3159.2,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0299,
       "scope": "aggregate"
     },
     {
@@ -3957,9 +5281,10 @@
       "target": 100.76,
       "stop": 79.2,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0268,
       "scope": "aggregate"
     },
     {
@@ -3980,9 +5305,10 @@
       "target": 1450.0,
       "stop": 1144.0,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0846,
       "scope": "aggregate"
     },
     {
@@ -4001,9 +5327,10 @@
       "target": 3845.6,
       "stop": 3845.6,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0708,
       "scope": "aggregate"
     },
     {
@@ -4022,9 +5349,10 @@
       "target": 1002.42,
       "stop": 799.04,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0217,
       "scope": "aggregate"
     },
     {
@@ -4043,9 +5371,10 @@
       "target": 413.72,
       "stop": 336.72,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0119,
       "scope": "aggregate"
     },
     {
@@ -4064,9 +5393,10 @@
       "target": 413.72,
       "stop": 336.72,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0119,
       "scope": "aggregate"
     },
     {
@@ -4085,9 +5415,10 @@
       "target": 1041.42,
       "stop": 798.16,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0636,
       "scope": "aggregate"
     },
     {
@@ -4106,9 +5437,10 @@
       "target": 542.86,
       "stop": 448.68,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.008,
       "scope": "aggregate"
     },
     {
@@ -4127,9 +5459,10 @@
       "target": 542.86,
       "stop": 448.68,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.008,
       "scope": "aggregate"
     },
     {
@@ -4148,9 +5481,10 @@
       "target": 208.5,
       "stop": 191.35,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0123,
       "scope": "aggregate"
     },
     {
@@ -4169,9 +5503,10 @@
       "target": 171.58,
       "stop": 132.88,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0135,
       "scope": "aggregate"
     },
     {
@@ -4190,9 +5525,10 @@
       "target": 4280.0,
       "stop": 3388.0,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
-      "outcome_63d": null
+      "outcome_63d": null,
+      "ret_1d": -0.0323
     },
     {
       "date": "2026-07-23",
@@ -4210,9 +5546,10 @@
       "target": 3388.0,
       "stop": 4280.0,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0323,
       "scope": "aggregate"
     },
     {
@@ -4231,9 +5568,10 @@
       "target": 338.14,
       "stop": 259.6,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0524,
       "scope": "aggregate"
     },
     {
@@ -4252,9 +5590,10 @@
       "target": 138.65,
       "stop": 132.42,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": 0.0072,
       "scope": "aggregate"
     },
     {
@@ -4273,9 +5612,10 @@
       "target": 498.0,
       "stop": 392.04,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0587,
       "scope": "aggregate"
     },
     {
@@ -4294,9 +5634,10 @@
       "target": 356.08,
       "stop": 295.15,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0238,
       "scope": "aggregate"
     },
     {
@@ -4315,9 +5656,10 @@
       "target": 356.08,
       "stop": 295.15,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0238,
       "scope": "aggregate"
     },
     {
@@ -4336,9 +5678,10 @@
       "target": 2505.0,
       "stop": 2247.32,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
-      "outcome_63d": null
+      "outcome_63d": null,
+      "ret_1d": -0.0229
     },
     {
       "date": "2026-07-23",
@@ -4356,9 +5699,10 @@
       "target": 2505.0,
       "stop": 2247.32,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0229,
       "scope": "aggregate"
     },
     {
@@ -4377,9 +5721,10 @@
       "target": null,
       "stop": null,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0229,
       "scope": "aggregate"
     },
     {
@@ -4398,9 +5743,10 @@
       "target": 262.5,
       "stop": 233.9,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
-      "outcome_63d": null
+      "outcome_63d": null,
+      "ret_1d": -0.0194
     },
     {
       "date": "2026-07-23",
@@ -4418,9 +5764,10 @@
       "target": 2110.0,
       "stop": 1654.4,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0505,
       "scope": "aggregate"
     },
     {
@@ -4439,9 +5786,10 @@
       "target": 1654.4,
       "stop": 2110.0,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0505,
       "scope": "aggregate"
     },
     {
@@ -4460,9 +5808,10 @@
       "target": 159.85,
       "stop": 122.32,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0758,
       "scope": "aggregate"
     },
     {
@@ -4483,9 +5832,10 @@
       "target": 68.6,
       "stop": 55.88,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0529,
       "scope": "aggregate"
     },
     {
@@ -4504,9 +5854,10 @@
       "target": 29.94,
       "stop": 27.82,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0003,
       "scope": "aggregate"
     },
     {
@@ -4525,9 +5876,10 @@
       "target": 33.25,
       "stop": 30.55,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0037,
       "scope": "aggregate"
     },
     {
@@ -4546,9 +5898,10 @@
       "target": 219.97,
       "stop": 246.21,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0206,
       "scope": "aggregate"
     },
     {
@@ -4567,9 +5920,10 @@
       "target": 107.4,
       "stop": 96.38,
       "outcome": null,
-      "outcome_1d": null,
+      "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
+      "ret_1d": -0.0212,
       "scope": "aggregate"
     },
     {
@@ -10292,11 +11646,12 @@
       "entry_hi": 403.5,
       "target": 450.06,
       "stop": 360.57,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0099,
+      "ret_5d": 0.0127,
       "scope": "aggregate"
     },
     {
@@ -10314,11 +11669,12 @@
       "entry_hi": 368.6,
       "target": 429.12,
       "stop": 344.13,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
-      "ret_1d": -0.0296
+      "ret_1d": -0.0296,
+      "ret_5d": -0.1781
     },
     {
       "date": "2026-07-17",
@@ -10335,11 +11691,12 @@
       "entry_hi": 1390.04,
       "target": 1495.74,
       "stop": 1305.25,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0267,
+      "ret_5d": 0.0603,
       "scope": "aggregate"
     },
     {
@@ -10357,11 +11714,12 @@
       "entry_hi": 66.0,
       "target": 77.45,
       "stop": 59.27,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0278,
+      "ret_5d": -0.0549,
       "scope": "aggregate"
     },
     {
@@ -10379,11 +11737,12 @@
       "entry_hi": 7.54,
       "target": 8.79,
       "stop": 6.72,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0154,
+      "ret_5d": -0.0474,
       "scope": "aggregate"
     },
     {
@@ -10401,11 +11760,12 @@
       "entry_hi": 9.48,
       "target": 11.04,
       "stop": 8.45,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0339,
+      "ret_5d": 0.0442,
       "scope": "aggregate"
     },
     {
@@ -10423,11 +11783,12 @@
       "entry_hi": 168.99,
       "target": 191.05,
       "stop": 150.14,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0085,
+      "ret_5d": -0.028,
       "scope": "aggregate"
     },
     {
@@ -10445,11 +11806,12 @@
       "entry_hi": 125.17,
       "target": 138.9,
       "stop": 118.31,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0187,
+      "ret_5d": -0.0715,
       "scope": "aggregate"
     },
     {
@@ -10467,11 +11829,12 @@
       "entry_hi": 202.22,
       "target": 213.99,
       "stop": 189.9,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
-      "ret_1d": 0.0023
+      "ret_1d": 0.0023,
+      "ret_5d": 0.0199
     },
     {
       "date": "2026-07-17",
@@ -10488,11 +11851,12 @@
       "entry_hi": 52.22,
       "target": 58.65,
       "stop": 49.8,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0005,
+      "ret_5d": -0.0007,
       "scope": "aggregate"
     },
     {
@@ -10510,11 +11874,12 @@
       "entry_hi": 102.02,
       "target": 113.79,
       "stop": 91.53,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0141,
+      "ret_5d": -0.0432,
       "scope": "aggregate"
     },
     {
@@ -10534,11 +11899,12 @@
       "entry_hi": 75.5,
       "target": 78.45,
       "stop": 68.12,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0196,
+      "ret_5d": 0.0165,
       "scope": "aggregate"
     },
     {
@@ -10556,11 +11922,12 @@
       "entry_hi": 840.51,
       "target": 981.18,
       "stop": 750.82,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0194,
+      "ret_5d": 0.0848,
       "scope": "aggregate"
     },
     {
@@ -10578,11 +11945,12 @@
       "entry_hi": 382.62,
       "target": 405.99,
       "stop": 370.3,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
-      "ret_1d": 0.0215
+      "ret_1d": 0.0215,
+      "ret_5d": -0.0308
     },
     {
       "date": "2026-07-17",
@@ -10599,11 +11967,12 @@
       "entry_hi": 382.62,
       "target": 405.99,
       "stop": 370.3,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0215,
+      "ret_5d": -0.0308,
       "scope": "aggregate"
     },
     {
@@ -10621,11 +11990,12 @@
       "entry_hi": 382.62,
       "target": 405.99,
       "stop": 370.3,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0215,
+      "ret_5d": -0.0308,
       "scope": "aggregate"
     },
     {
@@ -10643,11 +12013,12 @@
       "entry_hi": 186.15,
       "target": 216.54,
       "stop": 165.7,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0332,
+      "ret_5d": 0.0294,
       "scope": "aggregate"
     },
     {
@@ -10665,11 +12036,12 @@
       "entry_hi": 620.9,
       "target": 686.08,
       "stop": 591.81,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0002,
+      "ret_5d": -0.0787,
       "scope": "aggregate"
     },
     {
@@ -10687,11 +12059,12 @@
       "entry_hi": 630.0,
       "target": 686.08,
       "stop": 591.81,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0002,
+      "ret_5d": -0.0787,
       "scope": "aggregate"
     },
     {
@@ -10709,11 +12082,12 @@
       "entry_hi": 34.67,
       "target": 40.37,
       "stop": 30.89,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0155,
+      "ret_5d": -0.0558,
       "scope": "aggregate"
     },
     {
@@ -10731,11 +12105,12 @@
       "entry_hi": 95.48,
       "target": 111.53,
       "stop": 85.34,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0213,
+      "ret_5d": -0.0286,
       "scope": "aggregate"
     },
     {
@@ -10753,11 +12128,12 @@
       "entry_hi": null,
       "target": 251.91,
       "stop": 192.76,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0016,
+      "ret_5d": 0.0071,
       "scope": "aggregate"
     },
     {
@@ -10777,11 +12153,12 @@
       "entry_hi": 1065.14,
       "target": 1153.99,
       "stop": 1004.44,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0096,
+      "ret_5d": -0.0037,
       "scope": "aggregate"
     },
     {
@@ -10799,11 +12176,12 @@
       "entry_hi": 337.54,
       "target": 375.27,
       "stop": 326.26,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0151,
+      "ret_5d": -0.0779,
       "scope": "aggregate"
     },
     {
@@ -10821,11 +12199,12 @@
       "entry_hi": 154.43,
       "target": 182.15,
       "stop": 139.38,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0098,
+      "ret_5d": -0.0515,
       "scope": "aggregate"
     },
     {
@@ -10843,11 +12222,12 @@
       "entry_hi": 1621.01,
       "target": 1899.6,
       "stop": 1478.93,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0228,
+      "ret_5d": 0.0356,
       "scope": "aggregate"
     },
     {
@@ -10865,11 +12245,12 @@
       "entry_hi": 378.66,
       "target": 450.09,
       "stop": 344.41,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0365,
+      "ret_5d": 0.1054,
       "scope": "aggregate"
     },
     {
@@ -10887,11 +12268,12 @@
       "entry_hi": 204.56,
       "target": 219.13,
       "stop": 191.23,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0833,
+      "ret_5d": -0.1399,
       "scope": "aggregate"
     },
     {
@@ -10909,11 +12291,12 @@
       "entry_hi": 382.94,
       "target": 405.43,
       "stop": 335.72,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0198,
+      "ret_5d": 0.0299,
       "scope": "aggregate"
     },
     {
@@ -10931,11 +12314,12 @@
       "entry_hi": 241.57,
       "target": 258.08,
       "stop": 230.81,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0112,
+      "ret_5d": -0.0612,
       "scope": "aggregate"
     },
     {
@@ -10953,11 +12337,12 @@
       "entry_hi": 245.0,
       "target": 258.08,
       "stop": 230.81,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0112,
+      "ret_5d": -0.0612,
       "scope": "aggregate"
     },
     {
@@ -10975,11 +12360,12 @@
       "entry_hi": 491.8,
       "target": 576.08,
       "stop": 440.83,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0158,
+      "ret_5d": 0.0528,
       "scope": "aggregate"
     },
     {
@@ -10999,11 +12385,12 @@
       "entry_hi": 320.25,
       "target": 334.68,
       "stop": 311.58,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
-      "ret_1d": -0.0214
+      "ret_1d": -0.0214,
+      "ret_5d": -0.0022
     },
     {
       "date": "2026-07-17",
@@ -11020,11 +12407,12 @@
       "entry_hi": 320.25,
       "target": 334.68,
       "stop": 311.58,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0214,
+      "ret_5d": -0.0022,
       "scope": "aggregate"
     },
     {
@@ -11042,11 +12430,12 @@
       "entry_hi": 97.89,
       "target": 115.28,
       "stop": 88.21,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.006,
+      "ret_5d": -0.0221,
       "scope": "aggregate"
     },
     {
@@ -11064,11 +12453,12 @@
       "entry_hi": 1110.0,
       "target": 1293.75,
       "stop": 990.0,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0433,
+      "ret_5d": -0.0099,
       "scope": "aggregate"
     },
     {
@@ -11086,11 +12476,12 @@
       "entry_hi": 1117.5,
       "target": 1293.75,
       "stop": 990.0,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0433,
+      "ret_5d": -0.0099,
       "scope": "aggregate"
     },
     {
@@ -11108,11 +12499,12 @@
       "entry_hi": 1955.0,
       "target": 2277.0,
       "stop": 1742.4,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.028,
+      "ret_5d": 0.0224,
       "scope": "aggregate"
     },
     {
@@ -11130,11 +12522,12 @@
       "entry_hi": 1967.5,
       "target": 2277.0,
       "stop": 1742.4,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.028,
+      "ret_5d": 0.0224,
       "scope": "aggregate"
     },
     {
@@ -11152,11 +12545,12 @@
       "entry_hi": 1083.39,
       "target": 1297.14,
       "stop": 1034.0,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0137,
+      "ret_5d": 0.0,
       "scope": "aggregate"
     },
     {
@@ -11174,11 +12568,12 @@
       "entry_hi": 1129.2,
       "target": 1297.14,
       "stop": 1034.0,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0137,
+      "ret_5d": 0.0,
       "scope": "aggregate"
     },
     {
@@ -11196,11 +12591,12 @@
       "entry_hi": 460.5,
       "target": 579.58,
       "stop": 444.4,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.099,
+      "ret_5d": -0.1859,
       "scope": "aggregate"
     },
     {
@@ -11220,11 +12616,12 @@
       "entry_hi": 239.0,
       "target": 246.0,
       "stop": 210.32,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0996,
+      "ret_5d": -0.1398,
       "scope": "aggregate"
     },
     {
@@ -11242,11 +12639,12 @@
       "entry_hi": 5009.0,
       "target": 5325.0,
       "stop": 4501.2,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0141,
+      "ret_5d": 0.2403,
       "scope": "aggregate"
     },
     {
@@ -11264,11 +12662,12 @@
       "entry_hi": 909.0,
       "target": 1033.28,
       "stop": 799.92,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0476,
+      "ret_5d": 0.0476,
       "scope": "aggregate"
     },
     {
@@ -11286,11 +12685,12 @@
       "entry_hi": 2610.0,
       "target": 3082.0,
       "stop": 2358.4,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0077,
+      "ret_5d": 0.0019,
       "scope": "aggregate"
     },
     {
@@ -11310,11 +12710,12 @@
       "entry_hi": 1370.0,
       "target": 1575.5,
       "stop": 1205.6,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0202,
+      "ret_5d": -0.1694,
       "scope": "aggregate"
     },
     {
@@ -11332,11 +12733,12 @@
       "entry_hi": 1295.0,
       "target": 1489.25,
       "stop": 1139.6,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0385,
+      "ret_5d": 0.0684,
       "scope": "aggregate"
     },
     {
@@ -11354,11 +12756,12 @@
       "entry_hi": 5950.0,
       "target": 7153.0,
       "stop": 5473.6,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0259,
+      "ret_5d": 0.0187,
       "scope": "aggregate"
     },
     {
@@ -11376,11 +12779,12 @@
       "entry_hi": 281.0,
       "target": 329.08,
       "stop": 254.32,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0534,
+      "ret_5d": -0.0737,
       "scope": "aggregate"
     },
     {
@@ -11398,11 +12802,12 @@
       "entry_hi": 285.0,
       "target": 329.08,
       "stop": 254.32,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0534,
+      "ret_5d": -0.0737,
       "scope": "aggregate"
     },
     {
@@ -11420,11 +12825,12 @@
       "entry_hi": 76.5,
       "target": 89.93,
       "stop": 68.82,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0781,
+      "ret_5d": -0.0739,
       "scope": "aggregate"
     },
     {
@@ -11442,11 +12848,12 @@
       "entry_hi": 215.5,
       "target": 247.86,
       "stop": 198.44,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0024,
+      "ret_5d": 0.0455,
       "scope": "aggregate"
     },
     {
@@ -11464,11 +12871,12 @@
       "entry_hi": 220.5,
       "target": 247.86,
       "stop": 198.44,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0024,
+      "ret_5d": 0.0455,
       "scope": "aggregate"
     },
     {
@@ -11486,11 +12894,12 @@
       "entry_hi": 345.32,
       "target": 418.02,
       "stop": 319.88,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0992,
+      "ret_5d": -0.0351,
       "scope": "aggregate"
     },
     {
@@ -11508,11 +12917,12 @@
       "entry_hi": 675.0,
       "target": 729.0,
       "stop": 600.16,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0277,
+      "ret_5d": -0.0016,
       "scope": "aggregate"
     },
     {
@@ -11530,11 +12940,12 @@
       "entry_hi": 672.98,
       "target": 729.0,
       "stop": 600.16,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0277,
+      "ret_5d": -0.0016,
       "scope": "aggregate"
     },
     {
@@ -11552,11 +12963,12 @@
       "entry_hi": 3697.5,
       "target": 4317.86,
       "stop": 3317.6,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.033,
+      "ret_5d": -0.0216,
       "scope": "aggregate"
     },
     {
@@ -11574,11 +12986,12 @@
       "entry_hi": null,
       "target": 107.46,
       "stop": 85.45,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0403,
+      "ret_5d": -0.0502,
       "scope": "aggregate"
     },
     {
@@ -11596,11 +13009,12 @@
       "entry_hi": 4015.0,
       "target": 4793.58,
       "stop": 3682.8,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0235,
+      "ret_5d": 0.0613,
       "scope": "aggregate"
     },
     {
@@ -11618,11 +13032,12 @@
       "entry_hi": 835.04,
       "target": 991.28,
       "stop": 793.76,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0602,
+      "ret_5d": 0.0329,
       "scope": "aggregate"
     },
     {
@@ -11640,11 +13055,12 @@
       "entry_hi": 868.52,
       "target": 991.28,
       "stop": 793.76,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0602,
+      "ret_5d": 0.0329,
       "scope": "aggregate"
     },
     {
@@ -11662,11 +13078,12 @@
       "entry_hi": 382.5,
       "target": 433.22,
       "stop": 359.6,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0491,
+      "ret_5d": 0.045,
       "scope": "aggregate"
     },
     {
@@ -11684,11 +13101,12 @@
       "entry_hi": 391.5,
       "target": 433.22,
       "stop": 359.6,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0491,
+      "ret_5d": 0.045,
       "scope": "aggregate"
     },
     {
@@ -11706,11 +13124,12 @@
       "entry_hi": 465.0,
       "target": 511.58,
       "stop": 421.4,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0054,
+      "ret_5d": 0.101,
       "scope": "aggregate"
     },
     {
@@ -11728,11 +13147,12 @@
       "entry_hi": 461.25,
       "target": 511.58,
       "stop": 421.4,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0054,
+      "ret_5d": 0.101,
       "scope": "aggregate"
     },
     {
@@ -11750,11 +13170,12 @@
       "entry_hi": 462.74,
       "target": 511.58,
       "stop": 421.4,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0054,
+      "ret_5d": 0.101,
       "scope": "aggregate"
     },
     {
@@ -11772,11 +13193,12 @@
       "entry_hi": 192.5,
       "target": 201.0,
       "stop": 187.5,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0101,
+      "ret_5d": 0.0404,
       "scope": "aggregate"
     },
     {
@@ -11794,11 +13216,12 @@
       "entry_hi": 154.75,
       "target": 180.78,
       "stop": 138.6,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0594,
+      "ret_5d": 0.0245,
       "scope": "aggregate"
     },
     {
@@ -11816,11 +13239,12 @@
       "entry_hi": 3515.0,
       "target": 4096.42,
       "stop": 3256.0,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
-      "ret_1d": -0.0089
+      "ret_1d": -0.0089,
+      "ret_5d": 0.1128
     },
     {
       "date": "2026-07-17",
@@ -11837,11 +13261,12 @@
       "entry_hi": 3607.5,
       "target": 4096.42,
       "stop": 3256.0,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0089,
+      "ret_5d": 0.1128,
       "scope": "aggregate"
     },
     {
@@ -11859,11 +13284,12 @@
       "entry_hi": 300.0,
       "target": 361.14,
       "stop": 279.84,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0558,
+      "ret_5d": -0.0541,
       "scope": "aggregate"
     },
     {
@@ -11881,11 +13307,12 @@
       "entry_hi": 139.72,
       "target": 140.14,
       "stop": 130.82,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0072,
+      "ret_5d": 0.0072,
       "scope": "aggregate"
     },
     {
@@ -11903,11 +13330,12 @@
       "entry_hi": 134.45,
       "target": 140.14,
       "stop": 130.82,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0072,
+      "ret_5d": 0.0072,
       "scope": "aggregate"
     },
     {
@@ -11925,11 +13353,12 @@
       "entry_hi": 439.0,
       "target": 504.85,
       "stop": 386.32,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0367,
+      "ret_5d": 0.0139,
       "scope": "aggregate"
     },
     {
@@ -11947,11 +13376,12 @@
       "entry_hi": 350.5,
       "target": 373.14,
       "stop": 325.57,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0292,
+      "ret_5d": 0.0077,
       "scope": "aggregate"
     },
     {
@@ -11969,11 +13399,12 @@
       "entry_hi": 349.0,
       "target": 373.14,
       "stop": 325.57,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0292,
+      "ret_5d": 0.0077,
       "scope": "aggregate"
     },
     {
@@ -11991,11 +13422,12 @@
       "entry_hi": 2434.5,
       "target": 2535.0,
       "stop": 2328.03,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
-      "ret_1d": 0.0131
+      "ret_1d": 0.0131,
+      "ret_5d": 0.0262
     },
     {
       "date": "2026-07-17",
@@ -12012,11 +13444,12 @@
       "entry_hi": 2434.5,
       "target": 2535.0,
       "stop": 2328.03,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0131,
+      "ret_5d": 0.0262,
       "scope": "aggregate"
     },
     {
@@ -12034,11 +13467,12 @@
       "entry_hi": 233.06,
       "target": 255.08,
       "stop": 226.78,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
-      "ret_1d": 0.0021
+      "ret_1d": 0.0021,
+      "ret_5d": 0.0791
     },
     {
       "date": "2026-07-17",
@@ -12055,11 +13489,12 @@
       "entry_hi": 237.78,
       "target": 255.08,
       "stop": 226.78,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": 0.0021,
+      "ret_5d": 0.0791,
       "scope": "aggregate"
     },
     {
@@ -12077,11 +13512,12 @@
       "entry_hi": 32.55,
       "target": 37.08,
       "stop": 29.57,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0383,
+      "ret_5d": 0.0176,
       "scope": "aggregate"
     },
     {
@@ -12099,11 +13535,12 @@
       "entry_hi": null,
       "target": null,
       "stop": 1676.4,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0201,
+      "ret_5d": 0.0259,
       "scope": "aggregate"
     },
     {
@@ -12121,11 +13558,12 @@
       "entry_hi": 1842.5,
       "target": 2119.28,
       "stop": 1676.4,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0201,
+      "ret_5d": 0.0259,
       "scope": "aggregate"
     },
     {
@@ -12143,11 +13581,12 @@
       "entry_hi": 162.8,
       "target": 179.72,
       "stop": 140.8,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0972,
+      "ret_5d": -0.1111,
       "scope": "aggregate"
     },
     {
@@ -12165,11 +13604,12 @@
       "entry_hi": 63.08,
       "target": 68.6,
       "stop": 57.73,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "loss",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.035,
+      "ret_5d": -0.0016,
       "scope": "aggregate"
     },
     {
@@ -12187,11 +13627,12 @@
       "entry_hi": 29.5,
       "target": 30.63,
       "stop": 28.7,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0131,
+      "ret_5d": 0.0194,
       "scope": "aggregate"
     },
     {
@@ -12209,11 +13650,12 @@
       "entry_hi": 33.33,
       "target": 34.25,
       "stop": 31.91,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0141,
+      "ret_5d": 0.0251,
       "scope": "aggregate"
     },
     {
@@ -12231,11 +13673,12 @@
       "entry_hi": 239.07,
       "target": 256.64,
       "stop": 234.05,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0077,
+      "ret_5d": 0.0231,
       "scope": "aggregate"
     },
     {
@@ -12253,11 +13696,12 @@
       "entry_hi": 102.94,
       "target": 110.78,
       "stop": 100.7,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0095,
+      "ret_5d": 0.0215,
       "scope": "aggregate"
     },
     {
@@ -12275,11 +13719,12 @@
       "entry_hi": 104.72,
       "target": 110.88,
       "stop": 100.8,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0095,
+      "ret_5d": 0.0215,
       "scope": "aggregate"
     },
     {
