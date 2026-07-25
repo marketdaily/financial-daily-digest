@@ -59,8 +59,8 @@ def fetch_rss_news() -> list:
     feeds = get_us_feeds() or RSS_FEEDS
     for domain, url in feeds:
         try:
-            feed = feedparser.parse(url)
-            for entry in feed.entries[:15]:
+            feed = _yf_guard(lambda: feedparser.parse(url), timeout=15)
+            for entry in (getattr(feed, "entries", None) or [])[:15]:
                 published = None
                 if hasattr(entry, "published_parsed") and entry.published_parsed:
                     import time
@@ -235,7 +235,7 @@ def _batch_prices(symbols: list) -> dict:
     if not _yahoo_cb_open():
         for _ in range(2):
             try:
-                data = YQTicker(symbols).price
+                data = _yf_guard(lambda: YQTicker(symbols).price, timeout=20, default={})
                 if isinstance(data, dict):
                     for sym in symbols:
                         if sym in result:
@@ -788,7 +788,7 @@ def fetch_technicals(symbols: list) -> dict:
     h = None
     if not _yahoo_cb_open():
         try:
-            h = YQTicker(list(ymap.values())).history(period="3mo")
+            h = _yf_guard(lambda: YQTicker(list(ymap.values())).history(period="3mo"), timeout=25)
         except Exception:
             h = None
     out = {}
@@ -1042,8 +1042,8 @@ def fetch_tw_rss_news() -> list:
     fallback_feeds = get_tw_feeds() or TW_RSS_FEEDS
     for domain, url in fallback_feeds:
         try:
-            feed = feedparser.parse(url)
-            for entry in feed.entries[:10]:
+            feed = _yf_guard(lambda: feedparser.parse(url), timeout=15)
+            for entry in (getattr(feed, "entries", None) or [])[:10]:
                 title = entry.get("title", "").strip()
                 if not title or title in seen_titles:
                     continue
@@ -1093,9 +1093,9 @@ def _fetch_tw_stock_news(codes: list) -> list:
         q = urllib.parse.quote(f"{name} {code}")
         out = []
         try:
-            feed = feedparser.parse(
-                f"https://news.google.com/rss/search?q={q}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant")
-            for entry in feed.entries[:15]:
+            feed = _yf_guard(lambda: feedparser.parse(
+                f"https://news.google.com/rss/search?q={q}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant"), timeout=15)
+            for entry in (getattr(feed, "entries", None) or [])[:15]:
                 if len(out) >= 3:
                     break
                 title = (entry.get("title") or "").strip()
