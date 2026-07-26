@@ -5,8 +5,11 @@ compatibility_date = "2026-05-01"
 # 雙班次(Worker 依 event.cron 派 market):
 #   22:55 UTC = 台灣 06:55 → market=tw 台股早報(台股 09:00 開盤前)
 #   12:00 UTC = 台灣 20:00 → market=us 美股晚報(美股約 21:30-22:30 開盤前)
+# 2026-07-26 停用每日派發(GitHub 帳號解封後 Actions 復活,winrig 才是唯一日常發送者;
+# 本 worker 再派=雙發風險)。daily_digest.yml 改為「純備援」:只由 digest-watchdog 偵測
+# winrig 缺席時派發(帶 failover=1),或人工 workflow_dispatch。要恢復雲端日常班:還原本行。
 [triggers]
-crons = ["20 22 * * *", "25 11 * * *"]
+crons = []
 
 # Secret(用 `wrangler secret put` 設定,不寫進這裡):
 #   GITHUB_TOKEN — fine-grained PAT,對 marketdaily/financial-daily-digest 有 Actions: Read and write

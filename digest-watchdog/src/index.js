@@ -140,8 +140,41 @@ async function checkShift(env, shift, phase, now = new Date()) {
 
   if (phase === 1) {
     await push(env, `🟠 ${label} ${date}:公版存檔未出現(${shift === "tw" ? "07:30" : "20:25"} 檢)。可能生成延遲,${shift === "tw" ? "08:00" : "21:00"} 第二檢確認。若今日休市可忽略`);
+    // 2026-07-26 雲端備援:第一檢缺席即派發 GH Actions 接手(failover=1 帶防雙發閘:
+    // 雲端起跑前再查一次存檔,winrig 遲交完成就退場)。第一檢就派=給雲端最大 runway
+    // (tw 07:30→死線 08:40;us 20:25→21:10)。dedupe 每班每天最多派一次。
+    await dispatchFailover(env, shift, date, label);
   } else {
-    await push(env, `🔴 ${label} ${date}:第二檢仍無存檔 → 日報極可能沒寄!winrig 可能整台離線(cron runner 在上面),請檢查主機電源/網路/WSL。守望犬無法代跑,需人工`);
+    await push(env, `🔴 ${label} ${date}:第二檢仍無存檔 → 日報極可能沒寄!winrig 可能整台離線,雲端備援已於第一檢派發(這則還在=雲端也沒趕上,查 GitHub Actions run),需人工`);
+  }
+}
+
+// ── 雲端備援派發(2026-07-26,GitHub 帳號解封後 Actions 復活):winrig 缺席 → 派
+// daily_digest.yml(failover=1)。workflow 內建防雙發閘;此處 KV dedupe 防重複派發。──
+async function dispatchFailover(env, shift, date, label) {
+  const k = `fo:${date}:${shift}`;
+  if (await kvGet(env, k)) return;
+  await kvSet(env, k, "1");
+  try {
+    const r = await fetch(
+      "https://api.github.com/repos/marketdaily/financial-daily-digest/actions/workflows/daily_digest.yml/dispatches",
+      {
+        method: "POST",
+        headers: {
+          "authorization": "Bearer " + env.GITHUB_TOKEN,
+          "accept": "application/vnd.github+json",
+          "user-agent": "md-digest-watchdog/1.0",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ ref: "main", inputs: { market: shift, failover: "1" } }),
+      });
+    if (r.status === 204) {
+      await push(env, `☁️ ${label} ${date}:雲端備援已派發(GitHub Actions 接手生成寄送,防雙發閘已帶)。`);
+    } else {
+      await push(env, `🔴 ${label} ${date}:雲端備援派發失敗(GitHub API ${r.status}),需人工補救`);
+    }
+  } catch (e) {
+    await push(env, `🔴 ${label} ${date}:雲端備援派發異常(${String(e.message || e).slice(0, 80)}),需人工補救`);
   }
 }
 
