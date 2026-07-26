@@ -1,14 +1,14 @@
 {
   "stats": {
-    "generated_at": "2026-07-25T08:10:48",
+    "generated_at": "2026-07-26T08:10:46",
     "horizon": "5d",
     "records_since": "2026-06-12",
     "days_covered": 26,
-    "total_records": 2100,
-    "judged_records": 1540,
+    "total_records": 2109,
+    "judged_records": 1542,
     "one_day": {
-      "a_count": 747,
-      "a_wins": 422,
+      "a_count": 745,
+      "a_wins": 421,
       "a_rate": 56.5,
       "c_count": 1143,
       "c_wins": 745,
@@ -30,7 +30,7 @@
         72.7,
         94.2
       ],
-      "c_pending": 1186
+      "c_pending": 1195
     },
     "quarterly": {
       "a_count": 0,
@@ -48,36 +48,36 @@
         0.0,
         0.0
       ],
-      "c_pending": 1224
+      "c_pending": 1233
     },
     "holder": {
       "note": "持有者框架建議(用戶自填進場成本):judge_holder 獨立結算,不計入 A/C 頭條",
-      "count": 20,
+      "count": 21,
       "wins": 12,
-      "rate": 60.0,
+      "rate": 57.1,
       "ci95": [
-        38.7,
-        78.1
+        36.5,
+        75.5
       ],
-      "pending": 85
+      "pending": 84
     },
-    "a_count": 638,
+    "a_count": 639,
     "a_wins": 285,
-    "a_rate": 44.7,
+    "a_rate": 44.6,
     "a_ci95": [
-      40.9,
+      40.8,
       48.5
     ],
-    "c_count": 902,
-    "c_wins": 695,
+    "c_count": 903,
+    "c_wins": 696,
     "c_rate": 77.1,
     "c_ci95": [
       74.2,
       79.7
     ],
     "calibration": {
-      "n": 638,
-      "brier": 0.252,
+      "n": 639,
+      "brier": 0.2519,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
@@ -89,8 +89,8 @@
           "hit_rate": 28.0
         },
         "<=50": {
-          "n": 448,
-          "hit_rate": 43.8
+          "n": 449,
+          "hit_rate": 43.7
         }
       }
     },
@@ -150,56 +150,56 @@
         }
       },
       "us": {
-        "a_count": 268,
+        "a_count": 269,
         "a_wins": 128,
-        "a_rate": 47.8,
+        "a_rate": 47.6,
         "a_ci95": [
-          41.9,
-          53.7
+          41.7,
+          53.5
         ],
-        "c_count": 492,
-        "c_wins": 376,
-        "c_rate": 76.4,
+        "c_count": 493,
+        "c_wins": 377,
+        "c_rate": 76.5,
         "c_ci95": [
           72.5,
           80.0
         ],
         "era": {
           "since": "2026-06-12",
-          "a_count": 268,
+          "a_count": 269,
           "a_wins": 128,
-          "a_rate": 47.8,
+          "a_rate": 47.6,
           "a_ci95_day_cluster": [
-            39.6,
-            55.5
+            39.3,
+            55.2
           ],
-          "c_count": 492,
-          "c_wins": 376,
-          "c_rate": 76.4,
+          "c_count": 493,
+          "c_wins": 377,
+          "c_rate": 76.5,
           "c_ci95_day_cluster": [
             69.1,
-            82.8
+            83.1
           ],
-          "days": 20
+          "days": 21
         }
       }
     },
     "era": {
       "note": "僅計 2026-06-12 起(結構prior+校準信心上線後)的現行模型;信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
       "since": "2026-06-12",
-      "a_count": 638,
+      "a_count": 639,
       "a_wins": 285,
-      "a_rate": 44.7,
+      "a_rate": 44.6,
       "a_ci95_day_cluster": [
-        36.9,
+        37.4,
         52.4
       ],
-      "c_count": 902,
-      "c_wins": 695,
+      "c_count": 903,
+      "c_wins": 696,
       "c_rate": 77.1,
       "c_ci95_day_cluster": [
-        68.0,
-        84.6
+        68.4,
+        84.5
       ],
       "by_regime": {
         "up": {
@@ -395,9 +395,9 @@
             "status": null
           },
           "hold|dn_deep": {
-            "count": 0,
+            "count": 1,
             "wins": 0,
-            "days": 0,
+            "days": 1,
             "rate": null,
             "status": "insufficient_data"
           },
@@ -437,9 +437,9 @@
             "status": "insufficient_data"
           },
           "wait|dn_deep": {
-            "count": 0,
-            "wins": 0,
-            "days": 0,
+            "count": 1,
+            "wins": 1,
+            "days": 1,
             "rate": null,
             "status": "insufficient_data"
           },
@@ -460,8 +460,8 @@
         }
       },
       "calibration": {
-        "n": 638,
-        "brier": 0.252,
+        "n": 639,
+        "brier": 0.2519,
         "coin_flip_brier": 0.25,
         "bins": {
           "51-60": {
@@ -473,12 +473,12 @@
             "hit_rate": 28.0
           },
           "<=50": {
-            "n": 448,
-            "hit_rate": 43.8
+            "n": 449,
+            "hit_rate": 43.7
           }
         }
       },
-      "days": 20
+      "days": 21
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
@@ -1630,11 +1630,11 @@
           "blocked_rate": 20.0
         },
         "crash": {
-          "n": 2,
-          "shown_wins": 2,
+          "n": 4,
+          "shown_wins": 3,
           "blocked_wins": 1,
-          "shown_rate": 100.0,
-          "blocked_rate": 50.0
+          "shown_rate": 75.0,
+          "blocked_rate": 25.0
         },
         "exdiv": {
           "n": 2,
@@ -1660,8 +1660,8 @@
       "c_wins": 39,
       "c_rate": 62.9
     },
-    "personal_samples_added": 1936,
-    "visible_personal_added": 1831
+    "personal_samples_added": 1945,
+    "visible_personal_added": 1840
   },
   "records": [
     {
@@ -1743,6 +1743,50 @@
       "entry_hi": 388.72,
       "target": 346.59,
       "stop": 275.47,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "",
+      "ticker": "QMCO",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BULLISH",
+      "reason": "現價11.1美元勿追，等下個美股交易日回測MA20(10.71)不破、收盤站穩11美元以上再分批低接；KD在67.9/60.8形成黃金交叉、MACD柱翻正0.12動能轉強，惟今日價漲量縮(相對量0.4x)背離需留意追高風險。若跌破9.77則轉弱看9.35布林下軌；若站上12.73則偏多挑戰前高。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 50,
+      "gated_from": "buy",
+      "gate": "crash",
+      "entry_lo": 10.71,
+      "entry_hi": 11.1,
+      "target": 12.73,
+      "stop": 9.77,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "Palantir",
+      "ticker": "PLTR",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📈 BEARISH",
+      "reason": "現價122.92美元勿追,已死亡交叉且空頭結構(價<MA20<MA50),DCF合理價區間僅12.5–16.3美元、現價明顯高估,下個美股交易日反彈都先當逃命波看待;要等收盤站回127.9(MA20)且MACD柱由負轉正,才考慮回測113.22不破分批接。近期EPS YoY雖高達+305.7%,基本面強勁但估值已透支,別在高檔重壓。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 113.22,
+      "entry_hi": 113.22,
+      "target": 135.86,
+      "stop": 108.17,
       "outcome": null,
       "outcome_1d": null,
       "outcome_21d": null,
@@ -1883,13 +1927,13 @@
       "ticker": "MRVL",
       "market": "us",
       "verdict_class": "wait",
-      "verdict_text": "📈 NEUTRAL",
-      "reason": "現價勿追,MRVL單日跌7.21%續處空頭結構(價<MA20<MA50),DCF估算合理價僅$22.4–$31.9,現價194.23遠高於合理區間,反彈時更不宜重壓;下個美股交易日等收盤收復$223.36反彈目標再看偏多,若續破$177.95新低則測$170.92止損,若收復$223.36則偏多看$229.56(MA20)。",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "現價194.23美元勿追，DCF估值區間僅22.4-31.9美元、現價明顯高於合理區間，潛在高估須留意追高風險；技術面仍空頭排列，RSI29.7、KD37.6/31.3、MACD柱-3.59負值擴大，下個美股交易日先看能否守住177.95低接不破，收盤收復223.36反彈目標再分批。若站上223.36則偏多看229.56；若跌破177.95則轉弱看170.92。",
       "type": "C",
       "source": "signal-card",
       "confidence": 53,
-      "entry_lo": null,
-      "entry_hi": null,
+      "entry_lo": 177.95,
+      "entry_hi": 190.0,
       "target": 223.36,
       "stop": 170.92,
       "outcome": null,
@@ -1955,6 +1999,27 @@
       "entry_hi": 34.0,
       "target": 42.63,
       "stop": 32.62,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "IonQ",
+      "ticker": "IONQ",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📉 BEARISH",
+      "reason": "IonQ收32.84美元跌破MA20(42.04)，RSI14僅8.7深度超賣但空頭排列未變，下個美股交易日先觀望，等收盤收復37.77美元反彈目標之上或站回MA20(42.04)再評估進場；價跌量縮(相對量0.73x)顯示賣壓略趨緩，但不宜現在買進。若跌破28.9則轉弱看28附近；若站上37.77則偏多看42(MA20)。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 50,
+      "entry_lo": 32.56,
+      "entry_hi": 32.56,
+      "target": 37.77,
+      "stop": 28.9,
       "outcome": null,
       "outcome_1d": null,
       "outcome_21d": null,
@@ -2030,13 +2095,13 @@
       "ticker": "BE",
       "market": "us",
       "verdict_class": "wait",
-      "verdict_text": "📈 NEUTRAL",
-      "reason": "現價勿追,BE單日重挫14.91%跌破MA20(244.62),價<MA20<MA50空頭結構下禁止進場,下個美股交易日先觀望,等收盤收復212.62反彈目標之上再談偏多;若收復$212.62則偏多可看$244.62(MA20),若續破$183.22新低則測$162.7止損。",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "現價184.89美元勿追，空頭排列未止跌；等下個美股交易日收盤站回MA20 244.62之上、或至少收復212.62反彈目標才考慮分批進場，目前價跌量縮(相對量0.87x)顯示賣壓趨緩，但RSI14僅23.8、KD21.9/23.7仍在低檔、MACD柱-5.11未轉正，動能尚未反轉。若收盤站上212.62則偏多看244.62；若跌破183.22則轉弱看162.7。",
       "type": "C",
       "source": "signal-card",
       "confidence": 49,
-      "entry_lo": null,
-      "entry_hi": null,
+      "entry_lo": 183.22,
+      "entry_hi": 196.0,
       "target": 212.62,
       "stop": 162.7,
       "outcome": null,
@@ -2174,6 +2239,48 @@
     },
     {
       "date": "2026-07-25",
+      "name": "",
+      "ticker": "AAOI",
+      "market": "us",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "現價100.15美元勿追，已跌破MA20 119.11並創波段新低，下個美股交易日先看能否止穩在91.5支撐之上；MACD柱0.56已由負轉正、RSI39.2、KD40.0/38.7略見回升，但仍處空頭排列，等收盤收復115.17反彈目標再評估。若站穩並收復115.17則偏多看119.11；若跌破91.5則轉弱看88.13。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 49,
+      "entry_lo": 91.5,
+      "entry_hi": 104.0,
+      "target": 115.17,
+      "stop": 88.13,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "高力",
+      "ticker": "8996",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "現價1005元勿追，結構屬盤整但RSI14僅19.0嚴重超賣、MACD柱-30.15顯示跌勢動能仍強，即便基本面營收連17月正成長+129.0%YoY撐腰，短線仍建議等下個台股交易日收盤站穩1155.75反彈目標、或至少守住914低接不破再評估，不建議現在承接。若收復1155.75則偏多看1238.45；若跌破914則轉弱看884.4。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 914.0,
+      "entry_hi": 914.0,
+      "target": 1155.75,
+      "stop": 884.4,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
       "name": "群聯",
       "ticker": "8299",
       "market": "tw",
@@ -2220,13 +2327,13 @@
       "ticker": "8210",
       "market": "tw",
       "verdict_class": "wait",
-      "verdict_text": "📉 BEARISH",
-      "reason": "現價勿追，8210昨日重挫7.2%且跌破MA20($1187.5)，空頭結構未解；下個台股交易日先觀察能否收復1187.5以上，若續破963.6下方即是加速出貨訊號，營收連18個月正成長(+55.6% YoY)僅是背景支撐，非今天進場理由。",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "現價1095元勿追，雖MACD柱由負翻正(+0.69)、KD51.6/46.3動能回溫，且外資近5日買超1,279張、營收連18月正成長+55.6%YoY基本面穩健，但股價仍在空頭排列下，下個台股交易日先看能否守穩1040低接、收盤收復1187.5 MA20再分批布局。若站回1187.5則偏多看1237.86；若跌破1040則轉弱看963.6。",
       "type": "C",
       "source": "signal-card",
       "confidence": 47,
-      "entry_lo": 1187.5,
-      "entry_hi": 1187.5,
+      "entry_lo": 1040.0,
+      "entry_hi": 1100.0,
       "target": 1237.86,
       "stop": 963.6,
       "outcome": null,
@@ -2344,6 +2451,27 @@
     },
     {
       "date": "2026-07-25",
+      "name": "榮科",
+      "ticker": "4989",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "現價65.2元勿追，雖營收連7月正成長、累計YoY+63.2%基本面撐腰，但本益比7.6倍已在近一年第100百分位相對偏貴，加上外資近5日賣超2,731張，短線不宜重壓；下個台股交易日先觀察能否守穩63.4低接不破，RSI14僅12.5、KD15.8/16.6極度超賣但尚未金叉，等收盤收復74.98反彈目標再考慮輕倉介入。若收復74.98則偏多看84.78；若跌破63.4則轉弱看57.38。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 52,
+      "entry_lo": 63.4,
+      "entry_hi": 70.0,
+      "target": 74.98,
+      "stop": 57.38,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
       "name": "十銓",
       "ticker": "4967",
       "market": "tw",
@@ -2369,8 +2497,8 @@
       "ticker": "4967",
       "market": "tw",
       "verdict_class": "wait",
-      "verdict_text": "📊 NEUTRAL",
-      "reason": "十銓結構仍空頭(價218.5元<MA20 234.95),今日價漲量縮(相對量1.36倍)呈現價量背離,追高風險偏高,現價勿追;下個台股交易日留意能否收盤收復235元站回MA20之上,站穩才轉買進,否則續觀望。",
+      "verdict_text": "📈 BEARISH",
+      "reason": "現價218.5元遠低於MA20 234.95,價漲量縮(相對量1.36x但屬背離),結構空頭,現價勿追;下個交易日要等收盤收復234.95且量能不再背離,才考慮回測201.84不破分批接,單靠今天小紅K不足以翻多。本益比5.6倍為近一年低檔、營收連4月正成長,回檔較有基本面撐,但這只影響心態不改價位。",
       "type": "C",
       "source": "signal-card",
       "confidence": 48,
@@ -2378,6 +2506,27 @@
       "entry_hi": 201.84,
       "target": 240.72,
       "stop": 192.28,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "科嶠",
+      "ticker": "4542",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📊 NEUTRAL",
+      "reason": "現價316元勿追，本益比高達265.6倍位居近一年第83百分位明顯偏貴，加上今日量能僅0.09x極度萎縮、MACD柱-11.37死叉擴大，下個台股交易日先觀望,等關鍵支撐站穩或利空消化再進場，等收盤收復363.4反彈目標、或至少守穩295低接不破再考慮輕倉。若收復363.4則偏多看381.45；若跌破295則轉弱看278.08。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 51,
+      "entry_lo": 295.0,
+      "entry_hi": 295.0,
+      "target": 363.4,
+      "stop": 278.08,
       "outcome": null,
       "outcome_1d": null,
       "outcome_21d": null,
@@ -2420,6 +2569,27 @@
       "entry_hi": 635.0,
       "target": 694.58,
       "stop": 539.44,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "晶彩科",
+      "ticker": "3535",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📉 BEARISH",
+      "reason": "晶彩科收87.1元跌破MA20(101.99)呈空頭排列，RSI14僅8.4深度超賣，下個台股交易日先觀望，等收盤站回97.6元反彈目標之上或收復MA20(101.99)再考慮進場；若拉回測84不破、價跌量縮(相對量0.62x)賣壓趨緩可留意止穩訊號，惟本益比217.8倍估值中性，暫不具備低接優勢。若跌破76.65則轉弱看84下方；若站上97.6則偏多看101.99(MA20)。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 52,
+      "entry_lo": 84.0,
+      "entry_hi": 84.0,
+      "target": 97.6,
+      "stop": 76.65,
       "outcome": null,
       "outcome_1d": null,
       "outcome_21d": null,
@@ -2487,6 +2657,27 @@
       "entry_hi": 507.0,
       "target": 549.14,
       "stop": 454.32,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-07-25",
+      "name": "盟立",
+      "ticker": "2464",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_text": "📉 BEARISH",
+      "reason": "盟立收146.5元跌破MA20(159.85)呈空頭排列，下個台股交易日先觀望，等收盤站回165.64元反彈目標之上或收復MA20(159.85)再考慮進場；月營收YoY+43.1%偏正面、本益比14倍處近一年第3百分位相對便宜、殖利率5.5%具基本面支撐，回檔風險相對有限。若拉回測132.15不破、價漲量縮(相對量0.33x)需留意背離追高風險。若跌破128.92則轉弱看132.15下方；若站上165.64則偏多看MA20之上。",
+      "type": "C",
+      "source": "signal-card",
+      "confidence": 52,
+      "entry_lo": 132.15,
+      "entry_hi": 132.15,
+      "target": 165.64,
+      "stop": 128.92,
       "outcome": null,
       "outcome_1d": null,
       "outcome_21d": null,
@@ -4362,10 +4553,9 @@
       "target": 682.09,
       "stop": 558.52,
       "outcome": null,
-      "outcome_1d": "win",
+      "outcome_1d": null,
       "outcome_21d": null,
       "outcome_63d": null,
-      "ret_1d": -0.018,
       "scope": "aggregate"
     },
     {
@@ -4384,10 +4574,9 @@
       "target": 682.0,
       "stop": 558.52,
       "outcome": null,
-      "outcome_1d": "loss",
+      "outcome_1d": null,
       "outcome_21d": null,
       "outcome_63d": null,
-      "ret_1d": -0.018,
       "scope": "aggregate"
     },
     {
@@ -10270,11 +10459,12 @@
       "entry_hi": 605.25,
       "target": 686.08,
       "stop": 569.36,
-      "outcome": null,
+      "outcome": "win",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0032,
+      "ret_5d": -0.0784,
       "scope": "aggregate"
     },
     {
@@ -10292,11 +10482,12 @@
       "entry_hi": 625.63,
       "target": 686.08,
       "stop": 569.36,
-      "outcome": null,
+      "outcome": "loss",
       "outcome_1d": "win",
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0032,
+      "ret_5d": -0.0784,
       "scope": "aggregate"
     },
     {
@@ -12041,7 +12232,7 @@
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0002,
-      "ret_5d": -0.0787,
+      "ret_5d": -0.0618,
       "scope": "aggregate"
     },
     {
@@ -12064,7 +12255,7 @@
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0002,
-      "ret_5d": -0.0787,
+      "ret_5d": -0.0618,
       "scope": "aggregate"
     },
     {
