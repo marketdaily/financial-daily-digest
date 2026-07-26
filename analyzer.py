@@ -287,8 +287,22 @@ def _call_gemini(prompt: str, model: str, system: str = None) -> str:
                 _GEMINI_QUOTA_DEAD.add((model, key[-6:]))
                 break
             if resp.status_code == 429:
-                # 退避一次仍 429 = 日配額耗盡而非瞬間 RPM;熔斷該 (model,key) 換下一把,
-                # 否則 6/11 事故重演:每次呼叫白燒 ~50s×2 模型,整班拖到數小時
+                # 2026-07-26 分流 RPM/RPD(全免費令的品質關鍵):免費層 429 有兩種——
+                # per_minute(RPM 爆發,幾十秒後自癒)與 per_day(日配額真耗盡)。原本連兩次 429
+                # 即判死,18 位訂閱者連環生成的爆發流量撞 RPM 就把健康 key 熔斷一整天 →
+                # 整鏈掉到弱模型 → reason 塌陷(07-23 晚班品質事故的真根因,當時誤診為
+                # 「配額整日耗盡」而上付費 Sonnet)。改讀錯誤體分流:
+                body = resp.text or ""
+                if "per_day" in body:
+                    # 日配額真死:立即熔斷換下一把(比舊版還快,不浪費 12s 退避)
+                    _GEMINI_QUOTA_DEAD.add((model, key[-6:]))
+                    break
+                if "per_minute" in body and attempt < 3:
+                    ra = resp.headers.get("retry-after", "")
+                    time.sleep(min(int(ra) if ra.isdigit() else 20, 60))
+                    continue
+                # 判別不出/退避用盡:維持舊行為(退避一次仍 429 → 熔斷),
+                # 保住 6/11 事故防線(絕不讓整班拖數小時)
                 if attempt >= 1:
                     _GEMINI_QUOTA_DEAD.add((model, key[-6:]))
                     break
@@ -474,9 +488,11 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
     # 免費雲端層(獨立廠商/網路路徑):CF Workers AI 一定在;
     # OpenRouter/Cerebras 沒 key 時 raise 自動跳過,填 key 即自動補進鏈。
     free_strong = [("groq:gpt-oss-120b", lambda p: _call_groq(p)),
-                   ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000)),
-                   ("openrouter:nemotron-120b", lambda p: _call_openrouter(p, max_tokens=8000)),
-                   ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
+                   ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000))]
+    # 2026-07-26 降級:nemotron 持續 no-json/抄 prompt 範例(07-23 reason 塌陷主犯之一)、
+    # cerebras 402 沒 credits——降到本地 GPU 之後當絕對最後一張網,不再站在品質要道上。
+    free_weak = [("openrouter:nemotron-120b", lambda p: _call_openrouter(p, max_tokens=8000)),
+                 ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
     # 2026-07-22 Delvin:「sonnet 要花錢就不要用」——付費 Claude 全退出主鏈,
     # 純免費層扛(gemini 雙 key + groq + cf + openrouter/cerebras + 本地 GPU),
     # audit 閘門/deterministic fallback 品質防線不動。openai 沒 key 自動跳過。
@@ -491,8 +507,12 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
     # 的呼叫端(生卡 _render_signal_cards_batched + 日報本體 generate_report/weekend/monday)花錢;council 辯論
     # 仍全免費。Claude 失敗仍往下掉回免費鏈 → deterministic,不破壞「永不掉 deterministic」保證。sonnet-5 禁非預設 temperature,
     # _call_claude 本來就不送 temperature,現成相容。
-    paid = [("claude:sonnet-5", lambda p: _call_claude(p, model="claude-sonnet-5"))] if prefer_paid else []
-    providers = paid + ((strong + gemini) if prefer_strong else (gemini + strong)) + local
+    # 2026-07-26 Delvin 親令全面回免費(「我要全部用免費的 llm council,不要扣錢」):
+    # 07-23 生卡付費 Sonnet 決定撤銷。付費頭改 opt-in——.env 設 DIGEST_PAID_CARDS=1 才啟用,
+    # 預設 0 = prefer_paid 呼叫端(生卡×2/報告×3/retry)一律走純免費鏈+本地 GPU,零 API 帳單。
+    paid = ([("claude:sonnet-5", lambda p: _call_claude(p, model="claude-sonnet-5"))]
+            if (prefer_paid and os.environ.get("DIGEST_PAID_CARDS") == "1") else [])
+    providers = paid + ((strong + gemini) if prefer_strong else (gemini + strong)) + local + free_weak
     last_err = None
     for rnd in range(2):
         dns_blip = False
