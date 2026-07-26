@@ -2401,6 +2401,11 @@ def _calibrated_confidence(card_cls: str, regime_label: str, sym: str = ""):
 # council 吃爆配額害卡片掉備援版;Claude 席次/裁判用便宜的 Haiku;每輪上限 _COUNCIL_MAX 支。
 # 席次/裁判一律傳乾淨的分析師 system(_COUNCIL_SYS),不沿用 HTML 生成器 system 以免被帶歪。
 _COUNCIL_CACHE: dict = {}
+# 同股跨用戶卡片快取(2026-07-26):21 位訂閱者持股高度重疊,同一支股票的卡片分析跨用戶
+# 共用(key=(sym,depth,picks_mode))。只有「有持倉成本」的用戶吃客製化 prompt(_pos_note),
+# 讀寫皆繞過快取;qty-only 不影響 LLM 框架(標記層事後個人化)可安全共用。
+# 效益:生成量 O(用戶×持股)→O(不重複股票),配額省 ~2/3、同股結論一致、重生預算更寬。
+_CARD_XUSER_CACHE: dict = {}
 _COUNCIL_ENABLED = os.environ.get("DIGEST_COUNCIL", "1") != "0"
 _COUNCIL_MAX = int(os.environ.get("DIGEST_COUNCIL_MAX", "40") or "40")
 # 時間預算(2026-07-23 晚報遲寄事故):傍晚 Gemini 免費配額整日耗盡→council 全落到慢席
@@ -3452,8 +3457,20 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             if match and match not in cards_by_sym and _card_passes_audit(card):
                 cards_by_sym[match] = card
 
-    for i in range(0, len(llm_stocks), CHUNK):
-        chunk = llm_stocks[i:i + CHUNK]
+    # ── 同股跨用戶快取:先撿現成的(持倉成本戶繞過),只為缺的呼叫 LLM ──
+    _ck = lambda s: (s, depth, bool(picks_mode))
+    for s in llm_stocks:
+        if s in pos_map:
+            continue
+        _hit = _CARD_XUSER_CACHE.get(_ck(s))
+        if _hit:
+            cards_by_sym[s] = _hit
+    _n_hit = len(cards_by_sym)
+    if _n_hit:
+        print(f"  [card-cache] {_n_hit}/{len(llm_stocks)} 支命中跨用戶快取,只生成其餘 {len(llm_stocks) - _n_hit} 支")
+    _todo = [s for s in llm_stocks if s not in cards_by_sym]
+    for i in range(0, len(_todo), CHUNK):
+        chunk = _todo[i:i + CHUNK]
         try:
             _collect(_llm_generate(_mk_prompt(chunk), prefer_strong, prefer_paid=True), chunk)
         except Exception as e:
@@ -3475,7 +3492,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                     misses += 1
                     print(f"  [signal-batch] 單支 {s} 重試仍失敗({str(e2)[:60]})")
                 time.sleep(1)
-        if i + CHUNK < len(llm_stocks):
+        if i + CHUNK < len(_todo):
             time.sleep(2)
     # ── 品質重生迴圈(2026-07-26「100% 品質」令)──
     # 舊行為:卡片沒過 _card_passes_audit 就靜默丟掉→deterministic 模板卡=品質靠運氣。
@@ -3498,6 +3515,10 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             except Exception as _e:
                 print(f"  [card-regen] {s} 失敗({str(_e)[:60]})")
             time.sleep(1)
+    # 寫回快取:過了品質閘的卡讓後續用戶直接共用(持倉戶不寫,其 prompt 帶個人成本)
+    for s, c in cards_by_sym.items():
+        if s not in pos_map:
+            _CARD_XUSER_CACHE.setdefault(_ck(s), c)
     overflow = set(seen[full_limit:]) if full_limit else set()
     ordered = []
     for s in seen:
