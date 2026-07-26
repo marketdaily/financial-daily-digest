@@ -659,24 +659,31 @@ def backfill_meta_desc(dry: bool) -> list:
 
 
 def call_claude(system: str, user: str, max_tokens: int = 2000) -> str:
+    """2026-07-26 Delvin「全部用免費的,不要扣錢」:改走 Gemini 免費層(函式名保留,免動全部呼叫端)。
+    兩模型×兩 key 輪替;全敗 raise → 呼叫端既有 try/except 跳過該篇。絕不再打付費 API。"""
     import urllib.request
-    req = urllib.request.Request(
-        "https://api.anthropic.com/v1/messages",
-        data=json.dumps({
-            "model": MODEL,
-            "max_tokens": max_tokens,
-            "system": system,
-            "messages": [{"role": "user", "content": user}],
-        }).encode(),
-        headers={
-            "x-api-key": ANTHROPIC_KEY,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-        },
-    )
-    with urllib.request.urlopen(req, timeout=60) as r:
-        data = json.loads(r.read())
-    return "".join(c.get("text", "") for c in data.get("content", [])).strip()
+    keys = [k for k in (os.getenv("GEMINI_API_KEY"), os.getenv("GEMINI_API_KEY_2")) if k]
+    if not keys:
+        raise RuntimeError("GEMINI_API_KEY missing")
+    last = None
+    for model in ("gemini-2.5-flash", "gemini-2.0-flash"):
+        for key in keys:
+            try:
+                req = urllib.request.Request(
+                    f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}",
+                    data=json.dumps({
+                        "systemInstruction": {"parts": [{"text": system}]},
+                        "contents": [{"parts": [{"text": user}]}],
+                        "generationConfig": {"temperature": 0.4, "maxOutputTokens": max_tokens},
+                    }).encode(),
+                    headers={"content-type": "application/json"},
+                )
+                with urllib.request.urlopen(req, timeout=90) as r:
+                    data = json.loads(r.read())
+                return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+            except Exception as e:
+                last = e
+    raise RuntimeError(f"gemini free chain failed: {last}")
 
 
 SYSTEM = """你是 MarketDaily 的財經 SEO 內容寫手。寫繁體中文 SEO 長尾文章。
@@ -2056,8 +2063,8 @@ def main():
     ap.add_argument("--dry", action="store_true")
     args = ap.parse_args()
 
-    if not ANTHROPIC_KEY and not args.dry:
-        print("✗ ANTHROPIC_API_KEY missing in .env"); sys.exit(1)
+    if not (os.getenv("GEMINI_API_KEY") or os.getenv("GEMINI_API_KEY_2")) and not args.dry:
+        print("✗ GEMINI_API_KEY missing in .env"); sys.exit(1)
 
     published = load_published()
     print(f"① 已發布 {len(published)} 篇,挑新主題 ×{args.count}...")
