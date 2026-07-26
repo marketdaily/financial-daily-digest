@@ -3178,7 +3178,9 @@ def _strip_reason_leak(card: str) -> str:
 
 
 def _card_passes_audit(card: str) -> bool:
-    """跟 digest_audit 同款檢查:確保每張 LLM 卡有 3 個 battle-row + reason 含價位/時間窗。"""
+    """跟 digest_audit 同款檢查:確保每張 LLM 卡有 3 個 battle-row + reason 含價位/時間窗
+    + reason 深度底線(2026-07-26「100% 品質」令:07-23 塌陷卡 48-64 字但帶價位,舊版照樣
+    放行→淺卡進信。≥70 字才算合格分析,對齊 digest 級 signal_reason_shallow 的 80/60 門檻)。"""
     if "signal-card" not in card:
         return False
     if card.count("battle-row") < 3:
@@ -3187,6 +3189,8 @@ def _card_passes_audit(card: str) -> bool:
     if not rm:
         return False
     reason = rm.group(1)
+    if len(re.sub(r"<[^>]+>", "", reason).strip()) < 70:
+        return False
     has_price = re.search(r"\$\s*\d|NT\$?\s*\d|\d+\s*(元|美元|塊|點)", reason)
     has_tw = re.search(r"今早|今晚|盤後|盤前|財報前|財報後|開盤|收盤|本週|下週|\d+\s*月\s*\d+", reason)
     return bool(has_price or has_tw)
@@ -3473,6 +3477,27 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                 time.sleep(1)
         if i + CHUNK < len(llm_stocks):
             time.sleep(2)
+    # ── 品質重生迴圈(2026-07-26「100% 品質」令)──
+    # 舊行為:卡片沒過 _card_passes_audit 就靜默丟掉→deterministic 模板卡=品質靠運氣。
+    # 新行為:沒過關的逐支重生,最多 3 輪;第 2 輪起 prefer_strong(免費強模型優先),
+    # 每輪換到的 provider 不同(鏈內熔斷自動輪替)=同一支換 3+ 個模型試到過。
+    # 時間預算(預設 120s/用戶,env 可調)防拖班:預算盡→剩餘走 deterministic(仍正確,樸素)。
+    _regen_deadline = time.time() + float(os.environ.get("DIGEST_CARD_REGEN_BUDGET_S", "120"))
+    for _round in range(3):
+        _missing = [s for s in llm_stocks if s not in cards_by_sym]
+        if not _missing or time.time() > _regen_deadline:
+            break
+        print(f"  [card-regen] 第 {_round + 1} 輪:{len(_missing)} 支未過卡級品質閘,逐支重生")
+        for s in _missing:
+            if time.time() > _regen_deadline:
+                print("  [card-regen] 時間預算用盡,剩餘走 deterministic")
+                break
+            try:
+                _collect(_llm_generate(_mk_prompt([s]),
+                                       prefer_strong or _round > 0, prefer_paid=True), [s])
+            except Exception as _e:
+                print(f"  [card-regen] {s} 失敗({str(_e)[:60]})")
+            time.sleep(1)
     overflow = set(seen[full_limit:]) if full_limit else set()
     ordered = []
     for s in seen:
