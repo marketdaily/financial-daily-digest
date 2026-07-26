@@ -6,7 +6,7 @@
   <atom:link href="https://marketdaily.ai/feed.xml" rel="self" type="application/rss+xml"/>
   <description>MarketDaily 個股深度分析 — 美股、台股長尾主題,每週更新。</description>
   <language>zh-tw</language>
-  <lastBuildDate>Mon, 13 Jul 2026 01:03:17 +0800</lastBuildDate>
+  <lastBuildDate>Mon, 27 Jul 2026 01:01:28 +0800</lastBuildDate>
   <ttl>720</ttl>
   <generator>MarketDaily blog_feed.py</generator>
   <image>
@@ -15,431 +15,481 @@
     <link>https://marketdaily.ai/blog/</link>
   </image>
   <item>
+    <title>迪士尼 (DIS) 適合長期持有嗎？深入分析其投資潛力與挑戰</title>
+    <link>https://marketdaily.ai/blog/dis-適合長期持有嗎-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=dis-適合長期持有嗎-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/dis-適合長期持有嗎-202607</guid>
+    <pubDate>Mon, 27 Jul 2026 01:01:28 +0800</pubDate>
+    <description>迪士尼 (DIS) 作為全球娛樂巨擘，擁有超過百年歷史，其股價表現與轉型策略一直是投資者關注的焦點。許多人好奇，在經歷了數年的變革後，迪士尼這家公司是否仍然適合長期持有？</description>
+    <category>DIS</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/dis-適合長期持有嗎-202607.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/dis-適合長期持有嗎-202607.png" medium="image"/>
+  </item>
+  <item>
+    <title>台達電(2308) 法說會前瞻：掌握產業脈動與未來成長契機</title>
+    <link>https://marketdaily.ai/blog/2308-event-20260730?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2308-event-20260730</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2308-event-20260730</guid>
+    <pubDate>Mon, 27 Jul 2026 01:00:55 +0800</pubDate>
+    <description>隨著全球科技產業快速變革，法人說明會已成為投資人洞悉企業營運現況與未來策略的關鍵管道。對於台灣電子產業巨擘台達電(2308)而言，其即將於2026年7月30日召開的法人說明會，無疑是市場高度關注的焦點。本次法說會主旨為說明1 相關文章</description>
+    <category>2308</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/2308-event-20260730.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/2308-event-20260730.png" medium="image"/>
+  </item>
+  <item>
+    <title>大立光(3008) 除權息時間與歷史紀錄：掌握股利發放關鍵資訊</title>
+    <link>https://marketdaily.ai/blog/3008-除權息時間與歷史紀錄-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=3008-除權息時間與歷史紀錄-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/3008-除權息時間與歷史紀錄-202607</guid>
+    <pubDate>Mon, 27 Jul 2026 01:00:39 +0800</pubDate>
+    <description>在台灣股市中，除權息是投資人關注的年度盛事，它不僅是公司回饋股東的方式，也反映了企業的營運狀況。對於像大立光(3008)這樣在光學鏡頭產業中佔據龍頭地位的公司，其除權息政策與歷史紀錄更是廣大投資人分析與決策的重要參考依據。</description>
+    <category>3008</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/3008-除權息時間與歷史紀錄-202607.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/3008-除權息時間與歷史紀錄-202607.png" medium="image"/>
+  </item>
+  <item>
+    <title>Netflix (NFLX) 供應鏈全景:上下游廠商解析</title>
+    <link>https://marketdaily.ai/blog/nflx-供應鏈全景-上下游廠商解析-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=nflx-供應鏈全景-上下游廠商解析-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/nflx-供應鏈全景-上下游廠商解析-202607</guid>
+    <pubDate>Mon, 27 Jul 2026 01:00:23 +0800</pubDate>
+    <description>在全球數位娛樂的浪潮中，Netflix (NFLX) 無疑是串流媒體服務的領航者。從最初的郵寄 DVD 租賃，到如今提供全球數億訂閱戶豐富的影音內容，Netflix 的商業模式不斷演進，目前已涵蓋月費訂閱與新推出的廣告方案。</description>
+    <category>NFLX</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/nflx-供應鏈全景-上下游廠商解析-202607.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/nflx-供應鏈全景-上下游廠商解析-202607.png" medium="image"/>
+  </item>
+  <item>
+    <title>除權息旺季來了：7-9月除權息投資人該注意什麼</title>
+    <link>https://marketdaily.ai/blog/guide-除權息旺季來了-7-9月除權息投資人該注意什麼-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-除權息旺季來了-7-9月除權息投資人該注意什麼-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-除權息旺季來了-7-9月除權息投資人該注意什麼-202607</guid>
+    <pubDate>Wed, 15 Jul 2026 21:39:59 +0800</pubDate>
+    <description>每年7月到9月，台股進入除權息旺季。如果你是剛開始買股票的新手，可能常聽到「除權息」這個詞，卻不太懂它對自己持有的股票會有什麼實際影響。更重要的是，許多新手被「配息」吸引，卻在不知不覺中掉入常見的投資陷阱。這篇文章會帶你用最實務的角度理解除權息旺季該怎麼應對。</description>
+    <category>GUIDE</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/guide-除權息旺季來了-7-9月除權息投資人該注意什麼-202607.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/guide-除權息旺季來了-7-9月除權息投資人該注意什麼-202607.png" medium="image"/>
+  </item>
+  <item>
     <title>群聯 8299 新手第一次買要注意什麼？5 大風險評估重點</title>
-    <link>https://marketdaily.ai/blog/8299-新手第一次買要注意什麼-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=8299-新手第一次買要注意什麼-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/8299-新手第一次買要注意什麼-202607.html</guid>
+    <link>https://marketdaily.ai/blog/8299-新手第一次買要注意什麼-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=8299-新手第一次買要注意什麼-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/8299-新手第一次買要注意什麼-202607</guid>
     <pubDate>Mon, 13 Jul 2026 01:03:17 +0800</pubDate>
-    <description>群聯 (8299) 新手第一次買要注意什麼 — MarketDaily 整理。</description>
+    <description>群聯電子（8299）是台灣主要的 NAND Flash 控制晶片設計廠，許多投資新手看好半導體產業前景而想購買。但第一次買進 8299 之前，你必須了解這檔股票的 5 個風險評估重點，避免盲目跟風導致虧損。本文將從產業週期、財務體質、技術競爭、進場時機、風險控管等面向，幫助新手建立正確的投資思考框架。</description>
     <category>8299</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/8299-新手第一次買要注意什麼-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/8299-新手第一次買要注意什麼-202607.png" medium="image"/>
   </item>
   <item>
     <title>鴻海(2317)法說會重點解讀：AI伺服器成長動能強勁，製造轉型加速</title>
-    <link>https://marketdaily.ai/blog/2317-event-20260707.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2317-event-20260707</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/2317-event-20260707.html</guid>
+    <link>https://marketdaily.ai/blog/2317-event-20260707?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2317-event-20260707</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2317-event-20260707</guid>
     <pubDate>Mon, 13 Jul 2026 01:02:42 +0800</pubDate>
-    <description>鴻海 (2317) 法說會重點解讀 — MarketDaily 整理。</description>
+    <description>鴻海在2026年7月舉辦投資人會議，向國際機構投資者說明營運概況與策略方向。這場法說會的重點涵蓋AI伺服器業務、晶圓製造進展、電動車布局，以及製造轉型合作，反映出公司在全球科技產業變革中的定位與應對策略。對於關注鴻海發展的投資人來說，這些重點揭示了公司短中期的成長支撐力道與長期轉型方向。</description>
     <category>2317</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2317-event-20260707.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2317-event-20260707.png" medium="image"/>
   </item>
   <item>
     <title>投資新手常犯的 5 個錯誤：2026 年第一步前必知</title>
-    <link>https://marketdaily.ai/blog/guide-新手投資最常犯的5個錯誤-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-新手投資最常犯的5個錯誤-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-新手投資最常犯的5個錯誤-202607.html</guid>
+    <link>https://marketdaily.ai/blog/guide-新手投資最常犯的5個錯誤-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-新手投資最常犯的5個錯誤-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-新手投資最常犯的5個錯誤-202607</guid>
     <pubDate>Mon, 13 Jul 2026 01:02:25 +0800</pubDate>
-    <description>新手投資最常犯的5個錯誤 — MarketDaily 新手投資教學整理。</description>
+    <description>剛開始投資的人最容易掉進哪些陷阱？很多新手滿心期待進場，卻因為一些本可避免的錯誤，白白損失本金或錯過長期獲利的機會。本文整理投資新手最常犯的 5 個錯誤，幫助你在第一步就走對方向。</description>
     <category>GUIDE</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/guide-新手投資最常犯的5個錯誤-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/guide-新手投資最常犯的5個錯誤-202607.png" medium="image"/>
   </item>
   <item>
     <title>布林通道是什麼？2026 新手必學的技術分析工具怎麼用</title>
-    <link>https://marketdaily.ai/blog/term-布林通道-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-布林通道-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/term-布林通道-202607.html</guid>
+    <link>https://marketdaily.ai/blog/term-布林通道-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-布林通道-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/term-布林通道-202607</guid>
     <pubDate>Mon, 13 Jul 2026 01:02:03 +0800</pubDate>
-    <description>布林通道 — MarketDaily 投資知識整理。</description>
+    <description>布林通道（Bollinger Bands）是股票、加密貨幣、期貨交易中最常見的技術分析指標。它由三條線組成：中線（移動平均線）和上下兩條波動帶，能幫助投資人判斷價格何時過熱、過冷，是許多新手進入交易世界的第一個必學工具。2026 年如果你才開始研究投資，布林通道的概念會直接影響你後續對「價格波動」和「風險管理」的理解。</description>
     <category>TERM</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/term-布林通道-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/term-布林通道-202607.png" medium="image"/>
   </item>
   <item>
     <title>輝達 NVDA 本益比合理嗎？美股 AI 晶片龍頭估值分析 2026</title>
-    <link>https://marketdaily.ai/blog/nvda-本益比合理嗎-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=nvda-本益比合理嗎-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/nvda-本益比合理嗎-202607.html</guid>
+    <link>https://marketdaily.ai/blog/nvda-本益比合理嗎-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=nvda-本益比合理嗎-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/nvda-本益比合理嗎-202607</guid>
     <pubDate>Mon, 06 Jul 2026 01:01:49 +0800</pubDate>
-    <description>輝達 (NVDA) 本益比合理嗎 — MarketDaily 整理。</description>
+    <description>輝達（NVIDIA, NVDA）作為全球 AI 晶片領域的龍頭企業，其股價在過去數年間漲幅驚人。隨著股價上升，投資人最常問的問題就是：「輝達的本益比還合理嗎？」本文將從歷史本益比區間、產業成長動能與估值邏輯三個角度，幫助你評估這家公司的投資吸引力。</description>
     <category>NVDA</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/nvda-本益比合理嗎-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/nvda-本益比合理嗎-202607.png" medium="image"/>
   </item>
   <item>
     <title>多少錢可以開始投資?小資族 2026 入門攻略</title>
-    <link>https://marketdaily.ai/blog/guide-多少錢可以開始投資-小資族入門攻略-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-多少錢可以開始投資-小資族入門攻略-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-多少錢可以開始投資-小資族入門攻略-202607.html</guid>
+    <link>https://marketdaily.ai/blog/guide-多少錢可以開始投資-小資族入門攻略-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-多少錢可以開始投資-小資族入門攻略-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-多少錢可以開始投資-小資族入門攻略-202607</guid>
     <pubDate>Mon, 06 Jul 2026 01:01:31 +0800</pubDate>
-    <description>多少錢可以開始投資:小資族入門攻略 — MarketDaily 新手投資教學整理。</description>
+    <description>「我只有幾千塊,能開始投資嗎?」——這是小資族最常問的問題。很多人以為投資需要大筆資金,所以一直遲遲不敢跨出第一步。但其實,在 2026 年,門檻已經遠比過去親民得多。這篇文章就來告訴你,小資族真正需要準備多少錢才能踏入投資世界。</description>
     <category>GUIDE</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/guide-多少錢可以開始投資-小資族入門攻略-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/guide-多少錢可以開始投資-小資族入門攻略-202607.png" medium="image"/>
   </item>
   <item>
     <title>M1B 與 M2 是什麼?一次看懂資金動能指標如何預測經濟轉折</title>
-    <link>https://marketdaily.ai/blog/macro-貨幣供給-M1B-與-M2-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-貨幣供給-M1B-與-M2-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-貨幣供給-M1B-與-M2-202607.html</guid>
+    <link>https://marketdaily.ai/blog/macro-貨幣供給-M1B-與-M2-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-貨幣供給-M1B-與-M2-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-貨幣供給-M1B-與-M2-202607</guid>
     <pubDate>Mon, 06 Jul 2026 01:01:10 +0800</pubDate>
-    <description>貨幣供給 M1B 與 M2 — MarketDaily 總體經濟指標整理。</description>
+    <description>投資人常在財經新聞中聽到「M1B 增速放緩」或「M2 創新高」，卻不知道這些數字代表什麼。M1B 與 M2 是央行公布的貨幣供給指標，反映市場中流動的資金規模。這兩項指標的增速快慢，往往領先股市與經濟景氣 3 到 6 個月轉變，是專業投資人監控資金面的核心工具。台灣央行每月定期公布這些數據，對預判景氣與資產價格走勢至關重要。</description>
     <category>MACRO</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/macro-貨幣供給-M1B-與-M2-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/macro-貨幣供給-M1B-與-M2-202607.png" medium="image"/>
   </item>
   <item>
     <title>國泰金(2882) 供應鏈全景:上下游廠商解析</title>
-    <link>https://marketdaily.ai/blog/2882-供應鏈全景-上下游廠商解析-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2882-供應鏈全景-上下游廠商解析-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/2882-供應鏈全景-上下游廠商解析-202607.html</guid>
+    <link>https://marketdaily.ai/blog/2882-供應鏈全景-上下游廠商解析-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2882-供應鏈全景-上下游廠商解析-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2882-供應鏈全景-上下游廠商解析-202607</guid>
     <pubDate>Mon, 06 Jul 2026 01:00:49 +0800</pubDate>
-    <description>國泰金 (2882) 供應鏈全景:上下游廠商解析 — MarketDaily 整理。</description>
+    <description>國泰金控(2882.TW)作為台灣金融業龍頭,其供應鏈結構與傳統製造業截然不同。作為金融控股公司,國泰金的競爭力源自於旗下壽險、銀行、證券等事業體的協同整合,以及對資金與投資資產的精準管理。本文將從上游資金來源、下游客戶需求,以及產業風險集中度三個角度,深入解析國泰金的供應鏈生態。</description>
     <category>2882</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2882-供應鏈全景-上下游廠商解析-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2882-供應鏈全景-上下游廠商解析-202607.png" medium="image"/>
   </item>
   <item>
     <title>股票分割是什麼？對投資人的影響及解讀指南</title>
-    <link>https://marketdaily.ai/blog/term-股票分割-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-股票分割-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/term-股票分割-202607.html</guid>
+    <link>https://marketdaily.ai/blog/term-股票分割-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-股票分割-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/term-股票分割-202607</guid>
     <pubDate>Mon, 06 Jul 2026 01:00:30 +0800</pubDate>
-    <description>股票分割 — MarketDaily 投資知識整理。</description>
+    <description>股票分割（Stock Split）是上市公司經營策略中的常見做法，卻常讓新手投資人感到困惑。簡單來說，當一家公司決定把一張股票分成多張時，就是股票分割。舉例來說，如果你持有 100 股某檔股票，經歷 2 分 1 股票分割後，你會變成持有 200 股。</description>
     <category>TERM</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/term-股票分割-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/term-股票分割-202607.png" medium="image"/>
   </item>
   <item>
     <title>大立光(3008)法說會前瞻：光學鏡頭廠商Q2成果與H2展望一次掌握</title>
-    <link>https://marketdaily.ai/blog/3008-event-20260709.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=3008-event-20260709</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/3008-event-20260709.html</guid>
+    <link>https://marketdaily.ai/blog/3008-event-20260709?utm_source=rss&amp;utm_medium=feed&amp;utm_content=3008-event-20260709</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/3008-event-20260709</guid>
     <pubDate>Sun, 05 Jul 2026 14:10:48 +0800</pubDate>
-    <description>大立光 (3008) 法說會前瞻 — MarketDaily 整理。</description>
+    <description>大立光電(股票代號3008)將於2026年7月9日召開法說會,說明115年第二季(Q2)營運成果與第三季(Q3)營運展望。作為台灣光學鏡頭產業的龍頭廠商,大立光的每一場法說會都備受市場關注。本文將帶你了解法說會通常會揭露哪些重點,以及投資人應如何提前準備,才能從這場說明會中獲取最有價值的資訊。</description>
     <category>3008</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/3008-event-20260709.png"/>
     <media:content url="https://marketdaily.ai/blog/og/3008-event-20260709.png" medium="image"/>
   </item>
   <item>
     <title>台積電(2330)法說會前瞻：2026年Q2成果與Q3展望一次掌握</title>
-    <link>https://marketdaily.ai/blog/2330-event-20260716.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-event-20260716</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-event-20260716.html</guid>
+    <link>https://marketdaily.ai/blog/2330-event-20260716?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-event-20260716</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-event-20260716</guid>
     <pubDate>Sun, 05 Jul 2026 14:10:48 +0800</pubDate>
-    <description>台積電 (2330) 法說會前瞻 — MarketDaily 整理。</description>
+    <description>台積電將於2026年7月16日召開法說會，公布第2季財務報告與第3季業績展望。作為全球晶圓代工龍頭，台積電的每場法說會都是投資人與分析師密切關注的焦點。本文將帶你了解法說會通常會揭露什麼內容，以及如何做好準備。</description>
     <category>2330</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2330-event-20260716.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2330-event-20260716.png" medium="image"/>
   </item>
   <item>
     <title>台達電(2308)法說會前哨:已揭露重點搶先看</title>
-    <link>https://marketdaily.ai/blog/2308-event-20260708.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2308-event-20260708</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/2308-event-20260708.html</guid>
+    <link>https://marketdaily.ai/blog/2308-event-20260708?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2308-event-20260708</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2308-event-20260708</guid>
     <pubDate>Sun, 05 Jul 2026 14:10:48 +0800</pubDate>
-    <description>台達電 (2308) 法說會前哨:已揭露重點 — MarketDaily 整理。</description>
+    <description>台達電將於 2026 年 7 月 8 日召開法人說明會,向投資機構說明 2026 年第 1 季財務報告。儘管正式說明會尚未舉行,公司先前已透過公開簡報資料揭露相關重點內容,包括營收、獲利與業務表現等關鍵數據。</description>
     <category>2308</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2308-event-20260708.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2308-event-20260708.png" medium="image"/>
   </item>
   <item>
     <title>風險承受度自我評估：我適合哪種投資？2026 新手指南</title>
-    <link>https://marketdaily.ai/blog/guide-風險承受度自我評估-我適合哪種投資-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-風險承受度自我評估-我適合哪種投資-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-風險承受度自我評估-我適合哪種投資-202607.html</guid>
+    <link>https://marketdaily.ai/blog/guide-風險承受度自我評估-我適合哪種投資-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-風險承受度自我評估-我適合哪種投資-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-風險承受度自我評估-我適合哪種投資-202607</guid>
     <pubDate>Sun, 05 Jul 2026 13:46:40 +0800</pubDate>
-    <description>風險承受度自我評估:我適合哪種投資 — MarketDaily 新手投資教學整理。</description>
+    <description>還沒開始投資，就被朋友慫恿買股票、基金、高收益債？你是否常常不知道自己「到底能承受多大的虧損」，也不清楚什麼投資商品才真正適合自己？</description>
     <category>GUIDE</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/guide-風險承受度自我評估-我適合哪種投資-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/guide-風險承受度自我評估-我適合哪種投資-202607.png" medium="image"/>
   </item>
   <item>
     <title>零股交易是什麼:小額投資新手指南(2026 完整教學)</title>
-    <link>https://marketdaily.ai/blog/guide-零股交易是什麼-小額投資新手指南-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-零股交易是什麼-小額投資新手指南-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-零股交易是什麼-小額投資新手指南-202607.html</guid>
+    <link>https://marketdaily.ai/blog/guide-零股交易是什麼-小額投資新手指南-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-零股交易是什麼-小額投資新手指南-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-零股交易是什麼-小額投資新手指南-202607</guid>
     <pubDate>Sun, 05 Jul 2026 13:46:40 +0800</pubDate>
-    <description>零股交易是什麼:小額投資新手指南 — MarketDaily 新手投資教學整理。</description>
+    <description>「我只有幾千塊,也能買台積電嗎?」——這是許多剛踏入投資世界的新手最常問的問題。答案是:可以的,透過零股交易。零股交易讓你不必湊足一張股票(1000 股)的資金,就能購買你心儀的上市公司股份。如果你有投資熱情卻手頭資金有限,零股交易正是為你設計的入門工具。</description>
     <category>GUIDE</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/guide-零股交易是什麼-小額投資新手指南-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/guide-零股交易是什麼-小額投資新手指南-202607.png" medium="image"/>
   </item>
   <item>
     <title>複委託與海外券商差在哪:美股投資新手指南</title>
-    <link>https://marketdaily.ai/blog/guide-複委託與海外券商差在哪-美股投資新手指南-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-複委託與海外券商差在哪-美股投資新手指南-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-複委託與海外券商差在哪-美股投資新手指南-202607.html</guid>
+    <link>https://marketdaily.ai/blog/guide-複委託與海外券商差在哪-美股投資新手指南-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-複委託與海外券商差在哪-美股投資新手指南-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-複委託與海外券商差在哪-美股投資新手指南-202607</guid>
     <pubDate>Sun, 05 Jul 2026 13:46:40 +0800</pubDate>
-    <description>複委託與海外券商差在哪:美股投資新手指南 — MarketDaily 新手投資教學整理。</description>
+    <description>如果你剛開始想買美股,卻被「複委託」和「海外券商」這兩個詞搞得一頭霧水,那你絕對不孤單。許多美股新手站在台灣的起點,面對這兩條不同的路,卻不知道自己適合走哪一條。究竟該透過本地券商委託買美股,還是自己去開一個海外券商帳戶?本篇會帶你一步步比較兩者的核心差異,幫你找到最合適的選擇。</description>
     <category>GUIDE</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/guide-複委託與海外券商差在哪-美股投資新手指南-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/guide-複委託與海外券商差在哪-美股投資新手指南-202607.png" medium="image"/>
   </item>
   <item>
     <title>緊急預備金該存多少才能開始投資？2026年新手必看的準備清單</title>
-    <link>https://marketdaily.ai/blog/guide-緊急預備金該存多少才能開始投資-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-緊急預備金該存多少才能開始投資-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-緊急預備金該存多少才能開始投資-202607.html</guid>
+    <link>https://marketdaily.ai/blog/guide-緊急預備金該存多少才能開始投資-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-緊急預備金該存多少才能開始投資-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-緊急預備金該存多少才能開始投資-202607</guid>
     <pubDate>Sun, 05 Jul 2026 13:46:40 +0800</pubDate>
-    <description>緊急預備金該存多少才能開始投資 — MarketDaily 新手投資教學整理。</description>
+    <description>很多新手投資人最常問的一個問題是：「我應該先存多少錢才能開始投資？」這個疑慮完全合理，因為沒有人想在突發狀況來臨時被迫低價賣出持股。本文就來幫你理清這個關鍵的第一步——該如何準備緊急預備金，以及什麼時候才是真正可以開始投資的時機。</description>
     <category>GUIDE</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/guide-緊急預備金該存多少才能開始投資-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/guide-緊急預備金該存多少才能開始投資-202607.png" medium="image"/>
   </item>
   <item>
     <title>台股加權指數與費城半導體指數的關聯:2026 年投資人必懂的技術股驅動機制</title>
-    <link>https://marketdaily.ai/blog/macro-台股加權指數與費半指數-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-台股加權指數與費半指數-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-台股加權指數與費半指數-202607.html</guid>
+    <link>https://marketdaily.ai/blog/macro-台股加權指數與費半指數-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-台股加權指數與費半指數-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-台股加權指數與費半指數-202607</guid>
     <pubDate>Sun, 05 Jul 2026 13:01:10 +0800</pubDate>
-    <description>台股加權指數與費半指數 — MarketDaily 總體經濟指標整理。</description>
+    <description>如果你在新聞中看到「台股跟著費半走」這樣的說法,其實反映了台灣股市與全球科技產業的深度連結。台股加權指數中,半導體與電子類股佔權重超過 50%,這使得美國費城半導體指數(簡稱「費半」)的漲跌,往往成為預測台股方向的領先指標。本文帶你理解這兩大指數背後的經濟邏輯,讓你在看財經新聞時,能夠自行判斷全球科技景氣對台股的影響。</description>
     <category>MACRO</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/macro-台股加權指數與費半指數-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/macro-台股加權指數與費半指數-202607.png" medium="image"/>
   </item>
   <item>
     <title>GDP是什麼？一文看懂經濟成長率對股市的傳導機制</title>
-    <link>https://marketdaily.ai/blog/macro-GDP-經濟成長率-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-GDP-經濟成長率-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-GDP-經濟成長率-202607.html</guid>
+    <link>https://marketdaily.ai/blog/macro-GDP-經濟成長率-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-GDP-經濟成長率-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-GDP-經濟成長率-202607</guid>
     <pubDate>Sun, 05 Jul 2026 13:01:10 +0800</pubDate>
-    <description>GDP 經濟成長率 — MarketDaily 總體經濟指標整理。</description>
+    <description>GDP（國內生產毛額）是衡量一國經濟健康度的最重要指標。許多投資人在看財經新聞時，都會聽到「GDP成長率」這個詞，卻對它如何影響股市一知半解。本文將深入解析GDP的含義、計算方式，以及它與股市漲跌之間的真實關係，幫助你用總經思維做出更理性的投資決策。</description>
     <category>MACRO</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/macro-GDP-經濟成長率-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/macro-GDP-經濟成長率-202607.png" medium="image"/>
   </item>
   <item>
     <title>Fed升息降息對股市影響2026：利率決議如何改變你的投資</title>
-    <link>https://marketdaily.ai/blog/macro-Fed-利率決議與升降息-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-Fed-利率決議與升降息-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-Fed-利率決議與升降息-202607.html</guid>
+    <link>https://marketdaily.ai/blog/macro-Fed-利率決議與升降息-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-Fed-利率決議與升降息-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-Fed-利率決議與升降息-202607</guid>
     <pubDate>Sun, 05 Jul 2026 13:01:10 +0800</pubDate>
-    <description>Fed 利率決議與升降息 — MarketDaily 總體經濟指標整理。</description>
+    <description>美國聯邦準備委員會（Fed）的升息或降息決議，是全球金融市場最重要的風向球。無論你是台股投資人還是美股交易者，理解Fed利率政策如何傳導到股市，決定了你能否在2026年及之後的市場波動中做出更明智的決策。本文深入解析Fed利率決議的運作機制、市場解讀邏輯，以及對股票市場的實際影響。</description>
     <category>MACRO</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/macro-Fed-利率決議與升降息-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/macro-Fed-利率決議與升降息-202607.png" medium="image"/>
   </item>
   <item>
     <title>CPI是什麼？消費者物價指數怎麼看，一篇文章讀懂通膨訊號</title>
-    <link>https://marketdaily.ai/blog/macro-CPI-消費者物價指數-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-CPI-消費者物價指數-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-CPI-消費者物價指數-202607.html</guid>
+    <link>https://marketdaily.ai/blog/macro-CPI-消費者物價指數-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-CPI-消費者物價指數-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-CPI-消費者物價指數-202607</guid>
     <pubDate>Sun, 05 Jul 2026 13:01:10 +0800</pubDate>
-    <description>CPI 消費者物價指數 — MarketDaily 總體經濟指標整理。</description>
+    <description>如果你常看財經新聞，應該不陌生「CPI」這個詞。每當央行開會或升息前夕，媒體就會大篇幅討論消費者物價指數。但 CPI 到底怎麼算？數字高低代表什麼？對你的投資決策有什麼影響？本篇帶你從零開始理解這個最重要的通膨指標。</description>
     <category>MACRO</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/macro-CPI-消費者物價指數-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/macro-CPI-消費者物價指數-202607.png" medium="image"/>
   </item>
   <item>
     <title>聯詠(3034)除權息時間與歷史紀錄──IC 設計龍頭的穩定配息策略</title>
-    <link>https://marketdaily.ai/blog/3034-除權息時間與歷史紀錄-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=3034-除權息時間與歷史紀錄-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/3034-除權息時間與歷史紀錄-202607.html</guid>
+    <link>https://marketdaily.ai/blog/3034-除權息時間與歷史紀錄-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=3034-除權息時間與歷史紀錄-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/3034-除權息時間與歷史紀錄-202607</guid>
     <pubDate>Sun, 05 Jul 2026 12:00:10 +0800</pubDate>
-    <description>聯詠 (3034) 除權息時間與歷史紀錄 — MarketDaily 整理。</description>
+    <description>聯詠科技(3034)是台灣 IC 設計產業的領導者,專注於多媒體晶片研發。作為上市公司,除權息是投資人每年關注的重點,也是評估公司獲利能力與股東回報的重要指標。本文整理聯詠近年的真實除息紀錄,並解析除權息的運作機制與投資人應注意的事項。</description>
     <category>3034</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/3034-除權息時間與歷史紀錄-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/3034-除權息時間與歷史紀錄-202607.png" medium="image"/>
   </item>
   <item>
     <title>中信金(2891)除權息時間與歷史紀錄：近4年現金股利分析</title>
-    <link>https://marketdaily.ai/blog/2891-除權息時間與歷史紀錄-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2891-除權息時間與歷史紀錄-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/2891-除權息時間與歷史紀錄-202607.html</guid>
+    <link>https://marketdaily.ai/blog/2891-除權息時間與歷史紀錄-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2891-除權息時間與歷史紀錄-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2891-除權息時間與歷史紀錄-202607</guid>
     <pubDate>Sun, 05 Jul 2026 12:00:10 +0800</pubDate>
-    <description>中信金 (2891) 除權息時間與歷史紀錄 — MarketDaily 整理。</description>
+    <description>中信金控作為台灣主要的金融控股公司,每年的除權息時間對於持股投資人而言都是重要的現金流入機會。本文整理中信金近年完整的除息紀錄,幫助投資人了解這檔股票的配息規律,以及如何在除權息旺季做出更聰明的投資決策。</description>
     <category>2891</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2891-除權息時間與歷史紀錄-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2891-除權息時間與歷史紀錄-202607.png" medium="image"/>
   </item>
   <item>
     <title>中華電（2412）除權息時間與歷史紀錄｜2026年股利領取指南</title>
-    <link>https://marketdaily.ai/blog/2412-除權息時間與歷史紀錄-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2412-除權息時間與歷史紀錄-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/2412-除權息時間與歷史紀錄-202607.html</guid>
+    <link>https://marketdaily.ai/blog/2412-除權息時間與歷史紀錄-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2412-除權息時間與歷史紀錄-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2412-除權息時間與歷史紀錄-202607</guid>
     <pubDate>Sun, 05 Jul 2026 12:00:10 +0800</pubDate>
-    <description>中華電 (2412) 除權息時間與歷史紀錄 — MarketDaily 整理。</description>
+    <description>中華電信（股票代號 2412）是台灣電信龍頭，每年穩定發放現金股利，吸引許多領息投資人關注。如果你想了解中華電的除息時程、歷年配息紀錄，以及在除權息旺季該注意哪些重點，這篇文章將為你一次整理。</description>
     <category>2412</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2412-除權息時間與歷史紀錄-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2412-除權息時間與歷史紀錄-202607.png" medium="image"/>
   </item>
   <item>
     <title>台積電(2330)除權息時間與歷史紀錄一覽</title>
-    <link>https://marketdaily.ai/blog/2330-除權息時間與歷史紀錄-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-除權息時間與歷史紀錄-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-除權息時間與歷史紀錄-202607.html</guid>
+    <link>https://marketdaily.ai/blog/2330-除權息時間與歷史紀錄-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-除權息時間與歷史紀錄-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-除權息時間與歷史紀錄-202607</guid>
     <pubDate>Sun, 05 Jul 2026 12:00:10 +0800</pubDate>
-    <description>台積電 (2330) 除權息時間與歷史紀錄 — MarketDaily 整理。</description>
+    <description>台積電作為台灣最大的晶圓代工企業,每年穩定配息已成為投資人關注的焦點。2025年及2026年台積電除息日期已陸續公告,本文整理其近年真實除息紀錄,並說明除權息機制與旺季投資注意事項。</description>
     <category>2330</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2330-除權息時間與歷史紀錄-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2330-除權息時間與歷史紀錄-202607.png" medium="image"/>
   </item>
   <item>
     <title>股票殖利率是什麼？怎麼算？2026 年新手必知的現金流指標</title>
-    <link>https://marketdaily.ai/blog/term-殖利率-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-殖利率-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/term-殖利率-202607.html</guid>
+    <link>https://marketdaily.ai/blog/term-殖利率-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-殖利率-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/term-殖利率-202607</guid>
     <pubDate>Sun, 05 Jul 2026 11:38:09 +0800</pubDate>
-    <description>殖利率 — MarketDaily 投資知識整理。</description>
+    <description>如果你剛踏入股票投資的世界，一定常聽到「殖利率」這個詞。簡單來說，殖利率就是你投入的本金，每年能從公司領到的現金股利占比。它是評估股票「能為你創造多少現金流」的關鍵指標，特別對想靠股利生活、或追求穩定收益的投資人來說，殖利率往往比股價漲跌更值得關注。</description>
     <category>TERM</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/term-殖利率-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/term-殖利率-202607.png" medium="image"/>
   </item>
   <item>
     <title>本益比是什麼？怎麼看懂 PE Ratio，新手一篇搞懂估值基礎</title>
-    <link>https://marketdaily.ai/blog/term-本益比-PE-Ratio-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-本益比-PE-Ratio-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/term-本益比-PE-Ratio-202607.html</guid>
+    <link>https://marketdaily.ai/blog/term-本益比-PE-Ratio-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-本益比-PE-Ratio-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/term-本益比-PE-Ratio-202607</guid>
     <pubDate>Sun, 05 Jul 2026 11:38:09 +0800</pubDate>
-    <description>本益比 PE Ratio — MarketDaily 投資知識整理。</description>
+    <description>本益比（Earnings Price Ratio，簡稱 PE 或 P/E Ratio）是股票投資最常見的估值指標，代表投資人用多少倍的盈利來買這家公司。換句話說，本益比 = 股價 ÷ 每股盈餘。如果本益比是 20 倍，表示你投入 20 元才能換取公司 1 元的年度利潤。</description>
     <category>TERM</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/term-本益比-PE-Ratio-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/term-本益比-PE-Ratio-202607.png" medium="image"/>
   </item>
   <item>
     <title>EPS是什麼？新手一次搞懂每股盈餘，學會看好壞判斷</title>
-    <link>https://marketdaily.ai/blog/term-EPS-每股盈餘-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-EPS-每股盈餘-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/term-EPS-每股盈餘-202607.html</guid>
+    <link>https://marketdaily.ai/blog/term-EPS-每股盈餘-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-EPS-每股盈餘-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/term-EPS-每股盈餘-202607</guid>
     <pubDate>Sun, 05 Jul 2026 11:38:09 +0800</pubDate>
-    <description>EPS 每股盈餘 — MarketDaily 投資知識整理。</description>
+    <description>投資股票時，你一定聽過「EPS」這個詞。EPS（每股盈餘，Earnings Per Share）是上市公司最重要的獲利指標之一，直接反映公司賺的錢有多少分配給每一股。想要判斷一家公司是否值得投資，EPS 是新手必須學會的第一個財務指標。本文將用最實用的角度，教你如何看懂 EPS、判斷好壞，避免常見陷阱。</description>
     <category>TERM</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/term-EPS-每股盈餘-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/term-EPS-每股盈餘-202607.png" medium="image"/>
   </item>
   <item>
     <title>輝達(NVDA) 供應鏈全景:上下游廠商解析</title>
-    <link>https://marketdaily.ai/blog/nvda-供應鏈全景-上下游廠商解析-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=nvda-供應鏈全景-上下游廠商解析-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/nvda-供應鏈全景-上下游廠商解析-202607.html</guid>
+    <link>https://marketdaily.ai/blog/nvda-供應鏈全景-上下游廠商解析-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=nvda-供應鏈全景-上下游廠商解析-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/nvda-供應鏈全景-上下游廠商解析-202607</guid>
     <pubDate>Sun, 05 Jul 2026 11:38:09 +0800</pubDate>
-    <description>輝達 (NVDA) 供應鏈全景:上下游廠商解析 — MarketDaily 整理。</description>
+    <description>輝達在 2026 年已成為全球 AI 晶片市場的絕對領導者,其 GPU 與 AI 加速器產品線滲透全球雲端、新創與自駕車生態。然而,輝達本身並非純晶片製造商,而是一個複雜的供應鏈樞紐——上游由晶圓代工、高速記憶體、系統整合等多個產業夥伴支撐</description>
     <category>NVDA</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/nvda-供應鏈全景-上下游廠商解析-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/nvda-供應鏈全景-上下游廠商解析-202607.png" medium="image"/>
   </item>
   <item>
     <title>蘋果(AAPL) 供應鏈全景:上下游廠商解析</title>
-    <link>https://marketdaily.ai/blog/aapl-供應鏈全景-上下游廠商解析-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=aapl-供應鏈全景-上下游廠商解析-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/aapl-供應鏈全景-上下游廠商解析-202607.html</guid>
+    <link>https://marketdaily.ai/blog/aapl-供應鏈全景-上下游廠商解析-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=aapl-供應鏈全景-上下游廠商解析-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/aapl-供應鏈全景-上下游廠商解析-202607</guid>
     <pubDate>Sun, 05 Jul 2026 11:38:09 +0800</pubDate>
-    <description>蘋果 (AAPL) 供應鏈全景:上下游廠商解析 — MarketDaily 整理。</description>
+    <description>蘋果作為全球最大的科技硬體製造商之一,其供應鏈遍佈全球,涵蓋晶片設計、代工組裝、零組件供應到最終消費者銷售。了解蘋果的供應鏈結構,對於投資者、產業分析師和供應商評估至關重要。本文將深入解析蘋果的上游供應商、下游客戶,以及產業鏈集中度風險。</description>
     <category>AAPL</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/aapl-供應鏈全景-上下游廠商解析-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/aapl-供應鏈全景-上下游廠商解析-202607.png" medium="image"/>
   </item>
   <item>
     <title>台積電(2330) 供應鏈全景:上下游廠商解析</title>
-    <link>https://marketdaily.ai/blog/2330-供應鏈全景-上下游廠商解析-202607.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-供應鏈全景-上下游廠商解析-202607</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-供應鏈全景-上下游廠商解析-202607.html</guid>
+    <link>https://marketdaily.ai/blog/2330-供應鏈全景-上下游廠商解析-202607?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-供應鏈全景-上下游廠商解析-202607</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-供應鏈全景-上下游廠商解析-202607</guid>
     <pubDate>Sun, 05 Jul 2026 11:38:09 +0800</pubDate>
-    <description>台積電 (2330) 供應鏈全景:上下游廠商解析 — MarketDaily 整理。</description>
+    <description>台積電作為全球晶圓代工龍頭，掌握著從 3nm 到 5nm 的先進製程近乎獨家地位，市佔率超過 60%。這個地位並非憑空而來，而是建立在高度專業化且集中度極高的上下游產業鏈上。理解台積電的供應鏈結構，對於追蹤半導體產業脈動、評估相關投資風險至關重要。本文將從上游供應商、下游客戶、以及產業風險三個角度，為你勾勒台積電供應鏈的完整輪廓。</description>
     <category>2330</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2330-供應鏈全景-上下游廠商解析-202607.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2330-供應鏈全景-上下游廠商解析-202607.png" medium="image"/>
   </item>
   <item>
     <title>台積電 ADR TSM 投資前必看 3 個風險 — 2026 年美股投資者必讀</title>
-    <link>https://marketdaily.ai/blog/tsm-投資前必看-3-個風險-202606.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=tsm-投資前必看-3-個風險-202606</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/tsm-投資前必看-3-個風險-202606.html</guid>
+    <link>https://marketdaily.ai/blog/tsm-投資前必看-3-個風險-202606?utm_source=rss&amp;utm_medium=feed&amp;utm_content=tsm-投資前必看-3-個風險-202606</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/tsm-投資前必看-3-個風險-202606</guid>
     <pubDate>Mon, 29 Jun 2026 01:01:36 +0800</pubDate>
-    <description>台積電 ADR (TSM) 投資前必看 3 個風險 — MarketDaily 整理。</description>
+    <description>台積電(TSMC)美國存託憑證 TSM 在那斯達克交易,是許多台灣與國際投資者進入美股市場的首選。2026 年,TSM 股價屢創新高,但在追漲前,你必須了解 3 大核心風險。本文將深入剖析地緣政治、競爭壓力與匯率波動對 TSM 投資人的實際影響,幫助你做出更理性的投資決策。</description>
     <category>TSM</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/tsm-投資前必看-3-個風險-202606.png"/>
     <media:content url="https://marketdaily.ai/blog/og/tsm-投資前必看-3-個風險-202606.png" medium="image"/>
   </item>
   <item>
     <title>Coinbase COIN 近期財報重點：2026 年加密貨幣交易所如何應對監管與盈利挑戰</title>
-    <link>https://marketdaily.ai/blog/coin-近期財報重點-202606.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=coin-近期財報重點-202606</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/coin-近期財報重點-202606.html</guid>
+    <link>https://marketdaily.ai/blog/coin-近期財報重點-202606?utm_source=rss&amp;utm_medium=feed&amp;utm_content=coin-近期財報重點-202606</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/coin-近期財報重點-202606</guid>
     <pubDate>Mon, 29 Jun 2026 01:01:36 +0800</pubDate>
-    <description>Coinbase (COIN) 近期財報重點 — MarketDaily 整理。</description>
+    <description>Coinbase（代號 COIN）作為全球最大的加密貨幣交易所上市公司，其每季財報都成為投資人關注加密資產市場的重要窗口。近期財報顯示，這家公司在監管壓力、市場波動與機構資金流入三大力量交匯下，正面臨關鍵的轉折點。本文將解析 Coinbase 近期財報的 4 大核心重點，幫助你評估這檔股票的投資邏輯。</description>
     <category>COIN</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/coin-近期財報重點-202606.png"/>
     <media:content url="https://marketdaily.ai/blog/og/coin-近期財報重點-202606.png" medium="image"/>
   </item>
   <item>
     <title>聯詠 3034 適合長期持有嗎？2026 年晶片設計股投資評估指南</title>
-    <link>https://marketdaily.ai/blog/3034-適合長期持有嗎-202606.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=3034-適合長期持有嗎-202606</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/3034-適合長期持有嗎-202606.html</guid>
+    <link>https://marketdaily.ai/blog/3034-適合長期持有嗎-202606?utm_source=rss&amp;utm_medium=feed&amp;utm_content=3034-適合長期持有嗎-202606</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/3034-適合長期持有嗎-202606</guid>
     <pubDate>Mon, 29 Jun 2026 01:01:36 +0800</pubDate>
-    <description>聯詠 (3034) 適合長期持有嗎 — MarketDaily 整理。</description>
+    <description>聯詠科技（3034）作為台灣顯示晶片設計龍頭，每年吸引數千位投資人詢問：「這檔股票值得長期持有嗎？」本文透過基本面、產業前景與風險分析，幫助你做出理性評估。</description>
     <category>3034</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/3034-適合長期持有嗎-202606.png"/>
     <media:content url="https://marketdaily.ai/blog/og/3034-適合長期持有嗎-202606.png" medium="image"/>
   </item>
   <item>
     <title>台積電 2330 投資前必看 3 個風險：2026 年投資人必知的關鍵因素</title>
-    <link>https://marketdaily.ai/blog/2330-投資前必看-3-個風險-202606.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-投資前必看-3-個風險-202606</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-投資前必看-3-個風險-202606.html</guid>
+    <link>https://marketdaily.ai/blog/2330-投資前必看-3-個風險-202606?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-投資前必看-3-個風險-202606</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-投資前必看-3-個風險-202606</guid>
     <pubDate>Mon, 29 Jun 2026 01:01:36 +0800</pubDate>
-    <description>台積電 (2330) 投資前必看 3 個風險 — MarketDaily 整理。</description>
+    <description>台積電（股票代號 2330）是台灣最大的晶圓代工廠，也是全球半導體產業的重要龍頭。許多投資人將其視為長期資產配置的核心標的，但在 2026 年地緣政治局勢複雜、晶片需求波動的環境下，投資前必須理解 3 個關鍵風險因素。本文將深入分析台積電面臨的挑戰，幫助您做出更理性的投資決策。</description>
     <category>2330</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2330-投資前必看-3-個風險-202606.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2330-投資前必看-3-個風險-202606.png" medium="image"/>
   </item>
   <item>
     <title>特斯拉 TSLA 技術面 vs 基本面：2026 年投資者必看的分析框架</title>
-    <link>https://marketdaily.ai/blog/tsla-技術面-vs-基本面-202606.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=tsla-技術面-vs-基本面-202606</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/tsla-技術面-vs-基本面-202606.html</guid>
+    <link>https://marketdaily.ai/blog/tsla-技術面-vs-基本面-202606?utm_source=rss&amp;utm_medium=feed&amp;utm_content=tsla-技術面-vs-基本面-202606</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/tsla-技術面-vs-基本面-202606</guid>
     <pubDate>Sun, 07 Jun 2026 20:56:10 +0000</pubDate>
-    <description>特斯拉 (TSLA) 技術面 vs 基本面 — MarketDaily 整理。</description>
+    <description>特斯拉（TSLA）股價在 2025 年至 2026 年間波動劇烈，投資者常陷入「該看技術面還是基本面」的困境。本文透過數據對比這兩大分析角度，幫助你建立更完整的評估邏輯。</description>
     <category>TSLA</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/tsla-技術面-vs-基本面-202606.png"/>
     <media:content url="https://marketdaily.ai/blog/og/tsla-技術面-vs-基本面-202606.png" medium="image"/>
   </item>
   <item>
     <title>AMD vs 同業比較 2026：與 Intel、NVIDIA 誰更值得投資？</title>
-    <link>https://marketdaily.ai/blog/amd-vs-同業比較-202606.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=amd-vs-同業比較-202606</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/amd-vs-同業比較-202606.html</guid>
+    <link>https://marketdaily.ai/blog/amd-vs-同業比較-202606?utm_source=rss&amp;utm_medium=feed&amp;utm_content=amd-vs-同業比較-202606</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/amd-vs-同業比較-202606</guid>
     <pubDate>Sun, 07 Jun 2026 20:56:10 +0000</pubDate>
-    <description>AMD (AMD) vs 同業比較 — MarketDaily 整理。</description>
+    <description>AMD 在 2025-2026 年芯片市場的表現備受關注，但投資者面臨一個核心問題：AMD 相比 Intel、NVIDIA 等同業競爭對手，究竟有什麼優勢與劣勢？本文透過 5 大維度對比分析，幫助你理解 AMD 在美股及台股的投資機會。</description>
     <category>AMD</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/amd-vs-同業比較-202606.png"/>
     <media:content url="https://marketdaily.ai/blog/og/amd-vs-同業比較-202606.png" medium="image"/>
   </item>
   <item>
     <title>群聯 8299 技術面 vs 基本面分析：投資者 2026 年必看的評估框架</title>
-    <link>https://marketdaily.ai/blog/8299-技術面-vs-基本面-202606.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=8299-技術面-vs-基本面-202606</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/8299-技術面-vs-基本面-202606.html</guid>
+    <link>https://marketdaily.ai/blog/8299-技術面-vs-基本面-202606?utm_source=rss&amp;utm_medium=feed&amp;utm_content=8299-技術面-vs-基本面-202606</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/8299-技術面-vs-基本面-202606</guid>
     <pubDate>Sun, 07 Jun 2026 20:56:10 +0000</pubDate>
-    <description>群聯 (8299) 技術面 vs 基本面 — MarketDaily 整理。</description>
+    <description>群聯電子（8299）作為台灣 NAND Flash 控制晶片的龍頭廠商，近年來股價波動劇烈。許多投資者在決策時常陷入技術面與基本面的兩難：究竟應該跟著短期走勢操作，還是深入研究長期基本面？本文將透過 3 個核心面向，幫助你建立完整的評估框架，做出更理性的投資決策。</description>
     <category>8299</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/8299-技術面-vs-基本面-202606.png"/>
     <media:content url="https://marketdaily.ai/blog/og/8299-技術面-vs-基本面-202606.png" medium="image"/>
   </item>
   <item>
     <title>台積電 2330 競爭優勢與護城河：2026 年晶片業龍頭為何難以撼動</title>
-    <link>https://marketdaily.ai/blog/2330-競爭優勢與護城河-202606.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-競爭優勢與護城河-202606</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-競爭優勢與護城河-202606.html</guid>
+    <link>https://marketdaily.ai/blog/2330-競爭優勢與護城河-202606?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-競爭優勢與護城河-202606</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-競爭優勢與護城河-202606</guid>
     <pubDate>Sun, 07 Jun 2026 20:56:10 +0000</pubDate>
-    <description>台積電 (2330) 競爭優勢與護城河 — MarketDaily 整理。</description>
+    <description>台積電（2330）作為全球最大的晶圓代工企業，掌控超過 50% 的市場份額，其護城河之深已成為投資人評估科技股的重要指標。本文分析台積電為何能在激烈競爭中保持領先地位，涵蓋技術、成本、客戶黏著度等 5 大核心競爭優勢，幫助你理解這間公司的長期價值基礎。</description>
     <category>2330</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2330-競爭優勢與護城河-202606.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2330-競爭優勢與護城河-202606.png" medium="image"/>
   </item>
   <item>
     <title>元大高股息 0056 競爭優勢與護城河：2026 年台股高息基金的關鍵分析</title>
-    <link>https://marketdaily.ai/blog/0056-競爭優勢與護城河-202606.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=0056-競爭優勢與護城河-202606</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/0056-競爭優勢與護城河-202606.html</guid>
+    <link>https://marketdaily.ai/blog/0056-競爭優勢與護城河-202606?utm_source=rss&amp;utm_medium=feed&amp;utm_content=0056-競爭優勢與護城河-202606</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/0056-競爭優勢與護城河-202606</guid>
     <pubDate>Sun, 07 Jun 2026 20:56:10 +0000</pubDate>
-    <description>元大高股息 (0056) 競爭優勢與護城河 — MarketDaily 整理。</description>
+    <description>元大高股息 0056 自上市以來，累積規模突破 3,000 億元，成為台股市場最受歡迎的高股息 ETF 之一。但在同類型產品激增的競爭環境下，0056 究竟擁有哪些實質的競爭優勢與護城河？本文透過深度分析，幫助投資人理解這檔基金在市場中的真實位置與長期價值。</description>
     <category>0056</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/0056-競爭優勢與護城河-202606.png"/>
     <media:content url="https://marketdaily.ai/blog/og/0056-競爭優勢與護城河-202606.png" medium="image"/>
   </item>
   <item>
     <title>Uber (UBER) 技術面 vs 基本面：2026 年投資人必讀分析</title>
-    <link>https://marketdaily.ai/blog/uber-技術面-vs-基本面-202605.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=uber-技術面-vs-基本面-202605</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/uber-技術面-vs-基本面-202605.html</guid>
+    <link>https://marketdaily.ai/blog/uber-技術面-vs-基本面-202605?utm_source=rss&amp;utm_medium=feed&amp;utm_content=uber-技術面-vs-基本面-202605</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/uber-技術面-vs-基本面-202605</guid>
     <pubDate>Sun, 31 May 2026 20:41:49 +0000</pubDate>
-    <description>Uber (UBER) 技術面 vs 基本面 — MarketDaily 整理。</description>
+    <description>Uber 股價在 2025-2026 年波動劇烈，投資人往往在「技術面看漲、基本面看衰」的矛盾訊號中迷失。本文深入解析 UBER 的技術面趨勢與基本面數據，幫你理清投資邏輯。根據最新財報，Uber 年度營收超過 350 億美元，但虧損仍未徹底扭轉——究竟應該看圖表的買進訊號，還是聽基本面的警告聲？</description>
     <category>UBER</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/uber-技術面-vs-基本面-202605.png"/>
     <media:content url="https://marketdaily.ai/blog/og/uber-技術面-vs-基本面-202605.png" medium="image"/>
   </item>
   <item>
     <title>微軟 MSFT 配息政策解析：2026 年股息投資者必看指南</title>
-    <link>https://marketdaily.ai/blog/msft-配息政策解析-202605.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=msft-配息政策解析-202605</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/msft-配息政策解析-202605.html</guid>
+    <link>https://marketdaily.ai/blog/msft-配息政策解析-202605?utm_source=rss&amp;utm_medium=feed&amp;utm_content=msft-配息政策解析-202605</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/msft-配息政策解析-202605</guid>
     <pubDate>Sun, 31 May 2026 20:41:49 +0000</pubDate>
-    <description>微軟 (MSFT) 配息政策解析 — MarketDaily 整理。</description>
+    <description>微軟(MSFT)作為全球市值最大的科技公司之一，其配息政策備受投資者關注。2026 年，MSFT 的股息殖利率、配息頻率與歷史增長軌跡如何變化？本文深入解析微軟的配息機制，幫助台灣及美股投資者做出更明智的配置決策。</description>
     <category>MSFT</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/msft-配息政策解析-202605.png"/>
     <media:content url="https://marketdaily.ai/blog/og/msft-配息政策解析-202605.png" medium="image"/>
   </item>
   <item>
     <title>Coinbase COIN 投資前必看 3 個風險：2026 年美股加密龍頭的隱憂</title>
-    <link>https://marketdaily.ai/blog/coin-投資前必看-3-個風險-202605.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=coin-投資前必看-3-個風險-202605</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/coin-投資前必看-3-個風險-202605.html</guid>
+    <link>https://marketdaily.ai/blog/coin-投資前必看-3-個風險-202605?utm_source=rss&amp;utm_medium=feed&amp;utm_content=coin-投資前必看-3-個風險-202605</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/coin-投資前必看-3-個風險-202605</guid>
     <pubDate>Sun, 31 May 2026 20:41:49 +0000</pubDate>
-    <description>Coinbase (COIN) 投資前必看 3 個風險 — MarketDaily 整理。</description>
+    <description>Coinbase（代號 COIN）作為美國最大合規加密貨幣交易所，2024 年股價漲幅超過 100%，吸引大量台灣投資人透過美股券商布局。但在追高之前，你必須了解這檔股票的 3 大核心風險，包括監管政策變動、收入波動性與市場競爭加劇。本文將深度解析 COIN 投資前應該關注的關鍵因素，幫助你做出更理性的決策。</description>
     <category>COIN</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/coin-投資前必看-3-個風險-202605.png"/>
     <media:content url="https://marketdaily.ai/blog/og/coin-投資前必看-3-個風險-202605.png" medium="image"/>
   </item>
   <item>
     <title>聯詠 3034 投資前必看 3 個風險：晶片股投資者必讀指南</title>
-    <link>https://marketdaily.ai/blog/3034-投資前必看-3-個風險-202605.html?utm_source=rss&amp;utm_medium=feed&amp;utm_content=3034-投資前必看-3-個風險-202605</link>
-    <guid isPermaLink="true">https://marketdaily.ai/blog/3034-投資前必看-3-個風險-202605.html</guid>
+    <link>https://marketdaily.ai/blog/3034-投資前必看-3-個風險-202605?utm_source=rss&amp;utm_medium=feed&amp;utm_content=3034-投資前必看-3-個風險-202605</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/3034-投資前必看-3-個風險-202605</guid>
     <pubDate>Sun, 31 May 2026 20:41:49 +0000</pubDate>
-    <description>聯詠 (3034) 投資前必看 3 個風險 — MarketDaily 整理。</description>
+    <description>聯詠科技（股票代號 3034）是台灣IC設計龍頭，主要開發顯示晶片、電源管理晶片等產品，2026年市值逾千億台幣。然而許多投資者在加碼前往往忽視3個關鍵風險因素，導致投資決策不夠全面。本文揭示聯詠3034的核心風險，幫助你在購買前做足功課。</description>
     <category>3034</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/3034-投資前必看-3-個風險-202605.png"/>
     <media:content url="https://marketdaily.ai/blog/og/3034-投資前必看-3-個風險-202605.png" medium="image"/>
