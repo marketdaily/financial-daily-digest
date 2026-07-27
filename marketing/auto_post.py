@@ -39,7 +39,7 @@ ENV_KEYS = ("META_ACCESS_TOKEN", "FB_PAGE_ID", "IG_USER_ID", "THREADS_ACCESS_TOK
             "X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_SECRET",
             "YT_CLIENT_ID", "YT_CLIENT_SECRET", "YT_REFRESH_TOKEN",
             "TIKTOK_CLIENT_KEY", "TIKTOK_CLIENT_SECRET",
-            "TIKTOK_ACCESS_TOKEN", "TIKTOK_REFRESH_TOKEN")
+            "TIKTOK_ACCESS_TOKEN", "TIKTOK_REFRESH_TOKEN", "SOCIAL_PAUSED_PLATFORMS")
 
 
 def load_env():
@@ -622,17 +622,39 @@ def caption_for(caption, plat, line_url=None):
     return caption.replace("utm_source=social&", f"utm_source={src}&")
 
 
+
+def _paused(env):
+    """SOCIAL_PAUSED_PLATFORMS=平台:原因,平台:原因 —— 明示暫停的平台,發文時軟略過。
+
+    2026-07-27:YT 帳號 07-10 起遭停權,每日 rc=4 告警 17 天;停權/申訴中這類
+    「已知且只能等人工處理」的平台走這裡,恢復後刪 .env 該項即回歸。
+    """
+    out = {}
+    for item in env.get("SOCIAL_PAUSED_PLATFORMS", "").split(","):
+        item = item.strip()
+        if not item:
+            continue
+        name, _, reason = item.partition(":")
+        out[name.strip()] = reason.strip() or "已暫停"
+    return out
+
+
 def post_reel_direct(env, post_id, video_url, caption, platforms):
     """直發 reel(不經 social_posts.json 佇列)—— 給每日日報短影音用。
 
     冪等靠 LOG_FILE:呼叫端先用 daily_run.posted_ids() 查 post_id。
     """
     results = {}
+    paused = _paused(env)
     print(f"發布 [{post_id}] (Reel 直發) → {video_url}\n平台:{', '.join(platforms)}\n")
     for plat in platforms:
         fn = REEL_PLATFORMS.get(plat)
         if not fn:
             print(f"  ⚠️ {plat}:不支援 reel")
+            continue
+        if plat in paused:
+            results[plat] = {"ok": False, "skipped": True, "detail": f"已暫停:{paused[plat]}"}
+            print(f"  ⏭️ {plat}: 已暫停({paused[plat]})")
             continue
         try:
             ok, detail = fn(env, video_url, caption_for(caption, plat))
@@ -669,10 +691,15 @@ def cmd_post(env, post_id, only=None):
     targets = only or post["platforms"]
     print(f"發布 [{post_id}]{' (Reel)' if is_reel else ''} → {media_url}\n平台:{', '.join(targets)}\n")
     results = {}
+    paused = _paused(env)
     for plat in targets:
         fn = table.get(plat)
         if not fn:
             print(f"  ⚠️ {plat}:此貼文型態不支援此平台")
+            continue
+        if plat in paused:
+            results[plat] = {"ok": False, "skipped": True, "detail": f"已暫停:{paused[plat]}"}
+            print(f"  ⏭️ {plat}: 已暫停({paused[plat]})")
             continue
         if isinstance(media_url, list) and plat != "instagram":
             print(f"  ⚠️ {plat}:多圖 carousel 目前只支援 instagram")
