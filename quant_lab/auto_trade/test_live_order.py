@@ -16,7 +16,7 @@ import sys
 import time
 import argparse
 
-MINI_TXF = "小型臺指"   # 小台(每點50元,保證金/風險約大台1/4)
+MINI_TXF = "微型臺指"   # 體檢刻意用微台(TMF,每點僅10元=最小學費);真錢魚C 用小台(MXF,每點50元)
 
 
 def _die(msg):
@@ -98,7 +98,14 @@ def main():
         order = api.Order(price=limit_px, quantity=1, action="Buy",
                           price_type="LMT", order_type="ROD",
                           octype="Auto")
-        trade = api.place_order(contract, order)
+        try:
+            trade = api.place_order(contract, order)
+        except Exception as e:
+            if "406" in str(e) or "Not Acceptable" in str(e):
+                _die("下單被拒 406=API 下單同意書未簽(帳戶 signed=false)。"
+                     "Delvin 本人到永豐:理財網/大戶投 App → 線上簽署中心 → "
+                     "簽「API使用權限申請暨風險預告書」(期貨帳戶),簽完重跑本體檢。")
+            raise
         time.sleep(2)
         api.update_status()
         st = trade.status.status
