@@ -99,6 +99,12 @@ class Feed:
         self._api = None
         self._lock = threading.Lock()
         self._deriv_lock = threading.Lock()
+        # 所有「資料端點→shioaji api」呼叫的全域序列化鎖(2026-07-27 事故):shioaji 的
+        # pyo3/Rust binding 不可重入,多個 handler 執行緒同時進 api(set_callback/subscribe)
+        # 會炸 RuntimeError: Already borrowed,泛用 except 再 reset()→logout() 撞上還在 api
+        # 裡的執行緒 → Rust 持 GIL 死鎖,整個 process 凍結(連 /health 都不回、SIGTERM 送不進)。
+        # RLock:允許同一執行緒巢狀(ranks→_deriv 內部再取)。
+        self._call_lock = threading.RLock()
         self._login_ts = 0.0
         self._cache = {}
         self._contracts = {}
@@ -580,6 +586,26 @@ class Handler(BaseHTTPRequestHandler):
             t = (qs.get("t") or [""])[0]
             if not TOKEN or not hmac.compare_digest(t, TOKEN):
                 return self._send(403, {"error": "forbidden"})
+            # 資料端點一律序列化進 shioaji(見 Feed._call_lock 註解)。拿不到鎖=前面有慢呼叫,
+            # 回 503 讓 client 下輪重試,不堆執行緒(舊行為:52 條 thread 疊在死鎖上)。
+            if not FEED._call_lock.acquire(timeout=20):
+                return self._send(503, {"error": "busy"})
+            try:
+                return self._dispatch(u, qs)
+            finally:
+                FEED._call_lock.release()
+        except UpstreamDataError as ex:
+            return self._send(502, {"error": str(ex)[:200]})
+        except Exception as ex:
+            traceback.print_exc()
+            FEED.reset()
+            try:
+                return self._send(502, {"error": str(ex)[:200]})
+            except Exception:
+                pass
+
+    def _dispatch(self, u, qs):
+        if True:  # 縮排橋接:沿用原 dispatch 區塊縮排,把 diff 降到最小(git blame 可追)
             if u.path == "/q":
                 raw = (qs.get("syms") or [""])[0]
                 syms = [s.strip().upper() for s in raw.split(",") if s.strip()][:60]
@@ -635,15 +661,6 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == "/positions":
                 return self._send(200, FEED.positions())
             return self._send(404, {"error": "not_found"})
-        except UpstreamDataError as ex:
-            return self._send(502, {"error": str(ex)[:200]})
-        except Exception as ex:
-            traceback.print_exc()
-            FEED.reset()
-            try:
-                return self._send(502, {"error": str(ex)[:200]})
-            except Exception:
-                pass
 
 
 def prewarm():
