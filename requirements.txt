@@ -1,16 +1,19 @@
-yfinance==0.2.54
-yahooquery==2.3.7
-requests==2.32.3
-feedparser==6.0.11
-python-dotenv==1.0.1
+# 2026-07-27 對齊 winrig 生產 venv 實際版本(每日實跑證明的組合)。
+# 舊 pin(yfinance 0.2.54 等)與 pandas 3.x 衝突→雲端備援 pip install 掛。
+# 更新法:改 winrig venv 後跑 scripts/ 內 pip show 對齊,別手寫猜版本。
+yfinance==1.4.1
+yahooquery==2.4.1
+requests==2.34.2
+feedparser==6.0.12
+python-dotenv==1.2.2
 premailer==3.10.0
-tenacity==8.2.3
-groq
+tenacity==9.1.4
+groq==1.5.0
 beautifulsoup4==4.15.0
 cssutils==2.15.0
 pandas==3.0.3
 numpy==2.5.0
-playwright==1.60.0
+playwright==1.61.0
 openpyxl==3.1.5
 PyMuPDF==1.27.2.3
 Pillow==12.3.0
