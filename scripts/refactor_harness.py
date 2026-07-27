@@ -107,7 +107,7 @@ def _load_modules():
     FrozenDateTime = _install_frozen_datetime()
     main.datetime = FrozenDateTime  # main 頂層 from datetime import datetime 的補丁
 
-    def fake_llm(prompt: str, prefer_strong: bool = False) -> str:
+    def fake_llm(prompt: str, prefer_strong: bool = False, **_kw) -> str:
         h = hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:12]
         return (
             '<div class="section-label">AI 觀點(樁)</div>'
