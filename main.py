@@ -162,7 +162,9 @@ def _fix_tw_morning_action_wording(date: str, html_report: str) -> str:
     且 med severity 不觸發 retry → 不依賴 LLM 聽話:
     ①台股卡裡「明日/明天開盤」= 時序錯亂(這封信在今早開盤前寄出)→ 改寫「今早開盤」
     ②整批台股卡皆無晨間窗口字眼 → 第一張帶 signal-reason 的台股卡開頭補「今早 9:00 開盤後:」。
-    只在台股開盤日的非 us 班次生效;美股卡(h-mark 非純數字)零觸碰;已合規日報 no-op。
+    只在台股開盤日的非 us 班次生效;美股卡(h-mark 首字非數字)零觸碰;已合規日報 no-op。
+    台股判別=首字數字(同 analyzer 慣例):00981A 這類帶字母尾碼的主動式 ETF 也是台股卡,
+    07-22/07-27 兩鍋皆因舊 `\\d+` 全數字判別把它誤當美股卡跳過(hfks996 實鍋)。
     audit#15 是這層的獨立驗證者(TW_MORNING_ACTION_RE 兩邊共用,不會 guard 過了 audit 卻紅)。"""
     if MARKET == "us":
         return html_report
@@ -177,7 +179,7 @@ def _fix_tw_morning_action_wording(date: str, html_report: str) -> str:
 
     def _tw_blocks(html: str):
         return [m for m in _SIGNAL_CARD_BLOCK_RE.finditer(html)
-                if re.search(r"<!--h:\d+-->", m.group(0))]
+                if re.search(r"<!--h:\d[A-Z0-9.]*-->", m.group(0))]
 
     # ① 時序錯字修正(從後往前替換,前面 match 的 offset 不失效)。
     #    只修「整塊沒有任何晨間窗口字眼」的卡(驗證者第14案 F1):已合規卡裡的
