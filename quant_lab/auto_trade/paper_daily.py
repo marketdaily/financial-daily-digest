@@ -541,6 +541,23 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
     except (FileNotFoundError, KeyError, ValueError):
         pass
 
+    # 🪙 資金費率套利 paper(Delvin 2026-07-27 拍板;funding_carry_paper.py 每晚記帳)
+    try:
+        fc = [json.loads(l) for l in open(os.path.join(HERE, ".funding_carry", "ledger.jsonl"), encoding="utf-8")]
+        if fc:
+            d0 = datetime.date.fromisoformat(fc[0]["date"])
+            days = max(1, (datetime.date.today() - d0).days)
+            cum = fc[-1]["cum_usd"]
+            ann = cum / 15000 / days * 365
+            pos_days = sum(1 for e in fc if e["pos"])
+            fcpanel = (f'<h2 style="font-size:1rem;margin:22px 0 6px">🪙 資金費率套利 paper(BTC delta中性·US$15k 虛擬底倉)</h2>'
+                       f'<div class="card" style="grid-column:1/-1"><div class="t">累積淨 carry(第 {days} 天 · 持有 {pos_days}/{len(fc)} 日 · 研究基準 +4.7%/年)</div>'
+                       f'<div class="v {"pos" if cum>=0 else "neg"}">{cum:+,.2f} USD(年化 {ann:+.1%})</div>'
+                       f'<div class="s">規則凍結:近7日均 funding&gt;0 持有,否則空手 · 真錢待交易所帳戶(Delvin)</div></div>')
+            html = html.replace(anchor, fcpanel + anchor, 1) if anchor in html else html + fcpanel
+    except Exception:
+        pass
+
     # 🪙 Crypto 量化研究面板(四扇門誠實記分;靜態研究定論)
     crypto = [("裸趨勢突破", "BTC WF夏普+0.27 / +2%年 / 46%回撤", "🟡弱"),
               ("均值回歸", "全負(夏普-1.2~-2.2)= 動能主導不回歸", "🔴無"),
