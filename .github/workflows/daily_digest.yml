@@ -1,9 +1,11 @@
 name: 財經日報每日發布
 
+# 2026-07-26 改為「純備援」(GitHub 帳號解封後 Actions 復活):
+#   winrig 是唯一日常發送者(cron 05:20/19:00 生成、07:00/20:00 寄)。本 workflow 只在
+#   winrig 缺席時由 digest-watchdog 派發(failover=1),或人工 dispatch 補救/驗證(dry_run=1)。
+#   marketdaily-digest-cron worker 的每日派發已停(crons=[]),防雙發。
+#   failover 模式有防雙發閘:公版存檔已存在(=winrig 其實寄了)→立即退出不重寄。
 on:
-  # 由 marketdaily-digest-cron Worker 雙班次派發:
-  #   早 06:20 TW(22:20 UTC)觸發生成、07:00 整點寄出 → market=tw;晚 19:25 TW(11:25 UTC)觸發、20:00 寄出 → market=us。
-  # 手動測試也可指定 market(預設 tw,沿用既有早報行為)。
   workflow_dispatch:
     inputs:
       market:
@@ -12,6 +14,14 @@ on:
         default: "tw"
         type: choice
         options: ["tw", "us", "both"]
+      failover:
+        description: "備援模式:1=watchdog 偵測 winrig 缺席後的自動接手(帶防雙發閘)"
+        required: false
+        default: "0"
+      dry_run:
+        description: "1=只生成不寄信(驗證雲端環境用)"
+        required: false
+        default: "0"
 
 permissions:
   contents: write          # 寄信後把當日公版日報 commit 回 main（不重寄、不部署）
@@ -24,20 +34,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 防雙發閘(failover 模式):watchdog 偵測→派發之間 winrig 可能遲交完成。
+      # 公版存檔當天該班已在線上 → winrig 實際寄過 → 立即安靜退出,絕不重寄。
+      - name: Failover double-send guard
+        if: github.event.inputs.failover == '1'
+        run: |
+          TWDATE=$(TZ=Asia/Taipei date +%F)
+          SUFFIX=""
+          [ "${{ github.event.inputs.market }}" = "us" ] && SUFFIX="_us"
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://marketdaily.ai/output/digest_${TWDATE}${SUFFIX}.html")
+          if [ "$CODE" = "200" ]; then
+            echo "公版存檔已在線上(winrig 已寄),備援退場不重寄。"
+            echo "SKIP_SEND=1" >> "$GITHUB_ENV"
+          fi
+
       - name: Set up Python
+        if: env.SKIP_SEND != '1'
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"   # requirements 的 numpy==2.5.0 需 py3.12(3.11 裝不了,2026-07-25 preflight 失敗根因)
 
       - name: Install dependencies
+        if: env.SKIP_SEND != '1'
         run: pip install -r requirements.txt
 
+      # 注意:刻意不帶 ANTHROPIC_API_KEY(2026-07-26 Delvin「全免費」令,雲端也零付費 API;
+      # analyzer 免費鏈 Gemini→Groq→CF 對應 secrets 已更新)。
       - name: Run daily digest
+        if: env.SKIP_SEND != '1'
         env:
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
           FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
@@ -47,13 +76,20 @@ jobs:
           MARKETDAILY_INTERNAL_TOKEN: ${{ secrets.MARKETDAILY_INTERNAL_TOKEN }}
           MARKETDAILY_ALERT_TOKEN: ${{ secrets.MARKETDAILY_ALERT_TOKEN }}
           MARKET: ${{ github.event.inputs.market || 'tw' }}
-        run: python main.py
+        run: |
+          # 寄出死線與 winrig run.sh 對齊(過線寧可不寄,不發開盤後的盤前信)
+          if [ "$MARKET" = "tw" ]; then export MD_SEND_DEADLINE_HM=0840; else export MD_SEND_DEADLINE_HM=2110; fi
+          if [ "${{ github.event.inputs.dry_run }}" = "1" ]; then
+            python main.py --dry-run
+          else
+            python main.py
+          fi
 
       # 寄信由上一步的 main.py 完成。這一步「只」把當日公版日報 + manifest commit 回 main,
       # 讓戰績 builder(weekly_track_record)checkout 時讀得到本機檔,不再依賴脆弱的 CDN 抓取。
       # 嚴格排除個人化日報(含訂閱者持股),不重寄信、不部署。
       - name: Persist public digest archive
-        if: success()
+        if: success() && env.SKIP_SEND != '1' && github.event.inputs.dry_run != '1'
         run: |
           rm -f docs/output/*_personal_*.html
           git config user.name "marketdaily-bot"
@@ -68,7 +104,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "No new public digest to commit."
           else
-            git commit -m "chore(digest): persist public archive $(date -u +%Y-%m-%d)"
+            git commit -m "chore(digest): persist public archive $(date -u +%Y-%m-%d) (cloud failover)"
             git pull --rebase origin main
             git push origin HEAD:main
           fi
