@@ -829,7 +829,11 @@ def _audit_with_retry(data, email, inner, gen_us, gen_tw, depth, is_premium, pic
                 if systemic_high_counts[_c] == 3:
                     _push_systemic_alert(data["date"], _c, email)
         try:
-            time.sleep(5)
+            # 60s:Groq 免費層是 TPM(每分鐘 token)限制,首輪生成若 429 過,5s 後 retry
+            # 必然還在同一分鐘窗口內再撞 429 → 掉到更弱模型 → 白 retry(07-27 八位掉
+            # deterministic 的共犯)。等滿一個 TPM 窗口讓最強免費模型復活;只有 HIGH fail
+            # 才走到這裡,量少,寄出死線由 MD_SEND_DEADLINE_HM 閘把關。
+            time.sleep(60)
             # retry 強制換更強模型(Claude/OpenAI 先於 Gemini),否則又從 Gemini 起跑 = 白 retry
             retry_inner = _report_fn()(data, gen_us or None, gen_tw or None, prefer_strong=True, depth=depth, market=MARKET, is_premium=is_premium, picks_mode=picks_mode, positions=positions)
             ai_calls += 1

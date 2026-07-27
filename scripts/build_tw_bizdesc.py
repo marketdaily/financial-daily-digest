@@ -62,7 +62,8 @@ def env(path):
 
 
 E = env(os.path.join(ROOT, ".env"))
-KEYS = [k for k in (E.get("GEMINI_API_KEY"), E.get("GEMINI_API_KEY_2")) if k]
+# key2=日報保留桶(2026-07-27 配額分區):背景腳本只准 key1,見 analyzer._call_gemini
+KEYS = [k for k in (E.get("GEMINI_API_KEY"),) if k] or [k for k in (E.get("GEMINI_API_KEY_2"),) if k]
 
 
 def _gemini(prompt, model, key, temperature):

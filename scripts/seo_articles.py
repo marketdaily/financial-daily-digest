@@ -662,7 +662,9 @@ def call_claude(system: str, user: str, max_tokens: int = 2000) -> str:
     """2026-07-26 Delvin「全部用免費的,不要扣錢」:改走 Gemini 免費層(函式名保留,免動全部呼叫端)。
     兩模型×兩 key 輪替;全敗 raise → 呼叫端既有 try/except 跳過該篇。絕不再打付費 API。"""
     import urllib.request
-    keys = [k for k in (os.getenv("GEMINI_API_KEY"), os.getenv("GEMINI_API_KEY_2")) if k]
+    # key2=日報保留桶(2026-07-27 配額分區):背景腳本只准 key1,見 analyzer._call_gemini
+    keys = [k for k in (os.getenv("GEMINI_API_KEY"),) if k] or \
+           [k for k in (os.getenv("GEMINI_API_KEY_2"),) if k]
     if not keys:
         raise RuntimeError("GEMINI_API_KEY missing")
     last = None

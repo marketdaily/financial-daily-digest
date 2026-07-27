@@ -261,7 +261,16 @@ _GEMINI_QUOTA_DEAD: set = set()  # 元素=(model, key尾6碼):每把 key 每個�
 def _call_gemini(prompt: str, model: str, system: str = None) -> str:
     # 雙 key 輪替(2026-07-11):免費額度綁 Google 帳號,第二把 key 來自另一帳號;
     # 同一模型 key1 429 熔斷後自動換 key2,兩把都熔斷才真的跳過該模型。
-    keys = [k for k in (GEMINI_API_KEY, GEMINI_API_KEY_2) if k]
+    # key2=日報保留桶(2026-07-27):07-26 早報專用 GCP 專案免費層被 Google 收回後,
+    # 日報退回與全機背景 cron 共用雙 key,而配額日 15:00 TW 重置、清晨班次離重置最遠,
+    # 整夜背景工作把 RPD 吃光 → 07-23/24/27 三場實鍋(每場 gemini 成功僅 1-21 次,
+    # 全程弱模型鏈 → reason 塌陷/8 位掉 deterministic)。分區:日報 run(run.sh 設
+    # DIGEST_RUN=1)key2 優先、key1 溢流;背景呼叫端只准 key1,絕不碰保留桶。
+    if os.environ.get("DIGEST_RUN") == "1":
+        ordered = (GEMINI_API_KEY_2, GEMINI_API_KEY)
+    else:
+        ordered = (GEMINI_API_KEY,) if GEMINI_API_KEY else (GEMINI_API_KEY_2,)
+    keys = [k for k in ordered if k]
     if not keys:
         raise RuntimeError("未設定 GEMINI_API_KEY")
     live = [k for k in keys if (model, k[-6:]) not in _GEMINI_QUOTA_DEAD]

@@ -1,9 +1,12 @@
 """回歸測試:全免費 LLM 令(2026-07-26 Delvin 親令「全部用免費的,不要扣錢」)。
 
-鎖住三件事:
+鎖住四件事:
 1. 預設(無 DIGEST_PAID_CARDS)下,即使呼叫端帶 prefer_paid=True,付費 Claude 也絕不被呼叫。
 2. 免費鏈順序:junk 席(openrouter/cerebras)必須排在本地 GPU 之後(絕對最後),不站品質要道。
 3. Gemini 429 分流:per_day → 立即熔斷;per_minute → 退避重試不判死(07-23 晚班品質塌陷根因)。
+4. Gemini key 分區(2026-07-27):key2=日報保留桶——日報 run(DIGEST_RUN=1)key2 優先、
+   key1 溢流;背景呼叫端(無 DIGEST_RUN)只准 key1,絕不碰保留桶(07-23/24/27 三場
+   清晨配額枯竭實鍋的根治)。
 """
 import os
 import sys
@@ -102,7 +105,50 @@ def run():
         analyzer.requests.post, analyzer.time.sleep = orig_post, orig_sleep
         analyzer._GEMINI_QUOTA_DEAD.clear()
 
-    print("✅ 全免費 LLM 回歸測試全過(付費絕不呼叫/junk 墊底/429 RPM-RPD 分流)")
+    # ── 4) key 分區:key2=日報保留桶 ──
+    urls = []
+
+    def _post_cap(url, *a, **k):
+        urls.append(url)
+        return _Resp(200)
+    orig_post = analyzer.requests.post
+    orig_k1, orig_k2 = analyzer.GEMINI_API_KEY, analyzer.GEMINI_API_KEY_2
+    orig_run = os.environ.pop("DIGEST_RUN", None)
+    try:
+        analyzer.requests.post = _post_cap
+        analyzer.GEMINI_API_KEY, analyzer.GEMINI_API_KEY_2 = "KEY1AAAAAA", "KEY2BBBBBB"
+        analyzer._GEMINI_QUOTA_DEAD.clear()
+        # 背景(無 DIGEST_RUN):只准 key1
+        analyzer._call_gemini("p", "m1")
+        assert "KEY1AAAAAA" in urls[-1] and "KEY2BBBBBB" not in urls[-1], \
+            f"[FAIL] 背景呼叫應只用 key1: {urls[-1][-20:]}"
+        # 背景遇 key1 per_day 熔斷:不得溢流到 key2(保留桶不可侵犯)
+        def _post_429(url, *a, **k):
+            urls.append(url)
+            return _Resp(429, "generate_requests_per_model_per_day limit: 0")
+        analyzer.requests.post = _post_429
+        try:
+            analyzer._call_gemini("p", "m1")
+            raise AssertionError("[FAIL] 背景 key1 死應 raise,不可用 key2")
+        except RuntimeError:
+            pass
+        assert not any("KEY2BBBBBB" in u for u in urls), "[FAIL] 背景呼叫碰到了保留桶 key2"
+        # 日報 run:key2 優先
+        os.environ["DIGEST_RUN"] = "1"
+        analyzer._GEMINI_QUOTA_DEAD.clear()
+        analyzer.requests.post = _post_cap
+        analyzer._call_gemini("p", "m2")
+        assert "KEY2BBBBBB" in urls[-1], f"[FAIL] 日報 run 應 key2 優先: {urls[-1][-20:]}"
+    finally:
+        analyzer.requests.post = orig_post
+        analyzer.GEMINI_API_KEY, analyzer.GEMINI_API_KEY_2 = orig_k1, orig_k2
+        analyzer._GEMINI_QUOTA_DEAD.clear()
+        if orig_run is None:
+            os.environ.pop("DIGEST_RUN", None)
+        else:
+            os.environ["DIGEST_RUN"] = orig_run
+
+    print("✅ 全免費 LLM 回歸測試全過(付費絕不呼叫/junk 墊底/429 RPM-RPD 分流/key2 日報保留桶)")
 
 
 if __name__ == "__main__":
