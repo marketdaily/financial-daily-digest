@@ -92,9 +92,10 @@ def main():
     print(f"   小台近月市價 ≈ {px}")
 
     if a.mode == "submit-cancel":
-        # 掛「遠離市價」買單(市價 -10%,絕不會成交)→ 確認接受 → 撤單
-        limit_px = round(px * 0.90)
-        print(f"③ 掛遠價限價買單 1 口 @ {limit_px}(市價-10%,不會成交)…")
+        # 掛「低於市價」買單(-3%,買單低於市價不會立即成交)→ 確認接受 → 撤單
+        # 坑(sim 實測):-10% 會被「價格超過漲跌幅範圍」拒單(漲跌幅以前日結算價算)
+        limit_px = round(px * 0.97)
+        print(f"③ 掛遠價限價買單 1 口 @ {limit_px}(市價-3%,不會成交)…")
         order = api.Order(price=limit_px, quantity=1, action="Buy",
                           price_type="LMT", order_type="ROD",
                           octype="Auto")
@@ -125,13 +126,13 @@ def main():
         print("③ ⚠️ fill-close:真的市價買 1 口小台 → 立即市價平。學費=一次來回價差+費稅。")
         print("   5 秒後執行,Ctrl-C 可中止…")
         time.sleep(5)
-        buy = api.Order(quantity=1, action="Buy", price_type="MKT",
-                        order_type="IOC", octype="Auto")
+        buy = api.Order(price=0, quantity=1, action="Buy", price_type="MKT",
+                        order_type="IOC", octype="Auto")   # MKT 也必須帶 price(SDK 1.5.6)
         t1 = api.place_order(contract, buy)
         time.sleep(2); api.update_status()
         print(f"   買進狀態:{t1.status.status} 成交均價:{getattr(t1.status,'deal_price','?')}")
         print("④ 立即市價平倉…")
-        sell = api.Order(quantity=1, action="Sell", price_type="MKT",
+        sell = api.Order(price=0, quantity=1, action="Sell", price_type="MKT",
                          order_type="IOC", octype="Auto")
         t2 = api.place_order(contract, sell)
         time.sleep(2); api.update_status()
