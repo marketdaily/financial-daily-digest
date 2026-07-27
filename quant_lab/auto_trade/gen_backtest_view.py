@@ -1,6 +1,7 @@
-"""生成 C+E 策略的歷史回測視圖 → .paper/backtest.json(權益曲線+逐筆+統計),
+"""生成魚C 策略的歷史回測視圖 → .paper/backtest.json(權益曲線+逐筆+統計),
 供儀表板渲染「策略在動」的樣子。⚠️ 明確標為回測示意(含後見之明),非真實績效。
 真實績效=forward paper(今天起累積)。winrig 月度可重生。
+魚E 已處決(2026-07-27 幻想成交審計);出貨前過 fill_lint 閘門(停損記獲利=不出貨)。
 用法:python3 gen_backtest_view.py
 """
 import os
@@ -76,6 +77,18 @@ def main():
     compound = compound_sim(1_000_000)            # 穩健:起3口
     compound_aggr = compound_sim(180_000)         # 胃納:起~16口,吃到30-40%回撤
 
+    peak_eq, mdd = START_EQUITY, 0.0
+    for v in curve:
+        peak_eq = max(peak_eq, v)
+        mdd = max(mdd, 1 - v / peak_eq)
+
+    from fill_lint import lint_trades
+    bad = lint_trades(trades)
+    if bad:
+        for b in bad:
+            print(f"🚨 fill-lint:{b['date']} 魚{b['fish']} 停損記獲利 {b['pnl']:+,}")
+        raise SystemExit(f"❌ fill-realism 違規 {len(bad)} 筆,backtest.json 不出貨")
+
     out = {
         "fish_asym": {f: asym(v) for f,v in _byf.items()},
         "start": trades[0]["date"] if trades else None,
@@ -83,6 +96,7 @@ def main():
         "n": len(trades),
         "final_equity": eq,
         "ret_pct": round((eq / START_EQUITY - 1) * 100, 1),
+        "mdd_pct": round(mdd * 100, 1),
         "win_rate": round(len(wins) / len(trades) * 100) if trades else 0,
         "curve": curve,
         "compound": compound,

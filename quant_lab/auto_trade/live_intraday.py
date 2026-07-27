@@ -52,7 +52,7 @@ def main():
     stop_all, dd = halted(st)
     fish, fdir = pick_mode(bars)
     note(f"閘門:方向={g} 波動OK={vol_ok} 煞車={stop_all}(回撤{dd:.1%}) → "
-         + ("觀望" if (fish is None or stop_all) else f"魚{fish}({'順勢突破' if fish=='C' else 'fade反手'})"))
+         + ("觀望" if (fish is None or stop_all) else f"魚{fish}(順勢突破)"))
     if fish is None or stop_all:
         note("今日不進場,收工")
         return
@@ -89,26 +89,22 @@ def main():
                 if pos == 0:
                     if hm >= "13:30":
                         break
-                    if fish == "C":
-                        if fdir > 0 and c > orh:
-                            pos, entry, stop, entry_hm = 1, c + SLIP, orl, hm
-                        elif fdir < 0 and c < orl:
-                            pos, entry, stop, entry_hm = -1, c - SLIP, orh, hm
-                    else:  # E fade:突破反手
-                        if c > orh:
-                            pos, entry, stop, entry_hm = -1, c - SLIP, orh + 30, hm
-                        elif c < orl:
-                            pos, entry, stop, entry_hm = 1, c + SLIP, orl - 30, hm
+                    if fdir > 0 and c > orh:
+                        pos, entry, stop, entry_hm = 1, c + SLIP, orl, hm
+                    elif fdir < 0 and c < orl:
+                        pos, entry, stop, entry_hm = -1, c - SLIP, orh, hm
                     if pos:
                         note(f"⚡ 魚{fish} 進場 {'多' if pos>0 else '空'} @{entry:.0f}(bar {hm})停損 {stop:.0f}")
                 elif (pos > 0 and l <= stop) or (pos < 0 and h >= stop):
-                    pnl = pos * (stop - entry) - COST_B
+                    # 停損成交=worse of(停損價,當棒開盤):跳空穿價不可能成交在停損價
+                    px = min(stop, o) if pos > 0 else max(stop, o)
+                    pnl = pos * (px - entry) - COST_B
                     realize(st, fish, pnl, {"fish": fish, "type": "trade", "mode": "live",
-                            "date": today, "side": pos, "entry": entry, "exit": stop,
+                            "date": today, "side": pos, "entry": entry, "exit": px,
                             "entry_hm": entry_hm, "exit_hm": hm, "reason": "stop"})
                     with open(STATE, "w", encoding="utf-8") as f:
                         json.dump(st, f, ensure_ascii=False, default=str)
-                    note(f"🛑 停損出場 @{stop:.0f} pnl {pnl:+.1f} 點,收工")
+                    note(f"🛑 停損出場 @{px:.0f} pnl {pnl:+.1f} 點,收工")
                     write_report()
                     api.logout()
                     return

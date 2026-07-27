@@ -1,9 +1,11 @@
 """Paper 前測日跑器(winrig cron 每晚執行;僅 FinMind 免費源,不需 Shioaji):
-- 魚B 外資高信念跟隨:|Δ淨OI|≥85分位(擴張窗,只用過去)→ 次日開→收,成本1.5點
-- 魚A 條件賣跨式:IV−EWMA>3% 且 10≤dte≤40 且 GEX≥近60日中位 → 賣ATM跨式;
-  出場=edge<1%/持有≥5天/mark>1.5×進場/換月,成本4.4點(價差+費稅雙腿來回)
+- 魚B 外資高信念跟隨:|Δ淨OI|≥85分位(擴張窗,只用過去)→ 次日開→收,成本3.3點(COST_B)
+- 魚A v2 條件鐵蝶(2026-07-27 起,有限風險):IV−EWMA>3% 且 10≤dte≤40 且 GEX≥近60日中位
+  → 賣ATM跨式+買 F±2.5% 雙翼(淨收權利金,最大虧損=翼距−淨權利金);
+  出場=edge<1%/持有≥5天/淨mark>1.5×進場/換月,成本8.8點(4腿來回價差+費稅)
 狀態 .paper/state.json;帳本 .paper/ledger.jsonl(事件流,唯一真源)。
-這是兩條魚的「真 OOS 裁決」:訊號規格 2026-07-17 凍結,不得再調參。
+訊號規格凍結不得調參(B/C=2026-07-17/22;A v2=2026-07-27 鐵蝶化重起,樣本歸零)。
+魚E 已處決(2026-07-27):回測edge 94%來自停損記成獲利的幻想成交,誠實成交後轉負,見 POND。
 用法:python3 paper_daily.py
 """
 import os
@@ -24,7 +26,7 @@ STATE = os.path.join(PDIR, "state.json")
 LEDGER = os.path.join(PDIR, "ledger.jsonl")
 LOG_LIVE = os.path.join(PDIR, "live_log.txt")
 COST_B = 3.3   # 台指期真實來回:期交稅1.83點(法定0.002%x2)+五折手續費~0.5點+價差~1點
-COST_A = 4.4
+COST_A = 8.8   # 鐵蝶 4 腿來回 8 腿邊 ×(過半價差0.6+費稅0.5);v1 裸跨式 4.4 已隨魚A v2 停用
 START_EQUITY = 3_000_000            # 虛擬本金(用戶實際資金規模)
 PV = {"A": 50, "B": 50, "C": 50, "E": 50}  # 小台1口/跨式1組,皆每點NT$50
 HARD_DD = 0.20                      # 回撤煞車:權益回撤≥20% 停開新倉(人工複核)
@@ -57,6 +59,10 @@ def log_ev(ev):
 def realize(st, fish, pnl_pts, ev):
     ev["pnl_pts"] = round(pnl_pts, 1)
     ev["pnl_ntd"] = round(pnl_pts * PV[fish])
+    if ev.get("reason") == "stop" and pnl_pts > 0 and not ev.get("trailing"):
+        # fill-realism 不變量(2026-07-27 魚E 幻想成交事故):停損出場不得記獲利
+        ev["lint"] = "fantasy_stop_fill"
+        push(f"🚨 fill-lint:魚{fish} {ev.get('date','')} 停損出場記獲利 {pnl_pts:+.1f} 點=幻想成交嫌疑,查成交模型")
     st["equity"] = st.get("equity", START_EQUITY) + ev["pnl_ntd"]
     st["peak"] = max(st.get("peak", START_EQUITY), st["equity"])
     ev["equity"] = st["equity"]
@@ -120,7 +126,7 @@ def main():
             log_ev({"fish": "B", "type": "signal", "date": today,
                     "delta_oi": d_today, "thr": round(thr), "side": st["fishB"]["pending"]["side"]})
 
-    # ---- 魚A:先管持倉,再看進場 ----
+    # ---- 魚A v2(鐵蝶,有限風險):先管持倉,再看進場 ----
     days = txo_data.load("2023-01-01")
     vols = ewma_vol_by_date()
     gex = build_gex(days)
@@ -131,7 +137,7 @@ def main():
         edge = (rec["atm_iv"] - rv) if rv else None
         if held:
             same = rec["contract"] == held["contract"]
-            mark = straddle(rec, held["K"]) if same else None
+            mark = iron_fly_mark(rec, held) if same else None
             held["age"] += 1
             reason = None
             if not same or mark is None:
@@ -155,14 +161,17 @@ def main():
             gs = sorted(gex[d]["mag"] for d in sorted(gex)[-60:])
             g_med = gs[len(gs) // 2]
             if edge > 0.03 and 10 <= rec["dte"] <= 40 and gex[today]["mag"] >= g_med:
-                px = straddle(rec, rec["atm_K"])
-                if px:
+                fly = iron_fly_entry(rec)
+                if fly:
+                    net, Kc, Kp = fly
+                    max_loss = max(Kc - rec["atm_K"], rec["atm_K"] - Kp) - net
                     st["fishA"]["held"] = {"contract": rec["contract"], "K": rec["atm_K"],
-                                           "entry_px": px, "last_mark": px, "age": 0,
-                                           "entry_date": today}
-                    log_ev({"fish": "A", "type": "entry", "date": today, "K": rec["atm_K"],
-                            "straddle_px": px, "iv": rec["atm_iv"], "edge": round(edge, 3),
-                            "dte": rec["dte"]})
+                                           "Kc": Kc, "Kp": Kp, "entry_px": net,
+                                           "last_mark": net, "age": 0, "entry_date": today}
+                    log_ev({"fish": "A", "type": "entry", "structure": "iron_fly",
+                            "date": today, "K": rec["atm_K"], "Kc": Kc, "Kp": Kp,
+                            "net_px": net, "max_loss_pts": round(max_loss, 1),
+                            "iv": rec["atm_iv"], "edge": round(edge, 3), "dte": rec["dte"]})
     else:
         print("  魚A:今日 TXO 資料尚未可得(FinMind 更新中),下次補")
 
@@ -187,21 +196,67 @@ def main():
         json.dump(st, f, ensure_ascii=False, default=str)
 
 
+def _leg(rec, K, side):
+    s = rec["strikes"].get(str(K))
+    if not s or side not in s:
+        return None
+    v = s[side]
+    return v["px"] if isinstance(v, dict) else v
+
+
+def iron_fly_entry(rec):
+    """魚A v2 進場定價:賣ATM跨式+買 F±2.5% 最近檔雙翼 → (淨權利金, Kc, Kp)。
+    翼腳無報價/淨額≤0 → None(不進場,誠實)。"""
+    K = rec["atm_K"]
+    st_px = straddle(rec, K)
+    if st_px is None:
+        return None
+    F, W = rec["F"], 0.025 * rec["F"]
+    ks = sorted(float(k) for k in rec["strikes"])
+    Kc = min((k for k in ks if k > K), key=lambda k: abs(k - (K + W)), default=None)
+    Kp = min((k for k in ks if k < K), key=lambda k: abs(k - (K - W)), default=None)
+    if Kc is None or Kp is None:
+        return None
+    c, p = _leg(rec, Kc, "C"), _leg(rec, Kp, "P")
+    if c is None or p is None:
+        return None
+    net = st_px - c - p
+    max_loss = max(Kc - K, K - Kp) - net
+    # max_loss<=0=淨收權利金≥翼距=無風險套利長相=陳舊收盤價假象,不可成交,跳過
+    if net <= 0 or max_loss <= 0:
+        return None
+    return (net, Kc, Kp)
+
+
+def iron_fly_mark(rec, held):
+    """持倉逐日 mark(同合約):淨值=跨式mark−雙翼mark。翼腳缺報價→保守記0
+    (我方是買翼,翼記0=淨mark偏高=對我方最差)。舊straddle格式持倉(無Kc)走原mark。"""
+    if "Kc" not in held:
+        return straddle(rec, held["K"])
+    st_px = straddle(rec, held["K"])
+    if st_px is None:
+        return None
+    c = _leg(rec, held["Kc"], "C") or 0.0
+    p = _leg(rec, held["Kp"], "P") or 0.0
+    return st_px - c - p
+
+
 def pick_mode(bars):
-    """regime 路由:平靜+趨勢明→魚C breakout;高波動→魚E fade(相反);其餘觀望。
-    回 (fish, dir) 或 (None, 0)。dir 對 fade 無意義(對稱)。"""
+    """regime 路由:平靜+趨勢明→魚C breakout;其餘觀望。
+    魚E 已處決(2026-07-27):高波動日 fade 的回測edge 94%來自「停損記成獲利」的
+    幻想成交(過衝≥30點時停損落在獲利側),誠實成交後 +4.6→-0.65點/筆。
+    高波動日 regime 缺口留空,等下一條正經驗證過的候選,不急著補。"""
     g, vol_ok = c_gates(bars)
     if vol_ok and g != 0:
         return "C", g          # 平靜趨勢日:順勢突破
-    if not vol_ok:
-        return "E", 0          # 高波動亂盤日:fade 突破(規格凍結 2026-07-23,弱證據 t=0.45,paper 驗)
-    return None, 0             # 平靜但無趨勢:觀望
+    return None, 0             # 高波動/無趨勢:觀望
 
 
 def replay_intraday(rows, fish, dir):
-    """盤後用當日1分K重播一筆。rows=[(hm,o,h,l,c)]。回 dict(entry/exit/pnl/reason) 或 None。
-    魚C:突破OR順勢,停損OR另一側。魚E:突破OR反手,停損突破外緣+30。皆13:44出。"""
-    if len(rows) < 40:
+    """盤後用當日1分K重播一筆(魚C)。rows=[(hm,o,h,l,c)]。回 dict 或 None。
+    突破OR順勢,停損OR另一側,13:44出。停損成交=worse of(停損價,當棒開盤)
+    ——停損被跳空穿越時不可能成交在停損價(2026-07-27 fill-realism 審計)。"""
+    if len(rows) < 40 or fish != "C":
         return None
     orh = max(x[2] for x in rows[:30])
     orl = min(x[3] for x in rows[:30])
@@ -212,19 +267,14 @@ def replay_intraday(rows, fish, dir):
         if pos == 0:
             if hm >= "13:30":
                 break
-            if fish == "C":
-                if dir > 0 and c > orh:
-                    pos, entry, stop, ehm = 1, c, orl, hm
-                elif dir < 0 and c < orl:
-                    pos, entry, stop, ehm = -1, c, orh, hm
-            else:  # E fade
-                if c > orh:
-                    pos, entry, stop, ehm = -1, c, orh + 30, hm
-                elif c < orl:
-                    pos, entry, stop, ehm = 1, c, orl - 30, hm
+            if dir > 0 and c > orh:
+                pos, entry, stop, ehm = 1, c, orl, hm
+            elif dir < 0 and c < orl:
+                pos, entry, stop, ehm = -1, c, orh, hm
             continue
         if (pos > 0 and l <= stop) or (pos < 0 and h >= stop):
-            return {"side": pos, "entry": entry, "exit": stop, "reason": "stop", "ehm": ehm, "xhm": hm}
+            px = min(stop, o) if pos > 0 else max(stop, o)
+            return {"side": pos, "entry": entry, "exit": px, "reason": "stop", "ehm": ehm, "xhm": hm}
         if hm >= "13:44":
             return {"side": pos, "entry": entry, "exit": c, "reason": "eod", "ehm": ehm, "xhm": hm}
     if pos:
@@ -264,7 +314,7 @@ def c_done_today(today):
 
 
 def fish_ce(bars, today, st):
-    """魚C(平靜趨勢日 breakout)/魚E(高波動日 fade)regime 路由,盤後重播。
+    """魚C(平靜趨勢日 breakout)regime 路由,盤後重播(魚E 已處決 2026-07-27)。
     live_intraday 盤中已記錄則跳過(live 主、重播備援)。"""
     dates = [b["date"] for b in bars]
     if dates[-1] != today or len(bars) < 300:
@@ -345,11 +395,11 @@ def write_report():
         posi.append(f"魚B 待執行:{p['signal_date']} 訊號 → 次交易日 {'做多' if p['side']>0 else '做空'}")
     strat_html = """
 <h2 style="font-size:1rem;margin:22px 0 8px">📖 策略說明(給人看的版本)</h2>
-<div class="fish"><b>A|收保險費(賣跨式選擇權)</b><br>
-<span class="why">邏輯:選擇權=保險。只在「保費明顯超收」且「做市商自動對沖會壓住行情」的日子當保險公司,收權利金。</span><br>
-進場:隱含波動比實際波動貴 3% 以上+距到期 10-40 天+GEX(對沖阻尼)高於近 60 日中位。<br>
-出場:保費回歸/持有滿 5 天/虧到 1.5 倍停損/合約換月。規模:1 組。<br>
-<span class="ev">依據:800 天研究——保費超收集中在高波動期;GEX 高的日子隔天行情被壓(t=+2.6)。出手很少,一月約 0-2 次。</span></div>
+<div class="fish"><b>A|收保險費 v2:鐵蝶(有限風險,2026-07-27 起)</b><br>
+<span class="why">邏輯:選擇權=保險。只在「保費明顯超收」且「做市商自動對沖會壓住行情」的日子當保險公司收權利金——但買雙翼把最大虧損鎖死(裸賣已依預註冊尺判不通過:尾部 -56,620 > 累積獲利)。</span><br>
+進場:隱含波動比實際波動貴 3% 以上+距到期 10-40 天+GEX 高於近 60 日中位 → 賣 ATM 跨式+買 ±2.5% 雙翼。<br>
+出場:保費回歸/持有滿 5 天/淨值虧到 1.5 倍停損/合約換月。最大虧損=翼距−淨權利金(進場即知)。規模:1 組。<br>
+<span class="ev">依據:800 天研究——保費超收集中在高波動期;GEX 高的日子隔天行情被壓(t=+2.6)。鐵蝶版 2026-07-27 樣本歸零重起。出手很少,一月約 0-2 次。</span></div>
 <div class="fish"><b>B|跟外資大單搭順風車</b><br>
 <span class="why">邏輯:外資建大部位要分好幾天下單,第一天的大動作後面還有續單。輸家=反應慢的資金。</span><br>
 進場:外資台指期淨部位單日變化進入歷史前 15% 大 → 次日開盤跟方向,收盤出。<br>
@@ -359,10 +409,9 @@ def write_report():
 進場:日線 EMA 多/空排列+波動閘(市場太瘋不進)+突破開盤區間。<br>
 出場:停損=區間另一側;否則 13:44 出(絕不留到強制平倉踩踏時段)。規模:小台 1 口。<br>
 <span class="ev">依據:平靜趨勢日回測正;高波動年出手稀疏(月2-3次)。</span></div>
-<div class="fish" style="border-left-color:#8a5f1c"><b>E|高波動日反手 fade(regime 互補,弱候選測試中)</b><br>
-<span class="why">邏輯:魚C 空手的高波動亂盤日不再枯坐——突破多半是假的,反手做(fade),贏大輸小。</span><br>
-進場:波動閘擋下的日子(最兇20%),突破OR30就反向進,停損=突破外緣+30點,13:44出。<br>
-<span class="ev">⚠️ 依據弱(高波動日回測 +3.9點/筆但 t=0.45=可能是運氣),明確標為「測試中」由 paper 裁決;高波動年出手頻繁(月~20次),裁決快。</span></div>
+<div class="fish" style="border-left-color:#8a3030"><b>E|高波動日反手 fade — ⚰️ 已處決(2026-07-27)</b><br>
+<span class="why">處決原因:成交模型審計發現回測 edge 是幻覺——進場用收盤穿越 OR 邊緣、停損固定在邊緣±30 點,突破棒過衝≥30 點時停損落在<b>獲利側</b>,回測把停損記成保證獲利(34/124 筆=27%,貢獻總 edge 的 94%)。</span><br>
+<span class="ev">誠實成交(穿價用當棒開盤)重算:+4.6 → <b>−0.65 點/筆</b>(t=−0.08);forward 3 筆全停損印證。高波動日 regime 缺口留空,等下一條正經驗證過的候選。歷史 3 筆(-2,545 元)保留在帳上誠實記分。教訓已固化為 fill_lint.py 確定性偵測器。</span></div>
 <div class="fish" style="border-left-color:#9a6a22"><b>⚖️ 交易紀律(全部寫死在程式裡,不靠意志力)</b><br>
 虛擬本金 300 萬照真實規則運作;回撤 10% 減碼、20% 全面停單;策略規格已凍結不得中途調參;
 <b>裁決規則:魚C 滿 30 筆自動判生死(均值為正→升真錢 1 口小台;差→處決),魚B 滿 10 筆、魚A 滿 5 筆同理。</b></div>"""
@@ -407,7 +456,7 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
     except Exception:
         pass
     if dlog:
-        panel = f'<h2 style="font-size:1rem;margin:20px 0 6px">🕗 魚C 每日決策日誌(空手也是決策)</h2><div class="dlog">{dlog}</div>'
+        panel = f'<h2 style="font-size:1rem;margin:20px 0 6px">🕗 每日決策日誌(空手也是決策)</h2><div class="dlog">{dlog}</div>'
         anchor = '<h2 style="font-size:1rem;margin:22px 0 8px">📖 策略說明'
         html = html.replace(anchor, panel + anchor, 1) if anchor in html else html + panel
     # 回測示意面板(策略在歷史上怎麼跑;明確標非真實績效)
@@ -443,7 +492,7 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
                 f'<div class="card" style="grid-column:1/-1"><div class="t">胃納加碼(起{cA["lots_start"]}口→峰{cA["lots_max"]}口·含40%回撤煞車)</div>'
                 f'<div class="v {"pos" if cA["ret_pct"]>=0 else "neg"}">{cA["final"]:,}（{cA["ret_pct"]:+}%）· 最大回撤 {cA["mdd_pct"]}%</div>{svgA}</div>'
                 '<table><tr><th>加碼版本</th><th>報酬</th><th>最大回撤</th><th>口數</th></tr>'
-                f'<tr><td>1口(驗證基準)</td><td class="pos">{bt["ret_pct"]:+}%</td><td>2.1%</td><td>1</td></tr>'
+                f'<tr><td>1口(驗證基準)</td><td class="{"pos" if bt["ret_pct"]>=0 else "neg"}">{bt["ret_pct"]:+}%</td><td>{bt.get("mdd_pct","?")}%</td><td>1</td></tr>'
                 f'<tr><td>穩健(3口起)</td><td class="{"pos" if cS["ret_pct"]>=0 else "neg"}">{cS["ret_pct"]:+}%</td><td>{cS["mdd_pct"]}%</td><td>{cS["lots_start"]}→{cS["lots_max"]}</td></tr>'
                 f'<tr><td>胃納(30-40%)</td><td class="{"pos" if cA["ret_pct"]>=0 else "neg"}">{cA["ret_pct"]:+}%</td><td>{cA["mdd_pct"]}%</td><td>{cA["lots_start"]}→{cA["lots_max"]}</td></tr>'
                 '</table>')
@@ -527,7 +576,7 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
         rr = "".join(f'<tr><td>魚{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td>'
                      f'<td>{r[3]}</td><td>{r[4]}</td></tr>' for r in (_ramp("B"), _ramp("C")))
         ramppanel = ('<h2 style="font-size:1rem;margin:22px 0 6px">📈 加碼階梯進度(魚B/C 放大)</h2>'
-                     '<div class="btnote">目標回撤胃納 30-40%。口數用 <b>forward 真實回撤</b>算(非回測——回測 1 口僅 2.1% 必低估)。'
+                     '<div class="btnote">目標回撤胃納 30-40%。口數用 <b>forward 真實回撤</b>算(非回測——回測 1 口回撤必低估)。'
                      '⚠️ 期貨戶未核 + 0 forward 筆 = 尚未起跑;起跑 2-3 口量測真實回撤後,才依胃納分批放大。</div>'
                      '<div class="card" style="grid-column:1/-1;overflow-x:auto"><table>'
                      '<tr><th>魚</th><th>forward筆</th><th>階段</th><th>真實回撤(1口)</th><th>目標胃納可加至</th></tr>'
