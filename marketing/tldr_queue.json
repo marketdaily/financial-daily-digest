@@ -2,6 +2,72 @@
   "_comment": "日報自動裂變候選佇列(P2.5打法6資料層)——只含公版存檔結構化數字區塊萃取的短文,發文前仍須逐字核對 caption_zh(feedback_social_post_verify)。本檔不會被自動發文流程讀取。",
   "candidates": [
     {
+      "date": "2026-07-27",
+      "variant": "us",
+      "indicators": [
+        {
+          "label": "VIX 恐慌指數",
+          "value": "17.56",
+          "sub": "平靜"
+        },
+        {
+          "label": "恐貪指數",
+          "value": "65/100",
+          "sub": "Greed"
+        },
+        {
+          "label": "美國10年債",
+          "value": "4.68%",
+          "sub": "升息預期參考"
+        },
+        {
+          "label": "黃金 / 原油",
+          "value": "$4102.2 / $83.27",
+          "sub": "+0.77% / -6.76%"
+        },
+        {
+          "label": "USD/TWD 匯率",
+          "value": "32.3",
+          "sub": "台幣升值"
+        }
+      ],
+      "sectors": [
+        {
+          "name": "XLP 必需消費",
+          "move": "▲ +1.11%",
+          "pct": 1.11
+        },
+        {
+          "name": "XLC 通訊",
+          "move": "▲ +0.87%",
+          "pct": 0.87
+        },
+        {
+          "name": "XLF 金融",
+          "move": "▲ +0.86%",
+          "pct": 0.86
+        },
+        {
+          "name": "XLE 能源",
+          "move": "▲ +0.40%",
+          "pct": 0.4
+        },
+        {
+          "name": "XLI 工業",
+          "move": "▲ +0.40%",
+          "pct": 0.4
+        },
+        {
+          "name": "XLK 科技",
+          "move": "▼ -1.44%",
+          "pct": -1.44
+        }
+      ],
+      "caption_zh": "📊 2026-07-27 美股盤後市場脈搏\nVIX 17.56(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.68% · USD/TWD 32.3\n板塊輪動:XLP 必需消費 領漲 ▲ +1.11%、XLK 科技 重挫 ▼ -1.44%\n完整日報 → link in bio",
+      "caption_len": 149,
+      "source_archive": "docs/output/digest_2026-07-27_us.html"
+    },
+    {
       "date": "2026-07-24",
       "variant": "us",
       "indicators": [
