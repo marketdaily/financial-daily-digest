@@ -255,6 +255,14 @@ def _market_status(today_iso: str) -> dict:
     }
 
 
+def _is_tw_symbol(sym) -> bool:
+    """台股/美股代碼判別唯一事實來源:台股代碼首字必為數字(含 00981A 這類字母尾碼的
+    主動式 ETF),美股代碼首字必為字母。舊「全數字」判別(str.isdigit)把 00981A 誤當
+    美股 → 晨間鐵則不注入 prompt/行情查錯市場(2026-07-22/27 hfks996 事故家族)。"""
+    s = str(sym or "")
+    return bool(s) and s[:1].isdigit()
+
+
 _GEMINI_QUOTA_DEAD: set = set()  # 元素=(model, key尾6碼):每把 key 每個模型獨立熔斷
 
 
@@ -1296,7 +1304,7 @@ def _pp_overnight_autogate(html: str, data: dict) -> str:
         if not hm:
             return block
         sym = hm.group(1)
-        mkt = "tw" if (sym in tw_syms or sym[:1].isdigit()) else "us"
+        mkt = "tw" if (sym in tw_syms or _is_tw_symbol(sym)) else "us"
         cur = _shrunk(mkt, bname)
         if cur is None or cur >= 45:
             return block
@@ -1518,7 +1526,7 @@ def _pp_capital_brief(html: str, data: dict) -> str:
                 px = float((all_mkt.get(sym) or {}).get("price"))
             except (TypeError, ValueError):
                 continue
-            is_tw = sym[:1].isdigit()
+            is_tw = _is_tw_symbol(sym)
             if not is_tw and fx is None:
                 skipped_fx.append(sym)
                 continue
@@ -1567,7 +1575,7 @@ def _pp_capital_brief(html: str, data: dict) -> str:
             lines.append("⚠️ 持倉市值已高於你填的總本金,佔比暫以持倉市值計 — 請到「我的專區」更新本金")
         if skipped_fx:
             lines.append(f"(美股 {len(skipped_fx)} 檔因今日缺匯率暫未納入市值計算)")
-        fx_note = f"・美股以 1 USD={fx:.2f} TWD 折算" if (fx and any(not r['sym'][:1].isdigit() for r in rows)) else ""
+        fx_note = f"・美股以 1 USD={fx:.2f} TWD 折算" if (fx and any(not _is_tw_symbol(r['sym']) for r in rows)) else ""
 
         body = "".join(f'<div style="margin:3px 0;">{ln}</div>' for ln in lines)
         section = (
@@ -1682,7 +1690,7 @@ def _pp_rotation_note(html: str, data: dict) -> str:
         if not hm:
             return block
         sym = hm.group(1)
-        mkt_key = "tw" if sym[:1].isdigit() else "us"
+        mkt_key = "tw" if _is_tw_symbol(sym) else "us"
         cand = _candidate(sym, mkt_key)
         if not cand:
             return block
@@ -2866,7 +2874,7 @@ def _options_flow_note(data: dict) -> str:
     if not token:
         return ""
     us = (data or {}).get("us_market") or {}
-    syms = [s for s in us.keys() if s and not str(s).isdigit()][:6]
+    syms = [s for s in us.keys() if s and not _is_tw_symbol(s)][:6]
     if not syms:
         return ""
     cache_key = time.strftime("%Y-%m-%d") + "|" + ",".join(sorted(syms))
@@ -3004,7 +3012,7 @@ def _portfolio_lens_block(data: dict, holdings: list, depth: str = "standard",
         chg = (allm.get(h) or {}).get("change_pct")
         if chg is not None:
             up += chg >= 0; down += chg < 0
-    tw_n = sum(1 for h in holds if str(h).isdigit())
+    tw_n = sum(1 for h in holds if _is_tw_symbol(h))
     us_n = n - tw_n
     pol_tks = set()
     for s in (data.get("political_signals") or []):
@@ -3098,7 +3106,7 @@ def _chunk_market_tech_block(data: dict, chunk: list, depth: str = "standard") -
                 news_by_tk.setdefault(tk, []).append(a["title"])
     lines = []
     for sym in chunk:
-        is_tw = str(sym).isdigit()
+        is_tw = _is_tw_symbol(sym)
         m = (tw_market if is_tw else us_market).get(sym) or {}
         nm = stock_names.display_name(sym, m.get("name"))
         unit = "元" if is_tw else "美元"
@@ -3213,7 +3221,7 @@ def _card_passes_audit(card: str) -> bool:
 def _deterministic_signal_card(sym: str, data: dict, mkt_status: dict) -> str:
     """無 LLM 也能生出的真實數據操作卡(技術價位錨定 MA / 高低 / ATR)。
     當某檔 LLM 生成失敗或不合格時用它補位 — 保證 100% 覆蓋且 audit 過關,且讀起來是真建議不是『異常』訊息。"""
-    is_tw = str(sym).isdigit()
+    is_tw = _is_tw_symbol(sym)
     market = data.get("tw_market", {}) if is_tw else data.get("us_market", {})
     tech = (data.get("technicals", {}) or {}).get(sym)
     m = market.get(sym)
@@ -3291,7 +3299,7 @@ def _mark_card(card: str, sym: str, entry: float = None, qty: float = None) -> s
 def _compact_overflow_card(sym: str, data: dict, mkt_status: dict) -> str:
     """email 版超出前 N 檔的持股用精簡卡(真實收盤 + 一句下一步 + 導去網頁完整版),
     控制信件大小避免 Gmail 截斷,但仍 100% 覆蓋每一支。audit 視為精簡卡豁免 battle 檢查。"""
-    is_tw = str(sym).isdigit()
+    is_tw = _is_tw_symbol(sym)
     market = data.get("tw_market", {}) if is_tw else data.get("us_market", {})
     m = market.get(sym)
     name = stock_names.display_name(sym, (m or {}).get("name"))
@@ -3418,7 +3426,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
         # 埋在範例裡 LLM 遵從隨機(07-13 三封/07-17 兩封整批無晨間框架實鍋)→ 拉出來當獨立鐵則。
         # 只在「台股今日將開盤 且 本批含台股標的」時注入;晚報批次全美股,永不觸發。
         tw_morning_note = ""
-        if mkt_status.get("tw_will_open_today") and any(str(s).isdigit() for s in sub):
+        if mkt_status.get("tw_will_open_today") and any(_is_tw_symbol(s) for s in sub):
             tw_morning_note = (
                 "\n【‼️ 台股早盤動作窗口】台股今日 9:00 將開盤,這封信在開盤前送達:"
                 "每張台股卡 signal-reason 第一句就要給「今早 9:00 開盤後」的具體動作"
