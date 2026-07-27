@@ -256,11 +256,8 @@ def _market_status(today_iso: str) -> dict:
 
 
 def _is_tw_symbol(sym) -> bool:
-    """台股/美股代碼判別唯一事實來源:台股代碼首字必為數字(含 00981A 這類字母尾碼的
-    主動式 ETF),美股代碼首字必為字母。舊「全數字」判別(str.isdigit)把 00981A 誤當
-    美股 → 晨間鐵則不注入 prompt/行情查錯市場(2026-07-22/27 hfks996 事故家族)。"""
-    s = str(sym or "")
-    return bool(s) and s[:1].isdigit()
+    """→ stock_names.is_tw_symbol(單一事實來源;data_fetcher 同用,2026-07-27 根治)。"""
+    return stock_names.is_tw_symbol(sym)
 
 
 _GEMINI_QUOTA_DEAD: set = set()  # 元素=(model, key尾6碼):每把 key 每個模型獨立熔斷

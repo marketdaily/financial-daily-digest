@@ -171,6 +171,15 @@ def _names(code, tw_hint=None):
     return ("", "")
 
 
+def is_tw_symbol(sym) -> bool:
+    """台股/美股代碼判別唯一事實來源:台股代碼首字必為數字(含 00981A 主動式 ETF、
+    00631L 槓桿、00632R 反向、00400A 債券這類字母尾碼商品),美股代碼首字必為字母。
+    「全數字」判別(str.isdigit)會把字母尾碼台股誤當美股/直接丟棄——2026-07-27
+    事故家族:hfks996 的 00981A 晨間鐵則不注入+TWSE 全表解析丟棄 127 檔字母尾碼。"""
+    s = str(sym or "")
+    return bool(s) and s[:1].isdigit()
+
+
 def is_known(code):
     c = (code or "").strip().upper()
     return c in US_NAMES or c in TW_NAMES

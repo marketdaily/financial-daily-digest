@@ -8,6 +8,7 @@ from config import (
     NEWS_API_KEY, US_INDICES, NEWS_WHITELIST_DOMAINS, TW_NEWS_WHITELIST_DOMAINS
 )
 from config_loader import get_us_stocks, get_tw_stocks, get_us_feeds, get_tw_feeds, get_domains
+from stock_names import is_tw_symbol as _is_tw_code
 
 
 def _yf_guard(fn, timeout=12, default=None):
@@ -328,7 +329,9 @@ def _fetch_twse_all() -> dict:
         data_date = None
         for row in data:
             code = row.get("Code", "")
-            if not code.isdigit():
+            # 首字數字=真台股代碼(舊 isdigit 全數字判別把 00631L 槓桿/00632R 反向/
+            # 00400A 債券等 127 檔字母尾碼商品整批丟棄,2026-07-27 事故)
+            if not _is_tw_code(code):
                 continue
             if data_date is None and row.get("Date"):
                 data_date = _roc_to_iso(row["Date"])
@@ -451,7 +454,7 @@ def _annotate_tw_ex_div(tw_market: dict) -> None:
     命中規則:last_session < 排定除息交易日 ≤ today_session —— 吃得下颱風順延
     (7/9 < 7/10 ≤ 7/13 = True)且隔日不重複觸發(7/13 < 7/10 = False)。整段 fail-safe。"""
     try:
-        codes = [c for c in tw_market if str(c).isdigit()]
+        codes = [c for c in tw_market if _is_tw_code(c)]
         if not codes:
             return
         last_session = _TWSE_DATA_DATE or _expected_tw_session_date()
@@ -472,7 +475,7 @@ def _tw_stocks_via_yahoo(codes: list, twse: dict, tpex: dict) -> dict:
     """TWSE 過期時改用 Yahoo 抓指定台股收盤(與加權指數同源同日,消除日期打架)。
     回 {code: {name, price, change_pct}};名稱沿用 TWSE/TPEx 既有對照。
     上市用 .TW、上櫃用 .TWO;不確定者(兩個官方源都過期/查無)兩種後綴都試,避免上櫃股漏掉。"""
-    codes = [c for c in (codes or []) if c and c.isdigit()]
+    codes = [c for c in (codes or []) if c and _is_tw_code(c)]
     if not codes:
         return {}
     tpex = tpex or {}
@@ -503,11 +506,54 @@ def _tw_stocks_via_yahoo(codes: list, twse: dict, tpex: dict) -> dict:
 # 本班次「主源查無、連 Yahoo 都救不回」的台股代號(去重),run 尾端由 main.py 推 admin。
 _LAST_TW_MISSING: list = []
 
+def _tw_stocks_via_finmind(codes: list) -> dict:
+    """報價救援最後一層:FinMind TaiwanStockPrice(免費層 600 req/hr,每碼 1-2 request)。
+    主動式 ETF(如 00981A)不在 TWSE STOCK_DAY_ALL/TPEX 日線全表、Yahoo 也 404,
+    FinMind 是免費層唯一有它的源。只在前面全 miss 時走到,量極小。
+    回 {code: {name, price, change_pct}},與 TWSE/Yahoo 路徑同形;資料逾 7 天視為
+    下市/停牌不收(fail-closed 進 _LAST_TW_MISSING 告警,不寄過期價)。"""
+    import os
+    tok = os.getenv("FINMIND_TOKEN", "")
+    if not tok or not codes:
+        return {}
+    out = {}
+    start = (datetime.now() - timedelta(days=10)).strftime("%Y-%m-%d")
+    for c in codes[:10]:
+        try:
+            r = requests.get("https://api.finmindtrade.com/api/v4/data",
+                             params={"dataset": "TaiwanStockPrice", "data_id": c,
+                                     "start_date": start, "token": tok}, timeout=15)
+            rows = (r.json() or {}).get("data") or []
+            if not rows:
+                continue
+            last = rows[-1]
+            if (datetime.now() - datetime.strptime(last["date"], "%Y-%m-%d")).days > 7:
+                continue
+            close = float(last["close"])
+            spread = float(last.get("spread") or 0)
+            prev = close - spread
+            chg = round(spread / prev * 100, 2) if prev else 0.0
+            nm = tw_name_map().get(c) or ""
+            if not nm:
+                try:
+                    ri = requests.get("https://api.finmindtrade.com/api/v4/data",
+                                      params={"dataset": "TaiwanStockInfo", "data_id": c,
+                                              "token": tok}, timeout=15)
+                    info = (ri.json() or {}).get("data") or []
+                    nm = (info[0].get("stock_name") or "") if info else ""
+                except Exception:
+                    nm = ""
+            out[c] = {"name": nm, "price": close, "change_pct": chg}
+        except Exception:
+            continue
+    return out
+
+
 def _rescue_missing_tw(codes: list, resolved: dict, twse: dict, tpex: dict) -> None:
     """覆蓋率守門+自我修復:任何要求的台股代號在主源(TWSE/TPEx)查無報價,
     改用 Yahoo(.TW/.TWO 都試)救回,就地補進 resolved。
     連 Yahoo 都救不回的才記進 _LAST_TW_MISSING,由 main.py 推 admin(web push)。"""
-    want = [c for c in (codes or []) if isinstance(c, str) and c.isdigit()]
+    want = [c for c in (codes or []) if isinstance(c, str) and _is_tw_code(c)]
     missing = [c for c in want if c not in resolved]
     if not missing:
         return
@@ -515,6 +561,12 @@ def _rescue_missing_tw(codes: list, resolved: dict, twse: dict, tpex: dict) -> N
     for c in missing:
         if c in rescued:
             resolved[c] = rescued[c]
+    # Yahoo 也查無 → FinMind 最後一層(主動式 ETF 如 00981A 不在 TWSE 日線全表、
+    # Yahoo 亦 404,FinMind 是免費層唯一有它的源;只有極少數碼會走到這裡)
+    still = [c for c in missing if c not in resolved]
+    if still:
+        for c, v in _tw_stocks_via_finmind(still).items():
+            resolved[c] = v
     for c in missing:
         if c not in resolved and c not in _LAST_TW_MISSING:
             _LAST_TW_MISSING.append(c)
@@ -541,7 +593,7 @@ def _fetch_tpex_all() -> dict:
             result = {}
             for row in resp.json():
                 code = (row.get("SecuritiesCompanyCode") or "").strip()
-                if not code.isdigit():
+                if not _is_tw_code(code):
                     continue
                 try:
                     close = float(str(row["Close"]).strip())
@@ -658,13 +710,13 @@ def fetch_custom_stocks(symbols: list) -> dict:
     twse = _fetch_twse_all()
     tpex = None
     result = {}
-    tw_codes = [s for s in symbols if s.isdigit()]
+    tw_codes = [s for s in symbols if _is_tw_code(s)]
     yahoo_tw = {}
     if tw_codes and _twse_is_stale():
         tpex = _fetch_tpex_all()
         yahoo_tw = _tw_stocks_via_yahoo(tw_codes, twse, tpex)
     for sym in symbols:
-        if sym.isdigit():
+        if _is_tw_code(sym):
             if sym in yahoo_tw:
                 result[sym] = yahoo_tw[sym]
             elif sym in twse:
@@ -686,7 +738,7 @@ def fetch_custom_stocks(symbols: list) -> dict:
 
 
 def _yahoo_symbol(code: str, twse: dict, tpex: dict) -> str:
-    if code.isdigit():
+    if _is_tw_code(code):
         if code in twse:
             return f"{code}.TW"
         if code in tpex:
@@ -768,7 +820,7 @@ def _alt_history_tw(code: str, pd):
 
 
 def _alt_history(raw: str, pd):
-    if raw.isdigit():
+    if _is_tw_code(raw):
         return _alt_history_tw(raw, pd)
     if re.fullmatch(r"[A-Z][A-Z.\-]{0,9}", raw):
         return _alt_history_us(raw, pd)
@@ -1081,7 +1133,7 @@ def _fetch_tw_stock_news(codes: list) -> list:
     from concurrent.futures import ThreadPoolExecutor
     names = tw_name_map()
     cutoff = datetime.now() - timedelta(hours=36)
-    uniq = list(dict.fromkeys([str(c) for c in codes if str(c).isdigit()]))[:80]
+    uniq = list(dict.fromkeys([str(c) for c in codes if _is_tw_code(c)]))[:80]
 
     def _whitelisted(domain: str) -> bool:
         return any(domain == d or domain.endswith("." + d) for d in TW_NEWS_WHITELIST_DOMAINS)
@@ -1158,7 +1210,7 @@ def fetch_tw_news(extra_tw_stocks: list = None):
         api_articles = []
     tw_rss = fetch_tw_rss_news()
     # 個股點名新聞:有持股用持股,無持股(公版)用預設台股池,保證每支都查過一輪
-    per_stock_codes = extra_tw_stocks or [s for s in get_tw_stocks() if str(s).isdigit()][:10]
+    per_stock_codes = extra_tw_stocks or [s for s in get_tw_stocks() if _is_tw_code(s)][:10]
     per_stock = _fetch_tw_stock_news(per_stock_codes)
     return api_articles + tw_rss + per_stock
 
