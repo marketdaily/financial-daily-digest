@@ -148,6 +148,19 @@ h = card("2330", "以下說明開盤後的操作邏輯:回測 950 不破分批�
 out = fixed(h)
 check("V5 「說明開盤」複合詞零觸碰", "說明開盤" in out and "說今早開盤" not in out)
 
+# M10: 07-22/07-27 hfks996 實鍋 — 00981A(帶字母尾碼的主動式 ETF)是台股卡,
+#      舊 `\d+` 全數字 h-mark 判別把它誤當美股卡跳過 → 防線 no-op → audit 紅。
+#      修後:首字數字=台股,缺窗口必注入。
+h = card("00981A", "外資連續五日大幅買超,短線偏多,現價勿追。")
+out = fixed(h)
+check("M10 00981A 字母尾碼 ETF 認定台股卡,缺窗口必注入(07-22/27 實鍋)",
+      "今早 9:00 開盤後:" in out and TW_MORNING_ACTION_RE.search(out))
+
+# M10b: 00981A 寫「明日開盤」時序錯亂也要改寫
+h = card("00981A", "觀察明日開盤能否延續買超動能。")
+out = fixed(h)
+check("M10b 00981A「明日開盤」→「今早開盤」", "今早開盤" in out and "明日開盤" not in out)
+
 # M9: audit#15 端到端 — 修防線後的 html 過 audit(共用 regex 無 drift)
 import digest_audit  # noqa: E402
 h = card("8299", "現價勿追,等待回測 1955 元支撐不破。")
