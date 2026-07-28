@@ -440,3 +440,13 @@
 {"date": "2026-07-27", "code": "3672", "source": "leadflow", "level": "red", "signal": "康聯訊(3672) 無消息近漲停+9.7%(連2根,5日+11.9%),疑資訊先行資金|外資+投信近3日僅-9張,法人未同步=隱形買盤", "price_at_signal": 14.1}
 {"date": "2026-07-27", "code": "8085", "source": "leadflow", "level": "yellow", "signal": "福華(8085) 無消息近漲停+9.7%(量能2.5×,5日+12.2%),疑資訊先行資金", "price_at_signal": 12.45}
 {"date": "2026-07-27", "code": "3521", "source": "leadflow", "level": "yellow", "signal": "台鋼建設(3521) 無消息近漲停+9.4%(量能2.7×,5日+10.3%),疑資訊先行資金", "price_at_signal": 13.35}
+{"date": "2026-07-28", "code": "2303", "source": "margin", "level": "red", "signal": "聯電(2303):融資5日驟減-24.5%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": 113.5}
+{"date": "2026-07-28", "code": "2303", "source": "tw_analyst", "level": "yellow", "signal": "聯電(2303):FactSet共識EPS預估上修至4.88元(目標價120元)", "price_at_signal": 113.5}
+{"date": "2026-07-28", "code": "2303", "source": "tw_analyst", "level": "red", "signal": "聯電(2303):FactSet共識目標價調升至120元(+10.6%)", "price_at_signal": 113.5}
+{"date": "2026-07-28", "code": "2316", "source": "sbl", "level": "yellow", "signal": "楠梓電(2316):機構借券賣出5日增15.0%(溫和加碼放空)", "price_at_signal": 142.5}
+{"date": "2026-07-28", "code": "2486", "source": "institutional", "level": "red", "signal": "一詮(2486):投信連 3 日買超(認養訊號,20日淨買 +0 張)", "price_at_signal": 205.0}
+{"date": "2026-07-28", "code": "4764", "source": "institutional", "level": "red", "signal": "雙鍵(4764):投信連 3 日買超(認養訊號,20日淨買 +4,771 張)", "price_at_signal": 281.0}
+{"date": "2026-07-28", "code": "5536", "source": "mops_news", "level": "red", "signal": "聖暉*(5536) 重訊[2026-07-27]:公告本公司國內第二次無擔保轉換公司債完成訂價", "price_at_signal": 1015.0}
+{"date": "2026-07-28", "code": "8438", "source": "sbl", "level": "red", "signal": "昶昕(8438):機構借券賣出5日遽增24.6%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": 58.5}
+{"date": "2026-07-28", "code": "5386", "source": "sbl", "level": "red", "signal": "青雲(5386):機構借券賣出5日遽增56.8%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": 223.5}
+{"date": "2026-07-28", "code": "3018", "source": "leadflow", "level": "red", "signal": "隆銘綠能(3018) 無消息近漲停+9.8%(連3根,5日+31.9%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": 15.7}
