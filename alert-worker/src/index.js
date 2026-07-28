@@ -283,9 +283,78 @@ async function fetchGlobalLead(env) {
   return line;
 }
 
-// Claude 嚴重度判定:輸入新聞 + 相關 ticker,輸出 {severity 0-10, reason}。
+// 2026-07-28 LLM 免費鏈(Delvin「不要扣錢」令延伸到 alert-worker):
+// Gemini flash(免費) → Gemini 2.5-flash-lite(免費,獨立 RPD 桶) → Groq llama-3.3-70b(免費)
+// → Claude Haiku(付費,最後備援)。任一家成功即回,全敗才 throw。
+async function llmComplete(env, prompt) {
+  const jobs = [];
+  if (env.GEMINI_API_KEY) {
+    for (const model of ["gemini-flash-latest", "gemini-2.5-flash-lite"]) {
+      jobs.push(async () => {
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.2, maxOutputTokens: 2000 },
+          }),
+        });
+        if (!r.ok) throw new Error(`gemini:${model} ${r.status}`);
+        const d = await r.json();
+        const parts = (((d.candidates || [])[0] || {}).content || {}).parts || [];
+        const text = parts.map((c) => c.text || "").join("");
+        if (!text) throw new Error(`gemini:${model} empty`);
+        return text;
+      });
+    }
+  }
+  if (env.GROQ_API_KEY) {
+    jobs.push(async () => {
+      const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { authorization: `Bearer ${env.GROQ_API_KEY}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 500,
+          temperature: 0.2,
+        }),
+      });
+      if (!r.ok) throw new Error(`groq ${r.status}`);
+      const d = await r.json();
+      const text = (((d.choices || [])[0] || {}).message || {}).content || "";
+      if (!text) throw new Error("groq empty");
+      return text;
+    });
+  }
+  if (env.ANTHROPIC_API_KEY) {
+    jobs.push(async () => {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 500,
+          messages: [{ role: "user", content: prompt }],
+        }),
+      });
+      if (!r.ok) throw new Error(`anthropic ${r.status}`);
+      const d = await r.json();
+      const text = (d.content || []).map((c) => c.text || "").join("");
+      if (!text) throw new Error("anthropic empty");
+      return text;
+    });
+  }
+  let lastErr = null;
+  for (const job of jobs) {
+    try { return await job(); } catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error("no LLM provider configured");
+}
+
+// LLM 嚴重度判定:輸入新聞 + 相關 ticker,輸出 {severity 0-10, reason}。
 async function aiSeverity(env, news, tickers, universe = null, globalLead = "") {
-  if (!env.ANTHROPIC_API_KEY) return { severity: null, reason: "AI 未設定", skipped: true };
+  if (!env.ANTHROPIC_API_KEY && !env.GEMINI_API_KEY && !env.GROQ_API_KEY) return { severity: null, reason: "AI 未設定", skipped: true };
   const names = tickers.length
     ? tickers.map((t) => `${t}(${displayName(t)})`).join("、")
     : "台股/美股投資人的持股";
@@ -319,22 +388,7 @@ ${globalLead ? `
 
 只輸出 JSON,格式:{"severity": <0-10 整數>, "category": "event|rumor|opinion", "stance": "加碼|續抱|觀望|減碼|賣出", "reason": "<一句:為何跟投資人有關>", "action": "<一句:此刻該怎麼做與理由>"${affectedField}}`;
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 256,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-    if (!res.ok) return { severity: null, reason: `AI 錯誤 ${res.status}`, error: true };
-    const data = await res.json();
-    const text = (data.content || []).map((c) => c.text || "").join("");
+    const text = await llmComplete(env, prompt);
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return { severity: null, reason: "AI 回應無法解析", error: true };
     const parsed = JSON.parse(m[0]);
