@@ -49,35 +49,53 @@ echo "=== $(date '+%F %T %z') fallback runner start (market=$MARKET) ==="
 if [ "$MARKET" = tw ] && [ "$TWDOW" = 7 ]; then echo "skip: Sunday TW morning"; exit 0; fi
 if [ "$MARKET" = us ] && { [ "$TWDOW" = 6 ] || [ "$TWDOW" = 7 ]; }; then echo "skip: weekend US evening"; exit 0; fi
 
+# ⚠️ 2026-07-28 雙發事故根因 #1(winrig 版同步修,本檔是 repo 源頭):舊版數「窗口內全部
+#   runs」不看死活,凌晨檢查窗口還會退到昨天,把已 cancelled/failure 的 dry-run 殘骸當成
+#   「雲端接手」→ 誤讓位 → 遲到 → watchdog 派真備援 → 訂閱者收兩封。
+#   修法:①窗口錨定「今天 TW 這一班」(tw=04:00 TW / us=18:00 TW 起)
+#        ②只數 queued/in_progress 或 completed+success(cancelled/failure 不算接手)
+#        ③run-name 有標記時比對 market 且排除 dry=1
 cloud_run_count() {
   python3 - "$MARKET" <<'PY'
 import json, subprocess, sys, urllib.request, datetime
 market = sys.argv[1]
-d = datetime.datetime.now(datetime.timezone.utc)
-# 班次窗口起點同 watchdog shiftWindowStart:tw 班 22:00 UTC 起、us 班 11:00 UTC 起
-if market == "tw":
-    if d.hour < 22:
-        d -= datetime.timedelta(days=1)
-    start = d.replace(hour=22, minute=0, second=0, microsecond=0)
-else:
-    start = d.replace(hour=11, minute=0, second=0, microsecond=0)
+tz_tw = datetime.timezone(datetime.timedelta(hours=8))
+anchor = 4 if market == "tw" else 18
+start = (datetime.datetime.now(tz_tw)
+         .replace(hour=anchor, minute=0, second=0, microsecond=0)
+         .astimezone(datetime.timezone.utc))
 path = ("/repos/marketdaily/financial-daily-digest/actions/workflows/daily_digest.yml"
-        "/runs?per_page=5&created=%3E%3D" + start.strftime("%Y-%m-%dT%H:%M:%SZ"))
+        "/runs?per_page=10&created=%3E%3D" + start.strftime("%Y-%m-%dT%H:%M:%SZ"))
+
+def relevant(run):
+    title = f'{run.get("display_title") or ""} {run.get("name") or ""}'
+    if "market=" in title:
+        if f"market={market}" not in title and "market=both" not in title:
+            return False
+        if "dry=1" in title:
+            return False
+    st = run.get("status")
+    if st == "completed":
+        return run.get("conclusion") == "success"
+    return st in ("queued", "in_progress", "waiting", "pending", "requested")
+
 # 帳號被 flag 期間 repo 連未認證讀都 404,要先用 gh(帶認證);gh 不行再裸打
+data = None
 try:
     out = subprocess.run(["gh", "api", path], capture_output=True, timeout=30)
     if out.returncode == 0:
-        print(len(json.loads(out.stdout).get("workflow_runs", [])))
-        sys.exit(0)
+        data = json.loads(out.stdout)
 except Exception:
     pass
-try:
-    req = urllib.request.Request("https://api.github.com" + path, headers={
-        "User-Agent": "md-local-fallback", "Accept": "application/vnd.github+json"})
-    data = json.load(urllib.request.urlopen(req, timeout=20))
-    print(len(data.get("workflow_runs", [])))
-except Exception as e:
-    print(f"ERR {e}")
+if data is None:
+    try:
+        req = urllib.request.Request("https://api.github.com" + path, headers={
+            "User-Agent": "md-local-fallback", "Accept": "application/vnd.github+json"})
+        data = json.load(urllib.request.urlopen(req, timeout=20))
+    except Exception as e:
+        print(f"ERR {e}")
+        sys.exit(0)
+print(sum(1 for r in data.get("workflow_runs", []) if relevant(r)))
 PY
 }
 

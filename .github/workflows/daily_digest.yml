@@ -1,10 +1,16 @@
 name: 財經日報每日發布
+# run-name 標記是 winrig run.sh cloud_run_count 的機器可讀訊號(2026-07-28 雙發事故後加):
+# winrig 靠它分辨「哪個 market、是不是 dry-run」,別改格式。
+run-name: "財經日報每日發布 market=${{ inputs.market || 'tw' }} failover=${{ inputs.failover || '0' }} dry=${{ inputs.dry_run || '0' }}"
 
 # 2026-07-26 改為「純備援」(GitHub 帳號解封後 Actions 復活):
 #   winrig 是唯一日常發送者(cron 05:20/19:00 生成、07:00/20:00 寄)。本 workflow 只在
 #   winrig 缺席時由 digest-watchdog 派發(failover=1),或人工 dispatch 補救/驗證(dry_run=1)。
 #   marketdaily-digest-cron worker 的每日派發已停(crons=[]),防雙發。
-#   failover 模式有防雙發閘:公版存檔已存在(=winrig 其實寄了)→立即退出不重寄。
+#   failover 防雙發三層(2026-07-28 事故補強,單靠起跑閘擋不住「winrig 補班中途完成」):
+#     ①起跑閘(下方 guard step):公版存檔已在線上→立即退出
+#     ②main.py 寄出前終極閘(MD_FAILOVER=1):存檔上線→退場;winrig 心跳新鮮→輪詢等它交付
+#     ③winrig 端 run.sh cloud_run_count:偵測到本 workflow 排隊/執行中/已成功→讓位
 on:
   workflow_dispatch:
     inputs:
@@ -76,6 +82,8 @@ jobs:
           MARKETDAILY_INTERNAL_TOKEN: ${{ secrets.MARKETDAILY_INTERNAL_TOKEN }}
           MARKETDAILY_ALERT_TOKEN: ${{ secrets.MARKETDAILY_ALERT_TOKEN }}
           MARKET: ${{ github.event.inputs.market || 'tw' }}
+          # 寄出前終極防雙發閘(main.py _failover_send_clearance)只在備援模式武裝
+          MD_FAILOVER: ${{ github.event.inputs.failover || '0' }}
         run: |
           # 寄出死線與 winrig run.sh 對齊(過線寧可不寄,不發開盤後的盤前信)
           if [ "$MARKET" = "tw" ]; then export MD_SEND_DEADLINE_HM=0840; else export MD_SEND_DEADLINE_HM=2110; fi
@@ -88,8 +96,13 @@ jobs:
       # 寄信由上一步的 main.py 完成。這一步「只」把當日公版日報 + manifest commit 回 main,
       # 讓戰績 builder(weekly_track_record)checkout 時讀得到本機檔,不再依賴脆弱的 CDN 抓取。
       # 嚴格排除個人化日報(含訂閱者持股),不重寄信、不部署。
+      # continue-on-error:寄信在上一步已完成,這步只是存檔回寫;它 push 撞到 winrig 同時段
+      # commit 而 fail 時,不可把整個 run 標成 failure——winrig 的 cloud_run_count 以
+      # 「completed+success=雲端已代寄」判斷要不要讓位,run 結論必須反映寄信成敗而非存檔成敗
+      # (2026-07-28 實例:備援 run 寄出了信卻因 push race 標 failure)。
       - name: Persist public digest archive
         if: success() && env.SKIP_SEND != '1' && github.event.inputs.dry_run != '1'
+        continue-on-error: true
         run: |
           rm -f docs/output/*_personal_*.html
           git config user.name "marketdaily-bot"

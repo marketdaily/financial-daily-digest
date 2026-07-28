@@ -1027,6 +1027,8 @@ def _flush_outbox(outbox, date, send_fn, api_key):
         return 0
     sent_ok = 0
     _hold_until_send_time(MARKET)
+    if not _failover_send_clearance(MARKET, date):   # 雲端備援才有作用;winrig 已交付→整批不寄
+        return 0
     _enforce_send_deadline(MARKET)   # 補班才有作用;放在 hold 之後=用「真正要寄的那一刻」判定
     # MD_SUBJECT_NOTE:人工補寄修正版時標注主旨(例:「(更新版) 」),平常不設=無作用
     note = os.environ.get("MD_SUBJECT_NOTE", "")
@@ -1176,6 +1178,67 @@ def _alert_if_late(market, late_sec):
     _push_admin_alert(f"⏰ {label} 遲到 {late_min} 分鐘才寄出——生成拖過整點,照寄但要查慢因"
                       f"(近日 Gemini 429 全滅逐戶 fallback 是主嫌)。若為人工補寄可忽略。"
                       f"log: logs/fallback_*.log")
+
+
+def _failover_send_clearance(market, date):
+    """雲端備援(MD_FAILOVER=1)寄出前的防雙發終極閘(2026-07-28 事故)。
+
+    當天實況:winrig 補班正在跑但還沒寄完,watchdog 07:30 檢查公版存檔撲空→派發雲端備援;
+    備援 workflow 的起跑閘那一刻存檔也還沒上線→放行;40 分鐘生成後 08:06 直接開寄——
+    winrig 08:02 已寄出正常版,訂閱者一天收到兩封,第二封還是雲端弱模降級版。
+    起跑時的一次性檢查天生擋不住「winrig 在雲端生成期間交付完成」,裁決必須放在
+    「真正要寄的那一刻」:
+      公版存檔已上線 → winrig 已交付 → 退場不寄;
+      未上線但 winrig 心跳新鮮 → 它活著(多半補班中),每 60 秒重查等它交付,
+        等到=退場;拖到內容誠實死線前緣仍沒有 → winrig pipeline 卡死,由雲端代打;
+      心跳過期 → winrig 真缺席(斷電/當機),立刻代打。
+    winrig 本機從不設 MD_FAILOVER,行為零改變。回傳 False=本輪不得寄出。"""
+    if os.environ.get("MD_FAILOVER") != "1":
+        return True
+    import urllib.request
+    from zoneinfo import ZoneInfo
+    suffix = "_us" if market == "us" else ""
+    archive_url = f"https://marketdaily.ai/output/digest_{date}{suffix}.html"
+    status_url = "https://watchdog.marketdaily.ai/status"
+
+    def _archived():
+        try:
+            req = urllib.request.Request(archive_url, headers={"User-Agent": "md-failover-guard"})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                return resp.status == 200
+        except Exception:
+            return False
+
+    def _winrig_alive():
+        try:
+            req = urllib.request.Request(status_url, headers={"User-Agent": "md-failover-guard"})
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                hb = (json.load(resp) or {}).get("hb") or {}
+            return not hb.get("stale", True)
+        except Exception:
+            return True   # watchdog 看不到→假設 winrig 活著繼續等:寧可晚寄,不可重寄
+
+    raw = os.environ.get("MD_SEND_DEADLINE_HM", "").strip()
+    if not (raw.isdigit() and len(raw) == 4):
+        raw = "0840" if market == "tw" else "2110"
+    # 輪詢到死線前 8 分就得裁決:留時間給 21+ 封實際寄送,且不可撞 _enforce_send_deadline
+    cutoff_min = int(raw[:2]) * 60 + int(raw[2:]) - 8
+    while True:
+        if _archived():
+            msg = f"☁️ 雲端備援 {date} {market} 寄出前偵測到公版存檔已上線(winrig 已交付)→ 退場不重寄"
+            print(f"   {msg}")
+            _push_admin_alert(msg)
+            return False
+        if not _winrig_alive():
+            print("   ☁️ 備援閘:winrig 心跳過期(真缺席)→ 雲端代打寄出")
+            return True
+        now_tw = datetime.now(ZoneInfo("Asia/Taipei"))
+        if now_tw.hour * 60 + now_tw.minute >= cutoff_min:
+            _push_admin_alert(f"🟠 雲端備援 {date} {market}:winrig 心跳存活但日報遲未交付,"
+                              f"已到死線前緣({now_tw:%H:%M} TW)改由雲端代打。查 winrig 日報 pipeline。")
+            return True
+        print("   ☁️ 備援閘:winrig 存活且尚未交付,60 秒後重查(等它交付,不搶寄)")
+        time.sleep(60)
 
 
 def _enforce_send_deadline(market):
