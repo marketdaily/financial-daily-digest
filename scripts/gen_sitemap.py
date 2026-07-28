@@ -17,6 +17,7 @@ CORE = [
     ("/vs-chatgpt", "monthly", "0.8"),
     ("/vs", "monthly", "0.8"),
     ("/guide", "monthly", "0.7"),
+    ("/faq", "monthly", "0.6"),
     ("/about", "monthly", "0.5"),
     ("/contact", "monthly", "0.4"),
     ("/testimonials", "monthly", "0.5"),
