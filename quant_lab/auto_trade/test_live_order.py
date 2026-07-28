@@ -111,8 +111,9 @@ def main():
         api.update_status()
         st = trade.status.status
         print(f"   訂單狀態:{st}  單號:{getattr(trade.status,'id','?')}")
-        if str(st).lower() in ("failed", "cancelled") and "cancel" not in str(st).lower():
-            _die(f"下單被拒:{st}")
+        if "failed" in str(st).lower():
+            _die("下單被交易所拒絕(Failed,勿撤單)。最常見=99Q9 可委託金額不足(帳戶未入金/保證金不夠),"
+                 "其次=漲跌幅/時段問題;確切原因看 log 的 op_msg。入金後重跑。")
         print("④ 撤單…")
         api.cancel_order(trade)
         time.sleep(2)
