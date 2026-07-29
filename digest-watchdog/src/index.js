@@ -192,11 +192,20 @@ async function checkArchivePersistence(env, now = new Date()) {
     let stillThere;
     try { stillThere = await archiveExists(shift, date); }
     catch (e) { continue; }                                       // 查詢失敗→不誤報,下一跳再試
-    if (!stillThere) {
-      await kvSet(env, vanishKey, "1");
-      const label = shift === "tw" ? "早報" : "晚報";
-      await push(env, `🔴 ${label} ${date}:公版存檔【曾上線後又消失】(git 復原丟掉未推的存檔 commit,或誤部署覆蓋)→ marketdaily.ai 上該日報現在 404,信裡網頁版連結壞掉,需人工補存檔+部署`);
+    const pendingKey = `vanish_pending:${date}:${shift}`;
+    if (stillThere) {                                             // 存檔在→清掛號(單輪抖動自癒)
+      await env.USER_PREFS.delete(`watchdog:${pendingKey}`).catch(() => {});
+      continue;
     }
+    // debounce(2026-07-29 假警報:Pages 全站 deploy 傳播窗口會讓存檔 404 數分鐘):
+    // 第一輪先掛號,下一輪 */20 還缺才告警——真事故(git 丟 commit)不會自己回來,只晚 20 分。
+    if (!(await kvGet(env, pendingKey))) {
+      await kvSet(env, pendingKey, "1");
+      continue;
+    }
+    await kvSet(env, vanishKey, "1");
+    const label = shift === "tw" ? "早報" : "晚報";
+    await push(env, `🔴 ${label} ${date}:公版存檔【曾上線後又消失】(連兩輪確認,非部署傳播抖動;git 復原丟掉未推的存檔 commit,或誤部署覆蓋)→ marketdaily.ai 上該日報現在 404,信裡網頁版連結壞掉,需人工補存檔+部署`);
   }
 }
 
