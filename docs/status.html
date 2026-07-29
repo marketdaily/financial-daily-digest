@@ -31,6 +31,9 @@
   .st.ok{color:var(--ok)} .st.warn{color:var(--warn)} .st.bad{color:var(--bad)} .st.pend{color:var(--muted)}
   .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:20px}
   a{color:var(--indigo);text-decoration:none}
+  .sec{font-size:16px;font-weight:700;margin:26px 0 10px;letter-spacing:.4px}
+  .qnote{display:none;padding:10px 14px;border-radius:10px;margin-bottom:10px;font-size:13px;
+         background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.4);color:#fca5a5}
 </style>
 </head>
 <body>
@@ -42,6 +45,9 @@
     <b id="ov-text">檢查中…</b>
   </div>
   <div id="cards"></div>
+  <h2 class="sec" id="q-h2"></h2>
+  <div class="qnote" id="q-note"></div>
+  <div id="q-cards"></div>
   <div class="foot"><span id="foot-last">最後檢查:</span><span id="ts">—</span> · <a href="/" id="foot-home">回首頁</a></div>
 </div>
 <script>
@@ -158,7 +164,111 @@ async function runAll(){
   const d = new Date();
   document.getElementById("ts").textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
-runAll(); setInterval(runAll, 60000);
+// ── 🛡 品質戰情室(品質監察部,2026-07-29 組織化)──
+// 資料源①watchdog /status(雲端外部視角,winrig 死也活著)②/data/quality.json(winrig 彙整,
+// build_quality_board.py 產出,只含彙整數字/enum)。winrig 心跳 stale → 本地資料視為凍結,整段示警。
+const QT = {
+  zh: {
+    title:"🛡 品質戰情室(品質監察部)",
+    frozen:"⚠️ winrig 心跳過期——以下本地防線資料可能已凍結(watchdog 外部視角仍為即時)",
+    cards:{
+      wd:{name:"雲端守望 watchdog", desc:"存檔上線+winrig 心跳(外部視角)"},
+      gate:{name:"寄前品質閘", desc:"audit 失分/確定性備援"},
+      time:{name:"班次準時度", desc:"07:00/20:00 整點交付"},
+      heal:{name:"寄後自癒+複檢", desc:"selfheal 裁決/postcheck"},
+      scan:{name:"站點巡檢", desc:"site_scan 每朝掃描"},
+    },
+    v:{on_time:"準時",late:"遲到",degenerate_429:"429退化",skipped:"跳過",incomplete:"未完成"},
+    sh:{none:"無需修",apply:"已自動修",blocked_scope:"修被擋(scope)",blocked_tests:"修被擋(測試)"},
+    nodata:"今日尚無資料", noconn:"無法連線", killsw:"⚠ kill-switch 啟用中",
+    gateNote:(a,top)=>`${a.date} 失分 ${a.audit_failed}/${a.total_subscribers} · 備援 ${a.fallback}`+(top?` · top:${top}`:""),
+    scanNote:(sc)=>`${sc.date} fail ${sc.fails}`+(sc.fixed_in_place?` (首掃 ${sc.first_scan_fails}→已自動修)`:""),
+  },
+  en: {
+    title:"🛡 Quality War Room (QA Dept.)",
+    frozen:"⚠️ winrig heartbeat stale — local defense data below may be frozen (watchdog view stays live)",
+    cards:{
+      wd:{name:"Cloud watchdog", desc:"archive + winrig heartbeat (external view)"},
+      gate:{name:"Pre-send quality gate", desc:"audit fails / deterministic fallbacks"},
+      time:{name:"Shift punctuality", desc:"07:00/20:00 on-the-hour delivery"},
+      heal:{name:"Post-send selfheal + recheck", desc:"selfheal verdict / postcheck"},
+      scan:{name:"Site scan", desc:"daily site_scan sweep"},
+    },
+    v:{on_time:"on time",late:"late",degenerate_429:"429 degraded",skipped:"skipped",incomplete:"incomplete"},
+    sh:{none:"nothing to fix",apply:"auto-fixed",blocked_scope:"fix blocked (scope)",blocked_tests:"fix blocked (tests)"},
+    nodata:"no data yet today", noconn:"unreachable", killsw:"⚠ kill-switch ON",
+    gateNote:(a,top)=>`${a.date} fails ${a.audit_failed}/${a.total_subscribers} · fallback ${a.fallback}`+(top?` · top:${top}`:""),
+    scanNote:(sc)=>`${sc.date} fails ${sc.fails}`+(sc.fixed_in_place?` (1st scan ${sc.first_scan_fails} → auto-fixed)`:""),
+  },
+}[LANG];
+document.getElementById("q-h2").textContent = QT.title;
+
+function qCard(box, key){
+  const el = document.createElement("div"); el.className="card";
+  el.innerHTML = `<span class="dot pend"></span><div class="meta">
+    <div class="name">${QT.cards[key].name}</div><div class="desc">${QT.cards[key].desc}</div></div>
+    <span class="st pend">${T.checking_st}</span>`;
+  box.appendChild(el);
+  return (state, note)=>{
+    el.querySelector(".dot").className = "dot "+state;
+    const st = el.querySelector(".st"); st.className="st "+state;
+    st.textContent = T.st[state] || "—";
+    if(note) el.querySelector(".desc").textContent = note;
+  };
+}
+
+async function runQuality(){
+  const box = document.getElementById("q-cards"); box.innerHTML = "";
+  const set = {wd:qCard(box,"wd"), gate:qCard(box,"gate"), time:qCard(box,"time"),
+               heal:qCard(box,"heal"), scan:qCard(box,"scan")};
+  const [wdR, qR] = await Promise.allSettled([
+    fetch("https://watchdog.marketdaily.ai/status",{cache:"no-store"}).then(r=>r.json()),
+    fetch("/data/quality.json?t="+Date.now(),{cache:"no-store"}).then(r=>r.json()),
+  ]);
+  let frozen = false;
+  if(wdR.status==="fulfilled"){
+    const w = wdR.value, arc = s => (w[s]&&w[s].skipped) ? "—" : (w[s]&&w[s].archived ? "✓" : "✗");
+    const hbTxt = w.hb.ageMin==null ? "?" : w.hb.ageMin+"m";
+    frozen = !!w.hb.stale;
+    const missing = ["tw","us"].some(s => w[s] && !w[s].skipped && !w[s].archived && !w[s].error);
+    set.wd(w.hb.stale ? "bad" : (missing ? "warn" : "ok"),
+           `TW ${arc("tw")} · US ${arc("us")} · HB ${hbTxt}`);
+  } else set.wd("bad", QT.noconn);
+  document.getElementById("q-note").style.display = frozen ? "block" : "none";
+  document.getElementById("q-note").textContent = QT.frozen;
+  if(qR.status!=="fulfilled"){
+    set.gate("warn", QT.noconn); set.time("warn", QT.noconn);
+    set.heal("warn", QT.noconn); set.scan("warn", QT.noconn);
+    return;
+  }
+  const q = qR.value, soft = s => frozen ? "warn" : s;
+  const a = q.digest && q.digest.audit;
+  if(a){
+    const top = Object.keys(a.per_check||{})[0];
+    const bad = a.fallback>0 || (a.total_subscribers>0 && a.audit_failed/a.total_subscribers>0.5);
+    set.gate(soft(bad ? "warn" : "ok"), QT.gateNote(a, top));
+  } else set.gate(soft("warn"), QT.nodata);
+  const today = (q.digest && q.digest.shifts || []).filter(s=>s.date===q.date);
+  if(today.length){
+    const txt = today.map(s=>`${s.market} ${QT.v[s.verdict]||s.verdict}${s.lateness_min>2?`(+${Math.round(s.lateness_min)}m)`:""}`).join(" · ");
+    const worstBad = today.some(s=>["late","degenerate_429","incomplete"].includes(s.verdict));
+    set.time(soft(worstBad ? "warn" : "ok"), txt);
+  } else set.time(soft("warn"), QT.nodata);
+  const shTxt = ["tw","us"].map(ed=>{
+    const v = q.selfheal && q.selfheal[ed];
+    return `${ed}:${v ? (QT.sh[v]||v) : "—"}/pc:${q.postcheck && q.postcheck[ed]!=null ? q.postcheck[ed] : "—"}`;
+  }).join(" · ");
+  const healBad = ["tw","us"].some(ed=>(q.postcheck&&q.postcheck[ed]!=null&&q.postcheck[ed]!==0) ||
+                                        (q.selfheal&&String(q.selfheal[ed]||"").startsWith("blocked")));
+  set.heal(soft(healBad ? "warn" : "ok"), (q.selfheal&&q.selfheal.disabled ? QT.killsw+" · " : "") + shTxt);
+  const sc = q.sitescan;
+  if(sc && sc.fails!=null){
+    set.scan(soft(sc.fails>0 ? "warn" : "ok"), QT.scanNote(sc));
+  } else set.scan(soft("warn"), sc ? `${sc.date} ?` : QT.nodata);
+}
+
+function tick(){ runAll(); runQuality(); }
+tick(); setInterval(tick, 60000);
 </script>
 </body>
 </html>

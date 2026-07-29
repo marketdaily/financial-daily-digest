@@ -1,0 +1,157 @@
+{
+ "date": "2026-07-29",
+ "digest": {
+  "audit": {
+   "date": "2026-07-29",
+   "total_subscribers": 21,
+   "audit_failed": 11,
+   "fallback": 0,
+   "personalization_failed": 0,
+   "per_check": {
+    "us_tonight_action_missing": 11,
+    "verdict_monoculture": 1
+   }
+  },
+  "trend": [
+   {
+    "date": "2026-07-20",
+    "audit_failed": 1,
+    "fallback": 0,
+    "total": 16
+   },
+   {
+    "date": "2026-07-22",
+    "audit_failed": 2,
+    "fallback": 0,
+    "total": 17
+   },
+   {
+    "date": "2026-07-23",
+    "audit_failed": 1,
+    "fallback": 0,
+    "total": 17
+   },
+   {
+    "date": "2026-07-24",
+    "audit_failed": 2,
+    "fallback": 0,
+    "total": 18
+   },
+   {
+    "date": "2026-07-27",
+    "audit_failed": 11,
+    "fallback": 1,
+    "total": 21
+   },
+   {
+    "date": "2026-07-28",
+    "audit_failed": 7,
+    "fallback": 2,
+    "total": 21
+   },
+   {
+    "date": "2026-07-29",
+    "audit_failed": 11,
+    "fallback": 0,
+    "total": 21
+   }
+  ],
+  "shifts": [
+   {
+    "date": "2026-07-27",
+    "market": "us",
+    "start": "19:00:01",
+    "done": "20:00:31",
+    "lateness_min": 0.5,
+    "verdict": "on_time",
+    "llm_tiers": {
+     "gemini": 19,
+     "groq_free": 17,
+     "cf_free": 30,
+     "local_last_resort": 1
+    }
+   },
+   {
+    "date": "2026-07-28",
+    "market": "tw",
+    "start": "05:20:01",
+    "done": null,
+    "lateness_min": null,
+    "verdict": "incomplete",
+    "llm_tiers": {}
+   },
+   {
+    "date": "2026-07-28",
+    "market": "tw",
+    "start": "06:50:00",
+    "done": "08:02:36",
+    "lateness_min": 62.6,
+    "verdict": "late",
+    "llm_tiers": {
+     "gemini": 3,
+     "cf_free": 82,
+     "groq_free": 11
+    }
+   },
+   {
+    "date": "2026-07-28",
+    "market": "us",
+    "start": "19:00:01",
+    "done": "20:00:30",
+    "lateness_min": 0.5,
+    "verdict": "on_time",
+    "llm_tiers": {
+     "gemini": 21,
+     "cf_free": 66
+    }
+   },
+   {
+    "date": "2026-07-29",
+    "market": "tw",
+    "start": "05:20:01",
+    "done": "07:00:40",
+    "lateness_min": 0.7,
+    "verdict": "on_time",
+    "llm_tiers": {
+     "gemini": 4,
+     "groq_free": 2,
+     "cf_free": 87
+    }
+   },
+   {
+    "date": "2026-07-29",
+    "market": "us",
+    "start": "19:00:01",
+    "done": "20:00:31",
+    "lateness_min": 0.5,
+    "verdict": "on_time",
+    "llm_tiers": {
+     "gemini": 22,
+     "cf_free": 36
+    }
+   }
+  ]
+ },
+ "selfheal": {
+  "tw": "none",
+  "us": null,
+  "disabled": false
+ },
+ "postcheck": {
+  "tw": 0,
+  "us": 0
+ },
+ "sitescan": {
+  "date": "2026-07-29",
+  "fails": 0,
+  "first_scan_fails": null,
+  "fixed_in_place": false
+ },
+ "flags": {
+  "hb_miss_tw": false,
+  "hb_miss_us": false,
+  "guard_alert_tw": true,
+  "guard_alert_us": true
+ },
+ "generated_utc": "2026-07-29T13:27:06Z"
+}

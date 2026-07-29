@@ -92,12 +92,14 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 | `review` | 審查 Pull Request |
 | `security-review` | 執行安全性審查 |
 
-### 自訂技能（Delvin Custom Skills）— 127 個
+### 自訂技能（Delvin Custom Skills）— 128 個
 位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
 **完整目錄（每個 skill 一行中文用途）→ 同目錄 `CATALOG.md`；重疊裁決/任務唯一路徑 → `GOVERNANCE.md`（挑 skill 前先查）**
 
+**🏢 公司組織（2026-07-29 老闆拍板）**：整個 Claude 系統=一家公司,老闆=Delvin,13 部門 hub 在記憶庫 `dept_*.md`(中心=dept_ceo_office 董事長室,Obsidian graph 橘色層);新資產入庫要歸部門。品質戰情頁=status.html+quality.json。
+
 分類速查（只列名，說明見 CATALOG.md；⚠️=退役或 Mac-only）：
-- **MarketDaily 營運**：workflow（日報pipeline）、site-doctor（全站巡檢必跑）、ui-ux-pro-max（含品牌設計系統）、claude-design、email-marketing-bible、growth-strategy、referral-program、pricing-strategy、landing-page-copy、ab-test-analyzer、sales-funnel-planner、sales-funnel-optimizer
+- **MarketDaily 營運**：workflow（日報pipeline）、site-doctor（全站巡檢必跑）、ui-ux-pro-max（含品牌設計系統）、claude-design、email-marketing-bible、growth-strategy、referral-program、pricing-strategy、landing-page-copy、ab-test-analyzer、sales-funnel-planner、sales-funnel-optimizer、legal-compliance（⚖️法務長:上線前合規審查唯一路徑）
 - **行銷鏈（「Marketing Agents」＝五連跑，順序不可跳）**：spy → competitive-ads-extractor → bulk-creative → ads-score → ads-meta（2026-07-06 起每週日 10:00 TW 由 `~/.marketdaily-fallback/marketing_agents_weekly.sh` 全自動跑：生成＋獨立驗證者核可＋入佇列，見 `marketing/CLAUDE.md`）
 - **內容/創作**：content-engine、crosspost、content-repurposing、content-refresh、content-research-writer、brand-voice-amplifier（⚠️enhancer 退役）、podcast-outline、video-style、video-editing、story-script、youtube-summarizer、article-extractor
 - **交易/量化**：quant-math（下注前必算）、backtest-validation（上實盤前必驗）、stock-analyzer、invest-skill、dcf-valuation、tw-financial-analysis、tw-stock-agent、tw-stock-scraper、trading-skills-pro、trade-bot、tradingagents、ccxt、finrobot（參考）、pm-mispricing、portfolio-optimization、regime-detection、order-execution、options-strategy-advisor、position-sizer、vcp-screener、market-breadth-analyzer、macro-regime-detector、institutional-flow-tracker、stanley-druckenmiller-investment、ai-trader、intel-signal-lookup（查`~/Delvin-agent/intel/`信息差引擎,免費層替代13F/insider）；edge 鏈：edge-pipeline-orchestrator → edge-signal-aggregator → edge-strategy-designer → signal-postmortem

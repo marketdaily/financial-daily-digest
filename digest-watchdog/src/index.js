@@ -258,7 +258,8 @@ export default {
       const ageMin = raw ? Math.round((Date.now() - Number(raw)) / 60000) : null;
       const stRaw = await env.USER_PREFS.get("watchdog:hb_state");
       out.hb = { ageMin, stale: !raw || ageMin > HB_STALE_MIN, state: stRaw ? JSON.parse(stRaw) : null };
-      return new Response(JSON.stringify(out, null, 2), { headers: { "content-type": "application/json" } });
+      // CORS:status.html(品質戰情室)跨網域直拉;唯讀無敏感資料
+      return new Response(JSON.stringify(out, null, 2), { headers: { "content-type": "application/json", "access-control-allow-origin": "https://marketdaily.ai" } });
     }
     return new Response(JSON.stringify({
       ok: true, service: "marketdaily-digest-watchdog", mode: "dead-man v3(心跳+存檔新鮮度)",
