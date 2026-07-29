@@ -676,13 +676,19 @@ def call_claude(system: str, user: str, max_tokens: int = 2000) -> str:
                     data=json.dumps({
                         "systemInstruction": {"parts": [{"text": system}]},
                         "contents": [{"parts": [{"text": user}]}],
-                        "generationConfig": {"temperature": 0.4, "maxOutputTokens": max_tokens},
+                        # gemini-2.5 系預設開 thinking,思考 token 吃 maxOutputTokens 額度 →
+                        # 輸出被 MAX_TOKENS 截成殘章(2026-07-27 2308 法說文事故)。關掉。
+                        "generationConfig": {"temperature": 0.4, "maxOutputTokens": max_tokens,
+                                             "thinkingConfig": {"thinkingBudget": 0}},
                     }).encode(),
                     headers={"content-type": "application/json"},
                 )
                 with urllib.request.urlopen(req, timeout=90) as r:
                     data = json.loads(r.read())
-                return data["candidates"][0]["content"]["parts"][0]["text"].strip()
+                cand = data["candidates"][0]
+                if cand.get("finishReason") == "MAX_TOKENS":
+                    raise RuntimeError(f"{model} output truncated (MAX_TOKENS)")
+                return cand["content"]["parts"][0]["text"].strip()
             except Exception as e:
                 last = e
     raise RuntimeError(f"gemini free chain failed: {last}")
@@ -1709,9 +1715,20 @@ def _breadcrumb_schema(title: str) -> dict:
     }
 
 
+THIN_FLOOR = 1600  # 與 content_seo audit C1 同地板(display-width,CJK=2/ASCII=1)
+
+def _body_display_width(body_html: str) -> int:
+    txt = re.sub(r"<[^>]+>", " ", body_html)
+    txt = re.sub(r"\s+", "", txt)
+    return sum(2 if ord(c) > 0x2E7F else 1 for c in txt)
+
+
 def write_article(art: dict, dry: bool) -> Path:
     slug = art["slug"]
     fname = BLOG_DIR / f"{slug}.html"
+    w = _body_display_width(art["body_html"])
+    if w < THIN_FLOOR:
+        raise RuntimeError(f"thin body(display-width {w} < {THIN_FLOOR}),拒發殘章")
     if art["market"] == "term":
         template_desc = f"{art['name']} — MarketDaily 投資知識整理。"
     elif art["market"] == "macro":
