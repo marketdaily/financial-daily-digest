@@ -31,6 +31,7 @@ SOURCE_MEANING = {
     "us_analyst": {"label": "美股分析師評等/目標價異動", "action": "升評/上調目標價=情緒轉多;降評/下修=情緒轉空", "direction": "sentiment"},
     "us_insider": {"label": "美股內部人交易(Form 4)", "action": "群聚買進=高層信心訊號可跟;大額賣出需排除10b5-1常規計畫雜訊", "direction": "conviction"},
     "us_8k": {"label": "美股8-K重大事件", "action": "破產/下市/會計師異動/財報重編=高風險立即警示避開;董事高層異動需個案判斷方向(item編號不分離職/新任)", "direction": "risk_flag"},
+    "us_congress": {"label": "美國會議員交易揭露", "action": "群聚/大額買進=立法資訊優勢者的信心訊號可跟;注意揭露依法可遲至45天,非即時", "direction": "conviction"},
     "margin": {"label": "台股融資融券", "action": "融資暴增=散戶追高過熱風險;搭配法人動向看背離(法人賣+散戶買=警訊)", "direction": "contrarian_risk"},
     "sbl": {"label": "台股借券賣出餘額", "action": "餘額遽減=機構回補(偏多);遽增=機構加碼放空(偏空)", "direction": "contrarian_risk"},
     "holders": {"label": "集保戶股權分散(千張大戶)", "action": "大戶持股比週增=籌碼集中偏多;週減=大戶出脫偏空", "direction": "trend_follow"},

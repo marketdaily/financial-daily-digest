@@ -18,7 +18,7 @@ ROOT = os.path.dirname(HERE)
 CBDIR = os.path.join(ROOT, "cb_analyzer")
 BRIEFS = os.path.join(HERE, "briefs")
 
-from intel import tw_institutional, mops_watch, us_analyst, us_insider, us_8k_events, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals, signal_ledger, us_13f_ledger, tw_financials, tw_leadflow, tw_analyst_ratings, tw_broker_calls, tw_rank_scanner
+from intel import tw_institutional, mops_watch, us_analyst, us_insider, us_8k_events, tw_margin, tw_sbl, tw_holders, tw_investor_conf, tw_investor_materials, tw_surveillance, tw_fsc, us_sec_regulatory, news_signals, signal_ledger, us_13f_ledger, tw_financials, tw_leadflow, tw_analyst_ratings, tw_broker_calls, tw_rank_scanner, us_congress_trades, gold_macro
 # confluence 刻意【不】在此 import——改在 confluence_section 內 lazy import,
 # 讓 confluence.py 萬一 import-time 壞掉也只降級成 fallback 段,不會整個 patrol 崩掉害 latest.json 沒產出餓死日報(驗證者 LOW-1)。
 
@@ -197,6 +197,16 @@ def run():
     except Exception as e:
         print(f"tw_rank_scanner 判讀失敗(不擋巡邏):{e}")
         rank_data = []
+    try:
+        congress_data = us_congress_trades.scan(sorted(us_insider.build_watchlist()))  # 內建源新鮮度守衛,快取凍結時自動回空
+    except Exception as e:
+        print(f"us_congress_trades 掃描失敗(不擋巡邏):{e}")
+        congress_data = {}
+    try:
+        gold_sig = gold_macro.market_signal()  # 市場級非個股,每日 1 call 記 ledger
+    except Exception as e:
+        print(f"gold_macro 判讀失敗(不擋巡邏):{e}")
+        gold_sig = None
 
     snap = _cb_snapshot()
     snap_ok = snap.returncode == 0 and "snapshot ok" in (snap.stdout or "")
@@ -237,6 +247,10 @@ def run():
     for s in us_8k_sigs:
         line = us_8k_events.format_line(s)
         _emit(s["symbol"], s["level"], line, "us_8k")
+    for sym, s in congress_data.items():
+        if s["level"] in ("plain", "unknown"):
+            continue
+        _emit(sym, s["level"], f"🏛️ {sym} {s['signal']}", "us_congress")
     for s in rank_data:
         _emit(s["code"], s["level"], s["signal"], "tw_rank")
     for c in codes:
@@ -304,7 +318,7 @@ def run():
 
     os.makedirs(BRIEFS, exist_ok=True)
     md = [f"# 信息差簡報 {today}", ""]
-    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|美股8-K重大事件 {len(us_8k_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔|美股SEC行政程序 {len(sec_enf)} 檔|美股規則變化 {len(sec_rules)} 則|新聞事件(美){len(news_us)} 檔|新聞事件(台){len(news_tw)} 檔|市場級主題 {len(news_broad)} 則|美股13F機構持股 {len(us13f_data)} 檔|台股財報結構化 {len(tw_fin_data)} 檔|先行異動雷達 {len(leadflow_data)} 檔|台股共識評等 {len(ratings_tw)} 則|券商喊單 {len(broker_calls)} 檔")
+    md.append(f"watchlist {len(codes)} 檔|法人資料 {len(inst)} 檔|重訊 {len(news)} 則|營收新公告 {len(revs)} 檔|美股分析師動向 {len(us_sigs)} 則|美股內部人交易 {len(us_insider_sigs)} 則|美股8-K重大事件 {len(us_8k_sigs)} 則|融資券 {len(marg)} 檔|借券賣出 {len(sbl_data)} 檔|股權分散 {len(holder_data)} 檔|法說會排程 {len(conf_data)} 檔|監理注意/處置 {len(surv_data)} 檔|金管會裁罰 {len(fsc_data)} 檔|美股SEC行政程序 {len(sec_enf)} 檔|美股規則變化 {len(sec_rules)} 則|新聞事件(美){len(news_us)} 檔|新聞事件(台){len(news_tw)} 檔|市場級主題 {len(news_broad)} 則|美股13F機構持股 {len(us13f_data)} 檔|台股財報結構化 {len(tw_fin_data)} 檔|先行異動雷達 {len(leadflow_data)} 檔|台股共識評等 {len(ratings_tw)} 則|券商喊單 {len(broker_calls)} 檔|國會交易 {len(congress_data)} 檔|黃金宏觀 {'✓' if gold_sig else '—'}")
     md.append("")
     md.append(confluence_section(by_code))
     md.append("")
@@ -319,6 +333,8 @@ def run():
     md.append("")
     md.append("## 🌐 市場級主題(政治/總經,近1.5日非個股)" if news_broad else "## 🌐 市場級主題:近1.5日無")
     md += [f"- {news_signals.format_broad_line(b)}" for b in news_broad]
+    if gold_sig:
+        md.append(f"- 🥇 {gold_sig['signal']}" + ("" if gold_sig["level"] == "plain" else f"({'🔴' if gold_sig['level'] == 'red' else '🟡'})"))
     md.append("")
     md.append("## 📒 回測帳本(CB 預測記分)")
     md.append(f"- 每日快照:{'✅' if snap_ok else '❌ ' + (snap.stderr or '')[-120:]}")
@@ -345,6 +361,7 @@ def run():
               "watchlist_n": len(codes), "by_code": by_code,
               "new_red_since_last_run": new_red_lines, "new_red_count": len(new_pairs),
               "sec_rule_changes": sec_rules, "news_broad_themes": news_broad,
+              "gold_macro": gold_sig,
               "signal_ledger_new": n_new_ledger}
     with open(os.path.join(BRIEFS, "latest.json"), "w", encoding="utf-8") as f:
         json.dump(latest, f, ensure_ascii=False, indent=1)

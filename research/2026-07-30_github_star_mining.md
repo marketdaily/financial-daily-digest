@@ -21,7 +21,13 @@
 - mattpocock 的 `to-tickets`（dispatch 骨架重疊）、`git-guardrails`（會擋 git push，與自動化管線相衝；但「PreToolUse 擋 `reset --hard`/`clean -f`/`branch -D`」的點子已記入下方提案）
 - ECC 25 skills / anthropics 官方 / trading-skills 11 個 — **2026-05-30 已搬過**，Karpathy CLAUDE.md 模式 07-14 已學
 
-## 情報：public-apis（453k★）金融區新源候選（待建連接器評估）
+## 情報：public-apis（453k★）金融區新源 → **已當場建成 2 連接器**（07-30 親令：挖到就蓋路，自主學習鋪平）
+
+- ✅ `intel/us_congress_trades.py` — 國會議員交易（CongressInvests 實測免 key）；classify 真實資料開火 18 檔含群聚 red；**內建殭屍源守衛當天就攔下凍結快取**（免費快取凍在 06-01）。patrol/query 已接線，自測過。
+- ✅ `intel/gold_macro.py` — 黃金避險溫度計（goldprice.dev 匿名層），ledger 首日入帳 $4,041。patrol 市場級段已接線，自測過。
+- 🔜 鋪平工單已進 `~/autonomous/backlog.md`（congress key/官方源、Dino/EconPulse/BriefTape 評估、gold 門檻校準）。
+
+### 原始候選表（存檔）
 | API | 內容 | Auth | 對位 |
 |---|---|---|---|
 | CongressInvests | 美國會議員交易揭露（Senate EFD + House Clerk 即時） | apiKey | 與 us_13f/us_insider 互補的獨立訊號 |
