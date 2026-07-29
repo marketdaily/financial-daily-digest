@@ -60,7 +60,8 @@ const research = await agent(
 2. 用 .venv/bin/python(沒有就 python3)跑 ${CAP}/spy.py 的 spy_report(),結果以 JSON 覆寫 ${CAP}/latest_spy_report.json。spy 失敗最多修一次,再失敗就沿用既有檔案並回報 spy_stale=true(不可因 spy 掛掉就整批不產)。
 3. 讀 ${CAP}/RUNBOOK.md、marketing/CLAUDE.md、docs/pricing.html、docs/data/track-record.json(當下現值)。
 4. 讀 marketing/COMPETITOR_CONTENT_SWIPE.md(三大 AI IG 帳號 @aipagedaily/@getintoai/@evolving.ai 拆解:選題三桶=錢/工作衝擊·名人擂台·獵奇科技、Hook 公式、可搬 AI 神用法),挑當前最能對接我們金融×AI 利基的角度餵給創作代理。
-5. 產出給創作代理的研究簡報 brief(競品在打什麼/我們的差異化彈藥/當前方案與排程事實/可用的真實賣點),800 字內。`,
+5. 讀 marketing/social_out/engagement_summary.json(若存在):近 14 天 IG 實際成效(各內容型 n/avg_reach/avg_likes/avg_comments、top/bottom_by_reach)。把「哪類型式實際有人看/全軍覆沒」寫進簡報,給創作代理 1-2 句成效導向指引;檔案不存在或數字全缺就明寫「無成效資料」,不准腦補數字。
+6. 產出給創作代理的研究簡報 brief(競品在打什麼/我們的差異化彈藥/當前方案與排程事實/可用的真實賣點),800 字內。`,
   { label: 'research', schema: RESEARCH_SCHEMA }
 )
 
