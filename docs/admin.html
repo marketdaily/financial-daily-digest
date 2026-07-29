@@ -561,6 +561,9 @@ body {
         <button class="sb-item" onclick="nav('ops',this)">
           <span class="sb-icon">◉</span> 營運監控 <span class="sb-badge" id="badge-ops"></span>
         </button>
+        <button class="sb-item" onclick="nav('alerts',this)">
+          <span class="sb-icon">⚑</span> 系統告警
+        </button>
         <button class="sb-item" onclick="nav('analytics',this)">
           <span class="sb-icon">◔</span> 數據分析
         </button>
@@ -869,6 +872,20 @@ body {
       </div>
 
       <!-- ── Audit log ── -->
+      <!-- ── System Alerts ── -->
+      <div id="sec-alerts" class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">系統告警</div>
+            <div class="section-desc">所有 admin 推播的完整歷史（日報 pipeline / 永豐 auto_trade 複檢 / watchdog / 政壇訊號 / 供應鏈）—— 錯過推播也看得到，最近 200 則，保留 90 天</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="loadAdminEvents()">↻ 重新整理</button>
+        </div>
+        <div class="card">
+          <div class="tbl-wrap" id="alerts-content"><div class="empty-state">載入中…</div></div>
+        </div>
+      </div>
+
       <div id="sec-audit" class="section">
         <div class="section-header">
           <div>
@@ -1180,6 +1197,7 @@ function closeSidebar(){ document.getElementById("sidebar").classList.remove("op
 const SECTION_TITLES = {
   overview:    ["總覽","全平台關鍵指標監控"],
   ops:         ["營運監控","日報產生數 / 排程狀態 / 系統健康"],
+  alerts:      ["系統告警","admin 推播完整歷史（含永豐 auto_trade / watchdog）"],
   email:       ["寄信成效","Brevo 送達 / 開信 / 退信"],
   audit:       ["稽核記錄","管理員操作軌跡"],
   analytics:   ["數據分析","30 日 UTM 歸因分析"],
@@ -1208,6 +1226,7 @@ function nav(id, btn) {
   if (id === "ops") loadOps();
   if (id === "email") loadEmailStats();
   if (id === "audit") loadAudit();
+  if (id === "alerts") loadAdminEvents();
 }
 
 // ── 模擬跟單淨值(內部指標) ──
@@ -1806,6 +1825,25 @@ async function loadAudit(force) {
       }).join("") + `</tbody></table>`;
   } catch {
     el.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>無法載入稽核記錄</div>`;
+  }
+}
+
+async function loadAdminEvents() {
+  const el = document.getElementById("alerts-content");
+  try {
+    const d = await api("/admin/events");
+    const events = d.events || [];
+    if (!events.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">🔕</div>尚無告警記錄（部署後的新推播才會落地）</div>`; return; }
+    el.innerHTML = `<table class="dtable"><thead><tr><th style="white-space:nowrap">時間</th><th>來源</th><th>內容</th><th>推播</th></tr></thead><tbody>` +
+      events.map(ev => {
+        const when = ev.ts ? new Date(ev.ts).toLocaleString("zh-TW",{timeZone:"Asia/Taipei",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
+        return `<tr><td class="mono" style="white-space:nowrap">${when}</td>` +
+          `<td><span class="badge">${esc(ev.title || "—")}</span></td>` +
+          `<td style="white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;max-width:560px">${esc(ev.body || "")}</td>` +
+          `<td style="text-align:center">${ev.pushed ? "✅" : `<span title="推播未送達（無訂閱裝置或全部失敗）">⚠️</span>`}</td></tr>`;
+      }).join("") + `</tbody></table>`;
+  } catch {
+    el.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>無法載入告警記錄</div>`;
   }
 }
 

@@ -840,6 +840,17 @@ export default {
       return json({ config: raw ? JSON.parse(raw) : null });
     }
 
+    // Admin:系統告警歷史(alert-worker webPushAdmin 每次推播落的 KV admin_events,
+    // 含 MarketDaily 告警/永豐 auto_trade 複檢/政壇訊號/供應鏈彙總;最近 200 則,90 天)
+    if (url.pathname === "/admin/events" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      let events = [];
+      try { const raw = await env.USER_PREFS.get("admin_events"); if (raw) events = JSON.parse(raw); } catch {}
+      return json({ events: Array.isArray(events) ? events : [] });
+    }
+
     // Save admin global config
     if (url.pathname === "/admin/save-config" && request.method === "POST") {
       let body;

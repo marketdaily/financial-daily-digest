@@ -595,18 +595,42 @@ async function recordAlertInbox(env, email, record) {
   } catch {}
 }
 
-// 對 admin 的所有裝置發 web push(讀 pushsub:${ADMIN_EMAIL} 陣列),回傳是否至少一台成功
-async function webPushAdmin(env, payloadStr) {
-  if (!env.ADMIN_EMAIL) return false;
+// 每次 admin 推播同步落 KV admin_events(最近 200 則,滾動 90 天),後台「系統告警」頁讀。
+// 推播失敗/無訂閱也照樣留痕:歷史不依賴推播當下有沒有看到(admin.html /admin/events)。
+// fullBody:admin-line-push 的完整訊息(push body 截 300 字,歷史留全文)。
+async function recordAdminEvent(env, payloadStr, pushed, fullBody) {
   try {
-    const raw = await env.USER_PREFS.get(`pushsub:${env.ADMIN_EMAIL}`);
-    if (!raw) return false;
-    const p = JSON.parse(raw);
-    const subs = Array.isArray(p) ? p : [p];
-    let ok = false;
-    for (const sub of subs) { const wr = await webPush(env, sub, payloadStr); if (wr.ok) ok = true; }
-    return ok;
-  } catch { return false; }
+    let p = {};
+    try { p = JSON.parse(payloadStr) || {}; } catch {}
+    let list = [];
+    const raw = await env.USER_PREFS.get("admin_events");
+    if (raw) { try { list = JSON.parse(raw); } catch {} }
+    if (!Array.isArray(list)) list = [];
+    list.unshift({
+      ts: Date.now(),
+      title: String(p.title || "").slice(0, 120),
+      body: String(fullBody || p.body || "").slice(0, 2000),
+      pushed: !!pushed,
+    });
+    await env.USER_PREFS.put("admin_events", JSON.stringify(list.slice(0, 200)), { expirationTtl: 90 * 24 * 3600 });
+  } catch {}
+}
+
+// 對 admin 的所有裝置發 web push(讀 pushsub:${ADMIN_EMAIL} 陣列),回傳是否至少一台成功
+async function webPushAdmin(env, payloadStr, fullBody) {
+  let ok = false;
+  try {
+    if (env.ADMIN_EMAIL) {
+      const raw = await env.USER_PREFS.get(`pushsub:${env.ADMIN_EMAIL}`);
+      if (raw) {
+        const p = JSON.parse(raw);
+        const subs = Array.isArray(p) ? p : [p];
+        for (const sub of subs) { const wr = await webPush(env, sub, payloadStr); if (wr.ok) ok = true; }
+      }
+    }
+  } catch {}
+  await recordAdminEvent(env, payloadStr, ok, fullBody);
+  return ok;
 }
 
 function alertMessage(news, ticker, severity, reason, meta = {}) {
@@ -1186,7 +1210,7 @@ export default {
       // 自有 web push 到所有 admin 裝置(LINE 已退役,唯一通道)
       if (await webPushAdmin(env, JSON.stringify({
         title: "🔔 MarketDaily", body: message.slice(0, 300), url: "https://marketdaily.ai/dashboard.html#alerts",
-      }))) { ok = true; channels.push("webpush"); }
+      }), message)) { ok = true; channels.push("webpush"); }
       // lineStatus 欄位保留 null 給既有呼叫端(watchdog/runner)解析相容
       return json({ ok, channels, lineStatus: null });
     }
