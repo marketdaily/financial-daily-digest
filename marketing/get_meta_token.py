@@ -21,7 +21,9 @@ SCOPES = ("pages_show_list,pages_read_engagement,pages_manage_posts,"
           "instagram_basic,instagram_content_publish,business_management,"
           "ads_management,"
           # 留言閘門漏斗(comment_funnel.py):回留言+私訊
-          "instagram_manage_comments,instagram_manage_messages,pages_messaging")
+          "instagram_manage_comments,instagram_manage_messages,pages_messaging,"
+          # 成效回饋迴圈(engagement_pull.py):IG media insights(reach/saved)+FB page insights
+          "instagram_manage_insights,read_insights")
 
 
 def load_env():
@@ -96,8 +98,9 @@ def main():
     scopes = get(f"{GRAPH}/debug_token?input_token={urllib.parse.quote(page['access_token'])}"
                  f"&access_token={app_tok}").get("data", {}).get("scopes", [])
     print(f"新 page token scopes:{', '.join(scopes)}")
-    if "ads_management" not in scopes:
-        sys.exit("⚠️ 新 token 沒有 ads_management —— 授權時可能沒勾到,重跑一次連結並確認全部權限打勾")
+    missing = [sc for sc in ("ads_management", "instagram_manage_insights") if sc not in scopes]
+    if missing:
+        sys.exit(f"⚠️ 新 token 缺 {missing} —— 授權時可能沒勾到,重跑一次連結並確認全部權限打勾")
     update_env(HERE / ".env",
                {"FB_USER_TOKEN": user_tok, "META_ACCESS_TOKEN": page["access_token"]})
     print("完成。接著跑:python auto_post.py check")
