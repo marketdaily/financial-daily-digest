@@ -410,10 +410,19 @@ def _call_groq(prompt: str, system: str = None,
     官方建議替換為 openai/gpt-oss-120b,已切換避免停用後掉回 deterministic。
     定位:Gemini 免費配額耗盡、Claude 又瞬斷時的『免費第三張網』,接住原本會掉
     deterministic 的班次(2026-07-01 事故:Gemini 429+Claude DNS 抖→3 chunk 掉備援)。
-    GROQ_API_KEY 已在 .env;沒設則 raise,鏈/席次自動跳過(非錯誤)。"""
+    GROQ_API_KEY 已在 .env;沒設則 raise,鏈/席次自動跳過(非錯誤)。
+    2026-07-29:免費層 gpt-oss-120b 每請求 token 預算僅 8000(TPM),prompt+max_tokens
+    超過即整包 413——主鏈預設 max_tokens=8000 等於任何生卡呼叫必 413(晚班 36 連敗 0 成功,
+    白繳大 payload HTTP 往返,吃掉 card-regen 時間預算害 2 卡掉 deterministic)。
+    改為寄出前本地估 token:塞得下就縮 max_tokens 續用(復活 Groq 這張網),
+    塞不下直接 raise 讓鏈零成本跳下一家(訊息帶 413 讓 council 席次標記正確)。"""
+    est = int(sum(0.3 if ord(c) < 128 else 1.0 for c in prompt + (system or _SYSTEM_PROMPT)))
+    room = 7200 - est
+    if room < 500:
+        raise RuntimeError(f"prompt 預估 {est} tokens,超過 Groq TPM 8000 預算(免打即 413),跳過")
     return _call_openai_style(
         "https://api.groq.com/openai/v1/chat/completions", "GROQ_API_KEY",
-        prompt, system, model=model, max_tokens=max_tokens,
+        prompt, system, model=model, max_tokens=min(max_tokens, room),
         content_type=True, retry_429_once=True)
 
 
