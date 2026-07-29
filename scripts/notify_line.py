@@ -18,7 +18,9 @@ def push(message: str) -> bool:
     req = urllib.request.Request(
         f"{WORKER.rstrip('/')}/internal/admin-line-push",
         data=json.dumps({"message": message[:4900]}).encode("utf-8"),
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"},
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}",
+                 # 裸 urllib UA 會被 Cloudflare 擋(07-10 marketing、07-30 decision_queue 兩度實測)
+                 "User-Agent": "marketdaily-internal/1.0"},
         method="POST",
     )
     with urllib.request.urlopen(req, timeout=10) as resp:

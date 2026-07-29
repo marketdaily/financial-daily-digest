@@ -126,7 +126,8 @@ if not tok:
 req = urllib.request.Request(
     "https://marketdaily-alert-worker.delvin-12345678.workers.dev/internal/admin-line-push",
     data=json.dumps({"message": sys.argv[1]}).encode(),
-    headers={"content-type": "application/json", "authorization": "Bearer " + tok},
+    headers={"content-type": "application/json", "authorization": "Bearer " + tok,
+             "user-agent": "marketdaily-internal/1.0"},
     method="POST")
 try:
     print("LINE push:", urllib.request.urlopen(req, timeout=20).status)

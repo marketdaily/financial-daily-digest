@@ -40,7 +40,8 @@ def push(msg):
     try:
         req = urllib.request.Request(ALERT_URL,
             data=json.dumps({"message": msg[:4900]}).encode(),
-            headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}"})
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {tok}",
+                     "User-Agent": "marketdaily-internal/1.0"})
         urllib.request.urlopen(req, timeout=10)
     except Exception:
         pass

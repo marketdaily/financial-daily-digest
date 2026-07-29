@@ -564,6 +564,9 @@ body {
         <button class="sb-item" onclick="nav('alerts',this)">
           <span class="sb-icon">⚑</span> 系統告警
         </button>
+        <button class="sb-item" onclick="nav('quality',this)">
+          <span class="sb-icon">🛡</span> 品質戰情
+        </button>
         <button class="sb-item" onclick="nav('analytics',this)">
           <span class="sb-icon">◔</span> 數據分析
         </button>
@@ -886,6 +889,18 @@ body {
         </div>
       </div>
 
+      <div id="sec-quality" class="section">
+        <div class="section-header">
+          <div>
+            <div class="section-title">品質戰情室</div>
+            <div class="section-desc">日報三防線＋公司 KPI 一眼看（watchdog 外部視角 + winrig 品質彙整，資料源同 /status）</div>
+          </div>
+          <a class="btn btn-ghost btn-sm" href="/status" target="_blank" rel="noopener">↗ 獨立頁開啟</a>
+        </div>
+        <iframe id="quality-frame" data-src="/status" title="品質戰情室"
+                style="width:100%;height:calc(100vh - 170px);min-height:640px;border:0;border-radius:12px;background:transparent"></iframe>
+      </div>
+
       <div id="sec-audit" class="section">
         <div class="section-header">
           <div>
@@ -1174,6 +1189,7 @@ function bootAdmin(email) {
   runHealth();           // health probes (overview + settings)
   loadReactive();        // reactive queue → badge
   loadOps();             // ops badge (今日日報數) + 排程狀態
+  handleAlertDeepLink(); // 推播點進來帶 #alerts-<ts> → 直跳系統告警該列
 }
 
 function logout() {
@@ -1198,6 +1214,7 @@ const SECTION_TITLES = {
   overview:    ["總覽","全平台關鍵指標監控"],
   ops:         ["營運監控","日報產生數 / 排程狀態 / 系統健康"],
   alerts:      ["系統告警","admin 推播完整歷史（含永豐 auto_trade / watchdog）"],
+  quality:     ["品質戰情室","日報三防線＋公司 KPI（同 /status，內嵌）"],
   email:       ["寄信成效","Brevo 送達 / 開信 / 退信"],
   audit:       ["稽核記錄","管理員操作軌跡"],
   analytics:   ["數據分析","30 日 UTM 歸因分析"],
@@ -1227,6 +1244,10 @@ function nav(id, btn) {
   if (id === "email") loadEmailStats();
   if (id === "audit") loadAudit();
   if (id === "alerts") loadAdminEvents();
+  if (id === "quality") {
+    const f = document.getElementById("quality-frame");
+    if (f && !f.src) f.src = f.dataset.src;
+  }
 }
 
 // ── 模擬跟單淨值(內部指標) ──
@@ -1856,16 +1877,36 @@ async function loadAdminEvents() {
           ? `<button class="btn btn-ghost btn-sm" style="color:#4ade80;white-space:nowrap" onclick="resolveEvent(${ev.ts},this)" title="解決於 ${resWhen}｜點擊可取消">✅ 已解決</button>` +
             (ev.resolved_note ? `<div style="font-size:11px;color:#4ade80;opacity:.85;margin-top:4px;max-width:200px;white-space:pre-wrap">${esc(ev.resolved_note)}</div>` : "")
           : `<button class="btn btn-ghost btn-sm" style="white-space:nowrap" onclick="resolveEvent(${ev.ts},this)">標記解決</button>`;
-        return `<tr${ev.resolved ? ' style="opacity:.5"' : ""}><td class="mono" style="white-space:nowrap">${when}</td>` +
+        return `<tr id="ev-${ev.ts}"${ev.resolved ? ' style="opacity:.5"' : ""}><td class="mono" style="white-space:nowrap">${when}</td>` +
           `<td><span class="badge">${esc(ev.title || "—")}</span></td>` +
           `<td style="white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;max-width:560px">${esc(ev.body || "")}</td>` +
           `<td style="text-align:center">${ev.pushed ? "✅" : `<span title="推播未送達（無訂閱裝置或全部失敗）">⚠️</span>`}</td>` +
           `<td>${resBtn}</td></tr>`;
       }).join("") + `</tbody></table>`;
+    if (window.__pendingAlertTs) {
+      const row = document.getElementById("ev-" + window.__pendingAlertTs);
+      window.__pendingAlertTs = null;
+      if (row) {
+        row.scrollIntoView({ behavior: "smooth", block: "center" });
+        row.style.transition = "background 1.2s";
+        row.style.background = "rgba(99,102,241,.35)";
+        setTimeout(() => { row.style.background = ""; }, 2600);
+      }
+    }
   } catch {
     el.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>無法載入告警記錄</div>`;
   }
 }
+
+// 推播深連結:#alerts-<ts> → 切到系統告警並捲到該列(sw.js 點通知帶此 hash,同新聞跳原文原理)
+function handleAlertDeepLink() {
+  const m = (location.hash || "").match(/^#alerts-(\d+)$/);
+  if (!m) return;
+  window.__pendingAlertTs = m[1];
+  const btn = Array.from(document.querySelectorAll(".sb-item")).find(b => b.textContent.includes("系統告警"));
+  nav("alerts", btn || null);
+}
+window.addEventListener("hashchange", handleAlertDeepLink);
 
 async function resolveEvent(ts, btn) {
   btn.disabled = true;

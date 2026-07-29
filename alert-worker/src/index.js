@@ -598,7 +598,7 @@ async function recordAlertInbox(env, email, record) {
 // 每次 admin 推播同步落 KV admin_events(最近 200 則,滾動 90 天),後台「系統告警」頁讀。
 // 推播失敗/無訂閱也照樣留痕:歷史不依賴推播當下有沒有看到(admin.html /admin/events)。
 // fullBody:admin-line-push 的完整訊息(push body 截 300 字,歷史留全文)。
-async function recordAdminEvent(env, payloadStr, pushed, fullBody) {
+async function recordAdminEvent(env, payloadStr, pushed, fullBody, evTs) {
   try {
     let p = {};
     try { p = JSON.parse(payloadStr) || {}; } catch {}
@@ -607,7 +607,7 @@ async function recordAdminEvent(env, payloadStr, pushed, fullBody) {
     if (raw) { try { list = JSON.parse(raw); } catch {} }
     if (!Array.isArray(list)) list = [];
     list.unshift({
-      ts: Date.now(),
+      ts: evTs || Date.now(),
       title: String(p.title || "").slice(0, 120),
       body: String(fullBody || p.body || "").slice(0, 2000),
       pushed: !!pushed,
@@ -617,7 +617,7 @@ async function recordAdminEvent(env, payloadStr, pushed, fullBody) {
 }
 
 // 對 admin 的所有裝置發 web push(讀 pushsub:${ADMIN_EMAIL} 陣列),回傳是否至少一台成功
-async function webPushAdmin(env, payloadStr, fullBody) {
+async function webPushAdmin(env, payloadStr, fullBody, evTs) {
   let ok = false;
   try {
     if (env.ADMIN_EMAIL) {
@@ -629,7 +629,7 @@ async function webPushAdmin(env, payloadStr, fullBody) {
       }
     }
   } catch {}
-  await recordAdminEvent(env, payloadStr, ok, fullBody);
+  await recordAdminEvent(env, payloadStr, ok, fullBody, evTs);
   return ok;
 }
 
@@ -1208,9 +1208,11 @@ export default {
       if (!message) return json({ error: "empty_message" }, 400);
       let ok = false; const channels = [];
       // 自有 web push 到所有 admin 裝置(LINE 已退役,唯一通道)
+      // evTs 同時當 KV 事件 ts 與深連結錨點:點通知直跳後台告警該列(07-30 Delvin 要求,同新聞跳原文原理)
+      const evTs = Date.now();
       if (await webPushAdmin(env, JSON.stringify({
-        title: "🔔 MarketDaily", body: message.slice(0, 300), url: "https://marketdaily.ai/dashboard.html#alerts",
-      }), message)) { ok = true; channels.push("webpush"); }
+        title: "🔔 MarketDaily", body: message.slice(0, 300), url: "https://marketdaily.ai/admin#alerts-" + evTs,
+      }), message, evTs)) { ok = true; channels.push("webpush"); }
       // lineStatus 欄位保留 null 給既有呼叫端(watchdog/runner)解析相容
       return json({ ok, channels, lineStatus: null });
     }

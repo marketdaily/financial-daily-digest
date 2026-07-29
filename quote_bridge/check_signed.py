@@ -24,7 +24,8 @@ def push(msg, token):
     req = urllib.request.Request(
         f"{ALERT_WORKER}/internal/admin-line-push",
         data=json.dumps({"message": msg}).encode(),
-        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}"},
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {token}",
+                 "User-Agent": "marketdaily-internal/1.0"},
         method="POST")
     with urllib.request.urlopen(req, timeout=10) as r:
         return r.status == 200
