@@ -1625,11 +1625,19 @@ const HEALTH_CHECKS = [
   { name:"戰績資料", desc:"track-record.json 持續刷新", run: async () => {
       const r = await fetch(`/data/track-record.json?t=${Date.now()}`,{cache:"no-store"});
       const j = await r.json(); const g = j.generated_at || j.generatedAt;
-      if (!g) return {state:"warn", note:"無更新時間戳"};
-      const hrs = (Date.now() - new Date(g).getTime())/3.6e6, when = `${Math.round(hrs)}h 前`;
-      if (hrs<36) return {state:"ok", note:`更新於 ${when}`};
-      if (hrs<60) return {state:"warn", note:`偏舊（${when}）`};
-      return {state:"bad", note:`過期（${when}）`}; } },
+      if (g) {
+        const hrs = (Date.now() - new Date(g).getTime())/3.6e6, when = `${Math.round(hrs)}h 前`;
+        if (hrs<36) return {state:"ok", note:`更新於 ${when}`};
+        if (hrs<60) return {state:"warn", note:`偏舊（${when}）`};
+        return {state:"bad", note:`過期（${when}）`};
+      }
+      // 產生器不寫 generated_at:退回看最新記錄日期(連假最長 3 天不誤報)
+      const last = (j.records||[]).reduce((m,x)=>(x&&x.date>m)?x.date:m,"");
+      if (!last) return {state:"warn", note:"無更新時間戳"};
+      const days = Math.floor((Date.now()-new Date(last+"T00:00:00+08:00").getTime())/864e5);
+      if (days<=3) return {state:"ok", note:`最新記錄 ${last}`};
+      if (days<=5) return {state:"warn", note:`偏舊（最新 ${last}）`};
+      return {state:"bad", note:`過期（最新 ${last}）`}; } },
   { name:"公版日報存檔", desc:"每日日報網頁版產出", run: async () => {
       const pad=n=>String(n).padStart(2,"0"), ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
       for (const d of [new Date(), new Date(Date.now()-864e5)]) {
@@ -1699,6 +1707,12 @@ async function loadOps(force) {
     const shiftRow = (key, label) => {
       const v = s[key];
       if (!v) return `<div class="hrow"><span class="hdot warn"></span><div class="hinfo"><div class="hname">${label}</div><div class="hdesc">今日尚無 run 記錄（未到時間或未觸發）</div></div><span class="hst warn">待觸發</span></div>`;
+      // watchdog v2 dead-man 格式(2026-07-20 起):{archived, url}=公版存檔新鮮度,非 GH run
+      if ("archived" in v) {
+        const ok = !!v.archived;
+        const link = v.url ? ` · <a href="${esc(v.url)}" target="_blank" style="color:#7aa2ff">存檔</a>` : "";
+        return `<div class="hrow"><span class="hdot ${ok?"ok":"warn"}"></span><div class="hinfo"><div class="hname">${label}</div><div class="hdesc">${ok?"公版存檔已產出":"尚未存檔（未到時間,缺席由 watchdog 推播）"}${link}</div></div><span class="hst ${ok?"ok":"warn"}">${ok?"成功":"待存檔"}</span></div>`;
+      }
       const concl = v.conclusion || v.status || "";
       const ok = concl === "success", running = v.status === "in_progress" || v.status === "queued";
       const state = ok ? "ok" : running ? "warn" : "bad";
@@ -1709,7 +1723,7 @@ async function loadOps(force) {
     };
     box.innerHTML = shiftRow("tw","台股早報 (07:00)") + shiftRow("us","美股晚報 (20:00)");
     const vals = [s.tw, s.us].filter(Boolean);
-    const allOk = vals.length && vals.every(v => (v.conclusion||v.status) === "success");
+    const allOk = vals.length && vals.every(v => v.archived === true || (v.conclusion||v.status) === "success");
     document.getElementById("ops-runhealth").textContent = vals.length ? (allOk ? "✓" : (vals.some(v=>v.status==="in_progress")?"…":"⚠")) : "待觸發";
   } catch {
     box.innerHTML = `<div class="empty-state">無法讀取排程狀態</div>`;
