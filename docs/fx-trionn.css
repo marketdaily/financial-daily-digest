@@ -1,0 +1,92 @@
+/* fx.css — Trionn-class effect layer (studied from trionn.com teardown 2026-07-29)
+ * Zero-dependency companions to fx.js. Everything transform/opacity/filter only.
+ * Gated: prefers-reduced-motion gets static content, no DOM surgery. */
+
+:root { --fx-ease: cubic-bezier(0.19, 1, 0.22, 1); }
+
+/* ---- 1. Char blur reveal (Trionn "BlurTextReveal": chars blur(12px)->0, random stagger) */
+.fx-word { display: inline-block; white-space: nowrap; }
+.fx-char { display: inline-block; white-space: pre; }
+.fx-splitting .fx-char {
+  opacity: 0; filter: blur(12px); transform: translateY(0.28em);
+  will-change: transform, opacity, filter;
+}
+.fx-in .fx-char {
+  opacity: 1; filter: blur(0); transform: none;
+  transition: opacity .65s var(--fx-ease), filter .65s var(--fx-ease),
+              transform .65s var(--fx-ease);
+  transition-delay: var(--fxd, 0ms);
+}
+
+/* ---- 2. Letter-roll hover (Trionn WordShiftButton: two stacked copies, per-letter stagger) */
+.fx-roll { display: inline-block; }
+.fx-roll .fxr { position: relative; display: inline-block; overflow: hidden;
+  vertical-align: top; }
+.fx-roll .fxr > span { display: inline-block; white-space: pre;
+  transition: transform .34s var(--fx-ease);
+  transition-delay: calc(var(--i) * 20ms); }
+.fx-roll .fxr > .fxb { position: absolute; left: 0; top: 100%; }
+.fx-roll:hover .fxr > span, .fx-roll:focus-visible .fxr > span
+  { transform: translateY(-100%); }
+
+/* ---- 3. Directional underline sweep (Trionn u-left/u-right: in from left, out to right) */
+.fx-ul { position: relative; }
+.fx-ul::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px;
+  height: 1px; background: currentColor;
+  transform: scaleX(0); transform-origin: right;
+  transition: transform .42s var(--fx-ease); }
+.fx-ul:hover::after { transform: scaleX(1); transform-origin: left; }
+
+/* ---- 4. Line-draw (Trionn js-card-line: rules draw themselves scaleX 0->1 on enter) */
+.fx-line { position: relative; }
+.fx-line::before { content: ""; position: absolute; left: 0; right: 0; top: 0;
+  height: 1px; background: currentColor; opacity: .18;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 1.1s var(--fx-ease) .1s; }
+.fx-line.fx-in::before { transform: scaleX(1); }
+
+/* ---- 5. Marquee (draggable infinite strip) */
+.fx-marquee { overflow: hidden; cursor: grab; -webkit-user-select: none; user-select: none; }
+.fx-marquee:active { cursor: grabbing; }
+.fx-marquee { flex-wrap: nowrap !important; }
+.fx-marquee .fx-mq-track { display: flex; width: max-content; align-items: center;
+  gap: inherit; will-change: transform; }
+.fx-marquee .fx-mq-track > * { flex: none; }
+
+/* ---- 6. Footer fog canvas (fbm smoke shader) */
+.fx-fog-host { position: relative; }
+.fx-fog { position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0; opacity: .6; }
+.fx-fog-host > :not(.fx-fog) { position: relative; z-index: 1; }
+
+/* ---- 7. Spark canvas (hero interactive welding sparks) */
+.fx-sparks { position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 3; mix-blend-mode: screen; }
+
+/* ---- 8. First-visit preloader (Trionn pl-*: slot digits + border draw + corner plus) */
+#fx-pl { position: fixed; inset: 0; z-index: 999; background: #070604;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .5s var(--fx-ease), visibility .5s; }
+#fx-pl.done { opacity: 0; visibility: hidden; }
+#fx-pl .plbox { position: relative; padding: 28px 36px; color: #e8b45a;
+  font-family: "Geist Mono", ui-monospace, monospace; }
+#fx-pl svg.plborder { position: absolute; inset: 0; width: 100%; height: 100%; }
+#fx-pl svg.plborder rect { fill: none; stroke: rgba(232,180,90,.55); stroke-width: 1.5; }
+#fx-pl .plplus { position: absolute; width: 14px; height: 14px; color: rgba(232,180,90,.7); }
+#fx-pl .plplus.tl { left: -7px; top: -7px; } #fx-pl .plplus.tr { right: -7px; top: -7px; }
+#fx-pl .plplus.bl { left: -7px; bottom: -7px; } #fx-pl .plplus.br { right: -7px; bottom: -7px; }
+#fx-pl .plname { font-size: 13px; letter-spacing: .22em; text-transform: uppercase;
+  color: #c9c2b4; }
+#fx-pl .plslots { display: inline-flex; overflow: hidden; height: 1.25em;
+  line-height: 1.25; font-size: 28px; font-weight: 500; vertical-align: bottom; }
+#fx-pl .plcol { display: flex; flex-direction: column;
+  transition: transform .45s var(--fx-ease); }
+#fx-pl .plpct { font-size: 28px; opacity: .85; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-splitting .fx-char, .fx-in .fx-char { opacity: 1; filter: none; transform: none; transition: none; }
+  .fx-roll .fxr > span { transition: none; }
+  .fx-roll:hover .fxr > span { transform: none; }
+  .fx-line::before { transform: scaleX(1); transition: none; }
+  .fx-fog, .fx-sparks, #fx-pl { display: none !important; }
+}

@@ -58,6 +58,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Archivo+Expanded:wght@600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fx-trionn.css?v=1">
 <style>
 :root {
   --bg: #060611;
@@ -910,10 +911,10 @@ footer {
     Market<em>Daily</em>
   </a>
   <div class="nav-right">
-    <a href="track-record.html" class="lang-btn" data-i18n="nav_record">戰績</a>
-    <a href="blog/" class="lang-btn" data-i18n="nav_learn">投資學堂</a>
-    <a href="vs.html" class="lang-btn" data-i18n="nav_vs">vs 對手</a>
-    <a href="pricing.html" class="lang-btn" data-i18n="nav_pricing">定價</a>
+    <a href="track-record.html" class="lang-btn" data-i18n="nav_record" data-fx-roll>戰績</a>
+    <a href="blog/" class="lang-btn" data-i18n="nav_learn" data-fx-roll>投資學堂</a>
+    <a href="vs.html" class="lang-btn" data-i18n="nav_vs" data-fx-roll>vs 對手</a>
+    <a href="pricing.html" class="lang-btn" data-i18n="nav_pricing" data-fx-roll>定價</a>
 </div>
   <button class="lang-btn" id="lang-toggle" onclick="toggleLang()">中文</button>
 </nav>
@@ -952,7 +953,7 @@ footer {
       <span class="live-dot"></span>
       <span data-i18n="pill">AI-Curated · Fake-News Filtered · 7AM & 8PM</span>
     </div>
-    <h1 data-i18n-html="hero_h1">Your daily stock market<br><span class="gradient">briefing in 30 seconds</span></h1>
+    <h1 data-i18n-html="hero_h1" data-fx-reveal>Your daily stock market<br><span class="gradient">briefing in 30 seconds</span></h1>
     <p class="hero-sub" data-i18n="hero_sub">
       AI-curated US & Taiwan market news, fake-news filtered,
       written like a smart friend texting you — all before the market opens.
@@ -1866,14 +1867,15 @@ footer {
 </div>
 
 <!-- Footer -->
-<footer>
+<footer data-fx-fog="#05060d,#1a1d33,#3f4470">
   <div class="footer-brand">Market<span style="color:#818cf8;">Daily</span></div>
   <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:18px;margin:18px 0 12px;font-size:13px;">
-    <a href="track-record.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_record">戰績紀錄</a>
-    <a href="vs.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_vs">vs 對手比較</a>
-    <a href="about.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_about">主編 · 編輯流程</a>
-    <a href="pricing.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_pricing">定價</a>
-    <a href="contact.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_contact">聯絡客服</a>
+    <a href="track-record.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_record" data-fx-roll data-fx-ul>戰績紀錄</a>
+    <a href="vs.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_vs" data-fx-roll data-fx-ul>vs 對手比較</a>
+    <a href="about.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_about" data-fx-roll data-fx-ul>主編 · 編輯流程</a>
+    <a href="pricing.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_pricing" data-fx-roll data-fx-ul>定價</a>
+    <a href="contact.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_contact" data-fx-roll data-fx-ul>聯絡客服</a>
+    <a href="faq.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_faq" data-fx-roll data-fx-ul>常見問題</a>
   </div>
   <div class="footer-note">
     <span data-i18n="footer2">✅ Multi-source verified &nbsp;|&nbsp; ⚠️ Single source — read with caution</span><br>
@@ -2017,6 +2019,7 @@ const i18n = {
     footer2: "✅ Multi-source verified  |  ⚠️ Single source — read with caution",
     footer3: "For informational purposes only. Not financial advice.",
     footer_contact: "Contact Us / Support",
+    footer_faq: "FAQ",
     founder_text: "I used to spend an hour every morning reading Bloomberg, CNBC, and PTT — just to figure out what happened overnight to my stocks. Half the news was noise. Some of it was flat-out wrong. I built MarketDaily because I was tired of doing that work myself. Now it just shows up in my inbox, already filtered, already personalized. I haven't opened a financial news app in months.",
     founder_name: "The Founder", founder_role: "Investor · Engineer · Built this for himself first",
     testimonials_eyebrow: "Early Users", testimonials_title: "What people are saying",
@@ -2176,6 +2179,7 @@ const i18n = {
     footer2: "✅ 多源確認  |  ⚠️ 單一來源，請自行查證",
     footer3: "本日報為 AI 生成，僅供參考，不構成投資建議。",
     footer_contact: "聯絡我們 / 客服",
+    footer_faq: "常見問題",
     founder_text: "我以前每天早上花一個小時讀 Bloomberg、CNBC 還有 PTT，就只是為了搞清楚昨晚我持倉的股票發生了什麼事。一半的新聞是雜訊，有些根本是假的。我做 MarketDaily，是因為我不想再自己做這件事。現在它每天早上在信箱等我，已經過濾好了，已經個人化好了。我幾個月沒打開任何財經 App 了。",
     founder_name: "創辦人", founder_role: "投資者 · 工程師 · 先為自己打造這個工具",
     testimonials_eyebrow: "早期用戶", testimonials_title: "用過的人說什麼",
@@ -2946,5 +2950,25 @@ MDTour.mount([
 ], { tourId: "index", auto: true });
 </script>
 <script src="terminal.js?v=1"></script>
+<script>
+/* fx glue: gradient span animates as one unit; re-split after i18n swaps */
+(function () {
+  function tagAtomic() {
+    document.querySelectorAll("[data-fx-reveal] .gradient").forEach(function (g) {
+      g.setAttribute("data-fx-atomic", "");
+    });
+  }
+  tagAtomic();
+  if (typeof window.applyLang === "function") {
+    var _orig = window.applyLang;
+    window.applyLang = function () {
+      _orig.apply(this, arguments);
+      tagAtomic();
+      if (window.FX) FX.refresh();
+    };
+  }
+})();
+</script>
+<script src="fx-trionn.js?v=1" defer></script>
 </body>
 </html>
