@@ -1215,6 +1215,39 @@ export default {
       return json({ ok, channels, lineStatus: null });
     }
 
+    // 程式化標記告警已解決(解決問題的那一方呼叫:Claude session / winrig 自動修復腳本)。
+    // Delvin 不該手動判斷解沒解決——修完事故必打這支,帶 note 說明怎麼解的(CLAUDE.md 慣例)。
+    // body:{ts?: 精準定位, match?: 子字串找最新一則未解決, note?: 解決說明} 至少給 ts 或 match。
+    if (url.pathname === "/internal/admin-events-resolve" && request.method === "POST") {
+      const got = (request.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+      const candidates = [env.ADMIN_PUSH_TOKEN, env.ADMIN_PUSH_TOKEN_2, env.MARKETING_TARGETS_TOKEN, env.INTERNAL_TOKEN].filter(Boolean);
+      let okAuth = false;
+      for (const t of candidates) {
+        if (got.length !== t.length) continue;
+        let diff = 0;
+        for (let i = 0; i < got.length; i++) diff |= got.charCodeAt(i) ^ t.charCodeAt(i);
+        if (diff === 0) { okAuth = true; break; }
+      }
+      if (!okAuth) return json({ error: "forbidden" }, 403);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      const ts = Number(body.ts) || 0;
+      const match = String(body.match || "").slice(0, 200);
+      if (!ts && !match) return json({ error: "need_ts_or_match" }, 400);
+      let events = [];
+      try { const raw = await env.USER_PREFS.get("admin_events"); if (raw) events = JSON.parse(raw); } catch {}
+      if (!Array.isArray(events)) events = [];
+      const ev = ts
+        ? events.find((e) => e && e.ts === ts)
+        : events.find((e) => e && !e.resolved && `${e.title}\n${e.body}`.includes(match));
+      if (!ev) return json({ error: "not_found" }, 404);
+      ev.resolved = Date.now();
+      const note = String(body.note || "").slice(0, 300);
+      if (note) ev.resolved_note = note;
+      await env.USER_PREFS.put("admin_events", JSON.stringify(events), { expirationTtl: 90 * 24 * 3600 });
+      return json({ ok: true, ts: ev.ts, title: ev.title, resolved: ev.resolved });
+    }
+
     // 供應鏈事件(winrig intel/supply_chain_watch.py 上送):官方公告的新合作/新供應關係。
     // 每則:KV pending(dashboard 產業鏈🆕區塊經 stripe-webhook /supply-chain-updates 讀)
     // + 比對全體用戶持股發 web push + 站內收件匣 + admin 彙總通知。事件級去重(scdone marker),
