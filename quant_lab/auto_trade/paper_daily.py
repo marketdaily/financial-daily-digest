@@ -580,7 +580,7 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
             tr = [e for e in evs if e.get("fish") == f and "pnl_ntd" in e]
             n = len(tr)
             if n == 0:
-                return (f, 0, "🕐 等待起跑", "0 筆 forward · 戶已開通,等paper裁決", "起跑 2-3 口量測")
+                return (f, 0, "🕐 等待起跑", "0 筆 forward · API已通,等入金+paper裁決", "起跑 2-3 口量測")
             cum = peak = mdd = 0
             for e in tr:
                 cum += e["pnl_ntd"]; peak = max(peak, cum); mdd = max(mdd, peak - cum)
@@ -594,7 +594,7 @@ td,th{{padding:6px 8px;border-bottom:1px solid #2a2e37;text-align:left}}
                      f'<td>{r[3]}</td><td>{r[4]}</td></tr>' for r in (_ramp("B"), _ramp("C")))
         ramppanel = ('<h2 style="font-size:1rem;margin:22px 0 6px">📈 加碼階梯進度(魚B/C 放大)</h2>'
                      '<div class="btnote">目標回撤胃納 30-40%。口數用 <b>forward 真實回撤</b>算(非回測——回測 1 口回撤必低估)。'
-                     '⚠️ 期貨戶已開通(2026-07-27;API下單同意書待簽);0 forward 筆=尚未起跑;起跑 2-3 口量測真實回撤後,才依胃納分批放大。</div>'
+                     '⚠️ 期貨戶已開通·API下單已生效(07-28);<b>等入金</b>(體檢≥2萬/起跑準備30-50萬)後隔日自動跑完下單體檢;0 forward 筆=尚未起跑;起跑 2-3 口量測真實回撤後,才依胃納分批放大。</div>'
                      '<div class="card" style="grid-column:1/-1;overflow-x:auto"><table>'
                      '<tr><th>魚</th><th>forward筆</th><th>階段</th><th>真實回撤(1口)</th><th>目標胃納可加至</th></tr>'
                      f'{rr}</table></div>')
