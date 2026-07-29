@@ -92,19 +92,19 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 | `review` | 審查 Pull Request |
 | `security-review` | 執行安全性審查 |
 
-### 自訂技能（Delvin Custom Skills）— 128 個
+### 自訂技能（Delvin Custom Skills）— 134 個
 位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
 **完整目錄（每個 skill 一行中文用途）→ 同目錄 `CATALOG.md`；重疊裁決/任務唯一路徑 → `GOVERNANCE.md`（挑 skill 前先查）**
 
-**🏢 公司組織（2026-07-29 老闆拍板）**：整個 Claude 系統=一家公司,老闆=Delvin,13 部門 hub 在記憶庫 `dept_*.md`(中心=dept_ceo_office 董事長室,Obsidian graph 橘色層);新資產入庫要歸部門。品質戰情頁=status.html+quality.json。
+**🏢 公司組織（2026-07-29 老闆拍板）**：整個 Claude 系統=一家公司,老闆=Delvin,9 部門 hub 在記憶庫 `dept_*.md`(中心=dept_ceo_office 董事長室,Obsidian graph 橘色層+《公司組織圖.canvas》);新資產入庫要歸部門;組織變動→更新對外名片 artifact(網址與鐵則見 dept_ceo_office)。品質戰情頁=status.html+quality.json。
 
 分類速查（只列名，說明見 CATALOG.md；⚠️=退役或 Mac-only）：
-- **MarketDaily 營運**：workflow（日報pipeline）、site-doctor（全站巡檢必跑）、ui-ux-pro-max（含品牌設計系統）、claude-design、email-marketing-bible、growth-strategy、referral-program、pricing-strategy、landing-page-copy、ab-test-analyzer、sales-funnel-planner、sales-funnel-optimizer、legal-compliance（⚖️法務長:上線前合規審查唯一路徑）
+- **MarketDaily 營運**：workflow（日報pipeline）、site-doctor（全站巡檢必跑）、ui-ux-pro-max（含品牌設計系統）、claude-design、email-marketing-bible、growth-strategy、referral-program、pricing-strategy、landing-page-copy、ab-test-analyzer、sales-funnel-planner、sales-funnel-optimizer、cro（單頁轉換診斷）、onboarding（註冊後活化）、programmatic-seo（規模化SEO頁）、marketing-psychology（行為科學原則庫）、legal-compliance（⚖️法務長:上線前合規審查唯一路徑）
 - **行銷鏈（「Marketing Agents」＝五連跑，順序不可跳）**：spy → competitive-ads-extractor → bulk-creative → ads-score → ads-meta（2026-07-06 起每週日 10:00 TW 由 `~/.marketdaily-fallback/marketing_agents_weekly.sh` 全自動跑：生成＋獨立驗證者核可＋入佇列，見 `marketing/CLAUDE.md`）
 - **內容/創作**：content-engine、crosspost、content-repurposing、content-refresh、content-research-writer、brand-voice-amplifier（⚠️enhancer 退役）、podcast-outline、video-style、video-editing、story-script、youtube-summarizer、article-extractor
 - **交易/量化**：quant-math（下注前必算）、backtest-validation（上實盤前必驗）、stock-analyzer、invest-skill、dcf-valuation、tw-financial-analysis、tw-stock-agent、tw-stock-scraper、trading-skills-pro、trade-bot、tradingagents、ccxt、finrobot（參考）、pm-mispricing、portfolio-optimization、regime-detection、order-execution、options-strategy-advisor、position-sizer、vcp-screener、market-breadth-analyzer、macro-regime-detector、institutional-flow-tracker、stanley-druckenmiller-investment、ai-trader、intel-signal-lookup（查`~/Delvin-agent/intel/`信息差引擎,免費層替代13F/insider）；edge 鏈：edge-pipeline-orchestrator → edge-signal-aggregator → edge-strategy-designer → signal-postmortem
 - **AI/Agent 工程**：agentic-engineering、ai-first-engineering、ai-regression-testing、agent-eval、eval-harness、council、iterative-retrieval、cost-aware-llm-pipeline、context-budget、cost-tracking、autonomous-loops、continuous-agent-loop、continuous-learning-v2、skill-creator、skill-seekers、mcp-builder
-- **開發紀律/測試/hooks**：superpowers、superpowers-lab、tdd-workflow、systematic-debugging、root-cause-tracing、finish-branch、pypict、playwright-testing、browser-qa、click-path-audit、fuzz-security、defense-in-depth、deployment-patterns、error-handling、api-connector-builder、data-scraper-agent、code-quality-hooks、typescript-quality-hooks、cc-hooks-python、claude-hooks-sdk（備用）、cc-notify（⚠️Mac-only）、claudio（⚠️Mac-only）、discord-notifier、activity-tracker、code-review-skill（⚠️退役→內建 /code-review）
+- **開發紀律/測試/hooks**：superpowers、superpowers-lab、tdd-workflow、systematic-debugging、root-cause-tracing、finish-branch、pypict、playwright-testing、browser-qa、click-path-audit、fuzz-security、defense-in-depth、deployment-patterns、error-handling、api-connector-builder、data-scraper-agent、code-quality-hooks、typescript-quality-hooks、cc-hooks-python、claude-hooks-sdk（備用）、cc-notify（⚠️Mac-only）、claudio（⚠️Mac-only）、discord-notifier、activity-tracker、wayfinder（超大工程決策票地圖）、domain-modeling（詞彙表+ADR）、code-review-skill（⚠️退役→內建 /code-review）
 - **研究/知識**：deep-research、tapestry、research-indexer、academic-analyzer、knowledge-ops、doc-coauthoring、grill-me（idea 拷問/壓力測試）
 - **產能/雜項**：docx、pptx、xlsx、pdf、invoice-organizer、file-organizer、website-design-team（⚠️做整站/landing 唯一入口）、web-artifacts-builder、dashboard-builder、sql-generator、excel-formula、api-docs-generator、genai-prompt-pro（⚠️生成prompt/任務spec強制前置層）、nano-banana-pro、antigravity、open-generative-ai、ui-wireframe-generator、creative-direction、color-palette-generator、font-pairing（⚠️typography-pairing 退役）、defi-amm-security、evm-token-decimals
 
@@ -119,6 +119,7 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 - 詳細背景：memory `feedback_engineer_structure_review`（2026-07-03 工程師 7 點體檢）
 
 ## Skill 管理規則
+- **🔁 skill 自主學習迴圈(2026-07-29 老闆親令,全 skill 適用)**:每個 skill 目錄可有 `LESSONS.md` 教訓帳本;全域 PostToolUse hook(`~/.claude/hooks/skill-lessons.py`)在每次 skill 被呼叫時自動注入該帳本+回寫指令。使用 skill 撞到門檻/bug/更好做法且解決後,**收尾前必須 append 一節**(日期+坑+修法,≤6行);過時條目順手修正;沒新教訓不寫不灌水
 - **每次用戶分享或要求建立新 skill，必須同步更新三處**：`skills/CATALOG.md`（完整表：名稱＋一行中文用途）＋ 上方分類速查（列名）＋ `skills/GOVERNANCE.md`（歸群裁決）
 - Skill 檔案位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
 - 有 URL 的 skill → 先 WebFetch 讀完再建立，確保內容正確
