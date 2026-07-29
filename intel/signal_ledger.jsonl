@@ -450,3 +450,16 @@
 {"date": "2026-07-28", "code": "8438", "source": "sbl", "level": "red", "signal": "昶昕(8438):機構借券賣出5日遽增24.6%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": 58.5}
 {"date": "2026-07-28", "code": "5386", "source": "sbl", "level": "red", "signal": "青雲(5386):機構借券賣出5日遽增56.8%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": 223.5}
 {"date": "2026-07-28", "code": "3018", "source": "leadflow", "level": "red", "signal": "隆銘綠能(3018) 無消息近漲停+9.8%(連3根,5日+31.9%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": 15.7}
+{"date": "2026-07-29", "code": "2316", "source": "margin", "level": "red", "signal": "楠梓電(2316):融資5日驟減-19.2%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": 136.5}
+{"date": "2026-07-29", "code": "5536", "source": "margin", "level": "red", "signal": "聖暉(5536):融資5日驟減-15.6%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": 944.0}
+{"date": "2026-07-29", "code": "6134", "source": "sbl", "level": "yellow", "signal": "萬旭(6134):機構借券賣出5日遽減-21.9%(回補潮,空頭力道減弱)", "price_at_signal": 23.7}
+{"date": "2026-07-29", "code": "6597", "source": "institutional", "level": "red", "signal": "立誠(6597):外資連 5 日賣超(5日淨賣 -7 張)", "price_at_signal": 59.5}
+{"date": "2026-07-29", "code": "8155", "source": "margin", "level": "red", "signal": "博智(8155):融資5日驟減-15.7%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": 258.0}
+{"date": "2026-07-29", "code": "8299", "source": "tw_rank", "level": "yellow", "signal": "群聯(8299) 今日成交額排行第17(-8.2%),異常活躍", "price_at_signal": 1515.0}
+{"date": "2026-07-29", "code": "3441", "source": "tw_rank", "level": "red", "signal": "聯一光(3441) 量能竄榜:今日量榜第20(近5日未進過top50,+9.8%,58,554張)", "price_at_signal": 84.8}
+{"date": "2026-07-29", "code": "5299", "source": "leadflow", "level": "yellow", "signal": "杰力(5299) 無消息近漲停+10.0%(量能2.4×,5日+0.0%),疑資訊先行資金", "price_at_signal": 96.1}
+{"date": "2026-07-29", "code": "6226", "source": "leadflow", "level": "red", "signal": "光鼎(6226) 無消息近漲停+10.0%(連2根,5日+18.1%),疑資訊先行資金|外資+投信近3日+1379張", "price_at_signal": 22.55}
+{"date": "2026-07-29", "code": "6733", "source": "leadflow", "level": "red", "signal": "博晟生醫(6733) 無消息近漲停+9.9%(連2根,5日+20.4%),疑資訊先行資金", "price_at_signal": 28.9}
+{"date": "2026-07-29", "code": "3362", "source": "leadflow", "level": "red", "signal": "先進光(3362) 無消息近漲停+9.8%(連2根,5日+10.9%),疑資訊先行資金|外資+投信近3日+610張", "price_at_signal": 173.5}
+{"date": "2026-07-29", "code": "2923", "source": "leadflow", "level": "red", "signal": "鼎固-KY(2923) 無消息近漲停+8.9%(連3根,5日+26.9%),疑資訊先行資金|外資+投信近3日+505張", "price_at_signal": 41.0}
+{"date": "2026-07-29", "code": "8089", "source": "leadflow", "level": "yellow", "signal": "康全電訊(8089) 無消息近漲停+8.6%(量能2.4×,5日+6.9%),疑資訊先行資金", "price_at_signal": 20.2}
