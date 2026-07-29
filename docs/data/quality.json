@@ -1,5 +1,11 @@
 {
  "date": "2026-07-29",
+ "kpi": {
+  "subscribers": 21,
+  "digest_clean_days_7d": "4/7",
+  "fallback_7d": 3,
+  "social_posts_7d": 39
+ },
  "digest": {
   "audit": {
    "date": "2026-07-29",
@@ -153,5 +159,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": true
  },
- "generated_utc": "2026-07-29T13:27:06Z"
+ "generated_utc": "2026-07-29T15:57:55Z"
 }

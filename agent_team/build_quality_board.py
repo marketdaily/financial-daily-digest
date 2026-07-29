@@ -127,12 +127,41 @@ def flag_status(date):
     }
 
 
+def company_kpi(trend):
+    """公司 KPI v1(2026-07-29 經營體檢⑤):老闆一眼看公司的最小集合。只出彙整數字。"""
+    kpi = {}
+    if trend:
+        kpi["subscribers"] = trend[-1].get("total", 0)
+        n = sum(1 for r in trend if r.get("total"))
+        ok = sum(1 for r in trend if r.get("total") and r.get("audit_failed", 0) <= 2)
+        kpi["digest_clean_days_7d"] = f"{ok}/{n}"
+        kpi["fallback_7d"] = sum(r.get("fallback", 0) for r in trend)
+    try:
+        cutoff = (datetime.now(TW) - timedelta(days=7)).strftime("%Y-%m-%d")
+        posts = 0
+        for line in open(os.path.join(REPO, "marketing", "social_out", "post_log.jsonl"),
+                         encoding="utf-8", errors="replace"):
+            try:
+                rec = json.loads(line)
+            except ValueError:
+                continue
+            ts = str(rec.get("ts") or rec.get("time") or rec.get("date") or "")
+            if ts[:10] >= cutoff:
+                posts += 1
+        kpi["social_posts_7d"] = posts
+    except OSError:
+        pass
+    return kpi
+
+
 def main():
     date = tw_today()
     selfheal, postcheck = tail_verdicts(date)
+    trend = audit_trend()
     payload = {
         "date": date,
-        "digest": {"audit": audit_summary(date), "trend": audit_trend(),
+        "kpi": company_kpi(trend),
+        "digest": {"audit": audit_summary(date), "trend": trend,
                    "shifts": latency_shifts()},
         "selfheal": selfheal,
         "postcheck": postcheck,

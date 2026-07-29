@@ -45,6 +45,8 @@
     <b id="ov-text">檢查中…</b>
   </div>
   <div id="cards"></div>
+  <h2 class="sec" id="k-h2"></h2>
+  <div id="k-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:6px"></div>
   <h2 class="sec" id="q-h2"></h2>
   <div class="qnote" id="q-note"></div>
   <div id="q-cards"></div>
@@ -203,6 +205,25 @@ const QT = {
 }[LANG];
 document.getElementById("q-h2").textContent = QT.title;
 
+const KT = {
+  zh:{title:"📊 公司 KPI", subs:"訂閱者", clean:"7日日報達標天數(失分≤2)", fb:"7日備援次數", posts:"7日社群發文"},
+  en:{title:"📊 Company KPI", subs:"Subscribers", clean:"Clean digest days (7d)", fb:"Fallbacks (7d)", posts:"Social posts (7d)"},
+}[LANG];
+document.getElementById("k-h2").textContent = KT.title;
+function renderKpi(k){
+  const box = document.getElementById("k-cards"); box.innerHTML = "";
+  const items = [[k.subscribers, KT.subs], [k.digest_clean_days_7d, KT.clean],
+                 [k.fallback_7d, KT.fb], [k.social_posts_7d, KT.posts]];
+  for(const [v, label] of items){
+    if(v === undefined || v === null) continue;
+    const el = document.createElement("div");
+    el.style.cssText = "background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px 14px";
+    el.innerHTML = `<div style="font-size:22px;font-weight:700;font-variant-numeric:tabular-nums">${v}</div>
+      <div style="font-size:11px;color:var(--muted)">${label}</div>`;
+    box.appendChild(el);
+  }
+}
+
 function qCard(box, key){
   const el = document.createElement("div"); el.className="card";
   el.innerHTML = `<span class="dot pend"></span><div class="meta">
@@ -242,6 +263,7 @@ async function runQuality(){
     return;
   }
   const q = qR.value, soft = s => frozen ? "warn" : s;
+  if(q.kpi) renderKpi(q.kpi);
   const a = q.digest && q.digest.audit;
   if(a){
     const top = Object.keys(a.per_check||{})[0];
