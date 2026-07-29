@@ -840,6 +840,17 @@ export default {
       return json({ config: raw ? JSON.parse(raw) : null });
     }
 
+    // Admin:系統告警歷史(alert-worker webPushAdmin 每次推播落的 KV admin_events,
+    // 含 MarketDaily 告警/永豐 auto_trade 複檢/政壇訊號/供應鏈彙總;最近 200 則,90 天)
+    if (url.pathname === "/admin/events" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      let events = [];
+      try { const raw = await env.USER_PREFS.get("admin_events"); if (raw) events = JSON.parse(raw); } catch {}
+      return json({ events: Array.isArray(events) ? events : [] });
+    }
+
     // Save admin global config
     if (url.pathname === "/admin/save-config" && request.method === "POST") {
       let body;
@@ -2128,6 +2139,17 @@ export default {
       });
     }
 
+    // 美股排行(Yahoo 預設 screener:漲幅/跌幅/成交量)
+    if (url.pathname === "/us-ranks" && request.method === "GET") {
+      const kind = (url.searchParams.get("kind") || "gainers");
+      const map = { gainers: "day_gainers", losers: "day_losers", actives: "most_actives" };
+      let rows = [];
+      try { rows = await yahooScreener(map[kind] || "day_gainers", 40); } catch {}
+      return new Response(JSON.stringify({ kind, rows }), {
+        headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*", "Cache-Control": "max-age=30" }
+      });
+    }
+
     // Historical chart series proxy (Yahoo Finance) — same source as /stock-quotes
     if (url.pathname === "/stock-chart" && request.method === "GET") {
       const t = (url.searchParams.get("ticker") || "").trim();
@@ -2632,6 +2654,22 @@ async function fetchYahooChart(base, isTW, interval, range, headers, cacheTtl) {
     } catch {}
   }
   return null;
+}
+
+// Yahoo 預設排行(day_gainers/day_losers/most_actives);回精簡列。免費、含買賣價/PE/市值。
+async function yahooScreener(scrId, count) {
+  const ua = { "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36", "Accept": "application/json" };
+  const u = `https://query1.finance.yahoo.com/v1/finance/screener/predefined/saved?scrIds=${encodeURIComponent(scrId)}&count=${count}`;
+  const res = await fetch(u, { headers: ua, cf: { cacheTtl: 30, cacheEverything: true } });
+  if (!res.ok) return [];
+  const j = await res.json();
+  const rows = j?.finance?.result?.[0]?.quotes || [];
+  return rows.map(q => ({
+    symbol: q.symbol, name: q.shortName || q.longName || q.symbol,
+    price: q.regularMarketPrice ?? null, change: q.regularMarketChangePercent ?? null,
+    volume: q.regularMarketVolume ?? null, bid: q.bid ?? null, ask: q.ask ?? null,
+    pe: q.trailingPE ?? null, mcap: q.marketCap ?? null
+  }));
 }
 
 async function verifyStripeSignature(payload, sigHeader, secret) {

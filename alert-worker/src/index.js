@@ -283,9 +283,78 @@ async function fetchGlobalLead(env) {
   return line;
 }
 
-// Claude 嚴重度判定:輸入新聞 + 相關 ticker,輸出 {severity 0-10, reason}。
+// 2026-07-28 LLM 免費鏈(Delvin「不要扣錢」令延伸到 alert-worker):
+// Gemini flash(免費) → Gemini 2.5-flash-lite(免費,獨立 RPD 桶) → Groq llama-3.3-70b(免費)
+// → Claude Haiku(付費,最後備援)。任一家成功即回,全敗才 throw。
+async function llmComplete(env, prompt) {
+  const jobs = [];
+  if (env.GEMINI_API_KEY) {
+    for (const model of ["gemini-flash-latest", "gemini-2.5-flash-lite"]) {
+      jobs.push(async () => {
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.2, maxOutputTokens: 2000 },
+          }),
+        });
+        if (!r.ok) throw new Error(`gemini:${model} ${r.status}`);
+        const d = await r.json();
+        const parts = (((d.candidates || [])[0] || {}).content || {}).parts || [];
+        const text = parts.map((c) => c.text || "").join("");
+        if (!text) throw new Error(`gemini:${model} empty`);
+        return text;
+      });
+    }
+  }
+  if (env.GROQ_API_KEY) {
+    jobs.push(async () => {
+      const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { authorization: `Bearer ${env.GROQ_API_KEY}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          model: "llama-3.3-70b-versatile",
+          messages: [{ role: "user", content: prompt }],
+          max_tokens: 500,
+          temperature: 0.2,
+        }),
+      });
+      if (!r.ok) throw new Error(`groq ${r.status}`);
+      const d = await r.json();
+      const text = (((d.choices || [])[0] || {}).message || {}).content || "";
+      if (!text) throw new Error("groq empty");
+      return text;
+    });
+  }
+  if (env.ANTHROPIC_API_KEY) {
+    jobs.push(async () => {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 500,
+          messages: [{ role: "user", content: prompt }],
+        }),
+      });
+      if (!r.ok) throw new Error(`anthropic ${r.status}`);
+      const d = await r.json();
+      const text = (d.content || []).map((c) => c.text || "").join("");
+      if (!text) throw new Error("anthropic empty");
+      return text;
+    });
+  }
+  let lastErr = null;
+  for (const job of jobs) {
+    try { return await job(); } catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error("no LLM provider configured");
+}
+
+// LLM 嚴重度判定:輸入新聞 + 相關 ticker,輸出 {severity 0-10, reason}。
 async function aiSeverity(env, news, tickers, universe = null, globalLead = "") {
-  if (!env.ANTHROPIC_API_KEY) return { severity: null, reason: "AI 未設定", skipped: true };
+  if (!env.ANTHROPIC_API_KEY && !env.GEMINI_API_KEY && !env.GROQ_API_KEY) return { severity: null, reason: "AI 未設定", skipped: true };
   const names = tickers.length
     ? tickers.map((t) => `${t}(${displayName(t)})`).join("、")
     : "台股/美股投資人的持股";
@@ -319,22 +388,7 @@ ${globalLead ? `
 
 只輸出 JSON,格式:{"severity": <0-10 整數>, "category": "event|rumor|opinion", "stance": "加碼|續抱|觀望|減碼|賣出", "reason": "<一句:為何跟投資人有關>", "action": "<一句:此刻該怎麼做與理由>"${affectedField}}`;
   try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 256,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
-    if (!res.ok) return { severity: null, reason: `AI 錯誤 ${res.status}`, error: true };
-    const data = await res.json();
-    const text = (data.content || []).map((c) => c.text || "").join("");
+    const text = await llmComplete(env, prompt);
     const m = text.match(/\{[\s\S]*\}/);
     if (!m) return { severity: null, reason: "AI 回應無法解析", error: true };
     const parsed = JSON.parse(m[0]);
@@ -541,18 +595,42 @@ async function recordAlertInbox(env, email, record) {
   } catch {}
 }
 
-// 對 admin 的所有裝置發 web push(讀 pushsub:${ADMIN_EMAIL} 陣列),回傳是否至少一台成功
-async function webPushAdmin(env, payloadStr) {
-  if (!env.ADMIN_EMAIL) return false;
+// 每次 admin 推播同步落 KV admin_events(最近 200 則,滾動 90 天),後台「系統告警」頁讀。
+// 推播失敗/無訂閱也照樣留痕:歷史不依賴推播當下有沒有看到(admin.html /admin/events)。
+// fullBody:admin-line-push 的完整訊息(push body 截 300 字,歷史留全文)。
+async function recordAdminEvent(env, payloadStr, pushed, fullBody) {
   try {
-    const raw = await env.USER_PREFS.get(`pushsub:${env.ADMIN_EMAIL}`);
-    if (!raw) return false;
-    const p = JSON.parse(raw);
-    const subs = Array.isArray(p) ? p : [p];
-    let ok = false;
-    for (const sub of subs) { const wr = await webPush(env, sub, payloadStr); if (wr.ok) ok = true; }
-    return ok;
-  } catch { return false; }
+    let p = {};
+    try { p = JSON.parse(payloadStr) || {}; } catch {}
+    let list = [];
+    const raw = await env.USER_PREFS.get("admin_events");
+    if (raw) { try { list = JSON.parse(raw); } catch {} }
+    if (!Array.isArray(list)) list = [];
+    list.unshift({
+      ts: Date.now(),
+      title: String(p.title || "").slice(0, 120),
+      body: String(fullBody || p.body || "").slice(0, 2000),
+      pushed: !!pushed,
+    });
+    await env.USER_PREFS.put("admin_events", JSON.stringify(list.slice(0, 200)), { expirationTtl: 90 * 24 * 3600 });
+  } catch {}
+}
+
+// 對 admin 的所有裝置發 web push(讀 pushsub:${ADMIN_EMAIL} 陣列),回傳是否至少一台成功
+async function webPushAdmin(env, payloadStr, fullBody) {
+  let ok = false;
+  try {
+    if (env.ADMIN_EMAIL) {
+      const raw = await env.USER_PREFS.get(`pushsub:${env.ADMIN_EMAIL}`);
+      if (raw) {
+        const p = JSON.parse(raw);
+        const subs = Array.isArray(p) ? p : [p];
+        for (const sub of subs) { const wr = await webPush(env, sub, payloadStr); if (wr.ok) ok = true; }
+      }
+    }
+  } catch {}
+  await recordAdminEvent(env, payloadStr, ok, fullBody);
+  return ok;
 }
 
 function alertMessage(news, ticker, severity, reason, meta = {}) {
@@ -1132,7 +1210,7 @@ export default {
       // 自有 web push 到所有 admin 裝置(LINE 已退役,唯一通道)
       if (await webPushAdmin(env, JSON.stringify({
         title: "🔔 MarketDaily", body: message.slice(0, 300), url: "https://marketdaily.ai/dashboard.html#alerts",
-      }))) { ok = true; channels.push("webpush"); }
+      }), message)) { ok = true; channels.push("webpush"); }
       // lineStatus 欄位保留 null 給既有呼叫端(watchdog/runner)解析相容
       return json({ ok, channels, lineStatus: null });
     }
