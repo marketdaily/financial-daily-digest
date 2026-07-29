@@ -1848,17 +1848,28 @@ async function loadAdminEvents() {
     const d = await api("/admin/events");
     const events = d.events || [];
     if (!events.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">🔕</div>尚無告警記錄（部署後的新推播才會落地）</div>`; return; }
-    el.innerHTML = `<table class="dtable"><thead><tr><th style="white-space:nowrap">時間</th><th>來源</th><th>內容</th><th>推播</th></tr></thead><tbody>` +
+    el.innerHTML = `<table class="dtable"><thead><tr><th style="white-space:nowrap">時間</th><th>來源</th><th>內容</th><th>推播</th><th>狀態</th></tr></thead><tbody>` +
       events.map(ev => {
         const when = ev.ts ? new Date(ev.ts).toLocaleString("zh-TW",{timeZone:"Asia/Taipei",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
-        return `<tr><td class="mono" style="white-space:nowrap">${when}</td>` +
+        const resWhen = ev.resolved ? new Date(ev.resolved).toLocaleString("zh-TW",{timeZone:"Asia/Taipei",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "";
+        const resBtn = ev.resolved
+          ? `<button class="btn btn-ghost btn-sm" style="color:#4ade80;white-space:nowrap" onclick="resolveEvent(${ev.ts},this)" title="解決於 ${resWhen}｜點擊可取消">✅ 已解決</button>`
+          : `<button class="btn btn-ghost btn-sm" style="white-space:nowrap" onclick="resolveEvent(${ev.ts},this)">標記解決</button>`;
+        return `<tr${ev.resolved ? ' style="opacity:.5"' : ""}><td class="mono" style="white-space:nowrap">${when}</td>` +
           `<td><span class="badge">${esc(ev.title || "—")}</span></td>` +
           `<td style="white-space:pre-wrap;word-break:break-word;font-size:12.5px;line-height:1.55;max-width:560px">${esc(ev.body || "")}</td>` +
-          `<td style="text-align:center">${ev.pushed ? "✅" : `<span title="推播未送達（無訂閱裝置或全部失敗）">⚠️</span>`}</td></tr>`;
+          `<td style="text-align:center">${ev.pushed ? "✅" : `<span title="推播未送達（無訂閱裝置或全部失敗）">⚠️</span>`}</td>` +
+          `<td>${resBtn}</td></tr>`;
       }).join("") + `</tbody></table>`;
   } catch {
     el.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div>無法載入告警記錄</div>`;
   }
+}
+
+async function resolveEvent(ts, btn) {
+  btn.disabled = true;
+  try { await api("/admin/events-resolve", { ts }); await loadAdminEvents(); }
+  catch { btn.disabled = false; alert("標記失敗,請重試"); }
 }
 
 // ── User detail drawer ──

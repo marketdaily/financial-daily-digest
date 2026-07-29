@@ -851,6 +851,23 @@ export default {
       return json({ events: Array.isArray(events) ? events : [] });
     }
 
+    // Admin:告警標記已解決/取消(body.ts 定位 admin_events 該則,toggle resolved 時間戳)
+    if (url.pathname === "/admin/events-resolve" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid" }, 400); }
+      if (!await requireAdmin(env, body, request)) return json({ error: "Forbidden" }, 403);
+      const ts = Number(body.ts);
+      if (!ts) return json({ error: "no_ts" }, 400);
+      let events = [];
+      try { const raw = await env.USER_PREFS.get("admin_events"); if (raw) events = JSON.parse(raw); } catch {}
+      if (!Array.isArray(events)) events = [];
+      const ev = events.find((e) => e && e.ts === ts);
+      if (!ev) return json({ error: "not_found" }, 404);
+      if (ev.resolved) delete ev.resolved; else ev.resolved = Date.now();
+      await env.USER_PREFS.put("admin_events", JSON.stringify(events), { expirationTtl: 90 * 24 * 3600 });
+      return json({ ok: true, resolved: ev.resolved || null });
+    }
+
     // Save admin global config
     if (url.pathname === "/admin/save-config" && request.method === "POST") {
       let body;
