@@ -9,7 +9,7 @@ const I18N = {
     search_ph: "搜尋任何股票:代號或名稱(台股+美股)…",
     tab_watch: "⭐ 自選", tab_cats: "🗂 分類", tab_ranks: "🏆 排行",
     sec_tw: "台股", sec_us: "美股",
-    col_sym: "代號 / 名稱", col_px: "成交", col_chg: "漲跌", col_bid: "買進", col_ask: "賣出",
+    col_sym: "代號 / 名稱", col_px: "成交", col_chg: "漲跌", col_pct: "幅度", col_bid: "買進", col_ask: "賣出",
     col_hl: "高 / 低", col_vol: "量(張)", col_qty: "股數", col_avg: "均價", col_now: "現價", col_pnl: "損益",
     gate_msg: "請先登入", gate_link: "前往 Dashboard →",
     empty_msg: "這個清單目前是空的。", empty_link: "去新增自選 →", more: "顯示更多 ↓",
@@ -72,7 +72,7 @@ const I18N = {
     search_ph: "Search any stock: symbol or name (TW + US)…",
     tab_watch: "⭐ Watchlist", tab_cats: "🗂 Sectors", tab_ranks: "🏆 Ranks",
     sec_tw: "Taiwan", sec_us: "US",
-    col_sym: "Symbol / Name", col_px: "Last", col_chg: "Chg", col_bid: "Bid", col_ask: "Ask",
+    col_sym: "Symbol / Name", col_px: "Last", col_chg: "Chg", col_pct: "Chg%", col_bid: "Bid", col_ask: "Ask",
     col_hl: "H / L", col_vol: "Vol", col_qty: "Shares", col_avg: "Avg", col_now: "Last", col_pnl: "P&L",
     gate_msg: "Please sign in first.", gate_link: "Go to Dashboard →",
     empty_msg: "This list is empty.", empty_link: "Add stocks →", more: "Show more ↓",
@@ -170,6 +170,33 @@ function fmtChg(c, sym) {
   if (isTWSym(sym) && c <= -9.9) return { dir: "down", label: T("limit_down") };
   return { dir: c >= 0 ? "up" : "down", label: `${c >= 0 ? "▲" : "▼"} ${Math.abs(c).toFixed(2)}%` };
 }
+
+/* 券商慣例(2026-07-30 用戶回報):「漲跌」=點數(絕對價差),「幅度」=百分比,兩者分欄。
+   點數一律取真實前收算 —— 用四捨五入到 2 位的 change% 反推會失真(台積電 2230 誤差可達 1 點)。*/
+function chgPts(q) {
+  if (!q) return null;
+  if (q.change_val != null) return q.change_val;                  // 永豐即時 snapshot.change_price
+  if (q.prev != null && q.price != null) return q.price - q.prev; // 免費源 Yahoo 前收
+  // 後援(舊版來源沒給前收):反推前收後吸附到台股跳動單位網格 —— 網格夠粗,反推誤差 <半格,吸附後即為真值
+  if (q.price == null || q.change == null) return null;
+  const est = q.price / (1 + q.change / 100);
+  if (!isFinite(est) || est <= 0) return null;
+  if (!isTWSym(q.symbol)) return q.price - est;
+  const grid = est >= 500 ? 1 : 0.05;
+  return q.price - Math.round(est / grid) * grid;
+}
+function fmtPts(v) {
+  if (v == null) return { dir: "neutral", label: "—" };
+  const a = Math.abs(v);
+  return { dir: v >= 0 ? "up" : "down",
+    label: `${v >= 0 ? "▲" : "▼"} ${a >= 1000 ? a.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : a.toFixed(2)}` };
+}
+/* 單一欄位要同時講點數與幅度時(個股詳情、大盤列):「▲ 30.00 (1.36%)」 */
+function chgCombo(q, sym) {
+  const { dir, label } = fmtChg(q.change, sym);
+  const p = chgPts(q);
+  return { dir, label: p == null ? label : `${fmtPts(p).label} (${label.replace(/^[▲▼]\s*/, "")})` };
+}
 const fp = v => v == null ? "—" : (v >= 1000 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : (v >= 100 ? v.toFixed(1) : v.toFixed(2)));
 
 const escAttr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
@@ -191,13 +218,14 @@ function nameCell(sym, name) {
 }
 
 function rowHtml(sym) {
-  // 台股表格 7 欄(含五檔 ext + 高低/量);美股表格只有 3 欄(表頭無高低/量),不產多餘 td 免錯位
+  // 台股表格 8 欄(含五檔 ext + 高低/量);美股表格只有 4 欄(表頭無高低/量),不產多餘 td 免錯位
   const extra = isTWSym(sym)
     ? `<td class="ext" id="bid-${sym}">—</td><td class="ext" id="ask-${sym}">—</td>
     <td class="hide-sm" id="hl-${sym}">—</td><td class="hide-sm" id="vol-${sym}">—</td>`
     : "";
   return `<tr data-sym="${sym}"><td>${nameCell(sym)}</td>
-    <td class="px" id="px-${sym}">—</td><td id="chg-${sym}" class="neutral">—</td>${extra}</tr>`;
+    <td class="px" id="px-${sym}">—</td><td id="cpt-${sym}" class="neutral">—</td>
+    <td id="chg-${sym}" class="neutral">—</td>${extra}</tr>`;
 }
 
 function paint(q) {
@@ -213,6 +241,8 @@ function paint(q) {
   px.className = "px " + dir;
   const chg = $("chg-" + s);
   if (chg) { chg.textContent = label; chg.className = dir; }
+  const cpt = $("cpt-" + s);
+  if (cpt) { const p = fmtPts(chgPts(quotes[s])); cpt.textContent = p.label; cpt.className = p.dir; }
   // 買賣五檔:券商即時(admin)才有
   if (q.bid !== undefined && $("bid-" + s)) {
     $("bid-" + s).textContent = fp(q.bid);
@@ -396,9 +426,10 @@ function renderRanks(rows) {
   $("rank-title").textContent = `${T(RANK_LABELS[curRank])} ${T("rank_title")}`;
   document.querySelector("#rank-table tbody").innerHTML = rows.map((r, i) => {
     const { dir, label } = fmtChg(r.change_pct, r.code);
+    const pts = fmtPts(r.change_price ?? null);
     return `<tr data-sym="${r.code}"><td>${i + 1}</td>
       <td>${nameCell(r.code, r.name)}</td>
-      <td class="px ${dir}">${fp(r.close)}</td><td class="${dir}">${label}</td>
+      <td class="px ${dir}">${fp(r.close)}</td><td class="${pts.dir}">${pts.label}</td><td class="${dir}">${label}</td>
       <td class="hide-sm">${r.volume == null ? "—" : r.volume.toLocaleString()}</td></tr>`;
   }).join("");
 }
@@ -2010,7 +2041,7 @@ async function tickMkt() {
       const dir = q.change == null ? "neutral" : q.change >= 0 ? "up" : "down";
       return `<div class="mkt-chip" data-mk="${s}"><div class="mk-n">${n}</div>
         <div class="mk-p ${dir}">${fp(q.price)}</div>
-        <div class="mk-c ${dir}">${q.change == null ? "—" : (q.change >= 0 ? "▲" : "▼") + Math.abs(q.change).toFixed(2) + "%"}</div></div>`;
+        <div class="mk-c ${dir}">${chgCombo(q, s).label}</div></div>`;
     }).join("");
     el.querySelectorAll("[data-mk]").forEach(c => c.onclick = () => openSheet(c.dataset.mk));
   } catch {}
@@ -2227,7 +2258,7 @@ function openSheet(sym) {
         <div class="d-ind">${ind}${sigs.length ? " " + sigDot(sym) : ""}</div></div>
       <div style="display:flex;align-items:flex-start;gap:12px">
         <div class="d-price"><div class="d-px ${dir}" id="d-px">${fp(q.price)}</div>
-          <div class="d-chg ${dir}" id="d-chg">${label}</div></div>
+          <div class="d-chg ${dir}" id="d-chg">${chgCombo(q, sym).label}</div></div>
         <button class="sheet-x" id="sheet-x" title="關閉">✕</button>
       </div>
     </div>
@@ -2434,7 +2465,7 @@ function openSheet(sym) {
 
 function refreshSheetHead(sym) {
   const q = quotes[sym] || {};
-  const { dir, label } = fmtChg(q.change, sym);
+  const { dir, label } = chgCombo(q, sym);
   const px = $("d-px"), chg = $("d-chg");
   if (px) { px.textContent = fp(q.price); px.className = "d-px " + dir; }
   if (chg) { chg.textContent = label; chg.className = "d-chg " + dir; }
