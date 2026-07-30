@@ -1125,7 +1125,12 @@ def _flush_outbox(outbox, date, send_fn, api_key):
     _enforce_send_deadline(MARKET)   # 補班才有作用;放在 hold 之後=用「真正要寄的那一刻」判定
     # MD_SUBJECT_NOTE:人工補寄修正版時標注主旨(例:「(更新版) 」),平常不設=無作用
     note = os.environ.get("MD_SUBJECT_NOTE", "")
+    # 超時加註:算一次、全批共用(同一批本來就在同一刻寄出)。沒超時回 "" → 行為零改變。
+    late_notice = _late_send_notice(MARKET, date)
+    if late_notice:
+        print(f"   ⏰ 本班寄出時已過內容誠實時點 → 全批自動加註盤前說明(Delvin 2026-07-30 拍板 B)")
     for email, html, subject in outbox:
+        html = _inject_late_notice(html, late_notice)
         if note:
             subject = note + (subject or f"📊 財經日報 {date} — AI 精選美股 + 台股")
         try:
@@ -1138,6 +1143,65 @@ def _flush_outbox(outbox, date, send_fn, api_key):
         else:
             print(f"   ❌ 發送失敗：{email}")
     return sent_ok
+
+
+def _market_open_tw(market, date):
+    """該班次對應市場的開盤時刻(台北時間)。us 一律從美東 9:30 換算 —— 夏令 21:30 TW、
+    冬令 22:30 TW,寫死任一個都會有半年是錯的。"""
+    from datetime import datetime, time as _time
+    from zoneinfo import ZoneInfo
+    d = datetime.strptime(date, "%Y-%m-%d").date()
+    if market == "tw":
+        return datetime.combine(d, _time(9, 0), ZoneInfo("Asia/Taipei"))
+    return datetime.combine(d, _time(9, 30), ZoneInfo("America/New_York")).astimezone(ZoneInfo("Asia/Taipei"))
+
+
+def _late_send_notice(market, date, now=None):
+    """生成拖過內容誠實時點時,信裡自動加註的說明(2026-07-30 Delvin 選 B)。
+
+    背景:`_enforce_send_deadline` 只在 run.sh 補班模式生效,正常班次一旦生成超時就直接寄——
+    07-30 晚報 21:35 才寄出,而美股 21:30 已開盤,等於發了一封講盤前的信卻沒告訴讀者。
+    兩條死線互相打架(「絕不讓用戶缺信」vs「不可開盤後寄盤前信」),Delvin 拍板:照寄,但誠實加註。
+
+    ⚠️ 措辭分兩種、不可一律寫「已開盤」:過了死線(tw 08:40 / us 21:10)但還沒到開盤那幾十分鐘,
+    寫「已開盤」本身就是假訊息 —— 為了誠實加的註記反而造假,比不加更糟。
+    回傳 "" = 沒超時,行為與過去逐字相同。now 只給測試注入用(生產一律讀真實時鐘)。"""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    if market not in ("tw", "us"):
+        return ""
+    raw = os.environ.get("MD_SEND_DEADLINE_HM", "").strip()
+    if not (raw.isdigit() and len(raw) == 4):
+        raw = "0840" if market == "tw" else "2110"     # 與補班閘同一組數字,單一事實來源
+    now_tw = now or datetime.now(ZoneInfo("Asia/Taipei"))
+    if now_tw.hour * 60 + now_tw.minute < int(raw[:2]) * 60 + int(raw[2:]):
+        return ""
+    mk_name = "台股" if market == "tw" else "美股"
+    open_tw = _market_open_tw(market, date)
+    if now_tw >= open_tw:
+        body = (f"本報的分析與進出場價位都是<b>{open_tw:%H:%M} 開盤前</b>判斷的，"
+                f"但今天生成延遲，寄出時已是 {now_tw:%H:%M}、{mk_name}已開盤。"
+                f"盤中價位可能已經跑掉，<b>請先確認現價再決定要不要動作</b>。")
+    else:
+        body = (f"本報今天生成延遲，寄出時已是 {now_tw:%H:%M}（原定 {raw[:2]}:{raw[2:]} 前）。"
+                f"內容仍是盤前判斷，{mk_name} {open_tw:%H:%M} 開盤前有效。")
+    return ('<div style="margin:14px 12px 0;padding:12px 15px;background:#fff7ed;'
+            'border:1px solid #fdba74;border-radius:12px;">'
+            '<div style="font-size:12.5px;color:#7c2d12;line-height:1.7;">'
+            f'⏰ {body}</div></div>')
+
+
+def _inject_late_notice(html, notice):
+    """把加註插在第一個內容區塊之前(header 之下)。三段錨點:tldr → wrapper → body,
+    任何一個中就插入;都沒中就原樣回傳(寧可少一段註記,不可弄壞整封信)。"""
+    if not notice:
+        return html
+    for anchor, after in (('<div class="tldr"', False), ('<div class="wrapper">', True), ("<body>", True)):
+        i = html.find(anchor)
+        if i >= 0:
+            pos = i + len(anchor) if after else i
+            return html[:pos] + notice + html[pos:]
+    return html
 
 
 def _emit_run_report(data, subscribers, processed, success_count, tier_counts,
