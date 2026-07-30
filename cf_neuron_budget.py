@@ -37,6 +37,19 @@ FREE_DAILY_NEURONS = 10_000
 # 被繞過,成本會回到舊曲線並開始撞這個閘門(撞到就會推播,見 cf_neuron_watch_runner.sh)。
 BUDGET_CEILING = int(os.environ.get("CF_NEURON_CEILING", 9_500))
 
+# 日報保留額(2026-07-30 晚間事故當場加):照 analyzer._call_gemini 的 key2 保留桶同一形狀
+# ——**背景呼叫端提早停手,把最後這段餘裕留給日報**。
+#
+# 為什麼:原本只有一個上限,誰先花誰先贏,而帳本分不出「日報」和「背景工作」。當天下午我為了
+# 量測 CF 成本手動跑了幾輪真實批次,吃掉 8,348 neurons(帳本 GraphQL 對帳的權威值);晚上
+# 19:00 美股班一開始就只剩約 1,150 額度,CF 幾乎立刻被閘門擋下 → 鏈條退到 OpenRouter 550b
+# (實測 144s/次)→ 21 位用戶的生成拖過 20:00 整點,日報遲到(design 上會晚寄+推遲到告警,
+# 訂閱者不會缺信,但那是防線在補洞,不是正常運作)。
+#
+# 保留額 3,000 的依據:當晚美股班實測只用 1,309 neurons(零邊際成本架構生效後),兩班合計
+# ≈2,600 → 3,000 有裕度但不浪費。背景工作因此實際可用 6,500。
+DIGEST_RESERVE = int(os.environ.get("CF_NEURON_DIGEST_RESERVE", 3_000))
+
 LEDGER = Path(__file__).resolve().parent / "logs" / "cf_neuron_ledger.json"
 
 
@@ -63,13 +76,27 @@ def spent_today() -> float:
     return float(_load().get(_utc_date(), {}).get("neurons", 0.0))
 
 
+def _is_digest_run() -> bool:
+    """日報 run 由 run.sh 設 DIGEST_RUN=1(與 analyzer._call_gemini 的 key 分區同一個旗標)。"""
+    return os.environ.get("DIGEST_RUN") == "1"
+
+
+def effective_ceiling() -> int:
+    """本呼叫端可用的上限:日報吃滿額,背景工作要留 DIGEST_RESERVE 給日報。"""
+    return BUDGET_CEILING if _is_digest_run() else max(0, BUDGET_CEILING - DIGEST_RESERVE)
+
+
 def remaining() -> float:
-    return max(0.0, BUDGET_CEILING - spent_today())
+    return max(0.0, effective_ceiling() - spent_today())
 
 
 def budget_ok() -> bool:
-    """還有預算可打 CF。False = 該讓路給零成本 provider(本機 GPU)。"""
-    return spent_today() < BUDGET_CEILING
+    """還有預算可打 CF。False = 該讓路給零成本 provider(本機 GPU)。
+
+    背景呼叫端的上限比日報低 DIGEST_RESERVE,所以背景工作把額度用完時日報還有餘裕
+    (2026-07-30 晚間就是因為沒有這道分區,下午的量測吃光額度害晚報遲到)。
+    """
+    return spent_today() < effective_ceiling()
 
 
 def record(model: str, in_tokens: int, out_tokens: int) -> float:
@@ -112,5 +139,6 @@ def record(model: str, in_tokens: int, out_tokens: int) -> float:
 
 def summary() -> str:
     day = _load().get(_utc_date(), {})
-    return (f"CF neurons 今日(UTC {_utc_date()}):{day.get('neurons', 0):.0f}/{BUDGET_CEILING} "
-            f"({day.get('calls', 0)} 次呼叫,免費層上限 {FREE_DAILY_NEURONS})")
+    who = "日報" if _is_digest_run() else f"背景(留 {DIGEST_RESERVE} 給日報)"
+    return (f"CF neurons 今日(UTC {_utc_date()}):{day.get('neurons', 0):.0f}/{effective_ceiling()} "
+            f"[{who}] ({day.get('calls', 0)} 次呼叫,免費層上限 {FREE_DAILY_NEURONS})")
