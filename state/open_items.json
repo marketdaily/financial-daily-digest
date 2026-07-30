@@ -128,5 +128,25 @@
   "opened": "2026-07-30 19:09",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 14,
+  "what": "今晚美股晚報遲到(我造成的):等它寄完+回寫 admin 告警",
+  "why": "我下午為量測 CF 成本手動跑真實批次吃掉 8,348/9,500 neurons → 19:00 美股班一開跑 CF 就被閘門擋下 → 鏈條退到 OpenRouter 550b(144s/次)→ 21 位用戶生成拖過 20:00。設計會晚寄+推遲到告警(訂閱者不缺信),但那是防線補洞。結構成因已修(CF 加 DIGEST_RESERVE=3000,背景上限降 6500,commit 85f60da),尚待:①確認今晚真的寄出成功 ②照鐵則跑 scripts/resolve_admin_alert.sh 把遲到告警標已解決+寫原因",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-07-30 20:25",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 15,
+  "what": "run.sh 的 main.py 輸出未關緩衝,整段生成期完全無法觀測",
+  "why": "run.sh 把 stdout 重導到 log 檔,Python 對非 TTY 用區塊緩衝 → 生成期的 print(含 card-pool、per-user 進度)全卡在緩衝區。今晚我因此花 90 分鐘誤判成「卡死」,而**真的當機看起來會跟緩衝中的正常進度完全一樣**=監測盲點。修法=run.sh:228 加 PYTHONUNBUFFERED=1。⚠️現在不能改:bash 邊讀邊執行,改動執行中的腳本會讀到錯位內容,要等這輪 run.sh 結束",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-07-30 20:25",
+  "closed": null,
+  "note": ""
  }
 ]
