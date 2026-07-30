@@ -263,23 +263,21 @@
   @media(min-width:1280px){
     .wrap{max-width:min(96vw,1720px);transition:margin .25s ease}
     td,th{padding:8px 10px}
-    /* 兩欄貼合,無黑縫:左欄 margin 剛好等於面板寬,右欄陰影收淡只留 1px 細邊 */
-    body.sheet-open .wrap{margin-right:var(--sheet-w)}
+    body.sheet-open .wrap{margin-right:calc(var(--sheet-w) + 20px)}
     .sheet{left:auto;right:0;top:0;bottom:0;width:var(--sheet-w);max-height:100vh;height:100vh;
-        border-radius:0;border-left:1px solid var(--bd-soft);border-top:none;
-        box-shadow:-6px 0 18px rgba(0,0,0,.22);padding:18px 22px 40px}
+        border-radius:0;border-left:1px solid var(--bd);border-top:none;
+        box-shadow:-18px 0 50px rgba(0,0,0,.45);padding:18px 22px 40px}
     .sheet::before{display:none}
-    /* 接縫拖拉桿:平時隱形(只靠面板 1px 細邊當接縫),滑到接縫才浮現紫色握把可拖 */
+    /* 左緣可拖拉分隔桿:調整清單↔詳情兩窗格寬度(記憶於 localStorage) */
     .sheet-resizer{display:none}
     body.sheet-open .sheet-resizer{display:block;position:fixed;top:0;bottom:0;
-        right:var(--sheet-w);width:14px;z-index:42;cursor:col-resize;transform:translateX(7px)}
+        right:var(--sheet-w);width:12px;z-index:42;cursor:col-resize;transform:translateX(6px)}
     .sheet-resizer::before{content:"";position:absolute;top:0;bottom:0;left:50%;width:2px;
-        transform:translateX(-50%);background:transparent;transition:background .15s,width .15s,box-shadow .15s}
+        transform:translateX(-50%);background:var(--bd);transition:background .15s,width .15s,box-shadow .15s}
     .sheet-resizer:hover::before,.sheet-resizer.dragging::before{
         width:3px;background:var(--acc);box-shadow:0 0 12px rgba(129,140,248,.55)}
-    .sheet-resizer::after{content:"⋮⋮";position:absolute;top:50%;left:50%;letter-spacing:-3px;
-        transform:translate(-50%,-50%);font-size:15px;line-height:1;color:transparent;
-        transition:color .15s;pointer-events:none}
+    .sheet-resizer::after{content:"⋮";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+        font-size:15px;line-height:1;color:var(--faint);pointer-events:none}
     .sheet-resizer:hover::after,.sheet-resizer.dragging::after{color:#c7d2fe}
     body.sheet-resizing{cursor:col-resize;user-select:none}
     body.sheet-resizing .wrap,body.sheet-resizing .sheet{transition:none}
@@ -362,8 +360,7 @@
       <table id="tw-table"><thead><tr>
         <th data-i18n="col_sym">代號 / 名稱</th>
         <th data-sort="px"><span data-i18n="col_px">成交</span><span class="arr"></span></th>
-        <th data-i18n="col_chg">漲跌</th>
-        <th data-sort="chg"><span data-i18n="col_pct">幅度</span><span class="arr"></span></th>
+        <th data-sort="chg"><span data-i18n="col_chg">漲跌</span><span class="arr"></span></th>
         <th class="ext" data-i18n="col_bid">買進</th><th class="ext" data-i18n="col_ask">賣出</th>
         <th class="hide-sm" data-i18n="col_hl">高 / 低</th>
         <th class="hide-sm" data-sort="vol"><span data-i18n="col_vol">量(張)</span><span class="arr"></span></th>
@@ -376,16 +373,14 @@
       <table id="us-table"><thead><tr>
         <th data-i18n="col_sym">代號 / 名稱</th>
         <th data-sort="px"><span data-i18n="col_px">成交</span><span class="arr"></span></th>
-        <th data-i18n="col_chg">漲跌</th>
-        <th data-sort="chg"><span data-i18n="col_pct">幅度</span><span class="arr"></span></th>
+        <th data-sort="chg"><span data-i18n="col_chg">漲跌</span><span class="arr"></span></th>
       </tr></thead><tbody></tbody></table>
     </div>
 
     <div class="sec" id="rank-sec" style="display:none">
       <div class="sec-title"><span id="rank-title"></span><span class="cnt" data-i18n="rank_src">永豐即時 · 30s</span></div>
       <table id="rank-table"><thead><tr>
-        <th>#</th><th data-i18n="col_sym">代號 / 名稱</th><th data-i18n="col_px">成交</th>
-        <th data-i18n="col_chg">漲跌</th><th data-i18n="col_pct">幅度</th>
+        <th>#</th><th data-i18n="col_sym">代號 / 名稱</th><th data-i18n="col_px">成交</th><th data-i18n="col_chg">漲跌</th>
         <th class="hide-sm" data-i18n="col_vol">量(張)</th>
       </tr></thead><tbody></tbody></table>
     </div>
@@ -394,7 +389,7 @@
       <div class="scr-form" id="scr-form"></div>
       <div class="sec-title"><span data-i18n="scr_result">篩選結果</span><span class="cnt" id="scr-cnt"></span></div>
       <table id="scr-table"><thead><tr>
-        <th data-i18n="col_sym">代號 / 名稱</th><th data-i18n="col_px">成交</th><th data-i18n="col_pct">幅度</th>
+        <th data-i18n="col_sym">代號 / 名稱</th><th data-i18n="col_px">成交</th><th data-i18n="col_chg">漲跌</th>
         <th data-i18n="fd_pe">本益比</th><th data-i18n="fd_dy">殖利率</th><th class="hide-sm" data-i18n="fd_pb">淨值比</th>
       </tr></thead><tbody></tbody></table>
     </div>
@@ -429,6 +424,6 @@
 <script src="tw-chain-generic.js?v=20260722b"></script>
 <script src="us-chain-generic.js?v=20260722"></script>
 <script src="tw-cb.js?v=20260722"></script>
-<script src="js/watch.js?v=20260730a"></script>
+<script src="js/watch.js?v=20260723r"></script>
 </body>
 </html>

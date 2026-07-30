@@ -2115,12 +2115,10 @@ export default {
         // Yahoo 全掛的最終後援:退回 Finnhub 自己的 c/dp(次佳,前收可能錯位但聊勝於無)
         if (price === null && fd && typeof fd.c === "number" && fd.c > 0) {
           price = fd.c; change = typeof fd.dp === "number" ? fd.dp : null;
-          prev = typeof fd.pc === "number" && fd.pc > 0 ? fd.pc : null;  // 這條後援 price/change 都來自 Finnhub,前收同源才自洽
         }
-        // prev(前收)出去給前台算「漲跌點數」——不可讓前台拿四捨五入到 2 位的 change% 反推(高價股會差 1 點以上)
-        return { symbol: t, name, price, prev, change, high, low, volume };
+        return { symbol: t, name, price, change, high, low, volume };
       };
-      const settleChunk = (arr, syms) => arr.map((r, i) => r.status === "fulfilled" ? r.value : { symbol: syms[i], name: syms[i], price: null, prev: null, change: null });
+      const settleChunk = (arr, syms) => arr.map((r, i) => r.status === "fulfilled" ? r.value : { symbol: syms[i], name: syms[i], price: null, change: null });
       // 持倉多時(10+ 檔)同時開 N 條會觸發 Yahoo burst 限流 → 改 4 檔一批、批間 120ms,
       // 從源頭降低觸發機率(2026-06-10:6/8 的單次補抓在「持續限流窗口」下仍會 6/10 檔卡「···」)。
       const quotes = [];

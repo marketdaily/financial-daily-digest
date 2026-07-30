@@ -170,8 +170,6 @@ class Feed:
                     "name": (getattr(c, "name", "") or "").strip() or None,
                     "price": sn.close,
                     "change": round(sn.change_rate, 2),
-                    # 前台「漲跌」欄=點數,「幅度」欄=百分比(券商慣例);點數用券商原生 change_price,不由 change 反推
-                    "change_val": sn.change_price,
                     "bid": sn.buy_price,
                     "ask": sn.sell_price,
                     "open": sn.open,
