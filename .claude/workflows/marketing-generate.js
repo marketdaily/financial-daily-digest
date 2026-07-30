@@ -49,8 +49,16 @@ const ANGLES = [
   { platform: 'x', angle: '產品日常:一封日報長什麼樣(講結構不講當日數字)' },
   { platform: 'facebook', angle: '信任與合規:免費與付費看到完全相同的個股分析' },
   { platform: 'instagram', angle: '新功能:每天 3 分鐘語音快報(marketdaily.ai/audio)' },
-  // 轉換軌:留言閘門(comment_funnel.py 自動回連結;caption 絕不放連結,固定關鍵字「早鳥」)
-  { platform: 'instagram', angle: '留言閘門轉換型:內容教一個真材實料的投資資訊習慣/方法(教方法,不喊個股不給價位),CTA 固定收尾「留言『早鳥』,我把訂閱連結私訊給你 ✌️」;caption 短(三句內)、不放任何連結;口徑只能是「目前全功能限時免費,早鳥用戶在未來恢復收費後永久保留免費使用權」,禁止暗示未來分析內容收費' },
+  // ⏸️ 轉換軌:留言閘門——2026-07-30 Delvin 拍板暫停(dq-70ca9a8e37 選 B)。
+  // 原因:promote_ad_creatives.py::_funnel_ready() 是 fail-closed 兩條件閘,①token scope
+  // instagram_manage_comments 早已到手 ✅,②env COMMENT_FUNNEL_ADVANCED 未開(Meta App Review
+  // 的 Advanced access 未送/未核准)❌ → 這型草稿一律進不了佇列。留在清單裡的後果是每週固定
+  // 燒一個創作代理 + 一個評分代理 + 一個驗證代理產一則結構上不可能上架的東西(07-30 那批就是
+  // PENDING_07,創作端自評 90 分最高的一則,白做)。
+  // ⚠️ 復原條件(Delvin:「之後再送 App Review」):App Review 核准 Advanced access 後,把
+  // COMMENT_FUNNEL_ADVANCED=1 寫進 .env,然後把下面這行的註解解開即可——不要改 _funnel_ready()
+  // 本身,那道閘是「po 出『留言早鳥』卻回不了公開粉絲=對用戶失信」的最後防線。
+  // { platform: 'instagram', angle: '留言閘門轉換型:內容教一個真材實料的投資資訊習慣/方法(教方法,不喊個股不給價位),CTA 固定收尾「留言『早鳥』,我把訂閱連結私訊給你 ✌️」;caption 短(三句內)、不放任何連結;口徑只能是「目前全功能限時免費,早鳥用戶在未來恢復收費後永久保留免費使用權」,禁止暗示未來分析內容收費' },
 ]
 
 phase('研究')
