@@ -170,6 +170,35 @@ def main():
         if f["check"] in TENSE_CHECKS or f["check"] in CONTENT_HIGH_CHECKS:
             problems.append(f"[archive] {f['check']}: {f['msg']}")
 
+    # ── 2b. 本班到底掉到哪一層 LLM(2026-07-30 晚報遲到 1h35 事故) ──
+    # 那天 45 次呼叫落在 openrouter nemotron-550b(144s/次)=108 分鐘,而**當下沒有任何
+    # 偵測器在看這件事**:日報照樣寄出、audit 全過,只有 Delvin 自己發現信來得太晚。
+    # 「強模全滅、整批掉慢路徑」是遲到的**領先指標**,要在它變成遲到之前就看得見。
+    log = REPO / "logs" / f"fallback_{date}.log"
+    if log.exists():
+        try:
+            txt = log.read_text(encoding="utf-8", errors="replace")
+            # 只切「這一班」那段,不要把早報的量算進晚報(累積比對會天天誤報)
+            # ⚠️ 起點之後**必須截到下一個 `^=== ` 表頭為止**:同一個 log 檔早晚兩班接在一起,
+            # 只取 marks[-1]: 會讓早報那段一路吃進晚報的呼叫 → 早報天天被誤報成「強模全滅」。
+            # (我第一版就是這樣寫的,而且註解裡才剛警告過同一件事。)
+            # 邊界錨 `[) ]`:起跑行的欄位以後可能再增加,不可錨死右括號(digest_guard 2026-07-20 同坑)。
+            marks = [m.start() for m in re.finditer(r"^=== .*winrig runner start \(market="
+                                                    + re.escape(edition) + r"[) ]", txt, re.M)]
+            seg = ""
+            if marks:
+                nxt = re.search(r"^=== ", txt[marks[-1] + 1:], re.M)
+                seg = txt[marks[-1]:marks[-1] + 1 + nxt.start()] if nxt else txt[marks[-1]:]
+            slow = len(re.findall(r"\[LLM\] 使用 openrouter:", seg))
+            local_n = len(re.findall(r"\[LLM\] 使用 local:", seg))
+            if slow >= 15:
+                problems.append(
+                    f"[LLM鏈] 本班 {slow} 次呼叫落到 openrouter 慢路徑(~144s/次≈{slow*144//60} 分鐘)"
+                    f"+本地 {local_n} 次 —— 強模層(gemini RPD/groq TPD/CF neuron)幾乎全滅,"
+                    f"下一班極可能遲到。查 429 內文分辨 TPM(等一分鐘)/TPD(今天沒救,要換桶)/RPD")
+        except Exception:
+            pass   # 這條是加值偵測,壞了不該擋既有複檢
+
     # ── 3b. 平日該有語音卻沒有=產線沒跑,不准靜默(2026-07-11 事故) ──
     narration = REPO / "audio_brief" / "out" / f"narration_{date}_{edition}.txt"
     if not narration.exists() and audio_expected(date, edition):
