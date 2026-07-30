@@ -16,8 +16,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 13:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 17:23",
+  "note": "語義釐清+正在補:'存貨0'指的是新鮮 adcreative(行銷創意素材)=0,不是社群斷更——daily_run --dry 仍有 win_* 可發。已開新項追蹤本次補產"
  },
  {
   "id": 3,
@@ -46,6 +46,16 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-07-30 13:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 6,
+  "what": "adcreative 素材補產進行中(Delvin 指示現在補)",
+  "why": "marketing-generate workflow 背景跑中→接 verify→promote→deploy;完成前存貨仍是 0。runner 的重複 --model 已收乾(改依 CLAUDE.md opus 令+--fallback-model)",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-07-30 17:23",
   "closed": null,
   "note": ""
  }
