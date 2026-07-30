@@ -595,6 +595,22 @@ async function recordAlertInbox(env, email, record) {
   } catch {}
 }
 
+// 純資訊類通知(非錯誤告警)進 KV 時直接自動標已解決,後台不用 Delvin 手動打勾(2026-07-30 拍板)。
+// 保守白名單:只有明確「事情正常完成/例行資訊」的字樣才算 info,拿不準一律當告警留未解決。
+// 未來新的資訊型推播想自動歸檔:訊息帶 [資訊] 或 [info] 標記即可,不用再改這份清單。
+const ADMIN_INFO_KEYWORDS = [
+  "班日報已由 winrig 寄出",
+  "永豐群更新",
+  "AI 技術雷達",
+  "預警已推全體",
+  "[資訊]",
+  "[info]",
+];
+function isInfoAdminEvent(title, body) {
+  const txt = `${title}\n${body}`;
+  return ADMIN_INFO_KEYWORDS.some((k) => txt.includes(k));
+}
+
 // 每次 admin 推播同步落 KV admin_events(最近 200 則,滾動 90 天),後台「系統告警」頁讀。
 // 推播失敗/無訂閱也照樣留痕:歷史不依賴推播當下有沒有看到(admin.html /admin/events)。
 // fullBody:admin-line-push 的完整訊息(push body 截 300 字,歷史留全文)。
@@ -606,12 +622,18 @@ async function recordAdminEvent(env, payloadStr, pushed, fullBody, evTs) {
     const raw = await env.USER_PREFS.get("admin_events");
     if (raw) { try { list = JSON.parse(raw); } catch {} }
     if (!Array.isArray(list)) list = [];
-    list.unshift({
+    const rec = {
       ts: evTs || Date.now(),
       title: String(p.title || "").slice(0, 120),
       body: String(fullBody || p.body || "").slice(0, 2000),
       pushed: !!pushed,
-    });
+    };
+    if (isInfoAdminEvent(rec.title, rec.body)) {
+      rec.info = true;
+      rec.resolved = rec.ts;
+      rec.resolved_note = "ℹ️ 資訊通知,自動歸檔";
+    }
+    list.unshift(rec);
     await env.USER_PREFS.put("admin_events", JSON.stringify(list.slice(0, 200)), { expirationTtl: 90 * 24 * 3600 });
   } catch {}
 }

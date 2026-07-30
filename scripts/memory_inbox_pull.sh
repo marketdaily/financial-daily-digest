@@ -10,7 +10,7 @@ ssh -o BatchMode=yes -o ConnectTimeout=10 "$MAC" "cat $MACF" > "$TMP" 2>/dev/nul
 new=0
 while IFS= read -r line; do
   case "$line" in
-    "- ["*) grep -qxF "$line" "$LOCAL" || { echo "$line" >> "$LOCAL"; new=$((new+1)); } ;;
+    "- ["*) grep -qxF -- "$line" "$LOCAL" || { echo "$line" >> "$LOCAL"; new=$((new+1)); } ;;
   esac
 done < "$TMP"
 rm -f "$TMP"

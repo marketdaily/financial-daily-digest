@@ -1869,6 +1869,7 @@ async function loadAdminEvents() {
     const d = await api("/admin/events");
     const events = d.events || [];
     if (!events.length) { el.innerHTML = `<div class="empty-state"><div class="emoji">🔕</div>尚無告警記錄（部署後的新推播才會落地）</div>`; return; }
+    events.sort((a, b) => ((a.resolved ? 1 : 0) - (b.resolved ? 1 : 0)) || ((b.ts || 0) - (a.ts || 0)));
     el.innerHTML = `<table class="dtable"><thead><tr><th style="white-space:nowrap">時間</th><th>來源</th><th>內容</th><th>推播</th><th>狀態</th></tr></thead><tbody>` +
       events.map(ev => {
         const when = ev.ts ? new Date(ev.ts).toLocaleString("zh-TW",{timeZone:"Asia/Taipei",month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
