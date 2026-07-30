@@ -8,9 +8,12 @@ import json
 import os
 import sys
 import urllib.request
+from datetime import date, timedelta
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MARKER = os.path.join(HERE, ".signed_ok")
+WATCH = os.path.join(HERE, ".signed_watch.json")
+OVERDUE_BIZ_DAYS = 2
 ALERT_WORKER = "https://marketdaily-alert-worker.delvin-12345678.workers.dev"
 
 
@@ -56,6 +59,40 @@ def build_message(states, n_pos):
     return msg
 
 
+def biz_days_between(a, b):
+    """a→b 之間的工作日數(不含 a 當天)。過檔是營業日批次,用日曆天會在週末誤報。"""
+    n, d = 0, a
+    while d < b:
+        d += timedelta(days=1)
+        if d.weekday() < 5:
+            n += 1
+    return n
+
+
+def overdue_alert(states, today, tok):
+    """過檔逾期主動告警——沒生效就靜默 = 沉默的守衛 = 沒有守衛。只推一次,不洗頻。"""
+    try:
+        st = json.load(open(WATCH))
+    except Exception:
+        st = {}
+    first = date.fromisoformat(st.get("first_seen", today.isoformat()))
+    st.setdefault("first_seen", first.isoformat())
+    if not st.get("alerted") and biz_days_between(first, today) >= OVERDUE_BIZ_DAYS:
+        pending = [label for k, label in (("stock", "證券"), ("futopt", "期貨"))
+                   if states[k] is not True]
+        msg = (f"⚠️ 永豐 API 過檔逾期:{'/'.join(pending)}自 {first} 起已過 "
+               f"{biz_days_between(first, today)} 個營業日仍未生效(簽署+測試皆已完成)。"
+               "該找營業員 Norris 查是否卡在系統過檔。")
+        if tok:
+            try:
+                push(msg, tok)
+                st["alerted"] = True
+            except Exception as ex:
+                print("push failed:", ex)
+        print(msg)
+    json.dump(st, open(WATCH, "w"))
+
+
 def main():
     if os.path.exists(MARKER):
         return 0
@@ -65,9 +102,11 @@ def main():
     accounts = api.login(api_key=E["SINOPAC_API_KEY"], secret_key=E["SINOPAC_SECRET_KEY"],
                          fetch_contract=False)
     states = account_states(accounts)
+    tok = E.get("MARKETDAILY_ALERT_TOKEN", "")
     try:
         if states["stock"] is not True:
             print(f"尚未生效 states={states}")
+            overdue_alert(states, date.today(), tok)
             return 0
         pos = api.list_positions(api.stock_account)
     finally:
@@ -77,7 +116,6 @@ def main():
             pass
     open(MARKER, "w").write(f"signed ok {states}\n")
     msg = build_message(states, len(pos))
-    tok = E.get("MARKETDAILY_ALERT_TOKEN", "")
     if tok:
         push(msg, tok)
     print(msg)
