@@ -2459,6 +2459,10 @@ _COUNCIL_SEATS = [
     # 雲端 CI 環境連不上 localhost → 席次熔斷自動停用,不影響
     ("local:qwen2.5-14b", lambda p: _call_ollama(p, system=_COUNCIL_SYS, max_tokens=300)),
     # Cloudflare Workers AI(免費 10k neurons/日,經 md-ai-proxy):第四家獨立廠商聲音
+    # 2026-07-30 加一席 gpt-oss-120b:與下面 llama 同一個 CF 配額桶,故**不是**第五家廠商,
+    # 多的是「模型世代的獨立聲音」——清晨 gemini 雙 key 必空桶時席次從 3 把變 4 把
+    # (今早 council 掉備援 8 席/LLM 失敗 446 的直接補強)。實測 max_tokens=300 就吐正確 JSON。
+    ("cf:gpt-oss-120b", lambda p: _call_cf_ai(p, system=_COUNCIL_SYS, model="@cf/openai/gpt-oss-120b", max_tokens=300)),
     ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, system=_COUNCIL_SYS, max_tokens=300)),
     # 預接線:沒 key raise→席次自動停用;用戶註冊後填 .env 即多一席,不需改程式
     ("openrouter:nemotron-ultra-550b", lambda p: _call_openrouter(p, system=_COUNCIL_SYS, max_tokens=300)),
