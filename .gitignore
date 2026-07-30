@@ -107,3 +107,5 @@ quote_bridge/shioaji.log
 quote_bridge/*.log
 quote_bridge/.signed_ok
 quant_lab/data/kbars/
+
+intel/reddit_buzz_wl_cache.json
