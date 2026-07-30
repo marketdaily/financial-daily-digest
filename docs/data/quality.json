@@ -65,15 +65,6 @@
    {
     "date": "2026-07-28",
     "market": "tw",
-    "start": "05:20:01",
-    "done": null,
-    "lateness_min": null,
-    "verdict": "incomplete",
-    "llm_tiers": {}
-   },
-   {
-    "date": "2026-07-28",
-    "market": "tw",
     "start": "06:50:00",
     "done": "08:02:36",
     "lateness_min": 62.6,
@@ -134,6 +125,15 @@
      "groq_free": 22,
      "local_last_resort": 6
     }
+   },
+   {
+    "date": "2026-07-30",
+    "market": "us",
+    "start": "19:00:01",
+    "done": null,
+    "lateness_min": null,
+    "verdict": "incomplete",
+    "llm_tiers": {}
    }
   ]
  },
@@ -158,5 +158,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-07-30T08:08:01Z"
+ "generated_utc": "2026-07-30T11:08:01Z"
 }
