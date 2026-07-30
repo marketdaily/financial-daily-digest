@@ -66,8 +66,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 17:44",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 17:51",
+  "note": "原因寫錯,改開 #9 修正:死因不是 429,是那個 session 用前景 Bash 'until grep -q ... journal.jsonl' 阻塞式輪詢等代理"
  },
  {
   "id": 8,
@@ -76,6 +76,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 17:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 9,
+  "what": "adcreative 素材補產仍是 0 產出:workflow 被中斷,尚未重跑(5 則草稿已搶救)",
+  "why": "死因已定案=那個 session 用前景 Bash 'until grep -q ... journal.jsonl' 阻塞輪詢等 6 個創作代理,Bash 工具卡住不返回 → 畫面像凍住等按 enter;workflow 本身沒壞。重跑要靠任務通知/Monitor 而非阻塞輪詢。已搶救 5 則完整草稿+研究簡報到 marketing/salvage/wf_2d91553c_20260730.json,只需補 1-2 則+跑 verify。次要風險:Fable 5 週額度 95%+,重跑要走 opus",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-07-30 17:51",
   "closed": null,
   "note": ""
  }
