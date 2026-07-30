@@ -81,8 +81,33 @@ def _is_digest_run() -> bool:
     return os.environ.get("DIGEST_RUN") == "1"
 
 
+def _override_ceiling() -> int | None:
+    """一次性、自我到期的上限放寬,格式 `CF_NEURON_CEILING_OVERRIDE=<UTC 日>:<上限>`。
+
+    2026-07-30 Delvin 拍板 A:當天下午的成本量測吃掉 8,348 neurons,而 UTC 換日要到隔天
+    08:00 TW,所以 05:20 TW 的台股早報整段都落在這個已耗盡的桶裡。放寬 2,000 neurons
+    (≈US$0.02)換那一班不重演前一晚的遲到+備援版。
+
+    為什麼帶 UTC 日期而不是直接改 `CF_NEURON_CEILING`:**放寬必須自己失效**。靠人記得改回來、
+    或靠另一支 cron 去清,都是遲早忘記然後某天開始默默產生帳單;日期一過條件自然不成立,
+    沒有任何需要被執行的收尾動作。只對日報 run 生效——背景工作不得吃這筆為日報買的額度。
+    """
+    raw = os.environ.get("CF_NEURON_CEILING_OVERRIDE", "").strip()
+    day, sep, val = raw.partition(":")
+    if not sep or day.strip() != _utc_date() or not _is_digest_run():
+        return None
+    try:
+        n = int(val.strip())
+    except ValueError:
+        return None
+    return n if n > BUDGET_CEILING else None
+
+
 def effective_ceiling() -> int:
     """本呼叫端可用的上限:日報吃滿額,背景工作要留 DIGEST_RESERVE 給日報。"""
+    over = _override_ceiling()
+    if over is not None:
+        return over
     return BUDGET_CEILING if _is_digest_run() else max(0, BUDGET_CEILING - DIGEST_RESERVE)
 
 
