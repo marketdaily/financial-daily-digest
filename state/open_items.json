@@ -108,5 +108,15 @@
   "opened": "2026-07-30 18:46",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 12,
+  "what": "us_congress_trades 連接器實際產出為零(源凍在 2026-06-01,守衛回空)",
+  "why": "今天實測 scan(6檔) 回 0 筆:免費快取 data_lag ~58 天 > STALE_DAYS 21 → 源級守衛回空+印警告(這是對的,不拿兩個月前申報冒充近期訊號)。是建立當天就寫在 docstring 的已知限制、非我造成,但『26 個信源』其實有一個是殭屍且沒人在追。升級路徑已記在模組 docstring:①註冊免費 key(100 req/day)看快取是否變新 ②改抓 Senate EFD/House Clerk 官方源",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-07-30 18:49",
+  "closed": null,
+  "note": ""
  }
 ]
