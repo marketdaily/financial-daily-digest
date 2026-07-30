@@ -208,5 +208,15 @@
   "opened": "2026-07-30 22:31",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 22,
+  "what": "15 支個人語音 mp3 CDN 全部驗不到(今晚 us 班)",
+  "why": "postcheck 新偵測器順帶掀出:manifest 有了但音檔沒上到 CDN,personal.py 沒跑完或上傳掛了。今晚信裡的語音連結應該是壞的,還沒查根因",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-07-30 22:41",
+  "closed": null,
+  "note": ""
  }
 ]
