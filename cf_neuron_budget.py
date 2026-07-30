@@ -27,16 +27,15 @@ _DEFAULT_PRICE = (86364, 363636)  # 未知模型按最貴的算,寧可早關閘�
 
 FREE_DAILY_NEURONS = 10_000
 
-# ⚠️ 上限刻意**不是** 10,000,原因是兩條 Delvin 常令在這裡衝突,而選錯邊的代價不對稱:
-#   「全部用免費、不要扣錢」(07-26) vs 「絕對不要再看到閹割版」(07-24)
-# 實測:一次 10 檔批次卡 ≈ 500 neurons,風暴日約 76 次落到 CF ≈ 38,000 neurons。
-# 若硬卡在 10,000,CF 被擋後鏈上沒有能扛批次卡的免費替代——本機 qwen2.5:14b 在真實
-# 10 張卡 prompt 上 600s 超時、OpenRouter 550b 要 144s/次,58 次呼叫趕不上寄出死線
-# → 大量訂閱者收到 deterministic 備援版(用戶看得見的產品傷害)。
-# 因此預設上限設在「風暴日跑得完、但擋掉失控燒錢」的 60,000(≈$0.55/日最大曝險);
-# 真的要純免費零帳單 → .env 設 CF_NEURON_CEILING=9000(代價=風暴日會出備援版)。
-# 這個取捨已推播給 Delvin 拍板,不由程式預設替他決定。
-BUDGET_CEILING = int(os.environ.get("CF_NEURON_CEILING", 60_000))
+# 上限=免費額度(留 5% 餘裕),即「絕不產生帳單」。
+# 這個值一度必須放寬到 60,000,因為當時每位用戶各自生成卡片,風暴日 76 次呼叫 ≈38,000
+# neurons,硬卡免費線會讓 CF 被擋後無免費替代可用(本機 qwen2.5:14b 在真實 10 卡 prompt
+# 上 600s 超時、OpenRouter 550b 要 144s/次)→ 大量訂閱者收備援版,與「絕對不要再看到閹割版」
+# 衝突。2026-07-30 的零邊際成本改造(卡片池聯集預生成+盡力卡共用)把工作量降到
+# ≈9,758 neurons/日(21 用戶/97 標的,即使 CF 扛 100% 的卡),取捨因此消失 → 收回到免費線。
+# ⚠️ 這個上限的正當性依賴那條去重路徑還在:若 main._prewarm_card_pool 失效或卡片池
+# 被繞過,成本會回到舊曲線並開始撞這個閘門(撞到就會推播,見 cf_neuron_watch_runner.sh)。
+BUDGET_CEILING = int(os.environ.get("CF_NEURON_CEILING", 9_500))
 
 LEDGER = Path(__file__).resolve().parent / "logs" / "cf_neuron_ledger.json"
 

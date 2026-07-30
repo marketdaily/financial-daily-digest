@@ -640,6 +640,40 @@ def _run_no_brevo_preview():
     save_local(data["date"], inner, suffix=("_us" if MARKET == "us" else ""))
 
 
+def _prewarm_card_pool(data, all_us_extra, all_tw_extra):
+    """用全體訂閱者的標的聯集跑滿批卡片生成,暖 analyzer 的跨用戶快取(零邊際成本的關鍵)。
+
+    為什麼要在 per-user 迴圈之前做:每位用戶只缺零星幾支時,批次會很小,而每次呼叫都要
+    重付約 2,400 token 的規則區塊 → 呼叫數被「用戶數」推高而不是「標的數」。
+    先跑滿批 → 呼叫數 = ceil(不重複標的/批次大小),加人幾乎不增加成本。
+
+    fail-soft:這裡失敗不影響正確性(per-user 迴圈照原路徑生成),只是回到舊的成本曲線。
+    只暖「本班次該市場」的標的:另一市場的資料當班未必抓齊,硬生會拿到殘缺數據。
+    ⚠️ MARKET 有三個值(tw/us/both,both=手動合併跑),漏掉 both 會只暖一半——實測抓到。
+    """
+    try:
+        from analyzer import _render_signal_cards_batched, _market_status
+        if MARKET == "tw":
+            wanted = set(all_tw_extra)
+        elif MARKET == "us":
+            wanted = set(all_us_extra)
+        else:
+            wanted = set(all_tw_extra) | set(all_us_extra)
+        syms = sorted(wanted)
+        if not syms:
+            return
+        mkt = _market_status(data["date"])
+        avail = {**data.get("us_market", {}), **data.get("tw_market", {})}
+        syms = [s for s in syms if (avail.get(s) or {}).get("price") is not None]
+        if not syms:
+            print("   [card-pool] 聯集標的皆無市價,略過預生成")
+            return
+        print(f"   [card-pool] 預生成 {len(syms)} 檔(全體訂閱者聯集,{MARKET} 班)→ 後面用戶共用")
+        _render_signal_cards_batched(data, syms, mkt, depth="standard")
+    except Exception as e:
+        print(f"   ⚠️ [card-pool] 預生成失敗({str(e)[:80]}),改回逐用戶生成(成本較高但功能不受影響)")
+
+
 def _load_subscriber_prefs(subscribers):
     """抓每位訂閱者偏好;附 zero-error gate(抓取失敗 ≥30% → 推 admin 告警)。
     回傳 (subscriber_prefs, all_us_extra, all_tw_extra)。"""
@@ -981,6 +1015,15 @@ def run():
         except Exception as e:
             print(f"   ⚠️ AI 精選選股失敗({e}),該用戶改收預設版")
             return []
+
+    # ── 卡片池預生成(2026-07-30 Delvin 零邊際成本令:「1 個用戶到 200 個用戶都是免費」)──
+    # 沒有這個 pass 時,每位用戶各自把「自己缺的那幾支」湊成小批次呼叫 LLM,
+    # 每次都重付一遍約 2,400 token 的規則區塊 → 實測 290 檔要 142 次呼叫(理論只需 29 次)。
+    # 先用全體訂閱者的標的聯集跑滿批(10 檔/批)暖 analyzer 的跨用戶快取,
+    # 後面的 per-user 迴圈就幾乎全命中 → 成本 = ceil(不重複標的/10),與用戶數無關。
+    # 品質不打折:走的是同一條生成+品質閘+重生迴圈路徑,且合規鐵則本就要求
+    # 「個股分析對全體用戶完全相同」——共用一份反而更合規。
+    _prewarm_card_pool(data, all_us_extra, all_tw_extra)
 
     picks_email_cache = {}  # (depth, exp_tier) -> (html, subject):精選版全用戶內容相同,共用生成結果
     for email in subscribers:

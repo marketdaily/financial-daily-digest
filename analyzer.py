@@ -2452,6 +2452,17 @@ _COUNCIL_CACHE: dict = {}
 # 讀寫皆繞過快取;qty-only 不影響 LLM 框架(標記層事後個人化)可安全共用。
 # 效益:生成量 O(用戶×持股)→O(不重複股票),配額省 ~2/3、同股結論一致、重生預算更寬。
 _CARD_XUSER_CACHE: dict = {}
+# 2026-07-30(Delvin 零邊際成本令:「1 個用戶到 200 個用戶都是免費、品質不變」)——
+# 上面的快取只收「過了品質閘」的卡,所以**沒過閘的難搞標的每個用戶都重跑一次 3 輪逐支重生**,
+# 成本 = N 用戶 × 3 輪 × 最貴的單支呼叫路徑 → 這是唯一還跟人數線性綁死的地方。
+# 實測(07-30 tw 班):理論去重率 59%(236 欄位/97 標的)但實際只命中 41%,差距全在這條失敗路徑。
+# 修法:同一支股票的重生預算全run只花一次。
+#   _CARD_XUSER_BEST:即使沒過閘也存「盡力而為」的 LLM 卡,後面的用戶直接共用不再呼叫。
+#   _CARD_XUSER_EXHAUSTED:已跑完重生迴圈的 (sym,depth,picks) 不再重跑。
+# 品質面不是退讓而是更正確:合規鐵則要求「個股分析對全體用戶完全相同」,
+# 舊行為讓同一支股票 A 用戶拿 LLM 卡、B 用戶拿 deterministic 卡,本身就違反該鐵則。
+_CARD_XUSER_BEST: dict = {}
+_CARD_XUSER_EXHAUSTED: set = set()
 _COUNCIL_ENABLED = os.environ.get("DIGEST_COUNCIL", "1") != "0"
 _COUNCIL_MAX = int(os.environ.get("DIGEST_COUNCIL_MAX", "40") or "40")
 # 時間預算(2026-07-23 晚報遲寄事故):傍晚 Gemini 免費配額整日耗盡→council 全落到慢席
@@ -3504,8 +3515,14 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
                 continue
             tk = tm.group(1).strip()
             match = next((cs for cs in sub if cs == tk or cs in tk or tk in cs), None)
-            if match and match not in cards_by_sym and _card_passes_audit(card):
+            if not match:
+                continue
+            if match not in cards_by_sym and _card_passes_audit(card):
                 cards_by_sym[match] = card
+            elif match not in cards_by_sym and match not in pos_map:
+                # 沒過閘也留一份「盡力卡」:重生迴圈跑完仍沒過時,後面的用戶共用這份,
+                # 不再逐一重燒(零邊際成本)。仍比 deterministic 模板卡有內容。
+                _CARD_XUSER_BEST.setdefault((match, depth, bool(picks_mode)), card)
 
     # ── 同股跨用戶快取:先撿現成的(持倉成本戶繞過),只為缺的呼叫 LLM ──
     _ck = lambda s: (s, depth, bool(picks_mode))
@@ -3518,6 +3535,17 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
     _n_hit = len(cards_by_sym)
     if _n_hit:
         print(f"  [card-cache] {_n_hit}/{len(llm_stocks)} 支命中跨用戶快取,只生成其餘 {len(llm_stocks) - _n_hit} 支")
+    # 已跑完重生迴圈仍沒過閘的:直接共用當時的盡力結果,不為後面每個用戶再燒一輪(零邊際成本)
+    _reused_best = 0
+    for s in llm_stocks:
+        if s in cards_by_sym or s in pos_map or _ck(s) not in _CARD_XUSER_EXHAUSTED:
+            continue
+        _best = _CARD_XUSER_BEST.get(_ck(s))
+        if _best:
+            cards_by_sym[s] = _best
+            _reused_best += 1
+    if _reused_best:
+        print(f"  [card-cache] {_reused_best} 支沿用前面用戶的盡力卡(該股重生預算全班次只花一次)")
     _todo = [s for s in llm_stocks if s not in cards_by_sym]
     for i in range(0, len(_todo), CHUNK):
         chunk = _todo[i:i + CHUNK]
@@ -3569,6 +3597,11 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
     for s, c in cards_by_sym.items():
         if s not in pos_map:
             _CARD_XUSER_CACHE.setdefault(_ck(s), c)
+    # 標記「這支的重生預算已經花過了」:本班次後面的用戶不再為它重跑迴圈。
+    # 只標本次真的走過生成流程的(_todo,含其後的重生輪);純快取命中的不必標。
+    for s in _todo:
+        if s not in pos_map:
+            _CARD_XUSER_EXHAUSTED.add(_ck(s))
     overflow = set(seen[full_limit:]) if full_limit else set()
     ordered = []
     for s in seen:
