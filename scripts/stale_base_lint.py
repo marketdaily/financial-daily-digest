@@ -99,12 +99,40 @@ def scan() -> list[str]:
                 continue
             if best is None or d_old < best[1]:
                 best = (ref, d_old)
-        if best and best[1] < d_head:
+        if best and _is_stale_base(best[1], d_head, path):
             findings.append(
                 f"{path}: 對 HEAD 差 {d_head} 行,但對舊版 {best[0]} 只差 {best[1]} 行"
                 f" → 疑似拿過期底稿整檔覆寫,HEAD 之後的改動可能被抹掉"
             )
     return findings
+
+
+def _small_edit_budget(path: str) -> int:
+    """「小修」的行數上限:30 行或檔案 5%(取大者)。"""
+    try:
+        with open(os.path.join(REPO, path), "rb") as f:
+            n = f.read().count(b"\n") + 1
+    except OSError:
+        n = 0
+    return max(30, n // 20)
+
+
+def _is_stale_base(d_old: int, d_head: int, path: str) -> bool:
+    """本守衛主張的是「有人拿舊版當底稿,只做了小修就寫回」。三個條件都要成立:
+
+    1. 對舊版比對 HEAD 近 —— 基本方向。
+    2. 近得夠明顯(至少一半)—— 兩者接近時排序只是雜訊。
+    3. **對舊版的差異本身要小** —— 這條是 2026-07-30 上線當天被自己誤判逼出來的:
+       `marketing/ad_creative_drafts.json` 是每週整檔重生的批次檔,新批次對 HEAD 差 663 行、
+       對某祖先差 533 行,只因兩份都很大而排序偶然反過來就被判紅。但「差 533 行」根本不是
+       「小修」,主張不成立。沒有這條絕對上限,所有整檔重生的產出檔(批次 JSON、快照、
+       重新渲染的資料)都會定期假紅 → 警報疲勞,守衛失去意義。
+    """
+    if d_old >= d_head:
+        return False
+    if d_old * 2 > d_head:
+        return False
+    return d_old <= _small_edit_budget(path)
 
 
 def main() -> int:
