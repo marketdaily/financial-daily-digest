@@ -97,6 +97,14 @@ if [ -d "$AUTO" ]; then
   echo "能力庫 ${CAPS} 積木 · 累計 ${CYC} 輪值班。最近做的:"
   grep -E '^\- \[' "$AUTO/autonomous_log.md" 2>/dev/null | tail -n 2 | sed 's/^/  /' | cut -c1-160
 
+  # ⚔️ 防打架(Delvin 2026-07-30 親令):機器「正在做/排隊中」的任務直接亮給每個新視窗——
+  # 你要動的東西若跟下面重疊,先查它進度(斷點檔+WORKLOG),別重做一份撞車;
+  # 反之你做掉了它排隊的事,把 state/current_task.md 改成 idle+一行說明,機器接手前會重讀。
+  if grep -q "STATUS: in_progress" "$AUTO/state/current_task.md" 2>/dev/null; then
+    echo "--- ⚔️ 機器手上的任務(in_progress,動同一塊前先看這裡防打架) ---"
+    head -n 10 "$AUTO/state/current_task.md" | sed 's/^/  /' | cut -c1-200
+  fi
+
   # 🌙 用戶不在時(睡覺/外出)機器完成的事——Delvin 2026-07-07 親令:睡醒開視窗要直接看到
   # 「額度刷新後接手做完了什麼」,不用每次開口問。列近 18 小時值班報告的標題(舊→新,最多 12 筆)。
   NIGHT=$(find "$AUTO/reports" -name '*.md' -mmin -1080 2>/dev/null | sort | tail -n 12)
