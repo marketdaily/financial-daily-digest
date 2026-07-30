@@ -1120,6 +1120,8 @@ def _flush_outbox(outbox, date, send_fn, api_key):
     _hold_until_send_time(MARKET)
     if not _failover_send_clearance(MARKET, date):   # 雲端備援才有作用;winrig 已交付→整批不寄
         return 0
+    if not _local_send_clearance(MARKET, date):      # winrig 才有作用;雲端已代打→整批不寄
+        return 0
     _enforce_send_deadline(MARKET)   # 補班才有作用;放在 hold 之後=用「真正要寄的那一刻」判定
     # MD_SUBJECT_NOTE:人工補寄修正版時標注主旨(例:「(更新版) 」),平常不設=無作用
     note = os.environ.get("MD_SUBJECT_NOTE", "")
@@ -1271,6 +1273,54 @@ def _alert_if_late(market, late_sec):
                       f"log: logs/fallback_*.log")
 
 
+def _archive_online(market, date):
+    """公版存檔(docs/output/,git push 後由 Cloudflare Pages 服務)是否已上線。
+
+    語義關鍵:這個檔案是【寄完之後】才被推上去的(winrig 由 run.sh 在 main.py 結束後 commit
+    +push;雲端備援由 workflow 的 "Persist public digest archive" 步驟)。所以
+    「我還沒寄、它就已經在線上」= 這一班已經被另一邊交付過了。
+    step ⑥ 的 save_hosted_digest 走的是另一條(Worker/KV 網頁版),不會污染這個判準。
+    查不到一律當作沒交付 → 照寄:死線是絕不缺信,寧可重寄也不可缺信。"""
+    import urllib.request
+    suffix = "_us" if market == "us" else ""
+    url = f"https://marketdaily.ai/output/digest_{date}{suffix}.html"
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "md-failover-guard"})
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            return resp.status == 200
+    except Exception:
+        return False
+
+
+def _local_send_clearance(market, date):
+    """winrig 端的反向防雙發閘(2026-07-30 事故)。
+
+    07-28 事故只補了雲端那一邊:雲端寄出前會等 winrig 交付。但 07-30 晚報反過來——
+    免費 LLM 全層見底(Gemini 雙 key RPD 429 / Groq TPM / CF neuron 超上限)導致 winrig
+    退到 OpenRouter 550b(~144s/次)一路拖到 21:35;watchdog 20:25 第一檢撲空派了雲端備援,
+    雲端等到自己的死線前緣 21:02 判定「winrig 卡死」代打寄出(全員 deterministic 備援版),
+    winrig 21:35 完工時【毫無察覺】又寄了一輪 → 21 位訂閱者每人兩封。
+    防線只裝單邊就只擋得住單一方向;這裡把它對稱化:winrig 寄出前也查一次公版存檔。
+
+    只管正常班次(tw/us);MARKET=both 的手動補寄與 MD_FORCE_SEND=1 一律放行,
+    否則人工補寄修正版會被自己的存檔擋死。回傳 False=本輪不得寄出。"""
+    if os.environ.get("MD_FAILOVER") == "1":
+        return True                      # 雲端那邊由 _failover_send_clearance 管
+    if market not in ("tw", "us"):
+        return True                      # both/手動班次不受閘
+    if os.environ.get("MD_FORCE_SEND") == "1":
+        return True
+    if not _archive_online(market, date):
+        return True
+    label = "早報" if market == "tw" else "晚報"
+    msg = (f"🟠 {label} {date}:winrig 生成完成時公版存檔【已在線上】= 雲端備援已代打交付,"
+           f"winrig 退場不重寄(防雙發對稱閘)。訂閱者收到的是雲端備援版(多半是 deterministic "
+           f"降級版),查 GitHub Actions failover run 與本機 logs/fallback_{date}.log 的遲滯根因。")
+    print(f"   {msg}")
+    _push_admin_alert(msg)
+    return False
+
+
 def _failover_send_clearance(market, date):
     """雲端備援(MD_FAILOVER=1)寄出前的防雙發終極閘(2026-07-28 事故)。
 
@@ -1288,17 +1338,10 @@ def _failover_send_clearance(market, date):
         return True
     import urllib.request
     from zoneinfo import ZoneInfo
-    suffix = "_us" if market == "us" else ""
-    archive_url = f"https://marketdaily.ai/output/digest_{date}{suffix}.html"
     status_url = "https://watchdog.marketdaily.ai/status"
 
     def _archived():
-        try:
-            req = urllib.request.Request(archive_url, headers={"User-Agent": "md-failover-guard"})
-            with urllib.request.urlopen(req, timeout=15) as resp:
-                return resp.status == 200
-        except Exception:
-            return False
+        return _archive_online(market, date)
 
     def _winrig_alive():
         try:
