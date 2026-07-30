@@ -6,8 +6,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 13:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 18:12",
+  "note": "形狀風險已用真實資料排除(零 LLM 呼叫):真實 21 位訂閱者/97 檔聯集,MARKET=tw/us/both 三值皆正確涵蓋 50/47/97 檔、一半標的缺 price 自動濾成 74 檔不拋例外、data 無 market 欄位優雅跳過、零標的跳過。且 _prewarm_card_pool 本身 fail-soft(失敗只退回舊成本曲線,不影響日報正確性)。剩下的只有 05:20 真實 LLM 批次行為 → 併入明日首跑觀測清單"
  },
  {
   "id": 2,
@@ -26,8 +26,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 13:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 18:12",
+  "note": "主鏈健康已實測:gemini 兩把 key 皆在(key1 gemini-2.5-flash 實際產出 3027 字完整回應、2.5-flash-lite 正常;flash-latest 對 key1 是 400 但對 key2 活,-latest 別名正是為此補的)。CF 只是備援,主鏈活著就不會動用今日剩餘 1152 neurons。免費鏈迴歸測試 scripts/test_free_llm_only.py 全過。⚠️我的探測用的是 key1(背景桶),沒碰 key2 日報保留桶 → 併入明日首跑觀測清單"
  },
  {
   "id": 4,
@@ -36,8 +36,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 13:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 18:12",
+  "note": "「cron env/PATH 與手動不同」這個具體疑慮已排除:reddit_buzz / cron_target_lint / cf_neuron_watch / conf_chart 四支 runner 全部用 env -i(乾淨環境,只留 HOME/PATH/SHELL/LOGNAME/USER)實跑通過。cf_neuron_watch 更已有真實排程跑紀錄(17:17)。新守衛 stale_base_lint 已在真實 cron 跑過兩次(17:49/18:00, rc=0)。剩下純粹是時鐘沒到 → 併入明日首跑觀測清單"
  },
  {
   "id": 5,
@@ -46,8 +46,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-07-30 13:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 18:12",
+  "note": "已搬到 /home/userdelvin/.claude/_archive/mac-encoded-project-20260730(不刪,可還原)。搬前逐檔 md5 比對確認安全:舊目錄 667 檔中「只存在於舊目錄」的檔案 0 個、33 個內容不同的全部是現役較新 → 純過期副本無獨有內容。現役記憶目錄仍 680 檔未受影響"
  },
  {
   "id": 6,
@@ -76,8 +76,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 17:44",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 18:12",
+  "note": "併入明日首跑觀測清單(03:20 窗口)。已驗:conf_charts.py 語法+真實快取跑出 3 條 chart_facts、runner 在乾淨 cron env 下正確走時間閘門靜默退出、GPU 互斥閘門邏輯在檔。今晚 21:30 patrol 會負責 enqueue,03:20 worker 才有活幹"
  },
  {
   "id": 9,
@@ -86,6 +86,16 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 17:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 10,
+  "what": "明日首跑觀測清單(5 項排程時點未到,環境與形狀均已預先驗過)",
+  "why": "①今晚 21:30 intel_patrol(還原後的 patrol.py 首次真跑,要確認 26 個信源齊+conf_charts 有 enqueue) ②今晚 20:00 美股日報(新免費鏈序首次上場,CF 今日只剩 1152 neurons 當備援) ③明早 03:20 conf_charts worker 首次窗口 ④明早 05:20 零邊際成本架構首次真實 LLM 批次 ⑤明早 05:30 reddit_buzz、09:40 cron_target_lint 各自修好後的首次排程跑。全部失敗都會自動推播(cron_run_and_alert),不需人盯",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-07-30 18:12",
   "closed": null,
   "note": ""
  }
