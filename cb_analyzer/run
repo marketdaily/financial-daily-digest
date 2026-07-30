@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# cb_analyzer / auto_trade 在 winrig 的執行入口(2026-07-30 A 級改制:交易分析移到 winrig)。
+#
+# 為什麼要這支:①要用釘死 shioaji==1.5.6 的 venv(1.7.0 login 簽名大改,既有驗證知識全在
+# 1.5.x)②cbdesk 是 ~/cb-desk 下的本地套件,得靠 PYTHONPATH 才 import 得到。
+# 兩件事忘一件就炸,所以包成一支。
+#
+# ⚠️ 不要用 ~/.venvs/shioaji-bridge:那是 quote_bridge 常駐服務的精簡環境,
+#    往裡面裝東西有把生產服務弄掛的風險,故另開 ~/.venvs/cb-analyzer 隔離。
+#
+# 用法: ./run cb.py --list        (等同 cd cb_analyzer && python cb.py --list)
+#       ./run ../quant_lab/auto_trade/engine.py --help
+exec env PYTHONPATH="$HOME/cb-desk${PYTHONPATH:+:$PYTHONPATH}" \
+  "$HOME/.venvs/cb-analyzer/bin/python" "$@"
