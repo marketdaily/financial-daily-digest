@@ -156,8 +156,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-07-30 21:16",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 22:46",
+  "note": "Delvin 拍板 B:超時自動加註盤前說明(commit 已推);⚠️尚未在生產超時情境跑過"
  },
  {
   "id": 17,
@@ -226,6 +226,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 22:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 24,
+  "what": "超時加註(_late_send_notice)尚未在生產超時情境跑過",
+  "why": "22 案離線迴歸+真實骨架插入實測皆過,但只有下次真的生成超時才會觸發;若 Groq 分桶生效反而不會再超時=這條可能長期沒機會驗",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-07-30 22:46",
   "closed": null,
   "note": ""
  }
