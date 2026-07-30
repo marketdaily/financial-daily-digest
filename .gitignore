@@ -107,3 +107,5 @@ quote_bridge/shioaji.log
 quote_bridge/*.log
 quote_bridge/.signed_ok
 quant_lab/data/kbars/
+intel/.conf_chart_queue.json
+intel/.conf_chart_cache.json

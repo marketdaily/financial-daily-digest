@@ -295,6 +295,8 @@ def run():
             materials_fetched += 1
             if summ and summ.get("highlights"):
                 line += "|簡報摘要:" + "、".join(summ["highlights"][:3])
+            if summ and summ.get("chart_facts"):
+                line += "|圖表:" + "、".join(summ["chart_facts"])
         _emit(c, f2["level"], line, "investor_conf")
 
     try:

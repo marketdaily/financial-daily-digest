@@ -143,7 +143,10 @@ def summarize(text, name="", code=""):
 
 def fetch_materials(code, name, conf_entry):
     """conf_entry(tw_investor_conf.investor_conf()/scan() 的單筆結果) → 摘要 dict 或 None。
-    呼叫端負責只在 red/yellow 時呼叫(避免對全市場批次下載),本函式本身不做 level 過濾。"""
+    呼叫端負責只在 red/yellow 時呼叫(避免對全市場批次下載),本函式本身不做 level 過濾。
+
+    坑 #2(圖表數字不在文字層)由 conf_charts.py 離線 worker 補:有快取就把圖表數據併進
+    摘要輸入,沒有就排隊等 worker(winrig GPU 夜間跑),本輪照舊只用文字層——永不阻塞。"""
     if not conf_entry:
         return None
     filename = conf_entry.get("pdf_zh") or conf_entry.get("pdf_en")
@@ -151,7 +154,30 @@ def fetch_materials(code, name, conf_entry):
         return None
     pdf_bytes = download_pdf(filename)
     text = extract_text(pdf_bytes)
-    return summarize(text, name=name, code=code)
+    chart_text, facts = "", []
+    try:
+        from intel import conf_charts
+        charts = conf_charts.cached_charts(filename)
+        if charts:
+            chart_text = conf_charts.charts_as_text(charts)
+            facts = conf_charts.chart_facts(charts)
+        else:
+            conf_charts.enqueue(filename, code, name)
+    except Exception:
+        pass
+    if chart_text:
+        # 圖表數據是稀缺的那一份,必須保證不被 summarize() 的 12000 字截斷吃掉:
+        # 先替它保留額度,再用剩下的裝文字層(文字層冗長且資訊密度低,截它代價小)。
+        room = max(MAX_CHARS_FOR_SUMMARY - len(chart_text) - 2, 500)
+        text = (text[:room] + "\n\n" + chart_text).strip()
+    summ = summarize(text, name=name, code=code)
+    if facts and summ is None:
+        # 摘要失敗但圖表數字還在 → 不要一起丟掉,確定性事實本身就是可行動訊號。
+        summ = {"highlights": [], "has_guidance": False, "tone": "neutral"}
+    if summ is not None:
+        summ["has_chart_data"] = bool(chart_text)
+        summ["chart_facts"] = facts
+    return summ
 
 
 if __name__ == "__main__":
