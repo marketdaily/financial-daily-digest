@@ -55,6 +55,19 @@ cron_daily_lock() {
 # 且每次抑制都寫進 log(看得見,不做無聲吞掉)。指紋正規化掉時間戳/uuid/duration
 # 這類每次都變的數字與 hex,否則「同一個錯誤」永遠算成新錯誤=去重形同虛設。
 # fail-open:狀態目錄寫不進去一律照推,寧可吵也不要漏真事故。
+# claude_model TIER — 模型分層(2026-07-30 Delvin「分層,日常小任務走 sonnet」)。
+# 切法是「失敗代價」不是「任務大小」:
+#   heavy(預設)= 會改到生產程式碼、對外發布、或做合規把關 → opus,降級 sonnet
+#                (把關者降級 = 放行壞內容,省下的 token 遠不值那個風險)
+#   light      = 只讀資料的內部整理、機械性檢查、摘要 → sonnet,降級 haiku
+# 用法:claude $(claude_model light) -p "..."   ← 不要再自己疊 --model,會出現兩個旗標
+claude_model() {
+  case "${1:-heavy}" in
+    light) echo "--model sonnet --fallback-model haiku" ;;
+    *)     echo "--model opus --fallback-model sonnet" ;;
+  esac
+}
+
 CRON_ALERT_DEDUP_SEC="${CRON_ALERT_DEDUP_SEC:-21600}"   # 預設 6h,同一錯誤最多 4 則/天
 _cron_alert_dir() { echo "$HOME/.marketdaily-fallback/state/alert_dedup"; }
 
