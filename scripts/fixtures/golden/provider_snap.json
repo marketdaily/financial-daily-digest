@@ -12,7 +12,8 @@
   "https://api.openai.com/v1/chat/completions",
   "https://openrouter.ai/api/v1/chat/completions",
   "http://localhost:11434/api/chat",
-  "https://api.cerebras.ai/v1/chat/completions"
+  "https://api.cerebras.ai/v1/chat/completions",
+  "https://api.groq.com/openai/v1/chat/completions"
  ],
  "_chain_order_strong": [
   "https://api.groq.com/openai/v1/chat/completions",
@@ -27,7 +28,8 @@
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
   "https://openrouter.ai/api/v1/chat/completions",
   "http://localhost:11434/api/chat",
-  "https://api.cerebras.ai/v1/chat/completions"
+  "https://api.cerebras.ai/v1/chat/completions",
+  "https://api.groq.com/openai/v1/chat/completions"
  ],
  "cerebras_custom": {
   "calls": [
@@ -291,7 +293,7 @@
      "Content-Type": "application/json"
     },
     "json": {
-     "max_tokens": 7109,
+     "max_tokens": 7588,
      "messages": [
       {
        "content": "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，凡是標示「必填、強制、每一張都要」的內容一律不可省略。只輸出 HTML 本身，不要 markdown code block，不要任何多餘說明。",

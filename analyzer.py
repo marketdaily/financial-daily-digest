@@ -366,7 +366,8 @@ LLM_TEMPERATURE = 0.4  # 全 OpenAI 相容 provider 共用(gemini 另在自家 p
 
 def _call_openai_style(url: str, key_env: str, prompt: str, system: str, model: str,
                        max_tokens: int, extra_headers: dict = None, content_type: bool = False,
-                       retry_429_once: bool = False, timeout: int = 120) -> str:
+                       retry_429_once: bool = False, timeout: int = 120,
+                       extra_payload: dict = None) -> str:
     """openai / groq / openrouter / cerebras 四家共用的 chat-completions 轉接
     (原本四份逐字複製的樣板,2026-07-03 P2 收斂)。headers 順序、payload 欄位、
     重試行為逐家凍結於 refactor_harness 的 provider 快照 —— 改這裡必先過快照 diff。
@@ -388,6 +389,10 @@ def _call_openai_style(url: str, key_env: str, prompt: str, system: str, model: 
             {"role": "user", "content": prompt},
         ],
     }
+    # extra_payload:各家自己的非標準欄位(如 Groq 的 reasoning_effort)。預設 None=payload
+    # 逐字不變,provider 快照零 diff。
+    if extra_payload:
+        payload.update(extra_payload)
     resp = None
     for attempt in range(2 if retry_429_once else 1):
         resp = requests.post(url, headers=headers, json=payload, timeout=timeout)
@@ -408,27 +413,74 @@ def _call_openai(prompt: str, system: str = None) -> str:
         content_type=True, timeout=180)
 
 
+def _est_tokens(text: str) -> int:
+    """本地 token 估計(免打就知道塞不塞得下)。
+
+    係數 2026-07-30 用 Groq 回傳的真實 usage.prompt_tokens 校準:同一份真實 10 檔批次卡
+    prompt(ascii 4192 / 中日韓 2835 字元)實際 4,890 tokens,舊係數(0.3/1.0)只估 4,092
+    ——**低估 19.5%**,而 TPM 預算就是照這個估計切的 → 每次都剛好踩過 8000 吃 413。
+    新係數估 4,885(誤差 5)。BPE 對英數約 3 字元/token、對中日韓約 1.25 token/字。
+    改係數要重跑 scripts/probe_llm_provider.py 對真實 prompt 驗,別用小 prompt 校準。"""
+    ascii_n = sum(1 for c in text if ord(c) < 128)
+    return int(ascii_n * 0.32 + (len(text) - ascii_n) * 1.25)
+
+
+# Groq 免費層的 rate limit 是**每個模型各自一個桶**(2026-07-30 用 x-ratelimit-* 標頭實測),
+# 所以多掛幾支模型 = 真的多幾份產能,不是換個名字打同一個桶。TPM 為每分鐘滾動窗口:
+# 一次真實批次卡呼叫就吃掉 ~7,000/8,000,等於單一模型每分鐘只做得了 1 次。
+# 07-30 晚報 45 次呼叫全擠在 gpt-oss-120b 一個桶上打不進去,才整批掉到 openrouter 550b
+# (144s/次)拖了 108 分鐘。實測值(RPD 皆 1000,llama-3.1-8b 為 14400):
+_GROQ_TPM = {
+    "openai/gpt-oss-120b": 8000,
+    "openai/gpt-oss-20b": 8000,
+    "openai/gpt-oss-safeguard-20b": 8000,
+    "qwen/qwen3.6-27b": 8000,
+    "llama-3.3-70b-versatile": 12000,
+    "llama-3.1-8b-instant": 6000,
+}
+_GROQ_TPM_MARGIN = 300   # 估計器再準也有殘差;寧可少要一點輸出,不要整包 413 白繳往返
+
+# ⚠️ 推理型模型不加 reasoning_effort=low 會**回空字串**(2026-07-30 實測):TPM 只給得起
+# ~2,800 output tokens,模型全花在 reasoning 上、答案 0 字 —— 而且 HTTP 200,
+# 看起來像「模型不會做」的假陰性。同一支加了 low 立刻 4.3s / 14 張卡齊全。
+# (這正是 07-30 前排除 kimi-k2「8000 output 全燒在 reasoning、答案 0 字」的同一個坑,
+#  當時的結論是「模型不可用」——實際是參數沒給對。判「不可用」前先確認這個開關。)
+# 值不是全家統一:gpt-oss 家接受 low/medium/high,qwen3.6 只收 none/default
+# (給錯值是 400 `reasoning_effort must be one of none or default`,不是靜默忽略)。
+# ⚠️ gpt-oss-120b 刻意不列:它是生產中已驗證能產好卡的主力(07-30 晚報仍成功 7 次),
+# 而「不加參數會回空字串」只在 20b 上實測到。今天它 TPD 已耗盡無法對照驗證,
+# 不拿沒量過的參數去動已證明可行的路徑;待 TPD 重置後用 probe_llm_provider.py 量過再說。
+_GROQ_REASONING = {
+    "openai/gpt-oss-20b": "low",
+    "openai/gpt-oss-safeguard-20b": "low",
+    "qwen/qwen3.6-27b": "none",
+}
+
+
 def _call_groq(prompt: str, system: str = None,
-               model: str = "openai/gpt-oss-120b", max_tokens: int = 8000) -> str:
-    """Groq(GPT-OSS 120B)免費後援。OpenAI 相容 API、速度快,免費層有獨立配額桶。
-    注:Groq 於 2026-07-01 通知 llama-3.3-70b-versatile deprecate、2026-08-16 停用,
-    官方建議替換為 openai/gpt-oss-120b,已切換避免停用後掉回 deterministic。
+               model: str = "openai/gpt-oss-120b", max_tokens: int = 8000,
+               retry_429: bool = True) -> str:
+    """Groq 免費後援。OpenAI 相容 API、速度是全鏈最快(實測 5-25s/批次卡)。
     定位:Gemini 免費配額耗盡、Claude 又瞬斷時的『免費第三張網』,接住原本會掉
     deterministic 的班次(2026-07-01 事故:Gemini 429+Claude DNS 抖→3 chunk 掉備援)。
     GROQ_API_KEY 已在 .env;沒設則 raise,鏈/席次自動跳過(非錯誤)。
-    2026-07-29:免費層 gpt-oss-120b 每請求 token 預算僅 8000(TPM),prompt+max_tokens
-    超過即整包 413——主鏈預設 max_tokens=8000 等於任何生卡呼叫必 413(晚班 36 連敗 0 成功,
-    白繳大 payload HTTP 往返,吃掉 card-regen 時間預算害 2 卡掉 deterministic)。
+    2026-07-29:免費層每請求 token 預算就是該模型的 TPM,prompt+max_tokens 超過即整包
+    413——主鏈預設 max_tokens=8000 等於任何生卡呼叫必 413(晚班 36 連敗 0 成功,白繳大
+    payload HTTP 往返,吃掉 card-regen 時間預算害 2 卡掉 deterministic)。
     改為寄出前本地估 token:塞得下就縮 max_tokens 續用(復活 Groq 這張網),
-    塞不下直接 raise 讓鏈零成本跳下一家(訊息帶 413 讓 council 席次標記正確)。"""
-    est = int(sum(0.3 if ord(c) < 128 else 1.0 for c in prompt + (system or _SYSTEM_PROMPT)))
-    room = 7200 - est
+    塞不下直接 raise 讓鏈零成本跳下一家(訊息帶 413 讓 council 席次標記正確)。
+    2026-07-30:TPM 改查 _GROQ_TPM 逐模型取(原本寫死 7200=只對 8000 那組正確,
+    llama-3.3-70b 的 12000 桶被白白砍掉 4000 的餘裕),估計器同時校準。"""
+    tpm = _GROQ_TPM.get(model, 8000)
+    est = _est_tokens(prompt + (system or _SYSTEM_PROMPT))
+    room = tpm - est - _GROQ_TPM_MARGIN
     if room < 500:
-        raise RuntimeError(f"prompt 預估 {est} tokens,超過 Groq TPM 8000 預算(免打即 413),跳過")
+        raise RuntimeError(f"prompt 預估 {est} tokens,超過 {model} 的 Groq TPM {tpm} 預算(免打即 413),跳過")
     return _call_openai_style(
         "https://api.groq.com/openai/v1/chat/completions", "GROQ_API_KEY",
         prompt, system, model=model, max_tokens=min(max_tokens, room),
-        content_type=True, retry_429_once=True)
+        content_type=True, retry_429_once=retry_429,
+        extra_payload=({"reasoning_effort": _GROQ_REASONING[model]} if model in _GROQ_REASONING else None))
 
 
 def _call_cf_ai(prompt: str, system: str = None,
@@ -536,9 +588,26 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
     #    kimi-k2.6=8000 output token 全燒在 reasoning、答案 0 字,且 3,125 neurons/次(6 倍貴);
     #    glm-4.7-flash=把答案包進 <p>;gemma-4-26b=finish_reason:length 寫不出答案;
     #    nemotron-3-120b=捏造題目沒給的數字。
-    free_strong = [("groq:gpt-oss-120b", lambda p: _call_groq(p)),
-                   ("cf:gpt-oss-120b", lambda p: _call_cf_ai(p, model="@cf/openai/gpt-oss-120b", max_tokens=8000)),
-                   ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000))]
+    # 2026-07-30 晚報保留桶(#18,Delvin「不要再讓晚報沒有強模」):Groq 免費層真正卡死人的
+    # 是**每模型每日 token 上限(TPD)**,不是每分鐘的 TPM —— 07-30 晚報時 gpt-oss-120b
+    # 的 TPD 200,000 已用掉 197,364(早報+council 吃掉的),於是 45 次呼叫整批掉到
+    # openrouter 550b(144s/次)拖了 108 分鐘,日報遲到 1h35。
+    # 但 TPD 是**逐模型**各自一份(實測 x-ratelimit-* 標頭 + 429 內文),所以多掛一支模型
+    # = 真的多一份日額度。gpt-oss-20b 用真實逐支重生 prompt 實測:1.3s、reason 85 字
+    # (過 70 字卡級閘)、無捏造數字 → 正是晚報那 45 次呼叫需要的那種網。
+    # 早報**不是不能用**它,而是排到全鏈最後(見 morning_reserve):早報先把自己那份用完,
+    # 晚報一開跑就有一份沒被動過的 TPD。單向保留、不做互搶。
+    _evening = os.environ.get("MARKET") == "us"
+    groq_reserve = [("groq:gpt-oss-20b",
+                     lambda p: _call_groq(p, model="openai/gpt-oss-20b", retry_429=False))]
+    free_strong = ([("groq:gpt-oss-120b", lambda p: _call_groq(p))]
+                   + (groq_reserve if _evening else [])
+                   + [("cf:gpt-oss-120b", lambda p: _call_cf_ai(p, model="@cf/openai/gpt-oss-120b", max_tokens=8000)),
+                      ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000))])
+    # ❌ 同一輪實測但**不進生卡鏈**的(判準見 scripts/probe_llm_provider.py):
+    #    gpt-oss-safeguard-20b=reason 中位數 44 字、llama-3.1-8b=37 字(兩者都過不了 70 字閘);
+    #    qwen3.6-27b=82 字夠深但把 prompt 給的 MA20 385.25 改寫成 385.00 —— 捏造價位精度,
+    #    踩「進出場價不可 LLM 掰」紅線,故只放 council(輸出是 JSON 觀點、不含價位)。
     # 2026-07-26 降級:nemotron 持續 no-json/抄 prompt 範例(07-23 reason 塌陷主犯之一)、
     # cerebras 402 沒 credits——降到本地 GPU 之後當絕對最後一張網,不再站在品質要道上。
     # 2026-07-30 分層:原本 openrouter 跟 cerebras 同在 free_weak(垃圾層,墊在 local 之後),
@@ -571,8 +640,11 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
     # 舊順序把 openrouter 跟垃圾層一起墊在 local 之後,害批次卡在備援路徑上先白等 local
     # 600s 超時,才輪到真的能產出的那層 → 直接吃掉寄出死線。
     # 不破壞「全網路斷線時 local 是唯一活口」的保證:網路斷時 openrouter 走 DNS 立即失敗。
+    # 早報那一份「晚報保留桶」:不是禁用,是排到全鏈最後(openrouter/local/cerebras 都倒了才動)。
+    # 這樣早報永遠不會缺網,但正常情況下它碰不到 → 晚報 19:00 起跑時那份 TPD 還是滿的。
+    morning_reserve = [] if _evening else groq_reserve
     providers = (paid + ((strong + gemini) if prefer_strong else (gemini + strong))
-                 + free_backstop + local + free_weak)
+                 + free_backstop + local + free_weak + morning_reserve)
     last_err = None
     for rnd in range(2):
         dns_blip = False
@@ -2490,10 +2562,16 @@ _COUNCIL_HAIKU = "claude-haiku-4-5-20251001"
 _COUNCIL_SEATS = [
     ("gemini:2.5-lite", lambda p: _call_gemini(p, "gemini-2.5-flash-lite", system=_COUNCIL_SYS)),
     ("gemini:2.0-flash", lambda p: _call_gemini(p, "gemini-2.0-flash", system=_COUNCIL_SYS)),
-    # Groq:免費且獨立配額桶。gpt-oss-120b 免費層 TPM 只有 8000,席次回應是小 JSON,
+    # Groq:免費且獨立配額桶。免費層 TPM 只有 8000,席次回應是小 JSON,
     # max_tokens 必須壓小,否則 prompt+max_tokens 超過每分鐘 token 預算 → 全數 413
     # (2026-07-01 換模型後連兩天 36/36 全滅的根因)
-    ("groq:gpt-oss-120b", lambda p: _call_groq(p, system=_COUNCIL_SYS, max_tokens=1000)),
+    # 2026-07-30 換桶(#18):原本用 gpt-oss-120b —— 但那正是生卡主鏈的同一支,council 每班
+    # 跑滿 40 支就吃掉它 ~100k tokens,直接把生卡的 TPD 200,000 榨到 197,364 → 晚報整批
+    # 掉去 openrouter 550b 拖 1h35。改用 qwen3.6-27b:各自獨立的日額度,且 council 輸出是
+    # JSON 觀點不含價位,躲得開 qwen「把 385.25 改寫成 385.00」的捏造價位問題(故它不進生卡鏈)。
+    # 這跟上面 Gemini 席次刻意用 lite/2.0 把 2.5-flash 留給卡片,是同一條配額保護原則。
+    ("groq:qwen3.6-27b", lambda p: _call_groq(p, system=_COUNCIL_SYS, max_tokens=1000,
+                                              model="qwen/qwen3.6-27b")),
     # winrig 本地 5080(零配額零429):清晨 Gemini 必空桶時保底的第三把獨立聲音;
     # 雲端 CI 環境連不上 localhost → 席次熔斷自動停用,不影響
     ("local:qwen2.5-14b", lambda p: _call_ollama(p, system=_COUNCIL_SYS, max_tokens=300)),
