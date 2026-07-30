@@ -50,6 +50,52 @@ cron_daily_lock() {
 # 告警走 notify_admin.py(web push + winrig 桌面 toast 雙通道,自行從 .env 讀 token、已修
 # Cloudflare WAF User-Agent 403 問題)——舊版呼叫 notify_line.py 只認 os.environ 裡的
 # MARKETDAILY_ALERT_TOKEN(呼叫端從未 export 過)會靜默跳過,失敗告警形同虛設,2026-07-04 修正。
+# ── 告警去重(2026-07-30 Delvin「how many times you need to send this」)───────────
+# 同一 cron + 同一錯誤指紋,冷卻期內只推第一則;期間抑制次數併進下一則推播,
+# 且每次抑制都寫進 log(看得見,不做無聲吞掉)。指紋正規化掉時間戳/uuid/duration
+# 這類每次都變的數字與 hex,否則「同一個錯誤」永遠算成新錯誤=去重形同虛設。
+# fail-open:狀態目錄寫不進去一律照推,寧可吵也不要漏真事故。
+CRON_ALERT_DEDUP_SEC="${CRON_ALERT_DEDUP_SEC:-21600}"   # 預設 6h,同一錯誤最多 4 則/天
+_cron_alert_dir() { echo "$HOME/.marketdaily-fallback/state/alert_dedup"; }
+
+# 正規化:殺掉 uuid / 長 hex / 數字(時間戳、duration_ms、retry 次數)→ 標點空白壓成空格,
+# 再只取「尾端 400 字元」——tail -c 800 的切點會浮動,開頭那半個字每次都不一樣,
+# 從尾端對齊才穩(尾端=最新的例外訊息,同一錯誤逐字相同)。
+_cron_alert_fingerprint() {
+  printf '%s' "$1" | tr 'A-Z' 'a-z' \
+    | sed -E 's/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}//g; s/[0-9a-f]{6,}//g; s/[0-9]+//g' \
+    | tr -s '[:space:][:punct:]' ' ' \
+    | tail -c 400 | md5sum | cut -c1-32
+}
+
+_cron_alert_suppressed_count() {
+  local f; f="$(_cron_alert_dir)/${1}.fp"
+  [ -f "$f" ] && cut -d'|' -f3 "$f" || echo 0
+}
+
+# _cron_alert_dedup NAME TAIL_MSG → stdout=先前抑制次數;return 0=該推,1=抑制
+_cron_alert_dedup() {
+  local name="$1" msg="$2" dir f fp now last_fp last_ts count
+  dir="$(_cron_alert_dir)"
+  mkdir -p "$dir" 2>/dev/null || { echo 0; return 0; }
+  f="$dir/${name}.fp"
+  fp=$(_cron_alert_fingerprint "$msg")
+  now=$(date +%s)
+  last_fp=""; last_ts=0; count=0
+  if [ -f "$f" ]; then
+    IFS='|' read -r last_fp last_ts count < "$f" || true
+    case "${last_ts:-}" in ''|*[!0-9]*) last_ts=0 ;; esac
+    case "${count:-}" in ''|*[!0-9]*) count=0 ;; esac
+  fi
+  if [ "$fp" = "$last_fp" ] && [ $((now - last_ts)) -lt "$CRON_ALERT_DEDUP_SEC" ]; then
+    printf '%s|%s|%s\n' "$fp" "$last_ts" "$((count + 1))" > "$f" 2>/dev/null || true
+    return 1
+  fi
+  printf '%s|%s|0\n' "$fp" "$now" > "$f" 2>/dev/null || true
+  echo "$count"
+  return 0
+}
+
 cron_run_and_alert() {
   local name="$1"; shift
   [ "${1:-}" = "--" ] && shift
@@ -59,15 +105,27 @@ cron_run_and_alert() {
   mkdir -p "$log_dir"
   log="$log_dir/${name}_${date_tag}.log"
   echo "=== $(date '+%F %T %z') cron_run_and_alert:${name} start ===" >> "$log"
+  local off; off=$(stat -c %s "$log" 2>/dev/null || echo 0)
   "$@" >> "$log" 2>&1
   rc=$?
   echo "=== end rc=${rc} ===" >> "$log"
   if [ "$rc" -ne 0 ]; then
-    tail_msg=$(tail -c 800 "$log")
-    MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" "$HOME/.marketdaily-fallback/notify_admin.py" \
-      "🔴 winrig cron『${name}』失敗 rc=${rc} $(TZ=Asia/Taipei date '+%F %T')
---- log tail ---
+    # 只取「這一輪」的輸出:log 是累積的,拿 tail -c 800 會隨檔案長大而變形,
+    # 同一個錯誤的指紋就對不起來(去重形同虛設)。用起跑前的 offset 精準切這輪。
+    tail_msg=$(tail -c "+$((off + 1))" "$log" 2>/dev/null | tail -c 800)
+    [ -n "$tail_msg" ] || tail_msg=$(tail -c 800 "$log")
+    local suppressed
+    if suppressed=$(_cron_alert_dedup "$name" "$tail_msg"); then
+      local prefix=""
+      [ "${suppressed:-0}" -gt 0 ] && prefix="(冷卻期內相同錯誤已抑制 ${suppressed} 次)
+"
+      MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" "$HOME/.marketdaily-fallback/notify_admin.py" \
+        "🔴 winrig cron『${name}』失敗 rc=${rc} $(TZ=Asia/Taipei date '+%F %T')
+${prefix}--- log tail ---
 ${tail_msg}" >/dev/null 2>&1
+    else
+      echo "⏸ 相同錯誤指紋仍在冷卻期(${CRON_ALERT_DEDUP_SEC}s),本次不推 admin(累計抑制 $(_cron_alert_suppressed_count "$name") 次)" >> "$log"
+    fi
   fi
   return "$rc"
 }

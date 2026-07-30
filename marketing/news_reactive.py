@@ -311,6 +311,10 @@ news in <facts>, plus a short image-card headline. Structure of caption, in orde
 Also produce caption_threads_zh: a standalone condensed version for Threads (hard API
 limit 500 chars total): hook + core fact + ONE technical or viewpoint line + the exact
 site_url + at most 2 hashtags. Max 360 Chinese characters BEFORE the URL. Same rules.
+In BOTH captions the offer line must stand alone as its own complete sentence. NEVER merge
+限時免費/早鳥 wording into the same clause as 分析/完整分析/報告/解讀/持股 (e.g.
+「全功能限時免費,完整分析 →」is a hard compliance violation). If the Threads version is
+tight on space, DROP the offer line entirely rather than compressing it into the CTA.
 When citing the source, name it (e.g. 據鉅亨網報導); never write 連結/link about the
 source since no source link is attached to the post.
 </task>
@@ -327,6 +331,9 @@ source since no source link is attached to the post.
 5. If tech_snapshot is null, skip section 3's numbers and write a qualitative line instead.
 6. Do not translate company names oddly; use the name given in <facts>.
 7. card_headline: max 16 Chinese characters, punchy, factual, no digits unless in <facts>.
+8. Traditional Chinese (zh-TW) characters ONLY, in every field. Never emit Simplified forms
+   (亚这两个们时说对现实发产业经济资报导观软数变电华应场关开门问间车东马头银长国图 …).
+   Mixed Simplified/Traditional output is an automatic reject.
 </constraints>
 
 <output_format>
@@ -354,7 +361,12 @@ Audit the caption+card_headline in <draft> against <facts>. Check every item:
    保證,穩賺,必漲,必跌,翻倍,勝率 claims,訂戶/用戶數 claims,付費,Pro方案,LINE.
 4. Contains the exact site_url string from <facts>.
 5. No promise of investment returns; viewpoint is hedged and observational.
-6. Does not state or imply stock analysis is/will be paid or gated.
+6. Compliance. The platform-level offer sentence approved by the owner (2026-07-09 口徑),
+   e.g. 「MarketDaily 全功能目前限時免費開放,早鳥訂閱者永久保留免費使用權」, is PRE-CLEARED —
+   do NOT flag it merely because it follows the analysis paragraph. Fail check 6 ONLY when
+   限時免費/早鳥/免費期/解鎖 wording directly modifies 個股分析/持股報告/分析內容 itself
+   (e.g.「個股分析限時免費」「早鳥才看得到完整分析」), or when the draft otherwise states
+   or implies stock analysis is or will be paid, gated, or tiered.
 7. Natural fluent zh-TW; no broken half-sentences; hashtags have no digits.
 </task>
 
@@ -372,18 +384,54 @@ pass=true ONLY if all 7 checks pass.
 </draft>"""
 
 
-def call_claude(prompt, timeout_s):
-    r = subprocess.run(
-        ["claude", "-p", prompt, "--dangerously-skip-permissions", "--output-format", "json"],
-        capture_output=True, text=True, timeout=timeout_s)
+# 預設模型週額度見底時的降級順序(2026-07-30:Fable 5 額度爆 → 每 10 分鐘 tick 全失敗刷屏)
+CLAUDE_FALLBACK_MODELS = ["sonnet", "haiku"]
+_QUOTA_RE = re.compile(r"reached your .{0,40}limit|usage-credits|usage limit|rate.?limit", re.I)
+
+
+class ClaudeQuotaExhausted(RuntimeError):
+    """claude CLI 額度耗盡(429)——基礎設施狀態,不是這則新聞的問題,不標 seen。"""
+
+
+def _claude_once(prompt, timeout_s, model=None):
+    cmd = ["claude", "-p", prompt, "--dangerously-skip-permissions", "--output-format", "json"]
+    if model:
+        cmd[1:1] = ["--model", model]
+    r = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout_s)
+    raw = r.stdout or ""
+    try:
+        payload = json.loads(raw)
+    except Exception:
+        payload = None
+    tag = model or "default"
+    # CLI 有時 rc=0 仍把 429 包在 result 裡,兩條路徑都要判成額度耗盡
+    if payload is not None:
+        result_txt = str(payload.get("result", ""))
+        if payload.get("api_error_status") == 429 or _QUOTA_RE.search(result_txt):
+            raise ClaudeQuotaExhausted(f"{tag}: {result_txt[:140]}")
     if r.returncode != 0:
-        raise RuntimeError(f"claude rc={r.returncode}: {(r.stderr or r.stdout)[-300:]}")
-    body = json.loads(r.stdout)["result"]
+        err = (r.stderr or raw)[-300:]
+        if _QUOTA_RE.search(err):
+            raise ClaudeQuotaExhausted(f"{tag}: {err[-140:]}")
+        raise RuntimeError(f"claude rc={r.returncode} (model={tag}): {err}")
+    body = (payload if payload is not None else json.loads(raw))["result"]
     body = re.sub(r"^```(json)?|```$", "", body.strip(), flags=re.M).strip()
     start, end = body.find("{"), body.rfind("}")
     if start < 0 or end < 0:
         raise ValueError(f"no JSON in claude output: {body[:200]}")
     return json.loads(body[start:end + 1])
+
+
+def call_claude(prompt, timeout_s):
+    """預設模型 429 時自動降級備援模型;全滿才拋 ClaudeQuotaExhausted(單一則告警)。"""
+    errs = []
+    for model in [None] + CLAUDE_FALLBACK_MODELS:
+        try:
+            return _claude_once(prompt, timeout_s, model)
+        except ClaudeQuotaExhausted as e:
+            errs.append(str(e))
+            print(f"  ⚠ 額度耗盡({model or 'default'}),降級下一個模型")
+    raise ClaudeQuotaExhausted("所有模型額度皆耗盡:" + " | ".join(errs))
 
 
 FORBIDDEN = ["買進", "買入", "賣出", "進場", "出場", "停損", "停利", "目標價", "加碼", "減碼",
@@ -409,10 +457,36 @@ def _digits_in(obj, acc):
     return acc
 
 
+# 只在簡體中文出現、正體中文絕不會用的字(刻意排除 後/裡/幹/只/面/制/強/戶/著 這類兩岸皆用的)
+SIMPLIFIED_ONLY = set(
+    "亚产亿仅从价众优传伤体债内军农冲决况净减击则刚创别办务动医华协单卖卫却厂历压县参双"
+    "叶号员响团园圆圣场坏块坚执声处备复够夹奋娱孙宁宝实审层属岁岛币师带帮广庆库废异张弹"
+    "归当录忆态总恋恶惊惯愿战扑扩扫扬担拟择挂据换摄摆敌数断无旧显术机杀杂权条来极构枪栏"
+    "树桥检楼标欢欧残毁汇汉沟泪洁济测浓涛润渐湾满滨灭灯灵灾炉点烦热爱爷独环电画畅疗盘盖"
+    "监码确碍础礼祸离种积称稳竞笔筑简签类紧级纪纳纵纷纸线组细织终绍经结给络绝统继绩续维"
+    "编缩网罗罚义习联肠肤胜胶脉脏脑脸腾舰艰节苏苹药荐荣获莱营蓝虑补装见观规视览觉誉计订"
+    "认讨让训议讯记讲许论设访证评识诉诊词译试诗诚话详语误说请读课谁调谈谋谓谢谱变财责贤"
+    "败货质贩贪贫购贯贷贸费贺贴贵贼资赋赌赏赔赖赚赛赞赠赢赶趋跃转轮软轰轻载较辅辆辈输辑"
+    "辞边达迁过运还这进远违连迟适选递逻遗邓郑释钟钢钱钻铁铃银铺链销锁锋锐错锦键镇镜长门"
+    "闭问闲间闻阁阅阴队阶际陆陈险隐难雾韩页顶项顺须预领频题颜额风飞饭饮饰饱馆马驶驻驾验"
+    "骗骤鱼鲁鲜鸟鸡鸣鹤麦"
+)
+
+
 def caption_gate(caption, threads_caption, headline, facts):
     """確定性閘:LLM prompt 永遠不是唯一防線(feedback_zero_error_no_miss)。回 violations list。"""
     v = []
     text = caption + "\n" + (threads_caption or "") + "\n" + headline
+    # 合規鐵則(COMPLIANCE_STRUCTURE.md):個股分析依法永遠免費,免費/早鳥字眼只能修飾「平台」。
+    # 同一子句內同時出現優惠字與分析字 = 暗示分析被收費或設限,確定性擋掉,不靠 LLM 驗證者。
+    for seg in re.split(r"[。;;!!??\n]", text):
+        if any(w in seg for w in ("限時免費", "早鳥", "免費期", "解鎖")) and \
+           any(w in seg for w in ("分析", "報告", "解讀", "持股", "選股")):
+            v.append(f"合規:優惠字眼與分析內容同句({seg.strip()[:40]})")
+            break
+    zh_bad = sorted({c for c in text if c in SIMPLIFIED_ONLY})
+    if zh_bad:
+        v.append("簡體字(全文必須 zh-TW 正體):" + "".join(zh_bad[:10]))
     for w in FORBIDDEN:
         if w in text:
             v.append(f"禁詞:{w}")
@@ -547,6 +621,24 @@ def retry_failed(state):
     return rc
 
 
+REJECT_ALERT_AFTER = 3   # 草稿被擋是把關成功,不是事故;連續這麼多次才當系統性品質問題告警
+
+
+def _reject(state, cand, today, dry, retry_rc, who):
+    """內容被閘門/驗證者擋下:標 seen 不重試,累計連續次數,連續超標才回 rc=1 觸發告警。"""
+    if dry:
+        return 1
+    state["seen"][cand["key"]] = today   # 這則今天別再重試燒額度
+    n = state.get("reject_streak", 0) + 1
+    state["reject_streak"] = n
+    save_state(state)
+    if n < REJECT_ALERT_AFTER:
+        print(f"({who}擋下=把關正常運作,連續第 {n}/{REJECT_ALERT_AFTER} 次,不告警)")
+        return retry_rc
+    print(f"⚠ 連續 {n} 次草稿被{who}擋下,升級告警(疑似系統性品質問題)")
+    return 1
+
+
 def cmd_run(dry=False, force=False):
     state = load_state()
     today = _tw_today()
@@ -587,18 +679,12 @@ def cmd_run(dry=False, force=False):
     gate_v = caption_gate(caption, threads_caption, headline, facts)
     if gate_v:
         print(f"❌ 確定性閘未過:{gate_v}")
-        if not dry:
-            state["seen"][cand["key"]] = today   # 這則今天別再重試燒額度
-            save_state(state)
-        return 1
+        return _reject(state, cand, today, dry, retry_rc, "確定性閘")
     verdict = call_claude(
         VERIFY_PROMPT.replace("{FACTS}", facts_json).replace("{DRAFT}", json.dumps(draft, ensure_ascii=False)), 240)
     if not verdict.get("pass"):
         print(f"❌ 獨立驗證者駁回:{verdict.get('violations')}")
-        if not dry:
-            state["seen"][cand["key"]] = today
-            save_state(state)
-        return 1
+        return _reject(state, cand, today, dry, retry_rc, "獨立驗證者")
     print("✅ 確定性閘+獨立驗證者全過")
 
     if dry:
@@ -621,6 +707,7 @@ def cmd_run(dry=False, force=False):
     results = post_direct(env, post_id, image_url, caption, threads_caption)
     ok_n = sum(1 for r in results.values() if r["ok"])
     state["seen"][cand["key"]] = today
+    state["reject_streak"] = 0
     if ok_n:
         state["posted"].append({"date": today, "ts": time.time(), "id": post_id,
                                 "ticker": comp["ticker"], "etype": cand["etype"],
@@ -640,7 +727,12 @@ def main():
         cmd_scan()
         return 0
     if args[0] == "run":
-        return cmd_run(dry="--dry" in args, force="--force" in args)
+        try:
+            return cmd_run(dry="--dry" in args, force="--force" in args)
+        except ClaudeQuotaExhausted as e:
+            # 額度是基礎設施狀態:留一行乾淨訊息給 runner 告警,不吐整串 traceback
+            print(f"❌ claude 額度耗盡,本輪放棄(不標 seen,額度恢復後自動重試):{e}")
+            return 1
     print(__doc__)
     return 0
 
