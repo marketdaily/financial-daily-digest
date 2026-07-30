@@ -4,7 +4,7 @@
 // 2.5-flash 對新用戶 404)→ 免費產能改從 CF 這桶取。同帳號同免費層,但模型世代整代提升。
 const ALLOWED = [
   "@cf/openai/gpt-oss-120b",
-  "@cf/moonshotai/kimi-k2.6",
+  "@cf/moonshotai/kimi-k2.6",  // 保留白名單(council 小 prompt 可用),但已從日報卡片鏈移除
   "@cf/zai-org/glm-4.7-flash",
   "@cf/google/gemma-4-26b-a4b-it",
   "@cf/nvidia/nemotron-3-120b-a12b",
@@ -35,6 +35,15 @@ function extractText(out) {
   return "";
 }
 
+// token 用量回傳給呼叫端算 neuron 消耗(免費層 10k neurons/日,燒穿=最後一張網破)。
+// ⚠️ reasoning 模型的思考 token 也計 output,所以只能實測不能用「答案字數」推估。
+function extractUsage(out) {
+  const u = out?.usage || {};
+  const inTok = u.prompt_tokens ?? u.input_tokens ?? 0;
+  const outTok = u.completion_tokens ?? u.output_tokens ?? 0;
+  return { in: inTok, out: outTok, total: u.total_tokens ?? inTok + outTok };
+}
+
 function timingSafeEqual(a, b) {
   const enc = new TextEncoder();
   const ba = enc.encode(a), bb = enc.encode(b);
@@ -54,15 +63,20 @@ export default {
     let body;
     try { body = await req.json(); } catch { return new Response("bad json", { status: 400 }); }
     const model = ALLOWED.includes(body.model) ? body.model : ALLOWED[0];
-    const out = await env.AI.run(model, {
+    // reasoning.effort:gpt-oss 系列的思考預算,思考 token 按 output 計價(68,182 neurons/M)
+    // → 調低直接砍 neuron 消耗。呼叫端不帶則不送(維持模型預設)。
+    const runInput = {
       messages: body.messages || [],
       max_tokens: Math.min(body.max_tokens || 1000, 8192),
       temperature: body.temperature ?? 0.4,
-    });
+    };
+    if (body.reasoning_effort) runInput.reasoning = { effort: body.reasoning_effort };
+    const out = await env.AI.run(model, runInput);
     const text = extractText(out);
+    const usage = extractUsage(out);
     // 萃取不到文字時附回原始形狀(僅此情形,且已過 token 驗證):新模型上架換形狀時
     // 呼叫端 log 直接看得到,不用再回頭猜(2026-07-30 五模型靜默空字串事故)。
-    if (!text) return Response.json({ model, response: "", raw: out });
-    return Response.json({ model, response: text });
+    if (!text) return Response.json({ model, response: "", usage, raw: out });
+    return Response.json({ model, response: text, usage });
   },
 };

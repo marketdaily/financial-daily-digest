@@ -2,6 +2,7 @@ import os
 import re
 import time
 import requests
+import cf_neuron_budget as _cf_budget
 import stock_names
 from config import GEMINI_API_KEY, GEMINI_API_KEY_2
 
@@ -428,20 +429,30 @@ def _call_groq(prompt: str, system: str = None,
 
 def _call_cf_ai(prompt: str, system: str = None,
                 model: str = "@cf/meta/llama-3.3-70b-instruct-fp8-fast", max_tokens: int = 600) -> str:
-    """Cloudflare Workers AI(免費層 10k neurons/日),經自家 md-ai-proxy worker(Bearer 驗證)。
+    """Cloudflare Workers AI(免費層 10k neurons/UTC 日),經自家 md-ai-proxy worker(Bearer 驗證)。
     獨立配額桶+獨立網路路徑(CF edge),與 Gemini/Groq/Anthropic 都不同廠商。
-    沒設 CF_AI_PROXY_TOKEN → raise,鏈/席次自動跳過(非錯誤)。"""
+    沒設 CF_AI_PROXY_TOKEN → raise,鏈/席次自動跳過(非錯誤)。
+
+    2026-07-30 加 neuron 預算閘門:07-26 起日報退到 CF 當主力後每天超額(實測 22k-61k/日,
+    超額按 $0.011/1k 計費),違反「全部用免費」常令。額度將盡即 raise,鏈往下掉到零成本
+    本機 GPU——寧可用弱一點的免費模型,也不要無聲扣錢。"""
     tok = os.environ.get("CF_AI_PROXY_TOKEN")
     url = os.environ.get("CF_AI_PROXY_URL")
     if not tok or not url:
         raise RuntimeError("未設定 CF_AI_PROXY_TOKEN")
+    if not _cf_budget.budget_ok():
+        raise RuntimeError(f"CF neuron 免費額度將盡({_cf_budget.summary()}),讓路給零成本 provider")
     r = requests.post(url, headers={"Authorization": f"Bearer {tok}"},
                       json={"model": model, "max_tokens": max_tokens,
                             "messages": [{"role": "system", "content": system or _SYSTEM_PROMPT},
                                          {"role": "user", "content": prompt}]},
                       timeout=120)
     r.raise_for_status()
-    return str(r.json()["response"]).strip()
+    payload = r.json()
+    u = payload.get("usage") or {}
+    if u.get("in") or u.get("out"):
+        _cf_budget.record(model, int(u.get("in") or 0), int(u.get("out") or 0))
+    return str(payload["response"]).strip()
 
 
 def _call_openrouter(prompt: str, system: str = None,
@@ -515,11 +526,14 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
     # 2026-07-30 免費產能擴充(Delvin「耗盡了就自己再去拿一把」):Google 已封死「新 GCP 專案=
     # 新免費 Gemini 桶」(新 key 實測 limit:0、2.5-flash 對新用戶 404)→ 改從 CF 同一免費層取新世代
     # 模型。llama-3.3-70b 正是今早寫出 79 字淺理由(reason_shallow)的那支,故新兩支排在它前面:
-    # cf:gpt-oss-120b 6.6s/111字、cf:kimi-k2.6 21s/126字(實測只用題目給的數字、不吐 HTML;
-    # glm-4.7-flash 會包 <p> 標籤、gemma-4-26b 把預算燒在 reasoning 寫不出答案,兩者已排除)。
+    # cf:gpt-oss-120b 實測用「真實 10 檔批次卡」prompt:49s、11,203 字、10 張卡齊全、
+    # 503 neurons/次(比 llama 的 896 便宜 44%)——同時更好更省,故排 llama 前面。
+    # ❌ 排除紀錄(全部用真實批次 prompt 驗過,單檔小 prompt 會給假綠燈):
+    #    kimi-k2.6=8000 output token 全燒在 reasoning、答案 0 字,且 3,125 neurons/次(6 倍貴);
+    #    glm-4.7-flash=把答案包進 <p>;gemma-4-26b=finish_reason:length 寫不出答案;
+    #    nemotron-3-120b=捏造題目沒給的數字。
     free_strong = [("groq:gpt-oss-120b", lambda p: _call_groq(p)),
                    ("cf:gpt-oss-120b", lambda p: _call_cf_ai(p, model="@cf/openai/gpt-oss-120b", max_tokens=8000)),
-                   ("cf:kimi-k2.6", lambda p: _call_cf_ai(p, model="@cf/moonshotai/kimi-k2.6", max_tokens=8000)),
                    ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000))]
     # 2026-07-26 降級:nemotron 持續 no-json/抄 prompt 範例(07-23 reason 塌陷主犯之一)、
     # cerebras 402 沒 credits——降到本地 GPU 之後當絕對最後一張網,不再站在品質要道上。
