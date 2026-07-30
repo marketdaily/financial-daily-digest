@@ -176,8 +176,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 21:45",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 22:31",
+  "note": "Groq 逐模型 TPD/TPM 分桶+晚報保留桶(commit 3d09451);⚠️尚未在生產晚報跑過"
  },
  {
   "id": 19,
@@ -186,6 +186,26 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 21:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 20,
+  "what": "永豐 API 開通測試腳本尚未在生產跑過(排 7/31 08:05 首跑)",
+  "why": "只驗過窗口守衛與純函式,真正的 simulation 下單測試明早才第一次真跑;期貨端更是連帳號都還沒掛上,測不了",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-07-30 22:15",
+  "closed": "2026-07-30 22:25",
+  "note": "改為不代跑測試單(Delvin 兩邊皆已自行完成簽署+模擬測試),qualify 已 marker 停走並實跑驗證 no-op;剩下的是等永豐過檔,已補逾期告警防沉默"
+ },
+ {
+  "id": 21,
+  "what": "晚報保留桶(groq gpt-oss-20b)尚未在生產晚報跑過",
+  "why": "16 案零網路迴歸+真實 prompt 單點實測皆過,但真正的驗收是明天 19:00 晚報班的 log 裡看到它接手、且沒再落 openrouter 550b",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-07-30 22:31",
   "closed": null,
   "note": ""
  }
