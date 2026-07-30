@@ -384,8 +384,9 @@ pass=true ONLY if all 7 checks pass.
 </draft>"""
 
 
-# 預設模型週額度見底時的降級順序(2026-07-30:Fable 5 額度爆 → 每 10 分鐘 tick 全失敗刷屏)
-CLAUDE_FALLBACK_MODELS = ["sonnet", "haiku"]
+# 明確指定模型鏈(2026-07-30 Delvin 親令「這種都用 opus 就好」):不吃 CLI 預設(=Fable 5,
+# 週額度見底就整條線失敗刷屏),第一順位固定 opus,後面兩個只是保命降級。
+CLAUDE_MODEL_CHAIN = ["opus", "sonnet", "haiku"]
 _QUOTA_RE = re.compile(r"reached your .{0,40}limit|usage-credits|usage limit|rate.?limit", re.I)
 
 
@@ -423,9 +424,9 @@ def _claude_once(prompt, timeout_s, model=None):
 
 
 def call_claude(prompt, timeout_s):
-    """預設模型 429 時自動降級備援模型;全滿才拋 ClaudeQuotaExhausted(單一則告警)。"""
+    """opus 額度滿才依序降級;全滿才拋 ClaudeQuotaExhausted(單一則告警)。"""
     errs = []
-    for model in [None] + CLAUDE_FALLBACK_MODELS:
+    for model in CLAUDE_MODEL_CHAIN:
         try:
             return _claude_once(prompt, timeout_s, model)
         except ClaudeQuotaExhausted as e:
