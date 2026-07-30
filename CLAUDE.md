@@ -144,11 +144,12 @@ Delvin 原話：「你為什麼沒有直接收掉而是要等我問你才跟我�
 - **🤖 cron 呼叫 `claude -p` 的模型分層(2026-07-30 Delvin 親令,先「都用 opus」再「分層,日常小任務走 sonnet」)**：一律用 `scripts/lib_cron_runner.sh` 的 `claude_model TIER`，禁止自己寫 `--model`（會疊成兩個旗標）。**切法是「失敗代價」不是「任務大小」**：`heavy`=會改到生產程式碼／對外發布／做合規把關 → opus(降級 sonnet)；`light`=只讀資料的內部整理、摘要、機械性檢查 → sonnet(降級 haiku)。現役 heavy：site_scan 自修站、digest_selfheal 自癒、marketing_agents_weekly(對外投放素材)、news_reactive 起草+驗證(Python 端鏈 opus→sonnet→haiku)；現役 light：line_group(讀 LINE 截圖產內部 md/推播)。⚠️ **驗證者／把關者不准降級**——把關者變寬鬆＝放行壞內容，省的 token 不值那個風險。絕不吃 CLI 預設(=Fable 5,週額度見底整批 cron 同時失敗刷屏,07-30 news_reactive 每 10 分鐘告警即此因)。
 - **日報整點寄出**：cron 早 05:20/晚 19:00 TW 觸發只為生成（2026-07-26 起：早報夜盤收完即起跑，05:20 取夏冬令制都安全＋數據落定緩衝；runway 100 分供品質重生迴圈），main.py `_hold_until_send_time` 等到 07:00/20:00 整點一齊寄。⚠️ 05:30 preflight 已隨 GitHub Actions 停擺退役(2026-07-06 才發現,勿當它還在);寄前防線=①`build_email_html` 未定義 CSS class 確定性修復層 ②同一 HIGH audit check 生成中連中 3 位即熔斷推 admin(`_push_systemic_alert`,趕在整點寄出前)。
 - **日報備援防線三層(2026-07-24,Delvin「絕對不要再看到閹割版」,不要重複建)**：①**老闆護盾**——老闆本人若只因「軟錯」check(`_SOFT_HIGH_CHECKS`:reason_shallow/vague、tldr_too_short)要掉備援→改寄 AI 完整版(main.py `_owner_shield_applies`);硬錯仍走安全備援。②**老闆掉備援紅色 canary**——`_push_admin_halt_alert` 老闆在名單即最上方刺眼告警+push 重試3次。③**寄後自動根因修**——`~/.marketdaily-fallback/digest_selfheal_runner.sh`(cron */10,窗口 TW08:50-09:10/US21:20-21:40)用 `scripts/digest_selfheal_detect.py` 偵測「檢查造成的硬錯備援」(排除 429/503 infra)→spawn `claude -p`(playbook=`scripts/digest_fix_playbook.md`)worktree 內根因修+白名單guard+digest測試把關→過才 push;修未來不重寄今日;kill-switch=`~/.marketdaily-fallback/digest_selfheal.DISABLED`。owner email 由 env `MARKETDAILY_OWNER_EMAIL` 定(預設 delvin)。
-- 相關 token（同一把值,**旋轉要「七處」一起**,2026-07-24 實測校正,原記「三端」不完整）：
+- 相關 token（同一把值,**旋轉要「八處」一起**,2026-07-30 再校正,原記「三端/七處」不完整——漏了 Mac 守衛那份）：
   - **alert-worker 四把 secret**：`ADMIN_PUSH_TOKEN`、`ADMIN_PUSH_TOKEN_2`、`MARKETING_TARGETS_TOKEN`、`INTERNAL_TOKEN`（admin-line-push 的候選清單全接受同值 → 漏換任一把舊 token 就還活）
   - **watchdog** `ALERT_TOKEN`（/hb 心跳驗證 + 反向推 alert-worker）
   - **winrig `.env`** `MARKETDAILY_ALERT_TOKEN` + `MARKETDAILY_INTERNAL_TOKEN`（`heartbeat.sh` 直讀前者,改 .env 自動跟上不用改腳本）
   - GH secret `MARKETDAILY_ALERT_TOKEN`（Actions 已死→runtime 無關,可略）
+  - **Mac `~/.mac-guard/.alert_token`**（Mac 兩支守衛唯一的告警管道:排程守衛 guard.sh + winrig tunnel 守衛;launchd 下讀不到 ~/Downloads 所以自成一份）⚠️ 2026-07-30 查出這端是**旋轉前的舊值**,推播 403——07-09 上線的 Mac 排程守衛自那次旋轉後一直啞著,因為沒違規所以沒人發現。**旋轉後必須真發一則自測推播驗 200**(沉默的守衛=沒有守衛)。
   - ⚠️ 旋轉法：`wrangler secret put` 後 **CF 傳播 30–60s**（首測太早會假陰,舊 token 看似還活）；驗證=舊 token 打兩 worker 皆須 403、新 token 皆 200 + 真實 `main._push_admin_alert` status=200。
 - 坑:workers.dev 同帳號互打被 1042 擋（用 service binding）;GH Actions skip 步驟 output=null,`null=='0'` 數字強轉=true。
 
