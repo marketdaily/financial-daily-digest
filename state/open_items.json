@@ -86,8 +86,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 17:51",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 18:46",
+  "note": "已收:續跑 workflow 補產 2 則+對 7 則評分+定稿 → 獨立驗證者 7 人平行裁決(approved 3 / rejected 4,4 則駁回都是真閘門或真事實錯誤,非誤殺)→ promote 3 則入佇列(day 102-104)+圖卡 1080x1350 深色底已驗(含實際看圖)→ deploy docs 完成,三張圖在正式網域 marketdaily.ai/social/ 皆 200 → site_scan 20 checks 全過。發文由 14:00 窗口 cron 負責,未手動發"
  },
  {
   "id": 10,
@@ -96,6 +96,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 18:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 11,
+  "what": "adcreative 佇列 3 篇尚未實際發出(等 14:00 TW 窗口 cron)",
+  "why": "promote 只入佇列,發文唯一路徑是 social_post_runner.sh 的 14:00-14:19 窗口、一天一篇 → 3 篇要 3 天發完。首篇明天 14:00 才會驗證到真實發文成功(IG API/圖片 URL/音樂層)。禁止手動補發是鐵則",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-07-30 18:46",
   "closed": null,
   "note": ""
  }
