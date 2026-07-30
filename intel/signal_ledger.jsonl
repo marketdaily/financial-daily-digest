@@ -463,3 +463,13 @@
 {"date": "2026-07-29", "code": "3362", "source": "leadflow", "level": "red", "signal": "先進光(3362) 無消息近漲停+9.8%(連2根,5日+10.9%),疑資訊先行資金|外資+投信近3日+610張", "price_at_signal": 173.5}
 {"date": "2026-07-29", "code": "2923", "source": "leadflow", "level": "red", "signal": "鼎固-KY(2923) 無消息近漲停+8.9%(連3根,5日+26.9%),疑資訊先行資金|外資+投信近3日+505張", "price_at_signal": 41.0}
 {"date": "2026-07-29", "code": "8089", "source": "leadflow", "level": "yellow", "signal": "康全電訊(8089) 無消息近漲停+8.6%(量能2.4×,5日+6.9%),疑資訊先行資金", "price_at_signal": 20.2}
+{"date": "2026-07-30", "code": "1560", "source": "sbl", "level": "yellow", "signal": "中砂(1560):機構借券賣出5日增11.9%(溫和加碼放空)", "price_at_signal": 582.0}
+{"date": "2026-07-30", "code": "3701", "source": "margin", "level": "red", "signal": "大眾控(3701):融資5日驟減-15.8%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": 33.5}
+{"date": "2026-07-30", "code": "6693", "source": "margin", "level": "red", "signal": "廣閎科(6693):融資5日驟減-15.4%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": 136.5}
+{"date": "2026-07-30", "code": "NVDA", "source": "us_congress", "level": "yellow", "signal": "🏛️ NVDA 國會議員買進:Cleo Fields(House) 2026-07-16 揭露", "price_at_signal": null}
+{"date": "2026-07-30", "code": "6903", "source": "margin", "level": "red", "signal": "巨漢(6903):融資5日驟減-18.4%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": 275.5}
+{"date": "2026-07-30", "code": "7631", "source": "margin", "level": "yellow", "signal": "聚賢研發-創(7631):融資5日暴增950.0%(散戶追高過熱)", "price_at_signal": 129.5}
+{"date": "2026-07-30", "code": "6620", "source": "leadflow", "level": "yellow", "signal": "漢達(6620) 無消息近漲停+9.9%(量能2.0×,5日+13.6%),疑資訊先行資金", "price_at_signal": 96.3}
+{"date": "2026-07-30", "code": "1796", "source": "leadflow", "level": "yellow", "signal": "金穎生技(1796) 無消息近漲停+9.9%(量能2.1×,5日-0.5%),疑資訊先行資金", "price_at_signal": 31.05}
+{"date": "2026-07-30", "code": "3520", "source": "leadflow", "level": "yellow", "signal": "華盈(3520) 無消息近漲停+9.8%(量能1.5×,5日+2.3%),疑資訊先行資金", "price_at_signal": 17.9}
+{"date": "2026-07-30", "code": "3226", "source": "leadflow", "level": "red", "signal": "龍鋒(3226) 無消息近漲停+9.0%(量能8.0×,5日+5.8%),疑資訊先行資金|外資+投信近3日僅-1張,法人未同步=隱形買盤", "price_at_signal": 48.9}
