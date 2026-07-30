@@ -25,6 +25,38 @@ def _owner_emails():
         "MARKETDAILY_OWNER_EMAIL", "delvin.12345678@gmail.com").split(",") if e.strip()}
 
 
+CF_GATE_MSG = "CF neuron 免費額度將盡"
+GEMINI_DEAD_MIN = 10      # 單一 gemini 模型失敗達此次數 = 該模型當輪等同不可用
+GEMINI_DEAD_MODELS = 4    # 有這麼多支 gemini 同時不可用 = 兩把 key 都倒了,不是偶發
+
+
+def _degradation(log_path):
+    """這一輪的模型鏈有沒有整體降級 → {degraded: bool, why: str}。純讀 log,零 LLM。
+
+    判準(任一):①CF neuron 額度閘門有觸發(強免費層被自己的預算擋掉)
+              ②≥GEMINI_DEAD_MODELS 支 gemini 模型各失敗 ≥GEMINI_DEAD_MIN 次(兩把 key 全滅)
+    用「多支模型同時大量失敗」而不是「有沒有失敗過」:單次 429 是常態,不該算降級。
+    """
+    out = {"degraded": False, "why": ""}
+    if not os.path.exists(log_path):
+        return out
+    txt = open(log_path, encoding="utf-8", errors="replace").read()
+    cf_gate = txt.count(CF_GATE_MSG)
+    fails = {}
+    for m in re.finditer(r"\[LLM\]\s+(gemini:[\w.-]+)\s+失敗", txt):
+        fails[m.group(1)] = fails.get(m.group(1), 0) + 1
+    dead = sorted(k for k, n in fails.items() if n >= GEMINI_DEAD_MIN)
+    why = []
+    if cf_gate:
+        why.append(f"CF 額度閘門觸發 {cf_gate} 次")
+    if len(dead) >= GEMINI_DEAD_MODELS:
+        why.append(f"{len(dead)} 支 gemini 模型各失敗 ≥{GEMINI_DEAD_MIN} 次(兩把 key 全滅)")
+    if why:
+        out["degraded"] = True
+        out["why"] = "、".join(why)
+    return out
+
+
 def detect(date_iso, shift):
     """回傳 dict。shift ∈ {'tw','us'};us 版 log 檔名帶 _us,audit 報告不分班次(同日覆寫)。"""
     audit_path = os.path.join(REPO, "output", f"digest_audit_{date_iso}.json")
@@ -67,6 +99,21 @@ def detect(date_iso, shift):
             check_victims.setdefault(c, set()).add(eml)
 
     systemic = sorted(c for c, v in check_victims.items() if len(v) >= 3)
+
+    # ── 鏈路降級判定(2026-07-30 晚間加)────────────────────────────────
+    # 原本的 infra 排除法只看「這個 email 有沒有 HIGH audit fail 行」,擋不住真正的 infra 事件:
+    # 當強模型全倒、只剩弱模型時,弱模型寫出的理由本來就淺/虛,audit 會正確地標 HIGH,於是
+    # 每個受害者都「有 HIGH 行」→ 看起來跟 prompt/樣板 bug 一模一樣 → 觸發自動修,去修一個
+    # 根本沒壞的樣板(docstring 早就寫「自動修只會空轉燒 token」,但判準抓不到這種形狀)。
+    # 當晚實況:6 個 gemini 模型各失敗 62 次(兩把 key 全滅)、groq 56、CF 因額度閘門 55
+    # (閘門訊息 111 次)、連 openrouter 都 10 次 —— 整條強鏈全倒。
+    deg = _degradation(log_path)
+    if deg["degraded"] and not out["owner_hit"]:
+        out["reason"] = (f"鏈路降級(非樣板 bug):{deg['why']}。弱模型寫出的理由本來就淺/虛,"
+                         f"改碼救不了 → 不自動修,請看模型鏈/配額")
+        out["checks"] = systemic
+        out["sample_email"] = (sorted(check_victims[systemic[0]])[0] if systemic else "")
+        return out
 
     if out["owner_hit"]:
         out["trigger"] = True
