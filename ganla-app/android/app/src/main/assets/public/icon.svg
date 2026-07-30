@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c1630"/>
+      <stop offset="1" stop-color="#0d0b14"/>
+    </linearGradient>
+    <linearGradient id="warm" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f43f5e"/>
+      <stop offset="1" stop-color="#fb923c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="256" cy="232" r="170" fill="#a855f7" opacity="0.13"/>
+
+  <!-- 左酒杯 -->
+  <g transform="translate(212 268) rotate(-20)">
+    <path d="M-58 -150 L58 -150 L0 -34 Z" fill="none" stroke="url(#warm)" stroke-width="16" stroke-linejoin="round"/>
+    <path d="M-40 -128 L40 -128 L0 -52 Z" fill="url(#warm)" opacity="0.85"/>
+    <rect x="-8" y="-34" width="16" height="118" rx="6" fill="url(#warm)"/>
+    <rect x="-52" y="78" width="104" height="18" rx="9" fill="url(#warm)"/>
+  </g>
+
+  <!-- 右酒杯 -->
+  <g transform="translate(300 268) rotate(20)">
+    <path d="M-58 -150 L58 -150 L0 -34 Z" fill="none" stroke="url(#warm)" stroke-width="16" stroke-linejoin="round"/>
+    <path d="M-40 -128 L40 -128 L0 -52 Z" fill="url(#warm)" opacity="0.85"/>
+    <rect x="-8" y="-34" width="16" height="118" rx="6" fill="url(#warm)"/>
+    <rect x="-52" y="78" width="104" height="18" rx="9" fill="url(#warm)"/>
+  </g>
+
+  <!-- 碰杯火花 -->
+  <g transform="translate(256 118)" fill="#ffe6a0">
+    <path d="M0 -34 L7 -7 L34 0 L7 7 L0 34 L-7 7 L-34 0 L-7 -7 Z"/>
+  </g>
+  <circle cx="206" cy="92" r="7" fill="#ffe6a0"/>
+  <circle cx="312" cy="104" r="5" fill="#ffe6a0"/>
+</svg>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>乾啦 — 隱私政策 Privacy Policy</title>
+<link rel="stylesheet" href="./app.css" />
+<style>
+  body { padding: 0 }
+  .doc { max-width: 720px; margin: 0 auto; padding: 40px 22px 80px; position: relative; z-index: 1 }
+  .doc h1 { font-size: 32px; font-weight: 900; margin-bottom: 6px;
+    background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent }
+  .doc .sub { color: var(--muted); font-size: 13px; margin-bottom: 24px }
+  .doc h2 { font-size: 18px; font-weight: 800; margin: 24px 0 8px; color: var(--text) }
+  .doc p, .doc li { font-size: 14.5px; line-height: 1.85; color: var(--text); opacity: .9 }
+  .doc ul { padding-left: 22px; margin: 6px 0 12px }
+  .doc a { color: var(--rose) }
+  .doc .lang-toggle { position: absolute; top: 40px; right: 22px;
+    background: var(--card); border: 1px solid var(--card-line); color: var(--text);
+    padding: 6px 12px; border-radius: 99px; font-size: 12px; cursor: pointer }
+  [data-lang="en"] .zh, [data-lang="zh"] .en { display: none }
+</style>
+</head>
+<body data-lang="zh">
+<div class="doc">
+  <button class="lang-toggle" id="toggle">EN / 中文</button>
+
+  <div class="zh">
+    <h1>乾啦 隱私政策</h1>
+    <div class="sub">最後更新：2026 年 5 月 23 日</div>
+
+    <h2>一、我們不收集個人資料</h2>
+    <p>「乾啦」不要求註冊、不收集姓名、Email、手機號碼、生日、付款資訊或任何身分識別資料。</p>
+
+    <h2>二、本機儲存</h2>
+    <p>App 使用瀏覽器 / 裝置的 localStorage 儲存以下資料，<b>只存在你自己的裝置上、不會上傳</b>：</p>
+    <ul>
+      <li>本機玩家名單（你輸入的暱稱）</li>
+      <li>偏好設定：微醺友善模式開關、音效開關、是否已通過 18 歲確認</li>
+      <li>多人連線使用的暱稱</li>
+    </ul>
+    <p>清除 App 或瀏覽器資料即可刪除以上資料。</p>
+
+    <h2>三、多人連線</h2>
+    <p>當你使用多人連線功能時：</p>
+    <ul>
+      <li>4 碼房號與你輸入的暱稱會透過 WebSocket 傳送到伺服器（Cloudflare Workers + Durable Objects）以支援同房玩家間的即時同步</li>
+      <li>遊戲狀態僅在房間活動期間暫存於記憶體，所有人離開後即刪除</li>
+      <li>不記錄 IP、不長期儲存任何遊戲紀錄、不串接第三方分析平台</li>
+    </ul>
+
+    <h2>四、App 權限</h2>
+    <p>App 僅使用以下系統功能：</p>
+    <ul>
+      <li><b>網路</b>：載入頁面與多人連線</li>
+      <li><b>震動</b>（Android）：遊戲互動回饋</li>
+      <li><b>音訊輸出</b>：透過 Web Audio API 即時合成音效播放（不錄音、不存取麥克風）</li>
+    </ul>
+    <p>不存取相機、相簿、位置、通訊錄、麥克風、藍牙、健康資料。</p>
+
+    <h2>五、年齡限制</h2>
+    <p>本 App 為 18 歲以上成年人設計。首次開啟時會要求年齡確認。請理性飲酒、未成年請勿飲酒、酒後不開車。</p>
+
+    <h2>六、第三方</h2>
+    <p>App 使用 Cloudflare 託管網頁與多人連線伺服器。Cloudflare 隱私政策請見：<a href="https://www.cloudflare.com/privacypolicy/" target="_blank">cloudflare.com/privacypolicy</a></p>
+    <p>不使用 Google Analytics、Facebook SDK、廣告 SDK 或其他追蹤技術。</p>
+
+    <h2>七、廣告與內購</h2>
+    <p>免費使用，無廣告、無內購、無訂閱。</p>
+
+    <h2>八、聯絡</h2>
+    <p>關於隱私問題請聯絡：<a href="mailto:hello@marketdaily.ai">hello@marketdaily.ai</a></p>
+  </div>
+
+  <div class="en">
+    <h1>Ganla Privacy Policy</h1>
+    <div class="sub">Last updated: May 23, 2026</div>
+
+    <h2>1. No personal data collected</h2>
+    <p>Ganla does not require sign-up. We do not collect names, email, phone, birthday, payment info, or any identifying data.</p>
+
+    <h2>2. Local storage</h2>
+    <p>The app uses browser/device localStorage to save the following, <b>stored only on your device, never uploaded</b>:</p>
+    <ul>
+      <li>Local player roster (nicknames you enter)</li>
+      <li>Preferences: soft drink mode, sound on/off, 18+ age confirmation</li>
+      <li>Display name used in multiplayer</li>
+    </ul>
+    <p>Clearing app/browser data removes all of this.</p>
+
+    <h2>3. Multiplayer</h2>
+    <p>When you use multiplayer:</p>
+    <ul>
+      <li>The 4-letter room code and your chosen display name are sent over WebSocket to our server (Cloudflare Workers + Durable Objects) to sync players in the same room</li>
+      <li>Game state lives in memory only during room activity and is deleted once everyone leaves</li>
+      <li>We do not log IP addresses, store game history long-term, or use third-party analytics</li>
+    </ul>
+
+    <h2>4. Permissions</h2>
+    <p>The app uses only:</p>
+    <ul>
+      <li><b>Network</b>: to load pages and connect to multiplayer</li>
+      <li><b>Vibration</b> (Android): tactile feedback during games</li>
+      <li><b>Audio output</b>: Web Audio API synthesizes sounds locally; no microphone access</li>
+    </ul>
+    <p>Does not access camera, photos, location, contacts, microphone, Bluetooth, or health data.</p>
+
+    <h2>5. Age</h2>
+    <p>This app is designed for adults aged 18+. An age gate appears on first launch. Please drink responsibly. Underage drinking is illegal. Don't drink and drive.</p>
+
+    <h2>6. Third parties</h2>
+    <p>Hosted on Cloudflare. Cloudflare privacy policy: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">cloudflare.com/privacypolicy</a></p>
+    <p>No Google Analytics, Facebook SDK, advertising SDK, or other tracking.</p>
+
+    <h2>7. Ads & purchases</h2>
+    <p>Free to use. No ads. No in-app purchases. No subscriptions.</p>
+
+    <h2>8. Contact</h2>
+    <p>Privacy questions: <a href="mailto:hello@marketdaily.ai">hello@marketdaily.ai</a></p>
+  </div>
+</div>
+
+<script>
+  const body = document.body;
+  document.getElementById("toggle").onclick = () => {
+    body.dataset.lang = body.dataset.lang === "zh" ? "en" : "zh";
+  };
+</script>
+</body>
+</html>

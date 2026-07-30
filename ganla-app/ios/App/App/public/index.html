@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>乾啦 — 台灣喝酒遊戲</title>
+<meta name="description" content="台灣人的喝酒遊戲全集:派對指令、國王遊戲、骰子、終極密碼、命運轉盤、真心話大冒險。聚會破冰必備。" />
+<meta name="theme-color" content="#0d0b14" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="乾啦" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" href="./icon.svg" />
+<link rel="icon" href="./icon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+
+<!-- 年齡確認 -->
+<div id="age-gate" class="overlay">
+  <div class="gate-card">
+    <div class="gate-emoji">🍻</div>
+    <h1>乾啦</h1>
+    <p class="gate-sub">台灣喝酒遊戲全集</p>
+    <p class="gate-warn">本 App 含飲酒相關內容,僅供 18 歲以上成年人使用。</p>
+    <button id="age-yes" class="btn btn-primary btn-lg">我已滿 18 歲,進入</button>
+    <button id="age-no" class="btn btn-ghost">未滿 18 歲</button>
+    <p class="gate-fine">請理性飲酒・未成年請勿飲酒・酒後不開車</p>
+  </div>
+</div>
+
+<div id="age-block" class="overlay" hidden>
+  <div class="gate-card">
+    <div class="gate-emoji">🔞</div>
+    <h1>未滿 18 歲</h1>
+    <p class="gate-warn">很抱歉,本 App 僅供成年人使用。<br />歡迎滿 18 歲後再來玩。</p>
+  </div>
+</div>
+
+<!-- 首次引導 onboarding -->
+<div id="onboarding" class="overlay" hidden>
+  <div class="onb-card">
+    <button class="onb-skip" id="onb-skip">略過 ›</button>
+    <div class="onb-dots">
+      <span class="dot active" data-d="0"></span>
+      <span class="dot" data-d="1"></span>
+      <span class="dot" data-d="2"></span>
+    </div>
+    <div class="onb-slide" data-i="0">
+      <div class="onb-emoji">🍻</div>
+      <h2>歡迎來乾啦</h2>
+      <p>17 款台灣派對遊戲 + 9 款手機連線遊戲。沒帶撲克牌、骰子也能玩,朋友開另一支手機輸入房號就連線。</p>
+    </div>
+    <div class="onb-slide" data-i="1" hidden>
+      <div class="onb-emoji">👥</div>
+      <h2>先加玩家名字</h2>
+      <p>有些遊戲(派對指令、國王、命運轉盤…)會點到名字,先把今晚一起喝的人加進去。<br /><br />不加也沒關係,大部分遊戲不需要。</p>
+    </div>
+    <div class="onb-slide" data-i="2" hidden>
+      <div class="onb-emoji">🌐</div>
+      <h2>跟朋友連線</h2>
+      <p>首頁最上方藍色卡片「多人連線」,主機建房 → 拿 4 碼房號給朋友 → 朋友輸入房號秒加入,最多 12 人同房玩牌。</p>
+    </div>
+    <div class="onb-actions">
+      <button class="btn btn-soft" id="onb-prev" hidden>‹ 上一步</button>
+      <button class="btn btn-primary btn-lg" id="onb-next">下一步 ›</button>
+    </div>
+  </div>
+</div>
+
+<!-- iOS 安裝提示 -->
+<div id="ios-install" class="install-toast" hidden>
+  <span>💡 把乾啦加到主畫面,下次不用開瀏覽器:點下方 <b>分享 ⬆️</b> → <b>加入主畫面</b></span>
+  <button id="ios-install-close" aria-label="關閉">✕</button>
+</div>
+
+<!-- App 主體 -->
+<div id="app" hidden>
+
+  <!-- 首頁 -->
+  <section id="screen-home" class="screen">
+    <header class="home-head">
+      <button class="settings-btn" id="settings-btn" aria-label="設定">⚙</button>
+      <div class="logo">乾啦</div>
+      <div class="logo-sub">台灣人的喝酒遊戲全集</div>
+    </header>
+
+    <button id="multi-entry" class="multi-entry">
+      <span class="me-emoji">🌐</span>
+      <span class="me-text">
+        <strong data-i18n="multi_title">多人連線</strong>
+        <span data-i18n="multi_desc">跟朋友連線,沒帶撲克牌 / 骰子也能玩</span>
+      </span>
+      <span class="me-arrow">›</span>
+    </button>
+
+    <button id="players-bar" class="players-bar">
+      <span class="pb-icon">👥</span>
+      <span id="players-bar-text" data-i18n="setup_players">設定玩家</span>
+      <span class="pb-arrow">›</span>
+    </button>
+
+    <!-- 搜尋 + 篩選 -->
+    <div class="search-bar">
+      <span class="sb-icon">🔍</span>
+      <input id="search-input" type="search" data-i18n-placeholder="search_ph" placeholder="搜尋遊戲…" autocomplete="off" />
+      <button id="search-clear" class="sb-clear" hidden aria-label="清除">✕</button>
+    </div>
+    <div class="filter-chips" id="filter-chips">
+      <button class="chip active" data-f="all" data-i18n="filter_all">全部</button>
+      <button class="chip" data-f="fav" data-i18n="filter_fav">⭐ 我的最愛</button>
+      <button class="chip" data-f="solo" data-i18n="filter_solo">🧍 1 人也能玩</button>
+      <button class="chip" data-f="multi" data-i18n="filter_multi">👥 2 人以上</button>
+    </div>
+
+    <div id="game-grid" class="game-grid"><!-- JS 注入 --></div>
+
+    <button class="rules-card" data-go="rules">
+      <span class="rc-emoji">📖</span>
+      <div class="rc-text">
+        <strong data-i18n="rules_title">規則大全</strong>
+        <span data-i18n="rules_desc">啤酒乒乓、划拳、369、射龍門… 12 款線下玩法</span>
+      </div>
+      <span class="pb-arrow">›</span>
+    </button>
+
+    <footer class="home-foot">
+      請理性飲酒・未成年請勿飲酒・酒後不開車<br />
+      乾啦 v1.1
+    </footer>
+  </section>
+
+  <!-- 玩家設定 -->
+  <section id="screen-players" class="screen" hidden>
+    <header class="sub-head">
+      <button class="back-btn" data-go="home">‹</button>
+      <h2 data-i18n="players_title">玩家設定</h2>
+    </header>
+    <div class="screen-body">
+      <p class="hint" id="players-hint" data-i18n="players_hint">加入今晚一起玩的人,部分遊戲會用到。</p>
+      <form id="player-form" class="player-form">
+        <input id="player-input" type="text" data-i18n-placeholder="players_ph" placeholder="輸入名字…" maxlength="10" autocomplete="off" />
+        <button type="submit" class="btn btn-primary" data-i18n="add">加入</button>
+      </form>
+      <div class="player-tools" id="player-tools">
+        <button class="tool-btn" id="tool-recall" hidden data-i18n="tool_recall">↻ 上次玩家</button>
+        <button class="tool-btn" id="tool-shuffle" data-i18n="tool_shuffle">🔀 洗牌順序</button>
+        <button class="tool-btn danger" id="tool-clear" data-i18n="tool_clear">✕ 全部清空</button>
+      </div>
+      <div id="player-list" class="player-list"></div>
+    </div>
+    <div class="screen-foot">
+      <button id="players-done" class="btn btn-primary btn-lg btn-block" data-i18n="done">完成</button>
+    </div>
+  </section>
+
+  <!-- 遊戲畫面 -->
+  <section id="screen-game" class="screen" hidden>
+    <header class="sub-head">
+      <button class="back-btn" data-go="home">‹</button>
+      <h2 id="game-title">遊戲</h2>
+      <button class="score-badge" id="score-badge" aria-label="跑分">
+        <span class="sc-emoji">🍺</span><span class="sc-n">0</span>
+      </button>
+      <button class="switch-game-btn" id="switch-game-btn" aria-label="換遊戲">換遊戲</button>
+    </header>
+    <div id="game-stage" class="screen-body game-stage"></div>
+  </section>
+
+  <!-- 多人連線 -->
+  <section id="screen-multi" class="screen" hidden>
+    <header class="sub-head">
+      <button class="back-btn" id="multi-back">‹</button>
+      <h2 id="multi-title" data-i18n="multi_title">多人連線</h2>
+    </header>
+    <div id="multi-body" class="screen-body"></div>
+  </section>
+
+  <!-- 設定 -->
+  <section id="screen-settings" class="screen" hidden>
+    <header class="sub-head">
+      <button class="back-btn" data-go="home">‹</button>
+      <h2 data-i18n="settings">設定</h2>
+    </header>
+    <div class="screen-body">
+      <div class="setting-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <strong data-i18n="soft_title">微醺友善模式</strong>
+            <span data-i18n="soft_desc">把「喝酒」改成「做大冒險」,不喝酒也能玩</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="soft-toggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <strong data-i18n="sound_title">音效</strong>
+            <span data-i18n="sound_desc">骰子、提示、勝利音效</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="sound-toggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-info">
+            <strong data-i18n="haptic_title">震動回饋</strong>
+            <span data-i18n="haptic_desc">互動時手機震一下(Android)</span>
+          </div>
+          <label class="switch">
+            <input type="checkbox" id="haptic-toggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <strong data-i18n="font_size">字體大小</strong>
+            <span data-i18n="font_size_desc">放大讓酒局昏暗時看得清楚</span>
+          </div>
+        </div>
+        <div class="font-size-row">
+          <button class="fs-btn" data-fs="small" data-i18n="fs_small">小</button>
+          <button class="fs-btn active" data-fs="normal" data-i18n="fs_normal">標準</button>
+          <button class="fs-btn" data-fs="large" data-i18n="fs_large">大</button>
+          <button class="fs-btn" data-fs="xlarge" data-i18n="fs_xlarge">特大</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-row">
+          <div class="setting-info">
+            <strong data-i18n="language">語言 Language</strong>
+            <span data-i18n="language_desc">介面語言切換</span>
+          </div>
+        </div>
+        <div class="lang-row">
+          <button class="lang-btn active" data-lang="zh">中文</button>
+          <button class="lang-btn" data-lang="en">English</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <button class="setting-link" id="reset-onb" data-i18n="reset_onb">重新看一次新手引導</button>
+        <button class="setting-link" id="reset-favs" data-i18n="reset_favs">清除「最近玩過」與「我的最愛」</button>
+        <button class="setting-link" id="reset-scores" data-i18n="reset_scores">清除本場喝酒統計</button>
+        <a class="setting-link" href="./privacy.html" data-i18n="privacy">隱私政策</a>
+      </div>
+
+      <div class="setting-foot">
+        乾啦 v1.1 ・ <a href="./privacy.html">Privacy</a><br />
+        請理性飲酒・未成年請勿飲酒・酒後不開車
+      </div>
+    </div>
+  </section>
+
+  <!-- 規則大全 -->
+  <section id="screen-rules" class="screen" hidden>
+    <header class="sub-head">
+      <button class="back-btn" data-go="home">‹</button>
+      <h2 data-i18n="rules_title">規則大全</h2>
+    </header>
+    <div id="rules-body" class="screen-body"></div>
+  </section>
+
+</div>
+
+<!-- 喝酒統計彈窗 -->
+<div id="score-sheet" class="score-sheet" hidden>
+  <div class="score-sheet-card">
+    <div class="ss-head">
+      <h3>🍺 本場喝酒榜</h3>
+      <button id="ss-close" aria-label="關閉">✕</button>
+    </div>
+    <div class="ss-list"></div>
+    <div class="ss-foot">
+      <button class="danger" id="ss-reset">清除統計</button>
+      <button id="ss-add">+1 我喝了</button>
+    </div>
+  </div>
+</div>
+
+<!-- 房主管理菜單 -->
+<div id="player-menu" class="player-menu" hidden>
+  <div class="player-menu-card">
+    <div class="pm-title" id="pm-title">操作 玩家</div>
+    <div id="pm-buttons"></div>
+    <button class="pm-cancel" id="pm-cancel">取消</button>
+  </div>
+</div>
+
+<!-- 喝了一口的玩家選擇器(快速 +1) -->
+<div id="add-drink-sheet" class="player-menu" hidden>
+  <div class="player-menu-card">
+    <div class="pm-title">誰喝了?點一下 +1</div>
+    <div id="ad-buttons"></div>
+    <button class="pm-cancel" id="ad-cancel">取消</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast" hidden></div>
+
+<script src="./app.js"></script>
+</body>
+</html>

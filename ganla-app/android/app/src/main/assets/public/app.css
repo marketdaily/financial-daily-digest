@@ -1,0 +1,561 @@
+:root{
+  --bg:#0d0b14;
+  --bg2:#15121f;
+  --card:rgba(255,255,255,.055);
+  --card-line:rgba(255,255,255,.10);
+  --text:#f4f1fb;
+  --muted:#9b94b3;
+  --rose:#f43f5e;
+  --orange:#fb923c;
+  --purple:#a855f7;
+  --grad:linear-gradient(135deg,#f43f5e 0%,#fb923c 100%);
+  --grad-p:linear-gradient(135deg,#a855f7 0%,#f43f5e 100%);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none !important}
+html,body{height:100%}
+body{
+  font-family:"Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60% 40% at 80% 0%,rgba(168,85,247,.22),transparent 70%),
+    radial-gradient(55% 38% at 10% 100%,rgba(244,63,94,.20),transparent 70%);
+}
+button{font-family:inherit;cursor:pointer;border:none;color:inherit}
+input{font-family:inherit}
+
+/* ---- 通用按鈕 ---- */
+.btn{
+  border-radius:14px;font-size:16px;font-weight:700;padding:14px 22px;
+  transition:transform .12s ease,opacity .12s ease;
+}
+.btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.55}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 8px 24px -8px rgba(244,63,94,.6)}
+.btn-ghost{background:transparent;color:var(--muted);font-weight:500}
+.btn-lg{font-size:17px;padding:16px 26px}
+.btn-block{width:100%}
+.btn-soft{background:var(--card);border:1px solid var(--card-line);color:var(--text)}
+
+/* ---- 年齡確認 ---- */
+.overlay{
+  position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;
+  background:var(--bg);padding:32px;
+}
+.gate-card{
+  position:relative;z-index:1;max-width:380px;width:100%;text-align:center;
+  display:flex;flex-direction:column;gap:14px;
+}
+.gate-emoji{font-size:64px}
+.gate-card h1{
+  font-size:52px;font-weight:900;letter-spacing:2px;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.gate-sub{color:var(--muted);font-size:15px;margin-top:-8px}
+.gate-warn{color:var(--text);font-size:14px;line-height:1.7;background:var(--card);
+  border:1px solid var(--card-line);border-radius:14px;padding:14px 16px;margin-top:8px}
+.gate-fine{color:var(--muted);font-size:12px;line-height:1.7;margin-top:6px}
+.gate-card .btn{margin-top:4px}
+
+/* ---- 畫面 ---- */
+.screen{position:relative;z-index:1;min-height:100vh;
+  max-width:480px;margin:0 auto;display:flex;flex-direction:column}
+.screen-body{flex:1;padding:18px 18px 28px;display:flex;flex-direction:column;gap:14px}
+.screen-foot{padding:14px 18px calc(18px + env(safe-area-inset-bottom));
+  position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%)}
+
+/* ---- 首頁 ---- */
+.home-head{padding:calc(40px + env(safe-area-inset-top)) 22px 14px;text-align:center}
+.logo{font-size:46px;font-weight:900;letter-spacing:3px;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.logo-sub{color:var(--muted);font-size:13px;letter-spacing:1px;margin-top:2px}
+
+.players-bar{
+  margin:6px 18px 16px;padding:14px 16px;display:flex;align-items:center;gap:10px;
+  background:var(--card);border:1px solid var(--card-line);border-radius:16px;
+  font-size:15px;font-weight:500;color:var(--text);transition:transform .12s}
+.players-bar:active{transform:scale(.98)}
+.pb-icon{font-size:18px}
+#players-bar-text{flex:1;text-align:left}
+.pb-arrow{color:var(--muted);font-size:22px;font-weight:300}
+
+.game-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 18px}
+.game-tile{
+  position:relative;background:var(--card);border:1px solid var(--card-line);
+  border-radius:20px;padding:18px 14px;text-align:left;
+  display:flex;flex-direction:column;gap:6px;min-height:138px;
+  box-shadow:0 10px 22px -16px rgba(0,0,0,.9);
+  transition:transform .14s ease,box-shadow .14s}
+.game-tile:active{transform:translateY(2px) scale(.97);box-shadow:0 4px 12px -10px #000}
+.gt-emoji{font-size:32px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+.gt-name{font-size:16px;font-weight:700;margin-top:auto}
+.gt-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.gt-badge{position:absolute;top:10px;right:10px;font-size:9px;font-weight:700;
+  letter-spacing:.5px;padding:3px 7px;border-radius:99px;background:var(--grad);color:#fff}
+
+.rules-card{
+  margin:16px 18px 0;padding:16px;display:flex;align-items:center;gap:13px;
+  background:var(--card);border:1px solid var(--card-line);border-radius:20px;
+  text-align:left;transition:transform .12s}
+.rules-card:active{transform:scale(.98)}
+.rc-emoji{font-size:30px}
+.rc-text{flex:1;display:flex;flex-direction:column;gap:2px}
+.rc-text strong{font-size:16px}
+.rc-text span{font-size:11.5px;color:var(--muted)}
+
+.soft-row{
+  margin:12px 18px 0;padding:14px 16px;display:flex;align-items:center;gap:12px;
+  background:var(--card);border:1px solid var(--card-line);border-radius:18px}
+.soft-info{flex:1;display:flex;flex-direction:column;gap:2px}
+.soft-info strong{font-size:14.5px}
+.soft-info span{font-size:11px;color:var(--muted);line-height:1.4}
+
+.switch{position:relative;width:48px;height:28px;flex-shrink:0}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:rgba(255,255,255,.12);border-radius:99px;transition:.2s}
+.slider::before{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;
+  background:#fff;border-radius:50%;transition:.2s}
+.switch input:checked+.slider{background:var(--rose)}
+.switch input:checked+.slider::before{transform:translateX(20px)}
+
+.home-foot{text-align:center;color:var(--muted);font-size:11px;line-height:1.8;
+  padding:26px 18px calc(20px + env(safe-area-inset-bottom))}
+
+/* ---- 子畫面 header ---- */
+.sub-head{
+  display:flex;align-items:center;gap:6px;
+  padding:calc(14px + env(safe-area-inset-top)) 14px 12px;
+  border-bottom:1px solid var(--card-line);position:sticky;top:0;z-index:5;
+  background:rgba(13,11,20,.85);backdrop-filter:blur(12px)}
+.back-btn{font-size:30px;font-weight:300;width:40px;height:40px;line-height:1;
+  background:transparent;color:var(--text);border-radius:12px}
+.back-btn:active{background:var(--card)}
+.sub-head h2{font-size:18px;font-weight:700}
+.hint{color:var(--muted);font-size:13px;line-height:1.6}
+
+/* ---- 玩家設定 ---- */
+.player-form{display:flex;gap:8px}
+.player-form input{
+  flex:1;background:var(--card);border:1px solid var(--card-line);border-radius:14px;
+  padding:13px 15px;font-size:15px;color:var(--text);outline:none}
+.player-form input:focus{border-color:var(--rose)}
+.player-list{display:flex;flex-wrap:wrap;gap:9px}
+.player-chip{
+  display:flex;align-items:center;gap:8px;background:var(--card);
+  border:1px solid var(--card-line);border-radius:99px;padding:9px 9px 9px 15px;
+  font-size:14px;font-weight:500}
+.player-chip button{
+  width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.10);
+  color:var(--muted);font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center}
+.player-empty{color:var(--muted);font-size:13px;text-align:center;padding:20px}
+
+/* ---- 遊戲舞台 ---- */
+.game-stage{align-items:center;justify-content:flex-start;padding-top:22px;
+  perspective:1100px}
+.stage-card{
+  width:100%;background:var(--card);border:1px solid var(--card-line);
+  border-radius:24px;padding:28px 22px;text-align:center;
+  display:flex;flex-direction:column;gap:14px;align-items:center;
+  box-shadow:0 24px 50px -22px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.06)}
+.stage-big{font-size:25px;font-weight:900;line-height:1.45}
+.stage-sub{font-size:14px;color:var(--muted);line-height:1.7}
+.stage-emoji{font-size:58px;line-height:1;filter:drop-shadow(0 8px 14px rgba(0,0,0,.55))}
+.stage-tag{
+  font-size:12px;font-weight:700;letter-spacing:1px;padding:6px 14px;border-radius:99px;
+  background:var(--grad-p);color:#fff}
+.stage-actions{width:100%;display:flex;flex-direction:column;gap:10px;margin-top:6px}
+
+.fade-in{animation:fade .42s cubic-bezier(.2,.9,.3,1)}
+@keyframes fade{
+  from{opacity:0;transform:perspective(900px) rotateX(16deg) translateY(22px)}
+  to{opacity:1;transform:perspective(900px) rotateX(0) translateY(0)}}
+.pop{animation:pop .45s cubic-bezier(.2,1.5,.4,1)}
+@keyframes pop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.shake{animation:shake .5s}
+@keyframes shake{0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-9px)}40%{transform:translateX(9px)}
+  60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+
+/* ---- 3D 撲克牌（國王遊戲）---- */
+.card3d{width:158px;height:222px;perspective:1100px}
+.card3d-inner{
+  position:relative;width:100%;height:100%;transform-style:preserve-3d;
+  transform:rotateY(180deg);
+  transition:transform .75s cubic-bezier(.3,.9,.25,1)}
+.card3d.flipped .card3d-inner{transform:rotateY(0deg)}
+.face-front,.face-back{
+  position:absolute;inset:0;border-radius:18px;backface-visibility:hidden;
+  box-shadow:0 20px 38px -14px rgba(0,0,0,.85),
+    6px 0 0 -2px rgba(0,0,0,.25)}
+.face-back{
+  background:
+    repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 9px,transparent 9px 18px),
+    linear-gradient(150deg,#5b21b6,#9333ea);
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;transform:rotateY(180deg)}
+.face-front{
+  background:#fdfbff;color:#15121f;padding:14px;
+  display:flex;flex-direction:column;justify-content:space-between}
+.face-front.red{color:#e0123c}
+.card-corner{font-size:25px;font-weight:900;line-height:1;text-align:left}
+.card-corner.btm{transform:rotate(180deg)}
+.card-center{font-size:52px;text-align:center}
+
+/* ---- 3D 骰子 ---- */
+.dice3d{display:flex;gap:26px;justify-content:center;padding:14px 0 4px;perspective:620px}
+.cube{
+  width:74px;height:74px;position:relative;transform-style:preserve-3d;
+  transition:transform 1.05s cubic-bezier(.2,.75,.25,1)}
+.cube-face{
+  position:absolute;width:74px;height:74px;border-radius:14px;
+  background:linear-gradient(150deg,#ffffff,#e7e3f0);
+  display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+  padding:9px;gap:2px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.07)}
+.cf1{transform:translateZ(37px)}
+.cf6{transform:rotateY(180deg) translateZ(37px)}
+.cf2{transform:rotateY(90deg) translateZ(37px)}
+.cf5{transform:rotateY(-90deg) translateZ(37px)}
+.cf3{transform:rotateX(90deg) translateZ(37px)}
+.cf4{transform:rotateX(-90deg) translateZ(37px)}
+.pip{border-radius:50%}
+.pip.on{background:radial-gradient(circle at 38% 35%,#4b3aa0,#15121f)}
+
+/* ---- 命運轉盤 ---- */
+.wheel-wrap{position:relative;width:248px;height:248px;margin:6px auto 2px}
+.wheel{
+  width:100%;height:100%;border-radius:50%;position:relative;
+  box-shadow:0 22px 44px -14px rgba(0,0,0,.9),
+    inset 0 0 0 7px rgba(255,255,255,.08),0 0 0 3px rgba(255,255,255,.05);
+  transition:transform 4.3s cubic-bezier(.13,.78,.22,1)}
+.wheel-label{
+  position:absolute;left:50%;top:50%;width:0;height:0;
+  display:flex;align-items:center;justify-content:center}
+.wheel-label span{
+  font-size:13px;font-weight:800;color:#fff;white-space:nowrap;
+  text-shadow:0 1px 3px rgba(0,0,0,.6);transform-origin:center}
+.wheel-hub{
+  position:absolute;left:50%;top:50%;width:46px;height:46px;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle at 38% 33%,#2a2536,#0c0b12);
+  box-shadow:0 4px 10px rgba(0,0,0,.7),inset 0 0 0 2px rgba(255,255,255,.1);z-index:2}
+.wheel-pin{
+  position:absolute;top:-4px;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;
+  border-top:26px solid #fff;z-index:3;
+  filter:drop-shadow(0 3px 4px rgba(0,0,0,.6))}
+
+/* ---- 俄羅斯輪盤（左輪）---- */
+.cylinder{
+  width:210px;height:210px;border-radius:50%;position:relative;margin:8px auto 2px;
+  background:radial-gradient(circle at 36% 30%,#67616f,#211e2b 68%);
+  box-shadow:0 18px 38px -12px #000,inset 0 0 0 5px rgba(255,255,255,.07),
+    inset 0 -16px 28px rgba(0,0,0,.55);
+  transition:transform 1.05s cubic-bezier(.18,.85,.2,1)}
+.chamber{
+  position:absolute;width:38px;height:38px;border-radius:50%;
+  background:radial-gradient(circle at 40% 34%,#2c2935,#070608);
+  box-shadow:inset 0 3px 7px #000,0 1px 0 rgba(255,255,255,.05);
+  transform:translate(-50%,-50%)}
+.cyl-core{
+  position:absolute;left:50%;top:50%;width:34px;height:34px;
+  transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle at 38% 33%,#8b8593,#2a2733);
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.6)}
+.gun-hammer{
+  position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+  width:18px;height:24px;border-radius:5px 5px 2px 2px;
+  background:linear-gradient(#cfcad6,#6b6676);
+  box-shadow:0 3px 6px rgba(0,0,0,.6);z-index:3}
+.flash-bang{animation:bang .55s}
+@keyframes bang{0%{box-shadow:0 0 0 0 rgba(244,63,94,.9)}
+  100%{box-shadow:0 0 0 60px rgba(244,63,94,0)}}
+
+/* ---- 吹牛骰 / 開盅 ---- */
+.dice-grid{width:100%;display:flex;flex-direction:column;gap:12px}
+.dice-row-p{display:flex;align-items:center;gap:10px}
+.dice-row-p .who{font-size:13px;font-weight:700;width:64px;text-align:left;flex-shrink:0}
+.mini-dice{display:flex;gap:6px;flex-wrap:wrap}
+.mini-die{
+  width:34px;height:34px;border-radius:8px;
+  background:linear-gradient(150deg,#fff,#e7e3f0);
+  display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);
+  padding:4px;gap:1px;box-shadow:0 3px 8px -3px rgba(0,0,0,.6)}
+.secret-dice{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.secret-dice .mini-die{width:48px;height:48px;padding:6px}
+
+/* ---- 傳手機卡 / 誰是臥底 ---- */
+.pass-emoji{font-size:54px}
+.secret-word{
+  font-size:34px;font-weight:900;padding:18px 26px;border-radius:18px;
+  background:var(--grad-p);color:#fff;
+  box-shadow:0 16px 34px -14px rgba(168,85,247,.7)}
+.spy-tally{font-size:13px;color:var(--muted)}
+.vote-list{width:100%;display:flex;flex-direction:column;gap:9px}
+.vote-btn{
+  background:var(--card);border:1px solid var(--card-line);border-radius:14px;
+  padding:14px 18px;font-size:16px;font-weight:700;color:var(--text);
+  transition:transform .12s}
+.vote-btn:active{transform:scale(.97)}
+
+/* ---- 比手畫腳 ---- */
+.timer-num{
+  font-size:62px;font-weight:900;line-height:1;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.timer-num.low{background:none;color:var(--rose);animation:tpulse .5s infinite}
+@keyframes tpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.charade-word{font-size:38px;font-weight:900}
+
+/* ---- 終極密碼 ---- */
+.pw-range{font-size:40px;font-weight:900;letter-spacing:1px}
+.pw-range b{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pw-form{display:flex;gap:8px;width:100%}
+.pw-form input{
+  flex:1;background:#fff;border:none;border-radius:14px;padding:14px;
+  font-size:22px;font-weight:800;text-align:center;color:#15121f;outline:none}
+
+/* ---- 真心話大冒險 ---- */
+.td-choice{display:flex;flex-direction:column;gap:12px;width:100%}
+.btn-truth{background:linear-gradient(135deg,#3b82f6,#a855f7);color:#fff}
+.btn-dare{background:var(--grad);color:#fff}
+
+/* ---- 規則大全 ---- */
+.rule-item{
+  background:var(--card);border:1px solid var(--card-line);border-radius:16px;overflow:hidden}
+.rule-q{
+  width:100%;text-align:left;padding:15px 16px;display:flex;align-items:center;gap:10px;
+  font-size:15.5px;font-weight:700;background:transparent}
+.rule-q .ri-emoji{font-size:20px}
+.rule-q .ri-arrow{margin-left:auto;color:var(--muted);transition:transform .2s}
+.rule-item.open .ri-arrow{transform:rotate(90deg)}
+.rule-a{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .25s ease,padding .25s}
+.rule-item.open .rule-a{padding:0 16px 16px;max-height:420px}
+.rule-a p{font-size:13.5px;color:var(--muted);line-height:1.85}
+
+/* ---- 首頁分類 ---- */
+.cat-head{
+  margin:22px 18px 4px;display:flex;align-items:center;gap:10px;
+  font-size:12.5px;font-weight:800;color:var(--muted);letter-spacing:1.5px}
+.cat-head::after{content:"";flex:1;height:1px;background:var(--card-line)}
+.game-tile{animation:tileIn .45s backwards}
+@keyframes tileIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+
+/* ---- 彩帶特效 ---- */
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.confetti i{position:absolute;top:-26px;width:9px;height:15px;animation:confFall linear forwards}
+@keyframes confFall{to{transform:translateY(112vh) rotate(780deg);opacity:.12}}
+
+/* ---- 地雷陣 ---- */
+.mine-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;width:100%}
+.mine-tile{
+  aspect-ratio:1;border-radius:14px;font-size:25px;font-weight:800;color:#fff;
+  background:linear-gradient(150deg,#3c3654,#262134);
+  box-shadow:0 5px 0 -1px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.09);
+  transition:transform .1s,background .2s}
+.mine-tile:active{transform:translateY(3px)}
+.mine-tile:disabled{transform:translateY(3px);box-shadow:none}
+.mine-tile.safe{background:linear-gradient(150deg,#15803d,#22c55e)}
+.mine-tile.boom{background:linear-gradient(150deg,#b91c1c,#f43f5e)}
+
+/* ---- 記憶大考驗 ---- */
+.simon-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:238px;height:238px;margin:4px auto}
+.simon-pad{
+  border-radius:22px;filter:brightness(.4);
+  box-shadow:0 8px 22px -8px rgba(0,0,0,.7),inset 0 2px 0 rgba(255,255,255,.18);
+  transition:filter .11s,transform .11s}
+.simon-pad.lit{filter:brightness(1.4);transform:scale(1.07)}
+.sp0{background:#f43f5e}
+.sp1{background:#3b82f6}
+.sp2{background:#22c55e}
+.sp3{background:#eab308}
+
+/* ---- 猜拳擂台 ---- */
+.rps-row{display:flex;gap:10px;width:100%}
+.rps-btn{
+  flex:1;aspect-ratio:1;border-radius:18px;font-size:42px;
+  background:var(--card);border:1px solid var(--card-line);
+  transition:transform .12s,border-color .12s}
+.rps-btn:active{transform:scale(.9);border-color:var(--rose)}
+.rps-vs{display:flex;align-items:center;justify-content:center;gap:16px;width:100%}
+.rps-vs .hand{font-size:62px}
+.rps-vs .vs{font-size:18px;font-weight:900;color:var(--muted)}
+.rps-shake{animation:rpsShake .45s}
+@keyframes rpsShake{0%,100%{transform:translateY(0)}
+  25%{transform:translateY(-13px)}55%{transform:translateY(0)}80%{transform:translateY(-7px)}}
+
+/* ---- 轉瓶子 ---- */
+.bottle-wrap{position:relative;width:252px;height:252px;margin:6px auto 2px}
+.bottle-ring{
+  position:absolute;inset:8px;border-radius:50%;
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.08),0 14px 30px -16px #000}
+.bottle{
+  position:absolute;left:50%;top:50%;width:30px;height:150px;
+  margin:-75px 0 0 -15px;transform-origin:50% 50%;
+  transition:transform 3.7s cubic-bezier(.13,.82,.2,1);
+  filter:drop-shadow(0 8px 12px rgba(0,0,0,.55))}
+.bottle-body{
+  position:absolute;bottom:0;width:30px;height:104px;border-radius:12px 12px 15px 15px;
+  background:linear-gradient(100deg,#15803d,#4ade80 70%)}
+.bottle-neck{
+  position:absolute;top:14px;left:50%;width:12px;height:44px;margin-left:-6px;
+  border-radius:5px 5px 0 0;background:linear-gradient(100deg,#166534,#22c55e)}
+.bottle-cap{
+  position:absolute;top:0;left:50%;width:16px;height:16px;margin-left:-8px;
+  border-radius:4px;background:linear-gradient(135deg,#fb923c,#f43f5e)}
+.ring-label{position:absolute;left:50%;top:50%;width:0;height:0;
+  display:flex;align-items:center;justify-content:center}
+.ring-label span{
+  font-size:13px;font-weight:800;white-space:nowrap;color:#fff;
+  text-shadow:0 1px 4px #000}
+
+/* ---- 手速王 ---- */
+.react-zone{
+  width:100%;min-height:208px;border-radius:22px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  font-size:24px;font-weight:900;text-align:center;color:#fff;
+  background:linear-gradient(150deg,#3c3654,#241f33);transition:background .08s}
+.react-zone.wait{background:linear-gradient(150deg,#9a3412,#c2410c)}
+.react-zone.go{background:linear-gradient(150deg,#15803d,#22c55e)}
+.react-ms{font-size:46px;font-weight:900}
+.react-rank{width:100%;display:flex;flex-direction:column;gap:7px}
+.react-rank div{
+  display:flex;justify-content:space-between;
+  background:var(--card);border:1px solid var(--card-line);
+  border-radius:12px;padding:11px 15px;font-size:15px;font-weight:700}
+.react-rank div.slow{background:var(--grad);border-color:transparent;color:#fff}
+
+/* ---- 定時炸彈 ---- */
+.bomb{font-size:96px;line-height:1;filter:drop-shadow(0 8px 16px rgba(0,0,0,.6))}
+.bomb.lit{animation:bombTick .55s infinite}
+@keyframes bombTick{0%,100%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.14) rotate(5deg)}}
+
+/* ---- 誰最有可能 ---- */
+.point-count{
+  font-size:90px;font-weight:900;line-height:1;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:pop .4s cubic-bezier(.2,1.5,.4,1)}
+
+/* ---- 多人連線入口 ---- */
+.multi-entry{
+  margin:6px 18px 14px;padding:15px 16px;display:flex;align-items:center;gap:13px;
+  background:linear-gradient(120deg,#3b82f6 0%,#a855f7 55%,#f43f5e 100%);
+  border:none;border-radius:18px;color:#fff;text-align:left;
+  box-shadow:0 14px 32px -10px rgba(168,85,247,.55);
+  transition:transform .12s}
+.multi-entry:active{transform:scale(.98)}
+.me-emoji{font-size:30px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.4))}
+.me-text{flex:1;display:flex;flex-direction:column;gap:2px}
+.me-text strong{font-size:16px;font-weight:800;color:#fff}
+.me-text span{font-size:11.5px;color:rgba(255,255,255,.85)}
+.me-arrow{font-size:22px;font-weight:300;color:rgba(255,255,255,.85)}
+
+/* ---- 房間 ---- */
+.room-code{
+  font-family:'SF Mono','Menlo',monospace;font-size:52px;font-weight:900;letter-spacing:8px;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+  text-align:center;line-height:1.1}
+.room-code-hint{text-align:center;color:var(--muted);font-size:12.5px;margin-top:-2px;line-height:1.6}
+.room-players{display:flex;flex-wrap:wrap;gap:8px}
+.room-pill{
+  display:flex;align-items:center;gap:6px;background:var(--card);
+  border:1px solid var(--card-line);border-radius:99px;padding:9px 14px;
+  font-size:14px;font-weight:600;color:var(--text)}
+.room-pill.me{background:var(--grad);border-color:transparent;color:#fff}
+.room-pill.host::before{content:"👑 ";font-size:13px}
+.game-pick{display:grid;grid-template-columns:1fr;gap:9px;width:100%}
+.game-pick button{
+  display:flex;align-items:center;gap:12px;padding:14px 16px;
+  background:var(--card);border:1px solid var(--card-line);border-radius:16px;
+  text-align:left;font-size:15px;font-weight:700;color:var(--text);
+  transition:transform .12s,border-color .12s}
+.game-pick button:active{transform:scale(.98);border-color:var(--rose)}
+.game-pick .gp-emoji{font-size:24px;flex-shrink:0}
+.game-pick .gp-info{flex:1;display:flex;flex-direction:column}
+.game-pick .gp-info span{font-size:11.5px;color:var(--muted);font-weight:500}
+
+.name-form{display:flex;flex-direction:column;gap:12px;width:100%}
+.name-form input{
+  background:var(--card);border:1px solid var(--card-line);border-radius:14px;
+  padding:14px 16px;font-size:18px;font-weight:600;color:var(--text);outline:none;
+  text-align:center;font-family:inherit}
+.name-form input:focus{border-color:var(--rose)}
+
+.code-form input{
+  font-family:'SF Mono','Menlo',monospace !important;font-size:30px;font-weight:900;
+  letter-spacing:8px;text-align:center;text-transform:uppercase}
+
+/* ---- 多人遊戲: 搖骰 ---- */
+.mp-dice-grid{display:flex;flex-direction:column;gap:8px;width:100%}
+.mp-dice-row{
+  display:flex;align-items:center;gap:10px;background:var(--card);
+  border:1px solid var(--card-line);border-radius:12px;padding:10px 14px;
+  transition:background .25s}
+.mp-dice-row.win{background:linear-gradient(135deg,#15803d,#22c55e);border-color:transparent;color:#fff}
+.mp-dice-row.lose{background:var(--grad);border-color:transparent;color:#fff}
+.mp-dice-row .who{flex:1;font-size:14px;font-weight:700}
+.mp-dice-row .roll{display:flex;align-items:center;gap:6px}
+.mp-mini-die{
+  width:30px;height:30px;border-radius:7px;background:#fdfbff;color:#15121f;
+  font-size:17px;font-weight:900;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px -2px rgba(0,0,0,.5)}
+
+/* ---- 多人遊戲: 妞妞 + 射龍門 卡牌 ---- */
+.mp-card{
+  width:42px;height:60px;border-radius:7px;background:#fdfbff;color:#15121f;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-weight:900;box-shadow:0 3px 8px -3px rgba(0,0,0,.6);font-size:13px;line-height:1.05}
+.mp-card.red{color:#e0123c}
+.mp-card.back{
+  background:repeating-linear-gradient(45deg,rgba(255,255,255,.06) 0 6px,transparent 6px 12px),
+    linear-gradient(150deg,#5b21b6,#9333ea);color:#fff;font-size:18px}
+.mp-card .lbl{font-weight:900}
+.mp-card .st{font-size:14px;margin-top:1px}
+
+/* ---- 妞妞: 對手列 + 自己手牌 ---- */
+.mp-niu-hand{display:flex;gap:5px;flex-wrap:wrap;justify-content:center}
+.mp-niu-row{
+  display:flex;flex-direction:column;gap:6px;padding:10px;
+  background:var(--card);border:1px solid var(--card-line);border-radius:14px;
+  transition:background .25s}
+.mp-niu-row.win{background:linear-gradient(135deg,#15803d,#22c55e);border-color:transparent;color:#fff}
+.mp-niu-row.lose{background:var(--grad);border-color:transparent;color:#fff}
+.mp-niu-row .niu-head{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700}
+.mp-niu-row .niu-name{font-weight:900}
+.mp-my-hand{
+  width:100%;display:flex;gap:7px;justify-content:center;padding:14px;
+  background:var(--card);border:1px solid var(--card-line);border-radius:16px}
+.mp-my-hand .mp-card{width:52px;height:74px;font-size:16px}
+.mp-my-hand .mp-card .st{font-size:19px}
+
+/* ---- 射龍門 ---- */
+.mp-pillars{display:flex;gap:14px;justify-content:center;align-items:center;padding:6px 0}
+.mp-pillars .mp-card{width:60px;height:84px;font-size:19px}
+.mp-pillars .mp-card .st{font-size:22px}
+.mp-vs{font-size:24px;font-weight:900;color:var(--muted)}
+.mp-bet-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:100%}
+.mp-bet-row button{
+  padding:14px 0;border-radius:12px;font-size:18px;font-weight:900;
+  background:var(--card);border:1px solid var(--card-line);color:var(--text);
+  transition:transform .12s}
+.mp-bet-row button:active{transform:scale(.95)}
+.mp-turn-info{font-size:14.5px;color:var(--text);text-align:center;font-weight:600;padding:6px 0}
+.mp-score-row{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:12px}
+.mp-score-row span{background:var(--card);border:1px solid var(--card-line);border-radius:99px;padding:4px 10px;color:var(--muted)}
+
+/* 大老二 / 撿紅點 / 接龍 共用手牌容器 */
+.bt-hand,.mp-myhand{
+  display:flex;flex-wrap:wrap;gap:5px;padding:14px;
+  background:var(--card);border:1px solid var(--card-line);border-radius:16px;
+  justify-content:center}
+.bt-card{transition:transform .15s,box-shadow .15s,outline-color .15s;cursor:pointer}
+.bt-card:active{transform:scale(.94)}
+.bt-card.selected{
+  transform:translateY(-10px) scale(1.06);
+  box-shadow:0 10px 22px -6px rgba(244,63,94,.6);
+  outline:2px solid var(--rose)}

@@ -1,0 +1,20 @@
+{
+	"appId": "com.ganla.app",
+	"appName": "乾啦",
+	"webDir": "../drink_game",
+	"bundledWebRuntime": false,
+	"ios": {
+		"contentInset": "always",
+		"limitsNavigationsToAppBoundDomains": false,
+		"scheme": "ganla"
+	},
+	"android": {
+		"allowMixedContent": false
+	},
+	"server": {
+		"androidScheme": "https",
+		"iosScheme": "https",
+		"cleartext": false
+	},
+	"packageClassList": []
+}

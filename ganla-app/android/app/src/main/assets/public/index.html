@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>乾啦 — 台灣喝酒遊戲</title>
+<meta name="description" content="台灣人的喝酒遊戲全集：派對指令、國王遊戲、骰子、終極密碼、命運轉盤、真心話大冒險。聚會破冰必備。" />
+<meta name="theme-color" content="#0d0b14" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="乾啦" />
+<link rel="manifest" href="./manifest.json" />
+<link rel="apple-touch-icon" href="./icon.svg" />
+<link rel="icon" href="./icon.svg" type="image/svg+xml" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="./app.css" />
+</head>
+<body>
+
+<!-- 年齡確認 -->
+<div id="age-gate" class="overlay">
+  <div class="gate-card">
+    <div class="gate-emoji">🍻</div>
+    <h1>乾啦</h1>
+    <p class="gate-sub">台灣喝酒遊戲全集</p>
+    <p class="gate-warn">本 App 含飲酒相關內容，僅供 18 歲以上成年人使用。</p>
+    <button id="age-yes" class="btn btn-primary btn-lg">我已滿 18 歲，進入</button>
+    <button id="age-no" class="btn btn-ghost">未滿 18 歲</button>
+    <p class="gate-fine">請理性飲酒・未成年請勿飲酒・酒後不開車</p>
+  </div>
+</div>
+
+<div id="age-block" class="overlay" hidden>
+  <div class="gate-card">
+    <div class="gate-emoji">🔞</div>
+    <h1>未滿 18 歲</h1>
+    <p class="gate-warn">很抱歉，本 App 僅供成年人使用。<br />歡迎滿 18 歲後再來玩。</p>
+  </div>
+</div>
+
+<!-- App 主體 -->
+<div id="app" hidden>
+
+  <!-- 首頁 -->
+  <section id="screen-home" class="screen">
+    <header class="home-head">
+      <div class="logo">乾啦</div>
+      <div class="logo-sub">台灣人的喝酒遊戲全集</div>
+    </header>
+
+    <button id="multi-entry" class="multi-entry">
+      <span class="me-emoji">🌐</span>
+      <span class="me-text">
+        <strong>多人連線</strong>
+        <span>跟朋友連線，沒帶撲克牌 / 骰子也能玩</span>
+      </span>
+      <span class="me-arrow">›</span>
+    </button>
+
+    <button id="players-bar" class="players-bar">
+      <span class="pb-icon">👥</span>
+      <span id="players-bar-text">設定玩家</span>
+      <span class="pb-arrow">›</span>
+    </button>
+
+    <div id="game-grid" class="game-grid"><!-- JS 注入 --></div>
+
+    <button class="rules-card" data-go="rules">
+      <span class="rc-emoji">📖</span>
+      <div class="rc-text">
+        <strong>規則大全</strong>
+        <span>啤酒乒乓、划拳、369、射龍門… 12 款線下玩法</span>
+      </div>
+      <span class="pb-arrow">›</span>
+    </button>
+
+    <div class="soft-row">
+      <div class="soft-info">
+        <strong>微醺友善模式</strong>
+        <span>把「喝酒」改成「做大冒險」，不喝酒也能玩</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="soft-toggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="soft-row">
+      <div class="soft-info">
+        <strong>音效</strong>
+        <span>遊戲音效、骰子聲、提示音</span>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="sound-toggle" />
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <footer class="home-foot">
+      請理性飲酒・未成年請勿飲酒・酒後不開車<br />
+      乾啦 v1.0
+    </footer>
+  </section>
+
+  <!-- 玩家設定 -->
+  <section id="screen-players" class="screen" hidden>
+    <header class="sub-head">
+      <button class="back-btn" data-go="home">‹</button>
+      <h2>玩家設定</h2>
+    </header>
+    <div class="screen-body">
+      <p class="hint" id="players-hint">加入今晚一起玩的人，部分遊戲會用到。</p>
+      <form id="player-form" class="player-form">
+        <input id="player-input" type="text" placeholder="輸入名字…" maxlength="10" autocomplete="off" />
+        <button type="submit" class="btn btn-primary">加入</button>
+      </form>
+      <div id="player-list" class="player-list"></div>
+    </div>
+    <div class="screen-foot">
+      <button id="players-done" class="btn btn-primary btn-lg btn-block">完成</button>
+    </div>
+  </section>
+
+  <!-- 遊戲畫面 -->
+  <section id="screen-game" class="screen" hidden>
+    <header class="sub-head">
+      <button class="back-btn" data-go="home">‹</button>
+      <h2 id="game-title">遊戲</h2>
+    </header>
+    <div id="game-stage" class="screen-body game-stage"></div>
+  </section>
+
+  <!-- 多人連線 -->
+  <section id="screen-multi" class="screen" hidden>
+    <header class="sub-head">
+      <button class="back-btn" id="multi-back">‹</button>
+      <h2 id="multi-title">多人連線</h2>
+    </header>
+    <div id="multi-body" class="screen-body"></div>
+  </section>
+
+  <!-- 規則大全 -->
+  <section id="screen-rules" class="screen" hidden>
+    <header class="sub-head">
+      <button class="back-btn" data-go="home">‹</button>
+      <h2>規則大全</h2>
+    </header>
+    <div id="rules-body" class="screen-body"></div>
+  </section>
+
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "乾啦 — 台灣喝酒遊戲",
+  "short_name": "乾啦",
+  "description": "台灣人的喝酒遊戲全集：派對指令、國王遊戲、骰子、終極密碼、命運轉盤、真心話大冒險。",
+  "lang": "zh-Hant",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0d0b14",
+  "theme_color": "#0d0b14",
+  "categories": ["games", "entertainment", "social"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
