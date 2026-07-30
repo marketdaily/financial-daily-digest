@@ -108,6 +108,14 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 - **研究/知識**：deep-research、tapestry、research-indexer、academic-analyzer、knowledge-ops、doc-coauthoring、grill-me（idea 拷問/壓力測試）
 - **產能/雜項**：docx、pptx、xlsx、pdf、invoice-organizer、file-organizer、website-design-team（⚠️做整站/landing 唯一入口）、web-artifacts-builder、dashboard-builder、sql-generator、excel-formula、api-docs-generator、genai-prompt-pro（⚠️生成prompt/任務spec強制前置層）、nano-banana-pro、antigravity、open-generative-ai、ui-wireframe-generator、creative-direction、color-palette-generator、font-pairing（⚠️typography-pairing 退役）、defi-amm-security、evm-token-decimals
 
+## 📋 未收尾事項必須主動報（2026-07-30 Delvin 追責，最高優先）
+Delvin 原話：「你為什麼沒有直接收掉而是要等我問你才跟我講…我以後沒有問你怎麼辦，誰要負責」。
+
+- **收工摘要不准只講已完成**：還沒收乾的、還沒在生產驗證的、我自己造成的風險，一律當場講，不等他問。
+- 任何未收乾的事項在做的當下就登記：`scripts/open_items.py add "一句話" --why "為什麼還沒收" [--risk high|med|low] [--owner me|delvin]`；收掉了 `close <id> --note`。
+- **機器保證，不靠良心**：`.claude/settings.json` 的 Stop hook 在每次 session 結束執行 `open_items.py push`，還有 open 項就自動推播到 Delvin 手機（零 open 項時完全靜默，不製造噪音）。
+- 判準：「已完成」= 已在**生產/真實排程**跑過並驗證；只有單元測試/模擬驗證過的一律是 open 項，寫明「尚未在生產跑過」。
+
 ## 編碼規範
 - 使用 Python 開發
 - 不加不必要的註解

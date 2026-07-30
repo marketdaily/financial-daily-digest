@@ -1,0 +1,52 @@
+[
+ {
+  "id": 1,
+  "what": "零邊際成本架構尚未在生產跑過:明早 05:20 TW 是第一次真跑",
+  "why": "驗收是零真實呼叫的模擬;真環境可能撞到我沒模擬到的形狀(如 prewarm 對真實 data 的殘缺欄位)",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-07-30 13:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 2,
+  "what": "Marketing Agents 週批次仍未產出新素材,社群存貨=0 則",
+  "why": "重跑撞帳號 Fable 5 週額度上限;已加自動降級 sonnet-5 但要等下個補跑窗才會被實際執行",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-07-30 13:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 3,
+  "what": "今晚美股日報的 CF 免費額度已被我今天的量測吃掉(8348/9500)",
+  "why": "已補救:鏈序修正(openrouter 550b 排 local 前)+接上 key2 還活著的 gemini-flash-latest;但今晚仍是新鏈序第一次上場",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-07-30 13:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 4,
+  "what": "reddit_buzz / cron 目標守衛 / CF neuron 對帳 三個新 cron 未在排程時點實跑過",
+  "why": "手動跑過都綠;但排程環境(cron env/PATH)與手動不同,要等 09:40、每小時、明早 05:30 各自首跑",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-07-30 13:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 5,
+  "what": "winrig 上那份過期的 Mac-encoded 記憶目錄仍在",
+  "why": "已被 sync.sh 守衛隔離無害;不是我建的,刪除要你確認",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-07-30 13:06",
+  "closed": null,
+  "note": ""
+ }
+]

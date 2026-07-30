@@ -17,7 +17,11 @@ from config import GEMINI_API_KEY, GEMINI_API_KEY_2
 # 新版 key 格式為 AQ. 開頭(舊 AIzaSy 仍有效)。gemini-3-*-preview 可用但 preview 不進生產階梯。
 # 2026-07-23: 移除 gemini-flash-latest / gemini-flash-lite-latest —— v1beta 端點不存在這兩個
 # alias,每次呼叫恆 400(見 07-23 早報事故 log),白佔鏈上的位子拖慢 fallback。留 4 個有效版本號模型。
-GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite",
+# 2026-07-30 補 -latest 別名:實測 key2(日報保留桶)的 gemini-2.5-flash 已 404
+# (Google 收模型)但 gemini-flash-latest 仍 200;key1 反之(2.5-flash 200、flash-latest 429)。
+# 兩把 key 的可用模型集合已經分岔 → 別名進鏈=白撿的免費產能,且不動既有偏好順序。
+GEMINI_MODELS = ["gemini-2.5-flash", "gemini-flash-latest",
+                 "gemini-2.5-flash-lite", "gemini-flash-lite-latest",
                  "gemini-2.0-flash", "gemini-2.0-flash-lite"]
 GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 
@@ -537,8 +541,13 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
                    ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, max_tokens=8000))]
     # 2026-07-26 降級:nemotron 持續 no-json/抄 prompt 範例(07-23 reason 塌陷主犯之一)、
     # cerebras 402 沒 credits——降到本地 GPU 之後當絕對最後一張網,不再站在品質要道上。
-    free_weak = [("openrouter:nemotron-ultra-550b", lambda p: _call_openrouter(p, max_tokens=8000)),
-                 ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
+    # 2026-07-30 分層:原本 openrouter 跟 cerebras 同在 free_weak(垃圾層,墊在 local 之後),
+    # 前提是 openrouter=nemotron-3-super-120b(07-26 因 no-json/抄範例被降級的那支)。
+    # 現已升級為 ultra-550b 並實測能對真實 10 檔批次 prompt 產出完整 10 張卡(144s),
+    # 而 local qwen2.5:14b 對同一 prompt **600s 超時** → 兩者不該同層。
+    # free_backstop:真的做得完事的免費後衛(排 local 前);free_weak:仍是垃圾層(墊 local 後)。
+    free_backstop = [("openrouter:nemotron-ultra-550b", lambda p: _call_openrouter(p, max_tokens=8000))]
+    free_weak = [("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
     # 2026-07-22 Delvin:「sonnet 要花錢就不要用」——付費 Claude 全退出主鏈,
     # 純免費層扛(gemini 雙 key + groq + cf + openrouter/cerebras + 本地 GPU),
     # audit 閘門/deterministic fallback 品質防線不動。openai 沒 key 自動跳過。
@@ -558,7 +567,12 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
     # 預設 0 = prefer_paid 呼叫端(生卡×2/報告×3/retry)一律走純免費鏈+本地 GPU,零 API 帳單。
     paid = ([("claude:sonnet-5", lambda p: _call_claude(p, model="claude-sonnet-5"))]
             if (prefer_paid and os.environ.get("DIGEST_PAID_CARDS") == "1") else [])
-    providers = paid + ((strong + gemini) if prefer_strong else (gemini + strong)) + local + free_weak
+    # 鏈尾:free_backstop(能做完事的免費後衛) → local(斷網唯一活口) → free_weak(垃圾層墊底)。
+    # 舊順序把 openrouter 跟垃圾層一起墊在 local 之後,害批次卡在備援路徑上先白等 local
+    # 600s 超時,才輪到真的能產出的那層 → 直接吃掉寄出死線。
+    # 不破壞「全網路斷線時 local 是唯一活口」的保證:網路斷時 openrouter 走 DNS 立即失敗。
+    providers = (paid + ((strong + gemini) if prefer_strong else (gemini + strong))
+                 + free_backstop + local + free_weak)
     last_err = None
     for rnd in range(2):
         dns_blip = False

@@ -1,26 +1,32 @@
 {
  "_chain_order_default": [
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
   "https://api.groq.com/openai/v1/chat/completions",
   "https://cf-proxy.test/ai",
+  "https://cf-proxy.test/ai",
   "https://api.openai.com/v1/chat/completions",
-  "http://localhost:11434/api/chat",
   "https://openrouter.ai/api/v1/chat/completions",
+  "http://localhost:11434/api/chat",
   "https://api.cerebras.ai/v1/chat/completions"
  ],
  "_chain_order_strong": [
   "https://api.groq.com/openai/v1/chat/completions",
   "https://cf-proxy.test/ai",
+  "https://cf-proxy.test/ai",
   "https://api.openai.com/v1/chat/completions",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent",
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
-  "http://localhost:11434/api/chat",
   "https://openrouter.ai/api/v1/chat/completions",
+  "http://localhost:11434/api/chat",
   "https://api.cerebras.ai/v1/chat/completions"
  ],
  "cerebras_custom": {
@@ -441,7 +447,7 @@
        "role": "user"
       }
      ],
-     "model": "nvidia/nemotron-3-super-120b-a12b:free",
+     "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
      "temperature": 0.4
     },
     "timeout": 120,
@@ -470,7 +476,7 @@
        "role": "user"
       }
      ],
-     "model": "nvidia/nemotron-3-super-120b-a12b:free",
+     "model": "nvidia/nemotron-3-ultra-550b-a55b:free",
      "temperature": 0.4
     },
     "timeout": 120,

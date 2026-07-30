@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/userdelvin/Delvin-agent/.venv/bin/python /home/userdelvin/Delvin-agent/scripts/open_items.py push 2>/dev/null || true",
+            "timeout": 120,
+            "statusMessage": "檢查未收尾事項"
+          }
+        ]
+      }
+    ]
+  }
+}

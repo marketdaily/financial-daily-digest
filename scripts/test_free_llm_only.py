@@ -58,8 +58,15 @@ def run():
         analyzer._call_ollama = _mk("local")
         analyzer._llm_generate("test")
         i_local, i_or = order.index("local"), order.index("openrouter")
-        assert i_local < i_or, f"[FAIL] junk 未墊底: {order}"
-        assert order.index("groq") < i_local, f"[FAIL] groq 應在 local 前: {order}"
+        # 2026-07-30 鏈序意圖更新:原斷言是 local < openrouter,前提「openrouter=垃圾席」
+        # (當時綁 nemotron-3-super-120b,07-26 因 no-json/抄範例被降級)。現升級為
+        # ultra-550b 並實測能對真實 10 檔批次 prompt 產出完整 10 張卡(144s),而 local
+        # qwen2.5:14b 對同一 prompt 600s 超時 → openrouter 必須排在 local 前,否則備援路徑
+        # 先白等 10 分鐘才輪到能做事的那層,直接吃掉寄出死線。
+        # 「junk 墊底」的原意由 cerebras(402 無 credits,真垃圾)守住:它仍在 local 之後。
+        assert i_or < i_local, f"[FAIL] 能做完事的免費後衛(openrouter 550b)應排在 local 前: {order}"
+        assert i_local < order.index("cerebras"), f"[FAIL] junk(cerebras) 未墊底: {order}"
+        assert order.index("groq") < i_or, f"[FAIL] groq 應在後衛層前: {order}"
     finally:
         for n, f in origs.items():
             setattr(analyzer, n, f)
