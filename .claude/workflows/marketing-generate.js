@@ -21,7 +21,15 @@ const IRON_RULES = `鐵則(違反=白做,獨立驗證者會駁回):
 - 只有 Premium 一個付費方案;禁「Pro」「免費試讀」「不綁卡」「邀請碼」「送 Premium」
 - 禁「保證/穩賺/絕對/100%/月賺X%」;不喊進喊出個股;個股分析內容不得與付費連結(合規鐵則)
 - organic only,不投付費廣告;禁任何 LINE CTA(LINE 已退役)
-- 中英 caption 語意必須一致(免費版週日休息→不可寫「每天」)`
+- 中英 caption 語意必須一致(免費版週日休息→不可寫「每天」)
+- ⛔ 留言閘門 CTA 全面禁止(2026-07-30 起,閘門未開通):不准寫「留言『早鳥』/留言 earlybird
+  /留言關鍵字我私訊你連結」這類「叫人留特定關鍵字換連結」的 CTA。Meta App Review 的
+  Advanced access 未核准,漏斗回不了公開粉絲的留言 → 承諾兌現不了,promote 會 fail-closed
+  擋掉整則(白做)。**想拉互動可以照做**:純提問/二選一(「你是讀派還是聽派?在下面告訴我」)
+  完全 OK——差別是「不要求特定關鍵字、不承諾給連結」。
+  ⚠️ 措辭陷阱:免費化政策強制口徑本身含「早鳥」二字(「現在訂閱的早鳥用戶永久保留免費
+  使用權」,這句必寫),所以**不要在同一則 caption 裡用「留言」這個動詞**——promote 的
+  _is_gated() 會把「留言」與「早鳥」共現判成閘門型。用「在下面告訴我」「留一句」等說法替代。`
 
 const RESEARCH_SCHEMA = {
   type: 'object', required: ['brief', 'spy_stale'],
@@ -69,6 +77,9 @@ const research = await agent(
 3. 讀 ${CAP}/RUNBOOK.md、marketing/CLAUDE.md、docs/pricing.html、docs/data/track-record.json(當下現值)。
 4. 讀 marketing/COMPETITOR_CONTENT_SWIPE.md(三大 AI IG 帳號 @aipagedaily/@getintoai/@evolving.ai 拆解:選題三桶=錢/工作衝擊·名人擂台·獵奇科技、Hook 公式、可搬 AI 神用法),挑當前最能對接我們金融×AI 利基的角度餵給創作代理。
 5. 讀 marketing/social_out/engagement_summary.json(若存在):近 14 天 IG 實際成效(各內容型 n/avg_reach/avg_likes/avg_comments、top/bottom_by_reach)。把「哪類型式實際有人看/全軍覆沒」寫進簡報,給創作代理 1-2 句成效導向指引;檔案不存在或數字全缺就明寫「無成效資料」,不准腦補數字。
+   ⛔ 但那 1-2 句指引**不准建議留言閘門 CTA**(「留言『早鳥』換連結」那類):閘門未開通,寫了整則會被 promote 擋掉。
+   要拉留言數就指引「純提問/二選一,不要求特定關鍵字、不承諾給連結」。2026-07-30 教訓:上一批的簡報寫了
+   「…再談轉換 CTA(留言閘門關鍵字固定「早鳥」)」,結果閘門 CTA 從研究階段擴散到 7 則裡的 4 則,全數白做。
 6. 產出給創作代理的研究簡報 brief(競品在打什麼/我們的差異化彈藥/當前方案與排程事實/可用的真實賣點),800 字內。`,
   { label: 'research', schema: RESEARCH_SCHEMA }
 )

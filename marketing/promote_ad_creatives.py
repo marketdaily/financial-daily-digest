@@ -27,6 +27,7 @@ platforms 用草稿自帶的單一 platform(每則草稿的 caption 是針對該
     python3 promote_ad_creatives.py         # 實際 promote(status 須已由獨立驗證者改成 "approved")
 """
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -93,11 +94,37 @@ def load_drafts() -> list:
     return data.get("drafts", [])
 
 
+_SENT_SPLIT = re.compile(r"[。！？!?\n]+")
+_GATE_NEAR_CHARS = 25
+# 「叫人留言」的同義寫法。只認中文是刻意的:_is_gated 只套用在 caption_zh,而 caption_zh
+# 正是實際發出去的那份(promote 寫 posts 時 caption=d["caption_zh"]),caption_en 從不發文。
+_GATE_VERBS = ("留言", "留一句", "留個言", "留個", "留下一句")
+
+
 def _is_gated(caption: str) -> bool:
-    """留言閘門型貼文:caption 叫人留言關鍵字,連結由 comment_funnel.py 自動回。"""
+    """留言閘門型貼文:caption 叫人留言特定關鍵字,連結由 comment_funnel.py 自動回。
+
+    判準=「留言」與關鍵字**在同一句內**,或**相距 25 字以內**(跨句但緊鄰的寫法)。
+
+    ⚠️ 2026-07-30 修正:舊判準是兩者「全文共現」,與合規口徑直接相撞——「現在訂閱的早鳥
+    用戶永久保留免費使用權」是全面免費化政策的強制口徑(每則都得寫),所以任何「邀請留言
+    +寫了必寫口徑」的貼文都會被永久誤判成閘門型而擋掉。偏偏研究簡報正因「近 14 天 50 篇
+    留言全為 0」在推互動型內容 → 舊判準會把這條路悄悄掐死。
+    校準集(當天實測):4 則真閘門 CTA 的「留言↔關鍵字」最近距離全是 3(就是 `留言「早鳥」`),
+    被誤判那則是 46(分屬不同段落)→ 兩邊分離乾淨,不需要魔術數字硬猜。
+
+    同時保留距離條件當第二層,是因為漏判比誤判嚴重:漏判=發出「留言換連結」卻回不了公開
+    粉絲=對用戶失信(這道閘存在的唯一理由);誤判只是擋掉一則好貼文。
+    """
     from comment_funnel import KEYWORDS
+    kws = [k.lower() for k in KEYWORDS]
     low = caption.lower()
-    return "留言" in caption and any(k.lower() in low for k in KEYWORDS)
+    for sent in _SENT_SPLIT.split(low):
+        if any(v in sent for v in _GATE_VERBS) and any(k in sent for k in kws):
+            return True
+    verb_pos = [m.start() for v in _GATE_VERBS for m in re.finditer(v, low)]
+    kw_pos = [n.start() for k in kws for n in re.finditer(re.escape(k), low)]
+    return any(abs(a - b) <= _GATE_NEAR_CHARS for a in verb_pos for b in kw_pos)
 
 
 _FUNNEL_READY = None
