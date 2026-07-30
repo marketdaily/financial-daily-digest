@@ -111,3 +111,5 @@ quant_lab/data/kbars/
 intel/reddit_buzz_wl_cache.json
 intel/.conf_chart_cache.json
 intel/.conf_chart_queue.json
+intel/.us_congress_ptr_cache.json
+intel/.us_congress_trades_cache.json
