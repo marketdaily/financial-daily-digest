@@ -100,8 +100,23 @@ def _env(path):
 
 
 def _gemini_keys():
+    """只回 key1。**絕不碰 GEMINI_API_KEY_2**——那是日報保留桶。
+
+    2026-07-30 修正:原本回傳兩把 key,違反 analyzer._call_gemini 訂下的分區鐵則
+    「日報 run(DIGEST_RUN=1)key2 優先、key1 溢流;背景呼叫端只准 key1」。本 worker 是
+    背景 cron(03:20),而台股早報 05:20 就要用 key2——中間只隔 2 小時,免費層是 RPD(日配額),
+    03:20 燒掉的額度早報拿不回來。這正是 07-23/24/27 三場日報品質事故的成因
+    (「整夜背景工作把 RPD 吃光 → 全程弱模型鏈 → reason 塌陷/8 位掉 deterministic」)。
+    圖表抽取是 nice-to-have,日報品質不是——衝突時本 worker 讓路。
+
+    ⚠️ 刻意與 scripts/build_tw_bizdesc.py、scripts/seo_articles.py 的慣例
+    (`[key1] or [key2]`,key1 缺失時拿 key2 墊底)不同:本 worker 連墊底都不拿,key1 沒了就
+    直接不做。理由=那兩支的產出(SEO 文章/公司簡述)缺了要補很麻煩,本 worker 的產出是可重建
+    的衍生快取,下一輪窗口再跑就有。別「順手統一」成有 key2 墊底的版本。
+    """
     e = _env(os.path.join(ROOT, ".env"))
-    return [k for k in (e.get("GEMINI_API_KEY"), e.get("GEMINI_API_KEY_2")) if k]
+    k1 = e.get("GEMINI_API_KEY")
+    return [k1] if k1 else []
 
 
 def _load_json(path, default):
