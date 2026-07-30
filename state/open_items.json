@@ -116,7 +116,7 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-07-30 18:49",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 19:07",
+  "note": "已救活:主源改 House Clerk 官方揭露(免 key,實測 lag 3 天 vs 舊源 58 天),舊 API 降備源。實跑 status stale=false、107 檔/152 筆、watchlist 命中 NVDA。⭐同時發現並修掉真實資料才暴露的品質問題:89% 申報是 $1,001 最小級距、單一議員一天可報 49 檔(代操再平衡),不過濾會產生 5 個假 red → 加 drop_bulk_rebalance() 後 0 red + 2 yellow。另修自己踩的兩坑(守衛量錯對象、_edge 快取鍵被覆寫的沉默失效)。離線迴歸 14 案 + 既有測試皆過。今晚 21:30 patrol 首次真跑會帶這個訊號"
  }
 ]
