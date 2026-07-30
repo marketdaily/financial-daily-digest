@@ -148,5 +148,35 @@
   "opened": "2026-07-30 20:25",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 16,
+  "what": "正常班次超時沒有內容誠實死線閘(只有補班模式有)——需 Delvin 決定",
+  "why": "_enforce_send_deadline 只在 run.sh 補班模式設 MD_SEND_DEADLINE_HM 時生效;正常班次一旦生成超時就會直接寄,今晚就是第一次真的踩到(21:15 仍在跑,美股 21:30 開盤 → 可能開盤後才寄出一封講盤前的信,那正是該函式 docstring 自己點名的『內容錯誤』)。兩個死線衝突:『絕不讓用戶缺信』vs『不可開盤後寄盤前信』。我不自行代決,也不會 kill 掉它(kill=今晚整批不寄=違反更硬的那條)。選項:A 維持現狀照寄 / B 超時就在信裡自動加註『本報為盤前內容,寄出時已開盤』(內容改動要你點頭) / C 正常班次也設死線閘寧可不寄",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-07-30 21:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 17,
+  "what": "晚報雙寄對稱閘(_local_send_clearance)尚未在生產跑過",
+  "why": "只有 8 案離線迴歸驗過;真正驗證要等下一次雲端 failover 被派發(不常發生),或人工在 winrig 造一次存檔已上線的情境",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-07-30 21:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 18,
+  "what": "免費 LLM 額度在晚報時段見底:Gemini 雙 key RPD 早報打光、Groq TPM 撞牆、CF neuron 超上限",
+  "why": "今晚晚報退到 OpenRouter 550b(144s/次)拖 1h35 才寄出;DIGEST_RESERVE 只擋得住 CF,Gemini RPD 沒有分班次保留機制",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-07-30 21:45",
+  "closed": null,
+  "note": ""
  }
 ]
