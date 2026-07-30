@@ -136,8 +136,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 20:25",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 21:47",
+  "note": "晚報已寄出 21/21 位(21:35),但兩件事:①7 位收到備援版(免費 LLM 全層見底:gemini 雙 key 全 429、groq TPM、CF 被我下午量測吃光)②**雲端備援 21:02 已代打寄過一輪 → 每位訂閱者收到兩封**(另一個視窗已診斷並修好防雙發閘對稱化 ede47e9,我不重複)。我這邊已修的結構成因:CF 加 DIGEST_RESERVE(85f60da)、run.sh 加 PYTHONUNBUFFERED、自癒偵測器加鏈路降級判定+窗口放寬(ea985e3)"
  },
  {
   "id": 15,
@@ -146,8 +146,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 20:25",
-  "closed": null,
-  "note": ""
+  "closed": "2026-07-30 21:47",
+  "note": "已修:run.sh 的 main.py 呼叫加 PYTHONUNBUFFERED=1(原子替換,備份 run.sh.bak-20260730-unbuffered,bash -n 通過)。順帶修了自癒窗口(US 21:20-21:40 → 21:20-23:59):原窗口可用 tick 只有 21:20/21:30,而今晚 audit 報告 21:35:59 才落地 → 自癒整晚不會啟動;窗口原本假設日報準時,但它最需要啟動的場合正是日報超時時"
  },
  {
   "id": 16,
@@ -176,6 +176,16 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 21:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 19,
+  "what": "今晚 7 位收到備援版 + 全員收到兩封,尚未跟 Delvin 對帳/回寫 admin 告警",
+  "why": "另一視窗已修防雙發閘(ede47e9)、我已修 CF 保留額與自癒偵測器,但:①今晚實際寄出的品質損害(7 位備援版、全員兩封)還沒跟 Delvin 確認要不要對訂閱者做任何說明 ②曾推播的 admin 告警還沒照鐵則跑 resolve_admin_alert.sh 標記已解決(要等確認哪些真的解了)",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-07-30 21:47",
   "closed": null,
   "note": ""
  }
