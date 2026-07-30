@@ -91,12 +91,28 @@ def live_signed_states():
             pass
 
 
+def claim_already_live(states):
+    """已生效的那一邊直接落 marker——絕不對已 signed=true 的帳號再送測試單。"""
+    claimed = []
+    for key, marker, label in (("stock", M_STOCK, "證券"), ("futopt", M_FUTOPT, "期貨")):
+        if states.get(key) is True and not os.path.exists(marker):
+            open(marker, "w").write("already signed=true, test not needed\n")
+            claimed.append(label)
+    return claimed
+
+
 def main():
     if os.path.exists(M_STOCK) and os.path.exists(M_FUTOPT):
         return 0
     now = datetime.now()
     if not in_test_window(now):
         print(f"不在永豐測試窗口(週一至五 08:00-19:40),現在 {now:%a %H:%M},跳過")
+        return 0
+
+    pre = live_signed_states()
+    claim_already_live(pre)
+    if os.path.exists(M_STOCK) and os.path.exists(M_FUTOPT):
+        print(f"兩邊都已 signed=true,無需測試 states={pre}")
         return 0
 
     E = _env(os.path.join(os.path.dirname(HERE), ".env"))
@@ -116,7 +132,7 @@ def main():
         time.sleep(2)
         if not os.path.exists(M_FUTOPT):
             if getattr(api, "futopt_account", None) is None:
-                skipped.append("期貨:永豐未掛此帳號 → 期貨那份條款尚未簽署(需先簽才測得了)")
+                skipped.append("期貨:API 端尚未掛上此帳號(2153016 已簽署+已自測,等永豐系統過檔)")
             else:
                 try:
                     t = order_futopt(api, sj)
@@ -147,7 +163,8 @@ def main():
                                else "⚠️未掛此帳號")
                 for k, label in (("stock", "證券"), ("futopt", "期貨"))))
             if states["stock"] is not True:
-                lines.append("證券仍未生效:測試已留紀錄但審核未過,明早會自動再試一次。")
+                lines.append("證券仍 false 屬正常:永豐是隔日「系統過檔」才生效(營業員口徑),"
+                             "非即時。測試紀錄已留,明早自動再查一次。")
         except Exception as ex:
             lines.append(f"⚠️ 回查 signed 失敗:{ex}")
 
