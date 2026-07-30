@@ -56,6 +56,26 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 17:23",
+  "closed": "2026-07-30 17:44",
+  "note": "前提已不成立:那個 session 在 workflow 背景跑到一半整個卡死(要求按 enter)被 Delvin 砍掉。實測 marketing/ad_creative_drafts.json 最後修改仍是 07-09 14:09、7 則全 approved → 本次補產零產出。改開新項追蹤"
+ },
+ {
+  "id": 7,
+  "what": "adcreative 素材補產仍是 0 產出:marketing-generate workflow 被中斷,尚未重跑",
+  "why": "上次跑到一半整個 session 卡死(疑 Fable 5 週額度 95%+ 撞 429 導致 CLI 停下等輸入);重跑前要先確認模型/額度路徑,不然會再卡一次。存貨(adcreative)仍為 0",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-07-30 17:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 8,
+  "what": "conf_charts 法說會圖表抽取尚未在真實 cron 窗口(03:20-03:49)跑過",
+  "why": "conf_charts_cron.log 是 0 bytes;快取那 1 筆是手動跑出來的。要等明早 03:20 首次排程跑+GPU 互斥閘門/OCR venv 在 cron env 下的行為才算生產驗證",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-07-30 17:44",
   "closed": null,
   "note": ""
  }

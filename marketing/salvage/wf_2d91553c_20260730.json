@@ -1,0 +1,171 @@
+{
+ "salvaged_from": "wf_2d91553c-34d (session 579af3d2, 2026-07-30 17:22-17:31, 被中斷)",
+ "research_brief": "【Marketing Agents 研究簡報 2026-07-30｜spy 今日重跑成功,latest_spy_report.json 已覆寫(4004B, 17:24)】\n\n## 競品在打什麼(來源僅 Meta Ad Library 單一平台)\n- **三竹股市:零廣告**(TW/ALL 一致,誠實 0)→ 台股「AI 財經日報」在 Meta 幾無正面競爭。\n- **富途牛牛**(唯一全命中,粵語):全打「錢的生活化換算」——「1年手續費夠你飛3次日本,慳返$9,300」「月供ETF低至$1000港幣起」「抽新股一手最多賺$33,000」+迎新$8,600/轉倉$7,000限時三重賞。骨架=金額+生活場景換算+限時。\n- **Robinhood**:把訂閱本身當賣點(Gold $5/mo)、$1 起低門檻、\"Make your money work harder\"。\n- **Morning Brew** 唯一真廣告:\"Explained clearly. Read quickly. And a little fun too.\";**The Hustle**:\"sent to your inbox every morning. Free to join.\"(清楚/快/免費/晨間信箱四要素)。\n- ⚠️ TradingView / Morning Brew / The Hustle 樣本含關鍵字雜訊(咖啡、音樂課程、Disney 商品),其 top_hooks 只可當句型參考,不可當該品牌策略引用。\n\n## 我們的差異化彈藥(whitespace)\n1. **誠實結算**:競品全在講獎金/免佣,沒有一家公開自己判斷對錯。我們有公開戰績頁(含判斷錯的、含降級閘門雙軌對照)。\n2. **金融×AI 實用教學**:aipagedaily 置頂爆款正是「兩個 AI agent 各拿 $1,000 交易」,金融×AI 是他們驗證過的富礦而我們坐擁未挖。搬法=把 swipe file 的省錢/實用 tip 換成金融場景:「我讓 AI 幫我盯持股,看盤時間砍半」;反諂媚 prompt →「一句話讓 AI 不再對你的持股報喜不報憂」。\n3. **繁中台股在地化**(競品素材是粵語/英文)+「不喊進喊出、只幫你少做錯決定」反 FOMO 定位(對照富途抽新股 FOMO)。\n4. Hook 公式=具名主體+具體數字+對比/衝突;但我方產品數字禁寫死,數字只能來自帶 `source_url` 的外部新聞,否則講機制不講數字。\n\n## 近14天實際成效(marketing/social_out/engagement_summary.json, IG 50 篇, pulled 07-30 10:20)\nreel n=21 avg_reach 23.5｜news_reactive n=18 avg 3.4｜win_card n=8 avg 3.5｜tldr n=3 avg 3.0;top5 觸及全是 reel(78/71/51/38/32);**50 篇 likes/comments 全為 0**。\n→ 指引:①靜態圖卡類(win_card/tldr/news)avg_reach ~3=幾乎沒人看,caption 首行必須自帶 hook、短到能當 reel 首幀用;②本批至少 2 則走「提問/二選一」互動誘餌,先把留言數從 0 拉起來,再談轉換 CTA(留言閘門關鍵字固定「早鳥」)。\n\n## 方案與排程事實(逐字現值,不可憑記憶)\npricing.html:**NT$0**、口徑「限時免費開放」+「未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權」。功能:美股+台股大盤摘要、5大新聞精選、加密(BTC/ETH/SOL)、板塊輪動、持股個人化最多80檔、財報提醒、日報深度自選、AI助手每日30則、即時推播;送達=週一至週六早上7點(美股晚報20:00)。排程:品牌貼文每日14:00一篇、reel 08:00/20:30、新聞快評≤3/天。\ntrack-record.json(07-30 08:13 現值,**僅供代理自我校準,禁寫入 caption**):A方向 41.8%(n=686)、C避坑 77.7%(n=1074)、Brier 0.247 vs 擲硬幣 0.25、plan_sim 平均報酬 −4.92%。→「戰績誠實」角度只能講機制(「連判斷錯的都列出來」),**絕不可暗示賺錢或高勝率**。\n鐵則:organic-only(禁付費投放語言)、零捏造數字/見證、禁「Pro / 7天免費試讀 / 不綁卡 / 邀請碼」(pricing FAQ 雖有邀請碼段,caption 仍禁)、不送 Premium、禁保證/穩賺/絕對/100%/月賺X%、不喊進喊出個股、AI 不稱老師/大師/神算。",
+ "drafts": [
+  {
+   "id": "adcreative_PENDING_07",
+   "platform": "instagram",
+   "angle": "留言閘門轉換型:教「認錯條件（falsification line）」這個真材實料的持股複盤習慣——不喊個股不給價位,以反 FOMO 的「幫你少做錯決定」定位對照富途式獎金/抽新股 FOMO,首行用提問 hook 拉留言,CTA 固定留言關鍵字「早鳥」私訊連結（本批互動誘餌之一,對治 IG 靜態圖卡 likes/comments 全為 0）",
+   "caption_zh": "你記得每檔持股的買進理由,但寫得出「什麼情況我會認錯」嗎?\n\n今晚花十分鐘,幫每檔持股補一行認錯條件——財報哪個數字轉差、當初看好的題材落空、或你的假設被打破就重新評估;寫下來,你才不會被當天的紅綠字牽著走。\n\nMarketDaily 週一到週六早上 7 點幫你盯這些變化,目前全功能限時免費,早鳥用戶在未來恢復收費後永久保留免費使用權——留言「早鳥」,我把訂閱連結私訊給你 ✌️",
+   "caption_en": "You remember why you bought each holding — but can you write down what would make you change your mind?\n\nSpend ten minutes tonight adding one line per holding: which earnings number turning weak, which thesis failing, or which assumption breaking would make you re-evaluate. Written down, you stop being pushed around by the day's red and green.\n\nMarketDaily watches for those changes Monday to Saturday, 7am, and everything is free for now — early subscribers keep free access permanently even after paid plans return. Comment 早鳥 and I will DM you the signup link ✌️",
+   "score": 90,
+   "score_dims": {
+    "hook_strength": 17,
+    "cta_clarity": 19,
+    "value_match": 18,
+    "target_match": 17,
+    "risk": 19
+   },
+   "score_rationale": "hook_strength 17:首行是提問式反直覺 hook（買進理由 vs 認錯條件）,單句可直接當 reel 首幀,但無外部新聞數字加持故不滿分。cta_clarity 19:單一動作、關鍵字固定「早鳥」、無連結（IG caption 連結不可點,改私訊反而降摩擦）,唯一扣分是需人工/自動回覆私訊。value_match 18:教的是可當晚執行的具體方法（每檔持股一行認錯條件),對應「不喊進喊出、只幫你少做錯決定」定位與日報「盯持股變化」真實功能,非空泛口號。target_match 17:繁中、持股散戶語境（財報/題材/紅綠字),與競品粵語獎金換算骨架完全錯開;略偏已有持股者,新手滲透較弱。risk 19:零我方產品數字、無百分比、無個股、無價位、無 Pro/試讀/邀請碼/送 Premium、無保證類字眼,送達口徑逐字採 pricing 現值（週一至週六早上 7 點）故未寫「每天」,中英語意一致;免費口徑逐字採「限時免費＋早鳥永久保留」且未暗示分析內容未來收費。compliance_selfcheck.check_caption() 對 caption_zh 與 caption_en 各跑一次,5 欄位全 true。",
+   "compliance_self_check": {
+    "no_fabricated_numbers": true,
+    "no_pro_tier_language": true,
+    "no_premium_giveaway": true,
+    "no_guarantee_language": true,
+    "no_stock_analysis_premium_claim": true
+   },
+   "status": "pending_review"
+  },
+  {
+   "id": "adcreative_PENDING_05",
+   "platform": "facebook",
+   "angle": "信任與合規:把「個股分析永不與付費掛鉤」當成可驗證的信任證明——競品全在講獎金/免佣/迎新賞,沒有一家敢說自己的分析內容不藏在付費牆後面;我方把法規約束(無投顧牌照→分析不得與對價綁定)翻譯成用戶聽得懂的承諾:免費與付費看到完全相同的個股分析,並用「你被付費牆卡過嗎?留言早鳥」當互動誘餌,先把留言數從 0 拉起來",
+   "caption_zh": "想知道一個財經服務值不值得信?看它有沒有把「哪一檔怎麼看」鎖在付費牆後面。\n我們沒有,而且法規上也不能。MarketDaily 沒有投顧牌照,依投信投顧法,任何個別股票的分析都不能跟付錢綁在一起。\n所以規則很單純:個股分析內容對全體用戶完全相同,不因付費而有差別——一樣的深度、一樣的時間、同一封信一起寄出。\n現在全站 NT$0 限時免費開放;未來若恢復收費,現在訂閱的早鳥用戶永久保留免費使用權。而就算哪天真的恢復收費,分析這一塊也不會被搬到牆後面,因為它對全體用戶免費且相同是法規要求,不是行銷上的讓步。\n日報照班次進信箱:台股週一到週六早上 7 點,美股晚報晚上 8 點。\n你被財經內容的付費牆卡過嗎?留言「早鳥」告訴我,我把訂閱連結貼給你。",
+   "caption_en": "Want to know if a finance service deserves your trust? Check whether it locks \"what to make of this stock\" behind a paywall.\nWe don't, and by law we can't. MarketDaily holds no investment advisory license, so under Taiwan's rules no analysis of an individual stock may be tied to payment.\nThe rule is simple: stock-level analysis is identical for every user and never gated by payment — same depth, same timing, same email for everyone.\nRight now the whole site is NT$0, free for a limited time. If pricing ever returns, everyone who subscribes today keeps free access permanently — and even then the stock-level analysis stays outside the wall, because keeping it free and identical for all users is a legal requirement, not a marketing concession.\nThe digest arrives on schedule: 7am for Taiwan stocks, Monday through Saturday, plus an 8pm US wrap-up.\nEver hit a paywall on finance content? Comment \"早鳥\" and I'll send you the subscribe link.",
+   "score": 88,
+   "score_dims": {
+    "hook_strength": 16,
+    "cta_clarity": 18,
+    "value_match": 19,
+    "target_match": 16,
+    "risk": 19
+   },
+   "score_rationale": "hook_strength 16:首行是「怎麼判斷值不值得信」的判準式提問,自帶衝突(付費牆)且短到可當 reel 首幀,但沒有具體外部數字撐,強度略低於新聞hook型。cta_clarity 18:單一 CTA=留言「早鳥」(批次固定留言閘門關鍵字),動作明確且是本批被指定要拉留言數的互動誘餌;未同時塞多個連結分散注意。value_match 19:講的是競品完全沒打的 whitespace(誠實/合規透明),且全部可逐字驗證於 pricing.html 現值(NT$0、限時免費、早鳥永久),零我方績效數字。target_match 16:對「怕被付費牆和話術收割」的台股散戶精準,但比省時間/個人化類角度受眾略窄,且合規敘事偏理性、不適合衝觸及,靠互動誘餌補。risk 19:五項自檢全過,無勝率/訂戶數/百分比、無 Pro/試讀/邀請碼/送 Premium、無保證類字眼、未喊進喊出任何個股;唯一殘餘風險是「法規」敘事需維持與 COMPLIANCE_STRUCTURE.md 口徑一致(已只講機制不做法律建議)。",
+   "compliance_self_check": {
+    "no_fabricated_numbers": true,
+    "no_pro_tier_language": true,
+    "no_premium_giveaway": true,
+    "no_guarantee_language": true,
+    "no_stock_analysis_premium_claim": true
+   },
+   "status": "pending_review"
+  },
+  {
+   "id": "adcreative_PENDING_02",
+   "platform": "instagram",
+   "angle": "AI 神用法型:教一句可直接複製的「反諂媚 prompt」,把 AI 從附和你變成列出 3 個看空理由並附推翻條件——切進 spy 報告點出的 whitespace #2(金融×AI 實用教學,aipagedaily 已驗證的富礦而我方未挖),用高收藏迷你教學繞開靜態圖卡 avg_reach≈3 的困境,結尾才接 MarketDaily「幫你把功課做好」,全程只教方法不碰個股買賣價位。",
+   "caption_zh": "只多加 1 句指令,AI 就從「報喜不報憂」變成「列出 3 個看空理由」。\n\n多數人問 AI 的方式,注定只會拿到附和自己的答案——你問「這檔看起來不錯吧?」,它就順著你講下去。要拿到有用的東西,得先把它的立場改掉。\n\n📋 直接複製這段(把 [股票代號] 換成你自己的持股):\n\n「你現在是空方研究員,任務不是安慰我。針對 [股票代號],列出 3 個具體的看空理由,每一個都標明依據屬於哪一類:財報、產業結構、籌碼、還是總體環境。接著指出這 3 個理由裡,你自己最不確定的假設是哪一個。最後告訴我:要出現什麼樣的新證據,才會讓你收回這個看空。不要提供任何進出價位,只講風險邏輯。」\n\n為什麼這樣問才有用:\n1️⃣ 先指定立場 → 切掉模型討好你的預設反應\n2️⃣ 要求標註依據類別 → 一眼看出哪條是硬資料、哪條只是它在推測\n3️⃣ 要求寫出「推翻條件」→ 你拿到的是一張可以追蹤的檢查清單,而不是一段感想\n\n⚠️ 提醒:AI 產出的是待驗證的問題清單,不是結論。它會把數字講錯,每個數據都回原始財報對一次。\n\n做完一輪你會發現,最花時間的不是問 AI,而是把該看的資料先蒐齊。這件事我們幫你做:MarketDaily 週一到週六早上 7 點寄出台股日報,美股晚報 20:00,只挑跟你持股有關的部分寫給你。目前限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你平常會先問 AI「這檔好不好」,還是先問「我可能錯在哪」?留言告訴我 👇",
+   "caption_en": "Add 1 sentence to your prompt and AI flips from cheerleading you to listing 3 bear cases.\n\nMost people ask AI in a way that only ever produces agreement. Ask \"this one looks decent, right?\" and it will happily agree with you. To get something useful, change its stance first.\n\n📋 Copy this (swap [TICKER] for a stock you actually hold):\n\n\"You are now a short-side research analyst. Your job is not to reassure me. For [TICKER], list 3 specific bear cases. Label each one by the type of evidence it rests on: financial statements, industry structure, ownership/flows, or macro. Then tell me which of those 3 assumptions you are least certain about. Finally: what new evidence would make you withdraw this bear case? Do not give me any entry or exit prices, only the risk logic.\"\n\nWhy this works:\n1️⃣ Assigning a stance strips out the model's default urge to please you\n2️⃣ Labeling the evidence type shows at a glance what is hard data and what is guesswork\n3️⃣ Asking for falsification conditions turns the answer into a checklist you can track, not an opinion\n\n⚠️ Warning: what AI hands back is a list of questions to verify, not a conclusion. It gets numbers wrong. Check every figure against the original filing.\n\nAfter one round you notice the slow part is not asking AI, it is gathering the material first. That part we do for you: MarketDaily emails the Taiwan-market brief Monday to Saturday at 7am, and the US wrap at 20:00, covering only what touches your own holdings. Free for a limited time right now; when paid plans return, everyone who subscribes now keeps free access permanently as an early subscriber.\n\nDo you usually ask AI \"is this a good stock\" first, or \"where might I be wrong\" first? Tell me below. 👇",
+   "score": 86,
+   "score_dims": {
+    "hook_strength": 17,
+    "cta_clarity": 16,
+    "value_match": 18,
+    "target_match": 17,
+    "risk": 18
+   },
+   "score_rationale": "hook_strength 17:首行「只多加 1 句指令 → 從報喜不報憂變成列出 3 個看空理由」符合具名主體+具體數字+衝突對比公式,單行成句可直接當 reel 首幀;扣分是主體是「AI」而非更具名的實體。cta_clarity 16:主 CTA 走近 14 天數據指引的互動誘餌(二選一提問:先問「這檔好不好」vs「我可能錯在哪」),先拉留言(50 篇 likes/comments 全為 0);轉換 CTA 只放時間+免費口徑不硬推,故不滿分。value_match 18:直擊 whitespace #2(金融×AI 實用教學),prompt 可整段複製=高收藏率,且教學結論天然接回「資料蒐齊很花時間」的產品價值,不是硬轉。target_match 17:TA=自己持股、會用 ChatGPT 但拿到一堆好話的散戶,繁中在地化對比競品粵語/英文素材;反諂媚=反 FOMO 定位一致(不喊進喊出,只幫你少做錯決定)。risk 18:caption 零我方產品數字(勝率/訂戶/來源數全未出現)、prompt 內文明寫「不要提供任何進出價位」、附「AI 會把數字講錯,回原始財報對一次」免責、個股方法教學完全不與付費掛鉤;僅存風險是模仿 swipe file 的教學骨架屬常見形式,故非 20。",
+   "compliance_self_check": {
+    "no_fabricated_numbers": true,
+    "no_pro_tier_language": true,
+    "no_premium_giveaway": true,
+    "no_guarantee_language": true,
+    "no_stock_analysis_premium_claim": true
+   },
+   "status": "pending_review"
+  },
+  {
+   "id": "adcreative_PENDING_06",
+   "platform": "instagram",
+   "angle": "新功能宣告走「二選一互動誘餌」而非單向告知:借 Morning Brew「Explained clearly. Read quickly.」的省時骨架,但把媒介本身翻成對立選擇——讀 vs 聽。競品(富途/Robinhood)全在講獎金與低門檻,沒有一家把「不用盯螢幕、通勤時用耳朵補完台股+美股」當賣點;繁中語音更是粵語/英文素材完全空白的 whitespace。近14天 IG 靜態卡 avg_reach≈3 且 50 篇留言全為 0,故首行做成可當 reel 首幀的短提問,並以「讀派/聽派」+固定關鍵字「早鳥」把留言數從 0 拉起來,轉換 CTA 退到第二層。",
+   "hook_type": "question(二選一互動誘餌)",
+   "pain_framing": "時間/場景型(通勤與盥洗時段的空手空眼)+反 FOMO 防錯(對照富途抽新股 FOMO)",
+   "tone": "口語/親切(情感面),與同批理性對帳型互補",
+   "visual_direction": "lifestyle + screenshot 混合:直式九宮格首幀左右對切——左半是手機日報文字牆(灰階、密密麻麻),右半是 audio.html 播放器卡片(品牌紫綠漸層、波形跳動、標示「3:00」);中央疊大字「讀 or 聽?」,底部小字「marketdaily.ai/audio」。首幀文字必須在無聲、縮圖尺寸下可讀,可直接複用為 reel 封面。",
+   "hook": "早上七點,你想「讀」還是「聽」?",
+   "body": "語音快報上線了:每個交易日早晚各一集,AI 把當天日報濃縮成 3 分鐘語音——早上講台股,晚上講美股。刷牙、通勤、開車的路上聽完,不必盯螢幕。我們不喊進喊出個股,只想讓你少做一個錯決定。",
+   "cta": "先聽一集",
+   "caption_zh": "早上七點，你想「讀」還是「聽」？\n\n語音快報上線了：每個交易日早晚各一集，AI 把當天日報濃縮成 3 分鐘語音——早上講台股，晚上講美股。刷牙、通勤、開車的路上聽完，不必盯螢幕。\n\n我們不喊進喊出個股，只想讓你少做一個錯決定；判斷對的、判斷錯的，都留在戰績頁上給你自己核對。\n\n你是「讀派」還是「聽派」？留言告訴我。\n想鎖住早鳥資格的，留言「早鳥」——全功能限時免費開放，現在加入的早鳥用戶，免費使用權永久保留。\n\n先聽一集 → https://marketdaily.ai/audio?utm_source=social&utm_medium=organic&utm_campaign=adcreative_PENDING_06\n\n#語音快報 #台股 #美股 #財經懶人包 #通勤必聽",
+   "caption_en": "Seven in the morning — do you want to read it, or hear it?\n\nAudio briefs are live: two episodes every trading day, TW markets in the morning and US markets in the evening, each one the daily report condensed into 3 minutes of audio. Listen while you brush your teeth, commute or drive — no screen needed.\n\nWe don't shout buy or sell on single names. We just want you to make one fewer bad decision — and every call, the right ones and the wrong ones, stays on the track record page for you to check yourself.\n\nReader or listener? Tell me in the comments.\nWant to lock in early-bird status? Comment 早鳥 — everything is free for a limited time, and early-bird subscribers keep their free access permanently.\n\nHear one episode → https://marketdaily.ai/audio?utm_source=social&utm_medium=organic&utm_campaign=adcreative_PENDING_06\n\n#AudioBrief #TaiwanStocks #USStocks #MarketDaily",
+   "score": 92,
+   "score_dims": {
+    "hook_strength": 17,
+    "cta_clarity": 18,
+    "value_match": 19,
+    "target_match": 18,
+    "risk": 20
+   },
+   "score_rationale": "hook 17:二選一提問+具體時間錨(早上七點),12 字內、縮圖可讀、可直接當 reel 首幀,但不含衝突性數字故未滿分。cta 18:主 CTA(先聽一集,免註冊即可消費)與互動 CTA(留言讀派/聽派、關鍵字「早鳥」)分層清楚,扣分僅因同時存在兩個動作。value 19:語音快報是 07-30 已上線的真功能,規格逐字取自 docs/audio.html(每個交易日早晚各一集、3 分鐘、早台股晚美股、完全免費),零想像成分。target 18:直打通勤/盥洗時段沒手沒眼的上班族投資者,並回應 engagement_summary 的「靜態卡沒人看+留言全 0」指引。risk 20:全篇無我方產品百分比/訂戶數,戰績只講機制(對的錯的都留),不喊進喊出個股,無 Pro/免費試讀/邀請碼/送 Premium/保證類字眼,無 LINE CTA,organic-only,zh/en 皆用「每個交易日」而非「每天」故與週日休息一致。差異化距離:富途/Robinhood 素材無任何語音或通勤場景,骨架借的是 Morning Brew 的清楚+快,非近似抄襲。",
+   "compliance_self_check": {
+    "no_fabricated_numbers": true,
+    "no_pro_tier_language": true,
+    "no_premium_giveaway": true,
+    "no_guarantee_language": true,
+    "no_stock_analysis_premium_claim": true
+   },
+   "compliance_detail": {
+    "zh": {
+     "no_fabricated_numbers": true,
+     "no_pro_tier_language": true,
+     "no_premium_giveaway": true,
+     "no_guarantee_language": true,
+     "no_stock_analysis_premium_claim": true
+    },
+    "en": {
+     "no_fabricated_numbers": true,
+     "no_pro_tier_language": true,
+     "no_premium_giveaway": true,
+     "no_guarantee_language": true,
+     "no_stock_analysis_premium_claim": true
+    },
+    "checker": "compliance_selfcheck.py::check_caption() 對 caption_zh / caption_en 各跑一次,兩者 all_pass=True(2026-07-30 實跑)",
+    "facts_verified": [
+     "docs/audio.html i18n.zh.hero_p 逐字:「每個交易日早晚各一集,AI 把當天日報濃縮成 3 分鐘語音…完全免費」",
+     "docs/audio.html i18n.en.hero_p 逐字:「Two episodes every trading day — TW markets in the morning, US markets in the evening, each a 3-minute audio brief… Completely free.」",
+     "早鳥口徑取自 pricing.html 現值(NT$0/限時免費開放/早鳥永久保留免費使用權),未暗示分析內容未來收費",
+     "caption 未引用 track-record.json 任何數字(A方向41.8%/C避坑77.7%/Brier 0.247 僅用於自我校準,一字未寫入)"
+    ],
+    "interaction_gate_keyword": "早鳥"
+   },
+   "status": "pending_review"
+  },
+  {
+   "id": "adcreative_PENDING_03",
+   "platform": "threads",
+   "angle": "機制差異化:把「AI 怎麼過濾假訊息」拆成 5 條可檢驗規則(回溯出處/多源交叉/衝突不選邊/數字不讓 AI 填/判斷錯了不刪),用競品完全沒在打的『可查證流程』對打群組謠言與抽新股 FOMO,結尾加二選一互動誘餌把留言數從 0 拉起來",
+   "caption_zh": "一張假利多截圖，在群組裡轉三手就變成「內線消息」。\n\n我們的日報怎麼擋這種東西，說白一點：\n\n1｜回溯出處：找不到原始來源的消息，不進日報。\n2｜多源交叉：同一件事只有一個地方在講，標成「說法待確認」，不當事實寫。\n3｜衝突不選邊：兩邊講法對不上就寫「說法不一」，不幫你決定哪邊是真的。\n4｜數字不交給 AI 填：模型湊不出來的欄位寧可留白，不猜。\n5｜判斷錯了不刪：公開戰績頁連做錯的判斷一起列，錯的留著才知道下次怎麼修。\n\n不喊進喊出，只幫你少做幾個錯決定。美股台股都看，週一到週六早上 7 點寄到信箱，目前限時免費開放。\n\n你最常被哪一種訊息騙到？1 假利多截圖　2 匿名內線群組——留言 1 或 2；想收日報的留言「早鳥」。",
+   "caption_en": "A fake bullish screenshot, forwarded 3x, becomes \"inside info.\"\n\nHow the brief screens it:\n1｜No original source → not in the brief.\n2｜Single-sourced → tagged \"unconfirmed.\"\n3｜Conflicting reports → we say so, no side taken.\n4｜Numbers the AI can't source stay blank.\n5｜Wrong calls stay up on the public track record.\n\nNo buy/sell calls, just fewer bad decisions. US + Taiwan, inbox Mon-Sat 7AM, free for now.\n\nFooled more by 1 fake screenshots or 2 \"insider\" chats? Reply 1 or 2 — comment 早鳥 to get it.",
+   "score": 85,
+   "score_dims": {
+    "hook_strength": 16,
+    "cta_clarity": 16,
+    "value_match": 18,
+    "target_match": 17,
+    "risk": 18
+   },
+   "score_rationale": "hook 16:首行是具體場景衝突(假截圖轉三手→內線消息),具名主體+可視畫面,短到能當 reel 首幀用;扣分因無外部新聞數字可掛(我方數字禁寫死),不如「數字型」hook 刺眼。cta_clarity 16:雙 CTA(回 1/2 互動 + 留言「早鳥」)符合本批「先拉留言數」指引且閘門關鍵字固定,但兩個 ask 併存略分散注意力。value_match 18:正打 whitespace #1(誠實結算,競品全在講獎金免佣沒人公開自己對錯)+#3(反 FOMO「不喊進喊出」對照富途抽新股),且用「5 條可檢驗規則」把抽象的 AI 過濾變成可查證流程,是競品素材完全沒有的資產。target_match 17:繁中在地化、對準台股散戶最日常的群組謠言痛點(pain #2 假新聞太多),Threads 討論型版面適合條列+提問。risk 18:全篇零我方數字、零見證、無個股買賣建議、無付費綁定、organic-only、無 LINE CTA;僅剩風險=5 條列表在 Threads 略長,靜態卡觸及本就低,靠首行 hook 撐。中英語意逐條對齊(皆為週一至週六 7 點/限時免費/同 5 條機制/同二選一問題),caption_zh 317 字、caption_en 500 字皆在 Threads 500 字上限內。",
+   "compliance_self_check": {
+    "no_fabricated_numbers": true,
+    "no_pro_tier_language": true,
+    "no_premium_giveaway": true,
+    "no_guarantee_language": true,
+    "no_stock_analysis_premium_claim": true
+   },
+   "status": "pending_review"
+  }
+ ],
+ "partial_unfinished": [
+  {
+   "agent": "a167857a413e5eb81",
+   "note": "死前最後一句是「All five compliance checks pass on both languages. Submitting the draft.」——只差 StructuredOutput 那一步。scratchpad 已隨 session 刪除清空,只從 transcript 撈回合規檢查用的段落片段(非完整 caption)。",
+   "angle_hint": "AI 代理人直連券商帳戶(Robinhood/Coinbase/Public/Podium Ivy)——皆保留客戶最終核准",
+   "fragment_zh": "已經不是假設了。Robinhood 開放第三方 AI 代理人直接連進客戶帳戶;Coinbase 的代理人能替用戶交易加密貨幣、甚至代為付款;券商 Public 自建代理人自動化投資流程,但所有 AI 排出來的流程都要客戶批准才執行;Podium Markets 的助理 Ivy 會跨多個券商帳戶檢視你的持股、依個人目標建議交易,送單前仍要你同意。",
+   "fragment_en": "This is no longer hypothetical. Robinhood now lets third-party AI agents connect straight into customer accounts. Coinbase agents can trade crypto and even make payments for users. Broker Public builds its own agents to automate investing workflows, yet every AI-generated workflow still needs customer approval. Podium Markets' assistant Ivy reviews your holdings across multiple brokerage accounts and suggests trades based on personal goals - and still waits for your go-ahead."
+  },
+  {
+   "agent": "af2ce5fe6b4184f7c",
+   "note": "死前還在 grep docs/ 查晚報時間口徑,離產出還遠,無可撈內容。"
+  }
+ ],
+ "status_note": "5 則完整草稿(含 score/score_dims/compliance_self_check)+研究簡報已保全;第 6 則僅片段;第 7 則無。重跑時應只補 1-2 則+跑 verify,不必整批重生。"
+}
