@@ -473,3 +473,31 @@
 {"date": "2026-07-30", "code": "1796", "source": "leadflow", "level": "yellow", "signal": "金穎生技(1796) 無消息近漲停+9.9%(量能2.1×,5日-0.5%),疑資訊先行資金", "price_at_signal": 31.05}
 {"date": "2026-07-30", "code": "3520", "source": "leadflow", "level": "yellow", "signal": "華盈(3520) 無消息近漲停+9.8%(量能1.5×,5日+2.3%),疑資訊先行資金", "price_at_signal": 17.9}
 {"date": "2026-07-30", "code": "3226", "source": "leadflow", "level": "red", "signal": "龍鋒(3226) 無消息近漲停+9.0%(量能8.0×,5日+5.8%),疑資訊先行資金|外資+投信近3日僅-1張,法人未同步=隱形買盤", "price_at_signal": 48.9}
+{"date": "2026-07-31", "code": "2221", "source": "institutional", "level": "yellow", "signal": "大甲(2221):法人 20 日淨賣超 -223 張(未成連續型態)", "price_at_signal": 43.3}
+{"date": "2026-07-31", "code": "2221", "source": "revenue", "level": "red", "signal": "大甲(2221):2026/06 營收公告、YoY +34.6%(強勁)、MoM +2.5%", "price_at_signal": 43.3}
+{"date": "2026-07-31", "code": "2221", "source": "sbl", "level": "yellow", "signal": "大甲(2221):機構借券賣出5日增10.3%(溫和加碼放空)", "price_at_signal": 43.3}
+{"date": "2026-07-31", "code": "2303", "source": "mops_news", "level": "red", "signal": "聯電(2303) 重訊[2026-07-30]:公告本公司國內第一次無擔保轉換公司債之轉換價格及 溢價率", "price_at_signal": 121.0}
+{"date": "2026-07-31", "code": "3081", "source": "mops_news", "level": "red", "signal": "聯亞(3081) 重訊[2026-07-30]:公告本公司國內第二次無擔保轉換公司債 代收價款行庫及存儲專戶行庫", "price_at_signal": 1630.0}
+{"date": "2026-07-31", "code": "3260", "source": "institutional", "level": "yellow", "signal": "威剛(3260):法人 20 日淨買超 +8,127 張(未成連續型態)", "price_at_signal": 398.5}
+{"date": "2026-07-31", "code": "3260", "source": "mops_news", "level": "red", "signal": "威剛(3260) 重訊[2026-07-30]:公告本公司董事會決議辦理現金增資發行新股案 (更正全案發行股數)", "price_at_signal": 398.5}
+{"date": "2026-07-31", "code": "3260", "source": "revenue", "level": "red", "signal": "威剛(3260):2026/06 營收公告、YoY +212.1%(強勁)、MoM +13.3%", "price_at_signal": 398.5}
+{"date": "2026-07-31", "code": "3260", "source": "tw_rank", "level": "yellow", "signal": "威剛(3260) 今日成交額排行第13(+5.3%),異常活躍", "price_at_signal": 398.5}
+{"date": "2026-07-31", "code": "3260", "source": "investor_conf", "level": "yellow", "signal": "威剛(3260):法說會6天後召開", "price_at_signal": 398.5}
+{"date": "2026-07-31", "code": "3701", "source": "institutional", "level": "red", "signal": "大眾控(3701):外資連 5 日買超(5日淨買 +735 張)", "price_at_signal": 36.0}
+{"date": "2026-07-31", "code": "3701", "source": "mops_news", "level": "yellow", "signal": "大眾控(3701) 重訊[2026-07-30]:代子公司PRIME BASE INC.公告資金貸與相關資料", "price_at_signal": 36.0}
+{"date": "2026-07-31", "code": "6570", "source": "mops_news", "level": "red", "signal": "維田(6570) 重訊[2026-07-30]:公告本公司簽訂發行國內第二次無擔保轉換公司債之 代收價款行庫及存儲專戶行庫", "price_at_signal": 50.5}
+{"date": "2026-07-31", "code": "6903", "source": "mops_news", "level": "yellow", "signal": "巨漢(6903) 重訊[2026-07-30]:公告本公司董事長辭任", "price_at_signal": 297.0}
+{"date": "2026-07-31", "code": "5263", "source": "mops_news", "level": "yellow", "signal": "智崴(5263) 重訊[2026-07-30]:取得Flyover Attractions B.V.公司股份公告", "price_at_signal": 93.4}
+{"date": "2026-07-31", "code": "4198", "source": "revenue", "level": "red", "signal": "欣大健康(4198):2026/06 營收公告、YoY +92.3%(強勁)、MoM +108.5%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": 40.0}
+{"date": "2026-07-31", "code": "6274", "source": "revenue", "level": "red", "signal": "台燿(6274):2026/06 營收公告、YoY +107.7%(強勁)、MoM +2.1%", "price_at_signal": 1110.0}
+{"date": "2026-07-31", "code": "6274", "source": "investor_conf", "level": "red", "signal": "台燿(6274):法說會0天內召開(波動事件窗口逼近)|簡報摘要:2026年第二季銅箔基板銷售分析、ELL & SLL占比39%、VLL & LL占比31%", "price_at_signal": 1110.0}
+{"date": "2026-07-31", "code": "7743", "source": "revenue", "level": "red", "signal": "金利食安(7743):2026/06 營收公告、YoY +21.0%(強勁)、MoM -31.9%", "price_at_signal": 19.9}
+{"date": "2026-07-31", "code": "7738", "source": "margin", "level": "yellow", "signal": "東聯互動(7738):融資5日暴增22.4%(散戶追高過熱)", "price_at_signal": 165.5}
+{"date": "2026-07-31", "code": "3485", "source": "leadflow", "level": "yellow", "signal": "敘豐(3485) 無消息近漲停+10.0%(一價鎖死,5日-15.0%),疑資訊先行資金", "price_at_signal": 192.5}
+{"date": "2026-07-31", "code": "4908", "source": "leadflow", "level": "yellow", "signal": "前鼎(4908) 無消息近漲停+10.0%(一價鎖死,5日-6.0%),疑資訊先行資金", "price_at_signal": 132.0}
+{"date": "2026-07-31", "code": "6223", "source": "leadflow", "level": "yellow", "signal": "旺矽(6223) 無消息近漲停+10.0%(一價鎖死,5日-7.4%),疑資訊先行資金", "price_at_signal": 5280.0}
+{"date": "2026-07-31", "code": "6259", "source": "leadflow", "level": "yellow", "signal": "百徽(6259) 無消息近漲停+10.0%(一價鎖死,5日-7.3%),疑資訊先行資金", "price_at_signal": 29.7}
+{"date": "2026-07-31", "code": "5351", "source": "leadflow", "level": "yellow", "signal": "鈺創(5351) 無消息近漲停+10.0%(一價鎖死,5日-14.3%),疑資訊先行資金", "price_at_signal": 72.7}
+{"date": "2026-07-31", "code": "4991", "source": "leadflow", "level": "yellow", "signal": "環宇-KY(4991) 無消息近漲停+10.0%(一價鎖死,5日-15.3%),疑資訊先行資金", "price_at_signal": 353.0}
+{"date": "2026-07-31", "code": "6432", "source": "leadflow", "level": "red", "signal": "今展科(6432) 無消息近漲停+10.0%(連2根,5日+10.4%),疑資訊先行資金|外資+投信近3日+1246張", "price_at_signal": 77.3}
+{"date": "2026-07-31", "code": "3236", "source": "leadflow", "level": "yellow", "signal": "千如(3236) 無消息近漲停+9.9%(一價鎖死,5日-7.7%),疑資訊先行資金", "price_at_signal": 38.75}
