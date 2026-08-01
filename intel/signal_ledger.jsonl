@@ -501,3 +501,13 @@
 {"date": "2026-07-31", "code": "4991", "source": "leadflow", "level": "yellow", "signal": "環宇-KY(4991) 無消息近漲停+10.0%(一價鎖死,5日-15.3%),疑資訊先行資金", "price_at_signal": 353.0}
 {"date": "2026-07-31", "code": "6432", "source": "leadflow", "level": "red", "signal": "今展科(6432) 無消息近漲停+10.0%(連2根,5日+10.4%),疑資訊先行資金|外資+投信近3日+1246張", "price_at_signal": 77.3}
 {"date": "2026-07-31", "code": "3236", "source": "leadflow", "level": "yellow", "signal": "千如(3236) 無消息近漲停+9.9%(一價鎖死,5日-7.7%),疑資訊先行資金", "price_at_signal": 38.75}
+{"date": "2026-08-01", "code": "1560", "source": "sbl", "level": "red", "signal": "中砂(1560):機構借券賣出5日遽增20.3%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": 640.0}
+{"date": "2026-08-01", "code": "1560", "source": "holders", "level": "yellow", "signal": "中砂(1560):千張大戶持股比週減-1.88個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 640.0}
+{"date": "2026-08-01", "code": "2464", "source": "mops_news", "level": "yellow", "signal": "盟立(2464) 重訊[2026-07-31]:公告本公司資訊安全長異動", "price_at_signal": 134.5}
+{"date": "2026-08-01", "code": "3016", "source": "mops_news", "level": "red", "signal": "嘉晶(3016) 重訊[2026-07-31]:公告本公司國內第六次無擔保轉換公司債代收價款及 存儲專戶行庫", "price_at_signal": 79.9}
+{"date": "2026-08-01", "code": "3028", "source": "holders", "level": "yellow", "signal": "增你強(3028):千張大戶持股比週減-1.89個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 61.5}
+{"date": "2026-08-01", "code": "3260", "source": "holders", "level": "yellow", "signal": "威剛(3260):千張大戶持股比週減-1.02個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 398.5}
+{"date": "2026-08-01", "code": "3260", "source": "investor_conf", "level": "red", "signal": "威剛(3260):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": 398.5}
+{"date": "2026-08-01", "code": "5263", "source": "mops_news", "level": "red", "signal": "智崴(5263) 重訊[2026-07-31]:智崴收購Flyover Attractions(補充公告-完成交割日期)", "price_at_signal": 93.4}
+{"date": "2026-08-01", "code": "6274", "source": "mops_news", "level": "yellow", "signal": "台燿(6274) 重訊[2026-07-31]:代重要子公司TAIWAN UNION TECHNOLOGY (THAILAND)及 台燿科技(中山)公告取得供營業用之機", "price_at_signal": 1110.0}
+{"date": "2026-08-01", "code": "TSM", "source": "us_congress", "level": "yellow", "signal": "🏛️ TSM 國會議員買進:Cleo Fields(House) 2026-07-30 揭露", "price_at_signal": null}
