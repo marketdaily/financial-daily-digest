@@ -1671,7 +1671,7 @@ export default {
         "metadata[product]": "fortune",
         "metadata[sku]": body.sku,
         success_url: "https://tianji-ai.pages.dev/paid.html?sid={CHECKOUT_SESSION_ID}",
-        cancel_url: "https://tianji-ai.pages.dev/#runli",
+        cancel_url: "https://tianji-ai.pages.dev/#pricing",
       };
       if (body.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) params.customer_email = body.email;
       const r = await fetch("https://api.stripe.com/v1/checkout/sessions", {
