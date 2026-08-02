@@ -266,8 +266,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-02 13:28",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-02 17:30",
+  "note": "蝦皮賣場上線+銀行驗證完成;1688登入成功並實查三品進價"
  },
  {
   "id": 28,
@@ -306,8 +306,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-02 14:18",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-02 14:52",
+  "note": "PyPI已上架quorumgate-llm 0.1.0(councilgate/quorumgate皆被相似度檢查擋,改dist名);pip安裝實測import ok"
  },
  {
   "id": 32,
@@ -316,8 +316,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-02 14:33",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-02 14:42",
+  "note": "申訴信已寄出(老闆Gmail+Brevo重複各一封,我的雙寄失誤已記憶);HN解除由cron健康閘每日偵測"
  },
  {
   "id": 33,
@@ -326,8 +326,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-02 14:33",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-02 14:42",
+  "note": "PoC信已寄出(同樣雙寄,輕微;等回覆)"
  },
  {
   "id": 34,
@@ -346,6 +346,166 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-02 14:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 36,
+  "what": "NVIDIA NIM 免費 key 尚未取得(卡寄信冷卻,腳本+backlog 已備妥)",
+  "why": "08-02 連試6次觸發NVIDIA驗證信冷卻;密碼已重設存.env,續跑腳本 scripts/nvidia_nim_signup.py 一次即可完成",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 14:41",
+  "closed": "2026-08-02 15:04",
+  "note": "已代辦到底:密碼重設+裝置驗證+Cloud Account 全完成,卡NVIDIA自家審核;nvidia_key_watch.py 每日自動複查一開通就自己拿key"
+ },
+ {
+  "id": 37,
+  "what": "口袋證券7天無回覆(08-09)要follow-up一封",
+  "why": "BD慣例,等回覆窗",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 14:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 38,
+  "what": "NVIDIA NIM API 存取待其官方審核通過(守望已自動化)",
+  "why": "帳號側全部完成,API Access Unavailable 是 NVIDIA 端閘門;每日 cron 自動複查,開通即自動取key寫.env並推播",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 15:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 39,
+  "what": "Dropshipping首批未下單:1688三品進價已實查(蒸氣梳¥1.7-2.5/逗貓棒¥2-6.5/壓縮袋¥1.6-2),待老闆註冊集運商拿中國倉地址+按付款;BSMI品目查詢未送出;聊聊FAQ機器人未設定",
+  "why": "付款與集運註冊需老闆本人;FAQ設定按鈕無回應待改由聊聊網頁版",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-02 17:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 40,
+  "what": "fortune-ai Concierge 首單待跑(引擎+runbook已備,等 Delvin 丟第一個白老鼠生日資料進來)",
+  "why": "白老鼠資料只有 Delvin 能給",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-02 17:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 41,
+  "what": "fortune-ai 紫微引擎未做(v1只有八字+塔羅);金流商戶申請等 Concierge 畢業(≥5單+3推薦)後才啟動",
+  "why": "照孵化憲法不提早 productize",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 17:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 42,
+  "what": "fortune-ai 社群三平台帳號開通:開站包 agent 備料中,最後一步 SMS/登入驗證需 Delvin 5 分鐘(HANDOFF.md 就緒會推播)",
+  "why": "Meta 新帳號驗證只有老闆手機能過",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-02 17:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 43,
+  "what": "fortune-ai SEO 第二波:programmatic 長尾頁(每日運勢/生肖/五行組合頁,programmatic-seo skill)待網站 v1 上線後啟動",
+  "why": "v1 只含 sitemap/og 基本盤,pSEO 需另建 cron 產頁線",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 17:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 44,
+  "what": "蝦皮快捷訊息(4則商品FAQ)填好但儲存鈕被鎖:群組名/內容/標籤皆合規仍 disabled,疑似平台端限制;歡迎+離線自動回覆已上線不受影響",
+  "why": "UI 儲存鈕 disabled 未解,待改用蝦皮 App 端或客服釐清",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 17:59",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 45,
+  "what": "天機AI 社群帳號開通+發文管線接線待老闆執行 HANDOFF(~/fortune-ai/marketing/HANDOFF.md);day6 案例貼文 draft-hold 待當事人同意",
+  "why": "帳號註冊 SMS 驗證只有老闆手機能做;案例發布需當事人同意,禁止代決",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-02 18:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 46,
+  "what": "fortune-ai 站名「天機 AI」是佔位名,pages.dev 也被佔改用 fortune-ai-56y 尾碼網域——正式命名+要不要買自訂網域需老闆拍板",
+  "why": "命名是老闆決策,canonical/OG/CORS 屆時要整批換",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-02 18:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 47,
+  "what": "fortune-ai worker /admin/orders 未設 ADMIN_TOKEN(fail-closed 關閉中),訂單目前用 npx wrangler kv key list 查——正式接單量起來前要補一條老闆看單通道",
+  "why": "v1 訂單通知靠 admin push,查單走 CLI 夠用但非長久之計",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 18:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 48,
+  "what": "fortune-ai 下單→LINE Pay 收款→交付的人工流程尚未跑過第一筆真單(系統測試單已驗,真客戶流程未演練)",
+  "why": "系統 e2e 已驗但商業流程(真人付款+交付)還沒發生過",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-02 18:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 49,
+  "what": "T1蝦皮客服引擎開發中(dogfood場=蝦皮店尚未開,依賴Dropshipping部選品拍板)",
+  "why": "引擎先行,接口與實店測試待店開",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 18:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 50,
+  "what": "T2補助顧問驗證:訪談邀約待寄+2家願付白牌月費才動工產品",
+  "why": "驗證前置,未達標不建產品",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 18:35",
+  "closed": "2026-08-02 18:48",
+  "note": "邀約已逐家寄出12封(log=research/t2_outreach_log.jsonl);等回覆,達2家願付白牌月費才動工產品"
+ },
+ {
+  "id": 51,
+  "what": "T2訪談回覆進你Gmail(reply-to),回信轉給我安排;NT000/場訪談費由你出",
+  "why": "訪談需老闆本人或書面,錢是他的承諾",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-02 18:48",
   "closed": null,
   "note": ""
  }
