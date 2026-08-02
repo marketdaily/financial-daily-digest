@@ -7,6 +7,19 @@ MARK="$DIR/marketing/eng_blog/.hn_submitted_council"
 U=$(grep -h '^HN_USERNAME=' "$DIR/.env" | head -1 | cut -d= -f2- | tr -d '"\r')
 P=$(grep -h '^HN_PASSWORD=' "$DIR/.env" | head -1 | cut -d= -f2- | tr -d '"\r')
 UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+
+# 健康閘:帳號的既有留言(49141686)公開視角仍 [flagged]/[dead] = 帳號還在過濾名單,投了必沉 → 不投,推播提醒
+push_admin() {
+  TOK=$(grep -h '^MARKETDAILY_ALERT_TOKEN=' "$DIR/.env" | head -1 | cut -d= -f2- | tr -d '"\r')
+  printf '%s' "$1" | python3 -c 'import json,sys; print(json.dumps({"message": sys.stdin.read()[:4900]}))' | \
+  curl -s -o /dev/null -X POST https://marketdaily-alert-worker.delvin-12345678.workers.dev/internal/admin-line-push \
+    -H "Content-Type: application/json" -H "Authorization: Bearer $TOK" -A "hn-submit/1.0" --data @-
+}
+HEALTH=$(curl -s -A "$UA" "https://news.ycombinator.com/item?id=49141686")
+if echo "$HEALTH" | grep -q '\[flagged\]\|\[dead\]'; then
+  push_admin "⏸ HN 投稿暫停:帳號 $U 仍被新帳號過濾器壓著(留言公開視角 flagged)。請先寄出 Gmail 草稿給 hn@ycombinator.com 申訴;解除後我再投(cron 每天 21:30 會重試檢查)。"
+  exit 0
+fi
 CJ=$(mktemp)
 TITLE="I run a 9-model LLM council to write a financial newsletter. What breaks"
 URL="https://marketdaily.ai/blog/eng-llm-council-judge-en-202608"
