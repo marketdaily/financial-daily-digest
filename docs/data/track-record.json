@@ -1,6 +1,6 @@
 {
   "stats": {
-    "generated_at": "2026-08-01T08:14:22",
+    "generated_at": "2026-08-02T08:14:16",
     "horizon": "5d",
     "records_since": "2026-06-12",
     "days_covered": 32,
@@ -54202,7 +54202,7 @@
       "outcome_63d": null,
       "ret_1d": -0.0413,
       "ret_5d": -0.0996,
-      "ret_21d": -0.3102,
+      "ret_21d": -0.2306,
       "scope": "aggregate"
     },
     {
