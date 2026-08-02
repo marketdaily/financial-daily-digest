@@ -73,6 +73,10 @@ US_NAMES = {
     "RIOT": ("Riot", "Riot Platforms"),
 }
 
+# 知名美股代號:digest_audit ticker_no_zh_name 抽查名單 = analyzer._pp_expand_us_tickers
+# 修復名單,單一事實來源放這裡(兩邊各自 hardcode 遲早漂移)。
+FAMOUS_US_TICKERS = ("NVDA", "AAPL", "MSFT", "TSLA", "GOOGL", "META", "AMD", "TSM", "JPM", "AMZN")
+
 TW_NAMES = {
     # 半導體 / IC 設計
     "2330": ("台積電", "TSMC"),

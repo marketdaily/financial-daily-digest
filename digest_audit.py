@@ -323,7 +323,8 @@ def audit_digest(
     #     只認 ≥2 連續中文會結構性誤判(07-10~16 復發根因之一)→ 同時接受 stock_names.US_NAMES
     #     的中/英公司名(word-boundary;en 名等同代號者如 AMD 不能拿代號自己當名字)。
     #     定位第一次出現也改 word-boundary(text.find 會誤中 METALS 這類子字串位置)。
-    code_only_us = re.findall(r"(?<![A-Za-z])(NVDA|AAPL|MSFT|TSLA|GOOGL|META|AMD|TSM|JPM|AMZN)(?![A-Za-z])", text)
+    code_only_us = re.findall(
+        r"(?<![A-Za-z])(" + "|".join(stock_names.FAMOUS_US_TICKERS) + r")(?![A-Za-z])", text)
     if code_only_us:
         # 抽樣檢查:每個代號前後 12 字是否有中英文公司名
         for code in set(code_only_us[:5]):

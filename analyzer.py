@@ -2042,6 +2042,94 @@ def _pp_fix_speculative_causality(html: str) -> str:
     return _re.sub(r"可能與([^。<]{2,30})有關", _repl, html)
 
 
+def _pp_anchor_vague_reasons(html: str, data: dict) -> str:
+    """虛詞卡確定性補錨(2026-08-02):audit signal_reason_vague 連日系統性命中(弱模型鏈下
+    reason 無價位/時間窗)→ HIGH → retry 再燒一輪 LLM → 仍 fail 就 deterministic fallback。
+    這裡在 audit 之前用 _near_term_levels(真實 ATR/MA20/20日高低,非 LLM 生成)補上價位錨,
+    判準與 digest_audit 9b 完全同一套 regex——它認可的卡這裡絕不動(行為凍結)。"""
+    import re as _re
+    all_mkt = {**data.get("us_market", {}), **data.get("tw_market", {})}
+    techs = data.get("technicals", {}) or {}
+    tw_codes = set((data.get("tw_market") or {}).keys())
+
+    def _fix(m):
+        block = m.group(0)
+        if _re.search(r"備援|個人化生成異常|fallback|主編將.{0,8}修復|無即時報價|見網頁", block):
+            return block
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        rm = _re.search(r'(<div class="signal-reason"[^>]*>)(.*?)(</div>)', block, _re.S)
+        if not hm or not rm:
+            return block
+        reason = rm.group(2)
+        if _re.search(r"\$\s*\d|NT\$?\s*\d|\d+\s*(元|美元|塊|點)", reason) or _re.search(
+                r"今早|今晚|盤後|盤前|財報前|財報後|開盤|收盤|本週|下週|\d+\s*月\s*\d+", reason):
+            return block
+        sym = hm.group(1)
+        price = (all_mkt.get(sym) or {}).get("price")
+        sup, tgt, _stp = _near_term_levels(price, techs.get(sym))
+        if not (sup and tgt):
+            return block
+        cur = "NT$" if sym in tw_codes else "$"
+        anchor = (f" 價位錨點(依 ATR/MA20 推算):近端支撐 {cur}{sup}、壓力 {cur}{tgt},"
+                  f"先以此區間評估進退。")
+        return block.replace(rm.group(0), rm.group(1) + reason + anchor + rm.group(3), 1)
+
+    return _re.sub(
+        r'<div class="signal-card[^"]*">.*?(?=<div class="signal-card[ "]|<div class="signal-disclaimer)',
+        _fix, html, flags=_re.DOTALL,
+    )
+
+
+def _pp_expand_us_tickers(html: str) -> str:
+    """知名美股裸代號補公司名(2026-08-02,audit ticker_no_zh_name 08-01 AMD 實鍋)。
+    ±12 字脈絡必須用「去 tag 後的純文字」看(與 digest_audit 同視角):卡片標頭的
+    純代號 span 隔壁 span 就是公司名,逐文字節點看會誤判成裸代號亂補
+    (refactor_harness 黃金快照抓到的第一版 bug)。"""
+    import re as _re
+
+    # 拼 stripped text,同時記每個文字節點在其中的 offset(tag 以單一空白代替,近似 audit 的
+    # re.sub(r"<[^>]+>"," "):對 ±12 字窗的判定等價)。
+    segs = list(_re.finditer(r"(?<=>)[^<>]+(?=<)", html))
+    parts, offsets, pos = [], [], 0
+    for sm in segs:
+        offsets.append(pos)
+        parts.append(sm.group(0))
+        pos += len(sm.group(0)) + 1
+    joined = " ".join(parts)
+
+    replacements = {}   # seg_idx -> list of (start_in_seg, end_in_seg, new_text)
+    for code in stock_names.FAMOUS_US_TICKERS:
+        zh, en = stock_names.US_NAMES.get(code, ("", ""))
+        if not zh or zh == code:
+            continue
+        for cm in _re.finditer(r"(?<![A-Za-z])" + code + r"(?![A-Za-z])", joined):
+            ctx = joined[max(0, cm.start() - 12):cm.end() + 12]
+            named = _re.search(r"[一-鿿]{2,}", ctx) or (
+                en and en != code and _re.search(
+                    r"(?<![A-Za-z])" + _re.escape(en) + r"(?![A-Za-z])", ctx))
+            if named:
+                continue
+            for i in range(len(segs) - 1, -1, -1):   # 定位落在哪個文字節點
+                if offsets[i] <= cm.start() and cm.end() <= offsets[i] + len(parts[i]):
+                    replacements.setdefault(i, []).append(
+                        (cm.start() - offsets[i], cm.end() - offsets[i], f"{zh}({code})"))
+                    break
+    if not replacements:
+        return html
+
+    out, last = [], 0
+    for i, sm in enumerate(segs):
+        if i in replacements:
+            seg = sm.group(0)
+            for s, e, new in sorted(replacements[i], reverse=True):
+                seg = seg[:s] + new + seg[e:]
+            out.append(html[last:sm.start()])
+            out.append(seg)
+            last = sm.end()
+    out.append(html[last:])
+    return "".join(out)
+
+
 def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_strip_llm_style(html)
     html = _pp_clear_placeholders(html)
@@ -2069,8 +2157,10 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_requalify_buy(html, data)
     html = _pp_record_buys(html, data)
     html = _pp_holder_wording(html)  # 須在 knife/extended/requalify 三閘門之後:覆蓋它們改寫的 chip
+    html = _pp_anchor_vague_reasons(html, data)  # 須在各閘門之後:對「最終版 reason」補錨
     html = _pp_scrub_earnings_notes(html, data)
     html = _pp_expand_tickers(html, tw_hint)
+    html = _pp_expand_us_tickers(html)
     html = _pp_rotation_note(html, data)
     html = _pp_capital_brief(html, data)
     html = _pp_strip_empty_impact(html)
@@ -2580,10 +2670,13 @@ _COUNCIL_SEATS = [
     # 2026-07-30 加一席 gpt-oss-120b:與下面 llama 同一個 CF 配額桶,故**不是**第五家廠商,
     # 多的是「模型世代的獨立聲音」——清晨 gemini 雙 key 必空桶時席次從 3 把變 4 把
     # (今早 council 掉備援 8 席/LLM 失敗 446 的直接補強)。實測 max_tokens=300 就吐正確 JSON。
-    ("cf:gpt-oss-120b", lambda p: _call_cf_ai(p, system=_COUNCIL_SYS, model="@cf/openai/gpt-oss-120b", max_tokens=300)),
+    # 2026-08-02:gpt-oss/nemotron 是推理型模型,先吐 reasoning 再吐 JSON,max_tokens=300
+    # 常在 JSON 前/中被截斷(07-31/08-01 council「no json」「Expecting ',' delimiter」兩席
+    # 天天死的根因)。放寬到 900 換可用票;寧可多幾百 tokens,不要白燒 300 換廢票。
+    ("cf:gpt-oss-120b", lambda p: _call_cf_ai(p, system=_COUNCIL_SYS, model="@cf/openai/gpt-oss-120b", max_tokens=900)),
     ("cf:llama-3.3-70b", lambda p: _call_cf_ai(p, system=_COUNCIL_SYS, max_tokens=300)),
     # 預接線:沒 key raise→席次自動停用;用戶註冊後填 .env 即多一席,不需改程式
-    ("openrouter:nemotron-ultra-550b", lambda p: _call_openrouter(p, system=_COUNCIL_SYS, max_tokens=300)),
+    ("openrouter:nemotron-ultra-550b", lambda p: _call_openrouter(p, system=_COUNCIL_SYS, max_tokens=900)),
     ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, system=_COUNCIL_SYS, max_tokens=300)),
     ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
