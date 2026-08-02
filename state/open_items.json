@@ -286,8 +286,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-02 13:46",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-02 14:33",
+  "note": "三線對外動作已執行:文章上線+repo公開+四平台排程;殘留項另立"
  },
  {
   "id": 30,
@@ -298,5 +298,55 @@
   "opened": "2026-08-02 13:57",
   "closed": "2026-08-02 14:03",
   "note": "兩頁CTA已補早鳥口徑,法務🟡解除"
+ },
+ {
+  "id": 31,
+  "what": "councilgate PyPI佔名待Delvin開帳號或給token(pypi.org註冊+2FA)",
+  "why": "本機無PyPI憑證,註冊需本人email+2FA",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-02 14:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 32,
+  "what": "HN帳號delvinchang被新帳號過濾器flag,申訴信草稿在Gmail待Delvin送出;投稿cron每日21:30健康閘重試",
+  "why": "自動化開帳+curl留言觸發過濾,需版主人工解",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-02 14:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 33,
+  "what": "口袋證券PoC敲門信草稿在Gmail待Delvin送出(mailbox@pocket.tw)",
+  "why": "B2B首封對外信由老闆過目送出",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-02 14:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 34,
+  "what": "B2B白牌引擎(包裝①)收費前置=外部律師,法務部判🔴未解;稽核閘門SaaS與PoC不受影響",
+  "why": "內部法務意見書judgement,老闆說不外聘,擱置待重議",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-02 14:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 35,
+  "what": "社群四平台文章貼文明日14:00首發,發後驗一次實際貼文",
+  "why": "尚未在生產窗口跑過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 14:33",
+  "closed": null,
+  "note": ""
  }
 ]
