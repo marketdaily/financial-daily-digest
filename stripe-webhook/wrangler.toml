@@ -20,6 +20,11 @@ QUOTE_BRIDGE_URL = "https://qb-fc90a8.marketdaily.ai"
 binding = "USER_PREFS"
 id = "f5229c5bf86a4f8b88d71995005cd670"
 
+# fortune-ai(天機AI)訂單 KV(同 namespace 綁進 fortune-ai worker;webhook 只寫 paid 標記)
+[[kv_namespaces]]
+binding = "FORTUNE_ORDERS"
+id = "0c036b69048e482eb51426f9f7993c21"
+
 # Lifecycle email sweep:每天 22:30 UTC = 隔日 06:30 TWT,跑在日報(06:55 UTC)之前
 # Reactive content sweep:每 15 分鐘掃 RSS,命中關鍵字 → AI 寫 hot take → pending(96 次/天,免費層內)
 [triggers]

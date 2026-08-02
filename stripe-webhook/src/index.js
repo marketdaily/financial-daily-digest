@@ -1609,6 +1609,81 @@ export default {
       return json(raw ? JSON.parse(raw) : { date: null, by_code: {} });
     }
 
+    // fortune-ai(天機AI):建立單次付費 Payment Links(冪等,KV 快取;body {force:true} 重建)。Bearer INTERNAL_TOKEN。
+    if (url.pathname === "/internal/fortune-payment-links" && request.method === "POST") {
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
+      if (!env.STRIPE_SECRET_KEY) return json({ error: "missing_stripe_key" }, 500);
+      let force = false;
+      try { force = !!(await request.json()).force; } catch { /* empty body ok */ }
+      const cached = await env.USER_PREFS.get("fortune:paylinks:v1");
+      if (cached && !force) return json({ ok: true, cached: true, links: JSON.parse(cached) });
+      const auth = { "Authorization": "Bearer " + env.STRIPE_SECRET_KEY, "Content-Type": "application/x-www-form-urlencoded" };
+      const sp = (o) => new URLSearchParams(o).toString();
+      const mk = async (name, amountTwd, sku) => {
+        let r = await fetch("https://api.stripe.com/v1/products", { method: "POST", headers: auth, body: sp({ name, "metadata[product]": "fortune", "metadata[sku]": sku }) });
+        const prod = await r.json();
+        if (!r.ok) throw new Error("product:" + JSON.stringify(prod).slice(0, 200));
+        // TWD 非零小數幣別,unit_amount 以「分」計(見 /admin/revenue 註解)
+        r = await fetch("https://api.stripe.com/v1/prices", { method: "POST", headers: auth, body: sp({ product: prod.id, currency: "twd", unit_amount: String(amountTwd * 100) }) });
+        const price = await r.json();
+        if (!r.ok) throw new Error("price:" + JSON.stringify(price).slice(0, 200));
+        r = await fetch("https://api.stripe.com/v1/payment_links", { method: "POST", headers: auth, body: sp({
+          "line_items[0][price]": price.id,
+          "line_items[0][quantity]": "1",
+          "metadata[product]": "fortune",
+          "metadata[sku]": sku,
+          "after_completion[type]": "redirect",
+          "after_completion[redirect][url]": "https://tianji-ai.pages.dev/paid.html?sid={CHECKOUT_SESSION_ID}",
+        }) });
+        const link = await r.json();
+        if (!r.ok) throw new Error("link:" + JSON.stringify(link).slice(0, 200));
+        return { sku, url: link.url, link_id: link.id, price_id: price.id, product_id: prod.id };
+      };
+      try {
+        const links = {
+          bazi249: await mk("天機AI 八字詳批(單次)", 249, "bazi249"),
+          tarot99: await mk("天機AI 塔羅單題(單次)", 99, "tarot99"),
+        };
+        await env.USER_PREFS.put("fortune:paylinks:v1", JSON.stringify(links));
+        return json({ ok: true, cached: false, links });
+      } catch (e) { return json({ error: "stripe_failed", detail: String(e).slice(0, 300) }, 502); }
+    }
+
+    // fortune-ai(天機AI):動態建立單次付費 Checkout Session(inline price_data,不需 Products 寫入權)。
+    // 由 fortune-ai worker 經 service binding 呼叫;Bearer INTERNAL_TOKEN。
+    if (url.pathname === "/internal/fortune-checkout" && request.method === "POST") {
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
+      if (!env.STRIPE_SECRET_KEY) return json({ error: "missing_stripe_key" }, 500);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      const SKUS = { bazi249: { name: "天機AI 八字詳批(單次)", amount: 24900 }, tarot99: { name: "天機AI 塔羅單題(單次)", amount: 9900 } };
+      const sku = SKUS[body.sku];
+      if (!sku) return json({ error: "bad_sku" }, 400);
+      const oid = String(body.order_id || "");
+      if (!oid.startsWith("order:")) return json({ error: "bad_order_id" }, 400);
+      const params = {
+        mode: "payment",
+        "line_items[0][quantity]": "1",
+        "line_items[0][price_data][currency]": "twd",
+        "line_items[0][price_data][unit_amount]": String(sku.amount),
+        "line_items[0][price_data][product_data][name]": sku.name,
+        client_reference_id: oid,
+        "metadata[product]": "fortune",
+        "metadata[sku]": body.sku,
+        success_url: "https://tianji-ai.pages.dev/paid.html?sid={CHECKOUT_SESSION_ID}",
+        cancel_url: "https://tianji-ai.pages.dev/#runli",
+      };
+      if (body.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) params.customer_email = body.email;
+      const r = await fetch("https://api.stripe.com/v1/checkout/sessions", {
+        method: "POST",
+        headers: { "Authorization": "Bearer " + env.STRIPE_SECRET_KEY, "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(params).toString(),
+      });
+      const d = await r.json();
+      if (!r.ok) return json({ error: "stripe_failed", detail: JSON.stringify(d).slice(0, 300) }, 502);
+      return json({ ok: true, url: d.url, session_id: d.id });
+    }
+
     // 台股基本面(本益比/殖利率/淨值比):winrig 每交易日從 TWSE/TPEx openapi 推 → KV
     if (url.pathname === "/internal/watch-fundamentals" && request.method === "POST") {
       if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
@@ -2516,6 +2591,24 @@ export default {
 
     if (event.type === "checkout.session.completed") {
       const session = event.data.object || {};
+      // fortune-ai(天機AI)單次付費分流:絕不進 MarketDaily 訂閱邏輯(Brevo 名單/plan 升級)。
+      const isFortune = (session.metadata?.product === "fortune") || ((session.client_reference_id || "").startsWith("order:"));
+      if (isFortune) {
+        const oid = session.client_reference_id || "";
+        if (env.FORTUNE_ORDERS) {
+          const raw = oid ? await env.FORTUNE_ORDERS.get(oid) : null;
+          if (raw) {
+            const o = JSON.parse(raw);
+            o.paid = true; o.paid_at = Date.now(); o.stripe_session = session.id; o.amount = session.amount_total;
+            o.payer_email = (session.customer_details?.email || "").trim().toLowerCase() || o.email || "";
+            await env.FORTUNE_ORDERS.put(oid, JSON.stringify(o));
+          } else {
+            // 找不到對應訂單(直接從 Payment Link 進來沒帶 client_reference_id):留 orphan 供補單
+            await env.FORTUNE_ORDERS.put(`paid_orphan:${session.id}`, payload.slice(0, 4000));
+          }
+        }
+        return new Response("OK", { status: 200 });
+      }
       const email = (session.customer_details?.email || session.customer_email || "").trim().toLowerCase();
       if (email) {
         const tier = TIER_BY_AMOUNT[session.amount_total] || "付費";
