@@ -511,3 +511,4 @@
 {"date": "2026-08-01", "code": "5263", "source": "mops_news", "level": "red", "signal": "智崴(5263) 重訊[2026-07-31]:智崴收購Flyover Attractions(補充公告-完成交割日期)", "price_at_signal": 93.4}
 {"date": "2026-08-01", "code": "6274", "source": "mops_news", "level": "yellow", "signal": "台燿(6274) 重訊[2026-07-31]:代重要子公司TAIWAN UNION TECHNOLOGY (THAILAND)及 台燿科技(中山)公告取得供營業用之機", "price_at_signal": 1110.0}
 {"date": "2026-08-01", "code": "TSM", "source": "us_congress", "level": "yellow", "signal": "🏛️ TSM 國會議員買進:Cleo Fields(House) 2026-07-30 揭露", "price_at_signal": null}
+{"date": "2026-08-02", "code": "4967", "source": "holders", "level": "red", "signal": "十銓(4967):千張大戶持股比週增1.49個百分點(大戶顯著加碼)", "price_at_signal": 233.5}
