@@ -47,6 +47,9 @@ CANDIDATES = [
     ("groq:qwen3.6-27b", lambda p: analyzer._call_groq(p, model="qwen/qwen3.6-27b")),
     ("groq:gpt-oss-safeguard-20b", lambda p: analyzer._call_groq(p, model="openai/gpt-oss-safeguard-20b")),
     ("groq:llama-3.1-8b", lambda p: analyzer._call_groq(p, model="llama-3.1-8b-instant")),
+    # 本地 5080(2026-08-02 起):零配額零網路,慢≠不可用(它是最後一張網),但仍要過品質閘
+    ("local:qwen2.5-14b", lambda p: analyzer._call_ollama(p, max_tokens=9000)),
+    ("local:qwen3.5-9b", lambda p: analyzer._call_ollama(p, model="qwen3.5:9b", max_tokens=9000)),
 ]
 
 

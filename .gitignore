@@ -113,3 +113,6 @@ intel/.conf_chart_cache.json
 intel/.conf_chart_queue.json
 intel/.us_congress_ptr_cache.json
 intel/.us_congress_trades_cache.json
+state/nvidia_profile/
+state/nvidia_verify_url.txt
+state/nvidia_*.png

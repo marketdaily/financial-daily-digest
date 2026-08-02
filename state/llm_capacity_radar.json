@@ -1,0 +1,76 @@
+{
+  "health": {
+    "cerebras:gpt-oss-120b": {
+      "alive": false,
+      "note": "402 付費牆"
+    },
+    "groq:gpt-oss-120b": {
+      "alive": true,
+      "note": "200"
+    },
+    "groq:gpt-oss-20b": {
+      "alive": true,
+      "note": "200"
+    },
+    "groq:qwen3.6-27b": {
+      "alive": true,
+      "note": "200"
+    },
+    "local:ollama": {
+      "alive": true,
+      "note": "200, 5 models"
+    },
+    "openrouter:nemotron-ultra-550b": {
+      "alive": true,
+      "note": "200"
+    }
+  },
+  "models": {
+    "cerebras": [
+      "gemma-4-31b",
+      "gpt-oss-120b",
+      "zai-glm-4.7"
+    ],
+    "groq": [
+      "allam-2-7b",
+      "canopylabs/orpheus-arabic-saudi",
+      "canopylabs/orpheus-v1-english",
+      "groq/compound",
+      "groq/compound-mini",
+      "llama-3.1-8b-instant",
+      "llama-3.3-70b-versatile",
+      "meta-llama/llama-prompt-guard-2-22m",
+      "meta-llama/llama-prompt-guard-2-86m",
+      "openai/gpt-oss-120b",
+      "openai/gpt-oss-20b",
+      "openai/gpt-oss-safeguard-20b",
+      "qwen/qwen3.6-27b",
+      "whisper-large-v3",
+      "whisper-large-v3-turbo"
+    ],
+    "ollama": [
+      "nomic-embed-text:latest",
+      "qwen2.5:14b-instruct-q4_K_M",
+      "qwen2.5:32b-instruct-q4_K_M",
+      "qwen2.5:7b-instruct-q4_K_M",
+      "qwen3.5:9b"
+    ],
+    "openrouter": [
+      "cohere/north-mini-code:free",
+      "google/gemma-4-26b-a4b-it:free",
+      "google/gemma-4-31b-it:free",
+      "inclusionai/ling-3.0-flash:free",
+      "nvidia/nemotron-3-nano-30b-a3b:free",
+      "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+      "nvidia/nemotron-3-super-120b-a12b:free",
+      "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "nvidia/nemotron-3.5-content-safety:free",
+      "nvidia/nemotron-nano-12b-v2-vl:free",
+      "nvidia/nemotron-nano-9b-v2:free",
+      "openai/gpt-oss-20b:free",
+      "poolside/laguna-s-2.1:free",
+      "poolside/laguna-xs-2.1:free"
+    ]
+  },
+  "updated": "2026-08-02 14:37"
+}
