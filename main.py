@@ -1356,6 +1356,35 @@ def _archive_online(market, date):
         return False
 
 
+def _archive_in_origin(market, date):
+    """git origin 端的交付訊號(2026-08-02 雙寄根因補洞)。
+
+    07-31 晚報又雙寄:winrig 20:43 寄完即 push 存檔,但晚班沒有任何 Pages deploy
+    (run.sh 只有 tw 班部署;archive_seo/tldr 等補部署 runner 全在早上窗口),
+    _archive_online 查的網站要到隔天早上才更新 → 雲端備援 21:02 死線前緣全程看不見
+    「winrig 已交付」,照樣代打。push 是寄完立刻做的動作,origin 有當班檔案=已交付,
+    秒級新鮮、不吃 deploy 延遲,兩邊(winrig/雲端 Actions checkout)都查得到。
+    查不到(離線/超時)一律 False → 沿用「寧可重寄,不可缺信」語義。"""
+    import subprocess
+    suffix = "_us" if market == "us" else ""
+    path = f"docs/output/digest_{date}{suffix}.html"
+    try:
+        # fetch 失敗不致命:退用本地 origin/main 快照。過期快照只會「看不見對面剛推的檔」
+        # → 照寄(與現狀等險),絕不會反向誤擋寄信。
+        subprocess.run(["git", "fetch", "-q", "origin", "main"],
+                       timeout=60, capture_output=True)
+        r = subprocess.run(["git", "cat-file", "-e", f"origin/main:{path}"],
+                           timeout=15, capture_output=True)
+        return r.returncode == 0
+    except Exception:
+        return False
+
+
+def _archive_delivered(market, date):
+    """「這一班已被交付」的唯一判準:網站存檔(慢訊號)或 origin 存檔(快訊號)任一在即真。"""
+    return _archive_online(market, date) or _archive_in_origin(market, date)
+
+
 def _local_send_clearance(market, date):
     """winrig 端的反向防雙發閘(2026-07-30 事故)。
 
@@ -1374,7 +1403,7 @@ def _local_send_clearance(market, date):
         return True                      # both/手動班次不受閘
     if os.environ.get("MD_FORCE_SEND") == "1":
         return True
-    if not _archive_online(market, date):
+    if not _archive_delivered(market, date):
         return True
     label = "早報" if market == "tw" else "晚報"
     msg = (f"🟠 {label} {date}:winrig 生成完成時公版存檔【已在線上】= 雲端備援已代打交付,"
@@ -1405,7 +1434,7 @@ def _failover_send_clearance(market, date):
     status_url = "https://watchdog.marketdaily.ai/status"
 
     def _archived():
-        return _archive_online(market, date)
+        return _archive_delivered(market, date)
 
     def _winrig_alive():
         try:

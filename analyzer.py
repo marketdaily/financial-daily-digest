@@ -301,8 +301,9 @@ def _call_gemini(prompt: str, model: str, system: str = None) -> str:
         url = f"{GEMINI_BASE}/{model}:generateContent?key={key}"
         for attempt in range(4):
             resp = requests.post(url, json=payload, timeout=120)
-            if resp.status_code == 404:
-                # 模型對這把 key 的專案已下架/不存在(新專案拿不到 2.5 系列):立即熔斷換下一把
+            if resp.status_code in (400, 404):
+                # 404=模型對這把 key 的專案已下架/不存在;400=alias 對端點無效(如 flash-lite-latest,
+                # 07-30/31 實鍋:400 不熔斷 → 21 位逐戶每輪重打死模型,白耗生成時間)。皆永久性,立即熔斷
                 _GEMINI_QUOTA_DEAD.add((model, key[-6:]))
                 break
             if resp.status_code == 429:

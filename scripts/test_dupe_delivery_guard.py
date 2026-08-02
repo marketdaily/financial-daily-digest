@@ -26,11 +26,13 @@ def check(name, got, want):
         print(f"  ✓ {name}")
 
 
-def run(market, archive_online, env=None):
+def run(market, archive_online, env=None, archive_in_origin=False):
     """在受控 env + 受控存檔狀態下取得 winrig 端裁決。"""
     saved = {k: os.environ.get(k) for k in ("MD_FAILOVER", "MD_FORCE_SEND")}
     orig_archive, orig_push = main._archive_online, main._push_admin_alert
+    orig_origin = main._archive_in_origin
     main._archive_online = lambda m, d: archive_online
+    main._archive_in_origin = lambda m, d: archive_in_origin
     main._push_admin_alert = lambda *a, **k: None
     try:
         for k in saved:
@@ -40,6 +42,7 @@ def run(market, archive_online, env=None):
         return main._local_send_clearance(market, DATE)
     finally:
         main._archive_online, main._push_admin_alert = orig_archive, orig_push
+        main._archive_in_origin = orig_origin
         for k, v in saved.items():
             os.environ.pop(k, None)
             if v is not None:
@@ -53,6 +56,9 @@ check("正常早報(存檔未上線)→ 放行", run("tw", False), True)
 # 事故日:雲端已代打並推了存檔 → winrig 退場
 check("雲端已代打(存檔已上線)→ 擋下", run("us", True), False)
 check("雲端已代打(早報)→ 擋下", run("tw", True), False)
+# 07-31 再犯形狀:晚班沒人 deploy,網站看不到,但雲端已把存檔 push 上 origin → 仍要擋
+check("雲端已代打(僅 origin 可見,網站盲)→ 擋下", run("us", False, archive_in_origin=True), False)
+check("兩訊號皆無 → 放行", run("us", False, archive_in_origin=False), True)
 # 雲端自己跑的那份不受這條閘管(由 _failover_send_clearance 裁決)
 check("MD_FAILOVER=1 不走本閘", run("us", True, {"MD_FAILOVER": "1"}), True)
 # 人工補寄:不可被自己稍早推上去的存檔擋死
@@ -72,6 +78,10 @@ try:
     check("存檔查詢失敗 → 當作未交付(False)", main._archive_online("us", DATE), False)
 finally:
     urllib.request.urlopen = _saved_urlopen
+
+print("\n── _archive_in_origin 語義(git push 即交付;不存在/查不到=False 照寄) ──")
+check("origin 已有該班存檔 → True", main._archive_in_origin("us", "2026-07-31"), True)
+check("origin 沒有的班次 → False", main._archive_in_origin("us", "1999-01-01"), False)
 
 if FAILS:
     print(f"\n✗ {len(FAILS)} 項失敗")
