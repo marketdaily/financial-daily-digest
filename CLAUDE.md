@@ -96,7 +96,7 @@ noise grain、scroll progress bar、page transition wipe、magnetic buttons、cl
 位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
 **完整目錄（每個 skill 一行中文用途）→ 同目錄 `CATALOG.md`；重疊裁決/任務唯一路徑 → `GOVERNANCE.md`（挑 skill 前先查）**
 
-**🏢 公司組織（2026-07-29 老闆拍板）**：整個 Claude 系統=一家公司,老闆=Delvin,9 部門 hub 在記憶庫 `dept_*.md`(中心=dept_ceo_office 董事長室,Obsidian graph 橘色層+《公司組織圖.canvas》);新資產入庫要歸部門;組織變動→更新對外名片 artifact(網址與鐵則見 dept_ceo_office)。品質戰情頁=status.html+quality.json。
+**🏢 公司組織（2026-07-29 老闆拍板）**：整個 Claude 系統=一家公司,老闆=Delvin,10 部門 hub 在記憶庫 `dept_*.md`(08-02 增設 Dropshipping 部)(中心=dept_ceo_office 董事長室,Obsidian graph 橘色層+《公司組織圖.canvas》);新資產入庫要歸部門;組織變動→更新對外名片 artifact(網址與鐵則見 dept_ceo_office)。品質戰情頁=status.html+quality.json。
 
 分類速查（只列名，說明見 CATALOG.md；⚠️=退役或 Mac-only）：
 - **MarketDaily 營運**：workflow（日報pipeline）、site-doctor（全站巡檢必跑）、ui-ux-pro-max（含品牌設計系統）、claude-design、email-marketing-bible、growth-strategy、referral-program、pricing-strategy、landing-page-copy、ab-test-analyzer、sales-funnel-planner、sales-funnel-optimizer、cro（單頁轉換診斷）、onboarding（註冊後活化）、programmatic-seo（規模化SEO頁）、marketing-psychology（行為科學原則庫）、legal-compliance（⚖️法務長:上線前合規審查唯一路徑）
