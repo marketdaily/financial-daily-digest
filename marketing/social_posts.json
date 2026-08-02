@@ -826,7 +826,7 @@
   {
    "id": "eng_article_council_202608",
    "day": 114,
-   "caption": "我們把 MarketDaily 背後的系統寫成技術文章公開了。\n\n每天早晚寄出的日報,背後是 9 個免費模型席位的 council、一個 judge 仲裁、31 項確定性稽核檢查——LLM 永遠沒有翻方向的權力,審不過的信絕不寄出。\n\n75 天 production 實錄,包含三次真實事故的完整解剖(其中一次是防線自己變成事故)。\n\n全文 → https://marketdaily.ai/blog/eng-llm-council-judge-202608?utm_source=social&utm_medium=organic&utm_campaign=eng_article_council\n\n#工程 #LLM #AI #財經日報 #MarketDaily",
+   "caption": "我們把 MarketDaily 背後的系統寫成技術文章公開了。\n\n每天早晚寄出的日報,背後是 9 個免費模型席位的 council、一個 judge 仲裁、30 項確定性稽核檢查——LLM 永遠沒有翻方向的權力,審不過的信絕不寄出。\n\n75 天 production 實錄,包含三次真實事故的完整解剖(其中一次是防線自己變成事故)。\n\n全文 → https://marketdaily.ai/blog/eng-llm-council-judge-202608?utm_source=social&utm_medium=organic&utm_campaign=eng_article_council\n\n#工程 #LLM #AI #財經日報 #MarketDaily",
    "image": "eng_council_202608.jpg",
    "platforms": [
     "instagram",

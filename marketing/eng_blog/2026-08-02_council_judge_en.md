@@ -81,3 +81,5 @@ One more horizontal defense from that family: if the same HIGH check fires for 3
 75 days of the newsletter, 34 days of the council, two sends a day. The point was never "9 models are smarter than one." The point is an architecture where direction is decided by deterministic code, LLMs operate only inside structurally safe boundaries, every output is verified by code that doesn't trust it, and every incident becomes a permanent named check. Reliability in high-stakes LLM systems is not a model property. It's an architecture property.
 
 Next post: a taxonomy of all 31 audit checks and their failure modes — including the full anatomy of the check that caused its own incident.
+
+> **Correction (2026-08-02):** the real number is 30 checks, not 31 — one exists only in a docstring example and can never fire. Full dissection in the next post.

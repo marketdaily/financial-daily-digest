@@ -1,7 +1,7 @@
-# facts_sources — 兩篇稿件所有數字/事實的出處對照表
+# facts_sources — 稿件所有數字/事實的出處對照表
 
 規則(no_fake_numbers 紅線):文章中每個數字必須在此表有一列「數字 → 出處檔案路徑或可重跑指令」。查證不到的數字不准出現在稿件。
-本表涵蓋:`2026-08-02_council_judge_zh.md` 與 `2026-08-02_council_judge_en.md`。
+本表涵蓋:`2026-08-02_council_judge_zh.md` / `_en.md`(第 1 篇)與 `2026-08-06_audit_taxonomy_zh.md` / `_en.md`(第 2 篇,章節見文末)。
 
 ## 時間軸 / 規模
 
@@ -93,3 +93,62 @@
 - 營收 / 金流:未出現。
 - 個股分析與付費掛鉤:未出現(文章不提任何付費方案)。
 - 原任務標題的「跑了一年」:**查證不成立**(git 首 commit 2026-05-19,僅 75 天),依 no_fake_numbers 紅線改為「75 天實錄」,並於兩稿內文明示 council 層自 06-30 起(34 天)。
+
+---
+
+# 第 2 篇:〈Audit 失效模式分類學〉(2026-08-06_audit_taxonomy_zh/en.md)
+
+## 檢查數量與 severity 分布(本篇核心事實)
+
+| 數字/事實 | 出處 |
+|---|---|
+| 真實可觸發檢查 = 30 項 | `grep -c 'fails.append' digest_audit.py` → 30 |
+| grep 數出 31 = 30 + docstring 幽靈 `tldr_has_tw` | `grep -o '"check": "[a-z_0-9]*"' digest_audit.py \| sort -u \| wc -l` → 31;幽靈在 `digest_audit.py:7`(docstring 用法範例,真名是 `tldr_missing_tw`) |
+| 20 項固定 HIGH、6 項固定 MED、2 項 LOW、2 項動態 | `grep -o '"severity": "[a-z]*"' digest_audit.py \| sort \| uniq -c` → high 21/med 7/low 2;其中 `tldr_too_short`(`digest_audit.py:199-200` high↔med)與 `verdict_monoculture`(`digest_audit.py:397-398` med↔low)為動態,各從 high/med 扣 1 |
+| severity 語義:HIGH → sleep(60)+換強模型 retry → 仍敗切 deterministic fallback;MED/LOW 照寄 | `main.py:888-889` docstring、`main.py:913-920`(sleep(60)+prefer_strong)、`main.py:942-949` |
+| 60 秒=等滿一個 TPM 窗口(5s retry 必再撞 429);07-27 八位掉 deterministic 的共犯 | `main.py:914-917` 註解 |
+| fallback 卡刻意不給價位、audit 對 fallback 卡豁免三件套檢查 | `digest_audit.py:218-224` 註解 |
+| battle-row 進場/目標/停損「三件套」 | `digest_audit.py:228`(`card.count("battle-row") < 3`) |
+
+## 各檢查誕生日期(表格與內文引用,全部來自 digest_audit.py 檢查旁註解)
+
+| 數字/事實 | 出處 |
+|---|---|
+| 05-26 holdings_uncovered 創始契約,用戶原話「使用者選擇每一個台股美股都要顯示下一步」 | `digest_audit.py:234-235` 註解;audit 首 commit 2026-05-26(見第 1 篇章節) |
+| 06-10 實質稽核三連:AAPL 預期 EPS 3.60 vs 真實 1.86+「iPhone 15 仍是重點」/四張卡全「即刻分批買進」vs 結論「先觀望等 CPI」/標題「油價反彈 1.10%」內文「反而下跌」 | `digest_audit.py:374-375`、`digest_audit.py:383-384`、`digest_audit.py:416` 註解 |
+| 06-25 「金額高達 XXX 億元」佔位符洩出 | `digest_audit.py:367` 註解 |
+| 07-09 certifi 過期→TPEx SSL 靜默失敗→名稱表全滅→主旨+卡片裸代號寄出 | `digest_audit.py:350-353` 註解 |
+| 07-11 一位訂閱者週末版 TLDR 0 條 bullet(區塊全空)實鍋 | `digest_audit.py:198` 註解(稿內不寫訂閱者名) |
+| 07-15 TW_MORNING_ACTION_RE 假陽性(「9:00開盤」3 字元間隔吃不下)+價格「以1090開盤」誤認時間(驗證者第14案) | `digest_audit.py:18-22` 註解 |
+| 07-22 prompt 指令洩漏:每張卡開頭「白話講『下一步』:台股講…美股講…該做什麼具體動作」 | `digest_audit.py:285-287` 註解 |
+| 07-23 深度塌陷校準:正常 3 日 median 107–197/min≥97/零卡<80;壞日 median 48/min 46/5/7 卡<60;門檻 median<80 或半數<60 | `digest_audit.py:263-266` 註解、`digest_audit.py:279-283` |
+| 信心校準上限 75%,>75=防線破口 | `digest_audit.py:403-408` |
+| 07-21 組合透視混入公版 default_us 觀察清單 10 檔 | `digest_audit.py:491-494` 註解 |
+| 07-24 誤殺:年份(2026)/指數點位(23150)/價位(1085)/縮寫(AI/GDP/CPI/ETF)全被當外來標的,老闆連 2 版被誤殺→備援 | `digest_audit.py:30-36` 註解 |
+| 誤殺根治=真實 universe:台股 ~12k 代號快取+美股名稱庫 | `digest_audit.py:34-36` 註解(「12k 代號」)、`_is_real_ticker`(`digest_audit.py:59-66`) |
+
+## 07-06 undefined_css_class 事故完整 timeline
+
+| 數字/事實 | 出處 |
+|---|---|
+| 06-29 補 16 個 LLM 改名 class 的 CSS+同日新增 undefined_css_class HIGH check | commits「2026-06-29 fix(digest): 補 16 個 LLM 改名 class 的 CSS…」「2026-06-29 feat(digest): 版型守門—audit 加 undefined_css_class high check…」(`git log --date=short`) |
+| 07-06=檢查上線後第一個週一;週一 prompt 只寫「沿用平日 CSS class」沒逐字骨架,平日 prompt 有骨架所以平日沒事 | memory `project_digest_monday_css_incident.md` 根因鏈 1-2 |
+| 12/12 用戶全中;retry 同 prompt 同病;9 位被打成 deterministic fallback | 同上 memory 根因鏈 2;`main.py:84-86` 註解 |
+| admin 彙總告警 07:24 送達(寄完才知道) | 同上 memory 根因鏈 3 |
+| 05:30 preflight 已隨排程遷移靜默死近一個月 | 同上 memory 根因鏈 4 |
+| 修法:premailer 前 `_repair_undefined_classes`(12 個近似名對映+未知 class 移除=視覺 no-op) | `main.py:84-111`;`_CLASS_ALIASES` 12 條對映(`main.py:90-103` 逐行數) |
+| 系統性熔斷:同一 HIGH check 連中 3 位→立即推 admin,趕在整點寄出前;寄送不擋 | `main.py:905-912`;修復 commits 7b9735c+9a622cd(memory 同檔) |
+
+## 軟硬錯分級與 MED 修復層
+
+| 數字/事實 | 出處 |
+|---|---|
+| 07-24 老闆親令「絕對不要再看到閹割版」→ 軟錯={signal_reason_shallow, signal_reason_vague, tldr_too_short} 三項,其餘皆硬錯 | `main.py:866-871`(`_SOFT_HIGH_CHECKS`) |
+| #15 tw_morning_action_missing:07-13/17 實鍋 5 封,MED 不觸發 retry→確定性改寫層根治,regex 兩邊共用 | `main.py:159-168` docstring(「07-13/17 實鍋 5 封」「TW_MORNING_ACTION_RE 兩邊共用」) |
+| #14 us_tonight_action_missing:07-27 起三天 11/7/11 位失分→07-29 鏡射修 | `main.py:209-218` docstring |
+
+## 刻意不寫進第 2 篇的(合規/紅線自查)
+
+- 訂閱者姓名/email:07-11 TLDR 空區塊與 07-22 洩漏案的源註解含用戶名,稿內一律改「一位訂閱者/用戶」。
+- 「31 項」對外口徑:第 1 篇已發布的 31 不改稿,本篇正面更正為 30+1 幽靈並附兩條可重跑指令,標題保留 31 作為敘事鉤。
+- 個股買賣建議、付費方案、營收、key/token:未出現。
