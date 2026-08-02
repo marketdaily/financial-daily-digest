@@ -4,7 +4,7 @@
   "subscribers": 21,
   "digest_clean_days_7d": "4/7",
   "fallback_7d": 22,
-  "social_posts_7d": 31
+  "social_posts_7d": 32
  },
  "digest": {
   "audit": null,
@@ -149,7 +149,7 @@
   "us": null
  },
  "sitescan": {
-  "date": "2026-08-01",
+  "date": "2026-08-02",
   "fails": 0,
   "first_scan_fails": null,
   "fixed_in_place": false
@@ -160,5 +160,5 @@
   "guard_alert_tw": false,
   "guard_alert_us": false
  },
- "generated_utc": "2026-08-01T16:08:01Z"
+ "generated_utc": "2026-08-02T05:38:01Z"
 }
