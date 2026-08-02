@@ -9,6 +9,23 @@ CAL="$BLOG/content_calendar.md"
 PUB="$BLOG/published.log"
 [ -f "$CAL" ] || exit 0
 
+# 自動發布模式(2026-08-02 Delvin「直接寫,不要等我」):有完稿未發布 → claude heavy 照 playbook 全自動上線
+PUBF="$BLOG/published_files.log"
+STAGED=""
+for f in "$BLOG"/*_zh.md; do
+  [ -f "$f" ] || continue
+  grep -qF "$(basename "$f")" "$PUBF" 2>/dev/null || { STAGED="$f"; break; }
+done
+if [ -n "$STAGED" ] && [ "${DRY_RUN:-0}" != "1" ]; then
+  source "$DIR/scripts/lib_cron_runner.sh"
+  cd "$DIR"
+  timeout 30m claude $(claude_model heavy) -p "$(cat "$DIR/scripts/eng_blog_publish_playbook.md")
+
+本次目標完稿:$(basename "$STAGED")。發布成功後必須 echo '$(basename "$STAGED")' >> marketing/eng_blog/published_files.log" \
+    --dangerously-skip-permissions >> ~/.marketdaily-fallback/eng_blog_publish.log 2>&1 || true
+  exit 0
+fi
+
 START=2026-08-03
 WEEK=$(( ( $(date +%s) - $(date -d "$START" +%s) ) / 604800 + 1 ))
 [ "$WEEK" -ge 1 ] || exit 0
@@ -16,12 +33,12 @@ DONE=0; [ -f "$PUB" ] && DONE=$(wc -l < "$PUB")
 
 NEXT_HINT=""
 if [ -f "$PUB" ]; then
-  NEXT_HINT=$(grep -E '^\|' "$CAL" | grep -vE '^\|[- ]+\||週次|Week' | while IFS= read -r line; do
-    title=$(echo "$line" | awk -F'|' '{print $3}' | xargs)
+  NEXT_HINT=$(grep -E '^\|' "$CAL" | grep -vE '^\|[- ]+\||週 |週次|Week' | while IFS= read -r line; do
+    title=$(echo "$line" | awk -F'|' '{print $4}' | xargs)
     [ -n "$title" ] && ! grep -qF "$title" "$PUB" && { echo "$title"; break; }
   done | head -1)
 else
-  NEXT_HINT=$(grep -E '^\|' "$CAL" | grep -vE '^\|[- ]+\||週次|Week' | head -1 | awk -F'|' '{print $3}' | xargs)
+  NEXT_HINT=$(grep -E '^\|' "$CAL" | grep -vE '^\|[- ]+\||週 |週次|Week' | head -1 | awk -F'|' '{print $4}' | xargs)
 fi
 
 MSG="📝 技術文週更 · 第 ${WEEK}/12 週(已發 ${DONE} 篇)
