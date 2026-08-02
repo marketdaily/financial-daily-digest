@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
+<link rel="apple-touch-icon" href="/logo-icon.svg">
+<title>LLM council + judge:一個天天在生產環境寄信的多模型仲裁系統(75 天實錄) | MarketDaily</title>
+<meta name="description" content="MarketDaily 從 2026-05-19 第一個 commit 到今天跑了 75 天、1,800+ 個 commit。這篇講它的核心可靠層:多模型 council + judge 仲裁 + 31 項使用者視角 audit,以及三次真實事故怎麼把這套架構打磨出來的。">
+<meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
+<meta property="og:title" content="LLM council + judge:一個天天在生產環境寄信的多模型仲裁系統(75 天實錄)">
+<meta property="og:description" content="MarketDaily 從 2026-05-19 第一個 commit 到今天跑了 75 天、1,800+ 個 commit。這篇講它的核心可靠層:多模型 council + judge 仲裁 + 31 項使用者視角 audit,以及三次真實事故怎麼把這套架構打磨出來的。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://marketdaily.ai/blog/eng-llm-council-judge-202608">
+<meta property="og:site_name" content="MarketDaily">
+<meta property="og:image" content="https://marketdaily.ai/blog/og/eng-llm-council-judge-202608.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="LLM council + judge:一個天天在生產環境寄信的多模型仲裁系統(75 天實錄)">
+<meta name="twitter:description" content="MarketDaily 從 2026-05-19 第一個 commit 到今天跑了 75 天、1,800+ 個 commit。這篇講它的核心可靠層:多模型 council + judge 仲裁 + 31 項使用者視角 audit,以及三次真實事故怎麼把這套架構打磨出來的。">
+<meta name="twitter:image" content="https://marketdaily.ai/blog/og/eng-llm-council-judge-202608.png">
+<link rel="canonical" href="https://marketdaily.ai/blog/eng-llm-council-judge-202608">
+<link rel="alternate" hreflang="zh-Hant" href="https://marketdaily.ai/blog/eng-llm-council-judge-202608">
+<link rel="alternate" hreflang="en" href="https://marketdaily.ai/blog/eng-llm-council-judge-en-202608">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "LLM council + judge:一個天天在生產環境寄信的多模型仲裁系統(75 天實錄)", "description": "MarketDaily 從 2026-05-19 第一個 commit 到今天跑了 75 天、1,800+ 個 commit。這篇講它的核心可靠層:多模型 council + judge 仲裁 + 31 項使用者視角 audit,以及三次真實事故怎麼把這套架構打磨出來的。", "datePublished": "2026-08-02T10:00:00+08:00", "dateModified": "2026-08-02", "author": {"@type": "Organization", "name": "MarketDaily"}, "publisher": {"@type": "Organization", "name": "MarketDaily", "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://marketdaily.ai/blog/eng-llm-council-judge-202608"}, "image": ["https://marketdaily.ai/blog/og/eng-llm-council-judge-202608.png"]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首頁", "item": "https://marketdaily.ai/"}, {"@type": "ListItem", "position": 2, "name": "財經知識庫", "item": "https://marketdaily.ai/blog/"}, {"@type": "ListItem", "position": 3, "name": "LLM council + judge:一個天天在生產環境寄信的多模型仲裁系統(75 天實錄)"}]}]}</script>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background:#0a0a14; color:#e2e8f0; font-family:'Inter','PingFang TC',sans-serif; line-height:1.75; }
+.wrap { max-width:720px; margin:0 auto; padding:48px 24px 80px; }
+.topnav { position:sticky; top:0; background:rgba(10,10,20,0.85); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.08); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; z-index:10; }
+.topnav a { color:#a5b4fc; text-decoration:none; font-weight:700; }
+.crumb { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; letter-spacing:0.5px; text-transform:uppercase; }
+h1 { font-size:36px; font-weight:900; color:#fff; margin:6px 0 24px; letter-spacing:-0.5px; }
+h2 { font-size:24px; font-weight:800; color:#fff; margin:36px 0 14px; }
+h3 { font-size:18px; font-weight:700; color:#c7d2fe; margin:24px 0 10px; }
+p { font-size:16px; color:#cbd5e1; margin:0 0 16px; }
+ul, ol { margin:12px 0 20px 24px; }
+li { font-size:16px; color:#cbd5e1; margin:8px 0; }
+strong { color:#fbbf24; font-weight:700; }
+blockquote { border-left:3px solid rgba(99,102,241,0.55); background:rgba(99,102,241,0.07); border-radius:0 10px 10px 0; padding:14px 18px; margin:0 0 20px; }
+blockquote p { margin:0; color:#c7d2fe; font-size:15px; }
+pre { background:#12121f; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:18px 20px; margin:0 0 20px; overflow-x:auto; font-family:'SF Mono','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace; font-size:13.5px; line-height:1.6; color:#cbd5e1; }
+pre code { background:none; border:none; padding:0; font-size:inherit; color:inherit; }
+code { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.25); border-radius:6px; padding:1px 6px; font-family:'SF Mono','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace; font-size:14px; color:#c7d2fe; }
+table { width:100%; border-collapse:collapse; margin:0 0 20px; font-size:14.5px; }
+th, td { border:1px solid rgba(255,255,255,0.1); padding:8px 12px; text-align:left; color:#cbd5e1; }
+th { background:#12121f; color:#fff; font-weight:700; }
+.cta { background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.15)); border:1px solid rgba(99,102,241,0.35); border-radius:14px; padding:24px; margin:40px 0 0; text-align:center; }
+.cta a { display:inline-block; margin-top:14px; padding:14px 28px; background:linear-gradient(135deg,#6366f1,#a855f7); color:#fff; font-weight:800; text-decoration:none; border-radius:10px; }
+.disc { font-size:12px; color:rgba(255,255,255,0.4); margin-top:32px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a href="/">MarketDaily ←</a>
+  <a href="/blog/index.html">所有文章</a>
+</div>
+<article class="wrap">
+  <div class="crumb">MARKETDAILY · 工程</div>
+  <h1>LLM council + judge:一個天天在生產環境寄信的多模型仲裁系統(75 天實錄)</h1>
+
+<blockquote><p>MarketDaily 是一個每日財經 email 日報:訂閱者設定自己的持股,系統每天早晚兩班生成個人化 HTML 日報寄出。從 2026-05-19 第一個 commit 到今天跑了 75 天、1,800+ 個 commit。這篇講它的核心可靠層:<strong>多模型 council + judge 仲裁 + 31 項使用者視角 audit</strong>,以及三次真實事故怎麼把這套架構打磨出來的。</p></blockquote>
+
+<h2>為什麼不是「一個模型 + fallback」</h2>
+
+<p>一開始的架構很普通:主模型掛了換備援模型。問題是財經內容的失敗模式不是「掛掉」,而是<strong>安靜地變爛</strong>——配額壓力下模型回一段看起來像日報的弱內容,沒有 exception,沒有 error code,用戶隔天早上直接收到爛信。</p>
+
+<p>所以這套系統的設計哲學是三層分離:</p>
+
+<ol>
+<li><strong>council(委員會)</strong>:多個異質模型獨立表態,分歧本身是訊號</li>
+<li><strong>judge(裁判)</strong>:綜合共識與分歧,產出最終論點</li>
+<li><strong>audit(稽核)</strong>:確定性程式碼檢查最終 HTML,不信任任何 LLM 的自我報告</li>
+</ol>
+
+<pre>每支股票的真實市場數據
+     │
+     ▼
+結構 prior:價 vs MA20 vs MA50(方向由程式鎖死)
+     │
+     ▼
+Council:9 個免費席位
+(Gemini x2 / Groq / 本地 GPU / CF Workers AI x2 /
+ OpenRouter / Cerebras / OpenAI)
+     │  quorum &gt;= 2 席才成會
+     ▼
+Judge 裁判
+(免費鏈:Gemini lite → Groq,全敗 → 取最高信念席位)
+     │
+     ▼
+卡片生成 LLM 鏈
+     │
+     ▼
+audit_digest:31 項確定性檢查
+     │
+     ├─ HIGH fail ──► 等 60s + 換更強模型 retry
+     │                     │ 仍 HIGH
+     │                     ▼
+     │              deterministic fallback
+     │              (純程式組裝,絕不寄壞信)
+     │                     │
+     ▼ pass                │
+   整點寄出 ◄──────────────┘</pre>
+
+<h2>Council:分歧是一等公民</h2>
+
+<p>每支股票一輪只跑一次(跨用戶共用快取)。每個席位拿到相同的真實數據 + 一個<strong>結構硬約束</strong>:方向由 <code>價 vs MA20 vs MA50</code> 的確定性規則鎖死,席位只能在「論點/反向風險/結構容許範圍內的傾向」這層發揮。席位若違反方向(多頭結構喊 short),程式直接把它降為 neutral——<strong>LLM 永遠沒有翻方向的權力</strong>。</p>
+
+<pre><code># 席位輸出被強制收斂(機制真實,程式碼改寫)
+if lean not in ("long", "short", "neutral"):
+    lean = "neutral"
+if prior == "bull" and lean == "short":
+    lean = "neutral"          # 死防線:席位不可翻方向
+
+# 分歧度是輸出的一部分,不是要消除的噪音
+uniq = set(o["lean"] for o in opinions)
+dissent = 0 if len(uniq) == 1 else (2 if {"long", "short"} &lt;= uniq else 1)</code></pre>
+
+<p>分歧度(0/1/2)會一路傳到最終卡片:標「分歧大」的股票,下游 prompt 被強制要求保守語氣,信心分數再往下壓。信心顯示另有歷史校準上限 75%,audit 抓到 &gt;75% 就視為防線破口。</p>
+
+<p><strong>席位選型的真實邏輯是配額隔離,不是模型評測分數。</strong> council 於 06-30 上線(此前正是文章開頭批評的那種「單模型+fallback」),設定檔裡有 9 個免費席位、橫跨 7 家供應商——沒設 key 的席位自動跳過,常態約 5 把互相獨立的聲音。刻意全走免費層:Gemini 席位用 lite/2.0(把 2.5-flash 的配額留給用戶可見的卡片生成)、Groq 席位跟卡片主鏈用不同模型(同一支模型的 200,000 TPD 日額度會被 council 吃掉)、加一張本地 GPU(零配額零 429,全雲端斷線時唯一活口)。有一支模型(qwen3.6-27b)會把 prompt 給的 385.25 改寫成 385.00——捏造價位精度,所以它只准進 council(輸出是 JSON 觀點、不含價位),永遠不准碰生卡鏈。</p>
+
+<h2>Judge:綜合,但有退路</h2>
+
+<p>裁判拿到全部席位意見的 JSON,任務是「綜合共識與分歧,不要只抄一家」。裁判鏈本身也有 fallback:Gemini lite → Groq → 兩者全敗就直接取<strong>信念分數最高的席位</strong>當結論。quorum 不足 2 席就不成會,該股走原單模型路徑。整條 council 是 fail-safe 的:任何失敗都回傳部分結果,<strong>絕不擋寄信</strong>——死線是「絕不缺信」,品質防線是「絕不寄壞信」,兩條線分開設計。</p>
+
+<h2>Audit:寧可誤殺,不可放行</h2>
+
+<p><code>digest_audit.py</code> 有 31 項獨立命名的檢查,每一項都對應一次「用戶曾經或將會生氣」的場景:時序紀律(早上 7 點不准寫「今天台股已漲」——9 點才開盤)、持股覆蓋(用戶選的每支股票都要有操作卡)、編造偵測(佔位符 XXX、假網址、無來源的預期 EPS)、prompt 指令洩漏(把「台股講…美股講…」這種給 LLM 的說明抄進成品)、輸出截斷、未定義 CSS class。</p>
+
+<p>HIGH fail 的處理鏈:<strong>等滿 60 秒</strong>(免費層是 per-minute token 限制,5 秒後 retry 必然在同一個窗口再撞 429)→ 強制換更強模型重生 → 仍 fail 就切 deterministic fallback(純程式組裝、刻意不含價位)。</p>
+
+<h2>三次事故,三層新防線</h2>
+
+<p><strong>429 事故(06-11)</strong>:Gemini 日配額耗盡,每次呼叫的 429 退避白燒約 100 秒,日報遲到 5 小時。修法:單模型連續兩次 429 = 判定配額死亡,整輪熔斷跳過。後來 council 席位也加了同款熔斷:配額耗盡/沒 key/連敗 3 次就本輪停用,402(帳單牆)首刀斃命。</p>
+
+<p><strong>CSS class 事故(06-29 / 07-06)</strong>:LLM 會把「沿用既有 CSS class」自由發揮成近似名(<code>news-title</code> vs <code>news-headline</code>),樣板沒這些規則,整個區塊裸奔。06-29 加了 <code>undefined_css_class</code> HIGH 檢查,結果 07-06 週一版(prompt 沒給逐字骨架)12/12 用戶全中,retry 同 prompt 同病,9 位被打成備援版——<strong>防線自己變成了事故</strong>。真正的修法是在檢查之前加一層確定性修復:已知近似名對映回正確 class,未知 class 直接拿掉(CSS 本來就沒規則,拿掉是視覺 no-op)。教訓:對 LLM 說「沿用既有 class」無效,逐字骨架才是規格;新增 HIGH 檢查前先想「如果全員都中會怎樣」。</p>
+
+<p><strong>深度塌陷事故(07-23)</strong>:免費配額全熔斷,卡片掉到弱模型,分析理由從 129–165 字塌到 48–64 字——<strong>帶價位、格式全對,所以全部檢查放行</strong>,是用戶(老闆本人)抓到的。修法:用 3 天正常日(median 107–197 字)和壞日(median 48 字)的真實資料校準出 <code>signal_reason_shallow</code> 檢查:median &lt;80 字判定系統性塌陷。這條的教訓最值錢:audit 檢查格式容易,檢查「深度」必須先有正常日的統計基線。</p>
+
+<p>另一條系統性熔斷同場加映:同一個 HIGH 檢查在一次生成中連中 3 位用戶,立刻推播管理員——per-user 的 retry→fallback 鏈遇到系統性 bug 會「安靜地全員降級」,必須有跨用戶的橫向視角。</p>
+
+<h2>值不值得?</h2>
+
+<p>日報 75 天、council 34 天、每天兩班、31 項檢查、9 個席位。這套東西的本質不是「多模型比單模型聰明」,而是:<strong>方向由確定性程式鎖死、LLM 只在安全範圍內發揮、每一層輸出都被不信任地驗證、每次事故都變成一條新的確定性檢查</strong>。LLM 在高風險場景的可靠性不是模型問題,是架構問題。</p>
+
+<p>下一篇:31 項 audit 檢查的失效模式分類學——包含防線自己引發事故的完整解剖。</p>
+  <div style="margin:32px 0 0;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px;">English version</p>
+    <ul style="margin:0;padding:0;list-style:none;">
+    <li style="margin:8px 0;"><a href="eng-llm-council-judge-en-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">I run a 9-model LLM council with a judge to write a daily financial newsletter. Here's what actually breaks.</a></li>
+    </ul>
+  </div>
+  <div class="cta">
+    <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">MarketDaily 每天早晚用這套系統寄出日報,目前全功能限時免費——現在訂閱的早鳥用戶,未來恢復收費後永久保留免費使用權</p>
+    <a href="https://marketdaily.ai/?utm_source=blog&utm_medium=eng_article&utm_campaign=council_judge">免費訂閱 →</a>
+  </div>
+  <p class="disc">本文僅供資訊整理,非投資建議。投資有風險,請評估自身狀況。資料更新:2026-08-02</p>
+</article>
+<!-- md-attr-beacon -->
+<script>
+(function(){
+  try {
+    var WORKER_URL = "https://api.marketdaily.ai";
+    var p = new URL(window.location.href).searchParams;
+    var real = p.get("utm_source");
+    var utm = {
+      utm_source:   real || "blog",
+      utm_medium:   p.get("utm_medium")   || (real ? null : "organic"),
+      utm_campaign: p.get("utm_campaign") || null,
+      utm_term:     p.get("utm_term")     || null,
+      utm_content:  p.get("utm_content")  || "eng-llm-council-judge-202608",
+    };
+    if (real) {
+      var payload = { utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, ts: Date.now() };
+      try { sessionStorage.setItem("md-attr", JSON.stringify(payload)); localStorage.setItem("md-attr-first", JSON.stringify(payload)); } catch (e) {}
+    }
+    if (!navigator.webdriver && !sessionStorage.getItem("md-visit-id")) {
+      fetch(WORKER_URL + "/track/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, utm_term: utm.utm_term, utm_content: utm.utm_content, ts: Date.now() }),
+      })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){ if (d && d.visit_id) { try { sessionStorage.setItem("md-visit-id", d.visit_id); } catch (e) {} } })
+        .catch(function(){});
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
