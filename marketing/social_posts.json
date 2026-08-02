@@ -1,1211 +1,1223 @@
 {
-  "_comment": "MarketDaily v2 organic post — 2026-05-26 Marketing Agents 4 段串聯產出,15 篇 (avg 86/100, 0 法規 flag)。圖卡走 social_cards.py SVG 模板 (marketing/make_v2_cards.py),已轉 JPEG 到 docs/social/。X 平台跳過 (token 已停)。",
-  "posts": [
-    {
-      "id": "explainer_v01_30sec",
-      "day": 1,
-      "image": "explainer_v01_30sec.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "30 秒讀完一封財經早報, 然後去上班。\n\n— 你的美股 + 台股, AI 寫成中文\n— 假消息過濾掉\n— 重點 + 操作思考, 不是 80 則無結論的快訊\n\n台股 07:00、美股 20:00 在你 inbox。先免費讀一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=explainer_v01_30sec\n\n#美股 #台股 #投資理財 #財經日報 #理財"
-    },
-    {
-      "id": "explainer_v02_only_yours",
-      "day": 2,
-      "image": "explainer_v02_only_yours.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "市場每天 1000 條財經新聞。\n你需要的, 大概只有 5 條 — 跟你的持股有關的那 5 條。\n\nMarketDaily 做的就是這件事:你設定持股, AI 每天早上挑出跟你有關的, 中文寫給你。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=explainer_v02_only_yours\n\n#個人化 #美股 #台股 #投資理財 #財經"
-    },
-    {
-      "id": "problem_v01_time_steal",
-      "day": 3,
-      "image": "problem_v01_time_steal.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "你早上的 1 小時, 被多少則沒結論的新聞偷走?\n\nFed 講話、TSMC 漲跌、AI 又一輪、地緣政治、誰賣超誰買超…\n看完還是不知道:那, 我手上的股票呢?\n\nMarketDaily 把這 1 小時壓縮成 30 秒。中文寫, AI 過濾, 只給跟你持股有關的。\n\n試一份明早就到: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=problem_v01_time_steal\n\n#財經日報 #投資理財 #美股 #台股 #媒體識讀"
-    },
-    {
-      "id": "problem_v02_fake_news",
-      "day": 4,
-      "image": "problem_v02_fake_news.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "假新聞不是最危險的。\n\n最危險的是你看了 30 篇, 還是不知道哪些是真的、哪些跟你的股票有關。\n\nMarketDaily 每天從多家可信媒體交叉比對, AI 過濾掉雜訊, 中文寫成 30 秒可讀的早報。\n\n台股 07:00、美股 20:00,inbox 見: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=problem_v02_fake_news\n\n#假新聞 #媒體識讀 #財經日報 #投資 #美股 #台股"
-    },
-    {
-      "id": "proof_v01_track_record",
-      "day": 5,
-      "image": "proof_v01_track_record.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "大部分財經頻道只給你「賺到」的案例。\n\n我們做了一個公開的戰績頁:每天看多 / 看空 / 觀望, 後續對錯都列。看對的會貼出來, 看錯的也會。\n\n投資不是抽卡, 是要看樣本累積夠不夠誠實。\n\n戰績頁長這樣 → https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=proof_v01_track_record\n\n#戰績公開 #投資 #財經日報 #美股 #台股 #透明"
-    },
-    {
-      "id": "proof_v02_editor_promise",
-      "day": 6,
-      "image": "proof_v02_editor_promise.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "MarketDaily 編輯五條紀律:\n\n1. 不收業配\n2. 日報提及的個股, 編輯不持有 (避免利益衝突)\n3. 不喊單 (給你思考材料, 不是當你老師)\n4. 看錯了會列出來 (戰績頁公開)\n5. 永遠中文寫 (英文新聞 AI 翻好給你)\n\n大部分財經內容做不到第 1, 4。我們把這五條當底線。\n\n看實際早報: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=proof_v02_editor_promise\n\n#編輯紀律 #財經 #投資 #媒體識讀 #透明"
-    },
-    {
-      "id": "founder_v01_why_built",
-      "day": 7,
-      "image": "founder_v01_why_built.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "我是 Delvin, MarketDaily 創辦人。\n\n做這個的原因簡單:我自己持股 (美股 + 台股), 每天早上要花 1 小時掃新聞, 還是常常漏掉跟我的股票有關的東西。\n\n所以我寫了一個 AI, 每天台股早上 7 點、美股晚上 8 點,把跟我持股有關的事整理成 30 秒可讀的中文摘要。\n\n後來我發現朋友也在用。然後就開了讓你也能訂。\n\n想看一份長怎樣 → https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=founder_v01_why_built\n\n#創辦人 #財經日報 #個人化 #投資"
-    },
-    {
-      "id": "founder_v02_not_a_teacher",
-      "day": 8,
-      "image": "founder_v02_not_a_teacher.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "「投資老師」這個詞我聽到就警覺。\n\n我做 MarketDaily 不是要教你怎麼買, 而是把我自己每天早上會做的「讀新聞 → 整理 → 想我的持股」這件事自動化, 然後分享出來。\n\n你做決定。我給原料。\n\n這也是為什麼戰績頁公開、不收業配、日報提及的個股編輯不持有 — 我講錯了你可以馬上驗證。\n\nhttps://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=founder_v02_not_a_teacher\n\n#財經 #投資 #媒體識讀 #獨立媒體"
-    },
-    {
-      "id": "edu_v01_signal_noise",
-      "day": 9,
-      "image": "edu_v01_signal_noise.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "投資的真功夫, 不是「知道更多」, 是「過濾更少」。\n\n資訊永遠夠多, 你的注意力才稀缺。\n\nMarketDaily 的工作就是幫你做 80% 的過濾 — AI 跨多家媒體比對、去掉廣告稿和點擊餌、只留下對你持股可能有影響的。\n\n剩下 20% 留給你做判斷。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=edu_v01_signal_noise\n\n#投資思維 #媒體識讀 #財經 #理財"
-    },
-    {
-      "id": "edu_v02_market_vs_yours",
-      "day": 10,
-      "image": "edu_v02_market_vs_yours.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "市場分析 ≠ 你的股票分析。\n\n大盤漲 1%, 你的持股可能跌 3%。\nFed 升息對你影響大不大, 取決於你持有什麼。\n\n大部分財經內容只告訴你大盤怎麼了。MarketDaily 設計成相反的:你設定持股, 它每天告訴你「對你」怎麼了。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=edu_v02_market_vs_yours\n\n#個人化 #投資 #財經 #媒體識讀"
-    },
-    {
-      "id": "vs_v01_vs_local",
-      "day": 11,
-      "image": "vs_v01_vs_local.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "你早上追財經的選項 (台灣散戶版):\n\n→ 鉅亨網 / 經濟日報: 內容夠多, 但廣告滿版 + 沒個人化, 要自己挑\n→ Yahoo 股市 / 三竹股市: 看盤即時, 但沒人幫你寫摘要\n→ 滑社群: 免費, 但要自己過濾喊單和業配\n→ MarketDaily: 中文 + AI 過濾 + 只給跟你持股有關的, 30 秒讀完\n\n看 MarketDaily 長怎樣 → https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=vs_v01_vs_local\n\n#財經 #美股 #台股 #投資 #理財"
-    },
-    {
-      "id": "vs_v02_vs_chatgpt",
-      "day": 12,
-      "image": "vs_v02_vs_chatgpt.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "用 ChatGPT 查財經?\n\n問題 1: 你要每天記得去問\n問題 2: 它可能引用過時資料\n問題 3: 它不知道你持有什麼\n\nMarketDaily 是相反設計:\n→ 不用你問, 台股 07:00、美股 20:00 自己到 inbox\n→ 每天當天的新聞 + 標明來源\n→ 知道你的持股 (你設定過), 只給有關的\n\n看一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=vs_v02_vs_chatgpt\n\n#ChatGPT #AI #財經 #投資 #個人化"
-    },
-    {
-      "id": "habit_v01_weekly",
-      "day": 13,
-      "image": "habit_v01_weekly.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "MarketDaily 的節奏:\n\n→ 台股 07:00、美股 20:00 寄出(週一到週六)\n→ 週六是「本週回顧」版, 不是當天新聞\n→ 週日休息 (你也該休息)\n\n設計理由:盤前讀完, 開盤前你已經知道今天的故事。週末不打擾。\n\n從下一封早報開始: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=habit_v01_weekly\n\n#財經日報 #早起 #投資理財 #習慣"
-    },
-    {
-      "id": "explainer_v03_inbox_friend",
-      "day": 14,
-      "image": "explainer_v03_inbox_friend.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "MarketDaily 的寫法不是新聞稿, 是「朋友傳給你的早報」。\n\n中文。口語。\n你的股票漲跌 + 為什麼 + 你今天可能要注意什麼。\n沒有「投資人應審慎評估」這種廢話。\n\n試一份, 看寫法對不對你的口味: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=explainer_v03_inbox_friend\n\n#財經日報 #投資 #個人化 #中文"
-    },
-    {
-      "id": "faq_v01_who_for",
-      "day": 15,
-      "image": "faq_v01_who_for.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "MarketDaily 適合你嗎?\n\n✅ 適合: 持有美股或台股 / 上班族 / 想知道你持股的動態 / 不想花 1 小時掃新聞\n❌ 不適合: 完全不投資 / 純當沖技術派 / 想要喊單老師 (我們不喊單)\n\n如果上面 ✅ 你中了 2 個以上, 試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=faq_v01_who_for\n\n#財經日報 #投資 #美股 #台股 #理財"
-    },
-    {
-      "id": "dual_schedule_v01",
-      "caption": "美股開盤你在睡, 台股開盤你在忙。\n\nMarketDaily 一天兩班, 都在盤前:\n— 台股 07:00, 開盤前先讀\n— 美股 20:00, 美股盤前先讀\n\n只給跟你持股有關的, AI 中文寫好。免費讀一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=dual_schedule_v01\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
-      "image": "dual_schedule_v01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 16
-    },
-    {
-      "id": "brand_v01_no_noise",
-      "caption": "我們長得不像市面上的財經內容。\n\n沒有喊單老師, 沒有業配, 沒有 80 則沒結論的快訊洗版。\n\nAI 跨多家可信媒體比對, 過濾雜訊, 只留下對你持股可能有影響的 —— 中文寫成 30 秒可讀。\n\nNO NOISE, JUST SIGNAL。試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=brand_v01_no_noise\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
-      "image": "brand_v01_no_noise.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 17
-    },
-    {
-      "id": "pain_v01_overnight",
-      "caption": "美股的大事, 大多在你睡覺的時候發生。\n\n早上醒來帳戶已經變了, 你卻不知道昨晚到底發生什麼。\n\nMarketDaily 晚上 20:00 在美股盤前先幫你講清楚, 早上 07:00 再補台股 —— 兩邊盤前你都先就位。\n\n看一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=pain_v01_overnight\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
-      "image": "pain_v01_overnight.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 18
-    },
-    {
-      "id": "proof_v01_open_record",
-      "caption": "大部分財經頻道只給你「賺到」的案例。\n\n我們做了一個公開的戰績頁:每天的看多 / 看空 / 觀望, 後續對錯都記下來。看對的貼出來, 看錯的也是。\n\n投資不是抽卡, 是看樣本累積夠不夠誠實。聲稱 100% 準的, 那才是假的。\n\n戰績頁長這樣: https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=proof_v01_open_record\n\n#戰績公開 #投資 #財經日報 #美股 #台股",
-      "image": "proof_v01_open_record.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 19
-    },
-    {
-      "id": "personalization_v01",
-      "caption": "市場每天上千條財經新聞。你真正需要的, 大概只有跟你持股有關的那幾條。\n\nMarketDaily 做的就是這件事:你設定持有的美股 + 台股, AI 每天早晚挑出跟你有關的, 中文寫給你。\n\n其他的, 它幫你過濾掉。試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=personalization_v01\n\n#個人化 #美股 #台股 #投資理財 #財經",
-      "image": "personalization_v01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 20
-    },
-    {
-      "id": "ai_human_v01",
-      "caption": "MarketDaily 的寫法不是新聞稿, 是「朋友傳給你的早報」。\n\n不是「投資人應審慎評估」這種廢話, 而是:你的台積電昨晚發生什麼、為什麼、今天可能要注意什麼。\n\n中文、口語、給你思考材料。試一份看對不對你口味: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=ai_human_v01\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
-      "image": "ai_human_v01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 22
-    },
-    {
-      "id": "weekend_v01_recap",
-      "caption": "MarketDaily 的節奏:\n\n— 平日盤前, 台股 07:00、美股 20:00 各一封\n— 週六早上是「本週回顧 + 下週重點」特別版\n— 週日休息 (你也該休息)\n\n盤前讀完, 開盤前你已經知道今天的故事。週末不打擾。從下一封開始: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=weekend_v01_recap\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
-      "image": "weekend_v01_recap.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 23
-    },
-    {
-      "id": "usecase_v01_busy",
-      "caption": "MarketDaily 適合你嗎?\n\n✅ 持有美股或台股\n✅ 上班 / 上課 / 創業, 很忙\n✅ 想知道自己持股的動態\n✅ 不想每天花一小時掃新聞\n\n中了 2 個以上, 試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=usecase_v01_busy\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
-      "image": "usecase_v01_busy.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 24
-    },
-    {
-      "id": "editor_v01_discipline",
-      "caption": "MarketDaily 的編輯底線:\n\n1. 不收業配\n2. 日報提及的個股, 編輯不持有 (避免利益衝突)\n3. 不喊單 (給你思考材料, 不當你老師)\n4. 看錯了會列出來 (戰績頁公開)\n5. 永遠中文寫 (英文新聞 AI 翻好給你)\n\n我們把這五條當底線。看實際日報: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=editor_v01_discipline\n\n#編輯紀律 #媒體識讀 #財經 #投資 #台股",
-      "image": "editor_v01_discipline.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 25
-    },
-    {
-      "id": "vs_chatgpt_v02",
-      "caption": "用 ChatGPT 查財經?\n\n— 你要每天記得去問\n— 它可能引用過時資料\n— 它不知道你持有什麼\n\nMarketDaily 是相反設計:不用你問, 台股 07:00、美股 20:00 自己到 inbox, 標明來源, 只給跟你持股有關的。\n\n看一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=vs_chatgpt_v02\n\n#ChatGPT #AI #美股 #台股 #財經日報",
-      "image": "vs_chatgpt_v02.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 26
-    },
-    {
-      "id": "signal_noise_v02",
-      "caption": "投資的真功夫, 不是「知道更多」, 是「過濾更少」。\n\n資訊永遠夠多, 你的注意力才稀缺。\n\nMarketDaily 幫你做掉 80% 的過濾 —— AI 跨多家媒體比對、去掉廣告稿和點擊餌、只留對你持股可能有影響的。剩下 20% 留給你判斷。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=signal_noise_v02\n\n#投資思維 #媒體識讀 #財經 #理財 #台股",
-      "image": "signal_noise_v02.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "day": 27
-    },
-    {
-      "id": "v3_noise_filter_01",
-      "day": 28,
-      "image": "v3_noise_filter_01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "別的看盤 App 比誰報價更齊、圖表更多、通知更響。\nMarketDaily 反過來做:把每天上千條財經新聞, 刪到只剩跟你有關的重點。\n\nAI 先過濾假消息, 再幫你整理成 30 秒讀完的中文早報 —— 美股 + 台股, 附上該想的操作方向, 不是 80 則沒結論的快訊。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#美股 #台股 #投資理財 #財經早報 #理財"
-    },
-    {
-      "id": "v3_time_30sec_01",
-      "day": 29,
-      "image": "v3_time_30sec_01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "早上通勤那 30 秒, 夠讀完一份財經早報了。\n不用滑 20 個新聞 App、不用一支一支查你手上的股票。\n\nMarketDaily 幫你把美股 + 台股整理成一封中文早報:重點、風險、可以想的操作方向, 一次到位。\n台股 07:00、美股 20:00, 準時送進你的 inbox。\n\n免費試一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經早報 #美股 #台股 #通勤 #投資"
-    },
-    {
-      "id": "v3_personalized_01",
-      "day": 30,
-      "image": "v3_personalized_01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "市場每天上千條新聞, 真正跟你有關的可能只有 5 條。\n問題是 —— 哪 5 條?\n\nMarketDaily 讓你設定自己的持股, AI 每天早上只挑跟你有關的那幾條, 中文寫給你看。\n不是泛泛的大盤, 是你的美股 + 台股。\n\n設定你的持股, 先讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#個人化投資 #美股 #台股 #財經 #理財"
-    },
-    {
-      "id": "v3_bilingual_niche_01",
-      "day": 31,
-      "image": "v3_bilingual_niche_01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "如果你是「人在台灣、手上有美股」的那種投資人 —— 這封早報是寫給你的。\n\n台股看得懂, 美股卻常常隔一層英文和時差。等你早上醒來, 美股早就收盤, 新聞還是一堆英文標題。\n\nMarketDaily 把美股 + 台股都用中文整理好:美股早報 20:00、台股早報 07:00, 兩邊都不漏。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#美股 #台股 #海外投資 #財經早報 #中文"
-    },
-    {
-      "id": "v3_conclusion_01",
-      "day": 32,
-      "image": "v3_conclusion_01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "你不缺新聞, 你缺的是「所以呢?」\n\nFed 講話、台積電又漲、AI 再一輪、誰買超誰賣超…… 看完 80 則, 還是不知道:那我手上的股票, 今天該怎麼想?\n\nMarketDaily 每天只給你消化過的重點 + 該想的操作方向, 不是把快訊倒給你自己拼。\n\n30 秒看懂, 先讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經 #投資理財 #美股 #台股 #早報"
-    },
-    {
-      "id": "v3_track_record_01",
-      "day": 33,
-      "image": "v3_track_record_01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "財經內容最怕一件事:講得頭頭是道, 但沒人回頭對帳。\n\nMarketDaily 的每日方向判斷會留下紀錄, 戰績公開可查 —— 對的錯的都在頁面上, 自己去看, 不用聽我們一張嘴。\n\n先免費讀一份, 順便看看戰績頁 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#投資理財 #財經 #美股 #台股 #透明"
-    },
-    {
-      "id": "v3_last_to_know_01",
-      "day": 34,
-      "image": "v3_last_to_know_01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "重大新聞發生的時候, 你通常是第幾個知道的?\n\n如果答案是「最後一個」, 那多半是因為你在等自己有空滑新聞。\n\nMarketDaily 幫你顧著:美股 + 台股的關鍵消息, AI 過濾掉雜訊和假消息後, 整理成中文早報準時送到, 重大新聞也會即時推播提醒你——這項功能對全體用戶免費且相同, 不因訂閱而有差異。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#美股 #台股 #財經 #即時 #投資"
-    },
-    {
-      "id": "v3_schedule_01",
-      "day": 36,
-      "image": "v3_schedule_01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "好的資訊習慣, 是不用「特別安排時間」的。\n\n台股早報 07:00 —— 開盤前配早餐讀完。\n美股早報 20:00 —— 晚上收心的時候看一眼。\n\nMarketDaily 卡在你本來就會停下來的兩個時間點, 美股 + 台股中文整理好, 你只要讀。\n\n免費試一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經早報 #美股 #台股 #投資日常 #理財"
-    },
-    {
-      "id": "adcreative_2026-07-09_frameworks",
-      "day": 65,
-      "images": [
-        "frameworks_carousel_01.png",
-        "frameworks_carousel_02.png",
-        "frameworks_carousel_03.png",
-        "frameworks_carousel_04.png",
-        "frameworks_carousel_05.png",
-        "frameworks_carousel_06.png",
-        "frameworks_carousel_07.png",
-        "frameworks_carousel_08.png",
-        "frameworks_carousel_09.png",
-        "frameworks_carousel_10.png"
-      ],
-      "platforms": [
-        "instagram"
-      ],
-      "caption": "👀 很多人問 AI:「這支股票好不好?」\n\n問題不在 AI,在流程。單一 AI 憑印象回答,再厲害的角色扮演都只是演戲。\n\nMarketDaily 的每日日報,背後是 8 個真的在跑的分析框架:\n\n1️⃣ AI 委員會——多個模型互相辯論挑戰,不是一言堂\n2️⃣ 先算數學——歷史統計先給基率,AI 的信心經過校準\n3️⃣ 餵真實數據——即時行情+財報直接進管線,不憑 AI 記憶\n4️⃣ 關鍵價位來自真實技術關卡,不是順口編一個\n5️⃣ 休市偵測——不把舊收盤當今天的行情\n6️⃣ 多層稽核——寄出前逐項檢查,異常寧可攔下\n7️⃣ 戰績公開對帳——每天的判斷留檔,對錯自己查\n8️⃣ 產業鏈追蹤——影響路徑具體到公司\n\n往右滑,一張一個框架 👉\n\n目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n免費訂閱 → https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=frameworks_carousel\n\n#財經日報 #台股 #美股 #投資理財 #AI"
-    },
-    {
-      "id": "v3_ai_assistant_01",
-      "day": 37,
-      "image": "v3_ai_assistant_01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "讀完早報還有問題, 可以直接問。\n\nMarketDaily 的 AI 助手支援雙向對話 —— 「這則新聞對我的持股影響大嗎?」「這兩支怎麼比?」你問, 它用你的持股脈絡回答, 每天 30 則, 免費版就有。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#AI投資 #美股 #台股 #財經 #理財"
-    },
-    {
-      "id": "v3_weekend_rest_01",
-      "day": 39,
-      "image": "v3_weekend_rest_01.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "我們的早報, 週末不吵你。\n\n市場休市的時候, 你的手機不需要再多一則推播。MarketDaily 跟著開盤節奏走:有盤的日子, 美股 + 台股中文早報準時送到; 沒盤的日子, 讓你好好休息。\n\n去雜訊, 也包含「不製造雜訊」。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經早報 #美股 #台股 #投資 #生活"
-    },
-    {
-      "id": "win_2026-06-25_NVDA_sell",
-      "day": 40,
-      "image": "win_2026-06-25_NVDA_sell.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「避開」比「追上」更重要。\n\n2026-06-25 輝達 Nvidia(NVDA):MarketDaily 當時建議「賣出/避開」,5 個交易日後下跌 0.46%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-25_NVDA_sell\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-17_MSFT_sell",
-      "day": 41,
-      "image": "win_2026-06-17_MSFT_sell.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「避開」比「追上」更重要。\n\n2026-06-17 微軟 Microsoft(MSFT):MarketDaily 當時建議「賣出/避開」,5 個交易日後下跌 6.88%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-17_MSFT_sell\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-15_TSLA_wait",
-      "day": 42,
-      "image": "win_2026-06-15_TSLA_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-15 特斯拉 Tesla(TSLA):MarketDaily 當時建議「觀望」,5 個交易日後下跌 7.18%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-15_TSLA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-11_MSFT_wait",
-      "day": 43,
-      "image": "win_2026-06-11_MSFT_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-11 微軟 Microsoft(MSFT):MarketDaily 當時建議「觀望」,5 個交易日後下跌 2.80%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-11_MSFT_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-10_TSLA_buy",
-      "day": 44,
-      "image": "win_2026-06-10_TSLA_buy.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-06-10 特斯拉 Tesla(TSLA):MarketDaily 當時建議「買進」,5 個交易日後上漲 3.88%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-10_TSLA_buy\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-02_AAPL_wait",
-      "day": 45,
-      "image": "win_2026-06-02_AAPL_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-02 蘋果 Apple(AAPL):MarketDaily 當時建議「觀望」,5 個交易日後下跌 7.82%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-02_AAPL_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-05-21_2454_buy",
-      "day": 46,
-      "image": "win_2026-05-21_2454_buy.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-05-21 聯發科(2454):MarketDaily 當時建議「買進」,5 個交易日後上漲 24.23%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-05-21_2454_buy\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-09_MSFT_wait",
-      "day": 47,
-      "image": "win_2026-06-09_MSFT_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-09 微軟 Microsoft(MSFT):MarketDaily 當時建議「觀望」,5 個交易日後下跌 2.37%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-09_MSFT_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "tldr_2026-07-03_tw",
-      "day": 48,
-      "image": "tldr_2026-07-03_tw.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-03 台股盤後市場脈搏\nVIX 16.15(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.48% · USD/TWD 31.91\n板塊輪動:XLV 醫療 領漲 ▲ +2.63%、XLK 科技 重挫 ▼ -2.71%\n完整日報 → marketdaily.ai/output/digest_2026-07-03.html\n\n#市場脈搏 #台股 #財經日報",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "tldr_2026-07-02_us",
-      "day": 49,
-      "image": "tldr_2026-07-02_us.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-02 美股盤後市場脈搏\nVIX 16.62(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.47% · USD/TWD 31.91\n板塊輪動:XLC 通訊 領漲 ▲ +2.44%、XLK 科技 重挫 ▼ -2.57%\n完整日報 → marketdaily.ai/output/digest_2026-07-02_us.html\n\n#市場脈搏 #美股 #財經日報",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-17_TSLA_wait",
-      "day": 50,
-      "image": "win_2026-06-17_TSLA_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-17 特斯拉 Tesla(TSLA):MarketDaily 當時建議「觀望」,5 個交易日後下跌 5.36%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-17_TSLA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-15_AAPL_wait",
-      "day": 51,
-      "image": "win_2026-06-15_AAPL_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-15 蘋果 Apple(AAPL):MarketDaily 當時建議「觀望」,5 個交易日後下跌 0.72%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-15_AAPL_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-11_AAPL_buy",
-      "day": 52,
-      "image": "win_2026-06-11_AAPL_buy.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-06-11 蘋果 Apple(AAPL):MarketDaily 當時建議「買進」,5 個交易日後上漲 0.81%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-11_AAPL_buy\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-17_NVDA_wait",
-      "day": 53,
-      "image": "win_2026-06-17_NVDA_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-17 輝達 Nvidia(NVDA):MarketDaily 當時建議「觀望」,5 個交易日後下跌 4.35%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-17_NVDA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-11_TSLA_wait",
-      "day": 54,
-      "image": "win_2026-06-11_TSLA_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-11 特斯拉 Tesla(TSLA):MarketDaily 當時建議「觀望」,5 個交易日後上漲 0.34%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-11_TSLA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-10_NVDA_buy",
-      "day": 55,
-      "image": "win_2026-06-10_NVDA_buy.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-06-10 輝達 Nvidia(NVDA):MarketDaily 當時建議「買進」,5 個交易日後上漲 2.11%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-10_NVDA_buy\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-10_AAPL_buy",
-      "day": 56,
-      "image": "win_2026-06-10_AAPL_buy.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-06-10 蘋果 Apple(AAPL):MarketDaily 當時建議「買進」,5 個交易日後上漲 1.50%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-10_AAPL_buy\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-09_TSLA_buy",
-      "day": 57,
-      "image": "win_2026-06-09_TSLA_buy.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-06-09 特斯拉 Tesla(TSLA):MarketDaily 當時建議「買進」,5 個交易日後上漲 2.01%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-09_TSLA_buy\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "win_2026-06-08_MSFT_wait",
-      "day": 58,
-      "image": "win_2026-06-08_MSFT_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-08 微軟 Microsoft(MSFT):MarketDaily 當時建議「觀望」,5 個交易日後下跌 2.91%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-08_MSFT_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
-      "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
-    },
-    {
-      "id": "adcreative_2026-07-06_01",
-      "day": 59,
-      "image": "adcreative_2026-07-06_01.png",
-      "platforms": [
-        "threads"
-      ],
-      "caption": "別人的『高勝率』，是誰在算給你看?\n\nMarketDaily 每一次操作建議都留底——5 個交易日後直接對帳，看對的、看錯的都公開列在戰績頁，不是只挑贏的那幾次講。\n\n完整戰績(含看錯的)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_01\n免費訂閱→ https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_01\n\n#戰績公開 #財經日報 #台股 #美股"
-    },
-    {
-      "id": "adcreative_2026-07-06_02",
-      "day": 60,
-      "image": "adcreative_2026-07-06_02.png",
-      "platforms": [
-        "instagram"
-      ],
-      "caption": "財經新聞用讀的要一小時，你的行事曆沒有那一小時。\n\n美股+台股雙覆蓋，中文寫，分析只針對你自己的持股(最多 80 檔)——不是泛泛大盤新聞。\n週一到週六早上 7 點準時到信箱，週日休息。\n\n免費訂閱→ https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_02\n\n#財經日報 #台股 #美股 #投資理財"
-    },
-    {
-      "id": "adcreative_2026-07-06_04",
-      "day": 62,
-      "image": "adcreative_2026-07-06_04.png",
-      "platforms": [
-        "x"
-      ],
-      "caption": "你的美股跟台股，誰在幫你一起看?\n\n多數財經內容只講大盤，不管你手上到底抱哪幾檔。MarketDaily 只針對你的持股(最多 80 檔)做分析，美股台股都算進去。\n每日 30 則 AI 投資助手問答，免費版就有。\n\n開始→ https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_04\n\n#財經日報 #台股 #美股",
-      "retired": "X 通道已拔除(2026-07-10 Delvin 指令,API credits 為零從未發成)"
-    },
-    {
-      "id": "adcreative_2026-07-06_05",
-      "day": 63,
-      "image": "adcreative_2026-07-06_05.png",
-      "platforms": [
-        "threads"
-      ],
-      "caption": "股票、加密貨幣、大盤、板塊輪動——不用開四個 App 東湊西湊，一封信讀完。\n\n週一到週六早上 7 點，美股+台股一起送到信箱，你自己的持股優先分析。\n\n免費訂閱→ https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_05\n\n#財經日報 #投資理財 #台股 #美股"
-    },
-    {
-      "id": "adcreative_2026-07-06_06",
-      "day": 64,
-      "image": "adcreative_2026-07-06_06.png",
-      "platforms": [
-        "facebook"
-      ],
-      "caption": "多數財經帳號只會叫你『買進』。\n\nMarketDaily 的 AI 分析看多也看空——覺得不該追高，就會直接跟你說『觀望』，不是每篇都硬要你買。\nMarketDaily 完全免費，沒有付費方案，所有功能全面開放。\n\n免費訂閱→ https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_06\n\n#財經日報 #台股 #美股 #投資理財"
-    },
-    {
-      "id": "win_2026-07-10_SNDK_wait",
-      "day": 66,
-      "image": "win_2026-07-10_SNDK_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-10 SNDK(SNDK):MarketDaily 當時建議「觀望」,5 個交易日後下跌 29.29%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-10_SNDK_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-09_SNDK_wait",
-      "day": 67,
-      "image": "win_2026-07-09_SNDK_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-09 SNDK(SNDK):MarketDaily 當時建議「觀望」,5 個交易日後下跌 24.06%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-09_SNDK_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-08_6907_buy",
-      "day": 68,
-      "image": "win_2026-07-08_6907_buy.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-07-08 雅特力-KY(6907):MarketDaily 當時建議「買進」,5 個交易日後上漲 26.46%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-08_6907_buy\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "tldr_2026-07-20_us",
-      "day": 69,
-      "image": "tldr_2026-07-20_us.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-20 美股盤後市場脈搏\nVIX 18.24(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.54% · USD/TWD 32.28\n板塊輪動:XLE 能源 領漲 ▲ +1.16%、XLC 通訊 重挫 ▼ -1.78%\n完整日報 → marketdaily.ai/output/digest_2026-07-20_us.html\n\n#市場脈搏 #美股 #財經日報"
-    },
-    {
-      "id": "win_2026-07-13_6274_wait",
-      "day": 70,
-      "image": "win_2026-07-13_6274_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-13 台燿(6274):MarketDaily 當時建議「觀望」,5 個交易日後下跌 27.42%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-13_6274_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-10_IBM_wait",
-      "day": 71,
-      "image": "win_2026-07-10_IBM_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-10 IBM(IBM):MarketDaily 當時建議「觀望」,5 個交易日後下跌 26.04%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-10_IBM_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-09_MRVL_wait",
-      "day": 72,
-      "image": "win_2026-07-09_MRVL_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-09 邁威爾 Marvell(MRVL):MarketDaily 當時建議「觀望」,5 個交易日後下跌 22.60%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-09_MRVL_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "tldr_2026-07-21_us",
-      "day": 73,
-      "image": "tldr_2026-07-21_us.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-21 美股盤後市場脈搏\nVIX 17.79(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.6% · USD/TWD 32.31\n板塊輪動:XLE 能源 領漲 ▲ +0.45%、XLV 醫療 重挫 ▼ -1.14%\n完整日報 → marketdaily.ai/output/digest_2026-07-21_us.html\n\n#市場脈搏 #美股 #財經日報"
-    },
-    {
-      "id": "tldr_2026-07-21_tw",
-      "day": 74,
-      "image": "tldr_2026-07-21_tw.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-21 台股盤後市場脈搏\nVIX 18.65(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.6% · USD/TWD 32.28\n板塊輪動:XLE 能源 領漲 ▲ +0.45%、XLV 醫療 重挫 ▼ -1.14%\n完整日報 → marketdaily.ai/output/digest_2026-07-21.html\n\n#市場脈搏 #台股 #財經日報"
-    },
-    {
-      "id": "win_2026-07-14_6488_wait",
-      "day": 75,
-      "image": "win_2026-07-14_6488_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-14 環球晶(6488):MarketDaily 當時建議「觀望」,5 個交易日後下跌 20.46%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-14_6488_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-13_8996_wait",
-      "day": 76,
-      "image": "win_2026-07-13_8996_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-13 高力(8996):MarketDaily 當時建議「觀望」,5 個交易日後下跌 21.69%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-13_8996_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-10_6274_wait",
-      "day": 77,
-      "image": "win_2026-07-10_6274_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-10 台燿(6274):MarketDaily 當時建議「觀望」,5 個交易日後下跌 25.48%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-10_6274_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "tldr_2026-07-22_us",
-      "day": 78,
-      "image": "tldr_2026-07-22_us.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-22 美股盤後市場脈搏\nVIX 17.42(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.63% · USD/TWD 32.38\n板塊輪動:XLK 科技 領漲 ▲ +2.89%、XLP 必需消費 重挫 ▼ -0.94%\n完整日報 → link in bio in bio\n\n#市場脈搏 #美股 #財經日報"
-    },
-    {
-      "id": "tldr_2026-07-22_tw",
-      "day": 79,
-      "image": "tldr_2026-07-22_tw.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-22 台股盤後市場脈搏\nVIX 17.05(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.63% · USD/TWD 32.33\n板塊輪動:XLK 科技 領漲 ▲ +2.89%、XLP 必需消費 重挫 ▼ -0.94%\n完整日報 → link in bio in bio\n\n#市場脈搏 #台股 #財經日報"
-    },
-    {
-      "id": "win_2026-07-15_8021_wait",
-      "day": 80,
-      "image": "win_2026-07-15_8021_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-15 尖點(8021):MarketDaily 當時建議「觀望」,5 個交易日後下跌 21.33%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-15_8021_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-14_4989_wait",
-      "day": 81,
-      "image": "win_2026-07-14_4989_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-14 榮科(4989):MarketDaily 當時建議「觀望」,5 個交易日後下跌 13.75%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-14_4989_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-13_4989_wait",
-      "day": 82,
-      "image": "win_2026-07-13_4989_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-13 榮科(4989):MarketDaily 當時建議「觀望」,5 個交易日後下跌 21.52%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-13_4989_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "tldr_2026-07-24_us",
-      "day": 83,
-      "image": "tldr_2026-07-24_us.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-24 美股盤後市場脈搏\nVIX 18.88(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.7% · USD/TWD 32.34\n板塊輪動:XLI 工業 領漲 ▲ +1.73%、XLY 非必需消費 重挫 ▼ -4.61%\n完整日報 → link in bio in bio\n\n#市場脈搏 #美股 #財經日報"
-    },
-    {
-      "id": "tldr_2026-07-24_tw",
-      "day": 84,
-      "image": "tldr_2026-07-24_tw.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-24 台股盤後市場脈搏\nVIX 18.7(平靜（但一夜跳升12.4%要留意）) · 恐貪指數 65/100(Greed) · 美10年債 4.7% · USD/TWD 32.3\n板塊輪動:XLI 工業 領漲 ▲ +1.73%、XLY 非必需消費 重挫 ▼ -4.61%\n完整日報 → link in bio in bio\n\n#市場脈搏 #台股 #財經日報"
-    },
-    {
-      "id": "win_2026-07-17_6669_hold",
-      "day": 85,
-      "image": "win_2026-07-17_6669_hold.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "續抱的判斷,也留紀錄可查。\n\n2026-07-17 緯穎(6669):MarketDaily 當時建議「續抱」,5 個交易日後上漲 24.03%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-17_6669_hold\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-16_TSLA_wait",
-      "day": 86,
-      "image": "win_2026-07-16_TSLA_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-16 特斯拉 Tesla(TSLA):MarketDaily 當時建議「觀望」,5 個交易日後下跌 18.25%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-16_TSLA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-15_6488_wait",
-      "day": 87,
-      "image": "win_2026-07-15_6488_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-15 環球晶(6488):MarketDaily 當時建議「觀望」,5 個交易日後下跌 16.22%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-15_6488_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "tldr_2026-07-27_us",
-      "day": 88,
-      "image": "tldr_2026-07-27_us.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-27 美股盤後市場脈搏\nVIX 17.56(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.68% · USD/TWD 32.3\n板塊輪動:XLP 必需消費 領漲 ▲ +1.11%、XLK 科技 重挫 ▼ -1.44%\n完整日報 → link in bio in bio\n\n#市場脈搏 #美股 #財經日報"
-    },
-    {
-      "id": "win_2026-07-17_TSLA_wait",
-      "day": 89,
-      "image": "win_2026-07-17_TSLA_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-17 特斯拉 Tesla(TSLA):MarketDaily 當時建議「觀望」,5 個交易日後下跌 17.81%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-17_TSLA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-16_6488_wait",
-      "day": 90,
-      "image": "win_2026-07-16_6488_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-16 環球晶(6488):MarketDaily 當時建議「觀望」,5 個交易日後下跌 18.25%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-16_6488_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-15_5439_wait",
-      "day": 91,
-      "image": "win_2026-07-15_5439_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-15 高技(5439):MarketDaily 當時建議「觀望」,5 個交易日後下跌 15.03%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-15_5439_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "tldr_2026-07-28_us",
-      "day": 92,
-      "image": "tldr_2026-07-28_us.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-28 美股盤後市場脈搏\nVIX 18.98(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.64% · USD/TWD 32.4\n板塊輪動:XLP 必需消費 領漲 ▲ +1.46%、XLE 能源 重挫 ▼ -2.11%\n完整日報 → link in bio in bio\n\n#市場脈搏 #美股 #財經日報"
-    },
-    {
-      "id": "tldr_2026-07-28_tw",
-      "day": 93,
-      "image": "tldr_2026-07-28_tw.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-28 台股盤後市場脈搏\nVIX 18.67(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.64% · USD/TWD 32.29\n板塊輪動:XLP 必需消費 領漲 ▲ +1.46%、XLE 能源 重挫 ▼ -2.11%\n完整日報 → link in bio in bio\n\n#市場脈搏 #台股 #財經日報"
-    },
-    {
-      "id": "win_2026-07-17_6488_wait",
-      "day": 94,
-      "image": "win_2026-07-17_6488_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-17 環球晶(6488):MarketDaily 當時建議「觀望」,5 個交易日後下跌 16.94%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-17_6488_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-16_5439_wait",
-      "day": 95,
-      "image": "win_2026-07-16_5439_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-16 高技(5439):MarketDaily 當時建議「觀望」,5 個交易日後下跌 13.84%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-16_5439_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-15_RDDT_wait",
-      "day": 96,
-      "image": "win_2026-07-15_RDDT_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-15 RDDT(RDDT):MarketDaily 當時建議「觀望」,5 個交易日後下跌 13.96%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-15_RDDT_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "tldr_2026-07-29_us",
-      "day": 97,
-      "image": "tldr_2026-07-29_us.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-29 美股盤後市場脈搏\nVIX 18.39(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.6% · USD/TWD 32.43\n板塊輪動:XLV 醫療 領漲 ▲ +2.36%、XLK 科技 重挫 ▼ -1.84%\n完整日報 → link in bio in bio\n\n#市場脈搏 #美股 #財經日報"
-    },
-    {
-      "id": "tldr_2026-07-29_tw",
-      "day": 98,
-      "image": "tldr_2026-07-29_tw.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "📊 2026-07-29 台股盤後市場脈搏\nVIX 18.21(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.6% · USD/TWD 32.36\n板塊輪動:XLV 醫療 領漲 ▲ +2.36%、XLK 科技 重挫 ▼ -1.84%\n完整日報 → link in bio in bio\n\n#市場脈搏 #台股 #財經日報"
-    },
-    {
-      "id": "win_2026-07-21_SNDK_wait",
-      "day": 99,
-      "image": "win_2026-07-21_SNDK_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-21 SNDK(SNDK):MarketDaily 當時建議「觀望」,5 個交易日後下跌 31.04%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-21_SNDK_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-17_BE_wait",
-      "day": 100,
-      "image": "win_2026-07-17_BE_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-17 BE(BE):MarketDaily 當時建議「觀望」,5 個交易日後下跌 13.99%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-17_BE_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-16_NOW_wait",
-      "day": 101,
-      "image": "win_2026-07-16_NOW_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-16 NOW(NOW):MarketDaily 當時建議「觀望」,5 個交易日後下跌 11.60%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-16_NOW_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "adcreative_2026-07-30_01",
-      "day": 102,
-      "image": "adcreative_2026-07-30_01.png",
-      "platforms": [
-        "instagram"
-      ],
-      "caption": "Citizens 的金融科技研究主管 Devin Ryan 舉了一個對比:一個現在一個月交易 2 次的散戶,把帳戶接上 AI 代理人之後,可能變成一天交易 20 次。\n\n這已經不是假設。7 月底美國財經媒體整理了正在發生的事:Robinhood 近期推出讓第三方 AI 代理人連進客戶帳戶的工具;券商 Public 自己養代理人來自動化投資流程;新創 Podium Markets AI 的助理 Ivy 會跨多個券商帳戶看你的持股,再依你的目標和風險承受度給建議。\n\n但整篇報導最值得抄下來的,不是這些功能,而是這幾家的共同底線——\n\n▸ Podium 共同創辦人兼執行長 Dirk Mueller-Ingrand:「The AI informs, but the human decides.」(AI 提供資訊,人做決定)\n▸ Public 共同創辦人兼共同執行長 Leif Abraham:「You still have the last word.」(最後一句話還是你說)。Public 要求用戶先審核並批准代理人的工作流程,代理人才會去執行任何投資任務。\n\n翻成散戶聽得懂的話:代理人時代變貴的不是下單速度,是「你按下確認之前到底懂多少」。交易次數從一個月 2 次變成一天 20 次,不會讓每一筆的資訊落差自己縮小,只會讓同一個落差被重複更多次。\n\n所以真正要練的是那道人工閘門。三件現在就能開始做的事:\n1️⃣ 先寫下「不做條件」——什麼情況你不加碼,而不是什麼情況你要買。\n2️⃣ 讓 AI 幫你蒐集與整理,不讓它幫你下結論;它給的每個數字都回原始出處對一次。\n3️⃣ 任何自動化都留一道人工確認——報導裡連券商自己都是這樣設計的。\n\nMarketDaily 做的就是那道閘門前面的功課:週一到週六(週日休息)早上 7 點寄台股日報、晚上 20:00 寄美股晚報,只寫跟你持股有關的部分,判斷錯的一樣照列不刪。目前限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n那一下確認鍵,你想留給誰按? 👇"
-    },
-    {
-      "id": "adcreative_2026-07-30_02",
-      "day": 103,
-      "image": "adcreative_2026-07-30_02.png",
-      "platforms": [
-        "instagram"
-      ],
-      "caption": "只多加 1 句指令,AI 就從「報喜不報憂」變成「列出 3 個看空理由」。\n\n多數人問 AI 的方式,注定只會拿到附和自己的答案——你問「這檔看起來不錯吧?」,它就順著你講下去。要拿到有用的東西,得先把它的立場改掉。\n\n📋 直接複製這段(把 [股票代號] 換成你自己的持股):\n\n「你現在是空方研究員,任務不是安慰我。針對 [股票代號],列出 3 個具體的看空理由,每一個都標明依據屬於哪一類:財報、產業結構、籌碼、還是總體環境。接著指出這 3 個理由裡,你自己最不確定的假設是哪一個。最後告訴我:要出現什麼樣的新證據,才會讓你收回這個看空。不要提供任何進出價位,只講風險邏輯。」\n\n為什麼這樣問才有用:\n1️⃣ 先指定立場 → 切掉模型討好你的預設反應\n2️⃣ 要求標註依據類別 → 一眼看出哪條是硬資料、哪條只是它在推測\n3️⃣ 要求寫出「推翻條件」→ 你拿到的是一張可以追蹤的檢查清單,而不是一段感想\n\n⚠️ 提醒:AI 產出的是待驗證的問題清單,不是結論。它會把數字講錯,每個數據都回原始財報對一次。\n\n做完一輪你會發現,最花時間的不是問 AI,而是把該看的資料先蒐齊。這件事我們幫你做:MarketDaily 週一到週六早上 7 點寄出台股日報,美股晚報 20:00,只挑跟你持股有關的部分寫給你。目前限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你平常會先問 AI「這檔好不好」,還是先問「我可能錯在哪」?在下面告訴我 👇"
-    },
-    {
-      "id": "adcreative_2026-07-30_04",
-      "day": 104,
-      "image": "adcreative_2026-07-30_04.png",
-      "platforms": [
-        "x"
-      ],
-      "caption": "MarketDaily 從上往下:\n① 30 秒重點:今天哪裡別急\n② 每檔持股一張卡:下一步和要盯的變化\n③ 5 則新聞,標多源確認或單一來源\n④ 往下是板塊輪動、財報行事曆\n週一到週六 7 點,限時免費 →\nhttps://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_20260730_04"
-    },
-    {
-      "id": "win_2026-07-22_SNDK_wait",
-      "day": 105,
-      "image": "win_2026-07-22_SNDK_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-22 SNDK(SNDK):MarketDaily 當時建議「觀望」,5 個交易日後下跌 36.48%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-22_SNDK_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-21_BE_wait",
-      "day": 106,
-      "image": "win_2026-07-21_BE_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-21 BE(BE):MarketDaily 當時建議「觀望」,5 個交易日後下跌 26.26%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-21_BE_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-17_6907_wait",
-      "day": 107,
-      "image": "win_2026-07-17_6907_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-17 雅特力-KY(6907):MarketDaily 當時建議「觀望」,5 個交易日後下跌 13.98%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-17_6907_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "adcreative_2026-07-31_01",
-      "day": 108,
-      "image": "adcreative_2026-07-31_01.png",
-      "platforms": [
-        "instagram"
-      ],
-      "caption": "高盛成立 AlphaAI,只為回答 405 億美元 AI ETF 答不出的問題。\n\n全美 AI 主題基金與 ETF,管理規模加起來大約 405 億美元。但買進它們的人,買到的其實是「誰的名字裡有 AI」,不是「誰真的靠 AI 賺到錢」。\n\n7 月 30 日,路透看到一份內部備忘錄:高盛資產管理成立了 AI 投資平台 AlphaAI,由 Lou D'Ambrosio 出任資產管理的 AI 主席。資產與財富管理全球主管 Marc Nachmann 在備忘錄裡寫:「我們相信 AI 既在重塑各行各業,也是我們投資方式的力量倍增器。」\n\nD'Ambrosio 說得更直白:他預期同一個產業「內部的分化會更大」,而這件事未必已經反映在價格上。高盛手上的投資組合公司,已經跑出超過 100 個規模化的 AI 應用場景——那些成本、營收、利潤率的真實變化,會先出現在他們的內部資料,才輪到公開財報。\n\n翻成白話:當所有人都在買「AI 概念」,分水嶺已經悄悄從「有沒有講 AI」移到「有沒有把 AI 變成利潤率」。而這個差別,ETF 的名字不會告訴你。\n\n我們追不上高盛的私募資料,但可以追上同一個問題意識:你手上那幾檔,是靠故事在漲,還是靠數字在漲?\n\nMarketDaily 做的就是這件事的日常版——週一到週六,早上一班台股、晚上一班美股,只針對你自己設定的持股,把當天的消息、脈絡和該留意的風險整理成一封信。我們不替你按買賣鍵,也不把判斷錯的那幾次藏起來:連判錯的都列出來,敢這樣做的才有底氣。\n\n目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你手上的持股,是靠故事漲還是靠數字漲?在下面告訴我一檔就好。\n\n出處:Reuters(2026/7/30 內部備忘錄報導)、Finimize\n\n#AI投資 #高盛 #AlphaAI #台股 #美股 #財經日報 #MarketDaily"
-    },
-    {
-      "id": "adcreative_2026-07-31_02",
-      "day": 109,
-      "image": "adcreative_2026-07-31_02.png",
-      "platforms": [
-        "instagram"
-      ],
-      "caption": "同一份財報,自己啃兩小時,照這 4 步丟給 AI 只花 10 分鐘。\n\n差別不在 AI 比較聰明,而在你有沒有把「該問什麼」先寫清楚。多數人只丟一句「幫我看這份財報」,拿回來的就是一段誰都能寫的摘要。\n\n📋 照抄這 4 步:\n\n1️⃣ 先去公司投資人關係網頁或公開資訊觀測站,下載這一季的財報原檔或法說簡報。重點是給 AI 原始檔,不要讓它憑印象講數字。\n2️⃣ 把檔案上傳,貼下面這段指令。\n3️⃣ 它給的每一格,回原文用頁碼對一次。對不上的直接刪掉。\n4️⃣ 存成你自己的追蹤表,下一季同樣四步再跑一次,只看「哪幾格變了」。\n\n指令(直接複製):\n「我上傳的是這家公司最新一季的財報原文。只准使用檔案裡出現的內容作答,檔案裡找不到就寫『原文未提供』,不要用你記憶中的數字。請輸出一張表,包含五列:①這一季營收與獲利的變化,以及公司自己給的解釋(附原文句子)②毛利與費用結構裡,方向和上一季相反的項目 ③管理層對下一季的說法,標明那是承諾、預估、還是模糊帶過 ④這份文件裡最容易被讀者略過的一項風險,標出頁碼 ⑤下一季我該追蹤哪三個數字,才知道這個故事有沒有走偏。最後用三句話總結。不要提供任何價位或買賣判斷,只講事實與風險邏輯。」\n\n為什麼這樣寫有效:限制它只能用檔案內容,擋掉最常見的一種錯——AI 把記憶裡的舊數字講得很有信心;要求標頁碼,是為了讓你查得動;要求分「承諾/預估/模糊」,是把公關語言翻譯成可追蹤的東西。\n\n⚠️ 它產出的是一張待查清單,不是結論。數字一定要自己回原文核對。\n\n做完一次你就會發現,難的從來不是問 AI,而是每天把該讀的資料先蒐齊。這件事我們幫你做:MarketDaily 週一到週六早上 7 點寄台股日報、晚上 20:00 寄美股,只寫跟你手上部位有關的部分。目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你讀財報時最先看哪一段?營收、毛利,還是管理層講的話?在下面告訴我 👇"
-    },
-    {
-      "id": "adcreative_2026-07-31_05",
-      "day": 110,
-      "image": "adcreative_2026-07-31_05.png",
-      "platforms": [
-        "facebook"
-      ],
-      "caption": "就算有人付錢,看到的也跟你一模一樣。\n\n而且這不是佛心,是法律。MarketDaily 沒有投顧牌照,依法任何個別股票的分析都不能因為誰付了錢就變多、變深、變快——所以我們乾脆把它寫成產品鐵則:個股分析內容對全體用戶完全相同,永遠免費,不跟任何方案掛鉤。\n\n同樣的邏輯也用在戰績頁:判對的、判錯的,同一頁全列出來,不挑好看的講。敢把自己判錯的攤開,才有底氣談信任。\n\n現在全站零收費、不需要信用卡,全功能限時免費;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你比較信「只有付費才拿得到的獨家名單」,還是「所有人拿到的都一樣」?在下面告訴我一句。"
-    },
-    {
-      "id": "win_2026-07-23_6907_wait",
-      "day": 111,
-      "image": "win_2026-07-23_6907_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-23 雅特力-KY(6907):MarketDaily 當時建議「觀望」,5 個交易日後下跌 30.88%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-23_6907_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-22_AAOI_wait",
-      "day": 112,
-      "image": "win_2026-07-22_AAOI_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-22 AAOI(AAOI):MarketDaily 當時建議「觀望」,5 個交易日後下跌 30.76%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-22_AAOI_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    },
-    {
-      "id": "win_2026-07-21_AAOI_wait",
-      "day": 113,
-      "image": "win_2026-07-21_AAOI_wait.png",
-      "platforms": [
-        "instagram",
-        "facebook",
-        "threads"
-      ],
-      "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-21 AAOI(AAOI):MarketDaily 當時建議「觀望」,5 個交易日後下跌 26.09%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-21_AAOI_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
-    }
-  ]
+ "_comment": "MarketDaily v2 organic post — 2026-05-26 Marketing Agents 4 段串聯產出,15 篇 (avg 86/100, 0 法規 flag)。圖卡走 social_cards.py SVG 模板 (marketing/make_v2_cards.py),已轉 JPEG 到 docs/social/。X 平台跳過 (token 已停)。",
+ "posts": [
+  {
+   "id": "explainer_v01_30sec",
+   "day": 1,
+   "image": "explainer_v01_30sec.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "30 秒讀完一封財經早報, 然後去上班。\n\n— 你的美股 + 台股, AI 寫成中文\n— 假消息過濾掉\n— 重點 + 操作思考, 不是 80 則無結論的快訊\n\n台股 07:00、美股 20:00 在你 inbox。先免費讀一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=explainer_v01_30sec\n\n#美股 #台股 #投資理財 #財經日報 #理財"
+  },
+  {
+   "id": "explainer_v02_only_yours",
+   "day": 2,
+   "image": "explainer_v02_only_yours.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "市場每天 1000 條財經新聞。\n你需要的, 大概只有 5 條 — 跟你的持股有關的那 5 條。\n\nMarketDaily 做的就是這件事:你設定持股, AI 每天早上挑出跟你有關的, 中文寫給你。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=explainer_v02_only_yours\n\n#個人化 #美股 #台股 #投資理財 #財經"
+  },
+  {
+   "id": "problem_v01_time_steal",
+   "day": 3,
+   "image": "problem_v01_time_steal.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "你早上的 1 小時, 被多少則沒結論的新聞偷走?\n\nFed 講話、TSMC 漲跌、AI 又一輪、地緣政治、誰賣超誰買超…\n看完還是不知道:那, 我手上的股票呢?\n\nMarketDaily 把這 1 小時壓縮成 30 秒。中文寫, AI 過濾, 只給跟你持股有關的。\n\n試一份明早就到: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=problem_v01_time_steal\n\n#財經日報 #投資理財 #美股 #台股 #媒體識讀"
+  },
+  {
+   "id": "problem_v02_fake_news",
+   "day": 4,
+   "image": "problem_v02_fake_news.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "假新聞不是最危險的。\n\n最危險的是你看了 30 篇, 還是不知道哪些是真的、哪些跟你的股票有關。\n\nMarketDaily 每天從多家可信媒體交叉比對, AI 過濾掉雜訊, 中文寫成 30 秒可讀的早報。\n\n台股 07:00、美股 20:00,inbox 見: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=problem_v02_fake_news\n\n#假新聞 #媒體識讀 #財經日報 #投資 #美股 #台股"
+  },
+  {
+   "id": "proof_v01_track_record",
+   "day": 5,
+   "image": "proof_v01_track_record.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "大部分財經頻道只給你「賺到」的案例。\n\n我們做了一個公開的戰績頁:每天看多 / 看空 / 觀望, 後續對錯都列。看對的會貼出來, 看錯的也會。\n\n投資不是抽卡, 是要看樣本累積夠不夠誠實。\n\n戰績頁長這樣 → https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=proof_v01_track_record\n\n#戰績公開 #投資 #財經日報 #美股 #台股 #透明"
+  },
+  {
+   "id": "proof_v02_editor_promise",
+   "day": 6,
+   "image": "proof_v02_editor_promise.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "MarketDaily 編輯五條紀律:\n\n1. 不收業配\n2. 日報提及的個股, 編輯不持有 (避免利益衝突)\n3. 不喊單 (給你思考材料, 不是當你老師)\n4. 看錯了會列出來 (戰績頁公開)\n5. 永遠中文寫 (英文新聞 AI 翻好給你)\n\n大部分財經內容做不到第 1, 4。我們把這五條當底線。\n\n看實際早報: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=proof_v02_editor_promise\n\n#編輯紀律 #財經 #投資 #媒體識讀 #透明"
+  },
+  {
+   "id": "founder_v01_why_built",
+   "day": 7,
+   "image": "founder_v01_why_built.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "我是 Delvin, MarketDaily 創辦人。\n\n做這個的原因簡單:我自己持股 (美股 + 台股), 每天早上要花 1 小時掃新聞, 還是常常漏掉跟我的股票有關的東西。\n\n所以我寫了一個 AI, 每天台股早上 7 點、美股晚上 8 點,把跟我持股有關的事整理成 30 秒可讀的中文摘要。\n\n後來我發現朋友也在用。然後就開了讓你也能訂。\n\n想看一份長怎樣 → https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=founder_v01_why_built\n\n#創辦人 #財經日報 #個人化 #投資"
+  },
+  {
+   "id": "founder_v02_not_a_teacher",
+   "day": 8,
+   "image": "founder_v02_not_a_teacher.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "「投資老師」這個詞我聽到就警覺。\n\n我做 MarketDaily 不是要教你怎麼買, 而是把我自己每天早上會做的「讀新聞 → 整理 → 想我的持股」這件事自動化, 然後分享出來。\n\n你做決定。我給原料。\n\n這也是為什麼戰績頁公開、不收業配、日報提及的個股編輯不持有 — 我講錯了你可以馬上驗證。\n\nhttps://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=founder_v02_not_a_teacher\n\n#財經 #投資 #媒體識讀 #獨立媒體"
+  },
+  {
+   "id": "edu_v01_signal_noise",
+   "day": 9,
+   "image": "edu_v01_signal_noise.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "投資的真功夫, 不是「知道更多」, 是「過濾更少」。\n\n資訊永遠夠多, 你的注意力才稀缺。\n\nMarketDaily 的工作就是幫你做 80% 的過濾 — AI 跨多家媒體比對、去掉廣告稿和點擊餌、只留下對你持股可能有影響的。\n\n剩下 20% 留給你做判斷。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=edu_v01_signal_noise\n\n#投資思維 #媒體識讀 #財經 #理財"
+  },
+  {
+   "id": "edu_v02_market_vs_yours",
+   "day": 10,
+   "image": "edu_v02_market_vs_yours.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "市場分析 ≠ 你的股票分析。\n\n大盤漲 1%, 你的持股可能跌 3%。\nFed 升息對你影響大不大, 取決於你持有什麼。\n\n大部分財經內容只告訴你大盤怎麼了。MarketDaily 設計成相反的:你設定持股, 它每天告訴你「對你」怎麼了。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=edu_v02_market_vs_yours\n\n#個人化 #投資 #財經 #媒體識讀"
+  },
+  {
+   "id": "vs_v01_vs_local",
+   "day": 11,
+   "image": "vs_v01_vs_local.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "你早上追財經的選項 (台灣散戶版):\n\n→ 鉅亨網 / 經濟日報: 內容夠多, 但廣告滿版 + 沒個人化, 要自己挑\n→ Yahoo 股市 / 三竹股市: 看盤即時, 但沒人幫你寫摘要\n→ 滑社群: 免費, 但要自己過濾喊單和業配\n→ MarketDaily: 中文 + AI 過濾 + 只給跟你持股有關的, 30 秒讀完\n\n看 MarketDaily 長怎樣 → https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=vs_v01_vs_local\n\n#財經 #美股 #台股 #投資 #理財"
+  },
+  {
+   "id": "vs_v02_vs_chatgpt",
+   "day": 12,
+   "image": "vs_v02_vs_chatgpt.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "用 ChatGPT 查財經?\n\n問題 1: 你要每天記得去問\n問題 2: 它可能引用過時資料\n問題 3: 它不知道你持有什麼\n\nMarketDaily 是相反設計:\n→ 不用你問, 台股 07:00、美股 20:00 自己到 inbox\n→ 每天當天的新聞 + 標明來源\n→ 知道你的持股 (你設定過), 只給有關的\n\n看一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=vs_v02_vs_chatgpt\n\n#ChatGPT #AI #財經 #投資 #個人化"
+  },
+  {
+   "id": "habit_v01_weekly",
+   "day": 13,
+   "image": "habit_v01_weekly.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "MarketDaily 的節奏:\n\n→ 台股 07:00、美股 20:00 寄出(週一到週六)\n→ 週六是「本週回顧」版, 不是當天新聞\n→ 週日休息 (你也該休息)\n\n設計理由:盤前讀完, 開盤前你已經知道今天的故事。週末不打擾。\n\n從下一封早報開始: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=habit_v01_weekly\n\n#財經日報 #早起 #投資理財 #習慣"
+  },
+  {
+   "id": "explainer_v03_inbox_friend",
+   "day": 14,
+   "image": "explainer_v03_inbox_friend.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "MarketDaily 的寫法不是新聞稿, 是「朋友傳給你的早報」。\n\n中文。口語。\n你的股票漲跌 + 為什麼 + 你今天可能要注意什麼。\n沒有「投資人應審慎評估」這種廢話。\n\n試一份, 看寫法對不對你的口味: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=explainer_v03_inbox_friend\n\n#財經日報 #投資 #個人化 #中文"
+  },
+  {
+   "id": "faq_v01_who_for",
+   "day": 15,
+   "image": "faq_v01_who_for.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "MarketDaily 適合你嗎?\n\n✅ 適合: 持有美股或台股 / 上班族 / 想知道你持股的動態 / 不想花 1 小時掃新聞\n❌ 不適合: 完全不投資 / 純當沖技術派 / 想要喊單老師 (我們不喊單)\n\n如果上面 ✅ 你中了 2 個以上, 試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=faq_v01_who_for\n\n#財經日報 #投資 #美股 #台股 #理財"
+  },
+  {
+   "id": "dual_schedule_v01",
+   "caption": "美股開盤你在睡, 台股開盤你在忙。\n\nMarketDaily 一天兩班, 都在盤前:\n— 台股 07:00, 開盤前先讀\n— 美股 20:00, 美股盤前先讀\n\n只給跟你持股有關的, AI 中文寫好。免費讀一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=dual_schedule_v01\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+   "image": "dual_schedule_v01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 16
+  },
+  {
+   "id": "brand_v01_no_noise",
+   "caption": "我們長得不像市面上的財經內容。\n\n沒有喊單老師, 沒有業配, 沒有 80 則沒結論的快訊洗版。\n\nAI 跨多家可信媒體比對, 過濾雜訊, 只留下對你持股可能有影響的 —— 中文寫成 30 秒可讀。\n\nNO NOISE, JUST SIGNAL。試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=brand_v01_no_noise\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+   "image": "brand_v01_no_noise.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 17
+  },
+  {
+   "id": "pain_v01_overnight",
+   "caption": "美股的大事, 大多在你睡覺的時候發生。\n\n早上醒來帳戶已經變了, 你卻不知道昨晚到底發生什麼。\n\nMarketDaily 晚上 20:00 在美股盤前先幫你講清楚, 早上 07:00 再補台股 —— 兩邊盤前你都先就位。\n\n看一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=pain_v01_overnight\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+   "image": "pain_v01_overnight.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 18
+  },
+  {
+   "id": "proof_v01_open_record",
+   "caption": "大部分財經頻道只給你「賺到」的案例。\n\n我們做了一個公開的戰績頁:每天的看多 / 看空 / 觀望, 後續對錯都記下來。看對的貼出來, 看錯的也是。\n\n投資不是抽卡, 是看樣本累積夠不夠誠實。聲稱 100% 準的, 那才是假的。\n\n戰績頁長這樣: https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=proof_v01_open_record\n\n#戰績公開 #投資 #財經日報 #美股 #台股",
+   "image": "proof_v01_open_record.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 19
+  },
+  {
+   "id": "personalization_v01",
+   "caption": "市場每天上千條財經新聞。你真正需要的, 大概只有跟你持股有關的那幾條。\n\nMarketDaily 做的就是這件事:你設定持有的美股 + 台股, AI 每天早晚挑出跟你有關的, 中文寫給你。\n\n其他的, 它幫你過濾掉。試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=personalization_v01\n\n#個人化 #美股 #台股 #投資理財 #財經",
+   "image": "personalization_v01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 20
+  },
+  {
+   "id": "ai_human_v01",
+   "caption": "MarketDaily 的寫法不是新聞稿, 是「朋友傳給你的早報」。\n\n不是「投資人應審慎評估」這種廢話, 而是:你的台積電昨晚發生什麼、為什麼、今天可能要注意什麼。\n\n中文、口語、給你思考材料。試一份看對不對你口味: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=ai_human_v01\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+   "image": "ai_human_v01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 22
+  },
+  {
+   "id": "weekend_v01_recap",
+   "caption": "MarketDaily 的節奏:\n\n— 平日盤前, 台股 07:00、美股 20:00 各一封\n— 週六早上是「本週回顧 + 下週重點」特別版\n— 週日休息 (你也該休息)\n\n盤前讀完, 開盤前你已經知道今天的故事。週末不打擾。從下一封開始: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=weekend_v01_recap\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+   "image": "weekend_v01_recap.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 23
+  },
+  {
+   "id": "usecase_v01_busy",
+   "caption": "MarketDaily 適合你嗎?\n\n✅ 持有美股或台股\n✅ 上班 / 上課 / 創業, 很忙\n✅ 想知道自己持股的動態\n✅ 不想每天花一小時掃新聞\n\n中了 2 個以上, 試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=usecase_v01_busy\n\n#美股 #台股 #財經日報 #投資理財 #盤前",
+   "image": "usecase_v01_busy.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 24
+  },
+  {
+   "id": "editor_v01_discipline",
+   "caption": "MarketDaily 的編輯底線:\n\n1. 不收業配\n2. 日報提及的個股, 編輯不持有 (避免利益衝突)\n3. 不喊單 (給你思考材料, 不當你老師)\n4. 看錯了會列出來 (戰績頁公開)\n5. 永遠中文寫 (英文新聞 AI 翻好給你)\n\n我們把這五條當底線。看實際日報: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=editor_v01_discipline\n\n#編輯紀律 #媒體識讀 #財經 #投資 #台股",
+   "image": "editor_v01_discipline.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 25
+  },
+  {
+   "id": "vs_chatgpt_v02",
+   "caption": "用 ChatGPT 查財經?\n\n— 你要每天記得去問\n— 它可能引用過時資料\n— 它不知道你持有什麼\n\nMarketDaily 是相反設計:不用你問, 台股 07:00、美股 20:00 自己到 inbox, 標明來源, 只給跟你持股有關的。\n\n看一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=vs_chatgpt_v02\n\n#ChatGPT #AI #美股 #台股 #財經日報",
+   "image": "vs_chatgpt_v02.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 26
+  },
+  {
+   "id": "signal_noise_v02",
+   "caption": "投資的真功夫, 不是「知道更多」, 是「過濾更少」。\n\n資訊永遠夠多, 你的注意力才稀缺。\n\nMarketDaily 幫你做掉 80% 的過濾 —— AI 跨多家媒體比對、去掉廣告稿和點擊餌、只留對你持股可能有影響的。剩下 20% 留給你判斷。\n\n試一份: https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=signal_noise_v02\n\n#投資思維 #媒體識讀 #財經 #理財 #台股",
+   "image": "signal_noise_v02.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "day": 27
+  },
+  {
+   "id": "v3_noise_filter_01",
+   "day": 28,
+   "image": "v3_noise_filter_01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "別的看盤 App 比誰報價更齊、圖表更多、通知更響。\nMarketDaily 反過來做:把每天上千條財經新聞, 刪到只剩跟你有關的重點。\n\nAI 先過濾假消息, 再幫你整理成 30 秒讀完的中文早報 —— 美股 + 台股, 附上該想的操作方向, 不是 80 則沒結論的快訊。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#美股 #台股 #投資理財 #財經早報 #理財"
+  },
+  {
+   "id": "v3_time_30sec_01",
+   "day": 29,
+   "image": "v3_time_30sec_01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "早上通勤那 30 秒, 夠讀完一份財經早報了。\n不用滑 20 個新聞 App、不用一支一支查你手上的股票。\n\nMarketDaily 幫你把美股 + 台股整理成一封中文早報:重點、風險、可以想的操作方向, 一次到位。\n台股 07:00、美股 20:00, 準時送進你的 inbox。\n\n免費試一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經早報 #美股 #台股 #通勤 #投資"
+  },
+  {
+   "id": "v3_personalized_01",
+   "day": 30,
+   "image": "v3_personalized_01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "市場每天上千條新聞, 真正跟你有關的可能只有 5 條。\n問題是 —— 哪 5 條?\n\nMarketDaily 讓你設定自己的持股, AI 每天早上只挑跟你有關的那幾條, 中文寫給你看。\n不是泛泛的大盤, 是你的美股 + 台股。\n\n設定你的持股, 先讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#個人化投資 #美股 #台股 #財經 #理財"
+  },
+  {
+   "id": "v3_bilingual_niche_01",
+   "day": 31,
+   "image": "v3_bilingual_niche_01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "如果你是「人在台灣、手上有美股」的那種投資人 —— 這封早報是寫給你的。\n\n台股看得懂, 美股卻常常隔一層英文和時差。等你早上醒來, 美股早就收盤, 新聞還是一堆英文標題。\n\nMarketDaily 把美股 + 台股都用中文整理好:美股早報 20:00、台股早報 07:00, 兩邊都不漏。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#美股 #台股 #海外投資 #財經早報 #中文"
+  },
+  {
+   "id": "v3_conclusion_01",
+   "day": 32,
+   "image": "v3_conclusion_01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "你不缺新聞, 你缺的是「所以呢?」\n\nFed 講話、台積電又漲、AI 再一輪、誰買超誰賣超…… 看完 80 則, 還是不知道:那我手上的股票, 今天該怎麼想?\n\nMarketDaily 每天只給你消化過的重點 + 該想的操作方向, 不是把快訊倒給你自己拼。\n\n30 秒看懂, 先讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經 #投資理財 #美股 #台股 #早報"
+  },
+  {
+   "id": "v3_track_record_01",
+   "day": 33,
+   "image": "v3_track_record_01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "財經內容最怕一件事:講得頭頭是道, 但沒人回頭對帳。\n\nMarketDaily 的每日方向判斷會留下紀錄, 戰績公開可查 —— 對的錯的都在頁面上, 自己去看, 不用聽我們一張嘴。\n\n先免費讀一份, 順便看看戰績頁 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#投資理財 #財經 #美股 #台股 #透明"
+  },
+  {
+   "id": "v3_last_to_know_01",
+   "day": 34,
+   "image": "v3_last_to_know_01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "重大新聞發生的時候, 你通常是第幾個知道的?\n\n如果答案是「最後一個」, 那多半是因為你在等自己有空滑新聞。\n\nMarketDaily 幫你顧著:美股 + 台股的關鍵消息, AI 過濾掉雜訊和假消息後, 整理成中文早報準時送到, 重大新聞也會即時推播提醒你——這項功能對全體用戶免費且相同, 不因訂閱而有差異。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#美股 #台股 #財經 #即時 #投資"
+  },
+  {
+   "id": "v3_schedule_01",
+   "day": 36,
+   "image": "v3_schedule_01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "好的資訊習慣, 是不用「特別安排時間」的。\n\n台股早報 07:00 —— 開盤前配早餐讀完。\n美股早報 20:00 —— 晚上收心的時候看一眼。\n\nMarketDaily 卡在你本來就會停下來的兩個時間點, 美股 + 台股中文整理好, 你只要讀。\n\n免費試一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經早報 #美股 #台股 #投資日常 #理財"
+  },
+  {
+   "id": "adcreative_2026-07-09_frameworks",
+   "day": 65,
+   "images": [
+    "frameworks_carousel_01.png",
+    "frameworks_carousel_02.png",
+    "frameworks_carousel_03.png",
+    "frameworks_carousel_04.png",
+    "frameworks_carousel_05.png",
+    "frameworks_carousel_06.png",
+    "frameworks_carousel_07.png",
+    "frameworks_carousel_08.png",
+    "frameworks_carousel_09.png",
+    "frameworks_carousel_10.png"
+   ],
+   "platforms": [
+    "instagram"
+   ],
+   "caption": "👀 很多人問 AI:「這支股票好不好?」\n\n問題不在 AI,在流程。單一 AI 憑印象回答,再厲害的角色扮演都只是演戲。\n\nMarketDaily 的每日日報,背後是 8 個真的在跑的分析框架:\n\n1️⃣ AI 委員會——多個模型互相辯論挑戰,不是一言堂\n2️⃣ 先算數學——歷史統計先給基率,AI 的信心經過校準\n3️⃣ 餵真實數據——即時行情+財報直接進管線,不憑 AI 記憶\n4️⃣ 關鍵價位來自真實技術關卡,不是順口編一個\n5️⃣ 休市偵測——不把舊收盤當今天的行情\n6️⃣ 多層稽核——寄出前逐項檢查,異常寧可攔下\n7️⃣ 戰績公開對帳——每天的判斷留檔,對錯自己查\n8️⃣ 產業鏈追蹤——影響路徑具體到公司\n\n往右滑,一張一個框架 👉\n\n目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n免費訂閱 → https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=frameworks_carousel\n\n#財經日報 #台股 #美股 #投資理財 #AI"
+  },
+  {
+   "id": "v3_ai_assistant_01",
+   "day": 37,
+   "image": "v3_ai_assistant_01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "讀完早報還有問題, 可以直接問。\n\nMarketDaily 的 AI 助手支援雙向對話 —— 「這則新聞對我的持股影響大嗎?」「這兩支怎麼比?」你問, 它用你的持股脈絡回答, 每天 30 則, 免費版就有。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#AI投資 #美股 #台股 #財經 #理財"
+  },
+  {
+   "id": "v3_weekend_rest_01",
+   "day": 39,
+   "image": "v3_weekend_rest_01.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "我們的早報, 週末不吵你。\n\n市場休市的時候, 你的手機不需要再多一則推播。MarketDaily 跟著開盤節奏走:有盤的日子, 美股 + 台股中文早報準時送到; 沒盤的日子, 讓你好好休息。\n\n去雜訊, 也包含「不製造雜訊」。\n\n先免費讀一份 👉 https://marketdaily.ai?utm_source=social&utm_medium=organic&utm_campaign=v3\n\n#財經早報 #美股 #台股 #投資 #生活"
+  },
+  {
+   "id": "win_2026-06-25_NVDA_sell",
+   "day": 40,
+   "image": "win_2026-06-25_NVDA_sell.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「避開」比「追上」更重要。\n\n2026-06-25 輝達 Nvidia(NVDA):MarketDaily 當時建議「賣出/避開」,5 個交易日後下跌 0.46%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-25_NVDA_sell\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-17_MSFT_sell",
+   "day": 41,
+   "image": "win_2026-06-17_MSFT_sell.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「避開」比「追上」更重要。\n\n2026-06-17 微軟 Microsoft(MSFT):MarketDaily 當時建議「賣出/避開」,5 個交易日後下跌 6.88%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-17_MSFT_sell\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-15_TSLA_wait",
+   "day": 42,
+   "image": "win_2026-06-15_TSLA_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-15 特斯拉 Tesla(TSLA):MarketDaily 當時建議「觀望」,5 個交易日後下跌 7.18%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-15_TSLA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-11_MSFT_wait",
+   "day": 43,
+   "image": "win_2026-06-11_MSFT_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-11 微軟 Microsoft(MSFT):MarketDaily 當時建議「觀望」,5 個交易日後下跌 2.80%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-11_MSFT_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-10_TSLA_buy",
+   "day": 44,
+   "image": "win_2026-06-10_TSLA_buy.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-06-10 特斯拉 Tesla(TSLA):MarketDaily 當時建議「買進」,5 個交易日後上漲 3.88%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-10_TSLA_buy\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-02_AAPL_wait",
+   "day": 45,
+   "image": "win_2026-06-02_AAPL_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-02 蘋果 Apple(AAPL):MarketDaily 當時建議「觀望」,5 個交易日後下跌 7.82%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-02_AAPL_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-05-21_2454_buy",
+   "day": 46,
+   "image": "win_2026-05-21_2454_buy.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-05-21 聯發科(2454):MarketDaily 當時建議「買進」,5 個交易日後上漲 24.23%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-05-21_2454_buy\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-09_MSFT_wait",
+   "day": 47,
+   "image": "win_2026-06-09_MSFT_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-09 微軟 Microsoft(MSFT):MarketDaily 當時建議「觀望」,5 個交易日後下跌 2.37%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-09_MSFT_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "tldr_2026-07-03_tw",
+   "day": 48,
+   "image": "tldr_2026-07-03_tw.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-03 台股盤後市場脈搏\nVIX 16.15(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.48% · USD/TWD 31.91\n板塊輪動:XLV 醫療 領漲 ▲ +2.63%、XLK 科技 重挫 ▼ -2.71%\n完整日報 → marketdaily.ai/output/digest_2026-07-03.html\n\n#市場脈搏 #台股 #財經日報",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "tldr_2026-07-02_us",
+   "day": 49,
+   "image": "tldr_2026-07-02_us.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-02 美股盤後市場脈搏\nVIX 16.62(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.47% · USD/TWD 31.91\n板塊輪動:XLC 通訊 領漲 ▲ +2.44%、XLK 科技 重挫 ▼ -2.57%\n完整日報 → marketdaily.ai/output/digest_2026-07-02_us.html\n\n#市場脈搏 #美股 #財經日報",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-17_TSLA_wait",
+   "day": 50,
+   "image": "win_2026-06-17_TSLA_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-17 特斯拉 Tesla(TSLA):MarketDaily 當時建議「觀望」,5 個交易日後下跌 5.36%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-17_TSLA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-15_AAPL_wait",
+   "day": 51,
+   "image": "win_2026-06-15_AAPL_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-15 蘋果 Apple(AAPL):MarketDaily 當時建議「觀望」,5 個交易日後下跌 0.72%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-15_AAPL_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-11_AAPL_buy",
+   "day": 52,
+   "image": "win_2026-06-11_AAPL_buy.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-06-11 蘋果 Apple(AAPL):MarketDaily 當時建議「買進」,5 個交易日後上漲 0.81%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-11_AAPL_buy\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-17_NVDA_wait",
+   "day": 53,
+   "image": "win_2026-06-17_NVDA_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-17 輝達 Nvidia(NVDA):MarketDaily 當時建議「觀望」,5 個交易日後下跌 4.35%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-17_NVDA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-11_TSLA_wait",
+   "day": 54,
+   "image": "win_2026-06-11_TSLA_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-11 特斯拉 Tesla(TSLA):MarketDaily 當時建議「觀望」,5 個交易日後上漲 0.34%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-11_TSLA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-10_NVDA_buy",
+   "day": 55,
+   "image": "win_2026-06-10_NVDA_buy.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-06-10 輝達 Nvidia(NVDA):MarketDaily 當時建議「買進」,5 個交易日後上漲 2.11%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-10_NVDA_buy\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-10_AAPL_buy",
+   "day": 56,
+   "image": "win_2026-06-10_AAPL_buy.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-06-10 蘋果 Apple(AAPL):MarketDaily 當時建議「買進」,5 個交易日後上漲 1.50%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-10_AAPL_buy\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-09_TSLA_buy",
+   "day": 57,
+   "image": "win_2026-06-09_TSLA_buy.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-06-09 特斯拉 Tesla(TSLA):MarketDaily 當時建議「買進」,5 個交易日後上漲 2.01%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-09_TSLA_buy\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "win_2026-06-08_MSFT_wait",
+   "day": 58,
+   "image": "win_2026-06-08_MSFT_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-06-08 微軟 Microsoft(MSFT):MarketDaily 當時建議「觀望」,5 個交易日後下跌 2.91%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-06-08_MSFT_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明",
+   "retired": "2026-07-09 時效過期(舊戰績/舊日報tldr),用戶指示清舊存貨"
+  },
+  {
+   "id": "adcreative_2026-07-06_01",
+   "day": 59,
+   "image": "adcreative_2026-07-06_01.png",
+   "platforms": [
+    "threads"
+   ],
+   "caption": "別人的『高勝率』，是誰在算給你看?\n\nMarketDaily 每一次操作建議都留底——5 個交易日後直接對帳，看對的、看錯的都公開列在戰績頁，不是只挑贏的那幾次講。\n\n完整戰績(含看錯的)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_01\n免費訂閱→ https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_01\n\n#戰績公開 #財經日報 #台股 #美股"
+  },
+  {
+   "id": "adcreative_2026-07-06_02",
+   "day": 60,
+   "image": "adcreative_2026-07-06_02.png",
+   "platforms": [
+    "instagram"
+   ],
+   "caption": "財經新聞用讀的要一小時，你的行事曆沒有那一小時。\n\n美股+台股雙覆蓋，中文寫，分析只針對你自己的持股(最多 80 檔)——不是泛泛大盤新聞。\n週一到週六早上 7 點準時到信箱，週日休息。\n\n免費訂閱→ https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_02\n\n#財經日報 #台股 #美股 #投資理財"
+  },
+  {
+   "id": "adcreative_2026-07-06_04",
+   "day": 62,
+   "image": "adcreative_2026-07-06_04.png",
+   "platforms": [
+    "x"
+   ],
+   "caption": "你的美股跟台股，誰在幫你一起看?\n\n多數財經內容只講大盤，不管你手上到底抱哪幾檔。MarketDaily 只針對你的持股(最多 80 檔)做分析，美股台股都算進去。\n每日 30 則 AI 投資助手問答，免費版就有。\n\n開始→ https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_04\n\n#財經日報 #台股 #美股",
+   "retired": "X 通道已拔除(2026-07-10 Delvin 指令,API credits 為零從未發成)"
+  },
+  {
+   "id": "adcreative_2026-07-06_05",
+   "day": 63,
+   "image": "adcreative_2026-07-06_05.png",
+   "platforms": [
+    "threads"
+   ],
+   "caption": "股票、加密貨幣、大盤、板塊輪動——不用開四個 App 東湊西湊，一封信讀完。\n\n週一到週六早上 7 點，美股+台股一起送到信箱，你自己的持股優先分析。\n\n免費訂閱→ https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_05\n\n#財經日報 #投資理財 #台股 #美股"
+  },
+  {
+   "id": "adcreative_2026-07-06_06",
+   "day": 64,
+   "image": "adcreative_2026-07-06_06.png",
+   "platforms": [
+    "facebook"
+   ],
+   "caption": "多數財經帳號只會叫你『買進』。\n\nMarketDaily 的 AI 分析看多也看空——覺得不該追高，就會直接跟你說『觀望』，不是每篇都硬要你買。\nMarketDaily 完全免費，沒有付費方案，所有功能全面開放。\n\n免費訂閱→ https://marketdaily.ai/?utm_source=social&utm_medium=organic&utm_campaign=adcreative_2026-07-06_06\n\n#財經日報 #台股 #美股 #投資理財"
+  },
+  {
+   "id": "win_2026-07-10_SNDK_wait",
+   "day": 66,
+   "image": "win_2026-07-10_SNDK_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-10 SNDK(SNDK):MarketDaily 當時建議「觀望」,5 個交易日後下跌 29.29%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-10_SNDK_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-09_SNDK_wait",
+   "day": 67,
+   "image": "win_2026-07-09_SNDK_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-09 SNDK(SNDK):MarketDaily 當時建議「觀望」,5 個交易日後下跌 24.06%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-09_SNDK_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-08_6907_buy",
+   "day": 68,
+   "image": "win_2026-07-08_6907_buy.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有些建議,事後回頭看也站得住腳。\n\n2026-07-08 雅特力-KY(6907):MarketDaily 當時建議「買進」,5 個交易日後上漲 26.46%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-08_6907_buy\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "tldr_2026-07-20_us",
+   "day": 69,
+   "image": "tldr_2026-07-20_us.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-20 美股盤後市場脈搏\nVIX 18.24(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.54% · USD/TWD 32.28\n板塊輪動:XLE 能源 領漲 ▲ +1.16%、XLC 通訊 重挫 ▼ -1.78%\n完整日報 → marketdaily.ai/output/digest_2026-07-20_us.html\n\n#市場脈搏 #美股 #財經日報"
+  },
+  {
+   "id": "win_2026-07-13_6274_wait",
+   "day": 70,
+   "image": "win_2026-07-13_6274_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-13 台燿(6274):MarketDaily 當時建議「觀望」,5 個交易日後下跌 27.42%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-13_6274_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-10_IBM_wait",
+   "day": 71,
+   "image": "win_2026-07-10_IBM_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-10 IBM(IBM):MarketDaily 當時建議「觀望」,5 個交易日後下跌 26.04%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-10_IBM_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-09_MRVL_wait",
+   "day": 72,
+   "image": "win_2026-07-09_MRVL_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-09 邁威爾 Marvell(MRVL):MarketDaily 當時建議「觀望」,5 個交易日後下跌 22.60%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-09_MRVL_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "tldr_2026-07-21_us",
+   "day": 73,
+   "image": "tldr_2026-07-21_us.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-21 美股盤後市場脈搏\nVIX 17.79(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.6% · USD/TWD 32.31\n板塊輪動:XLE 能源 領漲 ▲ +0.45%、XLV 醫療 重挫 ▼ -1.14%\n完整日報 → marketdaily.ai/output/digest_2026-07-21_us.html\n\n#市場脈搏 #美股 #財經日報"
+  },
+  {
+   "id": "tldr_2026-07-21_tw",
+   "day": 74,
+   "image": "tldr_2026-07-21_tw.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-21 台股盤後市場脈搏\nVIX 18.65(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.6% · USD/TWD 32.28\n板塊輪動:XLE 能源 領漲 ▲ +0.45%、XLV 醫療 重挫 ▼ -1.14%\n完整日報 → marketdaily.ai/output/digest_2026-07-21.html\n\n#市場脈搏 #台股 #財經日報"
+  },
+  {
+   "id": "win_2026-07-14_6488_wait",
+   "day": 75,
+   "image": "win_2026-07-14_6488_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-14 環球晶(6488):MarketDaily 當時建議「觀望」,5 個交易日後下跌 20.46%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-14_6488_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-13_8996_wait",
+   "day": 76,
+   "image": "win_2026-07-13_8996_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-13 高力(8996):MarketDaily 當時建議「觀望」,5 個交易日後下跌 21.69%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-13_8996_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-10_6274_wait",
+   "day": 77,
+   "image": "win_2026-07-10_6274_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-10 台燿(6274):MarketDaily 當時建議「觀望」,5 個交易日後下跌 25.48%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-10_6274_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "eng_article_council_202608",
+   "day": 114,
+   "caption": "我們把 MarketDaily 背後的系統寫成技術文章公開了。\n\n每天早晚寄出的日報,背後是 9 個免費模型席位的 council、一個 judge 仲裁、31 項確定性稽核檢查——LLM 永遠沒有翻方向的權力,審不過的信絕不寄出。\n\n75 天 production 實錄,包含三次真實事故的完整解剖(其中一次是防線自己變成事故)。\n\n全文 → https://marketdaily.ai/blog/eng-llm-council-judge-202608?utm_source=social&utm_medium=organic&utm_campaign=eng_article_council\n\n#工程 #LLM #AI #財經日報 #MarketDaily",
+   "image": "eng_council_202608.jpg",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads",
+    "x"
+   ]
+  },
+  {
+   "id": "tldr_2026-07-22_us",
+   "day": 78,
+   "image": "tldr_2026-07-22_us.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-22 美股盤後市場脈搏\nVIX 17.42(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.63% · USD/TWD 32.38\n板塊輪動:XLK 科技 領漲 ▲ +2.89%、XLP 必需消費 重挫 ▼ -0.94%\n完整日報 → link in bio in bio\n\n#市場脈搏 #美股 #財經日報"
+  },
+  {
+   "id": "tldr_2026-07-22_tw",
+   "day": 79,
+   "image": "tldr_2026-07-22_tw.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-22 台股盤後市場脈搏\nVIX 17.05(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.63% · USD/TWD 32.33\n板塊輪動:XLK 科技 領漲 ▲ +2.89%、XLP 必需消費 重挫 ▼ -0.94%\n完整日報 → link in bio in bio\n\n#市場脈搏 #台股 #財經日報"
+  },
+  {
+   "id": "win_2026-07-15_8021_wait",
+   "day": 80,
+   "image": "win_2026-07-15_8021_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-15 尖點(8021):MarketDaily 當時建議「觀望」,5 個交易日後下跌 21.33%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-15_8021_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-14_4989_wait",
+   "day": 81,
+   "image": "win_2026-07-14_4989_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-14 榮科(4989):MarketDaily 當時建議「觀望」,5 個交易日後下跌 13.75%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-14_4989_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-13_4989_wait",
+   "day": 82,
+   "image": "win_2026-07-13_4989_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-13 榮科(4989):MarketDaily 當時建議「觀望」,5 個交易日後下跌 21.52%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-13_4989_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "tldr_2026-07-24_us",
+   "day": 83,
+   "image": "tldr_2026-07-24_us.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-24 美股盤後市場脈搏\nVIX 18.88(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.7% · USD/TWD 32.34\n板塊輪動:XLI 工業 領漲 ▲ +1.73%、XLY 非必需消費 重挫 ▼ -4.61%\n完整日報 → link in bio in bio\n\n#市場脈搏 #美股 #財經日報"
+  },
+  {
+   "id": "tldr_2026-07-24_tw",
+   "day": 84,
+   "image": "tldr_2026-07-24_tw.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-24 台股盤後市場脈搏\nVIX 18.7(平靜（但一夜跳升12.4%要留意）) · 恐貪指數 65/100(Greed) · 美10年債 4.7% · USD/TWD 32.3\n板塊輪動:XLI 工業 領漲 ▲ +1.73%、XLY 非必需消費 重挫 ▼ -4.61%\n完整日報 → link in bio in bio\n\n#市場脈搏 #台股 #財經日報"
+  },
+  {
+   "id": "win_2026-07-17_6669_hold",
+   "day": 85,
+   "image": "win_2026-07-17_6669_hold.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "續抱的判斷,也留紀錄可查。\n\n2026-07-17 緯穎(6669):MarketDaily 當時建議「續抱」,5 個交易日後上漲 24.03%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-17_6669_hold\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-16_TSLA_wait",
+   "day": 86,
+   "image": "win_2026-07-16_TSLA_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-16 特斯拉 Tesla(TSLA):MarketDaily 當時建議「觀望」,5 個交易日後下跌 18.25%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-16_TSLA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-15_6488_wait",
+   "day": 87,
+   "image": "win_2026-07-15_6488_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-15 環球晶(6488):MarketDaily 當時建議「觀望」,5 個交易日後下跌 16.22%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-15_6488_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "tldr_2026-07-27_us",
+   "day": 88,
+   "image": "tldr_2026-07-27_us.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-27 美股盤後市場脈搏\nVIX 17.56(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.68% · USD/TWD 32.3\n板塊輪動:XLP 必需消費 領漲 ▲ +1.11%、XLK 科技 重挫 ▼ -1.44%\n完整日報 → link in bio in bio\n\n#市場脈搏 #美股 #財經日報"
+  },
+  {
+   "id": "win_2026-07-17_TSLA_wait",
+   "day": 89,
+   "image": "win_2026-07-17_TSLA_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-17 特斯拉 Tesla(TSLA):MarketDaily 當時建議「觀望」,5 個交易日後下跌 17.81%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-17_TSLA_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-16_6488_wait",
+   "day": 90,
+   "image": "win_2026-07-16_6488_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-16 環球晶(6488):MarketDaily 當時建議「觀望」,5 個交易日後下跌 18.25%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-16_6488_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-15_5439_wait",
+   "day": 91,
+   "image": "win_2026-07-15_5439_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-15 高技(5439):MarketDaily 當時建議「觀望」,5 個交易日後下跌 15.03%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-15_5439_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "tldr_2026-07-28_us",
+   "day": 92,
+   "image": "tldr_2026-07-28_us.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-28 美股盤後市場脈搏\nVIX 18.98(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.64% · USD/TWD 32.4\n板塊輪動:XLP 必需消費 領漲 ▲ +1.46%、XLE 能源 重挫 ▼ -2.11%\n完整日報 → link in bio in bio\n\n#市場脈搏 #美股 #財經日報"
+  },
+  {
+   "id": "tldr_2026-07-28_tw",
+   "day": 93,
+   "image": "tldr_2026-07-28_tw.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-28 台股盤後市場脈搏\nVIX 18.67(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.64% · USD/TWD 32.29\n板塊輪動:XLP 必需消費 領漲 ▲ +1.46%、XLE 能源 重挫 ▼ -2.11%\n完整日報 → link in bio in bio\n\n#市場脈搏 #台股 #財經日報"
+  },
+  {
+   "id": "win_2026-07-17_6488_wait",
+   "day": 94,
+   "image": "win_2026-07-17_6488_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-17 環球晶(6488):MarketDaily 當時建議「觀望」,5 個交易日後下跌 16.94%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-17_6488_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-16_5439_wait",
+   "day": 95,
+   "image": "win_2026-07-16_5439_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-16 高技(5439):MarketDaily 當時建議「觀望」,5 個交易日後下跌 13.84%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-16_5439_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-15_RDDT_wait",
+   "day": 96,
+   "image": "win_2026-07-15_RDDT_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-15 RDDT(RDDT):MarketDaily 當時建議「觀望」,5 個交易日後下跌 13.96%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-15_RDDT_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "tldr_2026-07-29_us",
+   "day": 97,
+   "image": "tldr_2026-07-29_us.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-29 美股盤後市場脈搏\nVIX 18.39(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.6% · USD/TWD 32.43\n板塊輪動:XLV 醫療 領漲 ▲ +2.36%、XLK 科技 重挫 ▼ -1.84%\n完整日報 → link in bio in bio\n\n#市場脈搏 #美股 #財經日報"
+  },
+  {
+   "id": "tldr_2026-07-29_tw",
+   "day": 98,
+   "image": "tldr_2026-07-29_tw.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "📊 2026-07-29 台股盤後市場脈搏\nVIX 18.21(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.6% · USD/TWD 32.36\n板塊輪動:XLV 醫療 領漲 ▲ +2.36%、XLK 科技 重挫 ▼ -1.84%\n完整日報 → link in bio in bio\n\n#市場脈搏 #台股 #財經日報"
+  },
+  {
+   "id": "win_2026-07-21_SNDK_wait",
+   "day": 99,
+   "image": "win_2026-07-21_SNDK_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-21 SNDK(SNDK):MarketDaily 當時建議「觀望」,5 個交易日後下跌 31.04%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-21_SNDK_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-17_BE_wait",
+   "day": 100,
+   "image": "win_2026-07-17_BE_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-17 BE(BE):MarketDaily 當時建議「觀望」,5 個交易日後下跌 13.99%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-17_BE_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-16_NOW_wait",
+   "day": 101,
+   "image": "win_2026-07-16_NOW_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-16 NOW(NOW):MarketDaily 當時建議「觀望」,5 個交易日後下跌 11.60%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-16_NOW_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "adcreative_2026-07-30_01",
+   "day": 102,
+   "image": "adcreative_2026-07-30_01.png",
+   "platforms": [
+    "instagram"
+   ],
+   "caption": "Citizens 的金融科技研究主管 Devin Ryan 舉了一個對比:一個現在一個月交易 2 次的散戶,把帳戶接上 AI 代理人之後,可能變成一天交易 20 次。\n\n這已經不是假設。7 月底美國財經媒體整理了正在發生的事:Robinhood 近期推出讓第三方 AI 代理人連進客戶帳戶的工具;券商 Public 自己養代理人來自動化投資流程;新創 Podium Markets AI 的助理 Ivy 會跨多個券商帳戶看你的持股,再依你的目標和風險承受度給建議。\n\n但整篇報導最值得抄下來的,不是這些功能,而是這幾家的共同底線——\n\n▸ Podium 共同創辦人兼執行長 Dirk Mueller-Ingrand:「The AI informs, but the human decides.」(AI 提供資訊,人做決定)\n▸ Public 共同創辦人兼共同執行長 Leif Abraham:「You still have the last word.」(最後一句話還是你說)。Public 要求用戶先審核並批准代理人的工作流程,代理人才會去執行任何投資任務。\n\n翻成散戶聽得懂的話:代理人時代變貴的不是下單速度,是「你按下確認之前到底懂多少」。交易次數從一個月 2 次變成一天 20 次,不會讓每一筆的資訊落差自己縮小,只會讓同一個落差被重複更多次。\n\n所以真正要練的是那道人工閘門。三件現在就能開始做的事:\n1️⃣ 先寫下「不做條件」——什麼情況你不加碼,而不是什麼情況你要買。\n2️⃣ 讓 AI 幫你蒐集與整理,不讓它幫你下結論;它給的每個數字都回原始出處對一次。\n3️⃣ 任何自動化都留一道人工確認——報導裡連券商自己都是這樣設計的。\n\nMarketDaily 做的就是那道閘門前面的功課:週一到週六(週日休息)早上 7 點寄台股日報、晚上 20:00 寄美股晚報,只寫跟你持股有關的部分,判斷錯的一樣照列不刪。目前限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n那一下確認鍵,你想留給誰按? 👇"
+  },
+  {
+   "id": "adcreative_2026-07-30_02",
+   "day": 103,
+   "image": "adcreative_2026-07-30_02.png",
+   "platforms": [
+    "instagram"
+   ],
+   "caption": "只多加 1 句指令,AI 就從「報喜不報憂」變成「列出 3 個看空理由」。\n\n多數人問 AI 的方式,注定只會拿到附和自己的答案——你問「這檔看起來不錯吧?」,它就順著你講下去。要拿到有用的東西,得先把它的立場改掉。\n\n📋 直接複製這段(把 [股票代號] 換成你自己的持股):\n\n「你現在是空方研究員,任務不是安慰我。針對 [股票代號],列出 3 個具體的看空理由,每一個都標明依據屬於哪一類:財報、產業結構、籌碼、還是總體環境。接著指出這 3 個理由裡,你自己最不確定的假設是哪一個。最後告訴我:要出現什麼樣的新證據,才會讓你收回這個看空。不要提供任何進出價位,只講風險邏輯。」\n\n為什麼這樣問才有用:\n1️⃣ 先指定立場 → 切掉模型討好你的預設反應\n2️⃣ 要求標註依據類別 → 一眼看出哪條是硬資料、哪條只是它在推測\n3️⃣ 要求寫出「推翻條件」→ 你拿到的是一張可以追蹤的檢查清單,而不是一段感想\n\n⚠️ 提醒:AI 產出的是待驗證的問題清單,不是結論。它會把數字講錯,每個數據都回原始財報對一次。\n\n做完一輪你會發現,最花時間的不是問 AI,而是把該看的資料先蒐齊。這件事我們幫你做:MarketDaily 週一到週六早上 7 點寄出台股日報,美股晚報 20:00,只挑跟你持股有關的部分寫給你。目前限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你平常會先問 AI「這檔好不好」,還是先問「我可能錯在哪」?在下面告訴我 👇"
+  },
+  {
+   "id": "adcreative_2026-07-30_04",
+   "day": 104,
+   "image": "adcreative_2026-07-30_04.png",
+   "platforms": [
+    "x"
+   ],
+   "caption": "MarketDaily 從上往下:\n① 30 秒重點:今天哪裡別急\n② 每檔持股一張卡:下一步和要盯的變化\n③ 5 則新聞,標多源確認或單一來源\n④ 往下是板塊輪動、財報行事曆\n週一到週六 7 點,限時免費 →\nhttps://marketdaily.ai/pricing?utm_source=social&utm_medium=organic&utm_campaign=adcreative_20260730_04"
+  },
+  {
+   "id": "win_2026-07-22_SNDK_wait",
+   "day": 105,
+   "image": "win_2026-07-22_SNDK_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-22 SNDK(SNDK):MarketDaily 當時建議「觀望」,5 個交易日後下跌 36.48%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-22_SNDK_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-21_BE_wait",
+   "day": 106,
+   "image": "win_2026-07-21_BE_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-21 BE(BE):MarketDaily 當時建議「觀望」,5 個交易日後下跌 26.26%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-21_BE_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-17_6907_wait",
+   "day": 107,
+   "image": "win_2026-07-17_6907_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-17 雅特力-KY(6907):MarketDaily 當時建議「觀望」,5 個交易日後下跌 13.98%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-17_6907_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "adcreative_2026-07-31_01",
+   "day": 108,
+   "image": "adcreative_2026-07-31_01.png",
+   "platforms": [
+    "instagram"
+   ],
+   "caption": "高盛成立 AlphaAI,只為回答 405 億美元 AI ETF 答不出的問題。\n\n全美 AI 主題基金與 ETF,管理規模加起來大約 405 億美元。但買進它們的人,買到的其實是「誰的名字裡有 AI」,不是「誰真的靠 AI 賺到錢」。\n\n7 月 30 日,路透看到一份內部備忘錄:高盛資產管理成立了 AI 投資平台 AlphaAI,由 Lou D'Ambrosio 出任資產管理的 AI 主席。資產與財富管理全球主管 Marc Nachmann 在備忘錄裡寫:「我們相信 AI 既在重塑各行各業,也是我們投資方式的力量倍增器。」\n\nD'Ambrosio 說得更直白:他預期同一個產業「內部的分化會更大」,而這件事未必已經反映在價格上。高盛手上的投資組合公司,已經跑出超過 100 個規模化的 AI 應用場景——那些成本、營收、利潤率的真實變化,會先出現在他們的內部資料,才輪到公開財報。\n\n翻成白話:當所有人都在買「AI 概念」,分水嶺已經悄悄從「有沒有講 AI」移到「有沒有把 AI 變成利潤率」。而這個差別,ETF 的名字不會告訴你。\n\n我們追不上高盛的私募資料,但可以追上同一個問題意識:你手上那幾檔,是靠故事在漲,還是靠數字在漲?\n\nMarketDaily 做的就是這件事的日常版——週一到週六,早上一班台股、晚上一班美股,只針對你自己設定的持股,把當天的消息、脈絡和該留意的風險整理成一封信。我們不替你按買賣鍵,也不把判斷錯的那幾次藏起來:連判錯的都列出來,敢這樣做的才有底氣。\n\n目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你手上的持股,是靠故事漲還是靠數字漲?在下面告訴我一檔就好。\n\n出處:Reuters(2026/7/30 內部備忘錄報導)、Finimize\n\n#AI投資 #高盛 #AlphaAI #台股 #美股 #財經日報 #MarketDaily"
+  },
+  {
+   "id": "adcreative_2026-07-31_02",
+   "day": 109,
+   "image": "adcreative_2026-07-31_02.png",
+   "platforms": [
+    "instagram"
+   ],
+   "caption": "同一份財報,自己啃兩小時,照這 4 步丟給 AI 只花 10 分鐘。\n\n差別不在 AI 比較聰明,而在你有沒有把「該問什麼」先寫清楚。多數人只丟一句「幫我看這份財報」,拿回來的就是一段誰都能寫的摘要。\n\n📋 照抄這 4 步:\n\n1️⃣ 先去公司投資人關係網頁或公開資訊觀測站,下載這一季的財報原檔或法說簡報。重點是給 AI 原始檔,不要讓它憑印象講數字。\n2️⃣ 把檔案上傳,貼下面這段指令。\n3️⃣ 它給的每一格,回原文用頁碼對一次。對不上的直接刪掉。\n4️⃣ 存成你自己的追蹤表,下一季同樣四步再跑一次,只看「哪幾格變了」。\n\n指令(直接複製):\n「我上傳的是這家公司最新一季的財報原文。只准使用檔案裡出現的內容作答,檔案裡找不到就寫『原文未提供』,不要用你記憶中的數字。請輸出一張表,包含五列:①這一季營收與獲利的變化,以及公司自己給的解釋(附原文句子)②毛利與費用結構裡,方向和上一季相反的項目 ③管理層對下一季的說法,標明那是承諾、預估、還是模糊帶過 ④這份文件裡最容易被讀者略過的一項風險,標出頁碼 ⑤下一季我該追蹤哪三個數字,才知道這個故事有沒有走偏。最後用三句話總結。不要提供任何價位或買賣判斷,只講事實與風險邏輯。」\n\n為什麼這樣寫有效:限制它只能用檔案內容,擋掉最常見的一種錯——AI 把記憶裡的舊數字講得很有信心;要求標頁碼,是為了讓你查得動;要求分「承諾/預估/模糊」,是把公關語言翻譯成可追蹤的東西。\n\n⚠️ 它產出的是一張待查清單,不是結論。數字一定要自己回原文核對。\n\n做完一次你就會發現,難的從來不是問 AI,而是每天把該讀的資料先蒐齊。這件事我們幫你做:MarketDaily 週一到週六早上 7 點寄台股日報、晚上 20:00 寄美股,只寫跟你手上部位有關的部分。目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你讀財報時最先看哪一段?營收、毛利,還是管理層講的話?在下面告訴我 👇"
+  },
+  {
+   "id": "adcreative_2026-07-31_05",
+   "day": 110,
+   "image": "adcreative_2026-07-31_05.png",
+   "platforms": [
+    "facebook"
+   ],
+   "caption": "就算有人付錢,看到的也跟你一模一樣。\n\n而且這不是佛心,是法律。MarketDaily 沒有投顧牌照,依法任何個別股票的分析都不能因為誰付了錢就變多、變深、變快——所以我們乾脆把它寫成產品鐵則:個股分析內容對全體用戶完全相同,永遠免費,不跟任何方案掛鉤。\n\n同樣的邏輯也用在戰績頁:判對的、判錯的,同一頁全列出來,不挑好看的講。敢把自己判錯的攤開,才有底氣談信任。\n\n現在全站零收費、不需要信用卡,全功能限時免費;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你比較信「只有付費才拿得到的獨家名單」,還是「所有人拿到的都一樣」?在下面告訴我一句。"
+  },
+  {
+   "id": "win_2026-07-23_6907_wait",
+   "day": 111,
+   "image": "win_2026-07-23_6907_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-23 雅特力-KY(6907):MarketDaily 當時建議「觀望」,5 個交易日後下跌 30.88%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-23_6907_wait\n\n#戰績公開 #台股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-22_AAOI_wait",
+   "day": 112,
+   "image": "win_2026-07-22_AAOI_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-22 AAOI(AAOI):MarketDaily 當時建議「觀望」,5 個交易日後下跌 30.76%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-22_AAOI_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  },
+  {
+   "id": "win_2026-07-21_AAOI_wait",
+   "day": 113,
+   "image": "win_2026-07-21_AAOI_wait.png",
+   "platforms": [
+    "instagram",
+    "facebook",
+    "threads"
+   ],
+   "caption": "有時候「不追」比「追上」更重要。\n\n2026-07-21 AAOI(AAOI):MarketDaily 當時建議「觀望」,5 個交易日後下跌 26.09%。\n\n完整戰績對帳(看對看錯都列)→ https://marketdaily.ai/track-record?utm_source=social&utm_medium=organic&utm_campaign=win_2026-07-21_AAOI_wait\n\n#戰績公開 #美股 #財經日報 #投資理財 #透明"
+  }
+ ]
 }
