@@ -116,3 +116,6 @@ intel/.us_congress_trades_cache.json
 state/nvidia_profile/
 state/nvidia_verify_url.txt
 state/nvidia_*.png
+# 寄後複檢的 LLM 慢路徑帳本:每班 append 一列的營運狀態,tracked 會天天 dirty
+# → 餓死所有 cron_abort_if_dirty 守門 runner(2026-07-17 孤兒檔事故同款),永遠不進版控。
+state/postcheck_llm_ledger.jsonl
