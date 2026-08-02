@@ -384,6 +384,20 @@ def parse_args(argv):
     return edition, date, dry
 
 
+def format_report(date, edition, problems, notices):
+    """本班判決的**唯一**輸出格式。抽成函式不是為了好看:`digest_chronic_triage` 靠解析這段
+    文字判斷慢性失分,格式一改它就會安靜地少算(lesson `producer_format_drift_kills_consumers`)。
+    抽出來之後,消費端的測試可以直接 import 這個函式產生 fixture,契約才咬得住真實生產格式。"""
+    out = [f"  ℹ️ {n}" for n in notices]
+    if problems:
+        out.append(f"✗ 寄後複檢 {date} {edition}:{len(problems)} 個問題")
+        out += [f"  - {p}" for p in problems]
+    else:
+        out.append(f"✓ 寄後複檢 {date} {edition} 全過(archive/時序/語音/reel/CDN/用戶視角e2e)"
+                   + (f";另有 {len(notices)} 則趨勢註記(常態,不推播)" if notices else ""))
+    return "\n".join(out)
+
+
 def main():
     edition, date, dry = parse_args(sys.argv[1:])
     now = _now_tw()
@@ -508,16 +522,8 @@ def main():
     # (2026-07-31:個人語音 15/15 掛掉跟慢路徑常態訊號混在同一則,人眼只會看到第一行)。
     problems.extend(chain_problems)
 
-    for n in notices:
-        print("  ℹ️", n)
-    if problems:
-        print(f"✗ 寄後複檢 {date} {edition}:{len(problems)} 個問題")
-        for p in problems:
-            print("  -", p)
-        return 1
-    print(f"✓ 寄後複檢 {date} {edition} 全過(archive/時序/語音/reel/CDN/用戶視角e2e)"
-          + (f";另有 {len(notices)} 則趨勢註記(常態,不推播)" if notices else ""))
-    return 0
+    print(format_report(date, edition, problems, notices))
+    return 1 if problems else 0
 
 
 if __name__ == "__main__":
