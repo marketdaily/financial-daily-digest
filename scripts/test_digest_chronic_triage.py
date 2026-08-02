@@ -85,6 +85,10 @@ check("key/reel", ct.finding_key("[reel] caption 含 ++/-- 雙符號")[0], "reel
 check("key/unknown-prefix", ct.finding_key("[新種檢查] 出事了")[0], "other:新種檢查")
 check("key/no-prefix", ct.finding_key("裸文字沒有前綴")[0], "unstructured")
 check("key/archive-no-check", ct.finding_key("[archive] 沒有冒號的訊息")[0], "archive:unknown")
+# e2e 視角是同一個子系統的另一個鏡頭:不併回去的話,同一個病被拆成兩個 key,各自湊不到門檻
+check("key/personal-e2e-merged", ct.finding_key("[個人語音e2e] 訂閱者點自己的專屬語音連結卡住")[0],
+      "personal_audio")
+check("key/audio-e2e-merged", ct.finding_key("[語音頁e2e] 守衛本身跑不動(TimeoutError)")[0], "audio")
 
 # ── 3. 多輪輸出:defer 後重跑,只認最後一個判決 ──
 with tempfile.TemporaryDirectory() as d:
@@ -107,6 +111,19 @@ with tempfile.TemporaryDirectory() as d:
     s = ct.parse_shift_log(p)
     check_true("drift/flagged", bool(s["parse_drift"]), s["parse_drift"])
     check("drift/parsed", len(s["findings"]), 2)
+
+# ── 4b. postcheck rc=3(公版存檔不存在):有判決但沒有「N 個問題」header ──
+# 舊版把整班算成「查不到判決」→ 湊兩班就報「複檢自己沒在跑」,把人帶去查錯方向
+with tempfile.TemporaryDirectory() as d:
+    p = Path(d) / "postcheck_2026-07-30_us.log"
+    p.write_text("=== start ===\n✗ 公版 archive 不存在:digest_2026-07-30_us.html\n=== end rc=3 ===\n",
+                 encoding="utf-8")
+    s = ct.parse_shift_log(p)
+    check("missing_archive/verdict", (s["verdict"], s["date"], s["edition"]), ("fail", "2026-07-30", "us"))
+    check("missing_archive/key", ct.finding_key(s["findings"][0])[0], "archive:missing_archive")
+    gaps_ma = ct.coverage_gaps(tw("2026-07-30T23:59:00"), days=0, log_dir=d)
+    check("missing_archive/not-a-gap", [g for g in gaps_ma if "us" in g], [])
+    check_true("missing_archive/escalate-only", "archive:missing_archive" in ct.ESCALATE_ONLY_KEYS)
 
 # ── 5. 慢性判準 ──
 def build(dirp, shifts):
@@ -199,13 +216,50 @@ with tempfile.TemporaryDirectory() as d:
     r2 = ct.triage(now=tw("2026-07-29T11:00:00"), log_dir=d, ledger=str(led), gap_days=0)
     check("ledger/cooldown-expired", [i["key"] for i in r2["fix"]], [KEY])
 
-    # 兩次嘗試仍再犯 → 升級給人,不再自動修
+    # 一次 runner 執行=attempted + 一筆結局,只能算「一次嘗試」(否則上限 2 實際只有 1 次)
     led.write_text("".join(json.dumps({"date": dt, "key": KEY, "action": a}, ensure_ascii=False) + "\n"
-                           for dt, a in [("2026-07-10", "attempted"), ("2026-07-11", "blocked")]),
+                           for dt, a in [("2026-07-10", "attempted"), ("2026-07-10", "blocked")]),
+                   encoding="utf-8")
+    r3a = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
+    check("ledger/one-run-one-attempt", [i["key"] for i in r3a["fix"]], [KEY])
+    check("ledger/one-run-attempts", r3a["fix"][0]["attempts"] if r3a["fix"] else None, 1)
+
+    # 中止型結局(push 失敗/讓路/apply 空)不算用掉額度:一次網路抖動不該永久燒掉自動修資格
+    led.write_text("".join(json.dumps({"date": dt, "key": KEY, "action": a}, ensure_ascii=False) + "\n"
+                           for dt, a in [("2026-07-01", "attempted"), ("2026-07-01", "aborted"),
+                                         ("2026-07-02", "attempted"), ("2026-07-02", "aborted")]),
+                   encoding="utf-8")
+    r3b = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
+    check("ledger/aborted-not-counted", [i["key"] for i in r3b["fix"]], [KEY])
+    check("ledger/aborted-attempts", r3b["fix"][0]["attempts"] if r3b["fix"] else None, 0)
+
+    # 兩個【不同開工日】的嘗試仍再犯 → 升級給人,不再自動修
+    led.write_text("".join(json.dumps({"date": dt, "key": KEY, "action": a}, ensure_ascii=False) + "\n"
+                           for dt, a in [("2026-07-10", "attempted"), ("2026-07-10", "blocked"),
+                                         ("2026-07-11", "attempted"), ("2026-07-11", "applied")]),
                    encoding="utf-8")
     r3 = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
     check("ledger/max-attempts", [i["key"] for i in r3["escalate"]], [KEY])
     check("ledger/max-attempts-no-fix", r3["fix"], [])
+
+    check("ledger/max-attempts-count", r3["escalate"][0]["attempts"] if r3["escalate"] else None, 2)
+    # 升級提醒去重:剛講過就不重講,隔了 ESCALATE_REMIND_DAYS 天才再講(但絕不永久閉嘴)
+    led2 = led.read_text(encoding="utf-8")
+    led.write_text(led2 + json.dumps({"date": "2026-07-23", "key": KEY, "action": "escalated"},
+                                     ensure_ascii=False) + "\n", encoding="utf-8")
+    r3c = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
+    check("ledger/escalate-dedup", (r3c["verdict"], r3c["notify"]), ("escalate", False))
+    led.write_text(led2 + json.dumps({"date": "2026-07-10", "key": KEY, "action": "escalated"},
+                                     ensure_ascii=False) + "\n", encoding="utf-8")
+    r3d = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
+    check("ledger/escalate-remind-again", (r3d["verdict"], r3d["notify"]), ("escalate", True))
+    # 但「守衛自己瞎了/帳本壞了」不可被去重降噪:剛講過的同一個 key + 帳本壞掉 → 仍必須推播
+    led.write_text(led2 + json.dumps({"date": "2026-07-23", "key": KEY, "action": "escalated"},
+                                     ensure_ascii=False) + "\n這行不是 json\n", encoding="utf-8")
+    r3e = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
+    check("ledger/infra-level-never-muted",
+          (bool(r3e["ledger_broken"]), r3e["notify"]), (True, True))
+    led.write_text(led2, encoding="utf-8")
 
     # resolved 之後前帳一筆勾銷(否則同一個 key 一輩子只能被機器修兩次)
     led.write_text(led.read_text(encoding="utf-8")
@@ -232,6 +286,13 @@ with tempfile.TemporaryDirectory() as d:
     check("ledger/broken-no-fix", r6["fix"], [])
     check("ledger/broken-escalate", [i["key"] for i in r6["escalate"]], [KEY])
     check_true("ledger/broken-reason", bool(r6["ledger_broken"]), r6["ledger_broken"])
+    # 多種損壞混在一起時,回報不能只剩最後一種(運維只看到冰山一角)
+    led.write_text("{壞的\n" + json.dumps({"key": "k"}) + "\n不是 json\n", encoding="utf-8")
+    _, broken_multi = ct.read_ledger(str(led))
+    check_true("ledger/broken-counts-all", "共 3 行壞掉" in broken_multi, broken_multi)
+    # 三種損壞的**每一種**都要看得到:只回報最後一種 = 運維只看到冰山一角
+    check_true("ledger/broken-lists-first", "第 1 行" in broken_multi, broken_multi)
+    check_true("ledger/broken-lists-mid", "第 2 行" in broken_multi, broken_multi)
     check_true("ledger/broken-in-summary", "帳本" in ct.summary_line(r6), ct.summary_line(r6))
 
 # ── 8. 班表/缺件 dead-man:誰在檢查檢查者 ──
@@ -310,8 +371,19 @@ with tempfile.TemporaryDirectory() as d:
     check("cli/record-fields", (rec["key"], rec["action"], rec["date"]),
           ("archive:signal_reason_shallow", "attempted", "2026-07-24"))
     check("cli/record-then-cooling", run_cli([], env).returncode, 1)   # 冷卻中 → 安靜退
-    check("cli/bad-arg", run_cli(["--nope"], env).returncode, 1)
-    check("cli/bad-record", run_cli(["record", "xxx", "k"], env).returncode, 1)
+    # 用法錯 → rc=2(需人工)。**絕不可以是 1**:1 會被 runner 讀成「今天沒事」
+    check("cli/bad-arg", run_cli(["--nope"], env).returncode, 2)
+    check("cli/bad-record", run_cli(["record", "xxx", "k"], env).returncode, 2)
+    check("cli/window-missing-value", run_cli(["--window"], env).returncode, 2)
+    check("cli/window-nonnumeric", run_cli(["--window", "abc"], env).returncode, 2)
+    # 分流器自己炸了 → rc=3(CRASH_RC),與「無事」分開,runner 才推得出「守衛死了」
+    crash = run_cli([], dict(env, MD_CHRONIC_NOW="not-a-date"))
+    check("cli/crash-rc", crash.returncode, ct.CRASH_RC)
+    check_true("cli/crash-traceback", "Traceback" in crash.stderr, crash.stderr[-200:])
+    # 小窗口手跑不可恆為失明(MIN_SHIFTS 要夾住 window)
+    check("cli/small-window", run_cli(["--window", "3", "--json"], env).returncode in (0, 1, 2), True)
+    small = json.loads(run_cli(["--window", "3", "--json"], env).stdout)
+    check("cli/small-window-not-blind", small["blind"], "")
     # 需人工(這裡用失明情境)→ rc=2,runner 靠它決定「只推播不 spawn」
     env_blind = dict(env, MD_CHRONIC_GAP_DAYS="7", MD_CHRONIC_NOW="2026-07-31T23:59:00")
     check("cli/escalate-rc", run_cli([], env_blind).returncode, 2)

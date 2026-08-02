@@ -15,6 +15,14 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.pop("DIGEST_PAID_CARDS", None)
 import analyzer  # noqa: E402
 
+# ⭐ 一律用假 key,與機器上的 .env 完全脫鉤(2026-08-03)。
+# 這支全程 stub `requests.post`,不打真的網路;key 只是「有沒有設定」的閘。但只要它依賴
+# 環境裡真有 key,在**拋棄式 git worktree** 裡就恆紅(.env 被 .gitignore 擋在 worktree 外)——
+# 而 digest_selfheal / digest_chronic 的自動修就是在 worktree 內跑這份 gate 才准 apply。
+# 結果:自癒的修復每次都被判 blocked_tests 整包丟棄,告警還寫「代理修不好」,沒有任何測試會紅。
+# 順帶好處:key 數量固定=2,行為在任何機器上都一樣(只有 key1 的機器會走到不同分支)。
+analyzer.GEMINI_API_KEY, analyzer.GEMINI_API_KEY_2 = "TESTKEY1AAAAA", "TESTKEY2BBBBB"
+
 
 def run():
     # ── 1) 付費 Claude 預設絕不被呼叫 ──

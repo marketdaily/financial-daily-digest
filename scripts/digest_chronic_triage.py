@@ -42,15 +42,18 @@ MIN_HITS = 3         # 同一 key 在窗口內犯幾次算慢性
 RECENT_SHIFTS = 4    # 最近幾班內至少要犯 1 次(否則視為已止血,不重複立案)
 MIN_SHIFTS = 4       # 窗口內少於這麼多班有判決 = 偵測器失明
 COOLDOWN_DAYS = 5    # 同一 key 立案後的冷卻天數(給修復生效的時間)
-MAX_ATTEMPTS = 2     # 自動修嘗試上限,超過改叫人
+MAX_ATTEMPTS = 2     # 自動修嘗試上限(以「開工日」計),超過改叫人
+CRASH_RC = 3         # 分流器自己炸了(與「無事」的 1 分開,否則死掉跟乾淨長得一樣)
 
 # 前綴 → 穩定 key。postcheck 的失分行一律長成 `  - [前綴] 內文`。
 PREFIX_SLUG = {
     "archive": "archive",
     "交付": "delivery",
     "語音": "audio",
-    "語音稿": "narration",
+    "語音頁e2e": "audio",          # 同一子系統的 e2e 視角:併回 audio,否則失分被拆成兩個
+    "語音稿": "narration",         # key 各自湊不到門檻 → 慢性病永遠不成立(靈敏度稀釋)
     "個人語音": "personal_audio",
+    "個人語音e2e": "personal_audio",
     "reel": "reel",
     "LLM鏈": "llm_chain",
 }
@@ -58,11 +61,15 @@ PREFIX_SLUG = {
 # 分流+推播。放進來只會製造第二則重複告警(lesson: alert storm dedup)。
 INFRA_KEYS = {"llm_chain"}
 # 只能升級給人的:自動改碼的風險/半徑遠大於收益。
-ESCALATE_ONLY_KEYS = {"delivery"}
+ESCALATE_ONLY_KEYS = {"delivery", "archive:missing_archive"}
+ESCALATE_REMIND_DAYS = 7   # 同一件「需人工」多久重講一次(每天推=把守衛推播訓練成雜訊)
 
 VERDICT_FAIL_RE = re.compile(r"^✗ 寄後複檢 (\d{4}-\d{2}-\d{2}) (tw|us):(\d+) 個問題")
 VERDICT_PASS_RE = re.compile(r"^✓ 寄後複檢 (\d{4}-\d{2}-\d{2}) (tw|us) ")
 SKIP_RE = re.compile(r"跳過複檢")
+# postcheck rc=3:公版存檔根本不存在。這行沒有「N 個問題」的 header,舊版會把整班算成
+# 「查不到判決」→ 湊兩班就報「寄後複檢自己沒在跑」,把人帶去查錯方向(驗證者 Notes)。
+MISSING_ARCHIVE_RE = re.compile(r"^✗ 公版 archive 不存在:(.*)$")
 MAX_GAPS = 2         # 近 7 天有這麼多「該有判決卻沒有」的班次 = postcheck 自己可能死了
 FINDING_RE = re.compile(r"^ {2}- (.*)$")
 LOGNAME_RE = re.compile(r"^postcheck_(\d{4}-\d{2}-\d{2})_(tw|us)\.log$")
@@ -135,6 +142,18 @@ def parse_shift_log(path):
         m = VERDICT_PASS_RE.match(ln)
         if m:
             last_idx, last_kind, last_m = i, "pass", m
+            continue
+        m = MISSING_ARCHIVE_RE.match(ln)
+        if m:
+            last_idx, last_kind, last_m = i, "missing_archive", m
+    if last_kind == "missing_archive":
+        name = Path(path).name
+        fm = LOGNAME_RE.match(name)
+        out["verdict"] = "fail"
+        out["date"], out["edition"] = (fm.group(1), fm.group(2)) if fm else (None, None)
+        out["declared"] = 1
+        out["findings"] = [f"[archive] missing_archive: {last_m.group(1).strip()}"]
+        return out
     if last_idx is None:
         # 美股休市夜:腳本印「跳過複檢」就 return 0,沒有判決行——那是預期行為,不是缺件
         out["verdict"] = "skip" if any(SKIP_RE.search(ln) for ln in lines) else "none"
@@ -217,9 +236,12 @@ def coverage_gaps(now, days=7, log_dir=None):
 
 def read_ledger(path=None):
     """回傳 (records, broken_reason)。壞掉時 records 仍回已讀到的部分,但 broken 非空
-    → 上層必須改走「不 spawn + 告警」,不可當作沒事(fail-closed 且看得見)。"""
+    → 上層必須改走「不 spawn + 告警」,不可當作沒事(fail-closed 且看得見)。
+
+    broken 收集**全部**壞行再摘要:舊版是單一字串一路覆寫,三種損壞只報得出最後一種,
+    運維看到的永遠是冰山一角(驗證者 Notes)。"""
     path = Path(path) if path else _ledger_path()
-    recs, broken = [], ""
+    recs, bad = [], []
     if not path.exists():
         return recs, ""
     try:
@@ -230,15 +252,18 @@ def read_ledger(path=None):
             try:
                 r = json.loads(ln)
             except json.JSONDecodeError:
-                broken = f"第 {i} 行不是合法 JSON"
+                bad.append(f"第 {i} 行不是合法 JSON")
                 continue
             if not isinstance(r, dict) or not r.get("key") or not r.get("date"):
-                broken = f"第 {i} 行缺 key/date 欄位"
+                bad.append(f"第 {i} 行缺 key/date 欄位")
                 continue
             recs.append(r)
     except OSError as e:
         return recs, f"讀取失敗:{e}"
-    return recs, broken
+    if not bad:
+        return recs, ""
+    head = "、".join(bad[:3]) + (f"(另有 {len(bad) - 3} 行)" if len(bad) > 3 else "")
+    return recs, f"共 {len(bad)} 行壞掉:{head}"
 
 
 def append_ledger(rec, path=None):
@@ -257,27 +282,39 @@ def _days_since(date_iso, now):
 
 
 def ledger_state(key, recs, now):
-    """這個 key 現在該怎麼辦 → dict(attempts, last_attempt_date, cooling, resolved_after)。
+    """這個 key 現在該怎麼辦 → dict(attempts, last_attempt_date, cooling, last_escalated)。
 
-    `resolved` 記錄= 人工或後續驗證確認修好了 → 之前的 attempts 一筆勾銷(否則一個 key
-    一輩子只能被自動修兩次,半年後同名新 bug 就永遠叫不動機器)。
+    ⭐ attempts 用「**開工日**」算,不是用記錄筆數:一次 runner 執行一定會寫 `attempted`
+    (開工)+ 一筆結局(`applied`/`blocked`/`aborted`),舊版三種都計數 → 跑一次就 +2,
+    `MAX_ATTEMPTS=2` 實際等於「只准修一次」(驗證者 F3)。
+    `aborted` = 與修復品質無關的中止(push 失敗、主樹被別視窗動過而讓路、apply 後空)——
+    那天不算用掉一次額度,否則一次網路抖動就永久燒掉這個 key 的自動修資格。
+    `resolved` = 確認修好了 → 之前的帳一筆勾銷(否則同一個 key 一輩子只能被機器修兩次)。
     """
-    st = {"attempts": 0, "last_attempt_date": "", "cooling": False, "cool_days_left": 0}
+    st = {"attempts": 0, "last_attempt_date": "", "cooling": False, "cool_days_left": 0,
+          "last_escalated": ""}
     resolved_at = None
     for r in recs:
         if r.get("key") != key:
             continue
         if r.get("action") == "resolved":
             resolved_at = r.get("date")
+    started, aborted = {}, set()
     for r in recs:
         if r.get("key") != key:
             continue
-        if resolved_at and str(r.get("date", "")) <= str(resolved_at):
+        d, action = str(r.get("date", "")), r.get("action")
+        if resolved_at and d <= str(resolved_at):
             continue
-        if r.get("action") in ("attempted", "applied", "blocked"):
-            st["attempts"] += 1
-            if str(r.get("date", "")) > st["last_attempt_date"]:
-                st["last_attempt_date"] = str(r.get("date", ""))
+        if action == "attempted":
+            started[d] = True
+        elif action == "aborted":
+            aborted.add(d)
+        elif action == "escalated" and d > st["last_escalated"]:
+            st["last_escalated"] = d
+    real = sorted(d for d in started if d not in aborted)
+    st["attempts"] = len(real)
+    st["last_attempt_date"] = real[-1] if real else ""
     if st["last_attempt_date"]:
         d = _days_since(st["last_attempt_date"], now)
         if d is None:
@@ -288,6 +325,15 @@ def ledger_state(key, recs, now):
             # d<0(未來日期,時鐘錯亂)也落在這裡 → 一樣算冷卻中
             st["cooling"], st["cool_days_left"] = True, COOLDOWN_DAYS - d
     return st
+
+
+def _due_to_remind(last_date, now, days=ESCALATE_REMIND_DAYS):
+    """這件「需人工」的事今天該不該再講一次。沒講過=講;講過但已隔 days 天=再講。
+    每天講會把守衛推播訓練成雜訊(capability_alert_storm_dedup),但**絕不永久閉嘴**。"""
+    if not last_date:
+        return True
+    d = _days_since(last_date, now)
+    return d is None or d >= days or d < 0
 
 
 def triage(window=WINDOW, min_hits=MIN_HITS, now=None, log_dir=None, ledger=None, gap_days=None):
@@ -301,7 +347,7 @@ def triage(window=WINDOW, min_hits=MIN_HITS, now=None, log_dir=None, ledger=None
         "window": window, "min_hits": min_hits,
         "blind": "", "gaps": [], "parse_drift": [], "ledger_broken": "",
         "chronic": [], "fix": [], "escalate": [], "cooling": [],
-        "verdict": "clean",
+        "verdict": "clean", "notify": True,
     }
 
     for s in shifts:
@@ -310,8 +356,10 @@ def triage(window=WINDOW, min_hits=MIN_HITS, now=None, log_dir=None, ledger=None
 
     out["gaps"] = coverage_gaps(now, days=gap_days, log_dir=log_dir) if gap_days else []
     blind_bits = []
-    if len(shifts) < MIN_SHIFTS:
-        blind_bits.append(f"窗口內只找到 {len(shifts)} 個有判決的班次(<{MIN_SHIFTS})——"
+    # MIN_SHIFTS 是為預設窗口(10)訂的;手跑 `--window 3` 時若不夾住,會恆為「失明」(驗證者 Notes)
+    min_shifts = min(MIN_SHIFTS, window)
+    if len(shifts) < min_shifts:
+        blind_bits.append(f"窗口內只找到 {len(shifts)} 個有判決的班次(<{min_shifts})——"
                           "postcheck 可能沒在跑,或 log 被清掉;看不到 ≠ 沒問題")
     if len(out["gaps"]) >= MAX_GAPS:
         blind_bits.append(f"近 7 天有 {len(out['gaps'])} 個班次該有判決卻查不到:"
@@ -375,11 +423,19 @@ def triage(window=WINDOW, min_hits=MIN_HITS, now=None, log_dir=None, ledger=None
         else:
             item["route"] = "fix"
             out["fix"].append(item)
+        if item["route"] == "escalate":
+            item["last_escalated"] = st["last_escalated"]
+            item["due"] = _due_to_remind(st["last_escalated"], now)
 
     if out["fix"]:
         out["verdict"] = "fix"
     elif out["escalate"] or out["blind"] or out["parse_drift"] or out["ledger_broken"]:
         out["verdict"] = "escalate"
+        # 每天推同一則 = 把守衛推播訓練成雜訊。已講過且未滿 ESCALATE_REMIND_DAYS 天的
+        # **全部**升級項 → 本輪不推播(仍寫進 log/JSON,不是消失);只要有一項到期就照推。
+        # 偵測層自己的問題(失明/漂移/帳本壞)一律照推:那是「守衛瞎了」,不可降噪。
+        infra_level = bool(out["blind"] or out["parse_drift"] or out["ledger_broken"])
+        out["notify"] = infra_level or any(i.get("due") for i in out["escalate"]) or not out["escalate"]
     elif out["cooling"]:
         out["verdict"] = "cooling"
     return out
@@ -408,8 +464,11 @@ def summary_line(res):
 def main(argv):
     if argv and argv[0] == "record":
         # 用法:record <action> <key> [note]   —— 給 runner(bash)記帳用
-        if len(argv) < 3 or argv[1] not in ("attempted", "applied", "blocked", "escalated", "resolved"):
-            raise SystemExit("用法:record <attempted|applied|blocked|escalated|resolved> <key> [note]")
+        if len(argv) < 3 or argv[1] not in ("attempted", "applied", "blocked", "aborted",
+                                            "escalated", "resolved"):
+            print("用法:record <attempted|applied|blocked|aborted|escalated|resolved> <key> [note]",
+                  file=sys.stderr)
+            return 2
         now = _now_tw()
         append_ledger({"ts": now.isoformat(timespec="seconds"), "date": now.strftime("%Y-%m-%d"),
                        "key": argv[2], "action": argv[1], "note": " ".join(argv[3:])})
@@ -418,18 +477,23 @@ def main(argv):
 
     window, min_hits, as_json = WINDOW, MIN_HITS, False
     i = 0
+    usage = "用法:[--window N] [--min-hits N] [--json] | record <action> <key> [note]"
     while i < len(argv):
         a = argv[i]
-        if a == "--window":
+        if a in ("--window", "--min-hits"):
+            if i + 1 >= len(argv) or not argv[i + 1].isdigit() or int(argv[i + 1]) < 1:
+                print(f"參數 {a} 需要一個正整數。{usage}", file=sys.stderr)
+                return 2      # 用法錯 = 需人工,不可回 1(1 會被 runner 讀成「今天沒事」)
+            if a == "--window":
+                window = int(argv[i + 1])
+            else:
+                min_hits = int(argv[i + 1])
             i += 1
-            window = int(argv[i])
-        elif a == "--min-hits":
-            i += 1
-            min_hits = int(argv[i])
         elif a == "--json":
             as_json = True
         else:
-            raise SystemExit(f"未知參數 {a!r}(用法:--window N --min-hits N --json)")
+            print(f"未知參數 {a!r}。{usage}", file=sys.stderr)
+            return 2
         i += 1
     res = triage(window=window, min_hits=min_hits)
     if as_json:
@@ -439,5 +503,24 @@ def main(argv):
     return {"fix": 0, "escalate": 2, "cooling": 1, "clean": 1}[res["verdict"]]
 
 
+def cli(argv):
+    """把「炸了」與「沒事」在 exit code 上分開。
+
+    ⭐ Python 未捕捉例外的 exit code 就是 **1**,而 runner 把 1 讀成「無慢性失分,安靜退」——
+    偵測器整支死掉的樣子會跟「今天很乾淨」一模一樣:不推播、不記帳、exit 0。這正是本模組
+    宣稱要防的失明,自己卻在最外層踩了(驗證者 F2)。CRASH_RC=3 讓 runner 有得分辨。
+    """
+    try:
+        return main(argv)
+    except SystemExit:
+        raise
+    except BaseException:
+        import traceback
+        traceback.print_exc()
+        print("🔴 慢性失分分流器自己炸了(見上方 traceback)——本輪沒有任何慢性判斷",
+              file=sys.stderr)
+        return CRASH_RC
+
+
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(cli(sys.argv[1:]))
