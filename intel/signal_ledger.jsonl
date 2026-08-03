@@ -512,3 +512,10 @@
 {"date": "2026-08-01", "code": "6274", "source": "mops_news", "level": "yellow", "signal": "台燿(6274) 重訊[2026-07-31]:代重要子公司TAIWAN UNION TECHNOLOGY (THAILAND)及 台燿科技(中山)公告取得供營業用之機", "price_at_signal": 1110.0}
 {"date": "2026-08-01", "code": "TSM", "source": "us_congress", "level": "yellow", "signal": "🏛️ TSM 國會議員買進:Cleo Fields(House) 2026-07-30 揭露", "price_at_signal": null}
 {"date": "2026-08-02", "code": "4967", "source": "holders", "level": "red", "signal": "十銓(4967):千張大戶持股比週增1.49個百分點(大戶顯著加碼)", "price_at_signal": 233.5}
+{"date": "2026-08-03", "code": "3006", "source": "tw_rank", "level": "yellow", "signal": "晶豪科(3006) 今日漲幅排行第4(+10.0%),異常活躍", "price_at_signal": 198.0}
+{"date": "2026-08-03", "code": "4973", "source": "margin", "level": "red", "signal": "廣穎電通(4973):融資5日驟減-15.0%(疑似斷頭/停損潮,股價走勢待確認)", "price_at_signal": 139.0}
+{"date": "2026-08-03", "code": "6274", "source": "institutional", "level": "yellow", "signal": "台燿(6274):法人 20 日淨賣超 -655 張(未成連續型態)", "price_at_signal": 1220.0}
+{"date": "2026-08-03", "code": "6442", "source": "leadflow", "level": "red", "signal": "光聖(6442) 無消息近漲停+10.0%(連2根,5日-4.5%),疑資訊先行資金|外資+投信近3日僅+269張,法人未同步=隱形買盤", "price_at_signal": 1270.0}
+{"date": "2026-08-03", "code": "6240", "source": "leadflow", "level": "red", "signal": "松崗(6240) 無消息近漲停+10.0%(量能13.5×,5日+9.7%),疑資訊先行資金|外資+投信近3日僅-13張,法人未同步=隱形買盤", "price_at_signal": 19.8}
+{"date": "2026-08-03", "code": "2368", "source": "leadflow", "level": "red", "signal": "金像電(2368) 無消息近漲停+10.0%(連2根,5日-2.6%),疑資訊先行資金|外資+投信近3日僅-1886張,法人未同步=隱形買盤", "price_at_signal": 872.0}
+{"date": "2026-08-03", "code": "5274", "source": "leadflow", "level": "red", "signal": "信驊(5274) 無消息近漲停+10.0%(連2根,5日+8.7%),疑資訊先行資金|外資+投信近3日僅+136張,法人未同步=隱形買盤", "price_at_signal": 15975.0}
