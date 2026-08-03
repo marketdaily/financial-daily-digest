@@ -2,6 +2,72 @@
   "_comment": "日報自動裂變候選佇列(P2.5打法6資料層)——只含公版存檔結構化數字區塊萃取的短文,發文前仍須逐字核對 caption_zh(feedback_social_post_verify)。本檔不會被自動發文流程讀取。",
   "candidates": [
     {
+      "date": "2026-08-03",
+      "variant": "us",
+      "indicators": [
+        {
+          "label": "VIX 恐慌指數",
+          "value": "16.0",
+          "sub": "平靜"
+        },
+        {
+          "label": "恐貪指數",
+          "value": "65/100",
+          "sub": "Greed"
+        },
+        {
+          "label": "美國10年債",
+          "value": "4.75%",
+          "sub": "升息預期參考"
+        },
+        {
+          "label": "黃金 / 原油",
+          "value": "$4111.1 / $79.67",
+          "sub": "+0.10% / -5.91%"
+        },
+        {
+          "label": "USD/TWD 匯率",
+          "value": "32.47",
+          "sub": "台幣貶值"
+        }
+      ],
+      "sectors": [
+        {
+          "name": "XLY 非必需消費",
+          "move": "▲ +3.29%",
+          "pct": 3.29
+        },
+        {
+          "name": "XLC 通訊",
+          "move": "▲ +1.56%",
+          "pct": 1.56
+        },
+        {
+          "name": "XLE 能源",
+          "move": "▲ +1.00%",
+          "pct": 1.0
+        },
+        {
+          "name": "XLF 金融",
+          "move": "▼ -0.11%",
+          "pct": -0.11
+        },
+        {
+          "name": "XLK 科技",
+          "move": "▼ -0.22%",
+          "pct": -0.22
+        },
+        {
+          "name": "XLV 醫療",
+          "move": "▼ -0.59%",
+          "pct": -0.59
+        }
+      ],
+      "caption_zh": "📊 2026-08-03 美股盤後市場脈搏\nVIX 16.0(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.75% · USD/TWD 32.47\n板塊輪動:XLY 非必需消費 領漲 ▲ +3.29%、XLV 醫療 重挫 ▼ -0.59%\n完整日報 → link in bio",
+      "caption_len": 150,
+      "source_archive": "docs/output/digest_2026-08-03_us.html"
+    },
+    {
       "date": "2026-07-29",
       "variant": "us",
       "indicators": [
