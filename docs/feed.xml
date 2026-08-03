@@ -6,7 +6,7 @@
   <atom:link href="https://marketdaily.ai/feed.xml" rel="self" type="application/rss+xml"/>
   <description>MarketDaily 個股深度分析 — 美股、台股長尾主題,每週更新。</description>
   <language>zh-tw</language>
-  <lastBuildDate>Sun, 02 Aug 2026 10:00:00 +0800</lastBuildDate>
+  <lastBuildDate>Mon, 03 Aug 2026 16:30:56 +0800</lastBuildDate>
   <ttl>720</ttl>
   <generator>MarketDaily blog_feed.py</generator>
   <image>
@@ -15,11 +15,51 @@
     <link>https://marketdaily.ai/blog/</link>
   </image>
   <item>
+    <title>亞馬遜 (AMZN) 投資前必看 3 個關鍵風險</title>
+    <link>https://marketdaily.ai/blog/amzn-投資前必看-3-個風險-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=amzn-投資前必看-3-個風險-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/amzn-投資前必看-3-個風險-202608</guid>
+    <pubDate>Mon, 03 Aug 2026 16:30:56 +0800</pubDate>
+    <description>亞馬遜 (AMZN) 作為全球電商與雲端服務巨頭，其龐大的市場影響力與創新能力，使其成為許多投資人關注的焦點。然而，在考慮將亞馬遜納入您的投資組合之前，深入了解其潛在風險至關重要。本文將探討投資亞馬遜前必須仔細評估的 3 個主要風險，幫助您在 2026 年及未來做出更明智的決策。</description>
+    <category>AMZN</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/amzn-投資前必看-3-個風險-202608.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/amzn-投資前必看-3-個風險-202608.png" medium="image"/>
+  </item>
+  <item>
+    <title>中華電(2412) 法說會前瞻：掌握營運脈動的關鍵時刻</title>
+    <link>https://marketdaily.ai/blog/2412-event-20260805?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2412-event-20260805</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2412-event-20260805</guid>
+    <pubDate>Mon, 03 Aug 2026 16:30:38 +0800</pubDate>
+    <description>台灣電信龍頭中華電信（2412）即將於 2026 年 8 月 5 日 召開法人說明會，屆時將對外說明其 115 年第 2 季的營運成果。這場法說會不僅是公司向投資人、法人機構及媒體報告最新營運狀況的重要平台，更是市場觀察中華電信未來發展策略與產業趨勢的絕佳機會。</description>
+    <category>2412</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/2412-event-20260805.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/2412-event-20260805.png" medium="image"/>
+  </item>
+  <item>
+    <title>Fed 升息降息對股市影響：2026 年投資人必懂的利率決議傳導機制</title>
+    <link>https://marketdaily.ai/blog/macro-Fed-利率決議與升降息-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-Fed-利率決議與升降息-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-Fed-利率決議與升降息-202608</guid>
+    <pubDate>Mon, 03 Aug 2026 16:30:27 +0800</pubDate>
+    <description>聯準會（Fed）的利率決議，是全球金融市場最受矚目的事件之一。無論是升息、降息或維持利率不變，其背後的考量與對經濟的影響，都牽動著投資人的神經。特別是對於關心 Fed 升息降息對股市影響 的投資人而言，理解其運作機制，是掌握投資先機的關鍵。</description>
+    <category>MACRO</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/macro-Fed-利率決議與升降息-202608.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/macro-Fed-利率決議與升降息-202608.png" medium="image"/>
+  </item>
+  <item>
+    <title>大立光(3008) 除權息時間與歷史紀錄：掌握高股息投資關鍵</title>
+    <link>https://marketdaily.ai/blog/3008-除權息時間與歷史紀錄-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=3008-除權息時間與歷史紀錄-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/3008-除權息時間與歷史紀錄-202608</guid>
+    <pubDate>Mon, 03 Aug 2026 16:30:15 +0800</pubDate>
+    <description>對於台灣股市的投資人而言，「除權息」絕對是每年不可錯過的財經大事。特別是像大立光(3008)這類市場關注度高的權值股，其除權息政策與歷史紀錄，更是許多投資人評估投資價值的重要指標。本文將深入探討除權息的機制、大立光近年來的除息紀錄，並提供投資人在除權息旺季應注意的事項，幫助您更全面地理解這項重要的投資環節。</description>
+    <category>3008</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/3008-除權息時間與歷史紀錄-202608.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/3008-除權息時間與歷史紀錄-202608.png" medium="image"/>
+  </item>
+  <item>
     <title>I run a 9-model LLM council with a judge to write a daily financial newsletter. Here's what actually breaks.</title>
     <link>https://marketdaily.ai/blog/eng-llm-council-judge-en-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=eng-llm-council-judge-en-202608</link>
     <guid isPermaLink="true">https://marketdaily.ai/blog/eng-llm-council-judge-en-202608</guid>
     <pubDate>Sun, 02 Aug 2026 10:00:00 +0800</pubDate>
-    <description>MarketDaily is a daily financial email digest — 75 days and 1,800+ commits of production history. This post is about the reliability layer that makes it survivable: a multi-model council, a judge, and a 31-check deterministic audit gate. Including the three incidents where it failed.</description>
+    <description>I run MarketDaily, a daily financial email digest. Subscribers pick their holdings (US + Taiwan stocks), and twice a day the system generates a personalized HTML report for each of them and sends it at a fixed time. First commit was 2026-05-19; as of writing that's 75 days and 1,800+ commits of production history, curr</description>
     <category>ENG</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/eng-llm-council-judge-en-202608.png"/>
     <media:content url="https://marketdaily.ai/blog/og/eng-llm-council-judge-en-202608.png" medium="image"/>
@@ -29,7 +69,7 @@
     <link>https://marketdaily.ai/blog/eng-llm-council-judge-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=eng-llm-council-judge-202608</link>
     <guid isPermaLink="true">https://marketdaily.ai/blog/eng-llm-council-judge-202608</guid>
     <pubDate>Sun, 02 Aug 2026 10:00:00 +0800</pubDate>
-    <description>MarketDaily 從 2026-05-19 第一個 commit 到今天跑了 75 天、1,800+ 個 commit。這篇講它的核心可靠層:多模型 council + judge 仲裁 + 31 項使用者視角 audit,以及三次真實事故怎麼把這套架構打磨出來的。</description>
+    <description>MarketDaily 是一個每日財經 email 日報:訂閱者設定自己的持股,系統每天早晚兩班生成個人化 HTML 日報寄出。從 2026-05-19 第一個 commit 到今天跑了 75 天、1,800+ 個 commit。這篇講它的核心可靠層:多模型 council + judge 仲裁 + 31 項使用者視角 audit,以及三次真實事故怎麼把這套架構打磨出來的。</description>
     <category>ENG</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/eng-llm-council-judge-202608.png"/>
     <media:content url="https://marketdaily.ai/blog/og/eng-llm-council-judge-202608.png" medium="image"/>
