@@ -39,7 +39,9 @@ MARKET_TAG = {"us": "#美股", "tw": "#台股"}
 def caption_for(c: dict) -> str:
     mtag = MARKET_TAG.get(c["variant"], "#財經")
     # 2026-07-22 Delvin 指令:caption 不放完整網址,一律 link in bio(佇列舊候選也在此統一改寫)
-    caption = re.sub(r"完整日報 → \S+", "完整日報 → link in bio", c["caption_zh"])
+    # `\S+` 只吃掉網址的第一個 token,對已經是「link in bio」的來源會產出「link in bio in bio」
+    # (tldr_extract.py 現在就直接寫 link in bio)——改吃到行尾,對兩種來源都冪等。
+    caption = re.sub(r"完整日報 → .*", "完整日報 → link in bio", c["caption_zh"])
     return f"{caption}\n\n#市場脈搏 {mtag} #財經日報"
 
 
