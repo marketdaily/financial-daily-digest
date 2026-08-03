@@ -46,9 +46,7 @@ def push_admin(message: str) -> None:
             return
         ok, resp = http(post_gate.alert_endpoint(), "POST",
                         json_body={"message": message},
-                        headers={"Authorization": f"Bearer {tok}",
-                                 # 裸 urllib UA 會被 Cloudflare 擋(2026-07-10 實測)
-                                 "User-Agent": "Mozilla/5.0 MarketDailyBot/1.0"})
+                        headers=post_gate.alert_headers(tok))
         if not ok:
             print(f"  ⚠️ 閘門告警推播失敗:{resp}")
     except Exception as e:  # noqa: BLE001

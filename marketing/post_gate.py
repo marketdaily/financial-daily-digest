@@ -350,6 +350,10 @@ ALERT_MAX_LINES = 5
 # 閘門擋了東西卻沒有人會知道。沉默的守衛=沒有守衛,所以這條路徑有自測盯著。
 ALERT_TOKEN_KEY = "MARKETDAILY_ALERT_TOKEN"
 DEFAULT_ALERT_WORKER = "https://marketdaily-alert-worker.delvin-12345678.workers.dev"
+ALERT_PATH = "/internal/admin-line-push"
+# 裸 urllib 的 User-Agent 會被 Cloudflare 擋(2026-07-10 實測 403/1010)。UA 跟端點放在
+# 同一個地方,呼叫端拿 alert_headers() 就不可能忘記——別讓每個新呼叫端各自記得這件事。
+ALERT_UA = "Mozilla/5.0 MarketDailyBot/1.0"
 
 
 def _root_env(repo_root=None) -> dict:
@@ -373,7 +377,11 @@ def resolve_alert_token(repo_root=None) -> str:
 
 def alert_endpoint(repo_root=None) -> str:
     base = _root_env(repo_root).get("MARKETDAILY_ALERT_WORKER_URL") or DEFAULT_ALERT_WORKER
-    return f"{base.rstrip('/')}/internal/admin-line-push"
+    return f"{base.rstrip('/')}{ALERT_PATH}"
+
+
+def alert_headers(token: str) -> dict:
+    return {"Authorization": f"Bearer {token}", "User-Agent": ALERT_UA}
 
 
 def format_alert(result: dict, blocked: list[Verdict], picked_id: str | None) -> str:
