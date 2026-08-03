@@ -50,7 +50,8 @@ MUTS = [
      '        if action == "attempted":\n            started[d] = True',
      '        if action in ("attempted", "applied", "blocked"):\n            started[d + action] = True'),
     ("F3 中止型結局也燒額度(一次網路抖動永久封鎖)",
-     '    real = sorted(d for d in started if d not in aborted)', "    real = sorted(started)"),
+     '    real = [d for d in all_days if d not in aborted]  # 額度只算「真的用掉的那幾天」',
+     '    real = list(all_days)'),
     ("升級提醒永遠不重講(講一次就永久閉嘴)", "    if not last_date:\n        return True",
                                               "    if last_date:\n        return False"),
     ("升級提醒不去重(每天推同一則)", '        out["notify"] = infra_level or any',
@@ -60,6 +61,22 @@ MUTS = [
     ("公版存檔不存在被當成沒判決(誤報成複檢沒在跑)", '    if last_kind == "missing_archive":', "    if False:"),
     ("壞帳本只報最後一種損壞", '    head = "、".join(bad[:3])', '    head = "、".join(bad[-1:])'),
     ("MIN_SHIFTS 不夾住 window(小窗口恆失明)", "    min_shifts = min(MIN_SHIFTS, window)", "    min_shifts = MIN_SHIFTS"),
+    # ── 第 2 輪驗證者 findings 的迴歸 ──
+    ("F1 冷卻跟著 aborted 一起被扣掉(持續中止=每天燒一次 opus)",
+     '        d = _days_since(st["last_started_date"], now)', '        d = _days_since(st["last_attempt_date"], now)'),
+    ("F1 連續中止不會升級(永遠等不到叫人)", "        elif st[\"consecutive_aborted\"] >= MAX_CONSECUTIVE_ABORTED:",
+                                            "        elif False:"),
+    ("F3 帳本日期壞值不算壞掉(靜靜變成永久冷卻)", "            if _days_since(r[\"date\"], now_hint) is None:",
+                                                  "            if False:"),
+    ("F3 未來日期不算壞掉(冷卻 36325 天=永久靜音)", "            if _days_since(r[\"date\"], now_hint) < 0:",
+                                                    "            if False:"),
+    ("F3 型別漂移靜默通過(該筆記帳等於消失)",
+     '            if not all(isinstance(r.get(k), str) for k in ("key", "date")) \\',
+     '            if False and not all(isinstance(r.get(k), str) for k in ("key", "date")) \\'),
+    ("F6 一輪立多個 key(沒碰到的 key 也被記結局)", "    if len(out[\"fix\"]) > 1:", "    if False:"),
+    ("F7 跨日曆天下限失效(一天半的插曲當慢性病)", "        if days < MIN_DAYS:", "        if False:"),
+    ("F7 MIN_DAYS 被調成 1(等於沒有這條規則)", "MIN_DAYS = 3", "MIN_DAYS = 1"),
+    ("record 接受空 key(帳本從此永久回報壞行)", "        if not argv[2].strip():", "        if False:"),
 ]
 
 

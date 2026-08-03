@@ -43,6 +43,8 @@ RECENT_SHIFTS = 4    # 最近幾班內至少要犯 1 次(否則視為已止血,�
 MIN_SHIFTS = 4       # 窗口內少於這麼多班有判決 = 偵測器失明
 COOLDOWN_DAYS = 5    # 同一 key 立案後的冷卻天數(給修復生效的時間)
 MAX_ATTEMPTS = 2     # 自動修嘗試上限(以「開工日」計),超過改叫人
+MAX_CONSECUTIVE_ABORTED = 3   # 連續幾天「開工後中止」就停止重試改叫人(中止不燒額度,但不能無限重試)
+MIN_DAYS = 3         # 慢性判準的跨日曆天下限:同日 tw/us 兩班不是獨立觀測(pseudo-replication)
 CRASH_RC = 3         # 分流器自己炸了(與「無事」的 1 分開,否則死掉跟乾淨長得一樣)
 
 # 前綴 → 穩定 key。postcheck 的失分行一律長成 `  - [前綴] 內文`。
@@ -234,13 +236,14 @@ def coverage_gaps(now, days=7, log_dir=None):
     return gaps
 
 
-def read_ledger(path=None):
+def read_ledger(path=None, now=None):
     """回傳 (records, broken_reason)。壞掉時 records 仍回已讀到的部分,但 broken 非空
     → 上層必須改走「不 spawn + 告警」,不可當作沒事(fail-closed 且看得見)。
 
     broken 收集**全部**壞行再摘要:舊版是單一字串一路覆寫,三種損壞只報得出最後一種,
     運維看到的永遠是冰山一角(驗證者 Notes)。"""
     path = Path(path) if path else _ledger_path()
+    now_hint = now or _now_tw()
     recs, bad = [], []
     if not path.exists():
         return recs, ""
@@ -256,6 +259,23 @@ def read_ledger(path=None):
                 continue
             if not isinstance(r, dict) or not r.get("key") or not r.get("date"):
                 bad.append(f"第 {i} 行缺 key/date 欄位")
+                continue
+            # ⭐ 型別與日期「值」都要驗(第 2 輪驗證者 F3 + Notes)。舊版只驗「欄位存在」:
+            #   ①`{"date":"不是日期"}` 是合法 JSON → _days_since 回 None → 判「永久冷卻」→ rc=1
+            #     安靜退,而且 broken 是空字串 = 帳本壞掉的那道告警**完全沒被觸發**。
+            #   ②未來日期(時鐘錯亂寫進 2126)同理,冷卻 36325 天 = 永久靜音。
+            #   ③`{"key":["k"]}` / `{"action":123}` 型別漂移:欄位在、比不中,該筆記帳等於消失
+            #     (冷卻/額度被靜默清零)。
+            # 這三種都是「看不到 ≠ 沒問題」,一律列入 bad → escalate + 必推播。
+            if not all(isinstance(r.get(k), str) for k in ("key", "date")) \
+                    or not isinstance(r.get("action", ""), str):
+                bad.append(f"第 {i} 行 key/date/action 型別不對(應為字串)")
+                continue
+            if _days_since(r["date"], now_hint) is None:
+                bad.append(f"第 {i} 行日期解析不出來:{r['date']!r}")
+                continue
+            if _days_since(r["date"], now_hint) < 0:
+                bad.append(f"第 {i} 行日期在未來:{r['date']}(時鐘錯亂?會造成永久冷卻)")
                 continue
             recs.append(r)
     except OSError as e:
@@ -292,7 +312,8 @@ def ledger_state(key, recs, now):
     `resolved` = 確認修好了 → 之前的帳一筆勾銷(否則同一個 key 一輩子只能被機器修兩次)。
     """
     st = {"attempts": 0, "last_attempt_date": "", "cooling": False, "cool_days_left": 0,
-          "last_escalated": ""}
+          "last_escalated": "", "last_started_date": "", "consecutive_aborted": 0,
+          "cooldown_suspect": False}
     resolved_at = None
     for r in recs:
         if r.get("key") != key:
@@ -312,17 +333,31 @@ def ledger_state(key, recs, now):
             aborted.add(d)
         elif action == "escalated" and d > st["last_escalated"]:
             st["last_escalated"] = d
-    real = sorted(d for d in started if d not in aborted)
+    # ⭐「額度」與「冷卻」是兩個量,不可共用同一份清單(第 2 輪驗證者 F1)。
+    #   額度(attempts)扣掉 aborted 是對的——一次網路抖動不該永久燒掉自動修資格;
+    #   但**冷卻**如果也跟著扣掉,持續性中止(主樹一直有別視窗 WIP、push 一直失敗)就變成
+    #   「每天 spawn 一次 opus、attempts 恆為 0、永遠不會升級給人」——兩條紅線一起破。
+    all_days = sorted(started)                       # 冷卻看「有沒有開過工」,不管結局
+    real = [d for d in all_days if d not in aborted]  # 額度只算「真的用掉的那幾天」
     st["attempts"] = len(real)
     st["last_attempt_date"] = real[-1] if real else ""
-    if st["last_attempt_date"]:
-        d = _days_since(st["last_attempt_date"], now)
-        if d is None:
-            # 日期壞掉(手改帳本/寫入截斷):算不出冷卻 → 當成冷卻中。寧可晚一天立案,
-            # 也不要因為「讀不懂帳本」而天天重複 spawn 修復代理。
-            st["cooling"], st["cool_days_left"] = True, COOLDOWN_DAYS
+    st["last_started_date"] = all_days[-1] if all_days else ""
+    # 連續中止:結局一路都是 aborted 且已達門檻 → 這不是「還沒用到額度」,是有東西一直擋著,
+    # 得叫人。否則沉默地每天燒一次 15 分鐘的 opus。
+    trailing_aborted = 0
+    for d in reversed(all_days):
+        if d in aborted:
+            trailing_aborted += 1
+        else:
+            break
+    st["consecutive_aborted"] = trailing_aborted
+    if st["last_started_date"]:
+        d = _days_since(st["last_started_date"], now)
+        if d is None or d < 0:
+            # 日期壞掉/未來日:read_ledger 已經把這種紀錄擋在外面並列入 ledger_broken(→ 必告警)。
+            # 萬一仍漏進來,保守當成冷卻中,但**同時**標記需要人看,絕不安靜地永久冷卻下去。
+            st["cooling"], st["cool_days_left"], st["cooldown_suspect"] = True, COOLDOWN_DAYS, True
         elif d < COOLDOWN_DAYS:
-            # d<0(未來日期,時鐘錯亂)也落在這裡 → 一樣算冷卻中
             st["cooling"], st["cool_days_left"] = True, COOLDOWN_DAYS - d
     return st
 
@@ -346,7 +381,7 @@ def triage(window=WINDOW, min_hits=MIN_HITS, now=None, log_dir=None, ledger=None
         "shifts_seen": len(shifts),
         "window": window, "min_hits": min_hits,
         "blind": "", "gaps": [], "parse_drift": [], "ledger_broken": "",
-        "chronic": [], "fix": [], "escalate": [], "cooling": [],
+        "chronic": [], "fix": [], "escalate": [], "cooling": [], "episode": [],
         "verdict": "clean", "notify": True,
     }
 
@@ -377,27 +412,40 @@ def triage(window=WINDOW, min_hits=MIN_HITS, now=None, log_dir=None, ledger=None
             if key in seen_this_shift:
                 continue          # 同一班同一 key 只算一次(15/15 支不是 15 次慢性)
             seen_this_shift.add(key)
-            h = hits.setdefault(key, {"shifts": [], "samples": []})
+            h = hits.setdefault(key, {"shifts": [], "samples": [], "days": set()})
             h["shifts"].append(f"{s['date']}/{s['edition']}")
+            h["days"].add(s["date"])
             if len(h["samples"]) < 3:
                 h["samples"].append(variant)
             if idx >= len(shifts) - RECENT_SHIFTS:
                 recent_keys.add(key)
 
-    recs, broken = read_ledger(ledger)
+    recs, broken = read_ledger(ledger, now=now)
     out["ledger_broken"] = broken
 
     for key, h in sorted(hits.items()):
         n = len(h["shifts"])
+        days = len(h["days"])
         if n < min_hits or key not in recent_keys:
             continue
-        item = {"key": key, "hits": n, "shifts": h["shifts"], "samples": h["samples"]}
+        item = {"key": key, "hits": n, "days": days,
+                "shifts": h["shifts"], "samples": h["samples"]}
+        # ⭐ 跨日曆天下限(第 2 輪驗證者 F7):班次是 tw/us 兩班/天,同一天的兩班**不是獨立觀測**
+        # ——當天免費 LLM 桶枯竭之類的系統性事件,一天半就能湊滿 hits≥3(真實語料上 26% 的觸發
+        # 只跨 2 個日曆天)。把「一次插曲」當慢性病去 spawn opus 改 main.py/analyzer.py 是最貴的誤判。
+        if days < MIN_DAYS:
+            item["route"] = "episode"
+            item["why"] = (f"{n} 次只跨 {days} 個日曆天(<{MIN_DAYS})——同日 tw/us 不是獨立觀測,"
+                           "比較像一次插曲而非慢性病,先不立案")
+            out["episode"].append(item)
+            continue
         out["chronic"].append(item)
         if key in INFRA_KEYS:
             item["route"] = "infra_ignored"
             continue
         st = ledger_state(key, recs, now)
-        item.update(attempts=st["attempts"], last_attempt=st["last_attempt_date"])
+        item.update(attempts=st["attempts"], last_attempt=st["last_attempt_date"],
+                    consecutive_aborted=st["consecutive_aborted"])
         if key in ESCALATE_ONLY_KEYS or key.startswith("other:") or key == "unstructured":
             item["route"] = "escalate"
             item["why"] = "此類失分不開放自動改碼(半徑/風險過大或型別未知),直接叫人"
@@ -406,9 +454,17 @@ def triage(window=WINDOW, min_hits=MIN_HITS, now=None, log_dir=None, ledger=None
             item["route"] = "escalate"
             item["why"] = f"已自動修 {st['attempts']} 次仍再犯 —— 自動修顯然沒打到根因,交人工"
             out["escalate"].append(item)
+        elif st["consecutive_aborted"] >= MAX_CONSECUTIVE_ABORTED:
+            # 中止不燒額度是對的,但「一直中止」不是「還沒開始」——有東西一直擋著,得叫人,
+            # 否則每天安靜 spawn 一次 15 分鐘的 opus 而 attempts 永遠是 0(驗證者 F1)
+            item["route"] = "escalate"
+            item["why"] = (f"連續 {st['consecutive_aborted']} 天開工後中止(push 失敗/讓路/套用後空)"
+                           " —— 有東西一直擋著自動修,停止重試,交人工")
+            out["escalate"].append(item)
         elif st["cooling"]:
             item["route"] = "cooling"
-            item["why"] = f"{st['last_attempt_date']} 才立過案,冷卻中(還剩 {st['cool_days_left']} 天)"
+            item["why"] = (f"{st['last_started_date']} 才立過案,冷卻中(還剩 {st['cool_days_left']} 天)"
+                           + ("|⚠️ 冷卻基準日期可疑,需人工查帳本" if st["cooldown_suspect"] else ""))
             out["cooling"].append(item)
         elif broken:
             item["route"] = "escalate"
@@ -427,6 +483,20 @@ def triage(window=WINDOW, min_hits=MIN_HITS, now=None, log_dir=None, ledger=None
             item["last_escalated"] = st["last_escalated"]
             item["due"] = _due_to_remind(st["last_escalated"], now)
 
+    # ⭐ 一輪只立一個 key(第 2 輪驗證者 F6)。runner 把整包 key 丟給同一個代理,收尾卻對
+    # **每一個** key 記同一個結局 —— 代理只修了其中一個時,沒被碰過的 key 一樣被記 applied、
+    # 一樣燒額度、一樣進冷卻,兩輪後兩個都被判「修過還犯,交人工」。與其在 bash 端拼湊
+    # 逐 key 結果,不如讓「一次執行 = 一個 key」在偵測層就成立:記帳與現實才對得起來。
+    if len(out["fix"]) > 1:
+        ordered = sorted(out["fix"], key=lambda i: (-i["hits"], -i["days"], i["key"]))
+        out["fix"], deferred = ordered[:1], ordered[1:]
+        for i in deferred:
+            i["route"] = "deferred"
+            i["why"] = "本輪已有另一個 key 在立案(一輪只修一個,記帳才對得起現實),明天再排"
+        out["deferred"] = deferred
+    else:
+        out["deferred"] = []
+
     if out["fix"]:
         out["verdict"] = "fix"
     elif out["escalate"] or out["blind"] or out["parse_drift"] or out["ledger_broken"]:
@@ -443,8 +513,13 @@ def triage(window=WINDOW, min_hits=MIN_HITS, now=None, log_dir=None, ledger=None
 
 def summary_line(res):
     if res["verdict"] == "fix":
-        return "🩺 慢性失分立案:" + "、".join(
-            f"{i['key']}({i['hits']}/{res['shifts_seen']} 班)" for i in res["fix"])
+        line = "🩺 慢性失分立案:" + "、".join(
+            f"{i['key']}({i['hits']}/{res['shifts_seen']} 班,跨 {i.get('days', '?')} 天)"
+            for i in res["fix"])
+        if res.get("deferred"):
+            line += f"(另有 {len(res['deferred'])} 個 key 排隊:"
+            line += "、".join(i["key"] for i in res["deferred"]) + ")"
+        return line
     bits = []
     if res["blind"]:
         bits.append(f"偵測器失明:{res['blind']}")
@@ -458,7 +533,16 @@ def summary_line(res):
         return "⚠️ 寄後複檢慢性失分需人工:" + " | ".join(bits)
     if res["cooling"]:
         return "🟡 慢性失分冷卻中:" + "、".join(f"{i['key']}({i.get('why', '')})" for i in res["cooling"])
-    return f"✓ 近 {res['shifts_seen']} 班無慢性失分"
+    # ⭐ 誠實文案(驗證者 Notes):infra 類(llm_chain)命中時 verdict 仍是 clean,但「無慢性失分」
+    # 是假話——免費 LLM 桶天天枯竭時它每班都在犯,只是不歸這裡自動改碼。episode 同理。
+    tail = ""
+    infra_n = sum(1 for i in res.get("chronic", []) if i.get("route") == "infra_ignored")
+    if infra_n:
+        tail += f";infra 類 {infra_n} 項不自動改碼(由 postcheck/LLM 鏈自己的告警負責)"
+    if res.get("episode"):
+        tail += (f";另有 {len(res['episode'])} 項只跨 <{MIN_DAYS} 個日曆天,當插曲不立案:"
+                 + "、".join(i["key"] for i in res["episode"]))
+    return f"✓ 近 {res['shifts_seen']} 班無可自動修的慢性失分{tail}"
 
 
 def main(argv):
@@ -468,6 +552,11 @@ def main(argv):
                                             "escalated", "resolved"):
             print("用法:record <attempted|applied|blocked|aborted|escalated|resolved> <key> [note]",
                   file=sys.stderr)
+            return 2
+        if not argv[2].strip():
+            # 空 key 會寫進帳本 → read_ledger 從此永久回報「缺 key」→ 所有 key 只 escalate
+            # 不自動修,直到人工清檔(驗證者 Notes 的現成腳滑)
+            print("record 的 key 不可為空", file=sys.stderr)
             return 2
         now = _now_tw()
         append_ledger({"ts": now.isoformat(timespec="seconds"), "date": now.strftime("%Y-%m-%d"),

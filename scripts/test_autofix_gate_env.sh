@@ -38,19 +38,28 @@ for rn in $RUNNERS; do
   if [ -z "$GATE_LIST" ]; then
     echo "❌ $rn:解析不到 GATE_TESTS(清單改寫成別的形式?這支守衛就瞎了)"; FAILS=$((FAILS+1)); continue
   fi
-  echo "$rn(gate $(echo $GATE_LIST | wc -w) 支):"
+  # ⭐ 環境真源也要在 runner 裡(2026-08-03 第 2 輪驗證者 F4)。舊版守衛一律自己注入
+  # `MD_CHRONIC_REAL_LOGS`,但只有 chronic runner 會 export 它 —— 守衛環境**比生產寬鬆**,
+  # 任何人把需要該變數的測試加進 selfheal 的清單,守衛報全綠、生產恆紅,正是原病灶的翻版。
+  # 改成從 runner 檔案抽出它自己 export 的 MD_* 變數:清單真源在哪,環境真源就在哪。
+  RUNNER_ENV=$(grep -E '^export MD_[A-Z0-9_]+=' "$R" || true)
+  echo "$rn(gate $(echo $GATE_LIST | wc -w) 支;runner 自帶 env $(echo "$RUNNER_ENV" | grep -c . ) 條):"
   for t in $GATE_LIST; do
     TOTAL=$((TOTAL+1))
     if [ ! -f "$WT/scripts/$t.py" ]; then
       echo "  ✗ $t —— 檔案不在版控內(worktree 裡沒有它,gate fail-closed 判紅)"
       FAILS=$((FAILS+1)); continue
     fi
-    out=$( cd "$WT" && MD_CHRONIC_REAL_LOGS="$REPO/logs" "$PY" "scripts/$t.py" 2>&1 ); rc=$?
+    out=$( cd "$WT" && REPO="$REPO" HOME="$HOME" \
+             sh -c "$RUNNER_ENV
+exec \"\$1\" \"\$2\"" _ "$PY" "scripts/$t.py" 2>&1 ); rc=$?
     if [ "$rc" = 0 ]; then
       echo "  ✓ $t"
     else
       echo "  ✗ $t rc=$rc"
       echo "$out" | tail -6 | sed 's/^/      /'
+      echo "      ↑ 這支在生產 worktree 內會恆紅 → 該 runner 的自動修永遠到不了 apply。"
+      echo "        修法:讓測試不依賴被 gitignore 的東西,或在該 runner 內 export 對應的 MD_* 變數。"
       FAILS=$((FAILS+1))
     fi
   done

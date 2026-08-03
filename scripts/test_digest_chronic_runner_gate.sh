@@ -66,11 +66,12 @@ STUB
   [ -z "$keys" ] && FIXJSON='{"verdict":"fix","shifts_seen":10,"blind":"","parse_drift":[],"ledger_broken":"","cooling":[],"escalate":[],"fix":[]}'
   [ -n "${CASE_VERDICT_JSON:-}" ] && FIXJSON="$CASE_VERDICT_JSON"
 
+  local CASE_NOTIFY_RC=${CASE_NOTIFY_RC:-0}
   cat > "$R/.venv/bin/python" <<EOF
 #!/bin/bash
 case "\$*" in
   *scripts/test_*.py) exec /usr/bin/python3 "\$@" ;;   # guard 的測試把關要真的跑,不能被 shim 吃掉變假綠
-  *notify_admin.py*) echo "\$*" >> "$T/pushed"; exit 0 ;;
+  *notify_admin.py*) echo "\$*" >> "$T/pushed"; exit ${CASE_NOTIFY_RC:-0} ;;
   *dotenv*) echo ""; exit 0 ;;
   *digest_chronic_triage.py\ record\ *) echo "\$*" >> "$T/records"; exit 0 ;;
   *digest_chronic_triage.py\ --json*) echo '$FIXJSON'; exit $detrc ;;
@@ -95,16 +96,18 @@ EOF
 #!/bin/bash
 touch "$T/claude_ran"
 case "$claude_mode" in
-  ok)        echo "print('fixed')" >> main.py ;;
-  scope)     mkdir -p docs && echo x > docs/leak.html ;;
-  breakcode) echo "# BROKEN" >> main.py ;;
-  tamper)    echo "print('fixed')" >> main.py
+  ok)        echo "print('fixed')" >> main.py; touch .chronic_done ;;
+  scope)     mkdir -p docs && echo x > docs/leak.html; touch .chronic_done ;;
+  breakcode) echo "# BROKEN" >> main.py; touch .chronic_done ;;
+  tamper)    echo "print('fixed')" >> main.py; touch .chronic_done
              printf '#!/usr/bin/env python3\nimport sys\nsys.exit(0)\n' > "scripts/$FIRSTT.py" ;;
+  halfway)   echo "print('half')" >> main.py ;;   # 改了東西但沒留完工標記 = 被 timeout 砍在半路
 esac
 exit 0
 EOF
   chmod +x "$R/.venv/bin/claude"
   ( cd "$R" && git add -A && git commit -qm files ) >/dev/null 2>&1
+  [ "${CASE_DIRTY_MAIN:-}" = 1 ] && echo "# 別視窗的 WIP" >> "$R/main.py"
 
   if [ "${DEBUG_CASE:-}" = "$name" ]; then
     PATH="$T/bin:$PATH" HOME="$T/home" bash -x "$T/home/.marketdaily-fallback/digest_chronic_runner.sh" 2>&1 | tail -60
@@ -169,6 +172,15 @@ run_case "動 gate 測試=繳械整包丟棄"   "11:10" 0 "personal_audio" tampe
 CASE_PUSH_FAIL=1 \
 run_case "push 失敗記 aborted 不燒額度" "11:10" 0 "personal_audio" ok       "verdict=apply"  yes "aborted personal_audio"
 run_case "白名單內+測試過→套用push"    "11:10" 0 "personal_audio" ok        "verdict=apply"  yes "applied personal_audio"
+# 沒有完工標記 = 被 timeout 砍在半路,半成品不可 apply(第 2 輪驗證者 Notes)
+run_case "無完工標記→不套用半成品"     "11:10" 0 "personal_audio" halfway   "aborted_halfway" yes "aborted personal_audio"
+# 主樹 scope 內有別視窗 WIP → **spawn 前**就讓路,不燒 15 分鐘 opus(第 2 輪驗證者 F1 加重情節 B)
+CASE_DIRTY_MAIN=1 \
+run_case "主樹髒→spawn 前就讓路"       "11:10" 0 "personal_audio" ok        "spawn 前發現"   no  "!attempted"
+[ -e "$RUN_T/claude_ran" ] && { echo "  ✗ 主樹髒卻仍 spawn 了 claude(白燒 token)"; FAILS=$((FAILS+1)); }
+# 推播全通道失敗(403/斷網)→ 不可記 escalated,否則 last_escalated 前推 = 接下來 7 天真靜音
+CASE_VERDICT_JSON="$ESC_JSON" CASE_NOTIFY_RC=1 \
+run_case "推播送不出去→不記 escalated" "11:10" 2 ""  none "推播送不出去"    yes "!escalated"
 
 # 立案記帳必須在 spawn 之前(中途斷電也不可以天天重複立案)
 T2=$RUN_T

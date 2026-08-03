@@ -142,28 +142,40 @@ with tempfile.TemporaryDirectory() as d:
     r = ct.triage(now=NOW, log_dir=d, ledger=led, gap_days=0)
     check("chronic/2hits-no-trigger", r["verdict"], "clean")
 
-    build(d, [("2026-07-23", "us", [SHALLOW, PA_CDN])])
+    # 3 次但只跨 2 個日曆天(同日 tw+us 不是獨立觀測)→ 當插曲,不立案
     write_shift(d, "2026-07-24", "tw", [SHALLOW])
     r = ct.triage(now=NOW, log_dir=d, ledger=led, gap_days=0)
-    check("chronic/3hits-fix", [i["key"] for i in r["fix"]], ["archive:signal_reason_shallow"])
+    check("chronic/3hits-2days-episode", [i["key"] for i in r["episode"]],
+          ["archive:signal_reason_shallow"])
+    check("chronic/episode-not-fix", (r["fix"], r["verdict"]), ([], "clean"))
+    check_true("chronic/episode-in-summary", "插曲" in ct.summary_line(r), ct.summary_line(r))
+
+    # 補到跨 3 個日曆天 → 才算慢性
+    build(d, [("2026-07-22", "us", [SHALLOW, PA_CDN])])
+    r = ct.triage(now=NOW, log_dir=d, ledger=led, gap_days=0)
+    check("chronic/3days-fix", [i["key"] for i in r["fix"]], ["archive:signal_reason_shallow"])
     check("chronic/verdict", r["verdict"], "fix")
-    check("chronic/hits", r["fix"][0]["hits"], 3)
+    check("chronic/hits", r["fix"][0]["hits"], 4)
+    check("chronic/days", r["fix"][0]["days"], 3)
 
 with tempfile.TemporaryDirectory() as d:
     # 同一班同一 key 出現兩行(manifest 缺 + CDN 驗不到)只能算一次,不然一班就自己撐成慢性
     led = str(Path(d) / "led.jsonl")
-    build(d, BASE_CLEAN + [("2026-07-23", "tw", [PA_CDN]), ("2026-07-23", "us", [PA_MANIFEST]),
+    build(d, BASE_CLEAN + [("2026-07-22", "us", [PA_CDN]),
+                           ("2026-07-23", "tw", [PA_CDN]), ("2026-07-23", "us", [PA_MANIFEST]),
                            ("2026-07-24", "tw", [PA_CDN, PA_MANIFEST])])
     r = ct.triage(now=NOW, log_dir=d, ledger=led, gap_days=0)
     pa = [i for i in r["chronic"] if i["key"] == "personal_audio"]
-    check("chronic/dedup-in-shift", pa[0]["hits"] if pa else None, 3)
+    check("chronic/dedup-in-shift", pa[0]["hits"] if pa else None, 4)
+    check("chronic/dedup-days", pa[0]["days"] if pa else None, 3)
     check("chronic/dedup-samples", len(pa[0]["samples"]) if pa else None, 3)
 
 with tempfile.TemporaryDirectory() as d:
     # 全部命中都在窗口前段(最近 4 班都沒犯)→ 視為已止血,不重複立案
     led = str(Path(d) / "led.jsonl")
     build(d, [("2026-07-14", "tw", [SHALLOW]), ("2026-07-14", "us", [SHALLOW]),
-              ("2026-07-15", "tw", [SHALLOW]), ("2026-07-15", "us", []),
+              ("2026-07-15", "tw", [SHALLOW]), ("2026-07-15", "us", [SHALLOW]),
+              ("2026-07-13", "tw", [SHALLOW]), ("2026-07-13", "us", []),
               ("2026-07-16", "tw", []), ("2026-07-16", "us", []),
               ("2026-07-17", "tw", []), ("2026-07-17", "us", [])])
     r = ct.triage(now=tw("2026-07-18T11:00:00"), log_dir=d, ledger=led, gap_days=0)
@@ -172,16 +184,18 @@ with tempfile.TemporaryDirectory() as d:
 # ── 6. 分類路由:infra 忽略、delivery 只升級 ──
 with tempfile.TemporaryDirectory() as d:
     led = str(Path(d) / "led.jsonl")
-    build(d, BASE_CLEAN + [("2026-07-23", "tw", [LLM]), ("2026-07-23", "us", [LLM]),
+    build(d, BASE_CLEAN + [("2026-07-22", "us", [LLM]), ("2026-07-23", "tw", [LLM]),
                            ("2026-07-24", "tw", [LLM])])
     r = ct.triage(now=NOW, log_dir=d, ledger=led, gap_days=0)
     check("route/llm-not-fixed", (r["fix"], r["escalate"]), ([], []))
     check("route/llm-listed", [i["route"] for i in r["chronic"]], ["infra_ignored"])
     check("route/llm-verdict", r["verdict"], "clean")
+    # 摘要不可以宣稱「無慢性失分」——infra 類每班都在犯,只是不歸這裡改碼(驗證者 Notes)
+    check_true("route/llm-summary-honest", "infra 類 1 項" in ct.summary_line(r), ct.summary_line(r))
 
 with tempfile.TemporaryDirectory() as d:
     led = str(Path(d) / "led.jsonl")
-    build(d, BASE_CLEAN + [("2026-07-23", "tw", [DELIV]), ("2026-07-23", "us", [DELIV]),
+    build(d, BASE_CLEAN + [("2026-07-22", "us", [DELIV]), ("2026-07-23", "tw", [DELIV]),
                            ("2026-07-24", "tw", [DELIV])])
     r = ct.triage(now=NOW, log_dir=d, ledger=led, gap_days=0)
     check("route/delivery-escalate", [i["key"] for i in r["escalate"]], ["delivery"])
@@ -191,14 +205,14 @@ with tempfile.TemporaryDirectory() as d:
 with tempfile.TemporaryDirectory() as d:
     led = str(Path(d) / "led.jsonl")
     UNK = "[新種檢查] 每天都在發生"
-    build(d, BASE_CLEAN + [("2026-07-23", "tw", [UNK]), ("2026-07-23", "us", [UNK]),
+    build(d, BASE_CLEAN + [("2026-07-22", "us", [UNK]), ("2026-07-23", "tw", [UNK]),
                            ("2026-07-24", "tw", [UNK])])
     r = ct.triage(now=NOW, log_dir=d, ledger=led, gap_days=0)
     check("route/unknown-escalate", [i["key"] for i in r["escalate"]], ["other:新種檢查"])
 
 # ── 7. 帳本:cooldown / 上限 / resolved / 未來日 / 壞損 ──
 def chronic_env(d):
-    build(d, BASE_CLEAN + [("2026-07-23", "tw", [SHALLOW]), ("2026-07-23", "us", [SHALLOW]),
+    build(d, BASE_CLEAN + [("2026-07-22", "us", [SHALLOW]), ("2026-07-23", "tw", [SHALLOW]),
                            ("2026-07-24", "tw", [SHALLOW])])
 
 
@@ -268,17 +282,40 @@ with tempfile.TemporaryDirectory() as d:
     r4 = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
     check("ledger/resolved-resets", [i["key"] for i in r4["fix"]], [KEY])
 
-    # 未來日期的 attempt(時鐘錯亂/手改)→ 當成冷卻中,不無限重刷
-    led.write_text(json.dumps({"date": "2026-09-01", "key": KEY, "action": "attempted"},
-                              ensure_ascii=False) + "\n", encoding="utf-8")
-    r5 = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
-    check("ledger/future-date-cools", ([i["key"] for i in r5["cooling"]], r5["fix"]), ([KEY], []))
+    # ⭐ aborted 不燒額度,但**冷卻照算**(第 2 輪驗證者 F1)。兩者共用同一份清單時,
+    # 持續性中止(主樹一直有 WIP / push 一直失敗)= 每天 spawn 一次 opus、attempts 恆為 0、
+    # 永遠不會升級給人 —— 「不無限重刷 token」與「修不好就叫人」兩條紅線一起破。
+    led.write_text(json.dumps({"date": "2026-07-23", "key": KEY, "action": "attempted"},
+                              ensure_ascii=False) + "\n"
+                   + json.dumps({"date": "2026-07-23", "key": KEY, "action": "aborted"},
+                                ensure_ascii=False) + "\n", encoding="utf-8")
+    ra = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
+    check("ledger/aborted-still-cools", ([i["key"] for i in ra["cooling"]], ra["fix"]), ([KEY], []))
+    check("ledger/aborted-attempts-zero", ra["cooling"][0]["attempts"] if ra["cooling"] else None, 0)
 
-    # 日期欄壞掉 → 算不出冷卻,當成冷卻中(不可因為讀不懂帳本就天天重複 spawn)
-    led.write_text(json.dumps({"date": "不是日期", "key": KEY, "action": "attempted"},
-                              ensure_ascii=False) + "\n", encoding="utf-8")
-    r5b = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
-    check("ledger/bad-date-cools", ([i["key"] for i in r5b["cooling"]], r5b["fix"]), ([KEY], []))
+    # 連續中止達上限 → 停止重試改叫人(有東西一直擋著,不是「還沒用到額度」)
+    led.write_text("".join(
+        json.dumps({"date": dt, "key": KEY, "action": a}, ensure_ascii=False) + "\n"
+        for dt in ("2026-07-14", "2026-07-15", "2026-07-16") for a in ("attempted", "aborted")),
+        encoding="utf-8")
+    rab = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
+    check("ledger/consecutive-aborted-escalates", [i["key"] for i in rab["escalate"]], [KEY])
+    check("ledger/consecutive-aborted-not-fix", rab["fix"], [])
+
+
+    # ⭐ 日期「壞值」不可以只是靜靜地變成冷卻(第 2 輪驗證者 F3)。
+    # 舊版:未來日 → cooling(36325 天)、壞字串 → cooling(永遠),verdict=cooling → rc=1 →
+    # runner 看到摘要含「冷卻中」就安靜退,而 ledger_broken 是空字串 = 帳本壞掉那道告警從未觸發。
+    # 這與 shioaji 守望器的「未來日 first_seen 讓唯一的主動告警永久靜音」是同一個形狀。
+    for label, bad_date in (("future", "2026-09-01"), ("garbage", "不是日期")):
+        led.write_text(json.dumps({"date": bad_date, "key": KEY, "action": "attempted"},
+                                  ensure_ascii=False) + "\n", encoding="utf-8")
+        rb = ct.triage(now=NOW, log_dir=d, ledger=str(led), gap_days=0)
+        check(f"ledger/{label}-date-not-silent",
+              (rb["verdict"], rb["notify"], bool(rb["ledger_broken"]), rb["fix"]),
+              ("escalate", True, True, []))
+        check_true(f"ledger/{label}-date-in-summary", "帳本" in ct.summary_line(rb),
+                   ct.summary_line(rb))
 
     # 帳本壞掉 → 不自動修(避免重複立案),但必須升級(不可靜默)
     led.write_text("{壞掉的 json\n", encoding="utf-8")
@@ -293,7 +330,33 @@ with tempfile.TemporaryDirectory() as d:
     # 三種損壞的**每一種**都要看得到:只回報最後一種 = 運維只看到冰山一角
     check_true("ledger/broken-lists-first", "第 1 行" in broken_multi, broken_multi)
     check_true("ledger/broken-lists-mid", "第 2 行" in broken_multi, broken_multi)
+    # 型別漂移(key 是 list / action 是數字):欄位都在、卻永遠比不中 → 該筆記帳等於消失,
+    # 冷卻與額度被靜默清零。必須算「帳本壞掉」而不是安靜放行(第 2 輪驗證者 Notes)
+    led.write_text(json.dumps({"date": "2026-07-20", "key": ["k"], "action": "attempted"}) + "\n",
+                   encoding="utf-8")
+    _, broken_type = ct.read_ledger(str(led))
+    check_true("ledger/type-drift-is-broken", "型別" in broken_type, broken_type)
+    led.write_text(json.dumps({"date": "2026-07-20", "key": "k", "action": 123}) + "\n",
+                   encoding="utf-8")
+    _, broken_act = ct.read_ledger(str(led))
+    check_true("ledger/action-type-is-broken", bool(broken_act), broken_act)
     check_true("ledger/broken-in-summary", "帳本" in ct.summary_line(r6), ct.summary_line(r6))
+
+# ── 7b. 一輪只立一個 key(第 2 輪驗證者 F6)──
+# runner 把整包 key 丟給同一個代理,收尾卻對**每一個** key 記同一個結局 → 沒被碰過的 key
+# 一樣燒額度、一樣進冷卻,兩輪後兩個都被判「修過還犯,交人工」。讓「一次執行=一個 key」
+# 在偵測層就成立,記帳才對得起現實。
+with tempfile.TemporaryDirectory() as d:
+    led = str(Path(d) / "led.jsonl")
+    build(d, BASE_CLEAN + [("2026-07-22", "us", [SHALLOW, PA_CDN]),
+                           ("2026-07-23", "tw", [SHALLOW, PA_CDN]),
+                           ("2026-07-23", "us", [SHALLOW]),
+                           ("2026-07-24", "tw", [SHALLOW, PA_CDN])])
+    r = ct.triage(now=NOW, log_dir=d, ledger=led, gap_days=0)
+    check("batch/one-key-only", len(r["fix"]), 1)
+    check("batch/picks-most-hits", r["fix"][0]["key"], "archive:signal_reason_shallow")
+    check("batch/rest-deferred", [i["key"] for i in r["deferred"]], ["personal_audio"])
+    check_true("batch/deferred-visible-in-summary", "排隊" in ct.summary_line(r), ct.summary_line(r))
 
 # ── 8. 班表/缺件 dead-man:誰在檢查檢查者 ──
 SUN, SAT, MON = tw("2026-08-02T12:00:00"), tw("2026-08-01T12:00:00"), tw("2026-08-03T12:00:00")
@@ -338,7 +401,7 @@ with tempfile.TemporaryDirectory() as d:
     led = str(Path(d) / "led.jsonl")
     build(d, [("2026-07-23", "tw", [SHALLOW]), ("2026-07-23", "us", [SHALLOW]),
               ("2026-07-24", "tw", [SHALLOW]), ("2026-07-24", "us", []),
-              ("2026-07-22", "tw", []), ("2026-07-22", "us", [])])
+              ("2026-07-22", "tw", [SHALLOW]), ("2026-07-22", "us", [])])
     r = ct.triage(now=tw("2026-07-24T23:59:00"), log_dir=d, ledger=led, gap_days=7)
     check_true("blind+chronic/blind", bool(r["blind"]), r["blind"])
     check("blind+chronic/no-autofix", r["fix"], [])
@@ -374,6 +437,8 @@ with tempfile.TemporaryDirectory() as d:
     # 用法錯 → rc=2(需人工)。**絕不可以是 1**:1 會被 runner 讀成「今天沒事」
     check("cli/bad-arg", run_cli(["--nope"], env).returncode, 2)
     check("cli/bad-record", run_cli(["record", "xxx", "k"], env).returncode, 2)
+    # 空 key 會寫進帳本 → read_ledger 從此永久回報「缺 key」→ 所有 key 只 escalate 不自動修
+    check("cli/record-empty-key", run_cli(["record", "attempted", ""], env).returncode, 2)
     check("cli/window-missing-value", run_cli(["--window"], env).returncode, 2)
     check("cli/window-nonnumeric", run_cli(["--window", "abc"], env).returncode, 2)
     # 分流器自己炸了 → rc=3(CRASH_RC),與「無事」分開,runner 才推得出「守衛死了」
