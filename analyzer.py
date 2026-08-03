@@ -3429,6 +3429,47 @@ def _strip_reason_leak(card: str) -> str:
     return card[:m.start()] + m.group(1) + cleaned + m.group(3) + card[m.end():]
 
 
+def _augment_shallow_reason(card: str, sym: str, data: dict) -> str:
+    """卡級 reason 確定性增補層(2026-08-03,archive:signal_reason_shallow 根因修):
+    免費額全熔斷日(429)只剩弱模型鏈,reason 常落在 70-99 字 → 過卡級 70 字閘
+    但拖垮 archive 級 80/60 期望(08-03 早班 median 79 字→5 位掉 deterministic)。
+    <100 字時從該股既有真實數據(RSI14/MA20 距離/量能/當日漲跌幅)確定性拼事實行
+    補在後——只轉述 data dict 已有數字、零 LLM、不生成價位建議;放 _card_passes_audit
+    之前 → 短卡當場合格,不再進 regen 迴圈重燒慢模型(144s/次)。
+    ≥100 字的卡與湊不出任何事實的卡絕不動(行為凍結+fail-open)。"""
+    if "數據面補充" in card:
+        return card
+    rm = re.search(r'(<div class="signal-reason"[^>]*>)(.*?)(</div>)', card, re.S)
+    if not rm:
+        return card
+    reason = rm.group(2)
+    plain = re.sub(r"<[^>]+>", "", reason).strip()
+    if len(plain) >= 100 or re.search(r"備援|個人化生成異常|fallback|無即時報價", plain):
+        return card
+    t = (data.get("technicals", {}) or {}).get(sym) or {}
+    mkt = {**data.get("us_market", {}), **data.get("tw_market", {})}.get(sym) or {}
+    facts = []
+    chg = mkt.get("change_pct")
+    if chg is not None:
+        facts.append(f"當日 {chg:+.2f}%")
+    if t.get("rsi14") is not None and "RSI" not in plain:
+        facts.append(f"RSI14 {t['rsi14']}")
+    try:
+        p, ma20 = float(t.get("price") or 0), float(t.get("ma20") or 0)
+    except (TypeError, ValueError):
+        p = ma20 = 0
+    if p and ma20 and "MA20" not in plain and "月線" not in plain:
+        dist = (p - ma20) / ma20 * 100
+        facts.append(f"現價{'高於' if dist >= 0 else '低於'} MA20 約 {abs(dist):.1f}%")
+    if t.get("vol_ratio") is not None and "量" not in plain:
+        vs = f"({t['vol_state']})" if t.get("vol_state") else ""
+        facts.append(f"相對量 {t['vol_ratio']}x{vs}")
+    if not facts:
+        return card
+    extra = f" 數據面補充:{';'.join(facts)}。"
+    return card[:rm.start()] + rm.group(1) + reason + extra + rm.group(3) + card[rm.end():]
+
+
 def _card_passes_audit(card: str) -> bool:
     """跟 digest_audit 同款檢查:確保每張 LLM 卡有 3 個 battle-row + reason 含價位/時間窗
     + reason 深度底線(2026-07-26「100% 品質」令:07-23 塌陷卡 48-64 字但帶價位,舊版照樣
@@ -3703,6 +3744,7 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             match = next((cs for cs in sub if cs == tk or cs in tk or tk in cs), None)
             if not match:
                 continue
+            card = _augment_shallow_reason(card, match, data)
             if match not in cards_by_sym and _card_passes_audit(card):
                 cards_by_sym[match] = card
             elif match not in cards_by_sym and match not in pos_map:
