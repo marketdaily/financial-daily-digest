@@ -166,6 +166,82 @@ def t_downstream_regression():
               f"{f.name}: tldr 類股解析不變")
 
 
+def t_marker_corrupt():
+    print("[10] marker 半毀 fail-loud(不得靜默安定在錯誤固定點)")
+    once, _ = A.inject(PAGE, "2026-08-03", False)
+    # 少一個 START:舊區塊比對不到 → 舊 CTA 降級成正文永久留著,同時又插一份新的
+    orphan_start = once.replace(A.MARKER_START, "", 1)
+    out, reason = A.inject(orphan_start, "2026-08-03", False)
+    check(out is None and reason in ("marker_orphan", "marker_unpaired"),
+          f"缺 START marker → 不寫檔並回報({reason})")
+    # 少一個 END:非貪婪 regex 會從上方 START 一路吃到下方 END,刪掉整段正文
+    orphan_end = once.replace(A.MARKER_END, "", 1)
+    out, reason = A.inject(orphan_end, "2026-08-03", False)
+    check(out is None and reason in ("marker_orphan", "marker_unpaired"),
+          f"缺 END marker → 不寫檔並回報({reason})")
+    # 成對但順序顛倒(END 在 START 前)
+    swapped = PAGE.replace('<div class="header">',
+                           f'{A.MARKER_END}\nx\n{A.MARKER_START}\n<div class="header">')
+    out, reason = A.inject(swapped, "2026-08-03", False)
+    check(out is None and reason == "marker_unpaired", "marker 順序顛倒 → 拒絕注入")
+    # 健康頁面不得被誤判
+    out, reason = A.inject(once, "2026-08-03", False)
+    check(reason is None, "完整成對 marker 的頁面照常處理")
+
+
+def t_io_error_isolation():
+    print("[11] 單顆壞檔不得炸掉整批")
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        d = Path(td)
+        (d / "digest_2026-01-01.html").write_text(PAGE, encoding="utf-8")
+        (d / "digest_2026-01-02.html").write_bytes(b"<html>\xff\xfe broken</html>")
+        (d / "digest_2026-01-03.html").write_text(PAGE, encoding="utf-8")
+        try:
+            changed, skipped = A.run(dry=False, verbose=False, directory=d)
+        except Exception as e:  # noqa: BLE001
+            check(False, f"壞檔讓整批 traceback:{e.__class__.__name__}")
+            return
+        check(sorted(changed) == ["digest_2026-01-01.html", "digest_2026-01-03.html"],
+              f"壞檔前後的好檔都處理完({changed})")
+        check([n for n, r in skipped] == ["digest_2026-01-02.html"]
+              and skipped[0][1].startswith("io_error:"),
+              f"壞檔降級成單檔 skip({skipped})")
+        check("免費訂閱明天的日報" in (d / "digest_2026-01-03.html").read_text(encoding="utf-8"),
+              "排序在壞檔之後的檔案真的被寫入")
+
+
+def t_atomic_write():
+    print("[12] 寫檔原子性(行程中斷不得留下半截公開頁)")
+    import tempfile
+    with tempfile.TemporaryDirectory() as td:
+        target = Path(td) / "page.html"
+        target.write_text("OLD-COMPLETE", encoding="utf-8")
+        real_replace = A.os.replace
+
+        def boom(*a, **k):
+            raise RuntimeError("killed before rename")
+
+        A.os.replace = boom
+        try:
+            A.atomic_write(target, "NEW-COMPLETE")
+            raised = None
+        except RuntimeError:
+            raised = "RuntimeError"
+        except OSError:
+            raised = "OSError"
+        finally:
+            A.os.replace = real_replace
+        # 目的地只由 rename 那一步碰到:rename 前掛掉 → 磁碟上仍是完整舊版,絕不是半截
+        check(raised == "RuntimeError", f"rename 前中斷會傳播例外而非靜默直寫(got {raised})")
+        check(target.read_text(encoding="utf-8") == "OLD-COMPLETE",
+              "rename 前中斷:目的地仍是完整舊版")
+        A.atomic_write(target, "NEW-COMPLETE")
+        check(target.read_text(encoding="utf-8") == "NEW-COMPLETE", "正常路徑寫入成功")
+        check(A.DOCS_OUTPUT not in A.TMP_DIR.parents and A.TMP_DIR != A.DOCS_OUTPUT,
+              "tmp 檔不落在 docs/(殘留會被 wrangler 上傳並讓 docs-scoped cron 餓死)")
+
+
 def t_no_personal_files():
     print("[9] personal 檔永不進處理清單")
     # 用臨時目錄種一顆真的 personal 檔來測——不能在 docs/output/ 種(那裡出現
@@ -190,7 +266,8 @@ def t_no_personal_files():
 
 def main():
     for fn in (t_basic, t_idempotent, t_anchor_missing, t_multi_header, t_filename_and_utm,
-               t_edition_copy, t_compliance, t_downstream_regression, t_no_personal_files):
+               t_edition_copy, t_compliance, t_downstream_regression, t_marker_corrupt,
+               t_io_error_isolation, t_atomic_write, t_no_personal_files):
         fn()
     print()
     if FAILED:

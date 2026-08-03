@@ -19,6 +19,16 @@ GSC 逐頁流量帳本(capabilities/seo_page_traffic)顯示:全站流量最大�
 ## 冪等
 注入區塊包在具名 marker 之間;每次執行先剝掉舊區塊再重算,結果相同就不寫檔
 (改文案後重跑會自動更新既有頁面,不需 force flag)。
+⚠️ 冪等只在 marker 成對完整時成立:若某頁的 marker 被外力弄壞(docs/ 是 site_scan CI
+允許 LLM 自動修改的目錄),孤兒 marker 會讓「剝舊區塊」比對不到而變成每跑一次疊一份、
+或反過來吃掉正文。故注入前先 `marker_defect()` 成對掃描、寫檔前再驗一次 post-condition,
+任一不成立即 fail-loud 走 exit 3 告警路徑,絕不靜默安定在錯誤固定點(2026-08-03 F3)。
+
+## 並行/當機安全
+寫檔走 tmp+os.replace 原子替換(避免行程被 kill 時磁碟留下 0 byte / 半截的公開頁,
+下一輪 wrangler deploy 會把它推上線);tmp 落在 logs/tmp 而非 docs/,免得殘留檔案讓
+docs-scoped cron 守門從此 abort。整支 run() 外層有 flock,手動執行與 cron 互斥
+(2026-08-03 驗證者實測雙行程可讀到 0 byte,F5)。
 
 ## 歸因
 CTA 連結帶 utm_source=digest_archive / utm_medium=public_archive /
@@ -35,17 +45,24 @@ capabilities/funnel_attribution 量測。
 exit code: 0=全部成功 / 3=有檔案找不到注入錨點(已寫入其他檔,需告警) / 2=用法錯誤
 """
 import argparse
+import fcntl
+import os
 import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_OUTPUT = ROOT / "docs" / "output"
+LOCK_PATH = ROOT / "logs" / "locks" / "archive_cta.lock"
+TMP_DIR = ROOT / "logs" / "tmp"
 BASE = "https://marketdaily.ai"
 
 MARKER_START = "<!-- archive_cta:start -->"
 MARKER_END = "<!-- archive_cta:end -->"
 _BLOCK_RE = re.compile(re.escape(MARKER_START) + r".*?" + re.escape(MARKER_END) + r"\n?", re.S)
+_MARKER_TOKEN_RE = re.compile(re.escape(MARKER_START) + "|" + re.escape(MARKER_END))
+_TOP_SIG = "這是 MarketDaily"
+_BOTTOM_SIG = "免費訂閱明天的日報"
 
 _FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Noto Sans TC','PingFang TC',sans-serif"
 _FNAME_RE = re.compile(r"^digest_(\d{4}-\d{2}-\d{2})(_us)?\.html$")
@@ -54,6 +71,23 @@ _FNAME_RE = re.compile(r"^digest_(\d{4}-\d{2}-\d{2})(_us)?\.html$")
 def strip_existing_block(html: str) -> str:
     """移除先前執行留下的注入區塊,讓每次重跑都從『無本腳本痕跡』的乾淨狀態重算。"""
     return _BLOCK_RE.sub("", html)
+
+
+def marker_defect(html: str):
+    """成對掃描既有 marker;健康回 None,否則回損壞原因字串。
+
+    非貪婪的 `START.*?END` 對「半毀」有兩種相反的災難:少一個 END 會讓 regex 從上方
+    START 一路吃到下方 END(刪掉正文);少一個 START 會讓舊區塊比對不到而降級成普通
+    內文永久留著、同時又插一份新的(該頁固定兩份 CTA 且文案永遠更新不到,全程零告警)。
+    兩者都必須在 strip 之前擋下來——strip 完就分辨不出來了。
+    """
+    toks = _MARKER_TOKEN_RE.findall(html)
+    if len(toks) % 2:
+        return "marker_orphan"
+    for i in range(0, len(toks), 2):
+        if toks[i] != MARKER_START or toks[i + 1] != MARKER_END:
+            return "marker_unpaired"
+    return None
 
 
 def parse_filename(name: str):
@@ -123,6 +157,9 @@ def inject(html: str, date: str, is_us: bool):
     第二份完整 HTML,故只認第一個);頁尾主 CTA 插在 `<div class="footer">` 之前。
     兩個錨點缺任一 → 不寫該檔並回報(fail-loud,不靜默略過)。
     """
+    defect = marker_defect(html)
+    if defect:
+        return None, defect
     clean = strip_existing_block(html)
     i_header = clean.find('<div class="header">')
     i_footer = clean.rfind('<div class="footer">')
@@ -138,6 +175,11 @@ def inject(html: str, date: str, is_us: bool):
     # 頁尾插入不會動到 header 位置(在它之後),故 header 索引仍有效
     top = _wrap(_top_block(date, is_us))
     out = out[:i_header] + top + out[i_header:]
+    # post-condition:恰好一組頂+底區塊。任何非預期倍數(marker 殘留、頁面內嵌第二份
+    # 已注入的 HTML)都寧可不寫檔並告警,不寫出無法再被冪等收斂的頁面。
+    if (out.count(MARKER_START) != 2 or out.count(MARKER_END) != 2
+            or out.count(_TOP_SIG) != 1 or out.count(_BOTTOM_SIG) != 1):
+        return None, "marker_postcondition"
     return out, None
 
 
@@ -156,6 +198,23 @@ def archive_files(directory=None):
     )
 
 
+def atomic_write(path: Path, text: str) -> None:
+    """tmp + os.replace:公開頁永遠是「舊的完整版」或「新的完整版」,不會是半截。
+
+    tmp 刻意落在 logs/tmp 而非 docs/ 旁邊——殘留檔若留在 docs/ 會被 wrangler 上傳,
+    也會讓所有 docs-scoped cron 守門(cron_abort_if_untracked_scoped)從此 abort 餓死。
+    同一個檔案系統故 os.replace 原子有效;跨裝置時退回直接寫(至少不比原本差)。
+    """
+    TMP_DIR.mkdir(parents=True, exist_ok=True)
+    tmp = TMP_DIR / f"{path.name}.{os.getpid()}.tmp"
+    try:
+        tmp.write_text(text, encoding="utf-8")
+        os.replace(tmp, path)
+    except OSError:
+        tmp.unlink(missing_ok=True)
+        path.write_text(text, encoding="utf-8")
+
+
 def run(dry: bool = False, verbose: bool = True, directory=None):
     changed, skipped, unchanged = [], [], 0
     for path in archive_files(directory):
@@ -163,17 +222,24 @@ def run(dry: bool = False, verbose: bool = True, directory=None):
         if not parsed:
             continue
         date, is_us = parsed
-        html = path.read_text(encoding="utf-8")
-        out, reason = inject(html, date, is_us)
-        if reason:
-            skipped.append((path.name, reason))
-            continue
-        if out == html:
-            unchanged += 1
+        # 一顆壞檔(非 UTF-8 位元組、迴圈中被刪、權限)不得炸掉整批:整支 traceback
+        # 會讓排序在後的檔案全部不處理、前面的已寫入,而當日鎖已消耗=當天不會重試,
+        # docs 樹髒著讓所有 docs-scoped runner 餓死。降級成單檔 skip → exit 3 告警。
+        try:
+            html = path.read_text(encoding="utf-8")
+            out, reason = inject(html, date, is_us)
+            if reason:
+                skipped.append((path.name, reason))
+                continue
+            if out == html:
+                unchanged += 1
+                continue
+            if not dry:
+                atomic_write(path, out)
+        except (OSError, UnicodeDecodeError) as e:
+            skipped.append((path.name, f"io_error:{e.__class__.__name__}"))
             continue
         changed.append(path.name)
-        if not dry:
-            path.write_text(out, encoding="utf-8")
     if verbose:
         print(f"archive_cta: {'DRY ' if dry else ''}changed={len(changed)} "
               f"unchanged={unchanged} skipped={len(skipped)}")
@@ -190,7 +256,16 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--dry", action="store_true", help="只預覽不寫檔")
     args = ap.parse_args()
-    _, skipped = run(dry=args.dry)
+    # 手動執行與 cron 互斥:cron_daily_lock 只涵蓋 cron 路徑,而模組說明鼓勵手動跑。
+    # 拿不到鎖=另一個實例正在寫同一批檔,靜默讓路(它會做完同樣的事)。
+    LOCK_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(LOCK_PATH, "w") as lock:
+        try:
+            fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except OSError:
+            print("archive_cta: 另一個實例正在執行,本次讓路")
+            return 0
+        _, skipped = run(dry=args.dry)
     return 3 if skipped else 0
 
 
