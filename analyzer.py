@@ -536,6 +536,17 @@ def _call_cerebras(prompt: str, system: str = None,
         prompt, system, model=model, max_tokens=max_tokens)
 
 
+def _call_mistral(prompt: str, system: str = None,
+                  model: str = "mistral-large-latest", max_tokens: int = 8000) -> str:
+    """Mistral La Plateforme 免費層(2026-08-03 API/MCP 部收割入庫,免手機驗證時代註冊)。
+    OpenAI 相容 API、獨立廠商=獨立配額,市面最大免費額度。沒設 MISTRAL_API_KEY →
+    raise,鏈自動跳過。入鏈前已過 probe_llm_provider 真實 10 檔批次 prompt 實測。"""
+    return _call_openai_style(
+        "https://api.mistral.ai/v1/chat/completions", "MISTRAL_API_KEY",
+        prompt, system, model=model, max_tokens=max_tokens,
+        content_type=True)
+
+
 def _call_ollama(prompt: str, system: str = None,
                  model: str = "qwen2.5:14b-instruct-q4_K_M", max_tokens: int = 600) -> str:
     """winrig 本地 5080 GPU(Ollama)。零配額、零 429、不吃網路 —— 全雲端 LLM 斷線
@@ -617,7 +628,11 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
     # 而 local qwen2.5:14b 對同一 prompt **600s 超時** → 兩者不該同層。
     # free_backstop:真的做得完事的免費後衛(排 local 前);free_weak:仍是垃圾層(墊 local 後)。
     free_backstop = [("openrouter:nemotron-ultra-550b", lambda p: _call_openrouter(p, max_tokens=8000))]
-    free_weak = [("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
+    # mistral 2026-08-03 probe 實測(真實 10 檔批次):10/10 完卡、56.8s、誠實不捏數字,
+    # 但 reason 中位數 56 字 < 70 字卡級閘 → 不夠格站生卡要道,放墊底層(排死掉的 cerebras 402 前)。
+    # 卡品質閘照常把關:薄卡會被 regen/deterministic 接手,但它比死網和斷網強。
+    free_weak = [("mistral:large-latest", lambda p: _call_mistral(p, max_tokens=8000)),
+                 ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
     # 2026-07-22 Delvin:「sonnet 要花錢就不要用」——付費 Claude 全退出主鏈,
     # 純免費層扛(gemini 雙 key + groq + cf + openrouter/cerebras + 本地 GPU),
     # audit 閘門/deterministic fallback 品質防線不動。openai 沒 key 自動跳過。
@@ -2678,6 +2693,9 @@ _COUNCIL_SEATS = [
     # 預接線:沒 key raise→席次自動停用;用戶註冊後填 .env 即多一席,不需改程式
     ("openrouter:nemotron-ultra-550b", lambda p: _call_openrouter(p, system=_COUNCIL_SYS, max_tokens=900)),
     ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, system=_COUNCIL_SYS, max_tokens=300)),
+    # mistral 2026-08-03 入席:獨立廠商=獨立配額(gemini 429 熔斷/cerebras 402 當天實錄),
+    # council 輸出是 JSON 觀點不含價位,probe 56 字 reason 在這裡夠用(同 qwen3.6-27b 先例)。
+    ("mistral:large-latest", lambda p: _call_mistral(p, system=_COUNCIL_SYS, max_tokens=900)),
     ("openai", lambda p: _call_openai(p, system=_COUNCIL_SYS)),
 ]
 # 付費 Claude 席次改 opt-in(2026-07-22 Delvin 省錢令):council 佔 API 帳單大宗——
@@ -3091,6 +3109,17 @@ def _macro_backdrop_note(data: dict) -> str:
     twd = ind.get("usdtwd") or {}
     if twd.get("rate") is not None:
         parts.append(f"美元台幣 {_fmt_num(twd.get('rate'))}")
+    # FRED 官方系列(2026-08-03 接線):確定性數字直出,缺了 fail-open 不影響其餘欄位
+    fred = ind.get("fred") or {}
+    if fred.get("cpi_yoy") is not None:
+        parts.append(f"美CPI年增 {fred['cpi_yoy']}%({fred.get('cpi_month', '')})")
+    if fred.get("unemployment") is not None:
+        parts.append(f"美失業率 {fred['unemployment']}%")
+    if fred.get("fed_funds") is not None:
+        parts.append(f"Fed利率 {fred['fed_funds']}%")
+    if fred.get("curve_10y2y") is not None:
+        _cv = fred["curve_10y2y"]
+        parts.append(f"10Y-2Y利差 {_cv:+.2f}%{'(倒掛)' if _cv < 0 else ''}")
     return " ｜ ".join(parts)
 
 

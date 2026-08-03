@@ -1231,6 +1231,8 @@ def fetch_indicators() -> dict:
     if "TWD=X" in raw:
         indicators["usdtwd"] = {"rate": raw["TWD=X"]["price"], "change_pct": raw["TWD=X"]["change_pct"]}
 
+    indicators["fred"] = _fetch_fred_macro()
+
     if "vix" in indicators:
         vix = indicators["vix"]
         if vix > 30:   score, rating = 15, "Extreme Fear"
@@ -1241,6 +1243,69 @@ def fetch_indicators() -> dict:
         indicators["fear_greed"] = {"score": score, "rating": rating}
 
     return indicators
+
+
+import os as _os_fred
+_FRED_CACHE = _os_fred.path.join(_os_fred.path.dirname(_os_fred.path.abspath(__file__)), ".fred_macro_cache.json")
+
+
+def _fetch_fred_macro() -> dict:
+    """FRED 官方宏觀系列(2026-08-03 API/MCP 部接線,key 免費無分級)。
+    確定性數據餵宏觀背景句:CPI 年增/失業率/Fed funds/10Y-2Y 利差——官方數字直出,
+    不經 LLM 轉述。當日檔案快取(FRED 日更,兩班日報共用一次抓取);任何失敗回 {}
+    fail-open,日報照常(這是加分區塊,缺了不缺信)。"""
+    import os
+    import json
+    today = datetime.now().date().isoformat()
+    try:
+        with open(_FRED_CACHE, encoding="utf-8") as f:
+            c = json.load(f)
+        if c.get("date") == today:
+            return c.get("data") or {}
+    except Exception:
+        pass
+    key = os.environ.get("FRED_API_KEY")
+    if not key:
+        return {}
+    base = "https://api.stlouisfed.org/fred/series/observations"
+
+    def _obs(series, limit=1):
+        r = requests.get(base, params={
+            "series_id": series, "api_key": key, "file_type": "json",
+            "sort_order": "desc", "limit": limit}, timeout=15)
+        r.raise_for_status()
+        out = []
+        for o in r.json().get("observations", []):
+            if o.get("value") not in (None, "", "."):
+                out.append((o["date"], float(o["value"])))
+        return out
+
+    data = {}
+    try:
+        cpi = _obs("CPIAUCSL", 14)
+        if len(cpi) >= 13:
+            data["cpi_yoy"] = round((cpi[0][1] / cpi[12][1] - 1) * 100, 1)
+            data["cpi_month"] = cpi[0][0][:7]
+        un = _obs("UNRATE", 1)
+        if un:
+            data["unemployment"] = un[0][1]
+        ff = _obs("DFF", 1)
+        if ff:
+            data["fed_funds"] = ff[0][1]
+        g10, g2 = _obs("DGS10", 1), _obs("DGS2", 1)
+        if g10 and g2:
+            data["curve_10y2y"] = round(g10[0][1] - g2[0][1], 2)
+    except Exception as e:
+        print(f"  [FRED] 抓取失敗(fail-open,宏觀句略過官方系列): {e}")
+        if not data:
+            return {}
+    try:
+        with open(_FRED_CACHE, "w", encoding="utf-8") as f:
+            json.dump({"date": today, "data": data}, f)
+    except Exception:
+        pass
+    return data
+
 
 
 # 全球領先脈絡指數:鄰近市場開盤早於台股(東京/首爾 08:00 TW 早於台股 09:00),半導體鏈跨市連動,

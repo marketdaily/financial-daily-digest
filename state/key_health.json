@@ -1,0 +1,50 @@
+{
+ "ts": "2026-08-03T13:21:03",
+ "weekly_ran": true,
+ "results": {
+  "finmind": {
+   "ok": true,
+   "note": "http=200 rows=2"
+  },
+  "fmp": {
+   "ok": true,
+   "note": "http=200"
+  },
+  "newsapi": {
+   "ok": true,
+   "note": "http=200"
+  },
+  "fred": {
+   "ok": true,
+   "note": "http=200"
+  },
+  "brevo": {
+   "ok": true,
+   "note": "http=200"
+  },
+  "beehiiv": {
+   "ok": true,
+   "note": "http=200"
+  },
+  "exa_budget": {
+   "ok": true,
+   "note": "no budget file yet(尚未首跑)"
+  },
+  "alphavantage": {
+   "ok": true,
+   "note": "http=200"
+  },
+  "tavily": {
+   "ok": true,
+   "note": "http=200"
+  },
+  "context7": {
+   "ok": true,
+   "note": "http=200"
+  },
+  "mistral_key": {
+   "ok": true,
+   "note": "http=200"
+  }
+ }
+}
