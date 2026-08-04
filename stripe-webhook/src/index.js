@@ -1692,6 +1692,123 @@ export default {
       return json({ ok: true, url: d.url, session_id: d.id });
     }
 
+    // fortune-ai(命書):**站內原生付款**用的 PaymentIntent(Apple Pay / Google Pay)。
+    // 前端 Express Checkout Element 在客人按下錢包按鈕的當下要一個 client_secret,這支就是給它的。
+    // 與上面 /internal/fortune-checkout 同一把 Bearer INTERNAL_TOKEN、**同一個金額把關**,
+    // 差別只有「不跳轉去 checkout.stripe.com」。
+    //
+    // 💰 金額一樣由 fortune-ai worker 伺服器端 priceOf() 算完才送來;瀏覽器傳什麼價都不算數,
+    //    這裡再過一次 resolveFortuneCheckout()「不得超過定價」的上限把關(收銀台那條的同一支純函式)。
+    // 🔒 Idempotency-Key 綁 order id:客人連點兩下錢包按鈕,Stripe 回同一個 PaymentIntent,
+    //    不會出現一筆訂單兩個待付款意圖(也就不會有兩筆授權)。
+    if (url.pathname === "/internal/fortune-payment-intent" && request.method === "POST") {
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
+      if (!env.STRIPE_SECRET_KEY) return json({ error: "missing_stripe_key" }, 500);
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
+      const guard = resolveFortuneCheckout(body.sku, body.amount);
+      if (guard.error) return json({ error: guard.error, max_amount: guard.max_amount }, guard.status);
+      const oid = String(body.order_id || "");
+      if (!oid.startsWith("order:")) return json({ error: "bad_order_id" }, 400);
+      const params = {
+        amount: String(guard.amount),
+        currency: "twd",
+        // 錢包按鈕由 Express Checkout Element 決定顯示哪些;這裡開自動付款方式即可。
+        // allow_redirects=never:站內付款不該把人踢去外部授權頁(3DS 仍以彈窗完成)。
+        "automatic_payment_methods[enabled]": "true",
+        "automatic_payment_methods[allow_redirects]": "never",
+        description: guard.name,
+        // ⚠️ metadata 是 webhook 端唯一的分流依據(見 payment_intent.succeeded 分支):
+        //    product=fortune 決定「這是命書的單」,order_id 決定「是哪一筆」。漏帶 = 收到錢卻不出貨。
+        "metadata[product]": "fortune",
+        "metadata[sku]": body.sku,
+        "metadata[order_id]": oid,
+      };
+      if (body.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) params.receipt_email = body.email;
+      const r = await fetch("https://api.stripe.com/v1/payment_intents", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + env.STRIPE_SECRET_KEY,
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Idempotency-Key": `fortune-pi-${oid}`,
+        },
+        body: new URLSearchParams(params).toString(),
+      });
+      const d = await r.json();
+      if (!r.ok || !d.client_secret) {
+        return json({ error: "stripe_failed", detail: JSON.stringify(d).slice(0, 300) }, 502);
+      }
+      return json({ ok: true, client_secret: d.client_secret, payment_intent_id: d.id });
+    }
+
+    // fortune-ai(命書):站內原生付款的**一次性開通/複驗**(冪等,可重跑)。Bearer INTERNAL_TOKEN。
+    // 做兩件在 Stripe 後台那頭、程式沒它就不會動的事:
+    //   ① 註冊付款方式網域(/v1/payment_method_domains)—— Apple Pay 按鈕**只在已註冊的網域**出現,
+    //      Stripe 會去抓 https://<domain>/.well-known/apple-developer-merchantid-domain-association 驗證。
+    //   ② 確認 webhook 端點有訂閱 payment_intent.succeeded —— 沒訂閱 = 客人付了錢我們收不到通知 = 不出貨。
+    //      只做**聯集**(把事件加進去),絕不移除任何既有事件。
+    // 網域清單寫死在程式裡,不吃任何外部輸入 —— 這支不是「任意呼叫 Stripe API」的後門。
+    if (url.pathname === "/internal/fortune-native-pay-setup" && request.method === "POST") {
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
+      if (!env.STRIPE_SECRET_KEY) return json({ error: "missing_stripe_key" }, 500);
+      const auth = { "Authorization": "Bearer " + env.STRIPE_SECRET_KEY, "Content-Type": "application/x-www-form-urlencoded" };
+      const DOMAINS = ["mingshu.tw", "www.mingshu.tw"];
+      const NEED_EVENT = "payment_intent.succeeded";
+      const report = { domains: [], webhooks: [] };
+      try {
+        const lr = await fetch("https://api.stripe.com/v1/payment_method_domains?limit=100", { headers: auth });
+        const ld = await lr.json();
+        if (!lr.ok) return json({ error: "stripe_failed", detail: JSON.stringify(ld).slice(0, 300) }, 502);
+        for (const domain of DOMAINS) {
+          let row = (ld.data || []).find((x) => x.domain_name === domain);
+          if (!row) {
+            const cr = await fetch("https://api.stripe.com/v1/payment_method_domains", {
+              method: "POST", headers: auth, body: new URLSearchParams({ domain_name: domain }).toString(),
+            });
+            row = await cr.json();
+            if (!cr.ok) { report.domains.push({ domain, error: JSON.stringify(row).slice(0, 200) }); continue; }
+          } else {
+            // 已註冊 → 重跑驗證(檔案剛放上去/換過網域時,這一步才會讓 Apple Pay 由 pending 轉 active)
+            const vr = await fetch(`https://api.stripe.com/v1/payment_method_domains/${row.id}/validate`, {
+              method: "POST", headers: auth, body: "",
+            });
+            const vd = await vr.json();
+            if (vr.ok) row = vd;
+          }
+          report.domains.push({
+            domain, id: row.id, enabled: row.enabled,
+            apple_pay: row.apple_pay?.status, apple_pay_detail: row.apple_pay?.status_details?.error_message || null,
+            google_pay: row.google_pay?.status,
+          });
+        }
+        const wr = await fetch("https://api.stripe.com/v1/webhook_endpoints?limit=100", { headers: auth });
+        const wd = await wr.json();
+        if (!wr.ok) return json({ error: "stripe_failed", detail: JSON.stringify(wd).slice(0, 300) }, 502);
+        for (const ep of wd.data || []) {
+          const mine = /marketdaily\.ai|workers\.dev/.test(ep.url || "");
+          const has = (ep.enabled_events || []).includes(NEED_EVENT) || (ep.enabled_events || []).includes("*");
+          if (!mine || ep.status !== "enabled" || has) {
+            report.webhooks.push({ url: ep.url, mine, status: ep.status, has_event: has, changed: false });
+            continue;
+          }
+          const form = new URLSearchParams();
+          for (const e of [...(ep.enabled_events || []), NEED_EVENT]) form.append("enabled_events[]", e);
+          const ur = await fetch(`https://api.stripe.com/v1/webhook_endpoints/${ep.id}`, {
+            method: "POST", headers: auth, body: form.toString(),
+          });
+          const ud = await ur.json();
+          report.webhooks.push({
+            url: ep.url, mine: true, status: ep.status, has_event: false, changed: ur.ok,
+            error: ur.ok ? undefined : JSON.stringify(ud).slice(0, 200),
+            events_after: ur.ok ? (ud.enabled_events || []).length : undefined,
+          });
+        }
+      } catch (e) {
+        return json({ error: "setup_failed", detail: String(e).slice(0, 300), report }, 502);
+      }
+      return json({ ok: true, ...report });
+    }
+
     // 台股基本面(本益比/殖利率/淨值比):winrig 每交易日從 TWSE/TPEx openapi 推 → KV
     if (url.pathname === "/internal/watch-fundamentals" && request.method === "POST") {
       if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
@@ -2603,27 +2720,17 @@ export default {
       const isFortune = (session.metadata?.product === "fortune") || ((session.client_reference_id || "").startsWith("order:"));
       if (isFortune) {
         const oid = session.client_reference_id || "";
-        if (env.FORTUNE_ORDERS) {
-          const raw = oid ? await env.FORTUNE_ORDERS.get(oid) : null;
-          if (raw) {
-            const o = JSON.parse(raw);
-            o.paid = true; o.paid_at = Date.now(); o.stripe_session = session.id; o.amount = session.amount_total;
-            o.payer_email = (session.customer_details?.email || "").trim().toLowerCase() || o.email || "";
-            // ⚠️ KV put 會整份覆蓋 metadata:佇列統計(/api/order-status 的 queue_position)
-            // 只讀 metadata 不逐筆 get,漏帶這筆單就從佇列裡消失。契約與 fortune-ai
-            // worker 的 orderMeta() 同義:a=還在佇列, t=入列時間, l=車道(付費=api)。
-            const tsMatch = /^order:(\d{10,16})-/.exec(oid);
-            await env.FORTUNE_ORDERS.put(oid, JSON.stringify(o), {
-              metadata: {
-                a: (!o.fulfilled_at && !o.needs_human) ? 1 : 0,
-                t: Number(o.paid_at) || (tsMatch ? Number(tsMatch[1]) : 0),
-                l: o.comp ? "cli" : "api",
-              },
-            });
-          } else {
-            // 找不到對應訂單(直接從 Payment Link 進來沒帶 client_reference_id):留 orphan 供補單
-            await env.FORTUNE_ORDERS.put(`paid_orphan:${session.id}`, payload.slice(0, 4000));
-          }
+        // 寫入與冪等/metadata 契約全在 markFortunePaid()(站內 Apple Pay 走同一支)
+        const res = await markFortunePaid(env, oid, {
+          pay_method: "stripe_checkout",
+          session_id: session.id,
+          payment_intent: typeof session.payment_intent === "string" ? session.payment_intent : undefined,
+          amount: session.amount_total,
+          email: session.customer_details?.email || "",
+        });
+        // 找不到對應訂單(直接從 Payment Link 進來沒帶 client_reference_id):留 orphan 供補單
+        if (res === "orphan" && env.FORTUNE_ORDERS) {
+          await env.FORTUNE_ORDERS.put(`paid_orphan:${session.id}`, payload.slice(0, 4000));
         }
         return new Response("OK", { status: 200 });
       }
@@ -2681,6 +2788,31 @@ export default {
           clientUA: request.headers.get("user-agent") || null,
         }));
       }
+    }
+
+    // 站內原生付款(命書 Apple Pay / Google Pay):錢包直接確認 PaymentIntent,
+    // 全程不經 checkout.stripe.com,所以**沒有** checkout.session.completed 可收 ——
+    // 「有沒有真的收到錢」只能靠這個事件。
+    if (event.type === "payment_intent.succeeded") {
+      const pi = event.data.object || {};
+      const oid = String(pi.metadata?.order_id || "");
+      // ⚠️ 分流護欄:MarketDaily 自己的訂閱付款**同樣會發** payment_intent.succeeded。
+      //    那些單的開通邏輯全在 checkout.session.completed,這裡多做一次就會重複開通/重複寄信。
+      //    只有「我們自己建的、帶 product=fortune 且 order_id 合法」的 PI 才算命書的單,
+      //    其餘一律原樣放行(回 200 讓 Stripe 別重送),絕不碰任何 MarketDaily 狀態。
+      const isFortune = pi.metadata?.product === "fortune" && oid.startsWith("order:");
+      if (!isFortune) return new Response("OK", { status: 200 });
+      const res = await markFortunePaid(env, oid, {
+        pay_method: "stripe_native",
+        payment_intent: pi.id,
+        // amount_received 才是真的收到的錢(amount 是「打算收」);部分付款不會等於 amount。
+        amount: typeof pi.amount_received === "number" ? pi.amount_received : pi.amount,
+        email: pi.receipt_email || pi.charges?.data?.[0]?.billing_details?.email || "",
+      });
+      if (res === "orphan" && env.FORTUNE_ORDERS) {
+        await env.FORTUNE_ORDERS.put(`paid_orphan:${pi.id}`, payload.slice(0, 4000));
+      }
+      return new Response("OK", { status: 200 });
     }
 
     if (event.type === "customer.subscription.deleted") {
@@ -2826,6 +2958,58 @@ async function verifyStripeSignature(payload, sigHeader, secret) {
   let diff = 0;
   for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ signature.charCodeAt(i);
   return diff === 0;
+}
+
+// ---- fortune-ai(命書)訂單標記已付款 —— 全系統唯一的寫入點 ----
+// 兩個 Stripe 事件都會走到這裡:①checkout.session.completed(跳轉收銀台)
+// ②payment_intent.succeeded(站內 Apple Pay / Google Pay)。合成一支的理由有兩個:
+//
+// ⚠️ ①**冪等**:同一筆單很可能兩個事件都來(走收銀台付款時 Stripe 兩個都發)。
+//    已 paid 就原樣退出、一個位元組都不寫 —— 重寫會把 paid_at/stage 打回付款當下,
+//    已交付的單就可能被 fulfill 當成新單再跑一次 = 重複生成、重複寄信。
+//    (等同 fulfill.py `_delivery_guard()` 的精神:交付前後都要有一道「已經做過了」的閘。)
+// ⚠️ ②**KV metadata 契約**:KV 的 put 會**整份覆蓋** metadata,而佇列統計
+//    (fortune-ai `/api/order-status` 的 queue_position)只讀 metadata 不逐筆 get。
+//    漏帶這筆單就從佇列統計裡消失。契約與 fortune-ai worker 的 orderMeta() 同義:
+//    a=還在佇列, t=入列時間, l=車道(付費=api、邀請碼免單=cli)。
+//
+// 回傳值即結果碼:paid / already_paid / orphan(對不到單)/ no_kv(沒綁 KV)。
+async function markFortunePaid(env, oid, info) {
+  if (!env.FORTUNE_ORDERS) return "no_kv";
+  if (!oid || !oid.startsWith("order:")) return "orphan";
+  const raw = await env.FORTUNE_ORDERS.get(oid);
+  if (!raw) return "orphan";
+  let o;
+  try { o = JSON.parse(raw); } catch { return "orphan"; }
+  if (o.paid) return "already_paid";
+  o.paid = true;
+  o.paid_at = Date.now();
+  o.status = "paid";
+  o.stage = "queued";
+  o.pay_method = info.pay_method || "stripe";
+  if (info.session_id) o.stripe_session = info.session_id;
+  if (info.payment_intent) o.stripe_payment_intent = info.payment_intent;
+  if (typeof info.amount === "number") o.amount = info.amount;
+  // 對帳,但**不擋交付**:Stripe 的簽章已經保證這則通知真的來自 Stripe,所以金額對不上
+  // 只可能是我們自己建付款時算錯。記一筆供事後查 —— 客人已經付過錢了,任何「先扣住不出貨」
+  // 的設計都是把我們自己的 bug 變成客訴。(綠界那條會擋,是因為它的通知本身才是防線。)
+  const quoted = Number(o.quoted_price || 0) * 100;
+  if (quoted > 0 && typeof info.amount === "number" && info.amount !== quoted) {
+    o.amount_mismatch = { got: info.amount, expect: quoted, at: Date.now() };
+  }
+  // 交付管線只認 payer_email(fulfill.py 缺它會拋錯)。錢包付款可能沒帶 email,
+  // 退回下單時填的聯絡信箱 —— 那是客人自己填的收件地址,永遠有值。
+  o.payer_email = String(info.email || "").trim().toLowerCase() ||
+    o.payer_email || (o.contact_type === "email" ? String(o.contact || "").trim().toLowerCase() : "");
+  const tsMatch = /^order:(\d{10,16})-/.exec(oid);
+  await env.FORTUNE_ORDERS.put(oid, JSON.stringify(o), {
+    metadata: {
+      a: (!o.fulfilled_at && !o.needs_human) ? 1 : 0,
+      t: Number(o.paid_at) || (tsMatch ? Number(tsMatch[1]) : 0),
+      l: o.comp ? "cli" : "api",
+    },
+  });
+  return "paid";
 }
 
 // 稽核記錄:管理員每次異動寫一筆,供 /admin/audit-log 檢視。180 天 TTL。永不因失敗中斷主流程。
