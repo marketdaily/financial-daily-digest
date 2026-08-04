@@ -2609,7 +2609,17 @@ export default {
             const o = JSON.parse(raw);
             o.paid = true; o.paid_at = Date.now(); o.stripe_session = session.id; o.amount = session.amount_total;
             o.payer_email = (session.customer_details?.email || "").trim().toLowerCase() || o.email || "";
-            await env.FORTUNE_ORDERS.put(oid, JSON.stringify(o));
+            // ⚠️ KV put 會整份覆蓋 metadata:佇列統計(/api/order-status 的 queue_position)
+            // 只讀 metadata 不逐筆 get,漏帶這筆單就從佇列裡消失。契約與 fortune-ai
+            // worker 的 orderMeta() 同義:a=還在佇列, t=入列時間, l=車道(付費=api)。
+            const tsMatch = /^order:(\d{10,16})-/.exec(oid);
+            await env.FORTUNE_ORDERS.put(oid, JSON.stringify(o), {
+              metadata: {
+                a: (!o.fulfilled_at && !o.needs_human) ? 1 : 0,
+                t: Number(o.paid_at) || (tsMatch ? Number(tsMatch[1]) : 0),
+                l: o.comp ? "cli" : "api",
+              },
+            });
           } else {
             // 找不到對應訂單(直接從 Payment Link 進來沒帶 client_reference_id):留 orphan 供補單
             await env.FORTUNE_ORDERS.put(`paid_orphan:${session.id}`, payload.slice(0, 4000));
