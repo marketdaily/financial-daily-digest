@@ -18,6 +18,7 @@ export const FORTUNE_SKUS = {
   liunian349: { name: "天機AI 2027流年詳批(單次)", max_amount: 34900 },
   tarotlove149: { name: "天機AI 塔羅感情聖壇六張陣(單次)", max_amount: 14900 },
   ziwei249: { name: "天機AI 紫微斗數詳批(單次)", max_amount: 24900 },
+  astro249: { name: "天機AI 西洋占星本命盤(單次)", max_amount: 24900 },
 };
 
 export function resolveFortuneCheckout(sku, amount) {
