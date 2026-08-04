@@ -1656,7 +1656,14 @@ export default {
       if (!env.STRIPE_SECRET_KEY) return json({ error: "missing_stripe_key" }, 500);
       let body;
       try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
-      const SKUS = { bazi249: { name: "天機AI 八字詳批(單次)", amount: 24900 }, tarot99: { name: "天機AI 塔羅單題(單次)", amount: 9900 } };
+      const SKUS = {
+        bazi249: { name: "天機AI 八字詳批(單次)", amount: 24900 },
+        tarot99: { name: "天機AI 塔羅單題(單次)", amount: 9900 },
+        hehun399: { name: "天機AI 合婚合盤(單次)", amount: 39900 },
+        liunian349: { name: "天機AI 2027流年詳批(單次)", amount: 34900 },
+        tarotlove149: { name: "天機AI 塔羅感情聖壇六張陣(單次)", amount: 14900 },
+        ziwei249: { name: "天機AI 紫微斗數詳批(單次)", amount: 24900 },
+      };
       const sku = SKUS[body.sku];
       if (!sku) return json({ error: "bad_sku" }, 400);
       const oid = String(body.order_id || "");
