@@ -34,6 +34,7 @@ CLI:
 import os
 import sys
 import json
+import time
 import math
 import fcntl
 import datetime
@@ -63,10 +64,21 @@ MARGIN_DELTA_YELLOW = -3.0
 DEBT_RATIO_YELLOW = 70.0
 
 
-def _get(url, timeout=25):
-    req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return json.loads(r.read().decode())
+def _get(url, timeout=25, retries=2):
+    # tpex.org.tw 有節點憑證鏈壞掉(SSL: Missing Subject Key Identifier),實測約每 3 次
+    # 中 1 次。上層對兩市場端點各自 try/except,所以這個抖動的後果是「整批櫃買公司
+    # 財報靜默消失」而非報錯——2026-08-04 由 intel/doctor.py 探測時發現。
+    last = None
+    for attempt in range(retries + 1):
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return json.loads(r.read().decode())
+        except Exception as e:
+            last = e
+            if attempt < retries:
+                time.sleep(1.5)
+    raise last
 
 
 def _num(v):
