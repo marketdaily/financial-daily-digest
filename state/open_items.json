@@ -1216,8 +1216,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-04 23:40",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 00:33",
+  "note": "拆成兩半:①按鈕會不會出現 → 老闆 2026-08-05 真機確認會出現,這半收掉;②真的刷一筆走完出貨鏈 → 併入 #123(真卡從未刷過);另 elements 改 card-only 後的複驗另立 #124。留著會與 #123/#124 重複計數"
  },
  {
   "id": 123,
@@ -1236,6 +1236,16 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-05 00:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 125,
+  "what": "mingshu 流年頁只做了 2027,2028(戊申)未開",
+  "why": "本輪任務範圍鎖 2027;年底前不補會漏掉「2028 犯太歲」整批搜尋量。補法=families.LIUNIAN_FULL_YEARS 加一個數字後跑 ship.sh",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 00:21",
   "closed": null,
   "note": ""
  }
