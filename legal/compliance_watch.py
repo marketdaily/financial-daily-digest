@@ -122,6 +122,12 @@ SURFACES = [
     {"id": "ms_index", "label": "命書首頁",
      "url": "https://mingshu.tw/", "kind": "html",
      "packs": ["mingshu"]},
+    # 命書是唯一有真金流的線,原本只掃首頁 1 面 2 條規則——而稀缺話術/療效宣稱最可能出現在
+    # 142 個 pSEO 內容頁上。清單取自**線上 sitemap**(那才是「實際部署了什麼」的真源;
+    # 命書的頁面也不在本 repo 裡,拿本機檔案當清單會永遠對不上)。
+    {"id": "ms_pseo", "label": "命書全站頁面(線上 sitemap 展開)",
+     "url": "@ms_sitemap", "kind": "html_multi",
+     "packs": ["mingshu"]},
     {"id": "ms_pricing_api", "label": "命書定價快照(公平法促銷閘)",
      "url": "https://fortune-ai.delvin-12345678.workers.dev/api/pricing", "kind": "promo",
      "packs": []},
@@ -174,6 +180,19 @@ def blog_urls(limit=None):
     if limit:
         files = files[:limit]
     return [f"https://marketdaily.ai/blog/{f}" for f in files]
+
+
+_SITEMAP_LOC = re.compile(r"<loc>\s*([^<\s]+)\s*</loc>", re.I)
+MS_SITEMAP = "https://mingshu.tw/sitemap.xml"
+
+
+def sitemap_urls(sitemap=MS_SITEMAP, skip=("https://mingshu.tw/",)):
+    """從**線上 sitemap** 展開頁面清單(命書的 pSEO 頁不在本 repo,而且線上 sitemap 才是
+    「實際部署了什麼」的真源)。抓不到 → 空清單 → 該面 unknown,不會靜靜地綠。"""
+    code, body = fetch(sitemap, timeout=20, retries=1)
+    if code != 200:
+        return []
+    return [u for u in _SITEMAP_LOC.findall(body) if u not in skip]
 
 
 def config_problems():
@@ -518,7 +537,8 @@ SUB_WORKERS = 6   # html_multi 內層的併發(外層 5 × 內層 6 對自家 Pa
 
 
 def _expand_multi(token):
-    return {"@docs_rest": docs_page_urls, "@blog_all": blog_urls}.get(token, list)()
+    return {"@docs_rest": docs_page_urls, "@blog_all": blog_urls,
+            "@ms_sitemap": sitemap_urls}.get(token, list)()
 
 
 def _merge_corpus(acc, one):
