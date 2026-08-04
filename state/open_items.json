@@ -406,8 +406,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-02 17:40",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-04 20:34",
+  "note": "已完成:#41紫微+合婚+流年+塔羅聖壇+星座全部上架;#46 命名=命書、網域 mingshu.tw 已買並上線;#48 金流改 Stripe 自動化(LINE Pay 路線改綠界待申請)"
  },
  {
   "id": 42,
@@ -456,8 +456,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-02 18:17",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-04 20:34",
+  "note": "已完成:#41紫微+合婚+流年+塔羅聖壇+星座全部上架;#46 命名=命書、網域 mingshu.tw 已買並上線;#48 金流改 Stripe 自動化(LINE Pay 路線改綠界待申請)"
  },
  {
   "id": 47,
@@ -476,8 +476,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-02 18:17",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-04 20:34",
+  "note": "已完成:#41紫微+合婚+流年+塔羅聖壇+星座全部上架;#46 命名=命書、網域 mingshu.tw 已買並上線;#48 金流改 Stripe 自動化(LINE Pay 路線改綠界待申請)"
  },
  {
   "id": 49,
@@ -566,8 +566,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-02 19:39",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-04 14:11",
+  "note": "PayPal sandbox 憑證已取並灌 worker,端到端結帳實測通過(訂單7W316044RB420021H,金額/免運門檻/line items 全對);剩升 Business 換 live 憑證,另立新項"
  },
  {
   "id": 58,
@@ -776,8 +776,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-04 05:44",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-04 21:21",
+  "note": "驗證者分離已補做:run_verifier.sh(headless claude -p)真跑 tt-mutation-d11-d12,VERDICT=SOUND-WITH-CORRECTIONS/5 findings,F1-F5 全修且每則做『缺陷仍在時修前綠/修後紅』對照實驗;修後全 23 則突變複跑 23 killed/SURVIVED 0/生產檔 md5 未變;check_report --expect-task exit 0 有帳本背書"
  },
  {
   "id": 79,
@@ -806,6 +806,436 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-04 13:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 82,
+  "what": "Wrenly 真收款差最後一步:PayPal 個人帳號要升 Business 才有 live 憑證(sandbox 已全通)。升級入口 paypal.com/bizsignup,填商家名Wrenly+類別+地址;升完我換 live key 切 PAYPAL_ENV=live 跑A$1實單驗證",
+  "why": "升 Business 屬帳戶身分變更(KYC),需本人;2FA 也擋程式化點擊",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-04 14:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 83,
+  "what": "fortune-ai 紫微引擎+模板已 commit(ac1263d),但 fulfill.py 未接線 ziwei 品項、網站仍掛即將推出,未在生產跑過",
+  "why": "任務鐵則=只新增不碰既有檔,fulfill.py 且有別窗未 commit 修改",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 14:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 84,
+  "what": "fortune-ai 塔羅感情聖壇(tarotlove149)未真寄過信:e2e 只跑到 audit 通過即止(dry-run,任務指定)",
+  "why": "寄信段代碼全品項共用且已被 hehun/liunian/ziwei 三筆真寄驗證,但 tarotlove 品項本身尚未在生產走完 Brevo 寄達",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 14:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 85,
+  "what": "fortune-ai 四新品項 Stripe 真實刷卡收款未驗證(hehun399/liunian349/tarotlove149/ziwei249)",
+  "why": "e2e 用 KV 手動標 paid 模擬;checkout session 建立已驗證但無人真的付過款,webhook 標 paid 對新 sku 的實際路徑要等首筆真單或老闆決定刷一筆測試單",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-04 14:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 86,
+  "what": "天機AI 站上報告交付:Stripe 真刷卡路徑(付款→success_url ?sid→/api/claim→看報告)尚未在生產跑過",
+  "why": "演練全走邀請碼免單通道;刷卡路徑只單獨驗過 claim 端點回傳正確,沒有真的付一筆錢走完整段",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 16:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 87,
+  "what": "天機AI 報告 PDF 依賴 winrig 手動安裝的 Noto Serif/Sans TC 字型,沒有 provisioning 腳本",
+  "why": "字型是這次手動 cp 進 ~/.local/share/fonts 的;換機/重灌會靜默少字型(render_pdf 會驗文字層失敗→只掉 PDF 不掉交付,但沒人自動補回來)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 16:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 88,
+  "what": "天華測試品:SBIR計畫書稽核閘門demo(finaudit引擎+SBIR規則集),8/22死線,LINE交付",
+  "why": "訪談親口承諾2-3週;grill判決=一artifact三門的門1",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 16:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 89,
+  "what": "天機AI 付費單走 Anthropic API 車道=自動化付費支出,需 Delvin 明示核可",
+  "why": "2026-07-26 老闆親令『不要扣錢:winrig 上任何程式都不再能打付費 API』,key 密封在 ~/.marketdaily-secrets/ 且註明『要恢復自動化付費須 Delvin 明示』。這次雙車道是經協調者轉述的老闆拍板(付費單→API),我已照做並上線,但我無法直接驗證該授權;實測單篇 US$0.047(NT$1.5) vs 售價 NT$99-399。kill-switch=touch ~/fortune-ai/fulfill/USE_CLI_ONLY 即全退回免費車道",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-04 17:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 90,
+  "what": "天機AI 紫微(ziwei_249)audit 二輪皆不過的機率偏高",
+  "why": "0804 壓測 2/2 筆 ziwei 都因 ziwei_star_mismatch(命宮/遷移宮主星寫錯)轉 needs_human;audit 防線正確擋下(沒放寬),但代表 ziwei 模板/prompt 對『宮位→主星』的約束不夠強,真實客人下 ziwei 單會有較高機率吃到人工複核延遲",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 17:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 91,
+  "what": "天機AI 12 筆並行演練誤寄 12 封測試報告到 Delvin 信箱",
+  "why": "0804 我跑並行實證時沒有 dry-run 機制,10 封寄到 delvin.12345678+tjltNN@gmail.com、2 封(車道驗收)寄到本帳號。已加 FULFILL_DRY_RUN/DRY_RUN 閘門+測試+README 紅線根治,KV 與 delivered/ 殘留已清乾淨。信件本身無法收回,老闆需自行刪除(可用 +tjlt 過濾)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 17:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 92,
+  "what": "紫微品項 audit 高機率不過(壓測 2/2 皆 ziwei_star_mismatch 轉 needs_human),真客人買 NT49 會等人工複核——模板宮位→主星約束要加嚴",
+  "why": "既有問題非本次改動;需重寫 ziwei 模板約束後真跑驗證",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 17:44",
+  "closed": "2026-08-04 18:10",
+  "note": "根因是 audit 誤殺不是模板:落宮掃描的共現判定把對宮借星/三方四正/夾宮判成捏造,四柱逐字比對又卡中文頓號。改判句式+關係驗證+四柱分隔符正規化,模板同步加 <chart_grounding>;突變 6 紅/正統 6 綠釘進 pytest,DRY_RUN 真跑 5 筆 5/5 過(3 筆一稿過)。commit 97b9f5f。生產真單驗證另立 #93"
+ },
+ {
+  "id": 93,
+  "what": "紫微交付修復尚未在生產真訂單上跑過(只做 DRY_RUN 5 筆離線驗收)",
+  "why": "fortune-ai 目前無新 ziwei_249 進單;要等真客人下單或老闆手動補跑 fulfill.py 才算生產驗證",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 18:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 94,
+  "what": "fortune-ai 既有 2 筆 ziwei_249 needs_human 訂單尚未重跑交付",
+  "why": "訂單狀態在 KV,重跑會寄真信給客人,需老闆確認時機(非我可自行觸發)",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-04 18:10",
+  "closed": "2026-08-04 18:10",
+  "note": "查證後撤銷:KV 目前只有 3 筆訂單(2 bazi + 1 tarot)皆 fulfilled,沒有任何 ziwei_249 訂單卡 needs_human;那 2 筆壓測單不在生產 KV 也沒留在 fulfill/failed/,無單可重跑"
+ },
+ {
+  "id": 95,
+  "what": "天機AI 促銷:續檔間隔無自動偵測器(法遵)",
+  "why": "只有 docs/pricing_promo.md 的規則與 60 天單檔上限;若 8/31 結束後立刻再開一檔,公平會附表二第十/十一項『長期以特價名義標示』風險升高,但沒有東西會告警",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 18:31",
+  "closed": "2026-08-04 21:54",
+  "note": "已建偵測器:legal/compliance_watch.py 促銷閘每晚查線上 /api/pricing 快照——單檔>60天、同一檔 id 截止時刻往後跳(假倒數)、新檔距上一檔結束<30天(無縫續檔)、促銷未啟動卻收折扣價、劃線價無成交舉證,五條全部有自測(突變全滅)。帳本 ~/.marketdaily-fallback/.compliance_promo_ledger.json"
+ },
+ {
+  "id": 96,
+  "what": "天機AI 定價從未實際成交,劃線價閘門仍關閉",
+  "why": "KV 現存 3 筆訂單全是邀請碼免單;公平會判準要『曾以該價格販售相當數量之事實』才可劃線。目前顯示前瞻性『9/1 起 NT』。要開劃線須先補 docs/pricing_promo.md §7 成交舉證表",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-04 18:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 97,
+  "what": "stripe-webhook legacy /internal/fortune-payment-links 金額寫死定價",
+  "why": "不吃促銷狀態,促銷期重建連結會與站上標價不符;目前無呼叫者,只加了警語未改實作",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 18:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 98,
+  "what": "stripe-webhook 付款回寫 fortune 訂單時未帶 KV metadata(佇列統計失準)",
+  "why": "README 只點名 worker 與 fulfill.py 兩個寫入者,但 stripe-webhook 是第三個;它的 put 沒帶 metadata,KV put 會整份覆蓋 → Stripe 付款後該筆從佇列統計消失。發現於促銷任務,屬 fulfill/佇列代理範圍,未動(scope-lock)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 18:31",
+  "closed": "2026-08-04 18:33",
+  "note": "第三個訂單寫入者補上 metadata 契約(同 orderMeta),已部署"
+ },
+ {
+  "id": 99,
+  "what": "天機AI 綠界 ECPay 正式商店代號未申請,台灣在地支付在正式站仍關閉",
+  "why": "需 Delvin 本人做身分驗證+門牌照片+銀行帳戶,審核 2-3 工作天;行動包 ~/fortune-ai/docs/ECPAY_APPLY.md",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-04 18:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 100,
+  "what": "綠界付款成功通知(RtnCode=1)只在測試站用自簽通知驗過,未經真實金流",
+  "why": "綠界測試後台模擬付款有圖形驗證碼無法自動化;取號那一腿是綠界真的送來且驗章通過,同一段驗章程式碼,但真金流那一步仍需老闆上線後用小額真單補驗",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-04 18:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 101,
+  "what": "綠界 ATM/超商逾期未繳的訂單沒有清理排程,會永遠停在 awaiting_payment",
+  "why": "綠界逾期不發通知,要另排 QueryTradeInfo 對帳排程;等有真實單量再做",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 18:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 102,
+  "what": "stripe-webhook fortune 分流標記付款成功時沒帶 KV metadata,每筆 Stripe 付款單都從佇列統計消失(queue_position 恆 0)",
+  "why": "查綠界串接時發現的既有 bug,修它要動另一個 repo 的 worker,屬於另一個任務;綠界那條路沒有此問題(走 putOrder)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 18:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 103,
+  "what": "fortune-ai 占星品項 astro_249 用 Swiss Ephemeris(AGPL/商業雙授權),授權方式尚未選定就已上架販售",
+  "why": "Astrodienst 明訂『選擇必須在公開服務啟用前做出』:走 AGPL 要把整個 fortune-ai 開源,不開源就要買 Professional Edition(700 CHF 一次性、不限專案)。這是商務/法務決定,不是我能代拍的",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-04 19:46",
+  "closed": "2026-08-04 19:55",
+  "note": "改用更保守的收法:程式碼全部完成並 commit,但**未部署**——授權未定前不啟用公開服務。改開新項追蹤決策本身"
+ },
+ {
+  "id": 104,
+  "what": "GrantHawk真實案驗證:等天華丟第一份真計畫書,驗docx抽取層+檢查命中率",
+  "why": "fixtures是合成的,真檔表格長相是最大變數;交付訊號=usage.jsonl出現外部IP",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 19:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 105,
+  "what": "fortune-ai 占星品項 astro_249 程式已完成並 commit,但**刻意未部署**:Swiss Ephemeris 授權方式未定,不敢啟用公開服務",
+  "why": "Astrodienst 授權頁明寫『選擇必須在任何使用該軟體的公開服務啟用之前做出』。兩條路:①買 Professional Edition(700 CHF 一次性、不限專案)②把整個 fortune-ai 開源走 AGPL。老闆拍板後我一行指令就上線(npx wrangler pages deploy web --project-name tianji-ai + worker deploy)",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-04 19:55",
+  "closed": "2026-08-04 20:28",
+  "note": "老闆拍板選項C:星曆層改 Skyfield(MIT)+NASA JPL DE440s(NAIF明文允許商用零授權費),Placidus宮位自行實作球面三角,pyswisseph已移出venv且有測試擋回來。零授權費零開源義務,逐項出處 fortune-ai/docs/astro_licensing.md。三命例期望值一字未改全綠(與舊實作行星差1.04角秒、宮頭0.001角秒),worker已部署,線上 /api/pricing 含 astro_249、下單表單出生城市欄 e2e 驗過。commit 861fb76"
+ },
+ {
+  "id": 106,
+  "what": "天機AI 占星品項 astro_249 尚未有真實付費訂單跑過生產(演練 3/3 過但零真信)",
+  "why": "FULFILL_DRY_RUN 連跑三筆(南半球/只給時辰/時刻不確定)全過 audit、報告與引擎逐字一致,但 Stripe 真金流→Brevo 真寄信這一段對占星品項從未實跑;等第一筆真客人或老闆小額真單補驗",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 20:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 107,
+  "what": "mingshu.tw 的 Cloudflare 受管 robots.txt 把 GPTBot/ClaudeBot/Google-Extended/CCBot 全 Disallow",
+  "why": "zone 層級設定,手上兩把 token 都無 Zone Settings 權限(403);已推 Delvin 二選一(後台關掉 or 給我 token)",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-04 20:47",
+  "closed": "2026-08-04 22:39",
+  "note": "Cloudflare 受管 robots.txt(AI Crawl Control→Signals→Managed robots.txt)已由 Delvin 關閉;個別爬蟲封鎖也全關。線上驗證:CF 注入封鎖 0、Content-Signal 已清、我方政策完全接管;live_check 28 過 0 失敗"
+ },
+ {
+  "id": 108,
+  "what": "命書 www.mingshu.tw 未 301 導向 apex(目前兩個 host 都回 200)",
+  "why": "需要 zone Redirect Rule,現有 token 無 rulesets 權限;已用 canonical 標籤讓 Google 合併訊號,但 301 更強",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-04 20:47",
+  "closed": "2026-08-04 22:26",
+  "note": "已用 Cloudflare Page Rule 建 www→apex 301(含路徑保留),實測 /、/p/rizhu 皆 301 正確"
+ },
+ {
+  "id": 109,
+  "what": "命書首頁 LCP 13.5s(mobile)—— LCP 元素是 2MB hero 影片而非 poster",
+  "why": "根因在 web/js/motion.js 的影片換入時機(非我負責的 head 區),已量測附數據待與設計/前端負責人決定",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 20:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 110,
+  "what": "命書 sitemap(43 筆)與 pSEO 頁尚未部署上線",
+  "why": "web/p/ 42 頁是另一個 agent 的產出,由他決定何時 deploy;live_check 已列 WAIT,超過 3 天自動升級成告警",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 20:47",
+  "closed": "2026-08-04 22:39",
+  "note": "pSEO 42 頁+sitemap 已部署上線,live_check 全過"
+ },
+ {
+  "id": 111,
+  "what": "命書首頁沒有連到 pSEO 兩個 hub(/p/mingpan、/p/rizhu)",
+  "why": "web/index.html 屬地基 agent,本線刻意不碰;目前 42 頁只靠 sitemap+頁尾互連被發現,首頁頁尾加一條連結會明顯加快收錄",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 20:56",
+  "closed": "2026-08-04 21:00",
+  "note": "首頁頁尾已加 /p/mingpan 與 /p/rizhu 入口,已部署驗證"
+ },
+ {
+  "id": 112,
+  "what": "命書 pSEO 重建 cron 的『內容有變更』分支尚未在生產跑過",
+  "why": "build 冪等,首發當天內容不變走靜默路徑;commit+互鎖+ship 分支要等元旦(流年換年)才會真的執行,已用 --check 位移時鐘證明會偵測到 40 頁 stale,但 commit/ship 那段只驗過合成情境",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 20:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 113,
+  "what": "命書 pSEO 42 頁的收錄率尚未觀察",
+  "why": "2026-08-04 才上線並送 IndexNow/GSC;要看 1-2 週的實際收錄與曝光才能決定是否擴充到 Phase 2(流年×生肖、出生年擴到 1940-2029),擴充路徑已寫在 docs/seo_pages.md",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 20:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 114,
+  "what": "TT §14e 的『今天就紅』覆蓋率斷言尚未被證明 load-bearing(D4 的殺因是 §2 的 exit code 檢查,不是那條斷言)",
+  "why": "驗證者實測發現 D4 打破守恆律→rc=3→先被更早的段落咬到,所以那條覆蓋率斷言有沒有鑑別力還沒有證據;要補一則只打壞該斷言、不影響 exit code 的突變才驗得出來",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 21:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 115,
+  "what": "mingshu.tw 首頁字型自架 CJK subset(Google Fonts CJK 仍 ~2.8MB,是首頁剩下最大的體重)",
+  "why": "本輪只把字型 CSS 改成非阻斷,字檔本身沒動;實驗顯示拿掉字型 Lighthouse-sim LCP 3572→2539ms、分數 90→97,但自架 subset 要建構流程+字重取捨,屬另一個任務",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 21:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 116,
+  "what": "mingshu.tw LCP 線上複測(本輪 prod 量測時 winrig load 5.0,數字抖動大)",
+  "why": "改動已上線且本機 A/B 對照乾淨(手機 3724→1544ms),但 prod 端量到 2.4-9.3s 區間受機器負載汙染;等機器閒時或 28 天後看 CrUX 真實用戶數據才算生產驗證",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 21:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 117,
+  "what": "法務合規哨兵 compliance_watch 首次生產真跑=2026-08-04 22:10 TW,尚未在生產跑過",
+  "why": "本機手動全綠(9面/54檢查)+自測14突變全滅,但 cron runner 的時間閘/每日鎖/推播路徑只在沙盒驗過;已排一次性首班驗收 cron 22:35 推 PASS/FAIL",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 21:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 118,
+  "what": "命書站內 Apple Pay:等老闆給 Stripe Publishable key(pk_live_)才能開",
+  "why": "可公開金鑰無法經 API 取得,只有 Stripe 後台看得到;拿到後 worker/wrangler.toml 加 STRIPE_PK + deploy 即生效",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-04 23:13",
+  "closed": "2026-08-04 23:40",
+  "note": "老闆已完成 Stripe 後台三項(PaymentIntents 權限/Apple Pay 網域/webhook payment_intent.succeeded);可公開金鑰已注入 worker,線上驗證通過,功能已啟用"
+ },
+ {
+  "id": 119,
+  "what": "命書站內 Apple Pay:Stripe 受限金鑰(rk_live)不能建 PaymentIntent,需老闆在後台開 PaymentIntents: Write",
+  "why": "實測 402/permission 錯誤:required permissions are not available for use by restricted keys;沒開這條路一按錢包就退回跳轉",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-04 23:13",
+  "closed": "2026-08-04 23:40",
+  "note": "老闆已完成 Stripe 後台三項(PaymentIntents 權限/Apple Pay 網域/webhook payment_intent.succeeded);可公開金鑰已注入 worker,線上驗證通過,功能已啟用"
+ },
+ {
+  "id": 120,
+  "what": "命書站內 Apple Pay:Stripe 後台需註冊付款方式網域 mingshu.tw + webhook 加訂閱 payment_intent.succeeded",
+  "why": "受限金鑰打不動這兩支 API;驗證檔已上線可被抓取。金鑰權限開了之後可用 /internal/fortune-native-pay-setup 一行代勞",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-04 23:13",
+  "closed": "2026-08-04 23:40",
+  "note": "老闆已完成 Stripe 後台三項(PaymentIntents 權限/Apple Pay 網域/webhook payment_intent.succeeded);可公開金鑰已注入 worker,線上驗證通過,功能已啟用"
+ },
+ {
+  "id": 121,
+  "what": "命書站內 Apple Pay:真 iPhone 上完成一筆付款尚未驗證",
+  "why": "headless 沒有錢包,只驗到「不支援即回退」那一半;後台四件事做完後需老闆用 iPhone Safari 實測一筆",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-04 23:13",
+  "closed": "2026-08-04 23:40",
+  "note": "老闆已完成 Stripe 後台三項(PaymentIntents 權限/Apple Pay 網域/webhook payment_intent.succeeded);可公開金鑰已注入 worker,線上驗證通過,功能已啟用"
+ },
+ {
+  "id": 122,
+  "what": "命書 Apple Pay 真機未驗:headless 無錢包只驗到回退路徑;需 Delvin 用 iPhone Safari 開 mingshu.tw 實際刷一筆確認 Face ID→付款→自動交付全鏈",
+  "why": "錢包按鈕只在真實裝置出現,模擬不了",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-04 23:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 123,
+  "what": "命書站內刷卡:真人真卡從未刷過一次",
+  "why": "PaymentIntent 端點已在生產驗過(card-only、金額正確),但 confirmPayment 那一段只有無頭環境驗到掛載;沒有真卡就證明不了 3DS 與 payment_intent.succeeded 出貨鏈在站內刷卡路徑上會走通",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-05 00:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 124,
+  "what": "命書 Apple Pay 按鈕在 elements 改 card-only 之後未經真機複驗",
+  "why": "老闆昨天剛確認 Apple Pay 會出現,今天把 elements 的 paymentMethodTypes 鎖成 ['card'];錢包本來就是 card 型付款理論上不受影響,但這正是「每加一層第一次必出包」的形狀,要真機看一眼",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-05 00:15",
   "closed": null,
   "note": ""
  }
