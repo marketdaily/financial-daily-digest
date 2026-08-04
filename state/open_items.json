@@ -816,8 +816,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-04 14:11",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 00:45",
+  "note": "PayPal Business 升級完成+live App「Wrenly」已建;live 憑證灌入 worker、PAYPAL_ENV=live 已部署;實測真實訂單 78S83935DD924925B(paypal.com 非 sandbox,A$23.95+運8.39=32.34 AUD 金額正確)。店已可真收款"
  },
  {
   "id": 83,
@@ -1236,8 +1236,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-05 00:15",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 00:40",
+  "note": "老闆 2026-08-05 iPhone 真機確認:elements 鎖成 card-only 之後 Apple Pay 黑鈕仍在,且沙盤開得正確——商家名「命書」、金額 $99.00、卡片抓到滙豐旅人無限卡。錢包是 card 型付款的推論得到真機證實"
  },
  {
   "id": 125,
@@ -1246,6 +1246,26 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 00:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 126,
+  "what": "Wrenly 已可真收款但零實單驗證:未跑過完整付款→CJ自動建單→物流回填的真金流閉環(需真的付一筆並讓CJ扣款,CJ錢包餘額US$0);另 CJ blind包裹仍未實測(#61)",
+  "why": "跑閉環要真花錢(商品+運費約A$32+CJ錢包儲值),屬老闆金錢決策",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-05 00:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 127,
+  "what": "命書 Apple Pay 按鈕在【新版 card-only JS】下是否仍顯示,未經真機驗證",
+  "why": "我用老闆 08-05 00:41 的截圖收掉了舊的 #124,但那張截圖跑的是快取的舊 JS(automatic payment methods),證明的是舊版能顯示。新版 native_pay.js?v=2 才是 elements 鎖 card-only 的那份,按鈕在它底下會不會出現尚無證據——需重新載入頁面後再看一次",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-05 00:49",
   "closed": null,
   "note": ""
  }
