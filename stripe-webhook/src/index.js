@@ -1633,7 +1633,7 @@ export default {
           "metadata[product]": "fortune",
           "metadata[sku]": sku,
           "after_completion[type]": "redirect",
-          "after_completion[redirect][url]": "https://tianji-ai.pages.dev/paid.html?sid={CHECKOUT_SESSION_ID}",
+          "after_completion[redirect][url]": "https://tianji-ai.pages.dev/paid?sid={CHECKOUT_SESSION_ID}",
         }) });
         const link = await r.json();
         if (!r.ok) throw new Error("link:" + JSON.stringify(link).slice(0, 200));
@@ -1670,7 +1670,7 @@ export default {
         client_reference_id: oid,
         "metadata[product]": "fortune",
         "metadata[sku]": body.sku,
-        success_url: "https://tianji-ai.pages.dev/paid.html?sid={CHECKOUT_SESSION_ID}",
+        success_url: "https://tianji-ai.pages.dev/paid?sid={CHECKOUT_SESSION_ID}",
         cancel_url: "https://tianji-ai.pages.dev/#pricing",
       };
       if (body.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email)) params.customer_email = body.email;
