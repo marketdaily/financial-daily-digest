@@ -22,6 +22,7 @@ OWNER = "delvin.12345678@gmail.com"
 
 
 def push(msg):
+    print(msg, flush=True)   # 判定必須落地本機 log:只推播=事後無從查證(看門人自己不能是啞的)
     subprocess.run([os.path.join(REPO, ".venv/bin/python"),
                     os.path.join(HOME, ".marketdaily-fallback/notify_admin.py"), msg],
                    env={**os.environ, "MD_REPO": REPO}, timeout=60)
@@ -41,7 +42,7 @@ def main():
     if shift == "us":
         log = log.split("market=us", 1)[-1]
 
-    fails, notes = [], []
+    fails, notes, unverified = [], [], []
 
     m = re.search(r"deep 優先 (\d+) 檔", log)
     if m and int(m.group(1)) > 0:
@@ -57,7 +58,7 @@ def main():
         if hit < tot * 0.8:
             fails.append(f"老闆 deep 卡大多仍在班尾現生({hit}/{tot} 命中,預期近全中)")
     elif len(own) > 1:
-        notes.append("老闆段無 card-cache 行(可能全命中零缺卡)")
+        unverified.append("老闆段無 card-cache 行:「全命中零缺卡」與「快取層根本沒跑到」無法區分")
     else:
         fails.append("log 裡找不到老闆的生成段")
 
@@ -66,6 +67,11 @@ def main():
     n_local = len(re.findall(r"使用 local:qwen", log))
     if starved and n_local > 0 and n_mistral == 0:
         fails.append(f"荒年日 local qwen 接活 {n_local} 次而 mistral 0 次(修③排序未生效)")
+    elif starved and n_mistral == 0 and n_local == 0:
+        unverified.append("荒年日備援全程零接活(mistral 0 / local 0)——修③排序從未被執行到,"
+                          "本班無法證明它生效(08-04 us 班就是這樣拿到綠燈的)")
+    elif not starved:
+        unverified.append("本班 gemini 配額健康,備援鏈未被觸發——修③排序本班未受驗")
     else:
         notes.append(f"gemini {'荒年' if starved else '健康'} · mistral {n_mistral} 次 · local {n_local} 次")
 
@@ -84,13 +90,18 @@ def main():
         else:
             notes.append(f"公版 {len(reasons)} 張卡零回音 ✓")
     except Exception as e:
-        notes.append(f"公版回音檢查跳過({str(e)[:50]})")
+        unverified.append(f"公版回音檢查跳過({str(e)[:50]})——修②本班未受驗")
 
     tag = f"[首班驗收] {today} {shift} 班(08-04 鏈上三修+mistral)"
+    trail = ("\n— " + " / ".join(notes)) if notes else ""
+    unv = ("\n⚠️ 未驗到:\n" + "\n".join(f"· {u}" for u in unverified)) if unverified else ""
     if fails:
-        push(f"🔴 {tag} FAIL:\n" + "\n".join(f"· {f}" for f in fails)
-             + ("\n— " + " / ".join(notes) if notes else ""))
+        push(f"🔴 {tag} FAIL:\n" + "\n".join(f"· {f}" for f in fails) + unv + trail)
         return 1
+    if unverified:
+        # 空洞通過不算通過:目標行為沒被執行到就發綠燈 = 綠燈證明不了任何事
+        push(f"⚠️ {tag} 通過但有條款未受驗(不等於生效):" + unv + trail)
+        return 0
     push(f"✅ {tag} 全過:" + " / ".join(notes))
     return 0
 
