@@ -1,0 +1,137 @@
+{
+  "_why": "held-out 召回率語料:與各規則的 positives **刻意分開維護**。positives 是規則作者照著自己的 pattern 反寫的,通過率恆為 100%,對「規則覆蓋的措辭空間有多寬」零鑑別力(2026-08-05 第二輪驗證者 F9:用真正沒看過的措辭去打,13 條裡漏 10 條)。本檔的句子一律由**規則作者以外的來源**產生(獨立驗證者、真實事故文案、競品頁面),新增時不准回頭去改 pattern 遷就,只能改 pattern 讓它咬得到。",
+  "_rule": "hit=必須被該規則咬到(召回率下限);miss=真實合法文案,必須不被咬(防為了召回率把 pattern 寫太寬)。selfcheck() 會跑,漏一條就 exit 3。 ⚠️ 其中『本頁說明如何升級成為支持者。個股評分…』這條是**句界偵測**的哨兵:它刻意不含「一律免費」這種免責語(否則會被 unless 閘擋下,句界壞掉也測不出來)。",
+  "_source": "2026-08-05 verifier compliance-watch-round2 F9 的 held-out 清單 + 同型延伸",
+  "cases": [
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "訂閱後才能看到我們對台積電的目標價"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "個股進出場價為付費用戶專屬內容"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "Become a supporter to see our full stock analysis"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "Paid members get entry and exit prices for every stock"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "個股分析與進出場價一律免費,升級只影響寄送時段與版面。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "Every subscriber sees the same stock analysis; paid or not makes no difference."
+    },
+    {
+      "rule": "md_analysis_teaser",
+      "expect": "hit",
+      "text": "想看完整個股評分?加入 Premium 就看得到"
+    },
+    {
+      "rule": "md_analysis_teaser",
+      "expect": "miss",
+      "text": "完整的個股評分在每日報告裡,不需要任何付費動作。"
+    },
+    {
+      "rule": "md_fabricated_stats",
+      "expect": "hit",
+      "text": "我們的方向準確度達到八成五"
+    },
+    {
+      "rule": "md_fabricated_stats",
+      "expect": "hit",
+      "text": "超過三千位讀者訂閱"
+    },
+    {
+      "rule": "md_fabricated_stats",
+      "expect": "hit",
+      "text": "勝率 88.8%"
+    },
+    {
+      "rule": "md_fabricated_stats",
+      "expect": "miss",
+      "text": "勝率逐筆公開在戰績頁,樣本還在累積,不足 20 筆前不公布。"
+    },
+    {
+      "rule": "md_fake_testimonial",
+      "expect": "hit",
+      "text": "「這服務改變了我的投資」— 一位台北的工程師"
+    },
+    {
+      "rule": "md_fake_testimonial",
+      "expect": "miss",
+      "text": "訂閱者還很少,我們選擇誠實留白,不放任何感言。"
+    },
+    {
+      "rule": "md_price_tag",
+      "expect": "hit",
+      "text": "Premium 月費 299 元"
+    },
+    {
+      "rule": "md_price_tag",
+      "expect": "miss",
+      "text": "ChatGPT Plus 月費 640 元,MarketDaily 目前不收費。"
+    },
+    {
+      "rule": "ms_scarcity_wording",
+      "expect": "hit",
+      "text": "現省 NT$335"
+    },
+    {
+      "rule": "ms_scarcity_wording",
+      "expect": "hit",
+      "text": "特價倒數 3 天"
+    },
+    {
+      "rule": "ms_scarcity_wording",
+      "expect": "hit",
+      "text": "本月限定優惠"
+    },
+    {
+      "rule": "ms_scarcity_wording",
+      "expect": "miss",
+      "text": "本檔特惠至 8 月 31 日止,截止時刻全站一致,結束後恢復定價 NT$249。"
+    },
+    {
+      "rule": "ms_medical_claim",
+      "expect": "hit",
+      "text": "老師的開運符讓你的失眠一定會好轉"
+    },
+    {
+      "rule": "ms_medical_claim",
+      "expect": "miss",
+      "text": "命理只是傳統文化上的參考,身體不適請就醫。"
+    },
+    {
+      "rule": "md_pro_plan_name",
+      "expect": "hit",
+      "text": "Pro 會員每月多兩篇深度報告"
+    },
+    {
+      "rule": "md_pro_plan_name",
+      "expect": "miss",
+      "text": "本站的 ui-pro.js 只是前端強化層,與任何方案無關。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "個股評分的計算方式見下方說明。本頁說明如何升級成為支持者。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "本頁說明如何升級成為支持者。個股評分的計算方式見下方說明。"
+    }
+  ]
+}

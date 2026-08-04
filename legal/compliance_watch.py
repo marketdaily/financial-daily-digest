@@ -49,6 +49,10 @@ PROMO_LEDGER = os.environ.get("COMPLIANCE_PROMO_LEDGER") or (
     else os.path.join(HERE, "promo_ledger.json"))
 SOLD_EVIDENCE = os.environ.get("COMPLIANCE_SOLD_EVIDENCE") or os.path.join(
     HERE, "price_sold_evidence.json")
+# 各 @token 上次成功展開的筆數(覆蓋面腰斬偵測用;與帳本同理放在 repo 外)
+EXPAND_BASELINE = os.environ.get("COMPLIANCE_EXPAND_BASELINE") or (
+    os.path.join(_STATE_DIR, ".compliance_expand_baseline.json") if os.path.isdir(_STATE_DIR)
+    else os.path.join(HERE, "expand_baseline.json"))
 
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 TIMEOUT = 20
@@ -68,44 +72,46 @@ CLEAN, VIOLATION, UNKNOWN = "clean", "violation", "unknown"
 PROMO_PSEUDO_RULES = ("ms_promo_too_long", "ms_promo_rolling", "ms_promo_backtoback",
                       "ms_price_leak", "ms_compare_at_unproven", "ms_promo_snapshot_shape",
                       "ms_ledger_unreadable")
+# 這兩條的判準就是「形狀/帳本壞掉」本身,與資料能不能評估無關,永遠算跑過
+_PROMO_META_RULES = ("ms_promo_snapshot_shape", "ms_ledger_unreadable")
 
 SURFACES = [
     {"id": "md_index", "label": "MarketDaily 首頁",
-     "url": "https://marketdaily.ai/", "kind": "html",
+     "url": "https://marketdaily.ai/", "kind": "html", "bilingual": True,
      "packs": ["marketdaily", "marketdaily_marketing", "marketdaily_disclaimer"]},
     {"id": "md_pricing", "label": "MarketDaily 方案頁",
-     "url": "https://marketdaily.ai/pricing.html", "kind": "html",
+     "url": "https://marketdaily.ai/pricing.html", "kind": "html", "bilingual": True,
      "packs": ["marketdaily", "marketdaily_marketing"]},
     {"id": "md_testimonials", "label": "MarketDaily 見證頁",
-     "url": "https://marketdaily.ai/testimonials.html", "kind": "html",
+     "url": "https://marketdaily.ai/testimonials.html", "kind": "html", "bilingual": True,
      "packs": ["marketdaily"]},
     {"id": "md_track_record", "label": "MarketDaily 戰績頁",
-     "url": "https://marketdaily.ai/track-record.html", "kind": "html",
+     "url": "https://marketdaily.ai/track-record.html", "kind": "html", "bilingual": True,
      # 戰績頁是勝率數字的合法真源(公版可查證),不列入 marketing pack
      "packs": ["marketdaily"]},
     {"id": "md_vs_chatgpt", "label": "MarketDaily 對比頁",
-     "url": "https://marketdaily.ai/vs-chatgpt.html", "kind": "html",
+     "url": "https://marketdaily.ai/vs-chatgpt.html", "kind": "html", "bilingual": True,
      "packs": ["marketdaily", "marketdaily_marketing"]},
     {"id": "md_guide", "label": "MarketDaily 使用指南",
-     "url": "https://marketdaily.ai/guide.html", "kind": "html",
+     "url": "https://marketdaily.ai/guide.html", "kind": "html", "bilingual": True,
      "packs": ["marketdaily"]},
     # 以下 2026-08-04 補(驗證者 F13:原本只掃 7/145 個真實頁面,而 blog 正是
     # project_blog_seo_fabricated_numbers 事故的發生地,一篇都沒掃)
     {"id": "md_terms", "label": "MarketDaily 服務條款",
-     "url": "https://marketdaily.ai/terms.html", "kind": "html", "packs": ["marketdaily"]},
+     "url": "https://marketdaily.ai/terms.html", "kind": "html", "bilingual": True, "packs": ["marketdaily"]},
     {"id": "md_privacy", "label": "MarketDaily 隱私權",
-     "url": "https://marketdaily.ai/privacy.html", "kind": "html", "packs": ["marketdaily"]},
+     "url": "https://marketdaily.ai/privacy.html", "kind": "html", "bilingual": True, "packs": ["marketdaily"]},
     {"id": "md_faq", "label": "MarketDaily 常見問題",
-     "url": "https://marketdaily.ai/faq.html", "kind": "html",
+     "url": "https://marketdaily.ai/faq.html", "kind": "html", "bilingual": True,
      "packs": ["marketdaily", "marketdaily_marketing"]},
     {"id": "md_about", "label": "MarketDaily 關於我們",
-     "url": "https://marketdaily.ai/about.html", "kind": "html",
+     "url": "https://marketdaily.ai/about.html", "kind": "html", "bilingual": True,
      "packs": ["marketdaily", "marketdaily_marketing"]},
     {"id": "md_vs", "label": "MarketDaily 競品比較",
-     "url": "https://marketdaily.ai/vs.html", "kind": "html",
+     "url": "https://marketdaily.ai/vs.html", "kind": "html", "bilingual": True,
      "packs": ["marketdaily", "marketdaily_marketing"]},
     {"id": "md_agents", "label": "MarketDaily AI 代理人",
-     "url": "https://marketdaily.ai/agents.html", "kind": "html",
+     "url": "https://marketdaily.ai/agents.html", "kind": "html", "bilingual": True,
      "packs": ["marketdaily", "marketdaily_marketing"]},
     # ⭐ 這兩面是**預設納管**的:清單由 docs/ 的 glob 展開,不是人手維護的白名單。
     #    F13 的根因是「忘了把新頁面加進 SURFACES」——那種清單只會愈來愈舊,
@@ -186,13 +192,33 @@ _SITEMAP_LOC = re.compile(r"<loc>\s*([^<\s]+)\s*</loc>", re.I)
 MS_SITEMAP = "https://mingshu.tw/sitemap.xml"
 
 
-def sitemap_urls(sitemap=MS_SITEMAP, skip=("https://mingshu.tw/",)):
+MS_ORIGIN = "https://mingshu.tw/"
+MAX_EXPAND = 500          # 單一 @token 展開的筆數上限(超過=清單來源異常,不是我們長大了)
+
+
+def sitemap_urls(sitemap=MS_SITEMAP, skip=("https://mingshu.tw/",), origin=MS_ORIGIN):
     """從**線上 sitemap** 展開頁面清單(命書的 pSEO 頁不在本 repo,而且線上 sitemap 才是
-    「實際部署了什麼」的真源)。抓不到 → 空清單 → 該面 unknown,不會靜靜地綠。"""
+    「實際部署了什麼」的真源)。抓不到 → 空清單 → 該面 unknown,不會靜靜地綠。
+
+    ⚠️ sitemap 是**外部不可信輸入**(2026-08-05 驗證者 F7):實測餵進 `file:///etc/passwd`
+    與 link-local IP 會被照單全收並真的送出請求(`file://` 的內容確實被讀進記憶體,
+    內網 200 回應還會進語料、可能以「證據」形式被推播出去)。所以只收本網域 https,
+    並設筆數上限——被丟掉的項目由 `sitemap_urls.dropped` 記著,交給展開守衛去紅。
+    """
+    sitemap_urls.dropped = 0
     code, body = fetch(sitemap, timeout=20, retries=1)
     if code != 200:
         return []
-    return [u for u in _SITEMAP_LOC.findall(body) if u not in skip]
+    out, dropped = [], 0
+    for u in _SITEMAP_LOC.findall(body):
+        if u in skip:
+            continue
+        if not u.startswith(origin):
+            dropped += 1        # 非本網域/非 https(含 file:// 與 IP 端點)一律不打
+            continue
+        out.append(u)
+    sitemap_urls.dropped = dropped
+    return out[:MAX_EXPAND + 1]   # 多留一筆讓上限守衛看得到超標,不靜默截斷成剛好合法
 
 
 def config_problems():
@@ -263,7 +289,22 @@ _TAG = re.compile(r"(?s)<[^>]+>")
 _SCRIPT = re.compile(r"(?is)<script\b[^>]*>(.*?)</script>")
 # i18n 字典躺在 inline <script> 裡,是**真的會顯示給用戶看的字**;
 # 上限拉到 4000(原本 300 會把長段落整段丟掉,生產首頁今天就中了一筆——驗證者 F10)。
-_LITERAL = re.compile(r'"((?:[^"\\\n]|\\.){4,4000})"' r"|'((?:[^'\\\n]|\\.){4,4000})'")
+# ⚠️ backtick 樣板字串一定要收(2026-08-05 驗證者 F3):生產 46 段中文文案躺在 `...` 裡,
+#    包含 track-record 的勝率段與 testimonials 的見證段——正好是 md_fabricated_stats 與
+#    md_fake_testimonial 兩條規則的主場,而它們從來沒被任何規則看過,報告卻寫 dropped=0。
+#    樣板字串可跨行,所以 [^`\\] 刻意不排除 \n。
+_LITERAL = re.compile(r'"((?:[^"\\\n]|\\.){4,4000})"' r"|'((?:[^'\\\n]|\\.){4,4000})'"
+                      r"|`((?:[^`\\]|\\.){4,4000})`")
+_TPL_EXPR = re.compile(r"(?s)\$\{.*?\}")
+# ⚠️ regex 沒有 JS parser 的括號配對能力:一段程式碼裡有兩個獨立的樣板字串時,
+#    「前一個的結束 backtick」到「後一個的開始 backtick」之間的**程式碼**也會被當成字面值
+#    (實測首頁抓出兩段 10554/5732 字的 JS 當成文案 → 假掉字 2 筆 → 永久 exit 2 噪音)。
+#    這些區段裡真正的中文其實已經由雙/單引號分支收進語料了,所以直接用程式碼特徵剔除。
+_CODE_TELL = re.compile(r"=>|function\s*\(|document\.|addEventListener|console\.|;\s*\n|\}\s*catch")
+# 超過上限而**靜默掉出語料**的長字串:三種引號都要計,否則掉字計數器自己有盲區(F3 第二形態)
+_LONG_LITERALS = (re.compile(r'"((?:[^"\\\n]|\\.){4001,})"'),
+                  re.compile(r"'((?:[^'\\\n]|\\.){4001,})'"),
+                  re.compile(r"`((?:[^`\\]|\\.){4001,})`"))
 _CJK = re.compile(r"[一-龥]")
 # 屬性文字:meta/og description 是搜尋結果與社群分享上真正給人看的行銷文案,
 # alt/title/placeholder 同理。原本整個標籤被刪掉 = 從未被掃(驗證者 F9)。
@@ -303,14 +344,21 @@ def visible_text(page, stats=None):
     for m in _SCRIPT.finditer(page):
         block = m.group(1)
         for lit in _LITERAL.finditer(block):
-            s = lit.group(1) or lit.group(2) or ""
+            s = lit.group(1) or lit.group(2) or lit.group(3) or ""
+            s = _TPL_EXPR.sub(" ", s)   # `共 ${n} 筆` 的插值運算式不是文案
+            if lit.group(3) is not None and _CODE_TELL.search(s):
+                continue
             if _looks_like_copy(s):
                 kept += 1
                 parts.append(html.unescape(s.replace("\\n", " ").replace('\\"', '"')))
         # 超長字面值(超過 _LITERAL 上限)會靜默掉出語料 → 計數,零覆蓋率必須看得見
-        for lit in re.finditer(r'"((?:[^"\\\n]|\\.){4001,})"', block):
-            if _looks_like_copy(lit.group(1)):
-                dropped += 1
+        for i, pat in enumerate(_LONG_LITERALS):
+            for lit in pat.finditer(block):
+                s = _TPL_EXPR.sub(" ", lit.group(1))
+                if i == 2 and _CODE_TELL.search(s):
+                    continue
+                if _looks_like_copy(s):
+                    dropped += 1
     if stats is not None:
         stats["js_literals_kept"] = kept
         stats["js_literals_dropped"] = dropped
@@ -332,6 +380,13 @@ def load_ledger(path):
     ⚠️ 這裡吞例外會 fail-open 而且不可逆(2026-08-04 驗證者 F2):帳本毀損後歷史被清空 →
     教科書級的假倒數回報零 finding;程式接著把「現在這個已被延長的截止時刻」當成首次觀測
     寫回去 → 唯一能咬 rolling 的基準被永久抹掉,之後永遠也抓不到。
+
+    ⚠️⚠️ 2026-08-05 第二輪驗證者 F1:上一版的 fail-closed **只撐一晚**——毀損檔被
+    `_quarantine` 改名搬走之後,隔晚 `os.path.exists` 為 False → 走「首次跑」路徑 →
+    用已經被延長的截止時刻寫下新基準,rolling 偵測從第二晚起永久失明且回報 clean。
+    所以搬走的同時必須在**原路徑**留下 `baseline_lost` 哨兵,由人工清掉才算結案。
+    F4:型別驗證要推到欄位層——`ends_at_ms: null` 會讓 rolling/續檔閘全部短路(`if old_e`
+    直接 False),字串型別則讓整面炸成 unknown,兩種都不是設計承諾的 fail-closed finding。
     """
     if not os.path.exists(path):
         return {}, None
@@ -340,9 +395,19 @@ def load_ledger(path):
             data = json.load(f)
         if not isinstance(data, dict) or not isinstance(data.get("promos", []), list):
             raise ValueError("帳本結構不對(promos 應為 list)")
+        if data.get("baseline_lost"):
+            raise ValueError(f"帳本基準已遺失(毀損於 {data.get('since')},毀損檔另存 .corrupt-*)"
+                             "——rolling 偵測在人工確認促銷歷史並清除哨兵前一直是盲的")
         for h in data.get("promos", []):
             if not isinstance(h, dict):
                 raise ValueError("promos 內含非物件項目")
+            if not isinstance(h.get("id"), str) or not h["id"]:
+                raise ValueError(f"promos 項目的 id 不是字串:{h.get('id')!r}")
+            for fld in ("starts_at_ms", "ends_at_ms"):
+                v = h.get(fld)
+                if isinstance(v, bool) or not isinstance(v, (int, float)) or v <= 0:
+                    raise ValueError(f"promos 項目 {h.get('id')!r} 的 {fld} 不是正整數毫秒:{v!r}"
+                                     "——rolling/續檔閘會靜靜地全部短路")
         return data, None
     except Exception as e:
         return None, f"{type(e).__name__}: {e}"
@@ -365,14 +430,28 @@ def _promo_key(h):
 
 
 def _shape_problem(snap):
-    """線上 JSON 形狀變了要回報成 finding,不是拋例外讓整面變 unknown(驗證者 F11)。"""
+    """線上 JSON 形狀變了要回報成 finding,不是拋例外讓整面變 unknown(驗證者 F11)。
+
+    ⚠️ 驗證程度必須推到**欄位層**(2026-08-05 第二輪驗證者 F2):只驗「items 是 dict、
+    品項是 dict」的話,上游把 `price`/`list` 改名之後 `it.get("price") != it.get("list")`
+    變成 `None != None` = False、`compare_at` 取不到 → 全部檢查靜靜跳過,而**唯一有真金流
+    的那一面回報 clean / exit 0**。同理 `promo` 這個 key 整個不見(被改名)時,促銷視窗/
+    rolling/續檔三條規則也會靜靜地永遠不評估。
+    """
     if not isinstance(snap, dict):
         return "定價快照不是物件"
     if not isinstance(snap.get("items"), dict):
         return f"items 應為物件,實得 {type(snap.get('items')).__name__}"
+    if "promo" not in snap:
+        return "快照沒有 promo 欄位(上游改名?)——促銷視窗/假倒數/續檔三條檢查會靜靜地全部跳過"
     for pid, it in snap["items"].items():
         if not isinstance(it, dict):
             return f"品項 {pid} 不是物件(實得 {type(it).__name__})"
+        for fld in ("list", "price"):
+            v = it.get(fld)
+            if isinstance(v, bool) or not isinstance(v, (int, float)):
+                return (f"品項 {pid} 的 {fld} 不是數字(實得 {type(v).__name__})"
+                        "——價格比較會靜靜跳過,折扣外洩再也咬不到")
     if snap.get("promo") is not None and not isinstance(snap.get("promo"), dict):
         return f"promo 應為物件,實得 {type(snap.get('promo')).__name__}"
     if snap.get("now") is not None and not isinstance(snap.get("now"), (int, float)):
@@ -380,13 +459,20 @@ def _shape_problem(snap):
     return None
 
 
-def check_promo(snap, ledger, now_ms=None, write_path=None, ledger_problem=None):
+def check_promo(snap, ledger, now_ms=None, write_path=None, ledger_problem=None, evaluated=None):
     """回傳 (findings, new_ledger)。snap=/api/pricing 的解析結果。
 
     這裡的每一條都對應 `fortune-ai/worker/src/pricing.js` 檔頭的法規紅線,差別是
     **那邊擋部署、這邊看線上實況**——線上是 worker 的舊版本、或有人手改 KV,那邊測試全綠也沒用。
+
+    `evaluated`(可選 set)會被填入「這次真的評估得動的偽規則」。⚠️ 覆蓋率守衛原本無條件
+    填滿 7 條(驗證者 F2):上游欄位一改名,全部檢查靜靜跳過而守衛仍記「跑過了」——
+    它只看規則有沒有被列為套用,不看有沒有真的評估到資料。
     """
     out = []
+    if evaluated is not None:
+        # 這兩條與資料形狀無關(形狀壞掉/帳本壞掉本身就是它們的判準),永遠算評估過
+        evaluated.update(_PROMO_META_RULES)
     shape = _shape_problem(snap)
     if shape:
         out.append({"rule": "ms_promo_snapshot_shape", "severity": R.CRITICAL, "law": "公平法 §21",
@@ -414,6 +500,9 @@ def check_promo(snap, ledger, now_ms=None, write_path=None, ledger_problem=None)
         out.append({"rule": "ms_promo_snapshot", "severity": R.CRITICAL,
                     "law": "公平法 §21", "evidence": "定價快照沒有任何品項——前端會拿不到價格"})
         return out, led
+    if evaluated is not None:
+        # 形狀通過欄位層驗證 + 有品項 = 這些規則真的看得到資料
+        evaluated.update(PROMO_PSEUDO_RULES)
 
     active = bool(promo.get("active"))
     if active:
@@ -482,13 +571,49 @@ def check_promo(snap, ledger, now_ms=None, write_path=None, ledger_problem=None)
     return out, led
 
 
-def _quarantine(path):
-    """毀損帳本另存 .corrupt-<ts> 供鑑識,不是直接覆蓋掉。"""
+def seal_ledger(path, problem):
+    """毀損帳本另存 .corrupt-<ts> 供鑑識,**並在原路徑留下 `baseline_lost` 哨兵**。
+
+    ⭐ 只搬走檔案是 2026-08-05 驗證者 F1 的形狀:隔晚 `os.path.exists` 為 False → 走
+    「首次跑」路徑 → 把已被延長的截止時刻當首次觀測寫回去 → rolling 偵測從此永久失明
+    且回報 clean。fail-closed 必須跨得過午夜:哨兵在原地,`load_ledger` 每晚都會紅,
+    直到有人真的看過毀損檔、確認促銷歷史、手動刪掉哨兵為止。
+    """
     try:
+        if _is_sealed(path):
+            return False    # 已經封存過,不再重複搬(否則每晚生一個 .corrupt-*)
         ts = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%d%H%M%S")
         os.replace(path, f"{path}.corrupt-{ts}")
+        _atomic_write(path, {"schema_version": 1, "promos": [], "baseline_lost": True,
+                             "since": ts, "problem": str(problem)[:200],
+                             "howto": "人工確認促銷歷史後,刪除本檔即可重新建立基準"})
+        return True
     except Exception:
-        pass
+        return False
+
+
+def _is_sealed(path):
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return bool(json.load(f).get("baseline_lost"))
+    except Exception:
+        return False
+
+
+def check_promo_surface(snap, ledger_path, write_ledger=True, now_ms=None):
+    """促銷面的完整一晚流程(讀帳本 → 毀損則封存 → 比對)。回傳 (findings, evaluated)。
+
+    ⚠️ 刻意抽成函式:F1 是**跨兩晚**才顯形的缺陷,測試必須能重跑「同一個入口」兩次,
+    否則斷言只會停在「毀損那一晚」——上一版 15 則帳本斷言全綠、缺陷照樣活著。
+    """
+    led, problem = load_ledger(ledger_path)
+    if problem:
+        seal_ledger(ledger_path, problem)
+    evaluated = set()
+    findings, _ = check_promo(snap, led or {}, now_ms=now_ms, ledger_problem=problem,
+                              write_path=ledger_path if write_ledger else None,
+                              evaluated=evaluated)
+    return findings, evaluated
 
 
 def expected_rule_ids(surfaces):
@@ -541,6 +666,33 @@ def _expand_multi(token):
             "@ms_sitemap": sitemap_urls}.get(token, list)()
 
 
+def expand_problem(token, urls, record=True, path=None):
+    """展開出來的清單「規模無故縮小」也是靜默失守(2026-08-05 驗證者 F7)。
+
+    `docs/` 那邊有 `config_problems()` 擋清單腐爛,但 sitemap 那條路一條守衛都沒有:
+    實測部署管線退化成只吐 1–2 個 `<loc>` 時,覆蓋面從 141 頁掉到 1 頁,狀態仍是
+    **clean / exit 0 / 零訊號**。基準存「上次成功展開的筆數」,腰斬即視為設定壞掉(exit 3)。
+    """
+    path = path or EXPAND_BASELINE
+    n = len(urls)
+    if n > MAX_EXPAND:
+        return f"{token} 展開出 {n} 個網址 > 上限 {MAX_EXPAND}(清單來源異常,不予掃描)"
+    if getattr(sitemap_urls, "dropped", 0) and token == "@ms_sitemap":
+        return (f"{token} 的 sitemap 含 {sitemap_urls.dropped} 個非 {MS_ORIGIN} 項目"
+                "(網域/scheme 不符,已全部拒收)——來源可能被污染")
+    base = _load_json(path, {})
+    prev = base.get(token) if isinstance(base, dict) else None
+    if isinstance(prev, int) and prev >= 4 and n < prev * 0.5:
+        return (f"{token} 展開只剩 {n} 個網址,上次是 {prev} 個(腰斬)"
+                "——覆蓋面靜默縮小,這次的「乾淨」不算數")
+    if record and n:
+        try:
+            _atomic_write(path, {**(base if isinstance(base, dict) else {}), token: n})
+        except Exception:
+            pass
+    return None
+
+
 def _merge_corpus(acc, one):
     """把子頁的語料統計加總。零覆蓋率要看得見:語言分佈與被丟棄的長字串都要有數字。"""
     if not one:
@@ -553,7 +705,8 @@ def _merge_corpus(acc, one):
 
 def scan_surface(sf, write_ledger=True):
     res = {"id": sf["id"], "label": sf["label"], "url": sf["url"],
-           "status": UNKNOWN, "findings": [], "rules_run": [], "detail": ""}
+           "status": UNKNOWN, "findings": [], "rules_run": [], "detail": "",
+           "bilingual": bool(sf.get("bilingual"))}
     url = sf["url"]
     if url == "@latest_digest":
         url = latest_digest_url()
@@ -574,12 +727,10 @@ def scan_surface(sf, write_ledger=True):
         except Exception as e:
             res["detail"] = f"定價快照不是合法 JSON:{e}"
             return res
-        led, led_problem = load_ledger(PROMO_LEDGER)
-        if led_problem:
-            _quarantine(PROMO_LEDGER)
-        findings, _ = check_promo(snap, led or {}, ledger_problem=led_problem,
-                                  write_path=PROMO_LEDGER if write_ledger else None)
-        res["rules_run"] = list(PROMO_PSEUDO_RULES)
+        findings, evaluated = check_promo_surface(snap, PROMO_LEDGER, write_ledger=write_ledger)
+        # ⚠️ 只填**真的評估得動**的偽規則:上游欄位改名時全部檢查靜靜跳過,
+        #    無條件填滿 7 條會讓覆蓋率守衛也一起瞎掉(驗證者 F2)
+        res["rules_run"] = [r for r in PROMO_PSEUDO_RULES if r in evaluated]
         res["findings"] = findings
         res["status"] = VIOLATION if findings else CLEAN
         res["detail"] = (f"促銷{'啟動中' if (snap.get('promo') or {}).get('active') else '未啟動'}"
@@ -594,6 +745,13 @@ def scan_surface(sf, write_ledger=True):
         if not urls:
             res["detail"] = "展開後一個網址都沒有(來源清單消失了)"
             return res
+        if str(url).startswith("@"):
+            shrink = expand_problem(url, urls, record=write_ledger)
+            if shrink:
+                # 覆蓋面縮小/來源被污染 = 守衛自己壞了(exit 3),不是「今晚乾淨」
+                res["config_problem"] = shrink
+                res["detail"] = shrink
+                return res
         ok_n, unknown_n = 0, 0
         res["partial_unknown"] = 0
         res["corpus"] = {"pages": 0, "cjk_pages": 0, "en_pages": 0, "literals_dropped": 0}
@@ -706,15 +864,27 @@ def run(only=None, write_ledger=True, workers=5):
     expected = expected_rule_ids(todo)
     report["unapplied_rules"] = sorted(r["id"] for r in R.RULES if r["id"] not in expected)
     report["not_run_due_to_unknown"] = sorted(expected - applied)
+    # 掃描當下才發現的設定問題(清單腰斬、來源被污染)——與開跑前的 config_problems() 同級
+    scan_cfg = [s["config_problem"] for s in report["surfaces"] if s.get("config_problem")]
+    if scan_cfg:
+        report["selfcheck_problems"] = report["selfcheck_problems"] + scan_cfg
+        report["selfcheck_ok"] = False
+    # 雙語覆蓋率要**逐面**判(驗證者 F6):全站 OR 的守衛永遠不會觸發——實測 197 頁的英文
+    # 語料全部消失,只要首頁還有一句英文就一個字都不會提。只對宣告 bilingual 的面判定。
+    report["en_blind"] = sorted(
+        s["id"] for s in report["surfaces"]
+        if s.get("bilingual") and (s.get("corpus") or {}).get("pages")
+        and not s["corpus"]["en_pages"])
 
-    if (report["unapplied_rules"] or report["checks_run"] == 0
+    if (report["unapplied_rules"] or report["checks_run"] == 0 or scan_cfg
             or report["clean"] + report["violation"] == 0):
         report["exit"] = 3
     elif report["violation"]:
         report["exit"] = 1
     elif (report["unknown"] or report["not_run_due_to_unknown"]
           or any(s.get("partial_unknown") for s in report["surfaces"])
-          or report["corpus"]["literals_dropped"]):
+          or report["corpus"]["literals_dropped"] or report["en_blind"]
+          or any((s.get("stale_days") or 0) >= 2 for s in report["surfaces"])):
         # 多網址面裡有子頁抓不到、或有長字串沒進語料 = 部分未涵蓋,不可以宣稱 exit 0 全乾淨
         report["exit"] = 2
     return report
@@ -739,8 +909,10 @@ def render(rep):
         # 掉字計數是「有語料靜默沒進來」的唯一可見證據(F10)。兩個都是零覆蓋率偵測器。
         L.append(f"  語料 {c['pages']} 頁(含中文 {c['cjk_pages']} · 含英文 {c['en_pages']})"
                  + (f" · ⚠️ {c['literals_dropped']} 個超長字串沒進語料" if c["literals_dropped"] else ""))
-        if not c["en_pages"]:
-            L.append("  ⚠️ 這批語料一句英文都沒有——全站有 i18n 中英切換,英文那一半可能沒被掃到")
+        # 逐面判,不是全站 OR:全站加總永遠有一句英文,197 頁的英文語料消失也不會有人提(F6)
+        if rep.get("en_blind"):
+            L.append("  ⚠️ 這幾面一句英文都沒有——它們有 i18n 中英切換,英文那一半可能沒被掃到:"
+                     + ", ".join(rep["en_blind"]))
     if rep["unapplied_rules"]:
         L.append(f"  🔴 有規則一次都沒被套用(pack 名打錯?):{', '.join(rep['unapplied_rules'])}")
     L.append("")

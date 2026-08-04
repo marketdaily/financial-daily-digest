@@ -29,6 +29,8 @@ agent 改了 `docs/` 直接 `wrangler pages deploy` 就繞過全部閘門,而罰
   required         整份語料至少要出現一次,沒有即違規(法定聲明缺件型;**不套 exempt**——
                    exempt 的用途是防「規則咬自己的護城河」,而 required 要找的就是護城河)
 """
+import os
+import json
 import re
 
 CRITICAL, HIGH, MEDIUM = "critical", "high", "medium"
@@ -72,14 +74,20 @@ RULES = [
         "packs": ["marketdaily"],
         "kind": "proximity",
         "a": [r"升級", r"解鎖(?!.{0,4}免費)", r"付費方案", r"訂閱方案", r"加入會員", r"Premium",
+              r"訂閱\s*(後|才|即可|就能|就可)", r"加入\s*(Premium|會員|支持者)",
               r"專業版", r"付費用戶專屬", r"付費會員", r"贊助", r"支持者版", r"捐款",
               r"(?i)\b(upgrade|premium|paid (plan|member|subscriber)s?|pro plan)\b",
-              r"(?i)subscribe to (unlock|see|read)"],
+              r"(?i)subscribe to (unlock|see|read)",
+              r"(?i)\bbecome a (supporter|member|patron|paid)\b", r"(?i)\bsupporters? (get|see|receive)\b"],
         "b": [r"個股", r"選股", r"持股分析", r"買賣時點", r"進出場價", r"投資建議", r"個別股票",
               r"目標價", r"買賣點", r"買進價位", r"完整分析", r"個股評分",
               r"(?i)\bstock (analysis|picks?|ratings?|calls?)\b", r"(?i)\bprice targets?\b",
-              r"(?i)\bentry[\s/-]{0,3}exit\b", r"(?i)\bfull analysis\b"],
+              r"(?i)\bentry[\s/-]{0,3}exit\b", r"(?i)\bfull analysis\b",
+              r"(?i)\bentry (and|&) exit\b", r"(?i)\bexit (prices?|points?)\b"],
         "window": 30,
+        # 同句出現全稱式免費宣示 = 合規口徑,不是對價(held-out 召回語料的 miss 案例)
+        "unless": [r"(一律|全部|完全|皆|都|永遠)\s*免費", r"免費開放", r"不因付費",
+                   r"(?i)(same|identical)[^.\n]{0,24}(paid|free)", r"(?i)free (for (everyone|all)|to all)"],
         "positives": [
             "立即升級 Premium 解鎖完整個股分析與進出場價",
             "付費會員才看得到完整的個股評分與買進價位",
@@ -112,6 +120,11 @@ RULES = [
                      r"僅顯示部分[^。\n]{0,10}(分析|建議|內容)",
                      r"(其餘|其他)內容[^。\n]{0,10}(需|請|才|要)?\s*(付費|訂閱|升級|成為贊助|成為支持)",
                      r"閱讀全文[^。\n]{0,8}(付費|訂閱|升級)",
+                     # 「想看完整個股評分?加入 Premium 就看得到」——問號是句界,proximity 規則
+                     # 跨不過去(跨句共現是誤報大宗,不能為此放寬);這型 teaser 直接寫成 pattern
+                     r"(完整|全部)[^。\n]{0,6}(個股|選股)[^。\n]{0,8}(分析|評分|建議)"
+                     r"(?:(?!不需|不必|無需|免費)[^。\n]){0,12}"
+                     r"(加入|升級|訂閱|付費|成為)\s*(Premium|會員|支持者|贊助|方案)?",
                      r"(?i)(read|see) the full [a-z ]{0,16}(analysis|report)[^.\n]{0,20}(subscrib|upgrad|paid)"],
         "positives": [
             "本段僅顯示部分分析,付費後看完整內容",
@@ -174,9 +187,11 @@ RULES = [
         "packs": ["marketdaily"],
         "kind": "proximity",
         "a": [r"我們的方案", r"訂閱方案", r"Premium\s*方案", r"支持者方案", r"升級費用", r"本方案",
+              r"Premium\b",
               r"方案\s*[A-Z]\b", r"訂閱費", r"會員費"],
         "b": [r"NT\$\s*[1-9]\d*", r"US\$\s*[1-9]\d*", r"每月\s*[1-9]\d*\s*元",
-              r"每年\s*[1-9]\d*\s*元", r"[1-9]\d*\s*元\s*/\s*(月|年)"],
+              r"每年\s*[1-9]\d*\s*元", r"[1-9]\d*\s*元\s*/\s*(月|年)",
+              r"(月費|年費)\s*(NT\$)?\s*[1-9]\d*\s*元?"],
         "window": 40,
         "positives": [
             "訂閱方案 NT$299 起,隨時可取消",
@@ -215,6 +230,9 @@ RULES = [
         "packs": ["marketdaily_marketing"],
         "kind": "forbidden",
         "patterns": [r"(勝率|命中率|準確率|正確率)\s*(高達|達|約)?\s*\d{1,3}(\.\d+)?\s*(%|成)",
+                     r"(勝率|命中率|準確率|正確率|準確度|正確度)[^。\n]{0,6}(達到|高達|約|達)"
+                     r"\s*([一二三四五六七八九十]{1,3}|\d{1,3}(\.\d+)?)\s*(成|%|％)",
+                     r"(已有|超過|突破|逾)\s*[一二三四五六七八九十百千萬]{1,4}\s*(位|名)?\s*(訂閱|用戶|讀者|人)",
                      r"\d{2,}\s*\+?\s*(個|種)?\s*(資料)?來源",
                      r"(已有|超過|突破)\s*\d{3,}\s*(位|名)?\s*(訂閱|用戶|讀者|人)",
                      r"(已幫助|服務(了|過)?)\s*(超過)?\s*\d{3,}\s*(人|位|名)",
@@ -240,7 +258,7 @@ RULES = [
         "packs": ["marketdaily"],
         "kind": "forbidden",
         "patterns": [
-            r"「[^」]{8,}」\s*[—–\-]{1,2}\s*[A-Za-z一-龥]{0,4}?(先生|小姐|女士|工程師|老師|投資人)",
+            r"「[^」]{8,}」\s*[—–\-]{1,2}\s*[A-Za-z一-龥]{0,8}?(先生|小姐|女士|工程師|老師|投資人)",
             r"[一-龥]{1,4}(先生|小姐|女士)\s*[:：]\s*「[^」]{8,}」",
             r"(真實|用戶|訂閱者)見證\s*[:：]\s*「",
         ],
@@ -288,7 +306,8 @@ RULES = [
         "kind": "forbidden",
         "patterns": [r"原價", r"市價", r"市售價", r"僅剩\s*\d+", r"名額有限", r"最後一天",
                      r"錯過不再", r"即將漲價", r"限量\s*\d*\s*(名|份|組)", r"售完為止",
-                     r"手刀", r"手速", r"只到今(晚|天)", r"倒數\s*\d+\s*(小時|分鐘)"],
+                     r"手刀", r"手速", r"只到今(晚|天)", r"倒數\s*\d+\s*(小時|分鐘|天|日)",
+                     r"(現省|省下)\s*(NT)?\$?\s*[\d,]{2,}", r"(本月|本週|今日|今天)限定"],
         "positives": [
             "原價 NT$815,結緣價 NT$480,名額有限售完為止",
             "特價只到今晚十二點,手速要快",
@@ -392,10 +411,20 @@ def check_rule(rule, text):
         for pa in rule["a"]:
             for ma in _compile(pa).finditer(body):
                 lo = max(_sentence_start(body, ma.start()), ma.start() - rule["window"])
-                hi = min(_sentence_end(body, ma.end()), ma.end() + rule["window"])
-                seg = body[lo:hi]
+                seg = body[lo:_sentence_end(body, ma.end())]
+                # 免責語意閘:同句裡明講「一律免費/免費開放/不因付費」時,兩個關鍵字共現是
+                # **合規宣示**不是對價(held-out「個股分析與進出場價一律免費,升級只影響版面」)。
+                # ⚠️ 寫得很窄(要有 一律/全部/完全/永遠 這種全稱詞),不然「免費版只給摘要,
+                #    支持者版本才有個股進出場價」這種真違規只要有「免費」二字就能脫身。
+                if any(_compile(u).search(seg) for u in rule.get("unless", [])):
+                    continue
                 for pb in rule["b"]:
-                    if _compile(pb).search(seg):
+                    for mb in _compile(pb).finditer(seg):
+                        # ⚠️ 距離量的是**關鍵字起點**,不是比對片段的尾巴。原本把片段截在
+                        #    a.end+window,長一點的 b 關鍵字("stock analysis" 14 字)會剛好
+                        #    被切掉最後一個字母而整條漏掉(held-out F9 實測)。
+                        if lo + mb.start() > ma.end() + rule["window"]:
+                            continue
                         out.append({"pattern": f"{pa} ×{rule['window']}字內同句× {pb}",
                                     "evidence": _snippet(body, ma.start(), ma.end())})
                         return out
@@ -479,7 +508,50 @@ def selfcheck():
                 continue
             if hits:
                 problems.append(f"{rid}: 真實文案負例被誤咬 → {hits[0]['evidence'][:60]}")
+    # held-out 召回語料(與 positives 分離維護)——沒有它,「每條規則 ≥3 個 positives」
+    # 量到的只是規則作者自己反寫的措辭,對真實措辭空間零鑑別力(驗證者 F9)
+    problems += recall_problems()
     return (not problems), problems
+
+
+RECALL_CORPUS = os.environ.get("COMPLIANCE_RECALL_CORPUS") or os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "recall_corpus.json")
+
+
+def recall_problems(path=None):
+    """held-out 召回率語料的驗收。回傳 problems(空=全部通過)。
+
+    ⭐ 為什麼不能只靠 `positives`(2026-08-05 第二輪驗證者 F9):positives 是規則作者照著
+    自己的 pattern 反寫的,通過率恆為 100%,量的是自己。用真正沒看過的措辭去打時,
+    13 條裡漏 10 條——而輸出仍然是「全站乾淨」。所以召回率的判準必須來自**外部語料**,
+    而且檔案不見/被清空要當成守衛壞掉(否則刪檔就等於關掉這道防線)。
+    """
+    path = path or RECALL_CORPUS
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        cases = data["cases"]
+        if len(cases) < 12:
+            return [f"held-out 召回語料只剩 {len(cases)} 條(被清空?至少要 12 條)"]
+    except Exception as e:
+        return [f"讀不到 held-out 召回語料 {path}({type(e).__name__}: {e})——召回率從此無人把關"]
+    by_id = {r["id"]: r for r in RULES}
+    problems = []
+    for c in cases:
+        r = by_id.get(c["rule"])
+        if not r:
+            problems.append(f"召回語料指到不存在的規則 {c['rule']}(規則被改名/刪掉了?)")
+            continue
+        try:
+            hit = bool(check_rule(r, c["text"]))
+        except Exception as e:
+            problems.append(f"{c['rule']}: 召回語料比對爆炸 {e!r}")
+            continue
+        if c["expect"] == "hit" and not hit:
+            problems.append(f"{c['rule']}: held-out 措辭漏掉(召回率破洞):{c['text'][:40]}")
+        elif c["expect"] == "miss" and hit:
+            problems.append(f"{c['rule']}: held-out 合法文案被誤咬(pattern 太寬):{c['text'][:40]}")
+    return problems
 
 
 def rules_for(packs, exclude=()):
