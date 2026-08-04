@@ -1713,10 +1713,13 @@ export default {
       const params = {
         amount: String(guard.amount),
         currency: "twd",
-        // 錢包按鈕由 Express Checkout Element 決定顯示哪些;這裡開自動付款方式即可。
-        // allow_redirects=never:站內付款不該把人踢去外部授權頁(3DS 仍以彈窗完成)。
-        "automatic_payment_methods[enabled]": "true",
-        "automatic_payment_methods[allow_redirects]": "never",
+        // 只開卡片。Apple Pay / Google Pay 本來就是卡片型付款(錢包吐出來的是 card token),
+        // 所以這一行同時涵蓋「站內刷卡」與「兩顆錢包按鈕」。
+        // ⚠️ 不用 automatic_payment_methods:那會一併帶進 Link,而 Link 會在刷卡欄位下面
+        //    長出一整塊「儲存我的資料」(Email/手機/姓名)——佔掉手機半個畫面、多問三個
+        //    我們根本不需要的欄位。前端 elements 的 paymentMethodTypes 必須與這裡逐字一致,
+        //    對不上 Stripe 會在 confirm 當下丟 integration error。
+        "payment_method_types[0]": "card",
         description: guard.name,
         // ⚠️ metadata 是 webhook 端唯一的分流依據(見 payment_intent.succeeded 分支):
         //    product=fortune 決定「這是命書的單」,order_id 決定「是哪一筆」。漏帶 = 收到錢卻不出貨。
