@@ -1,3 +1,6 @@
+// fortune-ai 收銀台金額把關(純函式,價格真源在 fortune-ai repo worker/src/pricing.js)
+import { resolveFortuneCheckout } from "./fortune_checkout_guard.js";
+
 const ADMIN_EMAILS = ["delvin.12345678@gmail.com"];
 
 const INVITE_CODES = [
@@ -1610,6 +1613,9 @@ export default {
     }
 
     // fortune-ai(天機AI):建立單次付費 Payment Links(冪等,KV 快取;body {force:true} 重建)。Bearer INTERNAL_TOKEN。
+    // ⚠️ legacy(v3 起前端走下面的 /internal/fortune-checkout,本端點無呼叫者)。這裡的金額是**寫死的定價**,
+    //    不吃 fortune-ai `worker/src/pricing.js` 的促銷狀態 → 促銷期間若重建連結會產出定價連結、與站上標價不符。
+    //    要復用請先改成從呼叫端收 amount(同 fortune-checkout 的做法)。
     if (url.pathname === "/internal/fortune-payment-links" && request.method === "POST") {
       if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
       if (!env.STRIPE_SECRET_KEY) return json({ error: "missing_stripe_key" }, 500);
@@ -1656,24 +1662,19 @@ export default {
       if (!env.STRIPE_SECRET_KEY) return json({ error: "missing_stripe_key" }, 500);
       let body;
       try { body = await request.json(); } catch { return json({ error: "bad_body" }, 400); }
-      const SKUS = {
-        bazi249: { name: "天機AI 八字詳批(單次)", amount: 24900 },
-        tarot99: { name: "天機AI 塔羅單題(單次)", amount: 9900 },
-        hehun399: { name: "天機AI 合婚合盤(單次)", amount: 39900 },
-        liunian349: { name: "天機AI 2027流年詳批(單次)", amount: 34900 },
-        tarotlove149: { name: "天機AI 塔羅感情聖壇六張陣(單次)", amount: 14900 },
-        ziwei249: { name: "天機AI 紫微斗數詳批(單次)", amount: 24900 },
-      };
-      const sku = SKUS[body.sku];
-      if (!sku) return json({ error: "bad_sku" }, 400);
+      // 💰 價格真源在 fortune-ai repo 的 `worker/src/pricing.js`;這裡只把關,不定價。
+      //    判斷邏輯抽在 ./fortune_checkout_guard.js(純函式),讓 fortune-ai 的測試能**驗行為**
+      //    而不是只 grep 到關鍵字就當綠(2026-08-04 突變測試發現字串級檢查殺不掉「拿掉把關」)。
+      const guard = resolveFortuneCheckout(body.sku, body.amount);
+      if (guard.error) return json({ error: guard.error, max_amount: guard.max_amount }, guard.status);
       const oid = String(body.order_id || "");
       if (!oid.startsWith("order:")) return json({ error: "bad_order_id" }, 400);
       const params = {
         mode: "payment",
         "line_items[0][quantity]": "1",
         "line_items[0][price_data][currency]": "twd",
-        "line_items[0][price_data][unit_amount]": String(sku.amount),
-        "line_items[0][price_data][product_data][name]": sku.name,
+        "line_items[0][price_data][unit_amount]": String(guard.amount),
+        "line_items[0][price_data][product_data][name]": guard.name,
         client_reference_id: oid,
         "metadata[product]": "fortune",
         "metadata[sku]": body.sku,
