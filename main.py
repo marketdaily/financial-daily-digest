@@ -640,12 +640,17 @@ def _run_no_brevo_preview():
     save_local(data["date"], inner, suffix=("_us" if MARKET == "us" else ""))
 
 
-def _prewarm_card_pool(data, all_us_extra, all_tw_extra):
+def _prewarm_card_pool(data, all_us_extra, all_tw_extra, subscriber_prefs=None):
     """用全體訂閱者的標的聯集跑滿批卡片生成,暖 analyzer 的跨用戶快取(零邊際成本的關鍵)。
 
     為什麼要在 per-user 迴圈之前做:每位用戶只缺零星幾支時,批次會很小,而每次呼叫都要
     重付約 2,400 token 的規則區塊 → 呼叫數被「用戶數」推高而不是「標的數」。
     先跑滿批 → 呼叫數 = ceil(不重複標的/批次大小),加人幾乎不增加成本。
+
+    深度順序(2026-08-04 早報 deep 版整批淺卡事故根治):卡片快取鍵含 depth,只暖 standard
+    的話 deep/simple 用戶對這個池是零命中 → 他們的卡被擠到 per-user 迴圈(整班最後),
+    輪到時 council 預算與免費 LLM 配額都被 standard 池燒完,只剩弱模型 → 深度版反而最淺。
+    改成 deep 聯集最先生成(最吃 council/強模型,要用還活著的預算),再 standard,最後 simple。
 
     fail-soft:這裡失敗不影響正確性(per-user 迴圈照原路徑生成),只是回到舊的成本曲線。
     只暖「本班次該市場」的標的:另一市場的資料當班未必抓齊,硬生會拿到殘缺數據。
@@ -659,17 +664,27 @@ def _prewarm_card_pool(data, all_us_extra, all_tw_extra):
             wanted = set(all_us_extra)
         else:
             wanted = set(all_tw_extra) | set(all_us_extra)
-        syms = sorted(wanted)
-        if not syms:
+        if not wanted:
             return
         mkt = _market_status(data["date"])
         avail = {**data.get("us_market", {}), **data.get("tw_market", {})}
-        syms = [s for s in syms if (avail.get(s) or {}).get("price") is not None]
+        syms = [s for s in sorted(wanted) if (avail.get(s) or {}).get("price") is not None]
         if not syms:
             print("   [card-pool] 聯集標的皆無市價,略過預生成")
             return
-        print(f"   [card-pool] 預生成 {len(syms)} 檔(全體訂閱者聯集,{MARKET} 班)→ 後面用戶共用")
-        _render_signal_cards_batched(data, syms, mkt, depth="standard")
+        depth_syms = {"deep": set(), "simple": set()}
+        for prefs in (subscriber_prefs or {}).values():
+            d = prefs.get("digest_depth")
+            if d in depth_syms:
+                held = set(prefs.get("us_stocks") or []) | set(prefs.get("tw_stocks") or [])
+                depth_syms[d] |= held & set(syms)
+        print(f"   [card-pool] 預生成 {len(syms)} 檔(全體訂閱者聯集,{MARKET} 班)→ 後面用戶共用"
+              + (f" · deep 優先 {len(depth_syms['deep'])} 檔" if depth_syms["deep"] else ""))
+        for depth, batch in (("deep", sorted(depth_syms["deep"])),
+                             ("standard", syms),
+                             ("simple", sorted(depth_syms["simple"]))):
+            if batch:
+                _render_signal_cards_batched(data, batch, mkt, depth=depth)
     except Exception as e:
         print(f"   ⚠️ [card-pool] 預生成失敗({str(e)[:80]}),改回逐用戶生成(成本較高但功能不受影響)")
 
@@ -1023,7 +1038,7 @@ def run():
     # 後面的 per-user 迴圈就幾乎全命中 → 成本 = ceil(不重複標的/10),與用戶數無關。
     # 品質不打折:走的是同一條生成+品質閘+重生迴圈路徑,且合規鐵則本就要求
     # 「個股分析對全體用戶完全相同」——共用一份反而更合規。
-    _prewarm_card_pool(data, all_us_extra, all_tw_extra)
+    _prewarm_card_pool(data, all_us_extra, all_tw_extra, subscriber_prefs)
 
     picks_email_cache = {}  # (depth, exp_tier) -> (html, subject):精選版全用戶內容相同,共用生成結果
     for email in subscribers:

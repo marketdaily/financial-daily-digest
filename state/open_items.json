@@ -508,5 +508,305 @@
   "opened": "2026-08-02 18:48",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 52,
+  "what": "CJdropshipping API key 差最後一步:帳號註冊/email驗證/登入全自動完成,Add API 表單全填好(purrpickmain/API Key type),但 Confirm 被 CJ 新帳號反自動化防護擋(DOM 見 Account API Limitation Frozen 需email驗證碼);需老闆在 Chrome 分身視窗親手點 Confirm,跳驗證碼我撈信解",
+  "why": "CDP 點擊被 CJ 前端靜默擋,連敗多次停損;email驗證碼解凍流程需真人isTrusted觸發",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-02 18:55",
+  "closed": "2026-08-02 19:17",
+  "note": "CJ API key 建成:全自動註冊+email security code(Gmail撈)+建key;真Chrome CDP過Turnstile;freightCalculate實測AU成立TW=0選項"
+ },
+ {
+  "id": 53,
+  "what": "戰略:金融B2B升主力;T1砍線門檻=30天3付費賣家;T2=2家願付月費,未達即砍",
+  "why": "Delvin 08-02拍板do 1,防止側翼吃掉主力時間",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-02 19:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 54,
+  "what": "天機AI trionn 級龍首 motion 改版已上線 tianji-ai.pages.dev,待老闆過目拍板",
+  "why": "設計方向老闆親指,但成品未經老闆驗收",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-02 19:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 55,
+  "what": "FinTech Taipei獎徵件08-21截止(19天),W3前備妥finaudit demo+送件",
+  "why": "曝光+法遵圈信譽的制度性機會,死線硬",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-02 19:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 56,
+  "what": "FinTechSpace第16梯(推估09-10月開徵)一人公司資格需去電/表單確認",
+  "why": "監理門診+金融機構媒合=最短合規通路",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 19:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 57,
+  "what": "PurrPick 站上線但未能真收款:PayPal 商家帳號密鑰(PAYPAL_ID/PAYPAL_SECRET)未設,checkout 會停在 paypal auth failed;需老闆提供 PayPal 商家 API 憑證(developer.paypal.com 建 app)才能真賣",
+  "why": "金流憑證只有老闆能申請;目前 PAYPAL_ENV=sandbox",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-02 19:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 58,
+  "what": "PurrPick 未接自訂網域(現為 purrpick.delvin-12345678.workers.dev)+未做 blind dropshipping 實測(CJ remark 已寫但未驗證包裹真的無供應商品牌)+商品圖仍是供應商行銷圖(含他牌 logo 如 Eco Wood Tianyi)",
+  "why": "網域待老闆決定是否買;blind 要真出一單才驗得到;商品圖需重拍或去背",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-02 19:39",
+  "closed": "2026-08-02 20:05",
+  "note": "已改名 Wrenly 並掛 wrenly.marketdaily.ai(email 前綴消失);blind 實測與商品圖另立新項"
+ },
+ {
+  "id": 59,
+  "what": "天機AI v2 陀螺儀視差/hold震動需真機 iPhone 驗證(iOS permission prompt+vibrate headless 測不到,scroll 視差 fallback 已驗)",
+  "why": "headless Chromium 無真實 deviceorientation/vibrate,只驗了程式路徑與 fallback",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 19:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 60,
+  "what": "公司設立啟動(獎項8/21+B2B收費前置):路徑研究中,8/5前要老闆定名稱/資本額/地址/有無自然人憑證",
+  "why": "5-10工作天壓線,關鍵路徑",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-02 19:46",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 61,
+  "what": "Amazon AU 開賣前必驗:CJ 包裹是否真的零第三方標識(外箱/出貨單/發票/夾帶紙片)——Amazon 政策 strictly prohibited without exception,露出即停權。政策已驗,包裹未驗,需真下一單拆箱",
+  "why": "只有真收到包裹才驗得到;需老闆願意花約 A5 下測試單",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-02 20:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 62,
+  "what": "eBay 澳洲需老闆拍板:要開通只能向 CJ 買斷庫存寄倉(壓資金),否則違反 pre-purchased stock 政策。不做則此通路封存",
+  "why": "壓資金是老闆的錢,不能替他決定",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-02 20:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 63,
+  "what": "天機AI:真實信用卡付款未走過——webhook 標 paid 只用手動模擬驗過,等第一筆真單(或老闆親測 NT$99)驗 Stripe→webhook→KV→fulfill 全自動鏈",
+  "why": "live 卡未刷,不能自己花錢測",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-02 20:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 64,
+  "what": "天機AI:paid_orphan 補單未自動化——客人若從舊 Payment Link 直接付款(無 order id),webhook 存 paid_orphan:{session_id},fulfill.py 不撿,需人工對單",
+  "why": "orphan 幾乎只會來自舊快取連結,量極低,先人工",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-02 20:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 65,
+  "what": "Google Merchant Center 帳號本身未建(free listings 仍需一個 MC 帳號綁 feed):站點側全備妥(feed.tsv/schema/sitemap/canonical 全綠,GSC 已驗證+sitemap 已收),但 MC 註冊要走 Google 商家後台且需綁定商家資訊/退貨政策設定,可能需老闆帳號互動",
+  "why": "GSC 走 API 做掉了,MC 尚未確認有無同等 API 路徑(Content API for Shopping 需先有 MC 帳號)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-02 23:04",
+  "closed": "2026-08-04 13:24",
+  "note": "MC API 路徑已查證:accounts.createAndConfigure 需 provider 為數字帳號ID,獨立商家第一個帳號只能 UI 建;已啟用 merchantapi+shoppingcontent API,老闆建好加服務帳號後我接手"
+ },
+ {
+  "id": 66,
+  "what": "digest_postcheck 交付閘+LLM 慢路徑分流尚未在生產排程跑過",
+  "why": "只跑過離線 45 項/沙盒 12 情境/突變 11 項,首次生產窗口=2026-08-03 07:45 TW",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-03 00:03",
+  "closed": "2026-08-03 09:21",
+  "note": "2026-08-03 07:50 TW 生產 postcheck 真跑:交付閘正常放行、LLM 慢路徑分流行有印出(15 次 openrouter 慢路徑警示),rc=1 判決正確落 logs/postcheck_2026-08-03_tw.log"
+ },
+ {
+  "id": 67,
+  "what": "永豐簽署偵測器的告警通道本身沒有 dead-man(token 遺失/CF 403 時偵測器啞掉但看起來活著)",
+  "why": "本輪已讓 token 缺席=沒送到並大聲印,但沒有主動證明通道活著的機制;Mac 守衛前例是旋轉後啞了三週沒人發現",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-03 00:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 68,
+  "what": "永豐期貨 API 仍未過檔生效(states futopt=None,永豐尚未掛上期貨帳號)→ SSF 執行迴路 dry-run 被擋",
+  "why": "老闆 07-30 已完成簽署+模擬測試,等永豐系統過檔;偵測器已修好會自動推播+叫醒機器接手",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-03 00:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 69,
+  "what": "永豐簽署偵測器第2/3輪修法尚未在生產 cron 跑過(首次=2026-08-03 08:23 TW)",
+  "why": "只跑過離線自測 27 組/突變 34/34/真永豐 e2e(側效應全導 tmp);生產第一輪應推出『過檔逾期已 2 個營業日』",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-03 01:13",
+  "closed": "2026-08-03 09:21",
+  "note": "2026-08-03 08:23 TW 生產 cron 真跑:如預期推出『過檔逾期已 2 個營業日』,且 .signed_watch.json 的 alerted_at_biz=2 已寫入(該欄只在推播真的送達才記帳)=通道確認活著"
+ },
+ {
+  "id": 70,
+  "what": "MEMORY.md 索引 160 行(hook 要求壓到 140 以下)",
+  "why": "壓縮=合併/刪條目的破壞性操作,不在重任務尾端趕工;排下一輪用 capability_memory_index_hygiene 的方法做",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-03 02:36",
+  "closed": "2026-08-03 02:43",
+  "note": "已壓到 138 行(158→144 條目,13 組合併);連結完整性驗證:195 個連結全保留、每一條原始條目內容逐字仍在檔內"
+ },
+ {
+  "id": 71,
+  "what": "digest_selfheal 修復後的 apply 相位尚未在生產跑過",
+  "why": "gate 恆紅根治(commit 070a242)只在真 worktree 離線驗過;首次真跑=下一次『檢查造成的硬錯備援』發生時,可能數天後",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-03 02:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 72,
+  "what": "digest_chronic 第 2/3 輪驗證者修法尚未在生產 cron 跑過",
+  "why": "首次生產真跑=今天 11:00 TW 窗口,會對 signal_reason_shallow + personal_audio 立案並 spawn 修復代理",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-03 02:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 73,
+  "what": "shallow reason 增補層(d17556b)尚未在生產跑過:明早 TW 班後查 postcheck reason median 是否回 ≥100 + fallback log 確認 regen 重燒減少",
+  "why": "只過單測13/13+refactor_harness golden,判準要生產真跑",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-03 11:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 74,
+  "what": "archive_cta cron 路徑尚未在生產跑過(首跑 2026-08-04 07:20 TW,含新增的髒腳本守衛/空glob守衛)",
+  "why": "只驗過手動回填+沙盒 stub runner 五情境,真實 cron_git_persist 對 84 pathspec 的 add/commit/push 未跑過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-03 13:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 75,
+  "what": "digest_archive 未進 stripe-webhook ATTR_SOURCES,admin by_source 看不到存檔頁 CTA 這條管道的轉換",
+  "why": "需下次 worker 部署補常數;逐筆 attr:convert 仍保留原字串,分析讀得到",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-03 13:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 76,
+  "what": "社群發文閘門完整路徑(含真的發文)尚未在生產跑過",
+  "why": "今天只跑了 --gate-only(閘門落地但不發文);cmd_post 那一段的首次生產驗證=2026-08-05(三)14:00 TW 品牌貼文窗口,看 logs/social_2026-08-05.log 有無「閘門落地」行且發出的是過閘的那則",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-03 14:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 77,
+  "what": "夜巡逾時分級已改完但全庫實跑轉綠尚未確認,獨立驗證者報告也還沒收斂",
+  "why": "兩者都在背景跑,本 session 40m 上限先到;程式已驗(29段自測+6突變全咬)但未在真實夜巡跑過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-03 15:01",
+  "closed": "2026-08-04 05:44",
+  "note": "全庫實跑轉綠已確認:真實排程夜巡 2026-08-04 04:50 TW 跑過整批修改,05:01 收尾『積木自測全過』,TT already_broken 1→0 timeout=0 timebomb=0 覆蓋143/152。驗證者報告那半改記為新項目"
+ },
+ {
+  "id": 78,
+  "what": "TT 逐支預算/TIMEOUT 判決分流(08-03~08-04 兩輪)的驗證者分離未開",
+  "why": "連兩個 session 環境禁用 Agent/Workflow 工具;代償=突變 11 則全咬(逐則核對殺因)+真實排程夜巡實跑,但獨立 context 的挑錯還沒做過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 05:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 79,
+  "what": "Wrenly 三個硬卡點全部是 KYC 類、只有老闆能做,清單已備 ~/dropshipping/剩下只有你能做的.md:①金流憑證(Stripe restricted key 或 PayPal Client ID/Secret)②Merchant Center 第一個帳號只能 UI 建(API createAndConfigure 只給代管商,已實測)③CJ 包裹 blind 實測需儲值約US$20。其餘我全做完",
+  "why": "金融帳戶與 Google 帳號登入屬本人 KYC,不可代辦亦不應繞過",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-04 13:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 80,
+  "what": "08-04 四修復未全數生產驗證(機器續跑/fortune重試/chronic代理/patrol persist)",
+  "why": "機器要等老闆離機才跑;fortune重試要等下次競態;chronic代理要等下次立案;patrol persist今晚21:30見真章",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-04 13:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 81,
+  "what": "日報deep版淺卡三重修(deep優先預生成/回音卡不墊閘/council 900s)尚未在生產跑過",
+  "why": "修於08-04午後,首個生產驗證班=08-04晚報20:00與08-05早報07:00,需驗owner deep版卡片深度回升",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-04 13:51",
+  "closed": null,
+  "note": ""
  }
 ]

@@ -3458,6 +3458,21 @@ def _strip_reason_leak(card: str) -> str:
     return card[:m.start()] + m.group(1) + cleaned + m.group(3) + card[m.end():]
 
 
+# prompt 裡「台股早盤動作窗口」的兩句示範(例:「今早 9:00 開盤後現價勿追,等回測 NT$X 不破再分批」)
+# 弱模型(local qwen 等)會逐字抄回來只填數字 —— 十幾張卡同一句式、零個股資訊。
+# 只殺「整句 = 範例」的卡;範例句後面有接任何自己的分析就放行(那至少有增量資訊)。
+_EXAMPLE_ECHO_PATS = [
+    re.compile(r'^今[早晚]\s*[\d:：]*\s*開盤後\s*現價勿追[,，]\s*等回測\s*(?:NT)?\$?\s*[\d,.]+\s*(?:元)?\s*不破再分批(?:低接)?[。.]?$'),
+    re.compile(r'^今[早晚]\s*[\d:：]*\s*開盤後\s*若跳空跌破\s*(?:NT)?\$?\s*[\d,.]+\s*(?:元)?[,，]\s*先減碼控風險[。.]?$'),
+]
+
+
+def _is_example_echo_reason(plain: str) -> bool:
+    """reason 純文字是否只是 prompt 示範句的逐字回音(僅數字不同)。"""
+    s = re.sub(r"\s+", " ", plain).strip()
+    return any(p.match(s) for p in _EXAMPLE_ECHO_PATS)
+
+
 def _augment_shallow_reason(card: str, sym: str, data: dict) -> str:
     """卡級 reason 確定性增補層(2026-08-03,archive:signal_reason_shallow 根因修):
     免費額全熔斷日(429)只剩弱模型鏈,reason 常落在 70-99 字 → 過卡級 70 字閘
@@ -3465,7 +3480,9 @@ def _augment_shallow_reason(card: str, sym: str, data: dict) -> str:
     <100 字時從該股既有真實數據(RSI14/MA20 距離/量能/當日漲跌幅)確定性拼事實行
     補在後——只轉述 data dict 已有數字、零 LLM、不生成價位建議;放 _card_passes_audit
     之前 → 短卡當場合格,不再進 regen 迴圈重燒慢模型(144s/次)。
-    ≥100 字的卡與湊不出任何事實的卡絕不動(行為凍結+fail-open)。"""
+    ≥100 字的卡與湊不出任何事實的卡絕不動(行為凍結+fail-open)。
+    例外:reason 整句只是 prompt 示範句的逐字回音(弱模型抄範例填數字,2026-08-04 早報
+    deep 版整批淺卡事故)→ 不墊,讓它照舊掉 70 字閘進 regen/deterministic,不許零資訊卡過關。"""
     if "數據面補充" in card:
         return card
     rm = re.search(r'(<div class="signal-reason"[^>]*>)(.*?)(</div>)', card, re.S)
@@ -3474,6 +3491,8 @@ def _augment_shallow_reason(card: str, sym: str, data: dict) -> str:
     reason = rm.group(2)
     plain = re.sub(r"<[^>]+>", "", reason).strip()
     if len(plain) >= 100 or re.search(r"備援|個人化生成異常|fallback|無即時報價", plain):
+        return card
+    if _is_example_echo_reason(plain):
         return card
     t = (data.get("technicals", {}) or {}).get(sym) or {}
     mkt = {**data.get("us_market", {}), **data.get("tw_market", {})}.get(sym) or {}

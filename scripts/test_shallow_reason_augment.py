@@ -80,6 +80,19 @@ out_tiny = _augment_shallow_reason(mk_card(TINY), "NVDA", DATA)
 check("<70 字卡補後過 _card_passes_audit(不再進 regen 重燒)",
       not _card_passes_audit(mk_card(TINY)) and _card_passes_audit(out_tiny))
 
+# ── 示範句回音卡(2026-08-04 早報 deep 版淺卡事故):不墊、照舊掉閘進 regen ──
+ECHO1 = "今早 9:00 開盤後現價勿追,等回測 NT$999 不破再分批低接。"
+ECHO2 = "今早 9:00 開盤後若跳空跌破 NT$279,先減碼控風險。"
+for name, echo in (("回音卡1(勿追等回測)", ECHO1), ("回音卡2(跳空跌破)", ECHO2)):
+    c = mk_card(echo)
+    out_e = _augment_shallow_reason(c, "NVDA", DATA)
+    check(f"{name} 不墊數據面補充", out_e == c)
+    check(f"{name} 仍不過卡級閘(會進 regen)", not _card_passes_audit(out_e))
+
+ECHO_PLUS = "今早 9:00 開盤後現價勿追,等回測 NT$999 不破再分批低接。營收連28月正成長,累計YoY +84.3%。"
+out_ep = _augment_shallow_reason(mk_card(ECHO_PLUS), "NVDA", DATA)
+check("回音句後有自己的分析 → 照常墊(只殺零資訊卡)", "數據面補充" in out_ep)
+
 failed = [n for n, ok in RESULTS if not ok]
 print(f"\n{'FAIL: ' + ', '.join(failed) if failed else 'ALL PASS'} ({len(RESULTS) - len(failed)}/{len(RESULTS)})")
 sys.exit(1 if failed else 0)
