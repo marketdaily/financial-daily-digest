@@ -53,14 +53,17 @@ def run():
                 return "OK"
             raise RuntimeError("fail")
         return f
+    # ⚠️ 每一個底層呼叫函式都要堵(能力庫探針坑③):漏堵=測試真打 API 燒配額。
+    # 08-03 mistral 入席時漏堵 _call_mistral,此測試每跑一次真打一發 Mistral —— 08-04 補。
     origs = {n: getattr(analyzer, n) for n in
              ("_call_gemini", "_call_groq", "_call_cf_ai", "_call_openrouter",
-              "_call_cerebras", "_call_openai", "_call_ollama")}
+              "_call_mistral", "_call_cerebras", "_call_openai", "_call_ollama")}
     try:
         analyzer._call_gemini = _mk("gemini")
         analyzer._call_groq = _mk("groq")
         analyzer._call_cf_ai = _mk("cf")
         analyzer._call_openrouter = _mk("openrouter")
+        analyzer._call_mistral = _mk("mistral")
         analyzer._call_cerebras = _mk("cerebras", ok=True)  # 最後一席成功,終止迴圈
         analyzer._call_openai = _mk("openai")
         analyzer._call_ollama = _mk("local")
@@ -75,6 +78,9 @@ def run():
         assert i_or < i_local, f"[FAIL] 能做完事的免費後衛(openrouter 550b)應排在 local 前: {order}"
         assert i_local < order.index("cerebras"), f"[FAIL] junk(cerebras) 未墊底: {order}"
         assert order.index("groq") < i_or, f"[FAIL] groq 應在後衛層前: {order}"
+        # 2026-08-04 鏈序意圖:mistral=荒年日第一後衛(獨立大配額+56.8s/批),排 openrouter
+        # (50 次/日+144s)與 local(reason 中位數 18 字)之前。
+        assert order.index("mistral") < i_or, f"[FAIL] mistral 應為第一後衛(在 openrouter 前): {order}"
     finally:
         for n, f in origs.items():
             setattr(analyzer, n, f)

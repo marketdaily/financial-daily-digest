@@ -627,12 +627,17 @@ def _llm_generate(prompt: str, prefer_strong: bool = False, prefer_paid: bool = 
     # 現已升級為 ultra-550b 並實測能對真實 10 檔批次 prompt 產出完整 10 張卡(144s),
     # 而 local qwen2.5:14b 對同一 prompt **600s 超時** → 兩者不該同層。
     # free_backstop:真的做得完事的免費後衛(排 local 前);free_weak:仍是垃圾層(墊 local 後)。
-    free_backstop = [("openrouter:nemotron-ultra-550b", lambda p: _call_openrouter(p, max_tokens=8000))]
     # mistral 2026-08-03 probe 實測(真實 10 檔批次):10/10 完卡、56.8s、誠實不捏數字,
-    # 但 reason 中位數 56 字 < 70 字卡級閘 → 不夠格站生卡要道,放墊底層(排死掉的 cerebras 402 前)。
-    # 卡品質閘照常把關:薄卡會被 regen/deterministic 接手,但它比死網和斷網強。
-    free_weak = [("mistral:large-latest", lambda p: _call_mistral(p, max_tokens=8000)),
-                 ("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
+    # reason 中位數 56 字 < 70 字卡級閘 → 初判「不夠格站要道」放墊底層(local 之後)。
+    # 2026-08-04 改判排 local 前、openrouter 前:①當天早報全鏈 429,實際接活的是 local
+    # qwen2.5-14b(08-02 複驗 reason 中位數 18 字+批次 600s 超時+逐字抄 prompt 示範句),
+    # mistral 只在 ollama 連不上時被叫 4 次、4/4 成功——比它爛的網站在它前面;②56 字落在
+    # _augment_shallow_reason 的 <100 字增補帶,墊真實數據後過閘,不掉 regen;③openrouter
+    # :free 全帳號共用 50 次/日且 144s/次(07-30 靠它撐 45 次=108 分鐘遲寄),mistral 獨立
+    # 大配額+56.8s → 荒年日的第一後衛應是 mistral,550b 當第二後衛。
+    free_backstop = [("mistral:large-latest", lambda p: _call_mistral(p, max_tokens=8000)),
+                     ("openrouter:nemotron-ultra-550b", lambda p: _call_openrouter(p, max_tokens=8000))]
+    free_weak = [("cerebras:gpt-oss-120b", lambda p: _call_cerebras(p, max_tokens=8000))]
     # 2026-07-22 Delvin:「sonnet 要花錢就不要用」——付費 Claude 全退出主鏈,
     # 純免費層扛(gemini 雙 key + groq + cf + openrouter/cerebras + 本地 GPU),
     # audit 閘門/deterministic fallback 品質防線不動。openai 沒 key 自動跳過。
