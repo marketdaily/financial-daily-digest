@@ -91,6 +91,12 @@ def classify(jobs, today=None):
 OUTPUT_HEARTBEATS = [
     ("券商喊單(sinopac_line)", "~/sinopac_line/*.md", 5,
      "多半是 Windows 的 LINE 登出了(截圖會是登入/QR 頁),需 Delvin 本人在 winrig 重新登入"),
+    # 下面兩支 2026-08-05 補:輸出全進 /dev/null 或不符 <job>_<date>.log,原本完全不在納管範圍,
+    # 靜默死掉沒人知道。心跳由腳本自己在每輪完成時蓋戳記(Mac 離線的合法跳過也算活著)。
+    ("大腦送Mac(brain_deliver_mac)", "~/.marketdaily-fallback/state/brain_deliver_mac.beat", 1,
+     "本支 */5,戳記超過 1 天=它沒在跑了(不是 Mac 離線,離線也會蓋戳記)"),
+    ("cb_server 守護(keepalive)", "~/.marketdaily-fallback/state/cb_server_keepalive.beat", 1,
+     "本支 */5,戳記超過 1 天=守護自己死了,cb_server 掛掉將不再自癒"),
 ]
 
 
