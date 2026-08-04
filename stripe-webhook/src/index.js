@@ -1736,7 +1736,8 @@ export default {
       });
       const d = await r.json();
       if (!r.ok || !d.client_secret) {
-        return json({ error: "stripe_failed", detail: JSON.stringify(d).slice(0, 300) }, 502);
+        // 訊息留長一點:restricted key 少了權限時,Stripe 會在這句話裡直接點名缺哪一項
+        return json({ error: "stripe_failed", detail: JSON.stringify(d).slice(0, 800) }, 502);
       }
       return json({ ok: true, client_secret: d.client_secret, payment_intent_id: d.id });
     }
@@ -1758,7 +1759,7 @@ export default {
       try {
         const lr = await fetch("https://api.stripe.com/v1/payment_method_domains?limit=100", { headers: auth });
         const ld = await lr.json();
-        if (!lr.ok) return json({ error: "stripe_failed", detail: JSON.stringify(ld).slice(0, 300) }, 502);
+        if (!lr.ok) return json({ error: "stripe_failed", detail: JSON.stringify(ld).slice(0, 800) }, 502);
         for (const domain of DOMAINS) {
           let row = (ld.data || []).find((x) => x.domain_name === domain);
           if (!row) {
@@ -1783,7 +1784,7 @@ export default {
         }
         const wr = await fetch("https://api.stripe.com/v1/webhook_endpoints?limit=100", { headers: auth });
         const wd = await wr.json();
-        if (!wr.ok) return json({ error: "stripe_failed", detail: JSON.stringify(wd).slice(0, 300) }, 502);
+        if (!wr.ok) return json({ error: "stripe_failed", detail: JSON.stringify(wd).slice(0, 800) }, 502);
         for (const ep of wd.data || []) {
           const mine = /marketdaily\.ai|workers\.dev/.test(ep.url || "");
           const has = (ep.enabled_events || []).includes(NEED_EVENT) || (ep.enabled_events || []).includes("*");
