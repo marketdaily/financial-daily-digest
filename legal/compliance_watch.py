@@ -31,6 +31,7 @@ import html
 import time
 import argparse
 import datetime
+import threading
 import urllib.parse
 import urllib.request
 import urllib.error
@@ -125,6 +126,11 @@ SURFACES = [
     {"id": "md_digest_latest", "label": "日報公版存檔(最新)",
      "url": "@latest_digest", "kind": "html",
      "packs": ["marketdaily", "marketdaily_disclaimer"]},
+    # 公版存檔頁整頁都是個股分析、55 份在線上 sitemap 可被 Google 索引,原本只有最新一份
+    # 被掃(第三輪驗證者 F6)。這是全站最大流量頁面群,合規曝險與首頁同級。
+    {"id": "md_archive_all", "label": "日報公版存檔(全部,glob 自動納管)",
+     "url": "@archive_all", "kind": "html_multi",
+     "packs": ["marketdaily", "marketdaily_disclaimer"]},
     {"id": "ms_index", "label": "命書首頁",
      "url": "https://mingshu.tw/", "kind": "html",
      "packs": ["mingshu"]},
@@ -175,11 +181,36 @@ def docs_page_urls():
     return [f"https://marketdaily.ai/{f}" for f in files if f not in skip]
 
 
+# docs/ 底下每一個「裝著 .html 的目錄」都必須被某一面認領。新目錄冒出來而沒人認領
+# = 靜默零覆蓋(第三輪驗證者 F6:docs/output 的 87 個公版存檔頁只有最新一份被掃過,
+# 其中 55 個在線上 sitemap、可被 Google 索引,而整頁都是個股分析)。
+DOCS_DIR_ROUTES = {
+    "": "@docs_rest",            # 頂層
+    "blog": "@blog_all",
+    "output": "@archive_all",    # 公版存檔(capability_archive_cta_public_funnel:全站最大流量頁面群)
+}
+
+
+def archive_urls(limit=None):
+    """公版存檔頁的線上網址(新到舊)。`@latest_digest` 只看最新一份,其餘 86 份原本零覆蓋。"""
+    d = _docs_dir("output")
+    try:
+        files = [f for f in os.listdir(d) if f.endswith(".html")]
+    except Exception:
+        return []
+    files.sort(reverse=True)     # 檔名帶日期,反向排序=新到舊
+    if limit:
+        files = files[:limit]
+    return [f"https://marketdaily.ai/output/{f}" for f in files]
+
+
 def blog_urls(limit=None):
     """blog 全部文章的線上網址(新到舊)。清單來源=本機 docs/blog(部署來源),但**抓的是線上頁面**。"""
     d = _docs_dir("blog")
     try:
-        files = [f for f in os.listdir(d) if f.endswith(".html") and f != "index.html"]
+        # index.html(文章列表頁)原本被排除,而它也是一頁真的有行銷文案的線上頁面;
+        # 新的遞迴孤兒 lint 一開就把它揪出來了(第三輪驗證者 F6 的附帶收穫)。
+        files = [f for f in os.listdir(d) if f.endswith(".html")]
     except Exception:
         return []
     files.sort(key=lambda f: os.path.getmtime(os.path.join(d, f)), reverse=True)
@@ -238,7 +269,41 @@ def config_problems():
     for f in sorted(_named_doc_files()):
         if f not in have:
             probs.append(f"SURFACES 指向不存在的 docs/{f}(網址已死或檔案改名)")
+    probs += orphan_docs_problems()
     return probs
+
+
+def orphan_docs_problems():
+    """docs/ **遞迴**檢查:每一頁不是具名、就是具名排除、就是被某一面的 glob 納管。
+
+    ⚠️ 這段原本只活在自測裡、而且只走頂層(第三輪驗證者 F6):`os.listdir(docs/)` 對
+    142 個子目錄檔案恆真通過——**守衛與被守衛的東西共用同一個盲點**,自測還替它背書。
+    搬進模組本體 + 改遞迴 + 用「目錄→負責的面」路由表:冒出沒人認領的新目錄即 exit 3。
+    """
+    probs = []
+    root = _docs_dir()
+    covered = set()
+    for fn, urls in (("@docs_rest", docs_page_urls()), ("@blog_all", blog_urls()),
+                     ("@archive_all", archive_urls())):
+        for u in urls:
+            covered.add(u.split("marketdaily.ai/", 1)[-1])
+    named = {f for f in _named_doc_files()}
+    for dirpath, dirnames, filenames in os.walk(root):
+        rel = os.path.relpath(dirpath, root).replace(os.sep, "/")
+        rel = "" if rel == "." else rel
+        htmls = [f for f in filenames if f.endswith(".html")]
+        if not htmls:
+            continue
+        if rel not in DOCS_DIR_ROUTES:
+            probs.append(f"docs/{rel}/ 有 {len(htmls)} 個 .html 但沒有任何一面認領"
+                         "(新目錄=靜默零覆蓋;請在 DOCS_DIR_ROUTES 指派負責的 surface)")
+            continue
+        for f in sorted(htmls):
+            key = f if rel == "" else f"{rel}/{f}"
+            if key in covered or f in named or (rel == "" and f in DOCS_EXCLUDE):
+                continue
+            probs.append(f"docs/{key} 既非具名、也不在排除清單、也沒被 glob 納管(沒人看的頁面)")
+    return probs[:12]
 
 
 # ── 抓取 ────────────────────────────────────────────────────────────────
@@ -317,14 +382,71 @@ _META_REV = re.compile(r"""(?is)<meta\b[^>]*?content\s*=\s*["']([^"']{4,600})["'
 _ATTR_TEXT = re.compile(r"""(?is)\b(alt|title|placeholder|aria-label)\s*=\s*["']([^"']{4,400})["']""")
 # 英文 i18n 字典:≥4 個英文單字才算文案(過濾 selector/URL/class 名)
 _EN_SENTENCE = re.compile(r"(?:[A-Za-z][A-Za-z'’\-]{1,}\s+){3,}[A-Za-z]")
+# 這一頁自己說「我是雙語頁」的證據(不必人手在 SURFACES 標 bilingual——人手清單必腐爛)
+_I18N_ATTR = re.compile(r"(?i)\bdata-i18n(-html|-placeholder)?\s*=")
 
 
 def _looks_like_copy(s):
     return bool(_CJK.search(s)) or bool(_EN_SENTENCE.search(s))
 
 
-def visible_text(page, stats=None):
-    """把一頁 HTML 轉成「使用者真的看得到的字」。stats(可選 dict)會收到覆蓋率計數。"""
+# 外部 script:同網域 `.js` 裡的 i18n 字典就是使用者看得到的字(第三輪驗證者 F4:
+# dash-core.js 292 段、watch.js 196 段、共約 498 段從未進過語料,而報告寫 dropped=0)。
+_SCRIPT_SRC = re.compile(r"""(?is)<script\b[^>]*?\bsrc\s*=\s*["']([^"']+)["']""")
+# 資料字典型的 .js 不是文案:掃它只會把語料灌成六千筆股名。**每一條都要有理由**(同 DOCS_EXCLUDE)。
+JS_EXCLUDE = {
+    "stocks.js": "6366 筆股票代號→名稱字典,非使用者文案",
+    "tw-profile.js": "台股公司簡介資料檔(資料非文案)",
+    "tw-bizdesc.js": "台股營業項目資料檔",
+    "tw-industry.js": "台股產業分類資料檔",
+    "us-industry.js": "美股產業分類資料檔",
+    "tw-chain-generic.js": "供應鏈關係資料檔",
+    "us-chain-generic.js": "供應鏈關係資料檔",
+}
+_JS_CACHE = {}
+_JS_CACHE_LOCK = threading.Lock()
+
+
+def external_script_texts(page, page_url, fetcher=None, stats=None):
+    """抓同網域外部 `.js` 的內容(跨頁去重快取)。回傳 list[str];抓不到的計入 stats。"""
+    if not page_url:
+        return []
+    fetcher = fetcher or fetch
+    out, unscanned = [], 0
+    seen = set()
+    for m in _SCRIPT_SRC.finditer(page):
+        src = html.unescape(m.group(1)).strip()
+        full = urllib.parse.urljoin(page_url, src)
+        if urllib.parse.urlparse(full).netloc != urllib.parse.urlparse(page_url).netloc:
+            continue
+        clean = full.split("?", 1)[0]
+        if not clean.endswith(".js") or clean in seen:
+            continue
+        seen.add(clean)
+        if clean.rsplit("/", 1)[-1] in JS_EXCLUDE:
+            continue
+        with _JS_CACHE_LOCK:
+            hit = clean in _JS_CACHE
+            body = _JS_CACHE.get(clean)
+        if not hit:
+            st, body = fetcher(clean)
+            body = body if st == 200 else None
+            with _JS_CACHE_LOCK:
+                _JS_CACHE[clean] = body
+        if body is None:
+            unscanned += 1
+        else:
+            out.append(body)
+    if stats is not None and unscanned:
+        stats["external_js_unscanned"] = stats.get("external_js_unscanned", 0) + unscanned
+    return out
+
+
+def visible_text(page, stats=None, page_url=None, fetcher=None, extras=None):
+    """把一頁 HTML 轉成「使用者真的看得到的字」。stats(可選 dict)會收到覆蓋率計數。
+
+    `page_url` 有給時,會一併抓同網域外部 `.js` 的文案字面值(第三輪驗證者 F4)。
+    """
     # ⚠️ 順序:先移除 script/style,**再**處理註解。反過來的話 JS 裡的字面 `<!--`
     #    會跟後面任何一個 `-->` 配對,把中間的真實文案整段吃掉(驗證者 F12)。
     no_script = _DROP.sub("\n", page)
@@ -341,8 +463,11 @@ def visible_text(page, stats=None):
 
     dropped = 0
     kept = 0
-    for m in _SCRIPT.finditer(page):
-        block = m.group(1)
+    blocks = [m.group(1) for m in _SCRIPT.finditer(page)]
+    blocks += list(extras or [])
+    if page_url:
+        blocks += external_script_texts(page, page_url, fetcher=fetcher, stats=stats)
+    for block in blocks:
         for lit in _LITERAL.finditer(block):
             s = lit.group(1) or lit.group(2) or lit.group(3) or ""
             s = _TPL_EXPR.sub(" ", s)   # `共 ${n} 筆` 的插值運算式不是文案
@@ -374,6 +499,21 @@ def _load_json(path, default):
         return default
 
 
+def _ledger_seen_marker(path):
+    """「這個帳本曾經存在過」的足跡檔。只增不減——刪掉它等於人工宣告『我確認過歷史了』。"""
+    return path + ".seen"
+
+
+def _touch_ledger_marker(path):
+    m = _ledger_seen_marker(path)
+    if not os.path.exists(m):
+        try:
+            with open(m, "w", encoding="utf-8") as f:
+                f.write(datetime.datetime.now(datetime.timezone.utc).isoformat() + "\n")
+        except OSError:
+            pass
+
+
 def load_ledger(path):
     """回傳 (ledger, problem)。**檔案不存在=正常(首次跑);解析壞掉=事故,不可當成空帳本。**
 
@@ -389,6 +529,13 @@ def load_ledger(path):
     直接 False),字串型別則讓整面炸成 unknown,兩種都不是設計承諾的 fail-closed finding。
     """
     if not os.path.exists(path):
+        # ⚠️ 2026-08-05 第三輪驗證者 F11:上一版的 fail-closed 只覆蓋「毀損」,檔案被**刪掉**
+        #    (磁碟清理/手誤/搬機器)一樣走「首次跑」→ 那一晚的延長被赦免、首次觀測的截止
+        #    時刻永久遺失。足跡檔只增不減,它在而帳本不在 = 帳本被刪,同級 fail-closed。
+        if os.path.exists(_ledger_seen_marker(path)):
+            return None, ("帳本檔不存在,但足跡檔還在(" + os.path.basename(_ledger_seen_marker(path)) +
+                          ")——帳本被刪除而非首次跑,原始截止時刻已遺失;"
+                          "人工確認促銷歷史後刪掉足跡檔才算結案")
         return {}, None
     try:
         with open(path, "r", encoding="utf-8") as f:
@@ -414,13 +561,26 @@ def load_ledger(path):
 
 
 def _atomic_write(path, obj):
-    """tmp + os.replace。cron 每 10 分鐘跑一次、winrig 有斷電前科,直接 open(...,'w') 會留半截檔。"""
-    tmp = path + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:
-        json.dump(obj, f, ensure_ascii=False, indent=1)
-        f.flush()
-        os.fsync(f.fileno())
-    os.replace(tmp, path)
+    """tmp + os.replace。cron 每 10 分鐘跑一次、winrig 有斷電前科,直接 open(...,'w') 會留半截檔。
+
+    ⚠️ 2026-08-05 第三輪驗證者 F3:tmp 名固定成 `path + ".tmp"` 時,`run()` 的三條執行緒
+    (@docs_rest / @blog_all / @ms_sitemap)寫同一個展開基準檔會互相踩——`os.replace` 之後
+    另一條的 fd 直接續寫進**正式檔** → 30 晚模擬裡 9 晚檔案毀損、21 晚 lost update、0 晚完整。
+    tmp 名帶 pid+tid 才能讓每條執行緒有自己的暫存檔(讀-改-寫的原子性另由 _EXPAND_LOCK 保證)。
+    """
+    tmp = f"{path}.tmp.{os.getpid()}.{threading.get_ident()}"
+    try:
+        with open(tmp, "w", encoding="utf-8") as f:
+            json.dump(obj, f, ensure_ascii=False, indent=1)
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    finally:
+        if os.path.exists(tmp):
+            try:
+                os.remove(tmp)
+            except OSError:
+                pass
 
 
 def _promo_key(h):
@@ -568,6 +728,7 @@ def check_promo(snap, ledger, now_ms=None, write_path=None, ledger_problem=None,
     led["last_checked"] = _ms_ymd(now_ms)
     if write_path:
         _atomic_write(write_path, led)
+        _touch_ledger_marker(write_path)
     return out, led
 
 
@@ -663,7 +824,29 @@ SUB_WORKERS = 6   # html_multi 內層的併發(外層 5 × 內層 6 對自家 Pa
 
 def _expand_multi(token):
     return {"@docs_rest": docs_page_urls, "@blog_all": blog_urls,
-            "@ms_sitemap": sitemap_urls}.get(token, list)()
+            "@archive_all": archive_urls, "@ms_sitemap": sitemap_urls}.get(token, list)()
+
+
+_EXPAND_LOCK = threading.Lock()
+EXPAND_HIST = 5           # 基準保留近 N 晚,判準用其中的**最大值**
+EXPAND_FLOOR = 0.7        # 掉到近 N 晚最大值的 70% 以下 = 覆蓋面縮水
+
+
+def _load_baseline(path):
+    """回傳 (base, problem)。⚠️ 讀得到檔案但解析失敗**不可 fail-open**(第三輪驗證者 F3):
+    基準檔是腰斬守衛唯一的記憶,吞成 `{}` 之後 `prev=None` → 守衛靜默關閉、零 finding、
+    零 exit 3,而輸出與真乾淨一模一樣。"""
+    if not os.path.exists(path):
+        return {}, None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            raise ValueError("展開基準檔結構不對(應為 dict)")
+        return data, None
+    except Exception as e:
+        return {}, (f"展開基準檔 {path} 解析失敗({type(e).__name__}: {e})"
+                    "——腰斬守衛失憶,在人工修好之前不可宣稱覆蓋面正常")
 
 
 def expand_problem(token, urls, record=True, path=None):
@@ -671,7 +854,12 @@ def expand_problem(token, urls, record=True, path=None):
 
     `docs/` 那邊有 `config_problems()` 擋清單腐爛,但 sitemap 那條路一條守衛都沒有:
     實測部署管線退化成只吐 1–2 個 `<loc>` 時,覆蓋面從 141 頁掉到 1 頁,狀態仍是
-    **clean / exit 0 / 零訊號**。基準存「上次成功展開的筆數」,腰斬即視為設定壞掉(exit 3)。
+    **clean / exit 0 / 零訊號**。
+
+    ⚠️⚠️ 2026-08-05 第三輪驗證者 F7:上一版基準存「**上一晚**的筆數」而且每晚覆寫,
+    於是「每晚縮 49%」六晚從 141 頁掉到 4 頁全程靜默——漸進式退化正好穿過單晚比對。
+    現在基準存**近 {EXPAND_HIST} 晚的筆數史**,判準改用其中的最大值 × {EXPAND_FLOOR}。
+    確認是預期中的縮減時:編輯/刪除基準檔中該 token(這是刻意要人動手的,基準下修必須留痕)。
     """
     path = path or EXPAND_BASELINE
     n = len(urls)
@@ -680,16 +868,28 @@ def expand_problem(token, urls, record=True, path=None):
     if getattr(sitemap_urls, "dropped", 0) and token == "@ms_sitemap":
         return (f"{token} 的 sitemap 含 {sitemap_urls.dropped} 個非 {MS_ORIGIN} 項目"
                 "(網域/scheme 不符,已全部拒收)——來源可能被污染")
-    base = _load_json(path, {})
-    prev = base.get(token) if isinstance(base, dict) else None
-    if isinstance(prev, int) and prev >= 4 and n < prev * 0.5:
-        return (f"{token} 展開只剩 {n} 個網址,上次是 {prev} 個(腰斬)"
-                "——覆蓋面靜默縮小,這次的「乾淨」不算數")
-    if record and n:
-        try:
-            _atomic_write(path, {**(base if isinstance(base, dict) else {}), token: n})
-        except Exception:
-            pass
+    # 讀-改-寫必須整段互斥:三面同時展開,無鎖時後寫的會把先寫的 key 整個蓋掉(lost update)
+    with _EXPAND_LOCK:
+        base, problem = _load_baseline(path)
+        if problem:
+            return problem
+        rec = base.get(token)
+        if isinstance(rec, dict):
+            hist = [x for x in rec.get("hist", []) if isinstance(x, int)]
+        elif isinstance(rec, int):          # 舊格式(單一數字)也要看得懂
+            hist = [rec]
+        else:
+            hist = []
+        hi = max(hist) if hist else None
+        if hi is not None and hi >= 4 and n < hi * EXPAND_FLOOR:
+            return (f"{token} 展開只剩 {n} 個網址,近 {len(hist)} 次最高是 {hi} 個(腰斬)"
+                    "——覆蓋面靜默縮小,這次的「乾淨」不算數")
+        if record and n:
+            base[token] = {"n": n, "hist": (hist + [n])[-EXPAND_HIST:]}
+            try:
+                _atomic_write(path, base)
+            except Exception as e:
+                return f"展開基準檔寫入失敗({type(e).__name__}: {e})——下次的腰斬守衛會失憶"
     return None
 
 
@@ -701,6 +901,9 @@ def _merge_corpus(acc, one):
     acc["cjk_pages"] += one.get("cjk_pages", 0)
     acc["en_pages"] += one.get("en_pages", 0)
     acc["literals_dropped"] += one.get("literals_dropped", 0)
+    acc["external_js_unscanned"] = acc.get("external_js_unscanned", 0) + one.get("external_js_unscanned", 0)
+    # union 而不是 any:哪幾頁瞎掉要逐頁看得見,聚合成一個 bool 就是 F5 的原病
+    acc["en_blind_pages"] = list(acc.get("en_blind_pages", [])) + list(one.get("en_blind_pages", []))
 
 
 def scan_surface(sf, write_ledger=True):
@@ -754,6 +957,10 @@ def scan_surface(sf, write_ledger=True):
                 return res
         ok_n, unknown_n = 0, 0
         res["partial_unknown"] = 0
+        # ⭐ 誰真的被掃過要留紀錄(第三輪驗證者 F8):runner 的 🟢「已排除」原本只看
+        #    「違規鍵不見了」,而鍵不見的原因也可能是那一頁這晚**根本抓不到**——
+        #    於是失明被回報成已修復,而 Delvin 的結案流程就是看那則 🟢。
+        res["scanned"] = []
         res["corpus"] = {"pages": 0, "cjk_pages": 0, "en_pages": 0, "literals_dropped": 0}
         with concurrent.futures.ThreadPoolExecutor(max_workers=SUB_WORKERS) as ex:
             subs = list(ex.map(lambda u: (u, scan_surface(
@@ -765,6 +972,7 @@ def scan_surface(sf, write_ledger=True):
                 res["partial_unknown"] = unknown_n
                 continue
             ok_n += 1
+            res["scanned"].append(u)
             for f in sub["findings"]:
                 res["findings"].append({**f, "url": u})
         res["url"] = f"{len(urls)} 個網址"
@@ -784,7 +992,7 @@ def scan_surface(sf, write_ledger=True):
         res["detail"] = f"HTTP {code}:{body[:120]}"
         return res
     stats = {}
-    text = visible_text(body, stats)
+    text = visible_text(body, stats, page_url=url)
     if len(text) < 200:
         # 抓到了但幾乎沒有字 = 前端整頁 JS 渲染或被擋 → 這不是「乾淨」,是沒看到
         res["detail"] = f"可見文字僅 {len(text)} 字,判定為沒有真的掃到"
@@ -804,15 +1012,26 @@ def scan_surface(sf, write_ledger=True):
                                     "severity": rule["severity"], "law": rule["law"],
                                     "pattern": hit["pattern"], "evidence": hit["evidence"]})
     res["status"] = VIOLATION if res["findings"] else CLEAN
+    res["scanned"] = [url]
     res["detail"] = f"{len(text)} 字 / {len(applicable)} 條規則"
     # 語料觀測性:①這一頁到底有沒有英文進來(全站 i18n,只掃到中文那半=另一半沒人看過,
     # 卻被計入「乾淨 N 面」——驗證者 F5)②有沒有長字串因為上限而被靜默丟掉(F10)。
+    # ⭐ 雙語判定下放到**子頁**(第三輪驗證者 F5):上一版靠 SURFACES 人手標 `bilingual`,
+    #    而 209/223 頁擠在三個沒標的面底下 → 守衛對它們永遠不觸發;就算標了,面層的
+    #    「有沒有任何一頁含英文」也還是 OR,watch.html 一句英文都沒有照樣被鄰居蓋掉。
+    #    判準改成頁面自己說了算:HTML 裡有 data-i18n(=這頁確定是雙語)但語料零英文。
+    en_blind_page = ((bool(_I18N_ATTR.search(body)) or bool(sf.get("bilingual")))
+                     and not _EN_SENTENCE.search(text))
     res["corpus"] = {"pages": 1,
                      "cjk_pages": 1 if _CJK.search(text) else 0,
                      "en_pages": 1 if _EN_SENTENCE.search(text) else 0,
-                     "literals_dropped": stats.get("js_literals_dropped", 0)}
+                     "literals_dropped": stats.get("js_literals_dropped", 0),
+                     "external_js_unscanned": stats.get("external_js_unscanned", 0),
+                     "en_blind_pages": [url] if en_blind_page else []}
     if res["corpus"]["literals_dropped"]:
         res["detail"] += f"(⚠️ {res['corpus']['literals_dropped']} 個超長字串沒進語料)"
+    if res["corpus"]["external_js_unscanned"]:
+        res["detail"] += f"(⚠️ {res['corpus']['external_js_unscanned']} 支外部 JS 抓不到)"
     return res
 
 
@@ -862,19 +1081,23 @@ def run(only=None, write_ledger=True, workers=5):
     #    變成「從未被套用」→ 誤診成「pack 名打錯/規則庫壞了」並推假告警(驗證者 F6)。
     #    靜態就套不到 = 設定真的壞掉(exit 3);靜態套得到但因 unknown 沒跑到 = exit 2 的事。
     expected = expected_rule_ids(todo)
-    report["unapplied_rules"] = sorted(r["id"] for r in R.RULES if r["id"] not in expected)
+    # ⚠️ --only 是模組 docstring 明列的人工重跑用法,但覆蓋率守衛的比較基準是**全部規則**,
+    #    於是每次部分掃描都必然印出「🔴 有規則一次都沒被套用(pack 名打錯?)」+ exit 3。
+    #    那則紅字是「規則庫真的壞了」的專用訊號,天天假紅就會被訓練成雜訊(第三輪驗證者 F12)。
+    report["partial_scan"] = sorted(only) if only else []
+    report["unapplied_rules"] = ([] if only else
+                                 sorted(r["id"] for r in R.RULES if r["id"] not in expected))
     report["not_run_due_to_unknown"] = sorted(expected - applied)
     # 掃描當下才發現的設定問題(清單腰斬、來源被污染)——與開跑前的 config_problems() 同級
     scan_cfg = [s["config_problem"] for s in report["surfaces"] if s.get("config_problem")]
     if scan_cfg:
         report["selfcheck_problems"] = report["selfcheck_problems"] + scan_cfg
         report["selfcheck_ok"] = False
-    # 雙語覆蓋率要**逐面**判(驗證者 F6):全站 OR 的守衛永遠不會觸發——實測 197 頁的英文
-    # 語料全部消失,只要首頁還有一句英文就一個字都不會提。只對宣告 bilingual 的面判定。
+    # 雙語覆蓋率**逐頁**判(F6→F5):面層 OR 只是把尺度從 1 縮到 3,209 頁擠在三面底下照樣
+    # 被鄰居蓋住。頁面自己有 data-i18n 卻零英文語料 = 這一頁的英文那一半沒被看到,逐頁列出。
+    report["en_blind_pages"] = sorted(report["corpus"].get("en_blind_pages") or [])
     report["en_blind"] = sorted(
-        s["id"] for s in report["surfaces"]
-        if s.get("bilingual") and (s.get("corpus") or {}).get("pages")
-        and not s["corpus"]["en_pages"])
+        s["id"] for s in report["surfaces"] if (s.get("corpus") or {}).get("en_blind_pages"))
 
     if (report["unapplied_rules"] or report["checks_run"] == 0 or scan_cfg
             or report["clean"] + report["violation"] == 0):
@@ -884,6 +1107,7 @@ def run(only=None, write_ledger=True, workers=5):
     elif (report["unknown"] or report["not_run_due_to_unknown"]
           or any(s.get("partial_unknown") for s in report["surfaces"])
           or report["corpus"]["literals_dropped"] or report["en_blind"]
+          or report["corpus"].get("external_js_unscanned")
           or any((s.get("stale_days") or 0) >= 2 for s in report["surfaces"])):
         # 多網址面裡有子頁抓不到、或有長字串沒進語料 = 部分未涵蓋,不可以宣稱 exit 0 全乾淨
         report["exit"] = 2
@@ -903,16 +1127,24 @@ def render(rep):
     L.append(f"法務合規哨兵 {rep['generated']}  規則 {rep['rules_total']} 條 / "
              f"檢查 {rep['checks_run']} 次")
     L.append(f"  ✅ 乾淨 {rep['clean']} 面 · 🔴 違規 {rep['violation']} 面 · ⚠️ 未涵蓋 {rep['unknown']} 面")
+    if rep.get("partial_scan"):
+        L.append(f"  ⚠️ 本次為部分掃描(--only {' '.join(rep['partial_scan'])}),"
+                 "規則覆蓋率守衛未啟用——這次的「乾淨」不代表全站")
     c = rep.get("corpus") or {}
     if c.get("pages"):
         # 語言分佈是「站台的英文那一半有沒有被看過」的唯一可見證據(驗證者 F5);
         # 掉字計數是「有語料靜默沒進來」的唯一可見證據(F10)。兩個都是零覆蓋率偵測器。
         L.append(f"  語料 {c['pages']} 頁(含中文 {c['cjk_pages']} · 含英文 {c['en_pages']})"
                  + (f" · ⚠️ {c['literals_dropped']} 個超長字串沒進語料" if c["literals_dropped"] else ""))
-        # 逐面判,不是全站 OR:全站加總永遠有一句英文,197 頁的英文語料消失也不會有人提(F6)
-        if rep.get("en_blind"):
-            L.append("  ⚠️ 這幾面一句英文都沒有——它們有 i18n 中英切換,英文那一半可能沒被掃到:"
-                     + ", ".join(rep["en_blind"]))
+        # 逐頁判,不是面層 OR:全站加總永遠有一句英文,209 頁的英文語料消失也不會有人提(F5)
+        if rep.get("en_blind_pages"):
+            pgs = rep["en_blind_pages"]
+            L.append(f"  ⚠️ {len(pgs)} 頁有 data-i18n 中英切換但語料零英文(英文那一半可能沒被掃到):"
+                     + ", ".join(p.rsplit("/", 1)[-1] or p for p in pgs[:6])
+                     + (f" …等 {len(pgs)} 頁" if len(pgs) > 6 else ""))
+        if c.get("external_js_unscanned"):
+            L.append(f"  ⚠️ {c['external_js_unscanned']} 支同網域外部 JS 抓不到"
+                     "——那裡面的 i18n 文案這次沒進語料")
     if rep["unapplied_rules"]:
         L.append(f"  🔴 有規則一次都沒被套用(pack 名打錯?):{', '.join(rep['unapplied_rules'])}")
     L.append("")

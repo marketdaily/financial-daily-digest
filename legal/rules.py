@@ -85,9 +85,23 @@ RULES = [
               r"(?i)\bentry[\s/-]{0,3}exit\b", r"(?i)\bfull analysis\b",
               r"(?i)\bentry (and|&) exit\b", r"(?i)\bexit (prices?|points?)\b"],
         "window": 30,
-        # 同句出現全稱式免費宣示 = 合規口徑,不是對價(held-out 召回語料的 miss 案例)
-        "unless": [r"(一律|全部|完全|皆|都|永遠)\s*免費", r"免費開放", r"不因付費",
-                   r"(?i)(same|identical)[^.\n]{0,24}(paid|free)", r"(?i)free (for (everyone|all)|to all)"],
+        # 同句出現全稱式免費宣示 = 合規口徑,不是對價(held-out 召回語料的 miss 案例)。
+        # ⚠️⚠️ 2026-08-05 第三輪驗證者 F1(CRITICAL):上一版這裡放了裸的 `免費開放`/`不因付費`/
+        #   `free for everyone`,行銷頁最典型的「免費開放註冊,升級 Premium 解鎖完整個股分析」
+        #   同時命中兩者 → 唯一有刑責的規則被整條跳過,輸出與真乾淨的頁面一字不差(7/8 條實測脫身)。
+        #   現在兩道閘:①unless 只留**有語料背書**的(selfcheck 的必要性不變式會逼著它極小)
+        #   ②unless_void:同句只要出現「差別待遇」語(才/專屬/解鎖/paid…get…),免責一律作廢——
+        #   「個股分析一律免費開放,升級 Premium 才看得到目標價」這種自相矛盾的文案必須照咬。
+        "unless": [r"(一律|全部|完全|皆|都|永遠|所有|全體)\s*(用戶)?\s*(都\s*)?免費",
+                   r"全功能[^。\n]{0,8}免費"],
+        "unless_void": [r"才(能|可|會|有|看|拿|取得|享)", r"方(可|能)", r"始能",
+                        r"只(有|限|給|對|能看|看得到)", r"僅(限|供|有|對)",
+                        r"專屬", r"獨享", r"解鎖", r"限定會員", r"付費才",
+                        r"即可(看|見|得|取得|閱讀|獲得)",
+                        r"(?i)\b(unlock|exclusive|members?[- ]only|paywall)\b",
+                        r"(?i)\bonly (paid|premium|subscribers?|members?)\b",
+                        r"(?i)\b(paid|premium|pro)\b[^.\n]{0,24}\b(get|gets|receives?|sees?|access)\b",
+                        r"(?i)\bsupporters?\b[^.\n]{0,20}\b(get|see|receive)\b"],
         "positives": [
             "立即升級 Premium 解鎖完整個股分析與進出場價",
             "付費會員才看得到完整的個股評分與買進價位",
@@ -152,10 +166,17 @@ RULES = [
         # guard 抓的是「有沒有給既有訂戶的保障承諾」這個**語意**,不是特定兩個字。
         # 2026-08-04 兩次校準:①vs-chatgpt footer 寫「永久保留免費使用權」沒有「早鳥」二字
         # ②terms.html 寫「在此之前註冊的用戶保留免費使用權」連「永久」也沒有——兩者實質全合規。
-        "guard": (r"(?i)早鳥|(永久)?保留[^。\n]{0,6}免費|仍(然)?(永久)?免費|不受影響|"
+        # ⚠️ 2026-08-05 第三輪驗證者 F2:上一版 guard 有**裸的**「不受影響」與 `keep…free`,
+        #    於是「明年開始收費,現有的推播設定不受影響」也算給了保障口徑。保障承諾講的必須是
+        #    「既有訂戶的『免費資格』」,不是隨便什麼東西不受影響 → 兩端都要求與訂戶/免費共現。
+        "guard": (r"(?i)早鳥|(永久)?保留[^。\n]{0,6}免費|仍(然)?(永久)?免費|"
+                  r"(既有|現有|已註冊|已訂閱|原有|現在訂閱)[^。\n]{0,10}(用戶|訂戶|訂閱者|會員|讀者)"
+                  r"[^。\n]{0,12}(不受影響|免費|不變|不受)|"
+                  r"(免費(使用)?(權|資格)|既有權益)[^。\n]{0,8}不受影響|"
                   r"既有用戶[^。\n]{0,8}免費|之前註冊[^。\n]{0,10}免費|"
                   r"(stay free forever|free forever|early[- ]?(bird|subscriber)s?|"
-                  r"keep[^.\n]{0,30}free|free access (forever|permanently)|remain(s)? free|"
+                  r"keep[^.\n]{0,20}(free access|it free|full free)|"
+                  r"free access (forever|permanently)|remain(s)? free|"
                   r"registered before[^.\n]{0,40}keep)"),
         # 英文一句話比中文長得多:terms.html 的保障承諾距 trigger 約 100 字元
         "window": 160,
@@ -393,6 +414,14 @@ def _snippet(text, start, end, pad=35):
     return re.sub(r"\s+", " ", text[s:e]).strip()
 
 
+def _exempted(seg, rule):
+    """這一句的共現算不算合規宣示。兩道閘:①有全稱式免費宣示(unless)
+    ②同句沒有差別待遇語(unless_void)——只要還在賣「才看得到/解鎖/paid…get…」,
+    前面那句全稱免費就是幌子(2026-08-05 第三輪驗證者 F1)。"""
+    return (any(_compile(u).search(seg) for u in rule.get("unless", []))
+            and not any(_compile(v).search(seg) for v in rule.get("unless_void", [])))
+
+
 def check_rule(rule, text):
     """回傳 findings(list[dict])。空 list=這條規則在這份語料上乾淨。"""
     kind = rule["kind"]
@@ -412,11 +441,11 @@ def check_rule(rule, text):
             for ma in _compile(pa).finditer(body):
                 lo = max(_sentence_start(body, ma.start()), ma.start() - rule["window"])
                 seg = body[lo:_sentence_end(body, ma.end())]
-                # 免責語意閘:同句裡明講「一律免費/免費開放/不因付費」時,兩個關鍵字共現是
-                # **合規宣示**不是對價(held-out「個股分析與進出場價一律免費,升級只影響版面」)。
-                # ⚠️ 寫得很窄(要有 一律/全部/完全/永遠 這種全稱詞),不然「免費版只給摘要,
-                #    支持者版本才有個股進出場價」這種真違規只要有「免費」二字就能脫身。
-                if any(_compile(u).search(seg) for u in rule.get("unless", [])):
+                # 免責語意閘:同句裡明講全稱式免費宣示時,兩個關鍵字共現是**合規宣示**不是對價
+                # (held-out「個股分析與進出場價一律免費,升級只影響版面」)。
+                # ⭐ 但免責一律**被差別待遇語作廢**(unless_void):同句只要還在賣「才看得到/解鎖/
+                #    專屬/paid…get…」,那段全稱免費宣示就是幌子,規則照跑(第三輪驗證者 F1)。
+                if _exempted(seg, rule):
                     continue
                 for pb in rule["b"]:
                     for mb in _compile(pb).finditer(seg):
@@ -511,7 +540,46 @@ def selfcheck():
     # held-out 召回語料(與 positives 分離維護)——沒有它,「每條規則 ≥3 個 positives」
     # 量到的只是規則作者自己反寫的措辭,對真實措辭空間零鑑別力(驗證者 F9)
     problems += recall_problems()
+    problems += exemption_problems()
     return (not problems), problems
+
+
+def exemption_problems(path=None):
+    """⭐ 豁免條款的**必要性**不變式(2026-08-05 第三輪驗證者 F1 的根治)。
+
+    突變測試只證明得了「**拿掉**防線會紅」,對「**放寬**防線」零鑑別力——unless 多加一條
+    `免費開放`,自測 60 則突變全滅、selfcheck 全綠,而唯一有刑責的規則被整條跳過。
+    所以這裡把方向反過來驗:**每一條 unless(豁免)pattern 都必須有一個真實的合法句子
+    背書**——把它拿掉之後,得有某個 held-out `miss` 案例或 negatives 從乾淨變成誤咬。
+    沒有任何合法文案需要它 = 它只是一扇沒人要求開的後門 → 一律報 problem。
+    """
+    problems = []
+    legit = {}          # rule_id -> [必須不被咬的句子]
+    try:
+        with open(path or RECALL_CORPUS, "r", encoding="utf-8") as f:
+            for c in json.load(f)["cases"]:
+                if c["expect"] == "miss":
+                    legit.setdefault(c["rule"], []).append(c["text"])
+    except Exception as e:
+        return [f"豁免必要性檢查讀不到召回語料({type(e).__name__}: {e})"]
+    for r in RULES:
+        pats = list(r.get("unless") or [])
+        if not pats:
+            continue
+        samples = legit.get(r["id"], []) + list(r.get("negatives") or [])
+        for i, u in enumerate(pats):
+            probe = dict(r)
+            probe["unless"] = [x for j, x in enumerate(pats) if j != i]
+            try:
+                needed = any(check_rule(probe, s) and not check_rule(r, s) for s in samples)
+            except Exception as e:
+                problems.append(f"{r['id']}: 豁免必要性探針爆炸 {e!r}")
+                continue
+            if not needed:
+                problems.append(
+                    f"{r['id']}: 豁免條款沒有任何合法文案背書(=脫身通道,拿掉它不會誤咬"
+                    f"任何 negatives/held-out 合法句):{u}")
+    return problems
 
 
 RECALL_CORPUS = os.environ.get("COMPLIANCE_RECALL_CORPUS") or os.path.join(

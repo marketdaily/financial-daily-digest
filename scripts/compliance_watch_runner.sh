@@ -13,24 +13,35 @@
 set -u
 REPO="$HOME/Delvin-agent"; PY="$REPO/.venv/bin/python"
 [ -x "$PY" ] || PY=python3
-STATE="$HOME/.marketdaily-fallback/.compliance_watch_state.json"
-OUT="$HOME/.marketdaily-fallback/.compliance_watch_latest.json"
+STATE="${COMPLIANCE_WATCH_STATE:-$HOME/.marketdaily-fallback/.compliance_watch_state.json}"
+OUT="${COMPLIANCE_WATCH_OUT:-$HOME/.marketdaily-fallback/.compliance_watch_latest.json}"
+NOTIFY="${COMPLIANCE_WATCH_NOTIFY:-$HOME/.marketdaily-fallback/notify_admin.py}"
 source "$REPO/scripts/lib_cron_runner.sh"
-cron_time_gate "22:10" "22:30"
-cron_daily_lock "compliance_watch"
+# ⚠️ 自測入口(第三輪驗證者 F10):60 則突變沒有一則碰得到 runner,`exit "$rc"` 若被改回
+#    `exit 0` 整份自測仍然全綠。有了這個閘,自測才跑得動整支 runner 去斷言 rc 與推播順序。
+#    只有明確設環境變數才會生效,而且會印出來——不可能悄悄在生產打開。
+if [ "${COMPLIANCE_WATCH_SELFTEST:-0}" = "1" ]; then
+  echo "⚠️ SELFTEST 模式:略過時間閘與每日鎖(不可用於生產)"
+else
+  cron_time_gate "22:10" "22:30"
+  cron_daily_lock "compliance_watch"
+fi
 cd "$REPO" || exit 1
 
-"$PY" -m legal.compliance_watch --json > "$OUT" 2>/dev/null
+SCAN_CMD=${COMPLIANCE_WATCH_CMD:-"$PY -m legal.compliance_watch"}
+# 刻意不加引號:這裡要的就是分詞(自測會用 stub 指令替換掉掃描器)
+# shellcheck disable=SC2086
+$SCAN_CMD --json > "$OUT" 2>/dev/null
 rc=$?
 if [ ! -s "$OUT" ]; then
   # 哨兵自己掛掉也要看得見,否則就是「守衛自己是啞的」那個坑再演一次
-  MD_REPO="$REPO" "$PY" "$HOME/.marketdaily-fallback/notify_admin.py" \
+  MD_REPO="$REPO" "$PY" "$NOTIFY" \
     "🔴 法務合規哨兵無法執行(rc=$rc,無輸出) $(TZ=Asia/Taipei date '+%F %H:%M') — 查 legal/compliance_watch.py" \
     || echo "$(date '+%F %T') ⚠️ 哨兵失敗告警推播也失敗" >&2
   exit 1
 fi
 
-MSG=$("$PY" - "$OUT" "$STATE" <<'PYEOF'
+MSG=$("$PY" - "$OUT" "$STATE" "$STATE.pending" <<'PYEOF'
 import json, sys, os
 
 cur = json.load(open(sys.argv[1], encoding="utf-8"))
@@ -43,9 +54,12 @@ if os.path.exists(sys.argv[2]):
 
 open_keys, detail = {}, {}
 unknown_now = []
+scanned = set()          # "surface_id:url" —— 這晚真的成功掃過的子頁
 for s in cur.get("surfaces", []):
     if s["status"] == "unknown":
         unknown_now.append(s["id"])
+    for u in s.get("scanned", []):
+        scanned.add(f"{s['id']}:{u}")
     for f in s.get("findings", []):
         # ⚠️ 去重鍵必須含子頁網址(2026-08-05 驗證者 F8):覆蓋面擴到 223 頁之後,209 頁擠在
         #    3 個 html_multi surface 底下共用一個 surface:rule 鍵——第一頁違規推播過後,
@@ -61,7 +75,18 @@ prev_streak = prev.get("unknown_streak", {})
 streak = {sid: prev_streak.get(sid, 0) + 1 for sid in unknown_now}
 
 new = [k for k in open_keys if k not in prev_keys]
-gone = [k for k in prev_keys if k not in open_keys]
+# ⚠️ 「不見了」≠「修好了」(第三輪驗證者 F8):鍵消失也可能是那一頁這晚抓不到。
+#    Delvin 的結案流程就是看這則 🟢,把失明回報成已修復是最貴的一種假訊息。
+#    只有「該子頁這晚真的被掃過而且沒再命中」才算排除;其餘保留 open 鍵(fail-closed)。
+gone, unverified = [], []
+for k in prev_keys:
+    if k in open_keys:
+        continue
+    sid, rest = k.split(":", 1)
+    url = rest.rsplit(":", 1)[0]
+    (gone if f"{sid}:{url}" in scanned else unverified).append(k)
+for k in unverified:
+    open_keys.setdefault(k, True)   # 沒被證實修好之前不准從帳上消失
 # ⚠️ exit 3 也要週期重推(驗證者 F5):原本只在「轉變成 exit 3」那一次推,而 exit 3 的路徑是
 # **提早 return、surfaces 為空**——之後每晚都沒掃、每晚都靜默,連 unknown dead-man 都救不了
 # (streak 從空 surfaces 算出來會被清成 0)。守衛自己壞掉本來就該一直吵。
@@ -98,7 +123,7 @@ obs_due = [k for k, n in obs_streak.items() if n >= 2 and (n - 2) % 3 == 0]   # 
 json.dump({"open": sorted(open_keys), "exit": cur.get("exit"), "unknown_streak": streak,
            "cfg_streak": cfg_n, "obs_streak": obs_streak,
            "generated": cur.get("generated")},
-          open(sys.argv[2], "w", encoding="utf-8"), ensure_ascii=False)
+          open(sys.argv[3], "w", encoding="utf-8"), ensure_ascii=False)
 
 lines = []
 if broke:
@@ -114,23 +139,36 @@ for sid in dead:
     lines.append(f"⚠️ {sid} 已連續 3 晚抓不到——這一面等於沒有人看著")
 for k in obs_due:
     lines.append(obs[k])
+if unverified:
+    lines.append("⚠️ 原違規頁這晚抓不到,無法確認是否已修(保留列管):" + ",".join(unverified[:6]))
 if gone and not new and not broke:
     lines.append("✅ 已排除:" + ",".join(gone))
 elif gone:
     lines.append("(同時排除:" + ",".join(gone) + ")")
 
 if lines:
-    icon = "🔴" if (new or broke) else ("⚠️" if (dead or obs_due) else "🟢")
+    icon = "🔴" if (new or broke) else ("⚠️" if (dead or obs_due or unverified) else "🟢")
     head = (f"{icon} 法務合規哨兵:{cur.get('violation',0)} 面違規 / "
             f"{cur.get('clean',0)} 面乾淨 / {cur.get('unknown',0)} 面未涵蓋")
     print(head + "\n\n" + "\n".join(lines) +
           "\n\n重跑:cd ~/Delvin-agent && ./.venv/bin/python -m legal.compliance_watch")
 PYEOF
 )
+# ⚠️ state 必須**推播成功之後**才落地(第三輪驗證者 F9):原本內嵌 python 一算完就把 open 鍵
+#    寫進 state,推播失敗只寫一行 stderr(沒有人看那個檔)→ 隔晚該鍵已不是 new → 該筆違規
+#    從此永久靜默,而自測 ⑨d「同一違規次日不重推」還替這條路徑背書。
+#    推播失敗 = 不動 state = 明晚原封不動再推一次。
 if [ -n "$MSG" ]; then
   echo "notify: $MSG"
-  MD_REPO="$REPO" "$PY" "$HOME/.marketdaily-fallback/notify_admin.py" "$MSG" \
-    || echo "$(date '+%F %T') ⚠️ 合規哨兵告警推播失敗(守衛自曝)" >&2
+  if MD_REPO="$REPO" "$PY" "$NOTIFY" "$MSG"; then
+    [ -f "$STATE.pending" ] && mv -f "$STATE.pending" "$STATE"
+  else
+    echo "$(date '+%F %T') ⚠️ 合規哨兵告警推播失敗(守衛自曝)——state 不落地,明晚重推" >&2
+    rm -f "$STATE.pending"
+    rc=$([ "$rc" -ne 0 ] && echo "$rc" || echo 4)
+  fi
+else
+  [ -f "$STATE.pending" ] && mv -f "$STATE.pending" "$STATE"
 fi
 # ⚠️ 末行不可以是 exit 0(驗證者 F5):掃描器回 3(守衛自己壞了)時把 rc 吞成 0,
 # cron 層與任何看 exit code 的監控就再也看不到「這台哨兵今晚根本沒掃」。
