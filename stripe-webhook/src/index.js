@@ -3005,12 +3005,23 @@ async function markFortunePaid(env, oid, info) {
   // 退回下單時填的聯絡信箱 —— 那是客人自己填的收件地址,永遠有值。
   o.payer_email = String(info.email || "").trim().toLowerCase() ||
     o.payer_email || (o.contact_type === "email" ? String(o.contact || "").trim().toLowerCase() : "");
+  // ⚠️ metadata 契約 v2 —— 必須與 fortune-ai worker 的 orderMeta() 逐欄位一致。
+  // 它不只是佇列統計:命書交付頁的輪詢**只讀 metadata、完全不讀值**,因為 KV 的 get
+  // 在邊緣有 60 秒讀取快取(負快取一樣算數),每 5 秒輪詢會把「還沒付款」釘死在那裡。
+  // 這裡漏帶欄位的後果就是客人付完錢,畫面還卡在「確認收款中」最多 60 秒(2026-08-05 實測)。
   const tsMatch = /^order:(\d{10,16})-/.exec(oid);
   await env.FORTUNE_ORDERS.put(oid, JSON.stringify(o), {
     metadata: {
+      v: 2,
       a: (!o.fulfilled_at && !o.needs_human) ? 1 : 0,
       t: Number(o.paid_at) || (tsMatch ? Number(tsMatch[1]) : 0),
       l: o.comp ? "cli" : "api",
+      p: o.paid ? 1 : 0,
+      f: o.fulfilled_at ? 1 : 0,
+      h: o.needs_human ? 1 : 0,
+      r: o.has_report ? 1 : 0,
+      d: o.has_pdf ? 1 : 0,
+      s: String(o.stage || "").slice(0, 24),
     },
   });
   return "paid";
