@@ -472,19 +472,27 @@ _JSON_CACHE = {}
 _JSON_CACHE_LOCK = threading.Lock()
 
 
-def _json_copy_strings(obj, depth=0):
-    """遞迴收集 JSON 裡看起來像使用者文案的字串葉節點(數字/id/URL 這類不會通過 _looks_like_copy)。"""
+def _json_copy_strings(obj, depth=0, truncated=None):
+    """遞迴收集 JSON 裡看起來像使用者文案的字串葉節點(數字/id/URL 這類不會通過 _looks_like_copy)。
+
+    2026-08-06 第五輪驗證者 F2:depth>6 截斷原本是靜默 return,和「乾淨」長得一模一樣——
+    違反本檔自己訂的零覆蓋率必須看得見不變式。`truncated` 給一個 list 進來,截斷發生時
+    append 一筆,呼叫端據此累加 stats(不能用 yield 的次數判斷,深截斷可能剛好沒有任何
+    後續文案節點,計數器必須獨立於「有沒有找到東西」)。
+    """
     if depth > 6:
+        if truncated is not None:
+            truncated.append(1)
         return
     if isinstance(obj, str):
         if _looks_like_copy(obj):
             yield obj
     elif isinstance(obj, dict):
         for v in obj.values():
-            yield from _json_copy_strings(v, depth + 1)
+            yield from _json_copy_strings(v, depth + 1, truncated)
     elif isinstance(obj, list):
         for v in obj:
-            yield from _json_copy_strings(v, depth + 1)
+            yield from _json_copy_strings(v, depth + 1, truncated)
 
 
 def external_json_texts(blocks, page_url, fetcher=None, stats=None):
@@ -493,7 +501,7 @@ def external_json_texts(blocks, page_url, fetcher=None, stats=None):
     if not page_url:
         return []
     fetcher = fetcher or fetch
-    out, unscanned = [], 0
+    out, unscanned, truncated = [], 0, []
     seen = set()
     for block in blocks:
         for m in _JSON_REF.finditer(block):
@@ -523,9 +531,11 @@ def external_json_texts(blocks, page_url, fetcher=None, stats=None):
             if parsed is None:
                 unscanned += 1
             else:
-                out.extend(_json_copy_strings(parsed))
+                out.extend(_json_copy_strings(parsed, truncated=truncated))
     if stats is not None and unscanned:
         stats["external_json_unscanned"] = stats.get("external_json_unscanned", 0) + unscanned
+    if stats is not None and truncated:
+        stats["json_depth_truncated"] = stats.get("json_depth_truncated", 0) + len(truncated)
     return out
 
 
@@ -1063,7 +1073,13 @@ def expand_problem(token, urls, record=True, path=None, today=None):
             return f"{token} 基準紀錄型別看不懂({type(rec).__name__})——腰斬守衛失憶,在人工修好之前不可宣稱覆蓋面正常"
         hi = max((h[1] for h in hist), default=None)
         if hi is not None and hi >= 4 and n < hi * EXPAND_FLOOR:
-            return (f"{token} 展開只剩 {n} 個網址,近 {len(hist)} 晚最高是 {hi} 個(腰斬)"
+            # 2026-08-06 第五輪驗證者 F3:len(hist) 把「相異晚」跟「無日期舊紀錄可能是同一晚
+            # 重跑」混為一談——[None,n] 永遠不會被同日去重(None != 任何真日期字串),文案
+            # 卻照樣講成「近 N 晚」。分開算,無日期筆數老實標出來,不再假裝是相異夜晚觀測。
+            real_nights = len({h[0] for h in hist if h[0] is not None})
+            legacy_n = sum(1 for h in hist if h[0] is None)
+            obs = f"近 {real_nights} 晚" + (f"(另有 {legacy_n} 筆無日期舊紀錄)" if legacy_n else "")
+            return (f"{token} 展開只剩 {n} 個網址,{obs}最高是 {hi} 個(腰斬)"
                     "——覆蓋面靜默縮小,這次的「乾淨」不算數")
         if record and n:
             d = today or _today_str()
@@ -1086,6 +1102,7 @@ def _merge_corpus(acc, one):
     acc["literals_dropped"] += one.get("literals_dropped", 0)
     acc["external_js_unscanned"] = acc.get("external_js_unscanned", 0) + one.get("external_js_unscanned", 0)
     acc["external_json_unscanned"] = acc.get("external_json_unscanned", 0) + one.get("external_json_unscanned", 0)
+    acc["json_depth_truncated"] = acc.get("json_depth_truncated", 0) + one.get("json_depth_truncated", 0)
     # union 而不是 any:哪幾頁瞎掉要逐頁看得見,聚合成一個 bool 就是 F5 的原病
     acc["en_blind_pages"] = list(acc.get("en_blind_pages", [])) + list(one.get("en_blind_pages", []))
 
@@ -1220,6 +1237,7 @@ def scan_surface(sf, write_ledger=True):
                      "literals_dropped": stats.get("js_literals_dropped", 0),
                      "external_js_unscanned": stats.get("external_js_unscanned", 0),
                      "external_json_unscanned": stats.get("external_json_unscanned", 0),
+                     "json_depth_truncated": stats.get("json_depth_truncated", 0),
                      "en_blind_pages": [url] if en_blind_page else []}
     if res["corpus"]["literals_dropped"]:
         res["detail"] += f"(⚠️ {res['corpus']['literals_dropped']} 個超長字串沒進語料)"
@@ -1227,6 +1245,8 @@ def scan_surface(sf, write_ledger=True):
         res["detail"] += f"(⚠️ {res['corpus']['external_js_unscanned']} 支外部 JS 抓不到)"
     if res["corpus"]["external_json_unscanned"]:
         res["detail"] += f"(⚠️ {res['corpus']['external_json_unscanned']} 支外部 JSON 抓不到)"
+    if res["corpus"]["json_depth_truncated"]:
+        res["detail"] += f"(⚠️ {res['corpus']['json_depth_truncated']} 個 JSON 節點因巢狀過深被截斷)"
     return res
 
 
@@ -1304,6 +1324,7 @@ def run(only=None, write_ledger=True, workers=5):
           or report["corpus"]["literals_dropped"] or report["en_blind"]
           or report["corpus"].get("external_js_unscanned")
           or report["corpus"].get("external_json_unscanned")
+          or report["corpus"].get("json_depth_truncated")
           or any((s.get("stale_days") or 0) >= 2 for s in report["surfaces"])):
         # 多網址面裡有子頁抓不到、或有長字串沒進語料 = 部分未涵蓋,不可以宣稱 exit 0 全乾淨
         report["exit"] = 2
@@ -1344,6 +1365,9 @@ def render(rep):
         if c.get("external_json_unscanned"):
             L.append(f"  ⚠️ {c['external_json_unscanned']} 支同網域外部 JSON 抓不到"
                      "——執行期才餵進來的文案這次沒進語料")
+        if c.get("json_depth_truncated"):
+            L.append(f"  ⚠️ {c['json_depth_truncated']} 個 JSON 節點因巢狀過深(>6層)被截斷"
+                     "——裡面的文案這次沒進語料")
     if rep["unapplied_rules"]:
         L.append(f"  🔴 有規則一次都沒被套用(pack 名打錯?):{', '.join(rep['unapplied_rules'])}")
     L.append("")

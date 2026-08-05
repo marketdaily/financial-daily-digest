@@ -467,12 +467,19 @@ def check_rule(rule, text):
         for pa in rule["a"]:
             for ma in _compile(pa).finditer(body):
                 lo = max(_sentence_start(body, ma.start()), ma.start() - rule["window"])
+                # ⭐ seg 本身**不**夾右側 window——夾了會把長 b 關鍵字("stock analysis" 14 字)
+                #    截在句子中間,pb 的 finditer 連字都湊不齊(第四輪驗證者 F9 held-out 案例)。
+                #    pb 的 window 過濾已經靠下面 `lo + mb.start() > ma.end() + window` 顯式做。
                 seg = body[lo:_sentence_end(body, ma.end())]
                 # 免責語意閘:同句裡明講全稱式免費宣示時,兩個關鍵字共現是**合規宣示**不是對價
                 # (held-out「個股分析與進出場價一律免費,升級只影響版面」)。
                 # ⭐ 但免責一律**被差別待遇語作廢**(unless_void):同句只要還在賣「才看得到/解鎖/
                 #    專屬/paid…get…」,那段全稱免費宣示就是幌子,規則照跑(第三輪驗證者 F1)。
-                if _exempted(seg, rule):
+                # ⭐⭐ 2026-08-06 第五輪驗證者 F1 CRITICAL:_exempted 若吃整個 seg(到句尾),
+                #    離真違規 137 字外的裝飾性對稱宣示就能豁免——距離越遠越安全,顛倒了規則
+                #    本意。exempt 檢查必須跟 pb 用同一把 window 尺,只看 ma.end()+window 內。
+                exempt_hi = min(len(seg), max(0, ma.end() + rule["window"] - lo))
+                if _exempted(seg[:exempt_hi], rule):
                     continue
                 for pb in rule["b"]:
                     for mb in _compile(pb).finditer(seg):

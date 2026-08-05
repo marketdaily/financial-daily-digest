@@ -312,6 +312,16 @@
       "rule": "md_paywall_stock",
       "expect": "hit",
       "text": "Upgrade to Premium lots of extra descriptive marketing words here today lots of extra descriptive marketing words here today lots stock analysis available now for everyone who wants it"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "立即升級 Premium 解鎖完整個股分析與進出場價,更快速的通知推播,更精美的介面設計,更貼心的客服支援,更豐富的圖表工具,還有專屬社群功能與更多討論區權限,更快速的通知推播,更精美的介面設計,更貼心的客服支援,更豐富的圖表工具,還有專屬社群功能與更多討論區權限,個股分析內容完全相同,不因付費而有差異,只是體驗更好。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "立即升級 Premium,個股分析內容完全相同,不因付費而有差異,只是介面更精美。"
     }
   ]
 }
