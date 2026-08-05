@@ -1306,8 +1306,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-05 13:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 15:33",
+  "note": "FB 半邊已接通:代理瀏覽器(Delvin登入一次FB)自駕Graph Explorer補勾Mingshu粉專→長期粉專權杖→auto_post check ✅ Mingshu。IG/Threads 另立 #133"
  },
  {
   "id": 132,
@@ -1346,6 +1346,76 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 14:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 136,
+  "what": "全品類套利掃描:3C/高爾夫/汽車件/廣域10品類三agent調查中,榜單與第二波供應商開發信未出",
+  "why": "研究進行中;掃完要合併排榜+對可打品類發開發信",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-05 14:18",
+  "closed": "2026-08-05 14:36",
+  "note": "三agent掃描完成,總榜落research/2026-08-05_all_category_arbitrage_scan.md;第二波開發信(大啓商事/NextRound)已建Gmail草稿;剩餘待辦併#133追蹤"
+ },
+ {
+  "id": 137,
+  "what": "套利事業待Delvin動作:5封Gmail草稿點送+KING PUNCH申請身分拍板+捲線器行前BSMI/店家雙確認未做",
+  "why": "草稿只能由Delvin送出;首批下單前行前確認未跑",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-05 14:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 138,
+  "what": "套利:CPU/樂高線的台灣銷售通路未實查(agent 撞 Fable 5 額度掛掉);雷達 watchlist 僅含高爾夫+捲線器5型號",
+  "why": "兩個通路agent因模型額度中斷未重跑;CPU線還缺在美人力前提",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-05 15:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 139,
+  "what": "命書 IG 發文未接:IG mingshu_tw 尚未轉商業帳號+綁 Mingshu 粉專(instagram_business_account=null);Threads 長期權杖 exchange 待重試",
+  "why": "IG 轉商業+綁粉專需 IG app 端操作(約1分鐘手機);綁好後重跑 get_tokens.py meta stored 即自動抓 IG_USER_ID",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-05 15:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 140,
+  "what": "WSL 連坐防線 init.scope OOMPolicy=continue 尚未安裝(仍為 stop)",
+  "why": "drop-in 需 sudo,本 session 的 sudo 被權限政策擋下;腳本已備妥 scripts/wsl_oom_install_guard.sh 待 Delvin 跑一次",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-05 16:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 141,
+  "what": ".wslconfig(swap 16GB/memory 14GB/autoMemoryReclaim)已寫入但尚未生效",
+  "why": "需 wsl --shutdown 才套用,那會關掉所有分頁,不能趁 Delvin 在用時做",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-05 16:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 142,
+  "what": "吃掉 11.9GB 的 claude.exe 是誰拉起的仍未查明",
+  "why": "進程隨 VM 重建消失,journal 只留進程名不留 cmdline;已靠 wsl_oom_watch.sh 的事前預警補抓現行犯,但要等下次復現才驗得到",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 16:05",
   "closed": null,
   "note": ""
  }
