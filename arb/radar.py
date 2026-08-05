@@ -77,6 +77,11 @@ def evaluate(item, page, rate):
     cost = landed_cost(jp["avg_jpy"], rate, item)
     row["landed_cost"] = cost
 
+    # 流動性:日拍件數少=補不到穩定貨源,只能做一次性;台灣刊登少=可能賣不掉。
+    # 毛利再高,買得到但出不掉一樣是死錢。
+    row["jp_liquidity"] = jp["count"]
+    row["thin_supply"] = jp["count"] < 10
+
     if not tw.get("count"):
         # 台灣零刊登 = 市場空白。不是壞掉,是機會(但無售價錨,需人工定價)
         row["status"] = "tw_market_blank"
@@ -104,6 +109,8 @@ def evaluate(item, page, rate):
     row["passing_channels"] = passes
     if not passes:
         row["status"] = "below_threshold"
+    elif row["thin_supply"]:
+        row["status"] = "HIT_thin_supply"
     elif not row["anchor_reliable"]:
         row["status"] = "HIT_anchor_unreliable"
     elif len(passes) == 1:
@@ -156,10 +163,13 @@ def main():
         elif st == "tw_market_blank":
             blanks.append(r)
         mark = {"HIT": "🟢", "HIT_single_channel": "🟡",
-                "HIT_anchor_unreliable": "🟠", "below_threshold": "·",
+                "HIT_anchor_unreliable": "🟠", "HIT_thin_supply": "🟤",
+                "below_threshold": "·",
                 "tw_market_blank": "⬜", "jp_source_error": "🔴",
                 "tw_source_error": "🔴"}.get(st, "?")
         line = f"{mark} {r['name']} [{st}]"
+        if "jp" in r and "count" in r.get("jp", {}):
+            line += f" 日拍{r['jp']['count']}筆/¥{r['jp']['avg_jpy']:,}"
         if "landed_cost" in r:
             line += f" 落地={r['landed_cost']}"
         if "anchor" in r:
