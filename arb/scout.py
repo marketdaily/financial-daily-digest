@@ -117,3 +117,43 @@ def scout(page, item, rate, sell_price, limit=6, expect_gen=None):
     out.sort(key=lambda x: (x["margin_f2f"] is None, -(x["margin_f2f"] or 0)))
     return {"count": len(out), "items": out[:limit], "search_url": url,
             "buyee_search": "https://buyee.jp/item/search/query/" + up.quote(item["jp_kw"])}
+
+
+BLOCKED_MARKS = ("現在此商品不能下標", "この商品は入札できません",
+                 "cannot be bid", "入札できません")
+RATE_RE = re.compile(r"(?:好評比例|好評価率|Positive)\s*([0-9.]+)\s*%")
+GOOD_RE = re.compile(r"(?:良好|良い)\s*([0-9,]+)")
+BAD_RE = re.compile(r"(?:惡劣|悪い)\s*([0-9,]+)")
+
+
+def verify_listing(page, buyee_url, min_rating=99.0):
+    """下單前必查:能不能下標 + 賣家評價。
+
+    ⚠️ 這兩項在搜尋結果頁完全看不到,只有進商品頁才有;而「低評價賣家」的警告
+    更是只在結帳頁才出現(2026-08-05 老闆的截圖救回來的——首單差點從
+    Buyee 標記低評價的賣家買二手 Scotty Cameron,而真偽問題 Buyee 明文不負責)。
+    另有「投標者評價限制」會讓好賣家的貨根本下不了標,搜尋頁同樣看不出來。
+    """
+    try:
+        page.goto(buyee_url, timeout=55_000)
+        page.wait_for_timeout(4200)
+        txt = re.sub(r"[ \t]+", " ", page.inner_text("body"))
+    except Exception as e:
+        return {"error": f"verify_failed:{e}", "biddable": False}
+
+    m = RATE_RE.search(txt)
+    g, bd = GOOD_RE.search(txt), BAD_RE.search(txt)
+    rating = float(m.group(1)) if m else None
+    blocked = any(k in txt for k in BLOCKED_MARKS)
+    return {
+        "biddable": not blocked,
+        "seller_rating": rating,
+        "seller_good": int(g.group(1).replace(",", "")) if g else None,
+        "seller_bad": int(bd.group(1).replace(",", "")) if bd else None,
+        # 兩個條件都過才算可買:能下標 + 賣家評價達標
+        "ok_to_buy": (not blocked) and rating is not None and rating >= min_rating,
+        "reason": ("不可下標(多為賣家設了投標者評價限制)" if blocked else
+                   f"賣家好評率 {rating}% 低於門檻 {min_rating}%"
+                   if rating is not None and rating < min_rating else
+                   "評價抓取失敗,fail-closed 視為不可買" if rating is None else "可買"),
+    }
