@@ -121,7 +121,8 @@ def scout(page, item, rate, sell_price, limit=6, expect_gen=None):
 
 BLOCKED_MARKS = ("現在此商品不能下標", "この商品は入札できません",
                  "cannot be bid", "入札できません")
-RATE_RE = re.compile(r"(?:好評比例|好評価率|Positive)\s*([0-9.]+)\s*%")
+RATE_RE = re.compile(
+    r"(?:好評比例|好評価率|好评比例|Positive(?:\s+feedback)?|Rating)\s*[:：]?\s*([0-9.]+)\s*%")
 GOOD_RE = re.compile(r"(?:良好|良い)\s*([0-9,]+)")
 BAD_RE = re.compile(r"(?:惡劣|悪い)\s*([0-9,]+)")
 

@@ -53,7 +53,11 @@ def floor_for(item_id):
 
 
 def audit_one(page, item_id, keywords, floor):
-    """逐一試關鍵字,回傳每組結果與最終採用者。"""
+    """逐一試關鍵字。⚠️ 不在找到第一組合格就停——為了湊樣本數而放寬關鍵字,
+    代價是錨可能指向別的商品(2026-08-05 實例:Newport2 與 Phantom 雙雙退到
+    「卡麥隆 推桿」共用同一個 p25=6,290;Special Select 退到「select」會撈到
+    Studio/Special/Super 全世代)。故全部跑完,取**最保守(最低 p25)**的合格組,
+    並在跨標的層檢查有無共用關鍵字。"""
     tried = []
     for kw in keywords:
         r = sources.tw_listings_resilient(page, kw, price_floor=floor)
@@ -72,9 +76,10 @@ def audit_one(page, item_id, keywords, floor):
                "src": r.get("src", "biggo"),
                "ok": r["count"] >= MIN_SAMPLES and spread <= MAX_SPREAD}
         tried.append(row)
-        if row["ok"]:
-            return {"item": item_id, "chosen": row, "tried": tried}
-    return {"item": item_id, "chosen": None, "tried": tried}
+    oks = [t for t in tried if t.get("ok")]
+    # 保守優先:合格組中取最低 p25,寧可低估毛利也不要高估
+    chosen = min(oks, key=lambda x: x["p25"]) if oks else None
+    return {"item": item_id, "chosen": chosen, "tried": tried}
 
 
 def main():
@@ -102,6 +107,20 @@ def main():
                           if best else "全部零刊登")
                 print(f"❌ {item_id:<32} 無可靠錨 — {detail}")
         b.close()
+
+    # 跨標的檢查:兩個不同標的選到同一個關鍵字 = 至少一個的錨指向別的商品
+    by_kw = {}
+    for r in out:
+        c = r.get("chosen")
+        if c:
+            by_kw.setdefault(c["kw"], []).append(r["item"])
+    for kw, items in by_kw.items():
+        if len(items) > 1:
+            print(f"⚠️ 關鍵字 '{kw}' 被 {len(items)} 個標的共用 → 全部標為不可靠:{items}")
+            for r in out:
+                if r.get("chosen") and r["chosen"]["kw"] == kw:
+                    r["shared_keyword_with"] = [i for i in items if i != r["item"]]
+                    r["chosen"] = None
 
     path = os.path.join(HERE, "anchor_audit.json")
     with open(path, "w", encoding="utf-8") as f:

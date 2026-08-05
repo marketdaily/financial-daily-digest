@@ -204,16 +204,7 @@
   },
   {
    "item": "putter_sc_newport2",
-   "chosen": {
-    "kw": "卡麥隆 推桿",
-    "count": 8,
-    "p25": 6290,
-    "median": 6984,
-    "max": 10430,
-    "spread": 1.7,
-    "src": "ruten",
-    "ok": true
-   },
+   "chosen": null,
    "tried": [
     {
      "kw": "scotty cameron newport 2",
@@ -245,6 +236,9 @@
      "src": "ruten",
      "ok": true
     }
+   ],
+   "shared_keyword_with": [
+    "putter_sc_phantom"
    ]
   },
   {
@@ -309,16 +303,7 @@
   },
   {
    "item": "putter_sc_phantom",
-   "chosen": {
-    "kw": "卡麥隆 推桿",
-    "count": 8,
-    "p25": 6290,
-    "median": 6984,
-    "max": 10430,
-    "spread": 1.7,
-    "src": "ruten",
-    "ok": true
-   },
+   "chosen": null,
    "tried": [
     {
      "kw": "scotty cameron phantom",
@@ -350,6 +335,9 @@
      "src": "ruten",
      "ok": true
     }
+   ],
+   "shared_keyword_with": [
+    "putter_sc_newport2"
    ]
   },
   {
@@ -402,5 +390,6 @@
     }
    ]
   }
- ]
+ ],
+ "note": "chosen=合格組中最保守(最低p25);共用關鍵字者已判為無可靠錨"
 }

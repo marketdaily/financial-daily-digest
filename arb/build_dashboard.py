@@ -123,7 +123,11 @@ def main():
     golf = []
     with sync_playwright() as p:
         b = p.chromium.launch(headless=True)
-        page = b.new_page(user_agent=sources.UA)
+        # ⚠️ 必須指定 locale:verify_listing 用「好評比例/可否下標」等中文字樣做判準,
+        # 沒設 locale 時 Buyee 會回別的語言 → 評價抓不到 → fail-closed 把全部貨擋掉,
+        # 看起來像「今天沒好貨」,其實是抓取壞了(2026-08-05 實際發生,15/15 全誤擋)。
+        ctx = b.new_context(user_agent=sources.UA, locale="zh-TW")
+        page = ctx.new_page()
         for g in GOLF:
             a = audited.get(g["id"])
             if a:
@@ -158,11 +162,19 @@ def main():
                 }
             row["audited"] = bool(a)
             golf.append(row)
-            buyable = sum(1 for x in live.get("items", [])
-                          if x.get("ok_to_buy") and x.get("margin_f2f"))
-            print(f"  {g['name']}: 現貨 {live.get('count', 0)} 件,"
-                  f"四關全過 {buyable} 件"
-                  + ("" if a else " (⚠️ 無可靠錨)"))
+            checked = [x for x in live.get("items", []) if "biddable" in x]
+            rating_ok = [x for x in checked if x.get("seller_rating") is not None]
+            if checked and not rating_ok:
+                # 全部都抓不到評價 = 抓取管線壞了,不是「賣家都不合格」
+                row["verify_broken"] = True
+                print(f"  🔴 {g['name']}: 賣家評價 {len(checked)} 支全部抓取失敗"
+                      f" —— 這是抓取故障不是沒好貨")
+            else:
+                buyable = sum(1 for x in live.get("items", [])
+                              if x.get("ok_to_buy") and x.get("margin_f2f"))
+                print(f"  {g['name']}: 現貨 {live.get('count', 0)} 件,"
+                      f"四關全過 {buyable} 件"
+                      + ("" if a else " (⚠️ 無可靠錨)"))
         b.close()
 
     data = {
