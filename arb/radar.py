@@ -64,7 +64,8 @@ def landed_cost(jpy, rate, item):
 
 def evaluate(item, page, rate):
     jp = sources.jp_sold(item["jp_kw"], jp_floor=item.get("jp_floor", 0))
-    tw = sources.tw_listings(page, item["tw_kw"], price_floor=item.get("floor", 0))
+    tw = sources.tw_listings_resilient(page, item["tw_kw"],
+                                       price_floor=item.get("floor", 0))
     row = {"id": item["id"], "name": item["name"], "line": item["line"],
            "jp": jp, "tw": tw, "rate": rate}
 

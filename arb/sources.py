@@ -102,6 +102,47 @@ def tw_listings(page, keyword, price_floor=0, price_cap=500_000, settle_ms=3500)
     }
 
 
+def _ruten_listings(page, keyword, price_floor=0, price_cap=500_000):
+    """備援台灣行情源:露天。BigGo 被反爬擋住時自動改走這條。
+
+    露天價格是純數字(無 $ 或「元」前綴),故只取**含千分位逗號**的數字——
+    商品編號/分類計數不帶逗號,這條規則同時濾掉它們。需等 7s 才渲染完。
+    """
+    url = "https://www.ruten.com.tw/find/?q=" + requests.utils.quote(keyword)
+    try:
+        page.goto(url, timeout=60_000)
+        page.wait_for_timeout(7000)
+        txt = page.inner_text("body")
+    except Exception as e:
+        return {"error": f"ruten_render_failed:{e}"}
+    if len(txt) < 300:
+        return {"error": f"ruten_suspicious_short_page:{len(txt)}"}
+    raw = [_num(x) for x in re.findall(r"\b([0-9]{1,3}(?:,[0-9]{3})+)\b", txt)]
+    prices = sorted(p for p in raw if price_floor <= p <= price_cap)
+    if not prices:
+        return {"count": 0, "url": url, "note": "no_listings", "src": "ruten"}
+    return {
+        "count": len(prices), "min": prices[0], "p25": prices[len(prices) // 4],
+        "median": statistics.median(prices), "max": prices[-1],
+        "url": url, "src": "ruten",
+    }
+
+
+def tw_listings_resilient(page, keyword, price_floor=0, price_cap=500_000):
+    """先 BigGo,被擋則自動退到露天。回傳含 src 標示用了哪個源。
+
+    ⚠️ 兩源都壞才回 error——絕不因為單一源被擋就說「沒有刊登」。
+    """
+    r = tw_listings(page, keyword, price_floor, price_cap)
+    if "error" not in r:
+        return {**r, "src": r.get("src", "biggo")}
+    first_err = r["error"]
+    r2 = _ruten_listings(page, keyword, price_floor, price_cap)
+    if "error" not in r2:
+        return {**r2, "primary_error": first_err}
+    return {"error": f"all_sources_failed(biggo:{first_err}; ruten:{r2['error']})"}
+
+
 def jpy_twd_rate(fallback=0.21, timeout=15):
     """JPY→TWD 匯率。抓失敗回 fallback 並標記,不靜默。"""
     for url, path in (

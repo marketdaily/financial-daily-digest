@@ -4,287 +4,401 @@
  "results": [
   {
    "item": "shaft_tour_ad_di6",
-   "chosen": null,
+   "chosen": {
+    "kw": "tour ad di",
+    "count": 25,
+    "p25": 7247,
+    "median": 10500,
+    "max": 23644,
+    "spread": 3.3,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "tour ad di-6",
-     "count": 0,
-     "note": "no_listings"
-    },
-    {
-     "kw": "tour ad di",
-     "count": 3,
-     "p25": 4000,
-     "median": 4980,
-     "max": 26480,
-     "spread": 6.6,
+     "count": 28,
+     "p25": 9000,
+     "median": 12014,
+     "max": 65250,
+     "spread": 7.2,
+     "src": "ruten",
      "ok": false
     },
     {
-     "kw": "graphite design tour ad",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "tour ad 桿身",
-     "count": 0,
-     "note": "all_filtered"
+     "kw": "tour ad di",
+     "count": 25,
+     "p25": 7247,
+     "median": 10500,
+     "max": 23644,
+     "spread": 3.3,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "shaft_tour_ad_vr6",
-   "chosen": null,
+   "chosen": {
+    "kw": "tour ad vr",
+    "count": 20,
+    "p25": 5914,
+    "median": 6758,
+    "max": 11710,
+    "spread": 2.0,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "tour ad vr-6",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 26,
+     "p25": 5918,
+     "median": 6815,
+     "max": 65250,
+     "spread": 11.0,
+     "src": "ruten",
+     "ok": false
     },
     {
      "kw": "tour ad vr",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "graphite design tour ad",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "tour ad 桿身",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 20,
+     "p25": 5914,
+     "median": 6758,
+     "max": 11710,
+     "spread": 2.0,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "shaft_ventus_blue_6s",
-   "chosen": null,
+   "chosen": {
+    "kw": "fujikura ventus",
+    "count": 28,
+    "p25": 5952,
+    "median": 8889,
+    "max": 19990,
+    "spread": 3.4,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "ventus blue 6s",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 27,
+     "p25": 9157,
+     "median": 12692,
+     "max": 68566,
+     "spread": 7.5,
+     "src": "ruten",
+     "ok": false
     },
     {
      "kw": "ventus blue",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 33,
+     "p25": 6424,
+     "median": 7821,
+     "max": 42822,
+     "spread": 6.7,
+     "src": "ruten",
+     "ok": false
     },
     {
      "kw": "fujikura ventus",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "ventus 桿身",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 28,
+     "p25": 5952,
+     "median": 8889,
+     "max": 19990,
+     "spread": 3.4,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "shaft_ventus_black_6s",
-   "chosen": null,
+   "chosen": {
+    "kw": "ventus black",
+    "count": 21,
+    "p25": 12000,
+    "median": 14940,
+    "max": 33387,
+    "spread": 2.8,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "ventus black 6s",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 27,
+     "p25": 10000,
+     "median": 13850,
+     "max": 68566,
+     "spread": 6.9,
+     "src": "ruten",
+     "ok": false
     },
     {
      "kw": "ventus black",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "fujikura ventus",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "ventus 桿身",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 21,
+     "p25": 12000,
+     "median": 14940,
+     "max": 33387,
+     "spread": 2.8,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "shaft_diamana_tb60",
-   "chosen": null,
+   "chosen": {
+    "kw": "diamana tb60",
+    "count": 26,
+    "p25": 5884,
+    "median": 8244,
+    "max": 17400,
+    "spread": 3.0,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "diamana tb60",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "diamana tb",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "三菱 diamana",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "diamana 桿身",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 26,
+     "p25": 5884,
+     "median": 8244,
+     "max": 17400,
+     "spread": 3.0,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "shaft_speeder_nx_green",
-   "chosen": null,
+   "chosen": {
+    "kw": "speeder nx green",
+    "count": 22,
+    "p25": 9652,
+    "median": 10767,
+    "max": 16129,
+    "spread": 1.7,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "speeder nx green",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "fujikura speeder nx",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "speeder nx",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "speeder 桿身",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 22,
+     "p25": 9652,
+     "median": 10767,
+     "max": 16129,
+     "spread": 1.7,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "putter_sc_newport2",
-   "chosen": null,
+   "chosen": {
+    "kw": "卡麥隆 推桿",
+    "count": 8,
+    "p25": 6290,
+    "median": 6984,
+    "max": 10430,
+    "spread": 1.7,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "scotty cameron newport 2",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 20,
+     "p25": 13084,
+     "median": 23675,
+     "max": 58737,
+     "spread": 4.5,
+     "src": "ruten",
+     "ok": false
     },
     {
      "kw": "scotty cameron newport",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 25,
+     "p25": 13454,
+     "median": 19000,
+     "max": 250524,
+     "spread": 18.6,
+     "src": "ruten",
+     "ok": false
     },
     {
      "kw": "卡麥隆 推桿",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 8,
+     "p25": 6290,
+     "median": 6984,
+     "max": 10430,
+     "spread": 1.7,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "putter_sc_super_select",
-   "chosen": null,
+   "chosen": {
+    "kw": "scotty cameron super select",
+    "count": 22,
+    "p25": 14267,
+    "median": 15693,
+    "max": 49895,
+    "spread": 3.5,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "scotty cameron super select",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "scotty cameron select",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "卡麥隆 推桿",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 22,
+     "p25": 14267,
+     "median": 15693,
+     "max": 49895,
+     "spread": 3.5,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "putter_sc_special_select",
-   "chosen": null,
+   "chosen": {
+    "kw": "scotty cameron select",
+    "count": 22,
+    "p25": 9748,
+    "median": 10107,
+    "max": 11659,
+    "spread": 1.2,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "scotty cameron special select",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 26,
+     "p25": 12024,
+     "median": 12674,
+     "max": 51905,
+     "spread": 4.3,
+     "src": "ruten",
+     "ok": false
     },
     {
      "kw": "scotty cameron select",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "卡麥隆 推桿",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 22,
+     "p25": 9748,
+     "median": 10107,
+     "max": 11659,
+     "spread": 1.2,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "putter_sc_phantom",
-   "chosen": null,
+   "chosen": {
+    "kw": "卡麥隆 推桿",
+    "count": 8,
+    "p25": 6290,
+    "median": 6984,
+    "max": 10430,
+    "spread": 1.7,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "scotty cameron phantom",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 22,
+     "p25": 13102,
+     "median": 25276,
+     "max": 79742,
+     "spread": 6.1,
+     "src": "ruten",
+     "ok": false
     },
     {
      "kw": "cameron phantom",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 22,
+     "p25": 13102,
+     "median": 25276,
+     "max": 79742,
+     "spread": 6.1,
+     "src": "ruten",
+     "ok": false
     },
     {
      "kw": "卡麥隆 推桿",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 8,
+     "p25": 6290,
+     "median": 6984,
+     "max": 10430,
+     "spread": 1.7,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "reel_shimano_twinpower_c3000xg",
-   "chosen": null,
+   "chosen": {
+    "kw": "twin power c3000xg",
+    "count": 11,
+    "p25": 10343,
+    "median": 12324,
+    "max": 20304,
+    "spread": 2.0,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "twin power c3000xg",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "shimano twin power",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "twin power 捲線器",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 11,
+     "p25": 10343,
+     "median": 12324,
+     "max": 20304,
+     "spread": 2.0,
+     "src": "ruten",
+     "ok": true
     }
    ]
   },
   {
    "item": "reel_daiwa_certate_lt3000",
-   "chosen": null,
+   "chosen": {
+    "kw": "daiwa certate lt3000",
+    "count": 17,
+    "p25": 10706,
+    "median": 13046,
+    "max": 17506,
+    "spread": 1.6,
+    "src": "ruten",
+    "ok": true
+   },
    "tried": [
     {
      "kw": "daiwa certate lt3000",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "daiwa certate",
-     "count": 0,
-     "note": "all_filtered"
-    },
-    {
-     "kw": "certate 捲線器",
-     "count": 0,
-     "note": "all_filtered"
+     "count": 17,
+     "p25": 10706,
+     "median": 13046,
+     "max": 17506,
+     "spread": 1.6,
+     "src": "ruten",
+     "ok": true
     }
    ]
   }

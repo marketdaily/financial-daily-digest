@@ -56,7 +56,7 @@ def audit_one(page, item_id, keywords, floor):
     """逐一試關鍵字,回傳每組結果與最終採用者。"""
     tried = []
     for kw in keywords:
-        r = sources.tw_listings(page, kw, price_floor=floor)
+        r = sources.tw_listings_resilient(page, kw, price_floor=floor)
         if "error" in r:
             # 訊源壞掉(多為反爬限流)絕不能當成「沒刊登」——直接中止整輪,
             # 否則後續標的會全部誤報零刊登、再被解讀成「空白市場=機會」
@@ -69,6 +69,7 @@ def audit_one(page, item_id, keywords, floor):
         spread = round(r["max"] / max(r["p25"], 1), 1)
         row = {"kw": kw, "count": r["count"], "p25": r["p25"],
                "median": int(r["median"]), "max": r["max"], "spread": spread,
+               "src": r.get("src", "biggo"),
                "ok": r["count"] >= MIN_SAMPLES and spread <= MAX_SPREAD}
         tried.append(row)
         if row["ok"]:
@@ -91,8 +92,9 @@ def main():
                 break
             c = res["chosen"]
             if c:
-                print(f"✅ {item_id:<32} kw='{c['kw']}' n={c['count']} "
-                      f"p25={c['p25']:,} 中位={c['median']:,} spread={c['spread']}x")
+                print(f"✅ {item_id:<30} kw='{c['kw']}' n={c['count']} "
+                      f"p25={c['p25']:,} 中位={c['median']:,} spread={c['spread']}x "
+                      f"[{c.get('src')}]")
             else:
                 best = max((t for t in res["tried"] if t.get("count")),
                            key=lambda x: x["count"], default=None)

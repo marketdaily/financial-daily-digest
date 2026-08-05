@@ -29,6 +29,9 @@ def stub_sources(jp, tw):
         jp = {**jp, "cost_jpy": jp["avg_jpy"], "contaminated": False}
     import arb.radar as R
     R.sources.jp_sold = lambda kw, **k: jp
+    # radar 改用韌性版(BigGo→露天自動備援)後,stub 必須跟著換,
+    # 否則測試會真的觸網——這正是 2026-08-05 改動當下測試靜默中斷的原因
+    R.sources.tw_listings_resilient = lambda page, kw, **k: tw
     R.sources.tw_listings = lambda page, kw, **k: tw
 
 
