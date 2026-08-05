@@ -15,6 +15,27 @@ from arb.radar import SHOPEE_FLAT, SHOPEE_PCT, landed_cost
 
 AUC_ID = re.compile(r"auctions\.yahoo\.co\.jp/jp/auction/([A-Za-z0-9]+)")
 
+# Scotty Cameron 各世代:同一個「ニューポート2」關鍵字會撈到所有世代,
+# 但它們在台灣是完全不同價位帶(Studio Select 台灣幾乎零刊登、Special Select 中位 15,000)。
+# 拿型號中位當現貨售價錨 = 錨用錯,毛利會虛胖(實測某支被算成 ROI 238%,實際無錨可算)。
+GENERATIONS = {
+    "studio": ("スタジオセレクト", "スタジオ セレクト", "STUDIO SELECT", "STUDIO STYLE",
+               "スタジオスタイル", "スタジオステンレス"),
+    "special": ("スペシャルセレクト", "スペシャル セレクト", "SPECIAL SELECT"),
+    "super": ("スーパーセレクト", "スーパー セレクト", "SUPER SELECT"),
+    "phantom": ("ファントム", "PHANTOM"),
+    "futura": ("フューチュラ", "FUTURA"),
+}
+
+
+def detect_generation(title):
+    """從標題判斷世代。回 None 表示無法判斷。"""
+    up = title.upper()
+    for gen, kws in GENERATIONS.items():
+        if any(k.upper() in up for k in kws):
+            return gen
+    return None
+
 
 def _cards(page):
     """回傳 [(title, price_jpy, auction_id)]。"""
@@ -50,7 +71,7 @@ def _cards(page):
     return rows
 
 
-def scout(page, item, rate, sell_price, limit=6):
+def scout(page, item, rate, sell_price, limit=6, expect_gen=None):
     """回傳當前拍場上、落地後仍有肉的標的(已排序,最賺的在前)。"""
     url = ("https://auctions.yahoo.co.jp/search/search?p="
            + up.quote(item["jp_kw"]) + "&n=50")
@@ -61,22 +82,38 @@ def scout(page, item, rate, sell_price, limit=6):
         return {"error": f"render_failed:{e}"}
 
     floor = item.get("jp_floor", 0)
+    expect_gen = expect_gen or item.get("gen")
     out = []
     for title, jpy, aid in _cards(page):
         if jpy < floor:          # 配件雜訊(頭套/握把/配重)
             continue
         cost = landed_cost(jpy, rate, item)
-        f2f = sell_price - cost
-        out.append({
+        gen = detect_generation(title)
+        # 世代不符 = 這支的台灣售價錨不適用(不同世代價位帶差很大),
+        # 不能拿型號中位去算它的毛利,標記後由上層決定要不要信。
+        gen_ok = (expect_gen is None) or (gen == expect_gen)
+        row = {
             "title": title,
             "jpy": jpy,
             "landed": cost,
-            "margin_f2f": f2f,
-            "margin_shopee": round(sell_price * (1 - SHOPEE_PCT) - SHOPEE_FLAT - cost),
-            "roi": round(f2f / cost * 100) if cost else 0,
+            "gen": gen,
+            "anchor_applies": gen_ok,
             "buyee": f"https://buyee.jp/item/yahoo/auction/{aid}",
             "yahoo": f"https://auctions.yahoo.co.jp/jp/auction/{aid}",
-        })
-    out.sort(key=lambda x: -x["margin_f2f"])
+        }
+        if gen_ok and sell_price:
+            f2f = sell_price - cost
+            row.update({
+                "margin_f2f": f2f,
+                "margin_shopee": round(sell_price * (1 - SHOPEE_PCT) - SHOPEE_FLAT - cost),
+                "roi": round(f2f / cost * 100) if cost else 0,
+            })
+        else:
+            # 錨不適用就不產出毛利數字——寧可沒有,也不要一個會誤導決策的數
+            row.update({"margin_f2f": None, "margin_shopee": None, "roi": None,
+                        "note": f"世代 {gen or '不明'} 與售價錨({expect_gen})不符,無法計算毛利"})
+        out.append(row)
+    # 有毛利數字的排前面(依毛利),錨不適用的沉底
+    out.sort(key=lambda x: (x["margin_f2f"] is None, -(x["margin_f2f"] or 0)))
     return {"count": len(out), "items": out[:limit], "search_url": url,
             "buyee_search": "https://buyee.jp/item/search/query/" + up.quote(item["jp_kw"])}
