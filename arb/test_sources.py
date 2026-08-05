@@ -81,16 +81,21 @@ def main():
     try:
         shutil.rmtree(tdir, ignore_errors=True)
         cache.put("t", "kw", value={"count": 7, "p25": 100})
-        v = cache.cached("t", "kw", fetch=lambda: {"error": "blocked_by_antibot"})
+        fresh = cache.cached("t", "kw", fetch=lambda: {"error": "should_not_be_called"})
+        check("快取新鮮時直接命中,不打網路", fresh.get("_cache") == "hit", f"得 {fresh}")
+        # ttl=0 強制視為過期,才走得到「抓取失敗→回退舊值」那條路
+        v = cache.cached("t", "kw", ttl=0,
+                         fetch=lambda: {"error": "blocked_by_antibot"})
         check("被擋時回退到快取值", v.get("count") == 7, f"得 {v}")
         check("回退值必須標 stale", v.get("_cache") == "stale")
         check("必須保留原始錯誤供診斷", v.get("_live_error") == "blocked_by_antibot")
         check("必須帶幾小時前", "_stale_hours" in v)
         shutil.rmtree(tdir, ignore_errors=True)
-        v2 = cache.cached("t", "nokey", fetch=lambda: {"error": "blocked_by_antibot"})
+        v2 = cache.cached("t", "nokey", ttl=0,
+                          fetch=lambda: {"error": "blocked_by_antibot"})
         check("沒有快取可退時回原始錯誤(不得偽造資料)",
               v2.get("error") == "blocked_by_antibot")
-        v3 = cache.cached("t", "k2", fetch=lambda: {"error": "boom"})
+        cache.cached("t", "k2", ttl=0, fetch=lambda: {"error": "boom"})
         after = cache.get_stale("t", "k2")[0]
         check("錯誤結果不得被寫進快取", after is None, f"得 {after}")
     finally:

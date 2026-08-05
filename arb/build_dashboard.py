@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO)
 
-from arb import scout, sources  # noqa: E402
+from arb import scout, sources, tw_au  # noqa: E402
 from arb.radar import SHOPEE_FLAT, SHOPEE_PCT, landed_cost  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -177,7 +177,24 @@ def main():
                       + ("" if a else " (⚠️ 無可靠錨)"))
         b.close()
 
+    # 台灣→澳洲(反方向):全品類掃描後唯一未被判死的窄縫
+    aud_twd = 22.7615        # ⚠️ 2026-08-05 快照,未接即時匯率
+    twau = []
+    for it in tw_au.CANDIDATES:
+        mb = tw_au.max_batch(it["kg"])
+        rows = []
+        for qty in sorted({1, 5, 10, mb}):
+            if qty > mb:
+                continue
+            r = tw_au.evaluate(it, aud_twd, qty=qty)
+            if "margin" in r:
+                rows.append(r)
+        best = max((r for r in rows if r["ship_ratio_ok"] and r["margin"] > 0),
+                   key=lambda r: r["margin"], default=None)
+        twau.append({**it, "max_batch": mb, "tiers": rows, "best": best})
+
     data = {
+        "twau": twau, "aud_twd": aud_twd,
         "generated": datetime.now(timezone.utc).isoformat(),
         "rate_jpy_twd": rate, "rate_source": fx["source"], "rate_usd_twd": USD_TWD,
         "golf": golf, "lego": lego_rows(),

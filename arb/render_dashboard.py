@@ -172,6 +172,9 @@ footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--line);
   <h2>高爾夫線 · 日本拍賣 → 台灣</h2>
   <div id="golf"></div>
 
+  <h2>反向線 · 台灣 → 澳洲(全品類掃描後唯一存活的窄縫)</h2>
+  <div id="twau"></div>
+
   <h2>樂高線 · 美國清倉 → 台灣</h2>
   <div id="lego"></div>
 
@@ -281,6 +284,46 @@ document.getElementById('golf').innerHTML = D.golf.map(g => {
         <a class="btn ghost" href="${g.live.buyee_search}" target="_blank" rel="noopener">在 Buyee 看全部</a>
       </div>
       ${liveTbl}
+    </div>
+  </article>`;
+}).join('');
+
+/* ---- 台灣→澳洲 ---- */
+document.getElementById('twau').innerHTML = (D.twau || []).map(t => {
+  const b = t.best;
+  return `
+  <article class="card ${b ? '' : 'test'}">
+    <div class="stripe"></div>
+    <div class="chead">
+      <div class="name">
+        <h3>${esc(t.name)}</h3>
+        <div class="meta">${esc(t.note)}<br>
+          台灣端:${esc(t.tw_src)}<br>澳洲端:${esc(t.au_src)}</div>
+      </div>
+      <div class="roi ${b ? '' : 'b'}"><b>${b ? b.roi + '%' : '不成立'}</b>
+        <span>${b ? '最佳批量 ROI' : '運費佔比過高'}</span></div>
+    </div>
+    <div class="livewrap">
+      <div class="livehead"><span class="t">批量 × 運費攤提(一箱最多 ${t.max_batch} 件)</span></div>
+      <div class="tblscroll"><table>
+        <thead><tr><th>每箱件數</th><th class="r">單件運費</th><th class="r">管道</th>
+          <th class="r">落地成本</th><th class="r">澳洲售價</th><th class="r">單件淨利</th>
+          <th class="r">ROI</th><th class="r">運費佔售價</th></tr></thead>
+        <tbody>${t.tiers.map(r => `
+          <tr class="${r.ship_ratio_ok && r.margin > 0 ? '' : 'muted-row'}">
+            <td class="num">${r.qty}</td>
+            <td class="r num">${n(r.ship_unit)}</td>
+            <td class="r">${r.ship_via}</td>
+            <td class="r num">${n(r.landed)}</td>
+            <td class="r num">${n(r.sell_twd)}</td>
+            <td class="r num ${r.margin > 0 ? 'gain' : ''}">${n(r.margin)}</td>
+            <td class="r num">${r.roi}%</td>
+            <td class="r num">${r.ship_ratio}%
+              <span class="gatechip ${r.ship_ratio_ok ? 'pass' : 'blocked'}">${r.ship_ratio_ok ? 'OK' : '過高'}</span></td>
+          </tr>`).join('')}
+        </tbody></table></div>
+      ${b ? `<div class="note" style="margin:12px 0 0">整箱 ${b.qty} 件 → 單件淨利 NT$${n(b.margin)}、
+        <b>整箱淨利 NT$${n(b.margin * b.qty)}</b>。⚠️ ${esc(b.verdict)}</div>` : ''}
     </div>
   </article>`;
 }).join('');
