@@ -7,28 +7,54 @@
     Chrome 允許的做法就是:在這個瀏覽器裡**自己登入一次**,session 存進持久化 profile,
     往後所有背景操作都用它,不必再登入。FB session 動輒數月。
 
-⚠️ 這個視窗會出現在畫面上(WSLg)。依「絕不搶前景」鐵則,**只在 Delvin 主動要登入時跑**,
-   不要在他忙別的事時自動彈出來。跑起來後他自己操作,登完關掉視窗即可。
+自動偵測:視窗開著,程式每 3 秒檢查登入判準 cookie(FB=c_user / IG=sessionid)有沒有出現。
+    一出現就代表登入成功 → 自動存檔關閉,不必按任何鍵。等太久(預設 8 分鐘)才逾時。
+
+⚠️ 這個視窗會出現在畫面上(WSLg)。依「絕不搶前景」鐵則,**只在 Delvin 主動要登入時跑**。
 
 用法:
-    python3 agent_browser_login.py                 開登入視窗(預設先到 facebook)
-    python3 agent_browser_login.py instagram       開 IG 登入
+    python3 agent_browser_login.py                 FB(預設)
+    python3 agent_browser_login.py instagram
     python3 agent_browser_login.py threads
 """
 import sys
+import time
 from pathlib import Path
 
 PROFILE = Path.home() / ".claude-browser" / "profile"
-START = {
-    "facebook":  "https://www.facebook.com/login",
-    "instagram": "https://www.instagram.com/accounts/login/",
-    "threads":   "https://www.threads.net/login",
+CFG = {
+    "facebook":  ("https://www.facebook.com/login",            ["facebook.com"],  "c_user"),
+    "instagram": ("https://www.instagram.com/accounts/login/", ["instagram.com"], "sessionid"),
+    "threads":   ("https://www.threads.net/login",             ["threads.net", "threads.com"], "sessionid"),
+    # Buyee 未登入時沒有可辨識的 session cookie(全是 GA/廣告追蹤),
+    # 故改用「登入後才會出現的會員連結」當判準。第 4 元素 = CSS selector。
+    "buyee":     ("https://buyee.jp/signup/login",             ["buyee.jp"],      None,
+                  "a[href*='/mypage'], a[href*='logout'], a[href*='/signup/logout']"),
 }
+TIMEOUT_S = 480
+
+
+def logged_in(ctx, domains, cookie):
+    for c in ctx.cookies():
+        dom = c["domain"].lstrip(".")
+        if c["name"] == cookie and any(dom.endswith(d) for d in domains) and c.get("value"):
+            return True
+    return False
+
+
+def logged_in_by_selector(pg, selector):
+    """沒有可辨識 session cookie 的站(如 Buyee)改用登入後才出現的元素判準。"""
+    try:
+        return pg.query_selector(selector) is not None
+    except Exception:
+        return False
 
 
 def main():
     which = sys.argv[1] if len(sys.argv) > 1 else "facebook"
-    url = START.get(which, START["facebook"])
+    conf = CFG.get(which, CFG["facebook"])
+    url, domains, cookie = conf[0], conf[1], conf[2]
+    selector = conf[3] if len(conf) > 3 else None
     from playwright.sync_api import sync_playwright
     PROFILE.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
@@ -39,14 +65,25 @@ def main():
             args=["--disable-blink-features=AutomationControlled"])
         pg = ctx.pages[0] if ctx.pages else ctx.new_page()
         pg.goto(url, wait_until="domcontentloaded")
-        print(f"視窗已開:{url}")
-        print("在視窗裡登入完成後,把這個終端機的 Enter 按下去(或直接關視窗)——session 會留在代理瀏覽器。")
-        try:
-            input()
-        except (EOFError, KeyboardInterrupt):
-            pass
+        print(f"[登入視窗已開] {which}: {url}")
+        print("在視窗裡完成登入即可,不用按任何鍵 —— 我偵測到就會自動存檔關閉。")
+        deadline = time.time() + TIMEOUT_S
+        ok = False
+        while time.time() < deadline:
+            try:
+                hit = (logged_in(ctx, domains, cookie) if cookie
+                       else logged_in_by_selector(pg, selector))
+                if hit:
+                    ok = True
+                    break
+            except Exception:
+                pass  # 導頁途中 context 短暫忙,略過這輪
+            time.sleep(3)
+        # 多等 2 秒讓所有 cookie 落定再關
+        time.sleep(2)
         ctx.close()
-    print("已關閉。用 `python3 scripts/agent_browser.py check` 確認登入狀態。")
+    print("✅ 偵測到登入,已關閉存檔。" if ok else "⏱️ 逾時未偵測到登入(session 未變更)。")
+    print("確認:python3 scripts/agent_browser.py check")
 
 
 if __name__ == "__main__":
