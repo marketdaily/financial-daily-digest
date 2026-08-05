@@ -13,10 +13,17 @@ cat > "$DIR/oom-no-collateral.conf" <<'EOF'
 # 2026-08-05 根因修復:WSL 全部 claude 分頁被一次殺光(當天第 4 次)
 #
 # 根因鏈:
-#   某進程失控吃 11.9GB(當次是 claude.exe,經 WSL interop 拉起的 Windows 端進程)
+#   單一 claude.exe 進程失控吃 11.9GB
+#     ⚠️ claude.exe = Claude Code 自己的執行檔(npm @anthropic-ai/claude-code v2.1.222,
+#        bin/claude.exe,289MB **ELF** 檔)。副檔名雖是 .exe 但它是 Linux 原生二進位,
+#        與 Windows / WSL interop 完全無關。comm 差異:走 symlink 執行→"claude",
+#        直接跑完整路徑→"claude.exe"。此機器跑 opus[1m](1M context),記憶體需求極大。
 #   → WSL kernel global OOM(上限 15.6GB = 主機 31.2GB 的 50%,當時無 .wslconfig)
-#   → OOM killer 選中它卻殺不死(真身在 Windows 側,Linux 只有代理殼)→ 記憶體不釋放
-#   → 每 ~2 分鐘再 OOM 一次(15:36:59 / 15:39:00 / 15:41:20 / 15:43:38,正好 4 次)
+#   → OOM killer 送了 SIGKILL 但它沒真的死:四輪 OOM 都是同一個 PID 2290516、
+#     rss 一模一樣(2967040 pages),記憶體從未釋放,所以每 ~2 分鐘就再 OOM 一次
+#     (15:36:59 / 15:39:00 / 15:41:20 / 15:43:38,正好 4 次)。
+#     ⚠️ 「為何 SIGKILL 殺不掉」未完全證實;卡在不可中斷(D)狀態是合理解釋,
+#        同時段 dmesg 有 9P I/O 異常(Operation canceled @p9io.cpp:258)可佐證,但非定論。
 #   → 它位在 init.scope 內(OOM log: task_memcg=/init.scope)
 #   → systemd 預設 OOMPolicy=stop:cgroup 內任一進程被 OOM 殺掉 → 停掉整個單元
 #   → init.scope 正是裝著所有互動 session 的地方,停止等 90s 逾時 → SIGKILL 全部分頁

@@ -416,8 +416,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-02 17:56",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 16:51",
+  "note": "命書(原天機AI)FB+IG 發文管線 2026-08-05 接通:auto_post check ✅ Mingshu + ✅ @mingshu_tw"
  },
  {
   "id": 43,
@@ -446,8 +446,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-02 18:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 16:51",
+  "note": "同 #42,命書 FB+IG 已上線;Threads/TikTok 另計"
  },
  {
   "id": 46,
@@ -1386,8 +1386,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-05 15:33",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 16:50",
+  "note": "IG 綁定完成:老闆手機 IG app 綁 Mingshu 粉專→API 直查粉專ID拿到 instagram_business_account=@mingshu_tw(me/accounts 快取延遲,改用粉專ID直查繞過)→auto_post check FB+IG 全✅,IG曲庫可用"
  },
  {
   "id": 140,
@@ -1426,8 +1426,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 16:14",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 16:59",
+  "note": "已定案:claude.exe = Claude Code 自己的執行檔(npm @anthropic-ai/claude-code v2.1.222 的 bin/claude.exe,289MB,file 判定 ELF 64-bit Linux 原生二進位)。副檔名 .exe 具誤導性,與 Windows/WSL interop 無關。comm 差異:走 symlink→claude,直接跑完整路徑→claude.exe。決定性證據:同一次 OOM 快照有兩個 claude.exe,一個 11.9GB 一個 2.2MB。此機器跑 opus[1m] 1M context 是膨脹背景。已推翻並修正先前錯誤的 interop 結論(含守衛告警邏輯 /.exe$/ 誤判、系統 drop-in 註解、memory)"
  },
  {
   "id": 144,

@@ -25,6 +25,10 @@ STATE="$STATE_DIR/wsl_oom_watch.since"
 EVIDENCE_DIR="${WSL_OOM_EVIDENCE_DIR:-$HOME/.marketdaily-fallback/state/wsl_oom_evidence}"
 # 可用記憶體低於總量這個比例就預警(預設 18%)
 WARN_PCT="${WSL_OOM_WARN_PCT:-18}"
+# 單一進程 RSS 超過這個 MB 數就預警(預設 6GB)。
+# 本次事故是「單一 Claude Code 進程吃 11.9GB」,不是眾多小進程累積——
+# 只看總量會等到快撐爆(available<18%)才響,單一進程超標時喊才來得及。
+HOG_MB="${WSL_OOM_HOG_MB:-6144}"
 mkdir -p "$STATE_DIR" "$EVIDENCE_DIR" 2>/dev/null || true
 
 rc=0
@@ -50,7 +54,10 @@ snapshot_procs() {
         rssmb = int($3/1024)
         cmd = ""
         for (i = 6; i <= NF; i++) cmd = cmd (i>6 ? " " : "") $i
-        tag = ($5 ~ /\.exe$/) ? "  <<interop:Linux 殺不死,真身在 Windows>>" : ""
+        # 標出「單一進程就吃掉危險份量」的那個 —— 本次事故正是單一進程 11.9GB。
+        # (先前這裡用 /\.exe$/ 標 "interop 殺不死" 是錯的:claude.exe 是 Claude Code
+        #  自己的 ELF 執行檔,不是 Windows 進程,那個判準反而會錯標到真兇。)
+        tag = (rssmb >= 4096) ? "  <<單一進程已吃 " int(rssmb/1024) "GB>>" : ""
         if (maxw > 0 && length(cmd) > maxw) cmd = substr(cmd, 1, maxw) "..."
         printf "  %-6s %-6s %-8s %-8s %s%s\n", $1, $2, rssmb, $4, cmd, tag
       }'
@@ -82,6 +89,32 @@ $(snapshot_procs 42 5)
 "
     rc=1
   fi
+fi
+
+# ── ①b 單一進程失控預警(針對本次事故的真兇形狀)──
+# 2026-08-05 的兇手是單一 claude.exe 進程 11.9GB(Claude Code v2.1.222 的 ELF 執行檔,
+# 289MB binary,跑 opus[1m] 1M context)。總量門檻對這種形狀反應太慢:
+# 11.9GB 出現時距離打爆 15.6GB 上限只剩一步,幾乎沒有反應時間。
+hog_line=$(ps -eo rss,pid,ppid,args --sort=-rss 2>/dev/null | awk -v lim="$HOG_MB" '
+  NR==2 && ($1/1024) >= lim {
+    cmd=""; for (i=4; i<=NF; i++) cmd = cmd (i>4 ? " " : "") $i
+    if (length(cmd) > 70) cmd = substr(cmd,1,70) "..."
+    printf "%dMB pid=%s ppid=%s %s", int($1/1024), $2, $3, cmd
+  }')
+if [ -n "$hog_line" ]; then
+  ev="$EVIDENCE_DIR/hog_$(date +%Y%m%d_%H%M%S).txt"
+  {
+    echo "=== 單一進程吃過頭 $now_stamp (門檻 ${HOG_MB}MB) ==="
+    echo "$(mem_line)"
+    echo "--- top RSS 進程(完整 cmdline) ---"
+    snapshot_procs 0 10
+  } > "$ev" 2>/dev/null
+  out="${out}🟠 單一進程記憶體過大(門檻 ${HOG_MB}MB):
+   ${hog_line}
+$(mem_line)
+完整快照:$ev
+"
+  rc=1
 fi
 
 # ── ② 事後偵測:自上次檢查點以來的 OOM 與連坐擊殺 ──
