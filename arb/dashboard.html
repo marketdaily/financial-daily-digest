@@ -1,0 +1,318 @@
+<title>進貨台 · 跨境套利</title>
+<style>
+:root{
+  --bg:#F7F8FA; --surface:#FFFFFF; --surface-2:#F1F4F9;
+  --ink:#171B24; --muted:#5C6478; --line:#E2E6ED;
+  --accent:#2D4A7C; --accent-soft:#E8EEF8;
+  --good:#3F6B4C; --warn:#966D09; --crit:#8F4522;
+  --shadow:0 1px 2px rgba(23,27,36,.06),0 4px 16px rgba(23,27,36,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#12151C; --surface:#1A1F2A; --surface-2:#222836;
+    --ink:#E8ECF3; --muted:#8B94A8; --line:#2A3140;
+    --accent:#6B93D6; --accent-soft:#1E2938;
+    --good:#6FA37D; --warn:#D4A72C; --crit:#C77A5A;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12151C; --surface:#1A1F2A; --surface-2:#222836;
+  --ink:#E8ECF3; --muted:#8B94A8; --line:#2A3140;
+  --accent:#6B93D6; --accent-soft:#1E2938;
+  --good:#6FA37D; --warn:#D4A72C; --crit:#C77A5A;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);
+}
+:root[data-theme="light"]{
+  --bg:#F7F8FA; --surface:#FFFFFF; --surface-2:#F1F4F9;
+  --ink:#171B24; --muted:#5C6478; --line:#E2E6ED;
+  --accent:#2D4A7C; --accent-soft:#E8EEF8;
+  --good:#3F6B4C; --warn:#966D09; --crit:#8F4522;
+  --shadow:0 1px 2px rgba(23,27,36,.06),0 4px 16px rgba(23,27,36,.05);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI","Noto Sans TC","PingFang TC",
+    "Microsoft JhengHei",sans-serif;
+  font-size:15px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.num{font-variant-numeric:tabular-nums;
+  font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace}
+.wrap{max-width:1080px; margin:0 auto; padding:28px 20px 72px}
+
+header.top{display:flex; flex-wrap:wrap; align-items:baseline; gap:12px; margin-bottom:6px}
+h1{font-size:26px; font-weight:680; letter-spacing:-.02em; margin:0}
+.sub{color:var(--muted); font-size:13px; margin:0 0 22px}
+
+.summary{display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr));
+  gap:1px; background:var(--line); border:1px solid var(--line);
+  border-radius:10px; overflow:hidden; margin-bottom:14px}
+.cell{background:var(--surface); padding:14px 16px}
+.cell .k{font-size:11px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--muted); display:block; margin-bottom:5px}
+.cell .v{font-size:23px; font-weight:640; letter-spacing:-.02em}
+.cell .v.pos{color:var(--good)}
+
+.note{background:var(--accent-soft); border-left:3px solid var(--accent);
+  padding:11px 15px; border-radius:0 7px 7px 0; font-size:13px;
+  color:var(--ink); margin-bottom:30px}
+
+h2{font-size:12px; letter-spacing:.11em; text-transform:uppercase;
+  color:var(--muted); font-weight:620; margin:34px 0 13px;
+  padding-bottom:8px; border-bottom:1px solid var(--line)}
+
+.card{background:var(--surface); border:1px solid var(--line);
+  border-radius:11px; box-shadow:var(--shadow); margin-bottom:15px; overflow:hidden}
+.card > .stripe{height:3px; background:var(--good)}
+.card.b > .stripe{background:var(--warn)}
+.card.test > .stripe{background:var(--muted)}
+.chead{display:flex; flex-wrap:wrap; align-items:flex-start;
+  gap:12px; padding:15px 18px 13px}
+.chead .name{flex:1 1 240px; min-width:0}
+.chead h3{margin:0 0 4px; font-size:17px; font-weight:620; letter-spacing:-.01em;
+  text-wrap:balance}
+.chead .meta{font-size:12.5px; color:var(--muted)}
+.roi{text-align:right; flex:0 0 auto}
+.roi b{display:block; font-size:27px; font-weight:680; letter-spacing:-.025em;
+  line-height:1.05; color:var(--good)}
+.roi.b b{color:var(--warn)}
+.roi span{font-size:10.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--muted)}
+
+.pill{display:inline-block; font-size:10.5px; font-weight:640; letter-spacing:.06em;
+  padding:2.5px 8px; border-radius:20px; text-transform:uppercase; vertical-align:2px;
+  margin-left:7px}
+.pill.a{background:var(--good); color:#fff}
+.pill.b{background:var(--warn); color:#fff}
+.pill.test{background:var(--muted); color:#fff}
+
+.breakdown{display:flex; flex-wrap:wrap; gap:0; border-top:1px solid var(--line);
+  background:var(--surface-2)}
+.bd{flex:1 1 92px; padding:10px 14px; border-right:1px solid var(--line)}
+.bd:last-child{border-right:0}
+.bd .k{font-size:10.5px; color:var(--muted); display:block; letter-spacing:.05em}
+.bd .v{font-size:14.5px; font-weight:600}
+.bd.total .v{color:var(--accent)}
+
+.livewrap{padding:13px 18px 17px; border-top:1px solid var(--line)}
+.livehead{display:flex; justify-content:space-between; align-items:baseline;
+  gap:10px; margin-bottom:9px}
+.livehead .t{font-size:12px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--muted); font-weight:620}
+.tblscroll{overflow-x:auto}
+table{width:100%; border-collapse:collapse; font-size:13.5px; min-width:520px}
+th{text-align:left; font-size:10.5px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--muted); font-weight:620; padding:0 10px 7px 0; white-space:nowrap}
+th.r,td.r{text-align:right}
+td{padding:8px 10px 8px 0; border-top:1px solid var(--line); vertical-align:middle}
+td.title{max-width:330px; font-size:13px; line-height:1.4}
+tr:first-child td{border-top:1px solid var(--line)}
+.gain{color:var(--good); font-weight:620}
+
+a.btn{display:inline-block; background:var(--accent); color:#fff; text-decoration:none;
+  font-size:12.5px; font-weight:600; padding:6px 13px; border-radius:6px;
+  white-space:nowrap; transition:opacity .15s}
+a.btn:hover{opacity:.85}
+a.btn.ghost{background:transparent; color:var(--accent);
+  border:1px solid var(--accent); font-weight:560}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+.legomatrix{overflow-x:auto}
+.legomatrix table{min-width:560px}
+.best{background:var(--accent-soft)}
+
+details{background:var(--surface); border:1px solid var(--line); border-radius:11px;
+  padding:0; margin-top:15px; overflow:hidden}
+summary{cursor:pointer; padding:14px 18px; font-weight:600; font-size:14px;
+  list-style:none; display:flex; justify-content:space-between; align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"＋"; color:var(--muted); font-weight:400}
+details[open] summary::after{content:"−"}
+.deadbody{padding:0 18px 16px; font-size:13.5px}
+.deadbody ul{margin:0; padding-left:19px; color:var(--muted)}
+.deadbody li{margin-bottom:7px}
+.deadbody b{color:var(--ink)}
+
+footer{margin-top:34px; padding-top:16px; border-top:1px solid var(--line);
+  font-size:12px; color:var(--muted); line-height:1.7}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:560px){
+  .roi{flex-basis:100%; text-align:left}
+  .bd{flex:1 1 46%}
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>進貨台</h1>
+  </header>
+  <p class="sub" id="stamp"></p>
+
+  <div class="summary" id="summary"></div>
+  <div class="note" id="headnote"></div>
+
+  <h2>高爾夫線 · 日本拍賣 → 台灣</h2>
+  <div id="golf"></div>
+
+  <h2>樂高線 · 美國清倉 → 台灣</h2>
+  <div id="lego"></div>
+
+  <div id="dead"></div>
+
+  <footer id="foot"></footer>
+</div>
+
+<script type="application/json" id="data">{"generated":"2026-08-05T09:06:39.673874+00:00","rate_jpy_twd":0.2056,"rate_source":"open.er-api.com","rate_usd_twd":32.4,"golf":[{"id":"sc_special_select","name":"Scotty Cameron Special Select 推桿","jp_kw":"スコッティキャメロン スペシャルセレクト","jp_floor":15000,"jp_ship":400,"intl_ship":900,"duty":0.05,"sell":15000,"tw_note":"台灣刊登價格帶集中(spread 1.0x),錨可靠","grade":"A","live":{"count":18,"items":[{"title":"SCOTTY CAMERON SPECIAL SELECT FLOWBACK 5.5 スコッティキャメロン スペシャルセレクト フローバック5.5 パター メンズ 35インチ","jpy":26980,"landed":7508,"margin_f2f":7492,"margin_shopee":6232,"roi":100,"buyee":"https://buyee.jp/item/yahoo/auction/1201479326","yahoo":"https://auctions.yahoo.co.jp/jp/auction/1201479326"},{"title":"【良品】SCOTTY CAMERON スコッティキャメロン Special SELECT DEL MAR スペシャルセレクト デルマー パター メンズ 33インチ","jpy":26980,"landed":7508,"margin_f2f":7492,"margin_shopee":6232,"roi":100,"buyee":"https://buyee.jp/item/yahoo/auction/x1201488864","yahoo":"https://auctions.yahoo.co.jp/jp/auction/x1201488864"},{"title":"スコッティキャメロン スペシャルセレクト フローバック5 パター","jpy":29980,"landed":8188,"margin_f2f":6812,"margin_shopee":5552,"roi":83,"buyee":"https://buyee.jp/item/yahoo/auction/j1229262155","yahoo":"https://auctions.yahoo.co.jp/jp/auction/j1229262155"},{"title":"タイトリスト SCOTTY CAMERON Special select SQUAREBACK 2 34インチ パター PT フレックスその他","jpy":36587,"landed":9686,"margin_f2f":5314,"margin_shopee":4054,"roi":55,"buyee":"https://buyee.jp/item/yahoo/auction/u1238390550","yahoo":"https://auctions.yahoo.co.jp/jp/auction/u1238390550"},{"title":"◆T14 スコッティーキャメロン スペシャル セレクト フロウバック パター 2020年 SPECIAL SELECT FLOWBACK 33インチ SCOTTY CAMERON","jpy":38000,"landed":10006,"margin_f2f":4994,"margin_shopee":3734,"roi":50,"buyee":"https://buyee.jp/item/yahoo/auction/g1198762911","yahoo":"https://auctions.yahoo.co.jp/jp/auction/g1198762911"}],"buyee_search":"https://buyee.jp/item/search/query/%E3%82%B9%E3%82%B3%E3%83%83%E3%83%86%E3%82%A3%E3%82%AD%E3%83%A3%E3%83%A1%E3%83%AD%E3%83%B3%20%E3%82%B9%E3%83%9A%E3%82%B7%E3%83%A3%E3%83%AB%E3%82%BB%E3%83%AC%E3%82%AF%E3%83%88"},"market":{"count30d":16,"median_jpy":25228,"landed":7111,"margin_f2f":7889,"margin_shopee":6629,"roi":111}},{"id":"sc_newport2","name":"Scotty Cameron Newport 2 推桿","jp_kw":"スコッティキャメロン ニューポート2","jp_floor":15000,"jp_ship":400,"intl_ship":900,"duty":0.05,"sell":16800,"tw_note":"⚠️ spread 5.3x:各年份版本混雜,新手易買錯,建議有手感再進","grade":"B","live":{"count":20,"items":[{"title":"SCOTTY CAMERON STUDIO SELECT NEWPORT2.7 　34インチUSED　　　 スタジオセレクト ニューポート2.7","jpy":15800,"landed":4974,"margin_f2f":11826,"margin_shopee":10422,"roi":238,"buyee":"https://buyee.jp/item/yahoo/auction/1238044933","yahoo":"https://auctions.yahoo.co.jp/jp/auction/1238044933"},{"title":"カスタムビルド　スコッティ・キャメロン　スタジオセレクト　ニューポート２　【希少・美品】","jpy":28800,"landed":7920,"margin_f2f":8880,"margin_shopee":7476,"roi":112,"buyee":"https://buyee.jp/item/yahoo/auction/f1228591343","yahoo":"https://auctions.yahoo.co.jp/jp/auction/f1228591343"},{"title":"世界限定500本モデル！☆スコッティキャメロン/セレクト(2014) ニューポート2.5 1st オブ 500 パター/34インチ/メーカー正規品/6377","jpy":30000,"landed":8192,"margin_f2f":8608,"margin_shopee":7204,"roi":105,"buyee":"https://buyee.jp/item/yahoo/auction/f1189567616","yahoo":"https://auctions.yahoo.co.jp/jp/auction/f1189567616"},{"title":"SCOTTY CAMERON Select NEWPORT 2 スコッティキャメロン セレクト ニューポート2 パター 左 レフティ","jpy":35000,"landed":9326,"margin_f2f":7474,"margin_shopee":6070,"roi":80,"buyee":"https://buyee.jp/item/yahoo/auction/b1239340260","yahoo":"https://auctions.yahoo.co.jp/jp/auction/b1239340260"},{"title":"スコッティキャメロン スタジオステンレス ニューポート2.5 美品 純正HC付き","jpy":38000,"landed":10006,"margin_f2f":6794,"margin_shopee":5390,"roi":68,"buyee":"https://buyee.jp/item/yahoo/auction/o1239037441","yahoo":"https://auctions.yahoo.co.jp/jp/auction/o1239037441"}],"buyee_search":"https://buyee.jp/item/search/query/%E3%82%B9%E3%82%B3%E3%83%83%E3%83%86%E3%82%A3%E3%82%AD%E3%83%A3%E3%83%A1%E3%83%AD%E3%83%B3%20%E3%83%8B%E3%83%A5%E3%83%BC%E3%83%9D%E3%83%BC%E3%83%882"},"market":{"count30d":62,"median_jpy":27750,"landed":7682,"margin_f2f":9118,"margin_shopee":7714,"roi":119}},{"id":"speeder_nx_green","name":"Speeder NX Green 桿身","jp_kw":"スピーダー NX グリーン","jp_floor":8000,"jp_ship":250,"intl_ship":400,"duty":0.05,"sell":10000,"tw_note":"唯一台灣有掛牌的桿身,錨可靠(spread 1.0x)","grade":"A","live":{"count":25,"items":[{"title":"★Speeder NX GREEN☆スピーダーNX グリーン 60S ★DARKSPEED 　Cobra コブラ適合スリーブ　5W FW用　シャフト　27２","jpy":11000,"landed":3184,"margin_f2f":6816,"margin_shopee":5956,"roi":214,"buyee":"https://buyee.jp/item/yahoo/auction/r1237328283","yahoo":"https://auctions.yahoo.co.jp/jp/auction/r1237328283"},{"title":"★SPEEDER NX GREEN スピーダー NXグリーン 40SR ★★ピン PING G425.G410.G430.G440 適合スリーブ付★3W FW用★422","jpy":13500,"landed":3751,"margin_f2f":6249,"margin_shopee":5389,"roi":167,"buyee":"https://buyee.jp/item/yahoo/auction/c1238913983","yahoo":"https://auctions.yahoo.co.jp/jp/auction/c1238913983"},{"title":"★SPEEDER NX GREEN スピーダー NXグリーン 50S ★★ピン PING G425.G410.G430.G440 適合スリーブ付★3W FW用★423","jpy":14000,"landed":3864,"margin_f2f":6136,"margin_shopee":5276,"roi":159,"buyee":"https://buyee.jp/item/yahoo/auction/l1238920933","yahoo":"https://auctions.yahoo.co.jp/jp/auction/l1238920933"},{"title":"★Speeder NX GREEN☆スピーダーNX グリーン 50S★ドライバー　1W用★ダークスピード　Cobra コブラスリーブ　シャフト　９７４","jpy":14000,"landed":3864,"margin_f2f":6136,"margin_shopee":5276,"roi":159,"buyee":"https://buyee.jp/item/yahoo/auction/l1233351542","yahoo":"https://auctions.yahoo.co.jp/jp/auction/l1233351542"},{"title":"Speeder NX GREEN 50S 1w用シャフト コブラスリーブ付 cobra スピーダー ブラック ダークスピード ラッドスピード フジクラ 829","jpy":14000,"landed":3864,"margin_f2f":6136,"margin_shopee":5276,"roi":159,"buyee":"https://buyee.jp/item/yahoo/auction/x1232110210","yahoo":"https://auctions.yahoo.co.jp/jp/auction/x1232110210"}],"buyee_search":"https://buyee.jp/item/search/query/%E3%82%B9%E3%83%94%E3%83%BC%E3%83%80%E3%83%BC%20NX%20%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%B3"},"market":{"count30d":78,"median_jpy":14872,"landed":4062,"margin_f2f":5938,"margin_shopee":5078,"roi":146}},{"id":"sc_super_select","name":"Scotty Cameron Super Select 推桿","jp_kw":"スコッティキャメロン スーパーセレクト","jp_floor":15000,"jp_ship":400,"intl_ship":900,"duty":0.05,"sell":15120,"tw_note":"日拍 30 日僅 10 筆,補貨較慢","grade":"B","live":{"count":28,"items":[{"title":"スコッティキャメロン SELECT スーパー セレクト ニューポート 2 プラス パター スチールシャフト 【33】 シャフト：スチールシャフト","jpy":38080,"landed":10024,"margin_f2f":5096,"margin_shopee":3826,"roi":51,"buyee":"https://buyee.jp/item/yahoo/auction/f1238181165","yahoo":"https://auctions.yahoo.co.jp/jp/auction/f1238181165"},{"title":"そこそこ美品☆メーカー正規品☆スコッティキャメロン/スーパーセレクト(2023) ニューポート＋ パター/34インチ/ヘッドカバー付き/7928","jpy":39000,"landed":10233,"margin_f2f":4887,"margin_shopee":3617,"roi":48,"buyee":"https://buyee.jp/item/yahoo/auction/f1221491343","yahoo":"https://auctions.yahoo.co.jp/jp/auction/f1221491343"},{"title":"スコッティキャメロン SELECT スーパー セレクト GOLO 6 2023 パター スチールシャフト 【34】 シャフト：スチールシャフト","jpy":39080,"landed":10251,"margin_f2f":4869,"margin_shopee":3599,"roi":47,"buyee":"https://buyee.jp/item/yahoo/auction/g1235636347","yahoo":"https://auctions.yahoo.co.jp/jp/auction/g1235636347"},{"title":"スコッティキャメロン SELECT スーパー セレクト デルマー 2023 パター スチールシャフト レフティ 【33】 シャフト：スチールシャフト","jpy":39080,"landed":10251,"margin_f2f":4869,"margin_shopee":3599,"roi":47,"buyee":"https://buyee.jp/item/yahoo/auction/1239166362","yahoo":"https://auctions.yahoo.co.jp/jp/auction/1239166362"},{"title":"タイトリスト スコッティキャメロン 2023 スーパーセレクトニューポート2 34インチ 中古です","jpy":39800,"landed":10414,"margin_f2f":4706,"margin_shopee":3436,"roi":45,"buyee":"https://buyee.jp/item/yahoo/auction/q1239244401","yahoo":"https://auctions.yahoo.co.jp/jp/auction/q1239244401"}],"buyee_search":"https://buyee.jp/item/search/query/%E3%82%B9%E3%82%B3%E3%83%83%E3%83%86%E3%82%A3%E3%82%AD%E3%83%A3%E3%83%A1%E3%83%AD%E3%83%B3%20%E3%82%B9%E3%83%BC%E3%83%91%E3%83%BC%E3%82%BB%E3%83%AC%E3%82%AF%E3%83%88"},"market":{"count30d":10,"median_jpy":35455,"landed":9429,"margin_f2f":5691,"margin_shopee":4421,"roi":60}},{"id":"tour_ad_di6","name":"Tour AD DI-6 桿身(市場測試彈)","jp_kw":"ツアーAD DI-6","jp_floor":8000,"jp_ship":250,"intl_ship":400,"duty":0.05,"sell":null,"tw_note":"台灣零刊登=空白市場。買 1 支測「是沒人賣還是沒人要」","grade":"TEST","live":{"count":21,"items":[{"title":"中古品★グラファイトデザイン ツアーAD DI-6 X 41インチ PXGスリーブ付","jpy":9800,"landed":2912,"margin_f2f":-2912,"margin_shopee":-2972,"roi":-100,"buyee":"https://buyee.jp/item/yahoo/auction/u1213354878","yahoo":"https://auctions.yahoo.co.jp/jp/auction/u1213354878"},{"title":"5W FW用 キャロウェイスリーブ DI-6S TourAD ツアーAD グラファイトデザイン　クアンタム対応 管理 970","jpy":10000,"landed":2958,"margin_f2f":-2958,"margin_shopee":-3018,"roi":-100,"buyee":"https://buyee.jp/item/yahoo/auction/e1233361902","yahoo":"https://auctions.yahoo.co.jp/jp/auction/e1233361902"},{"title":"送料無料 ツアーAD TOUR AD DI 6S フェアウェイウッド 5w 7w シャフト タイトリスト/テーラーメイド/ピン/キャロウェイ","jpy":12980,"landed":3633,"margin_f2f":-3633,"margin_shopee":-3693,"roi":-100,"buyee":"https://buyee.jp/item/yahoo/auction/g1235791415","yahoo":"https://auctions.yahoo.co.jp/jp/auction/g1235791415"},{"title":"【中古シャフト】グラファイトデザイン Tour AD ツアーAD DI-6 S キャロウェイ純正カスタム品 キャロウェイスリーブ付 ドライバー用","jpy":13000,"landed":3638,"margin_f2f":-3638,"margin_shopee":-3698,"roi":-100,"buyee":"https://buyee.jp/item/yahoo/auction/l1239345275","yahoo":"https://auctions.yahoo.co.jp/jp/auction/l1239345275"},{"title":"【GRAPHITE DESIGN】 ツアーAD DI-6S★ピン PING G425.G410.G430　G440 適合スリーブ付★1W　ドライバー用　429","jpy":14000,"landed":3864,"margin_f2f":-3864,"margin_shopee":-3924,"roi":-100,"buyee":"https://buyee.jp/item/yahoo/auction/s1238927502","yahoo":"https://auctions.yahoo.co.jp/jp/auction/s1238927502"}],"buyee_search":"https://buyee.jp/item/search/query/%E3%83%84%E3%82%A2%E3%83%BCAD%20DI-6"},"market":{"count30d":85,"median_jpy":16364,"landed":4400,"margin_f2f":null,"margin_shopee":null,"roi":null}}],"lego":[{"id":"lego_21226","name":"LEGO 21226 Art Project(扁平盒)","pieces":4138,"weight_kg":1.85,"box":"40.2×37.6×5.2cm","msrp_usd":119.99,"target_usd":35.99,"online_usd":71.99,"tw_sell":3496,"note":"⭐扁平盒=樂高裡少數按實重計費的異類,運費最划算","links":[["Walmart 樂高清倉","https://www.walmart.com/browse/toys/lego/4171_4191_1004230"],["Amazon 搜尋","https://www.amazon.com/s?k=lego+21226"],["BrickLink 規格","https://www.bricklink.com/v2/catalog/catalogitem.page?S=21226-1"]],"vol_kg":1.57,"bill_kg":1.85,"scenarios":[{"label":"店內深折 -70% × 空運","usd":35.99,"ship":694,"landed":1953,"margin":1543,"roi":79},{"label":"店內深折 -70% × 海運","usd":35.99,"ship":231,"landed":1467,"margin":2029,"roi":138},{"label":"線上清倉 -40% × 空運","usd":71.99,"ship":694,"landed":3178,"margin":318,"roi":10},{"label":"線上清倉 -40% × 海運","usd":71.99,"ship":231,"landed":2692,"margin":804,"roi":30}]},{"id":"lego_10497","name":"LEGO 10497 Galaxy Explorer(中型盒)","pieces":1219,"weight_kg":1.76,"box":"53.4×27.7×8.9cm","msrp_usd":99.99,"target_usd":36.0,"online_usd":60.0,"tw_sell":3300,"note":"材積重 2.63kg > 實重,按材積計費;甜蜜點尺寸","links":[["Walmart 樂高清倉","https://www.walmart.com/browse/toys/lego/4171_4191_1004230"],["Amazon 搜尋","https://www.amazon.com/s?k=lego+10497"],["BrickLink 規格","https://www.bricklink.com/v2/catalog/catalogitem.page?S=10497-1"]],"vol_kg":2.63,"bill_kg":2.63,"scenarios":[{"label":"店內深折 -70% × 空運","usd":36.0,"ship":986,"landed":2260,"margin":1040,"roi":46},{"label":"店內深折 -70% × 海運","usd":36.0,"ship":329,"landed":1570,"margin":1730,"roi":110},{"label":"線上清倉 -40% × 空運","usd":60.0,"ship":986,"landed":3077,"margin":223,"roi":7},{"label":"線上清倉 -40% × 海運","usd":60.0,"ship":329,"landed":2386,"margin":914,"roi":38}]}],"shopee_pct":0.08,"shopee_flat":60}</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const n = v => (v == null ? '—' : Number(v).toLocaleString('en-US'));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---- 頂部總覽:只計 grade A/B 的建議首批 ---- */
+const BATCH = [
+  {id:'sc_special_select', qty:2},
+  {id:'speeder_nx_green',  qty:2},
+  {id:'sc_super_select',   qty:1},
+  {id:'tour_ad_di6',       qty:1},
+];
+let cost = 0, gain = 0;
+BATCH.forEach(b => {
+  const g = D.golf.find(x => x.id === b.id);
+  if (!g || !g.market) return;
+  cost += g.market.landed * b.qty;
+  if (g.market.margin_f2f) gain += g.market.margin_f2f * b.qty;
+});
+const roi = cost ? Math.round(gain / cost * 100) : 0;
+document.getElementById('summary').innerHTML = [
+  ['建議首批投入', 'NT$' + n(cost)],
+  ['預估淨利', 'NT$' + n(gain), 'pos'],
+  ['整批 ROI', roi + '%', 'pos'],
+  ['日圓匯率', D.rate_jpy_twd.toFixed(4)],
+].map(([k, v, c]) =>
+  `<div class="cell"><span class="k">${k}</span><span class="v ${c || ''}">${v}</span></div>`
+).join('');
+
+const dt = new Date(D.generated);
+document.getElementById('stamp').textContent =
+  '行情更新 ' + dt.toLocaleString('zh-TW', {hour12:false}) + '　·　匯率來源 ' + D.rate_source;
+
+document.getElementById('headnote').innerHTML =
+  '<b>怎麼用:</b>每張卡下方是<b>現在拍場上真的買得到的貨</b>(依落地後淨利排序,最賺的在最上面)。' +
+  '按「去 Buyee 下標」直接跳到該商品的下標頁,日文關鍵字已經幫你填好,你只要看價格出價。' +
+  '所有成本已含日本國內運費、國際運費、關稅 5%、營業稅 5%。售價用台灣<b>實際刊登行情</b>,不是代理商定價。';
+
+/* ---- 高爾夫卡片 ---- */
+document.getElementById('golf').innerHTML = D.golf.map(g => {
+  const m = g.market || {};
+  const cls = g.grade === 'A' ? '' : (g.grade === 'TEST' ? 'test' : 'b');
+  const roiTxt = m.roi != null ? m.roi + '%' : '測試';
+  const rows = (g.live.items || []).map(it => `
+    <tr>
+      <td class="title">${esc(it.title)}</td>
+      <td class="r num">¥${n(it.jpy)}</td>
+      <td class="r num">${n(it.landed)}</td>
+      <td class="r num gain">+${n(it.margin_f2f)}</td>
+      <td class="r num">${it.roi}%</td>
+      <td class="r"><a class="btn" href="${it.buyee}" target="_blank" rel="noopener">去 Buyee 下標</a></td>
+    </tr>`).join('');
+  const liveTbl = g.sell ? `
+    <div class="tblscroll"><table>
+      <thead><tr><th>現在拍場上的貨</th><th class="r">日圓</th><th class="r">落地成本</th>
+      <th class="r">淨利</th><th class="r">ROI</th><th></th></tr></thead>
+      <tbody>${rows}</tbody></table></div>` : `
+    <div class="tblscroll"><table>
+      <thead><tr><th>現在拍場上的貨</th><th class="r">日圓</th><th class="r">落地成本</th><th></th></tr></thead>
+      <tbody>${(g.live.items || []).map(it => `<tr><td class="title">${esc(it.title)}</td>
+        <td class="r num">¥${n(it.jpy)}</td><td class="r num">${n(it.landed)}</td>
+        <td class="r"><a class="btn" href="${it.buyee}" target="_blank" rel="noopener">去 Buyee 下標</a></td></tr>`).join('')}
+      </tbody></table></div>`;
+  return `
+  <article class="card ${cls}">
+    <div class="stripe"></div>
+    <div class="chead">
+      <div class="name">
+        <h3>${esc(g.name)}<span class="pill ${cls || 'a'}">${g.grade}</span></h3>
+        <div class="meta">${esc(g.tw_note)}</div>
+      </div>
+      <div class="roi ${cls}"><b>${roiTxt}</b><span>單筆 ROI</span></div>
+    </div>
+    <div class="breakdown">
+      <div class="bd"><span class="k">日拍中位</span><span class="v num">¥${n(m.median_jpy)}</span></div>
+      <div class="bd"><span class="k">30日成交</span><span class="v num">${n(m.count30d)} 筆</span></div>
+      <div class="bd total"><span class="k">落地成本</span><span class="v num">${n(m.landed)}</span></div>
+      <div class="bd"><span class="k">台灣售價</span><span class="v num">${g.sell ? n(g.sell) : '無錨'}</span></div>
+      <div class="bd"><span class="k">面交淨利</span><span class="v num gain">${m.margin_f2f ? '+' + n(m.margin_f2f) : '—'}</span></div>
+      <div class="bd"><span class="k">蝦皮淨利</span><span class="v num">${m.margin_shopee ? '+' + n(m.margin_shopee) : '—'}</span></div>
+    </div>
+    <div class="livewrap">
+      <div class="livehead">
+        <span class="t">拍場現貨 ${g.live.count} 件</span>
+        <a class="btn ghost" href="${g.live.buyee_search}" target="_blank" rel="noopener">在 Buyee 看全部</a>
+      </div>
+      ${liveTbl}
+    </div>
+  </article>`;
+}).join('');
+
+/* ---- 樂高 ---- */
+document.getElementById('lego').innerHTML = D.lego.map(L => {
+  const best = L.scenarios.reduce((a, b) => b.margin > a.margin ? b : a);
+  return `
+  <article class="card">
+    <div class="stripe"></div>
+    <div class="chead">
+      <div class="name">
+        <h3>${esc(L.name)}</h3>
+        <div class="meta">${L.pieces.toLocaleString()} 片 · 實重 ${L.weight_kg}kg · 材積重 ${L.vol_kg}kg ·
+          計費 ${L.bill_kg}kg · ${esc(L.box)}<br>${esc(L.note)}</div>
+      </div>
+      <div class="roi"><b>${best.roi}%</b><span>最佳情境</span></div>
+    </div>
+    <div class="livewrap">
+      <div class="legomatrix"><table>
+        <thead><tr><th>情境</th><th class="r">美國進價</th><th class="r">運費</th>
+        <th class="r">落地成本</th><th class="r">台灣售價</th><th class="r">淨利</th><th class="r">ROI</th></tr></thead>
+        <tbody>${L.scenarios.map(s => `
+          <tr class="${s === best ? 'best' : ''}">
+            <td>${esc(s.label)}</td>
+            <td class="r num">$${s.usd}</td>
+            <td class="r num">${n(s.ship)}</td>
+            <td class="r num">${n(s.landed)}</td>
+            <td class="r num">${n(L.tw_sell)}</td>
+            <td class="r num ${s.margin > 0 ? 'gain' : ''}">${s.margin > 0 ? '+' : ''}${n(s.margin)}</td>
+            <td class="r num">${s.roi}%</td>
+          </tr>`).join('')}
+        </tbody></table></div>
+      <div class="livehead" style="margin-top:12px">
+        <span class="t">去哪買</span>
+        <span>${L.links.map(([t, u]) =>
+          `<a class="btn ghost" href="${u}" target="_blank" rel="noopener" style="margin-left:6px">${esc(t)}</a>`).join('')}</span>
+      </div>
+    </div>
+  </article>`;
+}).join('');
+
+/* ---- 判死清單 ---- */
+document.getElementById('dead').innerHTML = `
+<details>
+  <summary>已判死 / 暫緩的線(點開看死因,免得重複研究)</summary>
+  <div class="deadbody"><ul>
+    <li><b>盒裝 CPU</b> — 毛利率 6.7-8.7% 低於 Micro Center 所在各州銷售稅率 5.6-9%,數學上無解;
+      且 Micro Center 在四個免稅州零分店。唯一活路=線上下單直寄 Oregon 免稅倉,需美國友人 5 分鐘實測。</li>
+    <li><b>露營帳篷 / Arc'teryx</b> — 損益兩平買價 US$321 vs 全美最深清倉 US$320.99,價差為零;
+      始祖鳥另有仿品把價格錨拉到公司貨兩折的檸檬市場問題。</li>
+    <li><b>捲線器</b> — 台灣水貨行情已被壓到 NT$9,300-9,800,蝦皮抽 14% 後淨利為負,只有 FB 面交勉強 +500。</li>
+    <li><b>有線 HHKB</b> — 台灣同行已把價格壓到 9,700-10,300,淨利僅 1,700-2,500 且月銷個位數。</li>
+    <li><b>球鞋 / 無線類 / SSD / 保健美妝 / 嬰幼</b> — 價差倒掛,或 NCC/BSMI/食藥署層級的「賣了就違法」。</li>
+    <li><b>Scotty Cameron Phantom</b> — 日拍中位 ¥58,864,落地 14,735 vs 台灣 15,800,淨利僅 1,065。</li>
+  </ul></div>
+</details>`;
+
+document.getElementById('foot').innerHTML =
+  'ROI = 單筆交易報酬率(淨利÷落地成本),<b>不是年化</b>——賣不掉就是 0,週轉速度要首批才知道。<br>' +
+  '蝦皮淨利已扣 ' + (D.shopee_pct * 100) + '% + NT$' + D.shopee_flat + ';FB 社團面交零抽成,是主戰場。<br>' +
+  '球桿出貨走黑貓「高爾夫宅急便」180cm/20kg 內本島單一價 NT$310,可直寄球場櫃檯。<br>' +
+  '樂高運費為估值(空運 NT$375/kg、海運 NT$125/kg)待實測校準;樂高整盒放不進任何 USPS 統一費率箱。';
+</script>
