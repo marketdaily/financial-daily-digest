@@ -539,3 +539,22 @@
 {"date": "2026-08-04", "code": "5340", "source": "leadflow", "level": "red", "signal": "建榮(5340) 無消息近漲停+10.0%(連2根,5日+13.0%),疑資訊先行資金|外資+投信近3日僅-76張,法人未同步=隱形買盤", "price_at_signal": 70.6}
 {"date": "2026-08-04", "code": "6727", "source": "leadflow", "level": "red", "signal": "亞泰金屬(6727) 無消息近漲停+10.0%(連3根,5日+7.9%),疑資訊先行資金|外資+投信近3日僅+80張,法人未同步=隱形買盤", "price_at_signal": 370.0}
 {"date": "2026-08-04", "code": "2337", "source": "leadflow", "level": "red", "signal": "旺宏(2337) 無消息近漲停+8.6%(連3根,5日+6.2%),疑資訊先行資金|外資+投信近3日僅-1494張,法人未同步=隱形買盤", "price_at_signal": 120.0}
+{"date": "2026-08-05", "code": "2221", "source": "institutional", "level": "red", "signal": "大甲(2221):外資連 5 日賣超(5日淨賣 -113 張)", "price_at_signal": 44.75}
+{"date": "2026-08-05", "code": "3512", "source": "institutional", "level": "yellow", "signal": "皇龍(3512):法人 20 日淨賣超 -206 張(未成連續型態)", "price_at_signal": 19.75}
+{"date": "2026-08-05", "code": "8222", "source": "mops_news", "level": "red", "signal": "寶一(8222) 重訊[2026-08-04]:公告本公司發行國內第一次有擔保轉換公司債乙案， 向金管會申請延長募集期間三個月", "price_at_signal": 37.45}
+{"date": "2026-08-05", "code": "8467", "source": "mops_news", "level": "yellow", "signal": "波力-KY(8467) 重訊[2026-08-04]:公告本公司代理發言人異動事宜", "price_at_signal": 98.5}
+{"date": "2026-08-05", "code": "4198", "source": "mops_news", "level": "red", "signal": "欣大健康(4198) 重訊[2026-08-04]:補充說明本公司董事會決議發行國內第一次有擔保轉換公司債", "price_at_signal": 41.3}
+{"date": "2026-08-05", "code": "3219", "source": "mops_news", "level": "red", "signal": "倚強科(3219) 重訊[2026-08-04]:公告本公司國內第一次無擔保轉換公司債代收價款行庫 及存儲專戶行庫", "price_at_signal": 65.0}
+{"date": "2026-08-05", "code": "3624", "source": "leadflow", "level": "red", "signal": "光頡(3624) 無消息近漲停+10.0%(連2根,5日+20.1%),疑資訊先行資金|外資+投信近3日僅+157張,法人未同步=隱形買盤", "price_at_signal": 74.8}
+{"date": "2026-08-05", "code": "4971", "source": "leadflow", "level": "red", "signal": "IET-KY(4971) 無消息近漲停+10.0%(連4根,5日+31.6%),疑資訊先行資金|外資+投信近3日僅+186張,法人未同步=隱形買盤", "price_at_signal": 462.0}
+{"date": "2026-08-05", "code": "6148", "source": "leadflow", "level": "red", "signal": "驊宏資(6148) 無消息近漲停+10.0%(量能4.9×,5日+15.3%),疑資訊先行資金|外資+投信近3日僅+54張,法人未同步=隱形買盤", "price_at_signal": 29.7}
+{"date": "2026-08-05", "code": "8050", "source": "leadflow", "level": "yellow", "signal": "廣積(8050) 無消息近漲停+10.0%(量能1.7×,5日+6.7%),疑資訊先行資金", "price_at_signal": 64.9}
+{"date": "2026-08-05", "code": "4707", "source": "leadflow", "level": "red", "signal": "磐亞(4707) 無消息近漲停+10.0%(連3根,5日+19.6%),疑資訊先行資金|外資+投信近3日僅-580張,法人未同步=隱形買盤", "price_at_signal": 30.85}
+{"date": "2026-08-05", "code": "6679", "source": "leadflow", "level": "yellow", "signal": "鈺太(6679) 無消息近漲停+10.0%(量能2.7×,5日+18.4%),疑資訊先行資金", "price_at_signal": 231.5}
+{"date": "2026-08-05", "code": "2455", "source": "leadflow", "level": "red", "signal": "全新(2455) 無消息近漲停+9.9%(連4根,5日+42.4%),疑資訊先行資金|外資+投信近3日僅-3500張,法人未同步=隱形買盤", "price_at_signal": 388.0}
+{"date": "2026-08-05", "code": "4908", "source": "leadflow", "level": "red", "signal": "前鼎(4908) 無消息近漲停+10.0%(連2根,5日+31.9%),疑資訊先行資金|外資+投信近3日僅-283張,法人未同步=隱形買盤", "price_at_signal": 165.5}
+{"date": "2026-08-05", "code": "4991", "source": "leadflow", "level": "red", "signal": "環宇-KY(4991) 無消息近漲停+10.0%(連4根,5日+31.6%),疑資訊先行資金|外資+投信近3日僅+210張,法人未同步=隱形買盤", "price_at_signal": 469.0}
+{"date": "2026-08-05", "code": "3587", "source": "leadflow", "level": "red", "signal": "閎康(3587) 無消息近漲停+9.9%(連3根,5日+28.6%),疑資訊先行資金|外資+投信近3日僅-158張,法人未同步=隱形買盤", "price_at_signal": 276.5}
+{"date": "2026-08-05", "code": "4979", "source": "leadflow", "level": "red", "signal": "華星光(4979) 無消息近漲停+9.9%(連3根,5日+28.0%),疑資訊先行資金|外資+投信近3日+1435張", "price_at_signal": 492.0}
+{"date": "2026-08-05", "code": "6840", "source": "leadflow", "level": "red", "signal": "東研信超(6840) 無消息近漲停+9.9%(量能11.9×,5日+18.7%),疑資訊先行資金|外資+投信近3日僅+26張,法人未同步=隱形買盤", "price_at_signal": 68.6}
+{"date": "2026-08-05", "code": "6547", "source": "leadflow", "level": "red", "signal": "高端疫苗(6547) 無消息近漲停+9.9%(量能4.1×,5日+14.0%),疑資訊先行資金|外資+投信近3日+2387張", "price_at_signal": 52.1}
