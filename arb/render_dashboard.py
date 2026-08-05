@@ -120,6 +120,12 @@ td{padding:8px 10px 8px 0; border-top:1px solid var(--line); vertical-align:midd
 td.title{max-width:330px; font-size:13px; line-height:1.4}
 tr:first-child td{border-top:1px solid var(--line)}
 .gain{color:var(--good); font-weight:620}
+.muted-row{opacity:.55}
+.gatechip{display:inline-block; font-size:10.5px; font-weight:620; padding:2px 7px;
+  border-radius:20px; white-space:nowrap}
+.gatechip.pass{background:var(--good); color:#fff}
+.gatechip.warn{background:var(--warn); color:#fff}
+.gatechip.blocked{background:var(--crit); color:#fff}
 
 a.btn{display:inline-block; background:var(--accent); color:#fff; text-decoration:none;
   font-size:12.5px; font-weight:600; padding:6px 13px; border-radius:6px;
@@ -182,22 +188,16 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g,
   c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ---- 頂部總覽:只計 grade A/B 的建議首批 ---- */
-const BATCH = [
-  {id:'sc_special_select', qty:2},
-  {id:'speeder_nx_green',  qty:2},
-  {id:'sc_super_select',   qty:1},
-  {id:'tour_ad_di6',       qty:1},
-];
-let cost = 0, gain = 0;
-BATCH.forEach(b => {
-  const g = D.golf.find(x => x.id === b.id);
-  if (!g || !g.market) return;
-  cost += g.market.landed * b.qty;
-  if (g.market.margin_f2f) gain += g.market.margin_f2f * b.qty;
-});
+// 總覽只計「四關全過」的現貨——沒過關的不該進投資總額
+const BUYABLE = D.golf.flatMap(g => (g.live.items || [])
+  .filter(x => x.ok_to_buy && x.margin_f2f)
+  .map(x => ({...x, from: g.name})));
+const cost = BUYABLE.reduce((a, x) => a + x.landed, 0);
+const gain = BUYABLE.reduce((a, x) => a + x.margin_f2f, 0);
 const roi = cost ? Math.round(gain / cost * 100) : 0;
 document.getElementById('summary').innerHTML = [
-  ['建議首批投入', 'NT$' + n(cost)],
+  ['四關全過', BUYABLE.length + ' 件'],
+  ['全買下來要', 'NT$' + n(cost)],
   ['預估淨利', 'NT$' + n(gain), 'pos'],
   ['整批 ROI', roi + '%', 'pos'],
   ['日圓匯率', D.rate_jpy_twd.toFixed(4)],
@@ -210,34 +210,52 @@ document.getElementById('stamp').textContent =
   '行情更新 ' + dt.toLocaleString('zh-TW', {hour12:false}) + '　·　匯率來源 ' + D.rate_source;
 
 document.getElementById('headnote').innerHTML =
-  '<b>怎麼用:</b>每張卡下方是<b>現在拍場上真的買得到的貨</b>(依落地後淨利排序,最賺的在最上面)。' +
-  '按「去 Buyee 下標」直接跳到該商品的下標頁,日文關鍵字已經幫你填好,你只要看價格出價。' +
-  '所有成本已含日本國內運費、國際運費、關稅 5%、營業稅 5%。售價用台灣<b>實際刊登行情</b>,不是代理商定價。';
+  '<b>怎麼用:</b>只有「四關」欄位是綠色的才可以買——它代表 ①台灣錨有足量樣本 ②規格世代相符 ' +
+  '③賣家好評率 ≥99% ④現在可以下標,四項全過。灰掉的那幾列是查給你看的,不是建議買的。' +
+  '所有成本已含日本國內運費、國際運費、關稅 5%、營業稅 5%;售價錨用台灣<b>實際刊登行情</b>' +
+  '且經過樣本數與關鍵字漂移校正,不是代理商定價。';
 
 /* ---- 高爾夫卡片 ---- */
 document.getElementById('golf').innerHTML = D.golf.map(g => {
   const m = g.market || {};
   const cls = g.grade === 'A' ? '' : (g.grade === 'TEST' ? 'test' : 'b');
   const roiTxt = m.roi != null ? m.roi + '%' : '測試';
-  const rows = (g.live.items || []).map(it => `
-    <tr>
+  const gate = it => {
+    if (it.error) return {cls:'blocked', txt:'查驗失敗'};
+    if (it.biddable === false) return {cls:'blocked', txt:'不可下標'};
+    if (it.seller_rating == null) return {cls:'blocked', txt:'評價未知'};
+    if (!it.ok_to_buy) return {cls:'warn', txt:`賣家 ${it.seller_rating}%`};
+    return {cls:'pass', txt:`賣家 ${it.seller_rating}%`};
+  };
+  const rows = (g.live.items || []).map(it => {
+    const gt = gate(it), pass = gt.cls === 'pass' && it.margin_f2f;
+    return `
+    <tr class="${pass ? '' : 'muted-row'}">
       <td class="title">${esc(it.title)}</td>
       <td class="r num">¥${n(it.jpy)}</td>
       <td class="r num">${n(it.landed)}</td>
-      <td class="r num gain">+${n(it.margin_f2f)}</td>
-      <td class="r num">${it.roi}%</td>
-      <td class="r"><a class="btn" href="${it.buyee}" target="_blank" rel="noopener">去 Buyee 下標</a></td>
-    </tr>`).join('');
+      <td class="r num ${pass ? 'gain' : ''}">${it.margin_f2f ? '+' + n(it.margin_f2f) : '—'}</td>
+      <td class="r num">${it.roi != null ? it.roi + '%' : '—'}</td>
+      <td class="r"><span class="gatechip ${gt.cls}">${gt.txt}</span></td>
+      <td class="r">${pass
+        ? `<a class="btn" href="${it.buyee}" target="_blank" rel="noopener">去 Buyee 下標</a>`
+        : `<a class="btn ghost" href="${it.buyee}" target="_blank" rel="noopener">查看</a>`}</td>
+    </tr>`;}).join('');
   const liveTbl = g.sell ? `
     <div class="tblscroll"><table>
       <thead><tr><th>現在拍場上的貨</th><th class="r">日圓</th><th class="r">落地成本</th>
-      <th class="r">淨利</th><th class="r">ROI</th><th></th></tr></thead>
+      <th class="r">淨利</th><th class="r">ROI</th><th class="r">四關</th><th></th></tr></thead>
       <tbody>${rows}</tbody></table></div>` : `
     <div class="tblscroll"><table>
-      <thead><tr><th>現在拍場上的貨</th><th class="r">日圓</th><th class="r">落地成本</th><th></th></tr></thead>
-      <tbody>${(g.live.items || []).map(it => `<tr><td class="title">${esc(it.title)}</td>
+      <thead><tr><th>現在拍場上的貨</th><th class="r">日圓</th><th class="r">落地成本</th>
+      <th class="r">四關</th><th></th></tr></thead>
+      <tbody>${(g.live.items || []).map(it => {
+        const gt = gate(it);
+        return `<tr class="muted-row"><td class="title">${esc(it.title)}</td>
         <td class="r num">¥${n(it.jpy)}</td><td class="r num">${n(it.landed)}</td>
-        <td class="r"><a class="btn" href="${it.buyee}" target="_blank" rel="noopener">去 Buyee 下標</a></td></tr>`).join('')}
+        <td class="r"><span class="gatechip blocked">無台灣錨</span></td>
+        <td class="r"><a class="btn ghost" href="${it.buyee}" target="_blank" rel="noopener">查看</a></td></tr>`;
+      }).join('')}
       </tbody></table></div>`;
   return `
   <article class="card ${cls}">

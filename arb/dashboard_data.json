@@ -1,5 +1,5 @@
 {
- "generated": "2026-08-05T10:39:22.987300+00:00",
+ "generated": "2026-08-05T10:44:36.126717+00:00",
  "rate_jpy_twd": 0.2056,
  "rate_source": "open.er-api.com",
  "rate_usd_twd": 32.4,
@@ -31,11 +31,11 @@
       "margin_shopee": 1400,
       "roi": 30,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
+      "seller_rating": 98.7,
+      "seller_good": 2225,
+      "seller_bad": 29,
       "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "reason": "賣家好評率 98.7% 低於門檻 99.0%"
      },
      {
       "title": "【良品】SCOTTY CAMERON スコッティキャメロン Special SELECT DEL MAR スペシャルセレクト デルマー パター メンズ 33インチ",
@@ -49,11 +49,11 @@
       "margin_shopee": 1400,
       "roi": 30,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
+      "seller_rating": 98.7,
+      "seller_good": 2225,
+      "seller_bad": 29,
       "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "reason": "賣家好評率 98.7% 低於門檻 99.0%"
      },
      {
       "title": "スコッティキャメロン スペシャルセレクト フローバック5 パター",
@@ -66,12 +66,12 @@
       "margin_f2f": 1560,
       "margin_shopee": 720,
       "roi": 19,
-      "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
+      "biddable": false,
+      "seller_rating": 99.8,
+      "seller_good": 789,
+      "seller_bad": 2,
       "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "reason": "不可下標(多為賣家設了投標者評價限制)"
      },
      {
       "title": "タイトリスト SCOTTY CAMERON Special select SQUAREBACK 2 34インチ パター PT フレックスその他",
@@ -150,11 +150,11 @@
       "roi": null,
       "note": "世代 super 與售價錨(None)不符,無法計算毛利",
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.5,
+      "seller_good": 1080,
+      "seller_bad": 5,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "即決 カスタム ショップ SCOTTY CAMERON スコッティキャメロン STUDIO SELECT NEWPORT2.6 スタジオセレクト ニューポート2.6 34インチ",
@@ -169,11 +169,11 @@
       "roi": null,
       "note": "世代 studio 與售價錨(None)不符,無法計算毛利",
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.7,
+      "seller_good": 2640,
+      "seller_bad": 7,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "SCOTTY CAMERON Select NEWPORT 2 スコッティキャメロン セレクト ニューポート2 パター 左 レフティ",
@@ -188,11 +188,11 @@
       "roi": null,
       "note": "世代 不明 與售價錨(None)不符,無法計算毛利",
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 100.0,
+      "seller_good": 339,
+      "seller_bad": 0,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "タイトリスト スコッティキャメロン 2023 スーパーセレクトニューポート2 34インチ 中古です",
@@ -221,17 +221,17 @@
       "note": "世代 studio 與售價錨(None)不符,無法計算毛利"
      },
      {
-      "title": "世界限定500本モデル！☆スコッティキャメロン/セレクト(2014) ニューポート2.5 1st オブ 500 パター/34インチ/メーカー正規品/6377",
-      "jpy": 30000,
-      "landed": 8192,
-      "gen": null,
+      "title": "SCOTTY CAMERON STUDIO SELECT NEWPORT2.7 　34インチUSED　　　 スタジオセレクト ニューポート2.7",
+      "jpy": 15800,
+      "landed": 4974,
+      "gen": "studio",
       "anchor_applies": true,
-      "buyee": "https://buyee.jp/item/yahoo/auction/f1189567616",
-      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/f1189567616",
+      "buyee": "https://buyee.jp/item/yahoo/auction/1238044933",
+      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/1238044933",
       "margin_f2f": null,
       "margin_shopee": null,
       "roi": null,
-      "note": "世代 不明 與售價錨(None)不符,無法計算毛利"
+      "note": "世代 studio 與售價錨(None)不符,無法計算毛利"
      }
     ],
     "search_url": "https://auctions.yahoo.co.jp/search/search?p=%E3%82%B9%E3%82%B3%E3%83%83%E3%83%86%E3%82%A3%E3%82%AD%E3%83%A3%E3%83%A1%E3%83%AD%E3%83%B3%20%E3%83%8B%E3%83%A5%E3%83%BC%E3%83%9D%E3%83%BC%E3%83%882&n=50",
@@ -260,7 +260,7 @@
    "grade": "A",
    "tw_kw": "speeder nx green",
    "live": {
-    "count": 26,
+    "count": 25,
     "items": [
      {
       "title": "★Speeder NX GREEN☆スピーダーNX グリーン 60S ★DARKSPEED 　Cobra コブラ適合スリーブ　5W FW用　シャフト　27２",
@@ -274,11 +274,11 @@
       "margin_shopee": 5636,
       "roi": 203,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.0,
+      "seller_good": 25503,
+      "seller_bad": 261,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "★SPEEDER NX GREEN スピーダー NXグリーン 40SR ★★ピン PING G425.G410.G430.G440 適合スリーブ付★3W FW用★422",
@@ -292,11 +292,11 @@
       "margin_shopee": 5069,
       "roi": 157,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.0,
+      "seller_good": 25503,
+      "seller_bad": 261,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "★SPEEDER NX GREEN スピーダー NXグリーン 50S ★★ピン PING G425.G410.G430.G440 適合スリーブ付★3W FW用★423",
@@ -310,11 +310,11 @@
       "margin_shopee": 4956,
       "roi": 150,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.0,
+      "seller_good": 25503,
+      "seller_bad": 261,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "★Speeder NX GREEN☆スピーダーNX グリーン 50S★ドライバー　1W用★ダークスピード　Cobra コブラスリーブ　シャフト　９７４",
@@ -393,11 +393,11 @@
       "margin_shopee": 4647,
       "roi": 69,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.5,
+      "seller_good": 1080,
+      "seller_bad": 5,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "スコッティキャメロン SELECT スーパー セレクト ニューポート 2 プラス パター スチールシャフト 【33】 シャフト：スチールシャフト",
@@ -411,11 +411,11 @@
       "margin_shopee": 3042,
       "roi": 42,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.4,
+      "seller_good": 56980,
+      "seller_bad": 369,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "そこそこ美品☆メーカー正規品☆スコッティキャメロン/スーパーセレクト(2023) ニューポート＋ パター/34インチ/ヘッドカバー付き/7928",
@@ -429,11 +429,11 @@
       "margin_shopee": 2833,
       "roi": 39,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.1,
+      "seller_good": 12041,
+      "seller_bad": 111,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "スコッティキャメロン SELECT スーパー セレクト GOLO 6 2023 パター スチールシャフト 【34】 シャフト：スチールシャフト",
@@ -512,11 +512,11 @@
       "margin_shopee": 3695,
       "roi": 149,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.9,
+      "seller_good": 19079,
+      "seller_bad": 14,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "5W FW用 キャロウェイスリーブ DI-6S TourAD ツアーAD グラファイトデザイン　クアンタム対応 管理 970",
@@ -530,11 +530,11 @@
       "margin_shopee": 3649,
       "roi": 145,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.0,
+      "seller_good": 25503,
+      "seller_bad": 261,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "送料無料 ツアーAD TOUR AD DI 6S フェアウェイウッド 5w 7w シャフト タイトリスト/テーラーメイド/ピン/キャロウェイ",
@@ -548,11 +548,11 @@
       "margin_shopee": 2974,
       "roi": 99,
       "biddable": true,
-      "seller_rating": null,
-      "seller_good": null,
-      "seller_bad": null,
-      "ok_to_buy": false,
-      "reason": "評價抓取失敗,fail-closed 視為不可買"
+      "seller_rating": 99.2,
+      "seller_good": 13466,
+      "seller_bad": 106,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
       "title": "【中古シャフト】グラファイトデザイン Tour AD ツアーAD DI-6 S キャロウェイ純正カスタム品 キャロウェイスリーブ付 ドライバー用",
