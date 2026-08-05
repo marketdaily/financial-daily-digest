@@ -1,0 +1,70 @@
+{
+  "_comment": "跨境套利監控清單。jp_kw=日拍搜尋詞(日文), tw_kw=台灣行情搜尋詞, floor=濾配件雜訊的價格下限, duty=關稅率, jp_ship=日本國內運費NTD, intl_ship=國際運費NTD(依重量), min_margin=推播門檻(淨利NTD)",
+  "items": [
+    {
+      "id": "shaft_tour_ad_di6",
+      "name": "Tour AD DI-6 桿身",
+      "line": "golf_shaft",
+      "jp_kw": "ツアーAD DI-6",
+      "tw_kw": "tour ad di-6",
+      "floor": 3000,
+      "duty": 0.05,
+      "jp_ship": 250,
+      "intl_ship": 400,
+      "min_margin": 1500,
+      "note": "台灣正品行情空白(BigGo零結果),露天整片NT$892-3325是仿品帶。空白=需自建行情,售價由我們定"
+    },
+    {
+      "id": "shaft_ventus_blue_6s",
+      "name": "Ventus Blue 6S 桿身",
+      "line": "golf_shaft",
+      "jp_kw": "ベンタス ブルー 6S",
+      "tw_kw": "ventus blue 6s",
+      "floor": 3000,
+      "duty": 0.05,
+      "jp_ship": 250,
+      "intl_ship": 400,
+      "min_margin": 1500,
+      "note": "同上,台灣正品市場空白"
+    },
+    {
+      "id": "putter_sc_newport2",
+      "name": "Scotty Cameron Newport 2 推桿",
+      "line": "golf_putter",
+      "jp_kw": "スコッティキャメロン ニューポート2",
+      "tw_kw": "scotty cameron newport 2",
+      "floor": 6000,
+      "duty": 0.05,
+      "jp_ship": 400,
+      "intl_ship": 900,
+      "min_margin": 3000,
+      "note": "旗艦品類。序號可查證(官方registry)=保真護城河"
+    },
+    {
+      "id": "reel_shimano_twinpower_c3000xg",
+      "name": "Shimano 24 Twin Power C3000XG",
+      "line": "reel",
+      "jp_kw": "24 ツインパワー C3000XG",
+      "tw_kw": "twin power c3000xg",
+      "floor": 5000,
+      "duty": 0.05,
+      "jp_ship": 300,
+      "intl_ship": 500,
+      "min_margin": 800,
+      "note": "已降級:蝦皮抽14%後淨利趨近零,只有FB面交成立。留在雷達裡監控行情變化"
+    },
+    {
+      "id": "reel_daiwa_certate_lt3000",
+      "name": "Daiwa 24 Certate LT3000",
+      "line": "reel",
+      "jp_kw": "24 セルテート LT3000",
+      "tw_kw": "daiwa certate lt3000",
+      "floor": 5000,
+      "duty": 0.05,
+      "jp_ship": 300,
+      "intl_ship": 500,
+      "min_margin": 800,
+      "note": "實查倒掛(漁拓蝦皮商城10920起<水貨落地成本)。監控用,不進貨"
+    }
+  ]
+}
