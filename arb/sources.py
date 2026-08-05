@@ -20,8 +20,14 @@ def _num(s):
     return int(str(s).replace(",", ""))
 
 
-def jp_sold(keyword, timeout=25):
-    """日本雅虎拍賣近 30 日落札行情。回 dict 或 {'error': ...}。"""
+def jp_sold(keyword, jp_floor=0, timeout=25):
+    """日本雅虎拍賣近 30 日落札行情。回 dict 或 {'error': ...}。
+
+    ⚠️ meta 的「平均落札価格」會被配件污染:同關鍵字下頭套/握把/配重等小物
+    也算進平均。實例:SC Special Select meta 均價 ¥18,451,但逐筆分布是
+    低段 ¥3,000-5,000(配件)、高段 ¥27,000-33,000(整支推桿)——均價低估近一半,
+    會讓落地成本算得太便宜、毛利虛胖。故同時解析逐筆成交價並取分位數。
+    """
     url = "https://aucfree.com/search?q=" + requests.utils.quote(keyword)
     try:
         r = requests.get(url, headers={"User-Agent": UA}, timeout=timeout)
@@ -34,7 +40,25 @@ def jp_sold(keyword, timeout=25):
         if "件あります" in r.text or "落札" in r.text:
             return {"error": "parse_failed_layout_changed"}
         return {"error": "no_results"}
-    return {"count": _num(m.group(1)), "avg_jpy": _num(m.group(2)), "url": url}
+
+    out = {"count": _num(m.group(1)), "avg_jpy": _num(m.group(2)), "url": url}
+
+    raw = [_num(x) for x in re.findall(r"([0-9,]{3,})\s*円", r.text)]
+    vals = sorted(v for v in raw if jp_floor <= v <= 3_000_000)
+    if len(vals) >= 4:
+        out["sample"] = len(vals)
+        out["median_jpy"] = int(statistics.median(vals))
+        out["p25_jpy"] = vals[len(vals) // 4]
+        out["p75_jpy"] = vals[(len(vals) * 3) // 4]
+        # 進貨成本一律用 median(抗配件雜訊),而非 meta 均價
+        out["cost_jpy"] = out["median_jpy"]
+        # 低段離群佔比高 = 混了配件,標記給上層決定要不要信
+        out["contaminated"] = out["median_jpy"] > out["avg_jpy"] * 1.25
+    else:
+        out["cost_jpy"] = out["avg_jpy"]
+        out["sample"] = len(vals)
+        out["contaminated"] = None      # 樣本太少無法判斷,不能當作乾淨
+    return out
 
 
 def tw_listings(page, keyword, price_floor=0, price_cap=500_000, settle_ms=3500):

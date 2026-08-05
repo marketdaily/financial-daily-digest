@@ -25,6 +25,8 @@ class FakePage:
 
 
 def stub_sources(jp, tw):
+    if "error" not in jp and "cost_jpy" not in jp:
+        jp = {**jp, "cost_jpy": jp["avg_jpy"], "contaminated": False}
     import arb.radar as R
     R.sources.jp_sold = lambda kw, **k: jp
     R.sources.tw_listings = lambda page, kw, **k: tw
@@ -79,6 +81,25 @@ def main():
           r["margin_shopee_cons"] ==
           round(8300 * (1 - SHOPEE_PCT) - SHOPEE_FLAT - r["landed_cost"]))
     check("蝦皮淨利必然低於面交", r["margin_shopee_cons"] < r["margin_facetoface_cons"])
+
+    print("日本端配件污染:成本必須用中位數不是均價")
+    # 均價被配件拉低到 18,451,真實中位 30,000 → 成本必須以中位計
+    stub_sources({"count": 20, "avg_jpy": 18_451, "cost_jpy": 30_000,
+                  "contaminated": True},
+                 {"count": 10, "min": 14000, "p25": 15000, "median": 15500,
+                  "max": 17000})
+    r_dirty = evaluate(ITEM, FakePage(), 0.21)
+    stub_sources({"count": 20, "avg_jpy": 18_451, "cost_jpy": 18_451,
+                  "contaminated": False},
+                 {"count": 10, "min": 14000, "p25": 15000, "median": 15500,
+                  "max": 17000})
+    r_clean = evaluate(ITEM, FakePage(), 0.21)
+    check("污染標的落地成本高於用均價算的版本",
+          r_dirty["landed_cost"] > r_clean["landed_cost"],
+          f"dirty={r_dirty['landed_cost']} clean={r_clean['landed_cost']}")
+    check("污染旗標有傳到 row", r_dirty["jp_contaminated"] is True)
+    check("污染會實質壓低毛利(不是只標記不作用)",
+          r_dirty["margin_facetoface_cons"] < r_clean["margin_facetoface_cons"])
 
     print("fail-loud:訊源壞掉不得偽裝成沒機會")
     stub_sources({"error": "http_503"},

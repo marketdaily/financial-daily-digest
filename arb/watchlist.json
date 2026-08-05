@@ -1,5 +1,5 @@
 {
-  "_comment": "跨境套利監控清單。jp_kw=日拍搜尋詞(日文), tw_kw=台灣行情搜尋詞, floor=濾配件雜訊的價格下限, duty=關稅率, jp_ship=日本國內運費NTD, intl_ship=國際運費NTD(依重量/長度), min_margin=推播門檻(淨利NTD)。桿身可拆較短運費低;推桿87-90cm長條物運費較高。",
+  "_comment": "跨境套利監控清單。jp_kw=日拍搜尋詞(日文), tw_kw=台灣行情搜尋詞, floor=濾配件雜訊的價格下限, duty=關稅率, jp_ship=日本國內運費NTD, intl_ship=國際運費NTD(依重量/長度), min_margin=推播門檻(淨利NTD)。桿身可拆較短運費低;推桿87-90cm長條物運費較高。 jp_floor=日本端配件過濾下限(¥):同關鍵字下頭套/握把/配重會把均價拉低近半,必須濾掉。",
   "items": [
     {
       "id": "shaft_tour_ad_di6",
@@ -12,7 +12,8 @@
       "jp_ship": 250,
       "intl_ship": 400,
       "min_margin": 1500,
-      "note": "台灣正品行情空白(BigGo零結果),露天整片NT$892-3325是仿品帶。空白=需自建行情"
+      "note": "台灣正品行情空白(BigGo零結果),露天整片NT$892-3325是仿品帶。空白=需自建行情",
+      "jp_floor": 8000
     },
     {
       "id": "shaft_tour_ad_vr6",
@@ -24,7 +25,8 @@
       "duty": 0.05,
       "jp_ship": 250,
       "intl_ship": 400,
-      "min_margin": 1500
+      "min_margin": 1500,
+      "jp_floor": 8000
     },
     {
       "id": "shaft_ventus_blue_6s",
@@ -36,7 +38,8 @@
       "duty": 0.05,
       "jp_ship": 250,
       "intl_ship": 400,
-      "min_margin": 1500
+      "min_margin": 1500,
+      "jp_floor": 8000
     },
     {
       "id": "shaft_ventus_black_6s",
@@ -48,7 +51,8 @@
       "duty": 0.05,
       "jp_ship": 250,
       "intl_ship": 400,
-      "min_margin": 1500
+      "min_margin": 1500,
+      "jp_floor": 8000
     },
     {
       "id": "shaft_diamana_tb60",
@@ -60,7 +64,8 @@
       "duty": 0.05,
       "jp_ship": 250,
       "intl_ship": 400,
-      "min_margin": 1500
+      "min_margin": 1500,
+      "jp_floor": 8000
     },
     {
       "id": "shaft_speeder_nx_green",
@@ -72,7 +77,8 @@
       "duty": 0.05,
       "jp_ship": 250,
       "intl_ship": 400,
-      "min_margin": 1500
+      "min_margin": 1500,
+      "jp_floor": 8000
     },
     {
       "id": "putter_sc_newport2",
@@ -85,7 +91,8 @@
       "jp_ship": 400,
       "intl_ship": 900,
       "min_margin": 3000,
-      "note": "旗艦品類。序號可查證(官方registry)=保真護城河。⚠️版本多(Studio/Special/Super Select),spread大要人工核款"
+      "note": "旗艦品類。序號可查證(官方registry)=保真護城河。⚠️版本多(Studio/Special/Super Select),spread大要人工核款",
+      "jp_floor": 15000
     },
     {
       "id": "putter_sc_super_select",
@@ -97,7 +104,8 @@
       "duty": 0.05,
       "jp_ship": 400,
       "intl_ship": 900,
-      "min_margin": 3000
+      "min_margin": 3000,
+      "jp_floor": 15000
     },
     {
       "id": "putter_sc_special_select",
@@ -109,7 +117,8 @@
       "duty": 0.05,
       "jp_ship": 400,
       "intl_ship": 900,
-      "min_margin": 3000
+      "min_margin": 3000,
+      "jp_floor": 15000
     },
     {
       "id": "putter_sc_phantom",
@@ -121,7 +130,8 @@
       "duty": 0.05,
       "jp_ship": 400,
       "intl_ship": 900,
-      "min_margin": 3000
+      "min_margin": 3000,
+      "jp_floor": 15000
     },
     {
       "id": "reel_shimano_twinpower_c3000xg",
@@ -134,7 +144,8 @@
       "jp_ship": 300,
       "intl_ship": 500,
       "min_margin": 800,
-      "note": "已降級:蝦皮抽14%後淨利趨近零,只有FB面交成立。留在雷達監控行情變化"
+      "note": "已降級:蝦皮抽14%後淨利趨近零,只有FB面交成立。留在雷達監控行情變化",
+      "jp_floor": 10000
     },
     {
       "id": "reel_daiwa_certate_lt3000",
@@ -147,7 +158,8 @@
       "jp_ship": 300,
       "intl_ship": 500,
       "min_margin": 800,
-      "note": "實查倒掛(漁拓蝦皮商城10920起<水貨落地成本)。監控用,不進貨"
+      "note": "實查倒掛(漁拓蝦皮商城10920起<水貨落地成本)。監控用,不進貨",
+      "jp_floor": 10000
     }
   ]
 }

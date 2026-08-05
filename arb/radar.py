@@ -62,7 +62,7 @@ def landed_cost(jpy, rate, item):
 
 
 def evaluate(item, page, rate):
-    jp = sources.jp_sold(item["jp_kw"])
+    jp = sources.jp_sold(item["jp_kw"], jp_floor=item.get("jp_floor", 0))
     tw = sources.tw_listings(page, item["tw_kw"], price_floor=item.get("floor", 0))
     row = {"id": item["id"], "name": item["name"], "line": item["line"],
            "jp": jp, "tw": tw, "rate": rate}
@@ -74,8 +74,10 @@ def evaluate(item, page, rate):
         row["status"] = "tw_source_error"
         return row
 
-    cost = landed_cost(jp["avg_jpy"], rate, item)
+    # 用 median 不用 meta 均價:均價會被同關鍵字下的配件(頭套/握把/配重)拉低
+    cost = landed_cost(jp["cost_jpy"], rate, item)
     row["landed_cost"] = cost
+    row["jp_contaminated"] = jp.get("contaminated")
 
     # 流動性:日拍件數少=補不到穩定貨源,只能做一次性;台灣刊登少=可能賣不掉。
     # 毛利再高,買得到但出不掉一樣是死錢。
@@ -169,7 +171,10 @@ def main():
                 "tw_source_error": "🔴"}.get(st, "?")
         line = f"{mark} {r['name']} [{st}]"
         if "jp" in r and "count" in r.get("jp", {}):
-            line += f" 日拍{r['jp']['count']}筆/¥{r['jp']['avg_jpy']:,}"
+            j = r["jp"]
+            line += f" 日拍{j['count']}筆/中位¥{j.get('cost_jpy', 0):,}"
+            if j.get("contaminated"):
+                line += "(均價¥%s被配件污染)" % f"{j['avg_jpy']:,}"
         if "landed_cost" in r:
             line += f" 落地={r['landed_cost']}"
         if "anchor" in r:
@@ -188,7 +193,7 @@ def main():
         body = "\n".join(
             f"・{r['name']}({'/'.join(r['passing_channels'])}"
             + (",錨不可靠" if not r["anchor_reliable"] else "") + ")"
-            f":日拍均價¥{r['jp']['avg_jpy']:,}({r['jp']['count']}筆)"
+            f":日拍中位¥{r['jp']['cost_jpy']:,}({r['jp']['count']}筆)"
             f" 落地NT${r['landed_cost']:,} 台灣保守錨NT${int(r['anchor_conservative']):,}"
             f" → 保守淨利 面交NT${r['margin_facetoface_cons']:,}"
             f"/蝦皮NT${r['margin_shopee_cons']:,}"
