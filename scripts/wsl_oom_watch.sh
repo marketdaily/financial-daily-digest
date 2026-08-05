@@ -115,10 +115,25 @@ fi
 # 否則同一批舊事件會每輪重推,變成警報疲勞。
 date '+%F %T' > "$STATE" 2>/dev/null || true
 
-# ── 防線自身健康度:drop-in 還在不在(沉默的守衛=沒有守衛)──
+# ── 防線自身健康度(沉默的守衛=沒有守衛,兩層都要能自己喊)──
+#
+# 層1:init.scope 的 OOMPolicy drop-in。這是治本那層——沒有它,任何一次 OOM
+#      都會連坐殺光所有互動 session。裝法見 scripts/wsl_oom_install_guard.sh。
 policy=$(systemctl show init.scope -p OOMPolicy --value 2>/dev/null)
 if [ "$policy" != "continue" ]; then
-  out="${out}🔴 init.scope OOMPolicy=${policy:-未知}(應為 continue)——連坐防線已失效,一次 OOM 會再次殺光所有分頁。
+  out="${out}🔴 init.scope OOMPolicy=${policy:-未知}(應為 continue)——連坐防線未生效,一次 OOM 會再次殺光所有分頁。
+   修法:sudo bash ~/Delvin-agent/scripts/wsl_oom_install_guard.sh
+"
+  rc=1
+fi
+
+# 層2:.wslconfig 的 swap 是否真的套用了。
+#      這層存在的理由:改 .wslconfig 要 wsl --shutdown 才生效,很容易「檔案寫了就以為修好了」。
+#      設定值 16GB;沒生效時是 WSL 預設的 ~4GB。用 15GB 當判準避免單位換算誤差。
+swap_mb=$(free -m | awk '/^Swap:/{print $2}')
+if [ "${swap_mb:-0}" -lt 15000 ]; then
+  out="${out}🟡 swap 僅 ${swap_mb}MB(.wslconfig 設 16GB 尚未生效)——失控進程仍會直接觸發 global OOM 而非先換出。
+   生效方式:挑手邊工作告一段落時 wsl --shutdown(會關掉所有 WSL 分頁)
 "
   rc=1
 fi
