@@ -1,0 +1,292 @@
+{
+ "min_samples": 5,
+ "max_spread": 4.0,
+ "results": [
+  {
+   "item": "shaft_tour_ad_di6",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "tour ad di-6",
+     "count": 0,
+     "note": "no_listings"
+    },
+    {
+     "kw": "tour ad di",
+     "count": 3,
+     "p25": 4000,
+     "median": 4980,
+     "max": 26480,
+     "spread": 6.6,
+     "ok": false
+    },
+    {
+     "kw": "graphite design tour ad",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "tour ad 桿身",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "shaft_tour_ad_vr6",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "tour ad vr-6",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "tour ad vr",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "graphite design tour ad",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "tour ad 桿身",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "shaft_ventus_blue_6s",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "ventus blue 6s",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "ventus blue",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "fujikura ventus",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "ventus 桿身",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "shaft_ventus_black_6s",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "ventus black 6s",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "ventus black",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "fujikura ventus",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "ventus 桿身",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "shaft_diamana_tb60",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "diamana tb60",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "diamana tb",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "三菱 diamana",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "diamana 桿身",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "shaft_speeder_nx_green",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "speeder nx green",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "fujikura speeder nx",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "speeder nx",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "speeder 桿身",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "putter_sc_newport2",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "scotty cameron newport 2",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "scotty cameron newport",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "卡麥隆 推桿",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "putter_sc_super_select",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "scotty cameron super select",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "scotty cameron select",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "卡麥隆 推桿",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "putter_sc_special_select",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "scotty cameron special select",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "scotty cameron select",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "卡麥隆 推桿",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "putter_sc_phantom",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "scotty cameron phantom",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "cameron phantom",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "卡麥隆 推桿",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "reel_shimano_twinpower_c3000xg",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "twin power c3000xg",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "shimano twin power",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "twin power 捲線器",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  },
+  {
+   "item": "reel_daiwa_certate_lt3000",
+   "chosen": null,
+   "tried": [
+    {
+     "kw": "daiwa certate lt3000",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "daiwa certate",
+     "count": 0,
+     "note": "all_filtered"
+    },
+    {
+     "kw": "certate 捲線器",
+     "count": 0,
+     "note": "all_filtered"
+    }
+   ]
+  }
+ ]
+}

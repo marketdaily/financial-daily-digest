@@ -61,6 +61,13 @@ def jp_sold(keyword, jp_floor=0, timeout=25):
     return out
 
 
+# BigGo 反爬頁的特徵。⚠️ 這條路徑一定要獨立成 error:
+# 若把「被擋」當成 count=0,在本系統裡會被解讀成「台灣零刊登=空白市場=機會」,
+# 一次限流就會讓全部標的變成假機會(2026-08-05 錨校正實測:連查 40 次後 12/12 全誤報零刊登)。
+ANTIBOT_MARKS = ("驗證你不是機器人", "搜尋行為異常", "驗證並繼續",
+                 "not a robot", "Too Many Requests")
+
+
 def tw_listings(page, keyword, price_floor=0, price_cap=500_000, settle_ms=3500):
     """台灣實際刊登行情(BigGo 聚合蝦皮/露天/Yahoo)。需傳入 playwright page。
 
@@ -73,6 +80,11 @@ def tw_listings(page, keyword, price_floor=0, price_cap=500_000, settle_ms=3500)
         txt = page.inner_text("body")
     except Exception as e:
         return {"error": f"render_failed:{e}"}
+    if any(k in txt for k in ANTIBOT_MARKS):
+        return {"error": "blocked_by_antibot", "url": url}
+    # 正常結果頁動輒數千字;極短頁面通常是攔截頁/空殼,不可當成「沒有刊登」
+    if len(txt) < 300 and "搜尋不到符合" not in txt:
+        return {"error": f"suspicious_short_page:{len(txt)}", "url": url}
     if "搜尋不到符合" in txt:
         return {"count": 0, "url": url, "note": "no_listings"}
     raw = [_num(x) for x in re.findall(r"\$\s?([0-9,]{3,})", txt)]
