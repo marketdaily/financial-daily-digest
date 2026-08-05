@@ -4,7 +4,7 @@
   "subscribers": 21,
   "digest_clean_days_7d": "4/7",
   "fallback_7d": 27,
-  "social_posts_7d": 30
+  "social_posts_7d": 31
  },
  "digest": {
   "audit": null,
@@ -146,7 +146,7 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": null,
+  "tw": 0,
   "us": null
  },
  "sitescan": {
@@ -158,8 +158,8 @@
  "flags": {
   "hb_miss_tw": false,
   "hb_miss_us": false,
-  "guard_alert_tw": false,
+  "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-08-04T23:08:01Z"
+ "generated_utc": "2026-08-05T00:08:01Z"
 }
