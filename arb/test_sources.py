@@ -72,6 +72,31 @@ def main():
           "error" in sources.jp_sold("zzz_不存在的關鍵字_zzz", timeout=20)
           or "count" in sources.jp_sold("zzz_不存在的關鍵字_zzz", timeout=20))
 
+    print("快取:被擋時回退舊值但必須標 stale")
+    from arb import cache
+    import shutil, os
+    tdir = os.path.join(os.path.dirname(cache.CACHE_DIR), ".cache_test")
+    orig = cache.CACHE_DIR
+    cache.CACHE_DIR = tdir
+    try:
+        shutil.rmtree(tdir, ignore_errors=True)
+        cache.put("t", "kw", value={"count": 7, "p25": 100})
+        v = cache.cached("t", "kw", fetch=lambda: {"error": "blocked_by_antibot"})
+        check("被擋時回退到快取值", v.get("count") == 7, f"得 {v}")
+        check("回退值必須標 stale", v.get("_cache") == "stale")
+        check("必須保留原始錯誤供診斷", v.get("_live_error") == "blocked_by_antibot")
+        check("必須帶幾小時前", "_stale_hours" in v)
+        shutil.rmtree(tdir, ignore_errors=True)
+        v2 = cache.cached("t", "nokey", fetch=lambda: {"error": "blocked_by_antibot"})
+        check("沒有快取可退時回原始錯誤(不得偽造資料)",
+              v2.get("error") == "blocked_by_antibot")
+        v3 = cache.cached("t", "k2", fetch=lambda: {"error": "boom"})
+        after = cache.get_stale("t", "k2")[0]
+        check("錯誤結果不得被寫進快取", after is None, f"得 {after}")
+    finally:
+        cache.CACHE_DIR = orig
+        shutil.rmtree(tdir, ignore_errors=True)
+
     print()
     if FAILED:
         print(f"❌ {len(FAILED)} 項失敗:{FAILED}")

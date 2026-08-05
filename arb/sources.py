@@ -10,6 +10,8 @@ import statistics
 
 import requests
 
+from arb import cache
+
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36")
 
@@ -20,7 +22,7 @@ def _num(s):
     return int(str(s).replace(",", ""))
 
 
-def jp_sold(keyword, jp_floor=0, timeout=25):
+def jp_sold(keyword, jp_floor=0, timeout=25, use_cache=True):
     """日本雅虎拍賣近 30 日落札行情。回 dict 或 {'error': ...}。
 
     ⚠️ meta 的「平均落札価格」會被配件污染:同關鍵字下頭套/握把/配重等小物
@@ -28,6 +30,10 @@ def jp_sold(keyword, jp_floor=0, timeout=25):
     低段 ¥3,000-5,000(配件)、高段 ¥27,000-33,000(整支推桿)——均價低估近一半,
     會讓落地成本算得太便宜、毛利虛胖。故同時解析逐筆成交價並取分位數。
     """
+    if use_cache:
+        return cache.cached("aucfree", keyword, jp_floor,
+                            fetch=lambda: jp_sold(keyword, jp_floor, timeout,
+                                                  use_cache=False))
     url = "https://aucfree.com/search?q=" + requests.utils.quote(keyword)
     try:
         r = requests.get(url, headers={"User-Agent": UA}, timeout=timeout)
@@ -128,11 +134,18 @@ def _ruten_listings(page, keyword, price_floor=0, price_cap=500_000):
     }
 
 
-def tw_listings_resilient(page, keyword, price_floor=0, price_cap=500_000):
+def tw_listings_resilient(page, keyword, price_floor=0, price_cap=500_000,
+                          use_cache=True):
     """先 BigGo,被擋則自動退到露天。回傳含 src 標示用了哪個源。
 
     ⚠️ 兩源都壞才回 error——絕不因為單一源被擋就說「沒有刊登」。
+    快取:行情不需分鐘級更新,20h TTL;兩源都被擋時回退過期快取並標 stale。
     """
+    if use_cache:
+        return cache.cached(
+            "tw_listings", keyword, price_floor,
+            fetch=lambda: tw_listings_resilient(page, keyword, price_floor,
+                                                price_cap, use_cache=False))
     r = tw_listings(page, keyword, price_floor, price_cap)
     if "error" not in r:
         return {**r, "src": r.get("src", "biggo")}

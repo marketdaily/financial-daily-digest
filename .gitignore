@@ -123,3 +123,4 @@ state/nvidia_*.png
 state/postcheck_llm_ledger.jsonl
 intel/*.lock
 arb/orders.jsonl
+arb/.cache/
