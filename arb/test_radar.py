@@ -60,6 +60,24 @@ def main():
           r["status"] == "below_threshold",
           f"得 {r['status']} cons={r['margin_facetoface_cons']}")
 
+    print("樣本數閘門:一筆刊登不是「價格集中」而是「沒有市場」")
+    # max==p25 → spread 1.0,舊邏輯會判「錨完美可靠」。實例:台灣 speeder nx green
+    # 僅 1 筆 10,000,換廣關鍵字 33 筆時 p25 只有 6,843 —— 錨高估 46%
+    stub_sources({"count": 50, "avg_jpy": 14_000},
+                 {"count": 1, "min": 10000, "p25": 10000, "median": 10000,
+                  "max": 10000})
+    r = evaluate({**ITEM, "min_margin": 100}, FakePage(), 0.2056)
+    check("單筆刊登 spread 確實算出 1.0(確認這題有鑑別力)", r["spread_ratio"] == 1.0)
+    check("單筆刊登不得判為錨可靠", r["anchor_reliable"] is False)
+    check("單筆刊登標記 HIT_thin_anchor", r["status"] == "HIT_thin_anchor",
+          f"得 {r['status']}")
+    stub_sources({"count": 50, "avg_jpy": 14_000},
+                 {"count": 33, "min": 3036, "p25": 6843, "median": 9024,
+                  "max": 10611})
+    r = evaluate({**ITEM, "min_margin": 100}, FakePage(), 0.2056)
+    check("足量樣本且 spread 正常→回到一般 HIT", r["status"] == "HIT", f"得 {r['status']}")
+    check("樣本數有記錄下來", r["tw_samples"] == 33)
+
     print("型號混雜偵測")
     stub_sources({"count": 50, "avg_jpy": 20_000},
                  {"count": 30, "min": 8000, "p25": 12000, "median": 17000,

@@ -33,6 +33,7 @@ LEDGER = os.path.join(HERE, "ledger.jsonl")
 # 蝦皮 2026/1/1 起:成交 5.5% + 金流 2.5% + 免運方案二(高單價品固定 NT$60)
 SHOPEE_PCT = 0.08
 SHOPEE_FLAT = 60
+MIN_TW_SAMPLES = 5       # 台灣刊登少於此數 = 沒有可信行情,不是「價格集中」
 
 
 def push(msg):
@@ -104,7 +105,13 @@ def evaluate(item, page, rate):
     # 型號混雜偵測:同關鍵字下價格帶過寬 = 中位數混了不同版本/成色,錨不可信
     spread = tw["max"] / max(tw["p25"], 1)
     row["spread_ratio"] = round(spread, 1)
-    row["anchor_reliable"] = spread <= 4
+    # ⭐ 樣本數必須先過:只有 1-2 筆刊登時 max==p25 → spread=1.0,
+    # 會被誤判成「價格極度集中、錨完美可靠」。那不是集中,是**沒有市場**。
+    # (2026-08-05 實例:speeder nx green 台灣僅 1 筆刊登 10,000,spread 算出 1.0x 判為可靠;
+    #  換更廣關鍵字 fujikura speeder nx 有 33 筆,p25 其實只有 6,843 —— 錨高估 46%)
+    row["tw_samples"] = tw["count"]
+    row["anchor_thin"] = tw["count"] < MIN_TW_SAMPLES
+    row["anchor_reliable"] = (spread <= 4) and not row["anchor_thin"]
 
     passes = [ch for ch in ("shopee", "facetoface")
               if row[f"margin_{ch}_cons"] >= thresh]
@@ -113,6 +120,8 @@ def evaluate(item, page, rate):
         row["status"] = "below_threshold"
     elif row["thin_supply"]:
         row["status"] = "HIT_thin_supply"
+    elif row["anchor_thin"]:
+        row["status"] = "HIT_thin_anchor"
     elif not row["anchor_reliable"]:
         row["status"] = "HIT_anchor_unreliable"
     elif len(passes) == 1:
@@ -166,6 +175,7 @@ def main():
             blanks.append(r)
         mark = {"HIT": "🟢", "HIT_single_channel": "🟡",
                 "HIT_anchor_unreliable": "🟠", "HIT_thin_supply": "🟤",
+                "HIT_thin_anchor": "🟣",
                 "below_threshold": "·",
                 "tw_market_blank": "⬜", "jp_source_error": "🔴",
                 "tw_source_error": "🔴"}.get(st, "?")
@@ -181,7 +191,7 @@ def main():
             line += (f" 台灣中位={int(r['anchor'])}/保守={int(r['anchor_conservative'])}"
                      f" 保守淨利:蝦皮={r['margin_shopee_cons']}"
                      f" 面交={r['margin_facetoface_cons']}"
-                     f" spread={r['spread_ratio']}x")
+                     f" spread={r['spread_ratio']}x/{r.get('tw_samples','?')}筆")
         print(line)
 
     if args.dry:
