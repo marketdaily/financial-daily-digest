@@ -1146,8 +1146,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-04 21:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 18:29",
+  "note": "2026-08-05 完成:自架 CJK 子集,2835→2108 KB(-727KB)+ 少兩次跨網域 DNS/TLS,線上零 Google Fonts 連線。⚠️ 兩個實測與直覺相反的結論已寫進註解:①不要 preload 字型(加了 FCP 960→1520ms、LCP 1856→2104ms,因為 swap 本來就不擋渲染,preload 只是去跟 hero 圖搶頻寬)②別期待改善 LCP(LCP 是 hero 圖不是字型;原記的『拿掉字型 3572→2539』是把字型整個拿掉的極端對照,不是自架能拿到的)。新增 tests/test_font_subset.py 5 條把缺字變成會紅的測試"
  },
  {
   "id": 116,
@@ -1246,8 +1246,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 00:21",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 17:37",
+  "note": "2026-08-05 完成,而且比原本計畫多做一層:加 2028 時稽核擋下跨年重複(64-68%),根因是年份頁混裝了生肖層級內容 → 新切 /p/shengxiao 族群 12 頁+總表。sitemap 153→179,167 頁 audit 全綠,線上實測 200"
  },
  {
   "id": 126,
@@ -1316,8 +1316,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 13:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 23:17",
+  "note": "已在生產發出:FB(1230347700164851_122103051015421507)+IG 七張輪播(instagram.com/p/Dbqb3kXDPeh),兩邊都用 Graph API 回查驗過 caption 逐字一致、輪播 7 張、圖片可取"
  },
  {
   "id": 133,
@@ -1336,8 +1336,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-05 14:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 19:22",
+  "note": "老闆 2026-08-05 拍板:先不做,等用戶量起來再說。KV list 邊緣快取造成的 12-21 秒屬可接受等待感(原本 56 秒的死當感已消除);Durable Object 要開 Workers Paid US$5/月,為 12 秒單獨開不划算。復活條件=①用戶量成長到有人抱怨等待 或 ②有其他功能同樣需要強一致通道(即時庫存/多人同時改同筆資料)→ 一起開才划算。"
  },
  {
   "id": 135,
@@ -1366,8 +1366,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-05 14:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 19:20",
+  "note": "KING PUNCH 依老闆 08-05 指示冷凍(不開公司);捲線器線本就降級,行前確認不需要了。開發信草稿仍在 Gmail 但非阻塞"
  },
  {
   "id": 138,
@@ -1476,8 +1476,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 17:04",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 18:00",
+  "note": "2026-08-05 完成。astronomy-engine 2.1.19 + Placidus 逐行移植;與後端 Skyfield 逐盤對帳:上升/十二宮頭差 0.005 角分、行星差 0.24 角分,十二宮歸屬/星座/逆行 100% 相同。含 1879 案例(UT1 坑唯一會現形的)與台灣 1945-1979 夏令時逐筆鎖定。真機實測兩組(含 1975 高雄自動標出 +09:00)。線上 200"
  },
  {
   "id": 149,
@@ -1486,6 +1486,166 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-05 17:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 150,
+  "what": "Buyee 代客下單 submit() 未在生產驗證:出價/即決按鈕 selector 與成功判準只在 dry-run 驗過,真實送出路徑沒跑過",
+  "why": "需 Delvin 先登入 Buyee + 綁定付款方式,且真實出價會花錢;首單必須人在旁邊看",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 17:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 151,
+  "what": "arb 成本模型未含 Buyee 手續費¥500/單、檢品方案¥500/件、Buyee匯率溢價5.9%;國際運費為到倉後另計未反映在落地成本",
+  "why": "首單結帳頁截圖才量到真實費用結構,雷達/後台/出價上限都還用舊模型(方向保守但不精確)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-05 18:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 152,
+  "what": "命書 link-in-bio(go_page.html)與塔羅分享卡尚未併進 web/ 上線",
+  "why": "2026-08-05 18:06 另一視窗正在改 web/tool/tarot.html 與 web/index.html,依系統不打架鐵則暫放 marketing/;該視窗收手後需併入 web/go.html 並接進 tarot 結果頁,再 deploy",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-05 18:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 153,
+  "what": "命書社群首批 6 篇內容已就緒但一篇未發;發文節奏 SCHEDULE.md 尚未接 cron",
+  "why": "等老闆把三平台個人檔案(頭像/bio)設好才適合首發;首發=週四20:00 Threads ms_gpt_jieqi,發後需人眼看過圖卡(post_lint 只檢查文字)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-05 18:14",
+  "closed": "2026-08-05 23:17",
+  "note": "cron 已接(mingshu_social_runner.sh,週二/四/日 20:00-20:19 + 20:20-23:00 補發窗),首篇 ms_rizhu_love 已發 FB+IG,圖卡已人眼看過對照表"
+ },
+ {
+  "id": 154,
+  "what": "arb 後台四關 cron 首班未驗:build_dashboard/render 已加進 09:10 runner 但沒在排程跑過",
+  "why": "只在手動執行驗過;首班 = 明天 TW 09:10",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-05 18:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 155,
+  "what": "桿身線台灣錨疑遭仿品污染:露天「Fujikura Ventus」掛NT$892-2992 vs 正品原裝進口NT$28158-31190(十倍價差),而後台桿身錨正是用露天p25",
+  "why": "研究agent在澳洲線查證時發現;後台Tour AD/Ventus的錨可能是仿品價格,未驗證前不可據以下單",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 22:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 156,
+  "what": "Higgsfield 1,200cr/月 額度優先序未拍板:07-27 定「全數優先皇海官網」,08-05 新增本地商家建站接案事業線也要吃 credit(Signature 級 103cr/站,Premium 358cr/站)",
+  "why": "兩條線搶同一份額度,若接到付費客戶會直接撞牆;需 Delvin 決定優先序或加購",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-05 22:25",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 157,
+  "what": "storefront 接案系統缺 Google Places API key,整條獵取漏斗斷在第一關(OSM 實測台灣官網覆蓋率僅 7%,129 家店挖到 0 個 email)",
+  "why": "需要 Delvin 的 Google Cloud 帳號開啟 Places API (New) 與帳單,我無法代開",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-05 22:41",
+  "closed": "2026-08-05 23:01",
+  "note": "已用經濟部商工登記開放資料(免金鑰,含資本額/負責人/統編)+Tavily 官網解析器繞過。實測台中精密 40 家→15 官網→7 個真實 email,B2B 漏斗跑通。Places key 仍是消費型品類的缺口,但那條路已被實測證明不成立(診所 129 家 0 email),所以不再是阻斷點。"
+ },
+ {
+  "id": 158,
+  "what": "storefront 冷信寄件網域未註冊/未預熱,寄件層全程 dry-run 從未真寄",
+  "why": "需新網域+SPF/DKIM/DMARC+2-3週預熱;絕不可用 marketdaily.ai(會燒日報送達率)或 Brevo(ToS 連坐)",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-05 22:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 159,
+  "what": "storefront 需求表單 Worker 已寫完但未部署(缺 D1/R2/網域),表單連結目前是死的",
+  "why": "信件模板已引用表單 URL,未部署前不可寄任何信,否則收件人點到 404",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-05 22:41",
+  "closed": "2026-08-05 23:06",
+  "note": "已部署 https://storefront-form.delvin-12345678.workers.dev(D1+KV,R2 未啟用時自動退 KV)。實測提交+檔案上傳/重複攔截/壞email攔截/admin授權全過;sync-tokens 已把 5 個 prospect token 推進 D1,信裡連結指得到真實個人化表單。剩:R2 需 Delvin 在 dashboard 點一次啟用(目前走 KV 可用),以及正式網域。"
+ },
+ {
+  "id": 160,
+  "what": "戰績案例三筆全是自有產品/關係企業,第三方付費客戶案例=0;皇海站仍是 kingconn-preview.pages.dev 未上正線",
+  "why": "冷信附戰績時對方可能查證,preview 網址與「客戶」字樣會傷信任;程式已用 relationship/honest_label 標註但根本問題未解",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-05 22:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 161,
+  "what": "storefront 表單目前掛在 workers.dev 子網域,冷信裡放 storefront-form.delvin-12345678.workers.dev 顯得不專業;且 R2 未啟用暫用 KV 存檔",
+  "why": "等 Delvin 決定品牌與網域後才能綁 custom domain;R2 需 dashboard 一次性啟用(要有付款方式)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-05 23:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 162,
+  "what": "命書:既有已交付訂單未回溯檢查是否有 1946-1979 DST 期間出生者(盤可能是錯的)",
+  "why": "訂單在 Cloudflare KV,量少但沒逐筆查;需列出 birth 落在 DST 區間的訂單再決定要不要重發報告",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 23:15",
+  "closed": "2026-08-05 23:16",
+  "note": "已逐筆查完 KV 全部 12 筆訂單:出生年 2001-2016,無一落在 1946-1979 日光節約時間區間 → 沒有已交付報告受影響,不需重發"
+ },
+ {
+  "id": 163,
+  "what": "命書:報告的「出生時間校正」區塊尚未在真實付費訂單跑過",
+  "why": "fulfill._time_disclosure_html 只在無頭環境驗過(Email/線上/PDF 三通道共用同一出口),下一筆 DST 期間出生的真單才算生產驗收",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-05 23:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 164,
+  "what": "命書社群 cron 首班(08-06 週四 20:00)尚未在排程跑過",
+  "why": "今天 08-05 是週三,cron 條件是週二/四/日,所以最快的排程首跑是明天 20:00。今晚兩篇是我手動走 daily_run.py 發的——同一條程式路徑,但『cron 有沒有被真的叫起來』沒被驗證過。已排一次性驗收 cron(08-06 23:05,PASS/FAIL 都推播,跑完自刪)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 23:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 165,
+  "what": "命書 Threads 未接:佇列 6 篇有 4 篇只設定 threads,目前全被跳過",
+  "why": "Threads 登入被 Meta 伺服器端擋(HTTP 400 Unexpected null login result,新裝置),不是密碼錯;再試會有鎖帳號風險所以停手。daily_run.py 會明白印出跳過原因不會靜默吃掉,但實質後果是可發存貨只剩 2 篇(ms_ghost_month / ms_lichun),約兩週後見底",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 23:17",
   "closed": null,
   "note": ""
  }
