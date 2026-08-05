@@ -34,11 +34,26 @@ now_stamp=$(date '+%F %T %z')
 # ── 現行犯快照:top RSS 進程 + 完整 cmdline,並標出 interop(.exe)進程 ──
 # interop 進程要特別標:它的真身在 Windows 側,Linux 的 OOM killer 殺不死它
 # (本次事故四輪 OOM 都選中同一個 PID、rss 一模一樣,就是這個原因),記憶體永遠不會被釋放。
+# $1 = 每行最大寬度(0=不截斷),$2 = 取前幾名(預設 10)。
+# ⚠️ 推播那份一定要又窄又短:cron_run_and_alert 推 admin 時只取 tail -c 800,
+# 而 chrome/wrangler 這類進程 cmdline 動輒數千字元。實測教訓——
+#   第一版不截斷 → 一條 chrome cmdline 就吃掉整則訊息
+#   第二版截到 60 字元但仍列 10 名 → 800 字元的窗口從第 3 名才開始,
+#     RSS 最大的兇手(當時 f5_server.py 2431MB)反而被切掉,等於白告警。
+# 所以推播版固定 top5 + 窄欄位;落盤版用 (0, 10) 完整保留供事後追兇。
 snapshot_procs() {
-  ps -eo pid,ppid,rss,etimes,comm,args --sort=-rss 2>/dev/null | head -12 | \
-    awk 'NR==1{print "  " $0; next}
-         {tag=""; if ($5 ~ /\.exe$/) tag="  ⚠️interop(殺不死,真身在Windows)";
-          printf "  %s%s\n", $0, tag}'
+  local maxw="${1:-0}" rows="${2:-10}"
+  ps -eo pid,ppid,rss,etimes,comm,args --sort=-rss 2>/dev/null | head -n "$((rows + 1))" | \
+    awk -v maxw="$maxw" '
+      NR==1 { print "  PID    PPID   RSS(MB)  ELAPSED  COMMAND"; next }
+      {
+        rssmb = int($3/1024)
+        cmd = ""
+        for (i = 6; i <= NF; i++) cmd = cmd (i>6 ? " " : "") $i
+        tag = ($5 ~ /\.exe$/) ? "  <<interop:Linux 殺不死,真身在 Windows>>" : ""
+        if (maxw > 0 && length(cmd) > maxw) cmd = substr(cmd, 1, maxw) "..."
+        printf "  %-6s %-6s %-8s %-8s %s%s\n", $1, $2, rssmb, $4, cmd, tag
+      }'
 }
 
 mem_line() {
@@ -56,14 +71,14 @@ if [ "${mem_total:-0}" -gt 0 ]; then
     {
       echo "=== WSL 記憶體吃緊快照 $now_stamp ==="
       echo "$(mem_line)"
-      echo "--- top RSS 進程(含 cmdline) ---"
-      snapshot_procs
+      echo "--- top RSS 進程(完整 cmdline,抓現行犯用) ---"
+      snapshot_procs 0 10
     } > "$ev" 2>/dev/null
     out="${out}⚠️ WSL 可用記憶體僅 ${avail_pct}%(門檻 ${WARN_PCT}%)
 $(mem_line)
---- 當下最吃記憶體的進程 ---
-$(snapshot_procs)
-證據已落盤:$ev
+--- 吃最兇的 5 個 ---
+$(snapshot_procs 42 5)
+完整 top10+cmdline:$ev
 "
     rc=1
   fi

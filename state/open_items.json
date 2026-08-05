@@ -1416,6 +1416,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 16:05",
+  "closed": "2026-08-05 16:14",
+  "note": "範圍已縮小但未定案:實證確認①WSL 檔案系統內無 claude.exe(只有 /mnt/c 的 Claude 桌面 App)②pgtables:23444kB 與 11.9GB 成真實 Linux 頁表比例③位在 init.scope=從互動終端機跑出來的,非 cron 背景任務。方向指向某 session 執行 Windows 命令時 interop relay 緩衝爆掉,但無定論。下次復現由 wsl_oom_watch.sh 事前預警抓 cmdline 現行犯"
+ },
+ {
+  "id": 143,
+  "what": "11.9GB claude.exe 的兇手仍未定案(#142 已縮小範圍後重開)",
+  "why": "已排除:WSL 內無此檔、無腳本呼叫、非 cron(位在 init.scope=互動終端機跑出來的)。方向指向某 session 執行 Windows 命令時 interop relay 緩衝爆掉,但無實證定論。要等下次復現由 wsl_oom_watch.sh 事前預警抓到 cmdline 現行犯才能結案",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 16:14",
   "closed": null,
   "note": ""
  }
