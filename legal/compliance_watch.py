@@ -29,9 +29,11 @@ import sys
 import json
 import html
 import time
+import fcntl
 import argparse
 import datetime
 import threading
+import contextlib
 import urllib.parse
 import urllib.request
 import urllib.error
@@ -364,8 +366,14 @@ _TPL_EXPR = re.compile(r"(?s)\$\{.*?\}")
 # ⚠️ regex 沒有 JS parser 的括號配對能力:一段程式碼裡有兩個獨立的樣板字串時,
 #    「前一個的結束 backtick」到「後一個的開始 backtick」之間的**程式碼**也會被當成字面值
 #    (實測首頁抓出兩段 10554/5732 字的 JS 當成文案 → 假掉字 2 筆 → 永久 exit 2 噪音)。
-#    這些區段裡真正的中文其實已經由雙/單引號分支收進語料了,所以直接用程式碼特徵剔除。
-_CODE_TELL = re.compile(r"=>|function\s*\(|document\.|addEventListener|console\.|;\s*\n|\}\s*catch")
+# ⚠️⚠️ 2026-08-05 第四輪驗證者 F3(CRITICAL):上一版單一 `_CODE_TELL` 把 `;\s*\n`
+#    (分號+換行)也當成程式碼證據,但這在**內嵌 CSS 的合法樣板字串**裡完全正常
+#    (`style="border:1px solid #333;\n  padding:16px"`),結果生產頁面真正看得到的
+#    卡片文案被靜默吃掉。分兩級:STRONG(document./addEventListener/=>/function(/}catch)
+#    是 JS 專屬語法,真文案幾乎不可能含這些字面值,一律當程式碼;WEAK(單純 `;\n`)
+#    在文案裡也常見,只有在**同時**看起來不像文案(`_looks_like_copy` 為否)時才當程式碼。
+_CODE_TELL_STRONG = re.compile(r"=>|function\s*\(|document\.|addEventListener|console\.|\}\s*catch")
+_CODE_TELL_WEAK = re.compile(r";\s*\n")
 # 超過上限而**靜默掉出語料**的長字串:三種引號都要計,否則掉字計數器自己有盲區(F3 第二形態)
 _LONG_LITERALS = (re.compile(r'"((?:[^"\\\n]|\\.){4001,})"'),
                   re.compile(r"'((?:[^'\\\n]|\\.){4001,})'"),
@@ -402,6 +410,13 @@ JS_EXCLUDE = {
     "us-industry.js": "美股產業分類資料檔",
     "tw-chain-generic.js": "供應鏈關係資料檔",
     "us-chain-generic.js": "供應鏈關係資料檔",
+    # 2026-08-06 生產實跑(--json)發現:mingshu.tw 工具頁 literals_dropped 非零,
+    # 追出來是第三方 vendor 函式庫本體(常數表/壓縮碼/內建 i18n 字典),不是行銷或
+    # 法遵文案——內容是天文常數、農曆演算法、庫本身的錯誤訊息/星曜名稱翻譯字典,
+    # 跟付費/個股/見證等規則管的範圍無關。
+    "astronomy.js": "第三方天文計算函式庫(vendor,常數表與程式碼,非文案)",
+    "lunar.js": "第三方農曆計算函式庫(vendor,非文案)",
+    "iztro.js": "第三方紫微斗數函式庫(vendor,內含 i18next 與星曜名稱字典,非行銷/法遵文案)",
 }
 _JS_CACHE = {}
 _JS_CACHE_LOCK = threading.Lock()
@@ -442,6 +457,78 @@ def external_script_texts(page, page_url, fetcher=None, stats=None):
     return out
 
 
+# 執行期由 JSON 餵字的頁面(2026-08-05 第四輪驗證者 F9):`agents.html` 線上 14038 bytes、
+# 語料只有 962 字,幾乎全是 i18n 外殼與 loading 佔位字,真正的數字來自從未被掃過的
+# `fetch("/data/board.json")`。同 `.js` 那道防線,抓引用到的同網域 `.json`,把裡面看起來
+# 像文案的字串葉節點也收進語料;抓不到/解析失敗計入 stats,不可跟「乾淨」混為一談。
+_JSON_REF = re.compile(r"""(?is)["'`]([^"'`\s]+\.json)(?:\?[^"'`\s]*)?["'`]""")
+JSON_EXCLUDE = {
+    # 2026-08-06 生產實跑發現:watch.html 的 `a.download = "marketdaily-watch.json"` 是
+    # client 端「匯出資料」下載檔名字面值,不是真的可抓取來源(該路徑必然 404),
+    # `_JSON_REF` 抓 .json 字面值時把它誤判成外部資料源,永久佔一格 external_json_unscanned。
+    "marketdaily-watch.json": "watch.html 匯出功能的下載檔名字面值,非真實資料來源(必 404)",
+}
+_JSON_CACHE = {}
+_JSON_CACHE_LOCK = threading.Lock()
+
+
+def _json_copy_strings(obj, depth=0):
+    """遞迴收集 JSON 裡看起來像使用者文案的字串葉節點(數字/id/URL 這類不會通過 _looks_like_copy)。"""
+    if depth > 6:
+        return
+    if isinstance(obj, str):
+        if _looks_like_copy(obj):
+            yield obj
+    elif isinstance(obj, dict):
+        for v in obj.values():
+            yield from _json_copy_strings(v, depth + 1)
+    elif isinstance(obj, list):
+        for v in obj:
+            yield from _json_copy_strings(v, depth + 1)
+
+
+def external_json_texts(blocks, page_url, fetcher=None, stats=None):
+    """抓同網域外部 `.json`(page 的 `<script>` 內容裡引用到的路徑)的文案字串(跨頁去重快取)。
+    回傳 list[str];抓不到/非法 JSON 計入 stats["external_json_unscanned"]。"""
+    if not page_url:
+        return []
+    fetcher = fetcher or fetch
+    out, unscanned = [], 0
+    seen = set()
+    for block in blocks:
+        for m in _JSON_REF.finditer(block):
+            src = html.unescape(m.group(1)).strip()
+            full = urllib.parse.urljoin(page_url, src)
+            if urllib.parse.urlparse(full).netloc != urllib.parse.urlparse(page_url).netloc:
+                continue
+            clean = full.split("?", 1)[0]
+            if clean in seen:
+                continue
+            seen.add(clean)
+            if clean.rsplit("/", 1)[-1] in JSON_EXCLUDE:
+                continue
+            with _JSON_CACHE_LOCK:
+                hit = clean in _JSON_CACHE
+                parsed = _JSON_CACHE.get(clean)
+            if not hit:
+                st, body = fetcher(clean)
+                parsed = None
+                if st == 200 and body:
+                    try:
+                        parsed = json.loads(body)
+                    except Exception:
+                        parsed = None
+                with _JSON_CACHE_LOCK:
+                    _JSON_CACHE[clean] = parsed
+            if parsed is None:
+                unscanned += 1
+            else:
+                out.extend(_json_copy_strings(parsed))
+    if stats is not None and unscanned:
+        stats["external_json_unscanned"] = stats.get("external_json_unscanned", 0) + unscanned
+    return out
+
+
 def visible_text(page, stats=None, page_url=None, fetcher=None, extras=None):
     """把一頁 HTML 轉成「使用者真的看得到的字」。stats(可選 dict)會收到覆蓋率計數。
 
@@ -467,20 +554,38 @@ def visible_text(page, stats=None, page_url=None, fetcher=None, extras=None):
     blocks += list(extras or [])
     if page_url:
         blocks += external_script_texts(page, page_url, fetcher=fetcher, stats=stats)
+        # 執行期由 JSON 餵字的頁面(第四輪驗證者 F9):inline <script> 裡常見
+        # `const RAW = "/data/board.json"` 這種字面路徑,`.js` 語料裡也可能引用 `.json`。
+        parts.extend(external_json_texts(blocks, page_url, fetcher=fetcher, stats=stats))
     for block in blocks:
         for lit in _LITERAL.finditer(block):
             s = lit.group(1) or lit.group(2) or lit.group(3) or ""
             s = _TPL_EXPR.sub(" ", s)   # `共 ${n} 筆` 的插值運算式不是文案
-            if lit.group(3) is not None and _CODE_TELL.search(s):
+            # ⚠️ 2026-08-05 第四輪驗證者 F3(CRITICAL):原本 `_CODE_TELL` 命中就直接
+            #   `continue` 整段丟棄,連生產頁面上使用者真的看得到的 backtick 樣板字串
+            #   (內嵌 CSS 分號+換行、`<div style="...">文案</div>` 這類卡片模板)都被靜默
+            #   吃掉。STRONG tell(document./addEventListener/=>/…)一律當程式碼丟棄——
+            #   真文案不會含這些 JS 專屬字面值,即使剛好夾了中文註解也不算使用者看得到的字
+            #   (㉒d 迴歸:兩個樣板字串中間夾的真程式碼必須繼續被排除)。WEAK tell
+            #   (單純 `;\n`)在合法文案(內嵌 CSS)裡很常見,只有在**同時不像文案**時才丟。
+            #   ⭐ 這裡刻意不計進 `js_literals_dropped`:那個計數器的語意是「可能有真文案被
+            #   吃掉,零覆蓋率必須看得見」,而 strong_code/weak_code 分支只在**已經確認不像
+            #   文案**(`not looks_copy`)時才丟,不是覆蓋率破洞,混進同一計數器只會製造
+            #   「N 個超長字串沒進語料」的誤導性推播(生產實測:多半是正常的 JS 程式碼片段)。
+            strong_code = lit.group(3) is not None and _CODE_TELL_STRONG.search(s)
+            weak_code = lit.group(3) is not None and _CODE_TELL_WEAK.search(s)
+            looks_copy = _looks_like_copy(s)
+            if strong_code or (weak_code and not looks_copy):
                 continue
-            if _looks_like_copy(s):
+            if looks_copy:
                 kept += 1
                 parts.append(html.unescape(s.replace("\\n", " ").replace('\\"', '"')))
         # 超長字面值(超過 _LITERAL 上限)會靜默掉出語料 → 計數,零覆蓋率必須看得見
         for i, pat in enumerate(_LONG_LITERALS):
             for lit in pat.finditer(block):
                 s = _TPL_EXPR.sub(" ", lit.group(1))
-                if i == 2 and _CODE_TELL.search(s):
+                if i == 2 and (_CODE_TELL_STRONG.search(s)
+                               or (_CODE_TELL_WEAK.search(s) and not _looks_like_copy(s))):
                     continue
                 if _looks_like_copy(s):
                     dropped += 1
@@ -560,13 +665,31 @@ def load_ledger(path):
         return None, f"{type(e).__name__}: {e}"
 
 
+@contextlib.contextmanager
+def _file_lock(path):
+    """跨行程互斥(2026-08-05 第四輪驗證者 F8):`_EXPAND_LOCK`/`threading.Lock` 只鎖得住
+    同一個 Python 行程內的執行緒,cron 的那一班與 Delvin 照著推播指令手動重跑是**兩個
+    OS 行程**,互斥完全不存在,真實 OS 行程實測會 lost update。用 `fcntl.flock` 鎖一個
+    專屬 `.lock` 檔(不是鎖被寫入的正式檔本身,避免跟 `_atomic_write` 的 tmp+replace 打架);
+    同一行程內兩條執行緒各自 `os.open` 出不同的 open file description,flock 一樣會把它們
+    序列化,所以這支函式同時涵蓋行程內與跨行程兩種情境,可以取代 `_EXPAND_LOCK`。"""
+    lock_path = f"{path}.lock"
+    fd = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o644)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        yield
+    finally:
+        fcntl.flock(fd, fcntl.LOCK_UN)
+        os.close(fd)
+
+
 def _atomic_write(path, obj):
     """tmp + os.replace。cron 每 10 分鐘跑一次、winrig 有斷電前科,直接 open(...,'w') 會留半截檔。
 
     ⚠️ 2026-08-05 第三輪驗證者 F3:tmp 名固定成 `path + ".tmp"` 時,`run()` 的三條執行緒
     (@docs_rest / @blog_all / @ms_sitemap)寫同一個展開基準檔會互相踩——`os.replace` 之後
     另一條的 fd 直接續寫進**正式檔** → 30 晚模擬裡 9 晚檔案毀損、21 晚 lost update、0 晚完整。
-    tmp 名帶 pid+tid 才能讓每條執行緒有自己的暫存檔(讀-改-寫的原子性另由 _EXPAND_LOCK 保證)。
+    tmp 名帶 pid+tid 才能讓每條執行緒有自己的暫存檔(讀-改-寫的原子性另由 `_file_lock` 保證)。
     """
     tmp = f"{path}.tmp.{os.getpid()}.{threading.get_ident()}"
     try:
@@ -766,14 +889,19 @@ def check_promo_surface(snap, ledger_path, write_ledger=True, now_ms=None):
 
     ⚠️ 刻意抽成函式:F1 是**跨兩晚**才顯形的缺陷,測試必須能重跑「同一個入口」兩次,
     否則斷言只會停在「毀損那一晚」——上一版 15 則帳本斷言全綠、缺陷照樣活著。
+
+    ⚠️ 2026-08-05 第四輪驗證者 F8:讀-改-寫(load_ledger → check_promo 內的比對/append →
+    _atomic_write)整段要互斥,cron 那一班與人工照推播指令手動重跑是兩個 OS 行程,
+    帳本連行程內的鎖都沒有,真實跑會 lost update(某檔促銷的 rolling timer 觀測基準被蓋掉)。
     """
-    led, problem = load_ledger(ledger_path)
-    if problem:
-        seal_ledger(ledger_path, problem)
-    evaluated = set()
-    findings, _ = check_promo(snap, led or {}, now_ms=now_ms, ledger_problem=problem,
-                              write_path=ledger_path if write_ledger else None,
-                              evaluated=evaluated)
+    with _file_lock(ledger_path):
+        led, problem = load_ledger(ledger_path)
+        if problem:
+            seal_ledger(ledger_path, problem)
+        evaluated = set()
+        findings, _ = check_promo(snap, led or {}, now_ms=now_ms, ledger_problem=problem,
+                                  write_path=ledger_path if write_ledger else None,
+                                  evaluated=evaluated)
     return findings, evaluated
 
 
@@ -827,9 +955,12 @@ def _expand_multi(token):
             "@archive_all": archive_urls, "@ms_sitemap": sitemap_urls}.get(token, list)()
 
 
-_EXPAND_LOCK = threading.Lock()
-EXPAND_HIST = 5           # 基準保留近 N 晚,判準用其中的**最大值**
+EXPAND_HIST = 5           # 基準保留近 N **晚**(去重後的相異日期數),判準用其中的**最大值**
 EXPAND_FLOOR = 0.7        # 掉到近 N 晚最大值的 70% 以下 = 覆蓋面縮水
+
+
+def _today_str():
+    return (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=8)).date().isoformat()
 
 
 def _load_baseline(path):
@@ -849,8 +980,43 @@ def _load_baseline(path):
                     "——腰斬守衛失憶,在人工修好之前不可宣稱覆蓋面正常")
 
 
-def expand_problem(token, urls, record=True, path=None):
+def _parse_hist(raw, token):
+    """回傳 (list[[date_str_or_None, int]], problem_or_None)。
+
+    ⚠️ 2026-08-05 第四輪驗證者 F6:上一版對每個 token 紀錄的形狀漂移是 fail-**open**——
+    `hist` 是字串陣列/浮點/dict、`rec` 本身是字串或 list 時,原本的 `isinstance` 過濾
+    直接靜靜退回 `hist=[]`(=「沒有基準」),腰斬守衛就此關閉、零 finding、零 exit 3,
+    而且會把今晚的小數字當新基準記下去(棘輪下修)。這裡改成**看不懂就 fail-closed**
+    (回傳 problem,呼叫端直接把它當 expand_problem 的結果吐出去),比照整檔級的
+    `_load_baseline`。向下相容 F7 之前寫的純數字陣列(無日期,標記日期為 None)。
+    """
+    if raw is None:
+        return [], None
+    if not isinstance(raw, list):
+        return None, f"{token} 基準紀錄的 hist 不是陣列({type(raw).__name__})"
+    out = []
+    for x in raw:
+        if isinstance(x, bool):
+            return None, f"{token} 基準紀錄的 hist 內有看不懂的項目({x!r})"
+        if isinstance(x, int):                  # F7 之前的舊格式:純數字,無日期
+            out.append([None, x])
+        elif (isinstance(x, list) and len(x) == 2 and (x[0] is None or isinstance(x[0], str))
+              and isinstance(x[1], int) and not isinstance(x[1], bool)):
+            # x[0] is None:過渡期格式(2026-08-06 生產實跑實測抓到——本檔在同一天內先後
+            # 被舊版/新版寫過,`[null, n]` 是合法的「無日期」記錄,語意等同純數字舊格式,
+            # 不是損毀;拒收它會讓腰斬守衛在毫無資料損毀的情況下永久 exit 3。
+            out.append([x[0], x[1]])
+        else:
+            return None, f"{token} 基準紀錄的 hist 內有看不懂的項目({x!r})"
+    return out, None
+
+
+def expand_problem(token, urls, record=True, path=None, today=None):
     """展開出來的清單「規模無故縮小」也是靜默失守(2026-08-05 驗證者 F7)。
+
+    `today` 只給自測用:注入假日期才能在單一測試行程裡模擬「跨晚」而不必真的位移系統時鐘
+    (time_travel_test 對這支的位移語意見 RUNBOOK「檔案新鮮度」那節,系統時鐘位移不動 disk
+    mtime,而這裡存的是**程式自己認定的日期字串**,不是 mtime,所以合法且必要用 `today` 覆寫)。
 
     `docs/` 那邊有 `config_problems()` 擋清單腐爛,但 sitemap 那條路一條守衛都沒有:
     實測部署管線退化成只吐 1–2 個 `<loc>` 時,覆蓋面從 141 頁掉到 1 頁,狀態仍是
@@ -860,6 +1026,12 @@ def expand_problem(token, urls, record=True, path=None):
     於是「每晚縮 49%」六晚從 141 頁掉到 4 頁全程靜默——漸進式退化正好穿過單晚比對。
     現在基準存**近 {EXPAND_HIST} 晚的筆數史**,判準改用其中的最大值 × {EXPAND_FLOOR}。
     確認是預期中的縮減時:編輯/刪除基準檔中該 token(這是刻意要人動手的,基準下修必須留痕)。
+
+    ⚠️⚠️⚠️ 2026-08-05 第四輪驗證者 F7(未根治):上一版 hist 每**執行一次**就 append 一筆,
+    不是每**晚**一筆。runner 每則推播結尾都印「重跑」指令,而那條指令預設會寫狀態——
+    Delvin 照著手動重跑 4 次,5 個歷史槽位就被同一晚的值灌滿,「近 N 晚最大值」的防線
+    被同一晚的重複執行吃掉。現在 hist 存 `[date, n]`,同一天的舊紀錄先剔除再 append,
+    確保 EXPAND_HIST 代表的是**相異日期數**而不是**執行次數**。
     """
     path = path or EXPAND_BASELINE
     n = len(urls)
@@ -868,24 +1040,35 @@ def expand_problem(token, urls, record=True, path=None):
     if getattr(sitemap_urls, "dropped", 0) and token == "@ms_sitemap":
         return (f"{token} 的 sitemap 含 {sitemap_urls.dropped} 個非 {MS_ORIGIN} 項目"
                 "(網域/scheme 不符,已全部拒收)——來源可能被污染")
-    # 讀-改-寫必須整段互斥:三面同時展開,無鎖時後寫的會把先寫的 key 整個蓋掉(lost update)
-    with _EXPAND_LOCK:
+    # 讀-改-寫必須整段互斥:三面同時展開,無鎖時後寫的會把先寫的 key 整個蓋掉(lost update);
+    # 2026-08-05 第四輪驗證者 F8:cron 與人工手動重跑是兩個 OS 行程,改用跨行程檔案鎖。
+    with _file_lock(path):
         base, problem = _load_baseline(path)
         if problem:
             return problem
         rec = base.get(token)
-        if isinstance(rec, dict):
-            hist = [x for x in rec.get("hist", []) if isinstance(x, int)]
-        elif isinstance(rec, int):          # 舊格式(單一數字)也要看得懂
-            hist = [rec]
-        else:
+        if rec is None:
             hist = []
-        hi = max(hist) if hist else None
+        elif isinstance(rec, dict):
+            hist, herr = _parse_hist(rec.get("hist"), token)
+            if herr:
+                return herr + "——腰斬守衛失憶,在人工修好之前不可宣稱覆蓋面正常"
+            if not hist and isinstance(rec.get("n"), int) and not isinstance(rec.get("n"), bool):
+                # F6:hist 空但 n 還在 = 這筆紀錄被別的寫入者截過,不可信任為「從無基準」
+                return (f"{token} 基準紀錄反常(hist 空但 n={rec['n']} 還在)"
+                        "——疑似被截斷,在人工修好之前不可宣稱覆蓋面正常")
+        elif isinstance(rec, int) and not isinstance(rec, bool):   # 更舊格式(單一數字)
+            hist = [[None, rec]]
+        else:
+            return f"{token} 基準紀錄型別看不懂({type(rec).__name__})——腰斬守衛失憶,在人工修好之前不可宣稱覆蓋面正常"
+        hi = max((h[1] for h in hist), default=None)
         if hi is not None and hi >= 4 and n < hi * EXPAND_FLOOR:
-            return (f"{token} 展開只剩 {n} 個網址,近 {len(hist)} 次最高是 {hi} 個(腰斬)"
+            return (f"{token} 展開只剩 {n} 個網址,近 {len(hist)} 晚最高是 {hi} 個(腰斬)"
                     "——覆蓋面靜默縮小,這次的「乾淨」不算數")
         if record and n:
-            base[token] = {"n": n, "hist": (hist + [n])[-EXPAND_HIST:]}
+            d = today or _today_str()
+            kept = [h for h in hist if h[0] != d]   # 同一天的舊紀錄先剔除(F7 去重)
+            base[token] = {"n": n, "hist": (kept + [[d, n]])[-EXPAND_HIST:]}
             try:
                 _atomic_write(path, base)
             except Exception as e:
@@ -902,6 +1085,7 @@ def _merge_corpus(acc, one):
     acc["en_pages"] += one.get("en_pages", 0)
     acc["literals_dropped"] += one.get("literals_dropped", 0)
     acc["external_js_unscanned"] = acc.get("external_js_unscanned", 0) + one.get("external_js_unscanned", 0)
+    acc["external_json_unscanned"] = acc.get("external_json_unscanned", 0) + one.get("external_json_unscanned", 0)
     # union 而不是 any:哪幾頁瞎掉要逐頁看得見,聚合成一個 bool 就是 F5 的原病
     acc["en_blind_pages"] = list(acc.get("en_blind_pages", [])) + list(one.get("en_blind_pages", []))
 
@@ -934,7 +1118,11 @@ def scan_surface(sf, write_ledger=True):
         # ⚠️ 只填**真的評估得動**的偽規則:上游欄位改名時全部檢查靜靜跳過,
         #    無條件填滿 7 條會讓覆蓋率守衛也一起瞎掉(驗證者 F2)
         res["rules_run"] = [r for r in PROMO_PSEUDO_RULES if r in evaluated]
-        res["findings"] = findings
+        # ⚠️ 2026-08-05 第四輪驗證者 F4(HIGH):promo 面從頭到尾沒寫 `res["scanned"]`,
+        #   findings 也沒帶 url——runner 的去重鍵退化成 `surface:surface:rule`,而 scanned
+        #   集合永遠是空的,兩者永遠對不上,`ms_pricing_api` 的違規修好後永遠不會有 🟢。
+        res["findings"] = [{**f, "url": url} for f in findings]
+        res["scanned"] = [url]
         res["status"] = VIOLATION if findings else CLEAN
         res["detail"] = (f"促銷{'啟動中' if (snap.get('promo') or {}).get('active') else '未啟動'}"
                          f",{len(snap.get('items') or {})} 品項")
@@ -1008,9 +1196,13 @@ def scan_surface(sf, write_ledger=True):
     for rule in applicable:
         res["rules_run"].append(rule["id"])
         for hit in R.check_rule(rule, text):
+            # ⚠️ 2026-08-05 第四輪驗證者 F4(HIGH):單頁 finding 原本沒帶 url,runner 的
+            #   去重鍵只好退回用 surface id 湊數,跟 res["scanned"] 的真實網址永遠對不上——
+            #   單頁違規修好之後永遠不會有 🟢,每晚固定多推一則假的「這晚抓不到」。
             res["findings"].append({"rule": rule["id"], "title": rule["title"],
                                     "severity": rule["severity"], "law": rule["law"],
-                                    "pattern": hit["pattern"], "evidence": hit["evidence"]})
+                                    "pattern": hit["pattern"], "evidence": hit["evidence"],
+                                    "url": url})
     res["status"] = VIOLATION if res["findings"] else CLEAN
     res["scanned"] = [url]
     res["detail"] = f"{len(text)} 字 / {len(applicable)} 條規則"
@@ -1027,11 +1219,14 @@ def scan_surface(sf, write_ledger=True):
                      "en_pages": 1 if _EN_SENTENCE.search(text) else 0,
                      "literals_dropped": stats.get("js_literals_dropped", 0),
                      "external_js_unscanned": stats.get("external_js_unscanned", 0),
+                     "external_json_unscanned": stats.get("external_json_unscanned", 0),
                      "en_blind_pages": [url] if en_blind_page else []}
     if res["corpus"]["literals_dropped"]:
         res["detail"] += f"(⚠️ {res['corpus']['literals_dropped']} 個超長字串沒進語料)"
     if res["corpus"]["external_js_unscanned"]:
         res["detail"] += f"(⚠️ {res['corpus']['external_js_unscanned']} 支外部 JS 抓不到)"
+    if res["corpus"]["external_json_unscanned"]:
+        res["detail"] += f"(⚠️ {res['corpus']['external_json_unscanned']} 支外部 JSON 抓不到)"
     return res
 
 
@@ -1108,6 +1303,7 @@ def run(only=None, write_ledger=True, workers=5):
           or any(s.get("partial_unknown") for s in report["surfaces"])
           or report["corpus"]["literals_dropped"] or report["en_blind"]
           or report["corpus"].get("external_js_unscanned")
+          or report["corpus"].get("external_json_unscanned")
           or any((s.get("stale_days") or 0) >= 2 for s in report["surfaces"])):
         # 多網址面裡有子頁抓不到、或有長字串沒進語料 = 部分未涵蓋,不可以宣稱 exit 0 全乾淨
         report["exit"] = 2
@@ -1145,6 +1341,9 @@ def render(rep):
         if c.get("external_js_unscanned"):
             L.append(f"  ⚠️ {c['external_js_unscanned']} 支同網域外部 JS 抓不到"
                      "——那裡面的 i18n 文案這次沒進語料")
+        if c.get("external_json_unscanned"):
+            L.append(f"  ⚠️ {c['external_json_unscanned']} 支同網域外部 JSON 抓不到"
+                     "——執行期才餵進來的文案這次沒進語料")
     if rep["unapplied_rules"]:
         L.append(f"  🔴 有規則一次都沒被套用(pack 名打錯?):{', '.join(rep['unapplied_rules'])}")
     L.append("")

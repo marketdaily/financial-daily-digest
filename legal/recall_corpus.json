@@ -207,6 +207,111 @@
       "rule": "md_future_charge_wording",
       "expect": "miss",
       "text": "未來恢復收費後,既有訂閱者的免費資格不受影響。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "訂閱 Premium 之後,你看到的個股分析與進出場價跟免費版完全相同,升級只換版面。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "升級 Premium 前後,個股分析內容完全一致,不會有任何差別。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "免費用戶與付費會員看到的個股評分一模一樣,升級只是拿掉廣告。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "升級 Premium 後,個股分析與進出場價沒有任何差異,只是介面比較乾淨。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "個股分析不因付費而異,加入會員只是拿掉廣告。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "個股分析一律免費開放,不需解鎖或升級。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "個股分析全部免費,沒有任何付費用戶專屬內容。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "Upgrade doesn't change the stock analysis — it stays identical for free and paid users."
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "Premium keeps the stock analysis the same for everyone."
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "Upgrade to Premium makes no difference to the stock analysis you receive."
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "Upgrade brings the same stock analysis and price targets, it only affects delivery timing and layout."
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "Premium gives the same stock analysis without upgrading or paying anything."
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "miss",
+      "text": "Premium stock analysis has no paid-only or member-exclusive content."
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "個股分析一律免費開放,升級 Premium 後享有完整的目標價。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "個股分析一律免費開放,付費會員另有進出場價的加值內容。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "選股內容全部免費,贊助者可以看到更完整的買賣點。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "所有用戶都免費,付費用戶優先取得個股目標價。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "全功能限時免費,升級 Premium 後可閱覽進階個股分析。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "成為支持者,我們會在每天收盤後,把當日最值得注意的那幾檔的完整分析與買賣點寄給你。"
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "Upgrade to Premium and you will receive, every single trading day, our full stock analysis with price targets."
+    },
+    {
+      "rule": "md_paywall_stock",
+      "expect": "hit",
+      "text": "Upgrade to Premium lots of extra descriptive marketing words here today lots of extra descriptive marketing words here today lots stock analysis available now for everyone who wants it"
     }
   ]
 }

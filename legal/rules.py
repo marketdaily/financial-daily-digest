@@ -75,7 +75,10 @@ RULES = [
         "kind": "proximity",
         "a": [r"升級", r"解鎖(?!.{0,4}免費)", r"付費方案", r"訂閱方案", r"加入會員", r"Premium",
               r"訂閱\s*(後|才|即可|就能|就可)", r"加入\s*(Premium|會員|支持者)",
-              r"專業版", r"付費用戶專屬", r"付費會員", r"贊助", r"支持者版", r"捐款",
+              # 2026-08-05 第四輪驗證者 F10:「成為支持者」held-out 案例漏掉,「加入」
+              # 之外「成為」是同義的常見動詞,漏的不是 window 是措辭覆蓋。
+              r"成為\s*(Premium|會員|支持者)",
+              r"專業版", r"付費用戶", r"付費會員", r"贊助", r"支持者版", r"捐款",
               r"(?i)\b(upgrade|premium|paid (plan|member|subscriber)s?|pro plan)\b",
               r"(?i)subscribe to (unlock|see|read)",
               r"(?i)\bbecome a (supporter|member|patron|paid)\b", r"(?i)\bsupporters? (get|see|receive)\b"],
@@ -84,24 +87,44 @@ RULES = [
               r"(?i)\bstock (analysis|picks?|ratings?|calls?)\b", r"(?i)\bprice targets?\b",
               r"(?i)\bentry[\s/-]{0,3}exit\b", r"(?i)\bfull analysis\b",
               r"(?i)\bentry (and|&) exit\b", r"(?i)\bexit (prices?|points?)\b"],
-        "window": 30,
-        # 同句出現全稱式免費宣示 = 合規口徑,不是對價(held-out 召回語料的 miss 案例)。
-        # ⚠️⚠️ 2026-08-05 第三輪驗證者 F1(CRITICAL):上一版這裡放了裸的 `免費開放`/`不因付費`/
-        #   `free for everyone`,行銷頁最典型的「免費開放註冊,升級 Premium 解鎖完整個股分析」
-        #   同時命中兩者 → 唯一有刑責的規則被整條跳過,輸出與真乾淨的頁面一字不差(7/8 條實測脫身)。
-        #   現在兩道閘:①unless 只留**有語料背書**的(selfcheck 的必要性不變式會逼著它極小)
-        #   ②unless_void:同句只要出現「差別待遇」語(才/專屬/解鎖/paid…get…),免責一律作廢——
-        #   「個股分析一律免費開放,升級 Premium 才看得到目標價」這種自相矛盾的文案必須照咬。
-        "unless": [r"(一律|全部|完全|皆|都|永遠|所有|全體)\s*(用戶)?\s*(都\s*)?免費",
-                   r"全功能[^。\n]{0,8}免費"],
-        "unless_void": [r"才(能|可|會|有|看|拿|取得|享)", r"方(可|能)", r"始能",
-                        r"只(有|限|給|對|能看|看得到)", r"僅(限|供|有|對)",
-                        r"專屬", r"獨享", r"解鎖", r"限定會員", r"付費才",
-                        r"即可(看|見|得|取得|閱讀|獲得)",
-                        r"(?i)\b(unlock|exclusive|members?[- ]only|paywall)\b",
-                        r"(?i)\bonly (paid|premium|subscribers?|members?)\b",
-                        r"(?i)\b(paid|premium|pro)\b[^.\n]{0,24}\b(get|gets|receives?|sees?|access)\b",
-                        r"(?i)\bsupporters?\b[^.\n]{0,20}\b(get|see|receive)\b"],
+        # ⚠️ 2026-08-05 第四輪驗證者 F10:30 字對真實行銷長句太窄——句界(_sentence_start/end)
+        # 已經擋掉跨句誤報,window 在這裡的邊際價值很低,真正的風險是漏掉(唯一有刑責的規則
+        # 對長句視而不見)。中文長句與英文句(英文一句話普遍比中文長,同 md_future_charge_wording
+        # 的 160)實測都需要 >30,拉到 120 涵蓋兩者,同時保留 unless 的合規句判斷不受影響。
+        "window": 120,
+        # 同句出現「對稱性宣示」= 合規口徑,不是對價(held-out 召回語料的 miss 案例)。
+        # ⚠️⚠️⚠️ 2026-08-05 第四輪驗證者 F1(CRITICAL,第三輪 F1 未根治):上一版靠
+        #   unless(裸的全稱免費宣示)+ unless_void(差別待遇語黑名單)兩道閘,但黑名單是
+        #   **無限措辭空間的列舉**——「享有/另有/更完整的/優先取得/可閱覽進階」統統不在
+        #   15 條名單上,一律脫身,5 句對價文案實測全部漏(唯一有刑責的規則整條跳過)。
+        #   F2(HIGH)同時發現黑名單反向誤傷:「不需解鎖或升級」這種**否定**差別待遇的合規句,
+        #   因為字面含「解鎖」也被 unless_void 作廢,產生假 CRITICAL。
+        #   兩則病根相同:枚舉「不對稱」的措辭空間注定漏(F1)又注定誤傷否定句(F2)。
+        #   根治(verifier 建議的方向):**翻成白名單**——unless 只留兩類可窮舉、可驗證的
+        #   「對稱性宣示」:①明講內容/分析對免費付費**完全相同**(完全相同/一致/一模一樣/
+        #   同樣完整/不因…而異/沒有差異/only affects/identical/same for everyone/makes no
+        #   difference)②**否定式**差別待遇(不需/不必/無需/沒有任何/without unlocking)——
+        #   後者本身就是「沒有差別」的另一種講法,不是漏洞,因為它結構上排除了「享有/優先/
+        #   更完整」這類正向差別待遇動詞(否定詞必須直接框住差別待遇語,見 _NEGATED_VOID)。
+        #   刪掉 unless_void 黑名單:白名單本身已經夠窄,不需要再疊一層會誤傷否定句的濾網。
+        "unless": [
+            r"完全相同", r"完全一致", r"一模一樣", r"沒有(任何)?(差異|不同|差別)",
+            # ⚠️ 零間隔(付費而異):有間隔會被「不因付費而有廣告差異」這種夾帶文案騙過
+            #   (2026-08-05 第四輪驗證者實測:5 字容錯的 `[^。]{0,6}` 讓「而有廣告差異」
+            #   也能命中「而…異」)。對稱性宣示是固定成語,不需要容錯空間。
+            r"不因(付費|收費|升級|訂閱)而(異|有別|不同)",
+            r"同樣(的)?(完整|內容|分析)",
+            r"只(影響|差在|差別在)(?!.{0,10}(分析|個股|目標|買賣|評分|進出場|持股|買進|選股))",
+            # 否定式差別待遇:不需/不必/無需/沒有 + 解鎖/升級/付費/專屬…(F2 根治)
+            r"不(需要?|必|用)(解鎖|升級|付費|訂閱)",
+            r"沒有(任何)?(付費|會員)?(用戶)?專屬",
+            r"(?i)\bidentical\b[^.\n]{0,20}\b(free|paid)\b",
+            r"(?i)\b(the )?same\b[^.\n]{0,20}\bfor everyone\b",
+            r"(?i)\bmakes? no difference\b",
+            r"(?i)\bonly affects?\b(?!.{0,30}\b(analysis|stock|price|entry|exit)\b)",
+            r"(?i)\bwithout\s+(unlocking|upgrading|paying)\b",
+            r"(?i)\bno\s+(paid|premium|member)[- ]?(only|exclusive)\b",
+        ],
         "positives": [
             "立即升級 Premium 解鎖完整個股分析與進出場價",
             "付費會員才看得到完整的個股評分與買進價位",
@@ -391,7 +414,11 @@ def strip_exempt(text, rule=None):
     return text, masked
 
 
-_SENT_BREAK = "。！？!?\n\r｜|;；"
+# ⚠️ 2026-08-05 第四輪驗證者 F10 widen 副作用(2026-08-06 自查):window 30→120 後,
+# track-record.html 的英文 CTA 用 `·` 分隔子句(無句號),被當成同一句,"exact same stock
+# analysis"(對稱宣示)與 "paid plans return" 隔了一個無關子句被判對價 → 假 CRITICAL。
+# `·` 是生產文案真的在用的子句分隔符,補進句界字元集,比窗寬更根本(不吃字元數魔術數字)。
+_SENT_BREAK = "。！？!?\n\r｜|;；·"
 
 
 def _sentence_start(text, pos):
@@ -415,11 +442,11 @@ def _snippet(text, start, end, pad=35):
 
 
 def _exempted(seg, rule):
-    """這一句的共現算不算合規宣示。兩道閘:①有全稱式免費宣示(unless)
-    ②同句沒有差別待遇語(unless_void)——只要還在賣「才看得到/解鎖/paid…get…」,
-    前面那句全稱免費就是幌子(2026-08-05 第三輪驗證者 F1)。"""
-    return (any(_compile(u).search(seg) for u in rule.get("unless", []))
-            and not any(_compile(v).search(seg) for v in rule.get("unless_void", [])))
+    """這一句的共現算不算合規宣示。⭐ 2026-08-05 第四輪驗證者 F1/F2 根治:
+    不再用「全稱免費宣示 + 差別待遇語黑名單」兩道閘(黑名單枚舉不完會漏,又會誤傷
+    否定句)。改成單一白名單:unless 只收窄義的「對稱性宣示」(完全相同/不因…而異/
+    否定式差別待遇…),本身就窄到不需要再疊一層 void 濾網。"""
+    return any(_compile(u).search(seg) for u in rule.get("unless", []))
 
 
 def check_rule(rule, text):

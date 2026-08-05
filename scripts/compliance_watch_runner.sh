@@ -40,6 +40,15 @@ if [ ! -s "$OUT" ]; then
     || echo "$(date '+%F %T') ⚠️ 哨兵失敗告警推播也失敗" >&2
   exit 1
 fi
+# ⚠️ 2026-08-05 第四輪驗證者 F5(HIGH):掃描器被 kill/OOM/磁碟寫滿只印出半截 JSON 時,
+#   下面的內嵌 python 在 json.load 就爆掉,整晚一則推播都沒有,而 cron_daily_lock 已經
+#   佔掉當日鎖,之後每 10 分鐘的 tick 全部靜默 exit 0——那一晚沒有任何人看過線上頁面。
+if ! "$PY" -c 'import json, sys; json.load(open(sys.argv[1], encoding="utf-8"))' "$OUT" 2>/dev/null; then
+  MD_REPO="$REPO" "$PY" "$NOTIFY" \
+    "🔴 法務合規哨兵輸出不是合法 JSON(rc=$rc)$(TZ=Asia/Taipei date '+%F %H:%M') — 掃描器可能被中斷/OOM,查 legal/compliance_watch.py" \
+    || echo "$(date '+%F %T') ⚠️ 哨兵失敗告警推播也失敗" >&2
+  exit 1
+fi
 
 MSG=$("$PY" - "$OUT" "$STATE" "$STATE.pending" <<'PYEOF'
 import json, sys, os
@@ -154,6 +163,16 @@ if lines:
           "\n\n重跑:cd ~/Delvin-agent && ./.venv/bin/python -m legal.compliance_watch")
 PYEOF
 )
+py_rc=$?
+# ⚠️ 2026-08-05 第四輪驗證者 F5(HIGH)第二形態:state 目錄不可寫時,內嵌 python 在寫
+#   `.pending` 就爆掉,traceback 只上 stderr、stdout 是空的,`MSG` 因此變成空字串——
+#   會被下面當成「沒事,今晚乾淨」放行,即使當晚有 CRITICAL 違規待推也一樣全靜默。
+if [ "$py_rc" -ne 0 ]; then
+  MD_REPO="$REPO" "$PY" "$NOTIFY" \
+    "🔴 法務合規哨兵狀態轉變計算失敗(rc=$py_rc)$(TZ=Asia/Taipei date '+%F %H:%M') — 查 compliance_watch_runner.sh(state 目錄可寫嗎?)" \
+    || echo "$(date '+%F %T') ⚠️ 哨兵失敗告警推播也失敗" >&2
+  exit 1
+fi
 # ⚠️ state 必須**推播成功之後**才落地(第三輪驗證者 F9):原本內嵌 python 一算完就把 open 鍵
 #    寫進 state,推播失敗只寫一行 stderr(沒有人看那個檔)→ 隔晚該鍵已不是 new → 該筆違規
 #    從此永久靜默,而自測 ⑨d「同一違規次日不重推」還替這條路徑背書。
