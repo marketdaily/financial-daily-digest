@@ -1,6 +1,15 @@
 #!/bin/bash
 # 把 Delvin 在 Windows Chrome 的登入狀態,種進 Claude 的代理瀏覽器(agent_browser.py)。
 #
+# ⚠️⚠️ 2026-08-05 實測:這條路對「現代 Chrome + FB/IG」**行不通,別再試**。兩層防盜:
+#   ① Chrome 136+ 禁止在預設 user-data-dir 開 --remote-debugging-port(專防偷 cookie)
+#      → 用真 profile 開 headless,CDP 根本不 listen。
+#   ② cookie 是 v20 App-Bound 加密,金鑰綁原 profile 路徑 → 複製 profile 到別的目錄再開,
+#      解出來是 0 筆(TOTAL=0)。
+#   兩層合起來 = 「背景把既有登入偷出來」被 Chrome 設計性擋死。
+#   → 要種登入請改用 agent_browser_login.py:在代理瀏覽器裡**互動登入一次**(Chrome 認可的路)。
+#   本檔僅對「舊版 Chrome / v10 cookie / 非 FB-IG 的站」可能還有用,保留備查。
+#
 # 何時要跑:代理瀏覽器對某站顯示「⛔ 未登入」時(session 過期、或第一次接一個新平台)。
 # 頻率:不高。FB/IG 的 session 動輒數月,種一次可以用很久 —— 這正是本工具存在的目的:
 #       把「每次都要 Delvin 手動點」變成「偶爾種一次」。
@@ -24,18 +33,22 @@ DST_WIN='C:\Users\USER\AppData\Local\Temp\cc-fb-profile'
 DST="/mnt/c/Users/USER/AppData/Local/Temp/cc-fb-profile"
 trap 'rm -rf "$WORK"' EXIT
 
-echo "[$(date +%T)] 等 Chrome 完全關閉(最多 6 分鐘)..."
+# 判準是「cookie 檔真的複製得出來」,不是「chrome.exe 數量歸零」——
+# 後者只是前者的代理指標,而且會說謊:Chrome 常留背景 process(背景應用程式設定、
+# crashpad、別的 headless 實例),數量不為零但檔案早就沒被鎖了。2026-08-05 就是
+# 卡在這個假條件上乾等到逾時,而那時檔案其實已經可以複製。
+echo "[$(date +%T)] 等 cookie DB 可複製(=Chrome 放開鎖;最多 6 分鐘)..."
+rm -rf "$DST" 2>/dev/null; mkdir -p "$DST/Default/Network"
+OK=0
 for i in $(seq 1 180); do
-  n=$("$TASKLIST" /FI "IMAGENAME eq chrome.exe" /NH 2>/dev/null | grep -ci "chrome.exe" || true)
-  [ "$n" -eq 0 ] && { echo "[$(date +%T)] 已關閉(等了 $((i*2)) 秒)"; break; }
+  if cp "$SRC/Default/Network/Cookies" "$DST/Default/Network/Cookies" 2>/dev/null; then
+    OK=1; echo "[$(date +%T)] 拿到了(等了 $((i*2)) 秒)"; break
+  fi
+  [ $((i % 15)) -eq 0 ] && echo "[$(date +%T)] 仍被鎖住,請確認 Chrome 完全關閉(含背景常駐)"
   sleep 2
 done
-n=$("$TASKLIST" /FI "IMAGENAME eq chrome.exe" /NH 2>/dev/null | grep -ci "chrome.exe" || true)
-[ "$n" -ne 0 ] && { echo "TIMEOUT: Chrome 仍在執行,未動任何東西"; exit 2; }
-
-rm -rf "$DST" 2>/dev/null; mkdir -p "$DST/Default/Network"
+[ "$OK" -ne 1 ] && { echo "TIMEOUT: cookie DB 始終被鎖,未動任何東西"; exit 2; }
 cp "$SRC/Local State" "$DST/Local State" || { echo "FAIL: Local State"; exit 3; }
-cp "$SRC/Default/Network/Cookies" "$DST/Default/Network/Cookies" || { echo "FAIL: cookie DB 仍被鎖"; exit 3; }
 cp "$SRC/Default/Preferences" "$DST/Default/Preferences" 2>/dev/null
 SIZE=$(stat -c%s "$DST/Default/Network/Cookies")
 # 空的 cookie DB 約 20KB —— 大小過小代表複製失敗、Chrome 又自建了一份空的,
