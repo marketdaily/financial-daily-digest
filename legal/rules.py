@@ -441,12 +441,23 @@ def _snippet(text, start, end, pad=35):
     return re.sub(r"\s+", " ", text[s:e]).strip()
 
 
-def _exempted(seg, rule):
+def _exempted(seg, rule, max_start=None):
     """這一句的共現算不算合規宣示。⭐ 2026-08-05 第四輪驗證者 F1/F2 根治:
     不再用「全稱免費宣示 + 差別待遇語黑名單」兩道閘(黑名單枚舉不完會漏,又會誤傷
     否定句)。改成單一白名單:unless 只收窄義的「對稱性宣示」(完全相同/不因…而異/
-    否定式差別待遇…),本身就窄到不需要再疊一層 void 濾網。"""
-    return any(_compile(u).search(seg) for u in rule.get("unless", []))
+    否定式差別待遇…),本身就窄到不需要再疊一層 void 濾網。
+
+    ⭐⭐ 2026-08-06 第六輪驗證者 F1 HIGH:`max_start` 若給定,unless 命中的起點必須
+    落在同一把 window 尺內才算數——**不對 seg 做字串切片**(切片會把 unless 自身的
+    negative lookahead 上下文一併砍掉,讓「只影響.../only affects...(?!...)」這類
+    自帶反向排除的樣式在邊界附近失去判斷依據,第五輪修的 exempt_hi 切片正是掉進這個
+    off-by-one)。改成用 finditer 找完整 seg 上的所有 unless 命中,只驗**位置**是否
+    在窗內,regex 引擎看到的字串永遠是完整的。"""
+    for u in rule.get("unless", []):
+        for m in _compile(u).finditer(seg):
+            if max_start is None or m.start() <= max_start:
+                return True
+    return False
 
 
 def check_rule(rule, text):
@@ -478,8 +489,10 @@ def check_rule(rule, text):
                 # ⭐⭐ 2026-08-06 第五輪驗證者 F1 CRITICAL:_exempted 若吃整個 seg(到句尾),
                 #    離真違規 137 字外的裝飾性對稱宣示就能豁免——距離越遠越安全,顛倒了規則
                 #    本意。exempt 檢查必須跟 pb 用同一把 window 尺,只看 ma.end()+window 內。
-                exempt_hi = min(len(seg), max(0, ma.end() + rule["window"] - lo))
-                if _exempted(seg[:exempt_hi], rule):
+                # ⭐⭐⭐ 2026-08-06 第六輪驗證者 F1 HIGH:上一版用切片 `seg[:exempt_hi]` 做這件
+                #    事,inclusive/exclusive 沒對齊 pb 的 `<=` 判斷(off-by-one),且切片會砍斷
+                #    unless 樣式自帶的 negative lookahead 上下文。改成不切片、只檢查命中位置。
+                if _exempted(seg, rule, max_start=ma.end() + rule["window"] - lo):
                     continue
                 for pb in rule["b"]:
                     for mb in _compile(pb).finditer(seg):
