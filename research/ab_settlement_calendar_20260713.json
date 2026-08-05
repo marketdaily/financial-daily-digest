@@ -1,0 +1,119 @@
+{
+ "n_keys": 1104,
+ "n_old": 1097,
+ "n_new": 1097,
+ "coverage_only_old": [],
+ "coverage_only_new": [],
+ "field_diffs": [],
+ "path_diffs": 0,
+ "stderr_old": [],
+ "stderr_new": [],
+ "public_label_flips": [],
+ "ledger": {
+  "computable": 1451,
+  "old_vs_stored_mismatch": [],
+  "new_vs_stored_mismatch": [],
+  "old_vs_new_mismatch": [],
+  "unstamped_rows": [
+   {
+    "key": [
+     "NVDA",
+     "2026-06-29"
+    ],
+    "class": "sell",
+    "label": "win",
+    "stored_chg": 0.010052784750508588,
+    "old_chg": 0.010052784750508588,
+    "new_chg": 0.010052784750508588
+   },
+   {
+    "key": [
+     "BE",
+     "2026-06-29"
+    ],
+    "class": "sell",
+    "label": "loss",
+    "stored_chg": -0.01978110704422158,
+    "old_chg": -0.01978110704422158,
+    "new_chg": -0.01978110704422158
+   },
+   {
+    "key": [
+     "TSLA",
+     "2026-06-29"
+    ],
+    "class": "sell",
+    "label": "loss",
+    "stored_chg": -0.02170746532852895,
+    "old_chg": -0.02170746532852895,
+    "new_chg": -0.02170746532852895
+   },
+   {
+    "key": [
+     "GENB",
+     "2026-06-29"
+    ],
+    "class": "buy",
+    "label": "win",
+    "stored_chg": -0.04080428978615362,
+    "old_chg": -0.04080428978615362,
+    "new_chg": -0.04080428978615362
+   },
+   {
+    "key": [
+     "PLTR",
+     "2026-07-01"
+    ],
+    "class": "wait",
+    "label": "win",
+    "stored_chg": 0.026326173871184293,
+    "old_chg": 0.026326173871184293,
+    "new_chg": 0.026326173871184293
+   },
+   {
+    "key": [
+     "AMZN",
+     "2026-07-01"
+    ],
+    "class": "wait",
+    "label": "win",
+    "stored_chg": 0.022093489471719505,
+    "old_chg": 0.022093489471719505,
+    "new_chg": 0.022093489471719505
+   },
+   {
+    "key": [
+     "NOW",
+     "2026-07-01"
+    ],
+    "class": "wait",
+    "label": "win",
+    "stored_chg": 0.02873339507037287,
+    "old_chg": 0.02873339507037287,
+    "new_chg": 0.02873339507037287
+   },
+   {
+    "key": [
+     "META",
+     "2026-07-01"
+    ],
+    "class": "wait",
+    "label": "win",
+    "stored_chg": 0.030298099456508156,
+    "old_chg": 0.030298099456508156,
+    "new_chg": 0.030298099456508156
+   },
+   {
+    "key": [
+     "MU",
+     "2026-07-01"
+    ],
+    "class": "hold",
+    "label": "win",
+    "stored_chg": -0.03936917647832338,
+    "old_chg": -0.03936917647832338,
+    "new_chg": -0.03936917647832338
+   }
+  ]
+ }
+}

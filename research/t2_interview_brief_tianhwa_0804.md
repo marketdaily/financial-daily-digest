@@ -1,4 +1,4 @@
-# 訪談 Brief:天華管理顧問(8/4 週一 15:00,Google Meet fuo-cuyt-jpf)
+# 訪談 Brief:天華管理顧問(8/4 週二 15:00,Google Meet fuo-cuyt-jpf)
 
 ## 對方是誰
 - 天華管理顧問有限公司,台北松山(南京東路三段208號9樓),02-2740-7021
