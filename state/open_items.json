@@ -1226,8 +1226,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-05 00:15",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-05 14:01",
+  "note": "老闆 2026-08-05 13:24 真卡刷成功走完全鏈:Apple Pay→扣款→webhook→自動生成→報告+PDF+備份信。訂單 order:1785907481324-45df6efc status=fulfilled, gen_seconds=63.2, has_report/has_pdf 皆 True, cost $0.0379"
  },
  {
   "id": 124,
@@ -1296,6 +1296,56 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 03:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 131,
+  "what": "命書社群三平台帳號未開通(IG handle 未知/Threads/FB粉專/TikTok 全未建),發文引擎已就緒但四組權杖全空",
+  "why": "Meta/TikTok 註冊與首次登入需 SMS/CAPTCHA/裝置驗證,程式化登入實測回 400 Unexpected null login result,續試會鎖帳號;需 Delvin 手機約 3 分鐘",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-05 13:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 132,
+  "what": "命書 auto_post.py 移植版從未在生產發過任何一篇(check 全紅、stage 未跑、無排程)",
+  "why": "帳號未開通拿不到權杖;首班驗收=拿到權杖後 check 四綠 + stage 部署 + 第一篇 --dry 逐字核對才算",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 13:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 133,
+  "what": "寶可夢/收藏品供應商開發:研究agent調查中,開發信草稿未建未寄",
+  "why": "供應商名單研究進行中;Gmail只能建草稿,送出需Delvin點擊;回信後才算關係建立",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-05 13:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 134,
+  "what": "命書交付頁狀態延遲仍有 12-21 秒(KV list 的邊緣快取),要再壓下去需換 Durable Object",
+  "why": "已把 56 秒壓到 12-21 秒(metadata 取代 get),但 worker 的 list 也有一層較短的邊緣快取,KV 沒有強一致讀。剩下這段要消掉只能換強一致通道(Durable Object,需 Workers Paid),屬架構決定,等老闆拍板",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-05 14:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 135,
+  "what": "命書延遲三修尚未在真實訂單上驗過(只在探針與單元測試驗)",
+  "why": "閒置守候/metadata v2/報告先於寄信三處都已上線並各自驗過:守候迴圈實跑 14 秒正確交棒、狀態傳播探針 12-21 秒、突變測試 6 條紅。但端到端的真實付款流程沒再跑過一次,下一筆真單才算生產驗收",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 14:01",
   "closed": null,
   "note": ""
  }
