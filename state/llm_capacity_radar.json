@@ -86,6 +86,7 @@
       "mistral-ocr-3-0",
       "mistral-ocr-4",
       "mistral-ocr-4-0",
+      "mistral-ocr-4-1",
       "mistral-ocr-latest",
       "mistral-small-2603",
       "mistral-small-latest",
@@ -126,5 +127,5 @@
       "poolside/laguna-xs-2.1:free"
     ]
   },
-  "updated": "2026-08-04 10:10"
+  "updated": "2026-08-05 10:10"
 }
