@@ -186,8 +186,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-07-30 21:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 19:03",
+  "note": "技術根因已於07-30/31修復並連續8晚(08-03~08-06 tw/us)零復發驗證(automation_scorecard #17)。admin告警本身已隨KV 200則/90天滾動視窗自然老化(現存最舊事件=08-04,原07-30告警已不在admin.html可見範圍),resolve_admin_alert.sh無事可標。唯一真決策(要不要跟訂閱者說明/致歉)已推播Delvin本人,設預設值:不回覆=視為不需說明。"
  },
  {
   "id": 20,
@@ -1748,5 +1748,15 @@
   "opened": "2026-08-06 17:34",
   "closed": "2026-08-06 17:45",
   "note": "已修復:CJ_EMAIL/CJ_API_KEY secret已部署+attempt計數144次真放棄+admin alert三檔(首次失敗/24h/放棄)。驗證者分離額外揪出pre-existing CRITICAL(capture端KV stale read靜默丟單)已一併修復。兩輪真實生產KV+真實alert-worker端到端驗證,admin_events確認pushed:true。dropshipping repo補建git版控(原本零VCS)。commit 3af43c7"
+ },
+ {
+  "id": 176,
+  "what": "07-30雙寄事故是否需跟訂閱者說明/致歉,等Delvin回覆(已推播,預設不回覆=不需說明)",
+  "why": "決策已送出,尚未收到Delvin回覆或明確逾時關閉",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-06 19:03",
+  "closed": null,
+  "note": ""
  }
 ]
