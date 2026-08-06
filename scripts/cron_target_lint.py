@@ -28,6 +28,28 @@ RE_MODULE = re.compile(r"-m\s+([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*
 RE_SCRIPT = re.compile(
     r"(?<![/\w])(?:\$\{?REPO\}?/|\$\{?HOME\}?/Delvin-agent/)?"
     r"((?:scripts|intel|marketing|quant_lab|cb_analyzer|audio_brief)/[A-Za-z0-9_./-]+\.py)")
+# 簡單變數賦值:`VAR="value"` / `VAR=value`(一行可用 `;` 分隔多個)。
+RE_ASSIGN = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)=(\"(?:[^\"\\]|\\.)*\"|\S+)$")
+# 行首 `cd <expr>`(忽略後面的 `|| exit 1` 等)。
+RE_CD = re.compile(r"^cd\s+(\"(?:[^\"\\]|\\.)*\"|\S+)")
+RE_VARREF = re.compile(r"\$\{?([A-Za-z_][A-Za-z0-9_]*)\}?")
+
+
+def _strip_quotes(s: str) -> str:
+    if len(s) >= 2 and s[0] == '"' and s[-1] == '"':
+        return s[1:-1]
+    return s
+
+
+def _resolve(expr: str, varmap: dict[str, str]) -> str:
+    """展開 `$VAR`/`${VAR}`,只用已知變數表——查不到的原樣留著(不猜)。"""
+    expr = _strip_quotes(expr)
+    for _ in range(5):
+        new = RE_VARREF.sub(lambda m: varmap.get(m.group(1), m.group(0)), expr)
+        if new == expr:
+            break
+        expr = new
+    return expr
 
 
 def shell_sources() -> list[tuple[str, str]]:
@@ -48,33 +70,50 @@ def shell_sources() -> list[tuple[str, str]]:
     return out
 
 
-def module_exists(mod: str) -> bool:
+def module_exists(mod: str, base: Path) -> bool:
     """不 import(避免副作用/耗時),純檔案系統解析 pkg.mod → pkg/mod.py 或 pkg/mod/__init__.py。"""
     rel = Path(*mod.split("."))
-    return (REPO / rel.with_suffix(".py")).is_file() or (REPO / rel / "__init__.py").is_file()
+    return (base / rel.with_suffix(".py")).is_file() or (base / rel / "__init__.py").is_file()
 
 
 def scan() -> list[str]:
+    """逐行掃描,同時追蹤 `cd` 目標——runner 若先 `cd` 進另一個 repo(例如 fortune-ai)
+    才呼叫 `-m scripts.foo`,該模組要對著那個 repo 驗證,而不是永遠假設是本 repo(Delvin-agent)。
+    2026-08-06 事故:mingshu_pages_runner.sh 先 `cd "$FORTUNE"` 才跑
+    `python -m scripts.seo.build_pages`(fortune-ai/scripts/seo/build_pages.py 真實存在),
+    舊版永遠對 Delvin-agent/scripts/seo/ 驗證(不存在)→ 連兩天假陽性推播 admin。
+    """
     missing: list[str] = []
     seen: set[tuple[str, str]] = set()
     for src, text in shell_sources():
+        varmap: dict[str, str] = {"HOME": str(Path.home())}
+        base = REPO
         for line in text.splitlines():
             s = line.strip()
             if not s or s.startswith("#"):
                 continue
+            for segment in s.split(";"):
+                m = RE_ASSIGN.match(segment.strip())
+                if m:
+                    varmap[m.group(1)] = _resolve(m.group(2), varmap)
+            m = RE_CD.match(s)
+            if m:
+                target = Path(_resolve(m.group(1), varmap))
+                if target.is_absolute() and target.is_dir():
+                    base = target
             for mod in RE_MODULE.findall(s):
-                # 只查本 repo 的套件(第一段是 repo 內既存目錄),外部套件如 -m pip 略過
-                if not (REPO / mod.split(".")[0]).is_dir():
+                # 只查該 base 下的套件(第一段是既存目錄),外部套件如 -m pip 略過
+                if not (base / mod.split(".")[0]).is_dir():
                     continue
-                if (src, mod) in seen or module_exists(mod):
+                if (src, mod) in seen or module_exists(mod, base):
                     continue
                 seen.add((src, mod))
-                missing.append(f"{src}: python -m {mod} → 模組不存在")
+                missing.append(f"{src}: python -m {mod} → 模組不存在({base})")
             for rel in RE_SCRIPT.findall(s):
-                if (src, rel) in seen or (REPO / rel).is_file():
+                if (src, rel) in seen or (base / rel).is_file():
                     continue
                 seen.add((src, rel))
-                missing.append(f"{src}: {rel} → 檔案不存在")
+                missing.append(f"{src}: {rel} → 檔案不存在({base})")
     return missing
 
 
