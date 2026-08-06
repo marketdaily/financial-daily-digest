@@ -1862,6 +1862,69 @@ def _pp_rotation_note(html: str, data: dict) -> str:
         return html
 
 
+def _pp_confluence_note(html: str, data: dict) -> str:
+    """跨源信念榜下游接線(2026-08-06):intel/confluence.py 的匯流評分(多個獨立情報源
+    同向)先前完全零下游消費(只寫 markdown 給推播用),main.py/analyzer.py 對 intel/ 無
+    任何 import——這裡把它接進日報卡片,補上 automation_scorecard.md 記錄的缺口。
+
+    設計刻意保守:①只處理 confluence_bull/confluence_bear(risk/divergence 留待未來,
+    一次別做太多)②措辭中性「僅供補充參考,不影響上方主判斷」——卡片本身的買賣判斷與
+    confluence 方向可能不一致(例如卡片寫「賣出」但 confluence 是 bull),note 不宣稱
+    推翻或印證上方判斷,純資訊揭露,不構成新的個股建議③任何一步失敗(檔案不存在/parse
+    失敗/import 失敗)一律靜默 no-op,絕不擋 digest 生成(fail-safe,呼應死線「絕不能缺」)。
+    """
+    import html as _htmlmod
+    import re as _re
+    try:
+        from intel import confluence as _cf
+        ranked = _cf.rank(_cf.load_by_code(), min_conviction=2)
+    except Exception:
+        return html
+    by_sym = {s["code"]: s for s in ranked if s["kind"] in ("confluence_bull", "confluence_bear")}
+    if not by_sym:
+        return html
+
+    def _note(m):
+        block = m.group(0)
+        hm = _re.search(r"<!--h:([A-Z0-9.]+)-->", block)
+        if not hm:
+            return block
+        s = by_sym.get(hm.group(1))
+        if not s:
+            return block
+        srcs = _cf.directional_srcs_text(s)
+        if not srcs:
+            return block
+        # 2026-08-06 驗證者分離抓到(F1 HIGH):srcs 的短標籤最終落在 confluence.py 的
+        # _short_tag()——對沒被 _TAG_PATTERNS 涵蓋的措辭會 fallback 成外部爬蟲原文前 12 字。
+        # 這段文字來自 mops_news 等外部來源,未必乾淨,若含未閉合的 `<` 會劫持這張卡的
+        # HTML(吃掉緊跟其後的 </div>,把卡片其餘內容吞進一個惡意連結),而且這個 HTML 會
+        # 同時進訂閱信與 marketdaily.ai 公開存檔頁——must escape 任何外部衍生片段。
+        srcs = _htmlmod.escape(srcs)
+        color = "#059669" if s["kind"] == "confluence_bull" else "#dc2626"
+        dirword = "看多" if s["kind"] == "confluence_bull" else "看空"
+        note = ('<div style="color:' + color + ';font-size:12px;font-weight:600;line-height:1.7;'
+                'margin:4px 0 6px;">🎯 情報雷達:另有 ' + str(s["conviction"]) + ' 個獨立資訊源同向'
+                + dirword + '（' + srcs + '）——僅供補充參考,不影響上方主判斷。</div>')
+        if '<div class="signal-reason">' in block:
+            block = block.replace('<div class="signal-reason">', note + '<div class="signal-reason">', 1)
+        else:
+            block = block.replace("<!--h:", note + "<!--h:", 1)
+        return block
+
+    try:
+        # 2026-08-06 驗證者分離抓到(F2 MEDIUM):`|$` 補在 lookahead 最後——沒有它,若命中
+        # 的卡片是整段 HTML 最後一個節點(後面沒有下一張卡/disclaimer/section-label),regex
+        # 對它零匹配,真命中會被靜默漏掉。同檔 `_pp_strip_rogue_cards`(約 1648 行)已對同一
+        # 類 pattern 補過這個 fallback,這裡照抄同樣的修法。
+        return _re.sub(
+            r'<div class="signal-card[^"]*">.*?'
+            r'(?=<div class="signal-card[ "]|<div class="signal-disclaimer|<div class="section-label|$)',
+            _note, html, flags=_re.DOTALL)
+    except Exception:
+        return html
+
+
 def _pp_holder_wording(html: str) -> str:
     import re as _re
     # 持有者框架措辭死防線(2026-07-07 持倉客製化):帶 <!--pos:--> 標記的卡=用戶已持有,
@@ -2182,6 +2245,7 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_expand_tickers(html, tw_hint)
     html = _pp_expand_us_tickers(html)
     html = _pp_rotation_note(html, data)
+    html = _pp_confluence_note(html, data)
     html = _pp_capital_brief(html, data)
     html = _pp_strip_empty_impact(html)
     html = _pp_drop_empty_sections(html)

@@ -299,6 +299,18 @@ def format_summary(s):
     return f"{label}:{s['name']}({s['code']})×{s['conviction']}源·{s['n_camps']}陣營"
 
 
+def directional_srcs_text(s):
+    """回傳匯流方向(confluence_bull/confluence_bear)的來源標籤字串(公開介面,供外部模組
+    展示用,例如日報卡片附註;不碰 _fmt_srcs 私有函式)。非 bull/bear kind 回傳空字串。"""
+    if s["kind"] == "confluence_bull":
+        srcs = s["bull_srcs"]
+    elif s["kind"] == "confluence_bear":
+        srcs = s["bear_srcs"]
+    else:
+        return ""
+    return _fmt_srcs(s, srcs)
+
+
 def load_by_code(path=None):
     with open(path or LATEST, encoding="utf-8") as f:
         return json.load(f).get("by_code", {})
