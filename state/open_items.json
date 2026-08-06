@@ -166,8 +166,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 21:45",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 10:18",
+  "note": "生產已跑8班(08-03/04/05 tw+us、08-06 tw)零dupe:logs/fallback_2026-08-0{3,4,5,6}.log 全數 21/21 成功寄出,無「防雙發對稱閘」擋信訊息,_local_send_clearance 每班都靜默通過驗證正常"
  },
  {
   "id": 18,
@@ -206,8 +206,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 22:31",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 10:18",
+  "note": "晚報保留桶 groq:gpt-oss-20b 生產已跑3班(08-03/04/05 us):fallback log 明確可見「[LLM] 使用 groq:gpt-oss-20b」成功接手,原本會落 openrouter 550b 的情境確認由保留桶接住"
  },
  {
   "id": 22,
@@ -246,8 +246,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-02 13:14",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 10:18",
+  "note": "晚報雙寄三重修生產已跑3班(08-03/04/05 us,18:20起跑),連同08-06早報共8班全數21/21零dupe,無防雙發告警觸發,origin交付訊號/us班deploy/18:20起跑三修皆正常運作"
  },
  {
   "id": 26,
@@ -276,8 +276,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-02 13:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 10:18",
+  "note": "品質三件套(虛詞卡補錨/US裸代號補名/council 900tokens)生產已跑4天8班(08-03~08-06):fallback log 對 signal_reason_vague / ticker_no_zh_name 零命中(對比修復前 08-01 AMD 實鍋),兩類缺陷未再復發"
  },
  {
   "id": 29,
@@ -756,8 +756,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-03 14:28",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 10:18",
+  "note": "社群發文閘門完整路徑(含cmd_post真發文)08-05 14:00生產已跑:logs/social_2026-08-05.log 顯示 daily_run 完整跑 win_2026-07-15_8021_wait,ig/fb/threads三平台皆✅發出 rc=0(非--gate-only)。automation_scorecard.md已標A但open_items.json漏收,本輪補收"
  },
  {
   "id": 77,
