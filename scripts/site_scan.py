@@ -265,6 +265,7 @@ def probe_blog_schema():
 # 頁面清單單一事實來源=site_structured_data.CORE_PAGES,不在此另存一份易漂移的清單。
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from site_structured_data import CORE_PAGES as _CORE_SEO_PAGE_PATHS  # noqa: E402
+import design_quality_lint  # noqa: E402
 
 
 def probe_core_pages_schema():
@@ -298,6 +299,35 @@ def probe_digest_archive_schema():
           severity="med")
 
 
+# ── 10. AI 醜站機械 tell(標題無選字/純黑白對比/行高/measure/hover/CSS 數學)──
+# 出處:capabilities/web_design_quality_lint(2026-07-13 建,Delvin 對 AI 生成醜站當場
+# 不滿);invalid_css_math 這條曾在 2026-07-14 抓到命欣站 clamp() 缺空格靜默失效、大字
+# 崩壞。此前只在 website-design-team skill 按需人啟(scorecard B 級:「非所有前端改動
+# 強制過」),此檢查把它接進每次 site_scan 自動跑。
+# ⚠️ 範圍刻意鎖死在「網站門面」頁(index+CORE_PAGES+blog 文章),不對整個 docs/ 掃:
+# 實測 docs/output/ 信件封存(email client 必須用系統字)與 demo-*/status.html 內部
+# 工具(刻意用系統字)全庫下去掃 95/174 檔會 false-fail typography_intent——把合法選擇
+# 當缺陷。只鎖真正代表門面的頁面,才不會把 email 安全字型或內部工具誤判成醜站。
+def probe_design_quality():
+    docs = Path(__file__).resolve().parents[1] / "docs"
+    targets = ["index.html"] + list(_CORE_SEO_PAGE_PATHS.values())
+    blog_dir = docs / "blog"
+    targets += [f"blog/{f.name}" for f in sorted(blog_dir.glob("*.html")) if f.name != "index.html"]
+    fails = []
+    for rel in targets:
+        f = docs / rel
+        if not f.exists():
+            continue
+        html = f.read_text(encoding="utf-8", errors="ignore")
+        r = design_quality_lint.lint_html(html, source=rel)
+        if r["verdict"] == "fail":
+            codes = [x["code"] for x in r["findings"] if x["severity"] == "HIGH"]
+            fails.append(f"{rel}:{codes}")
+    check("design_quality_floor", not fails,
+          f"{len(targets)} 頁皆無 AI 醜站機械 tell" if not fails
+          else f"{len(fails)}/{len(targets)} 頁有 HIGH 缺陷:{fails[:5]}")
+
+
 def main():
     probe_quotes()
     probe_track_record()
@@ -309,6 +339,7 @@ def main():
     probe_blog_schema()
     probe_core_pages_schema()
     probe_digest_archive_schema()
+    probe_design_quality()
     fails = [r for r in RESULTS if not r["ok"]]
     if "--json" in sys.argv:
         print(json.dumps(RESULTS, ensure_ascii=False, indent=1))

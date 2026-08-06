@@ -1688,5 +1688,55 @@
   "opened": "2026-08-06 12:34",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 170,
+  "what": "confluence 匯流/背離推播接線(intel_patrol_runner.sh)尚未在生產窗口真跑過",
+  "why": "今晚才是首次真實 21:30-21:59 TW 巡邏,合成 fixture 已驗過邏輯但真實 26 連接器資料的形狀未實測過;首班驗收前不可在 automation_scorecard 記 A",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-06 13:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 171,
+  "what": "cron_daily_lock 改 flock 序列化(commit bc4b679)尚未在生產排程真跑過",
+  "why": "呼叫端簽章零改動、13 斷言單元測試+決定性驗證+驗證者分離皆過,但按判準只有測試驗證過仍算 open;4 個生產呼叫端(key_health_runner/compliance_watch_runner/compliance_watch_coverage_firstrun/cron_template)下次各自排程時才是首次真跑",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-06 14:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 172,
+  "what": "WSL→Windows exe interop 自 08-05 21:20 起持續故障(cmd.exe/powershell.exe 一律 Invalid argument),已建 wsl_interop_watch.sh 偵測+告警(15:40 首次生產真跑已推播 admin),但復原本身需 Delvin 或從 Windows/Mac 端執行 wsl --shutdown,機器自己修不了",
+  "why": "偵測器只做偵測不做修復(從 WSL 裡面自砍自己不安全);受影響:line_group_runner.sh 券商喊單截圖(已加短路+獨立告警)、line_watch.sh、seed_agent_browser.sh、notify_admin.py 桌面 toast",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-06 15:57",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 173,
+  "what": "confluence 跨源信念榜日報下游接線(commit a3257b9)尚未在生產跑過",
+  "why": "digest 只在 05:20/18:20 TW 生成,首次真跑驗收前不算已完成;需確認真實 production data 下 _pp_confluence_note 有正常附註且沒有破壞 HTML/audit 通過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-06 16:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 174,
+  "what": "design_quality_floor(美感lint)接進 site_scan.py 尚未在生產跑過",
+  "why": "剛接線,site_scan_runner cron 每10分鐘跑一次,下一班才是首次生產真跑(讀本地 docs/ 檔案,不需部署);已用真實 63 頁掃描+合成缺陷注入驗證過邏輯正確,只是還沒被 cron 環境真的執行過一次",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-06 17:11",
+  "closed": null,
+  "note": ""
  }
 ]

@@ -23,6 +23,7 @@ cwd,你的任何改動只落在這個 worktree)。全站掃描(scripts/site_scan
 | 報價卡「···」 | 多半是 worker/限流(後端) | 前端僅確認 localStorage 留底與 chunked fetch 邏輯沒被改壞;後端問題不要碰 |
 | 資產 404(og.png/影片/CSS) | 檔案被改名/漏 commit | 修引用路徑(檔案真不存在就不要造假檔) |
 | sitemap/og 回歸 | 引用或生成物漂移 | 只修 docs/ 內引用 |
+| `design_quality_floor` fail(2026-08-06 新增) | `typography_intent`=該頁 CSS 只宣告系統字,零選字意圖;`invalid_css_math`=calc()/clamp() 裡 `+`/`-` 兩側缺空白,整條宣告被瀏覽器靜默丟棄(曾害命欣站大字崩壞) | **不要為了讓檢查通過而刪字/加假 comment 繞過**。`typography_intent`→挑一組 Google Fonts/Fontshare 配對(標題+內文各一)`<link>` 進 `<head>`+設成該頁 `font-family` 第一位;`invalid_css_math`→找 fail 訊息附的 evidence 片段,在 `+`/`-` 兩側各補一個空白(例:`5vw+1rem`→`5vw + 1rem`),不要整個拿掉 calc()。改完務必用 `python3 scripts/site_scan.py` 局部重跑 `design_quality_floor` 一項確認轉綠,別只看訊息就收工 |
 
 ## 完成時
 - 若有改動:確保 `git status` 只有 docs/ 變更,不用自己 commit/push/deploy(runner 收尾做:
