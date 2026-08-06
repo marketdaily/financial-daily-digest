@@ -35,6 +35,26 @@ MODEL = "claude-haiku-4-5-20251001"
 
 AI_SLOP_LINT = Path.home() / "autonomous" / "capabilities" / "ai_slop_lint" / "logic.py"
 _slop_mod = None
+_GEN_STATS = {"compliance_discards": 0, "slop_discards": 0}
+
+
+def _push_admin(msg):
+    """合規閘丟棄整篇文章時的可見告警(2026-08-06 驗證者 F3:原本只印 stdout,週跑一次的
+    無人值守 cron 若 LLM 系統性違規會靜默少發文章、沒人知道)。與
+    scripts/free_capacity_radar.py 同一套 token/端點/UA(CF 擋裸 urllib UA,已知坑)。"""
+    tok = os.getenv("MARKETDAILY_ALERT_TOKEN")
+    if not tok:
+        return False
+    try:
+        import requests
+        r = requests.post(
+            "https://marketdaily-alert-worker.delvin-12345678.workers.dev/internal/admin-line-push",
+            headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json",
+                     "User-Agent": "md-seo-articles"},
+            json={"message": msg}, timeout=30)
+        return r.status_code == 200
+    except Exception:
+        return False
 
 
 def _slop_report(body_html: str):
@@ -52,10 +72,57 @@ def _slop_report(body_html: str):
         return None
 
 
+def _html_to_text(html: str) -> str:
+    """粗略去 tag,留下純文字供合規規則比對(與 digest_audit._strip_html_to_text 同手法)。"""
+    txt = re.sub(r"<script[\s\S]*?</script>", "", html, flags=re.I)
+    txt = re.sub(r"<style[\s\S]*?</style>", "", txt, flags=re.I)
+    txt = re.sub(r"<[^>]+>", " ", txt)
+    return re.sub(r"\s+", " ", txt).strip()
+
+
+def _compliance_report(body_html: str):
+    """套用與 legal/compliance_watch.py 隔夜線上巡檢**同一份**規則(marketdaily +
+    marketdaily_marketing pack),在寫檔前擋下違規,不再只靠隔夜巡檢才抓到(2026-08-05
+    那次事故的暴露窗口最長 24h→0)。只排除 required 類(該類檢查的是整頁結構如頁尾法定
+    聲明句是否存在,write_article 的 PAGE_TEMPLATE 已固定帶一份,不是 LLM 本文該負責的
+    範圍)——**必含 proximity/context_required**:2026-08-06 驗證者分離抓到 F1
+    CRITICAL,md_paywall_stock(投信投顧法§4/§107 刑責,「訂閱才看得到目標價/買賣點」
+    這種同句共現)是 proximity 類,直接命中 LLM 生成的 prose/CTA,原版只套 forbidden 類
+    漏接了風險最高的規則。積木缺席/壞掉回 None(fail-open):合規閘複用既有規則庫,規則
+    庫本身不可用或規則本身壞掉(如壞掉的 regex)不該讓生成管線停擺——compliance_watch
+    隔夜巡檢仍是最後防線。fail-open 範圍涵蓋整個規則載入+套用過程(不只 import 那行),
+    與 `_slop_report` 同一種寬度,否則 legal/rules.py 任何一次規則改壞就會讓文章在沒有
+    重試機會的情況下直接整篇消失(2026-08-06 驗證者 F2)。"""
+    try:
+        from legal import rules as R
+        text = _html_to_text(body_html)
+        findings = []
+        for rule in R.rules_for(["marketdaily", "marketdaily_marketing"]):
+            if rule["kind"] == "required":
+                continue
+            hits = R.check_rule(rule, text)
+            if hits:
+                findings.append({"id": rule["id"], "severity": rule["severity"], "hits": hits})
+        return findings
+    except Exception as e:
+        print(f"    [compliance-lint unavailable: {type(e).__name__}: {e}] 跳過檢查")
+        return None
+
+
 def slop_gated(gen_fn, label: str, retries: int = 1):
-    """生成 + AI-slop 閘:sloppy 重生一次,仍 sloppy 丟棄(寧缺勿濫);watch 放行但大聲記錄。"""
+    """生成 + 合規閘 + AI-slop 閘:違規或 sloppy 重生一次,仍未過丟棄(寧缺勿濫);
+    slop watch 放行但大聲記錄。合規閘見 `_compliance_report`。"""
     for attempt in range(retries + 1):
         art = gen_fn()
+        comp = _compliance_report(art["body_html"])
+        if comp:
+            hits_desc = [f"{f['id']}({f['severity']})" for f in comp]
+            last = attempt >= retries
+            tail = "→丟棄不發(寧缺勿濫)" if last else "→重生一次"
+            print(f"    [compliance-BLOCK] {label} {hits_desc}{tail}")
+            if last:
+                _GEN_STATS["compliance_discards"] += 1
+            continue
         rep = _slop_report(art["body_html"])
         if rep is None or rep["verdict"] == "clean":
             return art
@@ -63,8 +130,11 @@ def slop_gated(gen_fn, label: str, retries: int = 1):
         if rep["verdict"] == "watch":
             print(f"    [slop-watch] {label} density={rep['slop_density']:.1f} {offenders}(放行,留觀察)")
             return art
-        tail = "→重生一次" if attempt < retries else "→丟棄不發(寧缺勿濫)"
+        last = attempt >= retries
+        tail = "→丟棄不發(寧缺勿濫)" if last else "→重生一次"
         print(f"    [slop-SLOPPY] {label} density={rep['slop_density']:.1f} {offenders}{tail}")
+        if last:
+            _GEN_STATS["slop_discards"] += 1
     return None
 
 BLOG_DIR = ROOT / "docs" / "blog"
@@ -2229,6 +2299,16 @@ def main():
         build_feed(args.dry)
     except Exception as e:
         print(f"  [feed] skip(不阻斷管線): {type(e).__name__}: {e}")
+    if _GEN_STATS["compliance_discards"] or _GEN_STATS["slop_discards"]:
+        print(f"  [gen-stats] compliance_discards={_GEN_STATS['compliance_discards']} "
+              f"slop_discards={_GEN_STATS['slop_discards']}")
+    if _GEN_STATS["compliance_discards"] and not args.dry:
+        # 合規閘丟棄=真實違規訊號(法律風險),非例行 slop 雜訊——每次發生都值得讓 Delvin 看到,
+        # 不是靜默少發文章(週跑一次,不會構成告警疲勞)。
+        _push_admin(
+            f"🟡 SEO blog:本輪 {_GEN_STATS['compliance_discards']} 篇因合規閘(捏造數字/"
+            f"付費牆等)重生仍違規被丟棄不發,查 seo_runner.sh log 的 [compliance-BLOCK] 行"
+        )
     print("✓ done")
 
 
