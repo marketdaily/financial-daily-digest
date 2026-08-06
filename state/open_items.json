@@ -1668,5 +1668,15 @@
   "opened": "2026-08-06 09:47",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 168,
+  "what": "blog SEO 文章寫檔前合規閘(commit c4da349)尚未在生產跑過:下次真跑=2026-08-10(週一)01:00 TW seo_runner.sh",
+  "why": "驗證只做到單元測試+mock生成器(6→10 checks 全過)+驗證者分離(SOUND-WITH-CORRECTIONS,3 findings 全修)。真實 Gemini 生成的文章形狀(entities/巢狀標籤/list 分段)未實跑驗證,_html_to_text 對這些形狀是否會漏判仍是驗證者報告裡的 UNVERIFIED 項",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-06 10:44",
+  "closed": null,
+  "note": ""
  }
 ]
