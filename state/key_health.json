@@ -1,6 +1,6 @@
 {
- "ts": "2026-08-03T13:21:03",
- "weekly_ran": true,
+ "ts": "2026-08-05T10:50:07",
+ "weekly_ran": false,
  "results": {
   "finmind": {
    "ok": true,
@@ -28,23 +28,7 @@
   },
   "exa_budget": {
    "ok": true,
-   "note": "no budget file yet(尚未首跑)"
-  },
-  "alphavantage": {
-   "ok": true,
-   "note": "http=200"
-  },
-  "tavily": {
-   "ok": true,
-   "note": "http=200"
-  },
-  "context7": {
-   "ok": true,
-   "note": "http=200"
-  },
-  "mistral_key": {
-   "ok": true,
-   "note": "http=200"
+   "note": "month=2026-08 used=0/800"
   }
  }
 }

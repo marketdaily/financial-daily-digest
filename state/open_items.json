@@ -736,8 +736,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-03 13:51",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 09:32",
+  "note": "digest_archive_seo_2026-08-04.log 起連續每日 07:20 TW exit=0(08-04/05/06 皆有 archive_cta exit=0 + indexnow 200),生產首跑確認成功"
  },
  {
   "id": 75,
@@ -1276,8 +1276,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 01:18",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 09:32",
+  "note": "compliance_watch_cron.log:2026-08-05 22:40 全站納管首班驗收 PASS(19面/351頁語料/119檢查/違規0/未涵蓋0)"
  },
  {
   "id": 129,
@@ -1286,8 +1286,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 02:18",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 09:32",
+  "note": "同 #128 首班驗收 PASS,同班已驗第二輪9則修復的生產訊號(哨兵帳本/欄位驗證/backtick語料/sitemap守衛/去重鍵/召回語料)"
  },
  {
   "id": 130,
@@ -1296,8 +1296,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 03:05",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 09:32",
+  "note": "同 #128 首班驗收 PASS,同班已驗第三輪12 findings修法(310頁/外部JS語料/新腰斬基準格式/runner state)的生產訊號"
  },
  {
   "id": 131,
@@ -1536,8 +1536,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-05 18:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 09:32",
+  "note": "git log 2d41b4a 2026-08-06 09:13 chore(arb) 進貨雷達行情帳本每日累積確認提交成功,radar/dashboard/render 三支 runner 首班皆 rc=0"
  },
  {
   "id": 155,
@@ -1648,5 +1648,15 @@
   "opened": "2026-08-05 23:17",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 166,
+  "what": "storefront 網域命名未定:需完整跑一輪(概念→候選→可用性驗證→3 個可直接買的),並確認 Cloudflare Registrar 是否支援 .tw",
+  "why": "老闆 08-05 交辦「網域幫我想然後要在哪裡買」,當晚只定出架構(買兩個:品牌域+獨立寄件域)與購買處建議;⚠️我的 .tw 可用性檢查器被驗出是壞的(TWNIC RDAP 對 google.com.tw 也回 404=可註冊),該批結果全部作廢,.com 那組(Verisign RDAP)可信",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-05 23:30",
+  "closed": "2026-08-06 06:26",
+  "note": "兩個網域(前一輪08-05 23:xx已定案「品牌域+獨立寄件域」分開買,本輪一開始漏看why欄位只推單一域,複查WORKLOG後同輪內補齊,commit 7e12bdd):品牌域quietfix.studio(US$31.2/yr),寄件域delvinchang.com(US$10.5/yr,個人化比再造品牌字更貼合以Delvin Chang個人身份寄信)。皆RDAP即時驗證可註冊+商標粗查排除風險字。已確認Cloudflare不支援.tw(政策頁查無條目)。BRAND_NAME佔位字已換QuietFix上線,worker已重新部署。兩網域都要付款留老闆選,細節見~/storefront/DOMAIN.md;購買後DNS/寄件網域預熱併入open #158"
  }
 ]

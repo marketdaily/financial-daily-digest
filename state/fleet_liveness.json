@@ -1,63 +1,85 @@
 {
- "ts": "2026-08-03T13:24:04",
- "jobs_n": 59,
+ "ts": "2026-08-05T13:29:33",
+ "jobs_n": 66,
  "silent_n": 0,
  "silent": [],
  "intel": {
   "latest_age_d": 1,
-  "sources_n": 7
+  "sources_n": 11
  },
  "intel_problems": [],
+ "outputs": {
+  "券商喊單(sinopac_line)": {
+   "age_days": 6,
+   "newest": "2026-07-30.md",
+   "max_age": 5
+  },
+  "大腦送Mac(brain_deliver_mac)": {
+   "age_days": 0,
+   "newest": "brain_deliver_mac.beat",
+   "max_age": 1
+  },
+  "cb_server 守護(keepalive)": {
+   "age_days": 0,
+   "newest": "cb_server_keepalive.beat",
+   "max_age": 1
+  }
+ },
+ "output_problems": [
+  "券商喊單(sinopac_line):最新產出 2026-07-30.md 已 6 天(容忍 5 天)——多半是 Windows 的 LINE 登出了(截圖會是登入/QR 頁),需 Delvin 本人在 winrig 重新登入"
+ ],
  "jobs": {
   "agent_board_deploy": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "agent_board_gen": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "brain_parity": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "brain_revert": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "capacity_radar": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
-   "status": "observing"
+   "median_gap_d": 1.0,
+   "thresh_d": 2.5,
+   "status": "ok"
   },
   "cb_conv_watch": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "cb_etf_watch": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "cb_mail_ingest": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -65,62 +87,67 @@
   },
   "churn_sniper": {
    "last": "2026-08-03",
-   "age_d": 0,
+   "age_d": 2,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "status": "ok"
   },
+  "comment_funnel": {
+   "last": "2026-08-05",
+   "age_d": 0,
+   "status": "observing"
+  },
   "conf_charts": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "crawler_coverage_ledger": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "deploy_docs_daily_digest": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "status": "gated"
   },
   "deploy_docs_digest_archive_seo": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "status": "gated"
   },
   "deploy_docs_seo": {
-   "last": "2026-07-27",
-   "age_d": 7,
+   "last": "2026-08-03",
+   "age_d": 2,
    "status": "gated"
   },
   "deploy_docs_site_scan": {
    "last": "2026-07-28",
-   "age_d": 6,
+   "age_d": 8,
    "status": "gated"
   },
   "deploy_docs_tldr": {
-   "last": "2026-07-29",
-   "age_d": 5,
+   "last": "2026-08-04",
+   "age_d": 1,
    "status": "gated"
   },
   "deploy_docs_track_record": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "status": "gated"
   },
   "deploy_docs_win_card": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "status": "gated"
   },
   "digest_archive_seo": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -128,32 +155,44 @@
   },
   "edge_cuts_weekly": {
    "last": "2026-08-02",
-   "age_d": 1,
+   "age_d": 3,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "status": "ok"
   },
   "fallback": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "status": "gated"
   },
+  "fleet_liveness": {
+   "last": "2026-08-04",
+   "age_d": 1,
+   "status": "observing"
+  },
   "fortune_fulfill": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "intel_patrol": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
+  "key_health": {
+   "last": "2026-08-05",
+   "age_d": 0,
+   "median_gap_d": 1,
+   "thresh_d": 2.5,
+   "status": "ok"
+  },
   "kospi_open_alert": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -161,32 +200,32 @@
   },
   "ledger_freshness": {
    "last": "2026-08-03",
-   "age_d": 0,
+   "age_d": 2,
    "median_gap_d": 10.5,
    "thresh_d": 16.8,
    "status": "ok"
   },
   "ma_weekly": {
    "last": "2026-07-31",
-   "age_d": 3,
+   "age_d": 5,
    "status": "observing"
   },
   "macro_rates_ledger": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "market_forecast_a": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "market_forecast_b": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -194,51 +233,77 @@
   },
   "meta_token_refresh": {
    "last": "2026-08-02",
+   "age_d": 3,
+   "status": "observing"
+  },
+  "mingshu_pages_audit": {
+   "last": "2026-08-05",
+   "age_d": 0,
+   "median_gap_d": 1,
+   "thresh_d": 2.5,
+   "status": "ok"
+  },
+  "mingshu_pages_build": {
+   "last": "2026-08-05",
+   "age_d": 0,
+   "median_gap_d": 1,
+   "thresh_d": 2.5,
+   "status": "ok"
+  },
+  "mingshu_pages_ship": {
+   "last": "2026-08-05",
+   "age_d": 0,
+   "status": "observing"
+  },
+  "mingshu_seo_pull": {
+   "last": "2026-08-04",
    "age_d": 1,
    "status": "observing"
   },
   "news_reactive": {
-   "last": "2026-08-03",
+   "last": "2026-08-04",
+   "age_d": 1,
+   "median_gap_d": 1,
+   "thresh_d": 2.5,
+   "status": "ok"
+  },
+  "nvidia_key_watch": {
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
-  "nvidia_key_watch": {
-   "last": "2026-08-03",
-   "age_d": 0,
-   "status": "observing"
-  },
   "pe_ratio_ledger": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "quality_board_deploy": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "quality_board_gen": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "reddit_buzz": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "regime_ledger": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -246,48 +311,48 @@
   },
   "rotation_settle": {
    "last": "2026-08-02",
-   "age_d": 1,
+   "age_d": 3,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "status": "ok"
   },
   "seo": {
-   "last": "2026-07-27",
-   "age_d": 7,
-   "median_gap_d": 10.5,
-   "thresh_d": 16.8,
+   "last": "2026-08-03",
+   "age_d": 2,
+   "median_gap_d": 7,
+   "thresh_d": 11.5,
    "status": "ok"
   },
   "seo_page_traffic_ledger": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "social": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "social_buzz": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "stale_base_lint": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "supply_chain_watch": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -295,27 +360,27 @@
   },
   "threads_token_refresh": {
    "last": "2026-08-01",
-   "age_d": 2,
+   "age_d": 4,
    "median_gap_d": 17,
    "thresh_d": 26.5,
    "status": "ok"
   },
   "tldr_distribution": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
-   "median_gap_d": 1.5,
-   "thresh_d": 3.2,
+   "median_gap_d": 1,
+   "thresh_d": 2.5,
    "status": "ok"
   },
   "trackrec": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "tw_financials_ledger": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -323,46 +388,46 @@
   },
   "update_stocks": {
    "last": "2026-08-01",
-   "age_d": 2,
+   "age_d": 4,
    "status": "observing"
   },
   "us_13f_ledger": {
-   "last": "2026-08-02",
+   "last": "2026-08-04",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "us_8k_poll": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "us_analyst_poll": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "us_insider_poll": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "valuation_ledger": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "videobrief": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -370,30 +435,30 @@
   },
   "watch_bizdesc_build": {
    "last": "2026-08-02",
-   "age_d": 1,
+   "age_d": 3,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "status": "ok"
   },
   "watch_industry_build": {
    "last": "2026-08-02",
-   "age_d": 1,
+   "age_d": 3,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "status": "ok"
   },
   "watch_profile_build": {
    "last": "2026-08-02",
-   "age_d": 1,
+   "age_d": 3,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "status": "ok"
   },
   "win_card_promote": {
-   "last": "2026-08-03",
+   "last": "2026-08-05",
    "age_d": 0,
-   "median_gap_d": 1.5,
-   "thresh_d": 3.2,
+   "median_gap_d": 1,
+   "thresh_d": 2.5,
    "status": "ok"
   }
  }
