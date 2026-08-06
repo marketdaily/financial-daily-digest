@@ -1738,5 +1738,15 @@
   "opened": "2026-08-06 17:11",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 175,
+  "what": "Wrenly(dropshipping)CJ供應商認證secret從未部署+無限靜默重試零告警,真實訂單有失敗風險",
+  "why": "本輪查出兩個真實生產缺陷,正在修復中",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-06 17:34",
+  "closed": "2026-08-06 17:45",
+  "note": "已修復:CJ_EMAIL/CJ_API_KEY secret已部署+attempt計數144次真放棄+admin alert三檔(首次失敗/24h/放棄)。驗證者分離額外揪出pre-existing CRITICAL(capture端KV stale read靜默丟單)已一併修復。兩輪真實生產KV+真實alert-worker端到端驗證,admin_events確認pushed:true。dropshipping repo補建git版控(原本零VCS)。commit 3af43c7"
  }
 ]
