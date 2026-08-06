@@ -558,3 +558,24 @@
 {"date": "2026-08-05", "code": "4979", "source": "leadflow", "level": "red", "signal": "華星光(4979) 無消息近漲停+9.9%(連3根,5日+28.0%),疑資訊先行資金|外資+投信近3日+1435張", "price_at_signal": 492.0}
 {"date": "2026-08-05", "code": "6840", "source": "leadflow", "level": "red", "signal": "東研信超(6840) 無消息近漲停+9.9%(量能11.9×,5日+18.7%),疑資訊先行資金|外資+投信近3日僅+26張,法人未同步=隱形買盤", "price_at_signal": 68.6}
 {"date": "2026-08-05", "code": "6547", "source": "leadflow", "level": "red", "signal": "高端疫苗(6547) 無消息近漲停+9.9%(量能4.1×,5日+14.0%),疑資訊先行資金|外資+投信近3日+2387張", "price_at_signal": 52.1}
+{"date": "2026-08-06", "code": "1560", "source": "investor_conf", "level": "red", "signal": "中砂(1560):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": 693.0}
+{"date": "2026-08-06", "code": "2303", "source": "margin", "level": "yellow", "signal": "聯電(2303):融資5日暴增16.3%(散戶追高過熱)", "price_at_signal": 121.5}
+{"date": "2026-08-06", "code": "3260", "source": "institutional", "level": "red", "signal": "威剛(3260):投信連 3 日賣超(棄養警訊,20日淨賣 +381 張)", "price_at_signal": 421.0}
+{"date": "2026-08-06", "code": "3339", "source": "margin", "level": "yellow", "signal": "泰谷(3339):融資5日暴增15.8%(散戶追高過熱)", "price_at_signal": 40.6}
+{"date": "2026-08-06", "code": "4973", "source": "mops_news", "level": "red", "signal": "廣穎電通(4973) 重訊[2026-08-05]:公告本公司發行國內第一次無擔保轉換公司債代收價款 及存儲專戶行庫", "price_at_signal": 162.5}
+{"date": "2026-08-06", "code": "4973", "source": "margin", "level": "yellow", "signal": "廣穎電通(4973):融資5日暴增23.0%(散戶追高過熱)", "price_at_signal": 162.5}
+{"date": "2026-08-06", "code": "5536", "source": "mops_news", "level": "yellow", "signal": "聖暉*(5536) 重訊[2026-08-05]:依公開發行公司資金貸與及背書保證處理準則第二十二條 第一項第三款規定公告本公司及子公司資金貸與他人事項", "price_at_signal": 1070.0}
+{"date": "2026-08-06", "code": "5536", "source": "margin", "level": "yellow", "signal": "聖暉(5536):融資5日暴增21.5%(散戶追高過熱)", "price_at_signal": 1070.0}
+{"date": "2026-08-06", "code": "6274", "source": "institutional", "level": "red", "signal": "台燿(6274):外資連 6 日賣超(5日淨賣 -5,169 張)", "price_at_signal": 1530.0}
+{"date": "2026-08-06", "code": "6274", "source": "tw_rank", "level": "yellow", "signal": "台燿(6274) 今日成交額排行第9(+4.1%),異常活躍", "price_at_signal": 1530.0}
+{"date": "2026-08-06", "code": "8438", "source": "institutional", "level": "red", "signal": "昶昕(8438):外資連 5 日賣超(5日淨賣 -420 張)", "price_at_signal": 66.2}
+{"date": "2026-08-06", "code": "3219", "source": "tw_rank", "level": "yellow", "signal": "倚強科(3219) 今日漲幅排行第2(+10.0%),異常活躍", "price_at_signal": 71.5}
+{"date": "2026-08-06", "code": "MSFT", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 MSFT 內部人賣出:Numoto Takeshi[EVP, Chief Marketing Officer] 4,810股 均價$496.48(約$2,388,244)", "price_at_signal": null}
+{"date": "2026-08-06", "code": "6213", "source": "leadflow", "level": "red", "signal": "聯茂(6213) 無消息近漲停+10.0%(連4根,5日+56.6%),疑資訊先行資金|外資+投信近3日+4095張", "price_at_signal": 375.0}
+{"date": "2026-08-06", "code": "2070", "source": "leadflow", "level": "red", "signal": "精湛(2070) 無消息近漲停+10.0%(連2根,5日+32.5%),疑資訊先行資金|外資+投信近3日僅+13張,法人未同步=隱形買盤", "price_at_signal": 58.3}
+{"date": "2026-08-06", "code": "3114", "source": "leadflow", "level": "red", "signal": "好德(3114) 無消息近漲停+10.0%(量能4.0×,5日+29.5%),疑資訊先行資金|外資+投信近3日僅-278張,法人未同步=隱形買盤", "price_at_signal": 36.9}
+{"date": "2026-08-06", "code": "5228", "source": "leadflow", "level": "red", "signal": "鈺鎧(5228) 無消息近漲停+9.9%(連2根,5日+28.2%),疑資訊先行資金|外資+投信近3日僅+23張,法人未同步=隱形買盤", "price_at_signal": 43.65}
+{"date": "2026-08-06", "code": "6735", "source": "leadflow", "level": "red", "signal": "美達科技(6735) 無消息近漲停+10.0%(量能1.4×,5日+26.3%),疑資訊先行資金|外資+投信近3日僅+24張,法人未同步=隱形買盤", "price_at_signal": 72.9}
+{"date": "2026-08-06", "code": "6419", "source": "leadflow", "level": "red", "signal": "京晨科(6419) 無消息近漲停+9.9%(連2根,5日+31.7%),疑資訊先行資金|外資+投信近3日僅+185張,法人未同步=隱形買盤", "price_at_signal": 149.5}
+{"date": "2026-08-06", "code": "4561", "source": "leadflow", "level": "yellow", "signal": "健椿(4561) 無消息近漲停+9.9%(量能2.7×,5日+23.5%),疑資訊先行資金", "price_at_signal": 39.9}
+{"date": "2026-08-06", "code": "5289", "source": "leadflow", "level": "red", "signal": "宜鼎(5289) 無消息近漲停+9.9%(連2根,5日+36.4%),疑資訊先行資金|外資+投信近3日僅-1561張,法人未同步=隱形買盤", "price_at_signal": 1610.0}
