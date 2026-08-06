@@ -114,6 +114,29 @@ def _all_sections(html: str, class_name: str) -> List[str]:
     return sections
 
 
+def signal_reason_stats(html: str) -> Dict:
+    """signal-reason 長度統計,不管有沒有觸發 9b-2 的 pass/fail 都算(那條判準留在 audit_digest,
+    單一事實來源不重複)。給 KPI 趨勢線用——backlog 08-06 發現:median 字數只在觸發失分時才會
+    被印進 log,平時完全沒有記帳,沒人知道「哪幾天的日報比較薄」除非事後 grep log。純讀取,
+    不影響 audit_digest 既有判準與行為。回傳 {"n": 0} 代表卡數不足(<1 張)算不出統計量。"""
+    signal_cards = _all_sections(html, r"signal-card[^\"]*")
+    reason_lens = []
+    for card in signal_cards:
+        if re.search(r"備援|個人化生成異常|fallback|主編將.{0,8}修復|無即時報價|見網頁", card):
+            continue
+        reason_m = re.search(r'<div class="signal-reason"[^>]*>(.*?)</div>', card, re.S)
+        if not reason_m:
+            continue
+        reason_lens.append(len(_strip_html_to_text(reason_m.group(1)).strip()))
+    if not reason_lens:
+        return {"n": 0}
+    sl = sorted(reason_lens)
+    n = len(sl)
+    median_len = sl[n // 2] if n % 2 else (sl[n // 2 - 1] + sl[n // 2]) / 2
+    return {"n": n, "median": median_len, "min": sl[0], "max": sl[-1],
+            "n_below60": sum(1 for x in reason_lens if x < 60)}
+
+
 def audit_digest(
     html: str,
     today_iso: str,

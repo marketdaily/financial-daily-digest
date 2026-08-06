@@ -58,6 +58,7 @@ DEFER_RC = 4
 HARD_DEADLINE_HM = {"tw": 9 * 60, "us": 23 * 60}
 SLOW_CALLS_THRESHOLD = 15          # 幾次 openrouter 慢路徑算「整批掉下去」
 LLM_LEDGER = REPO / "state" / "postcheck_llm_ledger.jsonl"
+REASON_MEDIAN_LEDGER = REPO / "state" / "signal_reason_median_history.jsonl"
 CHRONIC_WINDOW = 5                 # 看前幾班決定「這是不是常態」
 CHRONIC_MIN_HITS = 3               # 前 5 班有 3 班以上觸發 = 常態,降級成註記
 CHRONIC_WORSE_RATIO = 1.5          # 常態下還要比近期最糟再糟 50% 才算顯著惡化
@@ -166,6 +167,27 @@ def _ledger_path():
 
 def _days_between(d1, d2):
     return abs((datetime.strptime(d1, "%Y-%m-%d") - datetime.strptime(d2, "%Y-%m-%d")).days)
+
+
+def record_reason_median(date, edition, html, dry=False):
+    """把 signal-reason 長度統計 append 進趨勢帳本(2026-08-06,backlog P1 缺口:median 字數
+    以前只在觸發 signal_reason_shallow 失分時才會出現在 log 裡,平常完全沒記帳,沒人看得出
+    「哪幾天的日報比較薄」。append-only,同 (date,edition) 補跑會留多列——讀取端(kpi_pull.py)
+    比照 read_llm_ledger 用 dict 依 date 去重取最後一筆,不在寫入端擋,維持這支腳本一路 append-only
+    的既有慣例(同檔案的 LLM_LEDGER 也是這樣)。純觀測記帳,不影響任何 pass/fail 判準。
+    最少 3 張卡才記(與 digest_audit 9b-2 的最小樣本門檻一致,單一事實來源):1-2 張卡的
+    median 雜訊太大,記進趨勢帳本只會污染 KPI 的 7 日均線,不是真的品質訊號。"""
+    from digest_audit import signal_reason_stats
+    stats = signal_reason_stats(html)
+    if stats.get("n", 0) < 3 or dry:
+        return
+    try:
+        REASON_MEDIAN_LEDGER.parent.mkdir(parents=True, exist_ok=True)
+        with REASON_MEDIAN_LEDGER.open("a", encoding="utf-8") as f:
+            f.write(json.dumps({"date": date, "edition": edition, **stats},
+                                ensure_ascii=False) + "\n")
+    except Exception as e:
+        print(f"   ⚠️ signal-reason 趨勢帳本寫入失敗(不影響本班判決): {e}")
 
 
 def read_llm_ledger(path, edition, date):
@@ -442,6 +464,7 @@ def main():
     for f in fails:
         if f["check"] in TENSE_CHECKS or f["check"] in CONTENT_HIGH_CHECKS:
             problems.append(f"[archive] {f['check']}: {f['msg']}")
+    record_reason_median(date, edition, html, dry=dry)
 
     # ── 2b. 本班到底掉到哪一層 LLM(2026-07-30 晚報遲到 1h35 事故) ──
     # 那天 45 次呼叫落在 openrouter nemotron-550b(144s/次)=108 分鐘,而**當下沒有任何
