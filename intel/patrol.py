@@ -150,6 +150,58 @@ def confluence_section(by_code, top=15):
         return f"## 🎯 跨源信念榜\n（本段生成失敗，不影響其餘簡報：{e}）"
 
 
+NOTIFY_LEDGER = os.path.join(HERE, ".confluence_notify_ledger.json")
+CONFLUENCE_NOTIFY_COOLDOWN_DAYS = 3  # 對齊 mops_news 3 天視窗等易變來源的典型震盪週期
+
+
+def _parse_date(s):
+    try:
+        return datetime.date.fromisoformat(s)
+    except Exception:
+        return None
+
+
+def _confluence_notify_selection(conf_ranked, today):
+    """挑出真的值得推播的匯流/背離,用 ledger(非單純跟前一晚比對)。
+
+    驗證者分離抓到:單純「(code,kind) 不在前一晚快照」會讓 kind 因易變來源(如 3 天新聞視窗
+    到期)每晚微幅震盪時反覆判定「新」,同一情勢每晚重推(反而違背推播防洪的本意)。改成:
+    每個 (code,kind) 記上次推播日期+conviction,只在①首次出現 ②距上次推播≥冷卻天數
+    ③conviction 比上次推播時升級 三者之一才算「值得推」。conf_ranked 已依 rank() 排序
+    (陣營數>源數>紅燈數),遍歷保留原序=優先度,不再用集合+字母序 truncate(會把 emoji
+    排序意外洗掉高信念的 bull 訊號)。"""
+    ledger = _load_json(NOTIFY_LEDGER, {})
+    today_d = _parse_date(today) or datetime.date.today()
+    selected = []
+    for s in conf_ranked:
+        key = f"{s['code']}|{s['kind']}"
+        prev = ledger.get(key) if isinstance(ledger.get(key), dict) else None
+        is_new = prev is None
+        is_stale = False
+        is_escalated = False
+        if prev:
+            last_date = _parse_date(prev.get("date", ""))
+            is_stale = last_date is None or (today_d - last_date).days >= CONFLUENCE_NOTIFY_COOLDOWN_DAYS
+            is_escalated = s["conviction"] > prev.get("conviction", 0)
+        if is_new or is_stale or is_escalated:
+            selected.append(s)
+            ledger[key] = {"date": today, "conviction": s["conviction"]}  # 只在真的推播時蓋掉時間戳,
+            # 否則每天照樣出現卻被冷卻壓下的訊號會把「最後一次看到」誤當「最後一次推播」,冷卻期永遠續不完
+    cutoff = today_d - datetime.timedelta(days=CONFLUENCE_NOTIFY_COOLDOWN_DAYS * 5)
+    def _keep(v):
+        if not isinstance(v, dict):
+            return False
+        d = _parse_date(v.get("date", ""))
+        return d is not None and d >= cutoff  # 壞掉的日期字串直接丟棄,不 fail-open 讓垃圾永遠留著
+    ledger = {k: v for k, v in ledger.items() if _keep(v)}
+    try:
+        with open(NOTIFY_LEDGER, "w", encoding="utf-8") as f:
+            json.dump(ledger, f, ensure_ascii=False, indent=1)
+    except Exception:
+        pass  # ledger 是推播降噪輔助,寫不進去不擋巡邏(同全模組 fail-safe 原則)
+    return selected
+
+
 def run():
     today = datetime.date.today().isoformat()
     prev_latest = _load_json(os.path.join(BRIEFS, "latest.json"), {})
@@ -363,10 +415,30 @@ def run():
     new_red_lines = sorted({item["signal"] for code, items in by_code.items() for item in items
                              if item.get("level") == "red" and (code, item["source"]) in new_pairs})[:10]
 
+    # 跨源信念榜(confluence)下游接線:之前只寫進 markdown 段落沒人推播/消費(automation_scorecard
+    # B⚠️「下游接線非全自動」)。這裡比照紅燈訊號的「跟前一次比對」pattern,把新出現的匯流/背離
+    # 也算出來讓 runner 推播,並存一份輕量快照(confluence_top)供未來下游(日報/交易)直接讀。
+    try:
+        from intel import confluence
+        conf_ranked = confluence.rank(by_code)
+        notify_worthy = _confluence_notify_selection(conf_ranked, today)
+        new_confluence_count = len(notify_worthy)
+        new_confluence_lines = [confluence.format_summary(s) for s in notify_worthy][:10]
+    except Exception:
+        conf_ranked = []
+        new_confluence_count = 0
+        new_confluence_lines = []
+    confluence_top = [{"code": s["code"], "name": s["name"], "kind": s["kind"],
+                        "conviction": s["conviction"], "n_camps": s["n_camps"]}
+                       for s in conf_ranked[:20]]
+
     latest = {"date": today, "red": red, "yellow": yellow,
               "calibration": {k: v for k, v in calib.items() if k != "details"},
               "watchlist_n": len(codes), "by_code": by_code,
               "new_red_since_last_run": new_red_lines, "new_red_count": len(new_pairs),
+              "confluence_top": confluence_top,
+              "new_confluence_since_last_run": new_confluence_lines,
+              "new_confluence_count": new_confluence_count,
               "sec_rule_changes": sec_rules, "news_broad_themes": news_broad,
               "gold_macro": gold_sig,
               "exa_events": exa_sig,

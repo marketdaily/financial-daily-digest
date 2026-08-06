@@ -285,6 +285,20 @@ def render_markdown(ranked, top=None):
     return "\n".join(out)
 
 
+_KIND_LABEL = {
+    "confluence_bull": "🟢匯流做多",
+    "confluence_bear": "🔴匯流做空",
+    "divergence": "⚡背離",
+    "confluence_risk": "🚫多重風險",
+}
+
+
+def format_summary(s):
+    """單筆 ranked 結果的推播/摘要用一行(公開介面——外部模組跨檔案用這個,不碰 _head 私有函式)。"""
+    label = _KIND_LABEL.get(s["kind"], s["kind"])
+    return f"{label}:{s['name']}({s['code']})×{s['conviction']}源·{s['n_camps']}陣營"
+
+
 def load_by_code(path=None):
     with open(path or LATEST, encoding="utf-8") as f:
         return json.load(f).get("by_code", {})
