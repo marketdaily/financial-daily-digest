@@ -65,6 +65,12 @@ if [ "$rc" -ne 0 ]; then
   echo "受影響:任何從這台 WSL 呼叫 /mnt/c/Windows 下 exe 的 cron(目前已知:line_group_runner.sh"
   echo "券商喊單截圖、line_watch.sh、seed_agent_browser.sh),以及 notify_admin.py 的桌面 toast 通道"
   echo "(web push 通道走純 python urllib,不受影響,admin 告警本身仍會送達)。"
+  # 2026-08-06 診斷輔助(memory capability_wsl_interop_watch 08-06 18:4x 段):08-05 事故實測過
+  # 一次「VM 剛重開機」與「interop 自行恢復」同時間點——不是巧合,VM 重開機本身就是復原動作
+  # (等同 wsl --shutdown 的效果,只是非老闆主動下指令觸發)。印 VM 開機時間供人工/下一輪判讀:
+  # 若 boot 是幾分鐘內的新事,大機率會自己好,不必急著升級;boot 已久仍故障才是真的要人介入。
+  echo "本 WSL VM 開機時間:$(uptime -s 2>/dev/null || echo '<uptime 讀取失敗>')(若剛開機不久,"
+  echo "  可能會自行恢復——VM 重開機本身即等同復原動作,見 memory capability_wsl_interop_watch)"
   echo "已知復原法(只能從 Windows/Mac 端做,WSL 裡面重啟不了自己):"
   echo "  ssh winrig \"wsl --shutdown\"  (Windows 帳號,Tailscale;避開日報班次"
   echo "  TW 06:00-07:35 / 19:00-20:45,見 memory capability_winrig_wsl_hang_recovery.md)"

@@ -1406,8 +1406,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-05 16:05",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 18:49",
+  "note": "18:11:34 TW WSL VM 重開機(與 open #172 interop 自行恢復同一次重開,非另外找時間做的),.wslconfig 已生效並驗證:swapon --show 見 16G swap partition(對應 swap=16GB)、free -h 總記憶體 13Gi≈14GB 配置值(WSL2 預設應為主機 50%≈15.6GB,明顯不同)。OOM policy drop-in(/etc/systemd/system/init.scope.d/oom-no-collateral.conf)重開機後仍在,持久生效未被沖掉。兩層防線皆確認存活。"
  },
  {
   "id": 142,
@@ -1716,8 +1716,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-06 15:57",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 18:33",
+  "note": "18:15 TW 起連續多輪 cmd.exe/powershell.exe 探測皆 rc=0,已恢復;推測與 Delvin 18:10 開始使用本機 Claude(讓路事件)有因果關係,非本 session 執行 wsl --shutdown 修復。line_group_runner 下游 e2e 驗證留待今晚 21:20 排程班次(即使成功仍受 LINE 未登入 #167 卡住,兩者互不影響)"
  },
  {
   "id": 173,
