@@ -216,8 +216,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 22:41",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 10:03",
+  "note": "查證後與#23同根因,一併關閉:07-30 21:10 us班觸發的「manifest 不存在」實為postcheck提前於21:35manifest寫入前執行(audio_brief/out/manifest_2026-07-30_us.json mtime=21:35,postcheck跑在21:10),非CDN/上傳真失敗——並非15支音檔真的掛掉,是「還沒到寄送流程那一步就被查」。同批07-30/07-31 tw班personal_*.json顯示 total=17/failed=[] 全數上傳成功可佐證产線本身健康。#23的交付閘修復(commit 2deb8e2)已把此檢查移到延遲判決之後,結構性防止復發。"
  },
  {
   "id": 23,
@@ -226,8 +226,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 22:44",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 10:03",
+  "note": "根治(commit 2deb8e2,2026-08-02):digest_postcheck.py 交付閘(delivery_verdict)已移到 main() 最前面,verdict==defer 直接 return 提早退出,archive/語音/CDN 等後續檢查結構上不可能在本班未交付前執行——不只是觀察到沒再發生,是程式碼保證不會再發生。生產驗證:08-03~08-06 連續4班次postcheck(tw×3/us×1)全綠或只報真失分,零時序假陽性。"
  },
  {
   "id": 24,
