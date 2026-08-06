@@ -36,14 +36,26 @@ cron_time_gate() {
   fi
 }
 
-# cron_daily_lock NAME  防同一天重跑/防雙 cron source 撞期。用 mkdir 原子鎖,今天已存在就 exit 0。
+# cron_daily_lock NAME  防同一天重跑/防雙 cron source 撞期。今天已鎖過就 exit 0。
+# 2026-08-06 修:此 WSL2 host(kernel 6.6/tmpfs)的 mkdir 併發下非原子(實測 4/200 兩行程同時
+# mkdir 成功,見 lesson wsl2_mkdir_not_atomic),原本裸 mkdir 認領對多個生產呼叫端(social_post_
+# runner 等)有 2-4% 雙重執行漏洞,對 send-once/落帳語意=真 bug。修法同 capabilities/cron_catchup
+# 的既有作法:用 flock 把「檢查墓碑→立碑」整段序列化(flock 同機實測 100% 互斥),mkdir 目錄仍是
+# 跨 tick 的持久當日墓碑,只是認領那一刻不再併發、非原子性變得無關。
+# 鎖逾時(10s,理論上不該發生,flock 隨行程結束自動釋放)一律 fail-safe 當作已鎖處理直接 exit——
+# 寧可漏跑一次靠下個班次補,不要雙重執行破壞 send-once 語意。
 cron_daily_lock() {
   local name="$1"
-  local date_tag lock_dir
+  local date_tag lock_dir rc
   date_tag=$(TZ=Asia/Taipei date +%Y-%m-%d)
   lock_dir="$CRON_LIB_REPO/logs/locks"
   mkdir -p "$lock_dir"
-  mkdir "$lock_dir/${name}.${date_tag}" 2>/dev/null || exit 0
+  ( flock -w 10 9 || exit 1
+    [ -d "$lock_dir/${name}.${date_tag}" ] && exit 1
+    mkdir "$lock_dir/${name}.${date_tag}" 2>/dev/null
+  ) 9>>"$lock_dir/.${name}.flock"
+  rc=$?
+  [ "$rc" -eq 0 ] || exit 0
 }
 
 # cron_run_and_alert NAME [--] CMD...   跑指令,log 到 logs/<name>_<日期>.log;失敗自動告警 admin。
