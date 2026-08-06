@@ -1646,8 +1646,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 23:17",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-06 12:34",
+  "note": "Threads 已接:@mingshu_tw 60天長期權杖入 .env,auto_post check 三平台全綠;卡點是 Threads Tester 名單(已加入+老闆接受)。順帶修掉純文字發布路徑(五篇 type=text 原本會 KeyError)"
  },
  {
   "id": 166,
@@ -1676,6 +1676,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-06 10:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 169,
+  "what": "命書 Threads 發布最後一步(threads_publish)尚未在生產跑過",
+  "why": "已用『只建容器不發布』驗證 TEXT 容器建得起來(權杖+型態+文字全通),但 publish 那一步為了不佔掉今晚 20:00 黃金時段沒有真的送出。今晚 20:00 排程首跑會是它的第一次真發;失敗會走 20:20-23:00 補發窗並推播",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-06 12:34",
   "closed": null,
   "note": ""
  }
