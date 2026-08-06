@@ -1658,5 +1658,15 @@
   "opened": "2026-08-05 23:30",
   "closed": "2026-08-06 06:26",
   "note": "兩個網域(前一輪08-05 23:xx已定案「品牌域+獨立寄件域」分開買,本輪一開始漏看why欄位只推單一域,複查WORKLOG後同輪內補齊,commit 7e12bdd):品牌域quietfix.studio(US$31.2/yr),寄件域delvinchang.com(US$10.5/yr,個人化比再造品牌字更貼合以Delvin Chang個人身份寄信)。皆RDAP即時驗證可註冊+商標粗查排除風險字。已確認Cloudflare不支援.tw(政策頁查無條目)。BRAND_NAME佔位字已換QuietFix上線,worker已重新部署。兩網域都要付款留老闆選,細節見~/storefront/DOMAIN.md;購買後DNS/寄件網域預熱併入open #158"
+ },
+ {
+  "id": 167,
+  "what": "券商喊單 sinopac_line 的 Windows LINE 已登出,產出停在 07-30,自 08-04 起連兩天空跑(fleet_liveness 08-05 rc=1 已推播告警)",
+  "why": "登入頁需人眼過QR/密碼,GUI-only 動作,機器不可代勞(全域禁滑鼠規則);cron_run_and_alert 已自動告警但尚未看到有人處理",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-06 09:47",
+  "closed": null,
+  "note": ""
  }
 ]
