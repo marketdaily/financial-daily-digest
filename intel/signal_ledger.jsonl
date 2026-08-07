@@ -579,3 +579,27 @@
 {"date": "2026-08-06", "code": "6419", "source": "leadflow", "level": "red", "signal": "京晨科(6419) 無消息近漲停+9.9%(連2根,5日+31.7%),疑資訊先行資金|外資+投信近3日僅+185張,法人未同步=隱形買盤", "price_at_signal": 149.5}
 {"date": "2026-08-06", "code": "4561", "source": "leadflow", "level": "yellow", "signal": "健椿(4561) 無消息近漲停+9.9%(量能2.7×,5日+23.5%),疑資訊先行資金", "price_at_signal": 39.9}
 {"date": "2026-08-06", "code": "5289", "source": "leadflow", "level": "red", "signal": "宜鼎(5289) 無消息近漲停+9.9%(連2根,5日+36.4%),疑資訊先行資金|外資+投信近3日僅-1561張,法人未同步=隱形買盤", "price_at_signal": 1610.0}
+{"date": "2026-08-07", "code": "3028", "source": "mops_news", "level": "yellow", "signal": "增你強(3028) 重訊[2026-08-06]:本公司依「公開發行公司資金貸與及背書保證處理準則」 第二十五條第一項第四款規定公告", "price_at_signal": 65.9}
+{"date": "2026-08-07", "code": "3081", "source": "investor_conf", "level": "red", "signal": "聯亞(3081):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": 2305.0}
+{"date": "2026-08-07", "code": "3289", "source": "institutional", "level": "yellow", "signal": "宜特(3289):法人 20 日淨買超 +838 張(未成連續型態)", "price_at_signal": 138.5}
+{"date": "2026-08-07", "code": "3289", "source": "revenue", "level": "yellow", "signal": "宜特(3289):2026/06 營收公告、YoY -1.6%、MoM +10.5%", "price_at_signal": 138.5}
+{"date": "2026-08-07", "code": "3289", "source": "holders", "level": "red", "signal": "宜特(3289):千張大戶持股比週增2.17個百分點(大戶顯著加碼)", "price_at_signal": 138.5}
+{"date": "2026-08-07", "code": "5536", "source": "sbl", "level": "yellow", "signal": "聖暉(5536):機構借券賣出5日遽減-20.1%(回補潮,空頭力道減弱)", "price_at_signal": 1060.0}
+{"date": "2026-08-07", "code": "6274", "source": "sbl", "level": "yellow", "signal": "台燿(6274):機構借券賣出5日增17.6%(溫和加碼放空)", "price_at_signal": 1440.0}
+{"date": "2026-08-07", "code": "6285", "source": "institutional", "level": "yellow", "signal": "啟碁(6285):法人 20 日淨賣超 -2,935 張(未成連續型態)", "price_at_signal": 233.0}
+{"date": "2026-08-07", "code": "6285", "source": "revenue", "level": "red", "signal": "啟碁(6285):2026/06 營收公告、YoY +84.4%(強勁)、MoM +30.4%", "price_at_signal": 233.0}
+{"date": "2026-08-07", "code": "6285", "source": "tw_analyst", "level": "yellow", "signal": "啟碁(6285):FactSet共識EPS預估上修至12.56元(目標價302元)", "price_at_signal": 233.0}
+{"date": "2026-08-07", "code": "6944", "source": "institutional", "level": "yellow", "signal": "兆聯實業(6944):法人 20 日淨賣超 -1,657 張(未成連續型態)", "price_at_signal": 771.0}
+{"date": "2026-08-07", "code": "6944", "source": "mops_news", "level": "red", "signal": "兆聯實業(6944) 重訊[2026-08-06]:本公司董事會決議發行國內第一次無擔保轉換公司債 暨國內第二次無擔保轉換公司債", "price_at_signal": 771.0}
+{"date": "2026-08-07", "code": "6944", "source": "revenue", "level": "red", "signal": "兆聯實業(6944):2026/06 營收公告、YoY +30.0%(強勁)、MoM +13.2%", "price_at_signal": 771.0}
+{"date": "2026-08-07", "code": "6944", "source": "sbl", "level": "yellow", "signal": "兆聯實業(6944):機構借券賣出5日增19.3%(溫和加碼放空)", "price_at_signal": 771.0}
+{"date": "2026-08-07", "code": "6922", "source": "mops_news", "level": "red", "signal": "宸曜(6922) 重訊[2026-08-06]:本公司董事會決議發行國內第一次無擔保轉換公司債", "price_at_signal": 185.5}
+{"date": "2026-08-07", "code": "6922", "source": "revenue", "level": "red", "signal": "宸曜(6922):2026/06 營收公告、YoY +39.4%(強勁)、MoM +1.1%", "price_at_signal": 185.5}
+{"date": "2026-08-07", "code": "6922", "source": "margin", "level": "yellow", "signal": "宸曜(6922):融資5日暴增19.8%(散戶追高過熱)", "price_at_signal": 185.5}
+{"date": "2026-08-07", "code": "1714", "source": "tw_rank", "level": "red", "signal": "和桐(1714) 量能竄榜:今日量榜第15(近10日未進過top50,-2.8%,47,101張)", "price_at_signal": 15.75}
+{"date": "2026-08-07", "code": "3036", "source": "tw_rank", "level": "red", "signal": "文曄(3036) 量能竄榜:今日量榜第18(近10日未進過top50,-9.4%,40,831張)", "price_at_signal": 211.5}
+{"date": "2026-08-07", "code": "7723", "source": "leadflow", "level": "red", "signal": "築間(7723) 無消息近漲停+10.0%(量能4.3×,5日+8.5%),疑資訊先行資金|外資+投信近3日僅+72張,法人未同步=隱形買盤", "price_at_signal": 20.35}
+{"date": "2026-08-07", "code": "4561", "source": "leadflow", "level": "red", "signal": "健椿(4561) 無消息近漲停+9.9%(連2根,5日+28.2%),疑資訊先行資金|外資+投信近3日僅-81張,法人未同步=隱形買盤", "price_at_signal": 43.85}
+{"date": "2026-08-07", "code": "6441", "source": "leadflow", "level": "red", "signal": "廣錠(6441) 無消息近漲停+9.8%(連2根,5日+22.8%),疑資訊先行資金|外資+投信近3日僅+21張,法人未同步=隱形買盤", "price_at_signal": 23.45}
+{"date": "2026-08-07", "code": "8047", "source": "leadflow", "level": "yellow", "signal": "星雲(8047) 無消息近漲停+9.7%(量能1.5×,5日+9.7%),疑資訊先行資金", "price_at_signal": 48.5}
+{"date": "2026-08-07", "code": "8050", "source": "leadflow", "level": "red", "signal": "廣積(8050) 無消息近漲停+9.4%(連2根,5日+26.4%),疑資訊先行資金|外資+投信近3日+3922張", "price_at_signal": 69.0}
