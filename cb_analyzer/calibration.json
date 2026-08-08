@@ -1,285 +1,285 @@
 {
- "updated": "2026-08-07",
- "n_rows": 386,
- "n_interim": 159,
+ "updated": "2026-08-08",
+ "n_rows": 404,
+ "n_interim": 174,
  "n_final": 4,
  "details": [
   {
-   "bond": "61876",
-   "date": "2026-07-16",
-   "age_d": 22,
-   "p_interim": 0.019,
-   "touched": false
-  },
-  {
-   "bond": "65463",
-   "date": "2026-07-16",
-   "age_d": 22,
-   "p_interim": 0.001,
-   "touched": false
-  },
-  {
-   "bond": "65843",
-   "date": "2026-07-16",
-   "age_d": 22,
-   "p_interim": 0.008,
-   "touched": false
-  },
-  {
-   "bond": "68692",
-   "date": "2026-07-16",
-   "age_d": 22,
-   "p_interim": 0.063,
-   "touched": false
-  },
-  {
-   "bond": "80541",
-   "date": "2026-07-16",
-   "age_d": 22,
-   "p_interim": 0.0,
-   "touched": false
-  },
-  {
-   "bond": "80962",
-   "date": "2026-07-16",
-   "age_d": 22,
-   "p_interim": 0.063,
-   "touched": false
-  },
-  {
-   "bond": "80963",
-   "date": "2026-07-16",
-   "age_d": 22,
-   "p_interim": 0.094,
-   "touched": false
-  },
-  {
-   "bond": "811211",
-   "date": "2026-07-16",
-   "age_d": 22,
-   "p_interim": 0.008,
-   "touched": false
-  },
-  {
-   "bond": "84423",
-   "date": "2026-07-16",
-   "age_d": 22,
-   "p_interim": 0.296,
-   "touched": false
-  },
-  {
-   "bond": "82993",
-   "date": "2026-07-16",
-   "age_d": 22,
-   "p_interim": 0.001,
-   "touched": false
-  },
-  {
-   "bond": "52892",
-   "date": "2026-07-17",
-   "age_d": 21,
-   "p_interim": 0.0,
-   "touched": false
-  },
-  {
-   "bond": "82993",
-   "date": "2026-07-20",
-   "age_d": 18,
-   "p_interim": 0.0,
-   "touched": false
-  },
-  {
-   "bond": "16231",
-   "date": "2026-07-23",
-   "age_d": 15,
-   "p_interim": 0.01,
-   "touched": false
-  },
-  {
-   "bond": "24867",
-   "date": "2026-07-23",
-   "age_d": 15,
-   "p_interim": 0.105,
-   "touched": false
-  },
-  {
-   "bond": "30285",
-   "date": "2026-07-23",
-   "age_d": 15,
-   "p_interim": 0.019,
-   "touched": false
-  },
-  {
    "bond": "47642",
    "date": "2026-07-23",
-   "age_d": 15,
-   "p_interim": 0.186,
+   "age_d": 16,
+   "p_interim": 0.199,
    "touched": false
   },
   {
    "bond": "61343",
    "date": "2026-07-23",
-   "age_d": 15,
+   "age_d": 16,
    "p_interim": 0.0,
    "touched": false
   },
   {
    "bond": "66931",
    "date": "2026-07-23",
-   "age_d": 15,
-   "p_interim": 0.029,
+   "age_d": 16,
+   "p_interim": 0.034,
    "touched": false
   },
   {
    "bond": "68692",
    "date": "2026-07-23",
-   "age_d": 15,
-   "p_interim": 0.002,
+   "age_d": 16,
+   "p_interim": 0.003,
    "touched": false
   },
   {
    "bond": "69031",
    "date": "2026-07-23",
-   "age_d": 15,
-   "p_interim": 0.052,
+   "age_d": 16,
+   "p_interim": 0.06,
    "touched": false
   },
   {
    "bond": "80541",
    "date": "2026-07-23",
-   "age_d": 15,
+   "age_d": 16,
    "p_interim": 0.0,
    "touched": false
   },
   {
    "bond": "80963",
    "date": "2026-07-23",
-   "age_d": 15,
-   "p_interim": 0.027,
+   "age_d": 16,
+   "p_interim": 0.032,
    "touched": false
   },
   {
    "bond": "84381",
    "date": "2026-07-23",
-   "age_d": 15,
-   "p_interim": 0.002,
+   "age_d": 16,
+   "p_interim": 0.003,
    "touched": false
   },
   {
    "bond": "84423",
    "date": "2026-07-23",
-   "age_d": 15,
-   "p_interim": 0.02,
+   "age_d": 16,
+   "p_interim": 0.025,
    "touched": false
   },
   {
    "bond": "82993",
    "date": "2026-07-23",
-   "age_d": 15,
+   "age_d": 16,
    "p_interim": 0.0,
    "touched": false
   },
   {
    "bond": "24867",
    "date": "2026-07-24",
-   "age_d": 14,
-   "p_interim": 0.007,
+   "age_d": 15,
+   "p_interim": 0.009,
    "touched": false
   },
   {
    "bond": "30285",
    "date": "2026-07-24",
-   "age_d": 14,
-   "p_interim": 0.002,
+   "age_d": 15,
+   "p_interim": 0.003,
    "touched": false
   },
   {
    "bond": "35833",
    "date": "2026-07-24",
-   "age_d": 14,
-   "p_interim": 0.008,
+   "age_d": 15,
+   "p_interim": 0.01,
    "touched": false
   },
   {
    "bond": "47642",
    "date": "2026-07-24",
-   "age_d": 14,
-   "p_interim": 0.058,
+   "age_d": 15,
+   "p_interim": 0.067,
    "touched": false
   },
   {
    "bond": "52912",
    "date": "2026-07-24",
-   "age_d": 14,
-   "p_interim": 0.435,
+   "age_d": 15,
+   "p_interim": 0.449,
    "touched": false
   },
   {
    "bond": "61343",
    "date": "2026-07-24",
-   "age_d": 14,
+   "age_d": 15,
    "p_interim": 0.0,
    "touched": false
   },
   {
    "bond": "66831",
    "date": "2026-07-24",
-   "age_d": 14,
-   "p_interim": 0.521,
+   "age_d": 15,
+   "p_interim": 0.533,
    "touched": false
   },
   {
    "bond": "66931",
    "date": "2026-07-24",
-   "age_d": 14,
-   "p_interim": 0.001,
+   "age_d": 15,
+   "p_interim": 0.002,
    "touched": false
   },
   {
    "bond": "68692",
    "date": "2026-07-24",
-   "age_d": 14,
+   "age_d": 15,
    "p_interim": 0.0,
    "touched": false
   },
   {
    "bond": "69031",
    "date": "2026-07-24",
-   "age_d": 14,
-   "p_interim": 0.005,
+   "age_d": 15,
+   "p_interim": 0.007,
    "touched": false
   },
   {
    "bond": "69032",
    "date": "2026-07-24",
-   "age_d": 14,
-   "p_interim": 0.204,
+   "age_d": 15,
+   "p_interim": 0.219,
    "touched": false
   },
   {
    "bond": "80541",
    "date": "2026-07-24",
-   "age_d": 14,
+   "age_d": 15,
    "p_interim": 0.0,
    "touched": false
   },
   {
    "bond": "84381",
    "date": "2026-07-24",
+   "age_d": 15,
+   "p_interim": 0.001,
+   "touched": false
+  },
+  {
+   "bond": "84423",
+   "date": "2026-07-24",
+   "age_d": 15,
+   "p_interim": 0.009,
+   "touched": false
+  },
+  {
+   "bond": "82993",
+   "date": "2026-07-24",
+   "age_d": 15,
+   "p_interim": 0.0,
+   "touched": false
+  },
+  {
+   "bond": "24867",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.008,
+   "touched": false
+  },
+  {
+   "bond": "30285",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.002,
+   "touched": false
+  },
+  {
+   "bond": "35833",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.009,
+   "touched": false
+  },
+  {
+   "bond": "47642",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.063,
+   "touched": false
+  },
+  {
+   "bond": "52912",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.433,
+   "touched": false
+  },
+  {
+   "bond": "61343",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.0,
+   "touched": false
+  },
+  {
+   "bond": "66831",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.519,
+   "touched": false
+  },
+  {
+   "bond": "66931",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.001,
+   "touched": false
+  },
+  {
+   "bond": "68692",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.0,
+   "touched": false
+  },
+  {
+   "bond": "69031",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.005,
+   "touched": false
+  },
+  {
+   "bond": "69032",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.201,
+   "touched": false
+  },
+  {
+   "bond": "80541",
+   "date": "2026-07-25",
+   "age_d": 14,
+   "p_interim": 0.0,
+   "touched": false
+  },
+  {
+   "bond": "84381",
+   "date": "2026-07-25",
    "age_d": 14,
    "p_interim": 0.0,
    "touched": false
   },
   {
    "bond": "84423",
-   "date": "2026-07-24",
+   "date": "2026-07-25",
    "age_d": 14,
    "p_interim": 0.007,
    "touched": false
   },
   {
    "bond": "82993",
-   "date": "2026-07-24",
+   "date": "2026-07-25",
    "age_d": 14,
    "p_interim": 0.0,
    "touched": false
@@ -384,10 +384,10 @@
   },
   "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);live 帳本 predictions.jsonl 持續對答案;G1_brier.oos_brier_cal 是「假設全列都拿到校準」的理想值,實際部署有 oos_frac_out_of_domain 比例落回未校準 raw(見 cb_ledger.py),誠實部署量測見 oos_brier_cal_deployment_realistic"
  },
- "brier_interim": 0.0407,
+ "brier_interim": 0.0412,
  "coin_flip_brier": 0.25,
- "avg_pred_interim": 0.1139,
- "realized_interim": 0.0252,
+ "avg_pred_interim": 0.1145,
+ "realized_interim": 0.023,
  "shrink": 0.6,
  "note": "樣本 2 筆 <20,校準閘門未開(小樣本校準=雜訊)",
  "final_hit_rate": 1.0,

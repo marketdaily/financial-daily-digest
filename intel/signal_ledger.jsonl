@@ -603,3 +603,18 @@
 {"date": "2026-08-07", "code": "6441", "source": "leadflow", "level": "red", "signal": "廣錠(6441) 無消息近漲停+9.8%(連2根,5日+22.8%),疑資訊先行資金|外資+投信近3日僅+21張,法人未同步=隱形買盤", "price_at_signal": 23.45}
 {"date": "2026-08-07", "code": "8047", "source": "leadflow", "level": "yellow", "signal": "星雲(8047) 無消息近漲停+9.7%(量能1.5×,5日+9.7%),疑資訊先行資金", "price_at_signal": 48.5}
 {"date": "2026-08-07", "code": "8050", "source": "leadflow", "level": "red", "signal": "廣積(8050) 無消息近漲停+9.4%(連2根,5日+26.4%),疑資訊先行資金|外資+投信近3日+3922張", "price_at_signal": 69.0}
+{"date": "2026-08-08", "code": "2464", "source": "twse_notetrans", "level": "yellow", "signal": "盟立(2464):注意累計異常:115年8月6日至115年8月7日連續二次(逼近處置門檻)", "price_at_signal": 173.5}
+{"date": "2026-08-08", "code": "3006", "source": "twse_notetrans", "level": "yellow", "signal": "晶豪科(3006):注意累計異常:115年8月6日至115年8月7日連續二次(逼近處置門檻)", "price_at_signal": 256.5}
+{"date": "2026-08-08", "code": "3028", "source": "tw_financials", "level": "yellow", "signal": "增你強(3028):負債比率81.0%(較 115Q1 至 115Q2)", "price_at_signal": 65.9}
+{"date": "2026-08-08", "code": "3149", "source": "mops_news", "level": "yellow", "signal": "正達(3149) 重訊[2026-08-07]:本公司董事長兼任執行長", "price_at_signal": 62.8}
+{"date": "2026-08-08", "code": "3260", "source": "holders", "level": "red", "signal": "威剛(3260):千張大戶持股比週增3.55個百分點(大戶顯著加碼)", "price_at_signal": 416.0}
+{"date": "2026-08-08", "code": "4973", "source": "tw_financials", "level": "yellow", "signal": "廣穎電通(4973):毛利率QoQ下滑-3.3個百分點(較 115Q1 至 115Q2)", "price_at_signal": 156.0}
+{"date": "2026-08-08", "code": "6274", "source": "holders", "level": "yellow", "signal": "台燿(6274):千張大戶持股比週增0.52個百分點(溫和加碼)", "price_at_signal": 1440.0}
+{"date": "2026-08-08", "code": "6285", "source": "sbl", "level": "yellow", "signal": "啟碁(6285):機構借券賣出5日增10.0%(溫和加碼放空)", "price_at_signal": 233.0}
+{"date": "2026-08-08", "code": "6285", "source": "holders", "level": "yellow", "signal": "啟碁(6285):千張大戶持股比週增0.55個百分點(溫和加碼)", "price_at_signal": 233.0}
+{"date": "2026-08-08", "code": "8155", "source": "sbl", "level": "yellow", "signal": "博智(8155):機構借券賣出5日增14.2%(溫和加碼放空)", "price_at_signal": 295.5}
+{"date": "2026-08-08", "code": "8299", "source": "holders", "level": "red", "signal": "群聯(8299):千張大戶持股比週增1.44個百分點(大戶顯著加碼)", "price_at_signal": 2020.0}
+{"date": "2026-08-08", "code": "8299", "source": "investor_conf", "level": "red", "signal": "群聯(8299):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": 2020.0}
+{"date": "2026-08-08", "code": "8438", "source": "mops_news", "level": "yellow", "signal": "昶昕(8438) 重訊[2026-08-07]:公告本公司資安主管異動", "price_at_signal": 65.0}
+{"date": "2026-08-08", "code": "8442", "source": "institutional", "level": "red", "signal": "威宏-KY(8442):外資連 5 日賣超(5日淨賣 -50 張)", "price_at_signal": 44.3}
+{"date": "2026-08-08", "code": "3339", "source": "holders", "level": "red", "signal": "泰谷(3339):千張大戶持股比週增1.80個百分點(大戶顯著加碼)", "price_at_signal": 37.8}
