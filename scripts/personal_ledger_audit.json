@@ -1,52 +1,52 @@
 {
-  "generated_at": "2026-08-07T08:16:56",
-  "n_total": 3409,
+  "generated_at": "2026-08-08T08:14:20",
+  "n_total": 3548,
   "rule": "v2",
   "a": {
-    "total": 1321,
+    "total": 1391,
     "hit_rate": {
-      "n": 1321,
-      "wins": 626,
-      "rate_pct": 47.4,
+      "n": 1391,
+      "wins": 695,
+      "rate_pct": 50.0,
       "ci95": [
-        44.7,
-        50.1
+        47.3,
+        52.6
       ],
       "baseline_pct": 50.0,
       "verdict": "inconclusive",
       "daycluster_ci95": [
-        37.6,
-        57.5
+        39.7,
+        60.0
       ],
       "verdict_honest": "inconclusive",
       "daycluster_degenerate": false,
       "naive_overstated_confidence": false,
-      "edge_pct": 2.6,
-      "n_needed_for_edge": 1466,
-      "distinct_days": 39
+      "edge_pct": 0.0,
+      "n_needed_for_edge": 7739523,
+      "distinct_days": 40
     },
     "calibration": {
-      "n": 1321,
-      "brier": 0.2977,
+      "n": 1391,
+      "brier": 0.2963,
       "coin_flip_brier": 0.25,
       "worse_than_coin_flip": true,
       "bins": {
         "<=50": {
-          "n": 668,
-          "wins": 345,
-          "hit_pct": 51.6,
+          "n": 716,
+          "wins": 393,
+          "hit_pct": 54.9,
           "ci95": [
-            47.9,
-            55.4
+            51.2,
+            58.5
           ]
         },
         "51-60": {
-          "n": 277,
-          "wins": 161,
-          "hit_pct": 58.1,
+          "n": 299,
+          "wins": 182,
+          "hit_pct": 60.9,
           "ci95": [
-            52.2,
-            63.8
+            55.2,
+            66.2
           ]
         },
         "61-70": {
@@ -70,10 +70,10 @@
       },
       "inverted": false,
       "inversion_checkable": true,
-      "inversion_diff_pp": 19.9,
+      "inversion_diff_pp": 23.1,
       "inversion_diff_ci95_pp": [
-        12.8,
-        26.5
+        16.1,
+        29.7
       ],
       "inversion_pairs": [],
       "inversion_worst_pair": null,
@@ -81,43 +81,43 @@
         {
           "low_bin": "<=50",
           "high_bin": "61-70",
-          "diff_pp": 19.4,
+          "diff_pp": 22.6,
           "reason": "concentrated_days",
           "min_bin_days": 10
         },
         {
           "low_bin": "<=50",
           "high_bin": ">70",
-          "diff_pp": 19.9,
+          "diff_pp": 23.1,
           "reason": "concentrated_days",
           "min_bin_days": 8
         },
         {
           "low_bin": "51-60",
           "high_bin": "61-70",
-          "diff_pp": 25.9,
+          "diff_pp": 28.6,
           "reason": "concentrated_days",
           "min_bin_days": 10
         },
         {
           "low_bin": "51-60",
           "high_bin": ">70",
-          "diff_pp": 26.4,
+          "diff_pp": 29.1,
           "reason": "concentrated_days",
           "min_bin_days": 8
         }
       ]
     },
     "expectancy": {
-      "n": 470,
-      "avg_ret_pct": -2.253,
-      "avg_win_pct": 9.68,
+      "n": 471,
+      "avg_ret_pct": -2.23,
+      "avg_win_pct": 9.67,
       "avg_loss_pct": -6.86,
       "win_loss_count": [
-        130,
+        131,
         338
       ],
-      "profit_factor": 0.54,
+      "profit_factor": 0.55,
       "positive_expectancy": false
     },
     "by_regime": {
@@ -143,166 +143,166 @@
         "distinct_days": 19
       },
       "up": {
-        "n": 573,
-        "wins": 214,
-        "rate_pct": 37.3,
+        "n": 643,
+        "wins": 283,
+        "rate_pct": 44.0,
         "ci95": [
-          33.5,
-          41.4
+          40.2,
+          47.9
         ],
         "baseline_pct": 50.0,
         "verdict": "negative_edge",
         "daycluster_ci95": [
-          24.1,
-          54.6
+          26.8,
+          63.1
         ],
         "verdict_honest": "inconclusive",
         "daycluster_degenerate": false,
         "naive_overstated_confidence": true,
-        "edge_pct": 12.7,
-        "n_needed_for_edge": 62,
-        "distinct_days": 16
+        "edge_pct": 6.0,
+        "n_needed_for_edge": 278,
+        "distinct_days": 17
       }
     },
     "by_group": {
       "tw": {
-        "n": 751,
-        "wins": 361,
-        "rate_pct": 48.1,
+        "n": 797,
+        "wins": 406,
+        "rate_pct": 50.9,
         "ci95": [
-          44.5,
-          51.6
+          47.5,
+          54.4
         ],
         "baseline_pct": 50.0,
         "verdict": "inconclusive",
         "daycluster_ci95": [
-          37.1,
-          59.0
+          39.0,
+          62.3
         ],
         "verdict_honest": "inconclusive",
         "daycluster_degenerate": false,
         "naive_overstated_confidence": false,
-        "edge_pct": 1.9,
-        "n_needed_for_edge": 2682,
-        "distinct_days": 39
+        "edge_pct": 0.9,
+        "n_needed_for_edge": 11292,
+        "distinct_days": 40
       },
       "us": {
-        "n": 570,
-        "wins": 265,
-        "rate_pct": 46.5,
+        "n": 594,
+        "wins": 289,
+        "rate_pct": 48.7,
         "ci95": [
-          42.4,
-          50.6
+          44.7,
+          52.7
         ],
         "baseline_pct": 50.0,
         "verdict": "inconclusive",
         "daycluster_ci95": [
-          36.6,
-          58.0
+          38.4,
+          59.7
         ],
         "verdict_honest": "inconclusive",
         "daycluster_degenerate": false,
         "naive_overstated_confidence": false,
-        "edge_pct": 3.5,
-        "n_needed_for_edge": 812,
-        "distinct_days": 34
+        "edge_pct": 1.3,
+        "n_needed_for_edge": 5513,
+        "distinct_days": 35
       }
     },
     "verdict": [
-      "🟡 說不準:47.4%（day-cluster CI [37.6, 57.5] 跨過 50.0%）— edge 2.6% 需約 1466 筆才分得出運氣，現有 1321 筆",
-      "⚠️ 樣本相關:1321 筆只來自 39 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
-      "⚪ 疑似信心反向但無法認證:低信心箱 51-60 點估計贏高信心箱 >70 26.4pp,但某信心箱只集中在少數獨立日(<15 天或重抽不穩)— 樣本時間過度集中,不足以證實反向(低命中可能只是那幾天的行情、非信心模型缺陷)。別當已校準,累積更多不同日再看(Brier 0.2977)",
-      "🔴 負期望值:每筆平均 -2.253%（勝率高也可能賠）— profit factor 0.54，盈130/虧338"
+      "🟡 說不準:50.0%（day-cluster CI [39.7, 60.0] 跨過 50.0%）— edge 0.0% 需約 7739523 筆才分得出運氣，現有 1391 筆",
+      "⚠️ 樣本相關:1391 筆只來自 40 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
+      "⚪ 疑似信心反向但無法認證:低信心箱 51-60 點估計贏高信心箱 >70 29.1pp,但某信心箱只集中在少數獨立日(<15 天或重抽不穩)— 樣本時間過度集中,不足以證實反向(低命中可能只是那幾天的行情、非信心模型缺陷)。別當已校準,累積更多不同日再看(Brier 0.2963)",
+      "🔴 負期望值:每筆平均 -2.23%（勝率高也可能賠）— profit factor 0.55，盈131/虧338"
     ]
   },
   "c": {
-    "total": 1908,
+    "total": 1958,
     "hit_rate": {
-      "n": 1908,
-      "wins": 1250,
-      "rate_pct": 65.5,
+      "n": 1958,
+      "wins": 1262,
+      "rate_pct": 64.5,
       "ci95": [
-        63.4,
-        67.6
+        62.3,
+        66.5
       ],
       "baseline_pct": 50.0,
       "verdict": "real_edge",
       "daycluster_ci95": [
-        55.8,
-        74.8
+        54.9,
+        73.5
       ],
       "verdict_honest": "real_edge",
       "daycluster_degenerate": false,
       "naive_overstated_confidence": false,
-      "edge_pct": 15.5,
-      "n_needed_for_edge": 41,
-      "distinct_days": 39
+      "edge_pct": 14.5,
+      "n_needed_for_edge": 47,
+      "distinct_days": 40
     },
     "calibration": {
-      "n": 1907,
-      "brier": 0.2649,
+      "n": 1956,
+      "brier": 0.2644,
       "coin_flip_brier": 0.25,
       "worse_than_coin_flip": true,
       "bins": {
         "<=50": {
-          "n": 1317,
-          "wins": 914,
-          "hit_pct": 69.4,
+          "n": 1351,
+          "wins": 919,
+          "hit_pct": 68.0,
           "ci95": [
-            66.9,
-            71.8
+            65.5,
+            70.5
           ]
         },
         "51-60": {
-          "n": 369,
-          "wins": 189,
-          "hit_pct": 51.2,
+          "n": 381,
+          "wins": 194,
+          "hit_pct": 50.9,
           "ci95": [
-            46.1,
-            56.3
+            45.9,
+            55.9
           ]
         },
         "61-70": {
-          "n": 127,
+          "n": 128,
           "wins": 94,
-          "hit_pct": 74.0,
+          "hit_pct": 73.4,
           "ci95": [
-            65.8,
-            80.9
+            65.2,
+            80.3
           ]
         },
         ">70": {
-          "n": 94,
-          "wins": 52,
-          "hit_pct": 55.3,
+          "n": 96,
+          "wins": 53,
+          "hit_pct": 55.2,
           "ci95": [
             45.3,
-            65.0
+            64.8
           ]
         }
       },
       "inverted": true,
       "inversion_checkable": true,
-      "inversion_diff_pp": 14.1,
+      "inversion_diff_pp": 12.8,
       "inversion_diff_ci95_pp": [
-        4.1,
-        24.4
+        2.9,
+        23.1
       ],
       "inversion_pairs": [
         {
           "low_bin": "<=50",
           "high_bin": "51-60",
-          "diff_pp": 18.2,
+          "diff_pp": 17.1,
           "diff_ci95_pp": [
-            7.2,
-            28.5
+            5.7,
+            27.7
           ],
           "daycluster_corrected": true
         },
         {
           "low_bin": "61-70",
           "high_bin": ">70",
-          "diff_pp": 18.7,
+          "diff_pp": 18.2,
           "diff_ci95_pp": [
             1.5,
             40.2
@@ -313,7 +313,7 @@
       "inversion_worst_pair": {
         "low_bin": "61-70",
         "high_bin": ">70",
-        "diff_pp": 18.7,
+        "diff_pp": 18.2,
         "diff_ci95_pp": [
           1.5,
           40.2
@@ -346,86 +346,86 @@
         "distinct_days": 19
       },
       "up": {
-        "n": 707,
-        "wins": 553,
-        "rate_pct": 78.2,
+        "n": 757,
+        "wins": 565,
+        "rate_pct": 74.6,
         "ci95": [
-          75.0,
-          81.1
+          71.4,
+          77.6
         ],
         "baseline_pct": 50.0,
         "verdict": "real_edge",
         "daycluster_ci95": [
-          67.5,
-          85.5
+          62.1,
+          84.2
         ],
         "verdict_honest": "real_edge",
         "daycluster_degenerate": false,
         "naive_overstated_confidence": false,
-        "edge_pct": 28.2,
-        "n_needed_for_edge": 12,
-        "distinct_days": 16
+        "edge_pct": 24.6,
+        "n_needed_for_edge": 16,
+        "distinct_days": 17
       }
     },
     "by_group": {
       "tw": {
-        "n": 909,
-        "wins": 610,
-        "rate_pct": 67.1,
+        "n": 926,
+        "wins": 613,
+        "rate_pct": 66.2,
         "ci95": [
-          64.0,
-          70.1
+          63.1,
+          69.2
         ],
         "baseline_pct": 50.0,
         "verdict": "real_edge",
         "daycluster_ci95": [
-          55.4,
-          77.8
+          54.7,
+          76.4
         ],
         "verdict_honest": "real_edge",
         "daycluster_degenerate": false,
         "naive_overstated_confidence": false,
-        "edge_pct": 17.1,
-        "n_needed_for_edge": 34,
-        "distinct_days": 39
+        "edge_pct": 16.2,
+        "n_needed_for_edge": 38,
+        "distinct_days": 40
       },
       "us": {
-        "n": 999,
-        "wins": 640,
-        "rate_pct": 64.1,
+        "n": 1032,
+        "wins": 649,
+        "rate_pct": 62.9,
         "ci95": [
-          61.0,
-          67.0
+          59.9,
+          65.8
         ],
         "baseline_pct": 50.0,
         "verdict": "real_edge",
         "daycluster_ci95": [
-          55.2,
-          72.6
+          53.9,
+          71.9
         ],
         "verdict_honest": "real_edge",
         "daycluster_degenerate": false,
         "naive_overstated_confidence": false,
-        "edge_pct": 14.1,
-        "n_needed_for_edge": 50,
-        "distinct_days": 35
+        "edge_pct": 12.9,
+        "n_needed_for_edge": 60,
+        "distinct_days": 36
       }
     },
     "verdict": [
-      "✅ 方向有真 edge:65.5%（day-cluster CI [55.8, 74.8] 整段 > 50.0%，n=1908）",
-      "⚠️ 樣本相關:1908 筆只來自 39 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
-      "🔴 信心反向:低信心箱 61-70 命中比高信心箱 >70 高 18.7pp（差值 95% CI [1.5, 40.2] 全正,已 Bonferroni 校正;診斷性旗標,每晚重算;Brier 0.2649）— 越有信心越不準,信心數字指錯方向，該移除或重新校準"
+      "✅ 方向有真 edge:64.5%（day-cluster CI [54.9, 73.5] 整段 > 50.0%，n=1958）",
+      "⚠️ 樣本相關:1958 筆只來自 40 個獨立日 — 有效 N 遠小於筆數，CI 其實更寬",
+      "🔴 信心反向:低信心箱 61-70 命中比高信心箱 >70 高 18.2pp（差值 95% CI [1.5, 40.2] 全正,已 Bonferroni 校正;診斷性旗標,每晚重算;Brier 0.2644）— 越有信心越不準,信心數字指錯方向，該移除或重新校準"
     ]
   },
   "baseline": {
     "note": "零技能基線=同宇宙全部可結算(ticker,date)無腦全標同類的命中率(5d);wait/hold 勝利條件不對稱,50% 不是正確虛無假設",
     "all_with_chg": {
-      "n_pairs": 2621,
+      "n_pairs": 2717,
       "n_pairs_missing_chg": 0,
-      "buy": 41.2,
-      "hold": 54.8,
-      "sell": 58.3,
-      "wait": 68.3,
+      "buy": 42.9,
+      "hold": 56.4,
+      "sell": 56.6,
+      "wait": 66.6,
       "by_regime": {
         "down": {
           "n_pairs": 1353,
@@ -435,22 +435,22 @@
           "wait": 59.6
         },
         "up": {
-          "n_pairs": 1042,
-          "buy": 30.2,
-          "hold": 44.7,
-          "sell": 69.3,
-          "wait": 77.5
+          "n_pairs": 1138,
+          "buy": 35.2,
+          "hold": 49.3,
+          "sell": 64.3,
+          "wait": 72.8
         }
       }
     },
     "era": {
-      "n_pairs": 2018,
+      "n_pairs": 2114,
       "n_pairs_missing_chg": 0,
       "since": "2026-06-12",
-      "buy": 40.8,
-      "hold": 54.8,
-      "sell": 58.7,
-      "wait": 68.8,
+      "buy": 43.0,
+      "hold": 56.8,
+      "sell": 56.5,
+      "wait": 66.7,
       "by_regime": {
         "down": {
           "n_pairs": 994,
@@ -460,18 +460,18 @@
           "wait": 62.9
         },
         "up": {
-          "n_pairs": 798,
-          "buy": 35.0,
-          "hold": 51.3,
-          "sell": 64.7,
-          "wait": 73.9
+          "n_pairs": 894,
+          "buy": 40.8,
+          "hold": 56.4,
+          "sell": 58.8,
+          "wait": 68.3
         }
       }
     }
   },
   "label_freshness": {
-    "n_judged": 3409,
-    "n_rule_current": 3409,
+    "n_judged": 3548,
+    "n_rule_current": 3548,
     "n_rule_legacy_unstamped": 0,
     "n_missing_chg": 0
   }
