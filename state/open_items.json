@@ -1878,5 +1878,15 @@
   "opened": "2026-08-09 13:08",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 189,
+  "what": "天機 fulfill.py 每分鐘 O(N) 次 wrangler(每天造 ~23k 個 log 檔),改用 kv key list 的 metadata 篩選再 kv_get 候選單",
+  "why": "是 08-09 wrangler 每次呼叫 +28s 事故的產生源;守衛已擋住後果(cron 每6h換目錄),但源頭未收。fulfill.py 屬天機專案,不由自主機器代改",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-09 13:57",
+  "closed": null,
+  "note": ""
  }
 ]
