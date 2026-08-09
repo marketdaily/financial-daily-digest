@@ -1576,8 +1576,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-05 22:41",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-09 19:37",
+  "note": "已解:Google Workspace 開通,帳號 delvin@quietfix.studio(寄件身分改掛品牌網域,因為寄件域與連結域不一致本身是釣魚特徵)。MX/SPF/DKIM/DMARC 全部設好,實寄一封驗證 spf=pass/dkim=pass(@quietfix.studio)/dmarc=pass 且進 INBOX。sender.py 的 SMTP 三項已填、app password 已建。⚠️ 預熱尚未開始、7 封 prospect 信一封都還沒寄,另立新項追蹤"
  },
  {
   "id": 159,
@@ -1806,8 +1806,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-09 12:23",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-09 19:37",
+  "note": "已解:兩個網域都寫入 DMARC p=none,rua 指 delvin@quietfix.studio。DNS token 由 Delvin 提供(Zone→DNS→Edit,只含這兩個 zone)"
  },
  {
   "id": 182,
@@ -1846,8 +1846,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-09 12:38",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-09 18:29",
+  "note": "老闆 08-09 拍板:先集中 Threads。已落地——發文日改二/三/四、post_lint L12 擋未發貼文排 IG、generate.py 約束 15、STRATEGY/SCHEDULE 標暫緩並寫明重啟條件(等 Threads 累積出可導流受眾後再用既有受眾冷啟動 IG)。FB 保留因邊際成本為零"
  },
  {
   "id": 186,
@@ -1856,8 +1856,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-09 12:42",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-09 18:24",
+  "note": "查證:gmail 目的地址 2026-05-21 就已驗證(帳號層級跨網域共用),無需點信,轉寄規則即時生效;祕書寄件首班仍由 firstrun_watch 看守推 PASS/FAIL"
  },
  {
   "id": 187,
@@ -1866,8 +1866,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-09 12:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-09 19:07",
+  "note": "查證:headless 無法代驗。兩條路皆 by-design 安全機制擋死——①Edge/Chrome 拒絕對『預設 profile』開 CDP(DevTools remote debugging requires a non-default data directory)→ 無法驅動真 profile;②profile 複本無法解密 MSA token(Failed to decrypt token)+web cookie 未登入 Bing → SSO 不通。需老闆本人 60 秒:bing.com/webmasters 用 delvin.12345678@gmail.com(=已綁的 MSA)登入→Import from Google Search Console 一鍵匯入(mingshu.tw 已在 GSC 驗證過,零 token)。註:IndexNow 已在推且回 200=Bing 抓取請求管道其實通的,Webmaster 驗證主要解鎖報表儀表板而非抓取本身,故不緊急。已清乾淨所有暫時瀏覽器/埠代理/防火牆改動"
  },
  {
   "id": 188,
@@ -1906,6 +1906,56 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-09 14:58",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 192,
+  "what": "天機祕書寄件人首封真實信未寄過(firstrun_watch 會自動推 PASS/FAIL)",
+  "why": "等下一筆真單",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-09 18:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 193,
+  "what": "Bing Webmaster 驗證需老闆本人登入(headless 被安全機制擋,已查證)：bing.com/webmasters → 用 delvin.12345678@gmail.com 登入 → Import from Google Search Console 一鍵匯入 mingshu.tw(已在 GSC 驗證過,零 token,約 60 秒)",
+  "why": "MSA 互動登入無法 headless 代做",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-09 19:07",
+  "closed": "2026-08-09 19:25",
+  "note": "老闆本人登入 Bing Webmaster 並走到 XML 驗證步驟→下載 BingSiteAuth.xml。我讀出 token(73417F...)放進 web/ 根目錄→commit+wrangler 部署→線上 https://mingshu.tw/BingSiteAuth.xml 回 200 內容正確。老闆按 Try Again 即通過"
+ },
+ {
+  "id": 194,
+  "what": "storefront 冷信預熱尚未開始,7 封 prospect 信一封未寄",
+  "why": "寄件基礎設施已全通(三道驗證 pass),但新網域第一天打滿=進垃圾桶。warmup.py 斜坡 3→6→12→20→30 已就位,要開始時設 STOREFRONT_WARMUP_START 並把 STOREFRONT_SEND_ENABLED 轉 1;預熱期 2-4 週。要不要現在開始是老闆的商業決定",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-09 19:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 195,
+  "what": "hi@quietfix.studio 別名沒加成功",
+  "why": "Cloudflare catch-all 已隨轉寄關閉消失,寄到不存在地址會退信。自動化在 Admin console 的別名網域下拉卡住(預設 delvinchang.com,切不過去),試了兩次沒成。該地址目前沒有對外公開,影響低",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-09 19:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 196,
+  "what": "Workspace 2SV 的 TOTP 只有 winrig 算得出來,Delvin 本人沒有",
+  "why": "為了拿 app password 我用 TOTP 開了兩步驟驗證,金鑰在 winrig。Delvin 必須把金鑰加進自己的驗證器,否則他本人登入 delvin@quietfix.studio 會過不了第二關;另外他的登入密碼曾貼進對話紀錄,建議一併換掉",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-09 19:37",
   "closed": null,
   "note": ""
  }
