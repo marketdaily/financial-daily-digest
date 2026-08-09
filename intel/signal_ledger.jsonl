@@ -618,3 +618,5 @@
 {"date": "2026-08-08", "code": "8438", "source": "mops_news", "level": "yellow", "signal": "昶昕(8438) 重訊[2026-08-07]:公告本公司資安主管異動", "price_at_signal": 65.0}
 {"date": "2026-08-08", "code": "8442", "source": "institutional", "level": "red", "signal": "威宏-KY(8442):外資連 5 日賣超(5日淨賣 -50 張)", "price_at_signal": 44.3}
 {"date": "2026-08-08", "code": "3339", "source": "holders", "level": "red", "signal": "泰谷(3339):千張大戶持股比週增1.80個百分點(大戶顯著加碼)", "price_at_signal": 37.8}
+{"date": "2026-08-09", "code": "2303", "source": "holders", "level": "yellow", "signal": "聯電(2303):千張大戶持股比週減-1.17個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 116.0}
+{"date": "2026-08-09", "code": "5536", "source": "holders", "level": "yellow", "signal": "聖暉(5536):千張大戶持股比週增0.81個百分點(溫和加碼)", "price_at_signal": 1060.0}
