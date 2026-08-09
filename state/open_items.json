@@ -1968,5 +1968,15 @@
   "opened": "2026-08-09 20:15",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 198,
+  "what": "週考 provenance 閘 r4 驗證者 8 findings,只修了 3 條(F3/F2/F8);F1 CRITICAL(aborted_streaming 被判 RAN→0% 進成績單)、F4 HIGH(三條不開考出口全靜默)、F5(前提可能是錯的)未修",
+  "why": "r4 報告 22:51 才落盤,本輪 cycle 時間不足;斷點在 ~/autonomous/state/current_task.md",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-09 22:55",
+  "closed": null,
+  "note": ""
  }
 ]
