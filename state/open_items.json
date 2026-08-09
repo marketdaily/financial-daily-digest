@@ -1906,8 +1906,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-09 14:58",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-09 23:26",
+  "note": "F5-F7 已修,並對最終版全程凍結產物重跑 r4 驗證者(check_report exit 0 入帳本);r5 已派出待收割,追蹤改記在 #199"
  },
  {
   "id": 192,
@@ -1976,6 +1976,36 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-09 22:55",
+  "closed": "2026-08-09 23:26",
+  "note": "r4 八條全部修完(F1 白名單/F4 bail_out/F5 前提查證+modelUsage 證據/F6 fail-closed/F7 死碼清除);自測122→146全綠,7突變全咬到,生產語料412份重分類零漂移"
+ },
+ {
+  "id": 199,
+  "what": "週考 provenance r5 驗證者派出後未收割(findings 未知)",
+  "why": "23:23 派出 PID 3138117,照『派出即收尾、跨輪收割』規矩不在 cycle 內同步等;報告 ~/autonomous/capabilities/claude_run_provenance/verifier_report_r5.md,下一輪先跑 check_report --expect-task claude-run-provenance-r5 --ledger",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-09 23:26",
+  "closed": "2026-08-09 23:47",
+  "note": "r5 收割:它在第 7 分鐘就被砍了(nohup 擋不住 process group 清除),只吐出 1 條 F1。F1 已修(eval/score_status.py);傳輸層問題已修(--detach/setsid)+收割端假綠已修(check_report 認 HTML 註解骨架)。後續改記 #200"
+ },
+ {
+  "id": 200,
+  "what": "r6 驗證者(score-status-and-detach)已 --detach 派出,findings 未收割",
+  "why": "23:43 派出 pid 3252481 timeout 1500s;報告 ~/autonomous/capabilities/verifier_harness/verifier_report_score_status.md。收割前必須確認①pid 已結束 ②check_report --expect-task score-status-and-detach --ledger exit 0(這次就是被半成品報告騙過的)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-09 23:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 201,
+  "what": "claude_run_provenance 主體的 r5 驗證者被砍,那一輪的把關等於沒做完",
+  "why": "r5 只吐 1 條 finding 就陣亡;claude_run_provenance 在 r4 之後改動很大(白名單/modelUsage/bail_out),需要重派一次完整驗證者(這次用 --detach)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-09 23:47",
   "closed": null,
   "note": ""
  }
