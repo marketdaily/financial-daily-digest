@@ -1936,8 +1936,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-09 19:37",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-09 20:15",
+  "note": "已開跑:2026-08-09 寄出預熱第 1 天配額 3 封(零退信),warmup 起算日已設。平日 10:05 cron(storefront_outreach_runner.sh)自動續跑:掃回信→排跟進→依斜坡寄出;08-10 10:20 一次性首班驗收會推 PASS/FAIL"
  },
  {
   "id": 195,
@@ -1956,6 +1956,16 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-09 19:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 197,
+  "what": "QuietFix 冷信第一輪成效未知(3 封已寄,零回覆)",
+  "why": "2026-08-09 首批 3 封剛寄出,回覆率/表單填答率要幾天才看得出來。若一週後 7 家零回覆,要檢討的是切角(gap 是否夠痛)而不是加量;佇列剩 4 封 + 跟進信 step2/3 會自動排",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-09 20:15",
   "closed": null,
   "note": ""
  }
