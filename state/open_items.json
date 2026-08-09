@@ -1996,8 +1996,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-09 23:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-10 00:28",
+  "note": "r6 已收割:check_report exit 0(SOUND-WITH-CORRECTIONS/7 findings),F1-F7 全數修完並補迴歸自測(22/26/27 段)+8 發突變全咬。最貴的 F2=--detach 回 exit 0 與『0=已驗過』契約打架 → 改回 10 + 收據檔 + --harvest 機器收割"
  },
  {
   "id": 201,
@@ -2006,6 +2006,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-09 23:47",
+  "closed": "2026-08-10 00:28",
+  "note": "已用 --detach 重派 r7(pid 3656411)驗主體最終版,追蹤改掛 #202"
+ },
+ {
+  "id": 202,
+  "what": "r7 驗證者(claude_run_provenance 主體最終版)已 --detach 派出,findings 未收割",
+  "why": "00:24 派出 pid 3656411 timeout 1500s;收割一律用機器判準 bash ~/autonomous/capabilities/verifier_harness/run_verifier.sh --harvest ~/autonomous/state/verifier_runs/claude-run-provenance-r7_20260810_002425.pending(0=真過/10=還在跑/3=死了或沒過合約);報告 capabilities/claude_run_provenance/verifier_report_r7.md",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-10 00:28",
   "closed": null,
   "note": ""
  }
