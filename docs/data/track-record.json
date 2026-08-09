@@ -1,28 +1,28 @@
 {
   "stats": {
-    "generated_at": "2026-08-08T08:14:20",
+    "generated_at": "2026-08-09T08:14:20",
     "horizon": "5d",
     "records_since": "2026-06-12",
     "days_covered": 38,
-    "total_records": 3554,
-    "judged_records": 2504,
+    "total_records": 3561,
+    "judged_records": 2501,
     "one_day": {
-      "a_count": 1159,
+      "a_count": 1156,
       "a_wins": 709,
-      "a_rate": 61.2,
+      "a_rate": 61.3,
       "c_count": 1859,
       "c_wins": 1141,
       "c_rate": 61.4
     },
     "monthly": {
-      "a_count": 366,
-      "a_wins": 113,
+      "a_count": 363,
+      "a_wins": 112,
       "a_rate": 30.9,
       "a_ci95": [
-        26.4,
+        26.3,
         35.8
       ],
-      "a_pending": 840,
+      "a_pending": 850,
       "c_count": 413,
       "c_wins": 330,
       "c_rate": 79.9,
@@ -40,7 +40,7 @@
         0.0,
         0.0
       ],
-      "a_pending": 1206,
+      "a_pending": 1213,
       "c_count": 0,
       "c_wins": 0,
       "c_rate": 0.0,
@@ -61,8 +61,8 @@
       ],
       "pending": 136
     },
-    "a_count": 1001,
-    "a_wins": 549,
+    "a_count": 998,
+    "a_wins": 547,
     "a_rate": 54.8,
     "a_ci95": [
       51.7,
@@ -76,20 +76,20 @@
       69.2
     ],
     "calibration": {
-      "n": 1001,
+      "n": 998,
       "brier": 0.2509,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
-          "n": 268,
-          "hit_rate": 60.8
+          "n": 267,
+          "hit_rate": 60.7
         },
         "61-70": {
           "n": 25,
           "hit_rate": 28.0
         },
         "<=50": {
-          "n": 708,
+          "n": 706,
           "hit_rate": 53.5
         }
       }
@@ -105,22 +105,22 @@
         ]
       },
       "down": {
-        "a_count": 441,
-        "a_wins": 248,
+        "a_count": 438,
+        "a_wins": 246,
         "a_rate": 56.2,
         "ci95": [
-          51.6,
-          60.8
+          51.5,
+          60.7
         ]
       }
     },
     "by_market": {
       "tw": {
-        "a_count": 550,
-        "a_wins": 291,
-        "a_rate": 52.9,
+        "a_count": 547,
+        "a_wins": 289,
+        "a_rate": 52.8,
         "a_ci95": [
-          48.7,
+          48.6,
           57.0
         ],
         "c_count": 704,
@@ -132,12 +132,12 @@
         ],
         "era": {
           "since": "2026-06-12",
-          "a_count": 550,
-          "a_wins": 291,
-          "a_rate": 52.9,
+          "a_count": 547,
+          "a_wins": 289,
+          "a_rate": 52.8,
           "a_ci95_day_cluster": [
-            37.3,
-            66.6
+            37.5,
+            66.3
           ],
           "c_count": 704,
           "c_wins": 487,
@@ -146,7 +146,7 @@
             55.5,
             81.9
           ],
-          "days": 29
+          "days": 28
         }
       },
       "us": {
@@ -187,11 +187,11 @@
     "era": {
       "note": "僅計 2026-06-12 起(結構prior+校準信心上線後)的現行模型;信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
       "since": "2026-06-12",
-      "a_count": 1001,
-      "a_wins": 549,
+      "a_count": 998,
+      "a_wins": 547,
       "a_rate": 54.8,
       "a_ci95_day_cluster": [
-        43.1,
+        43.0,
         66.1
       ],
       "c_count": 1503,
@@ -212,12 +212,12 @@
           ]
         },
         "down": {
-          "a_count": 441,
-          "a_wins": 248,
+          "a_count": 438,
+          "a_wins": 246,
           "a_rate": 56.2,
           "a_ci95": [
-            51.6,
-            60.8
+            51.5,
+            60.7
           ]
         }
       },
@@ -241,8 +241,8 @@
           "status": null
         },
         "hold|down": {
-          "count": 322,
-          "wins": 203,
+          "count": 319,
+          "wins": 201,
           "rate": 63.0,
           "status": null
         },
@@ -316,10 +316,10 @@
             "status": null
           },
           "hold|dn": {
-            "count": 82,
-            "wins": 52,
-            "days": 10,
-            "rate": 63.4,
+            "count": 79,
+            "wins": 50,
+            "days": 9,
+            "rate": 63.3,
             "status": null
           },
           "hold|up": {
@@ -460,20 +460,20 @@
         }
       },
       "calibration": {
-        "n": 1001,
+        "n": 998,
         "brier": 0.2509,
         "coin_flip_brier": 0.25,
         "bins": {
           "51-60": {
-            "n": 268,
-            "hit_rate": 60.8
+            "n": 267,
+            "hit_rate": 60.7
           },
           "61-70": {
             "n": 25,
             "hit_rate": 28.0
           },
           "<=50": {
-            "n": 708,
+            "n": 706,
             "hit_rate": 53.5
           }
         }
@@ -2029,8 +2029,8 @@
       "c_wins": 63,
       "c_rate": 53.4
     },
-    "personal_samples_added": 3306,
-    "visible_personal_added": 2971
+    "personal_samples_added": 3313,
+    "visible_personal_added": 2978
   },
   "records": [
     {
@@ -2046,6 +2046,27 @@
       "confidence": 53,
       "entry_lo": 409.29,
       "entry_hi": 415.0,
+      "target": 437.99,
+      "stop": 378.67,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-08-08",
+      "name": "台積電 ADR TSMC",
+      "ticker": "TSM",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📈 BULLISH",
+      "reason": "台積電 ADR TSMC(TSM) 收 $420.04(+0.44%)。下個交易日後若回測 $409.29 不破、收盤收復 $414.67 再分批接,跌破 $378.67 先停損;本週留意 $437.99 壓力。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 53,
+      "entry_lo": 409.29,
+      "entry_hi": 414.67,
       "target": 437.99,
       "stop": 378.67,
       "outcome": null,
@@ -2309,6 +2330,27 @@
     },
     {
       "date": "2026-08-08",
+      "name": "",
+      "ticker": "NVTS",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📈 BULLISH",
+      "reason": "NVTS(NVTS) 收 $13.89(+12.02%)。下個交易日後若回測 $12.5 不破、收盤收復 $13.2 再分批接,跌破 $12.22 先停損;本週留意 $14.06 壓力。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 49,
+      "entry_lo": 12.5,
+      "entry_hi": 13.2,
+      "target": 14.06,
+      "stop": 12.22,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-08-08",
       "name": "輝達 Nvidia",
       "ticker": "NVDA",
       "market": "us",
@@ -2461,6 +2503,27 @@
     },
     {
       "date": "2026-08-08",
+      "name": "美光 Micron",
+      "ticker": "MU",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📉 BEARISH",
+      "reason": "美光 Micron(MU) 收 $877.57(-0.44%),目前空頭結構(價＜MA20＜MA50),先不接。下個交易日後站回 $888.26 之上並收穩再評估分批;持有者跌破 $772.26 先減碼控風險。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 789.81,
+      "entry_hi": 833.69,
+      "target": 1009.21,
+      "stop": 772.26,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-08-08",
       "name": "微策略 MicroStrategy",
       "ticker": "MSTR",
       "market": "us",
@@ -2567,6 +2630,27 @@
     },
     {
       "date": "2026-08-08",
+      "name": "Meta",
+      "ticker": "META",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📈 BULLISH",
+      "reason": "Meta(META) 收 $592.1(+0.37%)。下個交易日後若回測 $558.66 不破、收盤收復 $575.38 再分批接,跌破 $536.38 先停損;本週留意 $636.68 壓力。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 558.66,
+      "entry_hi": 575.38,
+      "target": 636.68,
+      "stop": 536.38,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-08-08",
       "name": "",
       "ticker": "LITE",
       "market": "us",
@@ -2599,6 +2683,27 @@
       "confidence": 48,
       "entry_lo": 37.9,
       "entry_hi": 38.1,
+      "target": 43.72,
+      "stop": 36.28,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-08-08",
+      "name": "",
+      "ticker": "IREN",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📈 BULLISH",
+      "reason": "IREN(IREN) 收 $41.23(+8.70%)。下個交易日後若回測 $37.9 不破、收盤收復 $39.56 再分批接,跌破 $36.28 先停損;本週留意 $43.72 壓力。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 37.9,
+      "entry_hi": 39.56,
       "target": 43.72,
       "stop": 36.28,
       "outcome": null,
@@ -2821,6 +2926,27 @@
     },
     {
       "date": "2026-08-08",
+      "name": "",
+      "ticker": "DPRO",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📈 BULLISH",
+      "reason": "DPRO(DPRO) 收 $4.65(+4.49%)。下個交易日後若回測 $4.34 不破、收盤收復 $4.5 再分批接,跌破 $4.09 先停損;本週留意 $4.84 壓力。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 4.34,
+      "entry_hi": 4.5,
+      "target": 4.84,
+      "stop": 4.09,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-08-08",
       "name": "戴爾 Dell",
       "ticker": "DELL",
       "market": "us",
@@ -2951,6 +3077,27 @@
     },
     {
       "date": "2026-08-08",
+      "name": "博通 Broadcom",
+      "ticker": "AVGO",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📈 BULLISH",
+      "reason": "博通 Broadcom(AVGO) 收 $427.76(+1.71%)。下個交易日後若回測 $403.46 不破、收盤收復 $415.61 再分批接,跌破 $387.26 先停損;本週留意 $430.82 壓力。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 403.46,
+      "entry_hi": 415.61,
+      "target": 430.82,
+      "stop": 387.26,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-08-08",
       "name": "亞馬遜 Amazon",
       "ticker": "AMZN",
       "market": "us",
@@ -2974,6 +3121,27 @@
     },
     {
       "date": "2026-08-08",
+      "name": "亞馬遜 Amazon",
+      "ticker": "AMZN",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📈 BULLISH",
+      "reason": "亞馬遜 Amazon(AMZN) 收 $274.48(+0.82%)。下個交易日後若回測 $259.5 不破、收盤收復 $266.99 再分批接,跌破 $249.5 先停損;本週留意 $287.2 壓力。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 49,
+      "entry_lo": 259.5,
+      "entry_hi": 266.99,
+      "target": 287.2,
+      "stop": 249.5,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-08-08",
       "name": "超微 AMD",
       "ticker": "AMD",
       "market": "us",
@@ -2985,6 +3153,27 @@
       "confidence": 47,
       "entry_lo": 435.02,
       "entry_hi": 435.02,
+      "target": 555.86,
+      "stop": 425.36,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-08-08",
+      "name": "超微 AMD",
+      "ticker": "AMD",
+      "market": "us",
+      "verdict_class": "hold",
+      "verdict_text": "📉 BEARISH",
+      "reason": "超微 AMD(AMD) 收 $483.36(-1.21%),目前空頭結構(價＜MA20＜MA50),先不接。下個交易日後站回 $503.45 之上並收穩再評估分批;持有者跌破 $425.36 先減碼控風險。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 47,
+      "entry_lo": 435.02,
+      "entry_hi": 459.19,
       "target": 555.86,
       "stop": 425.36,
       "outcome": null,
@@ -4170,6 +4359,27 @@
       "entry_hi": 103.0,
       "target": 107.55,
       "stop": 94.97,
+      "outcome": null,
+      "outcome_1d": null,
+      "outcome_21d": null,
+      "outcome_63d": null,
+      "scope": "aggregate"
+    },
+    {
+      "date": "2026-08-08",
+      "name": "元大台灣50",
+      "ticker": "0050",
+      "market": "tw",
+      "verdict_class": "hold",
+      "verdict_text": "📉 BEARISH",
+      "reason": "元大台灣50 Yuanta 0050 收 $102.85元(-0.44%)。下個交易日後若回測 $101.93元 不破、收盤收復 $102.39元 再分批接,跌破 $94.52元 先停損;本週留意 $107.55元 壓力。",
+      "type": "A",
+      "source": "signal-card",
+      "confidence": 48,
+      "entry_lo": 101.93,
+      "entry_hi": 102.39,
+      "target": 107.55,
+      "stop": 94.52,
       "outcome": null,
       "outcome_1d": null,
       "outcome_21d": null,
@@ -20598,7 +20808,7 @@
       "outcome_21d": null,
       "outcome_63d": null,
       "ret_1d": -0.0104,
-      "ret_5d": -0.0,
+      "ret_5d": 0.0,
       "scope": "aggregate"
     },
     {
@@ -75962,78 +76172,6 @@
       "ret_1d": 0.0314,
       "ret_5d": 0.1217,
       "ret_21d": 0.2245
-    },
-    {
-      "date": "2026-06-25",
-      "name": "群聯",
-      "ticker": "8299",
-      "market": "tw",
-      "verdict_class": "hold",
-      "verdict_text": "📈 BULLISH",
-      "reason": "群聯 Phison(8299) 收 $2500元(+2.88%)。今早 9:00 開盤後若回測 $2457.5元 不破、收盤收復 $2478.75元 再分批接,跌破 $2200元 先停損;本週留意 $2833.58元 壓力。",
-      "type": "A",
-      "source": "signal-card",
-      "confidence": 50,
-      "entry_lo": 2457.5,
-      "entry_hi": 2478.75,
-      "target": 2833.58,
-      "stop": 2200.0,
-      "outcome": "loss",
-      "outcome_1d": "loss",
-      "outcome_21d": "loss",
-      "outcome_63d": null,
-      "ret_1d": -0.0667,
-      "ret_5d": -0.0881,
-      "ret_21d": -0.2578,
-      "scope": "aggregate"
-    },
-    {
-      "date": "2026-06-25",
-      "name": "勤誠",
-      "ticker": "8210",
-      "market": "tw",
-      "verdict_class": "hold",
-      "verdict_text": "📈 BULLISH",
-      "reason": "勤誠(8210) 收 $1325元(+1.15%)。今早 9:00 開盤後若回測 $1235元 不破、收盤收復 $1280元 再分批接,跌破 $1166元 先停損;本週留意 $1505元 壓力。",
-      "type": "A",
-      "source": "signal-card",
-      "confidence": 47,
-      "entry_lo": 1235.0,
-      "entry_hi": 1280.0,
-      "target": 1505.0,
-      "stop": 1166.0,
-      "outcome": "win",
-      "outcome_1d": "loss",
-      "outcome_21d": "loss",
-      "outcome_63d": null,
-      "ret_1d": -0.0428,
-      "ret_5d": 0.0195,
-      "ret_21d": -0.1284,
-      "scope": "aggregate"
-    },
-    {
-      "date": "2026-06-25",
-      "name": "台積電",
-      "ticker": "2330",
-      "market": "tw",
-      "verdict_class": "hold",
-      "verdict_text": "📉 BEARISH",
-      "reason": "台積電 TSMC(2330) 收 $2390元(-4.02%)。今早 9:00 開盤後若回測 $2361.75元 不破、收盤收復 $2375.88元 再分批接,跌破 $2234.65元 先停損;本週留意 $2514.28元 壓力。",
-      "type": "A",
-      "source": "signal-card",
-      "confidence": 51,
-      "entry_lo": 2361.75,
-      "entry_hi": 2375.88,
-      "target": 2514.28,
-      "stop": 2234.65,
-      "outcome": "win",
-      "outcome_1d": "loss",
-      "outcome_21d": "win",
-      "outcome_63d": null,
-      "ret_1d": -0.0209,
-      "ret_5d": 0.0314,
-      "ret_21d": -0.0167,
-      "scope": "aggregate"
     },
     {
       "date": "2026-06-17",
