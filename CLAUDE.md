@@ -156,6 +156,7 @@ Delvin 原話：「你為什麼沒有直接收掉而是要等我問你才跟我�
 - 坑:workers.dev 同帳號互打被 1042 擋（用 service binding）;GH Actions skip 步驟 output=null,`null=='0'` 數字強轉=true。
 
 ## 重要慣例（從過去 session 學到）
+- **🔁 版控全自動（2026-08-10 Delvin 親令）**：完成一批檔案改動後當場自動 commit（有意義訊息）+push，不等用戶說「進版控」；storefront 另有每小時 autocommit cron 保底。例外仍要先問：force push/改寫歷史/刪 branch/對外發布
 - **🪟 Mac=純視窗（2026-07-30 Delvin 拍板 A 級，最高優先）**：所有思考/編碼/commit 走 winrig。**Mac 不跑 git 也不跑 sync**（launchd 已停用）；winrig 用 SSH 主動來收（`brain_collect_mac.sh`，`--ignore-existing` 只收新增、尊重墓碑防殭屍復活）、主動送回（`brain_deliver_mac.sh`，含墓碑刪除）。**排程一律 winrig**——Mac 會睡眠，放這裡會靜默不執行（07-01 的 update_stocks 就這樣沒跑、資料停更近兩個月）。⚠️ 代價：Mac 無本地能力，winrig 不可達時互動工作全停——**備援通道=`ssh winrig`（Windows 帳號，Tailscale）**，可經它 `wsl -d Ubuntu` 進 WSL 救援。詳見 memory `project_mac_pure_window`。
 - **🧠 記憶單機主寫制 → B 級（2026-07-30 升級，A 級的基礎）**：記憶索引 `MEMORY.md` 唯一寫者=winrig。**Mac 可「新增」記憶 topic 檔（winrig 會收走），但不能「修改」既有記憶/skill 檔**——寫入權由程式收掉（`--ignore-existing`），不靠自律；在 Mac 改既有檔不會生效，會被偵測並推播。新增記憶仍需登記 `MEMORY_INBOX_MAC.md`（winrig 每 2h SSH 拉走；該檔已排除在 sync 之外）。winrig 端改索引只准 Edit 錨定，禁整檔 Write。詳見 memory `feedback_memory_single_writer`、`project_brain_sync_realtime`。
 - **🔁 模型交接手冊（2026-07-07 建立）**：換模型接手（Fable 週額度見底改用 Opus 4.8 等）的**第一個 session,開工前先讀 memory `feedback_model_handoff_playbook.md` 全文**——Fable 隱性工作法一頁版（十鐵則/驗證者分離/e2e驗證/收工四件套/武器庫/陷阱Top清單）。CLAUDE.md+記憶+skills 換模型自動繼承,手冊補的是「工作法靈魂」。
