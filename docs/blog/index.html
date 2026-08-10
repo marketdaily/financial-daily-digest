@@ -51,6 +51,11 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
 .card-meta .arrow{ color:var(--indigo-l); font-weight:700; opacity:0; transform:translateX(-4px); transition:all .2s; }
 .card:hover .arrow{ opacity:1; transform:translateX(0); }
 .empty{ color:var(--muted); padding:40px 0; font-size:15px; }
+.cta-top{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center;
+  text-align:center; background:rgba(99,102,241,.10); border:1px solid rgba(99,102,241,.28);
+  border-radius:12px; padding:12px 16px; margin:0 0 26px; font-size:14px; color:#c7d2fe; line-height:1.7; }
+.cta-top a{ color:#fff; background:linear-gradient(135deg,#6366f1,#a855f7); font-weight:800;
+  text-decoration:none; padding:8px 16px; border-radius:8px; white-space:nowrap; }
 @media(max-width:520px){ .grid{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -60,6 +65,8 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
   <div class="eyebrow">投資學堂 · Learn</div>
   <h1>財經知識庫</h1>
   <p class="sub">個股拆解、法說會前瞻、除權息、供應鏈全景,到總經指標與新手入門——59 篇免費開放,依主題挑你要讀的。</p>
+  <!-- md-top-cta -->
+  <div class="cta-top">📬 這些都是 MarketDaily 每天在做的事。留個 Email,美股 + 台股 AI 過濾日報每天早上 7 點直送信箱——目前限時免費,現在訂閱未來恢復收費後仍永久免費。<a href="https://marketdaily.ai/?utm_source=blog&utm_medium=cta_top&utm_campaign=blog_index#email-step">免費訂閱 →</a></div>
   <div class="filters">
       <button class="pill on" data-f="all">全部 59</button>
       <button class="pill" data-f="stock">個股分析 21</button>

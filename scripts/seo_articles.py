@@ -386,6 +386,87 @@ def backfill_beacon(dry: bool) -> list:
     return injected
 
 
+TOP_CTA_MARKER = "<!-- md-top-cta -->"
+
+
+def top_cta_html(slug: str, lang: str) -> str:
+    """標題下方的細長條轉換入口(2026-08-11 成長線 domain③)。
+
+    為什麼:文章唯一的訂閱入口原本只有頁尾 `.cta`,長文實測落在 73~84% 捲動深度
+    (capabilities/cta_funnel_lint 首跑),中途離開的讀者從頭到尾沒看過任何訂閱入口——
+    而公版存檔頁(同一條漏斗、同一批陌生讀者)早在 08-03 就是「上下各一」。
+    這是「不論流量多寡都嚴格更差」的確定性缺陷,不需要也不可能靠 A/B 證明
+    (~95 真人/日 × 0.4% CTR ⇒ 任何 CTR 實驗都不會收斂)。
+
+    ⚠️ 刻意不含 <p>、不含巢狀 <div>:①`_first_prose` 抽 meta description 是掃第一個
+    <p>,CTA 裡有 <p> 會變成整篇文章的 SERP 描述 ②剝除用的非貪婪 `.*?</div>` 遇巢狀會斷。
+    ⚠️ class 刻意叫 `cta-top` 而非 `cta`:`reconcile_related_links` 用字面
+    `<div class="cta">` 當「相關文章要插在這之前」的錨點,同名會讓相關文章區塊插到頁首。
+    """
+    if lang == "en":
+        line = ("Reading this because you track these names? MarketDaily emails you an "
+                "AI-filtered US + Taiwan digest every morning — free.")
+        btn = "Subscribe free →"
+    else:
+        line = "喜歡這類拆解?MarketDaily 每天早上 7 點把美股 + 台股 AI 過濾日報寄到你信箱。"
+        btn = "免費訂閱 →"
+    href = (f"https://marketdaily.ai/?utm_source=blog&utm_medium=cta_top"
+            f"&utm_campaign=seo_{slug[:32]}#email-step")
+    return (
+        f'{TOP_CTA_MARKER}\n'
+        f'  <div class="cta-top">📬 {line}'
+        f'<a href="{href}">{btn}</a></div>'
+    )
+
+
+TOP_CTA_CSS = (".cta-top { display:flex; flex-wrap:wrap; gap:10px; align-items:center; "
+               "justify-content:center; text-align:center; background:rgba(99,102,241,0.10); "
+               "border:1px solid rgba(99,102,241,0.28); border-radius:12px; padding:12px 16px; "
+               "margin:0 0 26px; font-size:14px; color:#c7d2fe; line-height:1.7; }\n"
+               ".cta-top a { color:#fff; background:linear-gradient(135deg,#6366f1,#a855f7); "
+               "font-weight:800; text-decoration:none; padding:8px 16px; border-radius:8px; "
+               "white-space:nowrap; }")
+
+
+def _page_lang(html: str) -> str:
+    m = re.search(r'<html\b[^>]*\blang\s*=\s*"([^"]*)"', html, re.I)
+    return "en" if (m and m.group(1).lower().startswith("en")) else "zh"
+
+
+def insert_top_cta(html: str, slug: str) -> str:
+    """把頁首轉換入口插到第一個 </h1> 之後(冪等:已有 marker 就原樣返回)。
+    找不到 </h1>(版型不符)就原樣返回,不硬塞。CSS 缺了也一併補進 </style> 前。"""
+    if TOP_CTA_MARKER in html:
+        return html
+    m = re.search(r"</h1>", html, re.I)
+    if not m:
+        return html
+    out = html[: m.end()] + "\n  " + top_cta_html(slug, _page_lang(html)) + html[m.end():]
+    if ".cta-top {" not in out and "</style>" in out:
+        out = out.replace("</style>", TOP_CTA_CSS + "\n</style>", 1)
+    return out
+
+
+def backfill_top_cta(dry: bool) -> list:
+    """對 docs/blog/*.html 回填頁首轉換入口(冪等,缺 marker 才注入)。index.html 走
+    regenerate_blog_index 自己的版型,不在這裡處理。"""
+    injected = []
+    for f in sorted(BLOG_DIR.glob("*.html")):
+        if f.stem == "index":
+            continue
+        html = f.read_text(encoding="utf-8")
+        new_html = insert_top_cta(html, f.stem)
+        if new_html == html:
+            continue
+        injected.append(f.stem)
+        if dry:
+            print(f"  [dry] would inject top CTA: {f.name}")
+        else:
+            f.write_text(new_html, encoding="utf-8")
+            print(f"  ✓ top CTA injected: {f.name}")
+    return injected
+
+
 OG_MARKER = 'property="og:image"'
 
 
@@ -579,7 +660,9 @@ def _first_prose(source_html: str) -> str:
     生成階段的 body_html(無 <article> 包裹,直接掃第一個 <p>)。抽不到回空字串。"""
     m = re.search(r"<article\b[^>]*>(.*?)</article>", source_html, re.S)
     region = m.group(1) if m else source_html
-    region = re.sub(r'<div class="cta">.*?</div>', "", region, flags=re.S)
+    # `cta[^"]*` 同時吃掉頁尾 .cta 與頁首 .cta-top,否則頁首入口會被當成文章第一段 prose
+    # 拿去當 meta description(2026-08-11 加頁首入口時一併修)。
+    region = re.sub(r'<div class="cta[^"]*">.*?</div>', "", region, flags=re.S)
     region = re.sub(r'<p class="disc">.*?</p>', "", region, flags=re.S)
     for pm in re.finditer(r"<p\b[^>]*>(.*?)</p>", region, re.S):
         inner = re.sub(r"<[^>]+>", "", pm.group(1))
@@ -1982,6 +2065,11 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
 .card-meta .arrow{ color:var(--indigo-l); font-weight:700; opacity:0; transform:translateX(-4px); transition:all .2s; }
 .card:hover .arrow{ opacity:1; transform:translateX(0); }
 .empty{ color:var(--muted); padding:40px 0; font-size:15px; }
+.cta-top{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center;
+  text-align:center; background:rgba(99,102,241,.10); border:1px solid rgba(99,102,241,.28);
+  border-radius:12px; padding:12px 16px; margin:0 0 26px; font-size:14px; color:#c7d2fe; line-height:1.7; }
+.cta-top a{ color:#fff; background:linear-gradient(135deg,#6366f1,#a855f7); font-weight:800;
+  text-decoration:none; padding:8px 16px; border-radius:8px; white-space:nowrap; }
 @media(max-width:520px){ .grid{ grid-template-columns:1fr; } }
 </style>
 </head>
@@ -1991,6 +2079,8 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
   <div class="eyebrow">投資學堂 · Learn</div>
   <h1>財經知識庫</h1>
   <p class="sub">個股拆解、法說會前瞻、除權息、供應鏈全景,到總經指標與新手入門——__TOTAL__ 篇免費開放,依主題挑你要讀的。</p>
+  <!-- md-top-cta -->
+  <div class="cta-top">📬 這些都是 MarketDaily 每天在做的事。留個 Email,美股 + 台股 AI 過濾日報每天早上 7 點直送信箱——目前限時免費,現在訂閱未來恢復收費後仍永久免費。<a href="https://marketdaily.ai/?utm_source=blog&utm_medium=cta_top&utm_campaign=blog_index#email-step">免費訂閱 →</a></div>
   <div class="filters">
       __FILTERS__
   </div>
@@ -2277,6 +2367,8 @@ def main():
     reconcile_related_links(args.dry)
     print("④ 回填 attribution beacon(缺 marker 才注入,冪等)...")
     backfill_beacon(args.dry)
+    print("④ 回填頁首轉換入口(長文唯一入口原本只在 73~84% 捲動深度,冪等)...")
+    backfill_top_cta(args.dry)
 
     print("④ 補社群卡 og:image...")
     backfill_og_cards(args.dry)

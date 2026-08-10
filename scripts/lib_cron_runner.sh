@@ -36,6 +36,32 @@ cron_time_gate() {
   fi
 }
 
+# cron_time_slot NAME=START-END [NAME=START-END ...]  多窗口版的 cron_time_gate。
+# 命中就把該窗口名字印到 stdout(呼叫端拿去接 cron_daily_lock 當**每窗口各一把**的鎖名),
+# 全部沒命中回傳 1。窗口皆為台灣時間 HH:MM,支援跨夜(START>END)。
+# ⚠️ 這支**不能**像 cron_time_gate 那樣自己 exit 0:它一定是在 `$( )` 裡被呼叫的,
+#    子 shell 的 exit 殺不到主腳本,會變成「窗口外照跑、鎖名還是空字串」。呼叫端必須寫:
+#      SLOT=$(cron_time_slot am=07:20-07:49 pm=20:20-20:59) || exit 0
+#      [ -n "$SLOT" ] || exit 0     # 保險絲:漏寫 || exit 0 時仍不會裸奔
+# 為什麼要有它(2026-08-11):digest_archive_seo 只有早上一個窗口 + 一把當日鎖,美股存檔頁
+# 晚上 20:00 才落地 → 訂閱 CTA 與 canonical/JSON-LD 要等隔天早上才補,每篇美股存檔頁上線後
+# 最初 11 小時是「沒有任何轉換入口」的狀態(cta_funnel_lint 首跑抓到)。多窗口共用一把當日鎖
+# 會讓早班鎖掉晚班,所以鎖名必須帶窗口名。
+cron_time_slot() {
+  local spec name range now_min s e
+  now_min=$(_hhmm_to_min "$(TZ=Asia/Taipei date +%H:%M)")
+  for spec in "$@"; do
+    name=${spec%%=*}; range=${spec#*=}
+    s=$(_hhmm_to_min "${range%%-*}"); e=$(_hhmm_to_min "${range##*-}")
+    if [ "$s" -le "$e" ]; then
+      if [ "$now_min" -ge "$s" ] && [ "$now_min" -le "$e" ]; then echo "$name"; return 0; fi
+    else
+      if [ "$now_min" -ge "$s" ] || [ "$now_min" -le "$e" ]; then echo "$name"; return 0; fi
+    fi
+  done
+  return 1
+}
+
 # cron_daily_lock NAME  防同一天重跑/防雙 cron source 撞期。今天已鎖過就 exit 0。
 # 2026-08-06 修:此 WSL2 host(kernel 6.6/tmpfs)的 mkdir 併發下非原子(實測 4/200 兩行程同時
 # mkdir 成功,見 lesson wsl2_mkdir_not_atomic),原本裸 mkdir 認領對多個生產呼叫端(social_post_
