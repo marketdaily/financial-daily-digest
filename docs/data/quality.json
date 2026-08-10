@@ -126,10 +126,15 @@
     "date": "2026-08-11",
     "market": "tw",
     "start": "05:20:01",
-    "done": null,
-    "lateness_min": null,
-    "verdict": "incomplete",
-    "llm_tiers": {}
+    "done": "07:00:40",
+    "lateness_min": 0.7,
+    "verdict": "on_time",
+    "llm_tiers": {
+     "gemini": 2,
+     "unknown": 45,
+     "groq_free": 20,
+     "other_free70b": 1
+    }
    }
   ]
  },
@@ -154,5 +159,5 @@
   "guard_alert_tw": false,
   "guard_alert_us": false
  },
- "generated_utc": "2026-08-10T21:38:01Z"
+ "generated_utc": "2026-08-10T23:08:01Z"
 }
