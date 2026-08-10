@@ -2116,6 +2116,86 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-10 12:39",
+  "closed": "2026-08-10 13:21",
+  "note": "已解:不用新建。查出 MarketDaily 既有 LINE 官方帳號(@516nponm,channel_id 2010166664)閒置可用,憑證在 stripe-webhook secret。已把 channel secret 搬進 storefront worker、webhook 改指 form.quietfix.studio/line/webhook、驗簽實測(真簽章200/假403)。診斷端點用完拆除。待老闆:顯示名 MarketDaily→QuietFix 要進 OA Manager 改"
+ },
+ {
+  "id": 213,
+  "what": "mingshu.tw 線上字型仍是舊子集(缺字),本地已修已 commit 未部署",
+  "why": "另一視窗正在動 fortune-ai web/,依鐵則不從本視窗 ship 免得兩個系統互推;等 04:20 每日鏈或該視窗 ship。影響=新頁部分漢字靜默退回系統字型(外觀,非功能)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-10 13:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 214,
+  "what": "key_health 傳輸層重試、mingshu 每日鏈 build_fonts、driver rc124 白名單三項尚未在生產排程跑過",
+  "why": "各自的首班分別是明早 10:45 / 04:20 / 下一次 cycle 跑滿 40m;皆已離線驗過判定函式,但依判準只有生產真跑才算完成",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-10 13:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 215,
+  "what": "council 每天掉備援(detfb>0)=慢性產能不足,天天推 🔴 告警",
+  "why": "4 個席次長期死透(cerebras 402 付費牆、gemini 2.0-flash/2.5-lite、openai),是政策/付費牆不是 bug;要嘛補免費產能要嘛從名冊退役這些席次,屬產能決策不自行改",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-10 13:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 216,
+  "what": "夜巡守衛 selftest 自 08-06 未全過:log_contract_scan 回報新增失明消費者(selftest.sh:79 的 budget 解析模式配不上任何生產者輸出)",
+  "why": "本輪修掉 runner_parity(我造成)/recall_integrity NUL/claude_run_provenance 預算三條,log_contract_scan 這條是既有的靜默失明告警,還沒查;selftest_last_ok 要下一次夜巡全過才會前進",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-10 13:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 217,
+  "what": "cron_catchup per-job 逾時 + selftest 預算宣告尚未在夜巡真跑過",
+  "why": "離線含突變驗證(改回舊版即紅)+ 74 段全過,但生產首班是明早 04:50 夜巡與其後的 catchup 補班",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-10 13:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 218,
+  "what": "run_eval push_alert 沙箱 fail-closed 尚未在真實夜巡自測跑過",
+  "why": "已用四條行為斷言驗過(沙箱不推播/不碰網路/hook 仍優先/生產不被誤關),但真正證明它有效的是明早夜巡之後 admin feed 不再出現 /tmp/crp.* 的週考告警",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-10 13:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 219,
+  "what": "LINE 客服顯示名還是 MarketDaily,要改 QuietFix 需 OA Manager",
+  "why": "既有帳號轉用,技術管道已通(客人訊息進 QuietFix 後台),但好友看到的帳號名/頭像還是 MarketDaily。改名要進 LINE Official Account Manager(有冷卻/次數限制),且要決定 MarketDaily 是否還要獨立 LINE。老闆定",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-10 13:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 220,
+  "what": "storefront 4 封花店首信已重寫(送達率playbook短版),待老闆校對",
+  "why": "老闆要寄前校對;已按 <100字/offer前置/對話體重寫並重 queue。寄送仍三重鎖(SEND_ENABLED=0+kill-switch+暖機休眠至08-23)。校對OK且過解鎖日才會真發",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-10 13:21",
   "closed": null,
   "note": ""
  }
