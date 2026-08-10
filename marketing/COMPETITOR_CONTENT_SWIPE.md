@@ -82,4 +82,27 @@
 
 ## E. 自動化「持續學過來」的下一步（建議放 winrig）
 - 每日 scrape `newsletter.evolvingai.io/archive` 新一期 → 抽 3 大新聞題目 + Our tip → 寫進 `~/autonomous/backlog.md` 或 marketing 選題池。
-- 讓 Marketing Agents 生成鏈的 research 階段自動吃這批競品選題，站在天花板肩膀上出內容。
+- 讓 Marketing Agents 生成鏈的 research 階段自動吃這批競品選題,站在天花板肩膀上出內容。
+
+## F. ⭐ 產品發布 Trailer 型 Reel 拆解（@dailydoseofds_,2026-08-11 video-watcher 實看）
+
+> 源:https://www.instagram.com/reel/DY7Qz6aAcMF/(2,803 讚/34 留言,dev/DS 受眾帳號)
+> 內容:LTX-2(Lightricks 開源影音生成模型)發布片。25.5 秒,756x640 橫式。
+> 事實查核:GitHub API 實查 Lightricks/LTX-2 = 8,558 stars,license NOASSERTION(自訂社群授權);caption 稱 19B params。
+
+### 影片結構(timeline beats,frames+whisper 雙流實讀)
+1. **0–4.5s Hook**:口播「The first truly open audio video model」——最高級宣稱句型。畫面=GitHub README 螢幕錄製(標題+badge 列+一句話定位),內嵌官方 trailer 開播:兩隻精靈生物營火邊大笑(= 音畫同步能力的展示,不用講)
+2. **5–19s 蒙太奇賣點輪播**:trailer 快切 8+ 個完全不同風格的生成片段(3D 卡通/實拍運動/微距/科幻動作/動畫/奇幻實寫),**每段燒一組兩字賣點**:「IS NOW OPEN → Audio & Video → Weights → Training Code → Tooling → Run it locally → Build on it → Not a demo → A foundation」。口播只補一句「It's out of this world」
+3. **19–25s 收尾**:口播「Check it out!」→ 黑底 logo 卡結束
+
+### 為什麼有效(可搬的骨架)
+- **畫面=產品自己說話,資訊負載全在 caption**:影片零規格數字,caption 用 ✅×6 checklist 扛完(19B/FP8/三模式/LoRA/開源訓練工具)。影片管情緒,文字管理性——分工乾淨
+- **每 2–3 秒一個燒字賣點+風格跳切**:賣點節奏取代旁白;風格多樣性本身就是「模型很廣」的證明,show don't tell
+- **連結不放 caption 放留言**(「GitHub repo in the comments!」)→ 逼留言互動餵演算法——與我們的留言閘門漏斗(comment_funnel)同構,零新基建
+- **收尾拋開放式問題**(「What type of videos would you generate?」)= 第二層留言誘餌
+- **最高級宣稱 Hook**:「The first truly open…」——首行口播+caption 首句同步打
+
+### MarketDaily 搬法
+- **做一支「產品 trailer 型」reel**(現有產線全是資訊卡/日報摘要,沒有這型):螢幕錄製真實產品畫面(日報 email/watch.html/戰績頁),每 2 秒燒兩字賣點:「台股+美股 → AI 精選 → 戰績全公開 → 每天 7 點 → 限時免費」。落點=留言「早鳥」閘門
+- Hook 句型合規改寫:「敢把每一筆戰績公開讓你查的財經日報」(可驗證,不碰個股買賣建議)
+- 素材成本≈0:全用既有頁面錄製,不需生成影片
