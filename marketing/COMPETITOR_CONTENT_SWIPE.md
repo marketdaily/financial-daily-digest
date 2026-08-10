@@ -106,3 +106,26 @@
 - **做一支「產品 trailer 型」reel**(現有產線全是資訊卡/日報摘要,沒有這型):螢幕錄製真實產品畫面(日報 email/watch.html/戰績頁),每 2 秒燒兩字賣點:「台股+美股 → AI 精選 → 戰績全公開 → 每天 7 點 → 限時免費」。落點=留言「早鳥」閘門
 - Hook 句型合規改寫:「敢把每一筆戰績公開讓你查的財經日報」(可驗證,不碰個股買賣建議)
 - 素材成本≈0:全用既有頁面錄製,不需生成影片
+
+## G. ⭐ 系列化工具清單型 Reel 拆解(@avi_vashishta29,2026-08-11 video-watcher 實看)
+
+> 源:https://www.instagram.com/reel/DafoIitSbr9/(9,343 讚/61 留言)
+> 內容:「Cool Devs Don't Gatekeep Pt. 06 (UI Animation Edition)」——12.7 秒,720x1280 直式,4 個 web 動畫庫快閃導覽。
+> 音軌:純配樂零口播(Groq whisper 實測只有歌詞),資訊 100% 靠燒字;每庫定位一句話=燒在畫面頂部。
+
+### 影片結構(timeline beats,frames 實讀)
+1. **0–5s Hook**:真人入鏡——創作者在書桌前戴上耳機、身體前傾看螢幕(「進入工作模式」儀式感)。標題卡全程壓住:「Cool Devs Don't Gatekeep Pt. 06 (Ui Animation Edition)」。12.7 秒的片給 hook 5 秒=40%,人臉+動作留人,不急著上內容
+2. **5–12s 四庫快閃**(每個約 1.5–2 秒,實體螢幕翻拍非螢幕錄製,鍵盤紅光氛圍入鏡):①GSAP「For scroll based animations」(官網文字動畫示範)②Anime.js「For vector animations」(鏡頭 3D 拆解動畫)③Motion.dev「For block based animations」(「Copy, paste, ship」examples 網格)④React-Spring「For real life physics」(spring 物理光球)
+3. **12–12.7s 收尾**:「Follow for more.」壓在 anime.js Scroll Observer demo 上,無其他 CTA
+
+### 為什麼有效(可搬的骨架)
+- **「不藏私」人設包裝清單文**:「Cool Devs Don't Gatekeep」把普通工具清單升格成「圈內人分享祕密」,Pt. 06 系列編號製造追更期待+帳號回訪——系列名本身就是 hook
+- **每庫只給一句定位,不給教學**:「X for Y」格式(GSAP=scroll、Anime.js=vector、Motion=block、React-Spring=physics)——資訊密度剛好觸發「收藏當書籤」,收藏率是演算法最重權重之一
+- **官網自己就是 B-roll**:動畫庫的官網 demo 本來就會動,翻拍即素材,零製作成本;實體螢幕+氛圍光比螢幕錄製更有「真人在看」的溫度
+- **⚠️ caption 與影片完全無關**:caption 寫「Beginners guide to development in 2026」+堆 20 個 SEO 關鍵字(Claude/Cursor/CareerTok…)——caption 純拿來吃搜尋/推薦流量,內容溝通全在燒字。灰帽手法,學「caption=第二戰場」的意識即可,別學掛羊頭
+- **(inference)** 燒字有 typo(「GSap.com」「Addper」截字)照發不誤——出片速度>完美度,系列量產型帳號的取捨
+
+### MarketDaily 搬法
+- **開「投資人不藏私」系列**(直接對位:「聰明投資人不 Gatekeep Pt. N」):每集 12–15 秒快閃 3–4 個免費投資工具/資訊源(TWSE 公開資訊站、SEC EDGAR、FRED、MarketDaily 戰績頁),每個一句「X for Y」定位燒字。工具官網翻拍=零成本 B-roll,合規安全(介紹工具非個股建議)
+- 系列編號從 Pt. 01 累積,MarketDaily 自己排最後一位=軟置入;收尾「Follow for more」+留言「早鳥」閘門可並用
+- 現有 video_brief 產線是資訊卡型,這型需真人/實體螢幕拍攝——可先用 Playwright 錄官網動畫+燒字近似,人臉 hook 段等 Delvin 有空拍一次可重複用
