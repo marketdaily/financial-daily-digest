@@ -2016,6 +2016,56 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-10 00:28",
+  "closed": "2026-08-10 01:16",
+  "note": "r7 收割完成(SOUND-WITH-CORRECTIONS/6):六條全修(F1 只採計任務模型 outputTokens/F2 未完成總計行同日一列/F3 usage∪modelUsage/F4 EXCLUDED 認賠出口+兩道防呆/F5 帳本 id 去重/F6 OverflowError),自測 146→169 全綠,突變 7 發全咬,三組真 CLI 實驗存成 fixtures"
+ },
+ {
+  "id": 203,
+  "what": "週日 05:10 週考 cron 未帶 --if-week-missing:本週已考完後任何人工再觸發一次就重考整場 221 題(~$42)",
+  "why": "r7 驗證者 Notes 指出的人工誤操作地雷;改 crontab 要同步 intent 檔並過 cron_target_lint,本輪時間不夠",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-10 01:16",
+  "closed": "2026-08-10 01:57",
+  "note": "週日 05:10 週考 cron 已補 --if-week-missing(crontab 已套用+intent 同步+cron_target_lint 全綠);人工誤觸不再重考整場 221 題"
+ },
+ {
+  "id": 204,
+  "what": "空跑基線閘(eval/null_baseline.py + active_tasks.py)尚未在生產跑過首班:今天 11:10 TW 補考 cron 是它與三態計分的共同首班",
+  "why": "自測 21 段全綠+全庫 222 題實掃+結算段單獨驗+真實序列 smoke 都過,但按判準只有測試驗過仍算 open。要盯:①題數 221(222-1 廢題)②總計行帶『另 1 題空跑基線廢題已剔除』③eval_pending→eval_last_ok 流轉 ④隔天不可重考",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-10 02:09",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 205,
+  "what": "本輪(08-10 事件輪)驗證者分離 guard-blindness-and-r8-harvest 尚未收割",
+  "why": "09:24 --detach 派出(pid 1808825, timeout 1500s),收據 ~/autonomous/state/verifier_runs/guard-blindness-and-r8-harvest_20260810_092441.pending;收割用 run_verifier.sh --harvest(0=真驗過/10=還在跑/3=死了)。派出即凍結:收割前不准動那 9 個被驗檔",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-10 09:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 206,
+  "what": "null_baseline --task-json 草稿閘對壞草稿是 traceback+exit 1(撞『有廢題』保留碼)",
+  "why": "r8 驗證者 F3(MEDIUM),本輪只收了 F1/F2/F4;--task-json 的定位是還沒過 schema lint 的新題草稿,任何壞輸入都該是 exit 2 用法錯誤而不是 exit 1",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-10 09:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 207,
+  "what": "冷信後台的產業判定只覆蓋 5 家精密加工廠,規則庫未經其他品類驗證",
+  "why": "enrich/industry.py 的 13 條規則是照這批 B2B 製造業寫的;之後跑診所/餐廳/婚攝那三類品類時規則會大量落到 no_rule_matched(會顯示未確認,不會亂編,但等於沒標籤)。要擴品類時得補規則並拿真實樣本校準",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-10 11:30",
   "closed": null,
   "note": ""
  }
