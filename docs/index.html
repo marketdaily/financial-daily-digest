@@ -2254,7 +2254,18 @@ const i18n = {
   }
 };
 
-let currentLang = localStorage.getItem("md-lang-v2") || "zh";
+let currentLang = (function () {
+  // ?lang=en|zh:由來源頁指定語言(英文文章的 CTA 帶 lang=en)。URL 勝過 localStorage 並寫回,
+  // 讓其餘 17 頁(皆讀 md-lang-v2)自動跟著同一語言,不必逐頁改。
+  // 只認顯式參數,不嗅 navigator.language——台灣用戶常用英文語系瀏覽器,嗅探會誤把中文讀者切成英文。
+  var q = null;
+  try { q = new URLSearchParams(location.search).get("lang"); } catch (e) { q = null; }
+  if (q === "en" || q === "zh") {
+    try { localStorage.setItem("md-lang-v2", q); } catch (e) {}
+    return q;
+  }
+  return localStorage.getItem("md-lang-v2") || "zh";
+})();
 
 function toggleFaq(btn) {
   const item = btn.closest(".faq-item-acc");
