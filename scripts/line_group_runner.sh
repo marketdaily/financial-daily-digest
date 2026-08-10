@@ -57,6 +57,7 @@ cp "$WINDIR"/*.png "$OUT"/ 2>/dev/null
 
 cd "$HOME/sinopac_line"
 rm -f "$OUT.push.txt"
+MD_BEFORE=$(stat -c %Y "$OUT.md" 2>/dev/null || echo 0)
 echo "現在時刻 $DATE $HHMM(台灣)。讀取 $OUT 目錄內全部 png(LINE 群「永豐/創兆 聯一」訊息截圖)。若截圖顯示登入/QR 畫面、或聊天室不是這個群,只回一行「SKIP:原因」,不要寫任何檔案。否則整理永豐金證券法人部內容到 $OUT.md:若該檔已存在,先 Read 舊檔,把新內容【合併】進去(保留原有內容,不可刪除;同一則訊息已存在就不重複)。文件結構:一級標題後分「## 台股班(開盤前)」與「## 美股班(開盤前)」兩大節(依訊息時間戳歸類:上午=台股班,晚間=美股班),各節內含:晨訊/盤前重點(一行一條)、評等調整(markdown 表:代號|股票|券商|動作|評等|目標價|備註)、完整報告連結(截圖有 Google Drive 連結才列)。只寫截圖可清楚辨識的內容,嚴禁捏造;辨識不清的欄位寫—。另外:把本次【新增】的內容濃縮成一則 300 字內推播文字,用 Write 寫到 $OUT.push.txt(格式範例:「台股班|評等調整9檔:川湖 MS 6650→10000、南電 KGI 600→1480(+147%)、欣興 KGI→1175…;晨訊:台燿高階CCL供不應求 TP1905、復盛維持買進340」)。若本次沒有任何新增內容,絕對不要寫 push.txt。此為公司內部參考用,不對外發布。" \
   | claude $(claude_model light) -p --dangerously-skip-permissions --allowedTools "Read,Write" > /tmp/lgr_parse.$$ 2>&1
 PARSE_RC=$?
@@ -65,7 +66,18 @@ cat /tmp/lgr_parse.$$ >> "$LOG"
 # 「Failed to authenticate: OAuth session expired」只進了 log,沒人被告知。
 # 分辨兩種結果:SKIP=合法無事(登入頁/非本群),要安靜;rc!=0 或認證/額度字樣=真故障,要喊。
 PARSE_OUT=$(cat /tmp/lgr_parse.$$); rm -f /tmp/lgr_parse.$$
-if [ "$PARSE_RC" -ne 0 ] || echo "$PARSE_OUT" | grep -qiE "OAuth session expired|Failed to authenticate|rate limit|Invalid API key"; then
+# 2026-08-10 改判準:原本列舉錯誤字串(OAuth/rate limit...),08-07 claude 印的是
+# 「You've hit your weekly limit」→ 不匹配 → 五天斷流解析層零告警(靠 fleet_liveness
+# 產出斷流那層才接住)。**列舉故障模式永遠列不完;要斷言預期結果。**
+# 三種合法結局只有:①產出了 .md ②回 SKIP(登入頁/非本群)。其餘一律視為故障,
+# 不管它用什麼措辭失敗(額度/認證/網路/崩潰/未來沒見過的)。
+MD_AFTER=$(stat -c %Y "$OUT.md" 2>/dev/null || echo 0)
+PARSE_BAD=0
+if [ "$PARSE_RC" -ne 0 ]; then PARSE_BAD=1
+elif [ "$MD_AFTER" -gt "$MD_BEFORE" ]; then PARSE_BAD=0
+elif echo "$PARSE_OUT" | grep -q "SKIP:"; then PARSE_BAD=0
+else PARSE_BAD=1; fi
+if [ "$PARSE_BAD" -eq 1 ]; then
   COOL="$HOME/.marketdaily-fallback/state/line_group_parse_alerted"
   mkdir -p "$(dirname "$COOL")"
   NOW=$(date +%s); LAST=$(cat "$COOL" 2>/dev/null || echo 0)
