@@ -12,6 +12,7 @@ import datetime
 import json
 import os
 import sys
+import time
 
 import requests
 
@@ -116,16 +117,41 @@ WEEKLY = [("alphavantage", chk_alphavantage), ("tavily", chk_tavily),
           ("context7", chk_context7), ("mistral_key", chk_mistral)]
 
 
+# 一次 read timeout ≠ key 死了(2026-08-10:brevo 單次 20s 讀取逾時就推了 admin 告警)。
+# 只重試「傳輸層抖動」——逾時、連線失敗;HTTP 回了 401/403 那種**答案明確**的失敗絕不重試,
+# 重試它只會把真正的 key 死亡延後兩分鐘才講。
+_TRANSIENT = (requests.exceptions.Timeout, requests.exceptions.ConnectionError)
+PROBE_RETRIES = 2
+PROBE_BACKOFF = 5
+
+
+def _probe(name, fn):
+    """回 (ok, note)。傳輸層失敗重試 PROBE_RETRIES 次;救回來的會在 note 裡留下痕跡,
+    免得「其實每天都要重試兩次才通」這種慢性劣化被靜默吃掉。"""
+    last = ""
+    for attempt in range(PROBE_RETRIES + 1):
+        try:
+            ok, note = fn()
+            if attempt:
+                note = f"{note}(第 {attempt + 1} 次才通,前次 {last})"
+            return ok, note
+        except _TRANSIENT as e:
+            last = f"{type(e).__name__}"
+            if attempt < PROBE_RETRIES:
+                time.sleep(PROBE_BACKOFF)
+                continue
+            return False, f"傳輸層連續失敗 {PROBE_RETRIES + 1} 次: {str(e)[:60]}"
+        except Exception as e:                                    # noqa: BLE001
+            return False, f"exc: {str(e)[:80]}"
+
+
 def main():
     weekly = "--weekly" in sys.argv or datetime.date.today().weekday() == 6
     quiet = "--quiet" in sys.argv
     checks = DAILY + (WEEKLY if weekly else [])
     results, dead = {}, []
     for name, fn in checks:
-        try:
-            ok, note = fn()
-        except Exception as e:
-            ok, note = False, f"exc: {str(e)[:80]}"
+        ok, note = _probe(name, fn)
         results[name] = {"ok": ok, "note": note}
         if not ok:
             dead.append(f"{name}({note})")
