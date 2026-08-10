@@ -620,3 +620,9 @@
 {"date": "2026-08-08", "code": "3339", "source": "holders", "level": "red", "signal": "泰谷(3339):千張大戶持股比週增1.80個百分點(大戶顯著加碼)", "price_at_signal": 37.8}
 {"date": "2026-08-09", "code": "2303", "source": "holders", "level": "yellow", "signal": "聯電(2303):千張大戶持股比週減-1.17個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 116.0}
 {"date": "2026-08-09", "code": "5536", "source": "holders", "level": "yellow", "signal": "聖暉(5536):千張大戶持股比週增0.81個百分點(溫和加碼)", "price_at_signal": 1060.0}
+{"date": "2026-08-10", "code": "3289", "source": "investor_conf", "level": "red", "signal": "宜特(3289):法說會3天內召開(波動事件窗口逼近)", "price_at_signal": 140.5}
+{"date": "2026-08-10", "code": "6903", "source": "investor_conf", "level": "red", "signal": "巨漢(6903):法說會2天內召開(波動事件窗口逼近)", "price_at_signal": 315.0}
+{"date": "2026-08-10", "code": "6574", "source": "leadflow", "level": "red", "signal": "霈方(6574) 無消息近漲停+10.0%(連2根,5日+27.8%),疑資訊先行資金|外資+投信近3日僅+122張,法人未同步=隱形買盤", "price_at_signal": 154.0}
+{"date": "2026-08-10", "code": "4931", "source": "leadflow", "level": "red", "signal": "新盛力(4931) 無消息近漲停+9.9%(連2根,5日+24.6%),疑資訊先行資金|外資+投信近3日+1505張", "price_at_signal": 238.0}
+{"date": "2026-08-10", "code": "5302", "source": "leadflow", "level": "yellow", "signal": "太欣(5302) 無消息近漲停+9.9%(量能2.4×,5日+10.9%),疑資訊先行資金", "price_at_signal": 11.15}
+{"date": "2026-08-10", "code": "6761", "source": "leadflow", "level": "yellow", "signal": "穩得(6761) 無消息近漲停+9.8%(量能2.7×,5日+19.1%),疑資訊先行資金", "price_at_signal": 168.0}
