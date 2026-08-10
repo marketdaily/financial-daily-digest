@@ -2068,5 +2068,55 @@
   "opened": "2026-08-10 11:30",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 208,
+  "what": "命書每日運勢26頁靠既有 mingshu_pages_runner cron(04:20 TW)每日重建部署,尚未在生產真跑過首班——明早該確認 /p/yunshi 各頁日期換成當天、日干支/月亮星座有更新、部署成功",
+  "why": "每日自動重建鏈首班未在生產驗證(見 first_run_acceptance 鐵則)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-10 12:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 209,
+  "what": "storefront 冷信寄送已暫停,等老闆校對小店信文案",
+  "why": "老闆 2026-08-10 說『寄之前讓我校對』;已 touch kill-switch + STOREFRONT_SEND_ENABLED=0,4 封花店信 queued 待放行。校對 OK 後移除 DISABLED+SEND_ENABLED=1 即恢復",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-10 12:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 210,
+  "what": "小店冷email漏斗先天漏水:24家花店僅4家有email且全是已有官網的",
+  "why": "沒官網的小店(最需要我們)幾乎沒公開email,冷email觸及不到。需老闆決定:A擴大量抓多區補、B改用別管道(LINE/FB/電話)碰沒官網的、C接受只做有官網那批。目前先做A能碰到的",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-10 12:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 211,
+  "what": "QuietFix 官方 LINE 客服帳號待評估(撞 LINE 退役全域規則)",
+  "why": "老闆要 LINE 回覆客人;但全域規則 feedback_line_retired『不得再接 LINE』。判讀:那規則射程是 MarketDaily admin 告警通道,QuietFix 新事業對台灣小店客服用 LINE 官方帳號是不同情境。需老闆確認要不要建,建立需其本人 LINE Business ID+手機驗證",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-10 12:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 212,
+  "what": "LINE 官方帳號 headless 建立被擋,需老闆手機 3 分鐘建 OA 後給 channel token",
+  "why": "老闆 2026-08-10 指定 QuietFix 用 LINE 回客人(當獨立專案,不受 MarketDaily LINE 退役規則約束)。實測 LINE Business ID 註冊頁對 headless 主動封鎖(一律回『檔案讀取失敗』,stealth/清profile/慢重試皆無效)。最省時路徑=老闆用 LINE app 建官方帳號(免費)→ LINE Developers 開 Messaging API channel → 給我 channel access token + secret,我接 webhook 把客人訊息接進 storefront 後台",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-10 12:39",
+  "closed": null,
+  "note": ""
  }
 ]
