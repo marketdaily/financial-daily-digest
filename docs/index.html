@@ -59,6 +59,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Archivo+Expanded:wght@600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="fx-trionn.css?v=1">
+<link rel="stylesheet" href="fx-motion.css?v=1">
 <style>
 :root {
   --bg: #060611;
@@ -944,11 +945,11 @@ footer {
 
 <!-- Hero -->
 <div class="hero">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
+  <div class="orb orb-1" data-fx-parallax="-0.35"></div>
+  <div class="orb orb-2" data-fx-parallax="-0.55"></div>
+  <div class="orb orb-3" data-fx-parallax="-0.75"></div>
 
-  <div class="hero-inner">
+  <div class="hero-inner fx-hero-exit" data-fx-scrub="exit">
     <div class="hero-pill">
       <span class="live-dot"></span>
       <span data-i18n="pill">AI-Curated · Fake-News Filtered · 7AM & 8PM</span>
@@ -1144,8 +1145,8 @@ footer {
 </div>
 
 <!-- Stats -->
-<div class="stats-wrap reveal">
-  <div class="stats">
+<div class="stats-wrap">
+  <div class="stats" data-fx-stagger="center">
     <div class="stat-item">
       <span class="stat-num">7AM<span style="opacity:.5;font-weight:700;">·</span>8PM</span>
       <div class="stat-label" data-i18n="stat1">Taiwan Time Daily</div>
@@ -1384,7 +1385,7 @@ footer {
     <p data-i18n="feat_sub">Everything you need to start your morning smarter. Nothing you don't.</p>
   </div>
   <div class="feat-showcase">
-    <div class="feat-tabs">
+    <div class="feat-tabs" data-fx-stagger>
       <button class="feat-tab-btn active" onclick="switchFeat(0,this)" id="ft0">
         <span class="feat-tab-icon">☕</span>
         <span class="feat-tab-text" data-i18n="f1_title">30-Second Summary</span>
@@ -2818,7 +2819,7 @@ function switchAbout(panel, btn) {
 <script>window.META_PIXEL_ID = "1497334655104185";</script>
 <script src="meta-pixel.js"></script>
 <script src="analytics.js?v=20260708a"></script>
-<script src="ui-pro.js?v=20260610a"></script>
+<script src="ui-pro.js?v=20260811s"></script>
 
 <!-- Financial 3D particle background -->
 <canvas id="fin-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
@@ -2970,5 +2971,6 @@ MDTour.mount([
 })();
 </script>
 <script src="fx-trionn.js?v=1" defer></script>
+<script src="fx-motion.js?v=1" defer></script>
 </body>
 </html>

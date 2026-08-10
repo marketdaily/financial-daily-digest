@@ -1,0 +1,29 @@
+/* fx-motion.css — companions to fx-motion.js (scroll scrub / stagger / spring layer).
+ * Transform+opacity only. Reduced-motion gets static content. */
+
+/* ---- stagger reveal (anime.js-style, tween lives here, delay in --fxd) ---- */
+.fx-stagger-set > * {
+  opacity: 0;
+  transform: translateY(26px) scale(0.985);
+  transition: none;
+}
+.fx-stagger-set.fx-in > * {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.75s var(--fx-ease, cubic-bezier(0.22, 1, 0.36, 1)),
+              transform 0.75s var(--fx-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  transition-delay: var(--fxd, 0ms);
+}
+
+/* ---- scrub consumers: map --fxp (0..1) to whatever the section needs ---- */
+/* Hero exits: content sinks back and fades as it scrolls out (GSAP hero pattern) */
+[data-fx-scrub="exit"].fx-hero-exit {
+  opacity: calc(1 - var(--fxp, 0) * 0.9);
+  transform: translateY(calc(var(--fxp, 0) * 46px)) scale(calc(1 - var(--fxp, 0) * 0.04));
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-stagger-set > * { opacity: 1; transform: none; transition: none; }
+  [data-fx-scrub="exit"].fx-hero-exit { opacity: 1; transform: none; }
+}

@@ -58,22 +58,38 @@
     setTimeout(function () { location.href = dest; }, 520);
   }, true);
 
-  /* ── 5. MAGNETIC BUTTONS ── */
+  /* ── 5. MAGNETIC BUTTONS (spring physics — react-spring style integrator:
+   *     velocity carries through retargets, release wobbles like a real spring) ── */
   function initMagnetic() {
+    var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced || !matchMedia('(hover:hover) and (pointer:fine)').matches) return;
     document.querySelectorAll('.cta-btn,.pricing-btn.btn-pro,.subscribe-box button,.plan-mini-btn.paid,.wb-card a').forEach(function (btn) {
       if (btn.dataset.magnetic) return;
       btn.dataset.magnetic = '1';
+      var x = 0, y = 0, vx = 0, vy = 0, tx = 0, ty = 0, raf = null, last = 0;
+      var K = 220, C = 16; /* stiffness / damping: underdamped = visible bounce */
+      function step(now) {
+        var dt = Math.min(0.048, (now - last) / 1000 || 0.016); last = now;
+        vx += (-K * (x - tx) - C * vx) * dt; x += vx * dt;
+        vy += (-K * (y - ty) - C * vy) * dt; y += vy * dt;
+        if (Math.abs(x - tx) < 0.08 && Math.abs(y - ty) < 0.08 &&
+            Math.abs(vx) < 0.08 && Math.abs(vy) < 0.08) {
+          x = tx; y = ty; vx = vy = 0; raf = null;
+          if (!tx && !ty) { btn.style.transform = ''; btn.style.transition = ''; return; }
+        } else { raf = requestAnimationFrame(step); }
+        btn.style.transform = 'translate(' + x.toFixed(2) + 'px,' + y.toFixed(2) + 'px)';
+      }
+      function go() {
+        if (raf === null) { last = performance.now(); raf = requestAnimationFrame(step); }
+      }
       btn.addEventListener('mousemove', function (e) {
         var r = btn.getBoundingClientRect();
-        var dx = (e.clientX - (r.left + r.width / 2)) * 0.28;
-        var dy = (e.clientY - (r.top + r.height / 2)) * 0.28;
-        btn.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
-        btn.style.transition = 'transform .1s ease';
+        tx = (e.clientX - (r.left + r.width / 2)) * 0.28;
+        ty = (e.clientY - (r.top + r.height / 2)) * 0.28;
+        btn.style.transition = 'none';
+        go();
       });
-      btn.addEventListener('mouseleave', function () {
-        btn.style.transform = '';
-        btn.style.transition = 'transform .6s cubic-bezier(.34,1.56,.64,1)';
-      });
+      btn.addEventListener('mouseleave', function () { tx = ty = 0; go(); });
     });
   }
   initMagnetic();
