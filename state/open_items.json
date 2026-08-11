@@ -2756,6 +2756,46 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-12 06:32",
+  "closed": "2026-08-12 07:06",
+  "note": "已收:那份複跑有跑完(/tmp/nightly_e17.log EXIT=1),結果無新的連帶失敗——紅的就是後來進佇列的 E8/E18/E19/E20/E21,本輪(08-12 07:00)全部分流處理完畢、佇列歸零"
+ },
+ {
+  "id": 277,
+  "what": "recall NUL 根治後的全庫夜巡複跑沒等到收尾(受影響的四支個別已跑綠)",
+  "why": "本 session 40 分上限將到,而這次 selftest.sh 已跑逾 30 分仍在進行(它有巢狀自呼叫的測試);受我改動影響的四支已個別驗綠:msg_escape_safety 19斷言/4突變、event_queue 216✓0✗、recall_integrity OK、log_contract_scan ALL PASS。log 在 /tmp/selftest_e20_verify.log;今晚 cron 夜巡也會再跑一次。下一輪起手確認有無連帶",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-12 07:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 278,
+  "what": "INDEX 兩層化(level2)尚未經夜巡/週考首班,全庫複跑背景進行中",
+  "why": "本輪已跑下游六支自測+plan.py 實查全綠,但 04:40 夜巡(含新自測 index_hygiene_level2)與週日週考(新題 index-two-level-slimming)都還沒跑過首班;全庫 selftest 背景 pid 88387 log /tmp/selftest_0812b.log,下一輪起手先看它",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-12 07:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 279,
+  "what": "live_smoke_deadman 新接的 4 支自測(edgar_sec/seo_health_docs/seo_page_traffic_cf/cloudflare_kv)尚未經夜巡首班,且其中 2 支要等 #270 憑證修好才驗得到『成功→蓋戳記→轉綠』完整迴圈",
+  "why": "本輪 5 支逐支實跑+5 突變全被咬到+沙盒探針驗過蓋戳記路徑,但 04:40 夜巡是首班;cloudflare_kv / seo_page_traffic_cf 今天仍是 NEVER(紅),要 Delvin 重登 wrangler(#270)之後才會有第一枚戳記",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-12 07:58",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 280,
+  "what": "live_smoke_deadman 鋪設(5支接線+deadman自測3→5段)的獨立驗證者未派",
+  "why": "本 session 系統提示明令不得呼叫 Agent 工具(同 #272/#273/#274);代償=5 個突變全被咬到(namespace改壞走真失敗臂/刪check行/刪record行/採用者改名/未突變基準綠)+反向斷言生產 state/live_smoke 沒被污染",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 07:58",
   "closed": null,
   "note": ""
  }
