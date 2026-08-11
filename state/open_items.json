@@ -2242,7 +2242,7 @@
  {
   "id": 225,
   "what": "LINE 帳號名打錯:QuickFix→應改 QuietFix Studio",
-  "why": "老闆改名時把 Quiet(安靜)打成 Quick(快速),API 查 displayName=QuickFix Studio,與品牌/網域 quietfix.studio、冷信署名 QuietFix Studio 不一致,客人會混淆。basicId @516nponm 正確、加好友連結指對帳號。改名需老闆 OA Manager(headless 擋):LINE App→官方帳號→設定→帳號名稱→改 QuietFix Studio",
+  "why": "老闆改名打成 QuickFix(應 QuietFix),當下想改回卻卡 LINE 改名冷卻(~7天,約 08-17 結束)。⏰ 已裝 winrig cron 08-17 09:00 推播提醒改回;冷信 08-23 才開跑,改得回、時機來得及。其他全對(網域/logo/冷信皆 QuietFix),只等這一個字。basicId @516nponm 正確、加好友連結指對帳號。",
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-10 16:05",
@@ -2256,8 +2256,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-10 16:22",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-10 22:44",
+  "note": "根因查明:CF對HTML設s-maxage=604800(7天共享快取)。27.html被刪後URL不在新部署→無deploy事件使其快取失效→撐到TTL約08-17自然404。SEO無害(已不在sitemap,Google不會re-crawl)。更新的頁不受影響(每次部署使變動檔失效);只有被刪的頁會殘留,而test_no_orphan_html已從源頭擋掉未來復發。不值得為單頁動CF API purge"
  },
  {
   "id": 227,
@@ -2288,5 +2288,255 @@
   "opened": "2026-08-10 18:14",
   "closed": "2026-08-10 18:57",
   "note": "已收割 rc=0(SOUND-WITH-CORRECTIONS/6 findings),六項全部修完:F1 共用flock真互斥/F2 一趟sync只判一次(修 --delete 資料遺失)/F3 .stat 檔名放行尾/F4 明牌寫入失敗改拒跑/F5 隔離改 env -u 不剝奪呼叫端/F6 帳本殘行補換行。自測 41+23+22 段全過,突變 31/31 咬中"
+ },
+ {
+  "id": 230,
+  "what": "silence_watch r2 驗證者已 detach 派出但尚未收割;且 kpi_pull §7c 修正版首班在今晚 23:35 尚未在生產跑過",
+  "why": "驗證者需 ~25min;生產首班要等排程",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-10 20:46",
+  "closed": "2026-08-10 23:18",
+  "note": "r2 已收割(UNSOUND/9)且 9 findings 全落地;首班驗收改由 #新項 追蹤"
+ },
+ {
+  "id": 231,
+  "what": "silence_watch r3 驗證者待收割;kpi_pull §7c 修正版生產首班 23:35 尚未跑過",
+  "why": "r3 23:17 detach 派出需 ~28min;首班驗收由一次性 cron(23:45/23:55 firstrun_check.py)推播 PASS/FAIL 後自拆",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-10 23:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 232,
+  "what": "命書星座配對78組+生肖配對78組已上線但均為靜態pSEO,首班部署驗收靠本次ship線上200;後續無cron重跑(靜態頁不變),無首班cron看守需求",
+  "why": "靜態頁一次部署即定,無每日重跑",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-10 23:41",
+  "closed": "2026-08-10 23:41",
+  "note": "非未收尾項:靜態pSEO一次部署即定、無每日重跑故無需首班cron看守;本次ship線上200已驗收。登記僅為釐清,直接收掉"
+ },
+ {
+  "id": 233,
+  "what": "cap_trust 信任度記帳已上線但尚未在生產跑過首晚(0812 05:25 TEMP cron 自動驗收,PASS/FAIL 都推播,驗完自刪)",
+  "why": "夜巡今晚 04:50 才會首次寫 selftest_history.tsv,05:15 才首次算分",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-11 02:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 234,
+  "what": "silence_watch/alerting 今晚的改動尚未在生產跑過(kpi_pull 每晚 23:35 才呼叫)",
+  "why": "自測 146✓ + live KV 唯讀複跑都過,但 NO_EVENT_DATA→exit3、alerting 政策⑤/③改寫、logic surge_max=None 修復這三處都只在測試與唯讀路徑驗過,尚未經歷一次真實的 23:35 夜巡",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-11 03:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 235,
+  "what": "部署回捲事故已修但觸發者未證實:08-11 03:0x 有人/某支程式從錯的工作目錄 deploy docs 到 marketdaily production,把全站換成 07-22 快照(存檔頁 30 頁 404、blog 索引 59→44)",
+  "why": "已恢復並建 deploy_drift 守衛(*/30 cron),但『誰做的』只有間接證據(wrangler 記的 source commit ba5ce55 在本 repo 與 paper_trade worktree 都查無此物;paper_trade 的 docs/output 正好停在 07-22)。守衛只保證下次 30 分鐘內被抓到,不保證不再發生",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 04:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 236,
+  "what": "08-11 鏈上三修(多窗口存檔後製 am/pm + cta_funnel_lint runner)尚未在生產跑過首班",
+  "why": "自測+沙盤(假時鐘/假 crontab/樁告警)全過,但三班的第一次真跑都在今天 07:55/09:55/21:05;已裝 TEMP cron 首班驗收 PASS/FAIL 皆推播,pm 那班驗完自刪",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 04:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 237,
+  "what": "event_queue 持久事件佇列已上線,但尚未在生產跑過首班(今晚 04:50 夜巡的真實 trigger 是第一次)",
+  "why": "自測 20✓/0✗(含併發、模擬被砍、壞帳本 fail-closed、2 突變體)+ CYCLE_PRINT_PROMPT 端到端接線驗過,但真正證明它有效的是:下一輪 ORIENT 時 prompt 裡真的出現夜巡送進來的事件,且該事件在被 ack 之前不會消失",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 04:59",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 238,
+  "what": "event_queue 驗證者分離報告尚未收割(背景 agent 04:55 只落了 IN PROGRESS 骨架)",
+  "why": "check_report.py 對該骨架已正確判 FAIL(rc=1,VERDICT UNSOUND 卻 FINDINGS=0),所以不會假綠;但真正的裁決與 findings 還沒拿到。下一輪跑 check_report.py --report capabilities/event_queue/verifier_report.md --expect-task event_queue --ledger,exit 0 才算驗證者分離已做;報告若仍是骨架=agent 沒寫完就結束,要重派",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 05:04",
+  "closed": "2026-08-11 05:23",
+  "note": "已收割:驗證者判 UNSOUND/12,check_report.py 通過(rc=0)。本輪修掉 F1(cycle.sh 不看 rc→靜默失明)/F4(--no-deliver 會真推播)/F5(自測刪生產 cycle_hint),皆行為驗證過"
+ },
+ {
+  "id": 239,
+  "what": "event_queue 驗證者 9 個 findings 未修(含 3 HIGH:截斷餓死尾端事件/推播失敗無上限重推/自測 20 突變體存活 10)",
+  "why": "清單與優先序已寫進 ~/autonomous/state/current_task.md,下一輪 STATUS=in_progress 直接接續。F7 最急(selftest 每晚 reason 不同→「連N晚=一列」在真實資料上不成立,會變成多列各自推播)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 05:23",
+  "closed": "2026-08-11 05:52",
+  "note": "9 條全數修完(F2/F3/F6/F7/F8/F9/F10/F11/F12)+順帶抓到去重鍵漏 source 的新 bug;自測 23→57✓0✗、突變體 2→7 全被咬;r2 驗證者 05:47 已派出待收割(事件 E2)"
+ },
+ {
+  "id": 240,
+  "what": "event_queue 生產者改「一支積木一則事件+穩定指紋+reconcile」,今晚 04:50 夜巡是首班",
+  "why": "只在沙盒抽 EQ-FANOUT 原文跑過,尚未在生產跑過;要看 state/event_queue.json 出現多則 selftest:<cap> 而非一大則,且舊 E1 會被 reconcile 自動 ack(預期的遷移行為)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 05:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 241,
+  "what": "MEMORY.md 索引 19.6KB(Read 上限 24.4KB)未壓到 17.1KB",
+  "why": "機械式砍尾段被自己的覆蓋率探針否決:索引裡很多濃縮子句是唯一副本,盲砍=永久遺失;正解要先把 ⭐ 子句搬進 topic 檔再壓縮索引(事件 E3)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-11 05:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 242,
+  "what": "selftest_flake.test.sh 第21條斷言改判準後尚未在解凍狀態綠過",
+  "why": "改成『每一處 trigger.sh 都必須在 FAILED 分支內』(event_queue 讓 FAILED 分支合法有兩個呼叫點),但驗證者凍結期間該測試必假紅(cp 保留來源權限),無法在同輪驗完;已進佇列事件 E2",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 06:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 243,
+  "what": "event_queue r3 驗證者已派出未收割(佇列 E4);r2 的 8 findings 全修但尚未經第三方裁決",
+  "why": "驗證者還在跑,凍結中",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 06:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 244,
+  "what": "event_queue r4 驗證者尚未派出(r3 六條修法無獨立把關)",
+  "why": "07:22 派出時撞到夜巡自測正在跑,凍結會讓 cp 生產檔的測試假紅,當場 kill;等 selftest 跑完要重派(指令在 ~/autonomous/state/current_task.md)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 07:23",
+  "closed": "2026-08-11 09:10",
+  "note": "09:10 派出 slug=event-queue-r4,報告落 capabilities/event_queue/verifier_report_r4.md"
+ },
+ {
+  "id": 245,
+  "what": "夜巡全套 selftest 全綠驗收(selftest_last_ok 仍停 08-06)+ E5/E6/E7 未 ack",
+  "why": "3 個紅項已逐支修好並各自重跑綠,但全套 08:30 才重跑,尚未拿到全綠證據",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 07:52",
+  "closed": "2026-08-11 09:10",
+  "note": "全套 selftest 09:09 TW 全綠(already_broken=0,TT COVERAGE 166/182),selftest_last_ok 前進到 2026-08-11T01:09:41Z"
+ },
+ {
+  "id": 246,
+  "what": "event_queue r4 與 memory_hubify 兩個驗證者尚未派出",
+  "why": "驗證者凍結會 chmod 產物,與夜巡並行會製造假紅,必須等 selftest 結束",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 07:52",
+  "closed": "2026-08-11 09:10",
+  "note": "09:10 兩者皆已派出(setsid run_verifier.sh),改由新項追蹤收割"
+ },
+ {
+  "id": 247,
+  "what": "brainsearch dbsafe 驗證者(brainsearch-db-integrity)報告未收割、findings 未修",
+  "why": "08:23 派出,報告尚未落盤;派出即凍結期間不可動 dbsafe.py/index.py/search.py/graph.py/測試/sync_autonomous.sh",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 08:27",
+  "closed": "2026-08-11 08:39",
+  "note": "驗證者 SOUND-WITH-CORRECTIONS/7 已收割,七條全修;check_report --ledger rc=0;自測 9→14✓0✗"
+ },
+ {
+  "id": 248,
+  "what": "brain.db 排除同步後,首次真實驗收未做(下一趟 */5 sync 與今晚 04:40 cron)",
+  "why": "dry-run 與單元自測已過,但『同步真的不再搬 db、cron 內部自鎖不會自我封鎖』要等生產跑過才算數",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 08:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 249,
+  "what": "event_queue r4 與 memory_hubify 兩個驗證者已派出(09:10)未收割",
+  "why": "detached claude -p,timeout 1500s;下一輪用 check_report.py --expect-task event-queue-r4 / memory-hubify 驗收後修 findings",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 09:10",
+  "closed": "2026-08-11 10:26",
+  "note": "r4 已收割並全修(見 #251);memory_hubify 報告已收割,findings 轉 #252"
+ },
+ {
+  "id": 250,
+  "what": "honest_traffic 形狀白名單修正後,今晚 23:35 kpi_pull 是首次生產跑(human.* 數字會從 2858 掉到數百量級)",
+  "why": "只在本機手動跑過 report()/page_report(),尚未經 cron 生產路徑驗證;數字大幅位移可能觸發 kpi_trend 假警報",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 09:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 251,
+  "what": "驗證者 findings 12 條未修(event_queue r4 五條/memory_hubify 七條,含 4 條 HIGH)",
+  "why": "本輪 PICK 是成長域 honest_traffic,兩份報告 09:18/09:23 才落盤,只收割進帳本未修",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-11 09:37",
+  "closed": "2026-08-11 10:26",
+  "note": "event_queue r4 五條全修(3 HIGH:復活推播風暴/復活列輪替隱形/非必填欄位型別漂移毒死 render)+ 自測 132→159 全綠、突變 20→25 全 killed;memory_hubify 七條另立 #252"
+ },
+ {
+  "id": 252,
+  "what": "memory_hubify 驗證者 7 條 findings 未修(含 F1 HIGH:重跑 --apply 無聲摧毀 hub 檔後補內容,兩閘與 --verify 全報綠)",
+  "why": "本輪先修 event_queue r4(佇列是『我會不會看到事件』的機制,優先級更高);報告在 capabilities/memory_hubify/verifier_report.md",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-11 10:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 253,
+  "what": "honest_traffic r2 驗證者 8 條 findings 未修(2 HIGH:report() 靜默停用 offsite allow-list 但 note 照樣宣稱校正過;第三支查詢已在生產撞頂截斷會同時壓低真人數並讓可信度閘失效)",
+  "why": "r2 報告 10:00 才落盤,本輪 PICK 是 event_queue;今晚 23:35 kpi_pull 首次生產跑會吃到這些缺陷",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-11 10:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 254,
+  "what": "event_queue r5 驗證者 10:25 派出未收割",
+  "why": "detached claude -p;下一輪 check_report.py --expect-task event-queue-r5 --ledger 收割後修 findings;凍結檔=queue.py/event_queue.test.sh/RUNBOOK.md",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 10:26",
+  "closed": null,
+  "note": ""
  }
 ]
