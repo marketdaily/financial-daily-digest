@@ -256,6 +256,7 @@ function chgCombo(q, sym) {
 const fp = v => v == null ? "—" : (v >= 1000 ? v.toLocaleString(undefined, { maximumFractionDigits: 0 }) : (v >= 100 ? v.toFixed(1) : v.toFixed(2)));
 
 const escAttr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+const safeUrl = u => { const v = String(u == null ? "" : u).trim(); return /^https?:\/\//i.test(v) ? v.replace(/"/g, "%22").replace(/</g, "%3C") : "#"; };
 
 function sigDot(sym) {
   const items = signals[sym];
@@ -1594,7 +1595,7 @@ function renderProfile(sym) {
       if (p[0]) rows.push(`${T("prof_chair")} <b>${p[0]}</b>`);
       if (p[1]) rows.push(`${T("prof_gm")} <b>${p[1]}</b>`);
       if (p[2]) rows.push(`${T("prof_listed")} <b>${p[2]}</b>`);
-      if (p[4]) rows.push(`<a href="${p[4]}" target="_blank" rel="noopener">${T("prof_web")} ↗</a>`);
+      if (p[4]) rows.push(`<a href="${safeUrl(p[4])}" target="_blank" rel="noopener">${T("prof_web")} ↗</a>`);
     }
     el.innerHTML = `<div class="prof">${biz}${rows.length ? `<div class="kv">${rows.join("　")}</div>` : ""}</div>`;
     return;
@@ -1603,7 +1604,7 @@ function renderProfile(sym) {
   const rows = [];
   if (f) {
     if (f.ipo) rows.push(`${T("prof_listed")} <b>${f.ipo.slice(0, 4)}</b>`);
-    if (f.weburl) rows.push(`<a href="${f.weburl}" target="_blank" rel="noopener">${T("prof_web")} ↗</a>`);
+    if (f.weburl) rows.push(`<a href="${safeUrl(f.weburl)}" target="_blank" rel="noopener">${T("prof_web")} ↗</a>`);
   }
   if (!biz && !rows.length) { el.style.display = "none"; return; }
   el.style.display = "";
@@ -1630,7 +1631,7 @@ async function renderChainEvents(sym) {
     el.innerHTML = `<div class="chain-lbl" style="margin-top:12px">🆕 供應鏈動態(官方公告)</div>` + evs.map(e => {
       const inner = `<div class="news-t">${escAttr(e.headline || "")}</div>
         <div class="news-m">${e.date || ""}${e.counterparty ? " · 對象:" + escAttr(e.counterparty) : ""}${e.source_type ? " · " + escAttr(e.source_type) : ""}</div>`;
-      return e.url ? `<a class="news-item" href="${e.url}" target="_blank" rel="noopener">${inner}</a>` : `<div class="news-item">${inner}</div>`;
+      return e.url ? `<a class="news-item" href="${safeUrl(e.url)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="news-item">${inner}</div>`;
     }).join("");
   } catch {}
 }
@@ -1719,8 +1720,8 @@ async function renderNews(sym) {
       return h < 1 ? `${Math.max(Math.round(h * 60), 1)}m` : h < 24 ? `${Math.round(h)}h` : `${Math.round(h / 24)}d`;
     };
     el.innerHTML = items.map(n =>
-      `<a class="news-item" href="${n.url}" target="_blank" rel="noopener">
-        <div class="news-t">${n.title}</div><div class="news-m">${n.source || ""} · ${ago(n.ts)}</div></a>`).join("");
+      `<a class="news-item" href="${safeUrl(n.url)}" target="_blank" rel="noopener">
+        <div class="news-t">${escAttr(n.title)}</div><div class="news-m">${escAttr(n.source || "")} · ${ago(n.ts)}</div></a>`).join("");
   } catch { el.innerHTML = ""; }
 }
 
@@ -2363,8 +2364,8 @@ async function renderNewsTab() {
       return h < 1 ? `${Math.max(Math.round(h * 60), 1)}m` : h < 24 ? `${Math.round(h)}h` : `${Math.round(h / 24)}d`;
     };
     el.innerHTML = items.length ? items.map(n =>
-      `<a class="news-item" href="${n.url}" target="_blank" rel="noopener">
-        <div class="news-t">${n.title}</div><div class="news-m">${n.source || ""} · ${ago(n.ts)}</div></a>`).join("")
+      `<a class="news-item" href="${safeUrl(n.url)}" target="_blank" rel="noopener">
+        <div class="news-t">${escAttr(n.title)}</div><div class="news-m">${escAttr(n.source || "")} · ${ago(n.ts)}</div></a>`).join("")
       : `<div class="sig-item" style="color:var(--muted)">${T("news_none")}</div>`;
   } catch { el.innerHTML = ""; }
 }

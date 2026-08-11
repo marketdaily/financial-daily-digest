@@ -4,3 +4,11 @@
   Cache-Control: no-cache
 /watch.html
   Cache-Control: no-cache
+
+# 安全標頭(2026-08-11 資安審查):不設 script-src,不破壞 inline JS;
+# 只擋 object/base/frame-ancestors + MIME 嗅探 + referrer 外洩。DOM-XSS 本體修在 watch.js escAttr/safeUrl。
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: object-src 'none'; base-uri 'self'; frame-ancestors 'self'
