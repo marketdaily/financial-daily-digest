@@ -571,6 +571,12 @@ export default {
         if (weak) return json({ error: weak }, 400);
       }
 
+      // SECURITY(2026-08-11): 止血未驗證改密碼→帳號接管。/set-password 僅供首次設定;
+      // 改密碼走 /change-password(驗舊密碼)、遺忘走 /reset-password(email 驗證)。
+      // admin 一律不得經此公開端點設密碼;已有密碼者不得被覆寫。
+      if (ADMIN_EMAILS.includes(email)) return json({ error: "use_reset_flow" }, 403);
+      if (await env.USER_PREFS.get(`pwd:${email}`)) return json({ error: "password_already_set" }, 409);
+
       const targetList = parseInt(env.BREVO_LIST_ID) || 2;
       let contact = null;
       let inTargetList = false;
