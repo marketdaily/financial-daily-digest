@@ -14,7 +14,12 @@ from pathlib import Path
 
 BASE = "https://marketdaily.ai"
 WORKER = "https://marketdaily-webhook.delvin-12345678.workers.dev"
-UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/124.0 Safari/537.36"
+# ⚠️ 尾端 `MarketDailyQA/1.0` 是**自報標記,不可拿掉**:沒有它,本掃描器打自己站的請求會被
+# honest_traffic 判成 human_candidate 算進真人流量(實測七日 232 次,逐頁最高占到 97%:
+# /assets/og.png 97%、/sitemap.xml 94%、/testimonials 83%)。標記讓它被歸 self_automation
+# 扣除並揭露。前半段瀏覽器 UA 保留是為了不觸發 CF WAF(見 lib_cron_runner.sh 的 403 舊傷)。
+UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
+      "Chrome/124.0 Safari/537.36 MarketDailyQA/1.0")
 
 RESULTS = []
 
@@ -151,7 +156,10 @@ def probe_pages():
         except Exception:
             b = p.chromium.launch()
         for path in pages:
-            pg = b.new_page(viewport={"width": 1280, "height": 900})
+            # 帶自報標記(同 UA 常數):headless Chrome 本來就被 honest_traffic 判 declared_bot、
+            # 不進真人桶,但它是我們唯一會**抓資產+觸發 RUM** 的自家工具 ⇒ 不標記的話它會餵飽
+            # `zone_browser_evidence`,在「真實訪客歸零」那天幫自己作證,讓 fail-closed 守衛啞掉。
+            pg = b.new_page(viewport={"width": 1280, "height": 900}, user_agent=UA)
             errs, bad_resp = [], []
             pg.on("console", lambda m: errs.append(m.text) if m.type == "error" else None)
             pg.on("pageerror", lambda e: errs.append(str(e)))
