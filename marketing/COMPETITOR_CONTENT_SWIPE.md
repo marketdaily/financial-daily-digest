@@ -178,3 +178,30 @@
 - 視覺模板可完全復用 render.py 品牌動畫思路:官方素材(Fed 聲明頁/TWSE 公告/公司發布頁截圖)縮小置中+深色品牌底(封面不可白底鐵則剛好同構)+燒字幕,Playwright 錄製即成
 - mascot bookends:MarketDaily 品牌頭像已有,開頭+收尾各 3 秒固定模板一次做終身用;收尾把原片的開放式問題換成我們的留言閘門(「留言『早鳥』」)——此型天生弱互動,正好用閘門補
 - 8 條對財經觀眾太多,5 條=75 秒內收工;條數固定+節奏等速是此型的紀律,不要做成長短不一
+
+## J. ⭐ 開源神器快評+留言閘門型 Reel 拆解(@daniel.cross.market,2026-08-11 video-watcher 實看)
+
+> 源:https://www.instagram.com/reel/Db3P17nN1Og/(1,359 讚/**944 留言**——留言:讚比≈70%,全站拆過最高,留言閘門的教科書級戰果)
+> 內容:清華開源金融基座模型 Kronos 快評。61.5 秒,720x1280 直式,英文口播+逐字動態燒字。
+> 事實查核(WebSearch 對 GitHub/HF):Kronos=shiyu-coder/Kronos,真的——清華團隊、MIT license、AAAI 2026 接收、45+ 交易所 K 線訓練、「first open-source foundation model for financial candlesticks」,2026-04 時 16.4k stars。片中「$30,000 軟體被取代」=價值錨修辭(彭博終端機年費級),非事實陳述;「像 GPT 讀字一樣把 K 線變 token」與官方 README 的 BSQ tokenizer 描述一致。
+
+### 影片結構(timeline beats,frames+Groq whisper 雙流實讀)
+1. **0–6s 錢數 Hook**:華爾街交易室 B-roll+燒字「$30,000 worth of software」→口播「just got replaced by a free GitHub repo」——錢數錨+免費反差+GitHub 具體感三連;6 秒即切真人(粉紅絨毛麥+辦公室背景,反差萌降防禦)
+2. **6–40s 逐字動能字幕鋪陳**:與 G/H/I 的整句字幕不同,此片一拍一個單字(「BY」「REPO」「TOKENS」…)壓在快速輪換的 B-roll 上——README 實截(stars/forks/多語列/AAAI news 可讀)、GPT 瀏覽器窗(講 token 類比時)、交易桌氛圍片。資訊主幹全在音軌,燒字只做節奏器
+3. **40–52s 受害者敘事**:「Wall Street 花了幾十億建這種私有模型,一群研究者直接送掉」「這種東西以前鎖在對沖基金門後」——民粹式「他們 vs 你」框架,把開源事件升格成階級敘事
+4. **52–61s 留言閘門收尾**:真人回鏡「Comment Kronos and I'll DM you the link」。⚠️ caption 寫的關鍵字卻是「Kronosis」(非 Kronos)——口播與 caption 各設一個觸發詞,雙入口餵同一個 DM 自動化
+5. **(B-roll 道具識別)** 片中反覆出現的 paper-trading UI(kronos.agenticbase.app,BTCUSD/SOLUSD 持倉)與 Discord 訊號 bot(Prometheus,SOL/XRP/ADA/BTC/ETH trend 條)是創作者自家 Kronos 周邊產品的展示,不是 Kronos 官方物——DM 連結八成導向自家漏斗,免費開源當引流餌,自家產品當變現層(inference)
+
+### 為什麼有效(可搬的骨架)
+- **944 留言的機器**:留言閘門(comment-gate DM)把「想要連結」的人全變成留言互動,演算法把互動當品質訊號繼續推——讚不到 1.4k 但留言近千,這支的觸及層級遠超讚數面值。我們的 comment_funnel 就是同構物,差在我們還沒拿「開源神器」這種高需求餌來餵它
+- **錢數錨的第三次驗證**:H 段 $500K、本段 $30,000——「值錢的東西免費拿」是這批快評型 reel 的共用心臟;錨要具體數字,不要「很貴」
+- **GPT 類比降門檻**:「它讀 K 線就像 ChatGPT 讀單字」一句話讓非技術觀眾秒懂 foundation model——技術題材出圈的關鍵不是講對,是找到人人已懂的錨點做類比
+- **一拍一單字的動能字幕**:口播型 reel 的留人術,畫面每 0.4 秒有變化但認知負擔為零(單字非句子);代價=燒字完全不可當 transcript 用(單字流無語意)
+- **螢幕證據當信任狀**:README stars/AAAI 接收/推文方法論逐屏出現——「我不是嘴,你自己看」;觀眾不會逐字讀,但「有收據」的體感成立
+- **(honest-extraction 註)** 兩段 README 截圖 stars 數不同(17k vs 26k)=不同時期素材混剪;片中 wincy.eth 推文展示的 Polymarket 用法(480 根 Binance K 線→Kronos 溫度採樣跑 100 次→數多少條軌跡過 strike→68/100=68% 機率估計)是第三方玩法非官方功能
+
+### MarketDaily 搬法
+- **這型是我們的主場**:「華爾街付費工具 vs 免費開源」快評,財經+技術雙棲題材我們比泛 AI 帳號更有資格講(quant_lab 實測過的工具庫就是題材池:FinMind/EDGAR/ccxt/Kronos 本尊…)。三段式照抄:錢數錨 hook→螢幕實走(Playwright 錄 README+demo)→「對散戶的意思」一句收——合規天然安全(介紹工具非個股建議)
+- **留言閘門要配高需求餌**:現行「留言早鳥」給的是訂閱連結(自利餌),此片給的是「你剛被種草的工具連結」(利他餌)——後者留言意願高一個量級。搬法:工具快評型貼文的閘門改「留言『工具名』我私訊你連結+我們的測試筆記」,DM 裡連結+順帶訂閱 CTA,comment_funnel.py::KEYWORDS 支援逐檔期換字即可
+- **口播+caption 雙觸發詞**是零成本 A/B:兩個入口的留言量能分開數,直接量出「聽完留言」vs「讀 caption 留言」的比例
+- **順手的真資產**:Kronos 本尊(MIT,45+ 交易所 K 線,AAAI 2026)值得進 edge-pipeline 當候選訊號源評估——但依 backtest-validation 鐵則走 walk_forward+DSR 驗過才准上實盤語境;第三方 Polymarket 溫度採樣玩法同樣先當研究題不當結論
