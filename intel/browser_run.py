@@ -26,8 +26,20 @@ def _wrangler_oauth_token():
     return m.group(1) if m else None
 
 
+def _env_file_token():
+    for env in (pathlib.Path(__file__).resolve().parent.parent / ".env",
+                pathlib.Path.home() / "Delvin-agent/.env"):
+        if env.exists():
+            m = re.search(r"^CLOUDFLARE_BROWSER_RUN_TOKEN=(\S+)", env.read_text(), re.M)
+            if m:
+                return m.group(1)
+    return None
+
+
 def get_token():
-    tok = os.environ.get("CLOUDFLARE_BROWSER_RUN_TOKEN") or os.environ.get("CLOUDFLARE_API_TOKEN")
+    tok = (os.environ.get("CLOUDFLARE_BROWSER_RUN_TOKEN")
+           or os.environ.get("CLOUDFLARE_API_TOKEN")
+           or _env_file_token())
     if tok:
         return tok
     tok = _wrangler_oauth_token()
