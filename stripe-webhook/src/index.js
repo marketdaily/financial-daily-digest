@@ -1379,9 +1379,10 @@ export default {
         return json({ error: "invalid_subscription" }, 400);
       }
       const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
-      if (storedHash) {
+      // SECURITY(2026-08-11): 無條件要求密碼——關閉無密碼帳號 IDOR。合法前端一律帶 password(登入強制建立密碼),email-only 未登入帳號無合法呼叫路徑。
+      {
         const password = body.password || "";
-        if (!password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
+        if (!storedHash || !password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
       }
       // 多裝置:存成陣列,以 endpoint 去重(手機/Mac/平板各一筆都保留)
       let list = [];
@@ -1400,9 +1401,10 @@ export default {
       const email = (body.email || "").trim().toLowerCase();
       if (!email) return json({ error: "invalid_email" }, 400);
       const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
-      if (storedHash) {
+      // SECURITY(2026-08-11): 無條件要求密碼——關閉無密碼帳號 IDOR。合法前端一律帶 password(登入強制建立密碼),email-only 未登入帳號無合法呼叫路徑。
+      {
         const password = body.password || "";
-        if (!password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
+        if (!storedHash || !password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
       }
       // 帶 endpoint → 只移除「這台」;不帶 → 全清(關閉所有裝置)
       if (body.endpoint) {
@@ -1434,9 +1436,10 @@ export default {
       const email = (body.email || "").trim().toLowerCase();
       if (!email) return json({ error: "invalid_email" }, 400);
       const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
-      if (storedHash) {
+      // SECURITY(2026-08-11): 無條件要求密碼——關閉無密碼帳號 IDOR。合法前端一律帶 password(登入強制建立密碼),email-only 未登入帳號無合法呼叫路徑。
+      {
         const password = body.password || "";
-        if (!password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
+        if (!storedHash || !password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
       }
       let list = [];
       const raw = await env.USER_PREFS.get(`alerthist:${email}`);
@@ -1456,9 +1459,10 @@ export default {
       }
       // 身份驗證:若用戶已設密碼,save 必須帶正確密碼,否則任何人能改別人偏好。
       const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
-      if (storedHash) {
+      // SECURITY(2026-08-11): 無條件要求密碼——關閉無密碼帳號 IDOR。合法前端一律帶 password(登入強制建立密碼),email-only 未登入帳號無合法呼叫路徑。
+      {
         const password = body.password || "";
-        if (!password || !(await verifyPwd(password, storedHash))) {
+        if (!storedHash || !password || !(await verifyPwd(password, storedHash))) {
           return json({ error: "auth" }, 403);
         }
       }
@@ -1546,9 +1550,10 @@ export default {
       // 身份驗證:若用戶已設密碼,read 必須帶正確密碼,否則任何人能查別人持股。
       if (!internalOk) {
         const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
-        if (storedHash) {
+        // SECURITY(2026-08-11): 無條件要求密碼(digest job 走上面 internalOk bypass);關閉持股 enum IDOR。
+        {
           const password = body.password || "";
-          if (!password || !(await verifyPwd(password, storedHash))) {
+          if (!storedHash || !password || !(await verifyPwd(password, storedHash))) {
             return json({ error: "auth" }, 403);
           }
         }
@@ -2627,9 +2632,10 @@ export default {
       if (!email) return json({ error: "invalid_email" }, 400);
       // 身份驗證:任何人查別人 referral 等同洩漏其 conversions/clicks/bonus 統計
       const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
-      if (storedHash) {
+      // SECURITY(2026-08-11): 無條件要求密碼——關閉無密碼帳號 IDOR。合法前端一律帶 password(登入強制建立密碼),email-only 未登入帳號無合法呼叫路徑。
+      {
         const password = body.password || "";
-        if (!password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
+        if (!storedHash || !password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
       }
 
       let userData = await env.USER_PREFS.get(`referral:user:${email}`);
@@ -2659,9 +2665,10 @@ export default {
       if (!email) return json({ error: "invalid_email" }, 400);
       // 身份驗證:同 /get-referral,不可洩漏別人 stats
       const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
-      if (storedHash) {
+      // SECURITY(2026-08-11): 無條件要求密碼——關閉無密碼帳號 IDOR。合法前端一律帶 password(登入強制建立密碼),email-only 未登入帳號無合法呼叫路徑。
+      {
         const password = body.password || "";
-        if (!password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
+        if (!storedHash || !password || !(await verifyPwd(password, storedHash))) return json({ error: "auth" }, 403);
       }
 
       let userRaw = await env.USER_PREFS.get(`referral:user:${email}`);
