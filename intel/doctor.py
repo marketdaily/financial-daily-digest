@@ -15,6 +15,10 @@
 **刻意不做**:不改任何既有 connector(scope-lock);本檔純唯讀探測,不寫 latest.json、
 不碰帳本、不觸發任何 connector 的副作用。
 
+**第二意見層(2026-08-11)**:公開 GET 渠道被判壞掉時,經 Cloudflare Browser Run
+(intel/browser_run.py,Kitesurf)從 CF 機房視角複測一次,在 detail 標註
+「上游真死」vs「只擋我們的抓法/出口」——純診斷字串,不改變判定,失敗自吞。
+
 用法:
     python3 -m intel.doctor              # 人看的報告
     python3 -m intel.doctor --json       # 機器讀
@@ -466,6 +470,40 @@ CHANNELS = [
 ICON = {OK: "✅", CONFIG: "[!]", BROKEN: "[X]"}
 WORD = {OK: "可用", CONFIG: "需設定", BROKEN: "壞掉"}
 
+# ── 第二意見探測(2026-08-11)────────────────────────────────────────────
+# 渠道被判 BROKEN 時,用 Cloudflare Browser Run(Kitesurf,beta 免費)從 CF 機房
+# 視角再打一次,把「上游真死」與「只是擋我們的 UA/出口」在告警裡分開——
+# 後者要修的是我們的抓法,前者只能等上游。只限公開 GET 渠道;OAuth/金鑰型
+# 渠道瀏覽器視角無意義,不列。純診斷字串,不改變 BROKEN 判定;任何失敗吞掉。
+SECOND_OPINION = {
+    "twse_openapi": "https://openapi.twse.com.tw/v1/opendata/t187ap05_L",
+    "tpex_openapi": "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes",
+    "yahoo_chart": "https://query1.finance.yahoo.com/v8/finance/chart/2330.TW?range=5d&interval=1d",
+    "tdcc_holders": "https://www.tdcc.com.tw/portal/zh/smWeb/qryStock",
+    "cnyes_news": "https://news.cnyes.com/api/v3/news/category/tw_forecast?limit=5",
+    "cnyes_ess": "https://ess.api.cnyes.com/ess/api/v1/news/keyword?q=%E5%8F%B0%E7%A9%8D%E9%9B%BB&limit=5",
+    "multpl": "https://www.multpl.com/s-p-500-pe-ratio",
+    "fsc_rss": "https://www.fsc.gov.tw/RSS/Messages?serno=201202290003&language=chinese",
+    "mops_conf": "https://mopsov.twse.com.tw/mops/web/t100sb02_1",
+    "ptt": "https://www.ptt.cc/bbs/Stock/index.html",
+    "congress": "https://disclosures-clerk.house.gov/",
+}
+
+
+def second_opinion(name):
+    """回傳一句診斷字串(或空字串)。絕不拋出、絕不改變判定。"""
+    url = SECOND_OPINION.get(name)
+    if not url:
+        return ""
+    try:
+        from intel import browser_run
+        ok, res = browser_run.fetch(url, endpoint="markdown", timeout=50)
+        if ok and res:
+            return f"🔭 CF瀏覽器視角可達(回應{len(str(res))}字)→上游對瀏覽器正常,問題偏向我們的抓法/出口被擋"
+        return f"🔭 CF瀏覽器視角亦不可達({str(res)[:80]})→上游本身掛了"
+    except Exception as e:
+        return f"🔭 第二意見探測自身失敗({type(e).__name__}),不影響判定"
+
 
 def run_one(entry):
     name, label, probe, feeds, mods = entry
@@ -475,6 +513,10 @@ def run_one(entry):
     except Exception as e:
         # fail-open:單一探測炸掉不可以讓整份體檢失效(decision_queue 教訓 F3)
         status, detail = BROKEN, f"探測器自身例外 {type(e).__name__}: {e}"
+    if status == BROKEN:
+        so = second_opinion(name)
+        if so:
+            detail = f"{detail};{so}"
     return {"name": name, "label": label, "status": status, "detail": detail,
             "feeds": feeds, "modules": mods, "elapsed": round(time.time() - t0, 1)}
 
