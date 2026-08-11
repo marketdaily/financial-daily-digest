@@ -561,6 +561,7 @@ def save_hosted_digest(html: str, date: str = "", email: str = "") -> str:
         res = requests.post(
             f"{WORKER_URL}/save-digest",
             json=payload,
+            headers={"Authorization": f"Bearer {os.getenv('MARKETDAILY_INTERNAL_TOKEN', '')}"},  # SECURITY(2026-08-11): 驗權防匿名掛任意 HTML 釣魚
             timeout=20,
         )
         if res.ok:
