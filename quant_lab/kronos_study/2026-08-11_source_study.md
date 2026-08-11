@@ -57,3 +57,28 @@
 3. **樣本量誠實聲明**:n=379 依 N≈1/edge² 只能偵測 >5% 的 edge;2-3% 的小 edge 在此樣本下不可見。此判決=「無大 edge」,非「證明零 edge」。
 
 **剩餘活路(都是獨立新研究題,不自動開工)**:fine-tune 台股/加密(repo 附完整 pipeline,5080 可跑)、更短 horizon(1-4h)、改用它當波動度/分布形狀預測器(它的 std 或許比方向有訊息)、calibration 後再驗機率。
+
+---
+
+## 追加實驗＋總判決(2026-08-11,「你自己決定"後的決策樹)
+
+**決策**:選最便宜高資訊的兩發——①波動度預測(免費,用既有 jsonl 的 pred_std)②4h 短 horizon(6 分鐘 GPU,n=1,520/標的)。fine-tune 不跑:前兩發都弱,先驗不足以正當化 GPU-days。
+
+**① 波動度(軌跡離散度 kvol=pred_std/last_close vs 未來24h realized vol)**:
+- 單獨看輸給基線:rankIC BTC +0.186/ETH +0.345 vs trailing-vol 基線 +0.387/+0.411
+- 增量資訊存在:控制 trailing 後 partial IC ETH +0.229(p<0.001)/BTC +0.100(p=0.052)——方向一致但 BTC 未確認
+- 判決:有小增量、無獨立價值;若未來 crash_gate/position-sizer 要升級 vol 模型,可當第二特徵,單獨不成立
+
+**② 4h horizon 方向(n=1,520/標的,step=6h 非重疊)**:
+- 全樣本:BTC 52.2%(z=1.74 不顯著)、ETH 50.0%——死
+- 唯一活口:BTC 高信念子集(|p_up-0.5|≥0.25,n=986)hit 55.5% CI[52.4,58.6],raw p≈0.0006——**但經濟性不過**:毛利 +6.2bps/筆 < 10bps 成本,淨值仍負;且此格是掃過 20+ 格挑出來的最佳格,winner's curse 下真實效應必然更小
+- ETH 高信念 51.5%,CI 含 50%——跨標的不複製
+
+**總判決(Kronos zero-shot 全案)**:
+1. 方向 edge:24h 無、4h 無(成本後);唯一統計倖存格經濟性不過+跨標的不複製 → **不上實盤,不接 edge-pipeline**
+2. 機率輸出:未校準禁 raw 用(Brier 0.41 vs 0.25)
+3. 波動度:有 ETH 端小增量,標記為「可選第二特徵」,不獨立成案
+4. fine-tune:不做。理由=zero-shot 各切面全弱,與記憶 project_structural_edges_found「daily-bar 全失敗」同構;要翻案需新的結構性理由,不是更多算力
+5. 資產保留:winrig `~/research/external/Kronos`(含 .venv/eval harness/6,080 個預測點 jsonl)——未來有新假設可直接復用 harness,邊際成本≈0
+
+**方法論收穫(比結論值錢)**:batch 疊 N+sample_count=1=零改碼拿全軌跡;GPU 驗證前先確認 torch 真的是 cu 版(pip 把 +cpu 當已滿足);WSL /tmp tmpfs 裝不下大 wheel 要 TMPDIR 改道;掃格子後的顯著性必須配 winner's curse 折價+經濟性雙閘。
