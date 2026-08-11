@@ -2728,5 +2728,35 @@
   "opened": "2026-08-12 05:07",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 274,
+  "what": "null_calibration 尺校準普查的獨立驗證者未派(統計方法論類)",
+  "why": "本 session 系統提示明令不得呼叫 Agent 工具,與憲法驗證者分離衝突時以 session 指令為準;代償=自測11段含把adapter弄壞必須紅的load-bearing檢查、三次自我打臉全部寫進RUNBOOK/memory",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 05:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 275,
+  "what": "null_calibration 普查只能手動跑,尚未排程=未在生產跑過",
+  "why": "設計取捨是不把200-seed校準塞進夜巡(會多跑數分鐘),正解是週級普查看FPR/MDE漂移,但週級cron還沒建;現況=這台普查機只在我手動跑的那一次是活的",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 05:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 276,
+  "what": "E17 分流輪的全庫夜巡複跑沒等到收尾(七支個別已單獨跑綠)",
+  "why": "本 session 40 分上限將到,selftest.sh 全庫跑約 20 分;log 在 /tmp/nightly_e17.log,下一輪起手確認有無連帶失敗",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-12 06:32",
+  "closed": null,
+  "note": ""
  }
 ]
