@@ -153,3 +153,28 @@
 - **接進 news_reactive 產線當新題型**:「大廠免費放送」快評——財經圈事件源源不絕(券商免費開放數據/TWSE 新公開 API/SEC 工具/大行報告免費公開),三段式:事件+錢數錨→Playwright 錄實際操作畫面→教一個「怎麼用它查 X」的單點技巧。合規天然安全(教工具用法非個股建議),`source_url` 帶官方公告走既有獨立驗證者
 - 收尾補上我們的留言閘門(「留言『早鳥』」)——原片最大缺口正是我們現成的漏斗
 - **順手的真資產**:Hell Grind 專案頁 115,451 個資產每個附完整 prompt+模型參數(higgsfield.ai/@higgsfield.studio/projects/hell-grind),「去頭全身參考圖」角色連貫性技巧可直接用於我們的 AI 產圖/影片產線(Amanda 虛擬模特/nano-banana-pro 產圖的角色一致性同痛點)
+
+## I. ⭐ 週報清單型 Reel 拆解(@scps_jia,2026-08-11 video-watcher 實看)
+
+> 源:https://www.instagram.com/reel/Db2m7RgOvbC/(2,219 讚/6 留言,台灣中文 AI 週報帳號)
+> 內容:「1分鐘帶你看完|本週 AI 大事(8/10)」——97 秒,720x1280 直式,8 條新聞,中文口播+燒字幕。
+> 8 條:Weather Next 2 開源/OpenAI Astra 將登場/Qwen 3.8 Max/清華 MAC(Multi-Agent CAD)/Meta Muse Code/Cloudflare Kitesurf/Grok Imagine Image 2.0/MatrAIx 83 億 persona agents 模擬世界。
+
+### 影片結構(timeline beats,frames+Groq whisper 雙流實讀)
+1. **0–4s 品牌開場**:pixel-art 機器人 mascot(戴耳機)+燒字「一分鐘看完一週AI大事」——零 hook 花招,靠固定 mascot+固定欄目名開場,系列識別即 hook
+2. **4–90s 八條快閃**(每條 10–12 秒,節奏完全等速):視覺模板統一=官方 demo 素材縮小置中(上下大片模糊/暗背景)+黑底白字燒字幕置中。素材全是現成官方物:Google Weather Lab 實際操作畫面、Sam Altman 原推截圖、Qwen/Meta 官方發布頁、清華論文 benchmark 圖、MatrAIx 產品 UI 實走(Coke 定價研究 demo)。每條口播=事實+一句啟示(「與其追工具不如練審美」「要測市場反應可先丟進去試水溫收集回饋再上架」)
+3. **90–97s 收尾**:mascot 回歸+「以上就是本週的AI大事/你最喜歡哪則消息歡迎留言跟我分享/我們下週見」——開放式問題留言誘餌+下週見養回訪
+
+### 為什麼有效(可搬的骨架)
+- **「一分鐘看完一週」=時間承諾型 hook**:觀眾點開前就知道成本(1 分鐘)與回報(全週大事),適合週更欄目;固定週日發=訂閱習慣養成,mascot bookends=品牌記憶點
+- **每條=事實+一行「所以呢」**:caption 裡每條配一行「→」評論(「網路正在長出第二層基礎設施,專門服務 AI 而不是人」)——觀點才是差異化,純搬運沒有;這正是我們「信息差=訊號非資料堆」哲學的 reel 版
+- **具體數字當記憶鉤**:$2,000 算力解 10 大數學難題、效率 3–7 倍、83 億 agents、13x 成本/30x 速度——每條至少一個數字,可信度+可轉述性都靠它
+- **官方素材縮小置中+負空間**:高資訊密度但畫面極乾淨,零拍攝零設計成本;素材本身(產品 UI 實走)就替內容做了事實背書
+- **caption=完整 8 條清單重述**:reel 看完 caption 可存檔重讀,收藏價值拉高(2,219 讚 vs 僅 6 留言:此型吃讚/藏不吃留言,互動鉤天生弱)
+- **(gap)** 0.5fps 抽格,單條內部的轉場細節可能有漏;(inference)口播與 caption 小出入(口播「發布」/caption「開源」Weather Next)顯示口播稿與 caption 分開寫,caption 較晚定稿較準
+
+### MarketDaily 搬法
+- **直接對位:「1分鐘看完本週財經大事」週日盤點 reel**——現有週六 weekend 盤點版 reel(video_brief 產線)是數字卡型,此型是它的敘事升級:5 條本週市場大事,每條=事件+一個具體數字+一行「對投資人的意思」。事件源用 news_reactive 已有的 cnyes/NewsAPI 掃描+權值計分,數字走既有 source_url 獨立驗證者,合規天然安全(市場級事件,不碰個股買賣建議)
+- 視覺模板可完全復用 render.py 品牌動畫思路:官方素材(Fed 聲明頁/TWSE 公告/公司發布頁截圖)縮小置中+深色品牌底(封面不可白底鐵則剛好同構)+燒字幕,Playwright 錄製即成
+- mascot bookends:MarketDaily 品牌頭像已有,開頭+收尾各 3 秒固定模板一次做終身用;收尾把原片的開放式問題換成我們的留言閘門(「留言『早鳥』」)——此型天生弱互動,正好用閘門補
+- 8 條對財經觀眾太多,5 條=75 秒內收工;條數固定+節奏等速是此型的紀律,不要做成長短不一
