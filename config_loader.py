@@ -48,14 +48,14 @@ def get_us_feeds() -> list:
     feeds = get_global_config().get("us_feeds")
     if not feeds:
         return None
-    return [(f["domain"], f["url"]) for f in feeds if f.get("on", True)]
+    return [(f["domain"], f["url"]) for f in feeds if f.get("on", True) and str(f.get("url", "")).startswith("https://")]  # SECURITY(2026-08-11): 只放行 https,擋 file:// 與內網 SSRF
 
 
 def get_tw_feeds() -> list:
     feeds = get_global_config().get("tw_feeds")
     if not feeds:
         return None
-    return [(f["domain"], f["url"]) for f in feeds if f.get("on", True)]
+    return [(f["domain"], f["url"]) for f in feeds if f.get("on", True) and str(f.get("url", "")).startswith("https://")]  # SECURITY(2026-08-11): 只放行 https,擋 file:// 與內網 SSRF
 
 
 def get_domains() -> list:

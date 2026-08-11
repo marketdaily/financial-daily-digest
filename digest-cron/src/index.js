@@ -12,6 +12,8 @@ const REPO = "marketdaily/financial-daily-digest";
 const WORKFLOW = "daily_digest.yml";
 const BRANCH = "main";
 
+let _checkCache = null;  // SECURITY(2026-08-11): /check 結果快取,防匿名燒 GITHUB_TOKEN
+
 const CRON_TW = "20 22 * * *";  // 台灣 06:20 觸發生成,main.py 等到 07:00 整點寄出
 const CRON_US = "25 11 * * *";  // 台灣 19:25 觸發生成,main.py 等到 20:00 整點寄出
 
@@ -49,6 +51,9 @@ export default {
     if (url.pathname === "/check") {
       // 用儲存的 GITHUB_TOKEN 做一次唯讀呼叫,確認 token 有效且能存取 workflow。
       // 不會派發 workflow、不會寄信。
+      // SECURITY(2026-08-11): 結果快取 60s,防匿名洪水燒 GITHUB_TOKEN rate limit / token 有效性 oracle。
+      const _now = Date.now();
+      if (_checkCache && _now - _checkCache.t < 60000) return json(_checkCache.body);
       if (!env.GITHUB_TOKEN) {
         return json({ token_present: false, token_ok: false, hint: "Worker 還沒設 GITHUB_TOKEN secret" });
       }
@@ -64,12 +69,9 @@ export default {
       );
       let detail = null;
       try { const d = await r.json(); detail = d.state || d.message; } catch {}
-      return json({
-        token_present: true,
-        github_status: r.status,
-        token_ok: r.ok,
-        workflow: detail,
-      });
+      const _body = { token_present: true, github_status: r.status, token_ok: r.ok, workflow: detail };
+      _checkCache = { t: _now, body: _body };
+      return json(_body);
     }
     return json({
       ok: true,
