@@ -1571,6 +1571,8 @@ export default {
     // Save a personalized digest HTML; returns a shareable web URL.
     // 可選 date 欄位 → 同步寫索引 digest_idx:{date}:{token},供 track-record builder 列舉
     if (url.pathname === "/save-digest" && request.method === "POST") {
+      // SECURITY(2026-08-11): 需 INTERNAL_TOKEN,防匿名把任意 HTML 掛在 api.marketdaily.ai/digest/* 釣魚。
+      if (!internalBearerOk(request.headers.get("authorization") || "")) return json({ error: "unauthorized" }, 401);
       let body;
       try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
       const incoming = (body.token || "").trim();
