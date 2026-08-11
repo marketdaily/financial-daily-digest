@@ -128,6 +128,20 @@ def _escape_stray_lt(html_report: str) -> str:
     return _STRAY_LT_RE.sub("&lt;", html_report)
 
 
+def _strip_xss_vectors(html_report: str) -> str:
+    """剝除 LLM 內文可能挾帶的 XSS 向量(2026-08-11 資安審查):event handler、
+    javascript:/vbscript:/data:text-html scheme、script/iframe/object/embed/form 標籤。
+    只作用於 inner 報告內容;外層 shell 的合法 JSON-LD/CSS 不經此函式。放行 data:image 內嵌圖。"""
+    if not html_report:
+        return html_report
+    html_report = re.sub(r'\son[a-zA-Z]+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)', "", html_report)
+    html_report = re.sub(r'((?:href|src|xlink:href)\s*=\s*["\']?)\s*(?:javascript|vbscript)\s*:', r"\1#", html_report, flags=re.I)
+    html_report = re.sub(r'((?:href|src)\s*=\s*["\']?)\s*data\s*:\s*(?:text/html|application)', r"\1#", html_report, flags=re.I)
+    html_report = re.sub(r'<\s*(script|iframe|object|embed|form)\b.*?(<\s*/\s*\1\s*>|$)', "", html_report, flags=re.I | re.S)
+    html_report = re.sub(r'<\s*/?\s*(script|iframe|object|embed|form)\b[^>]*>', "", html_report, flags=re.I)
+    return html_report
+
+
 def _fix_closed_market_wording(date: str, html_report: str) -> str:
     """休市日措辭確定性防線(2026-07-10 颱風停市事故):台股休市日不可殘留
     「今早 9:00 開盤」類字眼,美股休市夜不可殘留「今晚開盤」。不依賴 LLM 聽話,
@@ -315,6 +329,7 @@ def render_email_shell(date: str, html_report: str) -> str:
 
 
 def build_email_html(date: str, html_report: str) -> str:
+    html_report = _strip_xss_vectors(html_report)
     html_report = _escape_stray_lt(html_report)
     html_report = _repair_undefined_classes(html_report)
     full = render_email_shell(date, html_report)
