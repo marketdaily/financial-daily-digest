@@ -2516,8 +2516,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-11 10:26",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-11 16:51",
+  "note": "7 條全修:F1 merge_preserve 錨定合併(+指標閘存在性判準)、F2 壞帳本 rc=3 拒動、F3 --verify 新增索引閘、F4 slug 強制 hub_ 前綴+撞名拒寫、F5 --target 對已 hub 化的群也生效(兩道安全條件)、F6 rc 回到 0/2/3 契約、F7 破折號共用 _norm_note。驗收:自測 24→62 段全過(含 LIVE verify)+ 突變閘門 19/19 killed + 拿 live 記憶目錄複本前後對照(修前吃掉那段人工註記且 rc=0/verify 綠,修後全活且冪等)"
  },
  {
   "id": 253,
@@ -2526,8 +2526,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-11 10:26",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-11 11:23",
+  "note": "r2 八條全修+r3 複驗(SOUND-WITH-CORRECTIONS);r3 新開的 8 條另立 #256"
  },
  {
   "id": 254,
@@ -2536,6 +2536,196 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 10:26",
+  "closed": "2026-08-11 11:23",
+  "note": "r5 報告是半成品(IN PROGRESS 標記,check_report 正確擋下),已改派 r6 並收割完成"
+ },
+ {
+  "id": 255,
+  "what": "honest_traffic r2 八條已修但尚未在生產 kpi_pull 跑過(今晚 23:35 首班)",
+  "why": "離線自測+突變 25 全 killed+live smoke+7b 區塊隔離實跑皆過,但 kpi.md 真的長出新欄位/warn 要等今晚排程",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 11:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 256,
+  "what": "honest_traffic r3 剩 7 條未修(F2-F8,4 MEDIUM)",
+  "why": "F1(HIGH,今晚 kpi_pull 會吃到)已修並驗過;F2 version_suspect 不是 human_candidate 子集、F3 25%門檻結構上不可能裁決、F4 human.error 從不進 warn、F5 截斷偵測 fail-open、F6 版本判準語氣過絕對、F7 畸形 GraphQL 回應拋例外破契約、F8 兩條真資料護欄是條件式的 —— 全部尚未動",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-11 11:23",
+  "closed": "2026-08-11 15:32",
+  "note": "r3 八條(F1~F8)全修完並驗證:自測全綠+突變閘門 31/31 killed(重掛 6 條失效錨點、新增 M27~M31)+ 沙盒 e2e 真跑 kpi_pull(消失偵測真的出聲、human.* 292/978/kill 0.70 正常)。F8 兩條護欄改 fail-closed 並實測(無 fixtures/無 docs 皆變紅,opt-out 可放行)"
+ },
+ {
+  "id": 257,
+  "what": "event_queue r6 四條已修但尚未複驗(r7 未派)",
+  "why": "自測 183✓ 0✗/28 突變體全 killed/生產 live smoke rc=0,但 max 基準與 NUM_FIELDS 檢查沒有獨立驗證者看過;r5 的教訓正是『自己覺得對的修法連錯兩輪』",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 11:23",
+  "closed": "2026-08-12 04:32",
+  "note": "r7 已派並收割:5 條 findings(2 個測試盲點+撞號壞列+推播節流+list 自己炸掉)全數修完,自測 183→216✓ 0✗、突變體 28→36 全 killed、生產 live smoke rc=0"
+ },
+ {
+  "id": 258,
+  "what": "命書八字十神10頁族群程式碼已commit(2a23703)但未接線未部署:待另一session的fortune-ai大改(終身詳批/付款/audit_tools)commit完,再①families.py接線shishen_specs②render.py+index.html加/p/shishen頁尾入口③build_pages+fonts+sitemap④ship。隔離已驗10頁全過(≥1566字/相似度30%/無簡體)",
+  "why": "另一session有20+檔未commit佔用sitemap/asset/index/audit_pages共享檔,現在build會撞車",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 13:17",
+  "closed": "2026-08-11 14:00",
+  "note": "已收尾:另一session commit終身詳批(b1e4fd2)後工作區靜置,乾淨接線shishen_specs+頁尾入口→build 529頁0問題→ship全測綠→線上/p/shishen hub+10頁全200,sitemap 545。在對方改動之上無衝突部署"
+ },
+ {
+  "id": 259,
+  "what": "quietfix.studio 首頁/menu 尚無任何連到新 services/guide 頁的內鏈(另一視窗 index.html WIP 中不能動),等他落版後補 footer/nav 內鏈,否則新頁只靠 sitemap 被發現、權重傳遞為零",
+  "why": "共享 git 多 session 紀律:index.html 有對方未 commit 改動,延後接線",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 14:27",
+  "closed": "2026-08-11 14:42",
+  "note": "index.html 另視窗已落版(a9acfbb),svc-row×5 轉真連結+雙頁 nav 加「指南」,e895cba 已部署並線上驗證(首頁 grep 5 條內鏈+截圖 hover 態正常)"
+ },
+ {
+  "id": 260,
+  "what": "QuietFix GBP 已建檔+地址/電話全填,只剩老闆本人錄驗證影片(Google 對此檔案僅開放影片驗證一種)",
+  "why": "QR/連結已交老闆(手機開 verify 連結,登入 delvin@quietfix.studio 要跟我拿 TOTP 碼);影片 1-2 分鐘一鏡到底:室外街景+官網/信箱畫面+Cloudflare 後台;送審最長 5 工作天,結果寄 delvin@quietfix.studio",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-11 15:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 261,
+  "what": "kpi_pull 今晚 23:35 生產首班尚未觀察(honest_traffic r3 修法+KPI 區塊消失偵測)",
+  "why": "所有驗證都在沙盒/隔離環境做的,真實 cron 還沒跑過;首班要確認 state/kpi.md 有 human.* 全套欄位、沒有假的『整組消失』警示",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 15:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 262,
+  "what": "honest_traffic 資產佐證透鏡尚未在生產 cron 跑過(今晚 23:35 kpi_pull 首班)",
+  "why": "全部驗證都在本機手動跑(自測40突變+live report()形狀);kpi.md 的 human.corroboration_* 四個新欄位還沒有任何一次真實 cron 產出,與 #261 同一班觀察",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-11 16:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 263,
+  "what": "memory_hubify 新版 --apply 尚未在真 MEMORY.md 寫過(目前 23 群都已 hub 化、15818<17100,無事可做)",
+  "why": "驗收全靠自測+突變閘門+live 目錄複本演練;真正的生產寫入要等下次有新群要 hub 化或索引漲破 17100 才會發生,屆時要確認 hub 檔的人工註記/frontmatter 存活",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-11 16:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 264,
+  "what": "mutation_sweep 積木尚未接進夜巡排程,也還沒在生產 cron 跑過",
+  "why": "本輪只在互動 session 手動跑過 7 支(全庫一次約 1.4 小時,不可整包塞進 selftest.sh);排程切法與批次大小未定",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-11 17:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 265,
+  "what": "honest_traffic 突變閘門改戳記制,今晚夜巡首班尚未跑過(自測 245.8s→9.2s)",
+  "why": "所有驗證都是手動跑的(deep/fast/三條反向/sweep A/B);真實 04:40 夜巡與 mutation_sweep 排程還沒經過這條新路徑",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 18:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 266,
+  "what": "夜巡 TSV-WRITEBACK(自測時長基準每晚寫回)尚未在真實 04:40 夜巡跑過",
+  "why": "全部驗證都是手動/沙盒(35段自測+生產原文沙盒實跑+三條反向突變);首班要確認 tsv 真的長出一批第4欄、沒有任何一列被抹掉、且沒有 FAILED",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 19:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 267,
+  "what": "honest_traffic 自家巡檢流量抽離尚未在生產資料上驗收(self_automation 仍為 0)",
+  "why": "site_scan 每天只在 TW 08:20-08:49 跑,帶標記的請求要等 08-12 那班;CF 完成日要到 08-13 才看得到 ⇒ 08-13 晨查 cli.py --pages 應出現『自家巡檢流量 N 已從分母扣除』,若仍為 0 = 標記沒生效",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 22:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 268,
+  "what": "honest_traffic latest 日期揭露(expected/is_expected/stale)尚未在生產 kpi_pull 跑過",
+  "why": "離線自測+47突變全killed+生產原文block三情境exec+live report()實查皆過,但真實 23:35 cron 還沒寫過 human.candidate_latest_date 這個新欄位;首班要確認 kpi.md 出現該欄位且沒有假的『退回』warn",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 22:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 269,
+  "what": "突變覆蓋輪掃已排程(01:40 TW)但尚未在生產跑過首班",
+  "why": "所有驗證都是手動跑的(自測80段+notify.py 沙盒突變12點+驗收腳本五情境+cron 安裝零損失);真正的首班是 2026-08-12 01:40,已裝 TEMP 驗收 cron 02:20 PASS/FAIL 皆推播並自刪",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-11 23:19",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 270,
+  "what": "winrig wrangler OAuth token 被我刪掉,CF 部署/分析全斷,需 Delvin 點一下重新登入",
+  "why": "沙盒 HOME 的 .config 是 symlink,我的驗證腳本 unlink 穿透到生產檔;重登要瀏覽器點同意,不能背景做",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-11 23:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 271,
+  "what": "mutation_sweep 四處改動趕在 01:40 首班排程前落地,尚未經生產輪掃驗證",
+  "why": "resolve_tests 家族比對/opt-out 具名跳過/pick_target 下探子目錄/.log等不准symlink,全部是 2026-08-12 01:00 手動驗的(自測99段+四支實掃全GRADED),但今晚 01:40 才是輪掃首班;首班若因新對映把某支掃成 ERROR 會連帶影響 #269 的驗收判決 → 02:20 的 TEMP 驗收 cron 推播要一起看 sweep 有沒有新的 ERROR/NO_TARGET",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 00:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 272,
+  "what": "event_queue r7 五條已修但 r8 獨立驗證者未派(本 session 環境禁用 Agent 工具)",
+  "why": "代償=每條修法各配 1 個突變體(M29-M36)+3 個我沒寫測試的『自然簡化』對抗突變(拿掉嘗試時鐘退避/taken 含 acked/拿掉 24h 冷卻)全部被咬到;但 r4→r7 的歷史是『自己覺得對的修法連錯兩輪』,仍需外部視角",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 04:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 273,
+  "what": "fx_timing_edge 的獨立驗證者未派(統計方法論類)",
+  "why": "本 session 系統提示明令不得呼叫 Agent 工具,與憲法的驗證者分離衝突時以 session 指令為準",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 05:07",
   "closed": null,
   "note": ""
  }
