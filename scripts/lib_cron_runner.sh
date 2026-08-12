@@ -582,16 +582,20 @@ _cron_deploy_pending_mark() {   # TAG MSG VERIFY_URL
 _cron_deploy_pending_clear() { rm -f "$CRON_DEPLOY_PENDING_DIR/$1" 2>/dev/null || true; }
 
 # 用了備援腿 → 每天最多一則 🟡(11 個呼叫端各推一則 = 告警疲勞;根因是同一個)
-_cron_deploy_fallback_notice() {
+# ⚠️ 「立當日標記」必須在**確認推播真的送達之後**:先立標記再推、推失敗還吞掉,
+#    等於一次投遞失敗就把整天的通知靜靜關掉(沉默的守衛=沒有守衛)。推播結果一律寫進 log。
+_cron_deploy_fallback_notice() {   # TAG [LOG_PATH]
   local mark="$CRON_DEPLOY_PENDING_DIR/../.deploy_fallback_notice_$(TZ=Asia/Taipei date +%F)"
+  local log="${2:-/dev/null}" out
   [ -f "$mark" ] && return 0
   mkdir -p "$(dirname "$mark")" 2>/dev/null || return 0
-  : > "$mark" 2>/dev/null || true
-  MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" \
+  out=$(MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" \
     "${CRON_NOTIFY_BIN:-$HOME/.marketdaily-fallback/notify_admin.py}" \
     "🟡 [winrig] docs 部署正在用**備援腿**(GitHub Actions):本機 wrangler 那條腿發不出去(首見於『$1』)。
-內容有上線,不影響交付;但根因還在(wrangler OAuth 憑證,open #270,需 npx wrangler login)。今天只推這一則。" \
-    >/dev/null 2>&1 || true
+內容有上線,不影響交付;但根因還在(wrangler OAuth 憑證,open #270,需 npx wrangler login)。今天只推這一則。" 2>&1)
+  echo "[fallback-notice] ${out:-(無輸出)}" >> "$log"
+  case "$out" in *全部失敗*) return 1 ;; esac
+  : > "$mark" 2>/dev/null || true
 }
 
 cron_deploy_docs() {
@@ -626,7 +630,7 @@ cron_deploy_docs() {
 
   if [ "$bkrc" -eq 0 ]; then
     _cron_deploy_pending_clear "$tag"
-    _cron_deploy_fallback_notice "$tag"
+    _cron_deploy_fallback_notice "$tag" "$log"
     echo "✅ 備援腿把內容送上線了(本機腿仍是壞的)" >> "$log"
     return 0
   fi
