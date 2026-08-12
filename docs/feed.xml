@@ -6,7 +6,7 @@
   <atom:link href="https://marketdaily.ai/feed.xml" rel="self" type="application/rss+xml"/>
   <description>MarketDaily 個股深度分析 — 美股、台股長尾主題,每週更新。</description>
   <language>zh-tw</language>
-  <lastBuildDate>Mon, 10 Aug 2026 16:31:04 +0800</lastBuildDate>
+  <lastBuildDate>Wed, 12 Aug 2026 10:00:00 +0800</lastBuildDate>
   <ttl>720</ttl>
   <generator>MarketDaily blog_feed.py</generator>
   <image>
@@ -14,6 +14,26 @@
     <title>MarketDaily 個股分析</title>
     <link>https://marketdaily.ai/blog/</link>
   </image>
+  <item>
+    <title>The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production</title>
+    <link>https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=eng-audit-taxonomy-en-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608</guid>
+    <pubDate>Wed, 12 Aug 2026 10:00:00 +0800</pubDate>
+    <description>A deterministic audit gate inspects every personalized finance email our LLM pipeline generates. This post dissects all 30 checks by failure mode, dates each to the incident that created it, and walks through the two times the defense itself became the outage: 12 of 12 users failing one HIGH check on 2026-07-06, and a false-positive rule that shot down years and price levels as foreign tickers on 2026-07-24.</description>
+    <category>ENG</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/eng-audit-taxonomy-en-202608.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/eng-audit-taxonomy-en-202608.png" medium="image"/>
+  </item>
+  <item>
+    <title>Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的</title>
+    <link>https://marketdaily.ai/blog/eng-audit-taxonomy-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=eng-audit-taxonomy-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/eng-audit-taxonomy-202608</guid>
+    <pubDate>Wed, 12 Aug 2026 10:00:00 +0800</pubDate>
+    <description>MarketDaily 每天早晚寄出個人化財經日報,寄出前由 digest_audit.py 做確定性稽核。這篇把真實存在的 30 項檢查按失效模式分成六類逐項拆解,每項標注它誕生的那次事故日期,並完整解剖兩個「防線自己變成事故」的反例:07-06 undefined_css_class 讓 12/12 用戶全中 HIGH、9 位收到閹割備援版;07-24 誤殺把年份與價位當成外來股票代號。</description>
+    <category>ENG</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/eng-audit-taxonomy-202608.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/eng-audit-taxonomy-202608.png" medium="image"/>
+  </item>
   <item>
     <title>鴻海 (2317) 競爭優勢與護城河：全球電子製造龍頭的致勝關鍵</title>
     <link>https://marketdaily.ai/blog/2317-競爭優勢與護城河-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2317-競爭優勢與護城河-202608</link>

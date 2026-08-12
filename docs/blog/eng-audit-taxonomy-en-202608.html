@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
+<link rel="apple-touch-icon" href="/logo-icon.svg">
+<title>The 31st check didn&#x27;t exist: a failure-mode taxonomy of auditing LLM output in production | MarketDaily</title>
+<meta name="description" content="A deterministic audit gate inspects every personalized finance email our LLM pipeline generates. This post dissects all 30 checks by failure mode, dates each to the incident that created it, and walks through the two times the defense itself became the outage: 12 of 12 users failing one HIGH check on 2026-07-06, and a false-positive rule that shot down years and price levels as foreign tickers on 2026-07-24.">
+<meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
+<meta property="og:title" content="The 31st check didn&#x27;t exist: a failure-mode taxonomy of auditing LLM output in production">
+<meta property="og:description" content="A deterministic audit gate inspects every personalized finance email our LLM pipeline generates. This post dissects all 30 checks by failure mode, dates each to the incident that created it, and walks through the two times the defense itself became the outage: 12 of 12 users failing one HIGH check on 2026-07-06, and a false-positive rule that shot down years and price levels as foreign tickers on 2026-07-24.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608">
+<meta property="og:site_name" content="MarketDaily">
+<meta property="og:image" content="https://marketdaily.ai/blog/og/eng-audit-taxonomy-en-202608.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The 31st check didn&#x27;t exist: a failure-mode taxonomy of auditing LLM output in production">
+<meta name="twitter:description" content="A deterministic audit gate inspects every personalized finance email our LLM pipeline generates. This post dissects all 30 checks by failure mode, dates each to the incident that created it, and walks through the two times the defense itself became the outage: 12 of 12 users failing one HIGH check on 2026-07-06, and a false-positive rule that shot down years and price levels as foreign tickers on 2026-07-24.">
+<meta name="twitter:image" content="https://marketdaily.ai/blog/og/eng-audit-taxonomy-en-202608.png">
+<link rel="canonical" href="https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608">
+<link rel="alternate" hreflang="zh-Hant" href="https://marketdaily.ai/blog/eng-audit-taxonomy-202608">
+<link rel="alternate" hreflang="en" href="https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production", "description": "A deterministic audit gate inspects every personalized finance email our LLM pipeline generates. This post dissects all 30 checks by failure mode, dates each to the incident that created it, and walks through the two times the defense itself became the outage: 12 of 12 users failing one HIGH check on 2026-07-06, and a false-positive rule that shot down years and price levels as foreign tickers on 2026-07-24.", "datePublished": "2026-08-12T10:00:00+08:00", "dateModified": "2026-08-12", "author": {"@type": "Organization", "name": "MarketDaily"}, "publisher": {"@type": "Organization", "name": "MarketDaily", "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608"}, "image": ["https://marketdaily.ai/blog/og/eng-audit-taxonomy-en-202608.png"]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://marketdaily.ai/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://marketdaily.ai/blog/"}, {"@type": "ListItem", "position": 3, "name": "The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production"}]}]}</script>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background:#0a0a14; color:#e2e8f0; font-family:'Inter','PingFang TC',sans-serif; line-height:1.75; }
+.wrap { max-width:720px; margin:0 auto; padding:48px 24px 80px; }
+.topnav { position:sticky; top:0; background:rgba(10,10,20,0.85); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.08); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; z-index:10; }
+.topnav a { color:#a5b4fc; text-decoration:none; font-weight:700; }
+.crumb { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; letter-spacing:0.5px; text-transform:uppercase; }
+h1 { font-size:36px; font-weight:900; color:#fff; margin:6px 0 24px; letter-spacing:-0.5px; }
+h2 { font-size:24px; font-weight:800; color:#fff; margin:36px 0 14px; }
+h3 { font-size:18px; font-weight:700; color:#c7d2fe; margin:24px 0 10px; }
+p { font-size:16px; color:#cbd5e1; margin:0 0 16px; }
+ul, ol { margin:12px 0 20px 24px; }
+li { font-size:16px; color:#cbd5e1; margin:8px 0; }
+strong { color:#fbbf24; font-weight:700; }
+blockquote { border-left:3px solid rgba(99,102,241,0.55); background:rgba(99,102,241,0.07); border-radius:0 10px 10px 0; padding:14px 18px; margin:0 0 20px; }
+blockquote p { margin:0; color:#c7d2fe; font-size:15px; }
+pre { background:#12121f; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:18px 20px; margin:0 0 20px; overflow-x:auto; font-family:'SF Mono','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace; font-size:13.5px; line-height:1.6; color:#cbd5e1; }
+pre code { background:none; border:none; padding:0; font-size:inherit; color:inherit; }
+code { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.25); border-radius:6px; padding:1px 6px; font-family:'SF Mono','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace; font-size:14px; color:#c7d2fe; }
+table { width:100%; border-collapse:collapse; margin:0 0 20px; font-size:14.5px; }
+th, td { border:1px solid rgba(255,255,255,0.1); padding:8px 12px; text-align:left; color:#cbd5e1; }
+th { background:#12121f; color:#fff; font-weight:700; }
+.cta { background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.15)); border:1px solid rgba(99,102,241,0.35); border-radius:14px; padding:24px; margin:40px 0 0; text-align:center; }
+.cta a { display:inline-block; margin-top:14px; padding:14px 28px; background:linear-gradient(135deg,#6366f1,#a855f7); color:#fff; font-weight:800; text-decoration:none; border-radius:10px; }
+.disc { font-size:12px; color:rgba(255,255,255,0.4); margin-top:32px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
+.cta-top { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; text-align:center; background:rgba(99,102,241,0.10); border:1px solid rgba(99,102,241,0.28); border-radius:12px; padding:12px 16px; margin:0 0 26px; font-size:14px; color:#c7d2fe; line-height:1.7; }
+.cta-top a { color:#fff; background:linear-gradient(135deg,#6366f1,#a855f7); font-weight:800; text-decoration:none; padding:8px 16px; border-radius:8px; white-space:nowrap; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a href="/?lang=en">MarketDaily ←</a>
+  <a href="/blog/index.html">All articles</a>
+</div>
+<article class="wrap">
+  <div class="crumb">MARKETDAILY · ENGINEERING</div>
+  <h1>The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production</h1>
+  <!-- md-top-cta -->
+  <div class="cta-top">📬 Reading this because you ship LLMs into production? MarketDaily emails you an AI-filtered US + Taiwan digest every morning — free.<a href="https://marketdaily.ai/?lang=en&amp;utm_source=blog&amp;utm_medium=cta_top&amp;utm_campaign=seo_eng-audit-taxonomy-en-202608#email-step">Subscribe free →</a></div>
+
+<p>We run a daily finance email. Subscribers pick their holdings; an LLM pipeline generates a personalized HTML digest twice a day; a deterministic audit inspects the final HTML before anything gets sent. In the previous post I described the architecture (multi-model council, judge, audit-retry-fallback). This post dissects the audit layer itself: every check, what incident created it, and — the interesting part — two cases where the defense itself became the outage.</p>
+
+<h2>First, a confession</h2>
+
+<p>The previous post claimed "31 independently named checks." The fact-check command behind that number was:</p>
+
+<pre><code>grep -o '"check": "[a-z_0-9]*"' digest_audit.py | sort -u | wc -l   # → 31</code></pre>
+
+<p>While building the table for this post, I listed the checks one by one and got 30. The discrepancy: the module docstring contains a usage example with a check name (<code>tldr_has_tw</code>) that doesn't exist in the code — the real check is named <code>tldr_missing_tw</code>. Counting <code>fails.append(</code> call sites gives exactly 30. Our audit system's own audit method produced a false positive, off by one, and it shipped into a published article.</p>
+
+<p>I'm keeping "31" in the title because the phantom check is the best possible opening for a taxonomy of failure modes: even <em>counting your checks</em> has a failure mode. The honest number is 30.</p>
+
+<h2>The design contract</h2>
+
+<p>The file's docstring states the philosophy: <em>every check corresponds to one scenario where a user got angry, or predictably will.</em> Each check has a stable snake_case name, a severity, and — this matters — a comment carrying the date of the incident that created it. The file reads like a fossil record.</p>
+
+<p>Severity is not decoration; it selects a recovery path:</p>
+
+<ul><li><strong>HIGH</strong> → sleep 60 seconds (free-tier rate limits are per-minute token windows; retrying after 5s lands in the same window and hits the same 429), regenerate with a stronger model forced, re-audit; still failing → deterministic fallback assembled by pure code, intentionally price-free. Never send a broken email; never fail to send an email. Two separate invariants.</li><li><strong>MED / LOW</strong> → logged as a quality deduction, email ships anyway.</li></ul>
+
+<p>Of the 30: 20 fixed-HIGH, 6 MED, 2 LOW, and 2 with dynamic severity (an empty TL;DR section escalates to HIGH; four same-direction cards escalate from LOW to MED if the verdict simultaneously preaches caution).</p>
+
+<h2>The full table</h2>
+
+<table>
+<thead><tr>
+<th>#</th>
+<th>check</th>
+<th>category</th>
+<th>sev</th>
+<th>one-line trigger</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>tw_pre_market_tense</td><td>temporal</td><td>HIGH</td><td>7 a.m. pre-market email says the TW market "already rose today" (it opens at 9:00)</td></tr>
+<tr><td>2</td><td>tw_pre_market_tense_zaoshen</td><td>temporal</td><td>HIGH</td><td>"TW stocks up this morning" — unknowable before the open</td></tr>
+<tr><td>3</td><td>us_holiday_tense</td><td>temporal</td><td>HIGH</td><td>US market was closed last night, email says it "closed green/red"</td></tr>
+<tr><td>4</td><td>tw_holiday_open_tense</td><td>temporal</td><td>HIGH</td><td>TW holiday, email says "opens at 9:00 this morning"</td></tr>
+<tr><td>5</td><td>us_holiday_tonight_tense</td><td>temporal</td><td>HIGH</td><td>US closed tonight, email says "opens tonight"</td></tr>
+<tr><td>6</td><td>tw_morning_action_missing</td><td>temporal</td><td>MED</td><td>TW trading day but no card mentions the morning-open action window</td></tr>
+<tr><td>7</td><td>us_tonight_action_missing</td><td>temporal</td><td>MED</td><td>US trading night but no card gives a "tonight / after-hours" action</td></tr>
+<tr><td>8</td><td>tldr_section_missing</td><td>coverage</td><td>HIGH</td><td>the 30-second summary section is absent entirely</td></tr>
+<tr><td>9</td><td>tldr_missing_tw</td><td>coverage</td><td>HIGH</td><td>user holds TW stocks; TL;DR never mentions the TW market</td></tr>
+<tr><td>10</td><td>tldr_missing_us</td><td>coverage</td><td>HIGH</td><td>evening US edition; TL;DR never mentions US stocks</td></tr>
+<tr><td>11</td><td>tldr_too_short</td><td>coverage</td><td>HIGH/MED</td><td>0 bullets (empty section) = HIGH; 1–2 bullets = MED</td></tr>
+<tr><td>12</td><td>holdings_uncovered</td><td>coverage</td><td>HIGH</td><td>any single holding the user selected lacks an action card</td></tr>
+<tr><td>13</td><td>signal_card_missing_battle</td><td>coverage</td><td>HIGH</td><td>an action card lacks the entry/target/stop triple</td></tr>
+<tr><td>14</td><td>market_summary_missing_tw</td><td>coverage</td><td>MED</td><td>market-overview section ignores the TW index for a TW holder</td></tr>
+<tr><td>15</td><td>fake_urls</td><td>fabrication</td><td>HIGH</td><td>example.com / placeholder.com style URLs in the output</td></tr>
+<tr><td>16</td><td>placeholder_prices</td><td>fabrication</td><td>HIGH</td><td>unfilled placeholders: "amounts to XXX billion"</td></tr>
+<tr><td>17</td><td>earnings_fabricated_estimates</td><td>fabrication</td><td>HIGH</td><td>"expected EPS" appears when the data layer supplied no verified estimate</td></tr>
+<tr><td>18</td><td>confidence_overclaim</td><td>fabrication</td><td>MED</td><td>confidence &gt;75% (historical calibration cap; above it = a defense was bypassed)</td></tr>
+<tr><td>19</td><td>speculative_causality</td><td>fabrication</td><td>LOW</td><td>sourceless attribution: "possibly related to…"</td></tr>
+<tr><td>20</td><td>prompt_instruction_leak</td><td>leakage</td><td>HIGH</td><td>instructions meant for the LLM copied verbatim into the product</td></tr>
+<tr><td>21</td><td>portfolio_lens_foreign_ticker</td><td>leakage</td><td>HIGH</td><td>a "your portfolio" section contains a real listed security the user doesn't hold</td></tr>
+<tr><td>22</td><td>ai_output_truncated</td><td>structural</td><td>HIGH</td><td>HTML tail looks cut off (token limit hit)</td></tr>
+<tr><td>23</td><td>undefined_css_class</td><td>structural</td><td>HIGH</td><td>body uses a class <code>&lt;style&gt;</code> never defines = unstyled block</td></tr>
+<tr><td>24</td><td>tw_ticker_bare_code</td><td>structural</td><td>HIGH</td><td>TW cards show bare numeric codes with no company name (name-table wipeout signal)</td></tr>
+<tr><td>25</td><td>ticker_no_zh_name</td><td>structural</td><td>LOW</td><td>US ticker with no company name anywhere near it</td></tr>
+<tr><td>26</td><td>signal_reason_shallow</td><td>depth</td><td>HIGH</td><td>median reasoning length &lt;80 chars = systemic model-downgrade collapse</td></tr>
+<tr><td>27</td><td>signal_reason_vague</td><td>depth</td><td>HIGH</td><td>"next step" contains neither a price nor a time window</td></tr>
+<tr><td>28</td><td>isolated_wait_phrase</td><td>depth</td><td>MED</td><td>a bare "wait and see" with no condition (price/event/date) attached</td></tr>
+<tr><td>29</td><td>verdict_monoculture</td><td>depth</td><td>MED/LOW</td><td>≥4 cards all same direction; MED if the verdict simultaneously says "hold off"</td></tr>
+<tr><td>30</td><td>news_headline_body_conflict</td><td>depth</td><td>MED</td><td>headline says "rebounded 1.10%", body says "actually fell"</td></tr>
+<tr><td>31</td><td><s>tldr_has_tw</s></td><td>phantom</td><td>—</td><td>exists only in a docstring example; counted by our fact-check grep; can never fire</td></tr>
+</tbody></table>
+
+<h2>Six failure modes, and the incidents behind them</h2>
+
+<p><strong>Temporal discipline</strong> is the least obvious category if you've never shipped a pre-market product. The morning email is written before the open, so any completed-tense claim about today's session is a lie by construction, and every holiday combination (our market closed / their market closed / reopening tomorrow) creates a new way to be wrong. Seven of the 30 checks exist because tense errors are the fastest way to make a finance email look like it was written by someone who doesn't trade.</p>
+
+<p><strong>Coverage contract</strong> encodes the product's founding promise. The comment above <code>holdings_uncovered</code> quotes the user verbatim (2026-05-26): every single stock the user selected must get a next-step card. Missing one is HIGH, non-negotiable. The interesting engineering detail: fallback cards (deterministic, intentionally price-free) are exempted from the entry/target/stop requirement — the audit knows which cards chose to omit prices as a safety feature and doesn't punish them for it.</p>
+
+<p><strong>Fabrication detection</strong> got serious on 2026-06-10, when the digest claimed AAPL's "expected EPS 3.60" while the data source said 1.86 — and added that "the iPhone 15 remains the focus" (it wasn't). The fix is structural, not textual: the pipeline knows whether it fetched a verified estimate today. If it didn't, <em>any</em> "expected EPS" phrasing in the earnings section is by definition invented, severity HIGH. Same day produced the self-consistency checks: four cards all screaming "buy in tranches now" under a verdict saying "wait for CPI," and a headline saying oil rebounded above a body saying oil fell.</p>
+
+<p><strong>Leakage</strong> has two flavors. Prompt leakage (2026-07-22): every card opened with boilerplate like "explain the 'next step' in plain language: for TW stocks say…, for US stocks say…" — instructions for the model, shipped to customers. The check hunts the whole <em>category</em> of meta-instruction tells (placeholder brackets, "must include at least N prices", "never write just 'wait'"), not one string. Data leakage (cross-contamination between the default watchlist and a user's personal portfolio view) is check #21 and gets its own post next week.</p>
+
+<p><strong>Structural integrity</strong> includes my favorite sleeper: <code>tw_ticker_bare_code</code>. Ticker-to-company-name expansion is deterministic post-processing — it <em>cannot</em> fail under normal conditions. So when an email went out with bare numeric codes (2026-07-09), the check that catches it is really an infrastructure monitor in disguise: an expired CA bundle had silently killed the SSL handshake to the exchange's name API, and the name table was empty. The check inspects content but detects dependency rot.</p>
+
+<p><strong>Depth</strong> is the category that taught us the most expensive lesson: format checks are cheap, depth checks require a statistical baseline. On 2026-07-23, quota exhaustion cascaded the cards onto weak models. Reasoning collapsed from ~130+ chars to ~48 — with prices present and format perfect, so 29 of 30 checks passed. A human caught it. The fix: calibrate on three normal days (median 107–197, min ≥97, zero cards &lt;80) versus the bad day (median 48, min 46, 5/7 cards &lt;60), then set thresholds in the gap — median &lt;80 or half the cards &lt;60. It detects <em>fleet-wide collapse</em> without executing single naturally-terse cards.</p>
+
+<h2>When the defense became the outage</h2>
+
+<p>This is the full timeline the previous post only sketched.</p>
+
+<p><strong>June 29 (a Monday).</strong> LLMs across vendors "creatively" rename CSS classes — <code>news-title</code> instead of <code>news-headline</code> — and the unstyled blocks ship. Two fixes that day: CSS rules for 16 renamed classes, plus a new HIGH check, <code>undefined_css_class</code>: set-difference between classes used in the body and classes defined in <code>&lt;style&gt;</code>. Airtight, we thought.</p>
+
+<p><strong>July 6 (the next Monday — the check's first Monday in production).</strong> The Monday-edition prompt said "reuse the weekday CSS classes" without pasting the literal skeleton; the weekday prompt had full skeleton examples, so weekdays were safe. This landmine was Monday-only. Every model invented near-miss class names. <strong>12 of 12 users hit the HIGH check.</strong> The retry chain did its job faithfully: stronger model, same prompt, same disease. Nine users were downgraded to the deterministic fallback — a deliberately minimal "generation issue" edition. The admin summary alert arrived at 07:24, <em>after</em> everything had been sent. Bonus finding: the 05:30 preflight dry-run had died a month earlier during an infrastructure migration, and nobody had noticed, because a dead watchdog is silent in exactly the way a healthy quiet one is.</p>
+
+<p>Ponder what the check accomplished that morning. Without it, 12 users get ugly-but-complete emails. With it, 9 users get gutted ones. The defense converted a cosmetic defect into a content defect.</p>
+
+<p><strong>The actual fix</strong> went in the same day, and it's the pattern I'd generalize: a deterministic repair layer <em>before</em> the check. Twelve known near-miss names map back to the intended class (restoring the intended styling — strictly better than punishing it); unknown classes are stripped (no CSS rule exists, so removal is a visual no-op). The audit check survives as a tripwire of last resort that should never fire again. Plus a lateral circuit breaker: the same HIGH check hitting 3 users within one generation run pushes an operator alert immediately — per-user retry/fallback chains handle individual failures fine and <em>systemic</em> failures catastrophically quietly, so you need a cross-user view, and it must fire before the send deadline, not in the postmortem.</p>
+
+<h2>The false-positive massacre</h2>
+
+<p>Check #21 was born righteous: on 2026-07-21 a "your portfolio" section had absorbed 10 tickers from the default public watchlist. The first implementation flagged any ticker-shaped token not in the user's holdings.</p>
+
+<p>Then it started shooting civilians. Years (2026), index levels (23150), price levels (1085), acronyms (AI, GDP, ETF) — all ticker-shaped. On 2026-07-24 one user's digest failed the check, the retry regenerated with a stronger model, the new version tripped over a <em>different</em> number, and both versions were executed. Full fallback. The victim was the owner of the product, two days running.</p>
+
+<p>The cure: change the predicate from "looks like a ticker" to "<strong>is a real listed security</strong>" — match against the actual TW universe (~12k listed codes) and the US name table. Genuinely leaked tickers are real securities, so they're still caught at full strength; years and prices aren't in any universe, so they pass. Heuristic denylists never enumerate all exceptions; a real-world universe is the correct boundary.</p>
+
+<p>That incident also produced a taxonomy <em>within</em> the taxonomy: HIGH checks are now classed as <strong>soft</strong> (content complete and correct, merely shallow — short reasoning, vague phrasing, thin TL;DR) versus <strong>hard</strong> (broken layout, fake numbers, bare codes, truncation, missed holdings, tense errors, leaks). Soft failures arguably shouldn't cost a user the full edition; hard ones must. That distinction now feeds the fallback decision.</p>
+
+<h2>Rules we paid for</h2>
+
+<ol><li><strong>One incident = one detector, same day</strong>, with the date fossilized in the check's comment. The audit file doubles as the system's medical chart.</li><li><strong>Before adding a HIGH check, ask three questions.</strong> What happens if <em>everyone</em> fails it simultaneously? (You need a systemic circuit breaker.) Who absorbs the false positives? (You need a real universe, not a heuristic.) Is failing it worse than the fallback you'll serve instead? (Soft vs. hard.)</li><li><strong>MED checks don't trigger retries, so MED checks need repair layers, not regeneration.</strong> Our two action-window checks failed for 11, 7, and 11 users on three consecutive days once quota pressure randomized prompt compliance; the durable fix was a deterministic rewrite layer, with the audit demoted to independent verifier — both sides sharing one regex so the judgment can never diverge.</li><li><strong>The checks themselves fail.</strong> A regex that missed "9:00 open" when two extra characters sat in between; a lookbehind that mistook a price for a time-of-day; a fact-check grep that counted a docstring. Audit code needs its own adversarial case set.</li></ol>
+
+<p>The system's default stance is "prefer false positives over misses." After July, the complete sentence is: prefer false positives over misses — <strong>then build a deterministic repair for every false-positive class you discover, and demote the check to a tripwire.</strong></p>
+
+<p><em>Next post: the full data-isolation incident report — how a public watchlist bled into "your portfolio," and why that's the most embarrassing way a personalization system can fail.</em></p>
+  <div style="margin:32px 0 0;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px;">相關文章</p>
+    <ul style="margin:0;padding:0;list-style:none;">
+    <li style="margin:8px 0;"><a href="eng-audit-taxonomy-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的</a></li>
+    <li style="margin:8px 0;"><a href="eng-llm-council-judge-en-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">I run a 9-model LLM council with a judge to write a daily financial newsletter. Here's what actually breaks.</a></li>
+    </ul>
+  </div>
+  <div class="cta">
+    <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">MarketDaily sends its daily digest through this exact audit gate, morning and evening — currently free for a limited time, and early-bird subscribers keep free access permanently if paid plans ever return</p>
+    <a href="https://marketdaily.ai/?lang=en&amp;utm_source=blog&amp;utm_medium=eng_article&amp;utm_campaign=audit_taxonomy">Subscribe free →</a>
+  </div>
+  <p class="disc">This article is for informational purposes only and is not investment advice. Investing involves risk; assess your own situation. Last updated: 2026-08-12</p>
+</article>
+<!-- md-attr-beacon -->
+<script>
+(function(){
+  try {
+    var WORKER_URL = "https://api.marketdaily.ai";
+    var p = new URL(window.location.href).searchParams;
+    var real = p.get("utm_source");
+    var utm = {
+      utm_source:   real || "blog",
+      utm_medium:   p.get("utm_medium")   || (real ? null : "organic"),
+      utm_campaign: p.get("utm_campaign") || null,
+      utm_term:     p.get("utm_term")     || null,
+      utm_content:  p.get("utm_content")  || "eng-audit-taxonomy-en-202608",
+    };
+    if (real) {
+      var payload = { utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, ts: Date.now() };
+      try { sessionStorage.setItem("md-attr", JSON.stringify(payload)); localStorage.setItem("md-attr-first", JSON.stringify(payload)); } catch (e) {}
+    }
+    if (!navigator.webdriver && !sessionStorage.getItem("md-visit-id")) {
+      fetch(WORKER_URL + "/track/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, utm_term: utm.utm_term, utm_content: utm.utm_content, ts: Date.now() }),
+      })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){ if (d && d.visit_id) { try { sessionStorage.setItem("md-visit-id", d.visit_id); } catch (e) {} } })
+        .catch(function(){});
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

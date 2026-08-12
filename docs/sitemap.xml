@@ -206,6 +206,16 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://marketdaily.ai/blog/eng-audit-taxonomy-202608</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://marketdaily.ai/blog/eng-llm-council-judge-202608</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

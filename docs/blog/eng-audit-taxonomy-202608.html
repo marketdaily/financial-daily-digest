@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
+<link rel="apple-touch-icon" href="/logo-icon.svg">
+<title>Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的 | MarketDaily</title>
+<meta name="description" content="MarketDaily 每天早晚寄出個人化財經日報,寄出前由 digest_audit.py 做確定性稽核。這篇把真實存在的 30 項檢查按失效模式分成六類逐項拆解,每項標注它誕生的那次事故日期,並完整解剖兩個「防線自己變成事故」的反例:07-06 undefined_css_class 讓 12/12 用戶全中 HIGH、9 位收到閹割備援版;07-24 誤殺把年份與價位當成外來股票代號。">
+<meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
+<meta property="og:title" content="Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的">
+<meta property="og:description" content="MarketDaily 每天早晚寄出個人化財經日報,寄出前由 digest_audit.py 做確定性稽核。這篇把真實存在的 30 項檢查按失效模式分成六類逐項拆解,每項標注它誕生的那次事故日期,並完整解剖兩個「防線自己變成事故」的反例:07-06 undefined_css_class 讓 12/12 用戶全中 HIGH、9 位收到閹割備援版;07-24 誤殺把年份與價位當成外來股票代號。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://marketdaily.ai/blog/eng-audit-taxonomy-202608">
+<meta property="og:site_name" content="MarketDaily">
+<meta property="og:image" content="https://marketdaily.ai/blog/og/eng-audit-taxonomy-202608.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的">
+<meta name="twitter:description" content="MarketDaily 每天早晚寄出個人化財經日報,寄出前由 digest_audit.py 做確定性稽核。這篇把真實存在的 30 項檢查按失效模式分成六類逐項拆解,每項標注它誕生的那次事故日期,並完整解剖兩個「防線自己變成事故」的反例:07-06 undefined_css_class 讓 12/12 用戶全中 HIGH、9 位收到閹割備援版;07-24 誤殺把年份與價位當成外來股票代號。">
+<meta name="twitter:image" content="https://marketdaily.ai/blog/og/eng-audit-taxonomy-202608.png">
+<link rel="canonical" href="https://marketdaily.ai/blog/eng-audit-taxonomy-202608">
+<link rel="alternate" hreflang="zh-Hant" href="https://marketdaily.ai/blog/eng-audit-taxonomy-202608">
+<link rel="alternate" hreflang="en" href="https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的", "description": "MarketDaily 每天早晚寄出個人化財經日報,寄出前由 digest_audit.py 做確定性稽核。這篇把真實存在的 30 項檢查按失效模式分成六類逐項拆解,每項標注它誕生的那次事故日期,並完整解剖兩個「防線自己變成事故」的反例:07-06 undefined_css_class 讓 12/12 用戶全中 HIGH、9 位收到閹割備援版;07-24 誤殺把年份與價位當成外來股票代號。", "datePublished": "2026-08-12T10:00:00+08:00", "dateModified": "2026-08-12", "author": {"@type": "Organization", "name": "MarketDaily"}, "publisher": {"@type": "Organization", "name": "MarketDaily", "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://marketdaily.ai/blog/eng-audit-taxonomy-202608"}, "image": ["https://marketdaily.ai/blog/og/eng-audit-taxonomy-202608.png"]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首頁", "item": "https://marketdaily.ai/"}, {"@type": "ListItem", "position": 2, "name": "財經知識庫", "item": "https://marketdaily.ai/blog/"}, {"@type": "ListItem", "position": 3, "name": "Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的"}]}]}</script>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background:#0a0a14; color:#e2e8f0; font-family:'Inter','PingFang TC',sans-serif; line-height:1.75; }
+.wrap { max-width:720px; margin:0 auto; padding:48px 24px 80px; }
+.topnav { position:sticky; top:0; background:rgba(10,10,20,0.85); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.08); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; z-index:10; }
+.topnav a { color:#a5b4fc; text-decoration:none; font-weight:700; }
+.crumb { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; letter-spacing:0.5px; text-transform:uppercase; }
+h1 { font-size:36px; font-weight:900; color:#fff; margin:6px 0 24px; letter-spacing:-0.5px; }
+h2 { font-size:24px; font-weight:800; color:#fff; margin:36px 0 14px; }
+h3 { font-size:18px; font-weight:700; color:#c7d2fe; margin:24px 0 10px; }
+p { font-size:16px; color:#cbd5e1; margin:0 0 16px; }
+ul, ol { margin:12px 0 20px 24px; }
+li { font-size:16px; color:#cbd5e1; margin:8px 0; }
+strong { color:#fbbf24; font-weight:700; }
+blockquote { border-left:3px solid rgba(99,102,241,0.55); background:rgba(99,102,241,0.07); border-radius:0 10px 10px 0; padding:14px 18px; margin:0 0 20px; }
+blockquote p { margin:0; color:#c7d2fe; font-size:15px; }
+pre { background:#12121f; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:18px 20px; margin:0 0 20px; overflow-x:auto; font-family:'SF Mono','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace; font-size:13.5px; line-height:1.6; color:#cbd5e1; }
+pre code { background:none; border:none; padding:0; font-size:inherit; color:inherit; }
+code { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.25); border-radius:6px; padding:1px 6px; font-family:'SF Mono','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace; font-size:14px; color:#c7d2fe; }
+table { width:100%; border-collapse:collapse; margin:0 0 20px; font-size:14.5px; }
+th, td { border:1px solid rgba(255,255,255,0.1); padding:8px 12px; text-align:left; color:#cbd5e1; }
+th { background:#12121f; color:#fff; font-weight:700; }
+.cta { background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.15)); border:1px solid rgba(99,102,241,0.35); border-radius:14px; padding:24px; margin:40px 0 0; text-align:center; }
+.cta a { display:inline-block; margin-top:14px; padding:14px 28px; background:linear-gradient(135deg,#6366f1,#a855f7); color:#fff; font-weight:800; text-decoration:none; border-radius:10px; }
+.disc { font-size:12px; color:rgba(255,255,255,0.4); margin-top:32px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
+.cta-top { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; text-align:center; background:rgba(99,102,241,0.10); border:1px solid rgba(99,102,241,0.28); border-radius:12px; padding:12px 16px; margin:0 0 26px; font-size:14px; color:#c7d2fe; line-height:1.7; }
+.cta-top a { color:#fff; background:linear-gradient(135deg,#6366f1,#a855f7); font-weight:800; text-decoration:none; padding:8px 16px; border-radius:8px; white-space:nowrap; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a href="/">MarketDaily ←</a>
+  <a href="/blog/index.html">所有文章</a>
+</div>
+<article class="wrap">
+  <div class="crumb">MARKETDAILY · 工程</div>
+  <h1>Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的</h1>
+  <!-- md-top-cta -->
+  <div class="cta-top">📬 喜歡這類拆解?MarketDaily 每天早上 7 點把美股 + 台股 AI 過濾日報寄到你信箱。<a href="https://marketdaily.ai/?utm_source=blog&amp;utm_medium=cta_top&amp;utm_campaign=seo_eng-audit-taxonomy-202608#email-step">免費訂閱 →</a></div>
+
+<blockquote><p>上一篇講了 council + judge + audit 三層架構的全貌。這篇把最後一層——<code>digest_audit.py</code> 的確定性稽核——整個拆開:逐項列出、按失效模式歸類,並完整解剖兩個「防線自己變成事故」的反例。</p></blockquote>
+
+<h2>先坦白:第 31 項檢查不存在</h2>
+
+<p>動筆第一件事是把 31 項檢查逐一列表,結果馬上撞到一件尷尬事。上一篇說「31 項獨立命名的檢查」,查證指令是:</p>
+
+<pre><code>grep -o '"check": "[a-z_0-9]*"' digest_audit.py | sort -u | wc -l   # → 31</code></pre>
+
+<p>但其中一項 <code>tldr_has_tw</code> 只存在於檔案開頭 docstring 的用法範例裡,程式碼裡真正會觸發的檢查名是 <code>tldr_missing_tw</code>。改數 <code>fails.append</code> 出現次數:恰好 30。也就是說,<strong>真實存在的檢查是 30 項,第 31 項是查證指令自己數出來的幽靈</strong>——稽核系統被自己的稽核方法騙了一次。這不是本篇要遮掩的瑕疵,是本篇的題眼:確定性檢查的失效模式,連「數自己有幾條」這一步都會出現。以下照實寫 30 項。</p>
+
+<h2>分類總表(30 項 + 1 幽靈)</h2>
+
+<p>severity 語義:HIGH → 觸發「等 60 秒 → 換更強模型重生 → 仍敗切純程式備援版」的完整 retry 鏈;MED/LOW → 記錄失分但照寄。共 20 項固定 HIGH、6 項 MED、2 項 LOW、2 項動態升降級。</p>
+
+<table>
+<thead><tr>
+<th>#</th>
+<th>check</th>
+<th>類別</th>
+<th>severity</th>
+<th>一句話觸發場景</th>
+</tr></thead><tbody>
+<tr><td>1</td><td>tw_pre_market_tense</td><td>時序紀律</td><td>HIGH</td><td>早上 7 點盤前寄的信寫「今天台股已漲/跌」(9:00 才開盤)</td></tr>
+<tr><td>2</td><td>tw_pre_market_tense_zaoshen</td><td>時序紀律</td><td>HIGH</td><td>「今早台股已漲」— 9:00 前不可能知道</td></tr>
+<tr><td>3</td><td>us_holiday_tense</td><td>時序紀律</td><td>HIGH</td><td>美股昨晚休市,卻寫「昨晚美股收紅/收黑」</td></tr>
+<tr><td>4</td><td>tw_holiday_open_tense</td><td>時序紀律</td><td>HIGH</td><td>台股休市日寫「今早 9:00 開盤」</td></tr>
+<tr><td>5</td><td>us_holiday_tonight_tense</td><td>時序紀律</td><td>HIGH</td><td>美股今晚休市寫「今晚開盤」</td></tr>
+<tr><td>6</td><td>tw_morning_action_missing</td><td>時序紀律</td><td>MED</td><td>台股開盤日,操作卡沒有任何「今早開盤後」動作窗口</td></tr>
+<tr><td>7</td><td>us_tonight_action_missing</td><td>時序紀律</td><td>MED</td><td>美股開盤夜,操作卡沒有任何「今晚/盤後」動作指示</td></tr>
+<tr><td>8</td><td>tldr_section_missing</td><td>覆蓋契約</td><td>HIGH</td><td>整份日報沒有「30 秒重點」區塊</td></tr>
+<tr><td>9</td><td>tldr_missing_tw</td><td>覆蓋契約</td><td>HIGH</td><td>用戶持有台股,TLDR 完全沒提台股</td></tr>
+<tr><td>10</td><td>tldr_missing_us</td><td>覆蓋契約</td><td>HIGH</td><td>美股晚報,TLDR 完全沒提美股</td></tr>
+<tr><td>11</td><td>tldr_too_short</td><td>覆蓋契約</td><td>HIGH/MED</td><td>TLDR 0 條 bullet(區塊全空)= HIGH;1–2 條 = MED</td></tr>
+<tr><td>12</td><td>holdings_uncovered</td><td>覆蓋契約</td><td>HIGH</td><td>用戶選的持股有任何一支沒拿到操作卡</td></tr>
+<tr><td>13</td><td>signal_card_missing_battle</td><td>覆蓋契約</td><td>HIGH</td><td>操作卡缺進場/目標/停損三件套</td></tr>
+<tr><td>14</td><td>market_summary_missing_tw</td><td>覆蓋契約</td><td>MED</td><td>用戶有台股,「大盤怎麼了」卻沒提台股大盤</td></tr>
+<tr><td>15</td><td>fake_urls</td><td>編造偵測</td><td>HIGH</td><td>出現 example.com / placeholder.com 之類假網址</td></tr>
+<tr><td>16</td><td>placeholder_prices</td><td>編造偵測</td><td>HIGH</td><td>佔位符沒填:「金額高達 XXX 億元」</td></tr>
+<tr><td>17</td><td>earnings_fabricated_estimates</td><td>編造偵測</td><td>HIGH</td><td>資料端沒有核實預期數字,財報區卻出現「預期 EPS」</td></tr>
+<tr><td>18</td><td>confidence_overclaim</td><td>編造偵測</td><td>MED</td><td>信心數字 &gt;75%(歷史校準上限,超過=防線破口)</td></tr>
+<tr><td>19</td><td>speculative_causality</td><td>編造偵測</td><td>LOW</td><td>無來源歸因:「可能與 XX 有關」</td></tr>
+<tr><td>20</td><td>prompt_instruction_leak</td><td>洩漏隔離</td><td>HIGH</td><td>給 LLM 的說明文字被抄進成品(「台股講…美股講…」)</td></tr>
+<tr><td>21</td><td>portfolio_lens_foreign_ticker</td><td>洩漏隔離</td><td>HIGH</td><td>掛「你的」的個人化區塊混進非用戶持股的真實證券</td></tr>
+<tr><td>22</td><td>ai_output_truncated</td><td>結構完整</td><td>HIGH</td><td>HTML 結尾像被切斷(token 超上限)</td></tr>
+<tr><td>23</td><td>undefined_css_class</td><td>結構完整</td><td>HIGH</td><td>body 用到 <code>&lt;style&gt;</code> 沒定義的 class=整區塊裸奔</td></tr>
+<tr><td>24</td><td>tw_ticker_bare_code</td><td>結構完整</td><td>HIGH</td><td>台股卡只有裸代號沒中文名(名稱表歸零訊號)</td></tr>
+<tr><td>25</td><td>ticker_no_zh_name</td><td>結構完整</td><td>LOW</td><td>美股代號附近沒有中英文公司名</td></tr>
+<tr><td>26</td><td>signal_reason_shallow</td><td>深度一致</td><td>HIGH</td><td>理由長度 median &lt;80 字=整批模型降級的系統性塌陷</td></tr>
+<tr><td>27</td><td>signal_reason_vague</td><td>深度一致</td><td>HIGH</td><td>「下一步」既無價位也無時間窗(虛詞卡)</td></tr>
+<tr><td>28</td><td>isolated_wait_phrase</td><td>深度一致</td><td>MED</td><td>孤立的「先觀望」沒附條件(價位/事件/日期)</td></tr>
+<tr><td>29</td><td>verdict_monoculture</td><td>深度一致</td><td>MED/LOW</td><td>≥4 張卡全同向;若結論同時喊「先觀望」=自相矛盾升 MED</td></tr>
+<tr><td>30</td><td>news_headline_body_conflict</td><td>深度一致</td><td>MED</td><td>新聞標題「反彈 1.10%」,內文「反而下跌」</td></tr>
+<tr><td>31</td><td><s>tldr_has_tw</s></td><td>幽靈</td><td>—</td><td>只存在於 docstring 範例,被查證 grep 數進去,永不觸發</td></tr>
+</tbody></table>
+
+<h2>每一項都刻著一個日期</h2>
+
+<p>這張表最重要的性質是:<strong>幾乎每項檢查的註解裡都刻著它誕生的那次事故日期</strong>。挑幾個最有故事的:</p>
+
+<p><strong>holdings_uncovered(05-26)</strong>:整套 audit 的創始契約。用戶原話「使用者選擇每一個台股美股都要顯示下一步」直接寫在註解裡。漏一支持股就是 HIGH——這是全系統最不容妥協的一條。</p>
+
+<p><strong>earnings_fabricated_estimates(06-10)</strong>:日報寫 AAPL「預期 EPS 3.60」,真實資料源給的是 1.86,還附贈一句「iPhone 15 仍是重點」(當時已不是)。修法很誠實:程式知道自己「今天有沒有拿到核實的預期數字」,沒有的話,財報區出現任何「預期 EPS/市場預期」= 編的,直接 HIGH。同一天還抓到 verdict_monoculture(四張卡全喊「即刻分批買進」,結論卻說「先觀望等 CPI」)和 news_headline_body_conflict(標題「油價反彈」,內文「油價反而下跌」)——06-10 是實質稽核從「查格式」升級到「查自洽」的一天。</p>
+
+<p><strong>tw_ticker_bare_code(07-09)</strong>:憑證過期 → 上櫃股名稱 API 的 SSL 失敗被靜默吞掉 → 名稱表全滅 → 主旨和卡片全部裸代號寄出。這條檢查的邏輯有意思:名稱展開是確定性後處理,「正常情況不可能失敗」,所以一旦出現裸代號,幾乎必是上游基礎設施壞了——檢查內容,實際上是在監控依賴。</p>
+
+<p><strong>prompt_instruction_leak(07-22)</strong>:每張卡開頭掛著「白話講『下一步』:台股講…、美股講…該做什麼具體動作」——這是 prompt 裡給模型的說明,被逐字抄進成品。抓法不是只抓那一句,而是抓整個「meta 指令 tell」類別:佔位括號〔〕、「必含至少 N 個價位」、「禁止只寫觀望」……這些字只該活在 prompt 裡。</p>
+
+<p><strong>signal_reason_shallow(07-23)</strong>:上一篇講過梗概,這裡補校準細節。免費配額全熔斷、卡片掉到弱模型,理由從正常的百餘字塌到四五十字——<strong>帶價位、格式全對,30 項裡 29 項放行</strong>,是老闆本人抓到的。修法是先拿 3 個正常日(median 107–197 字、min≥97、零卡 &lt;80)和壞日(median 48、min 46、5/7 卡 &lt;60)做統計基線,門檻取中間:median &lt;80 或半數卡 &lt;60 才判塌陷。抓「整批降級」,不誤殺單張天生短的卡。格式檢查便宜,深度檢查必須先有基線。</p>
+
+<h2>主菜:防線自己變成事故的完整解剖(07-06)</h2>
+
+<p>第 1 篇只給了梗概,這裡是完整 timeline。</p>
+
+<p><strong>06-29(週一)</strong>:LLM 把「沿用既有 CSS class」自由發揮成近似名(news-title vs news-headline),樣板沒規則,區塊裸奔。當天修了兩手:補 16 個被改名 class 的 CSS,並新增 <code>undefined_css_class</code> HIGH 檢查——比對「body 用到的 class」和「<code>&lt;style&gt;</code> 定義的 class」的差集。看起來滴水不漏。</p>
+
+<p><strong>07-06(下一個週一,檢查上線後第一個週一)</strong>:週一版 prompt 只寫「沿用平日日報 CSS class」、沒貼逐字骨架——平日版有完整骨架範例所以平日沒事,這顆雷專屬週一。各家模型(不分供應商)集體自創近似 class,12/12 位用戶全中 HIGH。retry 鏈忠實執行:換更強模型重生——但 prompt 沒變,同病再中。9 位被打成純程式備援版(「AI 個人化生成異常」極簡版)。admin 彙總告警在 07:24 送達——<strong>信已經寄完了</strong>。雪上加霜:原本 05:30 的 preflight 預跑早在排程基礎設施遷移時漏搬,已經靜默死了近一個月,沒人發現。</p>
+
+<p>沒有這條檢查,07-06 用戶會收到版型跑掉的信;有這條檢查,9 位收到的是閹割備援版。防線把「醜信」換成了「殘信」,不是換成「好信」。</p>
+
+<p><strong>根治(同日)</strong>:在 premailer 內聯之前加一層確定性修復 <code>_repair_undefined_classes</code>——12 個已知近似名直接對映回正確 class(恢復原本想要的樣式),未知 class 移除(CSS 本無規則,移除是視覺 no-op)。audit 檢查保留,但降級成最後防線,理論上永遠不會再觸發。週一 prompt 補上逐字骨架。另加系統性熔斷:<strong>同一 HIGH 檢查在一次生成中連中 3 位,立刻推播管理員</strong>——per-user 的 retry→fallback 鏈遇到系統性 bug 會「安靜地全員降級」,必須有跨用戶的橫向視角,而且告警要趕在整點寄出之前。</p>
+
+<h2>反例二:檢查誤殺(07-24)</h2>
+
+<p>portfolio_lens_foreign_ticker 的出身正當:07-21,「組合透視」區塊掛著「你的」字樣,卻混進公版觀察清單 10 檔(下一篇的主角)。防線邏輯:個人化區塊裡出現「像代號的 token」且不在用戶持股 → HIGH。</p>
+
+<p>然後它開始殺良民。年份(2026)、指數點位(23150)、價位(1085)、名詞縮寫(AI/GDP/ETF)——全都「像代號」。07-24,一位用戶的日報 retry 換強模型重生,新版又踩到另一個數字,<strong>連兩版被誤殺,整封降備援</strong>。受害者是老闆本人。</p>
+
+<p>根治是把判準從「像代號」改成「<strong>是真實上市證券</strong>」:台股比對約 1.2 萬檔代號快取,美股比對名稱庫。真的洩漏進來的標的(AAPL/2330)仍在名表裡照抓,防線不弱化;年份和價位不在名表,放行。啟發式白名單永遠列不完例外,真實 universe 才是對的邊界。</p>
+
+<p>同一天誕生的還有「軟硬錯」分級:HIGH 檢查分成「軟錯」(內容完整正確、只是不夠深:理由偏短/偏籠統/TLDR 偏短)與「硬錯」(版面壞/假數字/裸代號/截斷/漏持股/時序錯/洩漏)。這個分級後來成為備援決策的輸入——寧可完整帶小瑕,不要為軟錯閹割。</p>
+
+<h2>設計準則(30 項檢查的學費總結)</h2>
+
+<ol><li><strong>出事 1 次=當場建偵測器</strong>,而且檢查名和註解要刻上事故日期——這張表就是系統的病歷。</li><li><strong>新增 HIGH 檢查前必問三題</strong>:全員同中會怎樣(需要系統性熔斷)?誤殺誰來扛(需要真實 universe 而非啟發式)?這是軟錯還是硬錯(決定降級到備援版值不值得)?</li><li><strong>MED 不觸發 retry,所以 MED 靠修復層不靠重生</strong>:兩條動作窗口檢查(#6/#7)連續多日失分(07-27 起三天 11/7/11 位),prompt 遵從是隨機的——最後靠確定性改寫層根治,audit 降為獨立驗證者,兩邊共用同一條 regex 保證判準不岔開。</li><li><strong>檢查自己也會壞</strong>:「9:00開盤」中間多兩個字元就 miss 的 regex(07-15 假陽性)、把價格「以1090開盤」誤認成時間的 lookbehind——所以 audit 的 regex 也有自己的驗證者案例集。以及,連「數自己有幾條檢查」都能數錯。</li></ol>
+
+<p>寧可誤殺、不可放行,是這套系統的默認立場;但 07-06 和 07-24 教會我們,這句話的完整版是:<strong>寧可誤殺,不可放行——然後為每一次誤殺建一層確定性修復,讓檢查退居最後防線</strong>。</p>
+
+<p>下一篇:資料隔離事故完整報告——公版觀察清單怎麼混進「你的持股」,以及個人化系統最尷尬的失敗形態。</p>
+  <div style="margin:32px 0 0;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px;">相關文章</p>
+    <ul style="margin:0;padding:0;list-style:none;">
+    <li style="margin:8px 0;"><a href="eng-audit-taxonomy-en-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production</a></li>
+    <li style="margin:8px 0;"><a href="eng-llm-council-judge-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">LLM council + judge:一個天天在生產環境寄信的多模型仲裁系統(75 天實錄)</a></li>
+    </ul>
+  </div>
+  <div class="cta">
+    <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">MarketDaily 每天早晚用這套系統寄出日報,目前全功能限時免費——現在訂閱的早鳥用戶,未來恢復收費後永久保留免費使用權</p>
+    <a href="https://marketdaily.ai/?utm_source=blog&amp;utm_medium=eng_article&amp;utm_campaign=audit_taxonomy">免費訂閱 →</a>
+  </div>
+  <p class="disc">本文僅供資訊整理,非投資建議。投資有風險,請評估自身狀況。資料更新:2026-08-12</p>
+</article>
+<!-- md-attr-beacon -->
+<script>
+(function(){
+  try {
+    var WORKER_URL = "https://api.marketdaily.ai";
+    var p = new URL(window.location.href).searchParams;
+    var real = p.get("utm_source");
+    var utm = {
+      utm_source:   real || "blog",
+      utm_medium:   p.get("utm_medium")   || (real ? null : "organic"),
+      utm_campaign: p.get("utm_campaign") || null,
+      utm_term:     p.get("utm_term")     || null,
+      utm_content:  p.get("utm_content")  || "eng-audit-taxonomy-202608",
+    };
+    if (real) {
+      var payload = { utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, ts: Date.now() };
+      try { sessionStorage.setItem("md-attr", JSON.stringify(payload)); localStorage.setItem("md-attr-first", JSON.stringify(payload)); } catch (e) {}
+    }
+    if (!navigator.webdriver && !sessionStorage.getItem("md-visit-id")) {
+      fetch(WORKER_URL + "/track/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, utm_term: utm.utm_term, utm_content: utm.utm_content, ts: Date.now() }),
+      })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){ if (d && d.visit_id) { try { sessionStorage.setItem("md-visit-id", d.visit_id); } catch (e) {} } })
+        .catch(function(){});
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
