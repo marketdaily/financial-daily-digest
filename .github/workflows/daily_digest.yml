@@ -40,29 +40,45 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 防雙發閘(failover 模式):watchdog 偵測→派發之間 winrig 可能遲交完成。
-      # 公版存檔當天該班已在線上 → winrig 實際寄過 → 立即安靜退出,絕不重寄。
-      - name: Failover double-send guard
-        if: github.event.inputs.failover == '1'
-        run: |
-          TWDATE=$(TZ=Asia/Taipei date +%F)
-          SUFFIX=""
-          [ "${{ github.event.inputs.market }}" = "us" ] && SUFFIX="_us"
-          CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://marketdaily.ai/output/digest_${TWDATE}${SUFFIX}.html")
-          if [ "$CODE" = "200" ]; then
-            echo "公版存檔已在線上(winrig 已寄),備援退場不重寄。"
-            echo "SKIP_SEND=1" >> "$GITHUB_ENV"
-          fi
-
       - name: Set up Python
-        if: env.SKIP_SEND != '1'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"   # requirements 的 numpy==2.5.0 需 py3.12(3.11 裝不了,2026-07-25 preflight 失敗根因)
 
       - name: Install dependencies
-        if: env.SKIP_SEND != '1'
         run: pip install -r requirements.txt
+
+      # 防雙發閘 ①(failover 模式):watchdog 偵測→派發之間 winrig 可能遲交完成。
+      # 當班已被交付 → 立即安靜退出,既不重寄、也不白燒一整輪雲端生成(~50min CI + 一輪 LLM 額度)。
+      #
+      # ⚠️ 判準只准呼叫 main._archive_delivered() 本人,禁止在這裡自己 curl 重寫一份。
+      #   2026-08-12 查獲舊版 bash 閘的兩個缺陷:①`curl -s` 不跟隨重導,而存檔活著時回 308,
+      #   `= "200"` 永遠不成立 ⇒ 這道閘自始至終沒射出過;②只查網站,漏掉 origin 那半訊號
+      #   (權威判準是「網站 OR origin」,08-12 那次正是靠 origin 才認出 winrig 已交付)。
+      #   結果:憑證死掉導致存檔停止上線的那天,誤派的備援跑滿 51m47s 才在最後一步退場。
+      #   契約由 scripts/test_failover_gate_contract.py 守著(改回自己 curl 會紅)。
+      #
+      # 位置刻意放在裝完依賴之後(import main 需要),仍遠早於生成 ⇒ 省下的是那 ~50 分鐘。
+      # 任何例外一律 fail-open(不設 SKIP_SEND)→ 照寄:死線是絕不缺信,寧可重寄不可缺信。
+      # 判不出來時發 ::warning:: 讓「閘門啞了」看得見,不再重蹈沉默死碼的覆轍。
+      - name: Failover double-send guard
+        if: github.event.inputs.failover == '1'
+        run: |
+          TWDATE=$(TZ=Asia/Taipei date +%F)
+          MARKET="${{ github.event.inputs.market || 'tw' }}"
+          VERDICT=$(python3 -c "import sys, main; print('DELIVERED' if main._archive_delivered(sys.argv[1], sys.argv[2]) else 'ABSENT')" "$MARKET" "$TWDATE") || VERDICT="ERROR"
+          case "$VERDICT" in
+            DELIVERED)
+              echo "當班公版存檔已交付(winrig 已寄),備援退場不重寄。"
+              echo "SKIP_SEND=1" >> "$GITHUB_ENV"
+              ;;
+            ABSENT)
+              echo "未偵測到當班交付 → 備援繼續(查不到一律照寄)。"
+              ;;
+            *)
+              echo "::warning::防雙發閘①判定失敗(main._archive_delivered 拋錯,見上方 traceback)→ fail-open 照寄;第③層 _failover_send_clearance 仍在寄出前守著。"
+              ;;
+          esac
 
       # 注意:刻意不帶 ANTHROPIC_API_KEY(2026-07-26 Delvin「全免費」令,雲端也零付費 API;
       # analyzer 免費鏈 Gemini→Groq→CF 對應 secrets 已更新)。

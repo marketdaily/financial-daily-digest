@@ -1368,6 +1368,11 @@ def _alert_if_late(market, late_sec):
                       f"log: logs/fallback_*.log")
 
 
+# 存檔查詢的站台根;只為了讓「必須跟隨 308 重導」這條不變式可以被離線測試
+# (scripts/test_failover_gate_contract.py 會把它指到本機 http server)。生產值不變。
+ARCHIVE_BASE = "https://marketdaily.ai"
+
+
 def _archive_online(market, date):
     """公版存檔(docs/output/,git push 後由 Cloudflare Pages 服務)是否已上線。
 
@@ -1375,10 +1380,14 @@ def _archive_online(market, date):
     +push;雲端備援由 workflow 的 "Persist public digest archive" 步驟)。所以
     「我還沒寄、它就已經在線上」= 這一班已經被另一邊交付過了。
     step ⑥ 的 save_hosted_digest 走的是另一條(Worker/KV 網頁版),不會污染這個判準。
-    查不到一律當作沒交付 → 照寄:死線是絕不缺信,寧可重寄也不可缺信。"""
+    查不到一律當作沒交付 → 照寄:死線是絕不缺信,寧可重寄也不可缺信。
+
+    ⚠️ 必須跟隨重導:`digest_<date>.html` 在線上是 **308** 導到無副檔名版,只有跟隨之後才是
+    200(urlopen 預設會跟隨,所以這裡是對的)。2026-08-12 查獲 daily_digest.yml 的起跑閘用
+    `curl -s`(不跟隨)比對 200,因此那道閘自始至終沒射出過——同一個判準寫兩份就是這樣爛掉的。"""
     import urllib.request
     suffix = "_us" if market == "us" else ""
-    url = f"https://marketdaily.ai/output/digest_{date}{suffix}.html"
+    url = f"{ARCHIVE_BASE}/output/digest_{date}{suffix}.html"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "md-failover-guard"})
         with urllib.request.urlopen(req, timeout=15) as resp:
