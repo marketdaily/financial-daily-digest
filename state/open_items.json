@@ -2798,5 +2798,25 @@
   "opened": "2026-08-12 07:58",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 281,
+  "what": "event_queue --needs-delvin 的驗證者裁決未收 + reconcile 不清 needs_human 的缺口未修",
+  "why": "驗證者背景跑中,artifacts 凍結期間不准動 queue.py",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 08:47",
+  "closed": "2026-08-12 09:18",
+  "note": "驗證者 7 findings 全數修完並複驗:event_queue 232✓0✗(42突變全killed)、pyc_guard rc=0 且豁免名單逐字不變"
+ },
+ {
+  "id": 282,
+  "what": "event_queue/pyc_guard 這批 7-findings 修法的 r2 獨立驗證者未派",
+  "why": "本 session 系統提示明令不得呼叫 Agent 工具(同 #272/#273/#274 先例);代償=每條修法各配一個突變體(M39/M40/M41+M37 前置條件+fixture x1-x4),且 M40 第一版被自己抓到沒鑑別力已修",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 09:18",
+  "closed": null,
+  "note": ""
  }
 ]
