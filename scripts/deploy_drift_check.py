@@ -66,34 +66,84 @@ def _age_min(p):
     return (time.time() - p.stat().st_mtime) / 60.0
 
 
-def local_manifest_max():
-    p = DOCS / "output" / "manifest.json"
-    d = json.loads(p.read_text(encoding="utf-8"))
-    dates = d.get("dates") or []
-    return (max(dates) if dates else None), _age_min(p)
+class WorktreeSource:
+    """比較基準=winrig 磁碟現狀(預設,原始行為)。"""
+
+    name = "worktree"
+
+    def read(self, rel):
+        p = DOCS / rel
+        return p.read_text(encoding="utf-8"), _age_min(p)
+
+    def newest_archive(self):
+        best = None
+        for f in (DOCS / "output").glob("digest_*.html"):
+            if "_personal_" in f.name:
+                continue
+            if best is None or f.stem > best.stem:
+                best = f
+        if best is None:
+            return None, None
+        return best.stem, _age_min(best)
 
 
-def local_blog_count():
-    p = DOCS / "blog" / "index.html"
-    m = re.search(r"(\d+)\s*篇免費開放", p.read_text(encoding="utf-8"))
-    return (int(m.group(1)) if m else None), _age_min(p)
+class OriginSource:
+    """比較基準=origin/main 上的 docs/(自癒用)。
+
+    自癒腿(GitHub Actions)部署的是 origin/main,不是磁碟現狀——判斷「部署有沒有用」
+    必須拿它真的發得出去的那份來比,否則會拿別視窗還沒 push 的草稿當作「線上落後」,
+    自癒發完還是紅、每 30 分鐘白跑一次。
+    年齡一律取 origin/main 的 commit 時間(剛 push 完還沒輪到部署≠回捲)。
+    """
+
+    name = "origin"
+
+    def __init__(self, ref="origin/main"):
+        import subprocess
+        self._sp = subprocess
+        self.ref = ref
+        ts = subprocess.run(["git", "-C", str(ROOT), "log", "-1", "--format=%ct", ref],
+                            capture_output=True, text=True, check=True).stdout.strip()
+        self._age = (time.time() - int(ts)) / 60.0
+
+    def _show(self, rel):
+        r = self._sp.run(["git", "-C", str(ROOT), "show", "%s:docs/%s" % (self.ref, rel)],
+                         capture_output=True, text=True)
+        if r.returncode != 0:
+            raise RuntimeError("%s 沒有 docs/%s" % (self.ref, rel))
+        return r.stdout
+
+    def read(self, rel):
+        return self._show(rel), self._age
+
+    def newest_archive(self):
+        r = self._sp.run(["git", "-C", str(ROOT), "ls-tree", "--name-only",
+                          "%s:docs/output" % self.ref], capture_output=True, text=True, check=True)
+        best = None
+        for n in r.stdout.splitlines():
+            if not n.startswith("digest_") or not n.endswith(".html") or "_personal_" in n:
+                continue
+            stem = n[:-5]
+            if best is None or stem > best:
+                best = stem
+        return best, (self._age if best else None)
 
 
-def local_newest_archive():
-    """本機最新的公版存檔頁(排除 *_personal_*,那些不該公開)。"""
-    best = None
-    for f in (DOCS / "output").glob("digest_*.html"):
-        if "_personal_" in f.name:
-            continue
-        if best is None or f.stem > best.stem:
-            best = f
-    return best
-
-
-def run(base, grace_min):
+def run(base, grace_min, src=None):
+    src = src or WorktreeSource()
     signals = []
 
-    lmax, age = local_manifest_max()
+    def _manifest_max():
+        text, age = src.read("output/manifest.json")
+        dates = json.loads(text).get("dates") or []
+        return (max(dates) if dates else None), age
+
+    def _blog_count():
+        text, age = src.read("blog/index.html")
+        m = re.search(r"(\d+)\s*篇免費開放", text)
+        return (int(m.group(1)) if m else None), age
+
+    lmax, age = _manifest_max()
     st, body = fetch(base + "/output/manifest.json?cb=%d" % int(time.time()))
     live_max = None
     if st == 200:
@@ -109,7 +159,7 @@ def run(base, grace_min):
         "detail": "線上 manifest 最新日 %s vs 本機 %s(HTTP %s)" % (live_max, lmax, st),
     })
 
-    lcnt, age = local_blog_count()
+    lcnt, age = _blog_count()
     st, body = fetch(base + "/blog/index.html?cb=%d" % int(time.time()))
     m = re.search(r"(\d+)\s*篇免費開放", body or "")
     live_cnt = int(m.group(1)) if m else None
@@ -120,18 +170,18 @@ def run(base, grace_min):
         "detail": "線上 blog 索引 %s 篇 vs 本機 %s 篇(HTTP %s)" % (live_cnt, lcnt, st),
     })
 
-    newest = local_newest_archive()
+    newest, n_age = src.newest_archive()
     if newest is None:
         signals.append({"name": "newest_archive_200", "local": None, "live": None,
                         "skipped": False, "ok": False,
-                        "detail": "本機 docs/output 找不到任何存檔頁(應有 90+ 篇)"})
+                        "detail": "%s docs/output 找不到任何存檔頁(應有 90+ 篇)" % src.name})
     else:
         # .html 會 308 導到乾淨 URL,直接查乾淨 URL 才是使用者/爬蟲真的拿到的東西
-        st, _ = fetch("%s/output/%s?cb=%d" % (base, newest.stem, int(time.time())))
+        st, _ = fetch("%s/output/%s?cb=%d" % (base, newest, int(time.time())))
         signals.append({
-            "name": "newest_archive_200", "local": newest.stem, "live": st,
-            "skipped": _age_min(newest) < grace_min, "ok": st == 200,
-            "detail": "線上 /output/%s → HTTP %s" % (newest.stem, st),
+            "name": "newest_archive_200", "local": newest, "live": st,
+            "skipped": n_age < grace_min, "ok": st == 200,
+            "detail": "線上 /output/%s → HTTP %s" % (newest, st),
         })
 
     drift = [s for s in signals if not s["ok"] and not s["skipped"]]
@@ -143,9 +193,12 @@ def main(argv=None):
     ap.add_argument("--base", default="https://marketdaily.ai")
     ap.add_argument("--grace-min", type=float, default=60.0)
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--source", choices=("worktree", "origin"), default="worktree",
+                    help="比較基準:worktree=磁碟現狀(預設) / origin=origin/main(自癒腿發得出去的那份)")
     a = ap.parse_args(argv)
     try:
-        signals, drift = run(a.base.rstrip("/"), a.grace_min)
+        src = OriginSource() if a.source == "origin" else WorktreeSource()
+        signals, drift = run(a.base.rstrip("/"), a.grace_min, src)
     except Exception as e:  # noqa: BLE001
         print("deploy_drift_check 執行失敗(不等於沒問題):%s: %s" % (type(e).__name__, e),
               file=sys.stderr)
@@ -158,10 +211,13 @@ def main(argv=None):
             mark = "⏭" if s["skipped"] else ("✅" if s["ok"] else "🔴")
             print("%s [%s] %s" % (mark, s["name"], s["detail"]))
     if drift:
-        print("🔴 線上站台落後本機 repo(部署回捲):%s"
-              % "、".join(s["name"] for s in drift), file=sys.stderr)
-        print("   修法:cd ~/Delvin-agent && npx wrangler pages deploy docs "
+        print("🔴 線上站台落後%s(部署回捲):%s"
+              % ("本機 repo" if a.source == "worktree" else "origin/main",
+                 "、".join(s["name"] for s in drift)), file=sys.stderr)
+        print("   修法①(本機腿):cd ~/Delvin-agent && npx wrangler pages deploy docs "
               "--project-name marketdaily --commit-dirty=true", file=sys.stderr)
+        print("   修法②(備援腿,本機 wrangler OAuth 死掉時用,發的是 origin/main):"
+              "bash scripts/deploy_docs_via_actions.sh \"手動補部署\"", file=sys.stderr)
         return 1
     return 0
 
