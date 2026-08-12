@@ -2858,5 +2858,65 @@
   "opened": "2026-08-12 10:16",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 287,
+  "what": "cron_deploy_docs 已接的 11 個呼叫端,各自真實排程首班未驗",
+  "why": "生產首班只驗了直接呼叫(真 wrangler 失敗→真 Actions 腿 run 31557845713 部署並驗 200);tldr 14:00 / site_scan 08:20 / run.sh 20:00 等各自排程還沒跑過改後的路徑",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 10:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 288,
+  "what": "deploy_drift 的 pending 補發段在生產從未觸發過",
+  "why": "需要先出現「本機腿死+內容還沒 push」的真實情境才會留單;自測 12 段+突變全綠但那是沙盒",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 10:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 289,
+  "what": "~/.marketdaily-fallback/ 的 30+ 支 runner 完全不在版控,本輪改了 11 支",
+  "why": "只存在 winrig 本機磁碟,主機掛掉即全失;與 open #285(eng_blog published.log)同一類問題,需要一個 runner 目錄入版控的方案",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 10:48",
+  "closed": "2026-08-12 11:13",
+  "note": "fleet_snapshot 已把 90 支 runner + crontab 收進私有 brain repo,接 sync.sh 主寫機段 */5;守衛=runner_parity 段2(dead-man 24h);還原路徑每晚驗一次"
+ },
+ {
+  "id": 290,
+  "what": "cron 呼叫的 24 支腳本沒有能撐過磁碟死亡的副本:UNCOVERED 10(cardvault-pc 7/taifex_archive 1/intel_bounce_shadow.py 未track 1/其他)、local_git_only 9(cb-desk/fortune-ai/granthawk 三個 repo 沒有 remote)、殭屍 cron 5(paper_trade/* 檔案根本不存在)",
+  "why": "本輪只解 ~/.marketdaily-fallback 那 90 支;這 24 支散在別的專案目錄,要各自處理(加 remote / 建 repo / 清掉殭屍 cron 行),不宜順手夾帶",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 11:13",
+  "closed": "2026-08-12 11:45",
+  "note": "數字更正:是 19 支不是 24——'殭屍 cron 5 支(paper_trade)'是 coverage.py 路徑解析器誤報,那 5 支存在且 covered。改開 #292 追真正的 19 支"
+ },
+ {
+  "id": 291,
+  "what": "fleet_snapshot(快照/覆蓋率判準/還原)的獨立驗證者未派",
+  "why": "本 session 系統提示明令不得呼叫 Agent 工具(同 #272/#273/#274/#280/#282 先例);代償=14 個突變全被咬到且零 no-op、restore 對真實 90 支做過 round-trip 逐位元組比對、守衛段全部呼叫生產守衛本人而非重刻判準",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 11:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 292,
+  "what": "cron 呼叫的 19 支腳本沒有能撐過磁碟死亡的副本:UNCOVERED 10(cardvault-pc 7/taifex_archive 1/intel bounce_shadow.py 未 track 1/其他 1)、local_git_only 9(cb-desk/fortune-ai/granthawk 三個 repo 沒有 remote,加 remote 即可)",
+  "why": "散在別的專案目錄,各自要處理(加 remote / 建 repo),不宜順手夾帶進本輪",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 11:45",
+  "closed": null,
+  "note": ""
  }
 ]
