@@ -2836,8 +2836,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-12 09:44",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-12 10:16",
+  "note": "已解:找到繞過路徑=GH Actions 備援腿(GH secret CLOUDFLARE_API_TOKEN 有效),實跑 run 31555684463 把 origin/main 發上線,digest_2026-08-12.html 404→200;守衛已改成偵測到回捲自動走這條腿補發"
  },
  {
   "id": 285,
@@ -2846,6 +2846,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-12 10:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 286,
+  "what": "deploy_drift 自癒(自動觸發)首班未驗:今天是我手動跑備援腿,還沒看過 cron 自己判 HEAL→補發→推綠燈的完整一輪",
+  "why": "自測是假伺服器+假部署腳本;真正的首班要等下次線上真的落後 origin(存檔頁每天 07:20/20:20 更新,#270 沒修好前每天都會發生),看 ~/.marketdaily-fallback/deploy_drift_cron.log 有沒有『判決:HEAL』+手機是否收到🟢自癒推播",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 10:16",
   "closed": null,
   "note": ""
  }
