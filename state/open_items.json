@@ -2918,5 +2918,15 @@
   "opened": "2026-08-12 11:45",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 293,
+  "what": "cron_call_resolver 積木未派獨立驗證者",
+  "why": "本 session 系統提示明令不得呼叫 Agent 工具(同 #291 先例);代償=14 突變全 killed 零 no-op、old/new 差集對真 crontab 逐筆交代(140=140 剛好 5 換 5)、守衛正負對照都在自測裡",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-12 11:51",
+  "closed": null,
+  "note": ""
  }
 ]
