@@ -917,6 +917,18 @@
       "retired": "gate:violation 2026-08-03 — stale: 素材日 2026-07-24 已 10 天(型別 tldr 上限 4 天); duplicated_phrase: 相鄰重複片語:「in bio」"
     },
     {
+      "id": "eng_article_audit_taxonomy_202608",
+      "day": 85,
+      "caption": "我們把日報寄出前那道稽核閘門整個拆開,寫成技術文章公開了。\n\n30 項確定性檢查,每一項都對應一次真實事故——盤前寄的信不准寫完成式、佔位符 XXX 不准外洩、資料端沒有的「預期 EPS」一律判編造。\n\n最值得看的是兩個反例:防線自己變成事故那天,所有收信人同時卡在同一項檢查,重生換更強的模型也是同病,9 位最後收到的是備援版;還有一次誤殺,把年份和指數點位當成不該出現的股票代號。\n\n順便更正上一篇:寫成 31 項,真實是 30——第 31 項只活在程式註解裡,是查證指令自己數出來的幽靈。\n\n全文 → https://marketdaily.ai/blog/eng-audit-taxonomy-202608?utm_source=social&utm_medium=organic&utm_campaign=eng_article_audit_taxonomy\n\n#工程 #LLM #AI #財經日報 #MarketDaily",
+      "image": "eng_audit_taxonomy_202608.jpg",
+      "platforms": [
+        "instagram",
+        "facebook",
+        "threads",
+        "x"
+      ]
+    },
+    {
       "id": "win_2026-07-17_6669_hold",
       "day": 85,
       "image": "win_2026-07-17_6669_hold.png",
