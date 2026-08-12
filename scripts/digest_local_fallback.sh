@@ -187,8 +187,20 @@ if [ "$MARKET" = tw ]; then
   # 此時 docs/ 殘留 dirty/untracked=別視窗 WIP/草稿——跳過本輪部署(archive 已 commit,
   # 之後任一乾淨班次 deploy 會帶上線)。本檔不 source lib(獨立 clone 通用檔),自包含實作。
   if [ -z "$(git status --porcelain -uall -- docs/ 2>/dev/null)" ]; then
-    npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true \
-      --commit-message "daily refresh (local fallback)" || echo "pages deploy failed"
+    # 本機 wrangler 憑證死掉時退到第二條腿(GitHub Actions,見 2026-08-12 open #270)。
+    # 這裡的 docs/ 剛通過「零 dirty/untracked」檢查且上面已 push,所以 origin/main == 磁碟現狀,
+    # 備援腿發得出正確內容;它自己也 fail-closed(有落差就 exit 2 不發舊版)。
+    # 本檔刻意不 source lib(獨立 clone 通用檔),所以這段是自包含的,不用 cron_deploy_docs。
+    if ! npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true \
+           --commit-message "daily refresh (local fallback)"; then
+      echo "pages deploy failed → 改試備援腿(GitHub Actions)"
+      if [ -f scripts/deploy_docs_via_actions.sh ]; then
+        bash scripts/deploy_docs_via_actions.sh "fallback: digest_local_fallback" \
+          || echo "備援腿也沒發出去(兩條腿都斷)"
+      else
+        echo "找不到 scripts/deploy_docs_via_actions.sh,無備援腿"
+      fi
+    fi
     python3 scripts/indexnow_ping.py || echo "indexnow ping skipped"
   else
     echo "docs deploy 面有 WIP/untracked,本輪跳過部署(archive 已 commit)"

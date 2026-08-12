@@ -147,6 +147,28 @@ _cron_alert_dedup() {
   return 0
 }
 
+# cron_alert_failure NAME RC TAIL_MSG [LOG_PATH] → 推一則紅色失敗告警(帶同指紋去重)。
+# return 0=真的推了 / 1=冷卻期內被抑制。
+# 2026-08-12 從 cron_run_and_alert 抽出來:cron_deploy_docs 的「兩條腿都死」也要走同一套
+# 去重與訊息格式。**不准為了第二個呼叫端把去重邏輯複製一份**——判準被第二種寫法重寫,
+# 就是便宜那層安靜死掉的起點(見 memory capability_guard_reimplemented_in_second_language)。
+cron_alert_failure() {
+  local name="$1" rc="$2" tail_msg="$3" log="${4:-/dev/null}"
+  local suppressed prefix=""
+  if suppressed=$(_cron_alert_dedup "$name" "$tail_msg"); then
+    [ "${suppressed:-0}" -gt 0 ] && prefix="(冷卻期內相同錯誤已抑制 ${suppressed} 次)
+"
+    MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" \
+      "${CRON_NOTIFY_BIN:-$HOME/.marketdaily-fallback/notify_admin.py}" \
+      "🔴 winrig cron『${name}』失敗 rc=${rc} $(TZ=Asia/Taipei date '+%F %T')
+${prefix}--- log tail ---
+${tail_msg}" >/dev/null 2>&1
+    return 0
+  fi
+  echo "⏸ 相同錯誤指紋仍在冷卻期(${CRON_ALERT_DEDUP_SEC}s),本次不推 admin(累計抑制 $(_cron_alert_suppressed_count "$name") 次)" >> "$log"
+  return 1
+}
+
 cron_run_and_alert() {
   local name="$1"; shift
   [ "${1:-}" = "--" ] && shift
@@ -165,18 +187,7 @@ cron_run_and_alert() {
     # 同一個錯誤的指紋就對不起來(去重形同虛設)。用起跑前的 offset 精準切這輪。
     tail_msg=$(tail -c "+$((off + 1))" "$log" 2>/dev/null | tail -c 800)
     [ -n "$tail_msg" ] || tail_msg=$(tail -c 800 "$log")
-    local suppressed
-    if suppressed=$(_cron_alert_dedup "$name" "$tail_msg"); then
-      local prefix=""
-      [ "${suppressed:-0}" -gt 0 ] && prefix="(冷卻期內相同錯誤已抑制 ${suppressed} 次)
-"
-      MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" "$HOME/.marketdaily-fallback/notify_admin.py" \
-        "🔴 winrig cron『${name}』失敗 rc=${rc} $(TZ=Asia/Taipei date '+%F %T')
-${prefix}--- log tail ---
-${tail_msg}" >/dev/null 2>&1
-    else
-      echo "⏸ 相同錯誤指紋仍在冷卻期(${CRON_ALERT_DEDUP_SEC}s),本次不推 admin(累計抑制 $(_cron_alert_suppressed_count "$name") 次)" >> "$log"
-    fi
+    cron_alert_failure "$name" "$rc" "$tail_msg" "$log"
   fi
   return "$rc"
 }
@@ -536,4 +547,99 @@ cron_privacy_deploy_guard() {
     return 1
   fi
   return 0
+}
+
+# ---------------------------------------------------------------------------
+# cron_deploy_docs TAG "commit message" [verify_url]   ——  docs/ 部署的唯一入口
+# ---------------------------------------------------------------------------
+# 2026-08-12 建立。背景:winrig 的 wrangler OAuth 憑證死掉(open #270,只有 Delvin 能重登)
+# ⇒ 11 個會 deploy docs/ 的呼叫端**同時**啞掉、公版存檔頁 404 三個半小時。那天補的兩件事
+# (備援腳本 deploy_docs_via_actions.sh、deploy_drift 守衛自癒)都只是「事後補發」:
+# 守衛只認 3 個訊號(manifest 日期 / blog 篇數 / 最新存檔 200),社群卡、SEO 文章、戰績頁
+# 的部署失敗它一個都看不到。這個函式把「第二條腿」變成每個呼叫端天生就有的能力。
+#
+# 兩條腿:
+#   ① 本機腿 `npx wrangler pages deploy docs`  → 上傳**磁碟現狀**
+#   ② 備援腿 GitHub Actions(GH secret CLOUDFLARE_API_TOKEN)→ 只發得出 **origin/main**
+# 所以順序是本機優先;本機死了才退備援。
+#
+# ⚠️ 這裡最容易出的錯是「部署成功但發的是上一版」:呼叫端幾乎都是**先 deploy 再 commit+push**
+# (site_scan、tldr、win_card…),本機腿失敗的當下新內容還只在磁碟上,備援腿發出去的會是
+# 舊的 origin。deploy_docs_via_actions.sh 對這種落差 fail-closed(exit 2),我們**不覆寫**它,
+# 改成登記一張 pending 單:等呼叫端自己 commit+push 完,deploy_drift(*/30)會拿這張單補發。
+# 「不發」比「發了舊版還回報成功」安全——後者沒有任何人看得出來。
+#
+# 告警語意:本機腿失敗但備援腿發成功 = 內容已上線,不推紅色(每天一則 🟡 說明正在用備援腿,
+# 根因由 credential_watch 盯);兩條腿都沒把內容送上線才走 cron_alert_failure 推紅。
+#
+# return 0=內容已上線 / 非 0=沒上線(已告警,可能已登記 pending)
+CRON_DEPLOY_PENDING_DIR="${CRON_DEPLOY_PENDING_DIR:-$HOME/.marketdaily-fallback/state/deploy_pending}"
+
+_cron_deploy_pending_mark() {   # TAG MSG VERIFY_URL
+  mkdir -p "$CRON_DEPLOY_PENDING_DIR" 2>/dev/null || return 0
+  printf '%s|%s|%s\n' "$(date +%s)" "$2" "${3:-}" > "$CRON_DEPLOY_PENDING_DIR/$1" 2>/dev/null || true
+}
+_cron_deploy_pending_clear() { rm -f "$CRON_DEPLOY_PENDING_DIR/$1" 2>/dev/null || true; }
+
+# 用了備援腿 → 每天最多一則 🟡(11 個呼叫端各推一則 = 告警疲勞;根因是同一個)
+_cron_deploy_fallback_notice() {
+  local mark="$CRON_DEPLOY_PENDING_DIR/../.deploy_fallback_notice_$(TZ=Asia/Taipei date +%F)"
+  [ -f "$mark" ] && return 0
+  mkdir -p "$(dirname "$mark")" 2>/dev/null || return 0
+  : > "$mark" 2>/dev/null || true
+  MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" \
+    "${CRON_NOTIFY_BIN:-$HOME/.marketdaily-fallback/notify_admin.py}" \
+    "🟡 [winrig] docs 部署正在用**備援腿**(GitHub Actions):本機 wrangler 那條腿發不出去(首見於『$1』)。
+內容有上線,不影響交付;但根因還在(wrangler OAuth 憑證,open #270,需 npx wrangler login)。今天只推這一則。" \
+    >/dev/null 2>&1 || true
+}
+
+cron_deploy_docs() {
+  local tag="$1" msg="$2" verify="${3:-}"
+  local date_tag log_dir log off rc bkrc tail_msg
+  local -a wcmd
+  read -r -a wcmd <<< "${CRON_WRANGLER_BIN:-npx wrangler}"
+
+  cron_privacy_deploy_guard || return 1
+
+  date_tag=$(TZ=Asia/Taipei date +%Y-%m-%d)
+  log_dir="$CRON_LIB_REPO/logs"; mkdir -p "$log_dir"
+  log="$log_dir/${tag}_${date_tag}.log"
+  echo "=== $(date '+%F %T %z') cron_deploy_docs:${tag} leg1=本機 wrangler ===" >> "$log"
+  off=$(stat -c %s "$log" 2>/dev/null || echo 0)
+
+  ( cd "$CRON_LIB_REPO" && "${wcmd[@]}" pages deploy docs \
+      --project-name marketdaily --commit-dirty=true --commit-message "$msg" ) >> "$log" 2>&1
+  rc=$?
+  echo "=== leg1 end rc=${rc} ===" >> "$log"
+  if [ "$rc" -eq 0 ]; then
+    _cron_deploy_pending_clear "$tag"
+    return 0
+  fi
+
+  echo "⚠️ 本機腿失敗 rc=${rc},改試備援腿(GitHub Actions,發的是 origin/main)" >> "$log"
+  bkrc=0
+  ( cd "$CRON_LIB_REPO" && bash \
+      "${CRON_DEPLOY_BACKUP_SCRIPT:-$CRON_LIB_REPO/scripts/deploy_docs_via_actions.sh}" \
+      "fallback:${tag} — ${msg}" "$verify" ) >> "$log" 2>&1 || bkrc=$?
+  echo "=== leg2 end rc=${bkrc} ===" >> "$log"
+
+  if [ "$bkrc" -eq 0 ]; then
+    _cron_deploy_pending_clear "$tag"
+    _cron_deploy_fallback_notice "$tag"
+    echo "✅ 備援腿把內容送上線了(本機腿仍是壞的)" >> "$log"
+    return 0
+  fi
+
+  if [ "$bkrc" -eq 2 ]; then
+    # 落差 = 新內容還沒進 origin。呼叫端接下來會自己 commit+push,交給 deploy_drift 補發。
+    _cron_deploy_pending_mark "$tag" "$msg" "$verify"
+    echo "📌 已登記 pending:等 docs/ push 到 origin 後,deploy_drift(*/30)會用備援腿補發" >> "$log"
+  fi
+
+  tail_msg=$(tail -c "+$((off + 1))" "$log" 2>/dev/null | tail -c 800)
+  [ -n "$tail_msg" ] || tail_msg=$(tail -c 800 "$log")
+  cron_alert_failure "$tag" "$rc" "兩條腿都沒把內容送上線(本機 rc=${rc} / 備援 rc=${bkrc})
+${tail_msg}" "$log"
+  return "$rc"
 }
