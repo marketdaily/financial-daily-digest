@@ -645,3 +645,29 @@
 {"date": "2026-08-11", "code": "2033", "source": "leadflow", "level": "red", "signal": "佳大(2033) 無消息近漲停+9.9%(連2根,5日+30.5%),疑資訊先行資金|外資+投信近3日僅+394張,法人未同步=隱形買盤", "price_at_signal": 20.55}
 {"date": "2026-08-11", "code": "3026", "source": "leadflow", "level": "red", "signal": "禾伸堂(3026) 無消息近漲停+9.9%(連3根,5日+29.7%),疑資訊先行資金|外資+投信近3日僅-4548張,法人未同步=隱形買盤", "price_at_signal": 646.0}
 {"date": "2026-08-11", "code": "6834", "source": "leadflow", "level": "red", "signal": "天二科技(6834) 無消息近漲停+9.7%(連2根,5日+13.4%),疑資訊先行資金|外資+投信近3日+1134張", "price_at_signal": 106.0}
+{"date": "2026-08-12", "code": "2303", "source": "revenue", "level": "yellow", "signal": "聯電(2303):2026/07 營收公告、YoY +19.0%、MoM +3.1%", "price_at_signal": 123.0}
+{"date": "2026-08-12", "code": "2316", "source": "tw_financials", "level": "red", "signal": "楠梓電(2316):毛利率QoQ驟降-5.1個百分點(較 115Q1 至 115Q2)", "price_at_signal": 161.5}
+{"date": "2026-08-12", "code": "3339", "source": "sbl", "level": "yellow", "signal": "泰谷(3339):機構借券賣出5日增11.6%(溫和加碼放空)", "price_at_signal": 38.9}
+{"date": "2026-08-12", "code": "3701", "source": "revenue", "level": "yellow", "signal": "大眾控(3701):2026/07 營收公告、YoY +6.7%、MoM +30.9%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": 41.5}
+{"date": "2026-08-12", "code": "4541", "source": "investor_conf", "level": "red", "signal": "晟田(4541):法說會1天內召開(波動事件窗口逼近)", "price_at_signal": 70.3}
+{"date": "2026-08-12", "code": "4967", "source": "sbl", "level": "yellow", "signal": "十銓(4967):機構借券賣出5日遽減-32.5%(回補潮,空頭力道減弱)", "price_at_signal": 279.5}
+{"date": "2026-08-12", "code": "4973", "source": "sbl", "level": "red", "signal": "廣穎電通(4973):機構借券賣出5日遽增20.5%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": 158.5}
+{"date": "2026-08-12", "code": "5263", "source": "tw_financials", "level": "red", "signal": "智崴(5263):毛利率QoQ驟降-6.4個百分點(較 115Q1 至 115Q2)", "price_at_signal": 91.0}
+{"date": "2026-08-12", "code": "6683", "source": "margin", "level": "yellow", "signal": "雍智科技(6683):融資5日暴增21.8%(散戶追高過熱)", "price_at_signal": 1270.0}
+{"date": "2026-08-12", "code": "9958", "source": "tw_financials", "level": "red", "signal": "世紀鋼(9958):毛利率QoQ驟降-7.3個百分點(較 115Q1 至 115Q2)", "price_at_signal": 107.0}
+{"date": "2026-08-12", "code": "1560", "source": "revenue", "level": "red", "signal": "中砂(1560):2026/07 營收公告、YoY +26.6%(強勁)、MoM +6.4%", "price_at_signal": 728.0}
+{"date": "2026-08-12", "code": "8222", "source": "revenue", "level": "red", "signal": "寶一(8222):2026/07 營收公告、YoY +46.8%(強勁)、MoM +33.6%", "price_at_signal": 39.1}
+{"date": "2026-08-12", "code": "7743", "source": "mops_news", "level": "yellow", "signal": "金利食安(7743) 重訊[2026-08-11]:公告本公司副總經理晉升案", "price_at_signal": 21.0}
+{"date": "2026-08-12", "code": "2109", "source": "revenue", "level": "red", "signal": "華豐(2109):2026/07 營收公告、YoY +24.4%(強勁)、MoM +30.9%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": 14.75}
+{"date": "2026-08-12", "code": "8442", "source": "revenue", "level": "yellow", "signal": "威宏-KY(8442):2026/07 營收公告、YoY +13.0%、MoM -1.2%", "price_at_signal": 44.0}
+{"date": "2026-08-12", "code": "5904", "source": "tw_rank", "level": "red", "signal": "寶雅*(5904) 量能竄榜:今日量榜第11(近10日未進過top50,-5.3%,84,375張)", "price_at_signal": 82.5}
+{"date": "2026-08-12", "code": "2377", "source": "tw_rank", "level": "red", "signal": "微星(2377) 量能竄榜:今日量榜第20(近10日未進過top50,+9.7%,45,456張)", "price_at_signal": 169.0}
+{"date": "2026-08-12", "code": "4413", "source": "leadflow", "level": "red", "signal": "飛寶企業(4413) 無消息近漲停+10.0%(量能13.7×,5日+18.0%),疑資訊先行資金|外資+投信近3日僅+1張,法人未同步=隱形買盤", "price_at_signal": 17.05}
+{"date": "2026-08-12", "code": "4510", "source": "leadflow", "level": "red", "signal": "高鋒(4510) 無消息近漲停+10.0%(量能7.2×,5日+16.5%),疑資訊先行資金|外資+投信近3日+1698張", "price_at_signal": 44.55}
+{"date": "2026-08-12", "code": "8358", "source": "leadflow", "level": "red", "signal": "金居(8358) 無消息近漲停+10.0%(連3根,5日+19.7%),疑資訊先行資金|外資+投信近3日僅-4794張,法人未同步=隱形買盤", "price_at_signal": 418.5}
+{"date": "2026-08-12", "code": "6291", "source": "leadflow", "level": "yellow", "signal": "沛亨(6291) 無消息近漲停+10.0%(量能1.5×,5日+5.9%),疑資訊先行資金", "price_at_signal": 402.5}
+{"date": "2026-08-12", "code": "3066", "source": "leadflow", "level": "yellow", "signal": "李洲(3066) 無消息近漲停+10.0%(量能2.9×,5日+8.7%),疑資訊先行資金", "price_at_signal": 23.75}
+{"date": "2026-08-12", "code": "5464", "source": "leadflow", "level": "yellow", "signal": "霖宏(5464) 無消息近漲停+9.9%(量能2.3×,5日+7.8%),疑資訊先行資金", "price_at_signal": 67.5}
+{"date": "2026-08-12", "code": "6538", "source": "leadflow", "level": "yellow", "signal": "倉和(6538) 無消息近漲停+9.9%(量能1.5×,5日+3.2%),疑資訊先行資金", "price_at_signal": 161.5}
+{"date": "2026-08-12", "code": "5864", "source": "leadflow", "level": "yellow", "signal": "致和證(5864) 無消息近漲停+9.9%(量能2.1×,5日+7.4%),疑資訊先行資金", "price_at_signal": 33.45}
+{"date": "2026-08-12", "code": "6546", "source": "leadflow", "level": "red", "signal": "正基(6546) 無消息近漲停+9.9%(量能4.8×,5日+15.1%),疑資訊先行資金|外資+投信近3日僅+270張,法人未同步=隱形買盤", "price_at_signal": 68.0}
