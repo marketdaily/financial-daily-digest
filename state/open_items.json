@@ -2818,5 +2818,25 @@
   "opened": "2026-08-12 09:18",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 283,
+  "what": "備援起跑閘新修法(呼叫 main._archive_delivered)尚未在真實 failover 派工跑過首班",
+  "why": "所有驗證都是離線的(本機 http server 驗 308 語義、yml 契約、5 突變全killed、同一道指令對真實日期實跑 DELIVERED/ABSENT 各驗過);真首班=watchdog 下一次派 failover(存檔停更期間每班都會派),要在 Actions log 確認出現「當班公版存檔已交付…退場不重寄」且 run 時長從 ~52min 掉到 ~2min,而不是 ::warning:: 判定失敗",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-12 09:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 284,
+  "what": "公版存檔頁自 2026-08-12 起停止更新(marketdaily.ai/output/ 今日 404),全站最大流量頁面群+免費訂閱CTA漏斗跟著凍結",
+  "why": "根因是 #270 wrangler OAuth 憑證死掉導致 pages deploy 全斷;我已實測 .env 兩把 CLOUDFLARE_* token 皆無 KV/deploy 權限=沒有繞過路徑,只能 Delvin 在 winrig 跑一次 npx wrangler login 點瀏覽器授權",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-12 09:44",
+  "closed": null,
+  "note": ""
  }
 ]
