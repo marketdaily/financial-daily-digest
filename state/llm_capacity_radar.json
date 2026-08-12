@@ -56,6 +56,7 @@
       "devstral-2512",
       "devstral-latest",
       "devstral-medium-latest",
+      "glm-5-2",
       "labs-leanstral-1-5",
       "labs-leanstral-1-5-1",
       "magistral-small-latest",
@@ -101,7 +102,8 @@
       "voxtral-mini-tts-2603",
       "voxtral-mini-tts-latest",
       "voxtral-small-2507",
-      "voxtral-small-latest"
+      "voxtral-small-latest",
+      "zai-glm-5-2"
     ],
     "ollama": [
       "nomic-embed-text:latest",
@@ -115,11 +117,13 @@
       "google/gemma-4-26b-a4b-it:free",
       "google/gemma-4-31b-it:free",
       "inclusionai/ling-3.0-tiny:free",
+      "liquid/lfm-2.5-2.6b:free",
       "nvidia/nemotron-3-nano-30b-a3b:free",
       "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
       "nvidia/nemotron-3-super-120b-a12b:free",
       "nvidia/nemotron-3-ultra-550b-a55b:free",
       "nvidia/nemotron-3.5-content-safety:free",
+      "nvidia/nemotron-3.5-lightning:free",
       "nvidia/nemotron-nano-12b-v2-vl:free",
       "nvidia/nemotron-nano-9b-v2:free",
       "openai/gpt-oss-20b:free",
@@ -127,5 +131,5 @@
       "poolside/laguna-xs-2.1:free"
     ]
   },
-  "updated": "2026-08-11 10:10"
+  "updated": "2026-08-12 10:10"
 }
