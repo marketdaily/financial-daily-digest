@@ -2838,5 +2838,15 @@
   "opened": "2026-08-12 09:44",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 285,
+  "what": "eng_blog/published.log 被 .gitignore 擋,發布狀態只存在 winrig 本機",
+  "why": "週更 cron 的『下一篇該發哪篇』判準之一不在版控;若 winrig 檔案遺失會重發已發過的文章(content_calendar 有備援訊號但 playbook 未讀它做判準)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-12 10:11",
+  "closed": null,
+  "note": ""
  }
 ]
