@@ -39,7 +39,7 @@ npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true
 - Cloudflare 帳號：`delvin.12345678@gmail.com`
 - Account ID：`a92082d84f08b1d4883facbf1a1dc445`
 - 一律用 `npx wrangler`（非全域安裝），有未 commit 變更加 `--commit-dirty=true`
-- **⚠️ 部署有兩條腿，本機這條不是唯一（2026-08-12 事故）**：winrig 的 `npx wrangler` 走 OAuth 憑證，那份憑證死掉時 12 支會 deploy 的 runner 一起啞、公版存檔頁 404 而**每支 cron 各自 exit 0**。第二條腿＝`bash scripts/deploy_docs_via_actions.sh "<原因>" [驗證URL]`（GH Actions `pages_deploy.yml` + GH secret `CLOUDFLARE_API_TOKEN`，不碰本機憑證）。⚠️ 它發的是 **origin/main**，不是磁碟現狀——腳本會擋住有落差的呼叫，要先 push。`deploy_drift` 守衛（*/30）偵測到線上落後 origin 時會自己走這條腿補發（每日 3 次上限，發前用 `deploy_autoheal_verdict.py` 判 HEAL/REGRESS/NOGAIN，線上比 origin 新一律不發＝不自己製造回捲）。
+- **⚠️ 部署有兩條腿，本機這條不是唯一（2026-08-12 事故）**：winrig 的 `npx wrangler` 走 OAuth 憑證，那份憑證死掉時 12 支會 deploy 的 runner 一起啞、公版存檔頁 404 而**每支 cron 各自 exit 0**。第二條腿＝`bash scripts/deploy_docs_via_actions.sh "<原因>" [驗證URL]`（GH Actions `pages_deploy.yml` + GH secret `CLOUDFLARE_API_TOKEN`，不碰本機憑證）。⚠️ 它發的是 **origin/main**，不是磁碟現狀——腳本會擋住有落差的呼叫，要先 push。**cron 裡不要自己寫這兩條腿**：一律呼叫 `cron_deploy_docs "<tag>" "<commit message>" [verify_url]`（`scripts/lib_cron_runner.sh`，2026-08-12 起 11 個呼叫端都用它）——本機腿死掉自動退備援腿；新內容還沒 push 時**不發舊版**，改留 pending 單等 push 後由 deploy_drift 補發。`deploy_drift` 守衛（*/30）偵測到線上落後 origin 時會自己走這條腿補發（每日 3 次上限，發前用 `deploy_autoheal_verdict.py` 判 HEAL/REGRESS/NOGAIN，線上比 origin 新一律不發＝不自己製造回捲）。
 
 ### i18n 系統
 - 用 `data-i18n`、`data-i18n-html`、`data-i18n-placeholder` 屬性標記需翻譯元素
