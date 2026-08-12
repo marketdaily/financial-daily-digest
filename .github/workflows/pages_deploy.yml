@@ -1,0 +1,87 @@
+name: 公版靜態站部署(備援腿)
+
+# winrig 的 `npx wrangler` 走 OAuth 憑證,那份憑證死掉時(2026-08-12 事故 open #270)
+# 全部 12 支會 deploy 的 runner 一起啞掉——公版存檔頁、SEO 頁、戰績頁、品質戰情頁
+# 通通停更,而且**零告警**(cron 各自 exit 0,只是少了一次 deploy)。
+# 這支是第二條腿:用 GH secret CLOUDFLARE_API_TOKEN(API token,不是 OAuth)部署同一份
+# docs/,winrig 憑證死掉時仍然發得出去。呼叫端:scripts/deploy_docs_via_actions.sh。
+#
+# ⚠️ 只做 deploy,不生成任何內容、不寄信、不 commit。部署的是 **origin/main 上的 docs/**,
+#    不是 winrig 磁碟現狀——所以要先把 docs/ push 上來再叫它。
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "為什麼要部署(會寫進 CF deployment commit message)"
+        required: true
+        type: string
+      verify_url:
+        description: "部署後要驗 200 的 URL(留空=只驗首頁)"
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-deploy-fallback
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 隱私斷路器(docs/output/ 不得有 *_personal_*)
+        # 抄 lib_cron_runner.sh 的 cron_privacy_deploy_guard:個人化日報含訂閱者持股,
+        # 部署即公開可爬。這裡是 git checkout 理論上不該有,但 deploy 前的斷路器
+        # 一律 fail-closed,不因為「應該不會發生」就省略。
+        run: |
+          found=$(find docs/output -name '*_personal_*' -print -quit 2>/dev/null || true)
+          if [ -n "$found" ]; then
+            echo "::error::docs/output/ 有個人化檔案,擋死部署:$found"
+            exit 1
+          fi
+          echo "隱私斷路器通過"
+
+      - name: 部署盤點
+        run: |
+          echo "commit=$(git rev-parse --short HEAD)"
+          echo "docs/ 檔案數=$(find docs -type f | wc -l)"
+          echo "最新存檔頁:"
+          ls -1 docs/output/ | grep -E '^digest_[0-9]{4}-' | sort | tail -4
+
+      - name: Setup Node (for wrangler)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Deploy to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: a92082d84f08b1d4883facbf1a1dc445
+        run: |
+          npx wrangler@latest pages deploy docs --project-name marketdaily \
+            --commit-dirty=true \
+            --commit-message "fallback deploy: ${{ inputs.reason }}"
+
+      - name: 驗證線上真的更新了
+        # CF Pages 邊緣傳播要幾十秒,重試 6 次 × 15s。-L 跟隨 308(存檔頁 .html 會 308,
+        # 不跟隨就會把活著的頁面誤判成死的——2026-08-12 起跑閘死碼就是這個病)。
+        run: |
+          url="${{ inputs.verify_url }}"
+          [ -n "$url" ] || url="https://marketdaily.ai/"
+          for i in $(seq 1 6); do
+            code=$(curl -s -o /dev/null -L -w '%{http_code}' "$url" || echo 000)
+            echo "第 $i 次:$url -> $code"
+            [ "$code" = "200" ] && exit 0
+            sleep 15
+          done
+          echo "::error::部署完成但 $url 仍非 200(最後一次 $code)"
+          exit 1
