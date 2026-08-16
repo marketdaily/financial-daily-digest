@@ -10,7 +10,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash '/home/userdelvin/Delvin-agent/.claude/hooks/session-context.sh'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-context.sh\"",
             "statusMessage": "讀取跨視窗近況..."
           }
         ]
@@ -22,7 +22,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash '/home/userdelvin/Delvin-agent/.claude/hooks/block-mass-email.sh'",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/block-mass-email.sh\"",
             "statusMessage": "檢查寄信封鎖規則..."
           },
           {
