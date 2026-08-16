@@ -104,6 +104,8 @@ def harness(tmp, src=None):
     m.wakes = []
     m.logins = 0
     m.push_ok = True
+    m.desktop_ok = False       # 預設關閉:不改變既有測試對「webpush 失敗=沒送到」的假設
+    m.desktop_fallbacks = []
     m._env = lambda p: {"SINOPAC_API_KEY": "k", "SINOPAC_SECRET_KEY": "s",
                         "MARKETDAILY_ALERT_TOKEN": "tok"}
 
@@ -115,6 +117,14 @@ def harness(tmp, src=None):
         m.pushes.append(msg)
         return True
     m.push = _push
+
+    def _desktop_fallback(msg):
+        m.desktop_fallbacks.append(msg)
+        if m.desktop_ok:
+            m.pushes.append(msg)   # 桌面 toast 送達也算「講給老闆聽了」,沿用同一份斷言語彙
+            return True, ""
+        return False, "desktop fallback mocked failure"
+    m._desktop_fallback = _desktop_fallback
     m.wake_machine = lambda note: m.wakes.append(note) or "sent"
     m.SELF_ERR_STAMP = os.path.join(tmp, ".self_err")
     return m
@@ -340,6 +350,33 @@ def run_suite():
         ok, why = m._try_push("x", "")
         check("12b _try_push 對空 token 回 False 並說明原因",
               ok is False and "TOKEN" in why, (ok, why))
+
+    # --- 12x. ⭐open #67:webpush 死掉時桌面 toast 是獨立備援,不可以整支跟著啞掉 ---
+    with tempfile.TemporaryDirectory() as tmp:
+        m = harness(tmp)
+        m.push_ok = False              # webpush 這條通道死了(壞 token / CF 403 都長這樣)
+        m.desktop_ok = True            # 桌面 toast(獨立通道,不吃 token)還活著
+        ok, why = m._try_push("x", "tok")
+        check("12c webpush 死但桌面活 → 仍算送達(不是整支啞掉)", ok is True, (ok, why))
+        check("12d 桌面備援有被真的呼叫到", m.desktop_fallbacks == ["x"], m.desktop_fallbacks)
+        check("12e why 誠實記錄降級過程(供事後稽核)", "toast" in why, why)
+    with tempfile.TemporaryDirectory() as tmp:
+        m = harness(tmp)
+        m.push_ok = False
+        m.desktop_ok = False           # 兩條通道都死 → 維持原本「沒送到就重試」語意
+        ok, why = m._try_push("x", "tok")
+        check("12f 兩通道皆死 → 仍回 False(不可假裝送達)", ok is False, (ok, why))
+        check("12f2 ⭐兩通道皆死時 why 要留下桌面備援自己的失敗原因(不可只印 webpush 那半)",
+              "desktop" in why and "mocked failure" in why, why)
+    with tempfile.TemporaryDirectory() as tmp:
+        # ⭐end-to-end:token 缺席(不是 webpush 出錯,是完全没有 token)一樣要走桌面備援
+        m = harness(tmp)
+        m.date = FakeDate(date(2026, 8, 3))
+        m.desktop_ok = True
+        m._save_watch({"first_seen": "2026-07-30"})
+        m.overdue_alert({"stock": False, "futopt": None}, date(2026, 8, 3), "")
+        check("12g token 缺席時逾期告警仍能靠桌面 toast 記帳(不是永遠卡在重試)",
+              m._load_watch()[0].get("alerted_at_biz") == 2, m._load_watch()[0])
 
     # --- 13. list_positions 沒權限 / logout 一定被呼叫 ---
     with tempfile.TemporaryDirectory() as tmp:
@@ -669,6 +706,29 @@ def run_suite():
               any("叫不醒" in p or "找不到" in p for p in m.pushes), m.pushes)
 
 
+def desktop_fallback_integration_test():
+    """⭐驗證者第 1 輪 F1:`harness()` 把 `_desktop_fallback` 整個換成 Python stub,
+    35/35 mutation 全咬只證明 `_try_push` 的控制流對,完全沒碰到真正的
+    `subprocess.run([_NOTIFY_PY, NOTIFY_ADMIN, ...])` 那一行。2026-08-05
+    `mingshu_social_runner.sh` 才踩過「裸 python3 沒裝 notify_admin.py 需要的
+    dotenv,備援通道自己 ModuleNotFoundError 死給你看」,2026-08-06 在這支偵測器上
+    復發——同一個環境層地雷,mock 測試結構性咬不到。這裡用真直譯器+真檔案跑一次,
+    刻意 0 個訊息參數(notify_admin.py 在那之前就會匯入 dotenv 並印用法退出,
+    不會走到 web_push/desktop_toast,不會真的推播或彈 toast)。
+    """
+    print("\n[真實整合測試:_NOTIFY_PY 直譯器可以真的匯入 notify_admin.py]")
+    m = load()
+    check("dt1 _NOTIFY_PY 指向存在的檔案", os.path.exists(m._NOTIFY_PY), m._NOTIFY_PY)
+    if not os.path.exists(m.NOTIFY_ADMIN):
+        SKIPPED.append(f"desktop_fallback_integration_test:找不到 {m.NOTIFY_ADMIN}(非本機環境)")
+        print(f"  SKIP 找不到 {m.NOTIFY_ADMIN}")
+        return
+    r = subprocess.run([m._NOTIFY_PY, m.NOTIFY_ADMIN], capture_output=True, text=True, timeout=20)
+    check("dt2 ⭐真直譯器匯入 notify_admin.py 不炸(0 參數只印用法,不會真的推播/toast)",
+          "ModuleNotFoundError" not in r.stderr, r.stderr[:300])
+    check("dt3 0 參數依約定回用法錯誤 exit 2(不是意外成功推播)", r.returncode == 2, r.returncode)
+
+
 def contract_test():
     """⭐驗證者 F5:用**真的 shioaji.Account** 驗分腿,不用自刻 fixture。
 
@@ -774,8 +834,14 @@ MUTATIONS = [
      "if ok:\n            announced.add(kind)",
      "if True:\n            announced.add(kind)"),
     ("token 缺席當成不用送",
-     'if not tok:\n        return False, "MARKETDAILY_ALERT_TOKEN 缺席,告警無法送出"',
-     'if not tok:\n        return True, ""'),
+     '    ok, why = False, ""\n    if not tok:',
+     '    ok, why = True, ""\n    if not tok:'),
+    ("webpush 死掉不試桌面備援(open #67 迴歸:唯一通道死了就整支啞掉)",
+     '    d_ok, d_why = _desktop_fallback(msg)\n    if d_ok:',
+     '    d_ok, d_why = _desktop_fallback(msg)\n    if False:'),
+    ("桌面備援失敗原因被吞掉(驗證者第1輪F2迴歸:第二個沉默的守衛)",
+     '    return False, f"webpush: {why}; desktop: {d_why}"',
+     '    return False, why'),
     ("逾期告警退回一輩子只推一次",
      "last is None or waited - last >= OVERDUE_REPEAT_BIZ_DAYS",
      "last is None"),
@@ -855,6 +921,7 @@ if __name__ == "__main__":
         sys.exit(run_mutations())
     run_suite()
     contract_test()
+    desktop_fallback_integration_test()
     for s in SKIPPED:
         print("  ⏭️ SKIP:", s)
     if FAILED:

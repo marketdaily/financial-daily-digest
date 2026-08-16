@@ -83,6 +83,19 @@ LOCK = os.path.join(tempfile.gettempdir(), ".check_signed.lock")
 # AccountType.Intl('H')=複委託/海外。認得、但與「證券/期貨過檔」這件事無關 → 跳過而非拋例外。
 IGNORED_LEG_CODES = {"H"}
 ALERT_WORKER = "https://marketdaily-alert-worker.delvin-12345678.workers.dev"
+# open #67:webpush 是這支偵測器唯一的告警通道——token 遺失/CF 403 時所有 alert_* 函式
+# 全部退化成 print 進沒人讀的 cron log,偵測器看起來活著(rc=0)實際上啞了(Mac 守衛前例:
+# 旋轉後成舊值,啞了三週沒人發現)。桌面 toast 走 Windows PowerShell,完全不吃
+# MARKETDAILY_ALERT_TOKEN/alert-worker,是真正獨立的第二通道。
+NOTIFY_ADMIN = os.path.expanduser("~/.marketdaily-fallback/notify_admin.py")
+# ⚠️ 驗證者分離 F1(2026-08-06)抓到:裸 "python3" 會解到系統直譯器,沒裝 notify_admin.py
+# 需要的 dotenv,fallback 當場 ModuleNotFoundError——跟 open #67 要解的問題一模一樣(通道
+# 看起來接上了,實際上啞了),而且前一天(2026-08-05,mingshu_social_runner.sh)才踩過同一個坑。
+# 這支偵測器跑在專屬 venv(crontab 指定 ~/.venvs/shioaji-bridge/bin/python),不能假設它繼承
+# 了 Delvin-agent 的 venv,所以要用**絕對路徑**明確指到裝了 dotenv 的那個直譯器。
+_NOTIFY_PY = os.path.expanduser("~/Delvin-agent/.venv/bin/python")
+if not os.path.exists(_NOTIFY_PY):
+    _NOTIFY_PY = "python3"
 
 
 def _env(path):
@@ -285,16 +298,53 @@ def biz_days_between(a, b):
     return n
 
 
+def _desktop_fallback(msg):
+    """webpush 失敗時的獨立備援通道(open #67):subprocess 呼叫共用的
+    `~/.marketdaily-fallback/notify_admin.py`,走 Windows 桌面 toast——不需要
+    MARKETDAILY_ALERT_TOKEN,也不打 alert-worker,token 死掉/CF 403 時仍能送達。
+
+    (訊息, 送達了嗎)——失敗原因(stderr/stdout)要回傳,不能吞掉:備援通道自己壞掉
+    (例如環境缺套件)必須看得出來,否則就是「第二個沉默的守衛」,重演 open #67 本身
+    (驗證者第 1 輪 F2)。
+    """
+    try:
+        r = subprocess.run(
+            [_NOTIFY_PY, NOTIFY_ADMIN, "🔐 永豐簽署偵測器(webpush 失敗降級)", msg],
+            timeout=20, capture_output=True, text=True)
+        if r.returncode == 0:
+            return True, ""
+        return False, f"desktop fallback rc={r.returncode}: {(r.stderr or r.stdout or '').strip()[:300]}"
+    except Exception as ex:
+        return False, f"desktop fallback {type(ex).__name__}: {ex}"
+
+
 def _try_push(msg, tok):
     """(送達了嗎, 說明)。token 缺席一律當**沒送到**——不可以當成「不用送」:
     token 遺失/改名時三個告警點會全部退化成 print 進沒人讀的 log,偵測器看起來活著
-    實際上啞了(Mac 守衛前例:旋轉後成舊值,啞了三週沒人發現)。"""
+    實際上啞了(Mac 守衛前例:旋轉後成舊值,啞了三週沒人發現)。⚠️ open #67:webpush
+    是這支偵測器過去**唯一**的通道——token 本身死掉時,retry-until-delivered
+    (`announced`/`alerted_at_biz` 只在成功後才記帳)只會讓它對著同一個死通道永遠重試,
+    從不真正送達。加桌面 toast 當獨立備援(不吃 token),webpush 失敗才觸發,
+    成功仍算「送達」記帳,失敗路徑(兩者皆敗)維持原本的重試語意不變。"""
+    ok, why = False, ""
     if not tok:
-        return False, "MARKETDAILY_ALERT_TOKEN 缺席,告警無法送出"
-    try:
-        return bool(push(msg, tok)), ""
-    except Exception as ex:
-        return False, f"{type(ex).__name__}: {ex}"
+        why = "MARKETDAILY_ALERT_TOKEN 缺席,webpush 無法送出"
+    else:
+        try:
+            ok = bool(push(msg, tok))
+        except Exception as ex:
+            why = f"{type(ex).__name__}: {ex}"
+        else:
+            if not ok:
+                why = "webpush 回應非成功"
+    if ok:
+        return True, ""
+    d_ok, d_why = _desktop_fallback(msg)
+    if d_ok:
+        return True, f"webpush 失敗({why}),桌面 toast 已送達"
+    # 兩通道皆敗:兩邊的失敗原因都要留下——只印 webpush 那半等於備援通道自己壞掉時
+    # 沒人看得出來(驗證者第 1 輪 F2,同一個「沉默的守衛」病灶換位置復發)。
+    return False, f"webpush: {why}; desktop: {d_why}"
 
 
 def alert_corrupt_watch(dropped, today, tok):
