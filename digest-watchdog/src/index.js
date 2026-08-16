@@ -302,13 +302,27 @@ export default {
     }
     if (url.pathname === "/status") {
       // 唯讀:回當天兩班存檔新鮮度 + winrig 心跳年齡,診斷用
-      const date = twDate();
+      // ?date=YYYY-MM-DD:對任一天問兩軌(唯讀診斷)。存在的理由不是方便——
+      // 沒有它,「origin 那軌查得到既有存檔」這條路只能等某天早上從告警文字反推,
+      // 等於把一條生產判斷路徑長期停在「只驗過失敗那半」。格式不合一律忽略。
+      const qd = url.searchParams.get("date");
+      const date = /^\d{4}-\d{2}-\d{2}$/.test(qd || "") ? qd : twDate();
       const out = { date };
       for (const shift of ["tw", "us"]) {
         try {
-          out[shift] = shiftSkipped(shift)
+          // 兩軌都揭露:光看 archived 分不出「沒寄」與「寄了但部署腿壞掉」,
+          // 而那正是 checkShift 現在用來決定推不推紅、派不派備援的依據。
+          // inOrigin=null ⇒ 第二軌問不到(GITHUB_TOKEN 沒權限/GitHub 掛了),
+          // 這時守望犬只剩半隻眼睛 —— 要在診斷端看得見,不能等明天早上從告警文字反推。
+          // 週末判斷要跟著**被查詢的那一天**走,不是跟著「現在」——查歷史日期時
+          // 拿今天的星期幾去判,會對著一個交易日回 skipped:weekend(診斷說謊)。
+          out[shift] = shiftSkipped(shift, new Date(`${date}T00:00:00Z`))
             ? { skipped: "weekend" }
-            : { archived: await archiveExists(shift, date), url: archiveUrl(shift, date) };
+            : {
+                archived: await archiveExists(shift, date),
+                inOrigin: await originHasArchive(env, shift, date),
+                url: archiveUrl(shift, date),
+              };
         } catch (e) { out[shift] = { error: e.message }; }
       }
       const raw = await env.USER_PREFS.get("watchdog:hb:winrig");
