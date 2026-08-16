@@ -2591,10 +2591,10 @@
  },
  {
   "id": 260,
-  "what": "QuietFix GBP 已建檔+地址/電話全填,只剩老闆本人錄驗證影片(Google 對此檔案僅開放影片驗證一種)",
-  "why": "QR/連結已交老闆(手機開 verify 連結,登入 delvin@quietfix.studio 要跟我拿 TOTP 碼);影片 1-2 分鐘一鏡到底:室外街景+官網/信箱畫面+Cloudflare 後台;送審最長 5 工作天,結果寄 delvin@quietfix.studio",
+  "what": "QuietFix GBP 建檔完成但【驗證暫停】——資格未達標,不要送影片(送了被退會留紀錄)",
+  "why": "Google 規定:純線上、不與客戶面對面接觸的商家不符 GBP 資格;無店面商家的影片驗證要的『名稱證明』=商業登記證明/發票/水電帳單(不是招牌),QuietFix 目前無商業登記 ⇒ 現在拍必退。解鎖順序=第一個真實客戶→商業登記(親辦約3000元/3-4週)→補驗證。另:服務範圍當初設『台灣』全國過寬,SAB 建議≤2小時車程(桃園+雙北+新竹),要驗證前先改。檔案留在帳號零成本,不刪。",
   "owner": "delvin",
-  "risk": "med",
+  "risk": "low",
   "opened": "2026-08-11 15:02",
   "closed": null,
   "note": ""
@@ -2696,8 +2696,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-11 23:45",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-16 15:43",
+  "note": "由更精確的 #新項取代:已做出無頭修法(貼 CLOUDFLARE_API_TOKEN 進 .env 即可,不必開瀏覽器),原描述『需 Delvin 點一下重新登入』已不是唯一路徑"
  },
  {
   "id": 271,
@@ -2926,6 +2926,286 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-12 11:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 294,
+  "what": "08-14~08-15 停機缺信 3 班(08-14 早+晚、08-15 早):winrig 08-13 20:20 後未開機,雲端備援腿【沒有接手】",
+  "why": "watchdog 心跳告警有發,但 dispatchFailover 沒產生任何 Actions run(repo 自 07-30 零 run)。最可能是 watchdog 的 GITHUB_TOKEN(v1 遺留 PAT)已失效;無法自證,因為 wrangler 未登入(#270)無法讀/換 secret",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-16 15:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 295,
+  "what": "雲端備援腿(GH Actions)整條沒有存活偵測:死了 17 天沒人發現",
+  "why": "credential_watch 只看 wrangler/alert token,沒把 watchdog 的 GITHUB_TOKEN 與『Actions 是否還跑得動』納入;dead-man 的第二層自己是啞的",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-16 15:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 296,
+  "what": "check_signed 桌面 toast 成功即記帳 announced,但老闆不在 winrig 桌面前時那則 toast 沒人看到,系統已認定講過了",
+  "why": "『送出去了』被當成『有人收到了』,與 open #67 同源只是輕一級;作者刻意取捨(比整支啞掉好),不在該輪擴大範圍修",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-16 15:09",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 297,
+  "what": "check_signed deadman r3 獨立驗證者未派(r2 被砍斷,本輪由改動者自己複驗)",
+  "why": "本 session 系統提示禁用 Agent 工具(同 #272/#273/#274/#280/#282/#291/#293);代償=真實路徑複驗+突變 36/36",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-16 15:09",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 298,
+  "what": "GitHub 帳號 marketdaily 的 Actions 又被停用(HTTP 422 Actions has been disabled for this user),同 06-12 那次",
+  "why": "今天 15:30 deploy_drift 實測即中;後果=①雲端日報備援腿(daily_digest.yml failover)派不出去 ②公版站部署第二條腿(pages_deploy.yml)也死 ③Actions 執行史整批變 404。與 #270(wrangler OAuth 被刪)疊加=兩條部署腿同時斷、日報無人可接手。申訴要 Delvin 本人向 GitHub Support 提",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-16 15:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 299,
+  "what": "【最高優先】winrig 沒有任何 Cloudflare 憑證 ⇒ docs/存檔/Workers 部署與 KV/分析全部發不出去(43 支程式連坐)。修法:CF dashboard 建 API token(Pages:Edit + Workers Scripts:Edit + Workers KV:Edit + Analytics:Read)→ 貼 CLOUDFLARE_API_TOKEN=... 進 ~/Delvin-agent/.env,下一輪 cron 全部自己活",
+  "why": "OAuth 檔 08-11 消失;今天已把 env token 這條無頭路接通(lib_cron_runner + cf_token 解析器,7 處手刻已收斂),所以不再需要開瀏覽器 —— 但 token 只有老闆的 CF 帳號能產",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-16 15:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 300,
+  "what": "【最高優先】GitHub 在帳號層停用 Actions(任何 dispatch 回 422),日報雲端 failover 與 docs 部署備援腿兩條同時失效,run 歷史被清空。需向 GitHub Support 申訴",
+  "why": "08-13 之後被停用;repos/*/actions/permissions 仍謊報 enabled:true,所以在此之前沒有任何守衛看得到。今天已加 credential_watch 的 github_actions 零副作用探針,以後會自己喊",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-16 15:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 301,
+  "what": "digest-watchdog 雙軌交付判斷(網站 OR git origin)已寫好+22 條自測,但**尚未部署**——wrangler 憑證死著發不出去",
+  "why": "憑證恢復後跑 npx wrangler deploy(digest-watchdog);在那之前每天早晚班仍會收到『日報可能沒寄』的假紅",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-16 15:43",
+  "closed": "2026-08-17 00:28",
+  "note": "已用 Mac 借來的 wrangler 憑證部署(version 8f963dcd,5 個 cron trigger 完好);雙軌在生產驗過兩個方向:08-13 archived+inOrigin 皆 true、08-14 皆 false"
+ },
+ {
+  "id": 302,
+  "what": "cf_token 唯一解析器 + lib_cron_runner 的 .env token 注入尚未在生產 cron 跑過(離線自測 16+11 條、突變 13 全 killed)",
+  "why": "真首跑=憑證補上後的下一輪 cron;在那之前所有路徑都會走到『沒有憑證』分支,驗不到 happy path",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-16 15:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 303,
+  "what": "2026-08-14(週五)早報+晚報整班缺席,訂閱者當天沒收到信;無法補寄(行情已過期+禁止手動寄信)",
+  "why": "winrig 08-13 20:20~08-16 15:01 停機 67h,雲端 failover 因 Actions 被停用而派不出去。事實已記錄,不補寄;防線缺口已在本輪修(watchdog 雙軌 + Actions 探針)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-16 15:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 304,
+  "what": "MEMORY.md 已 170 行(讀取上限 200),hook 要求壓到 140 行以下",
+  "why": "本輪為了記錄停機事故又加一行;壓縮要逐條確認子句在 topic 檔裡有副本才准砍(capability_memory_two_level_index),是獨立任務,不夾帶在事故修復裡做",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-16 15:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 305,
+  "what": "E28 突變 survivor 剩 13 個(batch_diversity_guard 3 / conditional_edge 7 / 另 3 待複驗)已交棒給自主機器,我這輪只收了 12 個",
+  "why": "16:00 發現自主機器 driver.sh 正在跑同一件事並已接手那兩支積木,依『系統不跟系統打架』鐵則收手;E28 仍在事件佇列 pending,機器沒收掉會持續重投遞",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-16 16:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 306,
+  "what": "cf_wiring_lint 與 wrangler_env 交接層尚未在真實夜巡跑過(首班=今晚 04:50)",
+  "why": "本機 20 條自測+3 突變全過,但夜巡環境(export PYTHONDONTWRITEBYTECODE/PYCACHEPREFIX)沒實跑過,依判準只有生產跑過才算完成",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-16 17:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 307,
+  "what": "pyc 遮蔽 r2 判 UNSOUND:7 findings 未修,含 HIGH(守衛對真的在遮蔽的 pyc 回 USED_OK)+F3 夜巡自測每晚往生產樹寫 pyc",
+  "why": "r2 19:20 才收割,規格已寫進 current_task.md,下一輪逐條修;E33 因此不 ack",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-16 17:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 308,
+  "what": "secret_redact r2 的 12 條修法本身還沒跑獨立驗證者",
+  "why": "r1 的驗證者判 UNSOUND 抓到 3 條 HIGH(兩個 sink 全裸+空斷言),r2 修完只有我自己複查過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 03:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 309,
+  "what": "credential_watch 自測在 cron 環境會 BASELINE_RED(11 條紅),今晚夜巡這支守衛掃不動",
+  "why": "已本機複現(乾淨殼 122/0 vs 帶 CLOUDFLARE_API_TOKEN 111/11):自測檔頭宣稱『全離線』,但 ②/⑪/⑬ 段走 resolve.cf_token(),其第一優先序就是環境變數;08-16 起 lib_cron_runner.sh 會 source cf_token/export.sh ⇒ 夜巡環境帶 live token。同時 F1 的 credential_watch 三態修過頭(借得到但驗不動也判 down)會在斷網/CF 5xx 時推假告警給 Delvin。兩條都在下一輪 current_task.md 的 N1/N2,尚未修",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-17 03:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 310,
+  "what": "MEMORY.md 索引漲破 17100(現 17538 字元),記憶索引預算守衛已 HARD 並推播 admin —— 這正是 #263 等待的觸發條件",
+  "why": "本輪新增一則記憶索引行後越線(我已把自己那行從 239→155 字元,但越線是既有狀態:我加之前約 17372 已 > 17100)。正解不是再壓縮(memory_compact 量測顯示連結語法已佔 66%),是照 #263 用 memory_hubify --apply 把新群 hub 化,且要確認 hub 檔的人工註記/frontmatter 存活。尚未執行",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 03:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 311,
+  "what": "新鮮度哨兵只登記 8/74 支排程;其餘要逐支確認 .ok 戳記真的代表『該做的事做完了』",
+  "why": "watch 模式今天才上線,首批只挑對外副作用且閘門確認在包裝之前的 8 支",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 04:38",
+  "closed": "2026-08-17 05:03",
+  "note": "watch 覆蓋 8→24 列(--register 自動算 max_age 並只收現在 fresh 的);剩 30 支見 #315"
+ },
+ {
+  "id": 312,
+  "what": "沒有 lint 在守『時間閘寫在被包裝指令裡面』——那樣會每 tick 蓋 logs/ok 戳記=永遠 fresh=新鮮度哨兵靜默失效",
+  "why": "本批 8 支已人工逐支確認,但人工確認不是守衛",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 04:38",
+  "closed": "2026-08-17 05:03",
+  "note": "ok_stamp_lint 上線:三個硬檢查(NO_PRODUCER/TOO_TIGHT/TOO_LOOSE)全是註冊表 vs 真 crontab 契約比對,零啟發式;閘寫在被包裝指令裡的 job 其真實節奏=敲門頻率⇒掛日班 max_age 立刻判 156 倍紅。自測 42/0、突變 12/12 killed。生產首跑抓到 2 筆真的(兩支 token_refresh 的 max_age 與 17 天間隔完全相等=零餘裕,已改 28160)"
+ },
+ {
+  "id": 313,
+  "what": "哨兵首跑撈出 3 支已 5-6 天沒成功的 job(seo_page_traffic_ledger / crawler_coverage_ledger rc=2 拉不到資料 / agent_board_gen),只偵測到還沒修",
+  "why": "本輪任務是建偵測面,修這三支是各自獨立的題目",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 04:38",
+  "closed": "2026-08-17 05:53",
+  "note": "真因不是程式壞掉:67h 停機(winrig 08-16 15:01 才開機)錯過班次。seo_page_traffic 已加補班列(資料側自癒)、兩條 watch 列保留(runner 側),agent_board_gen 判定為真的不能補(deploy 副作用)並寫進 RUNBOOK"
+ },
+ {
+  "id": 314,
+  "what": "MEMORY.md 索引 17949 字仍超過 17100 硬上限(進本輪前已 HARD)",
+  "why": "壓縮索引是獨立任務,有自己的 hubify/驗連結流程,不在本輪範圍內順手做",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 04:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 315,
+  "what": "ok_stamp_lint --register 還有 30 支 watch 候選沒收(27 支是 67h 停機殘影、3 支戳記從未存在)",
+  "why": "註冊即推播=假告警會教人忽略整個通道;要等它們今天各自班次跑成功後重跑 --register(冪等)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 05:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 316,
+  "what": "ok_stamp_lint --register 沒接進任何 cron,擴量目前靠人跑",
+  "why": "守衛自己改註冊表的爆炸半徑要單獨一輪想清楚再接",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 05:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 317,
+  "what": "cron_catchup 其餘 20 條 watch 列尚未逐支覆審補班資格",
+  "why": "本輪只處理了證據確鑿的 seo_page_traffic/crawler_coverage 兩支;批次註冊時用『打 API 就不能補』這條過寬門檻,可能還有能自癒卻被降級成只會吵的 job",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 05:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 318,
+  "what": "seo_page_traffic 補班列與正常 cron 未共用同一把 flock",
+  "why": "沿用既有 crawler_coverage 的寫法;帳本有 LOCK_EX 擋重複列所以不是資料正確性問題,但重疊執行會做兩次白工",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 05:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 319,
+  "what": "seo_page_traffic_ledger runner 本身仍是壞的(08-12 log = no_cf_token,最後 rc=0 停在 08-11)",
+  "why": "本輪只讓資料側自癒(補班列),runner 為何拿不到 CF 憑證還沒查;watch 列會繼續每 3 天推,今天 14:55 那班是第一次真實驗收",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 05:53",
+  "closed": "2026-08-17 06:36",
+  "note": "實跑 seo_page_traffic/cli.py rc=0、帳本補到 08-15(CF 憑證改向 Mac 借得到);8 天保留視窗內救回,無永久遺失"
+ },
+ {
+  "id": 320,
+  "what": "週考停擺一週的兩個尾巴:①驗證者 r1 裁決未收 ②今天 11:10 的 --if-week-missing 是首班真實驗收",
+  "why": "驗證者背景跑中、11:10 那班還沒到",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 06:11",
+  "closed": "2026-08-17 06:36",
+  "note": "①r1 已收割並逐條修完(8 findings,r2 已派出=#321)②11:10 首班週考仍未到,改由 cron_catchup 的 weekly_eval watch 列盯"
+ },
+ {
+  "id": 321,
+  "what": "add_task r2 驗證者裁決未收(背景跑中,報告 eval/verifier_report_add_task_r2.md)",
+  "why": "r1 八條剛修完只有我自己複查過;派出即凍結,收割前不准動那 5 個檔",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 06:36",
   "closed": null,
   "note": ""
  }
