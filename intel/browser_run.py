@@ -19,11 +19,23 @@ API = f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT_ID}/browser-run"
 
 
 def _wrangler_oauth_token():
-    cfg = pathlib.Path.home() / ".config/.wrangler/config/default.toml"
-    if not cfg.exists():
-        return None
-    m = re.search(r'oauth_token = "([^"]+)"', cfg.read_text())
-    return m.group(1) if m else None
+    """2026-08-16:這裡原本是全機第 7 份手刻的「開 default.toml、regex 挖 oauth_token」。
+    收斂到唯一解析器(env → ~/Delvin-agent/.env → OAuth 檔,且會看 expiration_time)。
+    解析器不在時才退回原本那段,退回不靜默。"""
+    import sys
+    caps = str(pathlib.Path.home() / "autonomous" / "capabilities")
+    if caps not in sys.path:
+        sys.path.append(caps)
+    try:
+        from cf_token.resolve import cf_token_or_none
+        return cf_token_or_none()
+    except Exception as e:  # noqa: BLE001
+        print(f"[browser_run] cf_token 解析器不可用({e}),退回直讀 OAuth 檔", file=sys.stderr)
+        cfg = pathlib.Path.home() / ".config/.wrangler/config/default.toml"
+        if not cfg.exists():
+            return None
+        m = re.search(r'oauth_token = "([^"]+)"', cfg.read_text())
+        return m.group(1) if m else None
 
 
 def _env_file_token():
