@@ -1350,22 +1350,74 @@ function bindChartPointer(cv, sym) {
     if (!curChart || curChart.cv !== cv) return;
     redrawChart();
   };
-  cv.addEventListener("mousemove", e => {
-    if (dragging && curChart) {
-      const dx = e.clientX - dragging.x;
-      if (Math.abs(dx) > 3) moved = true;
-      const total = curChart.plotBars.length;
-      const vn = chartView && chartView.n ? chartView.n : total;
-      let o = dragging.o + Math.round(dx / curChart.slotW);
-      o = Math.max(0, Math.min(o, total - Math.min(vn, total)));
-      chartView = { n: vn, o };
-      redrawChart();
-      return;
-    }
-    move(e.clientX);
+  // ── 平移改走 Pointer Events(2026-08-17,依 apple-design 重寫)────────────────
+  // 原本只綁 mouse*,三個問題:①手機完全無法平移(單指只給十字準星,canvas 又 touch-action:none,
+  // 等於只能縮放不能移動視窗) ②mousemove 綁在 canvas 上,拖出畫布就停止追蹤 ③放開手指硬停,
+  // 沒有速度交接也沒有動量——apple-design §5 說這是「最能區分 fluid 與 fine 的細節」。
+  // 現在滑鼠與觸控走同一條路;未超過 6px 門檻仍是十字準星,超過才進平移,兩種能力都保住。
+  let panMom = null;
+  const stopMomentum = () => { if (panMom) { cancelAnimationFrame(panMom); panMom = null; } };
+  const clampO = o => {
+    const total = curChart.plotBars.length;
+    const vn = chartView && chartView.n ? chartView.n : total;
+    return Math.max(0, Math.min(o, total - Math.min(vn, total)));
+  };
+  const applyO = oF => {
+    const total = curChart.plotBars.length;
+    const vn = chartView && chartView.n ? chartView.n : total;
+    chartView = { n: vn, o: clampO(Math.round(oF)) };
+    redrawChart();
+  };
+  cv.addEventListener("pointerdown", e => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    if (pinch0 || e.isPrimary === false) return;
+    stopMomentum();   // §3 可中斷:從畫面上「當下的值」接手,不是從目標值,否則會看到跳動
+    dragging = { x: e.clientX, o: (chartView && chartView.o) || 0,
+                 lastX: e.clientX, lastT: e.timeStamp || performance.now(), v: 0, on: false };
+    moved = false;
+    try { cv.setPointerCapture(e.pointerId); } catch {}
   });
-  cv.addEventListener("mousedown", e => { dragging = { x: e.clientX, o: (chartView && chartView.o) || 0 }; moved = false; });
-  window.addEventListener("mouseup", () => { dragging = null; });
+  cv.addEventListener("pointermove", e => {
+    if (!curChart || curChart.cv !== cv) return;
+    if (!dragging) { move(e.clientX); return; }      // 沒按著 = 十字準星(滑鼠 hover 也走這)
+    if (pinch0) return;
+    const dx = e.clientX - dragging.x;
+    if (!dragging.on) {
+      if (Math.abs(dx) <= 6) { move(e.clientX); return; }
+      dragging.on = true; moved = true;
+    }
+    const now = e.timeStamp || performance.now();
+    const dt = Math.max(now - dragging.lastT, 1);
+    dragging.v = (e.clientX - dragging.lastX) / dt * 1000;   // px/s,供放開時交接
+    dragging.lastX = e.clientX; dragging.lastT = now;
+    applyO(dragging.o + dx / curChart.slotW);
+  });
+  const endPan = e => {
+    if (!dragging) return;
+    const d = dragging; dragging = null;
+    try { cv.releasePointerCapture(e.pointerId); } catch {}
+    if (!d.on || !curChart) return;
+    // §6 動量投射:用 Apple 出貨的指數衰減式,不是課本的 v²/(2a)
+    const project = (v, rate = 0.998) => (v / 1000) * rate / (1 - rate);
+    const startO = (chartView && chartView.o) || 0;
+    const targetO = clampO(Math.round(startO + project(d.v) / curChart.slotW));
+    if (targetO === startO) return;
+    // §4 臨界阻尼彈簧(damping 1.0 / response 0.4);§5 初速直接用放開時的手指速度
+    let cur = startO, vel = d.v / curChart.slotW, last = performance.now();
+    const k = 1 / 0.4;
+    const step = () => {
+      const now = performance.now();
+      const dt = Math.min((now - last) / 1000, 0.05); last = now;
+      vel += ((targetO - cur) * k * k - 2 * k * vel) * dt;
+      cur += vel * dt;
+      if (Math.abs(targetO - cur) < 0.01 && Math.abs(vel) < 0.01) { applyO(targetO); panMom = null; return; }
+      applyO(cur);
+      panMom = requestAnimationFrame(step);
+    };
+    panMom = requestAnimationFrame(step);
+  };
+  cv.addEventListener("pointerup", endPan);
+  cv.addEventListener("pointercancel", endPan);
   cv.addEventListener("mouseleave", () => { if (!dragging) reset(); });
   cv.addEventListener("dblclick", () => { chartView = null; redrawChart(); });
   cv.addEventListener("wheel", e => {
@@ -1382,7 +1434,8 @@ function bindChartPointer(cv, sym) {
       const d = Math.abs(e.touches[0].clientX - e.touches[1].clientX);
       const total = curChart.plotBars.length;
       pinch0 = { d: Math.max(d, 1), n: chartView && chartView.n ? chartView.n : total };
-    } else { move(e.touches[0].clientX); }
+      dragging = null; stopMomentum();
+    }
   }, { passive: true });
   cv.addEventListener("touchmove", e => {
     if (e.touches.length === 2 && pinch0 && curChart) {
@@ -1393,7 +1446,6 @@ function bindChartPointer(cv, sym) {
       redrawChart();
       return;
     }
-    move(e.touches[0].clientX);
   }, { passive: true });
   cv.addEventListener("touchend", () => { pinch0 = null; });
   // 繪圖工具:click 錨定
