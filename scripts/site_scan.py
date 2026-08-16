@@ -11,6 +11,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 BASE = "https://marketdaily.ai"
 WORKER = "https://marketdaily-webhook.delvin-12345678.workers.dev"
@@ -141,6 +142,55 @@ def probe_assets():
     check("sitemap", locs >= 30, f"sitemap {locs} URLs(<30=生成器壞掉)", severity="med")
 
 
+# ── 第三方 vs 自家來源分流(2026-08-16,夜巡事件 E29)────────────────────
+# 出處:08-13 00:21 site_scan 判 /pricing 🔴「console errors: Failed to load resource 404」,
+# 自動修復當然改不動(那是 fonts.gstatic.com 的字型檔暫時 404,不是我們的 code),
+# 於是升級成「需人工深修」掛在夜巡佇列上。08-16 用同一支掃描器、同一個 UA、真 Chrome
+# 連掃三頁 0 失敗 —— 不可重現的第三方 CDN 抖動。
+# 守衛對自己改不動的東西喊 🔴,教會人用樣板消音(memory hub_alerting)。
+# ⚠️ 方向是 fail-closed:host 解析不出來 / 認不得 → **當成自家**(照樣硬錯)。
+#    這條 guard 只准把「確定是別人家的」降級,不准因為看不懂而放行。
+OWN_HOST_SUFFIXES = ("marketdaily.ai", "workers.dev")
+
+
+def _own_origin(url):
+    try:
+        host = (urlparse(url).hostname or "").lower()
+    except Exception:
+        return True
+    if not host:
+        return True
+    return any(host == s or host.endswith("." + s) for s in OWN_HOST_SUFFIXES)
+
+
+def _response_router(own, third):
+    def on_response(r):
+        if r.status < 400 or "favicon" in r.url:
+            return
+        # ⚠️ 原本是 r.url[:80] —— 正好把 gstatic 字型 URL 砍在 80 字元,報告裡看到的是
+        # 斷頭 URL(連 .woff2 都不見了),診斷時第一眼會以為是我們寫死了壞路徑。
+        (own if _own_origin(r.url) else third).append(f"{r.status} {r.url[:200]}")
+    return on_response
+
+
+def _console_router(own, third):
+    def on_console(m):
+        if m.type != "error":
+            return
+        url = ""
+        try:
+            url = (m.location or {}).get("url") or ""
+        except Exception:
+            url = ""
+        # 「Failed to load resource」這類訊息的 location.url 就是那個失敗的資源,
+        # 靠它才分得出「我們的 JS 掛了」與「Google 的字型檔抖了」。
+        if url and not _own_origin(url):
+            third.append(f"{m.text} ← {url[:200]}")
+        else:
+            own.append(m.text)
+    return on_console
+
+
 # ── 5. 主要頁面渲染掃描(console error + 用戶可見錯誤符號)─────────────
 # 出處:undefined/NaN/[object Object] 出現在卡片上、「···」卡死、JS 掛掉整區空白。
 def probe_pages():
@@ -161,10 +211,10 @@ def probe_pages():
             # `zone_browser_evidence`,在「真實訪客歸零」那天幫自己作證,讓 fail-closed 守衛啞掉。
             pg = b.new_page(viewport={"width": 1280, "height": 900}, user_agent=UA)
             errs, bad_resp = [], []
-            pg.on("console", lambda m: errs.append(m.text) if m.type == "error" else None)
+            third_errs, third_bad = [], []
+            pg.on("console", _console_router(errs, third_errs))
             pg.on("pageerror", lambda e: errs.append(str(e)))
-            pg.on("response", lambda r: bad_resp.append(f"{r.status} {r.url[:80]}")
-                  if r.status >= 400 and "favicon" not in r.url else None)
+            pg.on("response", _response_router(bad_resp, third_bad))
             try:
                 pg.goto(BASE + path, wait_until="networkidle", timeout=45000)
                 pg.wait_for_timeout(2500)
@@ -181,6 +231,12 @@ def probe_pages():
                       f"console errors:{errs[:2]} 可見錯誤符號:{symptoms}" if (errs or symptoms) else "OK")
                 if bad_resp:
                     check(f"page{path}_requests", False, f"失敗請求:{bad_resp[:3]}", severity="med")
+                if third_bad or third_errs:
+                    # ok=True:第三方 CDN 抖動不判 fail、不觸發自動修復,但仍要看得見
+                    # (沉默地丟掉 = 真的第三方長期壞掉時沒人知道)。
+                    check(f"page{path}_thirdparty", True,
+                          f"第三方資源失敗(不計 fail,我們改不動):{(third_bad or third_errs)[:3]}",
+                          severity="info")
             except Exception as e:
                 check(f"page{path}", False, f"載入失敗:{str(e)[:80]}")
             pg.close()
@@ -353,7 +409,8 @@ def main():
         print(json.dumps(RESULTS, ensure_ascii=False, indent=1))
     else:
         for r in RESULTS:
-            mark = "✅" if r["ok"] else ("🔴" if r["severity"] == "high" else "🟡")
+            mark = (("ℹ️" if r["severity"] == "info" else "✅") if r["ok"]
+                    else ("🔴" if r["severity"] == "high" else "🟡"))
             print(f"{mark} [{r['check']}] {r['msg']}")
         print(f"\n{'✅ 全部通過' if not fails else f'🚨 {len(fails)} 條 fail'}({len(RESULTS)} checks)")
     return 1 if fails else 0
