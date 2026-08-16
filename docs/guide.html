@@ -76,14 +76,14 @@ nav {
   font-size: 15px; font-weight: 700; color: var(--text2);
   text-decoration: none; background: rgba(255,255,255,0.06);
   border: 1px solid var(--border); padding: 9px 18px; border-radius: 22px;
-  transition: all 0.2s;
+  transition: border-color 0.2s, color 0.2s;
 }
 .nav-back:hover { color: var(--text); border-color: var(--border2); }
 .nav-right { display: flex; align-items: center; gap: 8px; }
 .lang-btn {
   background: rgba(255,255,255,0.06); border: 1px solid var(--border);
   color: var(--text2); font-size: 13px; font-weight: 700; font-family: inherit;
-  padding: 9px 14px; border-radius: 22px; cursor: pointer; transition: all 0.2s;
+  padding: 9px 14px; border-radius: 22px; cursor: pointer; transition: background-color 0.2s, border-color 0.2s, color 0.2s;
 }
 .lang-btn:hover { background: rgba(99,102,241,0.13); border-color: rgba(99,102,241,0.3); color: var(--text); }
 

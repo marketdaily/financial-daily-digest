@@ -105,7 +105,7 @@ nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 .nav-link {
   font-size: 13px; font-weight: 500; color: var(--text-muted);
   text-decoration: none; padding: 7px 14px; border-radius: 8px;
-  transition: all 0.18s; white-space: nowrap; flex-shrink: 0;
+  transition: background-color 0.18s, color 0.18s; white-space: nowrap; flex-shrink: 0;
 }
 .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.05); }
 .nav-link.active { color: var(--text); background: var(--primary-dim); }
@@ -167,7 +167,7 @@ main { position: relative; z-index: 1; }
 .toggle-opt {
   font-size: 13px; font-weight: 600; color: var(--text-muted);
   padding: 8px 22px; border-radius: 32px; cursor: pointer;
-  transition: all 0.22s; user-select: none; white-space: nowrap;
+  transition: background-color 0.22s, box-shadow 0.22s, color 0.22s; user-select: none; white-space: nowrap;
 }
 .toggle-opt.active {
   background: linear-gradient(135deg, var(--primary), var(--violet));
@@ -308,7 +308,7 @@ main { position: relative; z-index: 1; }
   padding: 14px 20px; border-radius: var(--radius-sm);
   font-size: 14px; font-weight: 700; font-family: inherit;
   text-align: center; text-decoration: none; cursor: pointer;
-  border: none; transition: all 0.22s; letter-spacing: 0.2px;
+  border: none; transition: background-color 0.22s, border-color 0.22s, box-shadow 0.22s, color 0.22s, transform 0.22s; letter-spacing: 0.2px;
 }
 .tier-btn.btn-starter {
   background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.28);
@@ -552,7 +552,7 @@ main { position: relative; z-index: 1; }
   padding: 17px 44px; border-radius: var(--radius-sm); border: none;
   text-decoration: none; cursor: pointer;
   box-shadow: 0 8px 32px rgba(99,102,241,0.45), inset 0 1px 0 rgba(255,255,255,0.12);
-  transition: all 0.24s;
+  transition: box-shadow 0.24s, transform 0.24s;
 }
 .cta-btn-big:hover {
   transform: translateY(-3px);
@@ -576,7 +576,7 @@ footer {
 .lang-btn {
   background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
   color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 700; font-family: inherit;
-  padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: all 0.2s;
+  padding: 5px 12px; border-radius: 20px; cursor: pointer; transition: background-color 0.2s, border-color 0.2s, color 0.2s;
   margin-left: 4px;
 }
 .lang-btn:hover { background: rgba(99,102,241,0.12); border-color: rgba(99,102,241,0.28); color: #fff; }

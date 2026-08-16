@@ -28,7 +28,7 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
 .filters{ display:flex; flex-wrap:wrap; gap:10px; margin:34px 0 30px; }
 .pill{ font:inherit; font-size:13.5px; font-weight:700; color:var(--muted); cursor:pointer;
   background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:999px; padding:8px 16px;
-  transition:all .18s cubic-bezier(.22,1,.36,1); }
+  transition: background-color .18s cubic-bezier(.22,1,.36,1), border-color .18s cubic-bezier(.22,1,.36,1), color .18s cubic-bezier(.22,1,.36,1); }
 .pill:hover{ color:#fff; border-color:var(--line-h); }
 .pill.on{ color:#0b0b16; background:linear-gradient(135deg,#a5b4fc,#818cf8); border-color:transparent; }
 .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; }
@@ -48,7 +48,7 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .card-meta{ margin-top:auto; padding-top:15px; display:flex; justify-content:space-between; align-items:center;
   font-size:12.5px; color:#6f7793; }
-.card-meta .arrow{ color:var(--indigo-l); font-weight:700; opacity:0; transform:translateX(-4px); transition:all .2s; }
+.card-meta .arrow{ color:var(--indigo-l); font-weight:700; opacity:0; transform:translateX(-4px); transition:opacity .2s, transform .2s; }
 .card:hover .arrow{ opacity:1; transform:translateX(0); }
 .empty{ color:var(--muted); padding:40px 0; font-size:15px; }
 .cta-top{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center;
@@ -57,6 +57,18 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
 .cta-top a{ color:#fff; background:linear-gradient(135deg,#6366f1,#a855f7); font-weight:800;
   text-decoration:none; padding:8px 16px; border-radius:8px; white-space:nowrap; }
 @media(max-width:520px){ .grid{ grid-template-columns:1fr; } }
+
+  /* prefers-reduced-motion(2026-08-16 補):照 emil-design-skills/review-animations 第 8 條——
+     要「更溫和」不是「全關」:保留 opacity/顏色/陰影的淡入(資訊仍看得懂),只拿掉會位移的動畫。
+     對前庭敏感的使用者,這不是偏好問題。 */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-property: opacity, background-color, color, border-color, box-shadow, filter !important;
+      scroll-behavior: auto !important;
+    }
+  }
 </style>
 </head>
 <body>

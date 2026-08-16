@@ -114,7 +114,7 @@ body {
   display: flex; align-items: center; gap: 10px;
   padding: 9px 12px; border-radius: 10px;
   color: var(--text2); font-size: 13.5px; font-weight: 500;
-  cursor: pointer; transition: all 0.15s;
+  cursor: pointer; transition: background-color 0.15s, color 0.15s;
   border: none; background: none; width: 100%; text-align: left;
 }
 .sb-item:hover { background: var(--surface2); color: var(--text); }
@@ -277,7 +277,7 @@ body {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 9px 18px; border-radius: 10px;
   font-size: 13px; font-weight: 700; cursor: pointer;
-  border: none; transition: all 0.15s; white-space: nowrap; font-family: inherit;
+  border: none; transition: opacity 0.15s, transform 0.15s; white-space: nowrap; font-family: inherit;
 }
 .btn:active { transform: scale(0.97); }
 .btn:disabled { opacity: 0.45; cursor: default; }
@@ -315,7 +315,7 @@ body {
   background: rgba(99,102,241,0.12); border: 1px solid rgba(99,102,241,0.3);
   color: #a5b4fc; border-radius: 8px; padding: 4px 10px;
   font-size: 12.5px; font-weight: 700; font-family: ui-monospace, monospace;
-  transition: all 0.15s;
+  transition: background-color 0.15s;
 }
 .tag:hover { background: rgba(99,102,241,0.2); }
 .tag-x {
@@ -329,7 +329,7 @@ body {
 .chip {
   padding: 6px 14px; border-radius: 20px; font-size: 12.5px; font-weight: 700;
   cursor: pointer; border: 1px solid var(--border2); background: var(--surface2);
-  color: var(--text2); transition: all 0.15s; font-family: inherit;
+  color: var(--text2); transition: background-color 0.15s, border-color 0.15s, color 0.15s; font-family: inherit;
 }
 .chip.active { background: var(--indigo); border-color: var(--indigo); color: #fff; }
 .chip:hover:not(.active) { color: var(--text); border-color: var(--border2); }
@@ -339,7 +339,7 @@ body {
 .tabs { display: flex; gap: 2px; background: var(--surface2); padding: 4px; border-radius: 11px; width: fit-content; margin-bottom: 20px; flex-wrap: wrap; }
 .tab {
   padding: 7px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
-  cursor: pointer; color: var(--text2); transition: all 0.15s; border: none; background: none; font-family: inherit;
+  cursor: pointer; color: var(--text2); transition: background-color 0.15s, color 0.15s; border: none; background: none; font-family: inherit;
 }
 .tab.active { background: var(--indigo); color: #fff; }
 
@@ -439,7 +439,7 @@ body {
 .plan-apply {
   padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 700;
   font-family: inherit; border: 1px solid var(--border2); background: var(--surface2);
-  color: var(--text3); cursor: pointer; transition: all 0.18s; flex-shrink: 0;
+  color: var(--text3); cursor: pointer; transition: background-color 0.18s, border-color 0.18s, color 0.18s, filter 0.18s, opacity 0.18s; flex-shrink: 0;
 }
 .plan-apply:disabled { opacity: 0.38; cursor: default; }
 .plan-apply.ready { background: var(--banana); color: #1a1a1a; border-color: var(--banana); }
@@ -468,7 +468,7 @@ body {
   font-size: 13px; font-weight: 600;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
   transform: translateY(80px); opacity: 0;
-  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  transition: background-color 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.3s cubic-bezier(0.34,1.56,0.64,1), color 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s cubic-bezier(0.34,1.56,0.64,1), transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
   z-index: 9999; pointer-events: none; max-width: calc(100vw - 64px);
 }
 #toast.show { transform: translateY(0); opacity: 1; }
@@ -515,6 +515,18 @@ body {
   .topbar-actions .label-hide { display: none; }
   #toast { right: 16px; left: 16px; bottom: 16px; }
 }
+
+  /* prefers-reduced-motion(2026-08-16 補):照 emil-design-skills/review-animations 第 8 條——
+     要「更溫和」不是「全關」:保留 opacity/顏色/陰影的淡入(資訊仍看得懂),只拿掉會位移的動畫。
+     對前庭敏感的使用者,這不是偏好問題。 */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-property: opacity, background-color, color, border-color, box-shadow, filter !important;
+      scroll-behavior: auto !important;
+    }
+  }
 </style>
 </head>
 <body>
