@@ -1,18 +1,5 @@
 {
- "date": "2026-08-12",
+ "date": "2026-08-16",
  "mode": "rss",
- "by_code": {
-  "NBIS": {
-   "note": "NBIS 今日 Reddit 提及 3 則(近13日均 0.2,z=2.8)|例:CSCO YOLO",
-   "total": 3,
-   "baseline": 0.2,
-   "z": 2.77,
-   "score": 0,
-   "samples": [
-    "CSCO YOLO",
-    "2M in two months. Up 9,155% in two years with options AMA",
-    "NBIS Earnings (Boom boom boom boom)"
-   ]
-  }
- }
+ "by_code": {}
 }
