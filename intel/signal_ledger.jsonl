@@ -671,3 +671,12 @@
 {"date": "2026-08-12", "code": "6538", "source": "leadflow", "level": "yellow", "signal": "倉和(6538) 無消息近漲停+9.9%(量能1.5×,5日+3.2%),疑資訊先行資金", "price_at_signal": 161.5}
 {"date": "2026-08-12", "code": "5864", "source": "leadflow", "level": "yellow", "signal": "致和證(5864) 無消息近漲停+9.9%(量能2.1×,5日+7.4%),疑資訊先行資金", "price_at_signal": 33.45}
 {"date": "2026-08-12", "code": "6546", "source": "leadflow", "level": "red", "signal": "正基(6546) 無消息近漲停+9.9%(量能4.8×,5日+15.1%),疑資訊先行資金|外資+投信近3日僅+270張,法人未同步=隱形買盤", "price_at_signal": 68.0}
+{"date": "2026-08-16", "code": "1560", "source": "margin", "level": "red", "signal": "中砂(1560):融資5日驟減-19.3%(疑似斷頭/停損潮,股價同期止穩,籌碼出清轉機留意)", "price_at_signal": 725.0}
+{"date": "2026-08-16", "code": "3141", "source": "holders", "level": "red", "signal": "晶宏(3141):千張大戶持股比週增1.50個百分點(大戶顯著加碼)", "price_at_signal": 71.8}
+{"date": "2026-08-16", "code": "3289", "source": "holders", "level": "yellow", "signal": "宜特(3289):千張大戶持股比週減-2.02個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 137.0}
+{"date": "2026-08-16", "code": "3339", "source": "holders", "level": "yellow", "signal": "泰谷(3339):千張大戶持股比週減-2.13個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 37.2}
+{"date": "2026-08-16", "code": "5536", "source": "investor_conf", "level": "red", "signal": "聖暉(5536):法說會1天內召開(波動事件窗口逼近)", "price_at_signal": 925.0}
+{"date": "2026-08-16", "code": "6285", "source": "institutional", "level": "red", "signal": "啟碁(6285):投信連 3 日賣超(棄養警訊,20日淨賣 -606 張)", "price_at_signal": 245.0}
+{"date": "2026-08-16", "code": "6944", "source": "holders", "level": "yellow", "signal": "兆聯實業(6944):千張大戶持股比週增0.52個百分點(溫和加碼)", "price_at_signal": 741.0}
+{"date": "2026-08-16", "code": "7631", "source": "sbl", "level": "red", "signal": "聚賢研發-創(7631):機構借券賣出5日遽增200.0%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": 145.0}
+{"date": "2026-08-16", "code": "7631", "source": "holders", "level": "yellow", "signal": "聚賢研發-創(7631):千張大戶持股比週減-1.40個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 145.0}
