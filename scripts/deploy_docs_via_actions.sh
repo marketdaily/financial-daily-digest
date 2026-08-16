@@ -24,8 +24,22 @@ GH="${GH_BIN:-gh}"
 
 log() { echo "[deploy_via_actions] $*"; }
 
+# cron 的 PATH 是 /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin —— **不含
+# ~/.local/bin,而 gh 就裝在那裡**。2026-08-16 查獲:cron_deploy_docs 退到備援腿時,這支
+# 一律停在「gh 未安裝」rc=5,連 dispatch 都沒試過(quality_board_deploy 今天就是這樣)。
+# ⭐ 守衛的執行環境不等於我的執行環境:任何靠 PATH 找執行檔的備援路徑,都要自己解絕對路徑,
+#    否則它在**最需要它的那一刻**(本機腿已經死了)才第一次暴露自己也是壞的。
+_resolve_gh() {
+  command -v "$GH" >/dev/null 2>&1 && { command -v "$GH"; return 0; }
+  local d
+  for d in "$HOME/.local/bin" "$HOME/.npm-global/bin" /usr/local/bin /usr/bin /bin /snap/bin; do
+    [ -x "$d/gh" ] && { echo "$d/gh"; return 0; }
+  done
+  return 1
+}
+
 cd "$REPO_DIR" || { log "找不到 repo $REPO_DIR"; exit 5; }
-command -v "$GH" >/dev/null 2>&1 || { log "gh 未安裝"; exit 5; }
+GH="$(_resolve_gh)" || { log "gh 未安裝(PATH 與 ~/.local/bin 等已知位置都找不到)"; exit 5; }
 "$GH" auth status >/dev/null 2>&1 || { log "gh 未登入"; exit 5; }
 
 # ---- 落差守衛:Actions 發的是 origin/main ----

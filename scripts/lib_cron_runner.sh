@@ -174,10 +174,17 @@ _cron_alert_dedup() {
 # 2026-08-12 從 cron_run_and_alert 抽出來:cron_deploy_docs 的「兩條腿都死」也要走同一套
 # 去重與訊息格式。**不准為了第二個呼叫端把去重邏輯複製一份**——判準被第二種寫法重寫,
 # 就是便宜那層安靜死掉的起點(見 memory capability_guard_reimplemented_in_second_language)。
+#
+# 第 5 個參數 DEDUP_KEY(2026-08-16 加,預設=NAME):去重帳本的檔名。**只有在多個呼叫端
+# 會因為同一個根因同時失敗時才傳它**——例:wrangler 憑證與 GitHub Actions 兩條腿都死掉,
+# 11 個 deploy 呼叫端會各推一則紅,同一件事吵 11 次(告警疲勞,見
+# [[capability_alert_storm_dedup]]:重複告警會教人把整條通道靜音)。標題仍帶各自的 NAME,
+# 所以看得出是誰先撞到;被壓下的次數累計在共用帳本裡,不會假裝沒發生。
 cron_alert_failure() {
-  local name="$1" rc="$2" tail_msg="$3" log="${4:-/dev/null}"
+  local name="$1" rc="$2" tail_msg="$3" log="${4:-/dev/null}" dedup_key="${5:-}"
   local suppressed prefix=""
-  if suppressed=$(_cron_alert_dedup "$name" "$tail_msg"); then
+  [ -n "$dedup_key" ] || dedup_key="$name"
+  if suppressed=$(_cron_alert_dedup "$dedup_key" "$tail_msg"); then
     [ "${suppressed:-0}" -gt 0 ] && prefix="(冷卻期內相同錯誤已抑制 ${suppressed} 次)
 "
     MD_REPO="$CRON_LIB_REPO" "$CRON_LIB_REPO/.venv/bin/python" \
@@ -187,7 +194,7 @@ ${prefix}--- log tail ---
 ${tail_msg}" >/dev/null 2>&1
     return 0
   fi
-  echo "⏸ 相同錯誤指紋仍在冷卻期(${CRON_ALERT_DEDUP_SEC}s),本次不推 admin(累計抑制 $(_cron_alert_suppressed_count "$name") 次)" >> "$log"
+  echo "⏸ 相同錯誤指紋仍在冷卻期(${CRON_ALERT_DEDUP_SEC}s),本次不推 admin(帳本 ${dedup_key} 累計抑制 $(_cron_alert_suppressed_count "$dedup_key") 次)" >> "$log"
   return 1
 }
 
@@ -665,7 +672,9 @@ cron_deploy_docs() {
 
   tail_msg=$(tail -c "+$((off + 1))" "$log" 2>/dev/null | tail -c 800)
   [ -n "$tail_msg" ] || tail_msg=$(tail -c 800 "$log")
+  # 共用去重帳本:兩條腿都死是**全站共同的**根因(憑證 / Actions 被停用),
+  # 不是這個 tag 專屬的問題;11 個呼叫端各推一則 = 同一件事吵 11 次。
   cron_alert_failure "$tag" "$rc" "兩條腿都沒把內容送上線(本機 rc=${rc} / 備援 rc=${bkrc})
-${tail_msg}" "$log"
+${tail_msg}" "$log" "deploy_docs_both_legs_dead"
   return "$rc"
 }
