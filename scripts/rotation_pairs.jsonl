@@ -16,28 +16,28 @@
 {"date": "2026-07-29", "market": "us", "from": "META", "to": "AMD", "from_px": 593.41, "to_px": 454.62, "from_ret": 0.54, "to_ret": 12.22, "rel": 11.68, "win": true, "settled": true}
 {"date": "2026-07-31", "market": "tw", "from": "2317", "to": "2408", "from_px": 229.5, "to_px": 328.0, "from_ret": 3.79, "to_ret": 26.77, "rel": 22.98, "win": true, "settled": true}
 {"date": "2026-07-31", "market": "us", "from": "QQQM", "to": "AMD", "from_px": 281.35, "to_px": 485.39, "from_ret": 5.09, "to_ret": 1.51, "rel": -3.57, "win": false, "settled": true}
-{"date": "2026-08-03", "market": "tw", "from": "00891", "to": "2330", "from_px": 33.2, "to_px": 2425.0}
-{"date": "2026-08-03", "market": "tw", "from": "006208", "to": "2330", "from_px": 235.35, "to_px": 2425.0}
-{"date": "2026-08-03", "market": "tw", "from": "0051", "to": "2330", "from_px": 133.95, "to_px": 2425.0}
-{"date": "2026-08-03", "market": "tw", "from": "2454", "to": "2330", "from_px": 3555.0, "to_px": 2425.0}
-{"date": "2026-08-03", "market": "us", "from": "QQQM", "to": "GOOG", "from_px": 283.29, "to_px": 356.65}
-{"date": "2026-08-03", "market": "us", "from": "AAPL", "to": "GOOG", "from_px": 308.91, "to_px": 356.65}
-{"date": "2026-08-03", "market": "us", "from": "META", "to": "GOOG", "from_px": 556.71, "to_px": 356.65}
-{"date": "2026-08-03", "market": "us", "from": "NVDA", "to": "GOOG", "from_px": 200.75, "to_px": 356.65}
-{"date": "2026-08-04", "market": "tw", "from": "2454", "to": "2408", "from_px": 3910.0, "to_px": 396.5}
-{"date": "2026-08-04", "market": "us", "from": "QQQM", "to": "HIMS", "from_px": 288.27, "to_px": 30.82}
-{"date": "2026-08-04", "market": "us", "from": "META", "to": "HIMS", "from_px": 590.24, "to_px": 30.82}
-{"date": "2026-08-04", "market": "us", "from": "AAPL", "to": "HIMS", "from_px": 303.42, "to_px": 30.82}
-{"date": "2026-08-05", "market": "tw", "from": "2330", "to": "6488", "from_px": 2320.0, "to_px": 952.0}
-{"date": "2026-08-05", "market": "tw", "from": "0051", "to": "6488", "from_px": 135.9, "to_px": 952.0}
-{"date": "2026-08-05", "market": "tw", "from": "006208", "to": "6488", "from_px": 230.15, "to_px": 952.0}
-{"date": "2026-08-05", "market": "tw", "from": "00891", "to": "6488", "from_px": 33.86, "to_px": 952.0}
-{"date": "2026-08-05", "market": "us", "from": "DRAM", "to": "DELL", "from_px": 54.89, "to_px": 467.27}
-{"date": "2026-08-05", "market": "us", "from": "AAPL", "to": "DELL", "from_px": 309.38, "to_px": 467.27}
-{"date": "2026-08-06", "market": "tw", "from": "2308", "to": "6451", "from_px": 1650.0, "to_px": 430.0}
-{"date": "2026-08-06", "market": "tw", "from": "8299", "to": "6451", "from_px": 1845.0, "to_px": 430.0}
-{"date": "2026-08-07", "market": "tw", "from": "2308", "to": "5289", "from_px": 1680.0, "to_px": 1610.0}
-{"date": "2026-08-07", "market": "us", "from": "DRAM", "to": "DELL", "from_px": 51.44, "to_px": 437.65}
+{"date": "2026-08-03", "market": "tw", "from": "00891", "to": "2330", "from_px": 33.2, "to_px": 2425.0, "from_ret": 5.28, "to_ret": 0.42, "rel": -4.86, "win": false, "settled": true}
+{"date": "2026-08-03", "market": "tw", "from": "006208", "to": "2330", "from_px": 235.35, "to_px": 2425.0, "from_ret": 2.49, "to_ret": 0.42, "rel": -2.07, "win": false, "settled": true}
+{"date": "2026-08-03", "market": "tw", "from": "0051", "to": "2330", "from_px": 133.95, "to_px": 2425.0, "from_ret": 6.54, "to_ret": 0.42, "rel": -6.12, "win": false, "settled": true}
+{"date": "2026-08-03", "market": "tw", "from": "2454", "to": "2330", "from_px": 3555.0, "to_px": 2425.0, "from_ret": 1.28, "to_ret": 0.42, "rel": -0.86, "win": false, "settled": true}
+{"date": "2026-08-03", "market": "us", "from": "QQQM", "to": "GOOG", "from_px": 283.29, "to_px": 356.65, "from_ret": 2.98, "to_ret": -4.46, "rel": -7.44, "win": false, "settled": true}
+{"date": "2026-08-03", "market": "us", "from": "AAPL", "to": "GOOG", "from_px": 308.91, "to_px": 356.65, "from_ret": 1.6, "to_ret": -4.46, "rel": -6.06, "win": false, "settled": true}
+{"date": "2026-08-03", "market": "us", "from": "META", "to": "GOOG", "from_px": 556.71, "to_px": 356.65, "from_ret": 0.79, "to_ret": -4.46, "rel": -5.26, "win": false, "settled": true}
+{"date": "2026-08-03", "market": "us", "from": "NVDA", "to": "GOOG", "from_px": 200.75, "to_px": 356.65, "from_ret": 5.28, "to_ret": -4.46, "rel": -9.74, "win": false, "settled": true}
+{"date": "2026-08-04", "market": "tw", "from": "2454", "to": "2408", "from_px": 3910.0, "to_px": 396.5, "from_ret": 4.01, "to_ret": 12.16, "rel": 8.15, "win": true, "settled": true}
+{"date": "2026-08-04", "market": "us", "from": "QQQM", "to": "HIMS", "from_px": 288.27, "to_px": 30.82, "from_ret": -0.74, "to_ret": -5.13, "rel": -4.39, "win": false, "settled": true}
+{"date": "2026-08-04", "market": "us", "from": "META", "to": "HIMS", "from_px": 590.24, "to_px": 30.82, "from_ret": 1.9, "to_ret": -5.13, "rel": -7.03, "win": false, "settled": true}
+{"date": "2026-08-04", "market": "us", "from": "AAPL", "to": "HIMS", "from_px": 303.42, "to_px": 30.82, "from_ret": -1.44, "to_ret": -5.13, "rel": -3.69, "win": false, "settled": true}
+{"date": "2026-08-05", "market": "tw", "from": "2330", "to": "6488", "from_px": 2320.0, "to_px": 952.0, "from_ret": 0.42, "to_ret": 7.0, "rel": 6.58, "win": true, "settled": true}
+{"date": "2026-08-05", "market": "tw", "from": "0051", "to": "6488", "from_px": 135.9, "to_px": 952.0, "from_ret": 3.43, "to_ret": 7.0, "rel": 3.57, "win": true, "settled": true}
+{"date": "2026-08-05", "market": "tw", "from": "006208", "to": "6488", "from_px": 230.15, "to_px": 952.0, "from_ret": 1.11, "to_ret": 7.0, "rel": 5.88, "win": true, "settled": true}
+{"date": "2026-08-05", "market": "tw", "from": "00891", "to": "6488", "from_px": 33.86, "to_px": 952.0, "from_ret": 2.28, "to_ret": 7.0, "rel": 4.72, "win": true, "settled": true}
+{"date": "2026-08-05", "market": "us", "from": "DRAM", "to": "DELL", "from_px": 54.89, "to_px": 467.27, "from_ret": 1.97, "to_ret": 4.71, "rel": 2.74, "win": true, "settled": true}
+{"date": "2026-08-05", "market": "us", "from": "AAPL", "to": "DELL", "from_px": 309.38, "to_px": 467.27, "from_ret": -2.81, "to_ret": 4.71, "rel": 7.52, "win": true, "settled": true}
+{"date": "2026-08-06", "market": "tw", "from": "2308", "to": "6451", "from_px": 1650.0, "to_px": 430.0, "from_ret": 12.2, "to_ret": -3.54, "rel": -15.74, "win": false, "settled": true}
+{"date": "2026-08-06", "market": "tw", "from": "8299", "to": "6451", "from_px": 1845.0, "to_px": 430.0, "from_ret": 12.59, "to_ret": -3.54, "rel": -16.13, "win": false, "settled": true}
+{"date": "2026-08-07", "market": "tw", "from": "2308", "to": "5289", "from_px": 1680.0, "to_px": 1610.0, "from_ret": 14.24, "to_ret": -1.67, "rel": -15.91, "win": false, "settled": true}
+{"date": "2026-08-07", "market": "us", "from": "DRAM", "to": "DELL", "from_px": 51.44, "to_px": 437.65, "from_ret": 13.28, "to_ret": 8.16, "rel": -5.12, "win": false, "settled": true}
 {"date": "2026-08-08", "market": "tw", "from": "2308", "to": "6693", "from_px": 1650.0, "to_px": 185.5}
 {"date": "2026-08-11", "market": "us", "from": "DRAM", "to": "NVDA", "from_px": 49.6, "to_px": 217.55}
 {"date": "2026-08-11", "market": "us", "from": "TSLA", "to": "NVDA", "from_px": 330.88, "to_px": 217.55}
