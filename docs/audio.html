@@ -106,6 +106,26 @@ nav {
 .outro { text-align: center; margin-top: 48px; }
 .outro-link { color: var(--primary-light); text-decoration: none; font-weight: 700; font-size: 15px; }
 .outro-link:hover { text-decoration: underline; }
+
+  /* press feedback(2026-08-16 補):emil-design-skills/review-animations 第 1 條——
+     介面要在「按下的當下」就回應,不能等動作完成才有反應,否則每一次點擊都落在沉默裡。
+     用個別屬性 scale 而不是 transform:才不會蓋掉元素既有的 transform(例如置中的 translate(-50%))。 */
+  button, [role="button"], .btn, input[type="submit"], input[type="button"] {
+    transition: scale 140ms cubic-bezier(.23, 1, .32, 1);
+  }
+  button:active, [role="button"]:active, .btn:active,
+  input[type="submit"]:active, input[type="button"]:active { scale: 0.97; }
+
+  /* prefers-reduced-motion(2026-08-16 補):本頁原本完全沒有動效,是我加了 press feedback 之後
+     才需要這層。照 emil-design-skills 的原則「更溫和不是全關」:保留顏色/透明度,拿掉位移。 */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-property: opacity, background-color, color, border-color, box-shadow, filter !important;
+      scroll-behavior: auto !important;
+    }
+  }
 </style>
 </head>
 <body>

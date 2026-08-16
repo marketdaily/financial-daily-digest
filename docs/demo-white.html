@@ -77,6 +77,15 @@ nav { background: #fff; display: flex; justify-content: space-between; align-ite
       scroll-behavior: auto !important;
     }
   }
+
+  /* press feedback(2026-08-16 補):emil-design-skills/review-animations 第 1 條——
+     介面要在「按下的當下」就回應,不能等動作完成才有反應,否則每一次點擊都落在沉默裡。
+     用個別屬性 scale 而不是 transform:才不會蓋掉元素既有的 transform(例如置中的 translate(-50%))。 */
+  button, [role="button"], .btn, input[type="submit"], input[type="button"] {
+    transition: scale 140ms cubic-bezier(.23, 1, .32, 1);
+  }
+  button:active, [role="button"]:active, .btn:active,
+  input[type="submit"]:active, input[type="button"]:active { scale: 0.97; }
 </style>
 </head>
 <body>

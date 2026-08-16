@@ -598,7 +598,16 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
     font-size: 12px; color: #6ee7b7;
     font-family: 'SF Mono', monospace;
   }
-  </style>
+  
+  /* press feedback(2026-08-16 補):emil-design-skills/review-animations 第 1 條——
+     介面要在「按下的當下」就回應,不能等動作完成才有反應,否則每一次點擊都落在沉默裡。
+     用個別屬性 scale 而不是 transform:才不會蓋掉元素既有的 transform(例如置中的 translate(-50%))。 */
+  button, [role="button"], .btn, input[type="submit"], input[type="button"] {
+    transition: scale 140ms cubic-bezier(.23, 1, .32, 1);
+  }
+  button:active, [role="button"]:active, .btn:active,
+  input[type="submit"]:active, input[type="button"]:active { scale: 0.97; }
+</style>
   <div class="tr-faq">
     <h2 data-i18n="faq_h2">常見問題 · 給認真讀紀錄的人</h2>
 
