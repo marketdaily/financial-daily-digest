@@ -39,6 +39,20 @@ _cron_export_cf_token() {
 }
 _cron_export_cf_token
 
+# ── 第 4 條腿:.env 也沒有時,向 Mac 借那把活的 wrangler OAuth(2026-08-16 補)──
+# 只呼叫共用實作(`~/autonomous/capabilities/cf_token/export.sh` 的 cf_token_export_mac),
+# **刻意不在這裡再抄一份**:同一段憑證邏輯手刻 N 份正是 08-11 那場三天停機的成因。
+# 檔案不在(舊機器/裁剪過的部署)就什麼都不做,維持原本行為。
+_cron_export_cf_token_mac() {
+  local sh="$HOME/autonomous/capabilities/cf_token/export.sh"
+  [ -n "${CLOUDFLARE_API_TOKEN:-}" ] && return 0
+  [ -r "$sh" ] || return 0
+  # shellcheck disable=SC1090
+  CF_TOKEN_ENV_FILE="$CRON_LIB_REPO/.env" . "$sh" >/dev/null 2>&1 || return 0
+  return 0
+}
+_cron_export_cf_token_mac
+
 _hhmm_to_min() {
   local h=${1%%:*} m=${1##*:}
   h=$((10#$h)); m=$((10#$m))
