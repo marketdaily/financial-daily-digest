@@ -148,7 +148,7 @@ nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
   background: rgba(255,255,255,0.05); border: 1px solid var(--border);
   color: var(--text-muted); font-size: 12px; font-weight: 700; font-family: inherit;
   padding: 6px 14px; border-radius: 20px;
-  cursor: pointer; transition: all 0.2s; letter-spacing: 0.4px;
+  cursor: pointer; transition: background-color 0.2s, border-color 0.2s, color 0.2s; letter-spacing: 0.4px;
   text-decoration: none; display: inline-flex; align-items: center;
   white-space: nowrap; flex-shrink: 0;
 }
@@ -290,7 +290,7 @@ nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
   background: rgba(255,255,255,0.055); border: 1px solid rgba(255,255,255,0.13);
   color: #fff; font-size: 16px; font-family: inherit;
   padding: 17px 24px; border-radius: 14px; width: 330px; outline: none;
-  transition: all 0.2s;
+  transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
   backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 4px 18px rgba(0,0,0,0.28);
 }
@@ -303,7 +303,7 @@ nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
   background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff;
   font-size: 16px; font-weight: 800; font-family: inherit;
   padding: 17px 32px; border-radius: 14px; border: none;
-  cursor: pointer; transition: all 0.22s; white-space: nowrap; letter-spacing: 0.2px;
+  cursor: pointer; transition: filter 0.22s, transform 0.22s, box-shadow 0.22s; white-space: nowrap; letter-spacing: 0.2px;
   box-shadow: 0 6px 26px rgba(99,102,241,0.46), inset 0 1px 0 rgba(255,255,255,0.18);
 }
 .subscribe-box button:hover { filter: brightness(1.13); transform: translateY(-2px); box-shadow: 0 10px 34px rgba(99,102,241,0.58); }
@@ -350,14 +350,14 @@ nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 .plan-mini-input {
   width: 100%; padding: 11px 14px; background: rgba(255,255,255,0.07);
   border: 1px solid rgba(255,255,255,0.12); color: #fff; font-size: 14px; font-family: inherit;
-  border-radius: var(--radius-sm); outline: none; margin-bottom: 8px; transition: all 0.2s;
+  border-radius: var(--radius-sm); outline: none; margin-bottom: 8px; transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
 }
 .plan-mini-input:focus { border-color: var(--primary); background: rgba(99,102,241,0.08); box-shadow: 0 0 0 3px rgba(99,102,241,0.16); }
 .plan-mini-input::placeholder { color: rgba(255,255,255,0.28); }
 .plan-mini-btn {
   display: block; width: 100%; text-align: center; padding: 12px; border-radius: var(--radius-sm);
   font-size: 14px; font-weight: 700; font-family: inherit; border: none; cursor: pointer;
-  transition: all 0.2s; text-decoration: none; margin-top: 4px;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s; text-decoration: none; margin-top: 4px;
 }
 .plan-mini-btn.free { background: rgba(16,185,129,0.14); color: #6ee7b7; border: 1px solid rgba(16,185,129,0.24); }
 .plan-mini-btn.free:hover { background: rgba(16,185,129,0.24); }
@@ -477,7 +477,7 @@ nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 /* ── ABOUT INTERACTIVE ── */
 .about { padding: 0 24px 96px; max-width: 960px; margin: 0 auto; }
 .about-toggle-tabs { display: flex; gap: 0; justify-content: center; margin-bottom: 36px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 40px; padding: 5px; width: fit-content; margin-inline: auto; }
-.about-tab-btn { padding: 11px 32px; border-radius: 36px; border: none; background: none; color: rgba(255,255,255,0.45); font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.25s; font-family: inherit; white-space: nowrap; }
+.about-tab-btn { padding: 11px 32px; border-radius: 36px; border: none; background: none; color: rgba(255,255,255,0.45); font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color 0.25s, color 0.25s, box-shadow 0.25s; font-family: inherit; white-space: nowrap; }
 .about-tab-btn.active { background: #6366f1; color: #fff; box-shadow: 0 4px 18px rgba(99,102,241,0.38); }
 .about-panel { display: none; }
 .about-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; animation: ab-in 0.35s ease; }
@@ -497,7 +497,7 @@ nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 .about-check-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
 .about-bottom { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px; }
 @media (max-width: 640px) { .about-bottom { grid-template-columns: 1fr; } }
-.about-mini-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px; transition: all 0.22s; }
+.about-mini-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 18px; padding: 24px; transition: background-color 0.22s, border-color 0.22s; }
 .about-mini-card:hover { border-color: rgba(99,102,241,0.25); background: rgba(99,102,241,0.05); }
 .about-mini-icon { font-size: 26px; margin-bottom: 12px; }
 .about-mini-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.3px; }
@@ -508,7 +508,7 @@ nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 .feat-showcase { display: grid; grid-template-columns: 260px 1fr; gap: 16px; align-items: start; }
 @media (max-width: 768px) { .feat-showcase { grid-template-columns: 1fr; } }
 .feat-tabs { display: flex; flex-direction: column; gap: 4px; }
-.feat-tab-btn { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 14px; border: 1px solid transparent; background: transparent; cursor: pointer; text-align: left; transition: all 0.2s; font-family: inherit; width: 100%; }
+.feat-tab-btn { display: flex; align-items: center; gap: 12px; padding: 13px 14px; border-radius: 14px; border: 1px solid transparent; background: transparent; cursor: pointer; text-align: left; transition: background-color 0.2s, border-color 0.2s; font-family: inherit; width: 100%; }
 .feat-tab-btn:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.07); }
 .feat-tab-btn.active { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.28); }
 .feat-tab-icon { font-size: 19px; flex-shrink: 0; }
@@ -628,7 +628,7 @@ nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
 .pricing-btn {
   display: block; width: 100%; text-align: center; padding: 15px;
   border-radius: var(--radius-sm); font-size: 15px; font-weight: 700;
-  cursor: pointer; border: none; transition: all 0.22s; text-decoration: none; font-family: inherit;
+  cursor: pointer; border: none; transition: background-color 0.22s, color 0.22s, border-color 0.22s, box-shadow 0.22s, transform 0.22s; text-decoration: none; font-family: inherit;
 }
 .pricing-btn.btn-free { background: rgba(255,255,255,0.06); color: var(--text-muted); border: 1px solid var(--border); }
 .pricing-btn.btn-pro { background: var(--primary); color: #fff; box-shadow: 0 4px 20px rgba(99,102,241,0.42), inset 0 1px 0 rgba(255,255,255,0.1); }
@@ -673,7 +673,7 @@ nav > .lang-btn { flex-shrink: 0; margin-left: 6px; }
   display: inline-block; background: var(--primary); color: #fff;
   font-size: 16px; font-weight: 700; font-family: inherit;
   padding: 18px 48px; border-radius: var(--radius-sm); text-decoration: none;
-  transition: all 0.22s;
+  transition: background-color 0.22s, box-shadow 0.22s, transform 0.22s;
   box-shadow: 0 4px 24px rgba(99,102,241,0.45), inset 0 1px 0 rgba(255,255,255,0.12);
 }
 .cta-btn:hover { background: #4f46e5; transform: translateY(-3px); box-shadow: 0 12px 40px rgba(99,102,241,0.55); }
@@ -843,13 +843,13 @@ footer {
   background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
   color: rgba(255,255,255,0.55); font-size: 15px;
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: all 0.22s; flex-shrink: 0;
+  cursor: pointer; transition: background-color 0.22s, border-color 0.22s, color 0.22s; flex-shrink: 0;
 }
 .slider-btn:hover { background: var(--primary-dim); border-color: var(--primary-border); color: #fff; }
 .slider-dots { display: flex; gap: 7px; align-items: center; }
 .slider-dot {
   width: 6px; height: 6px; border-radius: 50%;
-  background: rgba(255,255,255,0.18); cursor: pointer; transition: all 0.3s;
+  background: rgba(255,255,255,0.18); cursor: pointer; transition: width 0.3s, border-radius 0.3s, background-color 0.3s;
 }
 .slider-dot.active { width: 22px; border-radius: 3px; background: var(--primary); }
 
@@ -1232,7 +1232,7 @@ footer {
   font-size: 14px; font-weight: 700;
   text-decoration: none;
   margin-top: 18px;
-  transition: all .2s;
+  transition: background-color .2s, transform .2s;
 }
 .tr-cta:hover { background: rgba(16,185,129,0.22); transform: translateY(-1px); }
 @media (max-width: 760px) {
@@ -1660,7 +1660,7 @@ footer {
   border-radius: 30px;
   font-size: 14px; font-weight: 700;
   text-decoration: none;
-  transition: all .2s;
+  transition: background-color .2s, transform .2s;
 }
 .founder-meet-cta:hover { background: rgba(99,102,241,0.22); transform: translateY(-1px); }
 </style>
@@ -1761,7 +1761,7 @@ footer {
   border-radius: 30px;
   font-size: 14px; font-weight: 700;
   text-decoration: none;
-  transition: all .2s;
+  transition: background-color .2s, transform .2s;
 }
 .vs-mini-cta:hover { background: rgba(99,102,241,0.22); transform: translateY(-1px); }
 @media (max-width: 720px) {
@@ -1848,7 +1848,7 @@ footer {
     </div>
   </div>
   <div style="text-align:center;margin-top:32px;">
-    <a href="testimonials.html" style="display:inline-flex;align-items:center;gap:8px;background:rgba(99,102,241,0.14);border:1px solid rgba(99,102,241,0.32);color:#a5b4fc;padding:11px 22px;border-radius:30px;font-size:13.5px;font-weight:700;text-decoration:none;transition:all .2s;" onmouseover="this.style.background='rgba(99,102,241,0.22)'" onmouseout="this.style.background='rgba(99,102,241,0.14)'" data-i18n="testimonials_share_cta">想分享你的使用心得?成為下一則見證 →</a>
+    <a href="testimonials.html" style="display:inline-flex;align-items:center;gap:8px;background:rgba(99,102,241,0.14);border:1px solid rgba(99,102,241,0.32);color:#a5b4fc;padding:11px 22px;border-radius:30px;font-size:13.5px;font-weight:700;text-decoration:none;transition:background-color .2s;" onmouseover="this.style.background='rgba(99,102,241,0.22)'" onmouseout="this.style.background='rgba(99,102,241,0.14)'" data-i18n="testimonials_share_cta">想分享你的使用心得?成為下一則見證 →</a>
   </div>
 </div>
 
