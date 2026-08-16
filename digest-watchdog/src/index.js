@@ -51,6 +51,34 @@ async function archiveExists(shift, date) {
   return r.ok;
 }
 
+// ── 交付訊號的第二軌:git origin(2026-08-16 補)──
+// 權威判準是「網站 OR origin」(main._archive_delivered();公版存檔是**寄完才推**的,
+// 所以它出現在 origin 上就證明信已經寄了)。這隻守望犬從 v2 起只查網站那半軌 ⇒
+// 「寄出去了、但部署腿壞掉」會被它讀成「日報沒寄」:推 🔴 假警報 + 誤派雲端備援。
+// 08-11 wrangler 憑證死、08-13 起 Actions 也被停用 ⇒ 部署腿歸零而寄信仍正常,
+// 這個誤判從明天早上開始會天天發生。CLAUDE.md 早就寫了「交付訊號要含 push 即可見的
+// origin 軌」,補的是 winrig 與雲端兩側,唯獨守望犬沒補到。
+// 三態:true=在 / false=不在 / null=問不到(問不到絕不當成「不在」)。
+async function originHasArchive(env, shift, date) {
+  const name = shift === "tw" ? `digest_${date}.html` : `digest_${date}_us.html`;
+  try {
+    const r = await fetch(
+      `https://api.github.com/repos/marketdaily/financial-daily-digest/contents/docs/output/${name}?ref=main`,
+      {
+        headers: {
+          "authorization": "Bearer " + env.GITHUB_TOKEN,
+          "accept": "application/vnd.github+json",
+          "user-agent": "md-digest-watchdog/1.0",
+        },
+      });
+    if (r.status === 200) return true;
+    if (r.status === 404) return false;
+    return null;                       // 401/403/5xx ⇒ 問不到,不是「不在」
+  } catch (e) {
+    return null;
+  }
+}
+
 async function push(env, message) {
   // 通道=自有 web push(路徑名沿用 line-push,LINE 已退役);
   // service binding(env.ALERT):workers.dev 同帳號互打會被 1042 擋,必須走 binding
@@ -134,18 +162,38 @@ async function checkShift(env, shift, phase, now = new Date()) {
     return;
   }
 
+  // 網站上沒有 ≠ 沒寄。先問第二軌:origin 有沒有這份存檔(寄完才推)。
+  // 有 ⇒ 信已經送出去了,壞的是**部署**,不是投遞 ⇒ 絕不推「可能沒寄」、更不准派備援
+  //      (派了只是白燒一輪雲端生成,而且是在已交付之後)。
+  const inOrigin = await originHasArchive(env, shift, date);
+  if (inOrigin === true) {
+    const deployKey = `deployfail:${date}:${shift}`;
+    if (!(await kvGet(env, deployKey))) {
+      await kvSet(env, deployKey, "1");
+      await push(env, `🟡 ${label} ${date}:信**已經寄出**(存檔已在 git origin),但公版存檔沒上線 → ` +
+        `marketdaily.ai 上該日報 404、信裡「網頁版」連結是壞的。壞的是部署腿不是投遞;` +
+        `查 credential_watch(wrangler 憑證 / GitHub Actions 備援腿)。不派雲端備援。`);
+    }
+    return;
+  }
+
   const dedupeKey = `miss:${date}:${shift}:${phase}`;
   if (await kvGet(env, dedupeKey)) return;
   await kvSet(env, dedupeKey, "1");
 
+  // inOrigin === null ⇒ 第二軌問不到(GitHub 掛了/token 壞了)。此時只有網站那半軌,
+  // 判斷力比平常弱 ⇒ 照原本流程告警(缺信是死線,寧可吵),但把「我只看得到一半」講出來,
+  // 免得收到的人以為兩軌都確認過了。
+  const halfBlind = inOrigin === null ? "(⚠️ origin 那半軌問不到,本則只依據網站)" : "";
+
   if (phase === 1) {
-    await push(env, `🟠 ${label} ${date}:公版存檔未出現(${shift === "tw" ? "07:30" : "20:25"} 檢)。可能生成延遲,${shift === "tw" ? "08:00" : "21:00"} 第二檢確認。若今日休市可忽略`);
+    await push(env, `🟠 ${label} ${date}:公版存檔未出現(${shift === "tw" ? "07:30" : "20:25"} 檢)${halfBlind}。可能生成延遲,${shift === "tw" ? "08:00" : "21:00"} 第二檢確認。若今日休市可忽略`);
     // 2026-07-26 雲端備援:第一檢缺席即派發 GH Actions 接手(failover=1 帶防雙發閘:
     // 雲端起跑前再查一次存檔,winrig 遲交完成就退場)。第一檢就派=給雲端最大 runway
     // (tw 07:30→死線 08:40;us 20:25→21:10)。dedupe 每班每天最多派一次。
     await dispatchFailover(env, shift, date, label);
   } else {
-    await push(env, `🔴 ${label} ${date}:第二檢仍無存檔 → 日報極可能沒寄!winrig 可能整台離線,雲端備援已於第一檢派發(這則還在=雲端也沒趕上,查 GitHub Actions run),需人工`);
+    await push(env, `🔴 ${label} ${date}:第二檢仍無存檔(網站與 git origin 兩軌都沒有)${halfBlind} → 日報極可能沒寄!winrig 可能整台離線,雲端備援已於第一檢派發(這則還在=雲端也沒趕上,查 GitHub Actions run),需人工`);
   }
 }
 
@@ -276,3 +324,7 @@ export default {
     }), { headers: { "content-type": "application/json" } });
   },
 };
+
+// 具名匯出只給自測用(Workers runtime 只讀 default export,多這幾個不影響部署)。
+// 沒有這幾行,雙軌交付判斷就只能靠「部署上去等明天早上看」來驗——那不是驗證。
+export { checkShift, originHasArchive, archiveExists, shiftSkipped, twDate };

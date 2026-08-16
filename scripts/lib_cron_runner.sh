@@ -17,6 +17,28 @@
 set -u
 CRON_LIB_REPO="${CRON_LIB_REPO:-$HOME/Delvin-agent}"
 
+# ── wrangler 的第三種憑證來源:.env 的 CLOUDFLARE_API_TOKEN(2026-08-16 建立)──
+# 背景:wrangler 只認兩種憑證 —— ①OAuth 設定檔(`npx wrangler login`,**要瀏覽器**、會過期)
+# ②環境變數 CLOUDFLARE_API_TOKEN。winrig 一直只靠 ①,所以 08-11 那份 OAuth 消失後
+# 42 個依賴它的呼叫端一起啞掉,而復原動作(開瀏覽器點同意)是背景 session 做不到的
+# ⇒ 「只有 Delvin 能修」這件事本身是架構造成的,不是命中註定。
+# 改成 source 這個庫時自動把 .env 的 CLOUDFLARE_API_TOKEN 送進環境:老闆貼一行 API token
+# 進 .env,42 個呼叫端**下一輪 cron 就全部自己活過來**,不需要重登、不需要改任何腳本。
+# 已存在的環境變數優先(CI / 手動覆寫不被蓋)。找不到就什麼都不做(維持 OAuth 路徑)。
+# ⚠️ 兩個變數**各自獨立**判斷,不可寫成「token 已存在就整支 return」:那樣在
+#   「token 由 CI 給、account id 只有 .env 有」時會靜默漏掉 account id(自測 ② 抓到)。
+_cron_export_cf_token() {
+  local envf="$CRON_LIB_REPO/.env" k v
+  [ -r "$envf" ] || return 0
+  for k in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+    [ -n "$(eval "printf '%s' \"\${$k:-}\"")" ] && continue   # 既有環境變數優先
+    v=$(grep -h "^$k=" "$envf" 2>/dev/null | head -1 | cut -d= -f2- | tr -d '"'"'"'\r')
+    [ -n "$v" ] && export "$k=$v"
+  done
+  return 0
+}
+_cron_export_cf_token
+
 _hhmm_to_min() {
   local h=${1%%:*} m=${1##*:}
   h=$((10#$h)); m=$((10#$m))
