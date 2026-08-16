@@ -225,6 +225,16 @@ cron_run_and_alert() {
   "$@" >> "$log" 2>&1
   rc=$?
   echo "=== end rc=${rc} ===" >> "$log"
+  # ⭐ 成功戳記(2026-08-17):logs/<name>_<日期>.log 是**起跑就建**的,所以它回答不了
+  #    「這支上次真的成功是什麼時候」。cron_run_and_alert 只認【非零 exit】,對
+  #    「crontab 那行被刪」「包裝層時間閘永遠不成立」「主機關機整個週期跳過」這三種
+  #    失效完全沒有偵測面(政壇貼文卡 35 天、gooaye 佇列 26 天、08-13~16 停機三天皆屬此類)。
+  #    這裡替全艦隊 90+ 支 runner 補上一個統一的、**只在成功時前進**的 artifact,
+  #    讓 cron_catchup 的新鮮度哨兵(watch 模式)不必替每支 job 各自考古一個產出檔。
+  #    絕不可影響主流程:rc 早已存進變數,這段整個 best-effort、失敗吞掉。
+  if [ "$rc" -eq 0 ]; then
+    { mkdir -p "$log_dir/ok" && date -u +%FT%TZ > "$log_dir/ok/${name}.ok"; } 2>/dev/null || true
+  fi
   if [ "$rc" -ne 0 ]; then
     # 只取「這一輪」的輸出:log 是累積的,拿 tail -c 800 會隨檔案長大而變形,
     # 同一個錯誤的指紋就對不起來(去重形同虛設)。用起跑前的 offset 精準切這輪。
