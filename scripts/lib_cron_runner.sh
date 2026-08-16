@@ -629,7 +629,7 @@ _cron_deploy_fallback_notice() {   # TAG [LOG_PATH]
 
 cron_deploy_docs() {
   local tag="$1" msg="$2" verify="${3:-}"
-  local date_tag log_dir log off rc bkrc tail_msg
+  local date_tag log_dir log off rc bkrc mrc tail_msg
   local -a wcmd
   read -r -a wcmd <<< "${CRON_WRANGLER_BIN:-npx wrangler}"
 
@@ -664,7 +664,25 @@ cron_deploy_docs() {
     return 0
   fi
 
-  if [ "$bkrc" -eq 2 ]; then
+  # leg3(2026-08-16 新增):SSH 到 Mac,用 Mac 那把 wrangler OAuth 發 origin/main 的 docs。
+  # 由來:08-13~08-16 leg1(winrig 無憑證)與 leg2(GitHub Actions 帳號層停用)同時死了三天,
+  # pending 單堆到自癒額度用滿、67h 沒人能發任何東西上線;而 Mac 上一直有一把有效的
+  # pages(write) OAuth,winrig→Mac 的 SSH 也天天在跑 brain sync。這條腿是 best-effort
+  # (Mac 會睡),所以它回 5 代表「本輪不可用」而不是部署失敗,不會蓋掉前兩腿的診斷。
+  echo "⚠️ 備援腿也失敗 rc=${bkrc},改試第三腿(Mac wrangler over SSH,發的一樣是 origin/main)" >> "$log"
+  mrc=0
+  ( cd "$CRON_LIB_REPO" && bash \
+      "${CRON_DEPLOY_MAC_SCRIPT:-$CRON_LIB_REPO/scripts/deploy_docs_via_mac.sh}" \
+      "mac-leg:${tag} — ${msg}" "$verify" ) >> "$log" 2>&1 || mrc=$?
+  echo "=== leg3 end rc=${mrc} ===" >> "$log"
+  if [ "$mrc" -eq 0 ]; then
+    _cron_deploy_pending_clear "$tag"
+    _cron_deploy_fallback_notice "$tag" "$log"
+    echo "✅ 第三腿(Mac)把內容送上線了(前兩腿仍是壞的)" >> "$log"
+    return 0
+  fi
+
+  if [ "$bkrc" -eq 2 ] || [ "$mrc" -eq 2 ]; then
     # 落差 = 新內容還沒進 origin。呼叫端接下來會自己 commit+push,交給 deploy_drift 補發。
     _cron_deploy_pending_mark "$tag" "$msg" "$verify"
     echo "📌 已登記 pending:等 docs/ push 到 origin 後,deploy_drift(*/30)會用備援腿補發" >> "$log"
@@ -674,7 +692,7 @@ cron_deploy_docs() {
   [ -n "$tail_msg" ] || tail_msg=$(tail -c 800 "$log")
   # 共用去重帳本:兩條腿都死是**全站共同的**根因(憑證 / Actions 被停用),
   # 不是這個 tag 專屬的問題;11 個呼叫端各推一則 = 同一件事吵 11 次。
-  cron_alert_failure "$tag" "$rc" "兩條腿都沒把內容送上線(本機 rc=${rc} / 備援 rc=${bkrc})
+  cron_alert_failure "$tag" "$rc" "三條腿都沒把內容送上線(本機 rc=${rc} / Actions rc=${bkrc} / Mac rc=${mrc}$([ "$mrc" = 5 ] && echo '=Mac不可達'))
 ${tail_msg}" "$log" "deploy_docs_both_legs_dead"
   return "$rc"
 }
