@@ -3388,5 +3388,35 @@
   "opened": "2026-08-17 12:12",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 340,
+  "what": "quietfix 曝光作戰:接案平台註冊/社群帳號/九個策展站投稿/寄件域購買/GBP 驗證/KINGCONN 真案拍板/Awwwards 投稿——素材與文案全備,需老闆本人動作(策略頁 artifact cb208344)",
+  "why": "需要老闆身分/帳號/付款,我做到『按下去就好』",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 12:19",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 341,
+  "what": "quietfix Lighthouse 手機效能仍 ~70(LCP 3.7-4s):字型非阻塞後 FCP 沒明顯改善,真正瓶頸(preloader/CJK 字重)未用 trace 抓死;下一輪站內表單→EN版→三區升級→轉場→字型自託管",
+  "why": "本輪只修了確定安全的部分,LCP 根因要 trace 不猜",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 12:19",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 342,
+  "what": "winrig .env CLOUDFLARE_API_TOKEN 缺 Zone:Workers Routes 權限,quietfix-site deploy 只能靠借 Mac OAuth(會睡的筆電);請老闆在 CF dashboard 給該 token 加 Zone→Workers Routes:Edit(quietfix.studio zone)",
+  "why": "今天 deploy 在 routes 步驟 10000,靠第 4 條腿過;不是健康狀態",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 12:19",
+  "closed": null,
+  "note": ""
  }
 ]

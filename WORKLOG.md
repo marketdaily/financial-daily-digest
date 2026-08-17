@@ -5602,3 +5602,10 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 收乾 #299 #327 #309;新開 #334(credential_watch 三態修過頭那半還在)、
   #335(honest_traffic 連 7 天 no_data,憑證/GraphQL 權限實測正常 ⇒ 根因不是 #299)。
 - 告警已回寫 `resolve_admin_alert.sh "Cloudflare"`。
+
+## 2026-08-17 12:20 TW — QuietFix 曝光作戰 + NO.25 精工敘事 FORGE + Awwwards-ready v34/v35(storefront repo f1632f1..3dbebfc)
+- 老闆令:讓有網站需求的人看到 quietfix.studio + 做到 Awwwards 等級,「你去做」,可用 Higgsfield。
+- 站:第三道大菜 FORGE(Seedance→Topaz 1080p→五件套→/demo/factory→兩頁轉盤 NO.25,計數 24→25);首屏 −4.6MB(below-fold autoplay 拔掉);
+  字型 CSS 非阻塞;<main>+標題階層(無障礙 100);品牌 404。三套驗收全綠、生產四驗過。deploy 走借 Mac OAuth(.env token 缺 Zone 權限,#342)。
+- 曝光:三支 Reels、投稿包(圖+錄影+中英文案+去處表)、接案平台文案、策略頁 artifact cb208344。需老闆本人的動作登記 #340。
+- ⭐ 教訓:複製驗收腳本要改「兩張表」(探點+亮度配對),否則靠殘留檔假綠;Seedance 2.5 預設 720p。詳 storefront REFINE_REPORT 末章。
