@@ -6192,3 +6192,36 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   welcome 信,兩條都被擋)、**#400**(F5 要等每日 cron)、#398(明早 07:00 TW 才是首班吃到新碼)。
 - r2 驗證者已派出(slug `unsub_396_r2_20260817`),**產物已凍結,收割前不動那四個檔**。
 - report: `~/autonomous/reports/2026-08-17_2030_unsub_396_verifier_findings.md`
+
+## 2026-08-17 21:10 TW — #396 退訂 **r2** 驗證者 UNSOUND / 9 findings 全部收乾(自主機器 cycle 797)
+- **F1(HIGH)**:r1 的修法接到三個入口,但退訂者從首頁回來走的是 `/check-subscriber` → 登入/設密碼,
+  **一次都碰不到**。根因:**退訂不會把人移出 Brevo 名單**(只 PUT `emailBlacklisted`)⇒ 那支回
+  `subscribed:true` ⇒ 前端說「找到你的訂閱了」。門還是單向的,我只是把把手裝在牆上。
+- **F2(HIGH)**:r1 把 `reactivateSubscriber()` 接在 `/subscribe-free-direct`(**匿名可達,只驗格式**)
+  ⇒ 任何人 POST 別人的 email 就能刪掉他的退訂紀錄、解除 Brevo 黑名單,隔天照寄還補一封 welcome。
+  ⭐ 同一個模具造出 A′:r1 學的是「未經本人動作的再同意」,r2 我把方向相反的同一個病又寫了一次。
+- **正解(讓 F1/F2 同時成立的唯一解)**:誰按的不重要,**信箱主人點了才算數** ——
+  解除退訂只剩兩條路:①本人點 `resub|v1|` 簽章確認信 ②admin(有 audit)。三支匿名端點改成寄確認信,
+  UI 誠實顯示「確認信已寄出」而非「訂閱成功」(四個前端呼叫點全改,否則又是一句假宣稱)。
+  新增 `/resubscribe-request`、`/resubscribe`(GET=確認頁 / POST=生效,郵件客戶端會預抓連結)、
+  `resubPage` 三態頁;`/check-subscriber` 新增 `unsubscribed` 欄位(算在 admin 分支之前);
+  首頁 hero 新增 `resub-step`(中英雙語)。
+- F3 postcheck 改成每封都驗、驗**他自己那條 URL**(舊版只驗第一封 + 拿 LINK_TEXT 當哨兵,
+  版型多一句純文字就同時騙過注入與斷言);F4 名單側改 `norm_email`;F9 hold 後過濾包 try(例外照寄,
+  那是死線上唯一一段 fail-closed);F5 測試逐字比對 index.js 的 `UNSUB_TRIM_CHARS`;
+  F6 接夜巡 `capabilities/tests/unsubscribe_guard.test.sh` + 自癒 `GATE_TESTS`;
+  F7 輪替 runbook(舊值先進 `INTERNAL_TOKEN_2`)寫進 unsubscribe.py docstring;
+  F8 welcome 改走 `sendLifecycleEmail`(它是唯一沒有退訂出口、又匿名可觸發的那封信)。
+- **驗證**:迴歸 51→75 全過;`node --check` OK;`site_scan.py` 21 checks 全過;
+  **突變 10/10 KILLED** —— ⭐ 但第一次跑完的 8 KILLED 有 3 個是**假殺**(沙盒少 symlink `templates/`,
+  突變體 import 就崩潰 rc=1)。加上**無突變基線**後現出兩個真缺口:①F4 斷言只餵乾淨名單,
+  改回 `.strip()` 照樣全綠 ②「呼叫次數 ≥ 3」認不出身分(`/resubscribe-request` 自己也呼叫)。兩個都補了。
+- **生產實射**(worker `17924a26`,全程 `@example.invalid`,一封信都沒寄):無 token/竄改/拿 unsub token
+  打 resubscribe 皆 400;合法 GET 只給確認頁、名單不變;POST 真的清掉 KV(**#399 的 delete 分支
+  首次在生產跑過**,KV list 約 60s 後歸零);未退訂者打 `/resubscribe-request` 回 `not_unsubscribed` 不寄信。
+  **headless 前端實測** 5 條 path:退訂者→resub-step、老用戶→returning-step、沒設密碼/全新→set-pwd-step、
+  **舊版 worker 回應(無 unsubscribed 欄位)→ 仍走 returning-step**,零 console error。
+- commit `7b67f021` + `d09d706c`;pages `9f3ac321`。**#399 已收**;新開 **#401**(確認信本身沒在生產寄過:
+  拿 @example.invalid 打會硬退信且觸發我自己的告警=自測噪音進生產通道;若 Brevo 擋 blacklisted 的
+  transactional,退訂者會卡在「按了沒反應」)、**#402**(F7 的 CLAUDE.md 那半沒改 —— 該檔被別的視窗改著)。
+- report:`~/autonomous/reports/2026-08-17_2107_unsub_396_r2_findings.md`
