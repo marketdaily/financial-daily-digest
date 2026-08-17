@@ -5889,3 +5889,24 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   lunar-javascript(裝在 worker/node_modules,不進 git),而 ship.sh --clean 的借用清單沒有它 ⇒ 乾淨工作樹 8 支 node 測試
   ERR_MODULE_NOT_FOUND ⇒ **那一刻起任何人跑 --clean 都部署不出去**;且 `node --test ... >/dev/null` 把原因吃掉,
   log 停在「401 passed」綠燈那行只留一個 rc=1。修:借用清單加 worker/node_modules + node 測試失敗才印。
+
+## 2026-08-17 17:5x 主視窗:mingshu.tw 八品角色化商品牆 + 評價區骨架(老闆拍板三招都用)
+- 承競品拆解。老闆令「角色化商品牆／情緒化命名／評價區用日主當用戶名,這幾招也要用」。
+- **商品牆**:首頁「潤例」文字價目表 → 8 張器物主視覺 + 情緒化主標 + 正式品名次標。
+  8 張經 genai-prompt-pro 骨架(Recraft V4.1,prompt 留檔 marketing/prompts/)。
+  ⭐ **色票鎖在 API 參數不是寫進 prompt**:八張要像同一雙手做的,那要確定性的鎖不是祈禱模型記得。
+  ⭐ 畫風**不抄**競品韓系 webtoon 人物 —— 照抄=一眼認得出的劣化版;改用自家器物語言(黑石/古銅/金絲/朱砂),與官網 hero 龍同世界。
+- ⭐⭐ **換 class 會靜默殺掉兩個下游**:①促銷價樣式全綁在 `.runli .price`(劃線價/鎏金特惠價會整組失效,
+  而價格照顯示 ⇒ 零症狀) ②`build_jsonld.py` 是**爬 `<ul class="runli">`** 抽商品描述的。
+  ②被 ship.sh 閘門當場攔下(硬失敗是對的);①是我自己想到才去接的 —— 沒有任何東西會告訴我。
+  修法是「認一組 class」而不是「換一個 class」:綁死一個 class 的代價是靜默(頁面正常,只有搜尋引擎讀到過期商品)。
+- **評價區**:形式抄「日主當用戶名」,**內容一個字不生**(2026 已因假見證下架過一次)。
+  預設 hidden;<3 筆有效評價 → JS 把整區從 DOM 移除(不留空殼,否則下一個人會想先填幾筆)。
+  ⭐ 測試含**正對照**(三筆真資料必須真的長出來)——只驗「空的時候不顯示」的話,一支永遠不顯示的壞程式全綠。
+- ⭐ **我把測試放錯地方**:第一版寫在 `web/tests_reviews_gate.py`,而 ship.sh 只跑 `pytest tests/`
+  ⇒ 沒有任何東西會執行它。沒人跑的測試比沒有測試更糟:它讓人以為這件事有被守著。已搬進 tests/ 並補 venv playwright。
+- ⚠️ **尚未上線**:ship.sh 兩次未過(第一次=JSON-LD 抽取器,已修;第二次=乾淨工作樹在別的視窗 HEAD 上前段 FFF.F,
+  我自己的工作樹同一批測試全綠 ⇒ 紅的不是我的改動)。第三次已在背景跑。open #375。
+- commit 9e424b6 + 5e67910。Artifact(同一網址)已更新給老闆:claude.ai/code/artifact/a9ebfda1
+- 16:5x CHOSEN landing 續改:掀蓋直接播(loop、contain 不裁、HQ 重編、字幕跟時間軸)、hero 空黃帶修、smooth scroll 升級(Lenis lerp .085+GSAP ticker、hero 反向視差、跑馬燈跟捲速、舞台浮出、段落 scrub 進場);⭐坑:直立桌機視窗被當手機給 9:16 那支⇒改 innerWidth<720 才算手機;sed 替換含 `/*` 吃掉註解結尾造成 JS 語法錯(node new Function 自檢後才 deploy)。
+- 老闆:「quietfix studio 也要有這個 smooth scroll」→ motion.js 同手感 + 新 smooth.js 讓 demo/services/guide/404 全部有 Lenis(有 GSAP 共用 ticker+ScrollTrigger.update),三套驗收+生產四頁全綠。
