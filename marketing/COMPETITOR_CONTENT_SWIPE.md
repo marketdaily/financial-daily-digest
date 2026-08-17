@@ -272,3 +272,34 @@
 - **雙層字幕導航 + 契約重設立刻可用**:頂部固定 chip(承諾)+ 章節 chip(進度)+ 整句燒字,三個圖層而已;把「接下來 30 秒」放在痛點鋪陳後面重設一次契約。這兩招與 K 段的碼表可疊加(碼表=可驗證收據,固定 chip=無限次 re-hook)
 - **CTA 選擇要照收的東西挑**:現行 `comment_funnel.py` 走留言閘門(收觸及)。若之後要經營早鳥社群(收密度),就要接受留言數掉一個量級——**別拿留言數當兩種 CTA 的共同 KPI**,那會逼我們永遠選閘門
 - **借用權威 B-roll 我們不能照抄**:此片放 Jobs/Elon 當情緒錨,我們是財經帳號,放法人/名人畫面容易被讀成暗示與背書,踩投顧法紅線。等價替代=**我們自己的螢幕證據**(回測曲線、資料源截圖、實跑 log)——反而更硬
+
+---
+
+## M. ⭐ 「軟體穿實體外殼」系列片 Reel 拆解(@byjackprice,2026-08-17 video-watcher 實看)
+
+> 源:https://www.instagram.com/reel/DbR5X7-Nc_G/(2026-07-26 發,3,050 讚/**736 留言**,留言:讚比 ≈24%——留言閘門「NFC」;同作者 L 段觀點片只有 2.9%,**同一個人換 CTA 型態差 8 倍**,把 L 段的「CTA 收不同東西」論證釘死)
+> caption:「Automating my life with NFC stickers. Bringing software & vibe coding into the real world. #vibecoding #coding」(一句話定調+2 hashtag,與 L 同款)
+> 內容:71.0 秒,720x1280 直式,英文口播+整句燒字+頂部固定 chip「Automating my life with NFC Stickers」全片不換(L 段那招沿用)。真人講+手拿貼紙+手機錄屏交錯。
+> ⚠️ 硬體事實:NFC 貼紙(畫面上是白色圓形 NTAG 類貼紙,雷雕圖示)成本每片幾塊台幣;**所有邏輯全在手機端 App/捷徑**。這不是做硬體,是「用最便宜的實體觸發器給軟體一個身體」。
+
+### 影片結構(timeline beats,frames+Groq whisper 雙流實讀)
+1. **0–7s 物件 hook + 類比**:手上一把白色圓貼紙「These are NFC stickers…imagine it like a blank hotel key card」。B-roll 一格是 VS Code 程式碼(可讀到 `TELEGRAM_BOT_TOKEN`/「Telegram optional」註解,inference=他某支自動化腳本)、一格 iPhone「Ready to Scan」原生 NFC 面板——**道具入鏡,非本片實作,別抄成架構**
+2. **7–31s 五個用例每個 ≤5 秒,一句話一畫面**:🌙 拍一下封鎖分心 App(錄屏:IG/TikTok 灰掉、只剩「Tap」App)→ 💬 拍一下發訊息(實拍狗碗旁貼紙,家庭群組「狗餵過了」)→ 💊 拍一下記錄補劑/藥 → 🚗 車內拍一下開 Waze 回家(**畫面小字「*this one only works for the phone that set it up*」——只有看 frames 才抓得到的架構自白:裝置綁定=捷徑/私有 URL 型,不是公開 web 標籤**)→ 🛒 冰箱貼紙任何人拍=共用採買清單(錄屏是 Safari 網頁「FRIDGE TAG / Grocery list」,**web 標籤,任何手機可用**)
+3. **31–42s 社會證明 → 需求發現敘事**:兩張前作縮圖疊在胸前(425K/556K 播放)+ 三則真人 DM/留言截圖(「我女兒癲癇一天吃 2-3 次藥,我跟老公老在互問吃了沒」/「這可以編程?我手機背後就有一張」)→「大家都問不同用例跟怎麼自己做,**所以我乾脆做了一整個 App**」
+4. **42–50s 產品露出+反定價**:App UI 錄屏(New tap「What do you want to automate?」/ Dashboard「Time saved ~31 min / All-time automations 47」/ My taps 清單 / 「Your tap is ready → Write your tap」)。口播「**免費**,我們不打算為了封鎖 App 跟人收 70 塊」(對照組=市面上的 Brick 之類實體封鎖器,inference)
+5. **50–63s 公開 roadmap**:「先證明夠多人想用 → 再轉商家:咖啡店五星評論一拍、餐廳菜單一拍,幫他們客製+建基礎設施,**錢在那裡**」
+6. **63–71s 留言閘門 CTA**:「快上 App Store;想先測就 comment NFC 我邀你 TestFlight」+ follow the journey;最後一格換近景手拿黑色 NFC 卡
+
+### 為什麼有效(可搬的骨架)
+- **⭐ 「軟體+一個實體物件」比純軟體 demo 強一個量級**:同一個「封鎖 App」功能,錄屏 demo 沒人看,**手拿一枚硬幣大小的貼紙「拍一下」**就是 hook。實體=可拍、可秀、可觸摸的證據;成本近零
+- **⭐ 用例輪播節奏**:5 個用例 × 5 秒,每個都是「一句話+一個實拍/錄屏」,沒有任何一個講原理——原理留給留言問(736 則就是這樣來的)
+- **⭐ 「觀眾提需求 → 我做成產品」的敘事把 build-in-public 變成訂單簿**:三則 DM 截圖=需求證據,而且**用戶自己寫的用例(癲癇用藥)比作者想的都強**
+- **免費+反定價錨**:「不收你 70 塊」同時攻擊競品又消除試用摩擦;真正變現寫在 roadmap 的 B2B(這也讓「免費」不像做慈善)
+- **兩種留言閘門對比(同作者)**:此片 24% vs L 段 2.9%——**留言閘門的效果來自「有東西可領」**(TestFlight 邀請),不是「comment 一個字」的儀式本身
+- **(honest-extraction 註)** ①開場程式碼與「Ready to Scan」面板為 B-roll 道具 ②「70 bucks」競品未點名,inference 為實體封鎖器類 ③App 名稱全片未說、DOM 也無,只知 UI 標籤「Tap」(gap)④425K/556K 為他自報縮圖,未驗
+
+### 我們自己的搬法(硬體方向判斷見 2026-08-17 對話結論)
+- **⭐⭐ B2B 那段就是 QuietFix 的現成升賣**:「咖啡店五星評論一拍/餐廳菜單一拍」=本地商家 NFC 立牌;QuietFix 已經在做本地商家建站+GBP,**一張寫好 Google 評論深連結的 NFC 立牌是零開發、成本 <100 元、可跟 care plan 綁的實體交付物**——這是把「軟體公司」變成「有東西可以放在客戶櫃檯上」的最便宜方式
+- **⭐ 「軟體+實體物件」的內容公式可直接搬到 MarketDaily**:一張桌上的實體物(貼紙/卡/立牌)+「拍一下」動作 = hook;內容不變,只是給它一個身體(例:NFC 卡拍一下開今日日報/語音快報——合規安全,因為只是入口)
+- **需求發現敘事**:我們的早鳥用戶回饋(DM/表單)也可以當這種「觀眾要求→我做了」的證據截圖,比自己講功能可信
+- **留言閘門要有東西可領**:現行 comment_funnel 的獎品是「早鳥資格」;此片說明獎品越具體(邀請碼/檔案)閘門越有力
