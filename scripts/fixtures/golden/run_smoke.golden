@@ -51,120 +51,49 @@
   [card-regen] 第 1 輪:3 支未過卡級品質閘,逐支重生
   [card-regen] 第 2 輪:3 支未過卡級品質閘,逐支重生
   [card-regen] 第 3 輪:3 支未過卡級品質閘,逐支重生
-   ⚠️ tw-user@test.local 個人化失敗，改用預設版（_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'）
-   ⚠️ tw-user@test.local HIGH audit fail(tldr_section_missing),retry 一次
-  [card-regen] 第 1 輪:3 支未過卡級品質閘,逐支重生
-  [card-regen] 第 2 輪:3 支未過卡級品質閘,逐支重生
-  [card-regen] 第 3 輪:3 支未過卡級品質閘,逐支重生
-   🛡️ retry 仍 HIGH fail(tldr_section_missing) → 切 deterministic fallback
    📦 生成完成,進寄送佇列 → tw-user@test.local
    us-user@test.local → AI 精選（本班次 tw｜美股:0, 台股:2）· 一般（47.4）
   [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
   [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
   [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
-   ⚠️ us-user@test.local 個人化失敗，改用預設版（_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'）
-   ⚠️ us-user@test.local HIGH audit fail(tldr_section_missing),retry 一次
-  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
-   🛡️ retry 仍 HIGH fail(tldr_section_missing) → 切 deterministic fallback
    📦 生成完成,進寄送佇列 → us-user@test.local
    nohold-user@test.local → AI 精選（本班次 tw｜美股:0, 台股:2）· 新手（0.0）
   [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
   [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
   [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
-   ⚠️ nohold-user@test.local 個人化失敗，改用預設版（_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'）
-   ⚠️ nohold-user@test.local HIGH audit fail(tldr_section_missing),retry 一次
-   ⚠️ systemic alert 推失敗:harness 網路出口未封:urlopen → https://marketdaily-alert-worker.delvin-12345678.workers.dev/internal/admin-line-push
-  golden 必須零外部呼叫。請把對應的 provider/fetch 打樁,或確認 analyzer 是否新增了沒被 _call_* 蓋到的呼叫路徑。
-  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
-   🛡️ retry 仍 HIGH fail(tldr_section_missing) → 切 deterministic fallback
    📦 生成完成,進寄送佇列 → nohold-user@test.local
-   nohold2-user@test.local → AI 精選（本班次 tw｜美股:0, 台股:2）· 新手（0.0）
-  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
-   ⚠️ nohold2-user@test.local 個人化失敗，改用預設版（_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'）
-   ⚠️ nohold2-user@test.local HIGH audit fail(tldr_section_missing),retry 一次
-  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
-   🛡️ retry 仍 HIGH fail(tldr_section_missing) → 切 deterministic fallback
+   nohold2-user@test.local → AI 精選版(共用今日精選,快取)
    📦 生成完成,進寄送佇列 → nohold2-user@test.local
 🎙 個人語音 manifest:4 份 → /home/userdelvin/Delvin-agent/audio_brief/out/manifest_YYYY-MM-DD_tw.json
    ⏰ 本班寄出時已過內容誠實時點 → 全批自動加註盤前說明(Delvin YYYY-MM-DD 拍板 B)
 ✅ 今日財經日報發送完成（班次 tw）！成功 4/4 位（總訂閱 4）
    經驗分布 → 🌱新手 3 · 📈一般 1 · 🎯老手 0
-🛡️ 4 位走 deterministic fallback
-⚠️ 個人化失敗 4 位:
-   - tw-user@test.local: _run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'
-   - us-user@test.local: _run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'
-   - nohold-user@test.local: _run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'
-   - nohold2-user@test.local: _run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'
-🛡️ [deterministic_fallback] 4 位收到備援版(個人化生成連 retry 都失敗):tw-user@test.local, us-user@test.local, nohold-user@test.local, nohold2-user@test.local
-❌ [personalization_failed] 4 位個人化生成拋錯:tw-user@test.local, us-user@test.local, nohold-user@test.local, nohold2-user@test.local
-📋 audit 報告寫到 output/digest_audit_YYYY-MM-DD.json
 
 === SENT ===
 [
  {
   "email": "tw-user@test.local",
-  "html_len": 9008,
-  "html_sha": "9a7f73daedb80a5770d9775d798945c2c2a28268c159dacd6ab7b0009e9011b1",
-  "subject": null
+  "html_len": 18940,
+  "html_sha": "7028a3c883ce3901e8ef97d31432670cbcfd89e7bf71bcfdffd6eb4ea4723736",
+  "subject": "📊 你的 聯發科 昨日跌了 3.5%｜財經日報 2026-07-03"
  },
  {
   "email": "us-user@test.local",
-  "html_len": 8398,
-  "html_sha": "8c589c47df0d6e2b0c3f52186b24136705c12a662675b973e6cb6ed0eb10a091",
-  "subject": null
+  "html_len": 15754,
+  "html_sha": "499d0084449805ea9080ef7a462dcbc1ae1f2133b84e755f41bbd15a7f2facd6",
+  "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
  },
  {
   "email": "nohold-user@test.local",
-  "html_len": 8402,
-  "html_sha": "8df3107584d5fc7df5823a7312c3d3affb33505944f52860cb9466dfb7ef8daf",
-  "subject": null
+  "html_len": 16157,
+  "html_sha": "6278efe2d209f2fa33936ac16a571f25292f602a44f5edf93523e488124f531b",
+  "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
  },
  {
   "email": "nohold2-user@test.local",
-  "html_len": 8403,
-  "html_sha": "012783ee367790361a2f96168daf3928781c7e5adc62192e864bc1e572ea2c56",
-  "subject": null
+  "html_len": 16158,
+  "html_sha": "c14833110a792af3bf0134bcc72aefe9bd73b2c3f0d2a1f1dc71c7a7afcd3d5a",
+  "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
  }
 ]
 === AUDIT ===
-{
-  "date": "YYYY-MM-DD",
-  "total_subscribers": 4,
-  "personalization_failed_count": 4,
-  "personalization_failures": [
-    [
-      "tw-user@test.local",
-      "_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'"
-    ],
-    [
-      "us-user@test.local",
-      "_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'"
-    ],
-    [
-      "nohold-user@test.local",
-      "_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'"
-    ],
-    [
-      "nohold2-user@test.local",
-      "_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'"
-    ]
-  ],
-  "deterministic_fallback_count": 4,
-  "deterministic_fallbacks": [
-    "tw-user@test.local",
-    "us-user@test.local",
-    "nohold-user@test.local",
-    "nohold2-user@test.local"
-  ],
-  "audit_failed_count": 0,
-  "summary": "🛡️ [deterministic_fallback] 4 位收到備援版(個人化生成連 retry 都失敗):tw-user@test.local, us-user@test.local, nohold-user@test.local, nohold2-user@test.local\n❌ [personalization_failed] 4 位個人化生成拋錯:tw-user@test.local, us-user@test.local, nohold-user@test.local, nohold2-user@test.local",
-  "by_email": {}
-}

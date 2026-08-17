@@ -15,6 +15,7 @@
 """
 import difflib
 import hashlib
+import inspect
 import json
 import os
 import pickle
@@ -34,6 +35,18 @@ os.environ.setdefault("MD_SKIP_ADHOC_FETCH", "1")  # 臨時休市偵測活資料
 FROZEN = _real_dt.datetime(2026, 7, 2, 11, 30, tzinfo=_real_dt.timezone.utc)  # 週四 19:30 TW
 US_H = ["AAPL", "NVDA", "TSLA"]
 TW_H = ["2330", "2317", "2454"]
+# 樁版 TLDR:結構照 analyzer._tldr_skeleton 的逐字骨架(div.tldr > div.tldr-title + ul>li),
+# 內容同時帶台股與美股關鍵字,讓 tldr_missing_tw / tldr_missing_us 都成立。
+TLDR_STUB = (
+    '<div class="tldr">\n'
+    '<div class="tldr-title">⚡ 30 秒重點</div>\n'
+    '<ul>\n'
+    '  <li>台股:台積電(2330)昨日收平,加權指數量縮整理。</li>\n'
+    '  <li>美股:AAPL 與 NVDA 昨夜小幅震盪,費半收在均線之上。</li>\n'
+    '  <li>你的持股今日沒有需要立刻動作的事件,維持原本計畫。</li>\n'
+    '  <li>今日觀察:留意開盤量能是否跟上,量縮則不追高。</li>\n'
+    '</ul>\n'
+    '</div>')
 
 # 2026-07-04 修:_track_stats() 讀活資料 docs/data/track-record.json(08:00 TW cron 每天更新),
 # 之前沒凍結 → 每次 08:00 之後跑 diff 都會因信心/避坑數字漂移而假 DIFF(9 個變體全紅),
@@ -140,11 +153,18 @@ def _load_modules():
 
     def fake_llm(prompt: str, prefer_strong: bool = False, **_kw) -> str:
         h = hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:12]
-        return (
+        body = (
             '<div class="section-label">AI 觀點(樁)</div>'
             f"<p>LLM固定樁 {h} len={len(prompt)} strong={int(bool(prefer_strong))}。"
             "台積電(2330)昨日走勢平穩,AAPL 亦無重大波動,信心 65%。</p>"
         )
+        # prompt 要求 .tldr 骨架時,樁也要吐出**合格**的 tldr,否則 digest_audit 直接 HIGH
+        # (tldr_section_missing / tldr_too_short / tldr_missing_tw)→ 每位用戶都掉
+        # deterministic fallback,characterization 就只凍結得到備援路徑,AI 個人化編排
+        # (本 harness 存在的唯一理由)一行都沒被覆蓋到。2026-08-18 F1 的第二層。
+        if 'class="tldr"' in prompt:
+            body = TLDR_STUB + body
+        return body
 
     analyzer._llm_generate = fake_llm
 
@@ -478,6 +498,46 @@ def _stub_unsub_list():
     _rq.get = _get
 
 
+def _stub(obj, name, fn):
+    """裝樁,並強制「生產端的呼叫吃得下這個樁」:binding 失敗當場炸開,
+    不准被生產碼的 try/except 吞掉、悄悄退化成備援路徑。
+
+    2026-08-18 事故:main.save_hosted_digest 在 07-09(775aedea)多了 email= 參數,
+    harness 的樁沒跟上 → 四位用戶每個都 TypeError → 全員掉 deterministic fallback,
+    run_smoke.golden 從此凍結的是「備援路徑」而不是 AI 個人化路徑,40 天沒人發現,
+    08-18 的 reseal 還差點把這個退化蓋章成正解。"""
+    try:
+        sig = inspect.signature(fn)
+    except (TypeError, ValueError):
+        sig = None
+    where = f"{getattr(obj, '__name__', obj)}.{name}"
+
+    def _wrapped(*a, **kw):
+        if sig is not None:
+            try:
+                sig.bind(*a, **kw)
+            except TypeError as e:
+                raise SystemExit(
+                    f"🔴 harness 樁與生產簽章漂移:{where} 吃不下生產呼叫({e})。\n"
+                    f"   → 把樁改成符合生產簽章,**不要** reseal golden——"
+                    f"golden 會把「呼叫失敗後的備援路徑」凍結成正解。")
+        return fn(*a, **kw)
+
+    setattr(obj, name, _wrapped)
+
+
+def _assert_not_degraded(stdout_text, sent):
+    """run_smoke 一旦退化成備援/預設版就直接紅(而不是靠人肉看 diff)。
+    characterization 的價值全在「真的走過 AI 個人化編排」,走備援等於什麼都沒凍結。"""
+    marks = [m for m in ("個人化失敗", "deterministic fallback", "掉備援") if m in stdout_text]
+    no_subject = [s.get("email") for s in sent if not s.get("subject")]
+    if marks or no_subject:
+        raise SystemExit(
+            "🔴 run_smoke 走進了退化路徑,基線無效:\n"
+            f"   stdout 命中 {marks or '—'};subject 為空的收件人 {no_subject or '—'}\n"
+            "   → 先查為什麼個人化失敗(常見:樁與生產簽章漂移),修好再 reseal。")
+
+
 def _run_smoke():
     """run() 的 characterization:mock 全部網路出口,3 個合成用戶跑完整 run(),
     回傳 normalized(stdout + 寄件清單含每封 html 雜湊 + audit 報告)。"""
@@ -490,20 +550,23 @@ def _run_smoke():
 
     main.MARKET = "tw"
     main.DRY_RUN = False
-    main.fetch_all = lambda **kw: data
-    main.filter_us_news = lambda x: x
-    main.filter_tw_news = lambda x: x
-    main._hold_until_send_time = lambda mk: None
-    main.save_hosted_digest = lambda html, date="": "https://hosted.test/digest"
-    main._push_admin_halt_alert = lambda *a, **k: None
-    main._push_admin_coverage_alert = lambda *a, **k: None
-    main._push_preflight_alert = lambda *a, **k: None
+    _stub(main, "fetch_all", lambda *a, **kw: data)
+    _stub(main, "filter_us_news", lambda x, *a, **kw: x)
+    _stub(main, "filter_tw_news", lambda x, *a, **kw: x)
+    _stub(main, "_hold_until_send_time", lambda *a, **kw: None)
+    _stub(main, "save_hosted_digest",
+          lambda html, date="", email="", *a, **kw: "https://hosted.test/digest")
+    _stub(main, "_push_admin_halt_alert", lambda *a, **k: None)
+    _stub(main, "_push_admin_coverage_alert", lambda *a, **k: None)
+    _stub(main, "_push_preflight_alert", lambda *a, **k: None)
+    # 網路 tripwire 抓到的第三個出口:HIGH check 連中 3 位會 urlopen 打 alert-worker
+    _stub(main, "_push_systemic_alert", lambda *a, **k: None)
     _stub_unsub_list()
-    publisher.get_list_id = lambda: 1
-    publisher.check_subscriber_count = lambda lid: 3
-    publisher.get_all_subscribers = lambda lid: [
+    _stub(publisher, "get_list_id", lambda *a, **kw: 1)
+    _stub(publisher, "check_subscriber_count", lambda *a, **kw: 3)
+    _stub(publisher, "get_all_subscribers", lambda *a, **kw: [
         "tw-user@test.local", "us-user@test.local", "nohold-user@test.local",
-        "nohold2-user@test.local"]  # 與 nohold 同(depth,tier)→覆蓋精選版快取命中路徑
+        "nohold2-user@test.local"])  # 與 nohold 同(depth,tier)→覆蓋精選版快取命中路徑
     sent = []
 
     def _fake_send(email, date, html, key, subject=None):
@@ -537,6 +600,7 @@ def _run_smoke():
             if os.path.exists(ap):
                 with open(ap, encoding="utf-8") as f:
                     audit = f.read()
+    _assert_not_degraded(buf.getvalue(), sent)
     out = ("=== STDOUT ===\n" + _norm(buf.getvalue())
            + "\n=== SENT ===\n" + json.dumps(sent, ensure_ascii=False, indent=1, sort_keys=True)
            + "\n=== AUDIT ===\n" + _norm(audit))
