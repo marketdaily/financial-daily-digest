@@ -3376,8 +3376,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 12:12",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 12:44",
+  "note": "已在真實部署跑過,且第一次就抓到 wrangler 誤上 master 預覽分支的假交付(正式站未受影響);--branch main 已釘死"
  },
  {
   "id": 339,
@@ -3386,8 +3386,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-17 12:12",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 12:44",
+  "note": "seq4 已渲染部署:121幀 2880x1606,avg 73.6KB 共 8.7MB;HAS_2X=true;1440@2x 實測抓 seq4、@1x 抓 seq2、手機抓 seqm3"
  },
  {
   "id": 340,

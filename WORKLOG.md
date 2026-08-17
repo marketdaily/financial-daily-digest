@@ -39,6 +39,25 @@
     `cmd | tail` 之後的 `$?` 讀到的是 tail 的離開碼不是被測程式的。兩次都靠還原後 md5 比對抓回來。
   - kingconn repo commit 01f903a(仍無 remote,open #337)。
 
+- [2026-08-17 12:45] [已完成] KINGCONN **seq4(2880x1606) retina 那套上線** + 閘門首次真實部署即抓到假交付。
+  - seq4:121 幀 2880x1606(恰為 2×,scene.py 構圖/景深/燈光完全不動,只把解析度做成**尾端選用參數**
+    ⇒ 1440x803 既有輸出一個位元不變)。OptiX **8.19 s/幀,16.5 分鐘**;q82 avg **73.6 KB**、共 **8.7 MB**。
+    縮回 1440 與線上 seq2 比 mean 0.94/255(2× 縮圖比原生 1× 更乾淨=超取樣,預期)。
+  - 實測選擇邏輯:1440@1x→seq2、**1440@2x→seq4**、390@3x→seqm3,三者 console 皆 []。
+  - ⭐⭐ **wrangler pages deploy 會讀本地 git 分支決定 Production 還是 Preview**。我自己
+    `git init ~/kingconn`(預設分支 **master**)之後,同一道指令就靜默改上 master 預覽站,
+    **正式站一動也沒動,而 wrangler 照樣印「Deployment complete!」**。典型「自己挖到自己蓋路」。
+    抓到它的是 md5 閘門:線上三支 seq4 的 md5 **全都等於 index.html**(=CF Pages 的 404 回退頁)。
+    修法 `--branch main` 釘死,不依賴本地分支;本地分支也改名 main。
+  - ⭐ **drift 閘門原本會誤殺我自己**:比「線上 vs 本地」的話,我一改 HAS_2X 就紅。
+    改成三方——【線上 vs pull 當下的基準快照】,本地這輪的改動不參與比對;部署後才改比
+    【線上 vs 本地】且要逐位元組相等。誤告會教人繞過閘門,比沒有閘門更糟。
+  - ⭐ **兩台會靜默分岔**:部署後線上 HAS_2X=true 而 Mac 那份還是 false,下次誰跑 pull 就蓋回去。
+    加 `push_mac()` 回寫,但只在「Mac 那份自我 pull 後沒被動過」時才寫(對方可能正在編輯)。
+    現況三方 md5 收斂:線上=本地=Mac `ec238b92…`。
+  - 新閘門 `check_assets()`:CF 404 回退頁回 200 ⇒ 驗 **content-type**,seq4 **逐幀 121 支**全過。
+  - open #338/#339 已收。kingconn commit 85c5466(仍無 remote,open #337)。
+
 # WORKLOG — 跨視窗工作紀錄
 
 每個 Claude 視窗(session)開工/收工都在最上面加一條,讓同時或之後開的視窗知道別人做了什麼。
