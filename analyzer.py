@@ -2029,6 +2029,11 @@ def _pp_expand_tickers(html: str, tw_hint: dict) -> str:
 
     def _resolve_tw_paren_code(m):
         code = m.group(1)
+        # 「…(2025)年…」是年份不是代號(1216 統一 / 2020 美亞 這類名稱表裡確實存在的四位數
+        # 會讓兩個方向都出錯:舊版剝掉年份、新版更慘會把它「改正」成別支的代號)。緊接著
+        # 「年」且落在合理年份區間的一律不碰。
+        if html[m.end():m.end() + 1] == "年" and 1900 <= int(code) <= 2099:
+            return m.group(0)
         pre = _re.sub(r"<[^>]+>", "", html[max(0, m.start() - 20):m.start()]).rstrip(" 　")
         name = tw_hint.get(code) or ""
         if name and name in pre:
