@@ -6155,3 +6155,40 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   且**沒有任何夜巡/CI 在跑這道閘**;本輪用 worktree at HEAD 對照證明與我無關:prompt hash 兩邊逐字相同)。
 - 驗證者分離:`--detach` 派出中(slug `unsub_396_20260817`),收據在 `~/autonomous/state/verifier_runs/`。
 - report: `~/autonomous/reports/2026-08-17_2005_digest_unsubscribe_396.md`
+
+## 2026-08-17 20:35 TW — 自主機器 cycle 796:#396 退訂 r1 驗證者 UNSOUND/6 findings 全部收乾
+- 判決:`~/autonomous/capabilities/verifier_harness/reports/unsub_396_20260817.md`(2 HIGH / 3 MEDIUM / 1 MINOR)。
+- ⭐⭐ **F1:我在修「宣稱存在、實際不存在」的同一份碼裡又造了一個**。退訂寫進 KV `unsub:` 之後
+  全 repo 沒有任何一處會刪 ⇒ 重新訂閱的人:註冊回 ok、welcome 信照發、`/check-subscriber` 說已訂閱、
+  dashboard 顯示已訂閱,而寄信端每天靜默剔除他 ⇒ **永遠收不到日報且四處都看不出異常**;
+  退訂確認頁還印著「之後想回來,重新訂閱即可」。修:`reactivateSubscriber()` 只接三個
+  「本人再次送出 email」的入口,**Stripe webhook / admin 屬性同步刻意不接**(替人解除退訂=
+  未經本人動作的再同意,比原 bug 更糟);補 `POST /admin/unsub-clear`(在那之前唯一救人的路是
+  有人記得手打 `wrangler kv key delete`,而那沒有 runbook)。
+- ⭐⭐ **F2:為 #396 寫的 33 項測試沒有一項測到 #396**。驗證者把 `_flush_outbox` 的
+  `inject_footer_link` 整行刪掉(=#396 原地復活)→ 33 項全綠;拆掉退訂過濾 → 也全綠。
+  補端到端段(打樁 hold/clearance)後 **10 個突變體全 KILLED**。
+  ⭐ 其中一個一開始 SURVIVED:兩條斷言都只寫 `len(ALERTS)==1`,而缺 token 與注入失效**兩種故障
+  都會發一則告警**(內容不同)⇒ 只數數量的斷言認不出身分,結構上殺不掉那個突變。改成斷言告警內文才死。
+- F3 名單在生成起點抓、信在 hold 後才寄 ⇒ 官網「即時生效」在那 100 分鐘是假的(而且「剛按退訂、
+  下一秒收到信」正是使用者按檢舉垃圾郵件的形狀)→ hold 後再濾一次,窗口壓到秒級。
+- F4 一把 env 不見 ⇒ 連結/header/KV 過濾**三半同時靜默消失**,只留一行 print → 寄前自檢 + 寄後
+  postcheck,兩者訊息可區分(「算不算得出 token」與「有沒有真的塞進 HTML」是兩件事)。
+- F5 lifecycle D1 行銷信不查 `unsub:`、無退訂出口 → sweep 跳過 + `sendLifecycleEmail` 多收 `env`
+  才加出口(**密碼重設信刻意不傳** —— 在重設密碼信上掛「取消訂閱」是錯的出口)。
+- ⭐ F6 Python `.strip()` 不吃 U+FEFF、JS `.trim()` 吃(反方向 U+001C–1F/U+0085 是 Python 吃得多)
+  ⇒ 帶 BOM 的 email 退訂連結**永遠**驗不過。修法不是補丁 strip 掉 BOM,是兩端改用**逐字相同的
+  明寫字元集**,誰都不靠語言內建語義;node↔python 13 形狀實測零分歧。
+- 驗證:退訂迴歸 **33→51 全過**;dupe_delivery_guard / failover_gate_contract / late_delivery_notice /
+  owner_shield / archive_cta 全 PASS;`node --check` OK;突變沙盒用 symlink farm + 獨立 `__pycache__`
+  (防 08-16 那次突變 `.pyc` 落進生產樹)。
+- **生產實射**(worker `a75b12de`):合法 200 / 竄改 400 / **【修復前】BOM URL 400 而【修復後】200**
+  (同一條同時證明分歧是真的、也真的修好了)/ POST 200 / 內部清單看得到 → 清完回 `count=0`;
+  全程 `@example.invalid` 探針,一封信都沒寄。
+- ⭐ **探針要有對照組**:`/admin/unsub-clear` 第一次探回 401,差點被我寫成「路由存在且有閘」——
+  但**隨便一個不存在的路徑也回 401**(未知路徑掉進 Stripe webhook 的 Invalid signature)。
+  帶真 body 再探才分得出來:我的路由回 400/403、亂路徑回 401。
+- commit `8c9feed8`;open **#399**(F1 的 KV delete 分支沒在生產跑過:要 admin 密碼或真走註冊=會寄
+  welcome 信,兩條都被擋)、**#400**(F5 要等每日 cron)、#398(明早 07:00 TW 才是首班吃到新碼)。
+- r2 驗證者已派出(slug `unsub_396_r2_20260817`),**產物已凍結,收割前不動那四個檔**。
+- report: `~/autonomous/reports/2026-08-17_2030_unsub_396_verifier_findings.md`
