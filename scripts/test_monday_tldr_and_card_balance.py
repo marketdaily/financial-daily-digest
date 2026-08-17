@@ -57,24 +57,47 @@ check("A1 骨架含 .tldr + .tldr-title + <ul> + <li> 四件套",
       and "<ul>" in SKEL and "<li>a</li>" in SKEL)
 
 
+class _GotPrompt(Exception):
+    """主 prompt 已到手 —— 立刻中止這條生成鏈,別讓它往後跑真實生成。"""
+
+
 def monday_prompts():
-    """攔截 _llm_generate 取回四條週末/週一 prompt(不打任何 API)。"""
+    """攔截 _llm_generate 取回四條週末/週一 prompt。
+
+    ⚠️ 2026-08-17 實測:首版只 stub 了 _llm_generate,**build_council 仍打真實 API** ——
+    7 支股票 × 6 席多模型辯論,單跑 169s 且每跑一次燒一輪配額(gemini 429/cerebras 402 全在
+    測試輸出裡)。而 guard 會在自癒當下跑這支測試,自癒發生的時機正好是配額最緊的時候。
+    現在 council 一併 stub,且主 prompt 一到手就 raise 中止 → 零 API、四條全程 <1s。
+    """
     seen = []
     real = analyzer._llm_generate
-    analyzer._llm_generate = lambda p, *a, **k: (seen.append(p), '<div class="tldr"></div>')[1]
+    real_council = analyzer.build_council
+
+    def _stub(p, *a, **k):
+        seen.append(p)
+        if "tldr" in p:          # 主 prompt 已到手,後面的生成鏈對本測試沒有價值
+            raise _GotPrompt
+        return '<div class="tldr"></div>'
+
+    analyzer._llm_generate = _stub
+    analyzer.build_council = lambda *a, **k: {}
     try:
         for fn, kw in ((analyzer.generate_monday_report, {}),
                        (analyzer.generate_monday_report, {"depth": "simple"}),
                        (analyzer.generate_weekend_report, {}),
                        (analyzer.generate_weekend_report, {"depth": "simple"})):
+            before = len(seen)
             try:
                 fn({"date": "2026-08-17", "us_market": {}, "tw_market": {},
                     "us_news": [], "tw_news": []}, [], [], **kw)
             except Exception as e:      # 生成鏈其餘部分不是本測範圍,prompt 已攔到就夠
-                if not seen:
-                    raise AssertionError(f"prompt 未攔到: {e}")
+                # ⚠️ 逐輪檢查,不是 `if not seen` —— seen 是累積的,用整體判斷會讓第 2 輪起
+                # 「這一輪根本沒產出主 prompt」被前幾輪的成果掩蓋成通過。
+                if not any("tldr" in p for p in seen[before:]):
+                    raise AssertionError(f"{fn.__name__}{kw} 未攔到主 prompt: {e}")
     finally:
         analyzer._llm_generate = real
+        analyzer.build_council = real_council
     return seen
 
 
