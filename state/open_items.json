@@ -3596,8 +3596,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-17 14:23",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 16:25",
+  "note": "已實測:占神無網頁排盤器(零證據不可寫),改以韓國 Forceteller 當體系代表;具名決策併入 #370"
  },
  {
   "id": 361,
@@ -3706,8 +3706,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 15:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 16:25",
+  "note": "已修並在生產站 headless 驗過:結果區 #pai-adjust 印出「快60分鐘,已還原為標準時 1975-06-30 23:20 排盤」(commit e4512bf, site.js v13)"
  },
  {
   "id": 372,
@@ -3716,8 +3716,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-17 15:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 16:25",
+  "note": "已修:免費排盤加選填「確切時間」欄;生產站實測五題全數重現(Q1b 從乙巳改為正確的丙午),交界提示亦顯示"
  },
  {
   "id": 373,
@@ -3746,8 +3746,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 16:02",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 16:20",
+  "note": "修好後 16:05 cron 真送成功:扣 $347(餘額 400→53),客戶陳先生 16:11 已讀,送出內容是正式訊息(非測試字樣);同時把冷信佇列中同一客戶 goldrz 那封改 blocked 避免雙管道撞單"
  },
  {
   "id": 376,
@@ -3766,6 +3766,26 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-17 16:19",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 378,
+  "what": "Tasker『我要提案』按鈕在 headless 點了完全沒反應(四步驟已全綠、DOM data-el=case_client_propose 無 href、直連 /propose 等路徑皆 404)——提案這一步目前只能老闆用 App 送;提案稿在 growth/out/tasker_proposals_2026-08-17.md。待查:是否 App 專屬或需 TaskerGo",
+  "why": "headless 打不開提案表單,原因未查明",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 16:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 379,
+  "what": "命書:probe 的 manseryeok.com 四柱是截圖判讀(該站干支不在DOM文字),對外具名引用前需目視覆核",
+  "why": "證據等級低於其他 12 站,聚合數字已用但具名引用要再驗",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 16:25",
   "closed": null,
   "note": ""
  }
