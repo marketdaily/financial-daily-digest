@@ -5941,3 +5941,23 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   只有 8 個品項且**沒有 hehun_399**)、`cl_tarot.js` 出現 399/199。
   ⚠️ 對方 commit 寫「15/15 在售品項全部有雲端交付」,而價格真源只有 8 個 ⇒ 兩邊對「在售品項」的定義不一致,
   這比 lint 紅燈本身更值得查。`hehun_399` 該不該存在是產品/定價決策,不由我猜(open #386,owner=delvin)。
+
+## 2026-08-17 17:2x 主視窗:命書部署卡在「磁碟滿了偽裝成測試壞了」
+- ship.sh --clean 跑完 411 passed / **1 failed**,而那一條 failed 是
+  `OSError: [Errno 28] No space left on device` —— 寫 /tmp 失敗。
+- ⭐⭐ **基礎設施故障長得像測試故障**:pytest 的短摘要只印
+  `FAILED tests/test_seo_daily.py::test_daily_audit_clean_every_sampled_day[2026-11-05]`,
+  下一個人會直接去 debug 那支無辜的 SEO 測試。真因在 traceback 深處那一行。
+- 真因兩層:①winrig 的 `/tmp` 是 **6.9G 的 tmpfs(記憶體)**,而 ship 要在裡面放
+  1073 檔的完整工作樹 + pytest 產生的上百個頁面 ②今早 06:29–06:31 有工具在 /tmp 留下
+  **4 份 ~827MB 的 `~/autonomous/eval` 拷貝(含 823MB 的 runs/)**,共 3.3G,trap 沒射出。
+  根磁碟其實有 791G 空著。
+- SHIP:工作樹改放 `$REPO/.ship-tmp`(真磁碟)+ TMPDIR 跟著走 + **建工作樹前先檢查可用空間**
+  (<2GB 直接明講退出,而不是等它在半路上以別人的名義炸掉)。
+- ⭐ 我自己在同一支腳本上犯了一個:TMPDIR 建在 `$WT` 裡面,而下一行 `rmdir "$WT"`
+  要求它是空的(git worktree add 不吃已存在目錄)⇒ set -e 直接帶走整支 ship。TMPDIR 已移到 WT 外面。
+- ⚠️ **沒有清 /tmp 那 3.3G**:`rm -rf` 被權限閘擋下,我不重試。那 4 個目錄沒有任何行程持有,
+  要清的是 `/tmp/tmp.{rJBzIs6Aq2,9m6yohVTTU,5ZAJeQg4hu,3FaXBNeLFL}`。
+  **產生端在 `~/autonomous/`(自主機器的地盤,可能正在跑)—— 我不去改它的腳本**(系統不跟系統打架),
+  改成登記 open item 給它自己收。今晚它若再長 3.3G,ship 的新空間閘會擋住並明講,不會再假裝成測試壞了。
+- 17:2x 老闆:「咖啡豆掉下來變成咖啡那個非常的卡」→ quietfix #brew scrub 從 video seek 改 canvas webp 拆幀(先粗後細+位圖 LRU 防 2.2GB 爆記憶體),brew_home 本地+生產全綠;lesson 進 website-design-team。
