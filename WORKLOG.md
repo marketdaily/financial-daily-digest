@@ -5910,3 +5910,13 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - commit 9e424b6 + 5e67910。Artifact(同一網址)已更新給老闆:claude.ai/code/artifact/a9ebfda1
 - 16:5x CHOSEN landing 續改:掀蓋直接播(loop、contain 不裁、HQ 重編、字幕跟時間軸)、hero 空黃帶修、smooth scroll 升級(Lenis lerp .085+GSAP ticker、hero 反向視差、跑馬燈跟捲速、舞台浮出、段落 scrub 進場);⭐坑:直立桌機視窗被當手機給 9:16 那支⇒改 innerWidth<720 才算手機;sed 替換含 `/*` 吃掉註解結尾造成 JS 語法錯(node new Function 自檢後才 deploy)。
 - 老闆:「quietfix studio 也要有這個 smooth scroll」→ motion.js 同手感 + 新 smooth.js 讓 demo/services/guide/404 全部有 Lenis(有 GSAP 共用 ticker+ScrollTrigger.update),三套驗收+生產四頁全綠。
+- 17:0x 續:①ship --clean 仍被卡:`pricing.test.mjs` 紅(`worker/src/cl_hehun.js`/`cl_tarot.js` 有價格字面值,違單一真源),
+  工作樹也紅=真紅,非環境問題;已向 agent-57/43 詢問皆否認(它們在 KINGCONN / QuietFix),做 cloudlane 的視窗不在 busy 清單裡。
+  我方 `/p/paipan` 實測段(88acd7a)+字型子集(6883877)已 commit **未上線**,待對方修好後任何一次 ship 會帶上去(open #383)。
+  ⭐ 免費工具的修正**已在 ship3 上線並在生產站驗過**,不受此阻塞影響。
+- ②發現 `fulfill/DISABLED` 16:41 被建立(交付管線每分鐘跳過)。查哨兵 `/api/sentinel-status`:`stuck=0`、`cloud.enabled=true`
+  ⇒ 研判是 cloudlane session 刻意切換到雲端車道,**目前無客人在等**,不是我建的檔故未動(open #385)。
+  ⭐⭐ 但抓到一個真盲點:DISABLED 在時 fulfill.py `return 0`,cron 照樣蓋 `logs/ok/fortune_fulfill.ok`
+  ⇒ **新鮮度哨兵分不出「刻意停用」與「健康」**,與今天早上卡單 25h 同一形狀(exit 0 但沒產出)。停用態應蓋 skipped 而非 ok。
+- ③agent-57 回報一個值得收的坑:**CF Pages 的 404 回退頁回 200 + text/html**,所以驗產物存在性只看狀態碼會過(要看 content-type)。
+  本次實測 `mingshu.tw/api/sentinel-status` 就是這樣:回 200 但其實是站台 404 頁,真 endpoint 在 workers.dev。
