@@ -6033,3 +6033,7 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   命中草稿不寫 stage=writing。目標 ~15s,驗證中。
 - 跨 runtime 指紋契約有測試(tests/test_prewarm_contract.py):兩邊算不一樣不會報錯,只會永遠沒命中
   (照燒成本、照樣慢、完全靜默)——本專案最貴的那類 bug。
+- **最終計時(同一條真實流程)**:78-90s → 30.7s(預熱命中)→ **18.9s**(PDF 背景化 + 省 KV 往返)。
+  客人「看到報告」更早:HTML 一上架就 has_report。⚠️ 過程中抓到 KV 最終一致會讓命中**永遠失敗且靜默**
+  (prewarm:last 已 done 而 prewarm:<fp> 還是 running)⇒ 草稿改存 DO storage(強一致),
+  winrig 與雲端車道共用 /internal/prewarm-take。

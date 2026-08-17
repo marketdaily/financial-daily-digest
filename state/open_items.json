@@ -3816,8 +3816,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 16:55",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 17:49",
+  "note": "ship rc=0,線上獨立驗證:8 張商品卡 + 8 張圖 naturalWidth>0(真的載到)+ 評價區在生產被移除(0)+ 零 console error;站台自身線上體檢 31 過/0 失敗"
  },
  {
   "id": 383,
@@ -3876,6 +3876,46 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 17:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 389,
+  "what": "LINE 官方帳號顯示名稱是「QuickFix Studio」(錯字,應為 QuietFix)",
+  "why": "只能在 LINE OA Manager 改、無 API;改完 7 天內不能再改",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 17:28",
+  "closed": "2026-08-17 17:52",
+  "note": "老闆已在 LINE OA Manager 改名,API 查 displayName=QuietFix Studio"
+ },
+ {
+  "id": 390,
+  "what": "LINE 認證帳號(藍勾勾)未申請 → 拿不到「誰加了好友」名單、也搜尋不到",
+  "why": "免費但要審約 10 個工作天,等老闆說要不要辦",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-17 17:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 391,
+  "what": "QuietFix NO.29 建商大菜 RISE：探索版已送 Higgsfield，尚未挑版/定稿/建頁/上線",
+  "why": "fast 720p 兩版生成中，後續要抽格定節拍→std 1080p 定稿→film_texture→dish_page→menu 轉盤→部署",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 18:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 392,
+  "what": "命書預熱(prewarm)已生產驗證 18.9s 交付,但 PDF 補產對『非雲端車道』的單尚未在生產看到(pdf_backfill 只在 dispatcher 閒置時做,今天兩筆補產都是雲端車道的);要確認 order:1786961312644 的 PDF 會在下一輪 idle 補上",
+  "why": "剛上線,需觀察下一輪 cron",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 18:09",
   "closed": null,
   "note": ""
  }
