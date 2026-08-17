@@ -3978,5 +3978,25 @@
   "opened": "2026-08-17 20:01",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 399,
+  "what": "退訂 F1 重新訂閱路徑(reactivateSubscriber 的 KV delete + Brevo 解除黑名單)尚未在生產跑過",
+  "why": "要驗它只有兩條路:admin 密碼(只有 Delvin 有)或真的走一次註冊流程(會寄 welcome 信,本機硬規則禁止)。程式碼與 /admin/unsub-clear 路由已實射到 403 閘,但 delete 那一段沒有真的執行過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 20:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 400,
+  "what": "退訂 F5 lifecycle D1 信的退訂出口尚未在生產跑過",
+  "why": "runLifecycleSweep 是每日 cron(22:30 UTC),要等下一次自然觸發且當天要有 day1 的人才驗得到;sendLifecycleEmail 的 header/連結注入目前只有讀碼與離線推理",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 20:26",
+  "closed": null,
+  "note": ""
  }
 ]
