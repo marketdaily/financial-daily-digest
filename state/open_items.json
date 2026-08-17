@@ -2076,8 +2076,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-10 12:11",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 04:35",
+  "note": "生產首班已跑並驗過:2026-08-18 04:20 mingshu_pages_ship 全鏈跑完(重建 JSON-LD/sitemap 576 筆 → 436 pytest passed in 701s → wrangler 上傳 644 檔部署成功)。線上實查 https://mingshu.tw/p/yunshi 標題=「今日運勢・2026 年 8 月 18 日(週二)」、生肖頁 /p/yunshi/shengxiao/gou 標題=「屬狗今日運勢(2026 年 8 月 18 日)|甲子日」,日干支與月亮星座(天蠍)皆為當日實算值"
  },
  {
   "id": 209,
@@ -2126,8 +2126,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-10 13:04",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 04:35",
+  "note": "04:20 每日鏈已重建字型子集並部署:web/fonts/*.woff2 六支 mtime 08-18 04:20,線上與本機 md5 逐支相同(noto-sans-tc-400 eadb40c1、noto-serif-tc-500 c240ec3e)⇒ 線上不再是舊子集"
  },
  {
   "id": 214,
@@ -4156,6 +4156,16 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-18 04:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 417,
+  "what": "ok_stamp_lint 的 case 子指令分派只涵蓋 case $1 形狀:if [ \"$1\" = a ] 分派(market_forecast_runner.sh:同一支腳本×兩行 crontab×兩個 slot)吃不到;另該支的戳記名是動態的 \"market_forecast_$SLOT\",_RE_CALL 的 [A-Za-z0-9_]+ 匹配不到含 $ 的名字 ⇒ 兩個戳記根本沒有產出端被登記(既存盲區,非本次改動造成)",
+  "why": "驗證者 F7 指出。兩者方向都安全(fail-open/不登記),不是誤告;要修得先決定動態戳記名怎麼解析,不該夾帶進還債輪",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 04:47",
   "closed": null,
   "note": ""
  }
