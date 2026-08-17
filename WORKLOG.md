@@ -6395,3 +6395,45 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 驗證:`scripts/test_inline_subscribe.py`、`scripts/test_inline_subscribe_e2e.py`(真 Chromium,
   攔截 API 四分支,零真實訂閱者/零寄信)、archive_cta 自測+11 突變、site_scan 21 綠、線上實測。
 - commit 64326841 已 push;docs 已 deploy(local wrangler leg)。
+
+### 2026-08-18 04:05 TW — 命書部署卡死兩天的根因收掉(自主機器·還債輪 #409)
+- 症狀:任何一則含冷僻字的 **JS 註解**都會讓 `tests/test_font_subset.py` 紅 → `ship.sh` 跑全套
+  pytest → **整個 fortune-ai 兩天沒人部署得出去**(08-17~18)。
+- 根因兩層:①掃描面把註解當成「站上會顯示的字」;②同一份掃描邏輯**手刻兩次**
+  (`build_fonts._from_products` / `test_font_subset._site_chars`,檔內註解自己寫「必須逐字相同」)。
+- 修法:`strip_js_comments`(字元掃描,認 `''`/`""`/`` ` ``三種字串與正規表示式字面值,
+  **不用** `//.*` 粗暴刪法——`"https://…"` 與 `/\//g` 裡都有 `//`,刪到行尾會反過來吃掉真文案)
+  + `.css`/`.html` 對應挖法;`site_chars()` 收斂成產生器與測試**共用的唯一**掃描器。
+- 驗證:全站字集 3036→3013(removed 23/added 0,23 字逐行目視確認只在註解)、9 條新迴歸測試、
+  5 突變全咬(其中「拿掉 template literal」首輪存活=我那條測試是裝飾性的,已改真)、
+  6 個 woff2 重建各縮 3-4KB、**全套 pytest 433 passed exit 0**。commit `9e0efe1`(fortune-ai 本機 repo)。
+- 未收乾:①**未上線**——刻意不自己 ship(fortune-ai 有別視窗未提交變更),交給 04:20 TW
+  `mingshu_pages_runner` 那班(它每天無條件重跑 build_fonts 再 ship);open #213 等那班。
+  ②獨立驗證者 `font-subset-comment-scanner` 派出後未在本輪收割(見 open item)。
+- 順手:E108(film_texture 突變沙盒 baseline 紅)根因=突變 runner PATH 寫死
+  `/usr/local/bin:/usr/bin:/bin`,少了夜巡自測有的 `~/.local/bin` ⇒ ffmpeg 找不到 ⇒
+  **baseline 紅的積木整支跳過突變**(報告上不顯示成紅字)。PATH 已對齊 selftest.sh,
+  重跑 GRADED 咬到 3/3。E109(20 個突變 survivor)刻意不收:還債模式禁止開新的自我基礎設施工程。
+
+### 2026-08-18 04:00 TW — 美股存檔頁 40 篇對搜尋引擎「完全不存在」(自主機器·還債輪 #236)
+- 起點是還債:open #236 寫「08-11 鏈上三修尚未在生產跑過首班」。**第一次真的去看產出**才發現
+  ——`docs/output/digest_*_us.html` **40/40 篇** canonical=0、JSON-LD=0、meta description=0,
+  而且不在 sitemap、全站沒有任何頁面連過去 ⇒ 半個存檔頁面群(全站最大流量頁面群的一半、
+  每天再長一篇)搜尋引擎看不到。台股版 64 篇全部正常。
+- 根因是**同一份邏輯手刻兩份**(24 小時內第二次撞到這個形狀,前一次是命書字型子集掃描器):
+  `site_structured_data.DATE_RE` 與 `gen_sitemap.DATE_RE` 都寫 `digest_(\d{4}-\d{2}-\d{2})\.html$`,
+  `$` 把 `_us` 擋掉;前者還多一行 `if "_us" in p.name: continue`,理由寫「未進 sitemap 所以
+  不加 SEO 標記」——而它不進 sitemap 的原因正是另一份 regex 的同一個 `$`。兩邊互相引用成閉環,
+  所以 08-11 補的晚班窗口(讓 runner 在美股存檔落地後也跑一次)對結構化資料其實無事可做。
+- 修法:兩支 regex 一起吃 `(_us)?` 並互指註解;美股版走自己的 canonical/og:url(指向自己)、
+  headline「美股日報 {date}」、datePublished 20:00+08:00(晚班)、盤前口徑的 description fallback;
+  兩版原本共用 `<title>財經日報 {date}</title>`(進 sitemap 就是一對重複標題互相稀釋)⇒ 一併去重。
+- 驗證:--dry 40 篇皆 _us、零台股版被動到;套用後重跑 0 篇(冪等);新自測
+  `scripts/test_site_structured_data.py` 16 項綠 + **4 突變全咬**;既有 SEO 合規閘 10/10、
+  archive_cta/inline_subscribe 全綠;deploy 後線上 `digest_2026-08-17_us` / `08-13_us`
+  http=200 canonical=1 ldjson=1 title=美股日報,live sitemap 收 40 篇 `_us`(digest URL 64→104),
+  site_scan **21 綠**。commit `c7e73f5c` 已 push。
+- 同輪收尾:①命書字型子集的驗證者 7 findings 全修完並 commit(`1bf2b84`,fortune-ai;
+  全套 pytest 436 passed、node 23/23 ⇒ ship.sh 兩道閘無紅燈,04:20 TW 那班會實際部署)。
+  ②E109(20 個突變 survivor)**ack 但不消音**:逐條登記進 autonomous/backlog.md 並註明
+  「edge_validator 1.96 / memory_index_trim 門檻常數不准用等價豁免打發」,還債模式解除後就收。
