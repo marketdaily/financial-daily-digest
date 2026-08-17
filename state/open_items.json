@@ -3036,8 +3036,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-16 15:51",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 09:20",
+  "note": "MEMORY.md 18469→13832 字(硬上限 17100),新積木 memory_index_trim 逐行砍說明尾巴,91 段全部逐字仍在 hub"
  },
  {
   "id": 305,
@@ -3096,8 +3096,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 03:31",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 09:20",
+  "note": "同上:budget_guard 實跑 lv=OK chars=13832"
  },
  {
   "id": 311,
@@ -3136,8 +3136,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 04:38",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 09:20",
+  "note": "同上:超支狀態解除,且 --verify 已進夜巡防 hub 被 groom 掉唯一副本"
  },
  {
   "id": 315,
@@ -3206,6 +3206,116 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 06:36",
+  "closed": "2026-08-17 07:10",
+  "note": "r2 裁決 SOUND-WITH-CORRECTIONS/4 findings 已收(check_report exit 0 入帳本),四條逐條修完並各自加斷言+突變複驗"
+ },
+ {
+  "id": 322,
+  "what": "sole_writer_lint 這塊新積木還沒有對應考題(憲法要求每積木一題)",
+  "why": "草稿 /tmp/q_swl.json 已過 schema 閘,但 verify 要自己建 fixture 且尚未拿好/壞兩份實作實測;未經實測的 verify=免費滿分,寧可欠著",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 06:40",
+  "closed": "2026-08-17 07:10",
+  "note": "考題 sole-writer-property-guard 已用 add_task.py 加入題庫(257 題);verify 拿好實作(PASS)/逐行正則壞實作(FAIL 漏抓)/空目錄(FAIL)三方實測過"
+ },
+ {
+  "id": 323,
+  "what": "verifier_harness 的『別人還活著就跳過還原』沒有人負責補做,四個檔停在唯讀 444",
+  "why": "本輪撞到:add_task.py/task_schema_lint.py/jobs.tsv/eval_add_task.test.sh 從 r1 那輪起就停在 444(我手動 chmod 664 收乾)。根因是 _unfreeze_list 遇到別的 live pid 宣告同一路徑就跳過還原,而那個 pid 死掉時若 trap 沒跑完就沒人補;正解是 run_verifier.sh 起跑時先掃 RUN_DIR/*.frozen 把 pid 已死的還原掉。改的是把關腳本本身,要單獨一輪配自測做",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 07:10",
+  "closed": "2026-08-17 08:48",
+  "note": "驗證者判 UNSOUND/5 findings 全收乾:登記已錄的『正解』(起跑掃 RUN_DIR 還原死 pid)本來就有人在做,真根因是①凍結登記簿是 per-RUN_DIR 而 mode 是全域資源(跨 RUN_DIR 兩輪重疊 → 永久唯讀)②還原失敗三種全靜默且照樣刪清單 ③矛盾仲裁取 max 會把 640 提權成 777 ④kill -0 沒驗 pid 身分。已改:登記簿搬全域 FREEZE_REG、沒還回去不准銷毀證據、非寫入位元不等就拒絕猜、清單記 #start=。驗證:repro 綠+自測 41→46 段全過+突變 13/13 各紅在對的斷言+兄弟自測 freeze_sync/runner 全過+生產登記簿零殘留"
+ },
+ {
+  "id": 324,
+  "what": "hub_engineering_bricks 索引行有 22 段 hook 註解不在索引也不在 trim 帳本(08-16 人工改寫留下),hubify --verify --strict 因此仍 rc=2",
+  "why": "內容已確認仍在 hub 檔內(抽驗 5/5 命中),不是資料遺失;但 strict 永遠紅=budget_guard 每天推的訊息帶著一個假紅,要嘛補登帳本要嘛承認那批是合法改寫",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 09:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 325,
+  "what": "命書社群改每天發:改制尚未在生產跑過(首班=今晚 2026-08-17 20:00),FB 同步也還沒發過雙平台",
+  "why": "只在假時鐘的 runner 模擬與單元測試驗過;真實驗收靠 daily_cadence_watch.py(cron */30,湊滿 3 個原全黑日推 PASS/掛零推 FAIL)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 10:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 326,
+  "what": "08-17 早報 9/21 掉備援的根因修尚未在生產跑過(明早 05:20 TW 首驗)",
+  "why": "analyzer.py 兩處根因修(TLDR 骨架 + 卡片 div 配對切法)只在離線測試 20/20 驗過;週一/週末 prompt 那半要到 08-24(下週一)才會真正上場",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 10:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 327,
+  "what": "credential_watch 對 cloudflare_wrangler 報假綠:實測 winrig 一把能部署的 CF 憑證都沒有(Pages/KV/Workers 全 403、Mac 關機借不到),它今早 09:47 仍判 ok 且 basis 寫「本機憑證(來源=env),線上探測 200」",
+  "why": "探測端點選錯:GET /accounts/{id} 對窄 scope token(DNS/Browser Rendering)也可能過,且它自己註解寫「借得到=degraded 不是 healthy」卻報 ok。假綠蓋住的正是打掉 08-14~16 三班日報的那條路",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-17 10:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 328,
+  "what": "pick_gate 受益者閘門尚未在生產 cron 跑過(離線自測 33 段全過、突變 9/9 killed、CYCLE_PRINT_PROMPT 驗證注入成功)",
+  "why": "判準:只有生產/真實排程跑過才算完成。真首跑=下一輪 driver.sh 起跑的 cycle",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 10:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 329,
+  "what": "~/autonomous/backups/ 一小時內暴衝 436 個 MEMORY.md.mit.* 備份檔(09:14~10:12,共 763 檔/14M)",
+  "why": "memory_index_trim 每處理一段就寫一份備份;不致命但是純噪音,且會淹掉真正該留的引擎檔備份",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 10:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 330,
+  "what": "driver.sh 手動執行時不會因為 Delvin 正在互動而讓路,會真的起跑一輪 cycle",
+  "why": "讓路哨兵是在 cycle 內背景偵測(~90s),起跑那一刻不擋;今天手動驗證引擎時因此起了一輪、要人工 kill。引擎鐵律③要求「手動跑一次 driver.sh」與這個行為衝突",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 10:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 331,
+  "what": "命書社群 X / TikTok 未接:X 完全沒金鑰、TikTok 缺 client key/secret 且只吃影片",
+  "why": "兩者都要 Delvin 本人去平台開發者後台開 App 拿憑證,程式端無法自助;TikTok 另需先決定要不要每天產影片",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-17 10:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 332,
+  "what": "命書 IG 每天發:整條 IG 腿尚未在生產發出過任何一則(首班=今晚 20:00)",
+  "why": "圖卡產製+圖床部署+SHA256 驗證已真跑過,但 post_instagram 那一步還沒在排程裡執行過;daily_cadence_watch 要求 IG 至少成功 2 天才 PASS",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 10:56",
   "closed": null,
   "note": ""
  }
