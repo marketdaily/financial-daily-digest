@@ -2011,12 +2011,36 @@ def _pp_expand_tickers(html: str, tw_hint: dict) -> str:
         _expand_impact, html
     )
 
-    # 台股一律只露中文名,不留代碼:清掉內文 LLM 寫的「名稱（2330）」括號代碼。
-    # 用名稱表比對只清「真實台股代號」→ 不誤傷年份/價位;美股 ticker 是字母,本規則不碰。
+    # 台股「名稱(代號)」:代號**查表驗證後保留**,不是看到就砍(2026-08-18,open #421)。
+    # 舊行為(2026-07-01 684824c9)是一律剝掉,動機是擋 LLM 掰錯代號;代價是整份日報的台股
+    # 沒有任何代號可以拿去下單/查價,而同一封信的確定性備援版自己寫「台積電 TSMC(2330)」
+    # ⇒ 兩套規則,且與 CLAUDE.md「台股顯示要同時有代碼+公司名」相衝。
+    # 新規則保留原本的保護、只是把「無資訊」換成「正確資訊」:
+    #   ① 前文有這個代號對應的公司名 → 原樣保留(對得上)
+    #   ② 前文緊鄰的是別支已知台股名 → 把代號**改正**成那支的代號(LLM 掰的代號一樣射不出去)
+    #   ③ 前文找不到任何已知台股名 → 沿用舊行為剝掉(無從驗證的數字不放行)
+    #   ④ 不在名稱表裡的四位數(年份/價位)→ 不碰;美股 ticker 是字母,本規則本來就不碰
+    # 名稱表全滅時(tw_hint 空,2026-07-09 certifi 事故情境)整條規則不作用=原文照留。
     _tw_codes = set(tw_hint.keys())
-    def _strip_tw_paren_code(m):
-        return "" if m.group(1) in _tw_codes else m.group(0)
-    html = _re.sub(r'[ 　]?[（(]\s*([0-9]{4})\s*[）)]', _strip_tw_paren_code, html)
+    _name_to_code = {}
+    for _c, _n in tw_hint.items():
+        if _n and _n not in _name_to_code:
+            _name_to_code[_n] = _c
+
+    def _resolve_tw_paren_code(m):
+        code = m.group(1)
+        pre = _re.sub(r"<[^>]+>", "", html[max(0, m.start() - 20):m.start()]).rstrip(" 　")
+        name = tw_hint.get(code) or ""
+        if name and name in pre:
+            return m.group(0)
+        for _ln in range(8, 1, -1):
+            right = _name_to_code.get(pre[-_ln:])
+            if right:
+                return m.group(0).replace(code, right)
+        # 名字認不出來:是真台股代號就沿用舊行為剝掉;不是的(年份/價位)不碰。
+        return "" if code in _tw_codes else m.group(0)
+
+    html = _re.sub(r'[ 　]?[（(]\s*([0-9]{4})\s*[）)]', _resolve_tw_paren_code, html)
     return html
 
 
@@ -4495,7 +4519,7 @@ def _gr_build_prompt(date: str, all_holdings: list, has_holdings: bool,
 - 數字要具體（不說「大幅上漲」，要說「漲了 3.2%」）
 - 每個重點一兩句話說清楚，不廢話
 - 繁體中文
-- 內文提到個股：美股用「中文名（代號）」例如「輝達（NVDA）」；**台股只用中文名、不加代碼**，例如「台積電」「聯發科」（不可寫成「台積電（2330）」），更不可只寫代號
+- 內文提到個股：一律「中文名（代號）」——美股例如「輝達（NVDA）」，台股例如「台積電（2330）」「聯發科（2454）」；**不可只寫代號**，也不可只在第一次出現時寫名字之後全用代號。台股代號務必是正確的四位數（不確定就只寫公司名，寧可少寫也不要寫錯）
 {few_stocks_note}
 日期：{date}
 

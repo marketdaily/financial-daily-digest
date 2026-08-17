@@ -210,7 +210,13 @@ def label_with_code(code, tw_hint=None):
 
 
 def badge_html(code, tw_hint=None):
-    """ticker 徽章 HTML。台股:只顯示台股名稱(代號不一定要顯示);美股:公司中英文名 + 小灰代號。"""
+    """ticker 徽章 HTML:公司名 + 小灰代號(台股與美股同一種寫法)。
+
+    2026-08-18(open #421):台股分支原本只吐中文名,卡片上看不到代號 → 讀者要下單/查價
+    得自己去查,且與 CLAUDE.md「台股顯示要同時有代碼+公司名」相衝(美股分支一直都有代號)。
+    代號來自我們自己的名稱表(不是 LLM 寫的),所以不存在掰錯代號的風險。
+    名稱表查不到時仍只回裸代號 → digest_audit.tw_ticker_bare_code 照樣抓得到(防線不變)。
+    """
     if _is_tw(code):
         cn, _ = _names(code, tw_hint)
         name = cn or code
@@ -219,6 +225,8 @@ def badge_html(code, tw_hint=None):
         return (
             '<span style="font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif;'
             f'font-weight:800;">{name}</span>'
+            '<span style="font-family:\'SF Mono\',ui-monospace,monospace;font-size:10px;'
+            f'color:#8e8e93;margin-left:5px;font-weight:700;">{code}</span>'
         )
     name = display_name(code, tw_hint)
     if name == code:
