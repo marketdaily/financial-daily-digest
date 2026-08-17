@@ -2356,8 +2356,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 04:35",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 03:51",
+  "note": "首次真的去看產出:美股班存檔頁 40/40 篇 canonical=0/JSON-LD=0/description=0 且不在 sitemap——08-11 只補了晚班窗口,site_structured_data 那行 'if _us in name: continue' 還在,兩支手刻 DATE_RE 的 $ 互相把 _us 擋在外面成閉環。已修(commit c7e73f5c):兩支 regex 一起收 _us、美股版走自己的 canonical/headline/datePublished 20:00、<title> 去重;新自測 scripts/test_site_structured_data.py 16 項綠+4 突變全咬。生產驗證:已 deploy,線上 digest_2026-08-17_us / 08-13_us http=200 canonical=1 ldjson=1 title=美股日報,live sitemap 收 40 篇 _us(digest URL 64→104),site_scan 21 綠。cta_funnel_lint runner 那半已有 08-17 09:20 的 ok 戳記"
  },
  {
   "id": 237,
@@ -4096,6 +4096,26 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-18 01:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 411,
+  "what": "就地訂閱表單(digest 存檔 104 頁 + blog 65 篇)已上線但尚未有真實陌生訪客走過:首班驗收=看 attr:convert 是否出現 utm_content=inline_form 的轉換,或至少確認 7 日內表單無錯誤回報",
+  "why": "只跑過 stub 網路的 e2e,真人路徑(真的 Brevo 加人 + welcome 信)在生產尚未發生過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 02:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 412,
+  "what": "event_queue 的自測會把合成 fixture 寫進生產佇列 state/event_queue.json(2026-08-17 17:48 一次寫進 26 筆,把顯示預算吃光、遮蔽 13 則真事件到隔天才被發現)——測試要改成走可注入的佇列路徑/臨時檔,並加一道『生產佇列不得出現測試來源 id』的守衛",
+  "why": "本輪是受益者=delvin 的對外輪,只先把污染 ack 掉;根因修復屬機器輪",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 02:20",
   "closed": null,
   "note": ""
  }
