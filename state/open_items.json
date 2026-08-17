@@ -3426,8 +3426,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 12:43",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 14:01",
+  "note": "08-17 14:00 用探針單在生產真射出第 1 階(admin_events pushed=True),✅ 回收路徑同輪驗"
  },
  {
   "id": 344,
@@ -3506,6 +3506,26 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 13:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 352,
+  "what": "冷 email 管道就緒待老闆兩步:①在 delvin@quietfix.studio 的 Gmail 加『以 delvin@delvinchang.com 寄送』別名(否則 From 被改寫,實測已證)②Google Admin 產 delvinchang.com DKIM 並貼 TXT(或給我 DNS:Edit token);完成後我把 STOREFRONT_SEND_ENABLED=1、WARMUP_START=當天,平日 10:05 從 3 封/日暖機起跑",
+  "why": "別名與 DKIM 都在老闆的 Google 後台,我碰不到",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 14:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 353,
+  "what": "命書交付管線心跳失聯告警(零訂單也響)只在 node 測試重播 08-13 情境驗過;生產真射需 fulfill 真的停 20 分鐘,未演練(不想為驗證停生產)",
+  "why": "生產演練成本=交付停 20 分鐘;等下次真事件或老闆同意演練",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 14:01",
   "closed": null,
   "note": ""
  }

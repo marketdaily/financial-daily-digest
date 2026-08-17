@@ -5701,3 +5701,11 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 老闆令「用 QuietFix 加幾道新菜,用 Higgsfield 驗剛做的東西」。餐飲 SEAR/科技 CIRCUIT/診所 CALM 三品類三 preset:rig prompt→lint 零 rig_missing→Seedance 2.5 1080p ×2 版(540cr)→抽格挑版→film_texture→五件套→頁+轉盤卡(25→28)→本地+生產雙驗全綠,已上線。
 - 產線泛化 dish_media/dish_page/dish_cards/shoot_dish(探點與亮度配對表同源)。坑:顆粒讓 scrub 檔 3 倍肥→crf21 tune film;Workers assets 25MiB 母帶擋 deploy;Higgsfield 推銷 preset 整批 0/6;⚠️`bash -x` 印出 .env secret(只在本機終端輸出,未外流,以後禁)。
 - open #347 關閉。CALM A 版 job 到收工仍 in_progress(已付費,不影響)。
+
+## 2026-08-17 14:1x TW — 老闆「確保它不會再發生」:命書交付管線互相看門+生產實射驗證
+- 補的兩塊:①fulfill 心跳(掃 KV 成功才打)→ 哨兵 20 分鐘沒收到就推「交付管線失聯,現在下單的人收不到」——**零訂單也響**
+  (08-13 憑證死到 08-15 第一位客人踩到差兩天,原本那兩天沒有任何東西在量「管線活著嗎」)②winrig 反看哨兵有沒有在巡檢。
+- 生產實射:放探針單(a=1、t=25 分鐘前、body paid:false 讓 fulfill 略過)→ 14:00 哨兵 pushed=1、admin_events 有「🟠 needs-delvin
+  命書訂單卡住 1 筆」→ 刪探針 → 14:10 ✅ 回收。已 resolve 那則告警。⭐ 首班驗收抓到心跳 404(部署傳播前 1 秒打的),之後全 200。
+- 現在的保證鏈:客人卡 20 分鐘 → 手機;管線死 20 分鐘(沒客人也)→ 手機;哨兵死 40 分鐘 → 手機;三條在兩台不同機器/兩把不同憑證上。
+- close #343;新開 #352(心跳失聯告警未在生產真停過管線演練)。
