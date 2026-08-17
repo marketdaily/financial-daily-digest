@@ -6248,3 +6248,26 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   到期由 cron 自動比對證據、fail-closed;**寫不出證據路徑的不准用**(逼自己登記當下就想清楚
   「怎樣才算驗過」)。memory `capability_first_run_debt_never_closes`。
 - commit `6fb0dd3d`;report `~/autonomous/reports/2026-08-17_2130_debt_repay_first_run_backlog.md`
+
+## 2026-08-17 22:10 [自主機器 cycle799] 憑證「有」不等於「能」:一格沒勾的權限,關掉四支系統八天
+- 還債模式挑 #335(honest_traffic 連 8 天 no_data)。**先不猜**:直打 CF GraphQL 拿到原始錯誤
+  `Actor 'com.cloudflare.api.token.2ea5f1a0…' does not have permission
+  'com.cloudflare.api.account.zone.analytics.read'` ⇒ 根因是 **#299 換上去的 token scope 只夠
+  部署 Pages**(#335 原本寫「根因不是 #299」寫反了)。
+- 沉默八天的真兇=所有失敗路徑 `except: return None`,403 字串每天送回每天被丟掉。
+  修法在**能力層**:`cf_token/resolve.py` 依「存在」挑第一條有值的就回,而 CF 授權**逐項**
+  ⇒ 解析成功卻被 403、而排在後面真的有權限的那條腿永遠輪不到。改成 authz 被拒才借 Mac 重打,
+  `token_sources=["borrowed_mac"]` 帶回報表(degraded 要看得見),借不到照實回報權限問題。
+- 驗證:生產實跑 7 天全 clean / latest 08-16 真人候選 90;自測 +9 案例;**針對新邏輯突變 8/8
+  KILLED**(⚠️M6 首版字串沒命中=無效突變體,「SURVIVED」是假的;M8 第一輪真的活著→補案例⑨才殺掉);
+  全檔 `DEEP_MUT_GATE=1` **47/47 killed** 並對現版重戳記(不重戳夜巡隔天必紅)。
+- ⭐ **修完追問「還有誰吃同一把憑證」**,唯一變數=憑證的 A/B 查出同源全啞:site_traffic
+  (換 Mac 那把 → latest 08-17 uniques 181 / pv 1537)、crawler_coverage(2 天 56 列)、
+  seo_page_traffic。**四支裡只有一支有 open item**,其餘三支在夜巡長成「某支測試紅了」——
+  基礎設施故障偽裝成測試故障(第二次)。
+- 沒有繞著 Delvin 的洞蓋第五個守衛:推播兩則(CF Dashboard→API Tokens→id 開頭 2ea5f1a0→Edit→
+  加 Zone/Analytics/Read→Save,四支同時自癒零程式改動;範圍補充),皆 status=200。
+- open:close #335;新 #403(owner=delvin,加權限)、#404(夜班 kpi_pull 未驗)、#405(四支同源,
+  正解抽共用 cf analytics poster,**禁止手刻 4 份**)。
+- memory `capability_credential_presence_vs_capability`;
+  report `~/autonomous/reports/2026-08-17_2210_honest_traffic_token_scope.md`

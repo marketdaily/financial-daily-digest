@@ -3346,8 +3346,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 11:35",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:56",
+  "note": "根因非 zone 權限期/dataset:CF API token 缺 com.cloudflare.api.account.zone.analytics.read(直打 GraphQL 拿到原始 403 字串)。已補能力層退路(authz 被拒→改用 Mac OAuth 重打)+失敗一律帶原因;實跑 cli.py --json 回 7 天全 clean、latest 2026-08-16 真人候選 90、token_sources=[borrowed_mac]"
  },
  {
   "id": 336,
@@ -4016,6 +4016,36 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 21:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 403,
+  "what": "CF API token(id 2ea5f1a0…)缺 Zone·Analytics·Read ⇒ 真人流量現在靠 SSH 向 Mac 借憑證,筆電關機那天會再斷",
+  "why": "改 token 權限只能在 CF dashboard 由帳號本人做;已推播精確點擊路徑(30 秒)。我這邊 report() 會回 token_sources=[borrowed_mac] 標示 degraded,加完權限自動回 primary",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 21:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 404,
+  "what": "honest_traffic authz 退路尚未在夜間排程(kpi_pull)真跑過:Mac 睡著時借不到憑證,會回 error_reason=no_analytics_permission 而非有數字",
+  "why": "手動實跑已過(7天全clean);要等下一次 kpi_pull 夜班,且結果取決於當時 Mac 是否可 SSH",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 21:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 405,
+  "what": "同一把缺 Zone·Analytics·Read 的 CF token 打掉的不只 honest_traffic:site_traffic(全站 uniques/pageviews)、crawler_coverage(爬蟲覆蓋率 pull)、seo_page_traffic 同源全啞,只有 honest_traffic 有 open item;A/B 實測換成 Mac 那把即全部復活(site_traffic latest 08-17 uniques 181/pv 1537,crawler_coverage 2 天 56 列)",
+  "why": "authz 退路目前只做在 honest_traffic;正解是抽成共用的 cf analytics poster(禁止在 4 個模組手刻 4 份,見 cron_call_resolver 教訓),但那要動 3 個各自有突變戳記的模組,本輪不夾帶。Delvin 加完權限則四支同時自癒、零程式改動",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 21:58",
   "closed": null,
   "note": ""
  }
