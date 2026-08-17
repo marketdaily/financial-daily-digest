@@ -6596,3 +6596,7 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   refactor_harness **reseal 前**先逐行比對 55 對變更行只有「代號插入/樁雜湊變化」兩類才封基線,
   封完三模式全綠。生效班次=明日 07:00(今天 07:00 這班 05:20 就生成完,吃的是舊碼)。
 - 要回舊行為:commit message 與 memory `capability_tw_ticker_code_display` 都寫了怎麼還原。
+- 同輪收 #398(退訂首班驗收,07:00 這班是第一班吃到新碼):21/21 成功、總訂閱 21 與前兩班相同
+  (無人被誤剔除);四條退訂告警全靜默(寄前自檢 + 逐封 postcheck 驗「他自己的 unsub URL 在不在
+  他那封 HTML 裡」)。誠實邊界:List-Unsubscribe header 是由「unsub_url 非空 + Brevo 未回 400」
+  推得,沒有直接讀收件匣(Gmail 連接器本 session 未授權)。
