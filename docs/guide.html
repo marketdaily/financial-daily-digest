@@ -221,7 +221,7 @@ nav {
       <div class="step-num">1</div>
       <div class="step-title" data-i18n="s1_title">怎麼註冊(開通帳號)</div>
     </div>
-    <img class="shot" src="assets/guide/step1-register.png" data-src-zh="assets/guide/step1-register.png" data-src-en="assets/guide/step1-register-en.png" data-i18n-alt="s1_alt" alt="MarketDaily 首頁,輸入 Email 直接免費訂閱的畫面" loading="lazy">
+    <img class="shot" src="assets/guide/step1-register.webp" width="2464" height="336" data-src-zh="assets/guide/step1-register.webp" data-src-en="assets/guide/step1-register-en.webp" data-wh-zh="2464x336" data-wh-en="2464x320" data-i18n-alt="s1_alt" alt="MarketDaily 首頁,輸入 Email 直接免費訂閱的畫面" loading="lazy">
     <div class="shot-cap" data-i18n="s1_cap">↑ MarketDaily 首頁的註冊畫面</div>
     <p class="step-body" data-i18n-html="s1_body">
       打開 MarketDaily 首頁,在輸入框打上你的<b>電子信箱(Email)</b>,按<b>「繼續」</b>。
@@ -235,7 +235,7 @@ nav {
       <div class="step-num">2</div>
       <div class="step-title" data-i18n="s2_title">設定你的密碼</div>
     </div>
-    <img class="shot" src="assets/guide/step2-password.png" data-src-zh="assets/guide/step2-password.png" data-src-en="assets/guide/step2-password-en.png" data-i18n-alt="s2_alt" alt="第一次登入時設定密碼的畫面" loading="lazy">
+    <img class="shot" src="assets/guide/step2-password.webp" width="840" height="1100" data-src-zh="assets/guide/step2-password.webp" data-src-en="assets/guide/step2-password-en.webp" data-wh-zh="840x1100" data-wh-en="840x1168" data-i18n-alt="s2_alt" alt="第一次登入時設定密碼的畫面" loading="lazy">
     <div class="shot-cap" data-i18n="s2_cap">↑ 第一次登入時的設定密碼畫面</div>
     <p class="step-body" data-i18n-html="s2_body">
       第一次登入時,網頁會請你設定一組<b>密碼(至少 6 個字)</b>。
@@ -252,7 +252,7 @@ nav {
       <div class="step-num">3</div>
       <div class="step-title" data-i18n="s3_title">在哪裡登入</div>
     </div>
-    <img class="shot" src="assets/guide/step3-login.png" data-src-zh="assets/guide/step3-login.png" data-src-en="assets/guide/step3-login-en.png" data-i18n-alt="s3_alt" alt="MarketDaily 我的專區登入畫面" loading="lazy">
+    <img class="shot" src="assets/guide/step3-login.webp" width="840" height="1068" data-src-zh="assets/guide/step3-login.webp" data-src-en="assets/guide/step3-login-en.webp" data-wh-zh="840x1068" data-wh-en="840x1092" data-i18n-alt="s3_alt" alt="MarketDaily 我的專區登入畫面" loading="lazy">
     <div class="shot-cap" data-i18n="s3_cap">↑ 「我的專區」的登入畫面</div>
     <p class="step-body" data-i18n-html="s3_body">
       以後想看你的專區,點網站上的<b>「我的專區」</b>。
@@ -266,7 +266,7 @@ nav {
       <div class="step-num">4</div>
       <div class="step-title" data-i18n="s4_title">設定你想追蹤的股票</div>
     </div>
-    <img class="shot" src="assets/guide/step4-stocks.png" data-src-zh="assets/guide/step4-stocks.png" data-src-en="assets/guide/step4-stocks-en.png" data-i18n-alt="s4_alt" alt="在持倉區搜尋並加入股票的畫面" loading="lazy">
+    <img class="shot" src="assets/guide/step4-stocks.webp" width="1424" height="496" data-src-zh="assets/guide/step4-stocks.webp" data-src-en="assets/guide/step4-stocks-en.webp" data-wh-zh="1424x496" data-wh-en="1424x482" data-i18n-alt="s4_alt" alt="在持倉區搜尋並加入股票的畫面" loading="lazy">
     <div class="shot-cap" data-i18n="s4_cap">↑ 持倉區:搜尋並加入你的股票</div>
     <p class="step-body" data-i18n-html="s4_body">
       進入專區後,在持倉區的搜尋框打<b>股票代號或公司名稱</b>(例如「台積電」「NVDA」),
@@ -364,6 +364,8 @@ function applyLang(lang) {
   document.querySelectorAll('[data-src-zh]').forEach(el => {
     const src = lang === 'en' ? el.dataset.srcEn : el.dataset.srcZh;
     if (src) el.src = src;
+    const wh = lang === 'en' ? el.dataset.whEn : el.dataset.whZh;
+    if (wh) { const [w, h] = wh.split('x'); el.width = w; el.height = h; }
   });
   const langBtn = document.querySelector('.lang-btn');
   if (langBtn) langBtn.textContent = lang === 'zh' ? 'EN' : '中文';
