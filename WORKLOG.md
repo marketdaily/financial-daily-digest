@@ -6437,3 +6437,29 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   全套 pytest 436 passed、node 23/23 ⇒ ship.sh 兩道閘無紅燈,04:20 TW 那班會實際部署)。
   ②E109(20 個突變 survivor)**ack 但不消音**:逐條登記進 autonomous/backlog.md 並註明
   「edge_validator 1.96 / memory_index_trim 門檻常數不准用等價豁免打發」,還債模式解除後就收。
+
+### 2026-08-18 04:15 TW — 「戳記有檔案,卻沒有任何東西在寫它」(自主機器·還債輪 #287/#315/#316)
+- 起點是還債:查 open #287(cron_deploy_docs 11 個呼叫端首班未驗)。證據全在磁碟上——
+  **10/11** 已在真實排程跑過改後路徑(各自 log 有 `cron_deploy_docs:<name>` + `leg? end rc=0`);
+  第 11 支 `deploy_docs_site_scan` 是條件觸發(只有 site_scan 判 docs-only 且修復後重掃全過
+  才 deploy),07-28 之後沒有場合≠沒驗。08-17 那班 track_record 還把三條腿走完:
+  leg1 wrangler 9109 → leg2 GH Actions 422 → **leg3(Mac SSH)成功上線**。
+- 查的過程撞到真缺陷:`logs/ok/deploy_docs_*.ok` 7 支內容全停在 08-11,但 08-17 那幾班
+  都部署成功了。根因=**戳記唯一的活寫入端是 `cron_run_and_alert`,而 `cron_deploy_docs`
+  是另一個函式、自己不寫**;那些 .ok 是 08-17 backfill 從舊 log 回填出來的 ⇒ 有檔案、
+  沒有寫入端、也沒有 watcher(`ok_stamp_lint --suggest` 結構上掃不到它們)= 純化石。
+  這條線正是 08-13~16 兩條腿同時死、67h 零告警的那條 —— 事後補了第三條腿與 deploy_drift
+  自癒,卻沒人發現它在新鮮度哨兵上結構性失明,**因為它看起來有戳記**。
+- 修法:`_cron_ok_stamp` 抽成唯一寫入端(不手刻第二份);`cron_deploy_docs` 改薄 wrapper,
+  只在 rc=0(內容真的上線)戳一次——不在三條腿各自的 `return 0` 補行,第四條腿長出來時
+  才不會漏戳。驗證:deploy_two_leg 補 ⑬a 七條(三腿上線都戳/都沒上線不准戳/隱私閘擋死不戳/
+  再次成功戳記要真的前進),**60 通過 0 失敗**;cron_runner_lib exit 0。commit `a9848efa` 已 push。
+- 同輪收 #315/#316:`ok_stamp_lint --register` 收進 **23 列** watch(註冊後硬檢查全過),
+  並把它接進 `cron_catchup`(*/10)尾段每日自動擴量(節流標記+失敗吞掉+沒新增就安靜)——
+  它本來是冪等 fail-closed 設計(「這次略過的下次自己撿」)卻沒有下次。沙盒驗冪等+正對照
+  (拿掉 warmup_daily 那列會自動補回),cron_catchup 自測 138 段 0 失敗。
+  被 fail-closed 略過的 8 支**就是真的壞掉的那批**(→ #413):fleet_liveness 4.7d、
+  mingshu_seo_pull 6.5d、mingshu_pages_ship 7d、care_report/mutation_sweep×2/pro360_radar
+  戳記從未存在=從未成功過。
+- 未收乾:mingshu_pages_runner 04:20 首班(修好的 `--clean` 分支)結果要等 ship.sh 跑完
+  (全套 pytest ~11min),留給下一輪收 #208/#213/#214/#409。
