@@ -3416,6 +3416,26 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-17 12:19",
+  "closed": "2026-08-17 12:32",
+  "note": "老闆貼的新 token 只有 Zone 權限(會弄啞 MarketDaily pages 部署)→ 已回滾 .env、新 token 存為 CLOUDFLARE_ZONE_TOKEN 備用;真正解法=quietfix-site 改走 wrangler versions upload+deploy(純帳號層,不碰 routes),現有 token 就通,已固化 site_worker/deploy.sh 並實發驗證 200"
+ },
+ {
+  "id": 343,
+  "what": "命書訂單卡住哨兵(Worker cron */10)已部署,但第 1 階告警推播尚未在生產真發過(只有 node 假 ALERT e2e);首次真的有單卡 20 分鐘時要回頭看 admin_events 有沒有那則",
+  "why": "沒有卡單就不會觸發,不做假單污染 KV",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 12:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 344,
+  "what": "命書 paid 頁延遲文案(delayed/waited_seconds)已上線但未在真卡單情境看過畫面;fulfill REST 401 重試+CLI memberships 重試也未在生產撞到過那 1% 事件驗證",
+  "why": "需真事件才驗得到,今日 log 觀察 24h",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 12:43",
   "closed": null,
   "note": ""
  }

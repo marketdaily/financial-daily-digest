@@ -5609,3 +5609,20 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   字型 CSS 非阻塞;<main>+標題階層(無障礙 100);品牌 404。三套驗收全綠、生產四驗過。deploy 走借 Mac OAuth(.env token 缺 Zone 權限,#342)。
 - 曝光:三支 Reels、投稿包(圖+錄影+中英文案+去處表)、接案平台文案、策略頁 artifact cb208344。需老闆本人的動作登記 #340。
 - ⭐ 教訓:複製驗收腳本要改「兩張表」(探點+亮度配對),否則靠殘留檔假綠;Seedance 2.5 預設 720p。詳 storefront REFINE_REPORT 末章。
+
+## 2026-08-17 13:0x TW — 命書 mingshu.tw:老闆邀請碼八字單躺 25 小時的根因 + 哨兵搬進 Worker
+- 事故:08-15(六)22:01 老闆用家友碼下 bazi_999(免單→cli 車道),08-16(日)22:58 才交付(正常 90 秒)。
+  根因**不是** claude 額度:08-13~16 winrig CF 憑證死掉 ⇒ fulfill.py 每分鐘在 `kv key list` crash
+  (log 1009 條 traceback/日),任何單都不會被撿;08-16 晚憑證復活後 87 秒就交付了。
+  三天內唯一告警=「cron fortune_fulfill 失敗 rc=1」(同指紋 6h 冷卻、累計抑制 360 次)——講的是
+  「機器壞了」,沒有任何東西講「**有客人在等**」;而 winrig 上的守衛跟 fulfill 死於同一把憑證。
+- 修:①Worker `scheduled */10` 訂單卡住哨兵(只讀 KV list metadata,零個資;a=1 超過 20 分鐘 →
+  needs-delvin 推播,20m/2h/12h 三階升級後每 24h 重推;脫離佇列推 ✅;`/api/sentinel-status` 可外部
+  驗活;帳本 `stuck:ledger`)②`/api/order-status` 加 `waited_seconds`/`delayed`,paid.js 延遲時照實講
+  「系統延遲已通報,不必重下單」且 30 分鐘後改 60s 慢輪詢**不再硬停**(原本硬停=對盯著的客人說「永遠
+  不會來」)③fulfill.py REST 401/5xx 先重試再落 CLI、CLI memberships 偶發同 10000 重試(08-17 一天
+  7 次 REST 401,其中 1 次 CLI 也偶發 ⇒ rc=1 告警)。
+- 驗證:node stuck_sentinel.test.mjs 重播事故時間軸全過;pytest fulfill 98/98(順手修 test_oauth_token
+  暗依賴「.env 剛好沒 token」的假紅);worker 已部署(schedule 掛上);web 走 ship.sh --clean。
+- open #343(第 1 階推播未在生產真發過)#344(延遲畫面/1% 重試未真事件驗證)。
+- ⭐ 教訓:「cron 失敗」告警與「客戶受影響」告警是兩件事;守衛不能跟被守的東西共用同一把憑證。
