@@ -3586,8 +3586,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 14:23",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 16:59",
+  "note": "pSEO 3 頁已線上 200 並驗過;免費工具修正已在生產站 headless 驗五題全過;社群 4 則仍等今晚 20:00 首發(拆到新項)"
  },
  {
   "id": 360,
@@ -3806,6 +3806,76 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 16:48",
+  "closed": "2026-08-17 17:24",
+  "note": "08-17 17:20 紫微(最複雜的 audit)由雲端車道生產真交付:111.6s、$0.0936、報告十二宮齊全、Email 已寄;其餘品項有 parity+coverage 測試但仍無生產實績,風險已降至低"
+ },
+ {
+  "id": 382,
+  "what": "mingshu.tw 八品商品牆+評價區已 commit 但尚未部署上線(ship.sh 未過)",
+  "why": "第一次卡 JSON-LD 抽取器(已修);第二次乾淨工作樹在別視窗 HEAD 上前段測試 FFF.F,我自己工作樹同批全綠;第三次在背景跑,未確認",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 16:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 383,
+  "what": "fortune-ai 部署被 cloudlane 硬編碼價格卡住:pricing.test.mjs 紅(cl_hehun.js/cl_tarot.js 無價格字面值),已通知 agent-57/43;我方 /p/paipan 實測段(88acd7a)+字型子集已 commit 未上線",
+  "why": "另一 session 在flight的紅燈,不去動它的檔;下次任何 ship 會帶上我的變更",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 16:59",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 384,
+  "what": "命書社群占神對位 4 則:今晚 20:00 首發未在生產發過(首班驗收)",
+  "why": "鏈上改動必附首班驗收",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 16:59",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 385,
+  "what": "fortune-ai fulfill/DISABLED 於 16:41 被建立(交付管線每分鐘跳過);哨兵 stuck=0、cloud.enabled=true ⇒ 研判是 cloudlane session 刻意切換,未動它。真實盲點:DISABLED 在時 cron 仍 return 0 並蓋 logs/ok/fortune_fulfill.ok ⇒ 新鮮度哨兵分不出「刻意停用」與「健康」",
+  "why": "不是我建的檔不逕自刪;但停用態蓋成功戳記是與 08-17 卡單事故同形狀的盲點,需在停用態改蓋 skipped 或另立狀態",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 17:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 386,
+  "what": "【#383 根因】fortune-ai 部署卡點不是守衛誤判:cl_hehun.js 宣告品項 hehun_399、cl_tarot.js 有 399/199,但價格真源 pricing.js 只有 8 個品項(無 hehun_399)⇒ 品項 id 沒進真源就不會被 strip,裸數字被咬。對方 commit 稱「15/15 在售品項」而目錄只有 8 個,兩邊對「在售品項」定義不一致",
+  "why": "hehun_399 該不該存在是產品/定價決策,不由我猜;交給 cloudlane 那個視窗或老闆定",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 17:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 387,
+  "what": "winrig /tmp(6.9G tmpfs)被 ~/autonomous/eval 的暫存拷貝塞爆:今早留下 4 份 827MB(含 823MB runs/),trap 沒射出",
+  "why": "產生端在 autonomous 機器自己的地盤,它可能正在跑,我不去改它的腳本(系統不跟系統打架);殘留目錄無行程持有但 rm 被權限閘擋下,未清",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 17:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 388,
+  "what": "雲端車道其餘品項(塔羅×2/合婚×2/流年×2/終身/占星×2)只有 parity+coverage 測試,無生產實績;紫微與八字已有真交付",
+  "why": "逐品項演練成本高(每次要停 winrig 30 分鐘);測試覆蓋已含引擎/audit/報告 markup 逐字對帳",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 17:24",
   "closed": null,
   "note": ""
  }
