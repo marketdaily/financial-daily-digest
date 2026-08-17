@@ -5650,3 +5650,13 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 老闆語音:寫圖/影片 prompt 要像人在片場、預算無上限——點名機身、鏡頭、導演/DP、腦中那部電影的那場戲、stock/grade,讓產出像真的那樣拍。
 - 落地:genai-prompt-pro §4.5(rig block 5 欄+英文模板+選 rig 思路+checklist);website-design-team 階段② 每方向附一組 rig(整站共用)、⓪b/③b 指過去;
   `genai_prompt_lint` 新增 `_check_rig`(photoreal 才開火,缺群→MED `rig_missing`,插畫/anime 豁免)自測 +11 全過;兩 skill LESSONS.md 各記一節;brain sync 已入 c2e0cd4c。
+
+## 2026-08-17 14:0x TW — 命書 mingshu.tw 全站 QA(子代理 headless 53 頁×2 視窗、489 連結、44 組工具測資)P0=0/P1=8/P2=11
+- P1 全修:①首頁手機頁尾 793px 不換行 ②**每日頁(老黃曆/今日運勢)線上停在 8/11 六天**——pages_runner 因工作樹一份沒 commit 的
+  sitemap.xml 判「他人 WIP」而 exit 0 跳過部署,審計/cron 全綠零告警(又一個「exit 0 但沒產出」);修=sitemap 一起 persist+
+  有 WIP 改走 `ship.sh --clean`+`live_check ⑦` 直接驗線上日期=今天 ③假單號 /paid 永遠「確認付款中」且入訂單簿(worker found:false/400)
+  ④紫微頁四柱用農曆月≠八字節氣月 ⑤23 時後說明寫「日柱已進位」但引擎是晚子時派 ⑥DST 還原後時辰仍用輸入鐘點 ⑦報告 md `---`
+  變文字、空行斷 <ol> ⑧舊品牌天機外露(抬頭/PDF 檔名/寄件人→命書)。P2 修 5:全站 og:image、簡體第二道 zhconv 偵測(建除
+  执开闭/煞东 修源)、Stripe.js 改接近下單區才載、生日上限=今天、/paid 無參數文案。
+- 未修 P2:塔羅強制填生日(產品決策)、表單原生英文驗證訊息、手機 caption 13px、hero 影片 ERR_ABORTED 噪音、手機點擊穩定性需實機驗。
+- 557 頁重建 audit 0 問題、node 12 套全過;worker 已部署;web 走 ship.sh --clean(全套 pytest)。
