@@ -3356,8 +3356,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-17 12:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 13:17",
+  "note": "已換成 CAD 版:從 seq4 末幀裁切(1600x892,49234B),不另外渲染也沒動 scene.py;三方 md5 一致 09cf7b98"
  },
  {
   "id": 337,
@@ -3466,6 +3466,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 13:09",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 348,
+  "what": "hero 快捲卡頓的修法尚未經 Delvin 在真實機器確認手感",
+  "why": "headless Chromium 的 rAF 是假時鐘,四種情境全 16.7ms 零變異,我量不到 jank;我能證明的是解碼壓力回到 1440 那條已知良好路徑+快捲時零額外高解析請求,但『真的不卡了』要他本人滑過才算",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 13:17",
   "closed": null,
   "note": ""
  }
