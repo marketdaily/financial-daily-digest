@@ -177,6 +177,19 @@ _rq.get = lambda url, headers=None, timeout=None: FakeListResp(
     {"ok": True, "emails": ["gone@x.com"], "count": 1})
 check("KV 層:退訂者被剔除(大小寫無關)", main._drop_unsubscribed(SUBS), ["a@x.com", "b@x.com"])
 
+# 名單那一側的正規化必須與訂閱者那一側**逐字相同**(2026-08-17 r2 驗證者 F4)。
+# 這裡曾經是 Python 內建 `.strip()`,它不吃 U+FEFF ⇒ KV 名單裡只要有一筆帶 BOM 的 key,
+# 那個人**永遠不會被剔除**,而且不會有任何訊號(寫入端目前會正規化,但那是「現在沒人那樣寫入」
+# 在撐著,不是這行在撐著 —— 手動 `wrangler kv key put` 一次就破)。
+_rq.get = lambda url, headers=None, timeout=None: FakeListResp(
+    {"ok": True, "emails": ["﻿gone@x.com"], "count": 1})
+check("KV 名單帶 BOM 的退訂者也要剔除(strip 不吃 U+FEFF)",
+      main._drop_unsubscribed(SUBS), ["a@x.com", "b@x.com"])
+_rq.get = lambda url, headers=None, timeout=None: FakeListResp(
+    {"ok": True, "emails": ["gone@x.com\x1c"], "count": 1})
+check("KV 名單帶 U+001C 的退訂者也要剔除(JS trim 不吃)",
+      main._drop_unsubscribed(SUBS), ["a@x.com", "b@x.com"])
+
 _rq.get = lambda url, headers=None, timeout=None: FakeListResp({}, 500)
 check("名單取不到 → fail-open 照寄", main._drop_unsubscribed(SUBS), SUBS)
 
@@ -390,9 +403,14 @@ if _js:
             _bad.append(_js[max(0, _mm.start() - 90):_mm.start() + 40].replace("\n", " ")[-90:])
     check_true("解除退訂只發生在本人確認 / admin 兩處(匿名端點不得直接清)",
                not _bad, "; ".join(_bad) if _bad else "")
-    check_true("匿名註冊端點改成寄確認信",
-               _js.count("requestResubscribeConfirm(email, env)") >= 3,
-               "subscribe-free-direct / free-subscribe / set-password 三支都要接")
+    # 「呼叫次數 ≥ 3」認不出身分:/resubscribe-request 自己也呼叫它,所以拔掉 set-password 那一支
+    # 仍然是 3 次 —— 那樣的斷言殺不掉突變(08-17 自己才寫下的教訓,這裡差點又犯)。逐支端點看。
+    for _path in ("/subscribe-free-direct", "/free-subscribe", "/set-password"):
+        _i = _js.find(f'url.pathname === "{_path}"')
+        _j = _js.find('url.pathname === "', _i + 40) if _i >= 0 else -1
+        _seg = _js[_i:_j] if _i >= 0 and _j > _i else ""
+        check_true(f"{_path} 用寄確認信取代直接解除退訂",
+                   bool(_seg) and "requestResubscribeConfirm(email, env)" in _seg)
     check_true("resub 簽章與 unsub 簽章 domain-separate", "`resub|v1|${email}`" in _js)
     check_true("GET /resubscribe 不生效(郵件客戶端會預抓連結)",
                'if (request.method === "GET") return resubPage("confirm", email, qs);' in _js)
