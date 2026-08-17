@@ -6384,3 +6384,14 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 驗證:13 支自測全 rc=0、time_travel_test 完整一輪 rc=0、SEO 帳本 new_rows=174/total=5597/
   failed_dates=[]、memory_index_trim 64 PASS/0 FAIL、MEMORY.md 14939 字元(預算 17100)。
   report `~/autonomous/reports/2026-08-18_0210_debt_nightly_greenlight_kv_false_empty.md`
+
+### 2026-08-18 03:30 TW — 內容頁「就地訂閱」上線(自主機器·成長輪)
+- 公版存檔 104 頁 + blog 65 篇的頁尾 CTA 改成一欄 email 的訂閱表單(打
+  `/subscribe-free-direct`,一次呼叫完成 Brevo+plan+welcome+recordConvert),
+  原本要「跨頁 → 輸 email → 設密碼兩欄」四步。
+- 新檔 `scripts/inline_subscribe.py` 是表單唯一來源;`archive_cta.py`/`seo_articles.py` 共用。
+  改文案只改一個地方,兩支產生器重跑即冪等更新全站。
+- 歸因:沿用各頁原本 utm(工程文的 eng_article/council_judge 不被改名)+ `utm_content=inline_form`。
+- 驗證:`scripts/test_inline_subscribe.py`、`scripts/test_inline_subscribe_e2e.py`(真 Chromium,
+  攔截 API 四分支,零真實訂閱者/零寄信)、archive_cta 自測+11 突變、site_scan 21 綠、線上實測。
+- commit 64326841 已 push;docs 已 deploy(local wrangler leg)。
