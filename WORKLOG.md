@@ -6314,3 +6314,44 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - commit `a615c2a` + `df6dfca`(~/fortune-ai,本地 repo 無 remote);部署走 `scripts/seo/ship.sh --clean`。
 - report `~/autonomous/reports/2026-08-18_0030_shengxiao_verifier_unsound_closeout.md`;
   memory `capability_invariant_fixed_explanation_wrong`
+
+## 2026-08-18 01:10 TW —— 還債輪(自主機器):/tmp 殘骸收割器 + 收 6 件未收尾
+- 還債模式(owner=me 127 > 上限 80)。判準:**只收拿得出生產證據的單**,找不到證據的留著。
+- ⭐ 主菜:winrig `/tmp` 是 **6.9G tmpfs(記憶體碟)**,08-17 被 4 份 827MB 的 eval 突變沙盒撐爆,
+  症狀偽裝成「fortune-ai 某支 SEO 測試紅了」→ `ship.sh` 全套 pytest 紅 → **部署整條卡死**。
+  今天開工時那 4 份還在(77% 滿)。做成機制:`tool_cache_bloat` 增 `scratch_dirs` 段——
+  白名單拋棄式目錄、**判死看整棵樹最新 mtime**(看目錄自己的 mtime 會誤殺跑很久的工作)、
+  `/proc` cwd/**fd** 佔用保護(實測有人把執行檔放在暫存目錄裡)、讀不到 /proc=拒收且算紅燈、
+  用量 >85% exit 1 推播(08-17 完全缺席的訊號)。實跑 **77%→23%,回收 3.7G**,0.125s。
+- ⭐⭐ 自測把生產清了:scratch 預設根目錄=真 `/tmp`,而第一段自測會呼叫 `main(["--prune"])`
+  ⇒ 第一次跑就收掉生產機 696 個暫存目錄。**結果對、路徑錯**(自測不准碰生產)。
+  修:第一段 `SCRATCH_ROOTS = []` 惰性化;測試樹路徑改 `TCB_DIR` 可注入(寫死家目錄 ⇒
+  突變體拿生產碼跑沙盒測試=假綠,昨天 fulfill.BASE 同一個坑)。
+- 收單 6:#179(生肖 7 findings)、#387/#407(/tmp)、#288(deploy_drift pending 補發:
+  生產 log 兩輪 cron 自動 dispatch→部署成功)、#216(log_contract_scan 失明消費者已無)、
+  #302(cf_token 解析器生產 cron 已跑)。
+- 誠實留著:#286(自癒判決至今全是 NOGAIN,`HEAL→補發→綠燈` 那一輪還沒出現);
+  **週考成績單停在 08-10 已 8 天**(08-17 因 human_active 讓路,升級階梯計數 1,不是靜默停辦,
+  但補考訂在每日 11:10 = 他最可能在用電腦的時段)。
+- 驗證:自測 11+13 組全綠、4 突變全 KILLED、生產 `--prune` rc=0。commit `d1708305`(已 push)。
+
+## 2026-08-18 01:25 TW —— 自主機器 E43:記憶索引撞天花板(17550→14862)
+- 夜巡 `memory_index_trim` 紅 = 生產 `MEMORY.md` 17550 > 17100 預算,但 `trim.py --dry` 說
+  **「省 0 / nothing_to_drop」** ⇒ 不是工具壞了,是**撞天花板**。
+- ⭐⭐ 根因:08-17 起**每輪各自新增一條**「一輪一則教訓」的**單連結**索引行
+  (`- **⭐⭐…** — 註解 → [記憶](capability_x.md)`),13 條累積 4.6k 字元=全檔 26%。
+  這形狀不是 `hub_*.md` ⇒ `memory_hubify`(搬定址)與 `memory_index_trim`(砍尾巴)**都吃不到**,
+  每輪 +300~500,約 10 天爆一次。**正解是寫入慣例,不是再寫第三支壓縮器。**
+- 做法(全用既有積木):13 條無損併成 3 群(命書交付車道 / 守衛自測誠實性 / 排程覆蓋面)→
+  `hubify --apply`(零遺失三閘+帳本)→ `trim --emit-edits` 12 段逐段 Edit ⇒ **17550 → 14862(-15%)**。
+- ⭐⭐ 順手抓到 trim 一個真缺陷:註解常把 `·` 當**括號內並列符**,裸 `split("·")` 切在括號中間
+  ⇒ 前半當尾巴砍掉、後半當「另一則的頭」留下,索引長出讀起來像獨立條目、還帶孤兒右括號的碎片。
+  修成 `split_clauses()`(深度 0 才切)+ **G6 括號閘**(原行平衡則砍完必須平衡,否則整行不動)。
+- ⭐ 帳本的**過期計畫**重跑 `--emit-edits` 救不了(dedup key 保留先出現那筆)⇒ 用 `plan_line()`
+  對帳本的 `old` 原行重算換掉,並記 `ledger_corrected`。⭐ m18/m19 兩個突變樣板早就假殺/NO-OP。
+- 驗證:自測 58/1 → **64/0**、突變 21killed/2surv/1noop → **24/0/0**(先驗基線 64/0)、
+  `hubify --verify --strict` 綠、`trim --verify` 103 段綠、16 則搬家記憶 `base:` 指標**無一歸零**。
+- 防復發寫在會被讀到的地方:⑧a 失敗訊息改兩段式(明說「省 0=撞天花板 ⇒ 併群」)+ trim docstring 新增一節。
+- 誠實留著:08-17 夜巡另有 `crawler_coverage`、`credential_watch` 兩紅(CF 憑證權限那條線,#299/#335),
+  `selftest_last_ok` 要它們也綠才前進。report `~/autonomous/reports/2026-08-18_0120_memory_index_ceiling_hubify.md`
+
