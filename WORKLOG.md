@@ -5778,3 +5778,8 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 盲盒「CHOSEN CHEST」:logo 實體化(紅蓋黃身斜縫、燙金 mark、磁吸硬殼、不開窗、PSA 9+、Chosen Ticket 四階 1:50 金票、內襯金反光紙、YOU ARE CHOSEN);NBP 2k 四視圖;對 GameStop 六點更好表+法務底線(不用寶可夢圖像)。
 - 影片:seedance_2_0 fast 720p 探索 3 支(35cr)→挑版→std 1080p 定稿 9:16+21:9(90cr×2)→film_texture kodak grain .45→品牌尾卡;交付 6 檔。共 ~330cr。
 - 教訓:NBP 會把「softbox」畫進畫面(prose 打光寫效果不寫燈具);lint multi_scene 對一鏡到底 beats 假陽性已修(one continuous 宣告豁免)。
+
+## 2026-08-17 15:4x TW — 第四刀:「做網站也要像 CHOSEN」→ 網站推導法 + CHOSEN CHEST landing 上線
+- 老闆:CHOSEN 影片=行銷能力很好,做網站也要這樣。落地 website-design-team `references/site-derivation.md`(網站 8 問/像它自己十成分/worked example),階段①必跑、⑤critic 加閘。
+- 實作+上線 https://chosen-chest.delvin-12345678.workers.dev(storefront clients/chosen/site+worker):捲動=掀蓋 hero(21:9/9:16 兩 take 自動切)、四句儀式短句、logo 斜縫分隔、盒子按鈕、材料 palette、Anton+Noto 900+Mono。桌機/手機 scrub 0→10s 單調、console 0、overflow 0。
+- 坑:CF Pages 不支援 Range⇒scrub 卡 0(搬 Workers Static Assets+quietfix range shim);Pages production branch main vs repo master⇒apex 404;CJK display 別靠 Anton fallback。
