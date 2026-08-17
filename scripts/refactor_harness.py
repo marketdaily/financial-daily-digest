@@ -93,6 +93,37 @@ def _install_frozen_datetime():
     return FrozenDateTime
 
 
+def _install_net_tripwire():
+    """把檔頭寫的「零真實 LLM 呼叫」從宣稱變成機器強制的不變量。
+
+    2026-08-18:provider 樁是**手寫名單**,analyzer 08-03 新增 _call_mistral 沒補進去,
+    harness 就安靜地對 api.mistral.ai 真發了兩週認證請求(429 才露餡)——名單型防線只擋
+    得住「我記得的那些」。這道 tripwire 反過來守出口:任何 HTTP 出去就當場炸,漏掉的樁
+    會在第一次跑就變成紅字,而不是變成一張帳單或一次擲骰子的 golden。
+    要臨時放行(例如手動 debug)設 MD_HARNESS_ALLOW_NET=1。
+    """
+    if os.environ.get("MD_HARNESS_ALLOW_NET") == "1":
+        return
+    import requests.sessions as _rs
+    import urllib.request as _ur
+
+    def _blocked(where, url):
+        raise RuntimeError(
+            f"harness 網路出口未封:{where} → {url}\n"
+            "  golden 必須零外部呼叫。請把對應的 provider/fetch 打樁,"
+            "或確認 analyzer 是否新增了沒被 _call_* 蓋到的呼叫路徑。")
+
+    _orig_req = _rs.Session.request
+
+    def _guard(self, method, url, *a, **kw):
+        _blocked(f"requests {method}", str(url)[:120])
+        return _orig_req(self, method, url, *a, **kw)  # pragma: no cover
+
+    _rs.Session.request = _guard
+    _ur.urlopen = lambda url, *a, **kw: _blocked(
+        "urlopen", str(getattr(url, "full_url", url))[:120])
+
+
 def _load_modules():
     import time as _t
     _t.sleep = lambda *a, **k: None
@@ -118,16 +149,31 @@ def _load_modules():
     analyzer._llm_generate = fake_llm
 
     # council 席次不走 _llm_generate 而是直呼各 _call_*(2026-07-03 首跑實測打到真 Gemini
-    # 還吃了 429)——8 個 provider caller 全打樁,保證整個 golden 流程零 LLM 網路呼叫。
+    # 還吃了 429)——provider caller 全打樁,保證整個 golden 流程零 LLM 網路呼叫。
+    # 2026-08-18 修:原本是**手寫的 8 個名字**,而 analyzer 08-03 新增的 _call_mistral 沒人
+    # 補進來 ⇒ harness 自 08-03 起每跑一次就對 api.mistral.ai 真發一次認證請求(實測回 429),
+    # 檔頭寫的「零真實 LLM 呼叫、零配額消耗」有兩週是假的;更糟的是 mistral 哪天回 200,
+    # council 就吃到真 LLM 文字 ⇒ golden 變成擲骰子。改成從 analyzer 自己列舉,新增 provider
+    # 自動被蓋住,不必記得回來改這行。
     def _stub_provider(tag):
         def _stub(prompt, *a, **kw):
             h = hashlib.sha256(prompt.encode("utf-8")).hexdigest()[:10]
             return f"看多|信心65|{tag}樁{h}|MA20支撐,量縮整理,逢低分批。"
+        _stub._harness_stub = True
         return _stub
 
-    for _name in ("_call_gemini", "_call_claude", "_call_openai", "_call_groq",
-                  "_call_cf_ai", "_call_openrouter", "_call_cerebras", "_call_ollama"):
+    _providers = sorted(n for n in dir(analyzer)
+                        if n.startswith("_call_") and callable(getattr(analyzer, n, None)))
+    if not _providers:
+        raise SystemExit("harness: analyzer 找不到任何 _call_* provider,樁失效")
+    for _name in _providers:
         setattr(analyzer, _name, _stub_provider(_name.replace("_call_", "")))
+    _leaked = [n for n in _providers
+               if not getattr(getattr(analyzer, n), "_harness_stub", False)]
+    if _leaked:
+        raise SystemExit(f"harness: provider 未打樁 {_leaked}")
+
+    _install_net_tripwire()
 
     analyzer._track_stats = lambda: FIXED_TRACK_STATS
 
@@ -279,6 +325,7 @@ def _provider_snaps():
         "GROQ_API_KEY": "TESTKEY-GROQ", "CF_AI_PROXY_TOKEN": "TESTKEY-CF",
         "CF_AI_PROXY_URL": "https://cf-proxy.test/ai",
         "OPENROUTER_API_KEY": "TESTKEY-OR", "CEREBRAS_API_KEY": "TESTKEY-CER",
+        "MISTRAL_API_KEY": "TESTKEY-MIS",
     }.items():
         os.environ[k] = dummy
     import time as _t
@@ -287,6 +334,12 @@ def _provider_snaps():
     os.chdir(ROOT)
     import analyzer  # provider 快照不需要凍時鐘,不動 sys.modules(防 pandas segfault)
     analyzer.GEMINI_API_KEY = "TESTKEY-GEM"
+    # CF neuron 預算閘門吃**當日活用量**(cf_neuron_budget.budget_ok 讀 UTC 日的帳本):
+    # 額度用得多的那天 _call_cf_ai 會在發請求前先 raise ⇒ provider 快照跟任何程式改動無關
+    # 地變紅(2026-08-18 實遇:9876/6500)。與 7bef298c 凍結 _track_stats 同一個道理——
+    # 行為凍結 harness 不准把活資料當輸入。record 一併打樁,確保快照永遠不寫真帳本。
+    analyzer._cf_budget.budget_ok = lambda: True
+    analyzer._cf_budget.record = lambda *a, **k: 0.0
 
     calls = []
 
@@ -339,6 +392,18 @@ def _provider_snaps():
     snap("cerebras_custom", lambda: analyzer._call_cerebras("PING", system="SYS-TEST", max_tokens=1234))
     snap("ollama_default", lambda: analyzer._call_ollama("PING"))
     snap("ollama_custom", lambda: analyzer._call_ollama("PING", system="SYS-TEST", model="m-test", max_tokens=1234))
+    snap("mistral_default", lambda: analyzer._call_mistral("PING"))
+    snap("mistral_custom", lambda: analyzer._call_mistral("PING", system="SYS-TEST", max_tokens=1234))
+
+    # 快照名單是手寫的 ⇒ 會漏。mistral 08-03 入鏈後 payload 形狀就一直沒被凍過(這次補上)。
+    # 這道斷言把「我記得列了誰」換成「analyzer 有誰就必須有誰」,下次再新增 provider 時
+    # 是這裡當場紅,而不是又過了兩週才被別的症狀撞出來。
+    _expected = {n[len("_call_"):] for n in dir(analyzer)
+                 if n.startswith("_call_") and callable(getattr(analyzer, n, None))} - {"openai_style"}
+    _missing = sorted(p for p in _expected
+                      if not any(k == p or k.startswith(p + "_") for k in snaps))
+    if _missing:
+        raise SystemExit(f"provider 快照漏了 {_missing}(analyzer 新增 provider 要補 snap)")
 
     def chain(prefer_strong):
         calls.clear()
@@ -383,6 +448,36 @@ def cmd_provider(mode):
     print("✅ provider 快照一致(payload/解析/鏈序凍結成立)")
 
 
+def _stub_unsub_list():
+    """退訂名單(main._drop_unsubscribed)的網路出口打樁。
+
+    2026-08-18 tripwire 抓到:run_smoke 的檔頭寫「mock 全部網路出口」,實際上 08-17 上線的
+    退訂第一層每跑一次就打一次**正式站 Worker** `/internal/unsub-list` —— 等於 golden 的
+    內容綁在線上 KV 的活狀態上(今天有人退訂,明天這支 characterization 就會無故變紅),
+    而且測試在對生產環境發帶 token 的請求。這裡改成固定樁:token 也給固定假值,讓
+    `_drop_unsubscribed` 的真邏輯(HTTP→json→norm_email→比對)整條跑完且完全確定性。
+    名單刻意放一個**不在訂閱者裡**的地址 —— 保留原本 4 位訂閱者的覆蓋形狀(第 4 位是
+    b67be887 為了打到精選版快取命中路徑才加的),不因為打樁而少測一條路。
+    """
+    import requests as _rq
+    os.environ["MARKETDAILY_INTERNAL_TOKEN"] = "harness-fixed-internal-token"
+
+    class _Resp:
+        ok = True
+        status_code = 200
+
+        @staticmethod
+        def json():
+            return {"emails": ["already-gone@test.local"], "truncated": False}
+
+    def _get(url, *a, **kw):
+        if "/internal/unsub-list" in str(url):
+            return _Resp()
+        raise RuntimeError(f"harness run_smoke 未預期的 HTTP GET → {str(url)[:120]}")
+
+    _rq.get = _get
+
+
 def _run_smoke():
     """run() 的 characterization:mock 全部網路出口,3 個合成用戶跑完整 run(),
     回傳 normalized(stdout + 寄件清單含每封 html 雜湊 + audit 報告)。"""
@@ -403,6 +498,7 @@ def _run_smoke():
     main._push_admin_halt_alert = lambda *a, **k: None
     main._push_admin_coverage_alert = lambda *a, **k: None
     main._push_preflight_alert = lambda *a, **k: None
+    _stub_unsub_list()
     publisher.get_list_id = lambda: 1
     publisher.check_subscriber_count = lambda lid: 3
     publisher.get_all_subscribers = lambda lid: [

@@ -8,74 +8,163 @@
 ④ 生成 AI 市場情緒 Banner（台股早報版）...
   [council] 席次 gemini:2.5-lite 失敗(no json)
   [council] 席次 gemini:2.0-flash 失敗(no json)
-  [council] 席次 groq:gpt-oss-120b 失敗(no json)
-  [council] 席次 claude:haiku 失敗(no json)
-  [council] 席次 claude:sonnet 失敗(no json)
+  [council] 席次 groq:qwen3.6-27b 失敗(no json)
   [council] 席次 local:qwen2.5-14b 失敗(no json)
+  [council] 席次 cf:gpt-oss-120b 失敗(no json)
   [council] 席次 cf:llama-3.3-70b 失敗(no json)
-  [council] 席次 openrouter:llama-70b 失敗(no json)
-  [council] 席次 cerebras:llama-70b 失敗(no json)
+  [council] 席次 openrouter:nemotron-ultra-550b 失敗(no json)
+  [council] 席次 cerebras:gpt-oss-120b 失敗(no json)
+  [council] 席次 mistral:large-latest 失敗(no json)
   [council] 席次 openai 失敗(no json)
   [council] 席次 gemini:2.5-lite 失敗(no json)
   [council] 席次 gemini:2.0-flash 失敗(no json)
-  [council] 席次 groq:gpt-oss-120b 失敗(no json)
-  [council] 席次 claude:haiku 失敗(no json)
-  [council] 席次 claude:sonnet 失敗(no json)
+  [council] 席次 groq:qwen3.6-27b 失敗(no json)
   [council] 席次 local:qwen2.5-14b 失敗(no json)
+  [council] 席次 cf:gpt-oss-120b 失敗(no json)
   [council] 席次 cf:llama-3.3-70b 失敗(no json)
-  [council] 席次 openrouter:llama-70b 失敗(no json)
-  [council] 席次 cerebras:llama-70b 失敗(no json)
+  [council] 席次 openrouter:nemotron-ultra-550b 失敗(no json)
+  [council] 席次 cerebras:gpt-oss-120b 失敗(no json)
+  [council] 席次 mistral:large-latest 失敗(no json)
   [council] 席次 openai 失敗(no json)
   [council] 席次 gemini:2.5-lite 本輪停用(no json)
   [council] 席次 gemini:2.0-flash 本輪停用(no json)
-  [council] 席次 groq:gpt-oss-120b 本輪停用(no json)
-  [council] 席次 claude:haiku 本輪停用(no json)
-  [council] 席次 claude:sonnet 本輪停用(no json)
+  [council] 席次 groq:qwen3.6-27b 本輪停用(no json)
   [council] 席次 local:qwen2.5-14b 本輪停用(no json)
+  [council] 席次 cf:gpt-oss-120b 本輪停用(no json)
   [council] 席次 cf:llama-3.3-70b 本輪停用(no json)
-  [council] 席次 openrouter:llama-70b 本輪停用(no json)
-  [council] 席次 cerebras:llama-70b 本輪停用(no json)
+  [council] 席次 openrouter:nemotron-ultra-550b 本輪停用(no json)
+  [council] 席次 cerebras:gpt-oss-120b 本輪停用(no json)
+  [council] 席次 mistral:large-latest 本輪停用(no json)
   [council] 席次 openai 本輪停用(no json)
+  [card-regen] 第 1 輪:7 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:7 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:7 支未過卡級品質閘,逐支重生
 ⑤ 儲存本地預覽（預設版）...
    本地預覽已儲存：output/digest_YYYY-MM-DD.html
 ⑥ 上傳預設版網頁...
 ⑦ 個人化發送...
+   [card-pool] 預生成 3 檔(全體訂閱者聯集,tw 班)→ 後面用戶共用
+  [card-regen] 第 1 輪:3 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:3 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:3 支未過卡級品質閘,逐支重生
    tw-user@test.local → 個人化（本班次 tw｜美股:0, 台股:3）· 新手（17.4）
+  [card-regen] 第 1 輪:3 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:3 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:3 支未過卡級品質閘,逐支重生
+   ⚠️ tw-user@test.local 個人化失敗，改用預設版（_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'）
+   ⚠️ tw-user@test.local HIGH audit fail(tldr_section_missing),retry 一次
+  [card-regen] 第 1 輪:3 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:3 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:3 支未過卡級品質閘,逐支重生
+   🛡️ retry 仍 HIGH fail(tldr_section_missing) → 切 deterministic fallback
    📦 生成完成,進寄送佇列 → tw-user@test.local
    us-user@test.local → AI 精選（本班次 tw｜美股:0, 台股:2）· 一般（47.4）
+  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
+   ⚠️ us-user@test.local 個人化失敗，改用預設版（_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'）
+   ⚠️ us-user@test.local HIGH audit fail(tldr_section_missing),retry 一次
+  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
+   🛡️ retry 仍 HIGH fail(tldr_section_missing) → 切 deterministic fallback
    📦 生成完成,進寄送佇列 → us-user@test.local
    nohold-user@test.local → AI 精選（本班次 tw｜美股:0, 台股:2）· 新手（0.0）
+  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
+   ⚠️ nohold-user@test.local 個人化失敗，改用預設版（_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'）
+   ⚠️ nohold-user@test.local HIGH audit fail(tldr_section_missing),retry 一次
+   ⚠️ systemic alert 推失敗:harness 網路出口未封:urlopen → https://marketdaily-alert-worker.delvin-12345678.workers.dev/internal/admin-line-push
+  golden 必須零外部呼叫。請把對應的 provider/fetch 打樁,或確認 analyzer 是否新增了沒被 _call_* 蓋到的呼叫路徑。
+  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
+   🛡️ retry 仍 HIGH fail(tldr_section_missing) → 切 deterministic fallback
    📦 生成完成,進寄送佇列 → nohold-user@test.local
-   nohold2-user@test.local → AI 精選版(共用今日精選,快取)
+   nohold2-user@test.local → AI 精選（本班次 tw｜美股:0, 台股:2）· 新手（0.0）
+  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
+   ⚠️ nohold2-user@test.local 個人化失敗，改用預設版（_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'）
+   ⚠️ nohold2-user@test.local HIGH audit fail(tldr_section_missing),retry 一次
+  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
+   🛡️ retry 仍 HIGH fail(tldr_section_missing) → 切 deterministic fallback
    📦 生成完成,進寄送佇列 → nohold2-user@test.local
+🎙 個人語音 manifest:4 份 → /home/userdelvin/Delvin-agent/audio_brief/out/manifest_YYYY-MM-DD_tw.json
+   ⏰ 本班寄出時已過內容誠實時點 → 全批自動加註盤前說明(Delvin YYYY-MM-DD 拍板 B)
 ✅ 今日財經日報發送完成（班次 tw）！成功 4/4 位（總訂閱 4）
    經驗分布 → 🌱新手 3 · 📈一般 1 · 🎯老手 0
+🛡️ 4 位走 deterministic fallback
+⚠️ 個人化失敗 4 位:
+   - tw-user@test.local: _run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'
+   - us-user@test.local: _run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'
+   - nohold-user@test.local: _run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'
+   - nohold2-user@test.local: _run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'
+🛡️ [deterministic_fallback] 4 位收到備援版(個人化生成連 retry 都失敗):tw-user@test.local, us-user@test.local, nohold-user@test.local, nohold2-user@test.local
+❌ [personalization_failed] 4 位個人化生成拋錯:tw-user@test.local, us-user@test.local, nohold-user@test.local, nohold2-user@test.local
+📋 audit 報告寫到 output/digest_audit_YYYY-MM-DD.json
 
 === SENT ===
 [
  {
   "email": "tw-user@test.local",
-  "html_len": 17394,
-  "html_sha": "c1c5c19acf60fc0306709978687b9a1965cf9785b9a41e044927a39394a3ccfd",
-  "subject": "📊 你的 聯發科 昨日跌了 3.5%｜財經日報 2026-07-03"
+  "html_len": 9008,
+  "html_sha": "9a7f73daedb80a5770d9775d798945c2c2a28268c159dacd6ab7b0009e9011b1",
+  "subject": null
  },
  {
   "email": "us-user@test.local",
-  "html_len": 15423,
-  "html_sha": "99b806622a54e7669e9897c7b598da27f6c9347ac4b34cd26a754c3b9c0e3e52",
-  "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
+  "html_len": 8398,
+  "html_sha": "8c589c47df0d6e2b0c3f52186b24136705c12a662675b973e6cb6ed0eb10a091",
+  "subject": null
  },
  {
   "email": "nohold-user@test.local",
-  "html_len": 14603,
-  "html_sha": "2507c6227af3a8d124751799f24184aecf6118d38996bf24cccd40c7e3610974",
-  "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
+  "html_len": 8402,
+  "html_sha": "8df3107584d5fc7df5823a7312c3d3affb33505944f52860cb9466dfb7ef8daf",
+  "subject": null
  },
  {
   "email": "nohold2-user@test.local",
-  "html_len": 14603,
-  "html_sha": "2507c6227af3a8d124751799f24184aecf6118d38996bf24cccd40c7e3610974",
-  "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
+  "html_len": 8403,
+  "html_sha": "012783ee367790361a2f96168daf3928781c7e5adc62192e864bc1e572ea2c56",
+  "subject": null
  }
 ]
 === AUDIT ===
+{
+  "date": "YYYY-MM-DD",
+  "total_subscribers": 4,
+  "personalization_failed_count": 4,
+  "personalization_failures": [
+    [
+      "tw-user@test.local",
+      "_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'"
+    ],
+    [
+      "us-user@test.local",
+      "_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'"
+    ],
+    [
+      "nohold-user@test.local",
+      "_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'"
+    ],
+    [
+      "nohold2-user@test.local",
+      "_run_smoke.<locals>.<lambda>() got an unexpected keyword argument 'email'"
+    ]
+  ],
+  "deterministic_fallback_count": 4,
+  "deterministic_fallbacks": [
+    "tw-user@test.local",
+    "us-user@test.local",
+    "nohold-user@test.local",
+    "nohold2-user@test.local"
+  ],
+  "audit_failed_count": 0,
+  "summary": "🛡️ [deterministic_fallback] 4 位收到備援版(個人化生成連 retry 都失敗):tw-user@test.local, us-user@test.local, nohold-user@test.local, nohold2-user@test.local\n❌ [personalization_failed] 4 位個人化生成拋錯:tw-user@test.local, us-user@test.local, nohold-user@test.local, nohold2-user@test.local",
+  "by_email": {}
+}

@@ -24,6 +24,17 @@ audit HIGH 檢查被逼降成 deterministic 備援版(閹割版),波及老闆本
      stub 要**蓋滿整條生成鏈**:只 stub `_llm_generate` 不夠,`build_council` 會自己去打(08-17 那支因此單跑 169s
      並真的燒掉一輪多模型配額)。拿到你要驗的東西就 raise 中止,別讓鏈往下跑。整支應在數秒內跑完。
 4. 本地驗證你的修復:`python3 -m py_compile <改過的.py>` 綠 + 跑相關 `scripts/test_*.py` 全過。
+   4b. **動到 prompt / 後處理 / run() 編排時,必跑行為凍結 harness**(2026-08-18 收 #397 加):
+   ```
+   ./.venv/bin/python scripts/refactor_harness.py diff && \
+   ./.venv/bin/python scripts/refactor_harness.py run diff && \
+   ./.venv/bin/python scripts/refactor_harness.py provider diff
+   ```
+   紅了是**預期的**(你就是刻意改了輸出)。逐條看 diff 確認每一行都是你要的改動,
+   然後 `... refactor_harness.py golden` + `run golden` 重新封存基線,連同程式一起 commit。
+   為什麼硬性要求:08-17 這支自癒代理把 `_tldr_skeleton` 加進 weekend/monday prompt(正確的修),
+   但沒 reseal ⇒ 這道閘門從那天起就一直紅著,而它是唯一能回答「日報輸出有沒有被悄悄改掉」
+   的東西。**留著紅燈 = 把後面所有人的偵測面關掉**。改動不涉輸出(純註解/log)就不會紅,零成本。
 5. 用清楚訊息 `git commit`(**只 commit 你改的 scope 內檔**,別 `git add -A` 吞別人的 WIP)。**不要 push**——外層 guard 會在測試全過後才 push。
 
 ## 心法

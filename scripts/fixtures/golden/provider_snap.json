@@ -10,9 +10,9 @@
   "https://cf-proxy.test/ai",
   "https://cf-proxy.test/ai",
   "https://api.openai.com/v1/chat/completions",
+  "https://api.mistral.ai/v1/chat/completions",
   "https://openrouter.ai/api/v1/chat/completions",
   "http://localhost:11434/api/chat",
-  "https://api.mistral.ai/v1/chat/completions",
   "https://api.cerebras.ai/v1/chat/completions",
   "https://api.groq.com/openai/v1/chat/completions"
  ],
@@ -27,9 +27,9 @@
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
   "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent",
+  "https://api.mistral.ai/v1/chat/completions",
   "https://openrouter.ai/api/v1/chat/completions",
   "http://localhost:11434/api/chat",
-  "https://api.mistral.ai/v1/chat/completions",
   "https://api.cerebras.ai/v1/chat/completions",
   "https://api.groq.com/openai/v1/chat/completions"
  ],
@@ -311,6 +311,62 @@
     },
     "timeout": 120,
     "url": "https://api.groq.com/openai/v1/chat/completions"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "mistral_custom": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-MIS",
+     "Content-Type": "application/json"
+    },
+    "json": {
+     "max_tokens": 1234,
+     "messages": [
+      {
+       "content": "SYS-TEST",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "mistral-large-latest",
+     "temperature": 0.4
+    },
+    "timeout": 120,
+    "url": "https://api.mistral.ai/v1/chat/completions"
+   }
+  ],
+  "parsed": "PONG"
+ },
+ "mistral_default": {
+  "calls": [
+   {
+    "headers": {
+     "Authorization": "Bearer TESTKEY-MIS",
+     "Content-Type": "application/json"
+    },
+    "json": {
+     "max_tokens": 8000,
+     "messages": [
+      {
+       "content": "你是嚴謹的財經日報 HTML 生成器。必須完整輸出使用者要求的每一個 HTML 區塊與欄位，凡是標示「必填、強制、每一張都要」的內容一律不可省略。只輸出 HTML 本身，不要 markdown code block，不要任何多餘說明。",
+       "role": "system"
+      },
+      {
+       "content": "PING",
+       "role": "user"
+      }
+     ],
+     "model": "mistral-large-latest",
+     "temperature": 0.4
+    },
+    "timeout": 120,
+    "url": "https://api.mistral.ai/v1/chat/completions"
    }
   ],
   "parsed": "PONG"
