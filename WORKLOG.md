@@ -5750,3 +5750,9 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - ⛔ **刻意沒做「占神 vs 命書」逐項對照頁**:要寫對照列就得真的拿五道題去跑他們的 app,沒跑就寫=捏造(且對方可自證)。
   改成「怎麼自己驗任何一個 app」——不點名、零法律風險、對所有競品同時有效。老闆若要具名對照頁需給我實測或截圖。
 - 廣告投放未開(organic-only 舊令未解、Google 命理是限制類別、Meta 需預算拍板)。
+
+## 2026-08-17 15:0x TW — CHOSEN(老闆真實客戶,寶可夢抽卡)盲盒設計 v1 + 宣傳影片 v1 = cinematic 推導法首個真案(storefront clients/chosen)
+- 8 問推導寫成 BRIEF_DERIVATION.md(世界=收藏家深夜書桌儀式/情緒=神祕→揭曉/英雄=盒子的斜縫/第一人稱/Willis+Young/Pulp Fiction 手提箱/Alexa Mini+Cooke Anamorphic 50mm/500T/kodak),與前三案 10/10 欄不同,cinematic 十成分 10/10、lint PASS。
+- 盲盒「CHOSEN CHEST」:logo 實體化(紅蓋黃身斜縫、燙金 mark、磁吸硬殼、不開窗、PSA 9+、Chosen Ticket 四階 1:50 金票、內襯金反光紙、YOU ARE CHOSEN);NBP 2k 四視圖;對 GameStop 六點更好表+法務底線(不用寶可夢圖像)。
+- 影片:seedance_2_0 fast 720p 探索 3 支(35cr)→挑版→std 1080p 定稿 9:16+21:9(90cr×2)→film_texture kodak grain .45→品牌尾卡;交付 6 檔。共 ~330cr。
+- 教訓:NBP 會把「softbox」畫進畫面(prose 打光寫效果不寫燈具);lint multi_scene 對一鏡到底 beats 假陽性已修(one continuous 宣告豁免)。
