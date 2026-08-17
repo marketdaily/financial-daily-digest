@@ -25,6 +25,7 @@ SRC_MD5_BEFORE="$(md5sum "$SRC" | awk '{print $1}')"
 SANDBOX="$WORK/repo"
 mkdir -p "$SANDBOX/scripts" "$SANDBOX/marketing" "$SANDBOX/docs/output"
 cp "$SRC" "$SANDBOX/scripts/archive_cta.py"
+cp "$REPO/scripts/inline_subscribe.py" "$SANDBOX/scripts/"   # 頁尾 CTA 的表單來源(2026-08-18 起)
 cp "$REPO/scripts/test_archive_cta.py" "$SANDBOX/scripts/"
 cp "$REPO/scripts/build_track_record.py" "$SANDBOX/scripts/"
 cp "$REPO/marketing/tldr_extract.py" "$SANDBOX/marketing/"

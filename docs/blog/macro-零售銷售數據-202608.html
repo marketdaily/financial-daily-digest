@@ -148,7 +148,49 @@ strong { color:#fbbf24; font-weight:700; }
   <div class="cta">
     <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">想每天早上 7 點收到這類分析?</p>
     <p style="font-size:14px;color:rgba(255,255,255,0.65);margin:6px 0 0;">免費訂閱 MarketDaily — 美股 + 台股 AI 過濾日報,30 秒讀完。</p>
-    <a href="https://marketdaily.ai/?utm_source=blog&utm_medium=cta&utm_campaign=seo_macro-零售銷售數據-202608">免費訂閱 →</a>
+    <!-- md-inline-subscribe:start --><form id="mdsub-form" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin:0 0 10px;"><input id="mdsub-email" type="email" autocomplete="email" inputmode="email" placeholder="your@email.com" aria-label="Email" style="width:100%;max-width:280px;box-sizing:border-box;padding:13px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#fff;font-size:15px;outline:none;"><button id="mdsub-btn" type="submit" style="padding:13px 26px;border:0;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:15px;font-weight:800;cursor:pointer;white-space:nowrap;">免費訂閱 →</button></form><p id="mdsub-msg" role="status" aria-live="polite" style="display:none;font-size:13px;line-height:1.7;margin:0 0 6px;"></p><noscript><a href="https://marketdaily.ai/?utm_source=blog&utm_medium=cta&utm_campaign=seo_macro-零售銷售數據-202608#email-step">到 marketdaily.ai 訂閱 →</a></noscript><script>
+(function(){
+  var API='https://api.marketdaily.ai';
+  var f=document.getElementById('mdsub-form'),e=document.getElementById('mdsub-email'),b=document.getElementById('mdsub-btn'),m=document.getElementById('mdsub-msg');
+  if(!f||!e||!b||!m){return;}
+  function say(t,ok){m.textContent=t;m.style.color=ok?'#6ee7b7':'#fca5a5';m.style.display='block';}
+  function attr(){
+    var p,real=null;
+    try{p=new URL(window.location.href).searchParams;real=p.get('utm_source');}catch(x){p=null;}
+    var vid=null;try{vid=sessionStorage.getItem('md-visit-id')||null;}catch(x){}
+    return {visit_id:vid,
+      utm_source: real||'blog',
+      utm_medium: (p&&p.get('utm_medium'))||(real?null:'cta'),
+      utm_campaign: (p&&p.get('utm_campaign'))||'seo_macro-零售銷售數據-202608',
+      utm_content: (p&&p.get('utm_content'))||'inline_form'};
+  }
+  f.addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var email=(e.value||'').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){say('請輸入有效的 Email',false);return;}
+    var old=b.textContent;
+    b.disabled=true;b.textContent='送出中...';
+    var body=attr();body.email=email;
+    fetch(API+'/subscribe-free-direct',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json().catch(function(){return {};});})
+      .then(function(d){
+        d=d||{};
+        if(d.resubscribe_pending){
+          say(d.sent?'📬 你先前退訂過 —— 確認信已寄到這個信箱,點一下就恢復寄送。':'你先前退訂過,但確認信寄不出去。請到「聯絡我們」告訴我們,我們手動幫你恢復。',!!d.sent);
+          b.textContent='已寄確認信 ✓';return;
+        }
+        if(d.ok){
+          say('✅ 訂閱成功!明天早上 7 點就會收到第一封(沒看到請看垃圾郵件匣)。',true);b.textContent='已訂閱 ✓';e.disabled=true;return;
+        }
+        if(d.error==='undeliverable_email'){say('這個 Email 好像收不到信,請確認拼字是否正確。',false);}
+        else if(d.error==='rate_limited'||d.error==='too_many_attempts'){say('剛剛已經送出過一次了,請等幾分鐘再試。',false);}
+        else{say('出了點問題,請稍後再試。',false);}
+        b.disabled=false;b.textContent=old;
+      })
+      .catch(function(){say('網路錯誤,請稍後再試。',false);b.disabled=false;b.textContent=old;});
+  });
+})();
+</script><!-- md-inline-subscribe:end -->
   </div>
   <p class="disc">本文僅供資訊整理,非投資建議。投資有風險,請評估自身狀況。資料更新:2026-08-10</p>
 </article>

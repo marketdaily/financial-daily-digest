@@ -24,6 +24,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+# insert(1):自家目錄壓在 stdlib 之前會靜默遮蔽同名模組(lesson `lib_path_shadow`)
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(1, _SCRIPTS_DIR)
+import inline_subscribe  # noqa: E402  就地訂閱表單的單一事實來源(與 archive_cta 共用)
 try:
     from dotenv import load_dotenv
     load_dotenv(ROOT / ".env")
@@ -445,6 +450,111 @@ def insert_top_cta(html: str, slug: str) -> str:
     if ".cta-top {" not in out and "</style>" in out:
         out = out.replace("</style>", TOP_CTA_CSS + "\n</style>", 1)
     return out
+
+
+_BOTTOM_ANCHOR_RE = re.compile(r'<a href="(https://marketdaily\.ai/\?[^"]*)"[^>]*>.*?</a>', re.S)
+_BOTTOM_BLOCK_RE = re.compile(
+    re.escape(inline_subscribe.FORM_MARKER_START) + r".*?" + re.escape(inline_subscribe.FORM_MARKER_END),
+    re.S)
+_CTA_REGION_RE = re.compile(r'<div class="cta">.*?</div>', re.S)
+
+
+def _utm_from_href(href: str) -> tuple:
+    """從既有 CTA 連結取回 (utm_medium, utm_campaign)。
+
+    ⚠️ 為什麼不寫死 `cta` / `seo_<slug>`:工程系列文章用的是
+    `utm_medium=eng_article&utm_campaign=council_judge`,一律覆寫等於把那幾頁既有的
+    成效帳直接改名(而其中一頁是近 7 日全站流量第一)。表單沿用該頁本來的歸因,
+    換掉的只有「怎麼訂閱」,不是「這筆訂閱算誰的」。
+    """
+    q = href.replace("&amp;", "&").split("?", 1)[-1]
+    kv = {}
+    for part in q.split("#")[0].split("&"):
+        if "=" in part:
+            k, v = part.split("=", 1)
+            kv[k] = v
+    return kv.get("utm_medium") or "cta", kv.get("utm_campaign") or ""
+
+
+def bottom_form_html(slug: str, lang: str, medium: str = "cta", campaign: str = "") -> str:
+    """頁尾 `.cta` 裡的**就地訂閱表單**(2026-08-18 成長線 domain③)。
+
+    取代原本那顆連回 landing 的按鈕:讀者本來要走「跨頁 → 輸 email → 設密碼兩欄」
+    才進得了名單,現在一欄一鍵當場完成。理由/邊界見 `scripts/inline_subscribe.py`。
+    ⚠️ 不含巢狀 `<div>`(訊息列用 `<p>`):見 `insert_top_cta` 上方同一條註記。
+    """
+    campaign = campaign or f"seo_{slug[:32]}"
+    href = (f"https://marketdaily.ai/?utm_source=blog&utm_medium={medium}"
+            f"&utm_campaign={campaign}#email-step")
+    if lang == "en":
+        button = "Subscribe free →"
+        success = "✅ You're in! The next morning digest lands in your inbox (check spam just in case)."
+        fallback = "Subscribe at marketdaily.ai →"
+    else:
+        button = "免費訂閱 →"
+        success = "✅ 訂閱成功!明天早上 7 點就會收到第一封(沒看到請看垃圾郵件匣)。"
+        fallback = "到 marketdaily.ai 訂閱 →"
+    fields = inline_subscribe.form_fields(
+        button_label=button, theme="blog", lang=lang, msg_tag="p")
+    script = inline_subscribe.form_script(
+        utm_source="blog", utm_medium=medium, utm_campaign=campaign,
+        utm_content="inline_form", success_msg=success, lang=lang)
+    return (
+        inline_subscribe.FORM_MARKER_START
+        + fields
+        + f'<noscript><a href="{href}">{fallback}</a></noscript>'
+        + script
+        + inline_subscribe.FORM_MARKER_END
+    )
+
+
+def insert_bottom_form(html: str, slug: str) -> str:
+    """把頁尾 `.cta` 裡那顆連出去的按鈕換成就地訂閱表單。
+
+    冪等:已注入過就整塊重算取代(改文案重跑會更新既有頁面,不會疊第二份);
+    找不到 `.cta` 區塊或區塊裡沒有連回站台的按鈕就原樣返回,不硬塞。
+    只在 `.cta` 區塊**內部**動刀 —— 全頁 regex 會咬到內文裡引用 marketdaily.ai 的連結。
+    """
+    lang = _page_lang(html)
+    if inline_subscribe.FORM_MARKER_START in html:
+        m = _BOTTOM_BLOCK_RE.search(html)
+        if m is None or len(_BOTTOM_BLOCK_RE.findall(html)) != 1:
+            return html  # marker 半毀/重複 → 不動它(fail-safe)
+        am = _BOTTOM_ANCHOR_RE.search(m.group(0))  # noscript 退路帶著原本的歸因
+        medium, campaign = _utm_from_href(am.group(1)) if am else ("cta", "")
+        block = bottom_form_html(slug, lang, medium, campaign)
+        return html[:m.start()] + block + html[m.end():]
+
+    cm = _CTA_REGION_RE.search(html)
+    if cm is None:
+        return html
+    region = cm.group(0)
+    am = _BOTTOM_ANCHOR_RE.search(region)
+    if am is None:
+        return html
+    medium, campaign = _utm_from_href(am.group(1))
+    block = bottom_form_html(slug, lang, medium, campaign)
+    new_region = region[:am.start()] + block + region[am.end():]
+    return html[:cm.start()] + new_region + html[cm.end():]
+
+
+def backfill_bottom_form(dry: bool) -> list:
+    """對 docs/blog/*.html 回填/更新頁尾就地訂閱表單(冪等)。"""
+    injected = []
+    for f in sorted(BLOG_DIR.glob("*.html")):
+        if f.stem == "index":
+            continue
+        html = f.read_text(encoding="utf-8")
+        new_html = insert_bottom_form(html, f.stem)
+        if new_html == html:
+            continue
+        injected.append(f.stem)
+        if dry:
+            print(f"  [dry] would inject inline subscribe form: {f.name}")
+        else:
+            f.write_text(new_html, encoding="utf-8")
+            print(f"  ✓ inline subscribe form: {f.name}")
+    return injected
 
 
 def backfill_top_cta(dry: bool) -> list:
@@ -1769,7 +1879,7 @@ strong {{ color:#fbbf24; font-weight:700; }}
     <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">想每天早上 7 點收到這類分析?</p>
     <p style="font-size:14px;color:rgba(255,255,255,0.65);margin:6px 0 0;">免費訂閱 MarketDaily — 美股 + 台股 AI 過濾日報,30 秒讀完。</p>
     <a href="https://marketdaily.ai/?utm_source=blog&utm_medium=cta&utm_campaign=seo_{slug_short}">免費訂閱 →</a>
-  </div>
+  </div><!-- ↑ 這顆連結是就地訂閱表單的注入錨點:頁面寫出後由 insert_bottom_form() 換成表單 -->
   <p class="disc">本文僅供資訊整理,非投資建議。投資有風險,請評估自身狀況。資料更新:{updated}</p>
 </article>
 {beacon}
@@ -2369,6 +2479,8 @@ def main():
     backfill_beacon(args.dry)
     print("④ 回填頁首轉換入口(長文唯一入口原本只在 73~84% 捲動深度,冪等)...")
     backfill_top_cta(args.dry)
+    print("④ 頁尾 CTA → 就地訂閱表單(免跨頁、免設密碼即可訂閱,冪等)...")
+    backfill_bottom_form(args.dry)
 
     print("④ 補社群卡 og:image...")
     backfill_og_cards(args.dry)

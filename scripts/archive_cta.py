@@ -51,6 +51,13 @@ import re
 import sys
 from pathlib import Path
 
+# insert(1) 而非 (0):把自家目錄壓在 stdlib 之前會讓同名模組被靜默遮蔽
+# (memory lesson `lib_path_shadow`,同一個坑咬過一次)。
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(1, _SCRIPTS_DIR)
+import inline_subscribe  # noqa: E402  就地訂閱表單的單一事實來源
+
 ROOT = Path(__file__).resolve().parent.parent
 DOCS_OUTPUT = ROOT / "docs" / "output"
 LOCK_PATH = ROOT / "logs" / "locks" / "archive_cta.lock"
@@ -120,29 +127,46 @@ def _top_block(date: str, is_us: bool) -> str:
 
 
 def _bottom_block(date: str, is_us: bool) -> str:
+    """頁尾主 CTA。2026-08-18 起是**就地訂閱表單**,不再是連出去的按鈕。
+
+    原本讀者要訂閱得走「點連結→跨頁到 landing→輸 email→設密碼兩欄」四步;
+    現在一欄 email 一顆按鈕當場完成(`/subscribe-free-direct` 單一呼叫就進名單並寄
+    welcome)。理由與邊界見 `scripts/inline_subscribe.py` 檔頭。
+    """
     url = cta_url(date, is_us, "bottom")
+    campaign = f"digest_{date}{'_us' if is_us else ''}"
     if is_us:
         headline = "每天晚上 8:00,美股日報直接寄到你信箱"
         watches = "你自己持有的美股"
+        success = "✅ 訂閱成功!今天晚上 8 點就會收到第一封(沒看到請看垃圾郵件匣)。"
     else:
         headline = "每天早上 7:00,台股日報直接寄到你信箱"
         watches = "你自己持有的台股與美股"
+        success = "✅ 訂閱成功!明天早上 7 點就會收到第一封(沒看到請看垃圾郵件匣)。"
     # 視覺上刻意做成深色主面板:同一頁尾已有一個淺紫的「前往個人專區」區塊(那是對
     # 已訂閱者說的話),兩個等重 CTA 會讓陌生讀者不知道該點哪個。深底白字讓「免費訂閱」
     # 明確是主要行動(CRO:one clear primary action)。
+    fields = inline_subscribe.form_fields(
+        button_label="免費訂閱明天的日報 →", theme="dark", lang="zh")
+    script = inline_subscribe.form_script(
+        utm_source="digest_archive", utm_medium="public_archive",
+        utm_campaign=campaign, utm_content="inline_form",
+        success_msg=success, lang="zh")
     return (
         f'<div style="margin:22px 12px 8px;background:#312e81;border-radius:14px;'
         f'padding:26px 22px;text-align:center;font-family:{_FONT};">'
         f'<p style="font-size:18px;font-weight:800;color:#ffffff;margin:0 0 10px;line-height:1.55;">{headline}</p>'
-        f'<p style="font-size:13px;color:#c7d2fe;line-height:1.9;margin:0 0 20px;">'
+        f'<p style="font-size:13px;color:#c7d2fe;line-height:1.9;margin:0 0 18px;">'
         f'你剛讀完的是公開存檔。訂閱後 AI 每天幫你盯<b style="color:#ffffff;">{watches}</b>——'
         f'多源查證、假訊息過濾,30 秒讀完。</p>'
-        f'<a href="{url}" style="display:inline-block;background:#ffffff;color:#312e81;'
-        f'font-size:15px;font-weight:800;padding:14px 34px;border-radius:10px;text-decoration:none;">'
-        f'免費訂閱明天的日報 →</a>'
-        f'<p style="font-size:11px;color:#a5b4fc;line-height:1.8;margin:16px 0 0;">'
+        f'{fields}'
+        f'<p style="font-size:11px;color:#a5b4fc;line-height:1.8;margin:12px 0 0;">'
         f'不需信用卡。目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。</p>'
+        f'<noscript><a href="{url}" style="display:inline-block;margin-top:14px;background:#ffffff;'
+        f'color:#312e81;font-size:15px;font-weight:800;padding:14px 34px;border-radius:10px;'
+        f'text-decoration:none;">到 marketdaily.ai 訂閱 →</a></noscript>'
         f'</div>'
+        f'{script}'
     )
 
 
