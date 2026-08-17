@@ -6287,3 +6287,30 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - close #405;#403(老闆勾 Zone·Analytics·Read)仍開著,沒有重推、沒有蓋新守衛。
 - report `~/autonomous/reports/2026-08-17_2300_cf_analytics_shared_fallback.md`;
   memory `capability_cf_analytics_shared_fallback`
+
+## 2026-08-18 00:50 [自主機器 cycle801] #179 收乾:驗證者裁 UNSOUND/7,「不變式修好了但那句解釋講反了」
+- 上一輪把命書生肖改由**年柱地支**推導(結構上不可能與四柱矛盾),驗證者分離裁 **UNSOUND / 7 findings**
+  —— 不變式本身經獨立複算成立(29585 天零違反、M1/M2/M3/M5/M6/M8/M9/M10 全 KILLED),
+  七條全落在**修法的另一半**。
+- ⭐⭐ **F1**:交界窗口有**兩個相反方向**(立春先到 326 天 / 農曆年先到 272 天),我兩邊共用一句 note
+  ⇒ 272 天的客人拿到**時序被講反**的解釋(「農曆上還算猴年」把剛開始的講成殘留)。
+  而我自己新增的 fixture 正踩在那個方向,斷言卻只有 `assert note`(非空)——
+  **我測了「有沒有這句話」,沒測「這句話說了什麼」**。修法:依 `lunar年 < 國曆年` 分支,
+  三車道同步,測試改成兩方向逐字 token + **措辭互斥**。順帶去第二人稱(合婚會對買單者說對方的話)。
+- ⭐⭐ **F2**:`shengxiao_lunar` 進了 prompt,而 audit 只問「正解出現了嗎」⇒ 一份同時寫「生肖屬鼠」(錯)
+  又引用 note(含正解字)的報告 **audit 回傳 `[]`**。新增 `shengxiao_mismatch`(比照 pillar_mismatch
+  的宣稱式逐字相等),接 5 個 Python + 5 個 worker audit 站;合婚 allowed 兩顆;
+  「農曆/太歲」前綴與泛稱「屬X的人」放行(誤殺=白燒一稿)。正規式與放行詞**經 assets 匯出**不手抄。
+- **F3** 三處畫面沒接 note:首頁免費 demo、免費合婚、免費紫微(後者的四柱來自八字引擎、生肖來自 iztro
+  ⇒ 同一生日在 /tool/lunar 顯示牛、/tool/ziwei 顯示鼠,**兩個免費工具互相打臉**)。
+- **F4** 前端手寫第三份 ZHI→生肖 表沒人守(parity 9 案只覆蓋 6/12 年支)⇒ 曝表整表對帳,
+  **M4 突變(酉→猴)從 SURVIVED 變 KILLED**。**F5** `fulfill.BASE` 寫死家目錄 ⇒ worktree 裡
+  JS 來自被測樹、Python 來自**生產樹**,hardlink 沙盒實測 M1 **假綠→RED**。**F7** 紫微「腊月」轉繁。
+- 順手抓到兩支**基礎設施偽裝成測試故障**:①`cl_ziwei_parity` 的 `TODAY` 寫死 2026-08-17 而 prompt
+  內文另有一處日期沒正規化 ⇒ **00:00 TW 一過自己變紅**(當場踩到);改成 Python 端把真今天換成注入值,
+  反向驗過。②`test_font_subset` 因 site.js **註解**裡一個「挪」而紅,ship.sh 跑全套 pytest
+  ⇒ **這幾天整個 fortune-ai 部署卡死**;#408 記 low 是低估,已收 #408 並另立 #409(掃描面該排除註解)。
+- 驗證:pytest 全套 **422 passed / 1 failed**(唯一紅=#408,已修)、21 支 node 測試全綠。
+- commit `a615c2a` + `df6dfca`(~/fortune-ai,本地 repo 無 remote);部署走 `scripts/seo/ship.sh --clean`。
+- report `~/autonomous/reports/2026-08-18_0030_shengxiao_verifier_unsound_closeout.md`;
+  memory `capability_invariant_fixed_explanation_wrong`
