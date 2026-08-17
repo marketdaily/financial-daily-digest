@@ -6271,3 +6271,19 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   正解抽共用 cf analytics poster,**禁止手刻 4 份**)。
 - memory `capability_credential_presence_vs_capability`;
   report `~/autonomous/reports/2026-08-17_2210_honest_traffic_token_scope.md`
+
+## 2026-08-17 23:00 [自主機器 cycle800] #405 收乾:CF analytics 退路四支共用,順手挖到一支「掃不動=沒在守」
+- 上一輪只在 honest_traffic 內補的 authz 退路,抽成 `capabilities/cf_analytics/post.py` **唯一實作**,
+  四支消費端(honest_traffic/site_traffic/crawler_coverage/seo_page_traffic)全部改呼叫它。
+  契約兩條:失敗一定帶 (kind,text)(「權限被拒」≠「沒資料」)、成功回 source(borrowed_mac=degraded)。
+  生產實跑:site_traffic 08-17 uniques 184/pv 1755、seo 逐頁 500 列、crawler 08-16 59 列。
+- ⭐ **同一天第二次踩同一個模具**:積木一 import 兄弟積木,突變沙盒(只 cp 自己那一個目錄)baseline
+  就崩 ⇒ 40 個突變體會全部「被殺」=假滿分。修法=兄弟目錄唯讀 symlink 進沙盒;honest_traffic 47/47 killed。
+- 夜巡三紅全收:E41(credential_watch 自測 sys.path 少一層,惰性 import 讓生產躲過)、
+  E42(=#405 同根因)、E43(索引 17276→16845;`--verify` 紅燈是誤告——逐字比對當身分判準,
+  索引本來就會長 ⇒ 改成唯一錨+hub 連結+鉤子超集,並補齊漏抓面 ⑫d~⑫g)。
+- ⭐⭐ memory_index_trim 在 mutation_sweep 一直 BASELINE_RED(verify 用 abspath,沙盒換 HOME 後
+  整個 run 被判「別的索引」⇒ 覆蓋率 0)。改 realpath 後**第一次真的被掃到**:8 點 4 存活(既有程式碼)。
+- close #405;#403(老闆勾 Zone·Analytics·Read)仍開著,沒有重推、沒有蓋新守衛。
+- report `~/autonomous/reports/2026-08-17_2300_cf_analytics_shared_fallback.md`;
+  memory `capability_cf_analytics_shared_fallback`
