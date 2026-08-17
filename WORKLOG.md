@@ -5696,3 +5696,8 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 ## 2026-08-17 14:5x TW — 命書:老闆親令「借占神(韓國 점신)台灣廣告收割受眾」→ fortune-ai/marketing/COUNTER_JEOMSIN_20260817.md
 - 老闆語音「僅僅八支」=占神八字(Handasoft 台灣版)。訴求兩版:A 華夏五千年(老闆原版,§24/Meta 風險留內圈)、B「翻譯本 vs 原本」(主推,事實可證);T1-T5 Threads+M1-M3 Meta 文案+SEO 截流三頁規格。
 - 4 則 Threads 已入 social_posts.json 但 status=pending_review(daily_run 白名單 draft 會發!),等老闆點頭。廣告預算仍待拍板。
+
+## 2026-08-17 14:0x TW — QuietFix 三道新大菜=兩道親令生產首驗(storefront 0da7730..e5a9405)
+- 老闆令「用 QuietFix 加幾道新菜,用 Higgsfield 驗剛做的東西」。餐飲 SEAR/科技 CIRCUIT/診所 CALM 三品類三 preset:rig prompt→lint 零 rig_missing→Seedance 2.5 1080p ×2 版(540cr)→抽格挑版→film_texture→五件套→頁+轉盤卡(25→28)→本地+生產雙驗全綠,已上線。
+- 產線泛化 dish_media/dish_page/dish_cards/shoot_dish(探點與亮度配對表同源)。坑:顆粒讓 scrub 檔 3 倍肥→crf21 tune film;Workers assets 25MiB 母帶擋 deploy;Higgsfield 推銷 preset 整批 0/6;⚠️`bash -x` 印出 .env secret(只在本機終端輸出,未外流,以後禁)。
+- open #347 關閉。CALM A 版 job 到收工仍 in_progress(已付費,不影響)。
