@@ -3256,8 +3256,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 10:51",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 07:18",
+  "note": "首班已驗:08-18 05:20 生成的早報 digest_audit_2026-08-18.json 顯示 total 21 / deterministic_fallback 0 / personalization_failed 0(08-17 那班是 fallback 1)。9/21 掉備援的根因修在生產首班零掉備援"
  },
  {
   "id": 327,
@@ -3506,8 +3506,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 13:43",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 07:18",
+  "note": "①08-18 04:20 生產 cron 走完整 ship.sh:436 pytest 全過、部署 53 檔、線上體檢 31 過/0 失敗、IndexNow 42 筆 200(logs/mingshu_pages_ship_2026-08-18.log)。②live_check ⑦ 每日頁新鮮度已在 08-17 15:10 生產班 PASS×3(/p/huangli、/p/yunshi、/p/tarot 線上日期=今天)。誠實邊界:--clean 那條子分支今天沒觸發,因為根因(sitemap.xml 一直是未提交 WIP)已被 cron_git_persist 收掉、工作樹是乾淨的;該分支仍未在生產走過,但它現在是罕見路徑而非每日路徑"
  },
  {
   "id": 352,
@@ -4136,8 +4136,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-18 04:12",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 07:18",
+  "note": "首班已驗:08-18 07:00 TW 早報部署走 cron_deploy_docs leg1(本機 wrangler)rc=0,logs/ok/deploy_docs_daily_digest.ok 前進到 2026-08-17T23:00:42Z(=07:00:42 TW),線上 manifest 最新日已跟上 2026-08-18。證據 logs/deploy_docs_daily_digest_2026-08-18.log"
  },
  {
   "id": 415,
@@ -4166,8 +4166,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-18 04:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 07:30",
+  "note": "兩半都補上並驗過:①ok_stamp_lint 現在解得開 if [ \"$1\" = a ] 分派(if_dispatch + prefix_facts 挖掉走不到的分支,不挖的話兩支的閘會被 union ⇒ 高估前進頻率 ⇒ 建議 max_age 太緊=慢性假告警)②_RE_CALL 吃得到含 $ 的動態戳記名,arg1_vars 只認確定從 $1 推得的賦值,解不開時判 UNKNOWN 而非假 NO_PRODUCER。自測 95→104 全綠(含 3 條反對照)、6 條突變 5 殺 1 等價(已註明)、生產掃描產出端 70→72 硬檢查 exit 0。落地:market_forecast_a/b 從零產出端變 OK(4320min),已註冊進 cron_catchup/jobs.tsv(max_age 4970);死人開關實測=把 max_age 壓成 10 分鐘時兩列真的噴 WATCH-STALE rc=3(證明不是裝飾)"
  },
  {
   "id": 418,

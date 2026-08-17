@@ -6600,3 +6600,24 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   (無人被誤剔除);四條退訂告警全靜默(寄前自檢 + 逐封 postcheck 驗「他自己的 unsub URL 在不在
   他那封 HTML 裡」)。誠實邊界:List-Unsubscribe header 是由「unsub_url 非空 + Brevo 未回 400」
   推得,沒有直接讀收件匣(Gmail 連接器本 session 未授權)。
+
+### 2026-08-18 07:35 TW — 還債輪:三件假債用現成證據收掉 + #417 動態戳記名/if 分派補完
+- **零工程收掉三件**(一查就有證據,08-17「首班未驗是假債」那課的延續):
+  #414 cron_deploy_docs 戳記(07:00 早報真部署 rc=0,`deploy_docs_daily_digest.ok`
+  前進到 2026-08-17T23:00:42Z,那條化石戳記第一次真的被寫)、
+  #326 早報掉備援根因修(08-18 那班 fallback **0**/21,08-17 是 1)、
+  #351 命書 pSEO(04:20 生產 cron 436 pytest 全過+線上體檢 31/0;live_check ⑦ 已於
+  08-17 15:10 PASS×3)。#351 誠實邊界:`--clean` 子分支今天沒觸發,因為根因(sitemap 永遠
+  是未提交 WIP)已被 cron_git_persist 收掉,它從每日路徑降級成罕見路徑。
+- **#417**:`market_forecast_runner.sh` 的兩個戳記名是 `market_forecast_$SLOT`,
+  `ok_stamp_lint._RE_CALL` 的 `[A-Za-z0-9_]+` 抓不到含 `$` 的名字 ⇒ 那支 job 從上線起
+  **零哨兵覆蓋**,而誰把它填進註冊表誰就吃假 NO_PRODUCER。兩半一起補:
+  ①`arg1_vars`+`resolve_stamp_name` 解動態名(變數被覆寫過就整個丟掉)
+  ②`if_dispatch`+`prefix_facts(…, dead)` 把走不到的分支挖成等長空白再讀時間閘
+  ——不挖的後果不是漏掉,是兩支的閘被 union ⇒ 高估前進頻率 ⇒ 建議 max_age 太緊=慢性假告警
+  ③名字解不開時判 **UNKNOWN 而非 NO_PRODUCER**(第一次分得出「沒有產出端」與「叫不出名字」)。
+- 驗證:自測 95→**104 全綠**(3 條反對照)、6 條突變 5 殺 1 等價(已在碼裡標明是冗餘防線,
+  不硬造假鑑別力斷言)、生產掃描產出端 70→72、硬檢查 exit 0。
+  落地:`market_forecast_a/b` 進 `cron_catchup/jobs.tsv`(max_age 4970);
+  **死人開關實測**=把 max_age 壓成 10min 餵複本註冊表,兩列真的噴 WATCH-STALE rc=3
+  (fresh 安靜 + stale 會響,兩個方向都證過才算哨兵接上)。
