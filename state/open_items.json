@@ -1786,8 +1786,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-09 12:20",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 00:30",
+  "note": "驗證者 UNSOUND/7 findings 全數收乾:生肖改由年柱地支推導(29585 天零違反)、note 依交界方向分兩句、audit 新增 shengxiao_mismatch 宣稱式檢查、前端第三份 ZHI 表整表對帳、fulfill.BASE 改 __file__ 推導。commit a615c2a/df6dfca;report 2026-08-18_0030"
  },
  {
   "id": 180,
@@ -2156,8 +2156,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-10 13:20",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 00:42",
+  "note": "本條指名的失明消費者已無:log_contract_scan 現跑『✅ 無新增 DRIFT』(LINKED 145 / DRIFT 21 全在 baseline 抑制內)+ 自測 ALL PASS,08-16/08-17 夜巡也都 PASS。⚠️ 夜巡整體仍非全綠(08-17 4 紅:memory_index_trim=#395、credential_watch=#334、crawler_coverage 疑為 08-17 22:53 CF analytics 修復前的殘影),各自有單,不再由本條代管"
  },
  {
   "id": 217,
@@ -2876,8 +2876,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-12 10:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 00:41",
+  "note": "生產已觸發並成功:deploy_drift_cron.log 有兩輪 cron 自己判『pending 未發出的部署單』→ dispatch pages_deploy.yml → run 31599194138 / 31654621418 → ✅部署成功;fail-closed 也實射過(rc=4/rc=2 內容還沒 push 時不發舊版、單子留下輪)。pending 目錄現為空"
  },
  {
   "id": 289,
@@ -3016,8 +3016,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-16 15:43",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 00:42",
+  "note": "生產 cron 已跑:lib_cron_runner.sh 的 _cron_export_cf_token 在每支 cron_run_and_alert 起手時執行,08-16 之後的戳記可證(logs/ok/deploy_drift.ok=2026-08-18 00:30、fortune_fulfill/intel_patrol 等 78 支戳記皆在後),且 08-17 22:53 CF analytics 共用退路取回四支流量數字走的正是這條解析器;cf_token 自測 08-16/08-17 連兩晚 PASS(22-24 條)"
  },
  {
   "id": 303,
@@ -3866,8 +3866,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 17:15",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 00:41",
+  "note": "收割器上線:tool_cache_bloat 增 scratch_dirs 段(白名單拋棄式目錄+整棵樹最新 mtime 判死+/proc cwd/fd 佔用保護+讀不到 /proc 即拒收並算紅燈),接既有 cron(23 */2 走 cron_run_and_alert wrangler_log_prune)。實跑回收 3.7G:/tmp 77%→23%(4 份 827MB eval 突變沙盒 + 692 個小殘骸,唯一有行程開著執行檔的 tmp.EneLERltDD 正確保留)。自測 13 組 + 4 突變全 KILLED"
  },
  {
   "id": 388,
@@ -4046,6 +4046,46 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 21:58",
+  "closed": "2026-08-17 22:50",
+  "note": "抽成共用 capabilities/cf_analytics/post.py(唯一退路實作),四支全接上並生產實跑:site_traffic 08-17 uniques 184/pv 1755、seo_page_traffic 08-16 逐頁 500 列、crawler_coverage 08-16 59 列,皆 token_sources=[borrowed_mac];honest_traffic 改成呼叫共用版後自測全綠+突變 47/47 killed。新積木自測 34 斷言、mutation_sweep 17/18(L69 登記等價豁免)。禁止手刻第 2 份的紀律寫進模組開頭。"
+ },
+ {
+  "id": 406,
+  "what": "紫微(iztro)與八字(lunar_python)在同一批 2% 日期上算出**不同的年柱**:2026-02-10 八字丙午、紫微乙巳(iztro 的四柱與 zodiac 都走農曆年,自己是自洽的)。同一位客人若同時買 bazi_999 與 ziwei_249,兩份報告的年柱會對不起來",
+  "why": "iztro 是 vendored 排盤核心(engine/ziwei_node/iztro.bundle.cjs),改它等於改別人的曆法實作,風險遠高於 #179 那種欄位推導;且紫微用農曆年是該派別的通行做法,不是 bug 而是流派差異。要處理應先決定對外口徑(在報告裡說明兩套曆法),不是偷改引擎",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 23:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 407,
+  "what": "winrig /tmp 是 6.9G 記憶體碟,今晚 99% 滿(84M):/tmp/pytest-of-userdelvin 累積 11 個被 kill 的 pytest 暫存(14:11~18:16,共 1.4G)+ 06:29 遺留的 4 個 827M 突變沙盒;寫入 ENOSPC 會偽裝成「某支測試紅了」或工具無輸出",
+  "why": "本輪清理被權限擋下(rm -rf 也在我自己的死線清單上),且多數殘留屬其他視窗/更早的 session,不該由我逕自刪。正解是給 pytest 與突變沙盒一個磁碟型 basetemp(本輪已對自己的 run 改用 ~/.cache/pytest-tmp),並讓夜巡定期回收 —— 但那要跨多支呼叫端改,不夾帶進本輪",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 23:24",
+  "closed": "2026-08-18 00:41",
+  "note": "同 #387:/tmp(6.9G tmpfs)現 23%,pytest-of-* 舊場次納入收割白名單(殼留著、殼裡場次收掉);另補上 08-17 完全缺席的那個訊號——用量 >85% 直接 exit 1 由 cron 推播(當時撐爆時沒有任何東西在看這個數字,症狀偽裝成 SEO 測試紅)"
+ },
+ {
+  "id": 408,
+  "what": "命書 test_font_subset 紅著:web/js/site.js 的一句**註解**用了「挪」,6 個字型子集都沒收該字(commit 0328ac4 預熱那輪引入,非本輪)。子集檢查掃到 JS 註解 ⇒ 註解字也會逼字型重建",
+  "why": "修法是跑 scripts/seo/build_fonts.py 重建子集(會動 6 個 woff2 二進位檔),或把掃描面排除 JS 註解 —— 前者屬別輪的產物、後者要改偵測器語義,兩者都不該夾帶進生肖修復;本輪已查明根因與歸屬並留證據",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 23:40",
+  "closed": "2026-08-18 00:13",
+  "note": "本輪最小解:那個字在 JS 註解裡、永不渲染,改成同義的「移」+bump ?v= ⇒ test_font_subset 綠。commit df6dfca"
+ },
+ {
+  "id": 409,
+  "what": "命書字型子集掃描器把 JS **註解**裡的字當成「站上在用的字」⇒ 任何一則含冷僻字的註解都會讓 test_font_subset 紅,而 ship.sh 跑全套 pytest ⇒ **整個 fortune-ai 部署卡死**(#408 記 low 是低估了:08-17~18 期間沒人部署得出去)",
+  "why": "正解是掃描面排除 JS 註解(或把註解字也納入子集重建),要動偵測器語義或重建 6 個 woff2 二進位,兩者都不該夾帶進生肖修復輪;本輪已用改字繞過,但下一則冷僻字註解會再犯",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 00:13",
   "closed": null,
   "note": ""
  }
