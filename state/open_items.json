@@ -2986,8 +2986,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-16 15:43",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 11:35",
+  "note": "Delvin 2026-08-17 11:2x 建了 CF API token 並提供;已寫入 .env(gitignore 擋著)。實測:Pages 10 專案/KV 5 namespace/Workers 22 支全 200、GraphQL analytics 200、npx wrangler kv namespace list 實跑成功、deploy_drift 三項全綠、cf_token 解析器 python 半邊(source=dotenv)與 bash 半邊(export 成功)都拿得到"
  },
  {
   "id": 300,
@@ -3086,8 +3086,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-17 03:28",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 11:35",
+  "note": "只修了兩半中的第一半:自測 BASELINE_RED 的根因=它暗中依賴「老闆的 .env 剛好沒有 CLOUDFLARE_API_TOKEN」,今天憑證補上後 ⑫⑬ 整段立刻全紅而被測邏輯一行沒改。修法=自測頂端把 resolve.ENV_PATH 指到 tmp 空檔(一行隔離 20 個呼叫點),現在 132/0。第二半(三態修過頭:借得到但驗不動也判 down ⇒ 斷網/CF 5xx 會推假告警)另開追蹤"
  },
  {
   "id": 310,
@@ -3266,8 +3266,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-17 10:55",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 11:35",
+  "note": "根因不是探測端點選錯(實測兩把窄 token 對 /accounts/{id} 是 403),是 export.sh::cf_token_export_mac 借到 Mac 的 token 後寫 't, _ = cf_token()' 把來源標籤丟掉,只 export 值 ⇒ 同環境的下一個 python 呼叫者在 _from_env() 命中,把「靠會睡覺的筆電撐著」回報成「來源=環境變數」+ok。修法:export 端連 source 一起交棒(\\x1f 分隔)、resolve 加 _env_origin() 採信標籤、credential_watch 對借來的一律 degraded。自測 credential_watch 132/0(含 ⑭a~g 誤告面反對照)+ cf_token bash 半邊 5 條;突變 7/7 killed 跨兩支"
  },
  {
   "id": 328,
@@ -3326,6 +3326,26 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 11:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 334,
+  "what": "credential_watch 三態仍可能修過頭:借得到但驗不動也判 down ⇒ 斷網或 CF 5xx 時會推假告警給 Delvin",
+  "why": "#309 的第二半,今天只修了自測污染那半;假告警會教人忽略整個通道,優先度不低",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 11:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 335,
+  "what": "honest_traffic(真人流量)連續 7 天 no_data:08-10~08-16 全部 failed_dates,而 CF 憑證/GraphQL 權限實測都正常(200)",
+  "why": "憑證補上後重跑仍 no_data ⇒ 根因不是 #299。可能是 zone 層權限、dataset 保留期、或停機期間真的沒採到;老闆在看的真人流量數字目前是空的",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 11:35",
   "closed": null,
   "note": ""
  }
