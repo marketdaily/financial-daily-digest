@@ -6530,3 +6530,26 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 上一輪背景 `_mutcheck.sh` 覆核收尾:killed=21 / survived=0。
 - 教訓 `~/autonomous/state/lessons/personalized_only_features_are_unobservable.md`;
   記憶掛 `hub_intel_radars`;報告 `~/autonomous/reports/2026-08-18_0500_confluence_unobservable.md`
+
+### 2026-08-18 05:30 TW — 收 #397:行為凍結閘門紅著沒人管,而且它自己在偷打 API
+- **兩紅變體是刻意變更沒重封基線**:08-17 自癒 commit `df0a6b69` 把 `_tldr_skeleton` 加進
+  weekend/monday prompt(週一班 9/21 掉備援的根因修),prompt +198/+174 字,其餘輸出一字未動。
+  自癒代理修對了但沒 reseal ⇒ 閘門從那天起一直紅。已加 `digest_fix_playbook.md` 4b 條款根治。
+- ⭐⭐ **harness 檔頭寫的「零真實 LLM 呼叫、零配額消耗」有兩週是假的**:provider 樁是手寫 8 個
+  名字,analyzer 08-03 新增的 `_call_mistral` 沒人補 ⇒ 每跑一次真打 api.mistral.ai(實測 429)。
+  更危險的是 mistral 哪天回 200,council 就吃到真 LLM 文字 ⇒ byte 比對的 golden 變擲骰子。
+  改成從 `dir(analyzer)` 自動列舉 + 漏網即 SystemExit。
+- ⭐⭐ **加網路 tripwire 後當場抓到第二個出口**:`_run_smoke` 的 docstring 寫「mock 全部網路出口」,
+  實際上 08-17 上線的退訂第一層每跑一次打**正式站 Worker** `/internal/unsub-list`
+  ⇒ golden 綁在線上 KV 活狀態(今天有人退訂,明天這支就無故變紅)。已固定樁化。
+- **第三個模式也是紅的,理由跟程式無關**:`provider diff` 爆 CF neuron 額度將盡(9876/6500)
+  —— 預算閘門讀當日活用量。同 7bef298c 凍結 `_track_stats` 的病,已凍結 `budget_ok`/`record`。
+  補 mistral payload 快照時,`.env` 洩漏守衛立刻擋下寫入(dummy key 名單也漏了 MISTRAL_API_KEY)
+  —— **同一個「名單漏一格」的病,一輪內在三個部位各犯一次**。
+- **接上排程**(#397 的另一半):`refactor_harness_runner.sh` 09:50 TW(自癒 08:50-09:10 收工後,
+  當天改了什麼同一個早上就攔下來),三模式共用一個戳記/告警指紋,已註冊 cron_catchup 哨兵。
+- 驗證:三模式全綠 + 生產 runner 實跑 rc=0 並寫出 `logs/ok/refactor_harness.ok`;
+  run_smoke 的 diff 行全是 council 名冊/card-regen 輪數,`=== SENT ===` 每封信 html_sha 一字未變。
+- commit `9479fb64`;新登記 #420(council 成功路徑在 golden 裡從未被覆蓋,既存盲區)。
+- 教訓 `~/autonomous/state/lessons/allowlist_defenses_drift_silently.md`;
+  報告 `~/autonomous/reports/2026-08-18_0530_refactor_harness_397.md`
