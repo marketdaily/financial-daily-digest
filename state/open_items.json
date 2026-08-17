@@ -3488,5 +3488,25 @@
   "opened": "2026-08-17 13:30",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 350,
+  "what": "命書占神對位線:4 則 Threads 草稿 pending_review 待老闆點頭改 approved;SEO 截流三頁未做;廣告預算未拍板",
+  "why": "對外發文/投放要老闆點頭",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-17 13:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 351,
+  "what": "命書 pSEO runner 改「有 WIP 走 ship.sh --clean」尚未在明早 04:20 生產 cron 跑過(手動 ship 已 3 次全過);live_check ⑦ 每日頁新鮮度已在 15:05 班接上但明天才首驗",
+  "why": "要等明天 04:20 / 15:05 兩班",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 13:43",
+  "closed": null,
+  "note": ""
  }
 ]
