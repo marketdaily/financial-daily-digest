@@ -3516,8 +3516,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-17 14:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 14:05",
+  "note": "老闆拍板改用 delvin@quietfix.studio 直接寄(不走 delvinchang 別名);.env SENDER=delvin@quietfix.studio、SEND_ENABLED=1、WARMUP_START=2026-08-04(→08-18 起 3 封/日,08-21 6,08-25 12,09-01 20);cron 平日 10:05 --i-really-mean-it 真寄;今天 cap 0(休眠末日)"
  },
  {
   "id": 353,
@@ -3526,6 +3526,36 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 14:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 354,
+  "what": "冷信 08-18 10:05 首批 3 封真寄(delvin@quietfix.studio→台中精密機械/花店,附 quietfix demo);首班要驗:寄出數/退信/回覆辨識,並看品牌網域信譽(Postmaster)",
+  "why": "尚未在生產跑過第一批",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 14:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 355,
+  "what": "KINGCONN 型錄產品圖:通用渲染器已建好但只在 1 顆料號驗證過",
+  "why": "232 顆的可行性取決於『他們公司 SolidWorks 配色慣例一不一致』,那決定材質對應表能不能通吃;要老闆給 3-5 個【不同系列】的 IGES/STEP 才驗得出來。另外線材類(電線多半沒建實體模型)與 ODM 系列(可能無可釋出 CAD)是已知風險",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 14:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 356,
+  "what": "站上產品卡的 mix-blend-mode:multiply 要拿掉才能換寫實產品圖",
+  "why": "那是為白底線圖設計的;寫實透明圖套上 multiply 會把整張米色卡壓黑。232 個產品頁都有這一段,換圖時要同批改",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 14:14",
   "closed": null,
   "note": ""
  }
