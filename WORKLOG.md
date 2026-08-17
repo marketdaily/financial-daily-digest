@@ -6225,3 +6225,26 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   拿 @example.invalid 打會硬退信且觸發我自己的告警=自測噪音進生產通道;若 Brevo 擋 blacklisted 的
   transactional,退訂者會卡在「按了沒反應」)、**#402**(F7 的 CLAUDE.md 那半沒改 —— 該檔被別的視窗改著)。
 - report:`~/autonomous/reports/2026-08-17_2107_unsub_396_r2_findings.md`
+
+## 2026-08-17 21:30 [自主機器 cycle798] 還債輪:32 件「首班未驗」其實早就有證據躺在磁碟上
+- pick_gate 亮**還債模式**(owner=me 157 > 上限 80,只准 close 既有 open item)。把 209 件按年齡排完
+  看到的東西比任何單一 bug 刺眼:一大票長成「XXX 尚未在生產跑過首班(今晚 04:50/明早 05:20)」,
+  而那個「今晚」是 **7~18 天前**。⇒ **成因不是事情沒做完,是做完了沒人回去看**。
+- 逐件去磁碟找生產證據,**收乾 32 件**(每件都指到一個檔案+一行內容,不接受「應該有跑吧」):
+  #237 #240 #233 #264 #269 #242 #204 #250 #255 #261 #262 #265 #306 #277 #271 #279 #278
+  #325 #332 #384 #328 #164 #169 #170 #168 #174 #171 #71 #72 #73 #10 #35。
+  **open 209→177、owner=me 157→125**。代表性證據:
+  · #71 selfheal 的 **apply 相位**今早真的 apply 了(08:50 detect=true→baseline gate ✓→
+    guard verdict=apply→autostash a828fb68),gate 恆紅根治後首次;
+  · #325/#332/#384 命書社群改每天發:今晚 20:01 三平台全成功,**IG 腿史上第一則**(18119133343915055);
+  · #73 kpi.md digest.reason_median_latest=121.0(門檻≥100)、7d avg 118.6。
+- **查到但不收的真紅燈**(誠實記錄):①honest_traffic 實跑 error=no_data,08-13~16 四天全 failed(#335)
+  ②命書每日運勢 26 頁 04:20 連續「有他人 WIP,跳過部署」(#351 明早首班)③deploy_drift 今晚 20:00
+  抓到🔴回捲但只印處方 rc=1、沒自動補發(#286)④本週週考未開考(eval_bail_reason=human_active)。
+- 順手把夜巡自測推回全綠:`selftest_last_ok` 卡在 08-11(#216),查最近一輪只剩 2 支紅而**兩支今天
+  都被別輪修掉了**(eval_task_schema ⑭ 實跑 15 段全過;ok_stamp_lint MIXED-CLOCK 已改成兩端都用
+  python time.time()),手動跑一次完整 selftest.sh 讓 last_ok 有機會前進。
+- 結構修法已進 backlog:`open_items.py add --verify-after <時點> --verify-by <證據路徑>`,
+  到期由 cron 自動比對證據、fail-closed;**寫不出證據路徑的不准用**(逼自己登記當下就想清楚
+  「怎樣才算驗過」)。memory `capability_first_run_debt_never_closes`。
+- commit `6fb0dd3d`;report `~/autonomous/reports/2026-08-17_2130_debt_repay_first_run_backlog.md`
