@@ -212,6 +212,18 @@ ${tail_msg}" >/dev/null 2>&1
   return 1
 }
 
+# ⭐ 成功戳記的**唯一**寫入端(2026-08-18 抽出)。原本這段內嵌在 cron_run_and_alert 裡,
+# 於是 `cron_deploy_docs`(docs/ 對外部署的唯一入口、11 個呼叫端)整條線沒有任何會前進的
+# 戳記:logs/ok/deploy_docs_*.ok 是 08-17 backfill_ok_stamps.sh 從舊 log 回填出來的,
+# 有檔案、沒有寫入端 = 化石(內容永遠停在 08-11,而 08-17 那幾班其實都部署成功了)。
+# 那條線正是 08-13~16 兩條腿同時死、67h 零告警的那條 ⇒ 新鮮度哨兵對它結構性失明。
+# 抽成 helper 而不是在第二處手刻一份 `date > ok/`:同一份判準被第二種寫法重寫,
+# 就是便宜那層安靜死掉的起點(見 memory capability_guard_reimplemented_in_second_language)。
+_cron_ok_stamp() {   # NAME —— 只在真的成功時呼叫;best-effort,絕不影響主流程
+  local d="${CRON_LIB_REPO:-$HOME/Delvin-agent}/logs/ok"
+  { mkdir -p "$d" && date -u +%FT%TZ > "$d/${1}.ok"; } 2>/dev/null || true
+}
+
 cron_run_and_alert() {
   local name="$1"; shift
   [ "${1:-}" = "--" ] && shift
@@ -233,7 +245,7 @@ cron_run_and_alert() {
   #    讓 cron_catchup 的新鮮度哨兵(watch 模式)不必替每支 job 各自考古一個產出檔。
   #    絕不可影響主流程:rc 早已存進變數,這段整個 best-effort、失敗吞掉。
   if [ "$rc" -eq 0 ]; then
-    { mkdir -p "$log_dir/ok" && date -u +%FT%TZ > "$log_dir/ok/${name}.ok"; } 2>/dev/null || true
+    _cron_ok_stamp "$name"
   fi
   if [ "$rc" -ne 0 ]; then
     # 只取「這一輪」的輸出:log 是累積的,拿 tail -c 800 會隨檔案長大而變形,
@@ -653,7 +665,9 @@ _cron_deploy_fallback_notice() {   # TAG [LOG_PATH] [LEG_DESC]
   : > "$mark" 2>/dev/null || true
 }
 
-cron_deploy_docs() {
+# 對外契約仍是 cron_deploy_docs;戳記寫在**唯一一個**出口(下面的 wrapper),不是在三個
+# `return 0` 分支各補一行——第四條腿哪天長出來時,漏戳的那條腿會安靜地讓哨兵誤判成停擺。
+_cron_deploy_docs_legs() {
   local tag="$1" msg="$2" verify="${3:-}"
   local date_tag log_dir log off rc bkrc mrc tail_msg
   local -a wcmd
@@ -720,5 +734,14 @@ cron_deploy_docs() {
   # 不是這個 tag 專屬的問題;11 個呼叫端各推一則 = 同一件事吵 11 次。
   cron_alert_failure "$tag" "$rc" "三條腿都沒把內容送上線(本機 rc=${rc} / Actions rc=${bkrc} / Mac rc=${mrc}$([ "$mrc" = 5 ] && echo '=Mac不可達'))
 ${tail_msg}" "$log" "deploy_docs_both_legs_dead"
+  return "$rc"
+}
+
+cron_deploy_docs() {
+  _cron_deploy_docs_legs "$@"
+  local rc=$?
+  # rc=0 的語意是「內容真的上線了」(不管出力的是哪條腿)⇒ 這才是戳記該前進的時刻。
+  # 沒上線時**絕不**戳:一個只會前進的 artifact 如果連失敗也戳,哨兵就永遠是綠的。
+  [ "$rc" -eq 0 ] && _cron_ok_stamp "$1"
   return "$rc"
 }
