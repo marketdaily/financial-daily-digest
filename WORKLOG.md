@@ -5692,3 +5692,7 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 13:3x 續:第二刀「生成完要蓋膠片質感」→ 新積木 `~/autonomous/capabilities/film_texture`(圖 numpy+影片 ffmpeg gbrp,七 op 固定序,四 preset,--proof 量測;自測 31/31)、
   genai-prompt-pro §4.6、website-design-team ⓪d 品類→rig+preset 表(老闆追問「食物/花/科技都用這 skill?」→是)+階段⑤ critic 影像三查、video-editing 交付前必上。
   坑:ffmpeg float 平面 geq 靜默 no-op / crf18 吃顆粒 / hf ratio 在細節圖會<1(看 grain_std_added)。memory capability_film_texture_rig_block;open #347(未在真實接案跑過)。
+
+## 2026-08-17 14:5x TW — 命書:老闆親令「借占神(韓國 점신)台灣廣告收割受眾」→ fortune-ai/marketing/COUNTER_JEOMSIN_20260817.md
+- 老闆語音「僅僅八支」=占神八字(Handasoft 台灣版)。訴求兩版:A 華夏五千年(老闆原版,§24/Meta 風險留內圈)、B「翻譯本 vs 原本」(主推,事實可證);T1-T5 Threads+M1-M3 Meta 文案+SEO 截流三頁規格。
+- 4 則 Threads 已入 social_posts.json 但 status=pending_review(daily_run 白名單 draft 會發!),等老闆點頭。廣告預算仍待拍板。
