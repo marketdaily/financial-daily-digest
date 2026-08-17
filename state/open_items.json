@@ -96,8 +96,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-07-30 18:12",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:26",
+  "note": "5 項首跑全部有生產證據(18 天後回驗):①intel_patrol 21:30 → intel/.confluence_notify_ledger.json 08-16 21:36、leadflow_latest.json 08-16 21:32 ②美股日報免費鏈 → sitescan 08-17 digest_archive_fresh 最新公版日報 2026-08-17(0 天前) ③conf_charts 03:20 → intel/.conf_chart_cache.json 08-13 03:31 ④05:20 零邊際成本批次 → 早報每日照跑(08-17 08:50 selfheal 有讀到當天 audit 結果) ⑤reddit_buzz 05:30 → intel/reddit_buzz_latest.json 08-17 05:31;cron_target_lint 09:40 → cron_target_lint.log 08-17 09:40『✅ cron 目標存在性:全部解析得出的模組/腳本都在』。"
  },
  {
   "id": 11,
@@ -346,8 +346,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-02 14:33",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:26",
+  "note": "首發已驗:marketing/social_out/post_log.jsonl『2026-08-03T14:00:53 eng_article_council_202608』instagram 18062191790532741 / facebook 1133333363197689_122124229167345835 / threads 皆 ok=true;之後 14:00 窗口持續有貼文(最近一次 08-17T14:00:58 win_2026-07-21_SNDK_wait,IG 成功、FB 撞 Graph API『reduce the amount of data』暫時性錯誤)。"
  },
  {
   "id": 36,
@@ -706,8 +706,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-03 02:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:25",
+  "note": "apply 相位今天在生產跑過了:logs/selfheal_2026-08-17_tw.log(08:50)detect trigger=true(老闆本人因 holdings_uncovered/tldr_too_short 掉備援)→ baseline gate ✓ → changed(worktree): analyzer.py + scripts/test_monday_tldr_and_card_balance.py → **guard verdict=apply** → Created/Applied autostash a828fb68 → done verdict=apply。gate 恆紅根治(070a242)確認不再擋。"
  },
  {
   "id": 72,
@@ -716,8 +716,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-03 02:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:25",
+  "note": "已在生產 cron 跑過:logs/chronic_2026-08-17.log(11:00 窗口)rc=2 並走 escalate 路徑推播 admin(通道 webpush+desktop),內容是『偵測器失明:近 7 天 4 個班次該有判決卻查不到』——第 2/3 輪驗證者要求的『先修偵測層再談自動改碼』判準真的在生產射出來了。"
  },
  {
   "id": 73,
@@ -726,8 +726,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-03 11:50",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:25",
+  "note": "生產數據達標:state/kpi.md(08-16 23:35)digest.reason_median_latest=121.0(≥100 門檻)、reason_median_7d_avg=118.6、reason_median_soft_warn=False。增補層上線後 median 已站回 100 以上。"
  },
  {
   "id": 74,
@@ -1636,8 +1636,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-05 23:17",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:23",
+  "note": "首班早就通過:~/.marketdaily-fallback/mingshu_social_cron.log『2026-08-06 23:05:04 ✅ 命書社群 cron 首班通過:ms_gpt_jieqi→threads,ms_decision_offer→threads』;之後 08-11/12/13/17 每個窗口都有 social_out/cron_<date>.log。"
  },
  {
   "id": 165,
@@ -1676,8 +1676,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-06 10:44",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:24",
+  "note": "已在生產跑過兩班(seo_2026-08-10.log / seo_2026-08-17.log,週一 01:00 seo_runner.sh):兩份 log 皆無 [compliance-lint unavailable](=規則庫真的載入了、閘有執行)、也無 [compliance-BLOCK](=本期文章零違規,不是閘沒跑)。08-17 那班產出 4 篇 + sitemap 140 URLs 並 push 成功。"
  },
  {
   "id": 169,
@@ -1686,8 +1686,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-06 12:34",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:23",
+  "note": "threads_publish 已在生產跑過多次並拿到真實貼文 id:post_log.jsonl 08-12 ms_lichun→18134007715715354、08-13 ms_huaji_gong→18221463334331265、08-17 ms_saju_origin→18078739490704329。"
  },
  {
   "id": 170,
@@ -1696,8 +1696,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-06 13:13",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:24",
+  "note": "已在生產窗口真跑過:intel/.confluence_notify_ledger.json 有 08-06~08-16 多筆推播記帳(如 7631|confluence_bear 2026-08-16 conviction 3、3339|confluence_bear 08-16、2464|divergence 08-12),檔案 mtime 2026-08-16 21:36(=intel_patrol 21:30 那班)。"
  },
  {
   "id": 171,
@@ -1706,8 +1706,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-06 14:03",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:24",
+  "note": "已在生產排程真跑過:logs/locks/ 下有大量當日墓碑目錄(postcheck_us.2026-08-17 / intel_doctor.2026-08-17 / reel_us_pm.2026-08-17 / digest_archive_seo_pm.2026-08-17 / tldr_dist.2026-08-17)與對應的 .<name>.flock 檔——flock 序列化那段是認領墓碑的唯一路徑,墓碑存在即代表它跑過。"
  },
  {
   "id": 172,
@@ -1736,8 +1736,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-06 17:11",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:24",
+  "note": "生產已跑過:~/.marketdaily-fallback/logs/sitescan_2026-08-17.log 第 22 行『✅ [design_quality_floor] 70 頁皆無 AI 醜站機械 tell』,該班 21 checks 全過。"
  },
  {
   "id": 175,
@@ -2036,8 +2036,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-10 02:09",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:20",
+  "note": "首班已跑:eval/scoreboard.md 2026-08-10 總計列『202/221 (91%)(另 1 題空跑基線廢題已剔除,見 eval/null_baseline.json)』——空跑基線閘在生產真的把 FREEPASS 題排出分母;eval/null_baseline.json(08-10 09:22)有全庫 entries 與 state/verify_sha。"
  },
  {
   "id": 205,
@@ -2326,8 +2326,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-11 02:15",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:20",
+  "note": "生產已跑過:capabilities/TRUST.md 標頭『生成:2026-08-16T21:15Z』(=cron 05:15 TW),state/cap_trust.json mtime 2026-08-17 05:15;暖機規則(N<7 顯示🌱不給紅燈)也已寫在表頭。"
  },
  {
   "id": 234,
@@ -2366,8 +2366,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 04:59",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:20",
+  "note": "已在生產跑過多輪:state/event_queue.json seq=41、41 則事件,來源涵蓋 selftest_health / mutation_sweep / verifier_harvest,E1 已投遞 4 次、E5 投遞 13 次(投遞階梯真的在走)。首班之後每晚夜巡都在寫。"
  },
  {
   "id": 238,
@@ -2396,8 +2396,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 05:52",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:20",
+  "note": "『一支積木一則事件+穩定指紋+reconcile』在生產成立:E5/E6/E7/E8/E9 各自對應一支積木(event_queue/index_hygiene/log_contract_scan/dispatch_plan/pyc_guard),fingerprint=selftest:<cap>;selftest.sh 的 EQ-FANOUT/EQ-GREEN 兩段每晚跑,reconcile 記錄可見(mutation_sweep 那側 08-17 01:50 『reconcile 收掉 0 則(來源 mutation_sweep,仍在發生 3 項)』)。"
  },
  {
   "id": 241,
@@ -2416,8 +2416,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 06:00",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:20",
+  "note": "已在解凍狀態綠過:剛實跑 capabilities/tests/selftest_flake.test.sh → 『✅ selftest_flake 自測全過(35 段,含逾時分級、基準自癒與基準寫回)』;且它在 08-16 21:19Z 夜巡的 204 支走訪清單裡沒有出現在失敗名單。"
  },
  {
   "id": 243,
@@ -2496,8 +2496,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 09:37",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:21",
+  "note": "生產已跑且預測成立:state/kpi.md(08-16 23:35 kpi_pull 產出)human.candidate_avg_clean_7d=201.1、candidate_latest=32 —— 正是預期的『從 2858 掉到數百量級』。"
  },
  {
   "id": 251,
@@ -2546,8 +2546,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 11:03",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:21",
+  "note": "已在生產 kpi_pull 跑過多晚:kpi.md 內 human.* 區塊(含 r2 修法帶進來的 path_killed/path_kill_share/version_suspect/n_uncorrected_days_7d/n_truncated_days_7d)每晚都在更新,最後一次 08-16 23:35。"
  },
  {
   "id": 256,
@@ -2606,8 +2606,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 15:32",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:21",
+  "note": "已觀察:kpi_pull 每晚 23:35 由 flock 包住跑(crontab 可見),kpi.md 08-16 23:35 有完整 human.* 區塊;『KPI 區塊消失偵測』也證明有效——honest_traffic 連 7 天 no_data 這件事就是被抓出來並登記成 #335,不是靜默消失。"
  },
  {
   "id": 262,
@@ -2616,8 +2616,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-11 16:14",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:21",
+  "note": "資產佐證透鏡已在生產 cron 產出:kpi.md 有 human.corroboration_usable=True / corroborated_share=0.5817 / n_human_uas=377 / n_corroborated_uas=108。"
  },
  {
   "id": 263,
@@ -2636,8 +2636,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-11 17:27",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:20",
+  "note": "已接進排程且在生產跑過:crontab 有 \"*/10 * * * * ~/.marketdaily-fallback/mutation_sweep_runner.sh\";夜巡自測預算表列有 mutation_sweep=150s(=已在夜巡走訪清單內);~/.marketdaily-fallback/mutation_sweep_cron.log 有實跑輸出。"
  },
  {
   "id": 265,
@@ -2646,8 +2646,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 18:55",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:21",
+  "note": "夜巡首班已過:08-16 21:19Z 那輪的 SELFTEST BUDGETS 行列有 honest_traffic=60s(戳記制生效後的新預算),且 honest_traffic 不在該輪失敗名單內。"
  },
  {
   "id": 266,
@@ -2686,8 +2686,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 23:19",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:20",
+  "note": "首班已跑:~/.marketdaily-fallback/mutation_sweep_cron.log『2026-08-17 01:50:27 sweep rc=1』,當輪掃 10 支、發現 2、事件 3 則、覆蓋 45/107 支有紀錄。rc=1 是設計上的『有 survivor』不是故障。"
  },
  {
   "id": 270,
@@ -2706,8 +2706,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-12 00:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:22",
+  "note": "生產輪掃已驗過:mutation_sweep_cron.log『2026-08-17 01:50:27 sweep rc=1』(掃 10 支/發現 2/錯誤 0/事件 3 則/覆蓋 45 支),且 selftest_history.tsv 08-16 mutation_sweep PASS(23-24 段)。"
  },
  {
   "id": 272,
@@ -2766,8 +2766,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-12 07:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:22",
+  "note": "全庫夜巡複跑已完成:selftest_history.tsv 2026-08-16 recall_integrity PASS(該晚三輪皆 PASS)。"
  },
  {
   "id": 278,
@@ -2776,8 +2776,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-12 07:39",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:22",
+  "note": "夜巡那半已過:selftest_history.tsv 08-16 index_hygiene_level2 PASS、index_hygiene PASS。週考那半本週還沒開考(08-17 05:10/11:10 兩班皆 bail=human_active,state/eval_bail_reason),但那是週考閘門本身的行為、不是 level2 的未驗——下次開考自然覆蓋。"
  },
  {
   "id": 279,
@@ -2786,8 +2786,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-12 07:58",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:22",
+  "note": "夜巡首班已過:selftest_history.tsv 08-16 live_smoke_deadman PASS、seo_page_traffic PASS。死人開關本身正確運作——它對 cloudflare_kv 報 NEVER、對 seo_page_traffic_cf 報 STALE(4.89 天),那是它該做的事;那兩條 CF live smoke 為何拿不到資料屬 #335,不在本項。"
  },
  {
   "id": 280,
@@ -3056,8 +3056,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-16 17:53",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:22",
+  "note": "夜巡首班已過:state/selftest_history.tsv 2026-08-16 那晚 cf_wiring_lint PASS(2 段);08-16 白天那輪曾 rc=1,晚上正式夜巡已綠。"
  },
  {
   "id": 307,
@@ -3246,8 +3246,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 10:40",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:23",
+  "note": "首班已過且三平台全成功:fortune-ai/marketing/social_out/cron_2026-08-17.log『20:00:01 命書社群發文(黃金時段)』→ ms_saju_origin 發到 threads/facebook/instagram,rc=0;post_log.jsonl 2026-08-17T20:01:20 三個平台 ok=true(threads 18078739490704329 / facebook 1230347700164851_122109010581421507 / instagram 18119133343915055)。FB 同步這次也真的發出去了。"
  },
  {
   "id": 326,
@@ -3276,8 +3276,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 10:55",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:23",
+  "note": "已在生產 cycle 跑過:本輪(cycle 798)的 prompt 就帶著 pick_gate 注入的『🎯 PICK 受益者閘門』區塊——含 5 件卡在 Delvin 的 high 風險項、最近 6 輪受益者、以及『還債模式 157>80』的硬閘文字。閘門在生產真的射出來了。"
  },
  {
   "id": 329,
@@ -3316,8 +3316,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 10:56",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:23",
+  "note": "IG 腿今晚首次真的發出去了:post_log.jsonl 2026-08-17T20:01:20 instagram ok=true, media id 18119133343915055(貼文 ms_saju_origin)。"
  },
  {
   "id": 333,
@@ -3836,8 +3836,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 16:59",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:23",
+  "note": "首發已完成:今晚 20:00 那篇就是占神對位系列的 ms_saju_origin(D 原本vs翻譯本/占神借力),三平台皆成功。其餘 3 則會依每日輪替接著發。"
  },
  {
   "id": 385,
