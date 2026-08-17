@@ -3646,8 +3646,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 15:34",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 16:48",
+  "note": "08-17 15 個在售品項全部接上雲端車道(塔羅/合婚/紫微/流年/終身/占星各一支 cl_*.js,對 Python 逐案例 parity;cloudlane_coverage.test.mjs 硬閘擋漏接)"
  },
  {
   "id": 366,
@@ -3786,6 +3786,26 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 16:25",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 380,
+  "what": "命書雲端車道占星有不可消除殘差(後端 Skyfield+DE440s vs 雲端 astronomy-engine):500 盤實測星座/宮位/元素分布 0 筆不同,但停滯點逆行 0.1%、容許度邊界相位 1.3%、度數字串 5% 差 1 角分。已接受並寫進檔頭;若日後要消除,做法是補 engine/astro_node/ephemeris bundle",
+  "why": "物理限制,非 bug;取捨是備援的替代品=客人拿不到報告",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 16:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 381,
+  "what": "雲端車道 13 個新接品項(塔羅/合婚/紫微/流年/終身/占星)尚未在生產真交付過;僅八字有生產實績。紫微演練進行中",
+  "why": "需逐品項真單或演練",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 16:48",
   "closed": null,
   "note": ""
  }
