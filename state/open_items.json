@@ -2866,8 +2866,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-12 10:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 04:07",
+  "note": "10/11 呼叫端已在真實排程跑過改後路徑(08-17~18 各自 log 有 cron_deploy_docs:<name> 起跑行 + leg? end rc=0):seo/win_card/ma_weekly/tldr/agent_board/daily_digest/track_record/quality_board/digest_archive_seo。第 11 支 deploy_docs_site_scan 是條件觸發(只有 site_scan 判 docs-only 且修復後重掃全過才 deploy),最後一次 07-28=沒有場合而非沒驗。track_record 08-17 那班順便把三條腿全走過:leg1 wrangler 9109 → leg2 GH Actions 422 → leg3 Mac SSH 成功上線。順帶查獲:這條線的成功戳記是化石(見 commit 修法)"
  },
  {
   "id": 288,
@@ -3146,8 +3146,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 05:02",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 04:09",
+  "note": "--register 已跑:23 列收進 jobs.tsv(arb×4/brain_parity/cap_trust/capacity_radar/cb×3/cta_funnel_lint/key_health/kospi_open_alert/macro_rates/mingshu_seo_weekly/nvidia_key_watch/pe_ratio/reddit_buzz/regime/tw_financials/us_13f/valuation/warmup_daily),註冊後硬檢查全過。67h 停機殘影已散。剩 8 個沒收且**它們就是真的壞掉的那批**(不是噪音):fleet_liveness 4.7d、mingshu_seo_pull 6.5d、mingshu_pages_ship 7d(今天 04:20 首班修復中)、care_daily 邊際 1196>1100;care_report/mutation_sweep/mutation_sweep_notify/pro360_radar 戳記從未存在=從未成功過。已另立 open item 追這 8 個"
  },
  {
   "id": 316,
@@ -3156,8 +3156,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 05:02",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 04:09",
+  "note": "已接進 cron_catchup(*/10)尾段:每日一次自動跑 --register(mkdir $STATE/register.$TODAY 節流,--check 模式不跑,失敗吞掉不影響主流程,只有真的新增列才寫 log)。沙盒驗:①冪等——連跑兩次 jobs.tsv 與生產同內容 ②正對照——刻意拿掉 warmup_daily 那列後自動補回並寫 log『新增 1 列 watch』。cron_catchup 自測 138 段 0 失敗"
  },
  {
   "id": 317,
@@ -3636,8 +3636,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 15:27",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 04:27",
+  "note": "首次真扣點已發生:2026-08-17 16:05 梧棲 2630814912(網站架設/台中梧棲/預算3-5萬)報價成功送出,扣 $347,帳本 growth/out/pro360_quoted.jsonl 有 ok=true 一筆 + 送出前後截圖各一張。餘額 $400→$53 的預測也成立,但『之後會 FAILED 推播直到老闆儲值』只對一半——真正的卡點是 PRO360 點數用完後改走刷卡而帳號沒綁信用卡(截圖為證),已另立 #416 給老闆;推播確實有送達(webpush+desktop)但訊息只說 FAILED 沒說要綁卡,已在 594b903 修成可執行指示"
  },
  {
   "id": 365,
@@ -4116,6 +4116,46 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-18 02:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 413,
+  "what": "ok_stamp_lint 註冊時被 fail-closed 略過的 8 支 = 真的壞掉/從未成功的那批:fleet_liveness(設計性:偵測到艦隊有問題就 rc=1,於是它自己的戳記永遠不前進)、mingshu_seo_pull 6.5d、care_daily 邊際過期、care_report/mutation_sweep/mutation_sweep_notify/pro360_radar 戳記從未存在",
+  "why": "自動擴量已接上(每日重跑),它們恢復後會自己進安全網;但『從未成功過』那 4 支不會自己好,要逐支查為什麼從來沒 rc=0。另 care_report 是每月 job 卻被算出 max_age=1100min(掃描器按 runner 檔對應,分不出 care_cron.sh 的 fast/daily/report 三個子命令)=就算它成功了也會立刻假紅",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 04:09",
+  "closed": "2026-08-18 04:23",
+  "note": "逐支查完,5 個裁決:①pro360_radar 戳記不存在=首班未到(crontab 行 08-17 13:00 才加,時間閘 09:30-09:50,logs/locks 從無 pro360_radar.* 佐證從未進過窗口;已做首班前置檢查:4 支依賴腳本語法過、今日 04:20 的 pro360_cases 由同 session 的 fastpoll 真的抓下來、雷達推播用的 6 個欄位全在)②care_report 月班(30 8 1 * *)、care cron 約 08-10 才上線 ⇒ 首班是 09-01,同樣是假債 ③care_report/care_daily 的 max_age 對應錯已修(ok_stamp_lint 原本把同一支 care_cron.sh 的每一行 crontab 算給檔案裡每一個呼叫點;care_daily 1100 比真實間隔 1440 還短=每天紅 5.7h)④mutation_sweep/mutation_sweep_notify/fleet_liveness 不是壞掉,是偵測器 job 的 rc=1 語義=『跑完了而且有發現』⇒ 戳記結構上不前進(另立新項)⑤mingshu_seo_pull 6.5d 另案"
+ },
+ {
+  "id": 414,
+  "what": "cron_deploy_docs 成功戳記(a9848efa)尚未在生產真部署跑過首班:下一次真的 deploy docs 才會寫出第一個會前進的 logs/ok/deploy_docs_*.ok",
+  "why": "本輪只在沙盒自測驗過(deploy_two_leg 60 綠含 7 條戳記斷言);生產首班=site_scan 08:20 / run.sh 早報 07:20 / tldr 20:20 / deploy_drift 觸發時,任一支跑完後查該 .ok 內容是否為當日,綠即可收",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 04:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 415,
+  "what": "偵測器型 job(mutation_sweep / mutation_sweep_notify / fleet_liveness)的 rc=1 語義是『我跑完了而且有發現』,不是『我失敗了』⇒ cron_run_and_alert 不戳記 + 每次都推 admin 告警 ⇒ 這三支在新鮮度哨兵上結構性失明(它們真的死掉時沒有任何差別)",
+  "why": "正解是把『跑完了』與『跑完且沒發現』分成兩個訊號(例如 rc=1 仍戳記、另用發現數推播),要動 lib_cron_runner 的公用語義=會影響 66 個產出端,不該夾帶進還債輪",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 04:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 416,
+  "what": "PRO360 自動報價卡在帳號層:點數用完後 PRO360 改走刷卡,而帳號沒綁信用卡 ⇒ 一件都報不出去(08-17 18:15 起)。積壓中的真實網站案:台北士林 網頁設計 預算3-5萬(報價扣 $347,頁面顯示剩餘 3 個聯繫名額)",
+  "why": "綁信用卡/儲值只有老闆本人做得到(登入 pro360.com.tw → 案件細節按「送出報價」→ 對話框填卡)。程式端已改成偵測到就停手+推播一次+綁好刪掉 growth/out/pro360_blocked.json 即自動補報",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-18 04:27",
   "closed": null,
   "note": ""
  }
