@@ -10,11 +10,20 @@ token = HMAC-SHA256(INTERNAL_TOKEN, "unsub|v1|" + email) 前 16 hex(64-bit,不�
 import hashlib
 import hmac
 import os
+import re
 from urllib.parse import quote
 
 UNSUB_BASE = os.environ.get("MD_UNSUB_BASE", "https://api.marketdaily.ai/unsubscribe")
 LINK_TEXT = "取消訂閱 / Unsubscribe"
 _SECRET_ENVS = ("MARKETDAILY_INTERNAL_TOKEN", "INTERNAL_TOKEN")
+
+# 兩端(這裡簽、Worker 驗)必須對同一個字串算 HMAC,所以「要修掉哪些字元」不可以交給
+# 各自語言內建的 trim/strip 語義 —— 它們的字元集不一樣:
+#   Python str.strip() 吃 U+001C–1F 與 U+0085,不吃 U+FEFF;JS .trim() 正好相反。
+#   ⇒ 帶 BOM 的 email:Python 簽含 BOM 的字串、Worker 驗不含 BOM 的 ⇒ 那個人的退訂連結**永遠**驗不過。
+# 這裡明寫成一個共用字元集(Worker 端 `UNSUB_TRIM` 逐字相同),兩邊都不靠內建語義。
+_TRIM_CHARS = "\\t\\n\\v\\f\\r \\u001c-\\u001f\\u0085\\u00a0\\u1680\\u2000-\\u200a\\u2028\\u2029\\u202f\\u205f\\u3000\\ufeff"
+_TRIM_RE = re.compile(f"^[{_TRIM_CHARS}]+|[{_TRIM_CHARS}]+$")
 
 
 def _secret() -> str:
@@ -26,7 +35,7 @@ def _secret() -> str:
 
 
 def norm_email(email: str) -> str:
-    return (email or "").strip().lower()
+    return _TRIM_RE.sub("", email or "").lower()
 
 
 def unsub_token(email: str, secret: str = None) -> str:

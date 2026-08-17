@@ -530,10 +530,39 @@ def _drop_unsubscribed(subscribers: list) -> list:
         return subscribers
     if not unsub:
         return subscribers
-    kept = [e for e in subscribers if str(e).strip().lower() not in unsub]
+    from unsubscribe import norm_email
+    kept = [e for e in subscribers if norm_email(str(e)) not in unsub]
     if len(kept) != len(subscribers):
         print(f"   🚫 已退訂 {len(subscribers) - len(kept)} 位,不寄送")
     return kept
+
+
+def _assert_unsub_path_alive(sample_email):
+    """寄出前自檢:這批信到底有沒有退訂路徑(2026-08-17 驗證者 F4)。
+
+    連結、List-Unsubscribe header、KV 名單過濾**共用同一把 INTERNAL_TOKEN**。那把 token
+    在寄信程序的 env 裡缺席時,三半會各自 fail-open 成「照寄、無連結、不過濾」——
+    每一條單獨看都合理,合起來就是 #396 原地復活(官網宣稱可退訂、信裡沒有退訂路徑),
+    而唯一訊號只有 cron log 裡一行 print。本專案自己的判準是「沉默的守衛=沒有守衛」⇒ 這裡推播。
+    回傳 True/False 供寄後 postcheck 判斷要不要再驗一次 HTML。
+    """
+    try:
+        from unsubscribe import unsub_url
+        if unsub_url(sample_email):
+            return True
+    except Exception as e:
+        print(f"   ⚠️ 退訂連結自檢異常({e})")
+    print("   🚨 本批信沒有退訂路徑(算不出 unsub token)")
+    try:
+        _push_admin_alert(
+            "🚨 日報這批信【沒有退訂連結】\n"
+            "算不出 unsub token(INTERNAL_TOKEN 在寄信程序的 env 裡缺席)⇒ 信裡沒有退訂連結、"
+            "沒有 List-Unsubscribe header、KV 退訂名單也沒過濾(退訂者會照收)。\n"
+            "官網 privacy/contact/index 三頁對外寫著「日報底部可取消訂閱」⇒ 這是法務曝險,不只是少一個連結。\n"
+            "修法:確認寄信端 .env(winrig)或 GH secret(雲端 failover)有 MARKETDAILY_INTERNAL_TOKEN。")
+    except Exception as e:
+        print(f"   ⚠️ 退訂告警推播失敗({e})")
+    return False
 
 
 def get_user_preferences(email: str) -> dict:
@@ -1194,12 +1223,38 @@ def _flush_outbox(outbox, date, send_fn, api_key):
     late_notice = _late_send_notice(MARKET, date)
     if late_notice:
         print(f"   ⏰ 本班寄出時已過內容誠實時點 → 全批自動加註盤前說明(Delvin 2026-07-30 拍板 B)")
-    from unsubscribe import inject_footer_link
+    # 退訂名單是在生成起點抓的,而寄出在 hold 之後 —— 早班 05:20 生成、07:00 寄,中間最長 100 分鐘,
+    # 官網寫的卻是「即時生效」(2026-08-17 驗證者 F3)。在真正寄出的那一刻再濾一次,窗口壓到秒級:
+    # 剛按下「確認取消訂閱」的人下一秒又收到今天這封,是使用者會直接按「檢舉垃圾郵件」的形狀。
+    # fail-open 方向不變(取不到名單就照寄) —— 死線仍是「絕不缺信」。
+    _before = len(outbox)
+    _still = set(_drop_unsubscribed([row[0] for row in outbox]))
+    outbox = [row for row in outbox if row[0] in _still]
+    if len(outbox) != _before:
+        print(f"   🚫 hold 期間又有 {_before - len(outbox)} 位退訂,本班不寄給他們")
+    if not outbox:
+        return 0
+    _unsub_alive = _assert_unsub_path_alive(outbox[0][0])
+    from unsubscribe import inject_footer_link, LINK_TEXT
+    _postchecked = False
     for email, html, subject in outbox:
         html = _inject_late_notice(html, late_notice)
         # 退訂連結只在這裡注入:outbox 是所有寄出信件的唯一 choke point(含備援版與精選共用版),
         # 塞在 render_email_shell 會連公版存檔頁一起帶上別人的退訂 token。
         html = inject_footer_link(html, email)
+        # postcheck:自檢說算得出 token,就要真的在寄出的 HTML 裡看到連結 —— 注入落點會隨版型改動
+        # 而失效(那正是 #396 的形狀),只驗「算不算得出來」擋不住「有沒有真的塞進去」。
+        if _unsub_alive and not _postchecked:
+            _postchecked = True
+            if LINK_TEXT not in html:
+                print("   🚨 退訂連結沒有進到寄出的 HTML(注入落點失效)")
+                try:
+                    _push_admin_alert(
+                        "🚨 日報信裡【沒有退訂連結】—— token 算得出來,但注入沒生效\n"
+                        f"班次:{MARKET} {date}。`inject_footer_link` 的落點可能隨 email 版型改動失效。\n"
+                        "官網三頁對外宣稱日報底部可退訂 ⇒ 法務曝險。查 `unsubscribe.inject_footer_link`。")
+                except Exception as e:
+                    print(f"   ⚠️ 退訂 postcheck 推播失敗({e})")
         if note:
             subject = note + (subject or f"📊 財經日報 {date} — AI 精選美股 + 台股")
         try:
