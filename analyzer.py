@@ -2058,6 +2058,58 @@ def _pp_drop_empty_sections(html: str) -> str:
     return html
 
 
+# TLDR 條目候選:內容不含巢狀 div/p 的「葉節點」區塊元素(模型寫成 tldr-item / p / 裸 div 的那些)
+_TLDR_LEAF_RE = re.compile(r'<(div|p)\b[^>]*>((?:(?!</?(?:div|p)\b).)*)</\1\s*>', re.S | re.I)
+_TLDR_MAX_ITEMS = 8
+
+
+def _pp_tldr_structure(html: str) -> str:
+    """TLDR 結構確定性修復(2026-08-17 週一版事故的死防線,與 _tldr_skeleton 的 prompt 修復配套)。
+
+    .tldr 區塊在但一條 <li> 都沒有時(模型把重點寫成 <div class="tldr-item">/<p>/<br> 分行),
+    原樣把那些條目搬進 <ul><li>。**只搬結構不生內容**——真的空的 TLDR 搬不出東西就原樣不動,
+    audit 的 tldr_too_short 照樣抓得到 0 條;只有 2 條的仍然只有 2 條(MED 照樣失分)。
+    順便把模型自己換掉的標題 class(週一版常寫成 section-label)正規化回 tldr-title,
+    否則 _pp_hoist_verdict_chip 的 <div class="tldr-title"> 比對永遠 miss、偏多/偏空 chip
+    整個週一班次靜默消失(08-17 公版實鍋:tldr-chip 一顆都沒有)。"""
+    import re as _re
+    m = _re.search(r'<div class="tldr"[^>]*>', html, _re.I)
+    if not m:
+        return html
+    try:
+        from digest_audit import _section  # 與 audit 同一套巢狀切分,不另手刻第二份判準
+        block = _section(html[m.start():], "tldr")
+    except Exception:
+        return html
+    if not block:
+        return html
+    head = m.group(0)
+    inner = block[len(head):]
+    if inner.endswith("</div>"):
+        inner = inner[:-len("</div>")]
+    title_m = _re.match(r'\s*<div class="(tldr-title|section-label)"[^>]*>(.*?)</div>',
+                        inner, _re.S)
+    title = title_m.group(2).strip() if title_m else "☕ 30 秒看完今天重點"
+    rest = inner[title_m.end():] if title_m else inner
+    title_ok = bool(title_m) and title_m.group(1) == "tldr-title"
+    if "<li" in rest.lower():
+        if title_ok:
+            return html
+        items_html = rest
+    else:
+        items = [c for _t, c in _TLDR_LEAF_RE.findall(rest)
+                 if _re.sub(r"<[^>]+>", "", c).strip()]
+        if not items:
+            items = [c for c in _re.split(r"<br\s*/?>", rest)
+                     if _re.sub(r"<[^>]+>", "", c).strip()]
+        if not items:
+            return html
+        items_html = "\n".join(f"  <li>{c.strip()}</li>" for c in items[:_TLDR_MAX_ITEMS])
+        items_html = f"\n<ul>\n{items_html}\n</ul>\n"
+    fixed = f'{head}\n<div class="tldr-title">{title}</div>{items_html}</div>'
+    return html[:m.start()] + fixed + html[m.start() + len(block):]
+
+
 def _pp_hoist_verdict_chip(html: str) -> str:
     import re as _re
     # 結論情緒 chip 提前:把今天偏多/偏空標籤抓到 TLDR 標題,讓用戶第一眼就掃到結論
@@ -2249,6 +2301,9 @@ def _postprocess_html(html: str, data: dict) -> str:
     html = _pp_capital_brief(html, data)
     html = _pp_strip_empty_impact(html)
     html = _pp_drop_empty_sections(html)
+    # 須在 _pp_hoist_verdict_chip 之前:chip 注入吃 <div class="tldr-title">,
+    # 週一/週末版模型常把標題寫成 section-label,正規化過才注得進去。
+    html = _pp_tldr_structure(html)
     html = _pp_hoist_verdict_chip(html)
     # 必須在 _pp_markdown_bold 之前跑:markdown ** 轉成 <strong> 後,regex 的 [^<] 會被
     # tag 截斷導致漏網(2026-07-07 獨立驗證抓到)。
@@ -2627,6 +2682,26 @@ def _track_stats():
         except Exception:
             _TRACK_STATS_CACHE["stats"] = None
     return _TRACK_STATS_CACHE["stats"]
+
+
+def _tldr_skeleton(title: str, items: list) -> str:
+    """TLDR 區塊逐字骨架(週一/週末 prompt 用,結構與平日 prompt 那份一字不差)。
+
+    2026-08-17 事故根因:週一/週末 prompt 只用白話寫「.tldr 區改成「📅 週一展望」標題,
+    列 3-4 條」,沒給逐字骨架 —— 平日 prompt 有(見 _mk_prompt 的 <div class="tldr"> 那段)。
+    結果各家模型自由發揮:重點寫成 <div class="tldr-item">/<p>/純文字+<br> 等非 <li> 結構
+    → audit 數 <li> 得 0 → tldr_too_short HIGH;retry 換模型還可能自創整個容器 class,
+    被 main._repair_undefined_classes 剝成 class="" → tldr_section_missing。
+    08-03(週日)/08-10(週一)/08-17(週一)三班全中、平日五天零中,08-17 一班 12 人踩到、
+    9 人收到閹割備援版。跟平日一樣給逐字骨架才根治(同 2026-07-06 news-card 那次的結論)。
+    _pp_tldr_structure 是這層不依賴 LLM 聽話的死防線。"""
+    lis = "\n".join(f"  <li>{t}</li>" for t in items)
+    return ('<div class="tldr">\n'
+            f'<div class="tldr-title">{title}</div>\n'
+            '<ul>\n'
+            f'{lis}\n'
+            '</ul>\n'
+            '</div>')
 
 
 def _tldr_avoid_edge_note() -> str:
@@ -3587,11 +3662,51 @@ def _augment_shallow_reason(card: str, sym: str, data: dict) -> str:
     return card[:rm.start()] + rm.group(1) + reason + extra + rm.group(3) + card[rm.end():]
 
 
+def _card_close_idx(seg: str, start: int) -> int:
+    """回傳這張 signal-card **自己配對**的 </div> 結束位置(exclusive),配不起來回 -1。
+
+    2026-08-17 delvin 實鍋(holdings_uncovered 連 retry 都中 → 老闆本人掉備援版)根因:
+    原本用 seg.rfind('</div>') 取「這段裡最後一個 </div>」當卡尾,所以 LLM 只要在卡尾多吐
+    一個 </div>(或整批多包一層容器),那顆多出來的就被吃進卡片 ⇒ 卡片 div 不配對。
+    這種卡照樣過 _card_passes_audit、進跨用戶快取被全班次共用,而 digest_audit._section
+    的巢狀配對會在多出來的 </div> 提前收尾,剛好切掉卡尾的 <!--h:SYM--> 標記——台股卡經
+    _pp_expand_tickers 展開公司名後**只剩這個標記帶代號** ⇒ holdings_uncovered 判定該支
+    「沒給 signal-card」,retry 讀同一份快取必再中(持股最多的用戶最容易踩到)。
+    多餘的 </div> 同時會提前關掉 .signal-grid,本來就是真的版型破損,不該放行。"""
+    if start < 0:
+        return -1
+    depth = 0
+    for m in re.finditer(r'<div\b|</div\s*>', seg[start:], re.I):
+        if m.group(0).startswith("</"):
+            depth -= 1
+            if depth == 0:
+                return start + m.end()
+        else:
+            depth += 1
+    return -1
+
+
+def _div_balanced(card: str) -> bool:
+    """<div>/</div> 是否完全配對(不可提前關閉、結尾必須歸零)。_card_close_idx 已保證切出來的
+    卡片配對,這裡是切完之後才跑的 _strip_reason_leak / _augment_shallow_reason 的不變量把關。"""
+    depth = 0
+    for m in re.finditer(r'<div\b|</div\s*>', card, re.I):
+        if m.group(0).startswith("</"):
+            depth -= 1
+            if depth < 0:
+                return False
+        else:
+            depth += 1
+    return depth == 0
+
+
 def _card_passes_audit(card: str) -> bool:
     """跟 digest_audit 同款檢查:確保每張 LLM 卡有 3 個 battle-row + reason 含價位/時間窗
     + reason 深度底線(2026-07-26「100% 品質」令:07-23 塌陷卡 48-64 字但帶價位,舊版照樣
     放行→淺卡進信。≥70 字才算合格分析,對齊 digest 級 signal_reason_shallow 的 80/60 門檻)。"""
     if "signal-card" not in card:
+        return False
+    if not _div_balanced(card):
         return False
     if card.count("battle-row") < 3:
         return False
@@ -3849,10 +3964,10 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             if "signal-card" not in seg:
                 continue
             start = seg.find('<div class="signal-card')
-            end = seg.rfind('</div>')
+            end = _card_close_idx(seg, start)  # 卡片自己配對的 </div>,不是段內最後一個(見函式 docstring)
             if start < 0 or end < 0:
                 continue
-            card = seg[start:end + 6].strip()
+            card = seg[start:end].strip()
             card = _strip_reason_leak(card)
             tm = re.search(r'<span class="signal-ticker">\s*([^<]+?)\s*</span>', card)
             if not tm:
@@ -3864,9 +3979,11 @@ def _render_signal_cards_batched(data: dict, stocks: list, mkt_status: dict, ful
             card = _augment_shallow_reason(card, match, data)
             if match not in cards_by_sym and _card_passes_audit(card):
                 cards_by_sym[match] = card
-            elif match not in cards_by_sym and match not in pos_map:
+            elif match not in cards_by_sym and match not in pos_map and _div_balanced(card):
                 # 沒過閘也留一份「盡力卡」:重生迴圈跑完仍沒過時,後面的用戶共用這份,
                 # 不再逐一重燒(零邊際成本)。仍比 deterministic 模板卡有內容。
+                # 但 div 不配對的卡不准進來:這條路徑繞過 _card_passes_audit,一旦收進去
+                # 就會被全班次共用,正是 08-17 holdings_uncovered 擴散的載體。
                 _CARD_XUSER_BEST.setdefault((match, depth, bool(picks_mode)), card)
 
     # ── 同股跨用戶快取:先撿現成的(持倉成本戶繞過),只為缺的呼叫 LLM ──
@@ -4551,8 +4668,11 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 【週末投資思考(1 段)】
 - 給用戶一個本週末值得思考的問題或觀點(風險、配置、心態),簡短有力
 """
-        weekend_format = """嚴格回傳純 HTML,沿用平日日報 CSS class(.tldr, .stock-card, .verdict.neutral 等),只要這幾塊(純重點,不要新聞回顧、不要 catalysts 清單):
-1. .tldr 區改成「📅 本週快訊」(3-4 條本週重點,有台股要至少 1 條台股)
+        weekend_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class(.tldr, .stock-card, .verdict.neutral 等),只要這幾塊(純重點,不要新聞回顧、不要 catalysts 清單):
+1. TLDR 區**逐字用這個骨架**(括號內容自己填,標籤與 class 原樣不可改、條目一律 <li>):
+{_tldr_skeleton("📅 本週快訊", ["（本週最大事件,一句話）",
+                             "（持股本週表現重點）",
+                             "（下週最該注意什麼;有台股就至少 1 條講台股）"])}
 2. .section-label「持股本週表現」+ .stock-card 寫用戶 holdings 的本週走勢 + 下週明確操作(買/抱/賣 + 價位條件)
 3. .verdict.neutral 結尾的「週末思考」"""
     else:
@@ -4568,8 +4688,12 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 【週末投資思考(1 段)】
 - 給用戶一個本週末值得思考的問題或觀點(風險、配置、心態),簡短有力
 """
-        weekend_format = """嚴格回傳純 HTML,沿用平日日報 CSS class(.tldr, .news-card, .stock-card, .verdict.neutral, .watch-list 等),內容主軸:
-1. .tldr 區改成「📅 本週快訊」(3-4 條本週重點)
+        weekend_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class(.tldr, .news-card, .stock-card, .verdict.neutral, .watch-list 等),內容主軸:
+1. TLDR 區**逐字用這個骨架**(括號內容自己填,標籤與 class 原樣不可改、條目一律 <li>):
+{_tldr_skeleton("📅 本週快訊", ["（本週最大事件,一句話）",
+                             "（本週贏家/輸家或持股表現）",
+                             "（下週最該注意什麼）",
+                             "（有台股就至少 1 條講台股）"])}
 2. .section-label「本週回顧」+ 數張 .news-card 寫本週實際發生的大事
 3. .section-label「下週 catalysts」+ .watch-list 列下週要看的事件 + 日期
 4. .section-label「持股本週表現」+ .stock-card 寫用戶 holdings 的本週走勢
@@ -4696,7 +4820,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
     # summary-item/watch-date/verdict-playbook…),樣板沒規則=版型全毀,undefined_css_class
     # audit 全員 HIGH → 全打成 deterministic fallback。跟平日 prompt 一樣給逐字骨架才根治。
     monday_class_rule = """
-【🚫 CSS class 鐵則(違反=版型全毀廢稿)】只能用下列骨架裡出現的 class,絕對禁止自創任何新 class 名(例如 news-title、news-meta、news-source、news-content、summary-item、summary-label、summary-content、verdict-playbook、playbook-title、watch-date、watch-event、impact-stocks、daily-report-container 都不存在,全部是錯的);也不要在最外層包任何自己命名的容器 div,直接依序輸出各區塊。
+【🚫 CSS class 鐵則(違反=版型全毀廢稿)】只能用下列骨架裡出現的 class,絕對禁止自創任何新 class 名(例如 news-title、news-meta、news-source、news-content、summary-item、summary-label、summary-content、verdict-playbook、playbook-title、watch-date、watch-event、impact-stocks、tldr-item、tldr-list、daily-report-container 都不存在,全部是錯的);也不要在最外層包任何自己命名的容器 div,直接依序輸出各區塊。
 - 週末新聞卡,每張逐字用這個骨架:
 <div class="news-card">
   <div class="news-tag verified">✅ 多源確認</div>
@@ -4711,7 +4835,10 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 - 本週催化劑:<div class="watch-list"><div class="watch-title">📅 本週催化劑</div><div class="watch-item">日期 · 事件 · 影響哪些持股</div>（每個事件一行,務必都包在 watch-item 裡）</div>"""
     if _simple:
         monday_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class,只要這幾塊(純重點操作:保留週末新聞,但省略大盤收盤回顧段、省略本週事件預告清單):
-1. .tldr 區改成「📅 週一展望」標題,列 3-4 條:①週末最大事件 ②今早 gap 方向 ③本週持股怎麼動
+1. TLDR 區**逐字用這個骨架**(括號內容自己填,標籤與 class 原樣不可改、條目一律 <li>):
+{_tldr_skeleton("📅 週一展望", ["（週末最大事件,一句話）",
+                             "（今早開盤 gap 方向)",
+                             "（本週持股怎麼動,給明確動詞）"])}
 2. .section-label「📰 週末重點新聞」+ 數張 .news-card,標題明示「週末發生」,有影響個股就掛 impact-stock(這是週一開盤前最該知道的事)
 3. .section-label「⚠️ 週一開盤 Gap 風險」+ 一張 .verdict.SENTIMENT 卡片,寫明開盤方向 + 具體 playbook(買/抱/賣 + 價位)
 4. 持股操作訊號卡區塊:**原樣輸出下方模板,不要自己生卡片**(卡片由系統填入 <!--SIGNAL_CARDS-->):
@@ -4720,7 +4847,11 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 {monday_class_rule}"""
     else:
         monday_format = f"""嚴格回傳純 HTML,沿用平日日報 CSS class,順序如下:
-1. .tldr 區改成「📅 週一展望」標題,列 3-4 條:①週末最大事件 ②上週五收盤摘要 ③本週要看什麼 ④今早 gap 方向
+1. TLDR 區**逐字用這個骨架**(括號內容自己填,標籤與 class 原樣不可改、條目一律 <li>):
+{_tldr_skeleton("📅 週一展望", ["（週末最大事件,一句話）",
+                             "（上週五收盤摘要）",
+                             "（本週要看什麼）",
+                             "（今早開盤 gap 方向)"])}
 2. .section-label「📰 週末重點新聞」+ 數張 .news-card,標題明示「週末發生」,有影響個股就掛 impact-stock
 3. .section-label「📊 上週五收盤回顧」+ .market-summary,**所有數據敘述都要說「上週五」不可寫「今天」**
 4. .section-label「⚠️ 週一開盤 Gap 風險」+ 一張 .verdict.SENTIMENT 卡片,寫明開盤方向 + 具體 playbook
