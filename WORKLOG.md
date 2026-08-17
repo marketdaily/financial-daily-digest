@@ -19,6 +19,26 @@
   - 已部署 kingconn-preview(版號 cad2→cad3),線上 md5 6/6 一致,Playwright 桌機+手機 console errors 皆 []。
   - repo:`~/kingconn` 已 git init + commit dab8b07(**無 remote,未 push**,見 open #337);og:image 未動(open #336)。
 
+- [2026-08-17 12:15] [已修] ⭐⭐ **我把 Mac 的 hero 播放器改寫整份回捲掉**（KINGCONN）。
+  - 根因:winrig 與 Mac **共用同一個 CF Pages 專案**,而 `wrangler pages deploy .` 是
+    **整個目錄的快照上傳**——沒有「只傳我改的」這選項,誰後部署誰覆蓋全部。我拿一份
+    rsync 過來就沒再更新的舊副本部署 ⇒ 我沒碰過的檔案被我的舊版靜默還原。Mac 端已善後,
+    線上現為合併版(md5 97fc37b7…),winrig 本地已 `rsync -rc` 回對齊,整棵樹零差異。
+  - ⭐ **同時漏了快取版號**:新播放器把版號搬進 `const VER = '...'`,我的替換只認 `?v=xxx`
+    ⇒ og:image 換了、播放器沒換,舊訪客繼續吃舊圖。**不是我忘了看,是我的替換器結構上打不到它**。
+  - 修法(紀律靠人記不住,做成機器閘門,四項皆雙向突變驗證):
+    ① `stage_pull()` 部署前強制從 Mac 收回狀態,rsync 失敗即硬停(實測 rc=255 fail-closed,不 fail-open)
+    ② `live_drift()` 線上 vs 本地入口檔比對,**版號正規化後**再比 ⇒ 本地落後即紅(exit 1)、
+       只差版號不誤報(exit 0);部署前後各跑一次
+    ③ 版號兩形狀都換,換完**斷言整頁只剩一個版號** ⇒ split-brain(cad2/cad3 併存)直接擋下
+  - ⚠️ 誠實邊界:`live_drift` 覆蓋面只有 5 個入口檔,**不是全部 874 個**(CF Pages 的 ETag
+    不是內容雜湊、HTML 根本沒 ETag,便宜的全檔驗證做不到);完整保護來自 ①。open #338。
+  - ⭐ 順帶記:CF Pages 的 404 回退頁回 **200**,驗檔案存不存在要看 content-type
+    (`img/seq4/f000.webp` 實測 `200 text/html` = 不存在)。seq4 未做,open #339。
+  - ⭐ 我自己的測試腳本兩度出錯:`io.open(p,'w').write(io.open(p).read())` 先截斷再讀把檔案清空;
+    `cmd | tail` 之後的 `$?` 讀到的是 tail 的離開碼不是被測程式的。兩次都靠還原後 md5 比對抓回來。
+  - kingconn repo commit 01f903a(仍無 remote,open #337)。
+
 # WORKLOG — 跨視窗工作紀錄
 
 每個 Claude 視窗(session)開工/收工都在最上面加一條,讓同時或之後開的視窗知道別人做了什麼。

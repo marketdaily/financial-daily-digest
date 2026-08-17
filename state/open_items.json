@@ -3368,5 +3368,25 @@
   "opened": "2026-08-17 12:01",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 338,
+  "what": "KINGCONN pipeline 三道回捲閘門尚未在真實部署跑過",
+  "why": "只做過突變測試(本地落後→紅/只差版號→綠/split-brain→紅/Mac不可達→硬停),還沒有任何一次真實 wrangler pages deploy 經過它們;且 live_drift 覆蓋面只有 5 個入口檔,不是全部 874 個檔",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 12:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 339,
+  "what": "KINGCONN seq4 (2880x1606) 那套尚未渲染,v5.html 的 HAS_2X 仍是 false",
+  "why": "等老闆決定要不要現在做;2880 是 seq2 的 4 倍像素,hero 是首屏資源,檔案大小預算要先定",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-17 12:12",
+  "closed": null,
+  "note": ""
  }
 ]
