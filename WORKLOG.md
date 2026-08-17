@@ -5645,3 +5645,8 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   暗依賴「.env 剛好沒 token」的假紅);worker 已部署(schedule 掛上);web 走 ship.sh --clean。
 - open #343(第 1 階推播未在生產真發過)#344(延遲畫面/1% 重試未真事件驗證)。
 - ⭐ 教訓:「cron 失敗」告警與「客戶受影響」告警是兩件事;守衛不能跟被守的東西共用同一把憑證。
+
+## 2026-08-17 13:1x TW — 🎬 Delvin 親令「片場無限預算法」燒進 genai-prompt-pro §4.5 + website-design-team + lint 閘
+- 老闆語音:寫圖/影片 prompt 要像人在片場、預算無上限——點名機身、鏡頭、導演/DP、腦中那部電影的那場戲、stock/grade,讓產出像真的那樣拍。
+- 落地:genai-prompt-pro §4.5(rig block 5 欄+英文模板+選 rig 思路+checklist);website-design-team 階段② 每方向附一組 rig(整站共用)、⓪b/③b 指過去;
+  `genai_prompt_lint` 新增 `_check_rig`(photoreal 才開火,缺群→MED `rig_missing`,插畫/anime 豁免)自測 +11 全過;兩 skill LESSONS.md 各記一節;brain sync 已入 c2e0cd4c。
