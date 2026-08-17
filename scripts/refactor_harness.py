@@ -18,6 +18,7 @@ import hashlib
 import inspect
 import json
 import os
+import pathlib
 import pickle
 import re
 import sys
@@ -33,8 +34,68 @@ FIX_DIR = os.path.join(ROOT, "scripts", "fixtures")
 GOLD_DIR = os.path.join(FIX_DIR, "golden")
 os.environ.setdefault("MD_SKIP_ADHOC_FETCH", "1")  # 臨時休市偵測活資料隔離(全部入口)
 FROZEN = _real_dt.datetime(2026, 7, 2, 11, 30, tzinfo=_real_dt.timezone.utc)  # 週四 19:30 TW
+SUBSCRIBERS = ("tw-user@test.local", "us-user@test.local", "nohold-user@test.local",
+               "nohold2-user@test.local")  # 末位與 nohold 同(depth,tier)→覆蓋精選版快取命中路徑
 US_H = ["AAPL", "NVDA", "TSLA"]
 TW_H = ["2330", "2317", "2454"]
+# 樁版訊號卡:2026-08-18 r2 驗證者 F1[HIGH] —— 樁的回傳不含 `<div class="signal-card`,
+# analyzer._collect() 切段時整段丟棄 ⇒ `_card_passes_audit` 從未被呼叫、17 張卡全部落到
+# `_deterministic_signal_card` 模板。也就是說日報「內容量最大的一段」自 harness 誕生起
+# 就沒被凍結過,連 `_strip_reason_leak` / `_augment_shallow_reason` / `_CARD_XUSER_CACHE`
+# / `_CARD_XUSER_BEST`(08-17 holdings_uncovered 擴散的載體)全是零覆蓋。
+# 樁卡必須真的過得了 _card_passes_audit:3 個 battle-row + reason 純文字 ≥70 字 + 帶價位
+# + 帶時間窗 + div 配對;signal-ticker 要填 prompt 指定的代號,否則 _collect 的 match 對不上。
+_CARD_TARGETS_RE = re.compile(r"標的\([^)]*\)[:：]\s*([^\n]+)")
+# 樁**故意**不生這一支的卡:讓 `cards_by_sym.get(s) or _deterministic_signal_card(...)`
+# 那條備援線與 card-regen 重生迴圈也留在凍結範圍內。否則「全部卡都過閘」會把備援路徑
+# 從 golden 裡整個抹掉 —— 那是拿一個盲區換另一個盲區(08-18 r2 F1 的教訓的反面)。
+# 判準因此不是「零張備援卡」,而是「備援卡只出現在我故意戳的那一支」。
+_CARD_STUB_SKIP = ("TSLA",)
+
+
+def _card_stub(prompt):
+    """卡片批次 prompt → 每支一張合格樁卡;不是卡片 prompt 回 None。"""
+    m = _CARD_TARGETS_RE.search(prompt)
+    if not m or 'signal-card' not in prompt:
+        return None
+    syms = [s.strip() for s in m.group(1).split(",") if s.strip()]
+    syms = [s for s in syms if s not in _CARD_STUB_SKIP]
+    if not syms:
+        return None
+    out = []
+    for s in syms:
+        h = hashlib.sha256(f"{s}|{len(prompt)}".encode("utf-8")).hexdigest()[:8]
+        out.append(
+            "<!--CARD-->\n"
+            '<div class="signal-card hold">'
+            '<div class="signal-card-top">'
+            f'<span class="signal-ticker">{s}</span>'
+            '<span class="signal-day-move up">▲ +1.23%</span>'
+            '<div class="signal-score-block"><span class="signal-score">6</span>'
+            '<span class="signal-score-label">/ 10</span></div>'
+            '<span class="signal-bias neutral">📈 NEUTRAL</span>'
+            '</div>'
+            '<div class="signal-body">'
+            f'<div class="signal-reason">固定樁卡 {h}:{s} 昨日收在 100 元附近、量能持續萎縮,'
+            '短線仍在區間整理。本週若回測 95 元不破且收盤站回 102 元可分批接回;'
+            '跌破 92 元先停損控制風險,上方目標看 115 元。(harness 樁文字,無真實市場判斷)</div>'
+            '<div class="signal-battle-plan">'
+            '<div class="battle-row"><span class="battle-label">建議買價</span>'
+            '<span class="battle-val">95–102 元</span></div>'
+            '<div class="battle-row"><span class="battle-label">賺錢目標</span>'
+            '<span class="battle-val up">115 元</span></div>'
+            '<div class="battle-row"><span class="battle-label">止損賣價</span>'
+            '<span class="battle-val down">92 元</span></div>'
+            '</div>'
+            '<div class="signal-watch">👀 盯 95 元支撐能不能守住</div>'
+            '<div class="signal-meta">'
+            '<span class="signal-badge hold">🟡 續抱持有</span>'
+            '<span class="signal-confidence">信心 60%</span>'
+            '<span class="signal-horizon">⏱ 本週視角</span>'
+            '</div></div></div>')
+    return "\n".join(out)
+
+
 # 樁版 TLDR:結構照 analyzer._tldr_skeleton 的逐字骨架(div.tldr > div.tldr-title + ul>li),
 # 內容同時帶台股與美股關鍵字,讓 tldr_missing_tw / tldr_missing_us 都成立。
 TLDR_STUB = (
@@ -164,6 +225,9 @@ def _load_modules():
         # (本 harness 存在的唯一理由)一行都沒被覆蓋到。2026-08-18 F1 的第二層。
         if 'class="tldr"' in prompt:
             body = TLDR_STUB + body
+        card_batch = _card_stub(prompt)
+        if card_batch:
+            return card_batch
         return body
 
     analyzer._llm_generate = fake_llm
@@ -277,6 +341,8 @@ def _variants():
 def _norm(s: str) -> str:
     s = re.sub(r"\d{4}-\d{2}-\d{2}", "YYYY-MM-DD", s)
     s = re.sub(r"(?<!\w)\d{1,2}:\d{2}(?::\d{2})?(?!\w)", "HH:MM", s)
+    # 每輪隨機的臨時目錄(語音 manifest 隔離後會被印進 stdout)→ 固定字樣,否則 golden 每跑必變
+    s = re.sub(r"/tmp/[A-Za-z0-9_]*tmp[A-Za-z0-9_]+", "/tmp/TMPDIR", s)
     return s
 
 
@@ -526,21 +592,56 @@ def _stub(obj, name, fn):
     setattr(obj, name, _wrapped)
 
 
-def _assert_not_degraded(stdout_text, sent):
+# 生產端會印的退化訊息(main.py/analyzer.py 逐字抄來,r2 驗證者 F2:原本只認三種措辭,
+# 「🛡️ 預設版 AI 生成全失敗,改用 deterministic 備援版」這條——四封信內容全爛——直接漏網)。
+_DEGRADE_MARKS = (
+    "個人化失敗", "deterministic fallback", "掉備援",
+    "deterministic 備援版",      # main.py 預設版全失敗
+    "剩餘走 deterministic",       # analyzer 卡片時間預算用盡
+    "其餘改 deterministic",       # analyzer 單支重試也失敗
+)
+
+
+def _assert_not_degraded(stdout_text, sent, det_cards=(), expect_sent=None):
     """run_smoke 一旦退化成備援/預設版就直接紅(而不是靠人肉看 diff)。
-    characterization 的價值全在「真的走過 AI 個人化編排」,走備援等於什麼都沒凍結。"""
-    marks = [m for m in ("個人化失敗", "deterministic fallback", "掉備援") if m in stdout_text]
+    characterization 的價值全在「真的走過 AI 個人化編排」,走備援等於什麼都沒凍結。
+
+    2026-08-18 r2 驗證者 F1/F2:只比對 stdout 措辭是「守措辭不守行為」——生產端改一次
+    文案守衛就靜默。所以主判準改成**狀態**:deterministic 模板卡張數、寄出封數;
+    字串比對只留當第二層。"""
+    marks = [m for m in _DEGRADE_MARKS if m in stdout_text]
     no_subject = [s.get("email") for s in sent if not s.get("subject")]
-    if marks or no_subject:
+    short_sent = expect_sent is not None and len(sent) != expect_sent
+    det_syms = set(det_cards)
+    # 備援卡只准出現在故意戳的那一支;多一支 = AI 卡路徑正在靜默退化(F1 的偵測器)。
+    unexpected_det = sorted(det_syms - set(_CARD_STUB_SKIP))
+    # 反方向也要守:一支都沒有 = 備援線本身沒被走到,凍結範圍缺一塊(且代表 skip 名單失效)。
+    missing_det = sorted(set(_CARD_STUB_SKIP) - det_syms)
+    # 連一張備援卡都沒有 = 備援線整條沒被走到(例如有人把 _CARD_STUB_SKIP 清空),
+    # 那是把一個盲區換成另一個盲區,同樣不准封進 golden。
+    no_det = not det_syms
+    if marks or no_subject or unexpected_det or missing_det or no_det or short_sent:
         raise SystemExit(
-            "🔴 run_smoke 走進了退化路徑,基線無效:\n"
-            f"   stdout 命中 {marks or '—'};subject 為空的收件人 {no_subject or '—'}\n"
+            "🔴 run_smoke 走進了退化路徑(或覆蓋缺口),基線無效:\n"
+            f"   非預期的 deterministic 模板卡 {unexpected_det or '—'}"
+            f"(全部備援卡:{sorted(det_syms) or '—'})\n"
+            f"   故意戳的那支沒走到備援 {missing_det or '—'}"
+            f"{';且一張備援卡都沒有=備援線零覆蓋' if no_det else ''}\n"
+            f"   寄出 {len(sent)}/{expect_sent if expect_sent is not None else '?'} 封;"
+            f"subject 為空的收件人 {no_subject or '—'}\n"
+            f"   stdout 命中 {marks or '—'}\n"
             "   → 先查為什麼個人化失敗(常見:樁與生產簽章漂移),修好再 reseal。")
 
 
 def _run_smoke():
-    """run() 的 characterization:mock 全部網路出口,3 個合成用戶跑完整 run(),
-    回傳 normalized(stdout + 寄件清單含每封 html 雜湊 + audit 報告)。"""
+    """run() 的 characterization:mock 全部網路出口,4 個合成用戶跑完整 run(),
+    回傳 normalized(stdout + 寄件清單含每封 html 雜湊 + audit 狀態摘要)。
+
+    ⚠️ 打樁的固有邊界(2026-08-18 r2 驗證者點名,別誤讀這份 golden 的綠燈):
+    - 樁對所有用戶回同一份 TLDR / 同一組卡片文字 ⇒ 「內容有沒有真的**因人而異**」
+      這件事本 characterization 永遠測不到;它凍的是**編排**(誰收到哪一版、走哪條路徑、
+      每封信的 html 雜湊),不是內容品質。
+    - 樁刻意讓 `_CARD_STUB_SKIP` 那支生不出卡,好讓備援線與 card-regen 迴圈也在凍結範圍內。"""
     import io
     import contextlib
     data = _fixture()
@@ -564,10 +665,16 @@ def _run_smoke():
     _stub_unsub_list()
     _stub(publisher, "get_list_id", lambda *a, **kw: 1)
     _stub(publisher, "check_subscriber_count", lambda *a, **kw: 3)
-    _stub(publisher, "get_all_subscribers", lambda *a, **kw: [
-        "tw-user@test.local", "us-user@test.local", "nohold-user@test.local",
-        "nohold2-user@test.local"])  # 與 nohold 同(depth,tier)→覆蓋精選版快取命中路徑
+    _stub(publisher, "get_all_subscribers", lambda *a, **kw: list(SUBSCRIBERS))
     sent = []
+    det_cards = []
+    _real_det = analyzer._deterministic_signal_card
+
+    def _count_det(sym, *a, **kw):
+        det_cards.append(sym)
+        return _real_det(sym, *a, **kw)
+
+    _stub(analyzer, "_deterministic_signal_card", _count_det)
 
     def _fake_send(email, date, html, key, subject=None):
         sent.append({"email": email, "subject": subject,
@@ -575,7 +682,10 @@ def _run_smoke():
                      "html_len": len(_norm(html))})
         return True
 
-    publisher.send_transactional_email = _fake_send
+    # r2 F3:窄簽章的樁**才是** bind 檢查唯一發揮得了作用的形狀,而寄信這支(最要命的出口)
+    # 原本是直接指派、繞過防線 —— publisher 寄信簽章哪天多一個 kwarg,TypeError 會被
+    # main 的 except Exception 吃掉變成「四封寄送失敗」,而不是「樁漂移」。
+    _stub(publisher, "send_transactional_email", _fake_send)
     prefs_map = {
         "tw-user@test.local": {"us_stocks": [], "tw_stocks": TW_H,
                                "digest_depth": "standard", "plan": "free"},
@@ -586,12 +696,18 @@ def _run_smoke():
         "nohold2-user@test.local": {"us_stocks": [], "tw_stocks": [],
                                     "digest_depth": "simple", "plan": "free"},
     }
-    main.get_user_preferences = lambda email: dict(prefs_map[email])
-    analyzer.council_top_picks = lambda d, mk, n=3: ["2330", "2317"]
+    _stub(main, "get_user_preferences", lambda email: dict(prefs_map[email]))
+    _stub(analyzer, "council_top_picks", lambda d, mk, n=3: ["2330", "2317"])
     data_fetcher._LAST_TW_MISSING = []
 
     buf = io.StringIO()
     with tempfile.TemporaryDirectory() as td:
+        # 語音 manifest 的輸出路徑是**絕對**的(audio_brief/out,不隨 chdir 走),所以
+        # harness 每跑一次就真的在生產樹寫一份 manifest_2026-07-03_tw.json ——
+        # 該目錄在 .gitignore 裡,所以 git status 永遠看不到它,08-18 才查出來。
+        # 導到臨時目錄:write_manifest 的覆蓋保留,生產樹零落檔。
+        import audio_brief.manifest as _abm
+        _abm.OUT = pathlib.Path(td) / "audio_out"
         with _Chdir(td):
             with contextlib.redirect_stdout(buf):
                 main.run()
@@ -600,10 +716,17 @@ def _run_smoke():
             if os.path.exists(ap):
                 with open(ap, encoding="utf-8") as f:
                     audit = f.read()
-    _assert_not_degraded(buf.getvalue(), sent)
+    _assert_not_degraded(buf.getvalue(), sent, det_cards, len(SUBSCRIBERS))
     out = ("=== STDOUT ===\n" + _norm(buf.getvalue())
            + "\n=== SENT ===\n" + json.dumps(sent, ensure_ascii=False, indent=1, sort_keys=True)
-           + "\n=== AUDIT ===\n" + _norm(audit))
+           # r2 F4:audit 報告檔**只有壞掉時才存在**(main.py 三個 list 全空就不寫檔),
+           # 所以這一段在健康時永遠是空字串 =「audit 通過」這件事根本沒被 golden 守住。
+           # 補一行狀態摘要:全綠本身被寫進基線,退化時這行會先變。
+           + "\n=== AUDIT ===\n"
+           + json.dumps({"audit_report_written": bool(audit),
+                         "deterministic_cards": sorted(set(det_cards)),
+                         "sent": len(sent)}, ensure_ascii=False, sort_keys=True)
+           + ("\n" + _norm(audit) if audit else ""))
     return out
 
 

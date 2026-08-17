@@ -36,35 +36,25 @@
   [council] 席次 cerebras:gpt-oss-120b 本輪停用(no json)
   [council] 席次 mistral:large-latest 本輪停用(no json)
   [council] 席次 openai 本輪停用(no json)
-  [card-regen] 第 1 輪:7 支未過卡級品質閘,逐支重生
-  [card-regen] 第 2 輪:7 支未過卡級品質閘,逐支重生
-  [card-regen] 第 3 輪:7 支未過卡級品質閘,逐支重生
+  [card-regen] 第 1 輪:1 支未過卡級品質閘,逐支重生
+  [card-regen] 第 2 輪:1 支未過卡級品質閘,逐支重生
+  [card-regen] 第 3 輪:1 支未過卡級品質閘,逐支重生
 ⑤ 儲存本地預覽（預設版）...
    本地預覽已儲存：output/digest_YYYY-MM-DD.html
 ⑥ 上傳預設版網頁...
 ⑦ 個人化發送...
    [card-pool] 預生成 3 檔(全體訂閱者聯集,tw 班)→ 後面用戶共用
-  [card-regen] 第 1 輪:3 支未過卡級品質閘,逐支重生
-  [card-regen] 第 2 輪:3 支未過卡級品質閘,逐支重生
-  [card-regen] 第 3 輪:3 支未過卡級品質閘,逐支重生
+  [card-cache] 3/3 支命中跨用戶快取,只生成其餘 0 支
    tw-user@test.local → 個人化（本班次 tw｜美股:0, 台股:3）· 新手（17.4）
-  [card-regen] 第 1 輪:3 支未過卡級品質閘,逐支重生
-  [card-regen] 第 2 輪:3 支未過卡級品質閘,逐支重生
-  [card-regen] 第 3 輪:3 支未過卡級品質閘,逐支重生
+  [card-cache] 3/3 支命中跨用戶快取,只生成其餘 0 支
    📦 生成完成,進寄送佇列 → tw-user@test.local
    us-user@test.local → AI 精選（本班次 tw｜美股:0, 台股:2）· 一般（47.4）
-  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
    📦 生成完成,進寄送佇列 → us-user@test.local
    nohold-user@test.local → AI 精選（本班次 tw｜美股:0, 台股:2）· 新手（0.0）
-  [card-regen] 第 1 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 2 輪:2 支未過卡級品質閘,逐支重生
-  [card-regen] 第 3 輪:2 支未過卡級品質閘,逐支重生
    📦 生成完成,進寄送佇列 → nohold-user@test.local
    nohold2-user@test.local → AI 精選版(共用今日精選,快取)
    📦 生成完成,進寄送佇列 → nohold2-user@test.local
-🎙 個人語音 manifest:4 份 → /home/userdelvin/Delvin-agent/audio_brief/out/manifest_YYYY-MM-DD_tw.json
+🎙 個人語音 manifest:4 份 → /tmp/TMPDIR/audio_out/manifest_YYYY-MM-DD_tw.json
    ⏰ 本班寄出時已過內容誠實時點 → 全批自動加註盤前說明(Delvin YYYY-MM-DD 拍板 B)
 ✅ 今日財經日報發送完成（班次 tw）！成功 4/4 位（總訂閱 4）
    經驗分布 → 🌱新手 3 · 📈一般 1 · 🎯老手 0
@@ -73,27 +63,28 @@
 [
  {
   "email": "tw-user@test.local",
-  "html_len": 18940,
-  "html_sha": "7028a3c883ce3901e8ef97d31432670cbcfd89e7bf71bcfdffd6eb4ea4723736",
+  "html_len": 18931,
+  "html_sha": "5a568da1d585a92451260fc8a026e15a34397e94dbf3352f3cec7ccd6ef0c60f",
   "subject": "📊 你的 聯發科 昨日跌了 3.5%｜財經日報 2026-07-03"
  },
  {
   "email": "us-user@test.local",
-  "html_len": 15754,
-  "html_sha": "499d0084449805ea9080ef7a462dcbc1ae1f2133b84e755f41bbd15a7f2facd6",
+  "html_len": 15755,
+  "html_sha": "07a7cf8e6e393a6455bd967d9640b2cfa510e21d73fc6de33a76409ac97b7687",
   "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
  },
  {
   "email": "nohold-user@test.local",
-  "html_len": 16157,
-  "html_sha": "6278efe2d209f2fa33936ac16a571f25292f602a44f5edf93523e488124f531b",
+  "html_len": 16158,
+  "html_sha": "749fe98270073b49df0b1954a07b770bfdadf70fc23d997f9e8a5370053d1569",
   "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
  },
  {
   "email": "nohold2-user@test.local",
-  "html_len": 16158,
-  "html_sha": "c14833110a792af3bf0134bcc72aefe9bd73b2c3f0d2a1f1dc71c7a7afcd3d5a",
+  "html_len": 16159,
+  "html_sha": "be2c6700fc4d769e00f09b448442f1c8fc7fd9b6c994aac8619409824ef8e29f",
   "subject": "🤖 AI 精選台股:台積電、鴻海｜MarketDaily 2026-07-03"
  }
 ]
 === AUDIT ===
+{"audit_report_written": false, "deterministic_cards": ["TSLA"], "sent": 4}
