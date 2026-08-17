@@ -5660,3 +5660,6 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   执开闭/煞东 修源)、Stripe.js 改接近下單區才載、生日上限=今天、/paid 無參數文案。
 - 未修 P2:塔羅強制填生日(產品決策)、表單原生英文驗證訊息、手機 caption 13px、hero 影片 ERR_ABORTED 噪音、手機點擊穩定性需實機驗。
 - 557 頁重建 audit 0 問題、node 12 套全過;worker 已部署;web 走 ship.sh --clean(全套 pytest)。
+- 13:3x 續:第二刀「生成完要蓋膠片質感」→ 新積木 `~/autonomous/capabilities/film_texture`(圖 numpy+影片 ffmpeg gbrp,七 op 固定序,四 preset,--proof 量測;自測 31/31)、
+  genai-prompt-pro §4.6、website-design-team ⓪d 品類→rig+preset 表(老闆追問「食物/花/科技都用這 skill?」→是)+階段⑤ critic 影像三查、video-editing 交付前必上。
+  坑:ffmpeg float 平面 geq 靜默 no-op / crf18 吃顆粒 / hf ratio 在細節圖會<1(看 grain_std_added)。memory capability_film_texture_rig_block;open #347(未在真實接案跑過)。

@@ -3438,5 +3438,35 @@
   "opened": "2026-08-17 12:43",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 345,
+  "what": "Tasker 出任務註冊卡在手機簡訊 OTP(0975-317-572),等老闆貼碼;104 外包網 DNS 懸空疑已停服,需老闆確認是否改投 518/其他",
+  "why": "簡訊只有老闆收得到;104 連不上",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 12:58",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 346,
+  "what": "PRO360 專家檔案已建(75%,台中西屯,QuietFix Studio);首件配對網站案(2630814912 台中梧棲 3-5萬 電商+分潤系統)我判定低品質未扣點,餘額 $400 每件 $117-347;『每天回 3 件』要老闆決定儲值與篩選政策",
+  "why": "報價要花錢,付款與風險胃納是老闆的決定",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-17 12:58",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 347,
+  "what": "首個真實建站案用 rig block+film_texture 走完整 SOP 並驗收(lint 無 rig_missing、proof 有值、老闆看過)",
+  "why": "08-17 兩刀親令只在合成 fixture+一張舊 hero 上驗過,尚未在生產接案跑過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 13:09",
+  "closed": null,
+  "note": ""
  }
 ]
