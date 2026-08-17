@@ -2976,8 +2976,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-16 15:40",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 19:08",
+  "note": "與 #300 同一件事(帳號層 Actions 停用、同一個申訴動作、同一 owner)⇒ 併入 #300 追蹤,避免兩張單各自老化。本輪已產出可直接送出的申訴包:state/GITHUB_ACTIONS_REINSTATEMENT.md(含實測事實表 + 逐字英文申訴稿 + 登入/表單點擊路徑 + Path B 免客服替代方案)"
  },
  {
   "id": 299,
@@ -3286,8 +3286,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 10:55",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 18:45",
+  "note": "根因=trim.py 的 BACKUP_DIR 是固定的 ~/autonomous/backups,不管 --index 指到哪 ⇒ 自測每跑一次 fixture 就在生產備份區留一份 800B 垃圾(436 個裡真正的回滾點只有 1 個 25KB)。修法 backup_dir_for():只有 --index==REAL_INDEX 才寫生產備份區,其餘落在被改的那份索引旁邊 .mit-backups(MIT_BACKUP_DIR 明寫時仍優先);新增 ⑯a-e 五條斷言 + 突變 m21(把它改回永遠寫生產區就紅在 ⑯a),自測 46→51、突變 20→21/21 killed。435 個 fixture 垃圾已移入 backups/_mit_fixture_noise_20260817/(移不是刪)。⚠️ 過程中發現測試自己是新產生端:m21 會讓整支測試每次 apply 都寫生產區,已加 -newer 時間標記清理且 glob 用 *.mit.*(只盯 MEMORY.md.mit.* 會漏掉 mirror.md 那 72 個)"
  },
  {
   "id": 330,
@@ -3936,6 +3936,26 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 18:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 395,
+  "what": "memory_index_trim --verify 對 hub_guard_incidents 報「1 段內容遺失」,實際是索引行被別的 session 正常加字(帳本記的 new 行對不上),自測 ⑧b 因此紅",
+  "why": "本輪跑 trim 自測時撞到(非本輪造成:trim 於 08-17 09:24 跑過,該索引行 09:31 被另一個 session 追加觸發字)。問題有兩半:①訊息形狀誤導——標題寫🔴內容遺失、細節寫「人工套錯?」,會教下一個 session 去『還原』一段其實好好的字 ②真正的損失是覆蓋面:對不上就整群跳過,那 20 段 dropped 從此沒被檢查過而沒人知道。索引行成長是常態(每天都在發生)⇒ 這是會天天紅的假警報。正解方向:比對改成『帳本的 new 行是不是當下行的前綴/子集』而非全等,對不上時分成 grew(正常)/diverged(真異常)兩態並各自量覆蓋率",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 18:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 396,
+  "what": "日報 email 沒有退訂連結/List-Unsubscribe,但 docs/privacy.html 對外宣稱「點日報底部 Unsubscribe 可刪帳號」=官網宣稱存在、實際不存在",
+  "why": "本輪驗證者查 GitHub 申訴稿的合規句時順手抓到(F7);footer 只有 marketdaily.ai/我的專區/語音快報,main.py 與 publisher.py 皆無 List-Unsubscribe。修法=footer 加真退訂連結(可接既有偏好端點)或改 privacy.html 文案,兩者都要動生產寄信路徑,不在本輪範圍",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 19:24",
   "closed": null,
   "note": ""
  }

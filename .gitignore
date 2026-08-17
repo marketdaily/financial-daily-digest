@@ -124,6 +124,10 @@ state/nvidia_*.png
 state/postcheck_llm_ledger.jsonl
 # 同款理由:signal-reason 長度趨勢帳本(2026-08-06),每班寄後複檢 append,不進版控。
 state/signal_reason_median_history.jsonl
+# ⚠️ 這個 repo 是 **public**(gh repo view: visibility=public)。給 Delvin 照著操作的申訴/救援
+# 手冊會寫到 Apple ID、備用碼檔路徑、第二個 GitHub 帳號等個資與帳號關係 → 一律不進版控
+# (2026-08-17:寫完 GITHUB_ACTIONS_REINSTATEMENT.md 才想到差一步就把 Apple ID push 到公開 repo)。
+state/GITHUB_ACTIONS_REINSTATEMENT.md
 intel/*.lock
 arb/orders.jsonl
 arb/.cache/
