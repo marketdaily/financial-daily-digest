@@ -3348,5 +3348,25 @@
   "opened": "2026-08-17 11:35",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 336,
+  "what": "KINGCONN og:image hero-typec.webp 仍是 AI 版，沒換成 CAD 渲染",
+  "why": "換掉要動 scene.py 的相機/燈光(近拍淺景深，與 hero 爆炸圖機位不同)，那是老闆指定一個字都不要動的區段；且不確定 CAD 版會不會比現在這張難看",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-17 12:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 337,
+  "what": "~/kingconn 已建本地 git repo 但沒有 remote，未 push",
+  "why": "客戶(皇海)的 CAD 圖檔+官網原始碼要不要上 GitHub private repo 是老闆的決定，我不自行對外建 repo",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 12:01",
+  "closed": null,
+  "note": ""
  }
 ]

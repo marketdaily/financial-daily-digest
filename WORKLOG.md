@@ -1,5 +1,24 @@
 - [2026-07-27 21:10] [已完成] 主視窗(Mac遠端) · **rc=4 reel 告警根因=YouTube 帳號 07-10 起遭 Google 停權(authenticatedUserAccountSuspended),已連 17 天每日 rc=4**。IG/FB 全程正常,最後一次 YT 成功上傳=07-09(p2QeQnJAEsc)。修復:auto_post.py 加 `SOCIAL_PAUSED_PLATFORMS` 明示暫停機制(post_reel_direct+cmd_post 兩路徑皆接,skipped=True 進帳本,log 印原因),.env 設 `youtube:帳號停權07-10起 待Delvin申訴`,隔離測試(LOG_FILE 導 tmp)驗證 rc=4 不再觸發。commit 09eb8b2 已 push origin/main。**已拍板(07-27):Delvin 決定不再用 YouTube,不申訴——YT 永久退役,SOCIAL_PAUSED_PLATFORMS 保留為長期狀態,結案。**
 
+- [2026-08-17 12:05] [已完成] KINGCONN hero 3D 序列 **從 Mac/Metal 搬到 winrig/RTX 5080**,並收斂成單一 pipeline。
+  - 效能:Mac Metal 13 s/幀(26 min) → **winrig OptiX 2.20 s/幀,121 幀 4.4 min(5.9×)**。
+  - ⭐⭐ **WSL2 拿不到 OptiX,只拿得到 CUDA**:`/usr/lib/wsl/lib/libnvoptix.so.1` 只是 72KB 轉發 stub,
+    error 7804(LIBRARY_NOT_FOUND,ldconfig 只登記 SONAME `libnvoptix_loader.so.1` 而 Blender 是用檔名 dlopen)
+    → 補 LD_LIBRARY_PATH 後變 7805(ENTRY_SYMBOL_NOT_FOUND)。**Blender 4.5 LTS 同樣拿不到 ⇒ 排除「5.2 ABI 太新」,
+    根因在 WSL 轉發層**。解=Windows 原生 blender.exe(C:\blender),CUDA 3.04 s/幀 → OptiX 2.20 s/幀。
+  - ⭐ **blender.exe 是 GUI subsystem,從 WSL interop 起沒有 console,stdout 全空、rc 亂跳**(單看 rc=0 會以為成功)。
+    包成 .bat 自己轉向到檔案才拿得到輸出——「拿不到輸出」不等於「沒問題」。
+  - ⭐ 老闆給的 `d.use = (d.type != 'CPU')` 在這台會把 **AMD 內顯(HIP)** 也點亮(列了 CUDA/CPU/OPTIX/HIP 四種);
+    收緊成 `d.type == prefs.compute_device_type`。
+  - ⭐⭐ **我自己寫的 md5 驗證器在說謊**:urllib 預設 UA 被 CF 擋 403,卻把它印成 `MISMATCH online=ERR`。
+    「抓不到」與「不一致」是兩種結論,已拆成 mismatch / unreachable 兩條各自的 exit,並帶瀏覽器 UA。
+  - 零退步證明:對客戶已驗收線上版**逐幀比對 121/121**,全體 mean diff **0.327/255**,最差幀 0.418,無任何幀 mean>2;
+    seqm3 61/61 mean 0.378。檔案大小 seq2 29836B(基準 29846B)、seqm3 20787B(基準 20779B)。
+  - 換料號路徑(split)已實跑驗證:gmsh 重新依**顏色**分件,渲染差 mean 0.021/255。gmsh 需 libGLU,無 root
+    → dpkg -x 抽到 `~/opt/libs`,在 import gmsh 前用 ctypes RTLD_GLOBAL 絕對路徑預載(LD_LIBRARY_PATH 中途設無效)。
+  - 已部署 kingconn-preview(版號 cad2→cad3),線上 md5 6/6 一致,Playwright 桌機+手機 console errors 皆 []。
+  - repo:`~/kingconn` 已 git init + commit dab8b07(**無 remote,未 push**,見 open #337);og:image 未動(open #336)。
+
 # WORKLOG — 跨視窗工作紀錄
 
 每個 Claude 視窗(session)開工/收工都在最上面加一條,讓同時或之後開的視窗知道別人做了什麼。
@@ -5538,3 +5557,28 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 驗證:test_monday_tldr_and_card_balance 20/20(worktree 無 .env 環境同樣 20/20)、
   3 突變全殺各紅在指名斷言;新積木 test_selfheal_newtest_gate 6/6 雙向;
   兩支夜巡 .test.sh 各 4 條含突變體全過。open #326 登記(根因修明早 05:20 首驗)。
+
+## 2026-08-17 11:40 TW — CF 憑證補上(#299 收乾)+ 假綠根因不是我猜的那個(#327)
+- Delvin 提供完整 scope 的 CF API token → 寫進 .env(gitignore 已擋)。實測:Pages 10/KV 5/
+  Workers 22/GraphQL 全 200、`wrangler kv namespace list` 實跑成功、deploy_drift 三項全綠、
+  cf_token 解析器 python 半邊(source=dotenv)與 bash 半邊(export)都拿得到。43 支連坐程式解封。
+- ⭐⭐ **#327 假綠的真根因跟我早上猜的不一樣**:不是探測端點選錯(實測兩把窄 token 對
+  `GET /accounts/{id}` 是 403,過不了),而是 `export.sh::cf_token_export_mac` 向 Mac 借到 token 後
+  寫 `t, _ = cf_token()` —— **只 export 值、把 source 丟掉**;同環境的下一個 python 呼叫者在
+  `_from_env()` 就命中,於是「靠一台會睡覺的筆電撐著」被回報成「來源=環境變數」+**ok**,
+  而 resolve.py 自己的 docstring 明寫「混成同一個 ok 就是拿備援去替破口作證」。
+  **憑證跨越 bash↔python 邊界時遺失的不是值,是身分**(「憑證有兩半」第四次現形)。
+- 修法三處:①export 端 `\x1f` 分隔把 source 一起交棒 ②`resolve._env_origin()` 採信標籤
+  (未知標籤退回 env,不可因認不得就升格成更健康)③credential_watch 對借來的一律 degraded
+  (BORROWED_SOURCES 只有一份定義)。
+- ⭐ 順帶收 #309:`credential_watch.test.sh` 的綠燈本來**暗中依賴「.env 剛好沒有 token」**——
+  憑證一補上,⑫⑬ 段 11 條斷言瞬間全紅而被測邏輯一行沒改。修法=頂端 `resolve.ENV_PATH`
+  指到 tmp 空檔(模組層變數,一行隔離 20 個呼叫點)。**自測若依賴生產「剛好缺某樣東西」,
+  那樣東西補上的那天就是它變紅的那天。**
+- 驗證:credential_watch 132/0、cf_token(含新增 bash 半邊 5 條)全過、突變 7/7 killed 跨兩支自測。
+  生產 credential_watch = 5 活 / 0 撐著 / 1 死(死的是 GitHub Actions,#300 要 Delvin 申訴)。
+- 順手修 `.env` 的 `STOREFRONT_SENDER_NAME=Delvin Chang` 未加引號 ⇒ 任何 `source .env` 的腳本
+  拿到的都是被截斷的 "Delvin"。
+- 收乾 #299 #327 #309;新開 #334(credential_watch 三態修過頭那半還在)、
+  #335(honest_traffic 連 7 天 no_data,憑證/GraphQL 權限實測正常 ⇒ 根因不是 #299)。
+- 告警已回寫 `resolve_admin_alert.sh "Cloudflare"`。
