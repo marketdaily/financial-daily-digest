@@ -6553,3 +6553,28 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - commit `9479fb64`;新登記 #420(council 成功路徑在 golden 裡從未被覆蓋,既存盲區)。
 - 教訓 `~/autonomous/state/lessons/allowlist_defenses_drift_silently.md`;
   報告 `~/autonomous/reports/2026-08-18_0530_refactor_harness_397.md`
+
+### 2026-08-18 06:20 TW — 收 #397 尾:那道閘門守的是一份從來沒走過 AI 路徑的假日報
+- **r1[CRITICAL]**:05:26 那次 reseal 把「四位用戶全掉 deterministic 備援」封成基線。
+  根因=`main.save_hosted_digest` 07-09 多了 `email=`,harness 樁沒跟上 ⇒ 每位用戶 TypeError
+  被生產 `except Exception` 吞掉。修法:`_stub()` 包裝層,生產呼叫 bind 不上樁就當場炸,
+  訊息直接寫「修樁,不要 reseal golden」。
+- ⭐⭐ **r2[HIGH] 同型的第二半,而且更大**:樁的回傳不含 `<div class="signal-card`,
+  `_collect()` 整段丟棄 ⇒ **17 張卡全是備援模板卡、`_card_passes_audit` 整場零呼叫**。
+  日報內容量最大的一段(含 `_CARD_XUSER_BEST`,08-17 holdings_uncovered 擴散的載體)
+  自 harness 誕生起零覆蓋。補 `_card_stub()` 照生產 prompt 的逐字範本生成;
+  **刻意留一支不生**(`_CARD_STUB_SKIP`)讓備援線與 card-regen 迴圈也留在凍結範圍內——
+  否則就是拿一個盲區換另一個盲區。判準隨之改成「備援卡只出現在故意戳的那一支」。
+- **r2 另外三條**:①退化判準守措辭不守行為(漏掉 `main.py:845`「改用 deterministic 備援版」
+  =四封信內容全爛)→ 改守狀態 ②12 個樁裡 9 個寬簽章讓 bind 檢查永遠射不出來,而**寄信**
+  那支唯一窄簽章的根本沒接上 → 三個直接指派全部改走 `_stub()` ③`=== AUDIT ===` 永遠空白
+  (報告檔只有壞掉才寫)→ 改成無條件輸出狀態摘要,全綠本身進基線。
+- ⭐ **gitignore 讓生產樹副作用隱形**:語音 manifest 輸出路徑是絕對的,harness 每跑一次
+  就真的在 `audio_brief/out/` 落一份檔;該目錄在 .gitignore 裡 ⇒ `git status` 永遠乾淨。
+- 驗證:三模式全綠 + 生產 runner 包裝層 rc=0 + 跨行程重跑 byte-identical +
+  突變 4 發全殺;`check_report --ledger` exit 0。commit `d189f955` / `11295c0f`。
+- 同輪收事件 E7(log_contract_scan 夜巡紅 6.9 天):markup 噪音閘補第③簽名(閉標籤寫死,
+  同類第 5 次復發,擴大前枚舉 41 條 0 誤傷)+ exclude 表補 basename 規則
+  (`scripts/test_*.py` 這種平放測試檔 29+65 個,兩個方向都在污染)。自測 ALL PASS、
+  mutcheck 33/33、scan rc=0 無新增 DRIFT。
+- #397 已收;新登記 #421(日報 TLDR 的「台積電(2330)」代號括號被管線某處剝掉,未定位)。

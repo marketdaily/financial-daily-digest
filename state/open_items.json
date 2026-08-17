@@ -3966,8 +3966,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 19:57",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 06:16",
+  "note": "r1 判 UNSOUND/CRITICAL(reseal 把『四位全掉備援』封成基線)已修;r2 判 SOUND-WITH-CORRECTIONS,四條 findings 全數收乾(F1 訊號卡零覆蓋→_card_stub+故意留備援線、F2 守措辭→守狀態、F3 三個直接指派改走 _stub、F4 audit 空殼→狀態摘要),外加抓到 gitignore 隱形的生產樹副作用(語音 manifest 落檔)。三模式全綠+生產 runner rc=0+突變四發全殺"
  },
  {
   "id": 398,
@@ -4196,6 +4196,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-18 05:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 421,
+  "what": "日報 TLDR 裡『台積電(2330)』的代號括號會在管線某處被剝掉,只剩公司名——與 CLAUDE.md『台股顯示要同時有代碼+名稱』的偏好衝突,且沒查到是哪一支後製幹的",
+  "why": "08-18 harness 樁卡實測:輸入 TLDR 帶 (2330),golden 產物只剩『台積電昨日收平』;已排除 _pp_tldr_structure 與 _pp_expand_tickers,單一 _pp_ 逐支測試無一命中 ⇒ 可能在 build_email_html/premailer 或多步組合後才發生。需要專輪二分定位;不確定是刻意設計還是回歸",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 06:16",
   "closed": null,
   "note": ""
  }
