@@ -6038,3 +6038,23 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   (prewarm:last 已 done 而 prewarm:<fp> 還是 running)⇒ 草稿改存 DO storage(強一致),
   winrig 與雲端車道共用 /internal/prewarm-take。
 - 18:0x 老闆:「要更快」→ brew 落豆 3x/沖煮 1.5x(183 張)、pin 300%;本地+生產全綠(首輪 6 個 404 是部署傳播期新舊混,重跑 0)。
+
+## 2026-08-17 18:30 — QuietFix NO.30 拔地敘事 RISE(給建商的捲動大菜)
+- 老闆要「一棟大樓從空地蓋到落成」的建商大菜,運鏡自己想。走 `cinematic-derivation.md` 8 問推導
+  (不是品類查表):Q3 莊嚴大格局 → Nolan/Hoytema;Q5 決定**低角仰視站在對街**,刻意避開房地產
+  爛大街的無人機環繞;Q2 用**一天的光壓縮數年工期**(藍調→日出→黃昏→夜);收尾用「室內燈由下
+  往上一層層亮起」隱喻交屋。cinematic_score **10/10**(上批 sear 8 / circuit 5 / calm 6)。
+- prompt 走 Higgsfield **block-scaffold regime**(SCENE CONTEXT→…→POSITIVE LOCKS,894 字),
+  兩道 lint 全綠。⭐ skill 的 preflight 抓到四個我自己看不出來的東西:短 prompt 220 字硬上限
+  在 block regime 自動解除、"Beat" 被 violence-verb 誤中(改時間碼)、"windows" 被 brand-ip 誤中
+  (改 panes)、bare/wet/skin 是 provider 側 NSFW 假陽性常客(改 leafless/rain-darkened/facade)。
+- ⭐ **定稿改用 upscale 而非重生 std 1080p**:A 版已命中 brief,重生會換一組畫面 ⇒ 要再挑一次
+  ⇒ 就是「一次到位」鐵則要禁的疊代。改 upscale 2K,內容一格不變。
+- ⭐⭐ **21:9 母帶暴露 dish_media.py 兩個真缺陷**(舊碼會靜默出錯):①轉盤卡寫死 `scale=1600:900`
+  把非 16:9 來源**拉變形** ②沒有 25MiB 閘門——戶外高細節內容(城市/建築/顆粒/全 I-frame)比
+  暗場棚拍難壓數倍,crf21 出來 **65.6MB**,會擋掉整次 deploy 而**產線自己不會說話**。
+  修法:來源比例 >1.9 自動裁中央 16:9(頁面 object-fit:cover 本來就裁掉左右,留著只是白付檔案
+  大小、垂直解析度還更低)+ crf 可覆寫 + `--reuse-film`(重編碼不必重跑 2K film_texture)+
+  超標直接 SystemExit 附處方。crf23@1920x1080 = 21.6MB,與既有三道同級。
+- 生產驗收:`shoot_dish.py rise https://quietfix.studio` 線上全綠(mono/linear err 0.4%/四幕字幕
+  各自可讀/相鄰幕像素差/console 0/mobile/static 降級),menu 22→23 道,sitemap 已加。
