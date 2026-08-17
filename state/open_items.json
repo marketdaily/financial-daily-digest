@@ -3956,6 +3956,26 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 19:24",
+  "closed": "2026-08-17 20:01",
+  "note": "已補實作而非改弱文案:①Worker 新增 GET/POST /unsubscribe(HMAC token,GET 只出確認頁、POST 才真退訂)+ /internal/unsub-list,已部署生產並實射 7 項全過 ②publisher 加 List-Unsubscribe/-Post(RFC 8058 一鍵退訂),400 才拔 header 重試(5xx 不重試=不雙寄)③退訂生效兩層獨立:KV 名單(main._drop_unsubscribed)+ Brevo emailBlacklisted,皆 fail-open 到照寄 ④連結只在 _flush_outbox 注入(公版存檔頁不帶任何人的 token,已在真實生產 HTML 上驗過 anchor)。docs 四頁文案一個字都不用改。首班驗收另立 open item"
+ },
+ {
+  "id": 397,
+  "what": "refactor_harness(動 main.py/analyzer.py 的指定行為凍結閘門)在 HEAD 70fafc13 就已經 2 個變體紅(weekend/monday),且沒有任何夜巡/CI 在跑它",
+  "why": "根因是 analyzer 讀 scripts/buy_signal_log.json 這類每日變動又進版控的資料檔 ⇒ golden 天生會被資料更新弄過期,而它是手動閘門、沒人在看。本輪只做了對照實驗證明自己無罪(worktree at HEAD 同樣紅、prompt hash 兩邊逐字相同),不順手修(受益者鐵則:不連續加工自家守衛)。正解方向=golden 生成時把資料檔輸入也凍結進 fixture,或讓 harness 明確分「程式碼造成的差異」與「資料造成的差異」",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 19:57",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 398,
+  "what": "退訂功能首班驗收:2026-08-18 07:00 TW 早報是第一班吃到新程式碼的班次,要確認寄出的信真的帶 footer 退訂連結 + List-Unsubscribe header,且沒有人被誤剔除(訂閱者數與前一班一致)",
+  "why": "今晚 US 班 18:20 起跑時 main.py 已載入舊碼,新碼首次真的執行是明早;鏈上改動必附首班驗收(2026-08-04 老闆令)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 20:01",
   "closed": null,
   "note": ""
  }

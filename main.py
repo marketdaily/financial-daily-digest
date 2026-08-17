@@ -502,6 +502,40 @@ def _inject_intel_signals(inner_html: str, data: dict, user_holdings=None) -> st
         return inner_html
 
 
+def _drop_unsubscribed(subscribers: list) -> list:
+    """退訂第一層(2026-08-17 #396):拉 Worker 的 KV 退訂名單,把退訂的人剔掉。
+
+    為什麼不只靠 Brevo 黑名單:那等於把「退訂到底有沒有生效」外包給別人的語意
+    (blacklisted 的聯絡人 Brevo 對 transactional 到底擋不擋,不是我們能保證的事)。
+    這層是我們自己控的那半,而且能真的被測到。
+    取不到名單時 fail-open(照寄)並印警告 —— 死線是「絕不缺信」,寧可多寄一封也不整批漏。
+    """
+    import requests
+    tok = os.environ.get("MARKETDAILY_INTERNAL_TOKEN") or os.environ.get("INTERNAL_TOKEN") or ""
+    if not tok:
+        print("   ⚠️ 無 INTERNAL_TOKEN,略過 KV 退訂名單過濾(僅剩 Brevo 黑名單那層)")
+        return subscribers
+    try:
+        res = requests.get(f"{WORKER_URL}/internal/unsub-list",
+                           headers={"Authorization": f"Bearer {tok}"}, timeout=10)
+        if not res.ok:
+            print(f"   ⚠️ 取退訂名單失敗(HTTP {res.status_code}),本班照寄")
+            return subscribers
+        d = res.json() or {}
+        unsub = {str(e).strip().lower() for e in (d.get("emails") or [])}
+        if d.get("truncated"):
+            print("   ⚠️ 退訂名單被截斷(KV list 超過上限),過濾可能不完整")
+    except Exception as e:
+        print(f"   ⚠️ 取退訂名單異常({e}),本班照寄")
+        return subscribers
+    if not unsub:
+        return subscribers
+    kept = [e for e in subscribers if str(e).strip().lower() not in unsub]
+    if len(kept) != len(subscribers):
+        print(f"   🚫 已退訂 {len(subscribers) - len(kept)} 位,不寄送")
+    return kept
+
+
 def get_user_preferences(email: str) -> dict:
     """讀取用戶在「我的專區」設定的持倉偏好。失敗會重試，確保日報依個人設定客製化。
     server-to-server 帶 INTERNAL_TOKEN 跳過 password gate（用戶已設密碼後 endpoint 預設拒絕匿名讀）。"""
@@ -1013,7 +1047,7 @@ def run():
     print("① 取得訂閱者名單與持倉偏好...")
     list_id = get_list_id()
     check_subscriber_count(list_id)
-    subscribers = get_all_subscribers(list_id)
+    subscribers = _drop_unsubscribed(get_all_subscribers(list_id))
     print(f"   共 {len(subscribers)} 位訂閱者")
 
     subscriber_prefs, all_us_extra, all_tw_extra = _load_subscriber_prefs(subscribers)
@@ -1160,8 +1194,12 @@ def _flush_outbox(outbox, date, send_fn, api_key):
     late_notice = _late_send_notice(MARKET, date)
     if late_notice:
         print(f"   ⏰ 本班寄出時已過內容誠實時點 → 全批自動加註盤前說明(Delvin 2026-07-30 拍板 B)")
+    from unsubscribe import inject_footer_link
     for email, html, subject in outbox:
         html = _inject_late_notice(html, late_notice)
+        # 退訂連結只在這裡注入:outbox 是所有寄出信件的唯一 choke point(含備援版與精選共用版),
+        # 塞在 render_email_shell 會連公版存檔頁一起帶上別人的退訂 token。
+        html = inject_footer_link(html, email)
         if note:
             subject = note + (subject or f"📊 財經日報 {date} — AI 精選美股 + 台股")
         try:

@@ -1,5 +1,6 @@
 import requests
 from config import BREVO_API_KEY, SENDER_EMAIL, SENDER_NAME
+from unsubscribe import unsub_url
 
 BREVO_SEND_URL = "https://api.brevo.com/v3/emailCampaigns"
 SUBSCRIBER_WARN_THRESHOLD = 250
@@ -72,7 +73,11 @@ def get_all_subscribers(list_id: int) -> list:
             contacts = resp.json().get("contacts", [])
             if not contacts:
                 break
-            emails.extend(c["email"] for c in contacts if c.get("email"))
+            # 退訂第二層(2026-08-17 #396):Brevo 端被標黑名單的人不再放進寄送名單。
+            # 欄位不存在時 c.get() 回 None=照寄 —— 刻意 fail-open:欄位改名不該讓整批漏信,
+            # 真正保證退訂生效的是 main.py 那層 KV 名單(我們自己控的那半)。
+            emails.extend(c["email"] for c in contacts
+                          if c.get("email") and not c.get("emailBlacklisted"))
             if len(contacts) < limit:
                 break
             offset += limit
@@ -88,6 +93,14 @@ def send_transactional_email(email: str, date: str, html_content: str, api_key: 
         "subject": subject or f"📊 財經日報 {date} — AI 精選美股 + 台股",
         "htmlContent": html_content,
     }
+    # 一鍵退訂 header(RFC 8058,2026-08-17 #396):Gmail/Apple Mail 會把它變成信件頂端的
+    # 「取消訂閱」按鈕 —— 這是收信人最先看到的退訂路徑,比 footer 連結更顯眼。
+    u = unsub_url(email)
+    if u:
+        payload["headers"] = {
+            "List-Unsubscribe": f"<{u}>",
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        }
     try:
         resp = requests.post(
             "https://api.brevo.com/v3/smtp/email",
@@ -95,7 +108,22 @@ def send_transactional_email(email: str, date: str, html_content: str, api_key: 
             headers={"api-key": api_key, "Content-Type": "application/json"},
             timeout=15
         )
-        return resp.ok
+        if resp.ok:
+            return True
+        # 400 = Brevo 驗證失敗(=確定沒進寄送佇列,不會雙寄)。多半只可能是 headers 這塊被嫌,
+        # 而「有沒有退訂 header」永遠不值得拿一封信去換 → 拔掉 header 重試一次。
+        # 5xx / timeout 曖昧(可能已收下),維持原本行為直接回 False,不重試。
+        if resp.status_code == 400 and "headers" in payload:
+            print(f"   ⚠️ Brevo 400 退回,拔掉 List-Unsubscribe header 重試 → {email}")
+            payload.pop("headers", None)
+            resp = requests.post(
+                "https://api.brevo.com/v3/smtp/email",
+                json=payload,
+                headers={"api-key": api_key, "Content-Type": "application/json"},
+                timeout=15
+            )
+            return resp.ok
+        return False
     except Exception:
         return False
 

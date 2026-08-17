@@ -1536,6 +1536,67 @@ export default {
       return false;
     };
 
+    // ── 日報退訂(2026-08-17,open #396)────────────────────────────────────────
+    // privacy / contact / index 三頁早就對外寫著「任何一封日報底部點『取消訂閱』即時生效」,
+    // 但 email 裡從來沒有那個連結、也沒有 List-Unsubscribe header ⇒ 官網宣稱存在、實際不存在。
+    // 這裡補上真的入口(文案不改,改現實)。
+    // GET = 確認頁,**不在 GET 就退訂** —— 郵件客戶端與掃描器會預抓連結,GET 即退等於幫人誤退。
+    // POST = 真的執行(RFC 8058 one-click 也是 POST,所以同一支 handler 同時服務人與郵件客戶端)。
+    const unsubTokenOk = async (email, tok) => {
+      if (!email || !tok) return false;
+      const enc = new TextEncoder();
+      for (const s of [env.INTERNAL_TOKEN, env.INTERNAL_TOKEN_2].filter(Boolean)) {
+        const key = await crypto.subtle.importKey(
+          "raw", enc.encode(s), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+        const sig = await crypto.subtle.sign("HMAC", key, enc.encode(`unsub|v1|${email}`));
+        const hex = [...new Uint8Array(sig)].map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+        if (hex.length !== tok.length) continue;
+        let diff = 0;
+        for (let i = 0; i < hex.length; i++) diff |= hex.charCodeAt(i) ^ tok.charCodeAt(i);
+        if (diff === 0) return true;
+      }
+      return false;
+    };
+    if (url.pathname === "/unsubscribe" && (request.method === "GET" || request.method === "POST")) {
+      const email = (url.searchParams.get("e") || "").trim().toLowerCase();
+      const tok = (url.searchParams.get("t") || "").trim();
+      if (!(await unsubTokenOk(email, tok))) return unsubPage("bad", email, "");
+      const qs = `e=${encodeURIComponent(email)}&t=${encodeURIComponent(tok)}`;
+      if (request.method === "GET") return unsubPage("confirm", email, qs);
+      // 兩層各自獨立、各自 fail-open:①KV(我們自己控,寄信端 main.py 會拉這份名單過濾)
+      // ②Brevo 黑名單(寄信 API 自己會擋)。只靠 Brevo 的語意=把退訂能不能生效外包給別人。
+      await env.USER_PREFS.put(`unsub:${email}`, new Date().toISOString());
+      let brevoOk = false;
+      try {
+        const r = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
+          method: "PUT",
+          headers: { "api-key": env.BREVO_API_KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ emailBlacklisted: true }),
+        });
+        brevoOk = r.ok || r.status === 404;  // 404 = 不在名單裡,對用戶而言同樣是「已退訂」
+      } catch { /* KV 那層已經生效,Brevo 抖動不該讓用戶看到失敗 */ }
+      if (!brevoOk) {
+        ctx.waitUntil(sendLineAdminPush(env,
+          `⚠️ 退訂只寫進 KV,Brevo 黑名單失敗:${email}\n` +
+          `寄信端 KV 過濾仍會擋住這位,但 Brevo 那層沒生效 → 請人工到 Brevo 補標 blacklisted。`));
+      }
+      return unsubPage("done", email, "");
+    }
+    if (url.pathname === "/internal/unsub-list" && request.method === "GET") {
+      if (!internalBearerOk(request.headers.get("Authorization"))) {
+        return json({ error: "unauthorized" }, 401);
+      }
+      const emails = [];
+      let cursor;
+      for (let i = 0; i < 50; i++) {
+        const page = await env.USER_PREFS.list({ prefix: "unsub:", cursor });
+        for (const k of page.keys) emails.push(k.name.slice("unsub:".length));
+        if (page.list_complete) { cursor = null; break; }
+        cursor = page.cursor;
+      }
+      return json({ ok: true, count: emails.length, emails, truncated: !!cursor });
+    }
+
     // Get user preferences
     if (url.pathname === "/get-preferences" && request.method === "POST") {
       let body;
@@ -2907,6 +2968,45 @@ function json(data, status = 200) {
     status,
     headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
   });
+}
+
+// 退訂頁(2026-08-17):給人看的三態頁面 —— confirm(要按一下才真的退)/ done / bad token。
+// 中英雙語直接並列而不做 i18n 切換:退訂是收信人在信裡點進來的一次性動作,
+// 這頁沒有 localStorage 語言偏好可讀(他可能從沒開過網站),兩種語言一起寫最不會卡住人。
+function unsubPage(state, email, qs) {
+  const esc = (s) => String(s || "").replace(/[&<>"']/g, c => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const shell = (body, status = 200) => new Response(
+    `<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>取消訂閱 · MarketDaily</title>
+<style>body{margin:0;background:#0b1020;color:#e5e7eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+.card{max-width:460px;width:100%;background:#141a2e;border:1px solid #232b45;border-radius:16px;padding:32px 28px;text-align:center}
+h1{font-size:19px;margin:0 0 14px;color:#fff}p{font-size:14px;line-height:1.75;color:#9ca3af;margin:0 0 10px}
+.em{color:#c7d2fe;font-weight:700;word-break:break-all}
+button{margin-top:20px;background:#6366f1;color:#fff;border:0;border-radius:10px;padding:12px 26px;font-size:14px;font-weight:700;cursor:pointer}
+a{color:#818cf8}</style></head><body><div class="card">${body}</div></body></html>`,
+    { status, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+
+  if (state === "confirm") {
+    return shell(`<h1>取消訂閱財經日報?</h1>
+<p><span class="em">${esc(email)}</span></p>
+<p>按下確認後立即停止寄送,不需要聯絡客服。<br>之後想回來,重新訂閱即可。</p>
+<p style="font-size:12px">Confirm to stop all digest emails to this address immediately.</p>
+<form method="POST" action="/unsubscribe?${esc(qs)}"><button type="submit">確認取消訂閱 / Confirm</button></form>
+<p style="font-size:12px;margin-top:18px">想改成只收某些股票?<a href="https://marketdaily.ai/dashboard.html">到我的專區調整偏好</a></p>`);
+  }
+  if (state === "done") {
+    return shell(`<h1>已為你取消訂閱 ✅</h1>
+<p><span class="em">${esc(email)}</span> 之後不會再收到財經日報。</p>
+<p style="font-size:12px">You have been unsubscribed. No further digest emails will be sent.</p>
+<p style="font-size:12px;margin-top:18px">若要連同所有紀錄一併刪除,<a href="https://marketdaily.ai/contact.html">來信告知</a>,7 日內完成。</p>`);
+  }
+  return shell(`<h1>這個退訂連結無法驗證</h1>
+<p>連結可能被郵件軟體截斷或已過期。請直接<a href="https://marketdaily.ai/contact.html">透過聯絡我們</a>告知,我們會為你停止寄送。</p>
+<p style="font-size:12px">This unsubscribe link could not be verified — please contact us and we will stop the emails for you.</p>`, 400);
 }
 
 // FinMind v4 data proxy(台股籌碼/財務官方彙整)。token 600 req/hr;CF edge cache 讓熱門股全球共用。

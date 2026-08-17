@@ -6123,3 +6123,35 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   「他能不能用他自己的資料打穿」)、`project_github_account_flagged` 補第二次發作段(含 3 個零副作用鑑別特徵:
   自家 workflow 歷史全 0 但 GitHub 自家 pages 歷史還在=強烈指向帳號層)、lesson `private_manual_into_public_repo`。
 - report: `~/autonomous/reports/2026-08-17_1950_github_actions_appeal_package.md`
+
+## 2026-08-17 20:05 TW — [自主機器] 官網寫著「信底部點取消訂閱」,而那個連結從來不存在(#396 收乾)
+- 昨輪驗證者查 GitHub 申訴稿時順手撈到的:`docs/privacy.html` 對外寫「任何一封日報底部點『取消訂閱』
+  即時生效」——**日報裡沒有那個連結、沒有 List-Unsubscribe header、Worker 79 個端點也沒有任何退訂入口**。
+  本輪先擴大查證:假宣稱不只 privacy,還在 `contact.html:291/334`、`index.html:1625/1990/2152`,
+  共 **4 頁 7 處**(`faq.html` 反而誠實,寫「透過聯絡我們提出」)。
+- **方向選「改現實」不是「改文案」**:退訂本來就該存在(Gmail/Apple 會把 `List-Unsubscribe` 變成
+  信件頂端按鈕),補完之後 **docs 一個字都不用改** ⇒ 也不必動 Pages 部署,順便避開 08-17 才踩到的
+  「兩機共用同一 Pages 專案整包互相覆蓋」。
+- 落地:`unsubscribe.py`(token/URL/注入的唯一真源,`HMAC(INTERNAL_TOKEN,"unsub|v1|"+email)` 前 16 hex)
+  / worker `GET|POST /unsubscribe` + `GET /internal/unsub-list`(**已部署,version c6bb0bdb**)
+  / `publisher.py` 兩個 RFC 8058 header + Brevo 黑名單過濾 / `main.py` `_drop_unsubscribed` + `_flush_outbox` 注入。
+  **GET 只出確認頁、POST 才真退訂**(郵件掃描器會預抓連結,GET 即退=幫人誤退);連結只在 `_flush_outbox`
+  注入,因為 `render_email_shell` 與**公版存檔頁共用** ⇒ 塞那裡等於把某個人的 token 發佈到網上。
+- 驗證:離線迴歸 `scripts/test_unsubscribe.py` **33/33**;dupe_delivery_guard / failover_gate_contract /
+  late_delivery_notice / owner_shield / archive_cta 全 PASS;**生產實射 7/7**(合法 token→200 確認頁 /
+  竄改一字元→400 / POST→200 / 內部清單看得到 / 無 token→401 / 端到端真的剔除),probe KV key 已刪;
+  footer 注入在**真實生產 HTML**(`docs/output/digest_2026-08-17_us.html`)上驗過 anchor,不是自製 fixture。
+- ⭐⭐ 順帶回答一個開工前不知道答案的問題:winrig `MARKETDAILY_INTERNAL_TOKEN` 與 Worker `INTERNAL_TOKEN`
+  **是同一把值**,兩份 HMAC 實作結果一致(靠實射證明,不是靠讀碼)。
+- ⭐ `npx wrangler` 的憑證是從 **cwd 的 `.env`** 撿的:在 `stripe-webhook/` 下 deploy 直接報
+  「必須設 CLOUDFLARE_API_TOKEN」,在 repo 根 `whoami` 卻是活的 —— 同機同憑證,差一個工作目錄
+  就從「活著」變「死了」。宣告憑證死亡前先確認自己站在哪。
+- ⭐ fail-open 的方向對著「哪種錯可以補救」寫:過濾失效=多寄一封(可道歉);誤判=整批漏信(回不來)
+  ⇒ 四個退路全選「照寄」。加 header 也不可以拿一封信去換:Brevo 回 **400**(確定沒進佇列)才拔 header
+  重試,**5xx/timeout 不重試**(曖昧狀態重試=製造 07-30/31 那種雙寄)。
+- open:#396 **已 close**;新登記 **#398**(明早 07:00 TW 才是第一班真的執行新碼的班次,今晚 US 班
+  18:20 起跑時載入的是舊碼 ⇒ 首班驗收未做)、**#397**(`refactor_harness` 在 HEAD 就已 2 紅,
+  根因是 analyzer 讀每日變動又進版控的 `scripts/buy_signal_log.json` 讓 golden 天生過期,
+  且**沒有任何夜巡/CI 在跑這道閘**;本輪用 worktree at HEAD 對照證明與我無關:prompt hash 兩邊逐字相同)。
+- 驗證者分離:`--detach` 派出中(slug `unsub_396_20260817`),收據在 `~/autonomous/state/verifier_runs/`。
+- report: `~/autonomous/reports/2026-08-17_2005_digest_unsubscribe_396.md`
