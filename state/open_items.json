@@ -4188,5 +4188,15 @@
   "opened": "2026-08-18 05:06",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 420,
+  "what": "行為凍結 harness 的 council 樁回傳 pipe 格式(看多|信心65|…),10 個席次在 golden 裡全部『no json 本輪停用』⇒ council 的成功路徑(多模型辯論+裁判合成)從未被凍結過,那段程式改壞了 harness 不會紅",
+  "why": "既存盲區,非 2026-08-18 這輪造成;修法是讓樁回傳 council 期望的 JSON 形狀並重封基線,但那會改動 5 個變體的 golden 內容,屬獨立任務",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 05:27",
+  "closed": null,
+  "note": ""
  }
 ]
