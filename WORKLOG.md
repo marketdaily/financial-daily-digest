@@ -5920,3 +5920,9 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   ⇒ **新鮮度哨兵分不出「刻意停用」與「健康」**,與今天早上卡單 25h 同一形狀(exit 0 但沒產出)。停用態應蓋 skipped 而非 ok。
 - ③agent-57 回報一個值得收的坑:**CF Pages 的 404 回退頁回 200 + text/html**,所以驗產物存在性只看狀態碼會過(要看 content-type)。
   本次實測 `mingshu.tw/api/sentinel-status` 就是這樣:回 200 但其實是站台 404 頁,真 endpoint 在 workers.dev。
+- 17:1x 續(#383 根因定位,交棒用):部署卡點**不是守衛誤判**。`tests/node/pricing.test.mjs` 的單一真源掃描
+  第 71 行本來就會先把品項 id 挖掉(`PRODUCTS.join("|")` → «id»),所以只有「真源不認識的 id」才會露出裸數字。
+  實際 hits:`cl_hehun.js` 出現 399(它宣告 `PRODUCTS = ["hehun_399","hehun_1299"]`,但 `worker/src/pricing.js`
+  只有 8 個品項且**沒有 hehun_399**)、`cl_tarot.js` 出現 399/199。
+  ⚠️ 對方 commit 寫「15/15 在售品項全部有雲端交付」,而價格真源只有 8 個 ⇒ 兩邊對「在售品項」的定義不一致,
+  這比 lint 紅燈本身更值得查。`hehun_399` 該不該存在是產品/定價決策,不由我猜(open #386,owner=delvin)。
