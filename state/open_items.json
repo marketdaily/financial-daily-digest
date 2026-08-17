@@ -1896,8 +1896,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-09 14:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 01:40",
+  "note": "生產證據:08-10 那場考完整跑完並寫出 state/eval_last_ok='2026-W32 2026-08-10',eval_pending 檔不存在(=NOTRUN=0 才寫的完成態),scoreboard 記 202/221(91%,另 1 題空跑基線廢題已剔除)=NOTRUN 不進分母生效;每日 11:10 補考路徑也在 08-17 11:10 實際觸發(考期鍵錨定最近週日,W33 比不到 W32 ⇒ 正確判定本週缺考並進場),當場在 human_active 閘讓路並寫 eval_bail_reason=human_active、eval_stall_count=1。⚠️誠實邊界:08-17 那次在閘門就退場,沒走到 provenance 計分段;provenance 本體的生產實績只有 08-10 那一場。"
  },
  {
   "id": 191,
@@ -2166,8 +2166,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-10 13:20",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 01:40",
+  "note": "生產證據且是 load-bearing:catchup jobs.tsv:38 給 selftest 宣告 per-job 逾時 2700s(6 欄形式),2026-08-17T16:00Z(08-18 00:00 TW)catchup.log 記 'CATCHUP selftest 起跑(超過 1560 分鐘沒更新)',該班實跑 1879s 才收工 —— 大於全域預設 JOB_TIMEOUT=900s,即舊版全域逾時會在 900s 把夜巡砍掉,per-job 值是真的在扛。同一段 log 另有 BUSY(flock 未取得不重複啟動)三次。selftest 預算宣告也在夜巡輸出實見:'SELFTEST BUDGETS(預設 40s,上限 240s): autofix_gate_env=120s …' 共 18 支。"
  },
  {
   "id": 218,
@@ -2306,8 +2306,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-10 23:18",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 01:40",
+  "note": "兩半都有證據:①r3 驗證者已於 08-11 收割結案,報告 ~/autonomous/reports/2026-08-11_0335_silence_watch_r3_close.md(含六個存活突變體的病因與修法)②kpi_pull §7c 修正版已在生產 23:35 跑過——state/kpi.md mtime 2026-08-17 23:35,內含 funnel.verdict=INCONCLUSIVE / verdict_basis=stratified / p_used=0.161009 / integrity_flags=None / data_suspect=False 整組欄位。"
  },
  {
   "id": 232,
@@ -2336,8 +2336,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-11 03:38",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 01:40",
+  "note": "生產 23:35 已跑過(kpi.md mtime 2026-08-17 23:35):NO_EVENT_DATA→exit3 那條沒觸發(有資料),但 alerting 政策⑤/③改寫的產物直接可見——異動警示寫成『(非 P1·僅提醒)訂閱轉換乾旱 22 天=基線間隔的 5.1 倍;stratified 檢定 p=0.161009 尚未構成故障證據(α=0.00594)』,即『沉默但證據不足時不定罪、只提醒』的新政策;logic surge_max 修復對應 funnel.tail_surge_ratio=1.37 有值(非 None)。"
  },
  {
   "id": 235,
@@ -2476,8 +2476,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 08:27",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 01:40",
+  "note": "生產證據:①排除設定在 sync_autonomous.sh:68-71 DERIVED[](brain.db 及 -journal/-wal/-shm/.rebuild-*/.prev 六條)②repo 內 autonomous/brainsearch/brain.db 不存在(git ls-files 唯一 .db 是無關的 gooaye_brain.db)③*/5 sync 真的跑過且沒被 db 卡住——sync_cron.log 2026-08-18 01:35 '✓ pulled autonomous machine brain' + commit b6ea911f + ✓ pushed④索引 cron 自鎖沒有自我封鎖:brainsearch_cron.log 連續多班成功('706 檔更新, 387 檔沒變, 共 7164 chunks'),brain.db mtime 2026-08-18 01:23。"
  },
  {
   "id": 249,
@@ -2666,8 +2666,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 22:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 01:40",
+  "note": "生產資料上驗收完成:self_automation 已不再是 0——honest_traffic 實跑(2026-08-18 01:40)在 7 天窗口抽出 self_automation_requests=1251,最新日 2026-08-16 單日 self_automation_visits=87,該日 top_bot_ua='storefront-care/1.0 (site health monitor)'=我們自家的 care plan 巡檢器,確認自家巡檢流量已被分離、不再灌進真人候選(latest_human_candidate=90)。"
  },
  {
   "id": 268,
@@ -2676,8 +2676,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 22:44",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 01:40",
+  "note": "已在生產 kpi_pull(2026-08-17 23:35)跑過:honest_traffic 回傳 expected_latest_date=2026-08-16 / latest_date=2026-08-16 / latest_is_expected=True / latest_stale_days=0,kpi_pull.py:344 的落後揭露分支據此判定不需告警,kpi.md 也確實沒有該則警示。⚠️誠實邊界:True 這一路走過了,latest_is_expected=False 的告警文案分支在生產仍未觸發過(要等真的有一天 CF 查詢失敗才會)。"
  },
  {
   "id": 269,
@@ -2936,8 +2936,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-16 15:07",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 01:45",
+  "note": "根因查明,行動併入 #300(owner=delvin),我這邊沒有第二個可做的動作。①原本卡住診斷的理由已失效:wrangler 現在活著(credential_watch 判 cloudflare_wrangler ✅,走 .env 的 CLOUDFLARE_API_TOKEN),而且 watchdog worker 的 secret **確實有 GITHUB_TOKEN**(wrangler secret list 回 ALERT_TOKEN + GITHUB_TOKEN 兩把)⇒『PAT 不見了』這條假設不成立。②真因足以解釋:credential_watch 的 dispatch 探針(2026-08-18 01:44)拿不存在的 ref 打 pages_deploy.yml,回 422『Actions has been disabled for this user』=**帳號層**停用,與用哪一把 token 無關;gh run list 顯示該 repo 最後一次 run 是 2026-07-30,08-14 當天早已零 run。③誠實邊界:帳號層停用會遮住 PAT 是否也過期——要真的排除,得等 #300 解封後再測一次;在那之前換 token 沒有意義。④另註:本輪 02:05 再打同一探針回 503(GitHub 通用錯誤),依三態鐵則會被判 UNKNOWN 而非 ok,行為正確。"
  },
  {
   "id": 295,
@@ -3946,8 +3946,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 18:45",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 01:40",
+  "note": "已解:根因是 memory_index_trim 的裸 split('·') 會切在括號內並列符中間(帳本 new 行對不上原行),08-18 01:20 那輪修成 split_clauses()(深度 0 才切)+G6 括號閘,並用 plan_line() 對帳本 old 行重算換掉過期計畫。複跑 capabilities/tests/memory_index_trim.test.sh rc=0(上一輪計數 64 PASS/0 FAIL,本輪 2026-08-18 01:42 再跑仍 rc=0),⑧b 不再紅。"
  },
  {
   "id": 396,
@@ -4036,8 +4036,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 21:56",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 01:40",
+  "note": "已在夜間排程真跑過:kpi_pull 2026-08-17 23:35 那班(kpi.md mtime 同時刻)產出完整 human.* 16 個欄位、沒有 human.error、沒有 no_analytics_permission 警示,即 08-17 22:53 上線的 cf_analytics 共用退路在第一個夜班就拿到數字。另本輪 01:40 手動複跑 honest_traffic/cli.py 亦成功(n_days_observed=7、site_inventory_ok=True、n_rows_dropped=0)。"
  },
  {
   "id": 405,
@@ -4086,6 +4086,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-18 00:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 410,
+  "what": "CLAUDE.md 與 open #47 寫著 fortune-ai 訂單用 `npx wrangler kv key list` 查,而該指令沒加 --remote 會安靜回 [](列的是本機 miniflare)⇒ 照做會看到 0 筆訂單;正解是 REST /storage/kv/namespaces/<id>/keys?prefix=",
+  "why": "本輪撞到並已寫進 lesson/記憶,但 CLAUDE.md 現在有別的視窗未 commit 的修改(M CLAUDE.md),依死線 3b 不可碰;要等該視窗收工再改那一句",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 01:47",
   "closed": null,
   "note": ""
  }

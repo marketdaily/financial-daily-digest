@@ -6355,3 +6355,32 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 誠實留著:08-17 夜巡另有 `crawler_coverage`、`credential_watch` 兩紅(CF 憑證權限那條線,#299/#335),
   `selftest_last_ok` 要它們也綠才前進。report `~/autonomous/reports/2026-08-18_0120_memory_index_ceiling_hubify.md`
 
+
+## 2026-08-18 02:10 TW —— 自主機器 E44:夜巡綠燈斷 7 天,而紅燈昨天就已治好
+- `selftest_last_ok` 停在 08-11。逐支重跑 08-17 那兩班的 **13 支紅燈 → 全綠**:CF 那批六支是
+  08-17 22:53 共用退路治好的、memory_index_trim 是 01:20 那輪、ok_stamp_lint 的 MIXED-CLOCK
+  已兩端改用 `time.time()`;**cloudflare_connector 的 live KV round-trip 有史以來第一次成功**。
+  credential_watch 現判 5 活/0 撐/1 死,唯一的死=github_actions(帳號層,#300,owner=delvin)。
+- 順手救資料:seo_page_traffic 帳本停在 08-15,而 CF 逐頁只留 ~8 天(該 runner 檔頭寫著
+  07-07/08 就是這樣永久遺失的)⇒ 補回 08-16 的 174 列。**刻意不走 runner**(帶 cron_daily_lock,
+  跑了會吃掉今天 14:55 那班)。
+- ⭐⭐ **`npx wrangler kv key list` 會安靜回 `[]`**(stderr 空、exit 0),同一把 token 打 REST 立刻
+  回一整串 key。兩層假空:①wrangler 4.x 的 kv 指令**預設列本機 miniflare** ②加 `--remote` 仍
+  不可信(連兩跑 3906/4210,都漏掉 REST 一查就在的 4 筆)。**爆炸半徑**:CLAUDE.md 與 open #47
+  寫著 fortune-ai 訂單就用這指令查 ⇒ 照做會看到 0 筆(實際 90 筆;抽查最近四筆全 fulfilled,
+  這次沒漏客人)。查 KV 一律 REST 帶 `prefix=`。CLAUDE.md 那句**本輪不能改**(`M CLAUDE.md`
+  是別的視窗的未 commit 修改,死線 3b)⇒ 登記 #410。
+- #294 收單:原本「wrangler 未登入所以無法自證」的前提已失效 —— wrangler 活著、watchdog worker
+  的 `GITHUB_TOKEN` **確實存在**,而探針回 422「Actions has been disabled for this user」=帳號層、
+  與 token 無關(gh run list 最後 run=07-30)⇒ 帳號層停用足以解釋,**Delvin 要動的手縮成只有
+  #300 申訴,不必換 token**。
+- 收單 10 件(#190/#217/#231/#234/#248/#267/#268/#294/#395/#404):**175→165、owner=me 122→112**。
+  #217 是 load-bearing 而非只是跑過:jobs.tsv:38 宣告 per-job 2700s,今天 00:00 那班實跑 1879s
+  > 全域預設 900s。
+- ⚖️ 主動收手:#295 只剩「watchdog 自己那把 PAT 無存活偵測」半個缺口 —— 補它=在 #300 洞旁邊
+  蓋第 N 個守衛,依受益者鐵則**留著不補**,缺口寫在報告裡。
+- 誠實留著:#218(週考自 08-10 沒完整跑過,沙箱路徑只有缺席型證據)、**週考停在 08-10 已 8 天**
+  (機制正確,但補考排 11:10=Delvin 最常用電腦的時段,結構上難考成,留引擎輪)。
+- 驗證:13 支自測全 rc=0、time_travel_test 完整一輪 rc=0、SEO 帳本 new_rows=174/total=5597/
+  failed_dates=[]、memory_index_trim 64 PASS/0 FAIL、MEMORY.md 14939 字元(預算 17100)。
+  report `~/autonomous/reports/2026-08-18_0210_debt_nightly_greenlight_kv_false_empty.md`
