@@ -205,3 +205,34 @@
 - **留言閘門要配高需求餌**:現行「留言早鳥」給的是訂閱連結(自利餌),此片給的是「你剛被種草的工具連結」(利他餌)——後者留言意願高一個量級。搬法:工具快評型貼文的閘門改「留言『工具名』我私訊你連結+我們的測試筆記」,DM 裡連結+順帶訂閱 CTA,comment_funnel.py::KEYWORDS 支援逐檔期換字即可
 - **口播+caption 雙觸發詞**是零成本 A/B:兩個入口的留言量能分開數,直接量出「聽完留言」vs「讀 caption 留言」的比例
 - **順手的真資產**:Kronos 本尊(MIT,45+ 交易所 K 線,AAAI 2026)值得進 edge-pipeline 當候選訊號源評估——但依 backtest-validation 鐵則走 walk_forward+DSR 驗過才准上實盤語境;第三方 Polymarket 溫度採樣玩法同樣先當研究題不當結論
+
+---
+
+## K. ⭐ 碼表計時型工具清單 Reel 拆解(@vibecode.rob,2026-08-17 video-watcher 實看)
+
+> 源:https://www.instagram.com/reel/DcD1jrTSlGL/(2026-08-15 發,912 讚/**321 留言**,留言:讚比 ≈35%)
+> caption 全文:「Ungatekeeping vibecoding ball in 30 seconds #vibecoding #websitebuilding **#ad #manuspartner**」——**這是一支業配片**,且業配標示寫在 caption 尾巴
+> 內容:29.95 秒,720x1280 直式,英文口播+整句燒字。介紹 4 個 vibecoding 工具。
+> 事實查核(WebSearch):**Motion**(motion.dev,動畫庫,有 Motion+ 付費層)、**Bklit UI**(bklit.com / github.com/bklit/bklit-ui,MIT,shadcn registry 的圖表/資料視覺化庫,Vercel OSS Program)、**Kokonut UI**(kokonutui.com,Tailwind v4+shadcn+Motion 元件庫,另有 Pro 版)、**Manus**(manus.im,業配主角,畫面實走發布流程:Publish→`*.manus.space` 網域→SEO Score 40 面板)——四個全部真實存在,名稱與功能描述與官網一致
+
+### 影片結構(timeline beats,frames+Groq whisper 雙流實讀)
+1. **0–3.7s 契約式 Hook**:「This is 3 years of vibe coding ball knowledge in less than 30 seconds」——**時間契約**(3 年→30 秒)+ ball knowledge(運動圈黑話=「內行門道」)。同時上方貼一個**真的在跑的 iPhone 碼表**(00:00.53→00:29.72 全片可見)
+2. **3.7–9.4s 成果證明**:「我用這些工具做出這種站,而且我不會寫程式」+ 兩個實站畫面(Vault「Invest in what Endures」暗色 hero、水晶 3D 產品站)——先給結果再給清單,不會寫程式=身分門檻歸零
+3. **9.4–21.8s 三連工具清單**(每個 ≈4 秒,結構完全一致:`Use X for Y`+官網實走截圖):Motion.dev(hover/drag/layout 動畫)→Bklit UI(圖表資料視覺)→Kokonut UI(上百個現成元件)
+4. **21.8–28.1s 業配格**:Manus——句型與前三個一模一樣(`Use Manus to…`),但獨佔 6.3 秒(前三個各 4 秒)且是唯一一個**演完整流程**的(建站→Publish 對話框→「Your site is now live」→自訂網域→SEO Score/Keywords 面板)
+5. **28.1–29.9s 留言閘門**:燒字大卡「Comment "fish" and I'll send you the links」——口播與燒字**同一個詞**(與 J 段的雙觸發詞不同)
+
+### 為什麼有效(可搬的骨架)
+- **⭐ 碼表 = 完播率裝置(本次最大增量)**:片頭承諾「30 秒」,畫面就掛一個真的在跑的碼表當**可驗證收據**。它同時做三件事:①降低點退出的心理成本(看得見終點)②製造「看它跑完」的蔡格尼克效應③把「我沒在灌水」變成視覺事實。成本=一支手機碼表疊圖層,零製作難度
+- **業配偽裝成清單第 N 項**:前三個是真·免費開源工具(建立「這人在送東西」的信任),第四個才是金主,且句型節奏完全對齊,觀眾感受不到切換——只有「多 2 秒 + 演到底 + caption 有 #ad」三個指紋。**這是可直接複製的置入結構,也是合規做法(#ad 有標)**
+- **`Use X for Y` 模板化**:三個工具三句同構,認知負擔為零,可無限延展成系列(換 4 個工具就是下一支)。與 G 段「系列化工具清單」同族,差在本片把每格壓到 4 秒
+- **留言觸發詞用無關的怪字**:「fish」與內容零關係——比 J 段的「Kronos」更短、更好打、更有玩味感,降低留言摩擦。321 留言/912 讚(35%)雖不及 J 段 70%,但仍是正常貼文的數倍
+- **「ungatekeeping」框架**(caption)與 J 段「Wall Street vs 你」同構:把分享工具講成**拆掉守門人**,免費贈與 + 階級敘事,是這批高留言 reel 的共用心臟
+- **拍攝零門檻**:一鏡到底手機自拍(門+房間背景、貼滿貼紙的筆電入鏡)+ 上方疊螢幕錄影。**沒有任何一格是精修素材**——說服力來自碼表與螢幕實走,不是製作費
+
+### MarketDaily 搬法
+- **⭐ 立刻可用:碼表格式移植**「3 年量化踩坑,30 秒講完」/「30 秒講完台股散戶最貴的 4 個錯」——碼表疊圖層 + `Use X for Y` 同構三連 + 留言閘門。我們的題材池(quant_lab 實測工具、FinMind/EDGAR/ccxt/回測驗真積木)天生適合清單型,且**介紹工具非個股建議,合規天然安全**
+- **時間契約 hook 是通用開場**:把現有貼文的 hook 改寫成「X 年的 Y,壓縮成 Z 秒」並在畫面給可驗證收據(碼表/進度條),比「你知道嗎…」型 hook 強一個量級
+- **業配結構備用**:未來若有工具方合作,照這支的「三真一金主 + 節奏對齊 + #ad 標示」放置;我方自家產品(訂閱)同理可當第 4 格,但依合規鐵則**個股分析功能不得與付費掛鉤**,只能講非分析類價值
+- **留言觸發詞改怪字測試**:現行 comment_funnel `KEYWORDS=「早鳥」`(語意相關)。可整檔期換成短怪字(如「牛」「翻倍」以外的無關字)A/B 一次,量留言摩擦差異——`comment_funnel.py::KEYWORDS` 改一行即可
+- **(gap 註)** 本片播放數無法從 DOM 取得,留言:讚比只是替代指標;碼表對完播率的因果為 **inference**(無後台數據),但成本近零、風險為零,值得直接試
