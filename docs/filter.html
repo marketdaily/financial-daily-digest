@@ -393,6 +393,8 @@ const i18n = {
     msg_invalid: "請輸入有效的 Email",
     msg_sending: "送出中…",
     msg_success: "✅ 訂閱成功!確認信已寄到你的信箱 —— 明早 7 點起,財經新聞有人幫你過濾好。",
+    msg_resub: "📬 你先前退訂過 —— 我們寄了一封確認信到你的信箱,點一下就恢復寄送。",
+    msg_resub_fail: "你先前退訂過,但確認信寄不出去。請到「聯絡我們」告訴我們,我們會手動幫你恢復。",
     msg_fail: "訂閱失敗,請稍後再試一次",
     msg_neterr: "網路連線異常,請稍後再試"
   },
@@ -446,6 +448,8 @@ const i18n = {
     msg_invalid: "Please enter a valid email",
     msg_sending: "Sending…",
     msg_success: "✅ Subscribed! A confirmation email is on its way — from 7AM tomorrow, someone filters the financial news for you.",
+    msg_resub: "📬 You unsubscribed earlier — we emailed you a confirmation link. Click it to resume.",
+    msg_resub_fail: "You unsubscribed earlier and we could not send the confirmation email — please contact us.",
     msg_fail: "Subscription failed, please try again later",
     msg_neterr: "Network error, please try again later"
   }
@@ -494,7 +498,10 @@ async function subscribe(formId) {
       body: JSON.stringify({ email, ref })
     });
     const data = await res.json();
-    if (data.ok) {
+    if (data.resubscribe_pending) {
+      // 退訂過的人:恢復要他本人點確認信,這裡不可以顯示「訂閱成功」
+      form.innerHTML = '<div class="cap-done">' + (data.sent ? T().msg_resub : T().msg_resub_fail) + '</div>';
+    } else if (data.ok) {
       form.innerHTML = '<div class="cap-done">' + T().msg_success + '</div>';
     } else {
       msg.textContent = T().msg_fail; msg.className = "cap-msg err";

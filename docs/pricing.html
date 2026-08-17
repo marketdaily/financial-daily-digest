@@ -1025,7 +1025,12 @@ async function submitFree() {
       body: JSON.stringify({ email, ref, utm_source: 'pricing', utm_medium: 'free_card' }),
     });
     const data = await res.json();
-    if (data.ok) {
+    if (data.resubscribe_pending) {
+      msg.style.color = data.sent ? '#6ee7b7' : '#fca5a5';
+      msg.textContent = data.sent ? (zh ? "📬 你先前退訂過 —— 我們寄了一封確認信到你的信箱,點一下就恢復寄送。" : "📬 You unsubscribed earlier — we emailed you a confirmation link. Click it to resume.") : (zh ? "你先前退訂過,但確認信寄不出去。請到「聯絡我們」告訴我們,我們會手動幫你恢復。" : "You unsubscribed earlier and we could not send the confirmation email — please contact us.");
+      msg.style.display = 'block';
+      btn.textContent = zh ? '已寄確認信 ✓' : 'Confirmation sent ✓';
+    } else if (data.ok) {
       if (window.mdTrackLead) window.mdTrackLead({ plan: "free" });
       msg.style.color = '#6ee7b7';
       msg.innerHTML = zh

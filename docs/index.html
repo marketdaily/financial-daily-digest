@@ -984,6 +984,22 @@ footer {
         </div>
       </div>
 
+      <!-- Step 2d: 退訂過的人回來(2026-08-17):退訂**不會**把人移出名單,所以他打 email 進來時
+           /check-subscriber 一路顯示「已訂閱」,而寄信端每天靜默剔除他 —— 那是進得去出不來的門。
+           這一步是他唯一看得見的出口;真正恢復要點確認信裡的連結(不能在這裡直接恢復,
+           不然任何人打別人的 email 就能替他撤銷退訂)。 -->
+      <div id="resub-step" style="display:none;">
+        <div class="wb-card">
+          <div style="font-size:13px;color:#fbbf24;font-weight:700;margin-bottom:8px;" data-i18n="rs_found">🔕 這個 Email 目前是「已退訂」狀態</div>
+          <div id="rs-email" style="font-size:14px;color:rgba(255,255,255,0.65);margin-bottom:14px;word-break:break-all;"></div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.5);line-height:1.7;margin-bottom:18px;" data-i18n="rs_note">你先前取消過日報,所以我們不會直接幫你重新開啟。按下面按鈕,我們寄一封確認信到這個信箱,點一下就恢復。</div>
+          <button id="rs-btn" onclick="requestResubscribe()" style="display:block;width:100%;background:#6366f1;color:#fff;font-size:15px;font-weight:700;padding:14px;border:0;border-radius:12px;cursor:pointer;margin-bottom:10px;box-shadow:0 4px 18px rgba(99,102,241,0.38);" data-i18n="rs_btn">寄確認信給我 →</button>
+          <div id="rs-msg" style="display:none;font-size:13px;line-height:1.7;margin-bottom:10px;"></div>
+          <a id="rs-dash" href="dashboard.html" style="display:block;font-size:13px;color:#a5b4fc;text-decoration:none;margin-bottom:8px;" data-i18n="rs_dash">只想看我的專區(不恢復日報)→</a>
+          <button class="back-link" onclick="resetEmailStep()" data-i18n="hero_btn_back">← 不是你？重新輸入</button>
+        </div>
+      </div>
+
       <!-- Step 2c: Set password (first login after subscribing) -->
       <div id="set-pwd-step" style="display:none;">
         <div class="wb-card">
@@ -1954,6 +1970,10 @@ const i18n = {
     hero_btn_signin: "Go to My Account →",
     hero_btn_back: "← Not you? Change email",
     wb_found: "✅ Found your subscription!",
+    rs_found: "🔕 This email is currently unsubscribed",
+    rs_note: "You unsubscribed earlier, so we won't switch it back on for you. Tap below and we'll email a confirmation link to this address — one click restores it.",
+    rs_btn: "Email me the confirmation →",
+    rs_dash: "Just open My Account (keep digests off) →",
     choose_plan: "🎉 Account created — welcome!",
     invite_title: "Someone sent you a gift 🎁", invite_hint: "A friend's invite gets you MarketDaily free — limited spots",
     or_divider: "or",
@@ -2114,6 +2134,10 @@ const i18n = {
     hero_btn_signin: "前往我的專區 →",
     hero_btn_back: "← 不是你？重新輸入",
     wb_found: "✅ 找到你的訂閱了！",
+    rs_found: "🔕 這個 Email 目前是「已退訂」狀態",
+    rs_note: "你先前取消過日報,所以我們不會直接幫你重新開啟。按下面按鈕,我們寄一封確認信到這個信箱,點一下就恢復。",
+    rs_btn: "寄確認信給我 →",
+    rs_dash: "只想看我的專區(不恢復日報)→",
     choose_plan: "🎉 註冊完成,歡迎加入",
     invite_title: "有人送你一份禮物 🎁", invite_hint: "用朋友送的邀請碼免費入場 —— 名額有限",
     or_divider: "或",
@@ -2326,7 +2350,18 @@ async function checkEmail() {
     const isReturning = data.subscribed && !data.needsPasswordSetup;
     const isLegitNeedsSetup = data.needsPasswordSetup && data.hasKvPlan === true;
     document.getElementById("email-step").style.display = "none";
-    if (isReturning) {
+    // 退訂狀態優先(2026-08-17):不擋在這裡的話,他會被導去登入/設密碼、看到「已訂閱」,
+    // 然後每天被寄信端靜默剔除 —— 官網寫「重新訂閱即可」卻沒有任何按鈕做得到那件事。
+    if (data.unsubscribed) {
+      _pendingSetupEmail = email;
+      document.getElementById("rs-email").textContent = email;
+      document.getElementById("rs-dash").href = `dashboard.html?email=${encodeURIComponent(email)}`;
+      const rsMsg = document.getElementById("rs-msg");
+      if (rsMsg) rsMsg.style.display = "none";
+      const rsBtn = document.getElementById("rs-btn");
+      if (rsBtn) rsBtn.disabled = false;
+      document.getElementById("resub-step").style.display = "block";
+    } else if (isReturning) {
       document.getElementById("wb-email").textContent = email;
       document.getElementById("wb-signin-btn").href = `dashboard.html?email=${encodeURIComponent(email)}`;
       document.getElementById("returning-step").style.display = "block";
@@ -2353,7 +2388,52 @@ async function checkEmail() {
   }
 }
 
+async function requestResubscribe() {
+  const btn = document.getElementById("rs-btn");
+  const msg = document.getElementById("rs-msg");
+  const email = (document.getElementById("rs-email").textContent || "").trim();
+  if (!email) return;
+  btn.disabled = true;
+  btn.textContent = currentLang === "zh" ? "寄送中..." : "Sending...";
+  try {
+    const res = await fetch(WORKER_URL + "/resubscribe-request", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    msg.style.display = "block";
+    if (data.sent || data.reason === "rate_limited") {
+      msg.style.color = "#6ee7b7";
+      msg.textContent = currentLang === "zh"
+        ? "✅ 確認信已寄出,點信裡的按鈕就恢復寄送(沒收到請看垃圾郵件匣)。"
+        : "✅ Confirmation email sent — click the button inside to resume (check your spam folder).";
+      btn.style.display = "none";
+    } else if (data.pending === false) {
+      // 期間剛好被解除了(例如他先點了信) → 不要謊稱寄了信
+      msg.style.color = "#6ee7b7";
+      msg.textContent = currentLang === "zh"
+        ? "✅ 這個 Email 目前是訂閱中,不需要恢復。"
+        : "✅ This email is already subscribed — nothing to restore.";
+      btn.style.display = "none";
+    } else {
+      msg.style.color = "#fca5a5";
+      msg.textContent = currentLang === "zh"
+        ? "確認信寄不出去。請到「聯絡我們」告訴我們,我們會手動幫你恢復。"
+        : "We could not send the confirmation email — please contact us and we will restore it manually.";
+      btn.disabled = false;
+    }
+  } catch {
+    msg.style.display = "block";
+    msg.style.color = "#fca5a5";
+    msg.textContent = currentLang === "zh" ? "網路錯誤，請稍後再試。" : "Network error. Please try again.";
+    btn.disabled = false;
+  } finally {
+    btn.textContent = currentLang === "zh" ? "寄確認信給我 →" : "Email me the confirmation →";
+  }
+}
+
 function resetEmailStep() {
+  document.getElementById("resub-step").style.display = "none";
   document.getElementById("returning-step").style.display = "none";
   document.getElementById("new-user-step").style.display = "none";
   document.getElementById("set-pwd-step").style.display = "none";
@@ -2433,7 +2513,14 @@ async function subscribeFree() {
       body: JSON.stringify({ email, ref: refCode, ...getAttrPayload() }),
     });
     const data = await res.json();
-    if (data.ok) {
+    // 退訂過的人:後端刻意不直接恢復(任何人都能打別人的 email)⇒ 這裡不可以說「訂閱成功」
+    if (data.resubscribe_pending) {
+      successEl.textContent = data.sent
+        ? (currentLang === "zh" ? "📬 你先前退訂過 —— 我們寄了一封確認信到你的信箱,點一下就恢復寄送。" : "📬 You unsubscribed earlier — we emailed you a confirmation link. Click it to resume.")
+        : (currentLang === "zh" ? "你先前退訂過,但確認信寄不出去。請到「聯絡我們」告訴我們,我們會手動幫你恢復。" : "You unsubscribed earlier and we could not send the confirmation email — please contact us.");
+      successEl.style.display = "block";
+      btn.disabled = true; btn.textContent = currentLang === "zh" ? "已寄確認信 ✓" : "Confirmation sent ✓";
+    } else if (data.ok) {
       if (window.mdTrackLead) window.mdTrackLead({ plan: "free" });
       if (window.mdIdentify) window.mdIdentify(email);
       if (window.mdTrack) window.mdTrack("signup_free", { plan: "free" });
@@ -2502,7 +2589,12 @@ async function submitHomeFree() {
       body: JSON.stringify({ email, ref, ...getAttrPayload() }),
     });
     const data = await res.json();
-    if (data.ok) {
+    if (data.resubscribe_pending) {
+      msg.style.color = data.sent ? "#6ee7b7" : "#fca5a5";
+      msg.textContent = data.sent ? (zh ? "📬 你先前退訂過 —— 我們寄了一封確認信到你的信箱,點一下就恢復寄送。" : "📬 You unsubscribed earlier — we emailed you a confirmation link. Click it to resume.") : (zh ? "你先前退訂過,但確認信寄不出去。請到「聯絡我們」告訴我們,我們會手動幫你恢復。" : "You unsubscribed earlier and we could not send the confirmation email — please contact us.");
+      msg.style.display = "block";
+      btn.textContent = zh ? "已寄確認信 ✓" : "Confirmation sent ✓";
+    } else if (data.ok) {
       if (window.mdTrackLead) window.mdTrackLead({ plan: "free" });
       msg.style.color = "#6ee7b7";
       msg.innerHTML = zh
@@ -2543,7 +2635,12 @@ async function subscribeInvite() {
       body: JSON.stringify({ email, code, ref: refCode, ...getAttrPayload() }),
     });
     const data = await res.json();
-    if (data.ok) {
+    if (data.resubscribe_pending) {
+      successEl.textContent = data.sent
+        ? (currentLang === "zh" ? "📬 你先前退訂過 —— 我們寄了一封確認信到你的信箱,點一下就恢復寄送。" : "📬 You unsubscribed earlier — we emailed you a confirmation link. Click it to resume.")
+        : (currentLang === "zh" ? "你先前退訂過,但確認信寄不出去。請到「聯絡我們」告訴我們,我們會手動幫你恢復。" : "You unsubscribed earlier and we could not send the confirmation email — please contact us.");
+      successEl.style.display = "block";
+    } else if (data.ok) {
       successEl.textContent = currentLang === "zh" ? "✅ 訂閱成功！請到信箱確認連結。" : "✅ Subscribed! Check your inbox.";
       successEl.style.display = "block";
       document.getElementById("invite-sec-code").value = "";

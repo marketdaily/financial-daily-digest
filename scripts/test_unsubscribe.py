@@ -291,8 +291,119 @@ check("注入失效仍照寄", len(SENT), 1)
 check("注入失效 → postcheck 推播", len(ALERTS), 1)
 unsubscribe.inject_footer_link = _orig_inject
 
+# ── ⑤ r2 驗證者(2026-08-17)─────────────────────────────────────────────────
+# F3-a 哨兵撞名:版型多一句提到「取消訂閱 / Unsubscribe」的**純文字**說明時,
+# 舊版注入哨兵(看 LINK_TEXT)會整批跳過注入,而舊版 postcheck 用同一個字串當判準 ⇒ 同時被騙。
+_TEXT_ONLY = ('<html><body><div class="footer">'
+              f'不想再收到?信末的{unsubscribe.LINK_TEXT}連結隨時可用。'
+              '</div></body></html>')
+ALERTS.clear()
+SENT.clear()
+main._drop_unsubscribed = lambda subs: subs
+main._flush_outbox([("a@x.com", _TEXT_ONLY, "S"), ("b@x.com", _TEXT_ONLY, "S")],
+                   "2026-08-17", fake_send, "k")
+check("純文字提到『取消訂閱』時仍然注入真連結", len(SENT), 2)
+for s in SENT:
+    check_true(f"{s['email']} 的信有 href(不是只有那句純文字)",
+               unsubscribe.unsub_url(s["email"], SEC) in s["html"],
+               "哨兵看 LINK_TEXT ⇒ 全批無連結而零告警")
+check("哨兵撞名情境下不該有告警(真的有連結)", len(ALERTS), 0)
+
+# F3-b 每一封都要驗:舊版 `_postchecked` 一次性 ⇒ 第 2 封起沒連結照樣零告警。
+_only_first = {"n": 0}
+
+
+def _inject_first_only(html, email, secret=None):
+    _only_first["n"] += 1
+    return _orig_inject(html, email, secret) if _only_first["n"] == 1 else html
+
+
+unsubscribe.inject_footer_link = _inject_first_only
+ALERTS.clear()
+SENT.clear()
+main._flush_outbox([("a@x.com", BODY, "S"), ("b@x.com", BODY, "S"), ("c@x.com", BODY, "S")],
+                   "2026-08-17", fake_send, "k")
+check("第 2、3 封沒連結時仍照寄", len(SENT), 3)
+check_true("第 2 封沒連結 → 有告警(不是只驗第一封)", len(ALERTS) >= 1)
+# 只斷言「有告警」殺不掉「把 email 換成別人」的突變 ⇒ 要認到告警指的是哪一位
+check_true("告警點名的是真的沒拿到連結的那一位",
+           ALERTS and "b@x.com" in ALERTS[0], ALERTS[0] if ALERTS else "(無告警)")
+check_true("告警不會反過來誣賴拿到連結的 a@x.com",
+           ALERTS and "第一個出問題的收件人:a@x.com" not in ALERTS[0])
+unsubscribe.inject_footer_link = _orig_inject
+
+# F3-c 收件人 email 髒到正規化後為空 ⇒ 那封沒有連結,舊版零告警(footer_link_html 回 "")
+ALERTS.clear()
+SENT.clear()
+main._flush_outbox([("a@x.com", BODY, "S"), ("﻿ \t", BODY, "S")],
+                   "2026-08-17", fake_send, "k")
+check("髒 email 那封仍照寄(死線:絕不缺信)", len(SENT), 2)
+check_true("髒 email 沒有退訂連結 → 有告警", len(ALERTS) >= 1)
+
+# F9 hold 後那次過濾丟例外時必須 fail-open(照寄),不可以整批不寄
+def _boom(_subs):
+    raise RuntimeError("unsub-list 模組壞掉")
+
+
+main._drop_unsubscribed = _boom
+ALERTS.clear()
+SENT.clear()
+_n = main._flush_outbox([("a@x.com", BODY, "S"), ("b@x.com", BODY, "S")],
+                        "2026-08-17", fake_send, "k")
+check("退訂過濾丟例外 → 照寄(fail-open,不是整批 0 封)", (_n, len(SENT)), (2, 2))
+check_true("fail-open 後連結還是有注入", unsubscribe.unsub_url("a@x.com", SEC) in SENT[0]["html"])
+main._drop_unsubscribed = lambda subs: subs
+
 for k, v in _stash.items():
     setattr(main, k, v)
+
+# ── ⑥ 跨語言不變量:JS 側的字元集(2026-08-17 r2 驗證者 F5)──────────────────
+# 這個不變量原本只靠兩邊的註解維持:改壞 Python 側會被上面的測試殺,改壞 **JS 側**沒有任何
+# 東西會紅,而後果就是 F6 那個 bug(某些人的退訂連結永遠 400)。抓不到那一行也算紅
+# ——「我找不到」不可以被寫成「它沒問題」。
+import re as _re  # noqa: E402
+
+_WORKER = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                       "stripe-webhook", "src", "index.js")
+_js = ""
+try:
+    with open(_WORKER, encoding="utf-8") as fh:
+        _js = fh.read()
+except OSError as e:
+    _js = ""
+    check("讀得到 worker index.js", f"OSError: {e}", "readable")
+if _js:
+    _m = _re.search(r'const UNSUB_TRIM_CHARS = "((?:[^"\\]|\\.)*)";', _js)
+    check_true("worker 裡找得到 UNSUB_TRIM_CHARS 宣告", _m is not None)
+    if _m:
+        # 兩邊都是「給 RegExp 用的字元類來源字串」,所以原始碼裡的反斜線都是成對的。
+        # 比的是**字串值**不是原始碼位元組:JS 那側要先把 `\\` 解回 `\`(Python 那側由直譯器做掉了)。
+        _js_val = _m.group(1).replace("\\\\", "\\")
+        check("JS 與 Python 的 trim 字元集逐字相同", _js_val, unsubscribe._TRIM_CHARS)
+    # F2:`unsub:` 標記的清除點只准出現在「本人點了確認信」與「admin 帶密碼」兩處。
+    # 用數量斷言認不出身分(兩個不同的洞都可以是 3 個呼叫點)⇒ 逐一看它長在誰底下。
+    _bad = []
+    for _mm in _re.finditer(r"await reactivateSubscriber\(", _js):
+        _ctx = _js[max(0, _mm.start() - 1200):_mm.start()]
+        if ('url.pathname === "/resubscribe"' not in _ctx
+                and 'url.pathname === "/admin/unsub-clear"' not in _ctx):
+            _bad.append(_js[max(0, _mm.start() - 90):_mm.start() + 40].replace("\n", " ")[-90:])
+    check_true("解除退訂只發生在本人確認 / admin 兩處(匿名端點不得直接清)",
+               not _bad, "; ".join(_bad) if _bad else "")
+    check_true("匿名註冊端點改成寄確認信",
+               _js.count("requestResubscribeConfirm(email, env)") >= 3,
+               "subscribe-free-direct / free-subscribe / set-password 三支都要接")
+    check_true("resub 簽章與 unsub 簽章 domain-separate", "`resub|v1|${email}`" in _js)
+    check_true("GET /resubscribe 不生效(郵件客戶端會預抓連結)",
+               'if (request.method === "GET") return resubPage("confirm", email, qs);' in _js)
+    # F8:welcome 是唯一沒有退訂出口的訂閱類信件,而它又是匿名可觸發的那一封
+    _w = _js[_js.find("async function sendWelcomeEmail("):]
+    _w = _w[:_w.find("\n}\n")]
+    check_true("welcome 信走 sendLifecycleEmail(=帶退訂連結與 List-Unsubscribe header)",
+               "sendLifecycleEmail(email, apiKey, subject, html, env" in _w)
+    check_true("welcome 呼叫端有把 env 傳進去(沒傳就補不出出口)",
+               _js.count("sendWelcomeEmail(email, env.BREVO_API_KEY") == 2
+               and _js.count("tier, env);") == 2)
 
 
 print()

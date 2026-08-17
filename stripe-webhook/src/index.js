@@ -519,8 +519,15 @@ export default {
       const password = body.password || "";
       if (!email) return json({ subscribed: false });
 
+      // 退訂狀態必須露出來(2026-08-17 r2 驗證者 F1):退訂**不會**把人移出 Brevo 名單
+      // (只 PUT emailBlacklisted),所以下面 listIds 仍含 targetList、前端一路顯示「已訂閱」,
+      // 而寄信端每天靜默把他剔掉 ⇒ 四個地方都看不出異常。這一欄是前端唯一分得出來的訊號。
+      // 算在 admin 分支**之前**:admin 自己退訂時同樣要看得到那個出口。
+      let unsubscribed = false;
+      try { unsubscribed = !!(await env.USER_PREFS.get(`unsub:${normUnsubEmail(email)}`)); } catch {}
+
       if (ADMIN_EMAILS.includes(email)) {
-        return json({ subscribed: true, plan: "admin" });
+        return json({ subscribed: true, plan: "admin", unsubscribed });
       }
 
       const res = await fetch(`https://api.brevo.com/v3/contacts/${encodeURIComponent(email)}`, {
@@ -541,10 +548,10 @@ export default {
 
       const storedHash = await env.USER_PREFS.get(`pwd:${email}`);
       if (!storedHash) {
-        return json({ subscribed: true, plan, since, needsPasswordSetup: true, hasKvPlan });
+        return json({ subscribed: true, plan, since, needsPasswordSetup: true, hasKvPlan, unsubscribed });
       }
       if (!password) {
-        return json({ subscribed: true, needsPasswordEntry: true, hasKvPlan });
+        return json({ subscribed: true, needsPasswordEntry: true, hasKvPlan, unsubscribed });
       }
       if (await isAuthLocked(env, email, request)) {
         return json({ subscribed: true, error: "too_many_attempts" }, 429);
@@ -555,7 +562,9 @@ export default {
       }
       await clearAuthFail(env, email, request);
       await maybeUpgradeHash(env, email, password, storedHash);
-      return json({ subscribed: true, plan, since, hasKvPlan });
+      // 登入成功也**不自動**恢復訂閱:有人是刻意退訂日報但仍要用「我的專區」看偏好。
+      // 替他決定 = 另一種未經同意的再同意(只是方向相反)。前端拿這欄顯示「重新訂閱」按鈕。
+      return json({ subscribed: true, plan, since, hasKvPlan, unsubscribed });
     }
 
     // Set subscriber password (first-time setup)
@@ -602,7 +611,6 @@ export default {
         if (!(await isEmailDeliverable(email, env))) return json({ error: "undeliverable_email" }, 400);
         const added = await addToBrevo(email, env.BREVO_API_KEY, targetList);
         if (!added) return json({ error: "brevo_error" }, 502);
-        await reactivateSubscriber(email, env);   // 本人重新送出 email 訂閱 → 清掉舊的退訂標記
         const existingPlan = await env.USER_PREFS.get(`plan:${email}`);
         if (!existingPlan) await env.USER_PREFS.put(`plan:${email}`, "free");
         createdNew = true;
@@ -617,9 +625,14 @@ export default {
       const hash = await makePwdHash(password);
       await env.USER_PREFS.put(`pwd:${email}`, hash);
 
+      // 設密碼 ≠ 解除退訂(r2 F2:這支端點對「還沒設過密碼的 email」同樣是匿名可達)。
+      // 帳號能用、日報照舊停 —— 想恢復寄送要點確認信裡的那一下。
+      const resub = await requestResubscribeConfirm(email, env);
+
       const isPaid = !!(contact && (contact.attributes?.PAID === true || contact.attributes?.PLAN === "paid"));
       const plan = (await env.USER_PREFS.get(`plan:${email}`)) || (isPaid ? "premium" : "free");
-      return json({ ok: true, plan, since: (contact && contact.createdAt) || null, createdNew });
+      return json({ ok: true, plan, since: (contact && contact.createdAt) || null, createdNew,
+                    resubscribe_pending: resub.pending, resubscribe_sent: resub.sent });
     }
 
     // Change password (authenticated users)
@@ -1579,6 +1592,40 @@ export default {
       }
       return unsubPage("done", email, "");
     }
+    // ── 重新訂閱(2026-08-17 r2 驗證者 F1+F2)──────────────────────────────────
+    // 站上任何「我要回來」的按鈕都打這支:它**不清**標記,只寄一封帶簽章的確認信。
+    // 真正清標記在下面 POST /resubscribe(=信箱主人自己點的那一下)。
+    if (url.pathname === "/resubscribe-request" && request.method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { return json({ error: "Invalid request" }, 400); }
+      const email = normUnsubEmail(body.email || "");
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "invalid_email" }, 400);
+      // 防當成騷擾工具:同一個 email 5 分鐘只寄一封確認信
+      if (await env.USER_PREFS.get(`rl:resub:${email}`)) return json({ ok: true, pending: true, sent: false, reason: "rate_limited" });
+      const r = await requestResubscribeConfirm(email, env);
+      if (r.pending) ctx.waitUntil(env.USER_PREFS.put(`rl:resub:${email}`, "1", { expirationTtl: 300 }));
+      return json({ ok: true, pending: r.pending, sent: r.sent, reason: r.reason });
+    }
+    if (url.pathname === "/resubscribe" && (request.method === "GET" || request.method === "POST")) {
+      const email = normUnsubEmail(url.searchParams.get("e") || "");
+      const tok = (url.searchParams.get("t") || "").trim();
+      let ok = false;
+      if (email && tok) {
+        for (const s of [env.INTERNAL_TOKEN, env.INTERNAL_TOKEN_2].filter(Boolean)) {
+          const hex = await resubHex(email, s);
+          if (hex.length !== tok.length) continue;
+          let diff = 0;
+          for (let i = 0; i < hex.length; i++) diff |= hex.charCodeAt(i) ^ tok.charCodeAt(i);
+          if (diff === 0) { ok = true; break; }
+        }
+      }
+      if (!ok) return resubPage("bad", email, "");
+      const qs = `e=${encodeURIComponent(email)}&t=${encodeURIComponent(tok)}`;
+      // GET 不生效(同 /unsubscribe 的理由:郵件客戶端會預抓連結 ⇒ GET 即生效等於幫人誤按)
+      if (request.method === "GET") return resubPage("confirm", email, qs);
+      await reactivateSubscriber(email, env);
+      return resubPage("done", email, "");
+    }
     if (url.pathname === "/internal/unsub-list" && request.method === "GET") {
       if (!internalBearerOk(request.headers.get("Authorization"))) {
         return json({ error: "unauthorized" }, 401);
@@ -2299,10 +2346,14 @@ export default {
         return json({ error: "code_already_used" }, 400);
       }
 
+      // 退訂過的人:不直接解除,寄確認信(r2 F2 —— 邀請碼不是本人證明,碼會被轉傳)
+      {
+        const resub = await requestResubscribeConfirm(email, env);
+        if (resub.pending) return json({ ok: true, resubscribe_pending: true, sent: resub.sent, reason: resub.reason });
+      }
       const listId = parseInt(env.BREVO_LIST_ID) || 2;
       const added = await addToBrevo(email, env.BREVO_API_KEY, listId);
       if (!added) return json({ error: "brevo_error" }, 502);
-      await reactivateSubscriber(email, env);   // 本人重新送出 email 訂閱 → 清掉舊的退訂標記
 
       // 標記碼已用(允許同 email 重複嘗試但不能轉給別人)
       if (!usedBy) {
@@ -2660,10 +2711,16 @@ export default {
       if (await env.USER_PREFS.get(`rl:signup-email:${email}`)) return json({ error: "rate_limited" }, 429);
       ctx.waitUntil(env.USER_PREFS.put(ipKey, String(ipCount + 1), { expirationTtl: 3600 }));
       ctx.waitUntil(env.USER_PREFS.put(`rl:signup-email:${email}`, "1", { expirationTtl: 300 }));
+      // 退訂過的人在這裡送 email:**不直接解除**(r2 驗證者 F2 —— 這支端點對匿名者完全開放,
+      // 直接清標記等於任何人都能替別人撤銷退訂)。改寄確認信,並且**不繼續走註冊流程**
+      // (不 addToBrevo、不寄 welcome):他早就在名單裡,缺的只是他本人的一次點擊。
+      {
+        const resub = await requestResubscribeConfirm(email, env);
+        if (resub.pending) return json({ ok: true, resubscribe_pending: true, sent: resub.sent, reason: resub.reason });
+      }
       const listId = parseInt(env.BREVO_LIST_ID) || 2;
       const added = await addToBrevo(email, env.BREVO_API_KEY, listId);
       if (!added) return json({ error: "brevo_error" }, 502);
-      await reactivateSubscriber(email, env);   // 本人重新送出 email 訂閱 → 清掉舊的退訂標記
       // 必寫 KV plan:${email} —— 不然 check-subscriber 會視為「未完成註冊」陷入循環
       const existing = await env.USER_PREFS.get(`plan:${email}`);
       if (!existing) await env.USER_PREFS.put(`plan:${email}`, "free");
@@ -2857,7 +2914,7 @@ export default {
               }));
             }
           } catch (e) { console.log("stripe signup ts error:", String(e)); }
-          try { await sendWelcomeEmail(email, env.BREVO_API_KEY, true, tier); }
+          try { await sendWelcomeEmail(email, env.BREVO_API_KEY, true, tier, env); }
           catch (e) { console.log("stripe welcome error:", String(e)); }
         })());
         // Attribution: Stripe Checkout 透過 session.metadata 帶 visit_id / utm / ref
@@ -3023,6 +3080,43 @@ a{color:#818cf8}</style></head><body><div class="card">${body}</div></body></htm
   return shell(`<h1>這個退訂連結無法驗證</h1>
 <p>連結可能被郵件軟體截斷或已過期。請直接<a href="https://marketdaily.ai/contact.html">透過聯絡我們</a>告知,我們會為你停止寄送。</p>
 <p style="font-size:12px">This unsubscribe link could not be verified — please contact us and we will stop the emails for you.</p>`, 400);
+}
+
+// 重新訂閱確認頁(2026-08-17 r2 F2)。與退訂頁同一個殼,但**方向相反**:
+// 這裡是「恢復寄送」,所以 bad token 的文案不可以照抄退訂那份(會把人導去要求停止寄送)。
+function resubPage(state, email, qs) {
+  const esc = (s) => String(s || "").replace(/[&<>"']/g, c => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const shell = (body, status = 200) => new Response(
+    `<!DOCTYPE html><html lang="zh-Hant"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>重新訂閱 · MarketDaily</title>
+<style>body{margin:0;background:#0b1020;color:#e5e7eb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px}
+.card{max-width:460px;width:100%;background:#141a2e;border:1px solid #232b45;border-radius:16px;padding:32px 28px;text-align:center}
+h1{font-size:19px;margin:0 0 14px;color:#fff}p{font-size:14px;line-height:1.75;color:#9ca3af;margin:0 0 10px}
+.em{color:#c7d2fe;font-weight:700;word-break:break-all}
+button{margin-top:20px;background:#6366f1;color:#fff;border:0;border-radius:10px;padding:12px 26px;font-size:14px;font-weight:700;cursor:pointer}
+a{color:#818cf8}</style></head><body><div class="card">${body}</div></body></html>`,
+    { status, headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" } });
+
+  if (state === "confirm") {
+    return shell(`<h1>恢復寄送財經日報?</h1>
+<p><span class="em">${esc(email)}</span></p>
+<p>按下確認後,明天早上 7:00 起恢復寄送。<br>不是你本人要求的?關掉這頁即可,你仍維持退訂狀態。</p>
+<p style="font-size:12px">Confirm to start receiving the daily digest again.</p>
+<form method="POST" action="/resubscribe?${esc(qs)}"><button type="submit">確認恢復寄送 / Confirm</button></form>`);
+  }
+  if (state === "done") {
+    return shell(`<h1>已恢復寄送 ✅</h1>
+<p><span class="em">${esc(email)}</span> 明天早上 7:00 起會再收到財經日報。</p>
+<p style="font-size:12px">You are subscribed again. The next digest arrives at 7:00 AM (Taipei).</p>
+<p style="font-size:12px;margin-top:18px">想調整只收哪些股票?<a href="https://marketdaily.ai/dashboard.html">到我的專區設定偏好</a></p>`);
+  }
+  return shell(`<h1>這個恢復連結無法驗證</h1>
+<p>連結可能被郵件軟體截斷或已過期。到<a href="https://marketdaily.ai">marketdaily.ai</a> 重新送出一次 Email,我們會再寄一封確認信給你。</p>
+<p style="font-size:12px">This link could not be verified — enter your email at marketdaily.ai and we will send a new confirmation.</p>`, 400);
 }
 
 // FinMind v4 data proxy(台股籌碼/財務官方彙整)。token 600 req/hr;CF edge cache 讓熱門股全球共用。
@@ -3198,11 +3292,89 @@ async function unsubUrlFor(email, env) {
   return `https://api.marketdaily.ai/unsubscribe?e=${encodeURIComponent(e)}&t=${await unsubHex(e, env.INTERNAL_TOKEN)}`;
 }
 
+// 重新訂閱確認信的簽章(2026-08-17 r2 驗證者 F2)。前綴 `resub|v1|` 與退訂的 `unsub|v1|`
+// domain-separate —— 不然同一把 secret 算出的退訂 token 可以被拿來當「解除退訂」用。
+async function resubHex(email, secret) {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("HMAC", key, enc.encode(`resub|v1|${email}`));
+  return [...new Uint8Array(sig)].map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+}
+
+async function resubUrlFor(email, env) {
+  const e = normUnsubEmail(email);
+  if (!e || !env.INTERNAL_TOKEN) return "";
+  return `https://api.marketdaily.ai/resubscribe?e=${encodeURIComponent(e)}&t=${await resubHex(e, env.INTERNAL_TOKEN)}`;
+}
+
+// 「想重新收日報」的唯一入口(2026-08-17 r2 驗證者 F1+F2 的共同解)。
+// F1:退訂後回站上的人必須有路回來;F2:那條路不可以讓**匿名第三方**替別人走。
+// 兩者同時成立的做法只有一個 —— 誰按的不重要,**信箱的主人點了才算數**:
+// 這裡只寄一封帶簽章的確認信,`unsub:` 要等 /resubscribe 被點下去才清。
+// 回傳 { pending, sent, reason } —— pending=true 代表這個 email 目前是退訂狀態、呼叫端要改講「確認信已寄出」。
+async function requestResubscribeConfirm(email, env) {
+  const e = normUnsubEmail(email);
+  if (!e) return { pending: false, sent: false, reason: "invalid_email" };
+  let marked = null;
+  try { marked = await env.USER_PREFS.get(`unsub:${e}`); }
+  catch { return { pending: false, sent: false, reason: "kv_error" }; }   // 讀不到就當沒退訂(不擋註冊)
+  if (!marked) return { pending: false, sent: false, reason: "not_unsubscribed" };
+
+  const u = await resubUrlFor(e, env);
+  if (!u) {
+    ctx_free_push(env, `⚠️ 有人要重新訂閱但算不出 resub token:${e}\n` +
+      `INTERNAL_TOKEN 缺席 ⇒ 他點不回來。人工解:/admin/unsub-clear 或 wrangler kv key delete "unsub:${e}"`);
+    return { pending: true, sent: false, reason: "no_token" };
+  }
+  const html = lifecycleShell({
+    badge: "RESUBSCRIBE",
+    headerTitle: "↩️ 要重新收財經日報嗎?",
+    headerSub: "確認一下就恢復寄送",
+    bodyHtml: `
+    <p style="font-size:15px;color:#444;line-height:1.8;margin:0 0 18px;">
+      有人(希望是你本人)在 marketdaily.ai 用 <strong>${e}</strong> 要求恢復財經日報。<br>
+      你先前退訂過,所以我們<strong>不會直接幫你重新開啟</strong> —— 按下面的按鈕才算數。
+    </p>
+    <div style="text-align:center;margin-bottom:22px;">
+      <a href="${u}" style="display:inline-block;background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff;font-size:15px;font-weight:800;padding:14px 36px;border-radius:12px;text-decoration:none;">確認恢復寄送 →</a>
+    </div>
+    <p style="font-size:12px;color:#888;line-height:1.8;margin:0;">
+      不是你本人?<strong>直接忽略這封信</strong>,你仍然維持退訂狀態,不會再收到任何日報。<br>
+      按鈕點不動的話,把這個網址貼到瀏覽器:<br>
+      <span style="word-break:break-all;color:#6366f1;">${u}</span>
+    </p>`,
+    footerNote: "這是一封確認信,不是日報",
+  });
+  try {
+    // env 刻意不傳:收信人**現在就是退訂狀態**,在確認信上再掛一個「取消訂閱」是錯的出口。
+    const r = await sendLifecycleEmail(e, env.BREVO_API_KEY, "↩️ 確認恢復 MarketDaily 財經日報", html);
+    if (!r || !r.ok) {
+      // 最現實的失敗:Brevo 對已 blacklist 的聯絡人擋掉這封 ⇒ 他會卡在「按了沒反應」。
+      ctx_free_push(env, `⚠️ 重新訂閱確認信寄不出去:${e}(HTTP ${r ? r.status : "?"})\n` +
+        `⇒ 他想回來但收不到確認信。人工解:/admin/unsub-clear 帶 target=${e}`);
+      return { pending: true, sent: false, reason: "send_failed" };
+    }
+  } catch (err) {
+    ctx_free_push(env, `⚠️ 重新訂閱確認信寄送異常:${e}(${String(err)})`);
+    return { pending: true, sent: false, reason: "send_error" };
+  }
+  return { pending: true, sent: true, reason: "confirm_sent" };
+}
+
+// 沒有 ctx 的地方也要能推播(fire-and-forget,失敗不影響主流程)
+function ctx_free_push(env, msg) {
+  try { sendLineAdminPush(env, msg).catch(() => {}); } catch {}
+}
+
 // 退訂標記的唯一清除點(2026-08-17 驗證者 F1)。沒有它時退訂是**單向門**:重新訂閱的人
 // 註冊回 ok、welcome 信照發、dashboard 顯示已訂閱,但寄信端每天靜默把他剔掉 ⇒ 永遠收不到日報,
 // 而且四個地方都看不出異常。退訂確認頁自己還寫著「之後想回來,重新訂閱即可」。
-// ⚠️ 只在「用戶本人再次送出 email 訂閱」時呼叫。webhook / admin 屬性同步**不得**呼叫:
-// 付款或後台同步替人解除退訂 = 未經本人動作的再同意,比原本的 bug 更糟。
+// ⚠️ 呼叫端白名單(r2 驗證者 F2:r1 把它接在匿名端點上 = 任何人可替別人解除退訂):
+//   ① POST /resubscribe(帶 resub 簽章 = 信箱主人本人點的)
+//   ② POST /admin/unsub-clear(admin 密碼 + audit log)
+//   其他一律走 requestResubscribeConfirm() 寄確認信,**不得**直接呼叫這支。
+//   付款 webhook / 後台屬性同步更不得呼叫 = 未經本人動作的再同意。
 async function reactivateSubscriber(email, env) {
   const e = normUnsubEmail(email);
   if (!e) return;
@@ -3269,7 +3441,7 @@ async function postSignupTasks(email, refCode, env, isPaid = false, tier = "") {
   try { await grantReferralReward(env, refCode, email); }
   catch (e) { console.log("postSignup referral error:", String(e)); }
   try {
-    await sendWelcomeEmail(email, env.BREVO_API_KEY, isPaid, tier);
+    await sendWelcomeEmail(email, env.BREVO_API_KEY, isPaid, tier, env);
   } catch (e) { console.log("postSignup welcome error:", String(e)); }
 }
 
@@ -3494,7 +3666,9 @@ async function notifyAdmin(userEmail, name, topic, message, aiReply, apiKey) {
   });
 }
 
-async function sendWelcomeEmail(email, apiKey, isPaid = false, tier = "") {
+// `env` 傳進來才補得出退訂出口(2026-08-17 r2 驗證者 F8:welcome 是唯一沒有退訂出口的訂閱類信件,
+// 而它又是匿名第三方可觸發的那一封 ⇒ 收到的人可能根本沒訂閱過,卻連停掉的方法都沒有)。
+async function sendWelcomeEmail(email, apiKey, isPaid = false, tier = "", env = null) {
   const subject = "✅ 訂閱成功！歡迎加入財經日報 🎉";
   const planLine = "您的訂閱已啟用。MarketDaily 目前<strong>全功能限時免費</strong>,而且你已鎖定<strong>早鳥權益</strong> — 未來恢復收費後,你仍永久免費使用。";
 
@@ -3611,16 +3785,9 @@ async function sendWelcomeEmail(email, apiKey, isPaid = false, tier = "") {
 </body>
 </html>`;
 
-  await fetch("https://api.brevo.com/v3/smtp/email", {
-    method: "POST",
-    headers: { "api-key": apiKey, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      sender: { name: "財經日報", email: "hello@marketdaily.ai" },
-      to: [{ email }],
-      subject,
-      htmlContent: html,
-    }),
-  });
+  // 走 sendLifecycleEmail = 與 D1/D7/D14/D21/D45 共用同一段補退訂出口的邏輯(信體連結 + RFC 8058
+  // 兩個 header)。sender 顯示名沿用原本的「財經日報」,寄件人外觀零改變。
+  return sendLifecycleEmail(email, apiKey, subject, html, env, "財經日報");
 }
 
 // --- Lifecycle Email 共用樣式(對齊 sendWelcomeEmail 玻璃卡風格)---
@@ -3659,9 +3826,9 @@ function lifecycleShell({ badge, headerTitle, headerSub, bodyHtml, footerNote })
 // `env` 只有**行銷/生命週期**信才傳:傳了就補退訂出口(信體連結 + RFC 8058 兩個 header)。
 // 密碼重設這種交易信刻意不傳 —— 在重設密碼信上掛「取消訂閱」是錯的出口。
 // 算不出 URL(缺 INTERNAL_TOKEN)時整段跳過:寧可少一個連結也不寄一個驗不過的半殘 URL。
-async function sendLifecycleEmail(email, apiKey, subject, html, env) {
+async function sendLifecycleEmail(email, apiKey, subject, html, env, senderName = "MarketDaily 財經日報") {
   const payload = {
-    sender: { name: "MarketDaily 財經日報", email: "hello@marketdaily.ai" },
+    sender: { name: senderName, email: "hello@marketdaily.ai" },
     to: [{ email }],
     subject,
     htmlContent: html,
