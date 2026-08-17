@@ -3986,8 +3986,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 20:26",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 21:07",
+  "note": "生產實射:POST /resubscribe(帶 resub 簽章)真的執行了 USER_PREFS.delete('unsub:') —— probe 標記退訂後名單 count=1,POST 後約 60s(KV list 最終一致)歸零。worker 版本 17924a26"
  },
  {
   "id": 400,
@@ -3996,6 +3996,26 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 20:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 401,
+  "what": "退訂→重新訂閱的『確認信』本身沒在生產寄過:requestResubscribeConfirm 的 Brevo 送信分支只有離線推理+結構斷言",
+  "why": "要驗它必須真的寄一封信給一個真人信箱(probe 用 @example.invalid 會硬退信、還會觸發我自己的 admin 告警=自測噪音打進生產通道)。已知風險:Brevo 對 emailBlacklisted 聯絡人若擋掉 transactional,退訂者會卡在『按了沒反應』——程式已把送信失敗轉成 UI 誠實訊息+admin 告警,但那條路也沒實射過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 21:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 402,
+  "what": "INTERNAL_TOKEN 輪替 runbook 少一步(舊值先進 worker 的 INTERNAL_TOKEN_2),CLAUDE.md 那段還沒改",
+  "why": "CLAUDE.md 目前被別的視窗改著(git status M),死線 3b 不碰;已先寫進 unsubscribe.py docstring。下次動 CLAUDE.md 的人要把這一步補進『八處一起換』清單",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 21:07",
   "closed": null,
   "note": ""
  }
