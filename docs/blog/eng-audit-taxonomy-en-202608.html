@@ -6,10 +6,10 @@
 <link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
 <link rel="apple-touch-icon" href="/logo-icon.svg">
 <title>The 31st check didn&#x27;t exist: a failure-mode taxonomy of auditing LLM output in production | MarketDaily</title>
-<meta name="description" content="A deterministic audit gate inspects every personalized finance email our LLM pipeline generates. This post dissects all 30 checks by failure mode, dates each to the incident that created it, and covers the two times the defense itself became the outage.">
+<meta name="description" content="We run a daily finance email. Subscribers pick their holdings; an LLM pipeline generates a personalized HTML digest twice a day">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
 <meta property="og:title" content="The 31st check didn&#x27;t exist: a failure-mode taxonomy of auditing LLM output in production">
-<meta property="og:description" content="A deterministic audit gate inspects every personalized finance email our LLM pipeline generates. This post dissects all 30 checks by failure mode, dates each to the incident that created it, and covers the two times the defense itself became the outage.">
+<meta property="og:description" content="We run a daily finance email. Subscribers pick their holdings; an LLM pipeline generates a personalized HTML digest twice a day">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608">
 <meta property="og:site_name" content="MarketDaily">
@@ -18,12 +18,12 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The 31st check didn&#x27;t exist: a failure-mode taxonomy of auditing LLM output in production">
-<meta name="twitter:description" content="A deterministic audit gate inspects every personalized finance email our LLM pipeline generates. This post dissects all 30 checks by failure mode, dates each to the incident that created it, and covers the two times the defense itself became the outage.">
+<meta name="twitter:description" content="We run a daily finance email. Subscribers pick their holdings; an LLM pipeline generates a personalized HTML digest twice a day">
 <meta name="twitter:image" content="https://marketdaily.ai/blog/og/eng-audit-taxonomy-en-202608.png">
 <link rel="canonical" href="https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608">
 <link rel="alternate" hreflang="zh-Hant" href="https://marketdaily.ai/blog/eng-audit-taxonomy-202608">
 <link rel="alternate" hreflang="en" href="https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608">
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production", "description": "A deterministic audit gate inspects every personalized finance email our LLM pipeline generates. This post dissects all 30 checks by failure mode, dates each to the incident that created it, and walks through the two times the defense itself became the outage: 12 of 12 users failing one HIGH check on 2026-07-06, and a false-positive rule that shot down years and price levels as foreign tickers on 2026-07-24.", "datePublished": "2026-08-12T10:00:00+08:00", "dateModified": "2026-08-12", "author": {"@type": "Organization", "name": "MarketDaily"}, "publisher": {"@type": "Organization", "name": "MarketDaily", "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608"}, "image": ["https://marketdaily.ai/blog/og/eng-audit-taxonomy-en-202608.png"]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://marketdaily.ai/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://marketdaily.ai/blog/"}, {"@type": "ListItem", "position": 3, "name": "The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production"}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production", "description": "We run a daily finance email. Subscribers pick their holdings; an LLM pipeline generates a personalized HTML digest twice a day", "datePublished": "2026-08-12T10:00:00+08:00", "dateModified": "2026-08-12", "author": {"@type": "Organization", "name": "MarketDaily"}, "publisher": {"@type": "Organization", "name": "MarketDaily", "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608"}, "image": ["https://marketdaily.ai/blog/og/eng-audit-taxonomy-en-202608.png"]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://marketdaily.ai/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://marketdaily.ai/blog/"}, {"@type": "ListItem", "position": 3, "name": "The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production"}]}]}</script>
 <style>
 :root { color-scheme: dark; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -176,8 +176,9 @@ th { background:#12121f; color:#fff; font-weight:700; }
   <div style="margin:32px 0 0;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
     <p style="font-size:13px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px;">相關文章</p>
     <ul style="margin:0;padding:0;list-style:none;">
-    <li style="margin:8px 0;"><a href="eng-audit-taxonomy-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的</a></li>
     <li style="margin:8px 0;"><a href="eng-llm-council-judge-en-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">I run a 9-model LLM council with a judge to write a daily financial newsletter. Here's what actually breaks.</a></li>
+    <li style="margin:8px 0;"><a href="eng-llm-council-judge-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">LLM council + judge:一個天天在生產環境寄信的多模型仲裁系統(75 天實錄)</a></li>
+    <li style="margin:8px 0;"><a href="eng-audit-taxonomy-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的</a></li>
     </ul>
   </div>
   <div class="cta">

@@ -6,7 +6,7 @@
   <atom:link href="https://marketdaily.ai/feed.xml" rel="self" type="application/rss+xml"/>
   <description>MarketDaily 個股深度分析 — 美股、台股長尾主題,每週更新。</description>
   <language>zh-tw</language>
-  <lastBuildDate>Wed, 12 Aug 2026 10:00:00 +0800</lastBuildDate>
+  <lastBuildDate>Mon, 17 Aug 2026 16:35:07 +0800</lastBuildDate>
   <ttl>720</ttl>
   <generator>MarketDaily blog_feed.py</generator>
   <image>
@@ -15,11 +15,51 @@
     <link>https://marketdaily.ai/blog/</link>
   </image>
   <item>
+    <title>Google GOOGL 技術面 vs 基本面：投資人該如何評估？</title>
+    <link>https://marketdaily.ai/blog/googl-技術面-vs-基本面-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=googl-技術面-vs-基本面-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/googl-技術面-vs-基本面-202608</guid>
+    <pubDate>Mon, 17 Aug 2026 16:35:07 +0800</pubDate>
+    <description>在瞬息萬變的科技巨頭投資世界中，Google 母公司 Alphabet (GOOGL) 無疑是許多投資人關注的焦點。然而，面對這家市值數兆美元的企業，究竟該從技術面還是基本面切入分析，才能做出明智的投資決策？這是一個困擾許多投資人的問題。</description>
+    <category>GOOGL</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/googl-技術面-vs-基本面-202608.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/googl-技術面-vs-基本面-202608.png" medium="image"/>
+  </item>
+  <item>
+    <title>鴻海(2317) 法說會前哨：已揭露重點與投資人關注焦點</title>
+    <link>https://marketdaily.ai/blog/2317-event-20260817?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2317-event-20260817</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2317-event-20260817</guid>
+    <pubDate>Mon, 17 Aug 2026 16:34:47 +0800</pubDate>
+    <description>台灣科技巨擘鴻海（2317）即將於 2026 年 8 月 17 日、18 日及 19 日，陸續受 J.P. Morgan、Bank of America 及 Nomura 邀請，參與一系列投資人會議，向全球投資者說明公司營運概況。</description>
+    <category>2317</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/2317-event-20260817.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/2317-event-20260817.png" medium="image"/>
+  </item>
+  <item>
+    <title>2026 證券開戶新手必看：準備文件、完整流程一次搞懂！</title>
+    <link>https://marketdaily.ai/blog/guide-證券開戶要準備什麼文件-新手開戶流程-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-證券開戶要準備什麼文件-新手開戶流程-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-證券開戶要準備什麼文件-新手開戶流程-202608</guid>
+    <pubDate>Mon, 17 Aug 2026 16:34:37 +0800</pubDate>
+    <description>對於想踏入投資世界的新手來說，「證券開戶」往往是第一個遇到的關卡。你可能正在煩惱：證券開戶要準備什麼文件？流程會很複雜嗎？會不會花很多時間？別擔心！這篇文章將為你詳細拆解 2026 年證券開戶的準備文件與完整流程，讓你對投資的第一步不再感到迷茫，輕鬆跨出理財的第一步。</description>
+    <category>GUIDE</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/guide-證券開戶要準備什麼文件-新手開戶流程-202608.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/guide-證券開戶要準備什麼文件-新手開戶流程-202608.png" medium="image"/>
+  </item>
+  <item>
+    <title>毛利率與營業利益率差別：2026 年新手投資人必懂的獲利指標</title>
+    <link>https://marketdaily.ai/blog/term-毛利率與營益率-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-毛利率與營益率-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/term-毛利率與營益率-202608</guid>
+    <pubDate>Mon, 17 Aug 2026 16:34:24 +0800</pubDate>
+    <description>對於剛踏入投資領域的新手來說，理解一家公司的獲利能力是做出明智決策的關鍵。在眾多財報指標中，毛利率與營業利益率是評估企業經營效率的兩大核心。許多人常將這兩個指標混淆，或不清楚它們之間的毛利率 營業利益率 差別 2026 年在分析上應如何應用。</description>
+    <category>TERM</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/term-毛利率與營益率-202608.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/term-毛利率與營益率-202608.png" medium="image"/>
+  </item>
+  <item>
     <title>The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production</title>
     <link>https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=eng-audit-taxonomy-en-202608</link>
     <guid isPermaLink="true">https://marketdaily.ai/blog/eng-audit-taxonomy-en-202608</guid>
     <pubDate>Wed, 12 Aug 2026 10:00:00 +0800</pubDate>
-    <description>A deterministic audit gate inspects every personalized finance email our LLM pipeline generates. This post dissects all 30 checks by failure mode, dates each to the incident that created it, and walks through the two times the defense itself became the outage: 12 of 12 users failing one HIGH check on 2026-07-06, and a false-positive rule that shot down years and price levels as foreign tickers on 2026-07-24.</description>
+    <description>We run a daily finance email. Subscribers pick their holdings; an LLM pipeline generates a personalized HTML digest twice a day</description>
     <category>ENG</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/eng-audit-taxonomy-en-202608.png"/>
     <media:content url="https://marketdaily.ai/blog/og/eng-audit-taxonomy-en-202608.png" medium="image"/>
@@ -29,7 +69,7 @@
     <link>https://marketdaily.ai/blog/eng-audit-taxonomy-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=eng-audit-taxonomy-202608</link>
     <guid isPermaLink="true">https://marketdaily.ai/blog/eng-audit-taxonomy-202608</guid>
     <pubDate>Wed, 12 Aug 2026 10:00:00 +0800</pubDate>
-    <description>MarketDaily 每天早晚寄出個人化財經日報,寄出前由 digest_audit.py 做確定性稽核。這篇把真實存在的 30 項檢查按失效模式分成六類逐項拆解,每項標注它誕生的那次事故日期,並完整解剖兩個「防線自己變成事故」的反例:07-06 undefined_css_class 讓 12/12 用戶全中 HIGH、9 位收到閹割備援版;07-24 誤殺把年份與價位當成外來股票代號。</description>
+    <description>上一篇講了 council + judge + audit 三層架構的全貌。這篇把最後一層——digest_audit.py 的確定性稽核——整個拆開:逐項列出、按失效模式歸類,並完整解剖兩個「防線自己變成事故」的反例。</description>
     <category>ENG</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/eng-audit-taxonomy-202608.png"/>
     <media:content url="https://marketdaily.ai/blog/og/eng-audit-taxonomy-202608.png" medium="image"/>

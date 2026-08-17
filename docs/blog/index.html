@@ -28,7 +28,7 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
 .filters{ display:flex; flex-wrap:wrap; gap:10px; margin:34px 0 30px; }
 .pill{ font:inherit; font-size:13.5px; font-weight:700; color:var(--muted); cursor:pointer;
   background:rgba(255,255,255,.04); border:1px solid var(--line); border-radius:999px; padding:8px 16px;
-  transition: background-color .18s cubic-bezier(.22,1,.36,1), border-color .18s cubic-bezier(.22,1,.36,1), color .18s cubic-bezier(.22,1,.36,1); }
+  transition:all .18s cubic-bezier(.22,1,.36,1); }
 .pill:hover{ color:#fff; border-color:var(--line-h); }
 .pill.on{ color:#0b0b16; background:linear-gradient(135deg,#a5b4fc,#818cf8); border-color:transparent; }
 .grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; }
@@ -48,7 +48,7 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .card-meta{ margin-top:auto; padding-top:15px; display:flex; justify-content:space-between; align-items:center;
   font-size:12.5px; color:#6f7793; }
-.card-meta .arrow{ color:var(--indigo-l); font-weight:700; opacity:0; transform:translateX(-4px); transition:opacity .2s, transform .2s; }
+.card-meta .arrow{ color:var(--indigo-l); font-weight:700; opacity:0; transform:translateX(-4px); transition:all .2s; }
 .card:hover .arrow{ opacity:1; transform:translateX(0); }
 .empty{ color:var(--muted); padding:40px 0; font-size:15px; }
 .cta-top{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center;
@@ -57,27 +57,6 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
 .cta-top a{ color:#fff; background:linear-gradient(135deg,#6366f1,#a855f7); font-weight:800;
   text-decoration:none; padding:8px 16px; border-radius:8px; white-space:nowrap; }
 @media(max-width:520px){ .grid{ grid-template-columns:1fr; } }
-
-  /* prefers-reduced-motion(2026-08-16 補):照 emil-design-skills/review-animations 第 8 條——
-     要「更溫和」不是「全關」:保留 opacity/顏色/陰影的淡入(資訊仍看得懂),只拿掉會位移的動畫。
-     對前庭敏感的使用者,這不是偏好問題。 */
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-property: opacity, background-color, color, border-color, box-shadow, filter !important;
-      scroll-behavior: auto !important;
-    }
-  }
-
-  /* press feedback(2026-08-16 補):emil-design-skills/review-animations 第 1 條——
-     介面要在「按下的當下」就回應,不能等動作完成才有反應,否則每一次點擊都落在沉默裡。
-     用個別屬性 scale 而不是 transform:才不會蓋掉元素既有的 transform(例如置中的 translate(-50%))。 */
-  button, [role="button"], .btn, input[type="submit"], input[type="button"] {
-    transition: scale 140ms cubic-bezier(.23, 1, .32, 1);
-  }
-  button:active, [role="button"]:active, .btn:active,
-  input[type="submit"]:active, input[type="button"]:active { scale: 0.97; }
 </style>
 </head>
 <body>
@@ -85,23 +64,26 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
 <div class="wrap">
   <div class="eyebrow">投資學堂 · Learn</div>
   <h1>財經知識庫</h1>
-  <p class="sub">個股拆解、法說會前瞻、除權息、供應鏈全景,到總經指標與新手入門——61 篇免費開放,依主題挑你要讀的。</p>
+  <p class="sub">個股拆解、法說會前瞻、除權息、供應鏈全景,到總經指標與新手入門——65 篇免費開放,依主題挑你要讀的。</p>
   <!-- md-top-cta -->
   <div class="cta-top">📬 這些都是 MarketDaily 每天在做的事。留個 Email,美股 + 台股 AI 過濾日報每天早上 7 點直送信箱——目前限時免費,現在訂閱未來恢復收費後仍永久免費。<a href="https://marketdaily.ai/?utm_source=blog&utm_medium=cta_top&utm_campaign=blog_index#email-step">免費訂閱 →</a></div>
   <div class="filters">
-      <button class="pill on" data-f="all">全部 61</button>
-      <button class="pill" data-f="stock">個股分析 21</button>
-      <button class="pill" data-f="event">法說會 7</button>
+      <button class="pill on" data-f="all">全部 65</button>
+      <button class="pill" data-f="stock">個股分析 24</button>
+      <button class="pill" data-f="event">法說會 8</button>
       <button class="pill" data-f="exdiv">除權息 6</button>
       <button class="pill" data-f="supply">供應鏈 5</button>
       <button class="pill" data-f="macro">總經 7</button>
-      <button class="pill" data-f="term">名詞 5</button>
-      <button class="pill" data-f="guide">新手 8</button>
-      <button class="pill" data-f="eng">工程 2</button>
+      <button class="pill" data-f="term">名詞 6</button>
+      <button class="pill" data-f="guide">新手 9</button>
   </div>
   <div class="grid" id="grid">
-<a class="card" data-cat="eng" href="eng-audit-taxonomy-202608.html"><span class="tag" style="--tc:#f472b6">工程</span><div class="card-title">Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的</div><div class="card-sum">30 項確定性檢查逐項解剖,含兩次「防線自己變成事故」</div><div class="card-meta"><span>2026·08·12</span><span class="arrow">閱讀 →</span></div></a>
-<a class="card" data-cat="eng" href="eng-audit-taxonomy-en-202608.html"><span class="tag" style="--tc:#f472b6">工程</span><div class="card-title">The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production</div><div class="card-sum">All 30 checks dissected, plus the two times the defense became the outage</div><div class="card-meta"><span>2026·08·12</span><span class="arrow">閱讀 →</span></div></a>
+<a class="card" data-cat="stock" href="googl-技術面-vs-基本面-202608.html"><span class="tag" style="--tc:#818cf8">個股分析</span><div class="card-title">Google GOOGL 技術面 vs 基本面：投資人該如何評估？</div><div class="card-sum">投資人該如何評估</div><div class="card-meta"><span>2026·08·17</span><span class="arrow">閱讀 →</span></div></a>
+<a class="card" data-cat="event" href="2317-event-20260817.html"><span class="tag" style="--tc:#fbbf24">法說會</span><div class="card-title">鴻海(2317) 法說會前哨：已揭露重點與投資人關注焦點</div><div class="card-sum">已揭露重點與投資人關注焦點</div><div class="card-meta"><span>2026·08·17</span><span class="arrow">閱讀 →</span></div></a>
+<a class="card" data-cat="guide" href="guide-證券開戶要準備什麼文件-新手開戶流程-202608.html"><span class="tag" style="--tc:#6ee7b7">新手</span><div class="card-title">2026 證券開戶新手必看：準備文件、完整流程一次搞懂！</div><div class="card-sum">準備文件、完整流程一次搞懂！</div><div class="card-meta"><span>2026·08·17</span><span class="arrow">閱讀 →</span></div></a>
+<a class="card" data-cat="term" href="term-毛利率與營益率-202608.html"><span class="tag" style="--tc:#a78bfa">名詞</span><div class="card-title">毛利率與營業利益率差別：2026 年新手投資人必懂的獲利指標</div><div class="card-sum">2026 年新手投資人必懂的獲利指標</div><div class="card-meta"><span>2026·08·17</span><span class="arrow">閱讀 →</span></div></a>
+<a class="card" data-cat="stock" href="eng-audit-taxonomy-en-202608.html"><span class="tag" style="--tc:#818cf8">個股分析</span><div class="card-title">The 31st check didn&amp;#x27;t exist: a failure-mode taxonomy of auditing LLM output in production</div><div class="card-sum">a failure-mode taxonomy of auditing LLM output in production</div><div class="card-meta"><span>2026·08·12</span><span class="arrow">閱讀 →</span></div></a>
+<a class="card" data-cat="stock" href="eng-audit-taxonomy-202608.html"><span class="tag" style="--tc:#818cf8">個股分析</span><div class="card-title">Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的</div><div class="card-sum">31 項檢查,每項都是一次用戶生氣換來的</div><div class="card-meta"><span>2026·08·12</span><span class="arrow">閱讀 →</span></div></a>
 <a class="card" data-cat="stock" href="2317-競爭優勢與護城河-202608.html"><span class="tag" style="--tc:#818cf8">個股分析</span><div class="card-title">鴻海 (2317) 競爭優勢與護城河：全球電子製造龍頭的致勝關鍵</div><div class="card-sum">全球電子製造龍頭的致勝關鍵</div><div class="card-meta"><span>2026·08·10</span><span class="arrow">閱讀 →</span></div></a>
 <a class="card" data-cat="stock" href="6274-confluence-20260809.html"><span class="tag" style="--tc:#818cf8">個股分析</span><div class="card-title">台燿(6274) 多方籌碼訊號同日觀察：公開資訊巧合案例解析</div><div class="card-sum">公開資訊巧合案例解析</div><div class="card-meta"><span>2026·08·10</span><span class="arrow">閱讀 →</span></div></a>
 <a class="card" data-cat="event" href="2317-event-20260812.html"><span class="tag" style="--tc:#fbbf24">法說會</span><div class="card-title">鴻海(2317) 法說會前瞻：掌握產業脈動與投資佈局</div><div class="card-sum">掌握產業脈動與投資佈局</div><div class="card-meta"><span>2026·08·10</span><span class="arrow">閱讀 →</span></div></a>
