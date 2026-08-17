@@ -3906,8 +3906,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 18:08",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 18:27",
+  "note": "已上線 quietfix.studio/demo/rise,線上 shoot_dish 驗收全綠(desktop/mobile/static),菜單 22→23 道,sitemap 已加"
  },
  {
   "id": 392,
@@ -3916,6 +3916,26 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 18:09",
+  "closed": "2026-08-17 18:16",
+  "note": "08-17 18:1x 已驗:order:1786961312644(非雲端車道、走 winrig 交付)的 PDF 由 pdf_backfill 在閒置輪自動補上,線上 200 可下載;has_pdf 已翻 true"
+ },
+ {
+  "id": 393,
+  "what": "KINGCONN /3d 樣品頁的圖還是舊刻字版(老闆已看過那個連結)",
+  "why": "重渲會連帶把上蓋顏色從黑換成銀(那頁的圖與現在的 catalog.py 材質狀態不同,且與首頁一致的是銀),等於改掉老闆已經看過的東西 —— 換不換是產品決策不是我猜",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 18:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 394,
+  "what": "KINGCONN 刻字量尺 mark_check 只在 2880 母片有效,1440/手機那兩套沒有自動閘門",
+  "why": "1440 筆畫只有 2~3px,連通塊/離散度會被反鋸齒扭曲;目前 1440 與 seqm3 是目視驗的(f060/f120 各比對過)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 18:29",
   "closed": null,
   "note": ""
  }
