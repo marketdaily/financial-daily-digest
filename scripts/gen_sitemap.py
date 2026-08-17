@@ -24,7 +24,10 @@ CORE = [
     ("/blog/", "weekly", "0.7"),
 ]
 
-DATE_RE = re.compile(r"digest_(\d{4}-\d{2}-\d{2})\.html$")
+# 2026-08-18:`_us`(美股班存檔)原本被這條 regex 的 `$` 擋掉 ⇒ 40 篇公開頁既不在 sitemap
+# 也沒有任何頁面連過去 = 對搜尋引擎完全不存在。與 site_structured_data.DATE_RE 同形狀,
+# 兩邊要一起改(見該檔同名常數的說明)。
+DATE_RE = re.compile(r"digest_(\d{4}-\d{2}-\d{2})(_us)?\.html$")
 
 
 def main() -> int:

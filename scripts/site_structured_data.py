@@ -159,7 +159,15 @@ def backfill_core(dry: bool) -> list:
 
 
 # ── 日報公版 archive 長尾頁 ──
-DATE_RE = re.compile(r"digest_(\d{4}-\d{2}-\d{2})\.html$")
+# 2026-08-18:原本只吃 `digest_YYYY-MM-DD.html`,美股版 `_us` 被同一條 regex 的 `$` 擋在外面
+# ⇒ 40/40 篇美股存檔頁 canonical=0/JSON-LD=0/description=0,而且 gen_sitemap 用同一個
+# 形狀的 regex ⇒ 它們既不在 sitemap 也沒有任何頁面連過去 = 對搜尋引擎完全不存在。
+# (08-11 只補了「晚班窗口」讓 runner 在美股存檔落地後也跑一次,但腳本這邊照樣 skip,
+#  所以那班對結構化資料實際上無事可做 —— open item #236 要驗的正是這一段。)
+DATE_RE = re.compile(r"digest_(\d{4}-\d{2}-\d{2})(_us)?\.html$")
+# 兩版原本共用同一個 <title>財經日報 {date}</title> ⇒ 進了 sitemap 就是一對重複標題,
+# 對 SERP 互相稀釋。美股版改寫成自己的標題(冪等:已經是新標題就不再動)。
+US_TITLE_RE = re.compile(r"<title>財經日報 (\d{4}-\d{2}-\d{2})</title>")
 DIGEST_TITLE_RE = re.compile(r"<title>[^<]*</title>")
 # div/ul 允許額外屬性(如 style=""/class=""),避免漏抓真實有 TL;DR 內容但 markup 稍有差異的舊版本頁面。
 TLDR_RE = re.compile(r'<div class="tldr"[^>]*>.*?<ul[^>]*>(.*?)</ul>', re.S)
@@ -182,11 +190,13 @@ def _extract_tldr_text(html: str) -> str:
     return " ".join(parts)
 
 
-def _digest_schema_json(date: str, desc: str, url: str) -> str:
-    published = f"{date}T07:00:00+08:00"
+def _digest_schema_json(date: str, desc: str, url: str, market: str = "tw") -> str:
+    # 台股班 07:00 寄出、美股班 20:00 寄出(TW 時間)——datePublished 照各自的班次寫,
+    # 兩篇才不會宣稱同一時刻發佈。
+    published = f"{date}T07:00:00+08:00" if market == "tw" else f"{date}T20:00:00+08:00"
     article = {
         "@type": "Article",
-        "headline": f"財經日報 {date}",
+        "headline": _digest_headline(date, market),
         "description": desc,
         "image": [OG_IMAGE],
         "datePublished": published,
@@ -199,17 +209,26 @@ def _digest_schema_json(date: str, desc: str, url: str) -> str:
     return json.dumps(schema, ensure_ascii=False).replace("</", "<\\/")
 
 
-def inject_archive_page(fpath: Path, date: str, dry: bool) -> bool:
+def _digest_headline(date: str, market: str) -> str:
+    return f"財經日報 {date}" if market == "tw" else f"美股日報 {date}"
+
+
+def inject_archive_page(fpath: Path, date: str, dry: bool, market: str = "tw") -> bool:
     original = fpath.read_text(encoding="utf-8")
     html = _strip_existing_block(original)
+    if market == "us":
+        html = US_TITLE_RE.sub(r"<title>美股日報 \1</title>", html, count=1)
     if not DIGEST_TITLE_RE.search(html):
         raise ValueError(f"{fpath.name}: 找不到 <title> 標籤,無法插入結構化資料區塊,需人工檢查頁面結構")
-    url = f"{BASE}/output/digest_{date}"
-    fallback = f"MarketDaily {date} AI 財經日報:美股與台股當日重點整理,個股分析全免費開放。"
+    title = _digest_headline(date, market)
+    url = f"{BASE}/output/digest_{date}" + ("_us" if market == "us" else "")
+    fallback = (f"MarketDaily {date} AI 財經日報:美股與台股當日重點整理,個股分析全免費開放。"
+                if market == "tw" else
+                f"MarketDaily {date} 美股盤前日報:當日美股重點與個股觀察,個股分析全免費開放。")
     cand = _extract_tldr_text(html)
     # danger_chars 留預設(空集合):真實市場文字常見 "S&P 500" 這類字元,不整篇回退——
     # HTML 屬性槽用 html.escape() 個別轉義(desc_a),JSON-LD 槽用 json.dumps 處理的原始 desc。
-    desc = _truncate_to_desc(cand, fallback, title=f"財經日報 {date}")
+    desc = _truncate_to_desc(cand, fallback, title=title)
     desc_a = _esc(desc, quote=True)
 
     block_lines = [
@@ -217,16 +236,16 @@ def inject_archive_page(fpath: Path, date: str, dry: bool) -> bool:
         f'<link rel="canonical" href="{url}">',
         '<meta property="og:type" content="article">',
         '<meta property="og:site_name" content="MarketDaily">',
-        f'<meta property="og:title" content="財經日報 {date}">',
+        f'<meta property="og:title" content="{title}">',
         f'<meta property="og:description" content="{desc_a}">',
         f'<meta property="og:url" content="{url}">',
         f'<meta property="og:image" content="{OG_IMAGE}">',
         '<meta name="twitter:card" content="summary_large_image">',
-        f'<meta name="twitter:title" content="財經日報 {date}">',
+        f'<meta name="twitter:title" content="{title}">',
         f'<meta name="twitter:description" content="{desc_a}">',
         f'<meta name="twitter:image" content="{OG_IMAGE}">',
     ]
-    schema_json = _digest_schema_json(date, desc, url)
+    schema_json = _digest_schema_json(date, desc, url, market)
     block_lines.append(f'<script type="application/ld+json">{schema_json}</script>')
 
     new_html = DIGEST_TITLE_RE.sub(lambda m: m.group(0) + "\n" + _wrap_block(block_lines), html, count=1)
@@ -244,12 +263,12 @@ def inject_archive_page(fpath: Path, date: str, dry: bool) -> bool:
 def backfill_archive(dry: bool) -> list:
     changed = []
     for p in sorted((DOCS / "output").glob("digest_*.html")):
-        if "_personal_" in p.name or "_us" in p.name:
-            continue  # 未進 sitemap(gen_sitemap.DATE_RE 排除),不加 SEO 標記
+        if "_personal_" in p.name:
+            continue  # 個人化版本不公開收錄
         m = DATE_RE.search(p.name)
         if not m:
             continue
-        if inject_archive_page(p, m.group(1), dry):
+        if inject_archive_page(p, m.group(1), dry, "us" if m.group(2) else "tw"):
             changed.append(p.name)
     return changed
 
