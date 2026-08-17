@@ -6037,3 +6037,4 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   客人「看到報告」更早:HTML 一上架就 has_report。⚠️ 過程中抓到 KV 最終一致會讓命中**永遠失敗且靜默**
   (prewarm:last 已 done 而 prewarm:<fp> 還是 running)⇒ 草稿改存 DO storage(強一致),
   winrig 與雲端車道共用 /internal/prewarm-take。
+- 18:0x 老闆:「要更快」→ brew 落豆 3x/沖煮 1.5x(183 張)、pin 300%;本地+生產全綠(首輪 6 個 404 是部署傳播期新舊混,重跑 0)。
