@@ -5783,3 +5783,14 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 老闆:CHOSEN 影片=行銷能力很好,做網站也要這樣。落地 website-design-team `references/site-derivation.md`(網站 8 問/像它自己十成分/worked example),階段①必跑、⑤critic 加閘。
 - 實作+上線 https://chosen-chest.delvin-12345678.workers.dev(storefront clients/chosen/site+worker):捲動=掀蓋 hero(21:9/9:16 兩 take 自動切)、四句儀式短句、logo 斜縫分隔、盒子按鈕、材料 palette、Anton+Noto 900+Mono。桌機/手機 scrub 0→10s 單調、console 0、overflow 0。
 - 坑:CF Pages 不支援 Range⇒scrub 卡 0(搬 Workers Static Assets+quietfix range shim);Pages production branch main vs repo master⇒apex 404;CJK display 別靠 Anton fallback。
+
+## 2026-08-17 15:3x TW — 老闆「所有顧客不管邀請碼還是付費一定要生成出來」→ 雲端車道(Worker 自己生成交付)上線+生產演練
+- GitHub Actions 帳號層仍停用(實測 422)⇒ 不能抄日報的雲端 failover;唯一不跟 winrig 一起死的算力=CF Worker。
+- 建 `worker/src/cloudlane.js`:哨兵每輪對「卡住 ≥30 分鐘且 lease 未被 winrig 持有」的單自己做:lunar-javascript 引擎(與
+  engine/bazi.py 逐欄位 parity 6 命例)→ Anthropic → audit(fulfill 八字分支逐條移植,二輪)→ 報告 KV → 寄信前複查 → Brevo →
+  fulfilled。prompt/CSS/禁詞/品名由 `scripts/build_cloudlane_assets.py` 從 fulfill.py 匯出(pytest 鎖同步),**沒有第二份文案**;
+  md_to_html/報告片段/Email 與 Python byte 級對帳。每日 30 筆上限、`cloudlane:disabled` 一鍵停、secrets 兩把。
+- 生產演練:touch DISABLED → 真邀請碼單。⭐第一筆被 14:28:01 已在跑的 dispatcher 撿走(DISABLED 只在行程啟動時查,我輸 5 秒);
+  第二筆 14:51:46 下單 → 14:50/15:20 哨兵推「訂單卡住+管線失聯 52 分鐘」(#353 真射) → **15:30 雲端車道接手,70.5s、$0.0466
+  真交付**(☁️/✅ 推播、線上報告可讀、Email 到)→ 15:34 恢復 winrig。
+- v1 只接八字家族;不產 PDF;兩條車道同一把 key(open #365/#366/#367)。close #353。

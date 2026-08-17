@@ -2406,8 +2406,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-11 05:52",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 14:55",
+  "note": "已達標:memory_index_budget_guard 今日 chars=15029 < 17100 目標(原 19.6KB)。兩層化 hub 化 50 群後降下來的,非一次性壓縮"
  },
  {
   "id": 242,
@@ -2626,8 +2626,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-11 16:51",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 14:55",
+  "note": "已在真 MEMORY.md 寫過:memory_hubify/originals.json 有 50 群、moved 日期 08-11~08-16,記憶庫有 57 個 hub_*.md。r2 驗證者另在 695 檔副本上複跑證明 --apply 冪等"
  },
  {
   "id": 264,
@@ -2656,8 +2656,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-11 19:49",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 14:55",
+  "note": "夜巡真跑過並寫回:state/selftest_cron.log 兩晚各印 'SELFTEST TSV-WRITEBACK:182/187 支實測基準已保鮮',selftest_durations.tsv mtime 08-17 05:06,無 FAILED"
  },
  {
   "id": 267,
@@ -3236,8 +3236,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 09:20",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 14:55",
+  "note": "已收:豁免前提改成 colocated(註解與 display + 該則自己的 wikilink 同一行),strict rc 2→0,生產 50 群 113/113 段豁免、0 段仍缺,budget_guard strict_rc=0、orphans=0。獨立驗證者 SOUND-WITH-CORRECTIONS 5 findings 全修,自測 83 全過、突變 27/27 killed"
  },
  {
   "id": 325,
@@ -3496,8 +3496,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-17 13:41",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 14:23",
+  "note": "已改 approved 進佇列並上 SEO 三頁;剩下的追蹤拆成新兩項"
  },
  {
   "id": 351,
@@ -3526,8 +3526,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 14:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-17 15:34",
+  "note": "08-17 14:28~15:34 刻意 DISABLED winrig fulfill,14:50 哨兵真推「交付管線失聯」;雲端車道 15:30 接手第二筆演練單真交付(70.5s,/bin/bash.0466)"
  },
  {
   "id": 354,
@@ -3556,6 +3556,116 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 14:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 357,
+  "what": "平台熱需求→冷信插隊管線首日產出:11 件案只有 1 件(金潤澤/goldrz)在案文寫了官網,其餘 Tasker 案文不露身分——這條路的可辨識率約 1 成,量會很小;08-18 10:05 首批 3 封第一封就是它(goldrz.co@gmail.com)",
+  "why": "尚未寄出、可辨識率待更多天樣本",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 14:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 358,
+  "what": "Tasker 提案被平台閘住:要『實名認證(身分證正面+字號+發證日期地點)』+『綁定 APP』才能提案——需老闆本人在 tasker.com.tw/users/setting/identity-verify 與 /app-download 完成;兩份提案稿已備 growth/out/tasker_proposals_2026-08-17.md,解鎖即送",
+  "why": "身分證與手機 APP 綁定是老闆本人動作",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 14:22",
+  "closed": "2026-08-17 14:36",
+  "note": "實名認證已由我用老闆提供的證件照完成(張*胤 通過);剩『綁定 APP』一步:老闆手機裝出任務 App 登入 0975317572 即完成,提案稿已備"
+ },
+ {
+  "id": 359,
+  "what": "命書占神對位:4 則社群等今晚 20:00 首發驗證(尚未在生產發過);pSEO 3 頁 ship 中,線上未驗",
+  "why": "首班未跑過,鏈上改動必附首班驗收",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 14:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 360,
+  "what": "命書具名對照頁(占神 vs 命書)未做:需真的拿排盤自驗五題去跑對方 app 才能寫,否則是捏造",
+  "why": "缺實測資料,需老闆給手機實測或截圖",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-17 14:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 361,
+  "what": "Tasker 提案只差『綁定 APP』:老闆手機裝出任務 App(App Store/Google Play 搜「出任務」)用 0975317572+密碼登入即綁定;綁定後我送兩份提案稿(HAIT86 5k/AOHI50 0k)",
+  "why": "App 綁定只能在老闆手機上做",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 14:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 362,
+  "what": "CHOSEN 宣傳影片配樂/音效(老闆說要上時再做:①seedance_2_0 generate_audio=true 重生成 或 ②本地合成配樂 ffmpeg 混入)",
+  "why": "老闆 08-17 指示先不上,要上再講;Higgsfield 無獨立音樂/SFX 模型",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-17 15:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 363,
+  "what": "PRO360 王〇生案(2630956890 板橋 一頁式購物網站 <3萬)通知 14:23 到,15:15 已『無法查看』——名額 1 小時內滿;已加 15 分鐘快速輪詢(只推播不扣點);要真的搶到得再加『自動報價』(老闆儲值+定規則後我接)",
+  "why": "反應速度是 PRO360 成敗關鍵,目前只做到 15 分鐘通知",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 15:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 364,
+  "what": "PRO360 自動報價已上線(cron */5,規則:網站案全報,簡單固定價/重案洽談後報價);第一件會是梧棲 2630814912(洽談後報價,扣 $347,餘額 $400→$53);之後餘額不足會 FAILED 推播直到老闆儲值 $3000",
+  "why": "首次真扣點尚未發生,要看下一輪 5 分鐘 cron 的結果",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 15:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 365,
+  "what": "命書雲端車道 v1 只接八字家族(bazi_999/bazi_249):紫微/占星/合婚/流年/塔羅/終身詳批 winrig 死掉時仍只告警不生成——要補各品項的引擎/audit parity 移植(engine JS 版都有,audit 各一份)",
+  "why": "今日只夠做主力品項並生產演練;其他品項需逐個移植+parity 測試",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-17 15:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 366,
+  "what": "雲端車道不產 PDF(Worker 無 chromium):雲端交付的單 has_pdf=false,winrig 回來後也不會補 PDF;可加「winrig 補產 PDF」小任務",
+  "why": "Worker 沒有 headless chromium",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-17 15:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 367,
+  "what": "雲端車道與 winrig 同用同一把 Anthropic key/同一 Brevo key:key 死掉=兩條車道一起死;heartbeat 只證明 KV 通,不證明 LLM/寄信通",
+  "why": "第二把 key 需老闆開;或以雲端車道每日自測一次",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-17 15:34",
   "closed": null,
   "note": ""
  }
