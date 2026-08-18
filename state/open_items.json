@@ -4298,5 +4298,35 @@
   "opened": "2026-08-18 11:42",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 431,
+  "what": "KINGCONN STEP 檔沒有在真的 CAD 軟體裡開過(SolidWorks/Altium/Creo)",
+  "why": "我只做了 gmsh round-trip(835 曲面+bbox 逐項相同),那證明幾何沒掉,不證明客戶的 CAD 吃得下去;要請老闆的 RD 開一次確認",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-18 14:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 432,
+  "what": "KINGCONN STEP 轉出後每個曲面的顏色與零件分群會掉(全變單一實體)",
+  "why": "gmsh 的 STEP writer 是 As Is 轉,不帶 IGES 的曲面顏色;干涉檢查夠用,但客戶看到的是一整塊沒有零件名稱的實體。要做有組裝結構的 STEP 得換 FreeCAD/OCC 路線",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 14:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 433,
+  "what": "KINGCONN 3D 檢視器只做了 1 個料號,232 個要批次化",
+  "why": "glb.py 已可換料號重跑,但缺(1)批次跑全部料號(2)每個料號一頁的產生器(3)從產品頁連過去的入口。先等老闆決定要不要對外公開再做",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-18 14:00",
+  "closed": null,
+  "note": ""
  }
 ]

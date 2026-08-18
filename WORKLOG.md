@@ -6850,3 +6850,27 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 誠實邊界:**關掉自主機器 ≠ weekly limit 就省下來**。另有 7 支生產 runner 仍會 spawn claude
   (site_scan / digest_selfheal / digest_chronic / marketing_agents_weekly / line_agent /
   line_group / brain_deliver_mac),不受 DISABLED 管,未動 —— 是否收斂等老闆拍板。
+
+## 2026-08-18 13:5x 主視窗:KINGCONN 客戶 RD 用的 360° 互動模型 + STEP/IGES 下載
+- 老闆新需求「讓客戶 RD 把連接器放到自己 PCB 上轉著看」拆成兩件:
+  (A) 可下載 CAD(STEP/IGES)——RD 真正要的;(B) 網頁 360° 檢視器——讓他先看到的入口。
+  **原料本來就在手上**(做 hero 用的那份 IGES),所以是轉檔+上架,不是重建模型。
+- 產出:`/3d-viewer` 已上線。IGES→STEP 用 gmsh/OCC(8.1MB,3.1s);
+  GLB 走既有分件 STL→Blender→glTF,Draco 壓縮 **1.66MB→169KB(10 倍)**,90063 面。
+  model-viewer 與 **Draco 解碼器全部自架**——預設會去 gstatic.com 抓,皇海有相當比例
+  客戶在中國大陸(站台本來就有簡體切換),牆內拿不到會整個載不出來而且畫面什麼都不說。
+- ⭐ **轉檔要 round-trip 驗,不能只看「有產出檔案」**:把 STEP 讀回來比對 —— 曲面數 835、
+  bbox 逐項相同 ✅,但**顏色分群全掉**(6 群 → 全部 0,0,255)。gmsh 的 STEP writer 是
+  As Is 轉,不帶 IGES 的曲面顏色 ⇒ 客戶會拿到一整塊沒有零件名稱的實體(open #432)。
+- ⭐ `from catalog import MATERIALS` 炸掉:catalog.py 是**腳本**不是函式庫,import 它
+  等於把整個建場景+讀 argv 跑一遍,直接死在 `int(ARGS[1])`。⇒ 共用資料要放進
+  只有資料的模組(`kc_materials.py`)。
+- ⭐⭐ **置中迴圈搬了所有 mesh,包含 parent 到上蓋的刻字貼片 ⇒ 它被位移兩次而飛掉。**
+  症狀是「刻字修法看起來完全沒生效」(字又變回昨天那團塗鴉),我第一時間差點誤判成
+  材質沒套上、跑去查材質。**有 parent 的物件只能搬最上層。**
+- ⭐ **glTF 的單位是公尺,CAD 是 mm** ⇒ 不縮 1/1000 的話這顆件在檢視器眼裡是 14 公尺寬:
+  自動取景、camera-orbit 距離、AR 實體大小、dimensions 讀數全錯(實測 auto-frame 半徑
+  跑到 22.9m)。修完線上量到 14.42 x 15.10 x 1.85 mm,與實件一致 —— 這也是最好的驗收:
+  **客戶的檢視器量出來的數字要等於規格書上的數字。**
+- ⚠️ 未收乾:#431 STEP **沒有在真的 CAD 軟體開過**(我只證明幾何沒掉,不證明客戶吃得下去,
+  要請老闆的 RD 開一次)、#432 STEP 掉顏色/零件分群、#433 只做 1 個料號、232 個要批次化。
