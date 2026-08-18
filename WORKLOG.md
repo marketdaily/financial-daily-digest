@@ -7216,3 +7216,13 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   ④`tests/e2e.py` 8 家族×12 步+17 API 契約 0 FAIL;老闆定調「先自測不失誤才給人用」⇒邀請稿不送。
 - ⭐ 球面 cap 布林減出來的殼 STL 不水密(OCC 極點/接縫),換圓錐碟才過——「幾何有效≠網格水密」,兩個都要驗。
 - ⭐ 讀 2D 圖實測 8.7 分鐘,不是我寫的 ~5;ETA 要用實測值。
+
+## 2026-08-19 00:0x~02:0x 主視窗:ProtoForge 第八輪 — 雙引擎(老闆:「任何東西任何複雜度都要高品質」+ 充電器 400 秒沒出來)
+- 400 秒根因:systemd restart 連坐殺掉背景 claude -p 子行程(cgroup),工作卡到逾時 ⇒ `KillMode=process`(實測重啟後子行程仍活);
+  重跑後 `usbc_wall_charger` 家族入庫(10 分,第 1 輪過擬真閘)。freeform 改第 1 輪 2 候選並行+≤220 行。
+- 引擎 B(生成式網格)落地:`mesh_gen.py`(rembg 去背→ComfyUI 原生 Hunyuan3D-2.1(7.4GB,ImageOnlyCheckpointLoader 全含)→VoxelToMesh→GLB→
+  置中/Y-up/按實體 mm 縮放/補洞/decimate 20 萬面/STL),job kind mesh,`/api/mesh`,UI 第 4 分頁「照片→3D」,intake 路由 `__mesh__`。
+  實測:充電器 73s、球拍 102s、相機 152s;⭐白底不去背會生成一面牆;⭐參考圖畫兩支球拍網格就兩支(single object 進 prompt)。
+  雲端對照:Higgsfield image_to_3d 20cr/4min 品質反而較差;fal 餘額耗盡。
+- Z-Image-Turbo(int8 6.2GB+qwen fp8 5.6GB+ae)下載中→本機文生圖→「一句話→參考圖→3D」。
+- 老實邊界:引擎 B 是白模無材質(Paint 需 21GB VRAM);A+B 組裝未做。
