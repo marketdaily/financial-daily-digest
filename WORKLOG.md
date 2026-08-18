@@ -7191,3 +7191,7 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   分享連結+AR、展開圖/刀模(`flat.py`:鈑金 K-factor 展開 DXF、RTE 摺盒刀模)、家族 +3(sheet_bracket/tuck_box/plate_fixture)、行業範例 chips、mm/in。
 - ⭐ Drawing 類不在 `from build123d import *`,要 `from build123d.exporters import Drawing`;fitz 能把 SVG 直接 convert_to_pdf。
 - ⭐ `hidden` 屬性會被 inline `display:flex` 蓋掉——顯示切換用 `#x:not([hidden]){display:flex}`。
+- 18:4x~19:2x 第六輪(「ok你去做」):可信度三件—①`dfm_overlay.py` 逐面射線量厚度塗色成 dfm.glb(需 rtree;實測 0.7→0.693/1.5→1.491)
+  ②adapter_housing 加 draft_deg+split_z(兩段 taper 拉伸,分模面) ③`_stamp_step` 改 STEP FILE_DESCRIPTION/FILE_NAME/頂層 PRODUCT=料號;
+  多租戶 `ws.py`(金鑰/方案/每日 AI 配額/usage.jsonl,workspaces.json 不進 git,皇海試用金鑰已開);公開模式(無金鑰可建模下載,AI 需金鑰);
+  設計夥伴邀請稿 `research/2026-08-18_design_partner_outreach.md`(等老闆 OK 才送)。

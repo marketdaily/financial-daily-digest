@@ -4426,6 +4426,16 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-18 17:10",
+  "closed": "2026-08-18 23:17",
+  "note": "多租戶已做(ws.py);STEP未在SolidWorks開過與第一位真實使用者→轉入#444(邀請稿等老闆OK)"
+ },
+ {
+  "id": 444,
+  "what": "ProtoForge:設計夥伴邀請稿(皇海RD+模具廠)等老闆看過OK才送;送出後要收 STEP 在 SolidWorks 開啟結果+三個問題答案",
+  "why": "對外內容送出前必先給老闆看(08-17親令)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-18 23:17",
   "closed": null,
   "note": ""
  }
