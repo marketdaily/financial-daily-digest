@@ -69,6 +69,14 @@ def _get(url, timeout=45):
     return json.loads(urllib.request.urlopen(req, timeout=timeout, context=_CTX).read())
 
 
+def roc_to_iso(d):
+    """民國日期字串 '1150818' -> '2026-08-18'。格式不符回 None(不猜)。"""
+    d = str(d or "").strip()
+    if len(d) != 7 or not d.isdigit():
+        return None
+    return f"{int(d[:3]) + 1911:04d}-{d[3:5]}-{d[5:7]}"
+
+
 def _f(v):
     try:
         x = float(str(v).replace(",", ""))
@@ -98,6 +106,17 @@ def fetch_tw():
     return out
 
 
+def tw_data_dates(tw):
+    """兩交易所各自的資料日期(ISO)。取眾數,避免個別檔位資料日異常帶偏。"""
+    from collections import Counter
+    dd = {}
+    for mkt in ("TWSE", "TPEx"):
+        c = Counter(roc_to_iso(v.get("date")) for v in tw.values()
+                    if v.get("market") == mkt and roc_to_iso(v.get("date")))
+        dd[mkt] = c.most_common(1)[0][0] if c else None
+    return dd
+
+
 def fetch_us(symbols, key):
     out = {}
     for s in symbols:
@@ -117,14 +136,33 @@ def fetch_us(symbols, key):
     return out
 
 
+def ledger_has(twse_date):
+    """該交易日是否已入帳。檔案不存在視為未入帳。"""
+    if not os.path.exists(LEDGER):
+        return False
+    with open(LEDGER) as f:
+        fcntl.flock(f, fcntl.LOCK_SH)
+        for line in f:
+            try:
+                if json.loads(line).get("twse_date") == twse_date:
+                    return True
+            except Exception:
+                continue
+    return False
+
+
 def append_ledger(row):
-    """dedup by date + flock(同 intel/ 既有慣例的三件套)。"""
+    """dedup by **交易所資料日**(非執行日)+ flock。
+
+    ⚠ 用執行日當鍵會在台股休市日寫進一列「日期是今天、數字是上一個交易日」的假資料,
+    之後對這條序列跑 lead-lag 時,那些列會把時間軸整個推歪且完全看不出來。
+    """
     with open(LEDGER, "a+") as f:
         fcntl.flock(f, fcntl.LOCK_EX)
         f.seek(0)
         for line in f:
             try:
-                if json.loads(line).get("date") == row["date"]:
+                if json.loads(line).get("twse_date") == row["twse_date"]:
                     fcntl.flock(f, fcntl.LOCK_UN)
                     return False
             except Exception:
@@ -139,16 +177,34 @@ def main():
     if not key:
         sys.exit("FATAL: 缺 ALPHAVANTAGE_API_KEY(請 source .env)")
 
+    # 台股兩所是免費無限的,先抓、先判資料日;已入帳就在碰 Alpha Vantage 之前退出。
+    # (AV 免費層 25 req/日,而本檔一次要 5 檔 → 若不早退,重試窗口會把當日額度燒光)
     tw = fetch_tw()
+    today = dt.date.today().isoformat()
+    dd = tw_data_dates(tw)
+    if not dd.get("TWSE"):
+        sys.exit("FATAL: 無法判定 TWSE 資料日期,拒絕寫入無法定位到交易日的帳本列")
+    if ledger_has(dd["TWSE"]):
+        print(f"資料日 {dd['TWSE']} 已在帳本內,略過(未動用 Alpha Vantage 額度)。")
+        return
+
     us_syms = sorted({s for v in LINES.values() for s in v["us"]})
     us = fetch_us(us_syms, key)
-
-    today = dt.date.today().isoformat()
-    report = {"date": today, "lines": {}}
+    if not any(d.get("pe") for d in us.values()):
+        errs = "; ".join(f"{k}:{v.get('error', '')[:60]}" for k, v in us.items() if v.get("error"))
+        sys.exit(f"FATAL: 美股端 {len(us_syms)} 檔全部取不到本益比,不寫半套帳本列。{errs}")
+    report = {"date": today, "twse_date": dd["TWSE"], "tpex_date": dd.get("TPEx"),
+              "lines": {}}
 
     W = 96
     print("=" * W)
-    print(f"跨市場記憶體族群 估值倍數對照   {today}")
+    print(f"跨市場記憶體族群 估值倍數對照   執行日 {today}")
+    print(f"資料日:上市(TWSE) {dd['TWSE']}   上櫃(TPEx) {dd.get('TPEx')}")
+    if dd.get("TPEx") and dd["TPEx"] != dd["TWSE"]:
+        print(f"⚠ 兩交易所資料日不同步(差 "
+              f"{(dt.date.fromisoformat(dd['TWSE']) - dt.date.fromisoformat(dd['TPEx'])).days} 天)。")
+        print("  上櫃股(群聯/旺矽/威剛/宜鼎)的倍數比上市股舊一天——日後對這條序列跑 lead-lag")
+        print("  必須各用各的資料日對齊,不能當成同一天,否則會憑空造出一天的假領先。")
     print("=" * W)
 
     for line, cfg in LINES.items():
