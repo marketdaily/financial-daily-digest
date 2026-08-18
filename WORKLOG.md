@@ -7153,3 +7153,11 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - ⭐ 坑:8931 被別的 python http.server 佔著,uvicorn 起不來卻 curl 回 200(是別人的);`pgrep -f protoforge.server` 會匹配到自己
   這條 bash 命令列⇒誤判「已在跑」。起服務用 setsid + run_server.sh,判活用 curl 該 port 的特徵路徑。
 - ⭐ model-viewer.min.js 是 ES module,`<script>` 不加 type=module 整支死(Unexpected token 'export')。
+- 17:2x~17:4x 第四輪(老闆:「要 universal——任何人有 3D 需求都能用;UI 更精緻專業」):
+  ①通用化:`intake.py` 沒有現成家族符合時回 `__new__`→自動走 freeform 現寫新家族→再建模(描述任何產業的東西都走得通);
+  加 `rigid_box`(硬盒包裝)家族;家族帶 LABEL/LABEL_EN;SCHEMA 加 group。
+  ②UI v2(impeccable operate 模式):單一字族 Plex Sans+Mono 只給量測、中/英切換、參數分群 details、ISO/前/上/側視角+自轉、
+  零件顏色圖例、bbox 尺寸浮層、拖放上傳、AI job 進度條、toast 取代 alert、Ctrl+Enter 重建、手機版重排。Playwright 桌機/手機/EN 零 error,detector 只剩 2 條(進度條 width 動畫已改 transform)。
+- ⭐⭐ 坑:手動 setsid 起的 uvicorn 一直佔著 8934,systemd 服務 crash-loop(exit 3)但 curl 回 200(舊碼)⇒「改了沒生效」其實是兩個實體在搶 port。
+  同 port 只准一個擁有者;判活要看 `ss -ltnp` 的 pid 是不是 systemd 那支。
+- ⭐ CSS `.p select,.p input[type=text]{grid-column:2}` 洩漏進巢狀 .obj 的 label input ⇒ 四格排版被擠成兩行;巢狀 grid 的規則要用 `>` 子選擇器。
