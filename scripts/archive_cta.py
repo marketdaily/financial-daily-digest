@@ -35,9 +35,9 @@ CTA 連結帶 utm_source=digest_archive / utm_medium=public_archive /
 utm_campaign=digest_<date>[_us] / utm_content=top|bottom,落地頁 index.html 既有的
 beacon 會把 UTM 記進 attr:visit,轉換時 join 回來 → 這條管道的成效可被
 capabilities/funnel_attribution 量測。
-⚠️ stripe-webhook 的 normalizeSource ATTR_SOURCES 尚未含 "digest_archive",故
-`/admin/analytics-summary` 的 by_source 會把它歸進 "other"(逐筆 attr:convert 記錄仍
-保留原字串,分析工具讀得到)。要讓 admin 桶看得見需在下次 worker 部署時補該常數。
+2026-08-18:stripe-webhook 的 normalizeSource ATTR_SOURCES 已補上 "digest_archive"
+(worker version 344bbd56,2026-08-18T03:24Z 部署),`/admin/analytics-summary` 的
+by_source 自此把這條管道獨立成桶,不再收斂進 "other"。
 
 用法:
   python scripts/archive_cta.py --dry     # 預覽(印會改幾檔,不寫檔)

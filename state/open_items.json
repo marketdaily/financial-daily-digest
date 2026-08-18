@@ -746,8 +746,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-03 13:51",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 11:25",
+  "note": "常數已補並部署:stripe-webhook/src/index.js 的 ATTR_SOURCES 加入 digest_archive,marketdaily-webhook version 344bbd56-3e74-46fb-ad11-556bd94c52d6(2026-08-18T03:24:39Z)已上線,部署後 api.marketdaily.ai OPTIONS 預檢回 204、worker 正常。normalizeSource 以 node 逐案驗過 7 例(digest_archive/大寫/blog/instagram/未知值/空字串/null)。⚠️ 誠實邊界:by_source 真的長出這個桶要等第一筆帶 utm_source=digest_archive 的真實轉換(funnel 已靜默 22 天),那條由 #411 追蹤,不重複開單。scripts/archive_cta.py 的過期註解同步更正。"
  },
  {
   "id": 76,
@@ -1016,8 +1016,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-04 18:40",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 11:10",
+  "note": "已於 2026-08-05 commit 3e6b96c1 修好(markFortunePaid 統一寫入點帶 metadata 契約 v2:v/a/t/l/p/f/h/r/d/s),生產 worker marketdaily-webhook 最後部署 2026-08-17 12:58 UTC 已含此碼;KV 實查最近 11 筆訂單 metadata 皆為 v2。剩下的『真實 Stripe 刷卡未走過』由 #63 追蹤,不重複開單。"
  },
  {
   "id": 103,
@@ -1156,8 +1156,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-04 21:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 10:41",
+  "note": "生產複測已完成(2026-08-18 10:20 TW,winrig load 0.52 非高載):mingshu.tw 手機 CDP applied throttling 390x844/4G/CPU4x 六樣本 1096/1296/1436/2528/1720/1520ms、桌機 848-1140ms、CLS 0、LCP 元素 IMG#hero-poster-img,已越過 Google good 2500。收據=reports/2026-08-18_1030_mingshu_lcp_regression.md"
  },
  {
   "id": 117,
@@ -1506,8 +1506,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-05 18:11",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 11:10",
+  "note": "修好並上線(commit 534d778f)。Buyee 手續費¥500/單、檢品¥500/件、換匯溢價5.9% 全部進模型;同時把手刻兩份的算式收斂成單一真源 arb/costs.py(正解/反解同源)。實測衝擊:落地成本原本低估 NT$349~898/件(帳本最後一批 12 筆全數重算,無 HIT 翻盤);真正危險的是出價上限高估 8.6~11.6%(¥1,750~2,559/件)。21 條斷言含封閉解 vs 二分搜尋獨立驗算與費用 load-bearing 突變;已掛進 arb_radar_runner 每日閘門 + 夜巡 arb_cost_model.test.sh。國際運費『到倉後另計』仍為估值(item.intl_ship),那是估計精度問題不是漏項,不另開單。"
  },
  {
   "id": 152,
@@ -3026,8 +3026,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-16 15:43",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 10:41",
+  "note": "範圍已用 65 天存檔全掃複核=正確:08-15/16 是週末本來就沒班(我一開始誤判成三天六班),marketdaily.ai/output 2026-06-15~08-18 逐日 HTTP 探測只有 08-14 兩班缺(6/15~6/25 是已知 GitHub 停權期,07-20 TW 缺為颱風休市)。本機 logs/fallback_2026-08-14.log 不存在=run.sh 當天沒起跑過(winrig 停機 67h),雲端 failover 因 #300 帳號層停用而無法接手。無法補寄是既定事實,本項無殘留動作;殘留風險由 #295(雲端腿無存活偵測)與 #300(GH Actions 申訴)承接"
  },
  {
   "id": 304,
@@ -4266,6 +4266,26 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-18 09:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 428,
+  "what": "admin_events 分艙保留(alert-worker ce00a102)首班未在生產跑過:離線 20 斷言+10 突變全殺+夜巡守衛都有,但 02:39Z 部署後到 02:48Z 還沒有新的 admin 推播落地,所以生產路徑走的仍是舊資料(n=200/info=84)。驗收=下次任一 admin 推播後 KV admin_events 應變成 info<=40、總筆數先掉到 ~157 再往上長過 200",
+  "why": "要等自然告警觸發;不為了驗證往 Delvin 手機發自測推播(那正是 08-10 盤點出『56% 告警是自測噪音』的病)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 10:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 429,
+  "what": "夜巡全庫自測已連續 7 晚沒全綠(selftest_last_ok 卡在 2026-08-11),唯一紅項是 log_contract_scan 對 cta_funnel_lint/logic.py:78 的 HTML 惰性區塊 regex 誤判成失明消費者",
+  "why": "同一條 _INERT regex 的誤告 2026-08-10 已由事件 E7 修過一次(當時已是同類第 5 次),08-17 又復發 ⇒ 噪音閘的簽名不穩。修法屬守衛調整,要照 08-17 教訓做:豁免必須寫明前提+正反對照各一測試,不能只加樣板消音;本輪處於還債模式(owner=me 99>80)不開新的守衛工程,先登記",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 11:26",
   "closed": null,
   "note": ""
  }

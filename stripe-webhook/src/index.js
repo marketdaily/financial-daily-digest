@@ -346,7 +346,11 @@ const CORS_HEADERS = {
 // 2026-07-13:加 "blog"——SEO blog 頁面 beacon(utm_source=blog,見 scripts/seo_articles.py
 // BEACON_JS)+ blog CTA(utm_source=blog)是排序#2 成長管道的歸因來源;缺此值時
 // normalizeSource 把 blog 收斂進 "other",/admin/analytics-summary by_source 看不到 blog 轉換。
-const ATTR_SOURCES = ["ig", "fb", "threads", "line", "x", "tiktok", "youtube", "email", "blog", "rss", "direct", "other"];
+// 2026-08-18:加 "digest_archive"——公版存檔頁(marketdaily.ai/output/digest_*)是全站
+// 最大流量頁面群,其免費訂閱 CTA 帶 utm_source=digest_archive(scripts/archive_cta.py:111)。
+// 缺此值時 normalizeSource 把它收斂進 "other",/admin/analytics-summary by_source 分不出
+// 這條管道帶進多少訂閱(逐筆 attr:convert 仍保留原字串,只有聚合桶會失真)。收 open #75。
+const ATTR_SOURCES = ["ig", "fb", "threads", "line", "x", "tiktok", "youtube", "email", "blog", "rss", "digest_archive", "direct", "other"];
 function normalizeSource(s) {
   const v = (s || "").toString().trim().toLowerCase();
   if (!v) return "direct";
