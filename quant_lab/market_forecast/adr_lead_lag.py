@@ -35,10 +35,20 @@ SYMS = {"TSM": "tsm_o", "2330.TW": "tw2330_o"}   # *_o.json is gitignored in thi
 MIN_ROWS = 1000                                   # truncation guard (prior fake-num incident: 41 rows)
 
 
-def fetch(sym, cache_name, force=False):
+def fetch(sym, cache_name, force=False, min_rows=None, out_dir=None):
     """Yahoo v8 daily OHLC + adjclose. Returns list of dicts with exchange-local date.
-    FAILS LOUD on a short/truncated pull."""
-    path = os.path.join(OUT, f"{cache_name}.json")
+    FAILS LOUD on a short/truncated pull.
+
+    min_rows / out_dir default to this module's MIN_ROWS / OUT, so existing callers
+    are unchanged. Other research modules pass their own: a legitimately short
+    history (e.g. SNDK, spun off 2025) must not be mistaken for a truncated pull,
+    and each study keeps its own cache dir.
+    """
+    if min_rows is None:
+        min_rows = MIN_ROWS
+    if out_dir is None:
+        out_dir = OUT
+    path = os.path.join(out_dir, f"{cache_name}.json")
     if os.path.exists(path) and not force:
         with open(path) as f:
             arr = json.load(f)
@@ -68,8 +78,8 @@ def fetch(sym, cache_name, force=False):
         print(f"  fetched {sym}: {len(arr)} rows ({arr[0]['date']} ~ {arr[-1]['date']})", flush=True)
         time.sleep(1.0)
 
-    if len(arr) < MIN_ROWS:
-        sys.exit(f"FATAL: {sym} returned only {len(arr)} rows (< {MIN_ROWS}). "
+    if len(arr) < min_rows:
+        sys.exit(f"FATAL: {sym} returned only {len(arr)} rows (< {min_rows}). "
                  f"Refusing to compute stats on a truncated sample. Re-run (Yahoo rate-limit?).")
     return arr
 
