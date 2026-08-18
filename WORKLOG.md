@@ -6748,3 +6748,24 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   查了但收不掉:#411(attr:convert 最後一筆 07-25,**已 24 天掛零**,首班沒樣本可驗)、
   #286(deploy_drift 六筆判決全 NOGAIN,一次 HEAL 都沒有)。
 - 報告:`~/autonomous/reports/2026-08-18_1100_admin_events_retention.md`
+
+## 2026-08-18 11:40 TW — 進貨雷達的出價上限,一直比該出的價高 9%(已修上線)
+- 還債輪(owner=me 101>80)。挑 #151:08-05 首單結帳頁量到 Buyee 真實費用(代標手續費 ¥500/單、
+  檢品 ¥500/件、收款匯率比中價貴 5.9%),但雷達的成本模型一直沒補進去。
+- **危險的不是毛利少算,是出價上限**:同一個 80% ROI 目標,新舊模型差 **¥1,750~2,559/件
+  (8.6~11.6%)**。照舊上限去搶標,搶到的正是本來不該買的那幾件。
+  落地成本則低估 NT$349~898/件(帳本最後一批 12 筆全部重算,**沒有任何 HIT 因此翻盤**,毛利仍夠厚)。
+- **根因是同一份算式手刻兩份**:radar.landed_cost(正解)與 bidcap(反解)各自實作,
+  漏的是同一批費用 ⇒ 高估的毛利與過寬的上限**互相對得起來**,從任一邊都看不出破綻。
+  所以修法不是兩邊各補一次,是收斂成單一真源 `arb/costs.py`,radar/bidcap 只呼叫。
+- 驗證:`arb/test_costs.py` 21 條斷言 —— 正反解 round-trip、**封閉解 vs 二分搜尋獨立驗算**
+  (不共用代數推導)、每項費用拿掉都必須讓成本下降(load-bearing 突變)、新模型只會更保守、邊界回 0。
+  test_radar 兩條寫死舊模型的期望值更新(3166→3525)並重算 single_channel 錨價讓該分支仍被覆蓋
+  ——改的是過期期望值,不是放寬判準。
+- **順手補的一課**:`arb/test_*.py` 在今天之前**沒有任何東西在跑 test_costs 級別的模型檢查**,
+  runner 只跑 test_radar。已把 test_costs 加進 `arb_radar_runner.sh` 每日閘門 + 夜巡
+  `capabilities/tests/arb_cost_model.test.sh`。帳本另加 `cost_model` 欄位,免得拿兩把尺比歷史趨勢。
+- commit `534d778f`(已 push),dashboard 已用新模型重建。
+- 順手收債 155→153:#102(fortune 付款 KV metadata v2 已於 3e6b96c1 修好,生產 worker 08-17 部署已含,
+  KV 實查最近 11 筆皆 v2;真實刷卡未走過由 #63 追蹤)。
+- 報告:`~/autonomous/reports/2026-08-18_1140_arb_cost_model_buyee_fees.md`
