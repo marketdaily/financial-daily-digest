@@ -4228,5 +4228,25 @@
   "opened": "2026-08-18 08:07",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 424,
+  "what": "命書 4 個產品頁在發現層缺席:2 個 Google 完全不知道有這 URL(unknown)、2 個知道但從未爬取(discovered),全在 08-17 就提交的 sitemap 裡且 HTTP 200+有內鏈",
+  "why": "08-18 驗證者 F3 推翻我原本『爬取預算延遲、等就好』的判詞——那個判詞的前提是『已爬取但未索引』,5 頁裡只有 1 頁符合。真上游疑似與 #423(lastmod 天天全站重寫=對 Google 謊報全站每天都改)同源;要先收 #423 再觀察兩週",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 08:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 425,
+  "what": "命書 pSEO Phase 2 擴充優先序要重排:原表只列 7 群且未校正年齡,第三/第四順位是錯的(真候選是 /p/xingming 0.600、/p/changsheng 0.538,不是 /tool 與 /p/rizhu)",
+  "why": "08-18 驗證者 F1(CRITICAL)推翻『各群年齡相同』——實差 7 天且被判死的兩群最年輕。校正後方向仍成立(擴 liunian/mingpan、停擴 tarot),但 /p/xingzuo 由『該砍』降級為『未定』(只跑 6 天且校正後排中段)。這是投放優先序假設,非已證實因果,要用 Phase 2 實際結果回測",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 08:24",
+  "closed": null,
+  "note": ""
  }
 ]
