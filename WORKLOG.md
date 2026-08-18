@@ -6812,3 +6812,41 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   沒另開工程,只在推播與決策項註明後台停在 08-10。
 - open 153→152(收 #197;#354/#357/#209 逐項加註更正;新登記 #430,明寫拍板後自然作廢)。
   報告:`~/autonomous/reports/2026-08-18_1200_quietfix_coldmail_silent_8days.md`
+
+## 2026-08-18 12:30 TW — 自主機器(還債輪):命書付費品項從此吃得到出生時刻(收 open #369)
+- 收 #369。引擎(`engine/bazi.py` + `timebase`)**早就**支援 `precision="精確"`(還原日光節約
+  + 距時辰交界 ≤20 分鐘的揭露),但管線上三道閘各自足以讓它歸零,所以那條路從上線到今天
+  **一次都沒射出過**:
+  ① worker `record.birth_time` **只在 astro_999 才寫進訂單** ⇒ 連程式碼裡「有吃」的**紫微**
+     實際上也永遠拿不到(open #369 原文寫「紫微/占星有吃」是讀交付端程式碼得到的錯誤結論)
+  ② `fulfill._parse_birth` 只回 HOUR_MAP 中點,不看 birth_time、不傳 precision
+  ③ 表單「出生時間」欄位關在占星專屬 `<fieldset hidden disabled>`,非占星品項送不出去
+- 兩條車道同步修(雲端腿是活的,只改一邊=製造分歧):`cl_bazi.baziChart` 加 precision
+  (原本 `boundary_note: null` 寫死)、`parseBirth` 吃 birth_time、`nearBoundary`/`TIME_RE`
+  從 cl_ziwei 抽到 cl_bazi 共用;worker 驗證升為全品項 + 合婚補 `p2_birth_time`;
+  指紋契約三處同步(SPEC_INPUT_FIELDS / PREWARM_FIELDS ×2)。
+- `/p/paipan` 那句「八字詳批的下單表單只收時辰」已成假話 → 改寫(自驗五題那頁自己說謊更糟)。
+- 驗證:python 10 支 + node 22 支全綠;新增 `tests/node/order_birth_time.test.mjs` 打真的
+  `/api/order` 釘住「欄位有沒有進 KV」。**突變驗殺**:欄位退回占星專屬 12 FAIL、壞值不擋
+  4 FAIL、**兩條車道一起退化**(parity 抓不到那種)3 FAIL。
+  生產實射:`birth_time=25:00` → 400 `bad_birth_time`;`p2_birth_time=99:99` → 400
+  `bad_p2_birth_time`(部署前這兩者都是靜默接受然後丟掉)。worker 版本 acfe011c。
+- 誠實邊界:**首班未驗** —— 真驗收是「真客人填了時間 → 報告出現『出生時間校正』段」,
+  KV 22 筆訂單無一在途,精確路徑尚未被真人走過(已登記)。驗證者分離跳過:本 session
+  禁用 Agent 工具(同 #272),改以雙向突變測試代替。`~/fortune-ai` 無 remote(#292),只本機 commit。
+
+## 2026-08-18 13:55 TW — 老闆令:關掉自主機器(吃 weekly limit)
+- 停機:`~/autonomous/state/DISABLED` + `~/autonomous/DISABLED` **兩道**都下(driver.sh 註解明寫
+  雙位置互為備援 —— 07-26 曾有單一旗標被不明程序刪掉→機器偷跑一輪)。
+- ⚠️ 真正在燒的不是 driver 那條:kill switch 下去時,**週考 `eval/run_eval.sh` 已連跑 2h40m**
+  (一題一題 spawn `claude -p --model sonnet`)。它只在**開考前**檢查 DISABLED,開考後不看,
+  所以旗標對正在進行的那場完全無效 → 手動 kill 整棵樹,含被殺父進程留下的孤兒 `claude -p`
+  (PPID=1,還在跑第二題,再 27 秒又燒一題)。
+- 停機後不會被別的路徑喚醒(已查):digest_guard 沒有喚醒 driver/cycle 的路徑、cron_catchup
+  不補跑 eval/driver、run_eval 每天 11:10 會 bail_out engine_disabled(門檻 14 次才推播)。
+- 停機提醒保留:driver.sh 停機滿 24h 起每日推播一次(防 07-30「靜默昏迷 3.5 天」重演)。
+- 用量事實:近 7 天等值 $3197.58(08-17 單日 $1491.66、08-18 至今 $377.88);自主機器帳本
+  有記花費的 9 輪合計 $117.64(僅涵蓋「時間到/讓路」才記帳的輪次,實際更高)。
+- 誠實邊界:**關掉自主機器 ≠ weekly limit 就省下來**。另有 7 支生產 runner 仍會 spawn claude
+  (site_scan / digest_selfheal / digest_chronic / marketing_agents_weekly / line_agent /
+  line_group / brain_deliver_mac),不受 DISABLED 管,未動 —— 是否收斂等老闆拍板。
