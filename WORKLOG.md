@@ -6769,3 +6769,19 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 順手收債 155→153:#102(fortune 付款 KV metadata v2 已於 3e6b96c1 修好,生產 worker 08-17 部署已含,
   KV 實查最近 11 筆皆 v2;真實刷卡未走過由 #63 追蹤)。
 - 報告:`~/autonomous/reports/2026-08-18_1140_arb_cost_model_buyee_fees.md`
+
+## 2026-08-18 11:30 TW — 存檔頁 CTA 終於進得了歸因桶;順帶抓到「我以為我在還債,其實一筆都沒收」
+- 還債輪。真正收掉的是 **#75**:公版存檔頁(marketdaily.ai/output/digest_*)是全站最大流量頁面群,
+  它的免費訂閱 CTA 帶 `utm_source=digest_archive`,但 stripe-webhook 的 `ATTR_SOURCES` 沒有這個值
+  ⇒ `normalizeSource` 把它收斂成 `"other"`,後台 by_source **分不出這條管道帶進多少訂閱**。
+  補常數 + 部署(marketdaily-webhook version `344bbd56`,2026-08-18T03:24:39Z),node 逐案驗 7 例
+  (digest_archive/大寫/blog/instagram/未知值/空字串/null),部署後 api.marketdaily.ai 預檢回 204。
+  誠實邊界:桶要真的長出來得等第一筆帶該 utm 的轉換(funnel 已靜默 22 天,由 #411 追蹤)。
+- **本輪最有價值的其實是抓到自己的假帳**:我挑債時用 `status` 欄位判 open,但這本帳本根本沒有
+  `status`,判準是 `closed is None` ⇒ 428 筆全被當成 open,挑出的 20 件多數早已收掉;而
+  `open_items.py close <已收 id>` 回 rc=0,我的 wrapper 只看 rc 就印「closed #N」——20 行成功訊息
+  全是假的,open 數 153 全程沒動。教訓:**同一支腳本對「做了」與「本來就這樣」回同一個 exit code 時,
+  exit code 就不是驗收訊號**。寫進 `~/autonomous/state/lessons/open_items_ledger_open_criterion.md`。
+- 新登記 #429:夜巡全庫自測連 7 晚沒全綠(selftest_last_ok 卡在 08-11),唯一紅項是 log_contract_scan
+  對 cta_funnel_lint 的 HTML 惰性區塊 regex 誤告(同類 08-10 才修過,已是第 6 次)。守衛工程,還債模式先登記不動手。
+- commit `4db5eb09`(已 push)。報告:`~/autonomous/reports/2026-08-18_1130_debt_round_attr_bucket.md`
