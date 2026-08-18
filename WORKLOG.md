@@ -6712,3 +6712,17 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   只有帳本還開著。`open_items` 沒有任何東西在對帳「證據是不是已經在磁碟上」,後果是假債把真債
   (#295 雲端備援腿無存活偵測 / #300 GitHub Actions 帳號層停用 / #416 PRO360 沒綁卡)淹在 156 行裡。
   對帳器本身是新的自我基礎設施工程,還債模式禁止,沒動手。
+
+## 2026-08-18 10:30 TW — 命書首頁手機 LCP 2740→1720ms 上線(收 open #109)
+- 接續上一輪存檔的 #109:`~/fortune-ai` commit 3dbcd4b → `scripts/seo/ship.sh --clean`
+  (**436 passed** 11m33s + 線上體檢 31 過 + sitemap 576 筆重送)→ 已部署。
+- 生產 mingshu.tw 複驗(CDP applied throttling 390x844/4G 1.6Mbps/CPU4x,6 樣本):
+  **1096/1296/1436/2528/1720/1520 ms**,越過 Google good 2500;桌機 848–1140;CLS 0;
+  LCP 元素 IMG#hero-poster-img。
+- 根因不是 render-blocking 是**頻寬**:292KB 整頁裡 240KB 是 defer JS,與 53KB hero poster 同毫秒
+  開跑 ⇒ poster responseEnd 833→2869ms。**CF 後面 `fetchpriority="high"` 救不了**(CF 不照客戶端
+  H2 優先序,多 stream round-robin)。修法=八支非首屏 JS 進 `<template id="late-js">`,等 poster
+  load(+rAF)或 1800ms 硬保險才 async=false 依序注入。
+- **一課**:同一頁 08-04 才修到 1544ms,14 天內的新功能把它推回紅線,而**兩次都是人去查才發現** ——
+  這頁沒有任何東西在持續量 LCP。積木(perf_cwv.py)早就有,缺的是排程+閾值告警;已進 backlog,
+  還債模式(owner=me 103>80)期間不准開新自我基礎設施工程,沒動手。

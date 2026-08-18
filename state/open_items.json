@@ -1086,8 +1086,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-04 20:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 10:22",
+  "note": "命書首頁手機 LCP 2740→1720ms(生產 mingshu.tw 實測,6 樣本 1096/1296/1436/2528/1720/1520,越過 Google good 2500 門檻)。根因是頻寬非 render-blocking:240KB defer JS 與 53KB hero poster 同毫秒開跑,CF 前面 fetchpriority 無效(H2 round-robin)。修法=八支非首屏 JS 移進 <template id=late-js>,等 poster load(+rAF)或 1800ms 硬保險才 async=false 依序注入。commit 3dbcd4b;ship.sh --clean 436 passed + 線上體檢 31 過 + 已部署。"
  },
  {
   "id": 110,
@@ -4256,6 +4256,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-18 08:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 427,
+  "what": "命書首頁的 <template id=late-js> 晚班注入尚未在真實訪客上驗過:1800ms 硬保險與 poster error 分支只在 headless 走過,真人若在黑幕退場前就捲到排盤區(慢裝置)會看到 JS 還沒到的那 0.x 秒",
+  "why": "首班驗收要看真實流量:GSC/CrUX 的 LCP 分佈要 28 天才會反映,先看 7 天內有沒有排盤/下單錯誤回報",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 09:43",
   "closed": null,
   "note": ""
  }
