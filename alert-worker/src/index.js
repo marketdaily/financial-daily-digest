@@ -617,9 +617,36 @@ function isInfoAdminEvent(title, body) {
   return ADMIN_INFO_KEYWORDS.some((k) => txt.includes(k));
 }
 
-// 每次 admin 推播同步落 KV admin_events(最近 200 則,滾動 90 天),後台「系統告警」頁讀。
+// 每次 admin 推播同步落 KV admin_events,後台「系統告警」頁讀(admin.html /admin/events)。
+// ⚠️ 保留量是「則數」不是「天數」——90 天只是 KV TTL 的上限,真正決定看得到多久的是環形容量。
+// 2026-08-18 修:原本是單一 FIFO slice(0,200),而資訊型通知(open_items 快照/讓路交接)占 42% 的
+// 位子、平均 1851B(真告警只 ~500B) ⇒ 實測 200 則只裝得下 37 小時,Delvin 上週處理過的告警在
+// 後台已經找不到。改成分艙保留:三類各有自己的預算,資訊型再多也擠不掉真告警。
+// 以實測 75 則真告警/日估:未解決 ~6.7 天、已解決(=他處理過的稽核軌)可回溯數週。
 // 推播失敗/無訂閱也照樣留痕:歷史不依賴推播當下有沒有看到(admin.html /admin/events)。
 // fullBody:admin-line-push 的完整訊息(push body 截 300 字,歷史留全文)。
+// 分艙保留預算(見 recordAdminEvent 上方說明)。三類互不相搶:
+//  - open   = 還沒被標已解決的真告警,Delvin 要看的就是這艙
+//  - solved = 他(或 resolve_admin_alert.sh)標過已解決的真告警 = 稽核軌,每天只有個位數,留久一點
+//  - info   = 自動歸檔的資訊型通知,只是留個痕,少量即可
+const ADMIN_EVENT_KEEP = { open: 500, solved: 200, info: 40 };
+const ADMIN_EVENT_INFO_BODY_MAX = 400;
+
+// 由新到舊掃,各艙額滿才丟。回傳新陣列,不改動入參。
+// 注意分艙依「當下」的 info/resolved 狀態算——一則告警被標已解決之後就換艙,這是刻意的:
+// 已解決的東西不該再占著「未解決」那 500 個位子。
+function pruneAdminEvents(list) {
+  const left = { open: ADMIN_EVENT_KEEP.open, solved: ADMIN_EVENT_KEEP.solved, info: ADMIN_EVENT_KEEP.info };
+  const out = [];
+  for (const e of list) {
+    const bucket = e && e.info ? "info" : (e && e.resolved ? "solved" : "open");
+    if (left[bucket] <= 0) continue;
+    left[bucket] -= 1;
+    out.push(e);
+  }
+  return out;
+}
+
 async function recordAdminEvent(env, payloadStr, pushed, fullBody, evTs) {
   try {
     let p = {};
@@ -638,9 +665,12 @@ async function recordAdminEvent(env, payloadStr, pushed, fullBody, evTs) {
       rec.info = true;
       rec.resolved = rec.ts;
       rec.resolved_note = "ℹ️ 資訊通知,自動歸檔";
+      // 資訊型不是要回頭查的東西(open_items 快照的活現況在 scripts/open_items.py),
+      // 留全文只會吃掉真告警的位子 ⇒ 這一類單獨截短。
+      rec.body = rec.body.slice(0, ADMIN_EVENT_INFO_BODY_MAX);
     }
     list.unshift(rec);
-    await env.USER_PREFS.put("admin_events", JSON.stringify(list.slice(0, 200)), { expirationTtl: 90 * 24 * 3600 });
+    await env.USER_PREFS.put("admin_events", JSON.stringify(pruneAdminEvents(list)), { expirationTtl: 90 * 24 * 3600 });
   } catch {}
 }
 
