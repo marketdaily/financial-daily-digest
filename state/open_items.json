@@ -4416,6 +4416,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-18 16:56",
+  "closed": "2026-08-18 17:10",
+  "note": "網頁殼已上線 protoforge.marketdaily.ai(systemd+tunnel,Playwright驗過);讀圖已是背景job"
+ },
+ {
+  "id": 443,
+  "what": "ProtoForge:STEP 未在 SolidWorks 開過(要皇海 RD 開一次);多租戶帳號未做(單一金鑰);第一位真實使用者(皇海 RD)尚未用過",
+  "why": "PoC 三輪收尾,等老闆拿給皇海 RD",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-18 17:10",
   "closed": null,
   "note": ""
  }

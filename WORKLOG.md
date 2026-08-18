@@ -7147,3 +7147,9 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - ⭐ 順手對齊一條既有鐵則:內襯的**盒身/蓋子**現在也吃「打光」開關(預設關=純平色),
   否則同一個黃色在頂面與側牆會呈現兩種黃 —— 正是老闆之前罵過的「各面凸出來的地方要跟另一面同色」。
   內容物(泡棉/卡/票券)不受開關影響,永遠有明暗,否則讀不出深度。
+- 17:0x~17:1x 第三輪(「接著做」):網頁殼 `protoforge/server.py`+`web/index.html`(FastAPI:家族 SCHEMA→滑桿面板/重建/360°/試插/下載 STEP,
+  AI 三入口背景 job 輪詢),systemd user `protoforge-web`+`protoforge-tunnel`,https://protoforge.marketdaily.ai(API 金鑰閘,401 驗過)。
+  Playwright headless 驗:零 console error、fitcheck PASS 0.25mm、card_connector 回 N/A 訊息。
+- ⭐ 坑:8931 被別的 python http.server 佔著,uvicorn 起不來卻 curl 回 200(是別人的);`pgrep -f protoforge.server` 會匹配到自己
+  這條 bash 命令列⇒誤判「已在跑」。起服務用 setsid + run_server.sh,判活用 curl 該 port 的特徵路徑。
+- ⭐ model-viewer.min.js 是 ES module,`<script>` 不加 type=module 整支死(Unexpected token 'export')。
