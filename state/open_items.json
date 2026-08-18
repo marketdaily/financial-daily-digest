@@ -4388,5 +4388,25 @@
   "opened": "2026-08-18 15:46",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 440,
+  "what": "CHOSEN 禮盒版三格並排在 178x140 放不下(差 23mm),需老闆決定:加大到 204x160 或票券分層",
+  "why": "尺寸取捨要老闆拍板,影響外觀與成本",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-18 16:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 441,
+  "what": "ProtoForge PoC 只有 adapter_housing 一個家族;皇海真實料號家族+滑桿網頁殼+STEP/2D 圖抽參入口未做,STEP 未在真 CAD 開過",
+  "why": "今日只做核心迴圈概念驗證,老闆看完 Artifact 再決定投入",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 16:38",
+  "closed": null,
+  "note": ""
  }
 ]
