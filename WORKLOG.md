@@ -7183,3 +7183,11 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - ⭐ 上一輪我把「印刷同色」錯套到 3D 實體預覽:全平色會讓紅頂面與紅左牆連成一片,盒子讀不出形狀。
   分開處理——盒身用弱明暗(0.80+0.20·N·L,看得出是同一個黃只是受光不同),內容物維持強對比。
   「各面同色」是對刀模/六面檢視器講的,那邊仍有平色開關。
+- 17:5x~18:4x 第五輪(老闆:「怎樣別人才覺得厲害好用、市場調查誰需要、針對全部行業升級」):
+  兩個研究代理(市場 11 段 + 競品 18 個拆解)→ `~/protoforge/research/2026-08-18_market_and_competitor.md`。
+  結論:灘頭堡=射出/模具廠(台 3,358 家,報價吃 30-50% 產能)、電子 ODM(皇海)、CNC/治具;text-to-CAD 共識「只能做簡單原型」,可信度槓桿=配合檢查+誠實 DFM+可信 STEP。
+  依此上線:自動 2D 工程圖(三視圖+ISO+尺寸+標題欄 PDF/SVG/DXF,`drawing.py` 用 build123d.exporters.Drawing 投影)、
+  DFM 六製程三級(必修/建議/未檢查)、STEP/STL 可信徽章(`validate.py`)、材料成本、變體掃描 zip、公開設定器 `/c/<family>`(限速)、
+  分享連結+AR、展開圖/刀模(`flat.py`:鈑金 K-factor 展開 DXF、RTE 摺盒刀模)、家族 +3(sheet_bracket/tuck_box/plate_fixture)、行業範例 chips、mm/in。
+- ⭐ Drawing 類不在 `from build123d import *`,要 `from build123d.exporters import Drawing`;fitz 能把 SVG 直接 convert_to_pdf。
+- ⭐ `hidden` 屬性會被 inline `display:flex` 蓋掉——顯示切換用 `#x:not([hidden]){display:flex}`。
