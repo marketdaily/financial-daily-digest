@@ -5,9 +5,9 @@
     ./.venv/bin/python -m arb.radar --dry      # 不推播
     ./.venv/bin/python -m arb.radar --only shaft_tour_ad_di6
 
-成本模型(日本→台灣):
-    落地成本 = 落札價×匯率 + 日本國內運費 + 國際運費 + 關稅 + 營業稅
-    營業稅基數 = (CIF + 關稅),CIF 含國際運費
+成本模型(日本→台灣)——**算式在 arb/costs.py,這裡只呼叫**:
+    落地成本 = 落札價×有效匯率 + Buyee 手續費/檢品 + 日本國內運費 + 國際運費 + 關稅 + 營業稅
+    有效匯率 = 中價 × 1.059(Buyee 收款匯率溢價,2026-08-05 結帳頁實測)
 淨利兩軌並列(通路決定生死,見 sales_playbook):
     蝦皮 = 售價×(1 - 手續費率) - 落地成本
     面交 = 售價 - 落地成本
@@ -24,6 +24,7 @@ sys.path.insert(0, REPO)
 import requests  # noqa: E402
 from dotenv import dotenv_values  # noqa: E402
 
+from arb import costs  # noqa: E402
 from arb import sources  # noqa: E402
 
 ENV = {**dotenv_values(os.path.join(REPO, ".env")), **os.environ}
@@ -54,12 +55,8 @@ def push(msg):
 
 
 def landed_cost(jpy, rate, item):
-    """日圓落札價 → 台灣落地成本(NTD)。"""
-    goods = jpy * rate
-    cif = goods + item["intl_ship"]
-    duty = cif * item.get("duty", 0.05)
-    vat = (cif + duty) * 0.05
-    return round(goods + item["jp_ship"] + item["intl_ship"] + duty + vat)
+    """日圓落札價 → 台灣落地成本(NTD)。算式真源在 arb/costs.py(正解/反解同源)。"""
+    return round(costs.landed_from_jpy(jpy, rate, item))
 
 
 def evaluate(item, page, rate):
@@ -79,6 +76,9 @@ def evaluate(item, page, rate):
     # 用 median 不用 meta 均價:均價會被同關鍵字下的配件(頭套/握把/配重)拉低
     cost = landed_cost(jp["cost_jpy"], rate, item)
     row["landed_cost"] = cost
+    # 帳本橫跨模型改版(2026-08-18 補進 Buyee 費用+換匯溢價),沒有這個欄位就會
+    # 拿兩把不同的尺去比歷史毛利趨勢
+    row["cost_model"] = costs.COST_MODEL
     row["jp_contaminated"] = jp.get("contaminated")
 
     # 流動性:日拍件數少=補不到穩定貨源,只能做一次性;台灣刊登少=可能賣不掉。

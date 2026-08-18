@@ -3,29 +3,20 @@
 拍賣不是「看到便宜就買」,是「先算出上限,出到上限為止」。
 別人出得比上限高 → 讓掉,因為超過那個價這筆生意就不賺錢了。
 
-成本模型(與 radar.landed_cost 同一套,反解):
-    landed = k*goods + jp_ship + k*intl_ship      其中 k = 1 + duty + (1+duty)*0.05
-    goods  = (landed - jp_ship - k*intl_ship) / k
-    jpy    = goods / rate
+⚠️ 成本算式**不在這裡** —— 正解與反解同源於 `arb/costs.py`。
+   2026-08-05 之前這支自己手刻了一份反解,和 radar 的正解各漏同一批 Buyee 費用,
+   於是「毛利」與「出價上限」一起高估卻互相對得起來。不要再在這裡刻第二份。
 """
+from arb import costs
 
-
-def _k(duty):
-    return 1 + duty + (1 + duty) * 0.05
-
-
-def landed_from_jpy(jpy, rate, item):
-    k = _k(item.get("duty", 0.05))
-    return k * (jpy * rate) + item["jp_ship"] + k * item["intl_ship"]
+landed_from_jpy = costs.landed_from_jpy
 
 
 def cap_for_target_landed(target_landed, rate, item):
     """給定可接受的落地成本,回推最高日圓出價。不可行回 0。"""
-    k = _k(item.get("duty", 0.05))
-    goods = (target_landed - item["jp_ship"] - k * item["intl_ship"]) / k
-    if goods <= 0 or rate <= 0:
+    if rate <= 0:
         return 0
-    return int(goods / rate)
+    return int(costs.jpy_for_landed(target_landed, rate, item))
 
 
 def cap_by_roi(sell_price, target_roi_pct, rate, item):
@@ -58,4 +49,5 @@ def plan(sell_price, rate, item, target_roi=80, min_margin=None):
         "margin_at_cap": round(sell_price - landed),
         "roi_at_cap": round((sell_price - landed) / landed * 100) if landed else 0,
         "sell": sell_price,
+        "cost_model": costs.COST_MODEL,
     }

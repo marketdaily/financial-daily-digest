@@ -41,16 +41,18 @@ ITEM = {"id": "t", "name": "T", "line": "l", "jp_kw": "x", "tw_kw": "y",
 
 def main():
     print("成本模型")
-    # 10000 JPY @0.21 = 2100 貨值; CIF=2100+500=2600; 關稅130; 營業稅=(2600+130)*.05=136.5
-    # 總 = 2100+300+500+130+136.5 = 3166.5 -> 3166 or 3167
+    # 模型 v2(2026-08-18,#151):有效匯率 0.21*1.059=0.22239;
+    #   貨值 10000*0.22239=2223.9;Buyee 手續費+檢品 ¥1000*0.22239=222.4
+    #   CIF=2223.9+500=2723.9;關稅136.2;營業稅=(2723.9+136.2)*.05=143.0
+    #   總 = 2223.9+222.4+300+500+136.2+143.0 = 3525.5 -> 3525
     c = landed_cost(10_000, 0.21, ITEM)
-    check("落地成本含關稅與營業稅複合", 3166 <= c <= 3167, f"得 {c}")
+    check("落地成本含 Buyee 費用/換匯溢價/關稅/營業稅複合", 3525 <= c <= 3526, f"得 {c}")
     check("營業稅基數含關稅(不是只課貨值)",
           landed_cost(10_000, 0.21, {**ITEM, "duty": 0.0}) < c)
 
     print("保守錨:代購掛牌不得抬高判定")
     # median 高(混代購掛牌) 但 p25 低(現貨) -> 應以 p25 判定
-    # 落地成本約 7797;median 15000 過關、p25 8300 不過關 → 必須以 p25 為準
+    # 落地成本約 8429(v2);median 15000 過關、p25 8300 不過關 → 必須以 p25 為準
     stub_sources({"count": 50, "avg_jpy": 30_000},
                  {"count": 20, "min": 8000, "p25": 8300, "median": 15000,
                   "max": 16000})
@@ -92,15 +94,16 @@ def main():
 
     print("單通路 vs 雙通路")
     # 讓面交過、蝦皮不過
+    # v2 落地 8429:p25 8800 → 面交 +371 過關、蝦皮 -393 不過關
     stub_sources({"count": 10, "avg_jpy": 30_000},
-                 {"count": 10, "min": 8000, "p25": 8300, "median": 8600,
-                  "max": 9000})
+                 {"count": 10, "min": 8500, "p25": 8800, "median": 9100,
+                  "max": 9500})
     r = evaluate({**ITEM, "min_margin": 100}, FakePage(), 0.21)
     check("僅單一通路達標時標記 single_channel",
           r["status"] == "HIT_single_channel", f"得 {r['status']}")
     check("蝦皮扣費算式正確",
           r["margin_shopee_cons"] ==
-          round(8300 * (1 - SHOPEE_PCT) - SHOPEE_FLAT - r["landed_cost"]))
+          round(8800 * (1 - SHOPEE_PCT) - SHOPEE_FLAT - r["landed_cost"]))
     check("蝦皮淨利必然低於面交", r["margin_shopee_cons"] < r["margin_facetoface_cons"])
 
     print("日本端配件污染:成本必須用中位數不是均價")
