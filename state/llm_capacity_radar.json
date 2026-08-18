@@ -28,8 +28,7 @@
   "models": {
     "cerebras": [
       "gemma-4-31b",
-      "gpt-oss-120b",
-      "zai-glm-4.7"
+      "gpt-oss-120b"
     ],
     "groq": [
       "allam-2-7b",
@@ -37,8 +36,6 @@
       "canopylabs/orpheus-v1-english",
       "groq/compound",
       "groq/compound-mini",
-      "llama-3.1-8b-instant",
-      "llama-3.3-70b-versatile",
       "meta-llama/llama-prompt-guard-2-22m",
       "meta-llama/llama-prompt-guard-2-86m",
       "openai/gpt-oss-120b",
@@ -132,5 +129,5 @@
       "z-ai/glm-5.2:free"
     ]
   },
-  "updated": "2026-08-17 10:10"
+  "updated": "2026-08-18 10:10"
 }
