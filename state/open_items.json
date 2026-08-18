@@ -4328,5 +4328,65 @@
   "opened": "2026-08-18 14:00",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 434,
+  "what": "KINGCONN 若接下「只有2D檔的料號自建3D」,工程級STEP不可未經RD簽核就給客戶",
+  "why": "2D圖只完整標註外形,內部機構(push-push凸輪行程、彈片幾何)通常沒有完整尺寸;而可拆解模型展示的正是內部。展示用模型風險低,但客戶拿去做PCB干涉檢查的STEP若尺寸有誤=客戶板子報廢,責任在我方",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-18 14:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 435,
+  "what": "CHOSEN review 頁(out/review_v1.html)還是舊圖,且 site/ 尚未 deploy",
+  "why": "review_v1.html 是 base64 內嵌手工檔沒有 builder;對外頁面要老闆點頭才發",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 15:01",
+  "closed": "2026-08-18 15:06",
+  "note": "build_review.py 建立+out/review.html 重建;chosen-chest worker 已 deploy,線上四圖 md5 與本機一致;Artifact 已交付"
+ },
+ {
+  "id": 436,
+  "what": "CHOSEN 盲盒圖 ②③ 的 PSA 殼標籤還有紅色色帶(規格是全白空白標籤)",
+  "why": "NBP 反覆畫出評級公司色帶,未收乾;IP/合規潔淨度",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 15:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 437,
+  "what": "命書 FB 多圖貼文(attached_media→/feed)未在生產跑過:只驗到 published=false 上傳那半",
+  "why": "最後那一步會產生真實貼文,無法在不發文的前提下驗;首班=今晚 20:00,失敗會自動退回封面單圖且 detail 留痕,看守器已接降級偵測",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 15:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 438,
+  "what": "CHOSEN 四張視覺仍是 AI 版,未依 box_spec.py 幾何重出",
+  "why": "盒身幾何剛參數化,視覺圖還沒接上這個真源",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 15:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 439,
+  "what": "命書 winrig 出現一次 KV 寫入被擋(wrangler kv put rc=1 'firewall or VPN blocking the request',15:45:18),13 秒後重試成功;若反覆出現要查 winrig 對外網路/CF 端限制",
+  "why": "單次瞬斷,既有重試已處理;需觀察是否復發",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 15:46",
+  "closed": null,
+  "note": ""
  }
 ]
