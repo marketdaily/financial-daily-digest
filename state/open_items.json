@@ -1966,8 +1966,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-09 20:15",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 11:41",
+  "note": "2026-08-18 結案:第一輪 6 封(08-09/10 寄出)滿 9 天,IMAP 全庫實查(INBOX 僅 15 封,全為 Google/DMARC 系統信)=0 回覆、0 退信、0 表單填答;inbox.scan 對 154 位聯絡人零命中。結論如當初設定的判準:要檢討的是切角(gap 是否夠痛)而不是加量。⚠️ 但此樣本只有 6 封且冷信線自 08-10 起就被 kill-switch 關著(見 #209),統計上不足以判死 B2B 冷信,只能說『首輪切角沒打中』。"
  },
  {
   "id": 198,
@@ -2082,7 +2082,7 @@
  {
   "id": 209,
   "what": "storefront 冷信寄送已暫停,等老闆校對小店信文案",
-  "why": "老闆 2026-08-10 說『寄之前讓我校對』;已 touch kill-switch + STOREFRONT_SEND_ENABLED=0,4 封花店信 queued 待放行。校對 OK 後移除 DISABLED+SEND_ENABLED=1 即恢復",
+  "why": "老闆 2026-08-10 說『寄之前讓我校對』;已 touch kill-switch + STOREFRONT_SEND_ENABLED=0,4 封花店信 queued 待放行。校對 OK 後移除 DISABLED+SEND_ENABLED=1 即恢復 ⚠️ 2026-08-18 更新:已卡 8 天,期間零寄出、零觸及,且沒有任何機制提醒任何人這條線是關著的。已推播老闆(webpush+desktop 皆送達)+登記決策佇列 m-coldmail(A 校對OK開/B 只放熱案那封/C 收線),5 封全文備妥在 ~/storefront/OUTREACH_REVIEW_20260818.md。另:實際只有 kill-switch 一道鎖在擋——config.py 讀的是 ~/storefront/.env(SEND_ENABLED=1),~/Delvin-agent/.env 那個 SEND_ENABLED=0 這條路徑根本不讀。",
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-10 12:21",
@@ -3532,7 +3532,7 @@
  {
   "id": 354,
   "what": "冷信 08-18 10:05 首批 3 封真寄(delvin@quietfix.studio→台中精密機械/花店,附 quietfix demo);首班要驗:寄出數/退信/回覆辨識,並看品牌網域信譽(Postmaster)",
-  "why": "尚未在生產跑過第一批",
+  "why": "尚未在生產跑過第一批 ⚠️ 2026-08-18 11:5x 更正:那一班【沒有發生】。~/.marketdaily-fallback/storefront_outreach.DISABLED 自 08-10 12:18 就在(#209 老闆要先校對),runner 第一行就 exit 0——無 log、無告警、cron 每個平日照樣『成功』。最後一次真寄是 08-10 02:05Z。本項改為等 #209 放行後的首班驗收。",
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 14:05",
@@ -3562,7 +3562,7 @@
  {
   "id": 357,
   "what": "平台熱需求→冷信插隊管線首日產出:11 件案只有 1 件(金潤澤/goldrz)在案文寫了官網,其餘 Tasker 案文不露身分——這條路的可辨識率約 1 成,量會很小;08-18 10:05 首批 3 封第一封就是它(goldrz.co@gmail.com)",
-  "why": "尚未寄出、可辨識率待更多天樣本",
+  "why": "尚未寄出、可辨識率待更多天樣本 ⚠️ 2026-08-18 更正:這封(outreach #188 金潤澤/goldrz,priority 10)在 08-18 之前被標成 status='blocked' 且 error IS NULL(無任何記錄的原因),就算冷信線開著它也不會被寄。本輪已 requeue 回 queued(今日 preflight 四閘全清)。可辨識率 1 成的結論仍待更多天樣本。",
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 14:17",
@@ -4286,6 +4286,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-18 11:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 430,
+  "what": "kill-switch 型停手(storefront_outreach.DISABLED)沒有任何到期或提醒機制:檔案一放,cron 每個平日照跑照 exit 0,8 天零產出零告警,連『它還關著』這件事都沒有表面",
+  "why": "本輪只做通報不建守衛(受益者鐵則:有 owner=delvin 的 #209 卡著時不准在同一子系統蓋週邊工事)。等 m-coldmail 拍板:老闆選 A/B 則 kill-switch 消失、本項自然作廢;選 C 收線亦作廢;若他都不回,才回頭考慮做成通用的『停手單有到期日』機制",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-18 11:42",
   "closed": null,
   "note": ""
  }

@@ -6785,3 +6785,30 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 新登記 #429:夜巡全庫自測連 7 晚沒全綠(selftest_last_ok 卡在 08-11),唯一紅項是 log_contract_scan
   對 cta_funnel_lint 的 HTML 惰性區塊 regex 誤告(同類 08-10 才修過,已是第 6 次)。守衛工程,還債模式先登記不動手。
 - commit `4db5eb09`(已 push)。報告:`~/autonomous/reports/2026-08-18_1130_debt_round_attr_bucket.md`
+
+## 2026-08-18 12:00 TW — QuietFix 冷信線關了八天沒人知道(還債輪撈到的真停擺)
+- 挑 open #354(「08-18 10:05 首批 3 封真寄」首班驗收)去收債,結果**那一班根本沒發生**:
+  `~/.marketdaily-fallback/storefront_outreach.DISABLED` 自 **08-10 12:18** 就在(老闆說花店信要先校對,
+  open #209),runner 的 `[ -f DISABLED ] && exit 0` 位在 `exec >> "$LOG"` **之前** ⇒
+  無 log、無 ok 戳記、無告警,cron 每個平日都「成功」。最後一次真寄 = 08-10 02:05Z(累計 6 封)。
+- **08-17 的 session 在一條關著的管子上排班**:排了新批次 + 登記 #354/#357 + 寫了首班驗收條件,
+  卻沒有先查「這條線現在通不通」。⟹ 教訓進 `~/autonomous/state/lessons/killswitch_has_no_expiry.md`:
+  排「明天自動會發生」的事之前,先 `ls ~/.marketdaily-fallback/*.DISABLED` + 查該線最後一次真產出。
+- 順帶三件:
+  ① **以為兩道鎖其實一道**:`storefront/config.py` 讀的是 `~/storefront/.env`(SEND_ENABLED=1);
+     `~/Delvin-agent/.env` 的 SEND_ENABLED=0 這條路徑不讀 ⇒ 擋住冷信的只有 kill-switch 這一個檔。
+  ② **該打頭陣的熱案信是死的**:`outreach#188`(金潤澤/goldrz,PRO360 插隊,priority 10)狀態 `blocked`
+     但 `error IS NULL`——程式裡唯一寫 blocked 的路徑必定同時寫 error,所以這是無主終局;
+     今日 preflight 四閘全清,已 requeue(#97 同形狀一併)。
+  ③ **第一輪成績可結案**:6 封滿 9 天,IMAP 實查寄件信箱 INBOX 僅 15 封且全為 Google/DMARC 系統信,
+     `FROM mailer-daemon/postmaster`=0 ⇒ **0 回覆、0 退信、0 填表**(收 open #197;誠實邊界:
+     6 封判不死冷信,只能說首輪切角沒打中,而且回信掃描器也隨 runner 停了 8 天)。
+- **刻意沒做**:不自己拆 kill-switch(老闆親令對外內容送出前必先給他看 OK)、不為此蓋守衛
+  (受益者鐵則:有 owner=delvin 的洞卡著時只准壓小他的手+推播)。改成:
+  5 封待寄全文校對包 `~/storefront/OUTREACH_REVIEW_20260818.md`、決策佇列 `m-coldmail`
+  (A 校對OK→開 / B 只放 PRO360 熱案那封 / C 收線)、推播老闆(webpush+桌面皆送達)。
+- 後台 `form.quietfix.studio/admin` 同步失敗:D1 回 `Authentication error 10000`,而本機
+  `CLOUDFLARE_API_TOKEN` 自身 verify 是 active ⇒ 又一次「憑證『有』不等於『能』」(缺 D1:Edit,屬 #299)。
+  沒另開工程,只在推播與決策項註明後台停在 08-10。
+- open 153→152(收 #197;#354/#357/#209 逐項加註更正;新登記 #430,明寫拍板後自然作廢)。
+  報告:`~/autonomous/reports/2026-08-18_1200_quietfix_coldmail_silent_8days.md`
