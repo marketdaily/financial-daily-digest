@@ -6678,3 +6678,19 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - **這輪真正的一課**:我為了排除混淆而加的那道公平性檢查,本身是一把**對任何輸入都回同一答案**
   的尺 —— 它從來沒在檢查任何東西,只是讓我對錯結論更有信心。判準寫完要先問
   「有沒有一個輸入會讓它回不同答案」,拿兩個極端跑反對照當場就看得出來。
+
+## 2026-08-18 09:00 TW — 週考空跑基線閘:收割 8 天前的驗證者報告(HIGH×1 + MEDIUM×2)
+- 還債輪(owner=me 107 件 > 上限 80)。收 open **#205**(驗證者報告已產出、收據 `.pending` 躺 8 天沒人讀)
+  與 **#206**;登記 **#426**(F1 殘留)。受益者=machine,已記帳。
+- **F2 HIGH**:`eval/null_baseline.py` 的裸例外讓 Python 回 exit 1,而 1 是「有 FREEPASS 廢題」的
+  保留碼 → `run_eval.sh` 推一則**名單空白**的假廢題告警、不留「這次沒驗到」的 log、ledger 沒被寫,
+  成績單照常宣告考完。實測反對照:舊版 rc=1 / 修後 rc=3。兩側都修並互為備援。
+- **F3**:`bail_out null_baseline_missing` 與空跑基線閘四條分支**零迴歸覆蓋**(沙箱題庫的 verify
+  必然 DISCRIMINATING ⇒ NB_RC 恆 0);驗證者實測整段刪掉四套自測全綠。補 [24a-d]。
+- **F4**:`is_stale()` 只認 verify/prompt/probe_version,但 `empty` 探針的判決是**宿主檔案系統**的
+  函數 —— 它翻面時沒有任何指紋會變 ⇒ 判決可以無限期頂著「新鮮」活下去。加 7 天保鮮期,
+  並配套「已知廢題到期重驗不重推」(否則修誠實性漏洞的同時排了一則每週假告警)。
+- 驗證:eval_null_baseline(31 段)/eval_task_schema/claude_run_provenance(43.1s)/selftest_flake(35 段)
+  全綠;**突變 6 發全殺**(M1~M6,全在副本上做);生產實跑 262 題重驗 10.2s、FREEPASS=1(既有)、rc=0。
+- 檔案在 `~/autonomous`(非 git repo,不進版控):eval/null_baseline.py、eval/run_eval.sh、
+  capabilities/tests/{eval_null_baseline,claude_run_provenance}.test.sh。備份在 autonomous/backups/。

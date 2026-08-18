@@ -2046,8 +2046,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-10 09:28",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 08:49",
+  "note": "08-10 派出的 guard-blindness r2/r3 驗證者報告已收割(r3 判 SOUND-WITH-CORRECTIONS/5 findings):F1 主體 08-11 已由逐列 col4 修掉、F5 夜巡自癒補上基準列;今天修 F2(HIGH,兩側)、F3(preflight 守衛零迴歸)、F4(ledger 缺時間維度)並各配迴歸+突變(6 突變全殺)。殘留 F1 heal 側整檔 mtime 另登記"
  },
  {
   "id": 206,
@@ -2056,8 +2056,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-10 09:28",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 08:49",
+  "note": "null_baseline 兩層都修好:①未預期例外一律 return 3(不再撞 exit 1=有廢題的保留碼)②--task-json 草稿閘加形狀檢查→回 2(用法錯誤)並講人話不吐 traceback。run_eval.sh 側加備援:exit 1 但輸出沒有 ^🚨 名單一律當『這次沒驗完』記 log 不推播。迴歸 ⑫d + 24b/24d,突變 M1/M2/M6 皆殺"
  },
  {
   "id": 207,
@@ -4246,6 +4246,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-18 08:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 426,
+  "what": "selftest_sweep 自癒側的新鮮度仍看整檔 mtime,而消費側(selftest_flake §30)08-11 已改逐列 col4 —— 兩把尺不同步:某一列 101 天但檔案 mtime 很新時,自癒說『仍在 100 天內』跳過、測試到 120 天卻紅,形成沒人熄得掉的紅燈",
+  "why": "改動面比預期大(_mut_tsv_heal.sh H5 與 selftest_flake §33 的 fixture 都用整檔 mtime 造老,一起改要重寫兩邊 fixture);本輪時間不足,不半做。修法=把 tsv_is_fresh 換成逐列 col4 的 stale_blocks(),與消費側同一把尺",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 08:49",
   "closed": null,
   "note": ""
  }
