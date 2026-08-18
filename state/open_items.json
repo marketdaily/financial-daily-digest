@@ -4406,6 +4406,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-18 16:38",
+  "closed": "2026-08-18 16:56",
+  "note": "第二家族(皇海真料號從2D圖重建,誤差≤0.1mm)+2D圖抽參入口+LLM現寫家族路徑已做;剩網頁殼與STEP未在真CAD開過另立"
+ },
+ {
+  "id": 442,
+  "what": "ProtoForge 剩:滑桿+對話網頁殼未做;STEP 未在 SolidWorks 開過(要皇海 RD 開一次);2D 圖讀取 4.5min 需做成背景任務",
+  "why": "PoC 第二輪收尾,等老闆看 Artifact 決定投入",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 16:56",
   "closed": null,
   "note": ""
  }
