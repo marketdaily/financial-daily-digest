@@ -760,3 +760,17 @@
 {"date": "2026-08-17", "code": "3234", "source": "leadflow", "level": "red", "signal": "光環(3234) 無消息近漲停+9.9%(連2根,5日+27.1%),疑資訊先行資金|外資+投信近3日+2576張", "price_at_signal": 150.0}
 {"date": "2026-08-17", "code": "3388", "source": "leadflow", "level": "red", "signal": "崇越電(3388) 無消息近漲停+9.9%(連2根,5日+26.1%),疑資訊先行資金|外資+投信近3日僅-1991張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-08-17", "code": "5314", "source": "leadflow", "level": "red", "signal": "世紀*(5314) 無消息近漲停+9.9%(連2根,5日+18.8%),疑資訊先行資金|外資+投信近3日僅-243張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-18", "code": "2756", "source": "institutional", "level": "red", "signal": "聯發國際(2756):外資連 5 日買超(5日淨買 +23 張)", "price_at_signal": 61.0}
+{"date": "2026-08-18", "code": "3450", "source": "institutional", "level": "red", "signal": "聯鈞(3450):外資連 5 日買超(5日淨買 +3,223 張)", "price_at_signal": 579.0}
+{"date": "2026-08-18", "code": "3455", "source": "institutional", "level": "red", "signal": "由田(3455):外資連 5 日買超(5日淨買 +1,017 張)", "price_at_signal": 258.0}
+{"date": "2026-08-18", "code": "3455", "source": "sbl", "level": "yellow", "signal": "由田(3455):機構借券賣出5日遽減-21.9%(回補潮,空頭力道減弱)", "price_at_signal": 258.0}
+{"date": "2026-08-18", "code": "3706", "source": "institutional", "level": "red", "signal": "神達(3706):投信連 3 日買超(認養訊號,20日淨買 +6,979 張)", "price_at_signal": 90.6}
+{"date": "2026-08-18", "code": "4973", "source": "sbl", "level": "yellow", "signal": "廣穎電通(4973):機構借券賣出5日增17.3%(溫和加碼放空)", "price_at_signal": 148.5}
+{"date": "2026-08-18", "code": "6922", "source": "sbl", "level": "yellow", "signal": "宸曜(6922):機構借券賣出5日遽減-21.0%(回補潮,空頭力道減弱)", "price_at_signal": 191.0}
+{"date": "2026-08-18", "code": "8299", "source": "sbl", "level": "red", "signal": "群聯(8299):機構借券賣出5日遽增23.6%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": 2000.0}
+{"date": "2026-08-18", "code": "8105", "source": "tw_rank", "level": "red", "signal": "凌巨(8105) 量能竄榜:今日量榜第18(近10日未進過top50,-8.6%,47,965張)", "price_at_signal": 13.8}
+{"date": "2026-08-18", "code": "6907", "source": "leadflow", "level": "yellow", "signal": "雅特力-KY(6907) 無消息近漲停+9.9%(量能1.8×,5日+0.5%),疑資訊先行資金", "price_at_signal": 188.0}
+{"date": "2026-08-18", "code": "4304", "source": "leadflow", "level": "red", "signal": "勝昱(4304) 無消息近漲停+9.9%(連2根,5日+21.2%),疑資訊先行資金|外資+投信近3日僅+6張,法人未同步=隱形買盤", "price_at_signal": 19.4}
+{"date": "2026-08-18", "code": "3498", "source": "leadflow", "level": "red", "signal": "陽程(3498) 無消息近漲停+9.8%(連3根,5日+39.8%),疑資訊先行資金|外資+投信近3日+3799張", "price_at_signal": 174.0}
+{"date": "2026-08-18", "code": "8085", "source": "leadflow", "level": "red", "signal": "福華(8085) 無消息近漲停+9.7%(量能3.1×,5日+9.3%),疑資訊先行資金|外資+投信近3日僅+22張,法人未同步=隱形買盤", "price_at_signal": 12.4}
+{"date": "2026-08-18", "code": "3629", "source": "leadflow", "level": "yellow", "signal": "地心引力(3629) 無消息近漲停+9.7%(一價鎖死,5日+15.9%),疑資訊先行資金", "price_at_signal": 15.3}
