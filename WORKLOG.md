@@ -6694,3 +6694,21 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   全綠;**突變 6 發全殺**(M1~M6,全在副本上做);生產實跑 262 題重驗 10.2s、FREEPASS=1(既有)、rc=0。
 - 檔案在 `~/autonomous`(非 git repo,不進版控):eval/null_baseline.py、eval/run_eval.sh、
   capabilities/tests/{eval_null_baseline,claude_run_provenance}.test.sh。備份在 autonomous/backups/。
+
+## 2026-08-18 09:08 TW — 還債輪:四筆「首班未驗」的收據早就躺在磁碟上
+- 還債模式(owner=me 106 > 上限 80),只收既有 open item。收 **#409 / #383 / #192 / #214**,160 → 156。
+- **#409**(命書字型子集掃描器把 JS 註解當站上文案 ⇒ ship.sh 全套 pytest 紅 ⇒ 整個 fortune-ai
+  部署卡死)根因已於今日 03:24 修好上線(9e0efe1 掃描面收斂成 `build_fonts.site_chars()` 唯一
+  一支+挖註解;1bf2b84 收驗證者 7 findings)。我補做**兩向**反對照才敢收:冷僻字「獝」在
+  JS/HTML/CSS 註解皆不被掃到、在會顯示的字串照樣抓到、一般文案不受影響 —— 只驗前半是單向的,
+  一支什麼都不回傳的掃描器也會通過。生產證據:08-18 04:20 ship **436 passed** + 部署成功。
+- **#383** `tests/node/pricing.test.mjs` 現地實跑 1/1 pass;88acd7a 的 /p/paipan 實測段線上可見。
+- **#192** fortune_fulfill 08-16 22:58 起 **5 封**真實信 `sender=secretary@mingshu.tw`、零 legacy
+  退回(沒拿 firstrun_watch 的 `sender_pass=true` 狀態檔當證據,回查它宣稱的那行 log 本人)。
+- **#214** rc124 白名單 + build_fonts 每日鏈皆生產實跑;key_health 傳輸層重試因 8 天無抖動而
+  沒機會射出 ⇒ 改真實程式路徑三向實測(抖動救回留痕 / 連續逾時判死 / **反對照 http=401 只呼叫
+  1 次不重試**,不讓明確的 key 死亡被重試延後)。
+- **一課**:四件裡三件的債是**收據沒被撿走**——修法早落地、生產早跑過、#409 連驗證者都跑完,
+  只有帳本還開著。`open_items` 沒有任何東西在對帳「證據是不是已經在磁碟上」,後果是假債把真債
+  (#295 雲端備援腿無存活偵測 / #300 GitHub Actions 帳號層停用 / #416 PRO360 沒綁卡)淹在 156 行裡。
+  對帳器本身是新的自我基礎設施工程,還債模式禁止,沒動手。

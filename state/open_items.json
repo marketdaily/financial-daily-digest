@@ -1916,8 +1916,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-09 18:24",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 09:06",
+  "note": "生產證據:fortune_fulfill 08-16 22:58 起共 5 封真實報告信 sender=secretary@mingshu.tw(訂單 1786802478189/1786948133421/1786959591712/1786960715221/1786961312644),零『寄件人退回 legacy』;firstrun_watch 已於 08-16 23:00 記 sender_pass=true"
  },
  {
   "id": 193,
@@ -2136,8 +2136,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-10 13:04",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 09:06",
+  "note": "三項逐項驗:①driver rc124 白名單=生產多次射出([時間到] 08-11/08-12/08-16 x2/08-17 x2/08-18,含『熔斷解除』分支)②mingshu build_fonts=每日鏈自 08-11 起天天 rc=0(最近 08-18 04:20,ok 戳記在)③key_health 傳輸層重試=生產 8 天無傳輸抖動所以沒有機會射出,改以真實程式路徑三向實測:抖動兩次後第 3 次通並留痕『(第 3 次才通,前次 ConnectionError)』、連續逾時判死『傳輸層連續失敗 3 次』、反對照 http=401 只呼叫 1 次不重試(明確失敗絕不延後)"
  },
  {
   "id": 215,
@@ -3826,8 +3826,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-17 16:59",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 09:06",
+  "note": "紅燈已消:tests/node/pricing.test.mjs 現地實跑 1/1 pass、0 fail。我方變更已上線——88acd7a 的 /p/paipan 實測段線上可見(https://mingshu.tw/p/paipan http=200,含『實測結果・2026 年 8 月 17 日』與『實測完發現是「有做的 vs 沒做的」』),字型子集隨 08-18 04:20 ship 一併部署"
  },
  {
   "id": 384,
@@ -4086,8 +4086,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-18 00:13",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 09:06",
+  "note": "根因已修並上線:掃描面收斂成 build_fonts.site_chars() 唯一一支+挖掉 JS/HTML/CSS 註解(commit 9e0efe1、1bf2b84 收驗證者 7 findings)。反對照實測:冷僻字『獝』在 JS 註解/HTML 註解/CSS 註解皆不被掃到、在會顯示的字串裡照樣抓到,一般文案不受影響 ⇒ 兩向都有鑑別力。生產證據:08-18 04:20 ship 全套 pytest 436 passed + 部署成功(test_font_subset 18 綠,含挖太多方向的 oracle)"
  },
  {
   "id": 410,
