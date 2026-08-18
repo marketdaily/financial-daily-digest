@@ -1126,8 +1126,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-04 20:56",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 08:07",
+  "note": "GSC 逐頁實查:576 頁收錄 571(99.1%);零曝光 253 頁全數 URL Inspection,248 已收錄、5 落後(全 HTTP200+有內鏈,判爬取延遲非缺陷)。曝光 13 天由 3→372/日。Phase 2 擴充證據支持,但方向要換:liunian 27 頁吃 40% 點擊(13.4 曝光/頁),tarot+xingzuo 159 頁只換 4.6% 曝光 0 點擊(0.2-1.0 曝光/頁,年齡相同故比較公平)。報告 ~/autonomous/reports/2026-08-18_0830_mingshu_seo_index_reality.md"
  },
  {
   "id": 114,
@@ -1486,8 +1486,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-05 17:10",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-18 08:07",
+  "note": "13 個工具頁全部已收錄(5 有曝光+8 零曝光逐一實查皆 Submitted and indexed)。/tool 群 18 天 54 曝光 2 點擊,位置 74-86=新站排名靠後但非缺陷。CTR 判斷誠實邊界:第一頁 303 曝光僅 4 點擊,但逐桶 Wilson 95% CI 都涵蓋該位置正常 CTR,n 太小不下結論,等曝光累到 ~3000 再判。同上報告"
  },
  {
   "id": 150,
@@ -4216,6 +4216,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-18 07:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 423,
+  "what": "命書 sitemap.xml 576 頁的 lastmod 每次 build 都重寫成當下(現全為 08-17/08-18),等於天天對 Google 宣稱全站每頁都改過",
+  "why": "本輪查 SEO 時順手發現,不在 #113/#149 範圍內;同專案 scripts/seo/indexnow.py 的 docstring 自己警告過這個反樣式(『天天全站重推=對外謊報全站天天更新』),IndexNow 那條線守住了、sitemap 這條沒有。修法=lastmod 改綁內容雜湊或真實內容變更日",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-18 08:07",
   "closed": null,
   "note": ""
  }
