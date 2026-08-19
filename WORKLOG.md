@@ -7419,3 +7419,33 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   Hacker News/LinkedIn/UGC Videos/Influencer + Coding Agent + Link Broker(coming)。
 - 在做:`marketing/team/`(roster.json 編制表 + cmo.py 戰情看板),把散在 ~100 支 cron 的行銷戰力
   收成一支有身分的團隊,並補 Okara 有而我沒有的席位。
+
+## 2026-08-19 19:1x 主視窗:皇海首頁 —— 拿掉「找零件」換上他們自己的經營理念 + 跑馬燈換真 logo
+- 老闆:皇海官網首頁沒有「找零件」,那段刪掉改成他們官網現有的「皇海堅持的經營理念」並重新設計。
+  查證後採原地替換:他們官網的順序就是 理念段落 → 數字 → 經營理念四條,替換後我們的首頁
+  正好複製他們自己的資訊架構。文案三語都直接用他們官網原字(英文那份還修掉他們的
+  `KINGCON` 漏字)。
+- 設計:沿用本頁既有的「巨大描邊字」語彙(.chap .num 那一招),把 品/服/創/環(英文 Q/S/I/E)
+  縮成每條前面的錨點;**刻意不做成第三個等寬格線**(.plain 與 .stats 已經各一個)。
+- 跑馬燈 11 個描邊字標 → 7 個真 logo(Intel/Sony/Dell/HP/Lenovo/Acer/ASUS,來源 simple-icons)。
+  另外四家(FOXCONN/SANDISK/FLEXTRONICS/VOLEX)沒有官方單色標,**名字用一行小字保留**,
+  不跟真 logo 混排。logo 內嵌 SVG 不走 CDN:皇海賣去大陸,牆內任何 CDN 依賴都會變破圖。
+- ⭐⭐⭐ **同一天第三次被「同一個字串在 CSS 和 HTML 都有」咬**:
+  ①`s.find('/* 找零件')` 命中 <style> 裡的同一句註解 ⇒ rfind('<script>') 回 -1 ⇒
+    差點從檔頭砍掉三萬個位元組(靠「#find 連結數應為 1」的斷言擋下)。
+  ②`s.index('mq-track')` 命中 CSS 的 `.mq-track {` ⇒ 那行小字被插進 #story 區塊。
+  ③英文版的找零件 CSS 在**第二個 <style> 區塊**,只處理第一個 ⇒ 18 條死 CSS 留著。
+  **教訓:在 HTML 裡定位元素,錨點一律用帶尖括號的標籤形式(`<div class="x"`),不要用裸 class 名。**
+- ⭐ `<symbol viewBox>` + `<use>` 會建立第二個 viewport,內容被縮放兩次 ⇒ 只有 viewBox 剛好
+  是 0 0 24 24 的 Dell/HP 正常,其餘五個**完全消失**。改 `<defs><g>` 才對(use 指到 g 不建 viewport)。
+- ⭐ 為了不把 20KB 路徑資料貼兩遍(跑馬燈要兩圈才無縫),改成 defs 定義一次 + use 引用 ⇒
+  首頁淨增從 +14KB 降到 +5KB。他們 8/19 開會自己抱怨過載入速度。
+- ⭐⭐⭐ **事故:改好的首頁被 stage_pull 靜默回捲並照樣部署,而且每一道閘門都報綠。**
+  PULL_APPLY 白名單含 v5.html / v5-en.html ⇒ ship 一開頭的 pull 拿 Mac 的舊版蓋掉我剛改的,
+  然後部署那份。`live_drift` 與 `check_live_md5` 全報「一致」——**因為它們是拿線上跟
+  【已經被蓋掉的本地檔】比,兩邊當然一致**。是我自己去看線上頁面內容才發現。
+  救援靠 cn/v5.html(不在白名單、沒被蓋)保留了完整成品,從它取出語言無關的三塊重建。
+  **根治**:stage_pull 新增 `uncommitted()` —— 要套用的白名單檔若在本機有未進版控的改動就停手,
+  並指出要先 `--stages push_mac`。**「收」與「送」是有順序的。**
+  守衛做了正 1 反 2 三個對照(空清單必須回空,否則 git 會列全 repo ⇒ 永遠誤報)。
+- 驗收:三語線上皆 creed=1 / logos=14 / finder=0 / hero→products,console 0 error,全站壞連結 0。
