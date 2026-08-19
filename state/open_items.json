@@ -4478,5 +4478,15 @@
   "opened": "2026-08-19 11:09",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 449,
+  "what": "ProtoForge:Onshape 帳號沒開成——signup 精靈的卡片選取擋掉 headless 點擊(Next 一直 disabled),且免費版是非商用授權不符我們的用途",
+  "why": "第三方 Parasolid 核心的自動回歸還沒有路;目前只剩皇海RD手動開一次",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-19 11:22",
+  "closed": null,
+  "note": ""
  }
 ]

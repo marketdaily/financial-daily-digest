@@ -7282,3 +7282,6 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   ⭐⭐ 用【單視角權重】跑 multiview conditioning 不報錯,安靜吐一坨雜訊(實測 166s 生出噪點球)⇒ `multiview_available()` 檢查專用權重,沒有就直接拒絕,不做假功能。
   自測手法:把我們自己的 CAD 件渲成四張白底視角圖再餵回去(可控的多視角輸入)。
 - e2e 0 FAIL(10 家族 × 13~15 步 + 17 API 契約,226s);皇海交付包 `research/2026-08-19_kingconn_handover.md`。
+- 老闆選「兩條都要」(RD + Onshape)⇒ ①皇海交付包已出;②Onshape **開不成**:signup 精靈的卡片選取綁 JS 事件,headless 點下去 Next 一直 disabled;
+  而且免費版授權是【非商用】,我們的用途是驗證要收費的產品輸出 ⇒ 不符。登記 #449 交回老闆決定(付費 Onshape / 皇海 SolidWorks 席次 / 只靠 RD 手動)。
+- 引擎B多視角權重(hunyuan3d-dit-v2-mv 4.9GB)裝好並驗過:同一顆充電器 4 視角 → 包絡 33.0×32.7×47.5 vs 真值 32×32×47.5(誤差≈1mm),123.8s。
