@@ -6,7 +6,7 @@
   <atom:link href="https://marketdaily.ai/feed.xml" rel="self" type="application/rss+xml"/>
   <description>MarketDaily 個股深度分析 — 美股、台股長尾主題,每週更新。</description>
   <language>zh-tw</language>
-  <lastBuildDate>Mon, 17 Aug 2026 16:35:07 +0800</lastBuildDate>
+  <lastBuildDate>Wed, 19 Aug 2026 22:29:53 +0800</lastBuildDate>
   <ttl>720</ttl>
   <generator>MarketDaily blog_feed.py</generator>
   <image>
@@ -14,6 +14,16 @@
     <title>MarketDaily 個股分析</title>
     <link>https://marketdaily.ai/blog/</link>
   </image>
+  <item>
+    <title>免費的台股盤前電子報有哪些?把「幾點送到」攤開比一次</title>
+    <link>https://marketdaily.ai/blog/guide-free-premarket-newsletter-tw-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-free-premarket-newsletter-tw-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-free-premarket-newsletter-tw-202608</guid>
+    <pubDate>Wed, 19 Aug 2026 22:29:53 +0800</pubDate>
+    <description>直接回答:免費、而且真的在台股開盤前送到信箱的每日電子報,選擇比想像中少。 台灣幾家主要的免費財經電子報,出刊時間多半落在盤後或下午——它們是好東西,但回答的是 「今天發生了什麼」,不是「等一下開盤我要注意什麼」。這兩件事看起來很像,實際用途完全不同。</description>
+    <category>GUIDE</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/guide-free-premarket-newsletter-tw-202608.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/guide-free-premarket-newsletter-tw-202608.png" medium="image"/>
+  </item>
   <item>
     <title>Google GOOGL 技術面 vs 基本面：投資人該如何評估？</title>
     <link>https://marketdaily.ai/blog/googl-技術面-vs-基本面-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=googl-技術面-vs-基本面-202608</link>
@@ -163,6 +173,16 @@
     <category>3008</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/3008-除權息時間與歷史紀錄-202608.png"/>
     <media:content url="https://marketdaily.ai/blog/og/3008-除權息時間與歷史紀錄-202608.png" medium="image"/>
+  </item>
+  <item>
+    <title>Free daily stock newsletters for Taiwan investors: compared by when they actually send</title>
+    <link>https://marketdaily.ai/blog/guide-free-premarket-newsletter-tw-en-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-free-premarket-newsletter-tw-en-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-free-premarket-newsletter-tw-en-202608</guid>
+    <pubDate>Sun, 02 Aug 2026 10:00:00 +0800</pubDate>
+    <description>Free daily newsletters that reach Taiwan investors before the market opens are rare: most free Taiwanese finance letters publish after the close. A comparison of the verified free options, by when they actually send.</description>
+    <category>GUIDE</category>
+    <media:thumbnail url="https://marketdaily.ai/assets/og.png"/>
+    <media:content url="https://marketdaily.ai/assets/og.png" medium="image"/>
   </item>
   <item>
     <title>I run a 9-model LLM council with a judge to write a daily financial newsletter. Here's what actually breaks.</title>
