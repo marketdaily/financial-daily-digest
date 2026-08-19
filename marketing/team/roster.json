@@ -1,0 +1,395 @@
+{
+  "team": "BLACKEDGE",
+  "team_zh": "黑刃行銷部",
+  "charter": "對標 Okara AI CMO v2($99/mo,10 agents)。把散在 winrig cron 艦隊裡的行銷戰力收成一支有身分、有戰情看板、跨品牌服役的常駐團隊。",
+  "benchmark": {
+    "name": "Okara AI CMO v2",
+    "url": "https://okara.ai",
+    "price_usd_month": 99,
+    "price_usd_month_annual": 66,
+    "free_tier": "分析與策略 only(20 credits)",
+    "paid_credits_month": 2000,
+    "agents_claimed": 10,
+    "known_weaknesses": [
+      "無 public API / 無 MCP / 無 Zapier —— 完全封閉,無法接進自己的 stack",
+      "無資料匯出路徑 —— 策略/歷史/接線都鎖在平台內",
+      "只出草稿,人工核准是硬性瓶頸 —— 品質責任仍在人身上",
+      "credit 計量(2000/mo)無耗用可視度",
+      "無 CRM / pipeline / 銷售漏斗 —— 只做行銷執行",
+      "單一網站導向 —— 多品牌要開多份訂閱"
+    ],
+    "source_verified_at": "2026-08-19"
+  },
+  "brands": {
+    "marketdaily": {
+      "name": "MarketDaily",
+      "site": "https://marketdaily.ai",
+      "docs": "docs"
+    },
+    "mingshu": {
+      "name": "命書",
+      "site": "https://mingshu.tw",
+      "docs": "fortune-ai/docs"
+    },
+    "quietfix": {
+      "name": "QuietFix / storefront",
+      "site": null,
+      "docs": null
+    },
+    "kingconn": {
+      "name": "皇海科技",
+      "site": null,
+      "docs": null
+    },
+    "protoforge": {
+      "name": "ProtoForge",
+      "site": "https://protoforge.marketdaily.ai",
+      "docs": null
+    }
+  },
+  "seats": [
+    {
+      "id": "seo",
+      "name": "SEO 席",
+      "okara_counterpart": "SEO Agent",
+      "mission": "關鍵字缺口→文章選題→上線→逐頁流量回收→爬蟲覆蓋率巡檢",
+      "owns": [
+        "scripts/seo_articles.py",
+        "~/.marketdaily-fallback/seo_runner.sh",
+        "capabilities/seo_page_traffic",
+        "capabilities/crawler_coverage"
+      ],
+      "stamps": [
+        "seo_page_traffic_ledger",
+        "crawler_coverage_ledger",
+        "deploy_docs_seo"
+      ],
+      "max_age_h": 336,
+      "backlog": "blog_articles",
+      "brands": [
+        "marketdaily",
+        "mingshu"
+      ],
+      "status": "live",
+      "edge": "Okara 給建議;我方直接寫檔、部署、並用 CF 逐頁流量帳本回收成效(免 GSC OAuth)",
+      "evidence": {
+        "kind": "newest_glob",
+        "patterns": [
+          "docs/blog/*.html"
+        ]
+      }
+    },
+    {
+      "id": "geo",
+      "name": "GEO 席",
+      "okara_counterpart": "GEO Agent",
+      "mission": "讓品牌被 ChatGPT / Google AI Overview / Gemini 引用;偵測引用缺口",
+      "owns": [
+        "marketing/team/geo_agent.py",
+        "~/.marketdaily-fallback/geo_agent_runner.sh"
+      ],
+      "stamps": [
+        "geo_agent"
+      ],
+      "max_age_h": 192,
+      "backlog": "geo_gaps",
+      "brands": [
+        "marketdaily",
+        "mingshu"
+      ],
+      "status": "live",
+      "edge": "Okara 只說「偵測到 N 個引用缺口」;我方用 Gemini grounded search 真的把 AI 引用的來源 URL 抓下來逐一比對,每個缺口都附可查證的競品 URL 清單",
+      "evidence": {
+        "kind": "newest_glob",
+        "patterns": [
+          "marketing/team/geo_state.json"
+        ]
+      },
+      "first_run": "2026-08-19 首掃:3 題全數未被引用(marketdaily 2 / mingshu 1),4 題撞免費層配額未完成"
+    },
+    {
+      "id": "writer",
+      "name": "文章席",
+      "okara_counterpart": "Writer Agent",
+      "mission": "品牌語氣長文生產,含合規閘與 AI-slop 密度閘",
+      "owns": [
+        "scripts/seo_articles.py",
+        "capabilities/ai_slop_lint",
+        "capabilities/narrative_compliance_lint"
+      ],
+      "stamps": [
+        "deploy_docs_seo"
+      ],
+      "max_age_h": 336,
+      "backlog": "blog_articles",
+      "brands": [
+        "marketdaily",
+        "mingshu"
+      ],
+      "status": "live",
+      "edge": "三道出版前確定性閘(AI-slop 密度 / 敘事合規 / 投顧法),不過就不寫檔 —— Okara 把品質責任丟回給人",
+      "evidence": {
+        "kind": "newest_glob",
+        "patterns": [
+          "docs/blog/*.html"
+        ]
+      }
+    },
+    {
+      "id": "social",
+      "name": "社群發文席",
+      "okara_counterpart": "X Agent + LinkedIn Agent",
+      "mission": "IG / FB / Threads 品牌貼文與 reel 的排程、發布、冪等與音樂掛載",
+      "owns": [
+        "marketing/daily_run.py",
+        "marketing/auto_post.py",
+        "marketing/post_gate.py",
+        "~/.marketdaily-fallback/social_post_runner.sh"
+      ],
+      "stamps": [
+        "social"
+      ],
+      "max_age_h": 36,
+      "backlog": "social_unposted",
+      "brands": [
+        "marketdaily",
+        "mingshu"
+      ],
+      "status": "live",
+      "edge": "Okara 只出草稿等人按鈕;我方真的發出去(含 IG trending 音軌自動掛載、每窗口每日鎖、post_gate 逐字驗)",
+      "evidence": {
+        "kind": "jsonl_last_ts",
+        "path": "marketing/social_out/post_log.jsonl"
+      }
+    },
+    {
+      "id": "ugc",
+      "name": "短影音席",
+      "okara_counterpart": "UGC Videos Agent",
+      "mission": "日報→1080x1920 品牌動畫 reel + 語音快報",
+      "owns": [
+        "video_brief/",
+        "capabilities/local_video_wan22",
+        "Higgsfield MCP"
+      ],
+      "stamps": [
+        "videobrief"
+      ],
+      "max_age_h": 36,
+      "backlog": null,
+      "brands": [
+        "marketdaily",
+        "mingshu"
+      ],
+      "status": "live",
+      "edge": "本地 5080 + Wan2.2 零邊際成本產片;數字逐字回驗+非黑幀/非白幀閘,驗不過當天不發",
+      "evidence": {
+        "kind": "newest_glob",
+        "patterns": [
+          "video_brief/out/post_*.json"
+        ]
+      }
+    },
+    {
+      "id": "news",
+      "name": "新聞快評席",
+      "okara_counterpart": null,
+      "mission": "新聞一出 90 分鐘內產出合規快評並直發社群",
+      "owns": [
+        "marketing/news_reactive.py",
+        "~/.marketdaily-fallback/news_reactive_runner.sh"
+      ],
+      "stamps": [
+        "news_reactive"
+      ],
+      "max_age_h": 72,
+      "backlog": null,
+      "brands": [
+        "marketdaily"
+      ],
+      "status": "live",
+      "edge": "Okara 完全沒有這個席位 —— 他們的內容都是選題型,沒有事件驅動軌",
+      "evidence": {
+        "kind": "jsonl_last_ts",
+        "path": "marketing/social_out/post_log.jsonl",
+        "id_prefix": "newsr_"
+      }
+    },
+    {
+      "id": "reddit",
+      "name": "Reddit 席",
+      "okara_counterpart": "Reddit Agent",
+      "mission": "掃社群討論找可切入的話題,產出可回覆的機會清單",
+      "owns": [
+        "intel/reddit_buzz.py"
+      ],
+      "stamps": [
+        "reddit_buzz"
+      ],
+      "max_age_h": 30,
+      "backlog": "reddit_codes",
+      "brands": [
+        "marketdaily"
+      ],
+      "status": "partial",
+      "gap_note": "目前只有 inbound 聆聽(抓聲量供日報用),沒有 outbound 機會清單與草擬回覆。Okara 這席是完整的。",
+      "edge": null,
+      "evidence": {
+        "kind": "newest_glob",
+        "patterns": [
+          "intel/reddit_buzz_latest.json"
+        ]
+      }
+    },
+    {
+      "id": "hn",
+      "name": "Hacker News 席",
+      "okara_counterpart": "Hacker News Agent",
+      "mission": "技術文投遞 HN 並追蹤成效",
+      "owns": [
+        "scripts/hn_submit_once.sh",
+        "scripts/eng_blog_weekly.sh"
+      ],
+      "stamps": [],
+      "max_age_h": 30,
+      "backlog": null,
+      "brands": [
+        "marketdaily"
+      ],
+      "status": "partial",
+      "gap_note": "有投遞腳本與週更提醒,但沒有落 logs/ok 戳記 → 活性不可知(第三態 UNKNOWN)。",
+      "edge": null
+    },
+    {
+      "id": "coding",
+      "name": "技術修復席",
+      "okara_counterpart": "Coding Agent",
+      "mission": "站台技術缺陷自動偵測→自動修→重掃→部署→失敗自動 revert",
+      "owns": [
+        "scripts/site_scan.py",
+        ".github/workflows/site_scan.yml",
+        "scripts/site_fix_playbook.md",
+        "~/.marketdaily-fallback/deploy_drift_runner.sh"
+      ],
+      "stamps": [
+        "deploy_docs_site_scan",
+        "deploy_drift"
+      ],
+      "max_age_h": 720,
+      "backlog": null,
+      "brands": [
+        "marketdaily"
+      ],
+      "status": "live",
+      "edge": "Okara 開 PR 等人 merge;我方修完自己重掃 14 項、全過才部署、沒過自動 revert 並推播 —— 閉環在機器手上"
+    },
+    {
+      "id": "copy",
+      "name": "轉換文案席",
+      "okara_counterpart": "Copy Agent",
+      "mission": "落地頁文案與轉換入口稽核(CTA 是否真的存在且可走通)",
+      "owns": [
+        "capabilities/cta_funnel_lint",
+        "skill:cro",
+        "skill:landing-page-copy"
+      ],
+      "stamps": [
+        "cta_funnel_lint"
+      ],
+      "max_age_h": 30,
+      "backlog": null,
+      "brands": [
+        "marketdaily",
+        "mingshu"
+      ],
+      "status": "live",
+      "edge": "不只建議改文案,還每 10 分鐘稽核「這個 CTA 指向的入口是否存在」—— 官網宣稱的機制實際不存在是我方吃過的虧"
+    },
+    {
+      "id": "influencer",
+      "name": "KOL 席",
+      "okara_counterpart": "Influencer Agent",
+      "mission": "campaign brief→找創作者→議價→追交付→付款→回收成效",
+      "owns": [],
+      "stamps": [],
+      "max_age_h": null,
+      "backlog": null,
+      "brands": [],
+      "status": "gap",
+      "gap_note": "完全沒有。Okara 這席最完整(brief→shortlist→outreach→escrow→campaign results)。這是他們對我最大的領先。",
+      "edge": null
+    },
+    {
+      "id": "competitor",
+      "name": "競品情報席",
+      "okara_counterpart": "Competitor Analysis",
+      "mission": "競品動態雷達 + 廣告骨架拆解",
+      "owns": [
+        "~/.marketdaily-fallback/competitor_radar_runner.sh",
+        "skill:spy",
+        "skill:competitive-ads-extractor"
+      ],
+      "stamps": [],
+      "max_age_h": 30,
+      "backlog": null,
+      "brands": [
+        "marketdaily",
+        "kingconn"
+      ],
+      "status": "partial",
+      "gap_note": "cron 在跑但沒落戳記 → 活性不可知。",
+      "edge": null
+    },
+    {
+      "id": "outbound",
+      "name": "開發信席",
+      "okara_counterpart": null,
+      "mission": "冷信序列、流失用戶狙擊、接案平台詢問搶單",
+      "owns": [
+        "~/.marketdaily-fallback/storefront_outreach_runner.sh",
+        "marketing/churn_sniper.py",
+        "~/.marketdaily-fallback/pro360_fastpoll_runner.sh"
+      ],
+      "stamps": [
+        "pro360_fastpoll",
+        "pro360_radar"
+      ],
+      "max_age_h": 2,
+      "backlog": null,
+      "brands": [
+        "quietfix"
+      ],
+      "status": "live",
+      "edge": "Okara 明確沒有 CRM / pipeline / 銷售漏斗 —— 這整席他們不做",
+      "evidence": {
+        "kind": "newest_glob",
+        "patterns": [
+          "logs/ok/pro360_fastpoll.ok"
+        ]
+      }
+    },
+    {
+      "id": "verifier",
+      "name": "驗證官席",
+      "okara_counterpart": null,
+      "mission": "每則對外內容由全新 context 的獨立驗證者裁決,缺席=fail-closed 駁回",
+      "owns": [
+        ".claude/workflows/marketing-verify.js",
+        "capabilities/verifier_harness",
+        "capabilities/marketing_compliance_lint",
+        "skill:legal-compliance"
+      ],
+      "stamps": [],
+      "max_age_h": 192,
+      "backlog": "drafts_pending",
+      "brands": [
+        "marketdaily",
+        "mingshu",
+        "quietfix",
+        "kingconn"
+      ],
+      "status": "live",
+      "edge": "Okara 的品質保證就是「請人自己看」。這席是我方對他們最大的結構性領先 —— 生產者與驗證者永不共用 context,且驗證者不准降級模型"
+    }
+  ]
+}

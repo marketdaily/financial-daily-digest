@@ -7411,3 +7411,11 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   ③**他們的產品頁完全沒有 hreflang**(三語 750 頁互相稀釋)④他們自家英文站也有 2 筆
   料號描述沒翻(7DDR4-F0-0007/0008)。
 - 驗收:285 頁可見中文 0、屬性/JSON-LD 中文 0、全站內部壞連結 0、線上抽驗 30 頁殘留 0。
+
+## 2026-08-19 18:5x 主視窗:BLACKEDGE 行銷部(對標 Okara AI CMO)
+- 老闆丟 IG Reel(darkvex.ai)→ 主角是 **Okara AI CMO v2**($99/mo,10 個行銷 agent,丟網址即部署)。
+  指令:「把 market agents 收成我的行銷團隊,學它、抄它、贏它」。
+- 影片實看(video-watcher,ig_sniff 十六連勝):Actions Feed 全名單讀出=Reddit/SEO/GEO/X/Articles/
+  Hacker News/LinkedIn/UGC Videos/Influencer + Coding Agent + Link Broker(coming)。
+- 在做:`marketing/team/`(roster.json 編制表 + cmo.py 戰情看板),把散在 ~100 支 cron 的行銷戰力
+  收成一支有身分的團隊,並補 Okara 有而我沒有的席位。

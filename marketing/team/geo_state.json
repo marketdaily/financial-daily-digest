@@ -1,0 +1,276 @@
+{
+ "scanned_at": "2026-08-19T11:08:57+00:00",
+ "engine": "gemini-2.5-flash-lite",
+ "engine_note": "Gemini 2.5 Flash + Google Search grounding。這是「AI 答案引擎會引用誰」的一個真實樣本,不等於 ChatGPT / Google AI Overview 的引用結果。",
+ "brand_filter": null,
+ "n_queries": 3,
+ "n_cited": 0,
+ "gaps": [
+  {
+   "brand": "marketdaily",
+   "query": "What are the best free daily stock market email newsletters for Taiwan investors?",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 7,
+   "cited_domains": [
+    "twse.com.tw",
+    "stockalarm.io",
+    "bestnewsletters.xyz",
+    "tker.co",
+    "beehiiv.com",
+    "tradingview.com",
+    "marketscreener.com"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "twse.com.tw",
+     "url": "https://twmonthly.twse.com.tw/front/content/8a81b98196d19e3d0197775b08380023?date=Jul.+2025"
+    },
+    {
+     "domain": "stockalarm.io",
+     "url": "https://stockalarm.io/exchanges/track-taiwan-stock-exchange-twse-stocks"
+    },
+    {
+     "domain": "stockalarm.io",
+     "url": "https://app.stockalarm.io/exchanges/TWSE"
+    },
+    {
+     "domain": "bestnewsletters.xyz",
+     "url": "https://bestnewsletters.xyz/lists/best-finance-newsletters/"
+    },
+    {
+     "domain": "tker.co",
+     "url": "https://www.tker.co/p/best-free-finance-newsletters"
+    },
+    {
+     "domain": "beehiiv.com",
+     "url": "https://www.beehiiv.com/blog/best-stock-market-newsletters"
+    }
+   ],
+   "answer_excerpt": "It appears that finding daily, free, email newsletters specifically focused on the Taiwanese stock market for investors can be challenging. However, here are some options and strategies:\n\n**Leveraging Taiwan Stock Exchange Resources:**\n\n*   **TWSE Gateway for Foreign Investors:** While not a daily email newsletter in the traditional sense, this platform provides essential information in English fo"
+  },
+  {
+   "brand": "marketdaily",
+   "query": "台股每日盤前分析電子報推薦 免費",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 5,
+   "cited_domains": [
+    "cnyes.com",
+    "esunsec.com.tw",
+    "line.me",
+    "ctee.com.tw",
+    "sinotrade.com.tw"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "cnyes.com",
+     "url": "https://www.cnyes.com/newsletter"
+    },
+    {
+     "domain": "esunsec.com.tw",
+     "url": "https://www.esunsec.com.tw/market/investmentfocus"
+    },
+    {
+     "domain": "line.me",
+     "url": "https://today.line.me/tw/v3/article/PG516xj"
+    },
+    {
+     "domain": "ctee.com.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHHYywdwMHVhfPJgcjjPqqkt8ZtLTKP7rR2YWep9GwtXLvXd8nh8suPUo707_LAoIbqYP9VD_bFEvI4xZ4M_9nczU-Ijh1b-W6Ph4stLSW3FcCYi6TrmImAvnAgNkCOCcc_PdzeHG1Oq_u9Zak="
+    },
+    {
+     "domain": "sinotrade.com.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGWFZ24v4qj-gW970vBMxgXHXuhjcYRzqVZGgTTyNNdediF-6g66HN4QGPyF5mYs5K7Le6v3F5oqaifqMtADUQFnGSnRwW-aZwR9IPuDEyC_sZoZ9uE1L7m1ANgqgZLzxzq04_Gdw=="
+    }
+   ],
+   "answer_excerpt": "想要免費的台股每日盤前分析電子報，可以參考以下幾個管道：\n\n*   **鉅亨網**：鉅亨網提供「鉅亨早報」，於週一至週六上午出刊，內容包含熱門投資標的、精選頭條新聞、重要國際報導，是每日財經重點整理快遞。此外，鉅亨網也有「台股日報」，於週一至週五盤後出刊，提供當天收盤情形及盤勢分析。\n*   **玉山證券**：玉山證券提供「每日投資重點」，包含盤前分析，讓您掌握投資大小事。\n*   **CMoney**：CMoney 會在其網站和電子報中提供台股盤前分析。\n*   **工商時報**：工商時報的「台股電子報」提供盤勢分析和新聞。\n*   **永豐金證券**：永豐金證券的「豐雲學堂」有提供盤前分析的直播解讀。\n\n這些平台通常會提供免費的電子報訂閱服務，您可以到他們的網站上尋找訂閱選項。\n\n在尋找盤前分析時，您可以特別留意提供市場變動、總體經濟、重要個股表現以及對台股盤勢分析的內容。"
+  },
+  {
+   "brand": "mingshu",
+   "query": "線上八字命書 客製化 推薦",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 5,
+   "cited_domains": [
+    "suanming.com.tw",
+    "superlucky.com.tw",
+    "google.com",
+    "dearmoney.com.tw",
+    "herokuapp.com"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "suanming.com.tw",
+     "url": "https://www.suanming.com.tw/blog/558"
+    },
+    {
+     "domain": "superlucky.com.tw",
+     "url": "https://www.superlucky.com.tw/product-page?p_ID=389"
+    },
+    {
+     "domain": "google.com",
+     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters.zwz&hl=zh_TW"
+    },
+    {
+     "domain": "google.com",
+     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters"
+    },
+    {
+     "domain": "google.com",
+     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters&hl=en_US"
+    },
+    {
+     "domain": "dearmoney.com.tw",
+     "url": "https://www.dearmoney.com.tw/eightwords"
+    }
+   ],
+   "answer_excerpt": "許多線上平台提供客製化的八字命書服務，讓使用者能根據自身需求獲得更個人化的命理分析。以下推薦幾個線上平台與APP，各有特色，您可以參考看看：\n\n**線上平台與APP推薦：**\n\n*   **先知命局：** 這款APP適合傳統命理愛好者，能自動排盤並解析五行強弱、流年大運，還提供姓名學評分與改名建議。部分進階內容需付費解鎖。\n*   **科技紫微：** 作為全球最大的命理網站之一，科技紫微提供星座、紫微斗數、八字、姓名學等多樣服務，解析方式淺顯易懂，方便使用者隨時查看運勢。\n*   **周映君‧八字命書 (命運好好玩)：** 此平台提供客製化的電子命書，由專人謄打成電子檔，方便收藏與列印。命書內容會濃縮老師親算重點，幫助使用者在面臨人生重要抉擇時作為參考。\n*   **八字算命APP (Google Play)：** 有多款八字算命APP在Google Play商店上架，提供詳盡的命書批算、"
+  }
+ ],
+ "results": [
+  {
+   "brand": "marketdaily",
+   "query": "What are the best free daily stock market email newsletters for Taiwan investors?",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 7,
+   "cited_domains": [
+    "twse.com.tw",
+    "stockalarm.io",
+    "bestnewsletters.xyz",
+    "tker.co",
+    "beehiiv.com",
+    "tradingview.com",
+    "marketscreener.com"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "twse.com.tw",
+     "url": "https://twmonthly.twse.com.tw/front/content/8a81b98196d19e3d0197775b08380023?date=Jul.+2025"
+    },
+    {
+     "domain": "stockalarm.io",
+     "url": "https://stockalarm.io/exchanges/track-taiwan-stock-exchange-twse-stocks"
+    },
+    {
+     "domain": "stockalarm.io",
+     "url": "https://app.stockalarm.io/exchanges/TWSE"
+    },
+    {
+     "domain": "bestnewsletters.xyz",
+     "url": "https://bestnewsletters.xyz/lists/best-finance-newsletters/"
+    },
+    {
+     "domain": "tker.co",
+     "url": "https://www.tker.co/p/best-free-finance-newsletters"
+    },
+    {
+     "domain": "beehiiv.com",
+     "url": "https://www.beehiiv.com/blog/best-stock-market-newsletters"
+    }
+   ],
+   "answer_excerpt": "It appears that finding daily, free, email newsletters specifically focused on the Taiwanese stock market for investors can be challenging. However, here are some options and strategies:\n\n**Leveraging Taiwan Stock Exchange Resources:**\n\n*   **TWSE Gateway for Foreign Investors:** While not a daily email newsletter in the traditional sense, this platform provides essential information in English fo"
+  },
+  {
+   "brand": "marketdaily",
+   "query": "台股每日盤前分析電子報推薦 免費",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 5,
+   "cited_domains": [
+    "cnyes.com",
+    "esunsec.com.tw",
+    "line.me",
+    "ctee.com.tw",
+    "sinotrade.com.tw"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "cnyes.com",
+     "url": "https://www.cnyes.com/newsletter"
+    },
+    {
+     "domain": "esunsec.com.tw",
+     "url": "https://www.esunsec.com.tw/market/investmentfocus"
+    },
+    {
+     "domain": "line.me",
+     "url": "https://today.line.me/tw/v3/article/PG516xj"
+    },
+    {
+     "domain": "ctee.com.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHHYywdwMHVhfPJgcjjPqqkt8ZtLTKP7rR2YWep9GwtXLvXd8nh8suPUo707_LAoIbqYP9VD_bFEvI4xZ4M_9nczU-Ijh1b-W6Ph4stLSW3FcCYi6TrmImAvnAgNkCOCcc_PdzeHG1Oq_u9Zak="
+    },
+    {
+     "domain": "sinotrade.com.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGWFZ24v4qj-gW970vBMxgXHXuhjcYRzqVZGgTTyNNdediF-6g66HN4QGPyF5mYs5K7Le6v3F5oqaifqMtADUQFnGSnRwW-aZwR9IPuDEyC_sZoZ9uE1L7m1ANgqgZLzxzq04_Gdw=="
+    }
+   ],
+   "answer_excerpt": "想要免費的台股每日盤前分析電子報，可以參考以下幾個管道：\n\n*   **鉅亨網**：鉅亨網提供「鉅亨早報」，於週一至週六上午出刊，內容包含熱門投資標的、精選頭條新聞、重要國際報導，是每日財經重點整理快遞。此外，鉅亨網也有「台股日報」，於週一至週五盤後出刊，提供當天收盤情形及盤勢分析。\n*   **玉山證券**：玉山證券提供「每日投資重點」，包含盤前分析，讓您掌握投資大小事。\n*   **CMoney**：CMoney 會在其網站和電子報中提供台股盤前分析。\n*   **工商時報**：工商時報的「台股電子報」提供盤勢分析和新聞。\n*   **永豐金證券**：永豐金證券的「豐雲學堂」有提供盤前分析的直播解讀。\n\n這些平台通常會提供免費的電子報訂閱服務，您可以到他們的網站上尋找訂閱選項。\n\n在尋找盤前分析時，您可以特別留意提供市場變動、總體經濟、重要個股表現以及對台股盤勢分析的內容。"
+  },
+  {
+   "brand": "mingshu",
+   "query": "線上八字命書 客製化 推薦",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 5,
+   "cited_domains": [
+    "suanming.com.tw",
+    "superlucky.com.tw",
+    "google.com",
+    "dearmoney.com.tw",
+    "herokuapp.com"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "suanming.com.tw",
+     "url": "https://www.suanming.com.tw/blog/558"
+    },
+    {
+     "domain": "superlucky.com.tw",
+     "url": "https://www.superlucky.com.tw/product-page?p_ID=389"
+    },
+    {
+     "domain": "google.com",
+     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters.zwz&hl=zh_TW"
+    },
+    {
+     "domain": "google.com",
+     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters"
+    },
+    {
+     "domain": "google.com",
+     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters&hl=en_US"
+    },
+    {
+     "domain": "dearmoney.com.tw",
+     "url": "https://www.dearmoney.com.tw/eightwords"
+    }
+   ],
+   "answer_excerpt": "許多線上平台提供客製化的八字命書服務，讓使用者能根據自身需求獲得更個人化的命理分析。以下推薦幾個線上平台與APP，各有特色，您可以參考看看：\n\n**線上平台與APP推薦：**\n\n*   **先知命局：** 這款APP適合傳統命理愛好者，能自動排盤並解析五行強弱、流年大運，還提供姓名學評分與改名建議。部分進階內容需付費解鎖。\n*   **科技紫微：** 作為全球最大的命理網站之一，科技紫微提供星座、紫微斗數、八字、姓名學等多樣服務，解析方式淺顯易懂，方便使用者隨時查看運勢。\n*   **周映君‧八字命書 (命運好好玩)：** 此平台提供客製化的電子命書，由專人謄打成電子檔，方便收藏與列印。命書內容會濃縮老師親算重點，幫助使用者在面臨人生重要抉擇時作為參考。\n*   **八字算命APP (Google Play)：** 有多款八字算命APP在Google Play商店上架，提供詳盡的命書批算、"
+  }
+ ],
+ "errors": [
+  {
+   "brand": "marketdaily",
+   "query": "AI 選股 每日報告 台股 美股 推薦服務",
+   "error": "HTTPError: HTTP Error 429: Too Many Requests"
+  },
+  {
+   "brand": "marketdaily",
+   "query": "free AI-generated daily stock analysis newsletter US and Taiwan stocks",
+   "error": "HTTPError: HTTP Error 429: Too Many Requests"
+  },
+  {
+   "brand": "mingshu",
+   "query": "AI 紫微斗數 命盤 命書 線上服務推薦",
+   "error": "HTTPError: HTTP Error 429: Too Many Requests"
+  },
+  {
+   "brand": "mingshu",
+   "query": "2026 流年運勢 個人化命書 哪裡買",
+   "error": "HTTPError: HTTP Error 429: Too Many Requests"
+  }
+ ]
+}
