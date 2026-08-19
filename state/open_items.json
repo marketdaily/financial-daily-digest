@@ -4556,8 +4556,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-19 18:40",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 22:28",
+  "note": "Tasker 登入改版 /login→/auth/login,已重新登入存 session;免費通路全線打通(雷達→自動提案→狀態監看,cron */20),08-17 兩份提案狀態查到:品牌形象網頁案主已讀、網頁設計未讀"
  },
  {
   "id": 457,
@@ -4716,6 +4716,26 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-19 22:25",
+  "closed": "2026-08-19 22:32",
+  "note": "已上線並驗證:兩頁 canonical 網址皆 200、關鍵句與雙向 hreflang 線上確認、site_scan 21 項全過。"
+ },
+ {
+  "id": 473,
+  "what": "Tasker 有些案子(special_proposal=2)提案要投入 TaskerGo 額度,帳號沒儲值一律跳過——今天已跳過 1 件(WordPress 中文學習網站 $25,000)",
+  "why": "要不要買 TaskerGo 額度是老闆的花錢決定;目前免費案已夠跑",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-19 22:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 474,
+  "what": "GEO 答案頁已上線但「有沒有真的被 AI 引用」尚未驗證",
+  "why": "被引用需要索引+檢索時間,不是發了就有;下週一 11:00 GEO 席自動重掃會產生第一個可比讀數(geo_ledger.jsonl)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-19 22:32",
   "closed": null,
   "note": ""
  }

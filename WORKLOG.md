@@ -7482,3 +7482,6 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - ⭐ seo_articles.py 全檔沒有 hreflang(既有英文文章那組是 playbook 手加的)⇒ 中文頁那半
   自己補,語言配對必須雙向。
 - **未上線**:依 08-17 親令對外內容先給老闆看。docs/ 一個字都沒動,預覽只渲染到暫存區。
+- ✅ 22:3x 老闆核可後上線:index/feed/sitemap 重建 → deploy → site_scan 21 項全過 →
+  兩頁 canonical 網址線上 200、雙向 hreflang 線上確認。commit fe38f1c5。
+  ⚠️ 「有沒有被 AI 引用」是另一回事,下週一 GEO 席重掃才有第一個讀數(open item 已登記)。
