@@ -4528,5 +4528,25 @@
   "opened": "2026-08-19 18:08",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 454,
+  "what": "皇海英文版還缺 45 頁(contact/news/faq/products/about子頁4/產品頁37)",
+  "why": "工具鏈與模式已驗證(tools/mk_en.py + /en/about 上線),剩下是逐頁對照表的產出量;產品頁 37 頁多為規格可批次",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 18:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 455,
+  "what": "皇海產品頁網址與內容不符(SEO缺陷):p/sd7-0-sd8-0-copy0001 裝的是 Micro SD T-Flash",
+  "why": "內容正確、不影響瀏覽,但網址對 Google 說錯話且 copy0001 不專業;是原 CMS 複製頁面留下的。修要一併處理 301,屬 SEO 月費的具體工項",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-19 18:26",
+  "closed": null,
+  "note": ""
  }
 ]
