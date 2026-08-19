@@ -4536,8 +4536,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-19 18:26",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 18:46",
+  "note": "英文 285 頁全部收乾並上線驗證(可見中文0/JSON-LD0/壞連結0/線上抽驗30頁0);原登記的『缺46頁』本身就是誤判——頁面早就在,壞的是共用外殼字串"
  },
  {
   "id": 455,
@@ -4546,6 +4546,86 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-19 18:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 456,
+  "what": "Tasker session 過期且 /login 已 404(改版),免費提案通路目前是瞎的——查不到那兩件提案有沒有回應,也沒法自動提案",
+  "why": "登入改成 modal/新路徑,要重新逆向;免費通路是 PRO360 花錢通路的對照組,不能一直瞎著",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 18:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 457,
+  "what": "皇海站 JSON-LD 每一頁都宣告自己是 AboutPage(@type/url 指向 /about),三語 865 頁皆然",
+  "why": "屬於既有站的結構化資料設計缺陷,不是這次英文化造成的;要動就是全站重生成 JSON-LD,應與『產品頁 title 太弱』一起做成 SEO 交付項",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 18:46",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 458,
+  "what": "皇海英文首頁網址是 /v5-en,不是 /en/(目前靠 _redirects 302 補)",
+  "why": "與 /en/xxx 的階層不一致;等跟他們 IT 併站時要一起定案正式網址結構,現在改會動到 pipeline 的 live_drift 入口檔清單",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-19 18:46",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 459,
+  "what": "BLACKEDGE KOL 席完全未建置(Okara 對我最大領先)",
+  "why": "brief→找創作者→議價→追交付→付款→回收成效整條沒有;今天只完成編制表登記",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 19:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 460,
+  "what": "social.ok / videobrief.ok 已無人書寫,艦隊新鮮度哨兵對社群發文與短影音兩條對外產線是瞎的",
+  "why": "8/12 與 8/11 起凍結;今天靠 BLACKEDGE 看板的產出物證據才發現。發文若默默停掉沒有任何東西會告警",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-19 19:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 461,
+  "what": "GEO 席 cron 首班未驗(下週一 11:00 TW)",
+  "why": "geo_agent_runner.sh 今天才接 crontab,尚未在真實排程跑過;手動 scan 已成功",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-19 19:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 462,
+  "what": "GEO 首掃 7 題只完成 3 題,4 題撞 Gemini 免費層配額",
+  "why": "配額按模型分桶已加備援,但三個桶同時被生產管線吃滿;需觀察下週首班是否掃得完",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-19 19:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 463,
+  "what": "Reddit/HN/競品情報三席活性不可知或半套",
+  "why": "Reddit 只有 inbound 聆聽無 outbound 機會清單;HN 與競品雷達沒落 logs/ok 戳記",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 19:10",
   "closed": null,
   "note": ""
  }
