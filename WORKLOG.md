@@ -7507,3 +7507,20 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   ⭐ 英文版原本用拉丁單字母(Q/S/I/E):Q 被裁得像 O、I 只是一根棒子 ⇒ 改成與中文版
   **共用同一組漢字** + 中文眉標,一組美術三種語言共用,對國際客戶也是來歷訊號。
 - 驗收:三語線上 creed=1 / 卡片 4 / 浮水印 4 / logo 14 / **字體請求 0** / console 0 error。
+
+## 2026-08-19 23:xx 主視窗:CREW —— 把行銷團隊做成可販售產品(新 repo ~/crew)
+- 老闆令:「make it a tool or website or app i can sell」→ 選「全套 AI 行銷團隊平台 + 雙語雙市場」。
+  我明講過這是數週工程;他拍板,照做,今晚交出可跑的核心。
+- 上線 https://crew.delvin-12345678.workers.dev(Worker + Durable Object + Assets,零 D1 零 KV)。
+- ⭐⭐ 四個「憑猜就會壞」的架構點,全是實測撞出來的:
+  ①Worker fetch handler 撐不過 30s ⇒ 掃描做成前端逐步驅動(附帶好處:客戶看得到 agent 逐一回報)
+  ②D1 建不起來(這把 CF token 沒 D1 權限)、KV 最終一致會讓「寫完立刻讀」撲空 ⇒ 用 DO
+  ③assets 沒設 run_worker_first 會把 /api/* 整個吃掉,請求根本不進 Worker(tail 零日誌)
+  ④Gemini `gemini-2.0-flash` 對這把 key **不存在**(404)⇒ 我原本三個配額桶只有兩個是真的
+- ⭐⭐ thinking 吃掉 maxOutputTokens ⇒ JSON 斷成殘章(中文站先炸)。thinkingBudget=0 + 提高上限才穩。
+- ⭐ 首版產生的買家問題是「best AI-powered product development systems for a growing startup」這種
+  沒人會打的句子 ⇒ 引用回來的是雜牌小站。prompt 改成「4-9 字、禁止用廠商形容詞」後,
+  同一題回來的是 monday.com / teamwork.com 這種真競品。**問題的品質決定整個產品的品質。**
+- ⭐ 零來源時標「未量測」而不是「未被引用」——absence of evidence ≠ evidence of absence。
+- ⚠️ 差點出事:首次 commit 把 `.env`(含 CF token)收進去了,`.gitignore` 漏了 `.env`。
+  repo 無 remote、未推出,已 amend 移除並確認歷史零殘留。
