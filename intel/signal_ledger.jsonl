@@ -774,3 +774,17 @@
 {"date": "2026-08-18", "code": "3498", "source": "leadflow", "level": "red", "signal": "陽程(3498) 無消息近漲停+9.8%(連3根,5日+39.8%),疑資訊先行資金|外資+投信近3日+3799張", "price_at_signal": 174.0}
 {"date": "2026-08-18", "code": "8085", "source": "leadflow", "level": "red", "signal": "福華(8085) 無消息近漲停+9.7%(量能3.1×,5日+9.3%),疑資訊先行資金|外資+投信近3日僅+22張,法人未同步=隱形買盤", "price_at_signal": 12.4}
 {"date": "2026-08-18", "code": "3629", "source": "leadflow", "level": "yellow", "signal": "地心引力(3629) 無消息近漲停+9.7%(一價鎖死,5日+15.9%),疑資訊先行資金", "price_at_signal": 15.3}
+{"date": "2026-08-19", "code": "1569", "source": "institutional", "level": "yellow", "signal": "濱川(1569):法人 20 日淨買超 +1,157 張(未成連續型態)", "price_at_signal": 43.8}
+{"date": "2026-08-19", "code": "3702", "source": "institutional", "level": "red", "signal": "大聯大(3702):投信連 3 日賣超(棄養警訊,20日淨賣 +3,983 張)", "price_at_signal": 106.5}
+{"date": "2026-08-19", "code": "6285", "source": "mops_news", "level": "red", "signal": "啟碁(6285) 重訊[2026-08-18]:本公司收回已發行之限制員工權利新股註銷減資變更登記完成", "price_at_signal": 235.5}
+{"date": "2026-08-19", "code": "7738", "source": "institutional", "level": "red", "signal": "東聯互動(7738):外資連 5 日賣超(5日淨賣 -25 張)", "price_at_signal": 165.0}
+{"date": "2026-08-19", "code": "8147", "source": "institutional", "level": "red", "signal": "正淩(8147):外資連 5 日賣超(5日淨賣 -166 張)", "price_at_signal": 119.0}
+{"date": "2026-08-19", "code": "9958", "source": "sbl", "level": "yellow", "signal": "世紀鋼(9958):機構借券賣出5日增16.2%(溫和加碼放空)", "price_at_signal": 99.5}
+{"date": "2026-08-19", "code": "2605", "source": "tw_rank", "level": "red", "signal": "新興(2605) 量能竄榜:今日量榜第12(近10日未進過top50,+4.4%,70,581張)", "price_at_signal": 36.75}
+{"date": "2026-08-19", "code": "2867", "source": "tw_rank", "level": "red", "signal": "三商壽(2867) 量能竄榜:今日量榜第14(近10日未進過top50,-1.2%,67,017張)", "price_at_signal": 9.7}
+{"date": "2026-08-19", "code": "6174", "source": "margin", "level": "yellow", "signal": "安碁(6174):融資5日暴增16.6%(散戶追高過熱)", "price_at_signal": 44.75}
+{"date": "2026-08-19", "code": "5608", "source": "leadflow", "level": "red", "signal": "四維航(5608) 無消息近漲停+9.7%(連2根,5日+22.4%),疑資訊先行資金|外資+投信近3日+6117張", "price_at_signal": 17.5}
+{"date": "2026-08-19", "code": "4735", "source": "leadflow", "level": "red", "signal": "豪展(4735) 無消息近漲停+10.0%(量能6.9×,5日+3.7%),疑資訊先行資金|外資+投信近3日僅+37張,法人未同步=隱形買盤", "price_at_signal": 39.75}
+{"date": "2026-08-19", "code": "7792", "source": "leadflow", "level": "yellow", "signal": "安葆(7792) 無消息近漲停+9.9%(量能2.7×,5日+24.1%),疑資訊先行資金", "price_at_signal": 288.5}
+{"date": "2026-08-19", "code": "6859", "source": "leadflow", "level": "yellow", "signal": "伯特光(6859) 無消息近漲停+8.6%(量能2.5×,5日+11.8%),疑資訊先行資金", "price_at_signal": 113.5}
+{"date": "2026-08-19", "code": "3219", "source": "investor_conf", "level": "yellow", "signal": "倚強科(3219):法說會8天後召開", "price_at_signal": 69.2}
