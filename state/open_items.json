@@ -3926,8 +3926,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-17 18:29",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 22:22",
+  "note": "樣品圖三張(comparison/option-a/option-b)已用現在的刻字修法重出並上線驗證 md5;過程中查獲型錄渲染器兩天來一直用 Blender 預設材質(材質算完沒被 append 到物件)與 stage_catalog 的 ModuleNotFoundError,都已修"
  },
  {
   "id": 394,
@@ -4696,6 +4696,26 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-19 22:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 471,
+  "what": "皇海型錄圖燈色改中性白後,hero(首頁 121 幀)仍是暖調 —— 兩者材質同源但成品色溫不一致",
+  "why": "型錄圖去背放白底要中性才讀得出不鏽鋼;hero 是暗場電影感,暖調是客戶已驗收的。目前刻意分開,但客戶若要求「型錄跟官網一致」就得選一邊,尚未跟他們確認",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-19 22:22",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 472,
+  "what": "GEO 答案頁中英兩篇已完稿過閘,待老闆核可才上線",
+  "why": "依 08-17 親令對外內容須先給老闆過目;docs/ 未動、未部署",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-19 22:25",
   "closed": null,
   "note": ""
  }
