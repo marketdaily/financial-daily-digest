@@ -7226,3 +7226,5 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   雲端對照:Higgsfield image_to_3d 20cr/4min 品質反而較差;fal 餘額耗盡。
 - Z-Image-Turbo(int8 6.2GB+qwen fp8 5.6GB+ae)下載中→本機文生圖→「一句話→參考圖→3D」。
 - 老實邊界:引擎 B 是白模無材質(Paint 需 21GB VRAM);A+B 組裝未做。
+- 02:0x~02:4x:Z-Image-Turbo 本機文生圖(int8+qwen fp8+ae)→ `mesh_gen.text_to_3d`,intake `__mesh__` 自動走「產參考圖→去背→Hunyuan3D」;
+  「一台紅色跑車」170s 全本機成功;球拍(鏤空薄線)單張圖→3D 做成一坨=已知天敵,要多視角/TRELLIS.2。
