@@ -7592,3 +7592,8 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   熱擴散 + 自寫距離權重備援(狐狸那隻就是備援救的,品質反而更好)。
   授權地域(Hunyuan3D/MiniMax H3 排除歐盟/英國/南韓)待老闆拍板。
 詳見 memory `capability_local_3d_content_stack`;交付頁=artifact「零元 3D 產線」。
+- ✅ 08-20 CREW 四項全落地 + 私有 repo + 起草功能:
+  自訂網域 crew.marketdaily.ai / 帳號(13 條實測) / 每週重掃(DO alarm,首班已驗) /
+  雙引擎(Tavily 專職量測 + Gemini,實測 Gemini 全 429 時 Tavily 全數量到) /
+  Stripe 管線(未設金鑰 503、無簽章 400) / 缺口→自動起草一頁(UI 9 條斷言全過)。
+  ⚠️ 新發現:策略簡報是整條鏈的單點故障(posthog 被判成自動修bug工具),已登記。

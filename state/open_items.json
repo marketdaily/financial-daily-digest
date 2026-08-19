@@ -4786,8 +4786,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-19 23:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-20 00:48",
+  "note": "已建私有 GitHub repo marketdaily/crew 並推上(推前做過密鑰稽核:歷史零真密鑰,3 處命中皆為文件佔位符)。"
  },
  {
   "id": 480,
@@ -4866,6 +4866,16 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-20 00:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 488,
+  "what": "CREW 的策略簡報是整條鏈的單點故障:品類判錯則問題/引用/起草全錯",
+  "why": "實測 posthog.com 被判成「自動修 bug 工具」,後續 4 題買家問題與草稿全照那個方向長。解法是讓客戶在產生問題【之前】能修正品類,尚未實作",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-20 00:48",
   "closed": null,
   "note": ""
  }
