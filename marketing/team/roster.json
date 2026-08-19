@@ -147,7 +147,9 @@
         "~/.marketdaily-fallback/social_post_runner.sh"
       ],
       "stamps": [
-        "social"
+        "social_reel_tw",
+        "social_reel_us",
+        "social_brand"
       ],
       "max_age_h": 36,
       "backlog": "social_unposted",
@@ -173,7 +175,8 @@
         "Higgsfield MCP"
       ],
       "stamps": [
-        "videobrief"
+        "videobrief_tw",
+        "videobrief_us"
       ],
       "max_age_h": 36,
       "backlog": null,

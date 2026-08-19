@@ -4596,8 +4596,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-19 19:10",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 22:03",
+  "note": "兩支 runner 已補【只在成功時前進】的字面名戳記(social_reel_tw/us、social_brand、videobrief_tw/us),正負對照皆驗;其中 social_reel_tw/us 已登記進艦隊哨兵 jobs.tsv。剩餘三條的登記卡在 ok_stamp_lint 多窗口歸屬缺陷,另開單追。"
  },
  {
   "id": 461,
@@ -4626,6 +4626,66 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-19 19:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 464,
+  "what": "皇海首頁跑馬燈用了 7 家客戶的真 logo(Intel/Sony/Dell/HP/Lenovo/Acer/ASUS)",
+  "why": "客戶 logo 上牆一般需對方授權;皇海官網目前只在文字裡列名並未用 logo。要不要用、有沒有授權是皇海的決定,上線前(或給他們看時)必須明講讓他們拍板",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-19 19:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 465,
+  "what": "皇海首頁載入 Google Fonts(Bricolage/Inter/Geist Mono/Noto Sans TC)但 CSS 變數 --disp/--zh/--mono 全指系統字體",
+  "why": "字體下載了卻沒被任何規則用到=白付一個 render-blocking 請求,而且大陸連不到 fonts.googleapis.com。要嘛自架字體要嘛拿掉連結,尚未處理",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-19 19:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 466,
+  "what": "3D 內容產線缺骨架/動作兩格:UniRig 已裝 py3.11 環境,torch_cluster 編譯中;動作來源(Mixamo retarget vs 生成式)還沒選",
+  "why": "貼圖今天才通,骨架這格今天沒跑完;沒有骨架就只有靜態模型,做不出 IG 那種 boss 動畫",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 19:36",
+  "closed": "2026-08-19 20:21",
+  "note": "骨架格已補上:UniRig 推骨架(6s)+ Blender 熱擴散蒙皮 + 拓樸驅動程序化動作,全部接進 protoforge/rig.py 並各自帶驗證閘。動作來源選了「程序化」而非 Mixamo,因為自動綁出來的骨頭沒有 mixamorig 命名對應表"
+ },
+ {
+  "id": 467,
+  "what": "MiniMax H3 權重已下載齊(unet Q4_K 10.9G + Qwen3VL-32B Q4_K_M 17G + 兩個 VAE + turbo LoRA),但一次都還沒實跑生成過",
+  "why": "今天只做到下載與掛上 ComfyUI-GGUF 節點;沒跑過就不知道 16GB VRAM 實際吃不吃得下、要多久",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 19:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 468,
+  "what": "3D/影片模型授權地域限制(Hunyuan3D-2.1 與 MiniMax H3 皆排除歐盟/英國/南韓)未與老闆確認 SaaS 開放區域",
+  "why": "老闆說 SaaS 是要給 global user;這兩個引擎在那些地區不能本地部署,要嘛切區域要嘛在該區改走 MIT 引擎",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-19 19:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 469,
+  "what": "ok_stamp_lint 把同一支 runner 的多個時間窗合併計算節奏,導致 social_brand/videobrief_tw/videobrief_us 無法誠實登記進哨兵",
+  "why": "符合現實的 max_age 會被判 MAX_AGE_TOO_LOOSE(紅燈),照它建議值又保證慢性假告警;戳記已在寫、只是還沒人看。正解是修多窗口歸屬,不是調數字繞過守衛",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 22:03",
   "closed": null,
   "note": ""
  }
