@@ -114,7 +114,6 @@
       "dots-studio/dots-3-note-preview:free",
       "google/gemma-4-26b-a4b-it:free",
       "google/gemma-4-31b-it:free",
-      "liquid/lfm-2.5-2.6b:free",
       "nvidia/nemotron-3-nano-30b-a3b:free",
       "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
       "nvidia/nemotron-3-super-120b-a12b:free",
@@ -129,5 +128,5 @@
       "z-ai/glm-5.2:free"
     ]
   },
-  "updated": "2026-08-18 10:10"
+  "updated": "2026-08-19 10:10"
 }
