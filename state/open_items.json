@@ -3366,8 +3366,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-17 12:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 23:42",
+  "note": "已開 private repo marketdaily/kingconn-site 並 push(31 commits, local==origin);推之前掃過機密(無 .env/token/私鑰被追蹤)。另裝 post-commit hook 自動推,避免再回到單點狀態"
  },
  {
   "id": 338,
@@ -4566,8 +4566,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-19 18:46",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 23:24",
+  "note": "696 個產品頁改成 Product + BreadcrumbList、sitemap 頁改 CollectionPage;線上抽驗 20 頁(網址從磁碟實體檔抽,不手打)全過。AboutPage 只剩真正的關於頁 18 個"
  },
  {
   "id": 458,
@@ -4576,8 +4576,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-19 18:46",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 23:46",
+  "note": "首頁改用正規網址:/ 、/en/ 、/cn/ 由 _redirects 200 rewrite 直接服務,canonical/og:url/hreflang/sitemap 全部改掉;/en 與 /cn 301 到帶斜線版。查獲更嚴重的一層:三個首頁的 canonical 原本都指著草稿網址 /v5。線上七個網址逐一驗過"
  },
  {
   "id": 459,
@@ -4646,8 +4646,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-19 19:20",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 22:38",
+  "note": "130 頁的 Google Fonts 連結已移除並上線驗證(線上字體請求 0);黑洞情境 FCP 12.2s 的問題消失。index/v2/v3/v4 因為 page.css 真的指名字族而保留"
  },
  {
   "id": 466,
@@ -4666,8 +4666,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-19 19:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 23:25",
+  "note": "已實跑通:官方 Comfy-Org fp8 unet(19.5GB)+ NVFP4 文字編碼器走 ComfyUI 原生載入器,608x352 3秒/20步 = 90 秒,GPU 峰值 14.4GB(16GB 夠,Windows 側 RAM 剩 1.9GB 靠 block-swap)。兩個 GGUF 版本都不能用:ComfyUI-GGUF 沒有 minimax 架構。輸出含原生立體聲 mean -14.1dB"
  },
  {
   "id": 468,
@@ -4736,6 +4736,66 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-19 22:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 475,
+  "what": "CREW 產品跑在跟生產線共用的 Gemini 免費 key 上,是能不能賣的頭號阻礙",
+  "why": "免費層每模型每分鐘 20 次,且日報/新聞快評同時在吃;實測掃描的引用量測會整批變成『未量測』。要賣就必須有自己的付費 key 或獨立專案",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-19 23:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 476,
+  "what": "CREW 沒有登入與金流,現在收不到錢",
+  "why": "只有 email 名單捕捉;方案表已標『建置中』避免宣稱不存在的機制,但要真的賣需要 Stripe + 帳號系統",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-19 23:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 477,
+  "what": "CREW $49 方案承諾的每週重掃/20題追蹤/起草頁面尚未建置",
+  "why": "目前只有一次性免費掃描;頁面已標『建置中』誠實揭露,但這是付費方案的實質內容",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 23:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 478,
+  "what": "CREW 仍掛在 workers.dev 網址,未接自訂網域",
+  "why": "crew.marketdaily.ai 未設定;對外賣用 *.workers.dev 可信度低",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 23:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 479,
+  "what": "CREW repo 只在 winrig 本機,沒有 remote",
+  "why": "已 git init+commit(且已確認 token 未進歷史),但沒有推到任何遠端,單一磁碟風險",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 23:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 480,
+  "what": "Delvin-agent 的 marketing/team/geo_agent.py 也寫死了不存在的 gemini-2.0-flash",
+  "why": "今天在 CREW 查出這把 key 上 2.0-flash 回 404;同一份幻影模型清單也在 geo_agent.py 裡,等於它的三個配額桶只有兩個是真的",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-19 23:48",
   "closed": null,
   "note": ""
  }
