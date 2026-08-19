@@ -4456,6 +4456,26 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-19 10:06",
+  "closed": "2026-08-19 11:09",
+  "note": "打光/材質層+三個家族真件化已完成並在生產跑過(e2e 0 FAIL,10 家族);引擎B多視角權重已裝且驗過(誤差~1mm)"
+ },
+ {
+  "id": 447,
+  "what": "ProtoForge:引擎B輸出仍是白模(無貼圖)——Hunyuan上色模型需21GB顯存,5080吃不下,要走參考圖投影或TRELLIS.2",
+  "why": "多視角已解決幾何,材質是另一條路,尚未做",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-19 11:09",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 448,
+  "what": "ProtoForge:STEP從未被第三方CAD核心(Parasolid/ASM)開過——所有免費CAD都是OCC=我們自己的核心,等於沒驗;皇海RD試用是目前唯一路徑",
+  "why": "winrig無CAD授權;已先做不碰OCC的檔案層稽核並抓到中文亂碼真缺陷,但那不等於匯入成功",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 11:09",
   "closed": null,
   "note": ""
  }
