@@ -7244,3 +7244,25 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   盒身回到**純平色**(與上面同一組色值),內容物維持明暗。
 - 驗收:同一份設定下把兩個檢視器各自截圖疊起來比 —— 姿態/透視/可見面/顏色四項全部對上;
   只剩下面多一條蓋緣接縫線(實體構造,刻意)。
+
+## 2026-08-19 09:xx 主視窗:ProtoForge 第九輪 — 品質基準對齊皇海 3d-viewer
+- 老闆給了品質標竿 https://kingconn-preview.pages.dev/3d-viewer:「以後這個工序做出來的東西品質都要跟這個一樣好」。
+- 拆解那顆為什麼好看:①平滑著色+依角度標硬邊 ②逐件真材質(不鏽鋼/金端子/黑絕緣體,且黑色要抬亮否則 glTF 一團黑)
+  ③烘進 glTF 的爆炸動畫(客戶自己拖到一半停住看內部) ④暗場攝影棚+neutral 環境光+視角按鈕 ⑤零件圖例。
+- ProtoForge 現況缺口:GLB **完全沒有法線**(trimesh 只寫 POSITION)⇒ 全部平面著色=看起來像積木;無爆炸動畫;檢視器是陽春版。
+- 做完(commit `43f1a01`,e2e 0 FAIL 165s):①法線(smooth_shade 32°+include_normals)②材質單一真源
+  `lib/materials.py`(⭐sRGB→線性,少這一步每個零件亮三倍=白模;黑件修完 0.0106≈皇海驗收值 0.0105)
+  ③自產攝影棚 HDR `tools/make_studio_hdr.py`(⭐內建 neutral 是均勻白房間 ⇒ 金屬無處可反射,四種 tone-mapping 全救不回)
+  ④拆解動畫烘進 glTF `glb_anim.py`+通用位移規則 `lib/explode.py`(⭐無 autoplay 時 duration=0,要 play() 再 pause())
+  ⑤`stage.py` 單一檢視器樣板(離線 viewer.html 與線上 /s/<id> 共用)+零件中文圖例+點擊單看+Draco 自架解碼器。
+- ⭐ 通用去銳邊 `details.soften()`:半徑要對【零件自己的厚度】算(0.12mm 薄彈片照整組尺寸倒圓 ⇒ 三角形 6.8k→270k);
+  倒完圓角 OCC 吐退化三角形 ⇒ 被判不水密、STEP 徽章掉成 check mesh(`lib/meshfix.py` 清掉後 21/23 恢復);
+  ⭐⭐ **OCC fillet 會 SIGSEGV 不是丟例外** —— e2e 一個字沒印就 exit 139,同一條路徑在網頁伺服器＝整個 uvicorn 消失;
+  `lib/safeproc.py` 用 os.fork 隔離(繼承直譯器 ~10ms,重開 python 要付 build123d 2s import),做完一顆寫一顆 BREP,崩了前面的照樣拿回來。
+- ⭐ Draco:只跑 `gltf-transform draco`(不用 optimize,它會 simplify+weld 把 CAD 稜線磨掉)3.88MB→82KB;
+  ⭐ 輸出檔名沒有 .glb 結尾它會吐 JSON+外部 .bin,搬回來是一個 9KB 的假 GLB(看起來很像壓縮成功)。
+- ⭐ trimesh 把 mesh.metadata 原封塞進 glTF extras:smooth_shade 留下的 original_components 讓 JSON chunk 脹 1MB。
+- ⭐ dfm_overlay max_faces 20000→8000:沒有 embree 時射線交會是 (射線×三角形) 暴力法,網格變密直接 OOM(只看到 exit 137)。
+- 靠「STL 必須水密」這條硬檢查挖出充電器家族三個真缺陷:卡扣窗只挖到壁厚一半(實際扣不到)、PCB 卡槽與螺絲柱相切、
+  分模面以上的卡槽掛在下殼(浮在空中)。`spring_contact` 上折段長度改成跟 rise 走(折角 74° 讓掃掠斷面自交
+  ⇒ 實體 valid 但網格不水密),加水密驗證+快取。
