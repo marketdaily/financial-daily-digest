@@ -4488,5 +4488,35 @@
   "opened": "2026-08-19 11:22",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 450,
+  "what": "KINGCONN 站台仍有其他 winrig 產出資產可能被 Mac pull 回捲(model/ vendor/ img/catalog-sample/)",
+  "why": "這次只把三套序列列入 GENERATED 保護清單;model/vendor/catalog-sample 目前 Mac 上沒有所以碰巧安全,跟 seq4 倖存是同一種「碰巧」。要嘛一併列入,要嘛改成白名單制(只有列名的才准從 Mac 收)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 11:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 451,
+  "what": "皇海導覽列四項改動(兩層選單/語言合併/字級放大)已完成但尚未部署",
+  "why": "Mac 離線,stage_pull 收不到另一個寫者的狀態,防覆蓋閘門擋下;我不繞過(上次繞過的代價是把 Mac 的播放器改動整份洗掉)。Mac 一上線即可發",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 17:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 452,
+  "what": "皇海「合併版」規格第①條前後矛盾:產品介紹那一段要留還是要刪",
+  "why": "正文說『產品介紹以上的新版內容』要留(中文以上含本身),註解說『新版產品介紹(含)以下拿掉』(也含本身)=同一段被同時判定留與刪。差一整個區塊,要老闆一句話",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-19 17:49",
+  "closed": null,
+  "note": ""
  }
 ]
