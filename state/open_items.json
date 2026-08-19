@@ -3936,8 +3936,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-17 18:29",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 23:52",
+  "note": "1440 那套改用「與 2880 母片同源」當閘門(MAD/相關),已做正反對照(好 2.75/0.9934 vs 已知壞 10.36/0.8638)並接進部署前硬閘。⚠️ seqm3 手機那套沒有母片可比仍無閘門,另登記"
  },
  {
   "id": 395,
@@ -4316,8 +4316,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-18 14:00",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 23:56",
+  "note": "描述本身就是錯的:不是掉成單一實體,是碎成 835 個無名開放曲面、0 個實體、0 個顏色。gmsh healShapes 縫合後仍產生 0 個體積 ⇒ 來源 IGES 本身即曲面模型,不是轉檔轉壞。真正的解是請皇海用 SolidWorks 從 SLDASM 直接匯出實體 STEP。已更正 /3d-viewer 上那句不成立的宣稱並上線"
  },
  {
   "id": 433,
@@ -4546,8 +4546,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-19 18:26",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-19 23:49",
+  "note": "併入更完整的新項:實查確認是皇海站上既有狀態(英文一套正確 slug、中文一套 copy0001 且整組位移一格),我們只是忠實沿用。改不改要他們決定"
  },
  {
   "id": 456,
@@ -4746,8 +4746,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-19 23:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-20 00:30",
+  "note": "改成雙引擎:Tavily 專職量引用(獨立配額)+Gemini grounding;生成端加 Groq 備援。實測 Gemini 四題全 429 時 Tavily 四題全數量到,不再出現整批未量測。付費 key 仍可買來提升上限,但已非阻礙。"
  },
  {
   "id": 476,
@@ -4756,8 +4756,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-19 23:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-20 00:30",
+  "note": "帳號系統(PBKDF2+session+額度)已上線,13 條線上實測全過;金流管線已建好,只差 Stripe 密鑰(另開單 owner=delvin)。"
  },
  {
   "id": 477,
@@ -4766,8 +4766,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-19 23:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-20 00:30",
+  "note": "cron 排隊 + DO alarm 逐步推進已建置,並已真的跑過一班:alarm 推進到第 7 步、歷史寫入、4 題量到真實引用。"
  },
  {
   "id": 478,
@@ -4776,8 +4776,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-19 23:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-20 00:30",
+  "note": "crew.marketdaily.ai 已掛上並線上驗證 200;故意不寫進 wrangler routes(token 無 zone 權限)。"
  },
  {
   "id": 479,
@@ -4796,6 +4796,76 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-19 23:48",
+  "closed": "2026-08-20 00:30",
+  "note": "已換成 models API 實查過的清單(2.5-flash / 3.5-flash / 兩個 lite),移除幻影 2.0-flash。"
+ },
+ {
+  "id": 481,
+  "what": "皇海分類網址在三語之間是兩套、且中文那套的名稱與內容對不上(已實查確認是他們站上的既有狀態,不是我們抄錯)",
+  "why": "英文站用 sd-4-0 / sd-7-0-sd-8-0 / micro-sd-t-flash(名稱與內容相符);中文/簡體站用 sd4-0-copy0001 / sd7-0-sd8-0-copy0001 / micro-sd-t-flash-copy0001,而且每一個都裝著【下一個】品項的內容(sd4-0-copy0001 裝 SD 7.0&8.0)。我們的站忠實沿用他們中文那套 ⇒ 同樣的網址在說錯話。要不要改成誠實 slug 是他們的決定(改=既有索引網址要 301,不改=網址繼續對 Google 說錯話),留到坐下來談時一起定",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-19 23:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 482,
+  "what": "皇海 seqm3(手機 720x1280 / 61 幀)刻字仍無任何自動閘門",
+  "why": "沒有對應的高解析母片可比(取景與幀數都跟 seq2/seq4 不同),既不能量字也不能比同源。要嘛加一套手機母片渲染,要嘛接受人工抽驗",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-19 23:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 483,
+  "what": "向皇海要一份【實體】STEP(由 SolidWorks 從 SLDASM 直接匯出)",
+  "why": "我們手上的 IGES 是曲面模型,轉出的 STEP 零個實體、835 個開放曲面 ⇒ 客戶 RD 拿去【不能做體積干涉檢查】。他們給過我們 7MSDP-B0-2210-H.SLDASM,原生就是實體,他們匯出只要幾十秒。在那之前對外一律只能說『佈局與外形確認』",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-19 23:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 484,
+  "what": "角色產線的網頁介面(/api/character + /char/<id>)只在本機 127.0.0.1:8977 測過,還沒接上 protoforge.marketdaily.ai 的正式服務,也沒有前端表單",
+  "why": "今天先把後端路徑打通並實測(605s 全綠);上線要決定配額、金鑰發放與排隊策略,而且 GPU 同時只能跑一件",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 23:57",
+  "closed": "2026-08-20 00:24",
+  "note": "已上線 https://protoforge.marketdaily.ai/studio:表單→排隊→進度→成品頁,從公開網址實測送件跑完(石頭魔像 575s 全綠,可互動頁 200)。GPU 排隊用 flock 序列化(上限 6 件,滿了回 429),主控台加了入口。老闆金鑰已建"
+ },
+ {
+  "id": 485,
+  "what": "皇海要的「把首頁 hero 滾動拆解動畫嵌到他們現有網站」從未交付,也沒登記過",
+  "why": "老闆 08-18 轉述:他們不打算採用整個網站,但想採用 hero 這個 scrolling animation 貼到現有站上。當時只做了口頭回覆(可以給圖讓他們自己用/或要權限),之後被 08-19 會議的五項需求蓋過去,沒有做出可交付的嵌入包(需要:121 幀序列 + 一支獨立 JS/CSS + 一頁安裝說明,且他們站是 Apache+CMS 不是我們的環境)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-20 00:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 486,
+  "what": "皇海 hero 嵌入包已做好但【尚未部署】:Mac 離線,部署管線拒絕在收不到 Mac 狀態時發布",
+  "why": "wrangler 是整目錄快照上傳,收不到 Mac 就可能把它那邊的 v5/v5-en 改動洗掉,所以 stage_pull 會擋(這是刻意的)。程式已 commit+push 到 private repo 且本機測過(桌機/手機/console 零錯誤),等 Mac 上線跑一次 ship 即可",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-20 00:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 487,
+  "what": "CREW 金流管線已建好,但還缺 Stripe 三個密鑰才能真的收款",
+  "why": "STRIPE_SECRET_KEY / STRIPE_PRICE_CREW / STRIPE_WEBHOOK_SECRET 需要 Delvin 在 Stripe 後台建價格與 webhook;未設定時升級鈕停用並說明,不會出現按不動的按鈕",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-20 00:30",
   "closed": null,
   "note": ""
  }

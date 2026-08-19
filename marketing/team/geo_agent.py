@@ -33,7 +33,10 @@ QUERIES = HERE / "geo_queries.json"
 MODEL = "gemini-2.5-flash"
 # 免費層配額是「每模型每分鐘」分桶的 —— 這把 key 同時被日報/新聞快評吃,
 # 換模型 = 換一個全新的配額桶,比乾等有效。
-MODEL_FALLBACKS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-2.5-flash-lite"]
+# ⚠️ 2026-08-20 實查:`gemini-2.0-flash` 在這把 key 上【不存在】(404) —— 原本三個配額桶
+# 只有兩個是真的。名單一律用 models API 列出來、而且實際打過的名字。
+MODEL_FALLBACKS = ["gemini-2.5-flash", "gemini-3.5-flash",
+                   "gemini-2.5-flash-lite", "gemini-3.5-flash-lite"]
 ENGINE_NOTE = ("Gemini 2.5 Flash + Google Search grounding。這是「AI 答案引擎會引用誰」的一個真實樣本,"
                "不等於 ChatGPT / Google AI Overview 的引用結果。")
 
