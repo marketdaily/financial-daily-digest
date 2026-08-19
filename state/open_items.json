@@ -4688,5 +4688,15 @@
   "opened": "2026-08-19 22:03",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 470,
+  "what": "社群發文/短影音 runner 改動首班未驗(明早 07:20 videobrief_tw、08:00 social_reel_tw)",
+  "why": "今晚美股班 20:00/20:30 在改動之前就跑完了,新程式路徑尚未在真實排程執行過;另 run_daily.sh 的輸出位置從 logs/videobrief_*.log 移到 logs/videobrief_tw_<date>.log",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-19 22:03",
+  "closed": null,
+  "note": ""
  }
 ]
