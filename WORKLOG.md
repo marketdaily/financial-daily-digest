@@ -7266,3 +7266,19 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
 - 靠「STL 必須水密」這條硬檢查挖出充電器家族三個真缺陷:卡扣窗只挖到壁厚一半(實際扣不到)、PCB 卡槽與螺絲柱相切、
   分模面以上的卡槽掛在下殼(浮在空中)。`spring_contact` 上折段長度改成跟 rise 走(折角 74° 讓掃掠斷面自交
   ⇒ 實體 valid 但網格不水密),加水密驗證+快取。
+
+## 2026-08-19 10:xx~11:xx 主視窗:ProtoForge 第十輪(老闆:「做好、都放行、為什麼不自己開 SolidWorks」)
+- 老闆當場回報充電器插頭方向錯:`fold_angle_deg` 預設 0=收合 ⇒ 插腳貼背板朝上;改預設 90(展開)。
+  ⭐ 斷面方向也錯:NEMA 1-15 兩片插腳【寬面互相平行】(寬邊沿 Z、厚度沿兩腳連線 X),原本轉出來寬面朝上下=插不進插座。插腳模組改置中在背面。
+- 三個「只有形狀」的家族做成真件:tuck_box 改用【和刀模同一組面板】摺出來(四牆+黏合邊+防塵翼/主封板/插舌,插舌尖端斜切,可掀蓋)⇒ 3D 與展開圖同源;
+  sheet_bracket 加翼端圓角+折彎補強三角板+長孔;rigid_box 加裱紙包邊圓角+上蓋傾斜擺拍+EVA 內襯。
+- **為什麼不能自己開 SolidWorks 驗**:winrig 沒裝任何 CAD;而免費 CAD(FreeCAD/CadQuery/gmsh)清一色 OCC 核心=我們寫檔用的同一顆 ⇒ 拿自己驗自己。
+  真正獨立的核心只有 Parasolid(SolidWorks/Onshape)與 ASM(Fusion)。⇒ 先做一支【不碰 OCC】的檔案層稽核 `step_check.py`,第一次跑就抓到真缺陷:
+- ⭐⭐ **中文料號在 STEP 裡是亂碼**:ISO 10303-21 字串只准 ASCII,中文要編 `\X2\<UTF-16BE hex>\X0\`。原本把 UTF-8 交給 OCC 的 writer,它又當 latin-1 編一次
+  (「L 支架」→ `L æ¯æ¶`,雙重編碼救不回)。修法=給 OCC ASCII 佔位名,PRODUCT/FILE_NAME/FILE_DESCRIPTION 用自己的 `_p21()` 編碼蓋回去。客戶特徵樹第一行從此不是亂碼。
+- ⭐ 稽核器第一版誤報 359 個「懸空參照」:AP214 複合實體寫成 `#42 = ( A() B() )` 開頭是括號不是名字 ——「我找不到」寫成「它不存在」第四次。
+- ⭐ re.sub 取代字串含 `\X2\` 會被當跳脫序列(bad escape \X)⇒ 一律用 lambda 回傳。
+- 引擎 B 多視角:`generate_multi()`+`Hunyuan3Dv2ConditioningMultiView`,API/UI 收左/後/右選填。
+  ⭐⭐ 用【單視角權重】跑 multiview conditioning 不報錯,安靜吐一坨雜訊(實測 166s 生出噪點球)⇒ `multiview_available()` 檢查專用權重,沒有就直接拒絕,不做假功能。
+  自測手法:把我們自己的 CAD 件渲成四張白底視角圖再餵回去(可控的多視角輸入)。
+- e2e 0 FAIL(10 家族 × 13~15 步 + 17 API 契約,226s);皇海交付包 `research/2026-08-19_kingconn_handover.md`。
