@@ -56,6 +56,7 @@
       "glm-5-2",
       "labs-leanstral-1-5",
       "labs-leanstral-1-5-1",
+      "magistral-medium-latest",
       "magistral-small-latest",
       "ministral-14b-2512",
       "ministral-14b-latest",
@@ -114,6 +115,7 @@
       "dots-studio/dots-3-note-preview:free",
       "google/gemma-4-26b-a4b-it:free",
       "google/gemma-4-31b-it:free",
+      "liquid/lfm-2.5-2.6b:free",
       "nvidia/nemotron-3-nano-30b-a3b:free",
       "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
       "nvidia/nemotron-3-super-120b-a12b:free",
@@ -128,5 +130,5 @@
       "z-ai/glm-5.2:free"
     ]
   },
-  "updated": "2026-08-19 10:10"
+  "updated": "2026-08-20 10:10"
 }
