@@ -788,3 +788,14 @@
 {"date": "2026-08-19", "code": "7792", "source": "leadflow", "level": "yellow", "signal": "安葆(7792) 無消息近漲停+9.9%(量能2.7×,5日+24.1%),疑資訊先行資金", "price_at_signal": 288.5}
 {"date": "2026-08-19", "code": "6859", "source": "leadflow", "level": "yellow", "signal": "伯特光(6859) 無消息近漲停+8.6%(量能2.5×,5日+11.8%),疑資訊先行資金", "price_at_signal": 113.5}
 {"date": "2026-08-19", "code": "3219", "source": "investor_conf", "level": "yellow", "signal": "倚強科(3219):法說會8天後召開", "price_at_signal": 69.2}
+{"date": "2026-08-20", "code": "2367", "source": "institutional", "level": "red", "signal": "燿華(2367):外資連 5 日買超(5日淨買 +2,907 張)", "price_at_signal": 42.55}
+{"date": "2026-08-20", "code": "2756", "source": "mops_news", "level": "red", "signal": "聯發國際(2756) 重訊[2026-08-19]:公告本公司國內第一次無擔保轉換公司債轉換價格調整", "price_at_signal": 61.8}
+{"date": "2026-08-20", "code": "3209", "source": "institutional", "level": "red", "signal": "全科(3209):外資連 5 日賣超(5日淨賣 -3,864 張)", "price_at_signal": 51.1}
+{"date": "2026-08-20", "code": "3413", "source": "sbl", "level": "yellow", "signal": "京鼎(3413):機構借券賣出5日增12.6%(溫和加碼放空)", "price_at_signal": 287.0}
+{"date": "2026-08-20", "code": "4566", "source": "institutional", "level": "red", "signal": "時碩工業(4566):外資連 5 日賣超(5日淨賣 -1,761 張)", "price_at_signal": 68.3}
+{"date": "2026-08-20", "code": "4967", "source": "margin", "level": "red", "signal": "十銓(4967):券資比25.2%(相對高檔,看空押注集中,軋空風險留意)", "price_at_signal": 266.0}
+{"date": "2026-08-20", "code": "6669", "source": "institutional", "level": "red", "signal": "緯穎(6669):投信連 3 日賣超(棄養警訊,20日淨賣 +1,869 張)", "price_at_signal": 6325.0}
+{"date": "2026-08-20", "code": "8467", "source": "margin", "level": "red", "signal": "波力-KY(8467):融資5日驟減-21.8%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": 97.0}
+{"date": "2026-08-20", "code": "AMD", "source": "us_congress", "level": "yellow", "signal": "🏛️ AMD 國會議員買進:Richard W. Allen(House) 2026-08-18 揭露", "price_at_signal": null}
+{"date": "2026-08-20", "code": "AMZN", "source": "us_congress", "level": "yellow", "signal": "🏛️ AMZN 國會議員買進:Thomas H. Kean(House) 2026-08-18 揭露", "price_at_signal": null}
+{"date": "2026-08-20", "code": "AAPL", "source": "us_congress", "level": "yellow", "signal": "🏛️ AAPL 國會議員買進:Ed Case(House) 2026-08-18 揭露", "price_at_signal": null}
