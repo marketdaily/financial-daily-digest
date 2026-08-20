@@ -7664,3 +7664,14 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   爆炸中的幀刻字根本不在框內(docstring 早就寫了)。**不要把工具的適用範圍當成缺陷。**
 - ⭐ 前一輪我還修錯頁面:老闆說「模型上面空一片」,我去修了 /3d-viewer,他講的是首頁 hero。
   **範圍沒確認就動手 = 一輪白工。**
+
+## 2026-08-20 深夜 追記:CF token 權限補齊(#492 已收)
+- 錯誤訊息只給 token id `2ea5f1a0…`,後台列表不顯示 id ⇒ 用「它能做什麼」反推是哪一列:
+  Pages/Workers Scripts/KV/Tail/Account read/Zone.Zone read 全過,但 **Zone.Workers Routes ❌**
+  ⇒ 刷掉 CF 內建範本「Edit Cloudflare Workers」(該範本必含 Workers Routes),定位到 token `hi`。
+  ⭐ 憑證識別可以不靠猜:**能力指紋 = 一組正/反探針**,反例(打不通的那格)比正例更有鑑別力。
+- 老闆加上 Zone.Analytics:Read 後驗收**刻意 borrow=False**(關掉借 Mac 退路),否則退路會替
+  token 遮住真相、看起來一樣綠:mingshu.tw / marketdaily.ai / quietfix.studio 三 zone 皆
+  `source=primary`;五個消費端實跑全綠(seo_report pull 7/7、honest_traffic、site_traffic、
+  crawler_coverage pull、seo_page_traffic),近日 log 零 `borrowed_mac`。
+- 編輯既有 token 的權限**不會換掉 token 值** ⇒ .env 與「八處輪替」完全不用動。

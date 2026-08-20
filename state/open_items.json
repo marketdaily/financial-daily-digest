@@ -4916,8 +4916,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-20 23:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-20 23:53",
+  "note": "Delvin 於 2026-08-20 深夜在 CF 後台把 token『hi』(id 2ea5f1a0…)加上 Zone.Analytics:Read。驗收(borrow=False,關掉借 Mac 退路):mingshu.tw / marketdaily.ai / quietfix.studio 三個 zone GraphQL 全回 source=primary;五個消費端實跑全綠(seo_report pull 7/7、honest_traffic、site_traffic、crawler_coverage pull、seo_page_traffic),近日 log 零 borrowed_mac。token 值未變,.env 與八處輪替無須動。"
  },
  {
   "id": 493,
@@ -4936,6 +4936,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-20 23:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 495,
+  "what": "CREW 掃描 geo 步驟間歇性當機的根因未查明(已包成可重試,使用者不再看到 HTTP 500)",
+  "why": "24 步 soak 零復發,無法在 wrangler tail 視窗內重現取得堆疊;目前是擋住症狀不是修掉原因",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-20 23:23",
   "closed": null,
   "note": ""
  }
