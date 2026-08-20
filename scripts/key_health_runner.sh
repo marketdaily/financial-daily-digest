@@ -17,7 +17,9 @@ exec >> "$BASE/logs/key_health_$(TZ=Asia/Taipei date +%Y-%m-%d).log" 2>&1
 echo "=== $(date '+%F %T %z') key health patrol start ==="
 cron_run_and_alert "key_health" -- "$PY" scripts/key_health_patrol.py --quiet
 # 艦隊 liveness 總表(同窗口一天一輪):106+ cron+intel 連接器的靜默死亡偵測,自校準間隔
-cron_run_and_alert "fleet_liveness" -- "$PY" scripts/fleet_liveness.py --quiet
+# rc=1 的語意是「查到有 job 靜默」不是「我掛了」——沒這行的話 fleet_liveness 每次
+# 盡責報告就讓自己的戳記凍住,下一輪把自己列進靜默名單(2026-08-20 實際發生)。
+CRON_OK_ON_RC=1 cron_run_and_alert "fleet_liveness" -- "$PY" scripts/fleet_liveness.py --quiet
 # 這兩支每天整檔重寫自己的 state,但 2026-08-10 前沒有 persist owner → 檔案永遠髒著:
 #   ① dirty_tree_watch 每天告警「tracked 檔持續髒逾 120h」
 #   ② stale_base_lint 把「工作樹比 HEAD 新很多」誤判成「拿過期底稿整檔覆寫」而恆紅

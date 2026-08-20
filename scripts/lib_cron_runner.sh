@@ -244,7 +244,17 @@ cron_run_and_alert() {
   #    這裡替全艦隊 90+ 支 runner 補上一個統一的、**只在成功時前進**的 artifact,
   #    讓 cron_catchup 的新鮮度哨兵(watch 模式)不必替每支 job 各自考古一個產出檔。
   #    絕不可影響主流程:rc 早已存進變數,這段整個 best-effort、失敗吞掉。
-  if [ "$rc" -eq 0 ]; then
+  # ⭐ 2026-08-20:「有發現」不等於「我死了」。稽核/巡檢型 job 刻意用非零 exit 表示
+  #    『查到東西了,值得叫人』(cta_funnel_lint --fail-on high、refactor_harness 凍結不符、
+  #    fleet_liveness 查到靜默 job)。但戳記只認 rc=0 ⇒ 這些 job 只要**做對事情**就永遠
+  #    不前進戳記,新鮮度哨兵接著把它們報成「靜默/死了」。最荒謬的是 fleet_liveness 自己:
+  #    它報告艦隊有人靜默 → 自己回 1 → 自己的戳記凍在 08-13 → 下一輪它把自己列進靜默名單。
+  #    自我實現的假紅,而且會排擠真紅(mingshu_seo_pull 那種真的斷了 9 天的)。
+  #    ⇒ 呼叫端可用 CRON_OK_ON_RC 宣告「這些 exit code 代表跑完了、只是有發現」。
+  #    告警照推(不減少可見性),只有 liveness 戳記照常前進。宣告是 opt-in:沒宣告的
+  #    job 行為完全不變(非零一律不戳),不會有人因為這個改動變得偵測不到。
+  local ok_rcs=" ${CRON_OK_ON_RC:-} "
+  if [ "$rc" -eq 0 ] || { [ -n "${CRON_OK_ON_RC:-}" ] && [[ "$ok_rcs" == *" $rc "* ]]; }; then
     _cron_ok_stamp "$name"
   fi
   if [ "$rc" -ne 0 ]; then

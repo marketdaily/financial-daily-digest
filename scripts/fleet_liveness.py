@@ -60,6 +60,35 @@ def collect_success_dates():
     return {j: sorted(ds) for j, ds in jobs.items()}
 
 
+def merge_ok_stamps(jobs):
+    """把全艦隊共用的成功戳記 logs/ok/<job>.ok 併進成功日史。
+
+    2026-08-20:本檔原本只認 log 裡的「end rc=0」——那是把 lib_cron_runner 的活性判準
+    **手刻了第二份**,而且刻的是舊語意。稽核型 job 刻意用非零 exit 表示「查到東西了」
+    (cta_funnel_lint --fail-on high / refactor_harness 凍結不符 / fleet_liveness 自己),
+    於是它們只要盡責工作就永遠沒有「end rc=0」⇒ 被自己判成靜默。實際發生過:
+    fleet_liveness 報告艦隊有人靜默 → 自己回 1 → 隔天把自己列進靜默名單,
+    連續七天佔著紅燈,排擠掉真正斷了 9 天的 mingshu_seo_pull。
+    ⇒ 戳記(只在「跑完了」時前進、由 _cron_ok_stamp 單一寫入端維護)才是活性的真源;
+    log 掃描保留成為第二來源(沒接 lib 的 runner 仍納管),兩者取聯集。
+    """
+    d = os.path.join(REPO, "logs", "ok")
+    if not os.path.isdir(d):
+        return jobs
+    for fn in os.listdir(d):
+        if not fn.endswith(".ok"):
+            continue
+        job = fn[:-3]
+        try:
+            with open(os.path.join(d, fn), encoding="utf-8") as f:
+                stamp = f.read().strip()[:10]
+            datetime.date.fromisoformat(stamp)
+        except Exception:
+            continue
+        jobs[job] = sorted(set(jobs.get(job, [])) | {stamp})
+    return jobs
+
+
 def classify(jobs, today=None):
     """純函式:成功日史 → (silent紅名單, report)。可測。
     判準:間隔中位數自校準;成功日<2 的新 job 不判(觀察期)。"""
@@ -186,12 +215,34 @@ def _selftest():
             assert len(probs) == 1 and "一個都沒有" in probs[0], probs
     finally:
         OUTPUT_HEARTBEATS = _save
+    # 戳記併入:①戳記比 log 新 → 不可再判靜默 ②沒戳記的 job 行為不變 ③壞戳記不可炸
+    import tempfile as _tf
+    global REPO
+    _saved_repo = REPO
+    try:
+        with _tf.TemporaryDirectory() as td:
+            okd = os.path.join(td, "logs", "ok")
+            os.makedirs(okd)
+            with open(os.path.join(okd, "daily_dead.ok"), "w") as f:
+                f.write("2026-08-03T02:50:07Z\n")
+            with open(os.path.join(okd, "garbage.ok"), "w") as f:
+                f.write("not-a-date\n")
+            REPO = td
+            merged = merge_ok_stamps({k: list(v) for k, v in jobs.items()})
+            assert merged["daily_dead"][-1] == "2026-08-03", merged["daily_dead"]
+            s2, _ = classify(merged, today)
+            n2 = [x.split("(")[0] for x in s2]
+            assert "daily_dead" not in n2, "戳記證明它今天跑過了,仍被判靜默"
+            assert "weekly_dead" in n2, "沒戳記的 job 不該因為這個改動變綠"
+            assert "garbage" not in merged, "壞戳記應被忽略而不是變成一個假 job"
+    finally:
+        REPO = _saved_repo
     print("selftest ok")
 
 
 def main():
     quiet = "--quiet" in sys.argv
-    jobs = collect_success_dates()
+    jobs = merge_ok_stamps(collect_success_dates())
     silent, report = classify(jobs)
     intel_problems, intel_info = check_intel()
     out_problems, out_info = check_outputs()
