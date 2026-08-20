@@ -7617,3 +7617,32 @@ Delvin 交辦「全部修好+要有寄出前/寄出後都檢查的系統」。�
   **教訓:排除干擾要用「把它關掉」,不要用「把它遮掉」——遮罩會變成量尺的一部分。**
 - 驗收:手機合體 高佔48%/寬佔81%/最小邊距4.0%;全拆 高佔76%/最小邊距9.5%;桌機兩態皆 ≥11%;
   console 零錯誤。
+
+## 2026-08-20 22:3x-23:5x 主視窗:老闆問「告警為什麼那麼多、cron 為什麼一直 fail」
+盤點今天噴紅的 10 支 job,**一半以上是同一顆石頭**,不是十件事:
+- ⭐⭐ **一個 untracked 檔讓全站部署停擺 26 小時**:08-19 22:30 那篇 GEO 文章的 HTML 進了版控,
+  同時生成的 `docs/blog/og/*.png` 沒有 ⇒ `cron_deploy_surface_gate` 判 deploy 面髒 ⇒
+  **8 個部署呼叫端全部跳過部署**(daily_digest / track_record / archive_seo / tldr / win_card /
+  quality_board / site_scan_fix / agent_board)。後果:線上 manifest 停在 08-19、**今天的台股與
+  美股存檔頁雙雙 404**、那篇文自己的 og:image 404、archive_cta 早晚兩班都讓路 ⇒ 兩張存檔頁整天
+  **沒有任何訂閱入口**(cta_funnel_lint 的 high finding 就是這條,我原本以為是獨立問題)。
+  ⭐ 教訓:starve streak 以「不同日期」計,所以第一天只到 1、明天才會告警;唯一即時看得到的是
+  deploy_drift,而它 6 小時去重 ⇒ 一天只吵 4 次。**擋住整條發布線的東西,可見性反而最低。**
+- ⭐⭐ **Tasker 提案監看從今天 14:20 起全瞎**:平台改版把「初次估價 $x-$y」換成「免費提案」、
+  「案主未讀」換成「未讀」,舊 parse 用 `split("初次估價")` 切 ⇒ 0 筆 ⇒ 每 10 分鐘紅一次(抑制 17 次)。
+  **守衛沒說謊,它是對的**——現場真的有 4 筆提案在等案主、其中 1 筆已被讀取,而我們看不到。
+  錨改成「YYYY/MM/DD HH:MM 提案」日期行;零筆分兩態(平台明示空狀態=rc0 / 頁面有東西卻切不出來=rc4)。
+  ⭐ 空狀態判準不可只認「目前沒有」:提案中分頁永遠帶著案主側的「目前沒有進行中案件」小工具,
+  拿它當判準會把「有 4 筆」判成空(假綠比假紅危險)。八組反對照 + 生產實跑 rc=0 零假推播。
+- ⭐⭐ **「查到東西」被包裝成「cron 失敗」**:稽核型 job 用非零 exit 表示有發現,但活性戳記只認
+  rc=0 ⇒ 它們只要做對事就永遠不前進戳記。最荒謬的是 fleet_liveness:它報告艦隊有人靜默 →
+  自己回 1 → 隔天把**自己**列進靜默名單,連七天佔著紅燈,把真的斷了 9 天的 mingshu_seo_pull 擠在後面。
+  修法 = lib 新增 opt-in `CRON_OK_ON_RC`(戳記前進、告警照推)+ fleet_liveness 不再手刻第二份
+  活性判準(併入全艦隊共用的 logs/ok/*.ok)。四條反對照 + 兩個突變體被殺。
+- **mingshu_seo_pull 斷 9 天**:08-17 收 #405 時把 CF analytics 的「借 Mac 憑證」退路收斂成
+  cf_analytics 唯一入口並接了四支,**漏掉第五支**。接上後 queried 7 / ok 7 / rows_added 6172。
+- **refactor_harness 連兩天無故變紅**:凍結基線綁到活檔——`_card_stub` 編號=sha256(sym|len(prompt)),
+  而 prompt 裡的 social_buzz / leadflow 兩段讀的是 cron 每天重寫的 intel JSON。打固定樁 + 死人開關
+  (樁沒被呼叫就炸)。reseal 前逐行驗:39 對變動行全部只差樁編號,零其他改動。
+驗收:兩張存檔頁 200 + CTA 上線、cta_funnel_lint high 1→0、deploy_drift 三項全綠、
+harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LINE 視窗要他登入、TaskerGo 要不要儲值(#490/#491/#492)。

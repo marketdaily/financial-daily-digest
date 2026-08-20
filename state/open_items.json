@@ -4846,8 +4846,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-20 00:05",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-20 00:49",
+  "note": "嵌入包已做好並上線:https://kingconn-preview.pages.dev/embed/ (demo + 繁中三步安裝說明 + 14MB zip)。桌機/直式手機/console 皆實測過"
  },
  {
   "id": 486,
@@ -4856,8 +4856,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-20 00:18",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-20 00:49",
+  "note": "Mac 上線後已部署;線上實測 /embed/ 索引、demo(四個捲動位置四張不同幀)、README、10KB JS、序列圖、14MB zip 全部 200,零 4xx、零 console error"
  },
  {
   "id": 487,
@@ -4876,6 +4876,66 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-20 00:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 489,
+  "what": "CREW 台幣軌 Stripe price id 未設(STRIPE_PRICE_CREW_TWD),台灣客戶目前結帳會退回美金軌",
+  "why": "兩軌定價已上線且有 fallback 提示,但真正收台幣需要 Delvin 在 Stripe 建 NT$1,490 訂閱價並設 secret;同 #487",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-20 18:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 490,
+  "what": "券商喊單(sinopac_line)產出斷流 8 天:Windows 的 LINE 視窗不在(line_watch 連日 NO-WINDOW),需 Delvin 本人在 winrig 開 LINE 並登入",
+  "why": "純前景 GUI,全域規則禁止我搶畫面/滑鼠",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-20 23:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 491,
+  "what": "Tasker 有 4 筆提案在等案主(1 筆已被讀取),但 autopropose 每輪送出 0 件——所有候選都要求 special_proposal=2(投 TaskerGo 額度),帳號沒儲值",
+  "why": "要不要儲值搶案是老闆的商業決策,不是技術問題",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-20 23:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 492,
+  "what": "winrig 那把 CF token 仍缺 zone.analytics.read:mingshu 流量現在靠向 Mac 借憑證才拉得到(degraded,Mac 會睡)",
+  "why": "改 CF token scope 要用 Delvin 的 CF 帳號後台",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-20 23:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 493,
+  "what": "今日四項修復尚未在生產排程首班驗收:CRON_OK_ON_RC(cta_funnel_lint 09:20/refactor_harness 09:50/fleet_liveness 10:50)、tasker_watch 新 parse 的 runner 包裝層、archive_cta 早班 07:20 自動恢復、deploy 面守門是否真的不再讓路",
+  "why": "今天窗口都過了,只有手動實跑驗過,排程首班要等明天",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-20 23:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 494,
+  "what": "blog/guide-free-premarket-newsletter-tw-202608.html 唯一轉換入口在 79% 捲動深度(cta_funnel_lint medium):該文 08-19 是手動建立的,沒走 seo_articles 的 inline_subscribe 注入",
+  "why": "medium 不觸發告警,今天優先收 high 與部署停擺",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-20 23:07",
   "closed": null,
   "note": ""
  }
