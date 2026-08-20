@@ -564,6 +564,34 @@ def _stub_unsub_list():
     _rq.get = _get
 
 
+def _stub_live_intel_notes(analyzer):
+    """把兩個「讀活檔」的 prompt 補充段打樁(2026-08-20)。
+
+    `_social_buzz_note` 讀 intel/social_buzz 的 latest.json、`_leadflow_note` 讀
+    leadflow_latest.json —— 兩份都是 cron 每天重寫的活檔。它們只進 **prompt**,而 LLM 是
+    樁,所以 golden 的 HTML 內容不受影響……除了 `_card_stub` 的卡片編號綁在 len(prompt) 上:
+    於是「今天的社群聲量變了」會讓 golden 每天無故變紅(08-19、08-20 連兩天,診斷訊息只有
+    一串看不懂的 8 碼 hash)。這跟 `_stub_unsub_list` 修的是同一種病:
+    **characterization 基線不可以綁在會自己變動的活狀態上**。
+    樁值刻意非空,讓注入點的字串拼接與長度效應仍在凍結範圍內(給空字串等於連注入都不測)。
+    """
+    calls = {"_social_buzz_note": 0, "_leadflow_note": 0}
+
+    def _mk(name, text):
+        def _f(data):
+            calls[name] += 1
+            return text
+        return _f
+
+    _stub(analyzer, "_social_buzz_note",
+          _mk("_social_buzz_note",
+              "\n【社群聲量觀察(harness 固定樁)】2330 討論度連兩日居前,純觀察不改方向。\n"))
+    _stub(analyzer, "_leadflow_note",
+          _mk("_leadflow_note",
+              "\n【先行異動雷達(harness 固定樁)】2317 量價先行,尚無公開消息,只作觀察。\n"))
+    return calls
+
+
 def _stub(obj, name, fn):
     """裝樁,並強制「生產端的呼叫吃得下這個樁」:binding 失敗當場炸開,
     不准被生產碼的 try/except 吞掉、悄悄退化成備援路徑。
@@ -698,6 +726,7 @@ def _run_smoke():
     }
     _stub(main, "get_user_preferences", lambda email: dict(prefs_map[email]))
     _stub(analyzer, "council_top_picks", lambda d, mk, n=3: ["2330", "2317"])
+    _intel_note_calls = _stub_live_intel_notes(analyzer)
     data_fetcher._LAST_TW_MISSING = []
 
     buf = io.StringIO()
@@ -717,6 +746,12 @@ def _run_smoke():
                 with open(ap, encoding="utf-8") as f:
                     audit = f.read()
     _assert_not_degraded(buf.getvalue(), sent, det_cards, len(SUBSCRIBERS))
+    # 死人開關:樁裝了但**沒被呼叫**=生產端改了名字/拿掉了呼叫,活檔會從別的地方溜回 prompt,
+    # 而 golden 依然全綠(這正是「裝了樁就以為隔離了」的假綠)。沒被呼叫就當場炸掉。
+    _unused = [k for k, v in _intel_note_calls.items() if v == 0]
+    if _unused:
+        raise SystemExit("樁裝了卻沒被呼叫: " + ", ".join(_unused)
+                         + " —— 生產端改名或拿掉呼叫了,活檔可能又溜進 prompt。修樁,不要 reseal golden。")
     out = ("=== STDOUT ===\n" + _norm(buf.getvalue())
            + "\n=== SENT ===\n" + json.dumps(sent, ensure_ascii=False, indent=1, sort_keys=True)
            # r2 F4:audit 報告檔**只有壞掉時才存在**(main.py 三個 list 全空就不寫檔),
