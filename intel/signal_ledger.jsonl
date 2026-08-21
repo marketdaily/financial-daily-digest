@@ -799,3 +799,22 @@
 {"date": "2026-08-20", "code": "AMD", "source": "us_congress", "level": "yellow", "signal": "🏛️ AMD 國會議員買進:Richard W. Allen(House) 2026-08-18 揭露", "price_at_signal": null}
 {"date": "2026-08-20", "code": "AMZN", "source": "us_congress", "level": "yellow", "signal": "🏛️ AMZN 國會議員買進:Thomas H. Kean(House) 2026-08-18 揭露", "price_at_signal": null}
 {"date": "2026-08-20", "code": "AAPL", "source": "us_congress", "level": "yellow", "signal": "🏛️ AAPL 國會議員買進:Ed Case(House) 2026-08-18 揭露", "price_at_signal": null}
+{"date": "2026-08-21", "code": "1727", "source": "margin", "level": "yellow", "signal": "中華化(1727):融資5日暴增16.6%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-08-21", "code": "2221", "source": "margin", "level": "yellow", "signal": "大甲(2221):融資5日暴增20.6%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-08-21", "code": "5381", "source": "institutional", "level": "yellow", "signal": "光譜(5381):法人 20 日淨買超 +1,127 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-08-21", "code": "5381", "source": "revenue", "level": "yellow", "signal": "光譜(5381):2026/07 營收公告、YoY +6.3%、MoM +82.1%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
+{"date": "2026-08-21", "code": "8021", "source": "institutional", "level": "yellow", "signal": "尖點(8021):法人 20 日淨賣超 -2,317 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-08-21", "code": "8021", "source": "revenue", "level": "red", "signal": "尖點(8021):2026/07 營收公告、YoY +102.6%(強勁)、MoM +7.3%", "price_at_signal": null}
+{"date": "2026-08-21", "code": "8021", "source": "holders", "level": "red", "signal": "尖點(8021):千張大戶持股比週增2.47個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-08-21", "code": "8442", "source": "mops_news", "level": "yellow", "signal": "威宏-KY(8442) 重訊[2026-08-20]:公告本公司新增資金貸與金額達新台幣一千萬元以上 且達本公司最近期財務報表淨值百分之二以上", "price_at_signal": null}
+{"date": "2026-08-21", "code": "6725", "source": "mops_news", "level": "yellow", "signal": "矽科宏晟(6725) 重訊[2026-08-20]:(補充公告) 公告本公司背書保證&#12198;額達 公開發行公司資&#12198;貸與及背書保證處理準則 第二十五條第", "price_at_signal": null}
+{"date": "2026-08-21", "code": "6534", "source": "revenue", "level": "red", "signal": "正瀚-創(6534):2026/07 營收公告、YoY +22.7%(強勁)、MoM -30.0%", "price_at_signal": null}
+{"date": "2026-08-21", "code": "2426", "source": "leadflow", "level": "red", "signal": "鼎元(2426) 無消息近漲停+9.9%(連3根,5日+23.4%),疑資訊先行資金|外資+投信近3日+8793張", "price_at_signal": null}
+{"date": "2026-08-21", "code": "4188", "source": "leadflow", "level": "red", "signal": "安克(4188) 無消息近漲停+10.0%(量能8.7×,5日+9.5%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-21", "code": "6664", "source": "leadflow", "level": "red", "signal": "群翊(6664) 無消息近漲停+10.0%(量能3.8×,5日+4.6%),疑資訊先行資金|外資+投信近3日僅+101張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-21", "code": "6103", "source": "leadflow", "level": "red", "signal": "合邦(6103) 無消息近漲停+9.9%(量能3.1×,5日-0.7%),疑資訊先行資金|外資+投信近3日僅+2張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-21", "code": "3540", "source": "leadflow", "level": "red", "signal": "曜越(3540) 無消息近漲停+9.9%(量能19.5×,5日+15.0%),疑資訊先行資金|外資+投信近3日僅+372張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-21", "code": "3229", "source": "leadflow", "level": "red", "signal": "晟鈦(3229) 無消息近漲停+8.6%(連2根,5日+14.9%),疑資訊先行資金|外資+投信近3日僅-125張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-21", "code": "3152", "source": "leadflow", "level": "red", "signal": "璟德(3152) 無消息近漲停+9.9%(量能6.5×,5日+14.0%),疑資訊先行資金|外資+投信近3日僅-328張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-21", "code": "7751", "source": "leadflow", "level": "red", "signal": "竑騰(7751) 無消息近漲停+9.8%(連2根,5日+19.7%),疑資訊先行資金|外資+投信近3日僅-95張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-21", "code": "6640", "source": "leadflow", "level": "yellow", "signal": "均華(6640) 無消息近漲停+9.5%(量能2.0×,5日-3.7%),疑資訊先行資金", "price_at_signal": null}
