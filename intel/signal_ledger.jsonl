@@ -818,3 +818,19 @@
 {"date": "2026-08-21", "code": "3152", "source": "leadflow", "level": "red", "signal": "璟德(3152) 無消息近漲停+9.9%(量能6.5×,5日+14.0%),疑資訊先行資金|外資+投信近3日僅-328張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-08-21", "code": "7751", "source": "leadflow", "level": "red", "signal": "竑騰(7751) 無消息近漲停+9.8%(連2根,5日+19.7%),疑資訊先行資金|外資+投信近3日僅-95張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-08-21", "code": "6640", "source": "leadflow", "level": "yellow", "signal": "均華(6640) 無消息近漲停+9.5%(量能2.0×,5日-3.7%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-22", "code": "1569", "source": "holders", "level": "yellow", "signal": "濱川(1569):千張大戶持股比週增0.71個百分點(溫和加碼)", "price_at_signal": 44.85}
+{"date": "2026-08-22", "code": "1727", "source": "sbl", "level": "yellow", "signal": "中華化(1727):機構借券賣出5日增12.7%(溫和加碼放空)", "price_at_signal": 90.2}
+{"date": "2026-08-22", "code": "1727", "source": "holders", "level": "yellow", "signal": "中華化(1727):千張大戶持股比週增0.80個百分點(溫和加碼)", "price_at_signal": 90.2}
+{"date": "2026-08-22", "code": "3413", "source": "sbl", "level": "red", "signal": "京鼎(3413):機構借券賣出5日遽增21.0%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": 284.5}
+{"date": "2026-08-22", "code": "3413", "source": "holders", "level": "yellow", "signal": "京鼎(3413):千張大戶持股比週減-2.09個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 284.5}
+{"date": "2026-08-22", "code": "3455", "source": "holders", "level": "red", "signal": "由田(3455):千張大戶持股比週增1.72個百分點(大戶顯著加碼)", "price_at_signal": 235.5}
+{"date": "2026-08-22", "code": "3702", "source": "holders", "level": "yellow", "signal": "大聯大(3702):千張大戶持股比週減-1.07個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 111.0}
+{"date": "2026-08-22", "code": "3706", "source": "holders", "level": "yellow", "signal": "神達(3706):千張大戶持股比週增0.73個百分點(溫和加碼)", "price_at_signal": 90.0}
+{"date": "2026-08-22", "code": "4566", "source": "holders", "level": "yellow", "signal": "時碩工業(4566):千張大戶持股比週增0.89個百分點(溫和加碼)", "price_at_signal": 67.0}
+{"date": "2026-08-22", "code": "8021", "source": "holders", "level": "yellow", "signal": "尖點(8021):千張大戶持股比週減-2.54個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 397.0}
+{"date": "2026-08-22", "code": "8996", "source": "holders", "level": "yellow", "signal": "高力(8996):千張大戶持股比週減-1.65個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": 1090.0}
+{"date": "2026-08-22", "code": "3095", "source": "mops_news", "level": "red", "signal": "及成(3095) 重訊[2026-08-21]:公告本公司私募甲至丁種特別股股東提出 申請轉換為私募普通股", "price_at_signal": 36.55}
+{"date": "2026-08-22", "code": "3219", "source": "investor_conf", "level": "red", "signal": "倚強科(3219):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": 71.6}
+{"date": "2026-08-22", "code": "NVDA", "source": "us_analyst", "level": "red", "signal": "🇺🇸 NVDA 目標價⬆️+55.9%→$335(D.A. Davidson)", "price_at_signal": null}
+{"date": "2026-08-22", "code": "AAPL", "source": "us_analyst", "level": "red", "signal": "🇺🇸 AAPL ⬇️ Buy→Outperform(BMO Capital)", "price_at_signal": null}
+{"date": "2026-08-22", "code": "7631", "source": "sbl", "level": "yellow", "signal": "聚賢研發-創(7631):機構借券賣出5日遽減-66.7%(回補潮,空頭力道減弱)", "price_at_signal": 147.5}
