@@ -5056,8 +5056,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-23 22:30",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 02:31",
+  "note": "重讀+重建完成。結論與預期相反:待確認 110→125(需對圖 80/待確認 45),但這是【讀得更準】的結果不是變爛 —— 新變紅的 25 顆信心平均 +0.044,跟轉綠的(+0.050)、沒變的(+0.055)一樣是上升;以前是通用值剛好過檢查,現在讀到真數字才照出矛盾。全庫信心 0.543→0.596,≥0.8 從 6→20、≤0.4 從 25→7。234 顆有 3D+STEP,read_failed 歸零。"
  },
  {
   "id": 507,
@@ -5126,8 +5126,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-23 22:52",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 00:53",
+  "note": "『未接自訂網域』這半已不成立:qfxsolution.com + www 都已上線(200,憑證正常,中英雙語)。剩下的只有『要不要對外』這個決定,拆成 #525"
  },
  {
   "id": 514,
@@ -5146,8 +5146,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-23 23:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 00:52",
+  "note": "Delvin 08-24 在 dashboard 按下 enable,MX(route1/2/3)+SPF 生效;SMTP 交握實測 hi@ 與 catch-all 皆 250、gmail 反對照 550 ⇒ 已是活信箱。切 Google 寄信的分段流程另見 ~/qfx/MAIL_RUNBOOK.md(#523)"
  },
  {
   "id": 516,
@@ -5226,6 +5226,36 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 00:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 524,
+  "what": "Google Workspace 次要網域切換卡在 Delvin 的 admin console 步驟(A/C/D/F 四步)",
+  "why": "加次要網域、產 DKIM、關 CF Email Routing 都在他登入的介面裡,我的 token 只有 Rules 沒有 Settings,程式打不開。我這邊 add-txt/preflight/cutover/check/rollback 五個指令已寫好並全部演練過(零副作用),等他貼 TXT 驗證碼就能接",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 00:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 525,
+  "what": "qfxsolution.com 仍鎖著不讓搜尋引擎看(noindex,nofollow + robots.txt Disallow: /)",
+  "why": "站是活的但刻意封鎖收錄,等 Delvin 決定何時對外。放行=改兩頁的 meta robots + robots.txt 後重新部署,我這邊 5 分鐘;但『何時把新公司對外亮出來』是他的決定,而且 #518(沒有任何資安證照可列)還在",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 00:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 526,
+  "what": "皇海 125 顆尺寸疑點(需對圖 80/待確認 45)需 RD 對圖確認,不是我這邊能自己收的",
+  "why": "每顆都要拿原始 2D 圖逐一判讀,判準屬客戶 RD;我能做的偵測與分級已做完",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 02:31",
   "closed": null,
   "note": ""
  }
