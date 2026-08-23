@@ -7725,3 +7725,13 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⭐ **Python 探測要帶 UA**:CF 擋預設 python-urllib 回 403,首版因此把健康的 bridge 判成打不通
   ——跟 intel/doctor.py 首版同一個坑。fail-closed 是唯一擋住這次誤判變成壞寫入的東西。
 
+
+## 2026-08-23 22:xx TW — QFX Solution 母品牌開案(logo + 三方向打樣)
+- 老闆令:成立母公司 **QFX Solution**(SEO/網站設計/資安維運/網站維護 打包),QuietFix Studio 與
+  Crew SEO 為旗下執行品牌。定位抄「高階顧問公司」:客層=外商在台分公司、獲客靠轉介、
+  **永不低於市場價**、pitch 不 sell。
+- 拍板(AskUserQuestion):①**兩站都重做成黑白**(QuietFix 現黑金 #d09a58 全換) ②本輪只交
+  **logo + 三方向打樣 Artifact** 給老闆挑,不做整站 ③QFX 官網**英文為主+中文次要**。
+- 視覺語言:黑白灰階為底 + **單一高飽和小物件當唯一色點**,用色點區分子品牌。
+- 我提的風險口徑:package 的 cybersecurity 對外寫成 **security hardening / 安全維運**
+  (WAF/憑證/備份/弱點掃描/監測),不暗示我們是資安事件應變公司。
