@@ -7675,3 +7675,9 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   `source=primary`;五個消費端實跑全綠(seo_report pull 7/7、honest_traffic、site_traffic、
   crawler_coverage pull、seo_page_traffic),近日 log 零 `borrowed_mac`。
 - 編輯既有 token 的權限**不會換掉 token 值** ⇒ .env 與「八處輪替」完全不用動。
+
+## 2026-08-23 Higgsfield×Blender 查證＋winrig 無頭 Blender 上線（Mac 視窗）
+- 老闆丟「higgsfield 可以連 blender 了」。查證結果：①`higgsfield.ai/plugins/blender` 真實存在（GUI 浮動列，7 分頁，Blender 4.2–5.1，Meshy 5 生 3D，雲端推論吃 credits）②**真正的發現＝`https://bridge.higgsfield.ai/mcp` 是標準 OAuth 2.1 remote MCP server（含 DCR），我可以直接掛進 Claude Code 驅動場景**——官網「An agent in your scene」那段。
+- ⚠️ 更正：winrig **8/17 就有 Blender**（~/opt/ 下 5.2.0 linux+windows、4.5.12、optixA/B、libs），只是沒進 PATH 所以 `which blender` 查不到——差點誤判成「沒裝」。
+- 版本閘門：外掛支援 4.2–5.1 ⇒ winrig 的 5.2.0 與 Mac 的 5.2.0 **都超出上限**；補裝官方 5.1.2 當 addon 相容版。
+- 動作：無頭 GPU（RTX 5080）算圖驗收 + 決定 skill 歸屬。
