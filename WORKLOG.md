@@ -7811,3 +7811,14 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   ⭐ 修掉自己造成的 8/11 寬度溢出(sticky 祖先不能 overflow:hidden ⇒ 只能不做橫向出血)。
 - **QFX**:資安段改成具名 Delvin Chang. Taipei. + 做/不做兩欄 + 三組對照「憑什麼是我們」。
 - open:#518 未列資安證照(刻意,沒資料不編) · #519 CREW 免費層與高階定位分層未落到站上。
+
+### 2026-08-24 續:quietfix.studio 正式站已切 + CREW 席位串接
+- **正式站切換完成**:`quietfix.studio` 已是新版(--accent:#e23d22)。六種頁型×桌機手機全綠、
+  sitemap 21 條、canonical 正確、無誤植 noindex。回滾基底 `b5c7079`。
+  ⚠️ wrangler 尾端的 `workers/routes` 認證錯是 token 缺該權限去對帳既有自訂網域,worker 與資產都上傳成功。
+- **hi@qfxsolution.com**:Delvin 給的 token 有 Email Routing **Rules** 沒有 **Settings** ⇒
+  enable 與 /dns 端點都打不開。**我不猜 MX**(猜錯信就進不來)。已預先建好 hi@ 與 catch-all 兩條規則
+  (皆 enabled、指向 delvin.12345678@gmail.com),只剩 dashboard 那個開關(open #520)。
+- **CREW**:15 席各自指名背後 playbook;9 席加 needs 相依(design 先看 writer/seo、社群推那篇本身、
+  ads 用情報席角度、account 排真的做出來的東西);`upstreamFor()` 把上游已完成產物注入 produce()。
+  不變量:上游沒跑就給空字串不給佔位符,`test/handoff.test.mjs` 10 項守住。相依圖已驗無環。

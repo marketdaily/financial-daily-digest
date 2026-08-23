@@ -5136,8 +5136,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-23 23:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 00:35",
+  "note": "quietfix.studio 正式站已切新版(--accent:#e23d22 線上生效);六種頁型×桌機手機全綠、SEO 資產完好(sitemap 21 條/canonical 正確/無 noindex)。回滾基底 b5c7079"
  },
  {
   "id": 515,
@@ -5186,6 +5186,36 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-24 00:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 520,
+  "what": "hi@qfxsolution.com:規則已建好,只差 zone 的 Email Routing 開關",
+  "why": "你給的 token 有 Rules 沒有 Settings 權限,enable 與取 MX 值的端點都打不開;我不猜 MX(猜錯信就進不來)。dashboard 按一下即可,規則與收件人我已預先設好",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 00:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 521,
+  "what": "⚠️ Delvin 把 live CF token 貼進對話,已存進 .env(gitignored);建議用完旋轉",
+  "why": "token 現在在 transcript 裡。08-17 才因為守衛把 live CF token 轉印進帳本推上 GitHub 出過事",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 00:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 522,
+  "what": "CREW 席位的 rules 尚未逐一移植背後 playbook 的真規則",
+  "why": "skill 指標與相依圖已上線,但只有 cro/email 兩支我實際讀過原始 SKILL.md;其餘 13 席的 rules 還是通用版",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-24 00:35",
   "closed": null,
   "note": ""
  }
