@@ -5086,8 +5086,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-23 22:31",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-23 23:36",
+  "note": "老闆 08-23 已購入 qfxsolution.com;zone active、apex+www 已接 CF Pages、憑證有效、線上 200"
  },
  {
   "id": 510,
@@ -5096,8 +5096,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-23 22:31",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-23 23:36",
+  "note": "換膚完成並上 preview:66 hex+70 rgba+8 條孤兒規則,22 頁內容零未解釋差異、對比 0 失敗;正式站切換另立 open"
  },
  {
   "id": 511,
@@ -5106,8 +5106,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-23 22:31",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-23 23:47",
+  "note": "Crew 確認存在且是活的產品(crew.marketdaily.ai,CF Worker+DO,兩引擎引用帳本);老闆 08-23 定調它是數位行銷公司,定名 CREW Digital,已寫進 QFX 站架構"
  },
  {
   "id": 512,
@@ -5126,6 +5126,46 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-23 22:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 514,
+  "what": "QuietFix 黑白改版只在 preview,正式站 quietfix.studio 未切",
+  "why": "有上線 SEO 與客戶漏斗,要 Delvin 看過 quietfix.pages.dev 點頭才切正式站",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-23 23:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 515,
+  "what": "CF Email Routing 開不了:三把 token 都沒該權限,hi@qfxsolution.com 仍是死信箱",
+  "why": "需 dashboard 開 Email Routing 或補一把帶 Email Routing 權限的 token,我無法自建",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-23 23:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 516,
+  "what": "CREW 尚未升級成行銷公司編制:缺 Account Manager 與 Graphic Designer 兩席,且自助免費層與高階代理定位互相打架",
+  "why": "老闆 08-23 指令要「perfect it」;現有 13 席全是執行席、沒有客戶窗口也沒有視覺設計;且『免費不用信用卡』與母公司『永不低於市場價』矛盾,需先拍板分層再動工",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-23 23:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 517,
+  "what": "QFX 資安定位需要一位具名資安負責人才站得住",
+  "why": "集團 CISO 的頭三個問題是:你們資安負責人是誰、什麼證照、IR 升級路徑。目前站上誠實寫『我們不是你的 SOC』擋住了,但要真的接高階客戶,這一格要有人",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-23 23:47",
   "closed": null,
   "note": ""
  }

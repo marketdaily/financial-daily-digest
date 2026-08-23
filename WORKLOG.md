@@ -7790,3 +7790,15 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 驗收:lint 100×2 / motion 100 / **20 組 viewport 零溢出** / 中英結構對帳 8/8 相等 /
   nav 桌機手機皆 6/6 / 線上 4 組零 console error 零破圖 / **招牌動作實測 saturate(0)→(1) 6/6 觸發**。
 - open:#508 已收(方向定案);新增 #512 hi@qfxsolution.com 是死信箱(網域未購)、#513 站仍 noindex 未對外。
+
+### 2026-08-23 續三:網域上線 + QuietFix 換膚 + QFX 安全先行重構
+- **qfxsolution.com 上線**(老闆已購):zone active、apex+www 接 CF Pages、GTS 憑證。
+  ⚠️ DNS 只有 `CLOUDFLARE_ZONE_TOKEN` 有權限;**Email Routing 三把 token 全無權限** ⇒ hi@ 仍死信箱(#515)。
+- **QuietFix 併入集團視覺**(preview,正式站未切 #514):66 hex + 70 rgba + 8 條被改名孤兒化的規則;
+  demo 七頁與 24 支效果影片**保留原色**(那是商品)。新增 `reskin_parity.py` 內容指紋與 `palette_scan.py`。
+  ⭐ 我的 hex-only 掃描器把 rgba 那半個色彩系統報成「不存在」;⭐ 對比稽核在量沒有 CSS 的裸 HTML 還回報全綠。
+- **QFX awwwards 層**:四物件 pinned develop sequence(sticky+rAF,不引 GSAP)+ fx 庫(逐字揭幕/letter-roll/
+  marquee/preloader)。三個只有動起來才看得到的坑已修並寫進 LESSONS。
+- **⭐⭐ 安全先行重構**(老闆洞見):MAP/HARDEN/WATCH/RUN,hero=「總部看不見的那一段攻擊面」,
+  新增誠實帶「我們不是你的 SOC」。Crew 定名 **CREW Digital**。
+- open:#514 QuietFix 正式站待切 · #515 Email Routing 權限 · #516 CREW 編制升級 · #517 具名資安負責人。
