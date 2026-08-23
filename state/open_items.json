@@ -5076,8 +5076,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-23 22:31",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-23 22:52",
+  "note": "老闆 08-23 選定方向 C（OBJECT）；正式站已依 C 建成並上線 qfx-preview.pages.dev（英文主/中文次，線上驗證全綠）"
  },
  {
   "id": 509,
@@ -5106,6 +5106,26 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-23 22:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 512,
+  "what": "QFX 站上的 hi@qfxsolution.com 目前是死信箱（網域未購）",
+  "why": "設計已完成並上線打樣,但 mailto 在網域買下來之前寄不到也收不到;不可對外",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-23 22:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 513,
+  "what": "QFX 正式站仍為 noindex 打樣,未接自訂網域、未對外",
+  "why": "等 #509 網域拍板後才能接 custom domain、拿掉 noindex、送 GSC",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-23 22:52",
   "closed": null,
   "note": ""
  }

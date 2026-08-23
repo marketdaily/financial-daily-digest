@@ -7778,3 +7778,15 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 自己踩的兩個坑(已寫進 LESSONS):①helper 的溢出檢查用 500px,390 照樣爆 44px 且逐元素矩形查不出來
   (要比 el.scrollWidth) ②我又把手機導覽 display:none(L2026-08-23f 同一條),已改成換行保留 4/4。
 - open items #508 方向待選 / #509 網域待買 / #510 QuietFix 黑白改版未開工 / #511 Crew SEO 身分未確認。
+
+### 2026-08-23 續:老闆選 C(OBJECT) → 正式站建完上線
+- `https://qfx-preview.pages.dev` 改建:`/` 英文正式站 · `/zh/` 中文 · `/directions/` 打樣存檔(a/b/c 保留)。
+  新增 Who-this-is-for 資格段(高階顧問公司的「我們不適合所有人」)、sticky nav、hreflang、OG。
+- 新增 2 張靜物(set square / bulldog clip,4cr,同 rig),共 6 張;**中英共用一份 style.css/site.js**
+  (`html[lang=zh-Hant]` 覆寫 --disp 成 Noto Serif TC,因為 Instrument Serif 無 CJK)。
+- 新閘門 `qfx/scripts/check_media.py`(含 --selftest 正反對照):擋①生成圖自帶淺色外框
+  ②唯一朱紅物件掉色。**首跑就抓到 obj-lock 的白框(edge−inner=+99)**——所有既有閘門對它全瞎。
+  ⚠️ 閘門第一批紅燈是我自己的 bug(地板 0.4% 把 hero-pin 0.16% 判死),改 0.05% 後 7/7 過。
+- 驗收:lint 100×2 / motion 100 / **20 組 viewport 零溢出** / 中英結構對帳 8/8 相等 /
+  nav 桌機手機皆 6/6 / 線上 4 組零 console error 零破圖 / **招牌動作實測 saturate(0)→(1) 6/6 觸發**。
+- open:#508 已收(方向定案);新增 #512 hi@qfxsolution.com 是死信箱(網域未購)、#513 站仍 noindex 未對外。
