@@ -7681,3 +7681,22 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⚠️ 更正：winrig **8/17 就有 Blender**（~/opt/ 下 5.2.0 linux+windows、4.5.12、optixA/B、libs），只是沒進 PATH 所以 `which blender` 查不到——差點誤判成「沒裝」。
 - 版本閘門：外掛支援 4.2–5.1 ⇒ winrig 的 5.2.0 與 Mac 的 5.2.0 **都超出上限**；補裝官方 5.1.2 當 addon 相容版。
 - 動作：無頭 GPU（RTX 5080）算圖驗收 + 決定 skill 歸屬。
+
+## 2026-08-23 Higgsfield×Blender 第二棒(winrig):閘門狀態確認＋三端點釐清
+- **兩道閘門都沒過,所以 A/B 兩項不能做**:G1 bridge OAuth——連接器在 winrig **根本沒掛**
+  (Mac 那次 `--scope user` 只寫進 Mac 的 ~/.claude.json,不跨機);我補掛後 DCR 自己跑完了
+  (clientId 進 credentials.json)但 `accessToken` 是空的,`claude mcp get` = Needs authentication。
+  G2 外掛 .zip 未交來。
+- ⭐ **「DCR 成功」≠「已認證」**:註冊那半 agent 做得到,授權那半做不到。差點看到 clientId 就以為過了。
+- ⭐⭐ **更正上一棒的推論:mcp.higgsfield.ai 不是死掉那代**。`POST higgsfield.ai/mcp` → **307 →
+  mcp.higgsfield.ai/mcp**,活著;winrig 上這條 MCP **已授權**(balance 1990.04 credits/plus)。
+  ⇒ 502 那個 claude.ai 連接器的接班人是【通用伺服器】,不是 bridge;bridge 答的是另一個問題。
+- ⭐ **C1 前提要更正**:winrig 的 Higgsfield 車道不是死的,**死的只有 CLI 那條**
+  (~/.config/higgsfield/ 只有 update.json)。MCP 那條活得好好的 ——
+  「憑證有三份」(CLI / 通用 MCP / bridge MCP),只查一份就下「整條車道死了」的結論會錯。
+- 負面證據也記:`apps_search("blender")` 對通用 MCP 回 0 筆 ⇒ bridge 的工具表不在已接好的伺服器裡,
+  不必再去那邊翻。CLI 1.1.23 也沒有任何 blender/bridge 子命令。
+- 廠商文件(重讀)說 bridge「connects an agent to the add-on itself — so Claude can build in your
+  open scene」⇒ **G1 單獨過大概不夠**,沒有裝好並登入的外掛可能就沒有場景可驅動。標為廠商宣稱、未實證。
+- 產出:skill v3.32.0 → **v3.32.1**(九列進驗證表 + 三端點表 + 閘門狀態表;known unknowns 改成
+  標明被哪道閘門擋住)。兩副本 validate.py ALL CHECKS PASSED、diff -r 完全一致。
