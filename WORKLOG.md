@@ -7765,3 +7765,16 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 🔴 **仍需老闆本人**:①kill-switch `storefront_outreach.DISABLED` 由他拿掉(對外內容送出前必先給他看 OK 的鐵則)
   ②Cloudflare API token 補 **D1 Edit + Workers Routes Edit**(現在 winrig 部署不了 Worker,是 Mac 代打的)
   ③Tasker 三件候選案都要 TaskerGo 額度(帳號沒儲值)——要不要儲是商業決定。
+
+### 收工（同日 QFX 開案）
+- 交付:`https://qfx-preview.pages.dev`(noindex) —— logo 系統 + 三方向完整頁(A LEDGER broadsheet /
+  B SIGNAL swiss / C OBJECT immersive,layout-variety 3/3 distinct)。**我建議 B**,理由是硬的:
+  實測 Pentagram 169圖/BASIC滿版影片/Koto 12影片,可信度全來自作品集——QFX 走不了那條路
+  (新公司+外商客戶 NDA);Work&Co 4圖0影片純排版即為證。
+- 資產:4 張 nano_banana_pro 靜物(8cr,rig=Hasselblad H6D+HC120 macro/Irving Penn/Tri-X)
+  → film_texture subtle(grain+0.0065 halo+0.0033 過閘) → webp。委任書那張內文是亂碼,**裁掉**不重生。
+- 閘門:lint 100×4 / layout-variety 3 distinct / motion-lint 100×4 / **40 組 viewport 零溢出** /
+  線上 8 項煙霧測試零 console error 零破圖 真 webfont。
+- 自己踩的兩個坑(已寫進 LESSONS):①helper 的溢出檢查用 500px,390 照樣爆 44px 且逐元素矩形查不出來
+  (要比 el.scrollWidth) ②我又把手機導覽 display:none(L2026-08-23f 同一條),已改成換行保留 4/4。
+- open items #508 方向待選 / #509 網域待買 / #510 QuietFix 黑白改版未開工 / #511 Crew SEO 身分未確認。

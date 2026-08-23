@@ -4876,8 +4876,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-20 00:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-21 00:50",
+  "note": "已加 confirm_brief 閘門:簡報可修正、可直接填自己的買家問題(優先於 AI 猜測),瀏覽器實測 posthog.com 從錯誤品類改正後量的是客戶給的四個問題"
  },
  {
   "id": 489,
@@ -4946,6 +4946,166 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-20 23:23",
+  "closed": "2026-08-21 00:11",
+  "note": "根因查明:Durable Object reset(部署/驅逐時 DO 被重置,請求進行到一半消失)——這是 CF 正常行為,重試包裝即正解。實測當場被接住、掃描自動續跑完成"
+ },
+ {
+  "id": 496,
+  "what": "CREW 13 席全編制與成品產出尚未有真人用過(只有我自己的實測)",
+  "why": "今天剛上線,老闆還沒實際點過「做出來」;免費兩份的邊界、旗標的可讀性都只有我自己看過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-21 00:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 497,
+  "what": "CREW 發布層只驗過本機假目的地,還沒對真的 WordPress/Ghost 站送過",
+  "why": "端到端 16 條測試是對本機 echo server 跑的;真站會有外掛改寫 REST、Cloudflare 擋 Basic auth、Ghost JWT 時鐘偏移等本機測不到的狀況",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-21 00:23",
+  "closed": "2026-08-21 00:30",
+  "note": "自己用 Docker 起真 WordPress 驗過:送出→REST 讀回確認文章真的存在/標題/draft/HTML章節/摘要皆正確。當場抓到「Plain 永久連結時 /wp-json 回 200+HTML 被當成功」的假成功 bug,已修並加回歸"
+ },
+ {
+  "id": 498,
+  "what": "CREW 的 X / LinkedIn 發布卡在平台申請(開發者帳號+付費/合作夥伴審核)",
+  "why": "程式面已有通用 webhook 可經 Zapier/Make 轉送;要原生直發需要 Delvin 決定是否申請 X 開發者付費方案與 LinkedIn 審核",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-21 00:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 499,
+  "what": "皇海合併樹已驗收但未部署上線（merge-mac-20260823 分支）",
+  "why": "兩台共用同一個 CF Pages 專案，上線是 Delvin 的決定；且與禮拜二談判時程綁在一起",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-23 14:22",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 500,
+  "what": "皇海 2 顆自相矛盾料號頁待 RD 確認（7SDCN-X0-0015 / 7USB31-F0-0025）",
+  "why": "料號欄與規格說明對不起來，不猜；已寫進給王國良的訊息草稿，等 8/25 面談問",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-23 14:22",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 501,
+  "what": "先跟 Bob 對齊皇海案歸屬（誰簽/誰收款）再回覆王國良",
+  "why": "8/25 10:25 面談前必須完成；訊息草稿已備妥在 Artifact，需 Delvin 本人送出",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-23 14:22",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 502,
+  "what": "Higgsfield bridge MCP 未認證,A 項(工具表/拓樸/花錢確認/匯出格式)全部沒答案",
+  "why": "OAuth 需瀏覽器+帳號本人,agent 代跑不了;winrig 已補掛連接器+DCR 已完成,只差 /mcp 授權",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-23 15:00",
+  "closed": "2026-08-23 15:42",
+  "note": "A1-A4 全部答完(live tools/list + get_host_status):170 工具/Adobe 橋、需連上的 host、無二次確認即花錢、沒有匯出工具。剩「沒有任何 bl_* 真的執行過」併入 #503"
+ },
+ {
+  "id": 503,
+  "what": "Higgsfield Blender 外掛 .zip 未取得,B 項最小實跑驗收未做",
+  "why": "下載網址在登入後的 app 路由,靜態路徑八個候選全 404,需 Delvin 登入下載並保持壓縮狀態交來",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-23 15:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 504,
+  "what": "winrig higgsfield CLI 未登入(僅 CLI 那條車道死,MCP 那條活著)",
+  "why": "補不補要 Delvin 拍板;登入是 browser PKCE,無 token 貼上旗標",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-23 15:00",
+  "closed": "2026-08-23 15:34",
+  "note": "反轉:原建議不補 CLI,現在 MCP 那條掛了,CLI 登入變成唯一有機會的復原路徑,併入新單"
+ },
+ {
+  "id": 505,
+  "what": "winrig 通用 Higgsfield MCP 憑證被清空且目前無法重新授權(廠商 RFC 9207 issuer 不符)",
+  "why": "授權重試路徑先清舊 token 才去換新的,新的換不到 ⇒ 原本能用的 73 工具車道停擺;唯一有機會的復原路徑是 CLI 登入後測 token 能否當 Bearer 打 mcp 端點",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-23 15:34",
+  "closed": "2026-08-23 15:42",
+  "note": "已用 CLI token 當 bearer 接回兩台(皆 Connected);24h TTL 由 higgsfield_token_sync cron 17 */6 顧,首班實射過"
+ },
+ {
+  "id": 506,
+  "what": "皇海 ProtoForge:234 顆重讀中,完成後需驗收尺寸疑點是否下降",
+  "why": "切塊讀圖已上線但全量結果未出,2026-08-25 10:25 會議前必須確認",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-23 22:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 507,
+  "what": "皇海 3D 中心尚未有真人用過(RD 未在 SolidWorks 開過 STEP)",
+  "why": "第三方 CAD 核心匯入是唯一我們自己過不了的一關;禮拜二可請王國良的 RD 當場開",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-23 22:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 508,
+  "what": "QFX Solution 方向未定案:三方向已上線打樣,等 Delvin 選 A/B/C",
+  "why": "本輪交付到 art direction 為止;整站與 QuietFix 黑白改版都要等方向選定才能開工",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-23 22:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 509,
+  "what": "QFX 網域尚未購買(qfxsolution.com/qfx.solutions/qfxsolution.tw/qfx.studio 已 RDAP 校準查證可註冊)",
+  "why": "要付款,需 Delvin 拍板買哪個;沒網域則 hi@ 信箱與寄件身分都接不了",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-23 22:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 510,
+  "what": "QuietFix 站黑白改版尚未開工(老闆已拍板兩站都改)",
+  "why": "現站有上線 SEO 與客戶漏斗,須等 QFX 方向定案後另開一輪,不與新站混做",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-23 22:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 511,
+  "what": "Crew SEO 身分未確認:所有 repo 與記憶庫都查無此品牌資產",
+  "why": "老闆口頭提到它是旗下品牌,但我找不到任何實體;打樣先當規劃中品牌放進架構圖",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-23 22:31",
   "closed": null,
   "note": ""
  }
