@@ -7826,3 +7826,16 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   ⭐ 驗法:對 route1.mx.cloudflare.net:25 做 SMTP 交握,RCPT TO 後直接 QUIT(不送 DATA=不寄信),
   並帶 gmail.com 當反對照 —— hi@ 接受、打錯字接受(catch-all)、反對照 550 拒絕 ⇒ 探測有鑑別力。
   ⚠️ 只能收不能寄(open #523)。
+
+### 2026-08-24 續:hi@ 改成「能收也能寄」的切換工具(卡在 Delvin 的 admin console)
+- **做法定案**:qfxsolution.com 加進既有 Google Workspace 當**次要網域**(不是網域別名——
+  別名鏡射每個現有帳號、做不出獨立 hi@)。primary=quietfix.studio(由 DMARC rua 反推)。
+- **`~/qfx/scripts/mail_switch_google.py`** 六個指令,`~/qfx/MAIL_RUNBOOK.md` 寫誰做哪一步。
+- ⭐⭐ **搬指標之前先證明目標是活的**:`preflight` 對 smtp.google.com 做 RCPT 探測,
+  Google 還沒收 hi@ 就 exit 1 拒絕動 MX(現在實測 550 ⇒ 正確擋下)。順序反過來=信被退,比只能收更糟。
+- ⭐⭐ **演練 rollback 撞出真障礙**:CF Email Routing 開著時它的 MX/DKIM 是 `meta.read_only`,
+  API 改不動(1046)。若沒演練,會在正式切換那天死在半路。已加鎖閘,在任何 mutation 之前擋下。
+- 六個指令全演練完,事後逐筆對帳 **7/7 零副作用**,現況收信仍綠(hi@ 250 / 反對照 550)。
+- 順手修正帳本失真:#515 已解(信箱是活的)、#513 的「未接自訂網域」不成立(站已在 qfxsolution.com,
+  200+憑證),拆成 #525 只留「要不要對外」這個決定。
+- open:#524 等 Delvin 的 admin console 四步 · #523 目前仍只能收 · #525 noindex 未放行 · #521 token 待旋轉。
