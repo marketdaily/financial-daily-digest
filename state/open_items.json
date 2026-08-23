@@ -5116,8 +5116,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-23 22:52",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 00:41",
+  "note": "hi@qfxsolution.com 不再是死信箱:CF Email Routing 已生效並實測收件被接受,轉寄到 delvin.12345678@gmail.com"
  },
  {
   "id": 513,
@@ -5196,8 +5196,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 00:35",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 00:41",
+  "note": "Delvin 已按 enable;MX(route1/2/3)+SPF 已生效,兩條規則 ON。SMTP 交握實測:hi@ 被接受、打錯字地址被接受(catch-all)、gmail.com 反對照被拒 550 ⇒ 探測有鑑別力"
  },
  {
   "id": 521,
@@ -5216,6 +5216,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-24 00:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 523,
+  "what": "hi@qfxsolution.com 只能收不能寄",
+  "why": "CF Email Routing 是單向轉寄。對外商客戶回信會從 gmail 出去;要用 hi@ 寄信需把 qfxsolution.com 加進既有 Google Workspace(網域別名,不加錢)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 00:41",
   "closed": null,
   "note": ""
  }

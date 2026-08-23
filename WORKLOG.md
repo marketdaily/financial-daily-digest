@@ -7822,3 +7822,7 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **CREW**:15 席各自指名背後 playbook;9 席加 needs 相依(design 先看 writer/seo、社群推那篇本身、
   ads 用情報席角度、account 排真的做出來的東西);`upstreamFor()` 把上游已完成產物注入 produce()。
   不變量:上游沒跑就給空字串不給佔位符,`test/handoff.test.mjs` 10 項守住。相依圖已驗無環。
+- **hi@qfxsolution.com 已通**(08-24):Delvin 按 enable → MX(route1/2/3)+SPF 生效。
+  ⭐ 驗法:對 route1.mx.cloudflare.net:25 做 SMTP 交握,RCPT TO 後直接 QUIT(不送 DATA=不寄信),
+  並帶 gmail.com 當反對照 —— hi@ 接受、打錯字接受(catch-all)、反對照 550 拒絕 ⇒ 探測有鑑別力。
+  ⚠️ 只能收不能寄(open #523)。
