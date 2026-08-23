@@ -7802,3 +7802,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **⭐⭐ 安全先行重構**(老闆洞見):MAP/HARDEN/WATCH/RUN,hero=「總部看不見的那一段攻擊面」,
   新增誠實帶「我們不是你的 SOC」。Crew 定名 **CREW Digital**。
 - open:#514 QuietFix 正式站待切 · #515 Email Routing 權限 · #516 CREW 編制升級 · #517 具名資安負責人。
+
+### 2026-08-24 CREW 兩席 + QuietFix 服務舞台 + QFX 具名透明
+- **CREW**:補上 account(客戶窗口)與 design(設計)兩席 ⇒ 15 席已上線 crew.marketdaily.ai,四張表對齊零空白;
+  順手修掉「6 個行銷席位」陳舊文案(實際 13 席),改成從 SEATS.length 算。
+- **QuietFix 服務區塊**:六列清單改成釘住的沉浸舞台(放大/朱紅掃線/巨大幽靈編號/去飽和背景層)。
+  ⭐ layout_animation 豁免用量測+對照組決定(本舞台 1.3% vs 同頁 hero 10.8% vs 靜態 0%);
+  ⭐ 修掉自己造成的 8/11 寬度溢出(sticky 祖先不能 overflow:hidden ⇒ 只能不做橫向出血)。
+- **QFX**:資安段改成具名 Delvin Chang. Taipei. + 做/不做兩欄 + 三組對照「憑什麼是我們」。
+- open:#518 未列資安證照(刻意,沒資料不編) · #519 CREW 免費層與高階定位分層未落到站上。

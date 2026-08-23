@@ -5156,8 +5156,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-23 23:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 00:12",
+  "note": "account + design 兩席已上線 crew.marketdaily.ai(15 席,四張表對齊,零空白圖示);順手修掉「6 席」陳舊文案改成從 SEATS.length 算"
  },
  {
   "id": 517,
@@ -5166,6 +5166,26 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-23 23:47",
+  "closed": "2026-08-24 00:12",
+  "note": "改以具名+透明處理:站上寫明 Delvin Chang. Taipei.、做什麼/不做什麼兩欄並列、三組對照講清楚憑什麼比別人好。⚠️ 若日後取得資安證照要補上去"
+ },
+ {
+  "id": 518,
+  "what": "QFX 站未列任何資安證照/年資 —— 目前靠「講清楚不做什麼」撐可信度",
+  "why": "老闆令用他本人的名字且要誠實透明,我沒有他的資安證照資訊、不編。集團 CISO 仍可能追問;有證照要補、沒有的話這是刻意的定位選擇",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 00:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 519,
+  "what": "CREW 自助免費層與 QFX 高階定位的分層尚未落到站上",
+  "why": "已想清楚(免費掃描=門/代理公司=房間),但 crew.marketdaily.ai 的『免費不用信用卡』文案還沒改寫成診斷式開場",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-24 00:12",
   "closed": null,
   "note": ""
  }
