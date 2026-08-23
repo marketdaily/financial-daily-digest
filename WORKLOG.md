@@ -7700,3 +7700,28 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   open scene」⇒ **G1 單獨過大概不夠**,沒有裝好並登入的外掛可能就沒有場景可驅動。標為廠商宣稱、未實證。
 - 產出:skill v3.32.0 → **v3.32.1**(九列進驗證表 + 三端點表 + 閘門狀態表;known unknowns 改成
   標明被哪道閘門擋住)。兩副本 validate.py ALL CHECKS PASSED、diff -r 完全一致。
+
+## 2026-08-23 續:Higgsfield bridge 被實際列舉 —— 以及我弄丟一條活著的憑證
+- ⭐⭐ **我叫老闆去 /mcp 授權,結果弄死了原本活著的東西**。廠商的 OAuth 違反 RFC 9207
+  (探索文件宣告 issuer=mcp.higgsfield.ai,授權回應回 clerk.higgsfield.ai),Claude Code 拒收;
+  而**重試路徑是先清舊 token 才去換新的** ⇒ 一次嘗試就把原本 73 工具、1990 credits 那條
+  車道清成 accessToken 空、expiresAt=0,`~/.claude/.credentials.json` 沒有備份 ⇒ 不可還原。
+  **鐵則:不要對一個「現在能用」的 MCP 條目「試試看重新授權」。**
+- ⭐⭐ **繞法在另一扇門**:`higgsfield auth login`(CLI 自己的 PKCE,直接打 clerk,沒有 iss 可以對不上),
+  它的 access_token **兩台 MCP 都當 plain bearer 收**(initialize 皆 HTTP 200)。
+  `claude mcp add --header "Authorization: Bearer $(higgsfield auth token)"` 就接回來了。
+- ⭐⭐ **bridge 根本不是 Blender 橋**:自報 "Higgsfield for Adobe" v0.2.0,**170 個工具**——
+  pr_* 77(Premiere)/ ae_* 67(After Effects)/ **bl_* 只有 25** / bs_*(瀏覽器版 3D Blocking
+  Studio,連上才會出現)。Blender 佔 15%。交接單、產品頁、我前兩版全都描述錯了。
+- **拓樸實證(不是推論)**:`get_host_status` 四個全 false + 伺服器指示叫使用者去 app 裡按 Connect
+  ⇒ **G1 沒有 G2 只買到一張工具表**,連上的 app 才是能力來源。
+- **花錢是不安全的那個答案**:原文「an explicit generation request authorizes submitting
+  immediately, **no second confirmation**」;bl_generate_3d/image/image_to_3d 都標 Spends credits。
+- **匯出格式用「不存在」回答**:170 個裡沒有 bl_export_*;glb/fbx/obj 是 bl_import_model 的
+  **進來**方向。要出去只能自己 bl_execute 跑 bpy.ops.export_scene.*。
+- ⭐ **token 只有 24h** ⇒ 手接完就會在明天同一刻**安靜地**兩台一起斷。建
+  `scripts/higgsfield_token_sync.py` + runner(cron `17 */6`):先實打兩台回 200 才寫設定
+  (fail-closed),CLI 換不出新的就推 admin。首班實射過、ok 戳記已前進。
+- ⭐ **Python 探測要帶 UA**:CF 擋預設 python-urllib 回 403,首版因此把健康的 bridge 判成打不通
+  ——跟 intel/doctor.py 首版同一個坑。fail-closed 是唯一擋住這次誤判變成壞寫入的東西。
+
