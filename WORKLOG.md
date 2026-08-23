@@ -7735,3 +7735,33 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 視覺語言:黑白灰階為底 + **單一高飽和小物件當唯一色點**,用色點區分子品牌。
 - 我提的風險口徑:package 的 cybersecurity 對外寫成 **security hardening / 安全維運**
   (WAF/憑證/備份/弱點掃描/監測),不暗示我們是資安事件應變公司。
+
+## 2026-08-23 22:0x-22:4x QuietFix:冷信上線前體檢 + 統一客戶總表後台(Mac 視窗,實作全在 winrig)
+- 老闆:「冷寄信明天就要上線了,去檢查一下」+「幫我整理一個 QuietFix 後台,PRO360/冷寄信/Tasker 的客戶我都要看得到」。
+- **後台(新)** `form.quietfix.studio/admin` 改成**統一客戶總表**(冷信逐封內文移到 `/admin/cold`)。
+  ⭐ 架構決定:winrig **POST JSON 給 Worker**、Worker 用自己的 D1 binding 寫,**完全不經 Cloudflare API token**
+  ——08-18 起後台停在舊資料的真因就是 winrig 的 token 缺 D1 權限(API 7403 / wrangler 10000),
+  而畫面看起來完全正常。新路徑把那一整類憑證故障結構性移除。`cli sync-dashboard` 也改走同一條(當場修好,已同步 80 筆)。
+  來源:paid_leads(pro360+tasker)/outreach(只收真的寄出去過的)/manual_leads.json(皇海、Petura 等平台外案子);
+  需求表單與 LINE 的真源本來就在 D1,由 Worker render 時併入(少一條會壞的路)。排序=「等我回應」優先,不是時間。
+  cron `*/15` `quietfix_leads_runner.sh`(有 ok 戳記+失敗告警)。手機 390px 無溢出。
+- **Tasker 線復活**:`tasker.ok` 停在 08-21 09:40 = 免費提案通道死了 2.5 天,而告警被同指紋 6h 冷卻壓成靜音(帳本累計抑制 16 次)。
+  真因=session 過期,**而系統從來沒有續期路徑**(只有一份會過期的 state 檔)⇒ 故障是必然而非意外。
+  新增 `growth/tasker_login.py`(--check 三態 + 自動重登)並接進 runner:過期自癒,重登也失敗才叫人。已實跑 rc=0、抓到一筆「案主已讀」。
+  ⚠️ 寫這支時自己先踩一次:探針 URL 打錯(`/user/proposal` 是 404)結果回報「session 活著」——**守衛自己是啞的**,改用 watch 用的同一個 URL 才會紅。
+- **冷信寄前複驗變成程式** `growth/outreach_claim_check.py`(三態、UNKNOWN 一律 fail-closed),接進 outreach runner。
+  抓到**兩封要寄給真公司的錯信**:①過來香鮮花店——信上說「Chrome 會標不安全」,人家憑證有效到 2026-12、還會 302 轉 https
+  ②全華精密——信上說「沒有官方頁面」,人家有 chuanhua.com.tw,只是站在 Cloudflare 機器人牆後面,
+  我們的稽核器抓到 403 就把「我抓不到」寫成「它不存在」(這條坑第 5 次復發)。
+  ⇒ `no_site` 這種「宣稱對方缺席」的指控特別加判準:連得上主機就是 BAD,不是 UNKNOWN。
+- **雙重接觸**:#188 金潤澤同時是 PRO360 付費線索 #1(08-17 站內報價、08-20 已寄跟進信),
+  冷信卻寫「我沒有走平台報價,直接寫信給你」=第三次接觸寫成第一次;而且 paid_lead 序列 08-24 16:05 還要再寄一封
+  ⇒ 同一天兩封。已擋下冷信那封,留付費線索序列。
+- **退訂承諾對不上機制**:花店版信尾寫「回『不用』就好」,但 `UNSUB_KEYWORDS` 沒有「不用」
+  ⇒ 我們在信上承諾了一個不存在的機制。修法不是直接加關鍵字(「不用客氣/不用錢」會誤殺成永久退訂),
+  而是**短回信才吃**(去標點後 ≤24 字),9/9 正反例通過。
+- 寄件基礎面實測全綠:SMTP 登入 OK、IMAP OK、SPF/DKIM(google selector)/DMARC p=none/MX 皆在;
+  預熱起算 08-04 ⇒ 明天(08-24 週一)是第 21 天,**當日上限 6 封**。
+- 🔴 **仍需老闆本人**:①kill-switch `storefront_outreach.DISABLED` 由他拿掉(對外內容送出前必先給他看 OK 的鐵則)
+  ②Cloudflare API token 補 **D1 Edit + Workers Routes Edit**(現在 winrig 部署不了 Worker,是 Mac 代打的)
+  ③Tasker 三件候選案都要 TaskerGo 額度(帳號沒儲值)——要不要儲是商業決定。
