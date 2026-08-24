@@ -4986,8 +4986,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-23 14:22",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 11:45",
+  "note": "已發上預覽站 kingconn-preview.pages.dev(全站 noindex),線上驗收 10/10:54 新頁在線、49 圖檔/PDF 型別正確、934 條轉址抽樣 10/10、hero 幀與 3d-viewer 完好。官網 www.kingconn.com.tw 未動(首岳 Apache,需 DNS 才能切)。"
  },
  {
   "id": 500,
@@ -5256,6 +5256,16 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 02:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 527,
+  "what": "皇海官網切換(DNS A 記錄改指 Cloudflare)未執行:域名管理權歸屬未確認、首岳合約收尾未談、王國良未給切換日",
+  "why": "前置是 #501 Bob 對齊歸屬 + 週二王國良拍板;技術端 30 分鐘可完成但決策不在我方",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 11:45",
   "closed": null,
   "note": ""
  }
