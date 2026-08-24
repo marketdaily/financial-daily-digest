@@ -5,7 +5,8 @@
 "ms_qiufen_border": "zhi_pai",
 "ms_test": "pan_grid",
 "ms_many": "banner_zhu",
-"ms_shenyue_shehe": "rank_zhu"
+"ms_shenyue_shehe": "rank_zhu",
+"ms_shenyue_shehe#photo": "plate_sky"
 },
 "order": [
 "ms_demo_a",
@@ -13,6 +14,7 @@
 "ms_qiufen_border",
 "ms_test",
 "ms_many",
-"ms_shenyue_shehe"
+"ms_shenyue_shehe",
+"ms_shenyue_shehe#photo"
 ]
 }

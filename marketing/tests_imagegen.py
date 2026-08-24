@@ -32,6 +32,12 @@ for name, s in [
     ("實景描述", GOOD),
     ("機房", "A service aisle inside a hyperscale data hall at night, cabinets receding to a vanishing point, cooling vapour low across the floor"),
     ("節氣", "Dew beads on grass blades before sunrise with cold mist lying across the field behind them"),
+    # ⚠️ 這三條是**誤告反例**,首版子字串比對全部誤殺:
+    #    sur"face" / "man"-made / "human"-scale。守衛咬太寬的傷害是無聲的
+    #    ——它不會報錯,只會安靜地退回庫存底圖,花錢做的功能沒在動也沒人知道。
+    ("surface（不是 face）", "A shallow stone water basin at dusk, its still surface split by one ripple, wet stone edges catching one lantern glow"),
+    ("human-scale（不是 man）", "Human-scale gantry cranes standing over a container yard at night with sea fog drifting between the stacks"),
+    ("workmanship（不是 worker）", "A brass compass showing fine workmanship on dark worn wood, engraved rings catching one low warm lamp"),
 ]:
     ok, why = ig.vet_subject(s)
     check(name, ok, why)
@@ -39,6 +45,7 @@ for name, s in [
 print("\n[主體閘：該擋下的]")
 for name, s, want in [
     ("人臉肖像", "A portrait of the chairman speaking at the announcement, his face lit from the side", "portrait"),
+    ("交易員", "Traders shouting across a dealing room floor at the opening bell under bright screens", "traders"),
     ("商標", "The Nvidia logo glowing on the wall of its headquarters at dusk", "logo"),
     ("招牌文字", "A newspaper headline about the tariff deal lying on a desk", "headline"),
     ("中文主體", "夜裡的油輪通過海峽，探照燈掃過霧氣，畫面壓在下三分之一", "ascii"),
@@ -83,6 +90,25 @@ check("photo_only 挑出來的一律是 photo 版位", not bad, str(bad[:3]))
 img, st = styles.render({"id": "photoroute", "headline": "測試", "plate_path": plate},
                         "marketdaily")
 check("render 帶 plate_path 時自動走 photo 版位", st["backdrop"] == "photo", st["id"])
+
+# ⭐⭐ 這條才是會出事的那條:貼文**早就被指派過**一個程序化風格,之後才帶著現生底圖回來。
+#    指派表若直接回快取而不看 photo_only,圖生了、錢花了、畫面上完全看不到,
+#    而且程式一路回報成功。首版就是這樣,而且測試因為只用新 key 而全綠(假綠)。
+key = "already_assigned_nonphoto"
+first, tries = None, 0
+while tries < 80:
+    first = styles.assign("marketdaily", key)
+    if first["backdrop"] != "photo":
+        break
+    key = f"already_assigned_nonphoto_{tries}"
+    tries += 1
+check("前置條件:先拿到一個非 photo 指派", first and first["backdrop"] != "photo", str(first))
+again = styles.assign("marketdaily", key, photo_only=True)
+check("同一則帶現生底圖回來時改走 photo 版位", again["backdrop"] == "photo", again["id"])
+check("原本的非 photo 指派沒有被改掉(重跑一致性還在)",
+      styles.assign("marketdaily", key)["id"] == first["id"])
+_, st2 = styles.render({"id": key, "headline": "測試", "plate_path": plate}, "marketdaily")
+check("render 走完整路徑也拿到 photo 版位", st2["backdrop"] == "photo", st2["id"])
 check("命書也有 photo 版位可用", len(styles.photo_styles("mingshu")) >= 3)
 
 print(f"\n{'❌ 失敗 ' + str(len(FAILS)) + ' 項: ' + ', '.join(FAILS) if FAILS else '✅ 全過'}")

@@ -108,7 +108,10 @@
 "t_59": "neon_mesh",
 "t": "plate_stat",
 "zz1": "plate_sticker",
-"photoroute": "plate_banner"
+"photoroute": "plate_banner",
+"photoroute#photo": "plate_left",
+"already_assigned_nonphoto": "ice_stat",
+"already_assigned_nonphoto#photo": "plate_hero"
 },
 "order": [
 "demo_0",
@@ -219,6 +222,9 @@
 "t_59",
 "t",
 "zz1",
-"photoroute"
+"photoroute",
+"photoroute#photo",
+"already_assigned_nonphoto",
+"already_assigned_nonphoto#photo"
 ]
 }

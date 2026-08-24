@@ -691,13 +691,21 @@ def assign(brand_key, key, prefer=None, spread=5, photo_only=False):
         led = {}
     amap = led.setdefault("map", {})
     order = led.setdefault("order", [])
-    if key in amap:
-        return next((s for s in BRANDS[brand_key].styles if s["id"] == amap[key]),
-                    BRANDS[brand_key].styles[0])
+    # ⚠️ photo_only 的指派要**另開一個 key 命名空間**。
+    #    首版直接 `if key in amap: return`，沒有檢查 photo_only —— 一則早就被指派過
+    #    程序化風格的貼文，之後帶著現生底圖再來，拿到的仍是那個舊指派 ⇒ 圖生了、
+    #    錢花了、畫面上完全看不到，而且程式一路回報成功。
+    #    (2026-08-24 命書 ms_shenyue_shehe 首次實跑就踩到;先前的測試只測了新 key，
+    #     沒測到「這個 key 已經有非 photo 指派」那條路，所以是假綠。)
+    lookup = f"{key}#photo" if photo_only else key
+    if lookup in amap:
+        cached = next((s for s in BRANDS[brand_key].styles if s["id"] == amap[lookup]), None)
+        if cached and (not photo_only or cached["backdrop"] == "photo"):
+            return cached
     recent = [amap[k] for k in order[-spread:] if k in amap]
     st = pick(brand_key, key, avoid=recent, prefer=prefer, photo_only=photo_only)
-    amap[key] = st["id"]
-    order.append(key)
+    amap[lookup] = st["id"]
+    order.append(lookup)
     led["order"] = order[-400:]
     led["map"] = {k: v for k, v in amap.items() if k in set(led["order"])}
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -781,7 +789,9 @@ def carousel(post_id, hook, bodies, cta_lines, brand_key="mingshu", size=SIZE_45
         img, _ = render({"id": f"{post_id}#b{i}", "headline": text, "page": i, "pages": n,
                          "note": note, "topic": topic}, brand_key, style=calm, size=size)
         out.append(("body", img))
-    cta_style = dict(st, layout="cta")
+    # 末頁 CTA 也走安靜背景 —— 現生的照片只用在封面。CTA 卡是「去哪裡」的指路牌,
+    # 壓在照片上只會讓網址讀不清楚。
+    cta_style = dict(calm, layout="cta")
     img, _ = render({"id": f"{post_id}#cta", "headline": cta_lines[0], "cta_lines": cta_lines,
                      "topic": topic}, brand_key, style=cta_style, size=size)
     out.append(("cta", img))

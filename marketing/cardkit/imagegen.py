@@ -70,10 +70,14 @@ DELIVERY = (
     "underexposed, with light confined to small motivated pools.")
 
 # 主體閘:這些字出現在 image_subject_en 就退回固定素材。
+# ⚠️ **整詞比對,不是子字串**。首版用 `w in low` 子字串比對,第一次真跑就把
+#    "its still sur**face** split by one ripple" 判成人臉、退回庫存底圖 —— 而且是
+#    「安靜地退回」,不看 log 根本不知道花錢做的功能沒在動。守衛咬太寬的傷害是無聲的。
 BANNED = [
     # 真人 —— 肖像 + 財經/命理斷言 = 名譽權;而且 AI 畫的名人臉一眼假
-    "portrait", "face", "headshot", "president", "prime minister", "ceo", "chairman",
-    "celebrity", "politician", "crowd of people", "man ", "woman ", "person ", "people ",
+    "portrait", "portraits", "face", "faces", "headshot", "president", "prime minister",
+    "ceo", "chairman", "celebrity", "politician", "man", "woman", "men", "women",
+    "person", "people", "crowd", "worker", "workers", "trader", "traders",
     # 商標 / 文字 —— IP 與 AI 亂碼字
     "logo", "wordmark", "brand", "signage", "billboard", "banner", "poster", "screen text",
     "headline", "newspaper", "magazine cover", "label", "lettering", "typography",
@@ -94,8 +98,8 @@ def vet_subject(subject):
     n = len(s.split())
     if not SUBJECT_MIN_WORDS <= n <= SUBJECT_MAX_WORDS:
         return False, f"長度 {n} 字不在 {SUBJECT_MIN_WORDS}-{SUBJECT_MAX_WORDS}"
-    low = " " + s.lower() + " "
-    hit = [w for w in BANNED if w in low]
+    low = s.lower()
+    hit = [w for w in BANNED if re.search(r"\b" + re.escape(w) + r"\b", low)]
     if hit:
         return False, f"主體含禁詞 {hit[:3]}"
     return True, ""
