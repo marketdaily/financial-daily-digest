@@ -65,9 +65,10 @@ DELIVERY = (
     "Composition for a text overlay: the upper 45 percent of the frame is one uninterrupted "
     "field of smooth deep black, empty and featureless, while the subject sits low in the "
     "lower third. Every surface in the frame is plain and unmarked; the only texture anywhere "
-    "is the natural material of the objects themselves. Any human presence reads as a single "
-    "anonymous distant silhouette turned away from the camera. Overall exposure is dark and "
-    "underexposed, with light confined to small motivated pools.")
+    "is the natural material of the objects themselves. The scene is unoccupied: everything in "
+    "the frame is an object, a surface, architecture or weather. Overall exposure is dark, with "
+    "light confined to small motivated pools, and the subject itself stays clearly legible "
+    "inside its pool of light.")
 
 # 主體閘:這些字出現在 image_subject_en 就退回固定素材。
 # ⚠️ **整詞比對,不是子字串**。首版用 `w in low` 子字串比對,第一次真跑就把

@@ -111,7 +111,12 @@
 "photoroute": "plate_banner",
 "photoroute#photo": "plate_left",
 "already_assigned_nonphoto": "ice_stat",
-"already_assigned_nonphoto#photo": "plate_hero"
+"already_assigned_nonphoto#photo": "plate_hero",
+"newsr_20260824_ai_1bea3c#photo": "plate_stat",
+"news_ai#photo": "plate_sticker",
+"news_macro#photo": "plate_banner",
+"news2_ai#photo": "plate_left",
+"news2_macro#photo": "plate_quote"
 },
 "order": [
 "demo_0",
@@ -225,6 +230,11 @@
 "photoroute",
 "photoroute#photo",
 "already_assigned_nonphoto",
-"already_assigned_nonphoto#photo"
+"already_assigned_nonphoto#photo",
+"newsr_20260824_ai_1bea3c#photo",
+"news_ai#photo",
+"news_macro#photo",
+"news2_ai#photo",
+"news2_macro#photo"
 ]
 }
