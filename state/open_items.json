@@ -5226,8 +5226,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 00:41",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 12:03",
+  "note": "改走 Brevo(老闆 08-24 選的):qfxsolution.com 已 verified+authenticated,四筆 DNS 全綠,不動 SPF/MX ⇒ 收信路徑零影響。寄信技術上已通,最後一哩見 #526"
  },
  {
   "id": 524,
@@ -5236,8 +5236,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 00:52",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 12:03",
+  "note": "Google Workspace 路線暫緩(老闆嫌 admin console 麻煩)。腳本與 runbook 留在 ~/qfx/MAIL_RUNBOOK.md,要撿隨時可撿"
  },
  {
   "id": 525,
@@ -5246,8 +5246,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 00:53",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 12:17",
+  "note": "已放行:/ 與 /zh/ 移除 meta robots 並改掉 _headers 的 X-Robots-Tag(只改 meta 是假綠),robots.txt+sitemap+JSON-LD 上線,線上兩層實查通過"
  },
  {
   "id": 526,
@@ -5266,6 +5266,66 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 11:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 528,
+  "what": "Gmail 還不能用 hi@qfxsolution.com 寄信:缺 Brevo 後台的 SMTP 登入與金鑰",
+  "why": "Brevo 的 SMTP 憑證只在後台一頁,API 拿不到。Delvin 用他平常的 gmail 登入 brevo.com → SMTP & API → SMTP 分頁,把 login 與新產的 key 貼給我(或自己填進 Gmail 設定),我已備好四個欄位的值",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 12:03",
+  "closed": "2026-08-24 12:17",
+  "note": "Delvin 貼了 SMTP 金鑰;登入帳號 abcb31001@smtp-brevo.com 我從 /v3/account 的 relay 欄位挖到並實測 AUTH 成功。憑證存 .env(BREVO_SMTP_KEY)"
+ },
+ {
+  "id": 529,
+  "what": "Brevo 會把寄出信件裡的連結改寫成 sendibt2.com 追蹤網址",
+  "why": "對 1:1 高階提案信觀感不好(像行銷信/可能被企業郵件閘擋)。純文字無連結的回信不受影響。要關只能整個帳號關,會連 MarketDaily 日報的連結追蹤一起關掉 ⇒ 需 Delvin 拍板",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-24 12:03",
+  "closed": "2026-08-24 12:17",
+  "note": "查證結果推翻原設想:Brevo 交易信/SMTP relay 的連結追蹤【沒有】關閉選項(只有匿名化),不是 Delvin 能決定的。要完全不改寫連結只能回 Google Workspace ⇒ 併入 #531"
+ },
+ {
+  "id": 530,
+  "what": "QFX 站寫「國際規格·台北設點」而非「境外母公司」",
+  "why": "老闆說「我們自己是外國公司來台開分公司」,但目前沒有境外實體。台灣 B2B 採購會查商業司,編一個查不到的母公司會當場破功,所以我只寫得出標準不寫實體。他若真去登記境外公司,講一聲我就改成明講",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-24 12:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 531,
+  "what": "hi@ 寄信要不要改回 Google Workspace(Brevo 會改寫信裡每個連結且關不掉)",
+  "why": "Brevo 官方確認交易信/SMTP 的連結追蹤無法關閉。純文字回信沒差,但有連結的提案信會出現 sendibt2.com 網址。Google 那條沒有這問題且他已在付費,卡點只有『他從沒登入過 delvin@quietfix.studio』——密碼救援信箱是他的 gmail,驗證碼我讀得到。DNS 與切換腳本全部備妥且演練過(~/qfx/MAIL_RUNBOOK.md)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 12:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 532,
+  "what": "皇海 card_connector 家族(118 顆,佔型錄一半)外觀幾乎相同:同系列共用一支參數化程式,推推機構/退卡滑塊/翻蓋/端子排法沒被當參數,6 對料號外框差 0.00%",
+  "why": "要逐系列把機構特徵參數化,不是一天能做完;週二先誠實講並當成後續工作範圍",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-24 12:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 533,
+  "what": "Cloudflare token 沒有 R2 權限,客戶備份的正規異地副本(R2 私有桶)還沒建;目前異地副本在 Mac ~/kingconn-offsite(SHA-256 已雙端驗)",
+  "why": "要 Delvin 在 CF dashboard 幫 token 加 R2 Storage 寫入權限,我這邊無法自助",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 12:17",
   "closed": null,
   "note": ""
  }
