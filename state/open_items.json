@@ -5596,8 +5596,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-24 16:35",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 16:50",
+  "note": "量測側雙語已上線並實跑驗證(kingconn 6/6 中英各半);順帶修掉 buildSteps 只量 4 題的沉默截斷,已立迴歸測試"
  },
  {
   "id": 561,
