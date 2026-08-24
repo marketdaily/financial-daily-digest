@@ -150,12 +150,12 @@
  },
  "selfheal": {
   "tw": "none",
-  "us": null,
+  "us": "none",
   "disabled": false
  },
  "postcheck": {
   "tw": 0,
-  "us": null
+  "us": 0
  },
  "sitescan": {
   "date": "2026-08-24",
@@ -169,5 +169,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": true
  },
- "generated_utc": "2026-08-24T13:08:00Z"
+ "generated_utc": "2026-08-24T13:38:00Z"
 }
