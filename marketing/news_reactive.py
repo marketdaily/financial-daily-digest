@@ -480,6 +480,15 @@ source since no source link is attached to the post.
 5. If tech_snapshot is null, skip section 3's numbers and write a qualitative line instead.
 6. Do not translate company names oddly; use the name given in <facts>.
 7. card_headline: max 16 Chinese characters, punchy, factual, no digits unless in <facts>.
+7b. image_subject_en: ONE English sentence, 12-40 words, describing the PHOTOGRAPH that should
+   sit behind this specific post — the concrete scene THIS story is about (the strait, the
+   fab floor, the server aisle, the port, the empty podium, the pipeline, the harvest field).
+   Describe objects, machinery, architecture, landscape and weather only. Keep it to things
+   a camera could point at. Write it as a scene, not as a topic label. It must contain no
+   people, no faces, no company names, no logos, no signage and no written words of any kind —
+   those all get the post rejected back to a stock plate. Do NOT specify camera, lens,
+   lighting, film stock or style: the production rig is fixed by our art direction and is
+   appended automatically.
 8. facts.lane tells you which kind of story this is; follow facts.lane_brief.
    When facts.company is null (lane = ai / macro / world) this is NOT a single-stock post:
    REPLACE section 3 with 「為什麼這件事重要」(mechanism, 2-3 sentences) and section 4 with
@@ -492,9 +501,9 @@ source since no source link is attached to the post.
 
 <output_format>
 Reply with STRICT JSON only, no markdown fences, exactly:
-{"caption_zh": "...", "caption_threads_zh": "...", "card_headline": "..."}
+{"caption_zh": "...", "caption_threads_zh": "...", "card_headline": "...", "image_subject_en": "..."}
 Example shape (placeholder text, do not reuse its wording):
-{"caption_zh": "輝達又出手了…(全文)…完整分析 → https://example…\\n\\n#美股 #AI", "caption_threads_zh": "輝達又出手了…(短版)… https://example… #美股", "card_headline": "輝達出手投資雲端新星"}
+{"caption_zh": "輝達又出手了…(全文)…完整分析 → https://example…\\n\\n#美股 #AI", "caption_threads_zh": "輝達又出手了…(短版)… https://example… #美股", "card_headline": "輝達出手投資雲端新星", "image_subject_en": "A single service aisle inside a hyperscale data hall at night, two facing walls of cabinets receding to a vanishing point, cooling vapour drifting low across the floor"}
 </output_format>
 
 <facts>
@@ -522,11 +531,15 @@ Audit the caption+card_headline in <draft> against <facts>. Check every item:
    (e.g.「個股分析限時免費」「早鳥才看得到完整分析」), or when the draft otherwise states
    or implies stock analysis is or will be paid, gated, or tiered.
 7. Natural fluent zh-TW; no broken half-sentences; hashtags have no digits.
+8. image_subject_en (the background photo brief) describes only objects/architecture/landscape
+   /machinery/weather, contains no people, no company names, no logos, no signage and no
+   written words, and does not assert anything about the world that <facts> does not support
+   (it is a scene, not a claim). Fail check 8 only for those; wording quality is not your call.
 </task>
 
 <output_format>
 STRICT JSON only: {"pass": true|false, "violations": ["..."]}
-pass=true ONLY if all 7 checks pass.
+pass=true ONLY if all 8 checks pass.
 </output_format>
 
 <facts>
@@ -695,7 +708,18 @@ def caption_gate(caption, threads_caption, headline, facts):
     return v
 
 
-def render_news_card(cand, tech, headline_zh, out_png):
+def _post_plate(cand, subject, post_id):
+    """依這則貼文的主題現生一張底圖。任何一步不成就回 None → 退回固定素材。"""
+    try:
+        sys.path.insert(0, str(Path(__file__).parent))
+        from cardkit import imagegen
+    except Exception as e:  # noqa: BLE001
+        print(f"  ⚠️ imagegen 載入失敗({type(e).__name__}),改用固定素材")
+        return None
+    return imagegen.generate("marketdaily", subject or "", post_id, None)
+
+
+def render_news_card(cand, tech, headline_zh, out_png, plate_path=None):
     comp = cand.get("company")
     body = [f"{comp['name']}({comp['ticker']}) · {cand['etype_zh']}"] if comp else [cand["etype_zh"]]
     if tech:
@@ -706,8 +730,9 @@ def render_news_card(cand, tech, headline_zh, out_png):
         body.append(line3)
     body.append("來源:" + ("鉅亨網" if "cnyes" in cand["url"] else "外電"))
     spec = {"tag": f"{cand.get('lane_zh', '新聞快評')} · {_tw_today()}", "headline": headline_zh,
-            # 題材線直接當底圖選擇的依據 —— 國際新聞配油輪、AI 新聞配機房。
-            # 底圖跟內容有關係,才不是「隨機貼一張漂亮照片」。
+            # 首選:依這則貼文主題現生的圖。生不出來才退回題材線對應的固定素材
+            # (國際配油輪、AI 配機房),最後才是程序化背景。
+            "plate_path": plate_path,
             "topic": cand.get("lane"),
             "body": "\n".join(body), "cta": "完整個股分析 marketdaily.ai →"}
     make_card(spec, out_png)
@@ -910,7 +935,8 @@ def cmd_run(dry=False, force=False):
     PNG_DIR.mkdir(parents=True, exist_ok=True)
     png = PNG_DIR / f"{post_id}.png"
     jpg = PNG_DIR / f"{post_id}.jpg"
-    render_news_card(cand, tech, headline, png)
+    plate = _post_plate(cand, draft.get("image_subject_en"), post_id)
+    render_news_card(cand, tech, headline, png, plate_path=plate)
     _png_to_jpg_playwright(png, jpg)
     image_url = upload_media(jpg, f"social/{post_id}.jpg")
     env = load_env()

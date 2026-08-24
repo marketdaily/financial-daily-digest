@@ -669,7 +669,11 @@ def remember_style(brand_key, style_id, keep=40):
     p.write_text(json.dumps(hist[-keep:], ensure_ascii=False), encoding="utf-8")
 
 
-def assign(brand_key, key, prefer=None, spread=5):
+def photo_styles(brand_key):
+    return [s for s in BRANDS[brand_key].styles if s["backdrop"] == "photo"]
+
+
+def assign(brand_key, key, prefer=None, spread=5, photo_only=False):
     """(品牌, 卡片鍵) → 風格，且**寫進指派表**。
 
     為什麼要指派表而不是純雜湊：
@@ -691,7 +695,7 @@ def assign(brand_key, key, prefer=None, spread=5):
         return next((s for s in BRANDS[brand_key].styles if s["id"] == amap[key]),
                     BRANDS[brand_key].styles[0])
     recent = [amap[k] for k in order[-spread:] if k in amap]
-    st = pick(brand_key, key, avoid=recent, prefer=prefer)
+    st = pick(brand_key, key, avoid=recent, prefer=prefer, photo_only=photo_only)
     amap[key] = st["id"]
     order.append(key)
     led["order"] = order[-400:]
@@ -701,7 +705,7 @@ def assign(brand_key, key, prefer=None, spread=5):
     return st
 
 
-def pick(brand_key, key, avoid=None, prefer=None):
+def pick(brand_key, key, avoid=None, prefer=None, photo_only=False):
     """(品牌, 貼文id) → 風格。同一個 id 永遠得到同一個結果。
 
     avoid = 最近用過的風格 id；全部都被 avoid 掉時退回純雜湊(不會挑不到)。
@@ -709,6 +713,11 @@ def pick(brand_key, key, avoid=None, prefer=None):
     """
     brand = BRANDS[brand_key]
     pool = brand.styles
+    # ⚠️ 這則有「按主題現生的底圖」時,風格**必須**落在 photo 版位。
+    #    少了這道限制,現生的圖會被指派到程序化背景的風格上 —— 錢花了、圖產了,
+    #    畫面上一點都看不到,而且程式一路回報成功。
+    if photo_only:
+        pool = photo_styles(brand_key) or pool
     if prefer:
         hinted = [s for s in pool if prefer in (s.get("tags") or []) or s["layout"] == prefer]
         if hinted:
@@ -727,7 +736,8 @@ def render(spec, brand_key="marketdaily", style=None, size=SIZE_45, seed=None):
     """
     brand = BRANDS[brand_key]
     if style is None:
-        style = assign(brand_key, spec.get("id") or spec["headline"], prefer=spec.get("prefer"))
+        style = assign(brand_key, spec.get("id") or spec["headline"], prefer=spec.get("prefer"),
+                       photo_only=bool(spec.get("plate_path")))
     elif isinstance(style, str):
         style = next((s for s in brand.styles if s["id"] == style), brand.styles[0])
     # 安全區依品牌招牌的位置而定：MarketDaily 頂部有字標要讓開，命書只有右下朱印。
@@ -751,17 +761,20 @@ def render(spec, brand_key="marketdaily", style=None, size=SIZE_45, seed=None):
 
 
 def carousel(post_id, hook, bodies, cta_lines, brand_key="mingshu", size=SIZE_45,
-             note=None, topic=None):
+             note=None, topic=None, plate_path=None):
     """一則貼文 → 整串輪播圖(封面 + 內文 × n + CTA)。
 
     風格在**貼文層級**指派：整串共用同一個色票與背景家族，所以一則貼文看起來是一件作品；
     下一則才換風格 —— 變化發生在時間軸上，不是在同一串裡。
     """
-    st = assign(brand_key, post_id)
+    # 現生的底圖只用在**封面**:內文卡是拿來讀的,一整串六張各配一張照片
+    # 既貴(六倍 credit)又難讀,而且會讓一則貼文看起來像六個不同的人做的。
+    st = assign(brand_key, post_id, photo_only=bool(plate_path))
     calm = dict(st, layout="body", backdrop=st.get("body_backdrop", "void"))
     out = []
     cover_img, _ = render({"id": post_id, "headline": hook, "kicker": BRANDS[brand_key].kicker,
-                           "topic": topic}, brand_key, style=st, size=size)
+                           "topic": topic, "plate_path": plate_path},
+                          brand_key, style=st, size=size)
     out.append(("cover", cover_img))
     n = len(bodies)
     for i, text in enumerate(bodies, 1):

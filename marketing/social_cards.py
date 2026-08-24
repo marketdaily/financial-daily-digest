@@ -231,6 +231,8 @@ def make_card(spec, out_path, w=W, h=H):
                 "prefer": spec.get("prefer"),
                 # 題材 → 選哪張真實底圖(國際配油輪、AI 配機房…);對不上就雜湊挑
                 "topic": spec.get("topic"),
+                # 依貼文主題現生的底圖(imagegen);有值就強制走 photo 版位
+                "plate_path": spec.get("plate_path"),
             }
             img, _style = _ck.render(ck_spec, "marketdaily", size=(w, h))
             out_path = Path(out_path)

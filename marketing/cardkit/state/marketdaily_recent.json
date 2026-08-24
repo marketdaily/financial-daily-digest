@@ -106,7 +106,9 @@
 "t_57": "plate_left",
 "t_58": "breaking",
 "t_59": "neon_mesh",
-"t": "plate_stat"
+"t": "plate_stat",
+"zz1": "plate_sticker",
+"photoroute": "plate_banner"
 },
 "order": [
 "demo_0",
@@ -215,6 +217,8 @@
 "t_57",
 "t_58",
 "t_59",
-"t"
+"t",
+"zz1",
+"photoroute"
 ]
 }
