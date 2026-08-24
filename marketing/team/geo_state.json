@@ -1,66 +1,64 @@
 {
- "scanned_at": "2026-08-19T11:08:57+00:00",
- "engine": "gemini-2.5-flash-lite",
+ "scanned_at": "2026-08-24T03:03:56+00:00",
+ "engine": "gemini-2.5-flash+gemini-2.5-flash-lite",
  "engine_note": "Gemini 2.5 Flash + Google Search grounding。這是「AI 答案引擎會引用誰」的一個真實樣本,不等於 ChatGPT / Google AI Overview 的引用結果。",
  "brand_filter": null,
- "n_queries": 3,
+ "n_queries": 7,
  "n_cited": 0,
  "gaps": [
   {
    "brand": "marketdaily",
    "query": "What are the best free daily stock market email newsletters for Taiwan investors?",
    "cited": false,
-   "engine": "gemini-2.5-flash-lite",
-   "n_sources": 7,
+   "engine": "gemini-2.5-flash",
+   "n_sources": 5,
    "cited_domains": [
+    "cw.com.tw",
     "twse.com.tw",
-    "stockalarm.io",
-    "bestnewsletters.xyz",
-    "tker.co",
-    "beehiiv.com",
-    "tradingview.com",
-    "marketscreener.com"
+    "tpex.org.tw",
+    "simplywall.st",
+    "kuse.ai"
    ],
    "competitors_cited": [
     {
+     "domain": "cw.com.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFkjFDR93sEFUDvviRYJRpBr1-l8KnQsSqfsUzeUBo5aVWpbTQmIjiMtZozV-LuZqesn2lal7b-N3k9jIA0N6PJt5gY4pYYKY7t9CXi63t9JBSIFKJzHTgHQUbAtwFNHV-Vb1WdR1L4__V6SLLqA9SB"
+    },
+    {
+     "domain": "cw.com.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFcPgKJZwqHEm3aav_mvFzzh5LCUfvGl4tdksjnu_zM0trlpHdLvGdnkFuN_R07DFpLR92WFoYq3yMkHW5PtwzlwEHl77dhwSz5BOQtAYI_KJisDdVS"
+    },
+    {
      "domain": "twse.com.tw",
-     "url": "https://twmonthly.twse.com.tw/front/content/8a81b98196d19e3d0197775b08380023?date=Jul.+2025"
+     "url": "https://www.twse.com.tw/en/terms/subscribe.html"
     },
     {
-     "domain": "stockalarm.io",
-     "url": "https://stockalarm.io/exchanges/track-taiwan-stock-exchange-twse-stocks"
+     "domain": "twse.com.tw",
+     "url": "https://www.twse.com.tw/en/"
     },
     {
-     "domain": "stockalarm.io",
-     "url": "https://app.stockalarm.io/exchanges/TWSE"
+     "domain": "tpex.org.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFHJRdqebuDRProS1AnhZy2rQlF0GdEzLD6UllsuaEdQYvAxa-fzFqIYecGcJ3rFFVgAd-hrBgnj8nRs13S7BNnCHtMz_n7Bzusj3EvcfVfogApvDkN9k079N1LBW0ez9OGn55eKtTXpxFeXPvIe1RXxZim7WSiTng1KDWkHq866vbeNfWkiRjsRw=="
     },
     {
-     "domain": "bestnewsletters.xyz",
-     "url": "https://bestnewsletters.xyz/lists/best-finance-newsletters/"
-    },
-    {
-     "domain": "tker.co",
-     "url": "https://www.tker.co/p/best-free-finance-newsletters"
-    },
-    {
-     "domain": "beehiiv.com",
-     "url": "https://www.beehiiv.com/blog/best-stock-market-newsletters"
+     "domain": "simplywall.st",
+     "url": "https://simplywall.st/markets/tw"
     }
    ],
-   "answer_excerpt": "It appears that finding daily, free, email newsletters specifically focused on the Taiwanese stock market for investors can be challenging. However, here are some options and strategies:\n\n**Leveraging Taiwan Stock Exchange Resources:**\n\n*   **TWSE Gateway for Foreign Investors:** While not a daily email newsletter in the traditional sense, this platform provides essential information in English fo"
+   "answer_excerpt": "For Taiwan investors seeking free daily stock market email newsletters in English, directly comparable options to those focusing on larger global markets are limited. However, several resources offer frequent updates and comprehensive analysis that can be valuable.\n\nHere are the closest available options:\n\n*   **CommonWealth Magazine (天下雜誌)**: This prominent Taiwanese financial news outlet offers "
   },
   {
    "brand": "marketdaily",
    "query": "台股每日盤前分析電子報推薦 免費",
    "cited": false,
-   "engine": "gemini-2.5-flash-lite",
+   "engine": "gemini-2.5-flash",
    "n_sources": 5,
    "cited_domains": [
     "cnyes.com",
-    "esunsec.com.tw",
-    "line.me",
-    "ctee.com.tw",
-    "sinotrade.com.tw"
+    "sinotrade.com.tw",
+    "investor.com.tw",
+    "cmnews.com.tw",
+    "cmoney.tw"
    ],
    "competitors_cited": [
     {
@@ -68,64 +66,249 @@
      "url": "https://www.cnyes.com/newsletter"
     },
     {
-     "domain": "esunsec.com.tw",
-     "url": "https://www.esunsec.com.tw/market/investmentfocus"
-    },
-    {
-     "domain": "line.me",
-     "url": "https://today.line.me/tw/v3/article/PG516xj"
-    },
-    {
-     "domain": "ctee.com.tw",
-     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHHYywdwMHVhfPJgcjjPqqkt8ZtLTKP7rR2YWep9GwtXLvXd8nh8suPUo707_LAoIbqYP9VD_bFEvI4xZ4M_9nczU-Ijh1b-W6Ph4stLSW3FcCYi6TrmImAvnAgNkCOCcc_PdzeHG1Oq_u9Zak="
-    },
-    {
      "domain": "sinotrade.com.tw",
-     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGWFZ24v4qj-gW970vBMxgXHXuhjcYRzqVZGgTTyNNdediF-6g66HN4QGPyF5mYs5K7Le6v3F5oqaifqMtADUQFnGSnRwW-aZwR9IPuDEyC_sZoZ9uE1L7m1ANgqgZLzxzq04_Gdw=="
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEwsu74wr1xQfviFMofADDeI6RvRRiAuGCEPBPTJeH0lFv1oUwVPi168xqEmxl06okWaX2OdUuxN1R1RHI6D8feJY4x12Jsw2Tu6APu4SeYpC7F4JbK6_VvgDl9tByezRi4Ed0vDg=="
+    },
+    {
+     "domain": "investor.com.tw",
+     "url": "https://www.investor.com.tw/onlinenews/NewsList2.asp?UnitXsub=048&UnitX=02"
+    },
+    {
+     "domain": "cmnews.com.tw",
+     "url": "https://cmnews.com.tw/article/laochien-4a36ea1d-9f56-11f1-92ad-3e4d0ca21e34"
+    },
+    {
+     "domain": "cmoney.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEOUR43vZvFYgXkr4Yht8KTivt9IyxwVO8hJkRAWH-nAegdOUXAvUfwFwj9d5fgzZaSKzqDTCxXT64chHAf11YOa7DimQ33N7GZf3l2eVQXkvpr3XKg1gIB59oM3EByLOtyZzgiHGP1os1j_2i7wLOCi3Q="
     }
    ],
-   "answer_excerpt": "想要免費的台股每日盤前分析電子報，可以參考以下幾個管道：\n\n*   **鉅亨網**：鉅亨網提供「鉅亨早報」，於週一至週六上午出刊，內容包含熱門投資標的、精選頭條新聞、重要國際報導，是每日財經重點整理快遞。此外，鉅亨網也有「台股日報」，於週一至週五盤後出刊，提供當天收盤情形及盤勢分析。\n*   **玉山證券**：玉山證券提供「每日投資重點」，包含盤前分析，讓您掌握投資大小事。\n*   **CMoney**：CMoney 會在其網站和電子報中提供台股盤前分析。\n*   **工商時報**：工商時報的「台股電子報」提供盤勢分析和新聞。\n*   **永豐金證券**：永豐金證券的「豐雲學堂」有提供盤前分析的直播解讀。\n\n這些平台通常會提供免費的電子報訂閱服務，您可以到他們的網站上尋找訂閱選項。\n\n在尋找盤前分析時，您可以特別留意提供市場變動、總體經濟、重要個股表現以及對台股盤勢分析的內容。"
+   "answer_excerpt": "以下是一些提供免費台股每日盤前分析電子報或資訊的推薦：\n\n*   **鉅亨網 (Anue):**\n    鉅亨網提供「鉅亨早報」，內容涵蓋熱門投資標的、精選頭條新聞、重要國際報導以及每日財經重點整理，於週一至週六上午出刊。他們也有「台股日報」，針對當天收盤情形進行盤勢分析，於週一至週五盤後出刊。這些電子報明確提供免費訂閱服務。\n\n*   **永豐金證券 (SinoPac Securities) 豐雲學堂:**\n    永豐金證券的「豐雲學堂」提供「盤前看這頁就夠！一早直播解讀台、美股盤勢」的內容，分析台股與美股盤勢，並抓穩焦點個股。這是一個每日更新的盤前分析來源。\n\n*   **財訊快報:**\n    財訊快報的「財訊快報焦點/盤勢分析」提供了每日的台股盤勢分析及相關新聞。雖然未明確說明有免費電子報訂閱，但其網站上會定期更新盤勢分析文章，可作為免費獲取資訊的管道。\n\n*   **股市爆料同"
+  },
+  {
+   "brand": "marketdaily",
+   "query": "AI 選股 每日報告 台股 美股 推薦服務",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 9,
+   "cited_domains": [
+    "wistock.ai",
+    "growin.ai",
+    "repoinside.com",
+    "github.com",
+    "iknowfirst.com",
+    "investing.com",
+    "scmp.com",
+    "youtube.com",
+    "finlab.finance"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "wistock.ai",
+     "url": "https://www.wistock.ai/"
+    },
+    {
+     "domain": "growin.ai",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFuL0ZoXUt_xxtxcAyPziIpA3XqPK1UxOV7o2pNAe93B0G5ZE4u_vQZ-fg5wfaPMdZ4gwYQrdha82eJMX-otxY47Pf_pVwuuODpV4E8uhf9Y53Vsw=="
+    },
+    {
+     "domain": "repoinside.com",
+     "url": "https://repoinside.com/zhulinsen/daily_stock_analysis"
+    },
+    {
+     "domain": "github.com",
+     "url": "https://github.com/ZhuLinsen/daily_stock_analysis"
+    },
+    {
+     "domain": "iknowfirst.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFLMKaxViM_J_AWPMdNshGntwdB5Nhcv8YLpa2c8XIPOFw1YdU4MCY0bOlScItSrhKU3Lk3ZLkRM7zrOo_4uGMQvYHRX3ebQ7AvrdNRLRtfuQn3NZ93kJ9paX-5ZWEn_jOYeFAcqv_7qggQPHCc736HhTg_WxJaMWTYy5E0IthjG9vvrCJSVjOKN4y_QlCZYIhUHtidvVOdOkKlOX0wKuz6M6jVRmx8EUKyzCQXPltws_zo"
+    },
+    {
+     "domain": "investing.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGn-yp5gC7hfy8qY2hrLEpMhU_PA3dRt9qNg_bHNIIRep1z1bKqLFpbrjFTqOGMyI4JCkGPGDSdRp4yu1lRtKda1IDQeQU-5e86Pvv4mEktPdMvab1ANw163sHS9SdD0AszQiaIGoGqCgV6aiQYb_FqINCzNECnXEjBAQMnANZaedQTMvg2ZcYSvRNZ7nqPuHli9dzxJ-ucph914Jlrr_vgeH-ry3OQMPqhAhYZ0DNBTpYJh6tQoEK_uhfwCSucldf0zA=="
+    }
+   ],
+   "answer_excerpt": "AI 選股服務在台股和美股市場都有提供，運用 AI 技術分析股票，以提供每日報告和推薦。\n\n**AI 選股服務提供者與特色：**\n\n*   **Wistock AI:** 這是一個台灣的 AI 智慧投資分析平台，提供個人化投資服務，包括財報分析、自選股監控和 AI 健檢報告。它能協助用戶精準選股、解讀財報、即時追蹤投資動態，並找到進場時機。\n*   **Growin 個股探勘:** Growin 整合 AI 個股分析、篩選器和獨家量化指標，協助投資人掌握台美股走勢，快速挖掘潛力股，提升投資決策效率。\n*   **daily\\_stock\\_analysis:** 這個專案利用大型語言模型與多數據源，自動分析 A 股、港股、美股、日股、韓股、台股的自選股，產生決策儀表盤並多渠道推送。它提供 AI 決策報告，包含核心結論、評分、趨勢、買賣點位、風險警報等。\n*   **I Know First"
+  },
+  {
+   "brand": "marketdaily",
+   "query": "free AI-generated daily stock analysis newsletter US and Taiwan stocks",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 9,
+   "cited_domains": [
+    "ai-seemarket.com",
+    "reddit.com",
+    "stocknews.ai",
+    "iknowfirst.com",
+    "tosea.ai",
+    "github.com",
+    "goodwinlab.ai",
+    "prospero.ai",
+    "stockgptchat.com"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "ai-seemarket.com",
+     "url": "https://ai-seemarket.com/en/ai-tool/"
+    },
+    {
+     "domain": "reddit.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFUgBpNiU2i8ahQiyGnEEveYOy-JrtXaEoOHywuiIjsG3CsNVtRAUIcN6P_V7LB1CAC1LRSyYMauL_iYCDqwig10Lm4slSlygHHcWA6XL8AwefGIv3Bgp3AqqGtj89Qj9mKVl5Vn7WXd4jVyEzntQVklwTTO_csh_AJkpVckyqUNGeWca2sAPki1Px4whPZiyycMaT67lzQB8M5Lw=="
+    },
+    {
+     "domain": "reddit.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEX8egZvjIlyutYTWokeySSqqVrvW-wRB8ylafcAE8OLOeqgtU_fixms2uNMDiFsOHLCC8ySSeQn3J4FpokbpSVFRyVTlvqUZ9DS_9jaQCUCe_lHK1sW2BdL-3BNkDH3b65gWaXKz89Mr8n7IwHCcpKbyWvJXg06FRZ1eaCin5k7Z_yIvJxhuzqdoTAzfJSz6ZqQZpNqO8uDpr0PpFuVeX8dL-ekGRn"
+    },
+    {
+     "domain": "stocknews.ai",
+     "url": "https://stocknews.ai/"
+    },
+    {
+     "domain": "iknowfirst.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHC78KjesoL6lgWbaBNiWm7uZV2e7Ze7JpLsdjS9bUGUmDKdiwh8j-WPFUzCDs7teU6ftvP0SVz2h_HO7h401fUwMz2vFUq6tdiHpUKmcTnXrmPtDV8Mncsqyy8GH0lUR0FR0GPz-fUwmk9WP1u6r6SJfP3RvNM9tujT0nUn5YgBj_z67VPU_5KpvqUpAgXhBbvjSU7-E9VJawWu7f02ZgcOMRIIPN9WgJXSULhyKkWC3E4"
+    },
+    {
+     "domain": "iknowfirst.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEhz7TWXy-lQBQn8k4uyXCBBvuZ0t1QPptXDbRorUudaZ7IFc_tgAuTTajZBM7ssw_DpUseYEi-ayTRQ8LiOq1Vma_BpQ4OtbDcILDzOCQc5L-0ozN_huDe3fX3q9_nuqBErornxitfp2YOuanktVuoto8F0_uFQmGpDgrc0sbfMumcjH0LZnm_gM07BnlnOW6S2Fq-MEcCJbZqAGQNN5iILc4nBN5XJw=="
+    }
+   ],
+   "answer_excerpt": "While there are many AI-powered tools and newsletters for stock analysis, finding one that is **free**, **daily**, and covers **both US and Taiwan stocks** requires careful selection.\n\nHere are some options and related services that might meet your needs:\n\n**See-Market:** This free AI tool offers daily market analysis for both Taiwan (TAIEX) and US stocks (S&P 500, Nasdaq), along with 12 other mar"
   },
   {
    "brand": "mingshu",
    "query": "線上八字命書 客製化 推薦",
    "cited": false,
-   "engine": "gemini-2.5-flash-lite",
-   "n_sources": 5,
+   "engine": "gemini-2.5-flash",
+   "n_sources": 6,
    "cited_domains": [
+    "dcard.tw",
+    "fatemaster.ai",
     "suanming.com.tw",
-    "superlucky.com.tw",
-    "google.com",
-    "dearmoney.com.tw",
-    "herokuapp.com"
+    "dashugo.com.tw",
+    "mingming3.com",
+    "fatew.com"
    ],
    "competitors_cited": [
     {
+     "domain": "dcard.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHBej4gLNi69FldaiCLYdRow8PN8bkzMsgEt_fLYBJOPds_US0pmCefKNq_XpLPpf35JHOAuIqxlM5pyTgPgZfz__-64sRgrhYCvZBdttkqdOxHloKPHYpUURQxhxQ3f1Ojf6UvTN0N2A=="
+    },
+    {
+     "domain": "fatemaster.ai",
+     "url": "https://www.fatemaster.ai/zh-Hant/workspace/bazi-calculate"
+    },
+    {
      "domain": "suanming.com.tw",
-     "url": "https://www.suanming.com.tw/blog/558"
+     "url": "https://www.suanming.com.tw/"
     },
     {
-     "domain": "superlucky.com.tw",
-     "url": "https://www.superlucky.com.tw/product-page?p_ID=389"
+     "domain": "dashugo.com.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHq4QaZSrsWz8TbRy-xQJ958w9LFiTmcRIfYll3-0XKlgP-H1PEd_PcsYFOEthyLyGnmqdSabUiZbdESRg4UPpCAyGl4WvxzoJygTeOEbAF0KVr3CZEovHN16xXk7-JRIJ4vJR7LmjfUyS4cDFv"
     },
     {
-     "domain": "google.com",
-     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters.zwz&hl=zh_TW"
+     "domain": "mingming3.com",
+     "url": "https://mingming3.com/bazi"
     },
     {
-     "domain": "google.com",
-     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters"
-    },
-    {
-     "domain": "google.com",
-     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters&hl=en_US"
-    },
-    {
-     "domain": "dearmoney.com.tw",
-     "url": "https://www.dearmoney.com.tw/eightwords"
+     "domain": "fatew.com",
+     "url": "https://fatew.com/"
     }
    ],
-   "answer_excerpt": "許多線上平台提供客製化的八字命書服務，讓使用者能根據自身需求獲得更個人化的命理分析。以下推薦幾個線上平台與APP，各有特色，您可以參考看看：\n\n**線上平台與APP推薦：**\n\n*   **先知命局：** 這款APP適合傳統命理愛好者，能自動排盤並解析五行強弱、流年大運，還提供姓名學評分與改名建議。部分進階內容需付費解鎖。\n*   **科技紫微：** 作為全球最大的命理網站之一，科技紫微提供星座、紫微斗數、八字、姓名學等多樣服務，解析方式淺顯易懂，方便使用者隨時查看運勢。\n*   **周映君‧八字命書 (命運好好玩)：** 此平台提供客製化的電子命書，由專人謄打成電子檔，方便收藏與列印。命書內容會濃縮老師親算重點，幫助使用者在面臨人生重要抉擇時作為參考。\n*   **八字算命APP (Google Play)：** 有多款八字算命APP在Google Play商店上架，提供詳盡的命書批算、"
+   "answer_excerpt": "對於線上八字命書的客製化推薦，您可以考慮以下幾個提供深入分析和個人化服務的平台：\n\n1.  **懂你算命**：\n    這個平台強調其「對話式私密算命平台」，並結合了八字、紫微斗數、西洋占星和印度占星等四大命理系統進行交叉驗證分析。它提供個人命盤、感情合盤、流年與流月運勢、事業財運、婚姻健康與性格解析。更吸引人的是，它支援免費體驗和線上算命服務，並可免費問一題，這有助於您評估其客製化分析的準確度與深度。\n\n2.  **FateMaster**：\n    FateMaster提供「全方位命理解析」，深入分析命盤的各個方面，包括性格洞察、事業方向、財運特徵、感情運勢和健康運勢。 該平台聲明其排盤引擎遵循子平命理典籍，並對流派分歧（如子時口徑、神煞定義）有公開說明，甚至允許使用者選擇，這顯示其在客製化和專業度上的嚴謹。\n\n3.  **算命網**：\n    此網站提供超準免費算命服務，能專業八字測"
+  },
+  {
+   "brand": "mingshu",
+   "query": "AI 紫微斗數 命盤 命書 線上服務推薦",
+   "cited": false,
+   "engine": "gemini-2.5-flash",
+   "n_sources": 15,
+   "cited_domains": [
+    "fatemaster.ai",
+    "liora.me",
+    "lingyuan.ai",
+    "destiny-vector.com",
+    "fateguides.com",
+    "wofu-studio.com",
+    "fate-ziwei.com",
+    "dearmoney.com.tw",
+    "com9.tw",
+    "windada.com",
+    "mingming3.com",
+    "herokuapp.com",
+    "6da.net",
+    "ptzl.tw",
+    "dcard.tw"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "fatemaster.ai",
+     "url": "https://www.fatemaster.ai/zh-Hant"
+    },
+    {
+     "domain": "liora.me",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1Ry0cldK30vrwMWlcutSjxPsJnOcd_ZKtBj6ZtiAluopBch_lR3LiWoifqLF3yoIpcR1UveH_-rOx8MXEH1cAiBCatbidvBewLr0="
+    },
+    {
+     "domain": "lingyuan.ai",
+     "url": "https://lingyuan.ai/en"
+    },
+    {
+     "domain": "destiny-vector.com",
+     "url": "https://destiny-vector.com/en/"
+    },
+    {
+     "domain": "fateguides.com",
+     "url": "https://fateguides.com/"
+    },
+    {
+     "domain": "wofu-studio.com",
+     "url": "https://wofu-studio.com/en"
+    }
+   ],
+   "answer_excerpt": "對於尋求AI紫微斗數命盤及命書線上服務，目前市面上有許多優質的平台提供不同深度的分析與功能。以下是一些值得推薦的線上服務：\n\n**綜合型AI命理平台，提供深度分析與多功能服務：**\n\n*   **FateMaster (費特大師)**：提供AI命理分析與線上算命工具，涵蓋紫微斗數、八字排盤、六爻、梅花易數、奇門遁甲、塔羅牌和老黃曆等。平台先由規則生成盤面，再由AI提供個人化解讀。\n*   **Liora.me - AI 命理人格系統**：結合紫微斗數、八字、西洋占星與MBTI人格分析的AI命理平台。它能生成專屬命盤與人格報告，提供每日洞見、感情與職涯建議、天賦優勢解析與人際互動指引。升級Pro後更可針對報告向AI提問。\n*   **LingYuan AI Fortune Telling (靈元AI)**：這是一個專業的線上算命平台，提供免費的八字分析、紫微斗數命盤和星座運勢閱讀。其AI驅動"
+  },
+  {
+   "brand": "mingshu",
+   "query": "2026 流年運勢 個人化命書 哪裡買",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 7,
+   "cited_domains": [
+    "etsy.com",
+    "shopee.tw",
+    "supbookstore.com",
+    "walmart.com",
+    "tombolobooks.com",
+    "shinnou.com",
+    "starqode.com"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "etsy.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEu-IwwUR-lgaaY2G3ZlIUMAmxx3GBGm5dciDU61mYt-Fn7rh8w2LnVcBIk2bzNLubjpAJ_P3GtGyTPZA2tiUbJ92-p1go2tVphxEDbiQwEbGCFC_YgVxw8uRNpTAUk6FjVl7ILLY379HhBQd4vH7uBxDd-P3OJQQ3Ijhxu-r-oHmzJkhWhESQX0FKt"
+    },
+    {
+     "domain": "etsy.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE3hqKn8m35Dskn388FOc8z8K9Dme6zPHsBsI__yyEhDH4wb3zwOklHAvJcu4iBUdTCdGB_RHmyp_u7GRvxkFyQXjaKiovq3Va8eF1Qk-jUIHQzJJ0K9260F4Q-S7vx5N1T6nh2zUELmrCOWHDDu-izXD53"
+    },
+    {
+     "domain": "shopee.tw",
+     "url": "https://shopee.tw/list/%E5%91%BD%E7%90%86%E6%9B%B8"
+    },
+    {
+     "domain": "shopee.tw",
+     "url": "https://shopee.tw/2026-%E5%80%8B%E4%BA%BA%E6%B5%81%E5%B9%B4%E9%81%8B%E5%8B%A2-%E6%B5%81%E5%B9%B4-%E9%81%8B%E5%8B%A2-%E5%91%BD%E7%9B%A4-%E6%96%B0%E5%B9%B4-%E5%91%BD%E7%90%86-%E5%88%86%E6%9E%90-i.34258640.25690853200"
+    },
+    {
+     "domain": "supbookstore.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFx3e-IZ6ykQf9u-vOnEhaIK2sCVnaIXaGqJeABF8xCMHWmlvbVauN0CchHn5-JVzWHzDVQ5CPsIqN5DrnIIXzPaXfsBKoOMYC8E4J7HAQ2ambl1xKc5rKyonia6RKNLlq5BMgPe202axxK83HWQBmO520fQjAjwz3_U1pqBazBAegUn7pN03mk319bxouwPSwxfN_BvDIyot_74lE9AXNSM-YTZP-fDNTEbxQdhxu_l9i1HiXhJnfuKIJ8Ycgp71TzxsKqlYhF2ewIJo0sDg=="
+    },
+    {
+     "domain": "walmart.com",
+     "url": "https://www.walmart.com/blocked?url=L2lwL1lvdXItUGVyc29uYWwtSG9yb3Njb3BlLTIwMjYtUGFwZXJiYWNrLTk3ODAwMDg3NDcxNjkvMTE2NzcxMjEwNzc=&uuid=6ebaed99-9f68-11f1-ad9f-7466dd578eae&vid=&g=b"
+    }
+   ],
+   "answer_excerpt": "您可以在以下幾個地方購買2026年個人化命書（流年運勢）：\n\n**線上購物平台：**\n\n*   **Etsy:** 提供許多個人化的命理報告，包括「Personalized Destiny Matrix Reading 2026」，通常包含50多頁的占星學和數字學分析，能深入探討職業、愛情、業力洞察等，並提供快速的24小時內交貨服務。\n*   **蝦皮購物:** 這裡有各種命理書籍和服務，您可以找到「2026 個人流年運勢流年運勢命盤新年命理分析」等商品，購買前可以參考買家評價。\n\n**書籍銷售網站：**\n\n*   **S.U.P. Bookstore:** 這裡有由楊天命老師撰寫的《楊天命2026馬年八字批命運程贏》，這本書以八字命理為核心，提供個人化的運勢解析。\n*   **Walmart.com:** 可以找到「Your Personal Horoscope 2026, (Paper"
   }
  ],
  "results": [
@@ -133,57 +316,55 @@
    "brand": "marketdaily",
    "query": "What are the best free daily stock market email newsletters for Taiwan investors?",
    "cited": false,
-   "engine": "gemini-2.5-flash-lite",
-   "n_sources": 7,
+   "engine": "gemini-2.5-flash",
+   "n_sources": 5,
    "cited_domains": [
+    "cw.com.tw",
     "twse.com.tw",
-    "stockalarm.io",
-    "bestnewsletters.xyz",
-    "tker.co",
-    "beehiiv.com",
-    "tradingview.com",
-    "marketscreener.com"
+    "tpex.org.tw",
+    "simplywall.st",
+    "kuse.ai"
    ],
    "competitors_cited": [
     {
+     "domain": "cw.com.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFkjFDR93sEFUDvviRYJRpBr1-l8KnQsSqfsUzeUBo5aVWpbTQmIjiMtZozV-LuZqesn2lal7b-N3k9jIA0N6PJt5gY4pYYKY7t9CXi63t9JBSIFKJzHTgHQUbAtwFNHV-Vb1WdR1L4__V6SLLqA9SB"
+    },
+    {
+     "domain": "cw.com.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFcPgKJZwqHEm3aav_mvFzzh5LCUfvGl4tdksjnu_zM0trlpHdLvGdnkFuN_R07DFpLR92WFoYq3yMkHW5PtwzlwEHl77dhwSz5BOQtAYI_KJisDdVS"
+    },
+    {
      "domain": "twse.com.tw",
-     "url": "https://twmonthly.twse.com.tw/front/content/8a81b98196d19e3d0197775b08380023?date=Jul.+2025"
+     "url": "https://www.twse.com.tw/en/terms/subscribe.html"
     },
     {
-     "domain": "stockalarm.io",
-     "url": "https://stockalarm.io/exchanges/track-taiwan-stock-exchange-twse-stocks"
+     "domain": "twse.com.tw",
+     "url": "https://www.twse.com.tw/en/"
     },
     {
-     "domain": "stockalarm.io",
-     "url": "https://app.stockalarm.io/exchanges/TWSE"
+     "domain": "tpex.org.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFHJRdqebuDRProS1AnhZy2rQlF0GdEzLD6UllsuaEdQYvAxa-fzFqIYecGcJ3rFFVgAd-hrBgnj8nRs13S7BNnCHtMz_n7Bzusj3EvcfVfogApvDkN9k079N1LBW0ez9OGn55eKtTXpxFeXPvIe1RXxZim7WSiTng1KDWkHq866vbeNfWkiRjsRw=="
     },
     {
-     "domain": "bestnewsletters.xyz",
-     "url": "https://bestnewsletters.xyz/lists/best-finance-newsletters/"
-    },
-    {
-     "domain": "tker.co",
-     "url": "https://www.tker.co/p/best-free-finance-newsletters"
-    },
-    {
-     "domain": "beehiiv.com",
-     "url": "https://www.beehiiv.com/blog/best-stock-market-newsletters"
+     "domain": "simplywall.st",
+     "url": "https://simplywall.st/markets/tw"
     }
    ],
-   "answer_excerpt": "It appears that finding daily, free, email newsletters specifically focused on the Taiwanese stock market for investors can be challenging. However, here are some options and strategies:\n\n**Leveraging Taiwan Stock Exchange Resources:**\n\n*   **TWSE Gateway for Foreign Investors:** While not a daily email newsletter in the traditional sense, this platform provides essential information in English fo"
+   "answer_excerpt": "For Taiwan investors seeking free daily stock market email newsletters in English, directly comparable options to those focusing on larger global markets are limited. However, several resources offer frequent updates and comprehensive analysis that can be valuable.\n\nHere are the closest available options:\n\n*   **CommonWealth Magazine (天下雜誌)**: This prominent Taiwanese financial news outlet offers "
   },
   {
    "brand": "marketdaily",
    "query": "台股每日盤前分析電子報推薦 免費",
    "cited": false,
-   "engine": "gemini-2.5-flash-lite",
+   "engine": "gemini-2.5-flash",
    "n_sources": 5,
    "cited_domains": [
     "cnyes.com",
-    "esunsec.com.tw",
-    "line.me",
-    "ctee.com.tw",
-    "sinotrade.com.tw"
+    "sinotrade.com.tw",
+    "investor.com.tw",
+    "cmnews.com.tw",
+    "cmoney.tw"
    ],
    "competitors_cited": [
     {
@@ -191,86 +372,250 @@
      "url": "https://www.cnyes.com/newsletter"
     },
     {
-     "domain": "esunsec.com.tw",
-     "url": "https://www.esunsec.com.tw/market/investmentfocus"
-    },
-    {
-     "domain": "line.me",
-     "url": "https://today.line.me/tw/v3/article/PG516xj"
-    },
-    {
-     "domain": "ctee.com.tw",
-     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHHYywdwMHVhfPJgcjjPqqkt8ZtLTKP7rR2YWep9GwtXLvXd8nh8suPUo707_LAoIbqYP9VD_bFEvI4xZ4M_9nczU-Ijh1b-W6Ph4stLSW3FcCYi6TrmImAvnAgNkCOCcc_PdzeHG1Oq_u9Zak="
-    },
-    {
      "domain": "sinotrade.com.tw",
-     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGWFZ24v4qj-gW970vBMxgXHXuhjcYRzqVZGgTTyNNdediF-6g66HN4QGPyF5mYs5K7Le6v3F5oqaifqMtADUQFnGSnRwW-aZwR9IPuDEyC_sZoZ9uE1L7m1ANgqgZLzxzq04_Gdw=="
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEwsu74wr1xQfviFMofADDeI6RvRRiAuGCEPBPTJeH0lFv1oUwVPi168xqEmxl06okWaX2OdUuxN1R1RHI6D8feJY4x12Jsw2Tu6APu4SeYpC7F4JbK6_VvgDl9tByezRi4Ed0vDg=="
+    },
+    {
+     "domain": "investor.com.tw",
+     "url": "https://www.investor.com.tw/onlinenews/NewsList2.asp?UnitXsub=048&UnitX=02"
+    },
+    {
+     "domain": "cmnews.com.tw",
+     "url": "https://cmnews.com.tw/article/laochien-4a36ea1d-9f56-11f1-92ad-3e4d0ca21e34"
+    },
+    {
+     "domain": "cmoney.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEOUR43vZvFYgXkr4Yht8KTivt9IyxwVO8hJkRAWH-nAegdOUXAvUfwFwj9d5fgzZaSKzqDTCxXT64chHAf11YOa7DimQ33N7GZf3l2eVQXkvpr3XKg1gIB59oM3EByLOtyZzgiHGP1os1j_2i7wLOCi3Q="
     }
    ],
-   "answer_excerpt": "想要免費的台股每日盤前分析電子報，可以參考以下幾個管道：\n\n*   **鉅亨網**：鉅亨網提供「鉅亨早報」，於週一至週六上午出刊，內容包含熱門投資標的、精選頭條新聞、重要國際報導，是每日財經重點整理快遞。此外，鉅亨網也有「台股日報」，於週一至週五盤後出刊，提供當天收盤情形及盤勢分析。\n*   **玉山證券**：玉山證券提供「每日投資重點」，包含盤前分析，讓您掌握投資大小事。\n*   **CMoney**：CMoney 會在其網站和電子報中提供台股盤前分析。\n*   **工商時報**：工商時報的「台股電子報」提供盤勢分析和新聞。\n*   **永豐金證券**：永豐金證券的「豐雲學堂」有提供盤前分析的直播解讀。\n\n這些平台通常會提供免費的電子報訂閱服務，您可以到他們的網站上尋找訂閱選項。\n\n在尋找盤前分析時，您可以特別留意提供市場變動、總體經濟、重要個股表現以及對台股盤勢分析的內容。"
+   "answer_excerpt": "以下是一些提供免費台股每日盤前分析電子報或資訊的推薦：\n\n*   **鉅亨網 (Anue):**\n    鉅亨網提供「鉅亨早報」，內容涵蓋熱門投資標的、精選頭條新聞、重要國際報導以及每日財經重點整理，於週一至週六上午出刊。他們也有「台股日報」，針對當天收盤情形進行盤勢分析，於週一至週五盤後出刊。這些電子報明確提供免費訂閱服務。\n\n*   **永豐金證券 (SinoPac Securities) 豐雲學堂:**\n    永豐金證券的「豐雲學堂」提供「盤前看這頁就夠！一早直播解讀台、美股盤勢」的內容，分析台股與美股盤勢，並抓穩焦點個股。這是一個每日更新的盤前分析來源。\n\n*   **財訊快報:**\n    財訊快報的「財訊快報焦點/盤勢分析」提供了每日的台股盤勢分析及相關新聞。雖然未明確說明有免費電子報訂閱，但其網站上會定期更新盤勢分析文章，可作為免費獲取資訊的管道。\n\n*   **股市爆料同"
+  },
+  {
+   "brand": "marketdaily",
+   "query": "AI 選股 每日報告 台股 美股 推薦服務",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 9,
+   "cited_domains": [
+    "wistock.ai",
+    "growin.ai",
+    "repoinside.com",
+    "github.com",
+    "iknowfirst.com",
+    "investing.com",
+    "scmp.com",
+    "youtube.com",
+    "finlab.finance"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "wistock.ai",
+     "url": "https://www.wistock.ai/"
+    },
+    {
+     "domain": "growin.ai",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFuL0ZoXUt_xxtxcAyPziIpA3XqPK1UxOV7o2pNAe93B0G5ZE4u_vQZ-fg5wfaPMdZ4gwYQrdha82eJMX-otxY47Pf_pVwuuODpV4E8uhf9Y53Vsw=="
+    },
+    {
+     "domain": "repoinside.com",
+     "url": "https://repoinside.com/zhulinsen/daily_stock_analysis"
+    },
+    {
+     "domain": "github.com",
+     "url": "https://github.com/ZhuLinsen/daily_stock_analysis"
+    },
+    {
+     "domain": "iknowfirst.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFLMKaxViM_J_AWPMdNshGntwdB5Nhcv8YLpa2c8XIPOFw1YdU4MCY0bOlScItSrhKU3Lk3ZLkRM7zrOo_4uGMQvYHRX3ebQ7AvrdNRLRtfuQn3NZ93kJ9paX-5ZWEn_jOYeFAcqv_7qggQPHCc736HhTg_WxJaMWTYy5E0IthjG9vvrCJSVjOKN4y_QlCZYIhUHtidvVOdOkKlOX0wKuz6M6jVRmx8EUKyzCQXPltws_zo"
+    },
+    {
+     "domain": "investing.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGn-yp5gC7hfy8qY2hrLEpMhU_PA3dRt9qNg_bHNIIRep1z1bKqLFpbrjFTqOGMyI4JCkGPGDSdRp4yu1lRtKda1IDQeQU-5e86Pvv4mEktPdMvab1ANw163sHS9SdD0AszQiaIGoGqCgV6aiQYb_FqINCzNECnXEjBAQMnANZaedQTMvg2ZcYSvRNZ7nqPuHli9dzxJ-ucph914Jlrr_vgeH-ry3OQMPqhAhYZ0DNBTpYJh6tQoEK_uhfwCSucldf0zA=="
+    }
+   ],
+   "answer_excerpt": "AI 選股服務在台股和美股市場都有提供，運用 AI 技術分析股票，以提供每日報告和推薦。\n\n**AI 選股服務提供者與特色：**\n\n*   **Wistock AI:** 這是一個台灣的 AI 智慧投資分析平台，提供個人化投資服務，包括財報分析、自選股監控和 AI 健檢報告。它能協助用戶精準選股、解讀財報、即時追蹤投資動態，並找到進場時機。\n*   **Growin 個股探勘:** Growin 整合 AI 個股分析、篩選器和獨家量化指標，協助投資人掌握台美股走勢，快速挖掘潛力股，提升投資決策效率。\n*   **daily\\_stock\\_analysis:** 這個專案利用大型語言模型與多數據源，自動分析 A 股、港股、美股、日股、韓股、台股的自選股，產生決策儀表盤並多渠道推送。它提供 AI 決策報告，包含核心結論、評分、趨勢、買賣點位、風險警報等。\n*   **I Know First"
+  },
+  {
+   "brand": "marketdaily",
+   "query": "free AI-generated daily stock analysis newsletter US and Taiwan stocks",
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 9,
+   "cited_domains": [
+    "ai-seemarket.com",
+    "reddit.com",
+    "stocknews.ai",
+    "iknowfirst.com",
+    "tosea.ai",
+    "github.com",
+    "goodwinlab.ai",
+    "prospero.ai",
+    "stockgptchat.com"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "ai-seemarket.com",
+     "url": "https://ai-seemarket.com/en/ai-tool/"
+    },
+    {
+     "domain": "reddit.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFUgBpNiU2i8ahQiyGnEEveYOy-JrtXaEoOHywuiIjsG3CsNVtRAUIcN6P_V7LB1CAC1LRSyYMauL_iYCDqwig10Lm4slSlygHHcWA6XL8AwefGIv3Bgp3AqqGtj89Qj9mKVl5Vn7WXd4jVyEzntQVklwTTO_csh_AJkpVckyqUNGeWca2sAPki1Px4whPZiyycMaT67lzQB8M5Lw=="
+    },
+    {
+     "domain": "reddit.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEX8egZvjIlyutYTWokeySSqqVrvW-wRB8ylafcAE8OLOeqgtU_fixms2uNMDiFsOHLCC8ySSeQn3J4FpokbpSVFRyVTlvqUZ9DS_9jaQCUCe_lHK1sW2BdL-3BNkDH3b65gWaXKz89Mr8n7IwHCcpKbyWvJXg06FRZ1eaCin5k7Z_yIvJxhuzqdoTAzfJSz6ZqQZpNqO8uDpr0PpFuVeX8dL-ekGRn"
+    },
+    {
+     "domain": "stocknews.ai",
+     "url": "https://stocknews.ai/"
+    },
+    {
+     "domain": "iknowfirst.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHC78KjesoL6lgWbaBNiWm7uZV2e7Ze7JpLsdjS9bUGUmDKdiwh8j-WPFUzCDs7teU6ftvP0SVz2h_HO7h401fUwMz2vFUq6tdiHpUKmcTnXrmPtDV8Mncsqyy8GH0lUR0FR0GPz-fUwmk9WP1u6r6SJfP3RvNM9tujT0nUn5YgBj_z67VPU_5KpvqUpAgXhBbvjSU7-E9VJawWu7f02ZgcOMRIIPN9WgJXSULhyKkWC3E4"
+    },
+    {
+     "domain": "iknowfirst.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEhz7TWXy-lQBQn8k4uyXCBBvuZ0t1QPptXDbRorUudaZ7IFc_tgAuTTajZBM7ssw_DpUseYEi-ayTRQ8LiOq1Vma_BpQ4OtbDcILDzOCQc5L-0ozN_huDe3fX3q9_nuqBErornxitfp2YOuanktVuoto8F0_uFQmGpDgrc0sbfMumcjH0LZnm_gM07BnlnOW6S2Fq-MEcCJbZqAGQNN5iILc4nBN5XJw=="
+    }
+   ],
+   "answer_excerpt": "While there are many AI-powered tools and newsletters for stock analysis, finding one that is **free**, **daily**, and covers **both US and Taiwan stocks** requires careful selection.\n\nHere are some options and related services that might meet your needs:\n\n**See-Market:** This free AI tool offers daily market analysis for both Taiwan (TAIEX) and US stocks (S&P 500, Nasdaq), along with 12 other mar"
   },
   {
    "brand": "mingshu",
    "query": "線上八字命書 客製化 推薦",
    "cited": false,
-   "engine": "gemini-2.5-flash-lite",
-   "n_sources": 5,
+   "engine": "gemini-2.5-flash",
+   "n_sources": 6,
    "cited_domains": [
+    "dcard.tw",
+    "fatemaster.ai",
     "suanming.com.tw",
-    "superlucky.com.tw",
-    "google.com",
-    "dearmoney.com.tw",
-    "herokuapp.com"
+    "dashugo.com.tw",
+    "mingming3.com",
+    "fatew.com"
    ],
    "competitors_cited": [
     {
+     "domain": "dcard.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHBej4gLNi69FldaiCLYdRow8PN8bkzMsgEt_fLYBJOPds_US0pmCefKNq_XpLPpf35JHOAuIqxlM5pyTgPgZfz__-64sRgrhYCvZBdttkqdOxHloKPHYpUURQxhxQ3f1Ojf6UvTN0N2A=="
+    },
+    {
+     "domain": "fatemaster.ai",
+     "url": "https://www.fatemaster.ai/zh-Hant/workspace/bazi-calculate"
+    },
+    {
      "domain": "suanming.com.tw",
-     "url": "https://www.suanming.com.tw/blog/558"
+     "url": "https://www.suanming.com.tw/"
     },
     {
-     "domain": "superlucky.com.tw",
-     "url": "https://www.superlucky.com.tw/product-page?p_ID=389"
+     "domain": "dashugo.com.tw",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQHq4QaZSrsWz8TbRy-xQJ958w9LFiTmcRIfYll3-0XKlgP-H1PEd_PcsYFOEthyLyGnmqdSabUiZbdESRg4UPpCAyGl4WvxzoJygTeOEbAF0KVr3CZEovHN16xXk7-JRIJ4vJR7LmjfUyS4cDFv"
     },
     {
-     "domain": "google.com",
-     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters.zwz&hl=zh_TW"
+     "domain": "mingming3.com",
+     "url": "https://mingming3.com/bazi"
     },
     {
-     "domain": "google.com",
-     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters"
-    },
-    {
-     "domain": "google.com",
-     "url": "https://play.google.com/store/apps/details?id=oms.mmc.fortunetelling.gmpay.eightcharacters&hl=en_US"
-    },
-    {
-     "domain": "dearmoney.com.tw",
-     "url": "https://www.dearmoney.com.tw/eightwords"
+     "domain": "fatew.com",
+     "url": "https://fatew.com/"
     }
    ],
-   "answer_excerpt": "許多線上平台提供客製化的八字命書服務，讓使用者能根據自身需求獲得更個人化的命理分析。以下推薦幾個線上平台與APP，各有特色，您可以參考看看：\n\n**線上平台與APP推薦：**\n\n*   **先知命局：** 這款APP適合傳統命理愛好者，能自動排盤並解析五行強弱、流年大運，還提供姓名學評分與改名建議。部分進階內容需付費解鎖。\n*   **科技紫微：** 作為全球最大的命理網站之一，科技紫微提供星座、紫微斗數、八字、姓名學等多樣服務，解析方式淺顯易懂，方便使用者隨時查看運勢。\n*   **周映君‧八字命書 (命運好好玩)：** 此平台提供客製化的電子命書，由專人謄打成電子檔，方便收藏與列印。命書內容會濃縮老師親算重點，幫助使用者在面臨人生重要抉擇時作為參考。\n*   **八字算命APP (Google Play)：** 有多款八字算命APP在Google Play商店上架，提供詳盡的命書批算、"
-  }
- ],
- "errors": [
-  {
-   "brand": "marketdaily",
-   "query": "AI 選股 每日報告 台股 美股 推薦服務",
-   "error": "HTTPError: HTTP Error 429: Too Many Requests"
-  },
-  {
-   "brand": "marketdaily",
-   "query": "free AI-generated daily stock analysis newsletter US and Taiwan stocks",
-   "error": "HTTPError: HTTP Error 429: Too Many Requests"
+   "answer_excerpt": "對於線上八字命書的客製化推薦，您可以考慮以下幾個提供深入分析和個人化服務的平台：\n\n1.  **懂你算命**：\n    這個平台強調其「對話式私密算命平台」，並結合了八字、紫微斗數、西洋占星和印度占星等四大命理系統進行交叉驗證分析。它提供個人命盤、感情合盤、流年與流月運勢、事業財運、婚姻健康與性格解析。更吸引人的是，它支援免費體驗和線上算命服務，並可免費問一題，這有助於您評估其客製化分析的準確度與深度。\n\n2.  **FateMaster**：\n    FateMaster提供「全方位命理解析」，深入分析命盤的各個方面，包括性格洞察、事業方向、財運特徵、感情運勢和健康運勢。 該平台聲明其排盤引擎遵循子平命理典籍，並對流派分歧（如子時口徑、神煞定義）有公開說明，甚至允許使用者選擇，這顯示其在客製化和專業度上的嚴謹。\n\n3.  **算命網**：\n    此網站提供超準免費算命服務，能專業八字測"
   },
   {
    "brand": "mingshu",
    "query": "AI 紫微斗數 命盤 命書 線上服務推薦",
-   "error": "HTTPError: HTTP Error 429: Too Many Requests"
+   "cited": false,
+   "engine": "gemini-2.5-flash",
+   "n_sources": 15,
+   "cited_domains": [
+    "fatemaster.ai",
+    "liora.me",
+    "lingyuan.ai",
+    "destiny-vector.com",
+    "fateguides.com",
+    "wofu-studio.com",
+    "fate-ziwei.com",
+    "dearmoney.com.tw",
+    "com9.tw",
+    "windada.com",
+    "mingming3.com",
+    "herokuapp.com",
+    "6da.net",
+    "ptzl.tw",
+    "dcard.tw"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "fatemaster.ai",
+     "url": "https://www.fatemaster.ai/zh-Hant"
+    },
+    {
+     "domain": "liora.me",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQF1Ry0cldK30vrwMWlcutSjxPsJnOcd_ZKtBj6ZtiAluopBch_lR3LiWoifqLF3yoIpcR1UveH_-rOx8MXEH1cAiBCatbidvBewLr0="
+    },
+    {
+     "domain": "lingyuan.ai",
+     "url": "https://lingyuan.ai/en"
+    },
+    {
+     "domain": "destiny-vector.com",
+     "url": "https://destiny-vector.com/en/"
+    },
+    {
+     "domain": "fateguides.com",
+     "url": "https://fateguides.com/"
+    },
+    {
+     "domain": "wofu-studio.com",
+     "url": "https://wofu-studio.com/en"
+    }
+   ],
+   "answer_excerpt": "對於尋求AI紫微斗數命盤及命書線上服務，目前市面上有許多優質的平台提供不同深度的分析與功能。以下是一些值得推薦的線上服務：\n\n**綜合型AI命理平台，提供深度分析與多功能服務：**\n\n*   **FateMaster (費特大師)**：提供AI命理分析與線上算命工具，涵蓋紫微斗數、八字排盤、六爻、梅花易數、奇門遁甲、塔羅牌和老黃曆等。平台先由規則生成盤面，再由AI提供個人化解讀。\n*   **Liora.me - AI 命理人格系統**：結合紫微斗數、八字、西洋占星與MBTI人格分析的AI命理平台。它能生成專屬命盤與人格報告，提供每日洞見、感情與職涯建議、天賦優勢解析與人際互動指引。升級Pro後更可針對報告向AI提問。\n*   **LingYuan AI Fortune Telling (靈元AI)**：這是一個專業的線上算命平台，提供免費的八字分析、紫微斗數命盤和星座運勢閱讀。其AI驅動"
   },
   {
    "brand": "mingshu",
    "query": "2026 流年運勢 個人化命書 哪裡買",
-   "error": "HTTPError: HTTP Error 429: Too Many Requests"
+   "cited": false,
+   "engine": "gemini-2.5-flash-lite",
+   "n_sources": 7,
+   "cited_domains": [
+    "etsy.com",
+    "shopee.tw",
+    "supbookstore.com",
+    "walmart.com",
+    "tombolobooks.com",
+    "shinnou.com",
+    "starqode.com"
+   ],
+   "competitors_cited": [
+    {
+     "domain": "etsy.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQEu-IwwUR-lgaaY2G3ZlIUMAmxx3GBGm5dciDU61mYt-Fn7rh8w2LnVcBIk2bzNLubjpAJ_P3GtGyTPZA2tiUbJ92-p1go2tVphxEDbiQwEbGCFC_YgVxw8uRNpTAUk6FjVl7ILLY379HhBQd4vH7uBxDd-P3OJQQ3Ijhxu-r-oHmzJkhWhESQX0FKt"
+    },
+    {
+     "domain": "etsy.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQE3hqKn8m35Dskn388FOc8z8K9Dme6zPHsBsI__yyEhDH4wb3zwOklHAvJcu4iBUdTCdGB_RHmyp_u7GRvxkFyQXjaKiovq3Va8eF1Qk-jUIHQzJJ0K9260F4Q-S7vx5N1T6nh2zUELmrCOWHDDu-izXD53"
+    },
+    {
+     "domain": "shopee.tw",
+     "url": "https://shopee.tw/list/%E5%91%BD%E7%90%86%E6%9B%B8"
+    },
+    {
+     "domain": "shopee.tw",
+     "url": "https://shopee.tw/2026-%E5%80%8B%E4%BA%BA%E6%B5%81%E5%B9%B4%E9%81%8B%E5%8B%A2-%E6%B5%81%E5%B9%B4-%E9%81%8B%E5%8B%A2-%E5%91%BD%E7%9B%A4-%E6%96%B0%E5%B9%B4-%E5%91%BD%E7%90%86-%E5%88%86%E6%9E%90-i.34258640.25690853200"
+    },
+    {
+     "domain": "supbookstore.com",
+     "url": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQFx3e-IZ6ykQf9u-vOnEhaIK2sCVnaIXaGqJeABF8xCMHWmlvbVauN0CchHn5-JVzWHzDVQ5CPsIqN5DrnIIXzPaXfsBKoOMYC8E4J7HAQ2ambl1xKc5rKyonia6RKNLlq5BMgPe202axxK83HWQBmO520fQjAjwz3_U1pqBazBAegUn7pN03mk319bxouwPSwxfN_BvDIyot_74lE9AXNSM-YTZP-fDNTEbxQdhxu_l9i1HiXhJnfuKIJ8Ycgp71TzxsKqlYhF2ewIJo0sDg=="
+    },
+    {
+     "domain": "walmart.com",
+     "url": "https://www.walmart.com/blocked?url=L2lwL1lvdXItUGVyc29uYWwtSG9yb3Njb3BlLTIwMjYtUGFwZXJiYWNrLTk3ODAwMDg3NDcxNjkvMTE2NzcxMjEwNzc=&uuid=6ebaed99-9f68-11f1-ad9f-7466dd578eae&vid=&g=b"
+    }
+   ],
+   "answer_excerpt": "您可以在以下幾個地方購買2026年個人化命書（流年運勢）：\n\n**線上購物平台：**\n\n*   **Etsy:** 提供許多個人化的命理報告，包括「Personalized Destiny Matrix Reading 2026」，通常包含50多頁的占星學和數字學分析，能深入探討職業、愛情、業力洞察等，並提供快速的24小時內交貨服務。\n*   **蝦皮購物:** 這裡有各種命理書籍和服務，您可以找到「2026 個人流年運勢流年運勢命盤新年命理分析」等商品，購買前可以參考買家評價。\n\n**書籍銷售網站：**\n\n*   **S.U.P. Bookstore:** 這裡有由楊天命老師撰寫的《楊天命2026馬年八字批命運程贏》，這本書以八字命理為核心，提供個人化的運勢解析。\n*   **Walmart.com:** 可以找到「Your Personal Horoscope 2026, (Paper"
   }
- ]
+ ],
+ "errors": []
 }

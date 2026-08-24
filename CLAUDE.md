@@ -26,7 +26,7 @@
 |------|------|
 | `docs/index.html` | 首頁（Landing page，i18n 中英切換，預設中文） |
 | `docs/dashboard.html` | 用戶後台（股票偏好摘要、管理員面板） |
-| `docs/preferences.html` | 股票偏好設定（美股 / 台股，含公司名稱顯示） |
+| `docs/preferences.html` | ⚠️ 已廢棄＝redirect 到 `dashboard?focus=stocks`；股票偏好 UI 只在 dashboard.html 維護（見 memory `feedback_dashboard_prefs_sync`、`docs/CLAUDE.md`） |
 | `docs/admin.html` | 管理員後台（KV 資料管理、用戶清單） |
 | `docs/ui-pro.js` | 共用 UI 強化層（grain、scroll bar、transition、ripple） |
 | `output/` | 產生的 HTML Email digest |
