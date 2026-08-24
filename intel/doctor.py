@@ -53,19 +53,33 @@ RETRIES = 2  # 網路層(status 0)才重試。tpex.org.tw 實測有節點憑證�
 OK, CONFIG, BROKEN = "ok", "config", "broken"
 
 
+# 體檢要讀的 .env 檔清單,**順序與各 connector 在 production 的載入順序一致**。
+# ⭐ 2026-08-24:doctor 原本只讀根目錄 .env,而 intel/social_buzz.py:43 明寫
+#   「THREADS_ACCESS_TOKEN 住在 marketing/.env(auto_post.py 同源)」⇒ 生產跑得好好的,
+#   體檢卻天天把 threads 報成「需設定(缺金鑰,要人去申請)」。這是本檔上線首日就踩過的
+#   同一類坑的第二形態(當時是 transport/UA 沒跟生產一致而誤報 4 個健康渠道):
+#   **探測必須沿用該 connector 在 production 的取值路徑**,否則體檢在回答另一個問題。
+_ENV_FILES = (".env", os.path.join("marketing", ".env"))
+
+
 def _env():
-    """讀 .env,不依賴 python-dotenv(doctor 必須在任何環境都能跑)。"""
+    """讀 .env,不依賴 python-dotenv(doctor 必須在任何環境都能跑)。
+
+    先到先得(setdefault):真實環境變數 > 根 .env > marketing/.env,與 connector 端
+    「不覆蓋 root 已有值」的語意相同。
+    """
     out = dict(os.environ)
-    try:
-        with open(os.path.join(REPO, ".env"), "r", encoding="utf-8", errors="replace") as f:
-            for line in f:
-                line = line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                k, v = line.split("=", 1)
-                out.setdefault(k.strip(), v.strip().strip('"').strip("'"))
-    except Exception:
-        pass
+    for rel in _ENV_FILES:
+        try:
+            with open(os.path.join(REPO, rel), "r", encoding="utf-8", errors="replace") as f:
+                for line in f:
+                    line = line.strip()
+                    if not line or line.startswith("#") or "=" not in line:
+                        continue
+                    k, v = line.split("=", 1)
+                    out.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+        except Exception:
+            continue
     return out
 
 
