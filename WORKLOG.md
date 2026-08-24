@@ -7932,3 +7932,8 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 ### 2026-08-24 (續2) CREW 網域定案+掛網:crewhq.digital
 - Delvin 先買 crewdigital.vip → 查證 .vip 是 Spamhaus 高濫用 TLD(投機新創/加密貨幣重災區)不建議當主網域,留備用;改買 **crewhq.digital**(採用建議名單首選)。
 - 已用 Workers Custom Domain API 把 crewhq.digital attach 到 crew worker(zone/cert/DNS 記錄皆已就緒),**NS 委派傳播中,尚未實測 200**(open #555)。`crew.marketdaily.ai` 完全未動,8/25 demo 連結零風險。是否日後 301 舊網址留待 Delvin 拍板,未自行執行。
+
+### 2026-08-24 (續3) CREW 正式遷移到 crewhq.digital,舊網域 301 全站保留
+- Delvin 授權「你決定就好」→ 決定+執行(非留兩域並存):NS 傳播完成後 headless 截圖比對零差異,`~/crew/src/index.js` 加 hostname 判斷 301(path+query 全保留,舊報告連結永久有效)。
+- ⭐ 踩坑:`wrangler.jsonc` run_worker_first 只列 /api/* 與 /r/*,首頁等路徑不進 Worker,轉址一開始對它們不生效——擴大成 /* 修正,生產全路徑實測過(舊域皆301/新域皆200)+npm test 全過。
+- 作戰卡、qfx記憶、vendor_takeover記憶三處網址已同步換新;已 commit+push(crew repo + Delvin-agent repo)。open #555 已關。
