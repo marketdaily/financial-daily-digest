@@ -7928,3 +7928,7 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - Delvin 提議「網站維護+SEO 直接 demo CREW Digital」。查證:CREW=活產品 crew.marketdaily.ai(舊記憶「查無資產#511」過時,已修正 qfx 記憶)。
 - 會前實跑 kingconn.com.tw 掃描(API 逐步,10/10 零錯):**報告 crew.marketdaily.ai/r/b3c7f1ae18a54f958119**——6 個買家問題皇海全 NOT CITED,被引用=Samtec/Molex/Amphenol/TE。headless 驗渲染 OK、頁上零價格、可切中文。
 - 作戰卡新增 05 Demo 動線段(含兩雷:不開 CREW 首頁防 US$49 錨價;Print/PDF 網路備援),同 URL 重發佈。
+
+### 2026-08-24 (續2) CREW 網域定案+掛網:crewhq.digital
+- Delvin 先買 crewdigital.vip → 查證 .vip 是 Spamhaus 高濫用 TLD(投機新創/加密貨幣重災區)不建議當主網域,留備用;改買 **crewhq.digital**(採用建議名單首選)。
+- 已用 Workers Custom Domain API 把 crewhq.digital attach 到 crew worker(zone/cert/DNS 記錄皆已就緒),**NS 委派傳播中,尚未實測 200**(open #555)。`crew.marketdaily.ai` 完全未動,8/25 demo 連結零風險。是否日後 301 舊網址留待 Delvin 拍板,未自行執行。
