@@ -7858,3 +7858,17 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   免費方案不蓋 logo(同一封信反面確認)。
 - open:#528 缺 Brevo SMTP 憑證(後台一頁) · #529 追蹤連結要不要關 · #530 「國際公司」口徑
   目前只寫得出「國際規格·台北設點」 · #525 noindex 未放行 · #521 token 待旋轉。
+
+### 2026-08-24 續:qfxsolution.com 對外開放 + Brevo 追蹤查證(推翻我自己前一則的說法)
+- 老闆說「放」。/ 與 /zh/ 已可收錄,打樣頁維持 noindex。
+- ⭐⭐ **只拿掉 HTML 的 `<meta robots>` 是假綠**:`_headers` 裡有 `/* X-Robots-Tag: noindex`,
+  標頭優先級更高、從原始碼看不出來。線上 `curl -sI` 實查才抓到,不然我會回報「已放行」而它其實沒放。
+- ⭐ 打樣頁刻意不在 robots.txt Disallow —— 被 Disallow 就讀不到 noindex,反而可能留在索引裡。
+- 加 robots.txt / sitemap.xml(含 hreflang) / Organization JSON-LD(不放查不到的欄位) / 安全標頭;
+  對外頁移除內部打樣存檔連結。
+- **Brevo SMTP 憑證到齊並實測**:登入帳號 `abcb31001@smtp-brevo.com` 是我從 `/v3/account` 的
+  relay 欄位挖到的(老闆只給了金鑰),AUTH 成功。只做認證握手不寄信。
+- ⭐⭐ **老闆說「追蹤一起關」,但查證後這件事做不到**:Brevo 交易信/SMTP relay 的連結追蹤
+  **沒有關閉選項**(只有匿名化);能關的只有行銷 campaign。我先前寫「要關只能整個帳號關」是錯的。
+  ⇒ 要完全不改寫連結只能回 Google Workspace(#531)。已如實回報,不用匿名化假裝解決。
+- open:#531 寄信路線待拍板 · #518 無資安證照 · #521 token 待旋轉 · #530 國際公司口徑。
