@@ -226,7 +226,20 @@ MS_SITEMAP = "https://mingshu.tw/sitemap.xml"
 
 
 MS_ORIGIN = "https://mingshu.tw/"
-MAX_EXPAND = 500          # 單一 @token 展開的筆數上限(超過=清單來源異常,不是我們長大了)
+# 單一 @token 展開的筆數上限 = **爆炸半徑上限**,不是異常偵測器。
+# 2026-08-24:命書 pSEO 從 142 頁長到 576 頁(真的是我們長大了),撞破舊上限 500 ⇒
+# config_problems 判「清單來源異常」→ 整個掃描 fail-closed 中止 ⇒ ms_pseo 這一面
+# **連續 3 晚沒有人看著**,而命書是唯一有真金流的線。舊註解「超過=清單來源異常,
+# 不是我們長大了」在寫下時是對的,但它把一個會自然成長的量寫成了固定天花板。
+# 「來源被污染」由另外兩道守衛認,它們不吃這個數字:
+#   ① sitemap_urls 的 origin 過濾 + dropped 計數(file:// / 內網 IP / 他網域一律拒收並判紅)
+#   ② EXPAND_HIST 基準漂移守衛(相對於近 N 晚的突增才是異常訊號)
+# ⇒ 這裡只需留足夠成長空間 + 擋住失控清單(576 → 2000 約 3.5 倍餘裕)。
+MAX_EXPAND = 2000
+# 逼近上限的提前示警門檻。2026-08-24 的形狀是「零預警地從正常直接變全站黑掉」:
+# 前一晚 499 頁還全綠,隔晚 501 頁就整個掃描 fail-closed 中止,而 ms_pseo 是唯一有
+# 真金流那條線的合規面。硬上限本身要留著(它擋失控清單),但撞牆前必須先出聲。
+EXPAND_WARN_RATIO = 0.8
 
 
 def sitemap_urls(sitemap=MS_SITEMAP, skip=("https://mingshu.tw/",), origin=MS_ORIGIN):
@@ -1154,6 +1167,12 @@ def scan_surface(sf, write_ledger=True):
             res["detail"] = "展開後一個網址都沒有(來源清單消失了)"
             return res
         if str(url).startswith("@"):
+            # 逼近爆炸半徑上限 → 只示警不中止(撞破才 fail-closed)。這一句是 2026-08-24
+            # 事故的偵測面:當晚之前沒有任何訊號說「快撞牆了」,直接就整面黑掉 3 晚。
+            if len(urls) >= MAX_EXPAND * EXPAND_WARN_RATIO:
+                res["expand_warn"] = (f"{url} 展開 {len(urls)} 個網址,已達上限 "
+                                      f"{MAX_EXPAND} 的 {len(urls) / MAX_EXPAND:.0%}"
+                                      "——撞破就整個掃描停擺,該調高上限了")
             shrink = expand_problem(url, urls, record=write_ledger)
             if shrink:
                 # 覆蓋面縮小/來源被污染 = 守衛自己壞了(exit 3),不是「今晚乾淨」
@@ -1304,6 +1323,7 @@ def run(only=None, write_ledger=True, workers=5):
                                  sorted(r["id"] for r in R.RULES if r["id"] not in expected))
     report["not_run_due_to_unknown"] = sorted(expected - applied)
     # 掃描當下才發現的設定問題(清單腰斬、來源被污染)——與開跑前的 config_problems() 同級
+    report["expand_warns"] = [s["expand_warn"] for s in report["surfaces"] if s.get("expand_warn")]
     scan_cfg = [s["config_problem"] for s in report["surfaces"] if s.get("config_problem")]
     if scan_cfg:
         report["selfcheck_problems"] = report["selfcheck_problems"] + scan_cfg
@@ -1344,6 +1364,8 @@ def render(rep):
     L.append(f"法務合規哨兵 {rep['generated']}  規則 {rep['rules_total']} 條 / "
              f"檢查 {rep['checks_run']} 次")
     L.append(f"  ✅ 乾淨 {rep['clean']} 面 · 🔴 違規 {rep['violation']} 面 · ⚠️ 未涵蓋 {rep['unknown']} 面")
+    for w in rep.get("expand_warns") or []:
+        L.append(f"  ⚠️ {w}")
     if rep.get("partial_scan"):
         L.append(f"  ⚠️ 本次為部分掃描(--only {' '.join(rep['partial_scan'])}),"
                  "規則覆蓋率守衛未啟用——這次的「乾淨」不代表全站")
