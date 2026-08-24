@@ -8025,3 +8025,28 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⭐ **教訓(自傷)**:我用 `git checkout <file>` 回退一個壞編輯,把同檔案裡**其他四項還沒 commit 的修改一起洗掉**,
   只好整批重做。有未 commit 的工作時,絕不用 checkout 當 undo。
 - 實測:打贏全部 6/6、99 秒、零 console error、每篇語言與其題目一致;免費方案在第 2 題停下並照實說明上限。
+
+### 2026-08-24 (續8) 引擎額度歸零→自行取得金鑰→證偽測試閉環
+- 兩個量測引擎同時見底(Tavily 997/1000 月額度、Gemini 當日配額)。老闆令「你自己去想辦法拿 key」。
+- **自行取得**:winrig 的 gcloud(兩個 Google 帳號皆已授權)→ 在 `marketdailyhq` 的 AI Studio 專案
+  `gen-lang-client-0291566266` 建 CREW 專屬 key(限定 generativelanguage API),實射 200。
+- ⚠️ **但換 key 救不了**:grounded 搜尋的配額**綁專案不綁 key** —— 全新 key 一樣 429。
+  兩個帳號的專案都已見底。這個事實花了一小時才查出來,根因是下面第二點。
+- ⭐⭐ **四個配額桶有兩個是幽靈**:`MODELS` 寫死四個,而註解自己寫著「一律用 models API 列出來」——
+  規則寫了實作沒做。較新專案上 `gemini-2.5-flash` / `-lite` 已停售回 404。改成真的探測:
+  同一把 key 從 4 個(2 幽靈)變 **12 個真桶**,正式版優先、同級新版先試。
+- ⭐ **429 不說原因**:上游訊息被丟在 `err.body` 裡沒人看,分不出限流/當日/grounding 三種桶。已帶出。
+- ⭐⭐ **更正一個我講錯的判斷**:crew 主 key 尾碼 z87E = `Delvin-agent/.env` 的 GEMINI_API_KEY
+  = **日報在用的那把**。我今天十幾輪回測都在吃它(#573)。已把 CREW 換到專屬 key 並刪掉重複的第二格,
+  從此不可能再餓死日報。記憶庫有同型事故 [[project_gemini_quota_partition]]。
+- **`/api/admin/engines`**:預設不吃配額(Tavily usage + Gemini models 列表),`?deep=1` 才真打一次。
+  ⚠️ 它自己第一版把判準寫成 `left > 0` —— 剩 3 個就說「可以量測」,而一輪要 6。
+  **判準要對著「一輪跑得完」寫**。已改 `>= MAX_QUERIES` 並列出 blocking。
+- Delvin 另開帳號給了新 Tavily key(0/1000)→ 裝上、`can_measure_now: true`。
+- ⭐⭐ **證偽測試閉環**:六個網站全 0 引用有兩種解釋(真的沒有 / 機器不會說有)。
+  ①`test/judge.test.mjs` 12 條斷言證明邏輯兩個方向都對;
+  ②生產實跑 `emailtooltester.com` → **cited=True**,來源清單含它本人。
+  **原因也查清楚了:AI 回答「最好的 X」時引用的是評測/比較站,不是廠商官網** —— 所以廠商幾乎必然是 0,
+  那是這個市場的常態而不是醜聞,對外話術要照這個講。
+- 「被引用」這個畫面狀態**在此之前從未在生產出現過**,一併驗:判決句自動換成「有 1 題提到了…」、
+  綠色標籤、命中列不再顯示缺口動作、剩餘缺口仍有「打贏全部」、零 console error。

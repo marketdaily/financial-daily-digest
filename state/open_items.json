@@ -5728,5 +5728,15 @@
   "opened": "2026-08-24 18:59",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 574,
+  "what": "Tavily key 貼進了對話,demo 後建議旋轉",
+  "why": "Delvin 直接把 tvly-dev-...WsG4 貼在聊天視窗,該字串已留在 transcript 裡。目前它是 CREW 生產用的 TAVILY_API_KEY(1000 credits 全新帳號)。不急,但用完 8/25 後應到 app.tavily.com 重新產一把並換上,舊的作廢。與 #521(Cloudflare token)同一類",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-24 19:25",
+  "closed": null,
+  "note": ""
  }
 ]
