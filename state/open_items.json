@@ -5738,5 +5738,15 @@
   "opened": "2026-08-24 19:25",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 575,
+  "what": "ProtoForge /kc:2 顆重讀後建模失敗(make_box Standard_DomainError),目前線上是舊版模型",
+  "why": "父行程跑的是批次啟動時的舊碼,保留失敗 spec 的修補沒生效 ⇒ 證據沒留下,要等批次結束用新碼重跑那兩顆才查得出根因",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 20:47",
+  "closed": null,
+  "note": ""
  }
 ]
