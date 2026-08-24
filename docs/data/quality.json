@@ -140,8 +140,9 @@
     "verdict": "incomplete",
     "llm_tiers": {
      "gemini": 3,
-     "groq_free": 16,
-     "cf_free": 3
+     "groq_free": 30,
+     "cf_free": 18,
+     "unknown": 6
     }
    }
   ]
@@ -167,5 +168,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-08-24T11:08:02Z"
+ "generated_utc": "2026-08-24T11:38:02Z"
 }
