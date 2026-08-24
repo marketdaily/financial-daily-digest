@@ -149,7 +149,7 @@
   ]
  },
  "selfheal": {
-  "tw": null,
+  "tw": "none",
   "us": null,
   "disabled": false
  },
@@ -169,5 +169,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-08-24T00:38:01Z"
+ "generated_utc": "2026-08-24T01:08:01Z"
 }
