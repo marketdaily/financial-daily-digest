@@ -7887,3 +7887,17 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **順手修**：模型鏈只認 429（額度耗盡）換模型，529 Overloaded 直接往上炸整批死。兩種失敗要兩種處置（額度→換模型；過載→原地退避重試）。命書 generate.py 與 MarketDaily news_reactive.py 都補上。
 - 樣張本 Artifact（老闆看得到的交付）：https://claude.ai/code/artifact/da2db322-c536-41a8-871a-7a52aebf221c
 - open：#539 新風格未在真實發文跑過 · #540 命書 @ 白名單待 Delvin 指定 · #541 分平台上限與新窗口首班未驗
+
+### 2026-08-24（第二輪）老闆：「你他媽只是換了個顏色而已，去用我的 higgsfield credit nano banana 2 生成一些圖」
+- 他是對的：第一輪只換了版面/背景/配色，卡片裡沒有任何「畫面」。
+- 用 Higgsfield **Nano Banana 2** 生 14 張片場級底圖（2k / 4:5 / **28 credits**，餘額 1974→1946）。
+  兩組 rig 五欄全異（MarketDaily=Venice 2·Cooke 40mm·Fraser/Villeneuve·Sicario·Vision3 500T；
+  命書=Hasselblad H6D·HC120 macro·杉本博司·花樣年華·Eterna），所以兩個帳號不像同一個攝影師拍的。
+- 每支 prompt 帶同一段**交付約束**（上緣 45% 無細節暗場／畫面零文字／燈具不入鏡），
+  14 支全過 `genai_prompt_lint(image_prose)` 才送出 → **14/14 一次可用、零重生**。
+- ⭐⭐ **CLI 會把 `nano_banana_2` 模糊匹配成 Nano Banana _Pro_**（`higgsfield model get` 回錯 schema）。
+  要精準指定模型一律走 MCP exact id；CLI 只適合互動探索。已寫進 skill LESSONS。
+- ⭐ 遮罩改自適應（量上緣 45% 亮度決定壓多重）：固定 88% 會把花錢生的圖蓋掉，卡片又變回純色塊。
+- ⭐ 題材路由：news_reactive 的 lane 與命書的 pillar 決定選哪張底圖（國際配油輪／AI 配機房／節氣配露水）。
+- 順手修兩個排版事故：硬斷行造成的中間孤字行（「…會不會斷／供」）、直排最後一欄只剩一個字。
+- 樣張本已更新（同一個網址）：https://claude.ai/code/artifact/da2db322-c536-41a8-871a-7a52aebf221c
