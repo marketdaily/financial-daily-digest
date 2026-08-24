@@ -5466,8 +5466,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-24 14:15",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 17:32",
+  "note": "已真的看完影片(32格/4 sheets,非讀 caption)。片中 claude-seo 交付三段:技術稽核/AI可見度/優先序修復清單;CREW 已有第二段(intel席),補上 audit 席涵蓋第一三段(兩個分數+逐項檢查實測值+P1P2P3含why_it_matters+not_measured誠實欄)。順手修好 ig_sniff.py 的 html 變數遮蔽 bug(十六戰那條修法從沒跑成功過)"
  },
  {
   "id": 548,
@@ -5496,8 +5496,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 14:29",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 17:26",
+  "note": "改驗證聯絡人要 admin console UI 我做不到,但風險已解:watch_locked_inbox 加了 CRITICAL 例外,付款/帳單/停用/逾期/資安信一律突破自動信過濾並標🔴推到手機(測試 25 項全過)。Google 說『關鍵信可能收不到』這件事,現在有第二條路保證他看得到"
  },
  {
   "id": 551,
@@ -5576,8 +5576,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 16:34",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 17:26",
+  "note": "別名其實存在:收信端探測零退信、且被當自寄吸收 ⇒ From 被改寫只是 Google send-as 權限快取延遲(官方稱最多24h)。管線已改回 delvin@quietfix.studio 且實測進收件匣,不依賴它。工具留 alias_receive_probe.py"
  },
  {
   "id": 559,
@@ -5586,8 +5586,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-24 16:35",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 17:36",
+  "note": "沙盒 tunnel 自癒已實測(530→200);打贏全部已在生產按下去跑滿 6/6,並因此修掉四個真缺陷"
  },
  {
   "id": 560,
@@ -5626,8 +5626,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-24 16:35",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 17:31",
+  "note": "已用 4.5 秒停頓實測:800ms 會切成兩輪、4500ms 不會,旋鈕有效;預設 1800ms 可容忍 2.5 秒停頓"
  },
  {
   "id": 564,
@@ -5636,6 +5636,56 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-24 17:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 565,
+  "what": "Kaiwa:Gemini API 仍在免費層,課程語音只產出 12/110 段",
+  "why": "免費層 429+503 頻繁,TTS 預產跑不完;需要 Delvin 在 Google AI Studio 開啟帳單成為付費層,之後一次跑完 warm_tts.mjs",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-24 17:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 566,
+  "what": "Kaiwa:角色立繪尚未產出(目前用 emoji 代替)",
+  "why": "老闆選了「AI 生成真實角色立繪」,但本地 GPU 被佔滿+ComfyUI 未啟動,Higgsfield 路線尚未執行",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 17:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 567,
+  "what": "Kaiwa:發音關與角色對話關未經真人實測",
+  "why": "headless 無音訊裝置,錄音→評分、對話兩條路徑只驗到協定層與 UI,麥克風實際進音只有 Delvin 手機測過舊版",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-24 17:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 568,
+  "what": "Kaiwa:定價未拍板,月費要覆蓋 API 成本",
+  "why": "實測每分鐘 NT/bin/bash.41,20分鐘/天=NT45/月成本;建議 NT99/月含600分鐘,待 Delvin 決定",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 17:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 569,
+  "what": "CREW 新增的 audit 席尚未部署到 crew.marketdaily.ai",
+  "why": "crew repo 現在有別的視窗未提交的改動(agents.js/llm.js/package.json),部署會把別人做到一半的東西一起推上去。我的三個檔已 commit+push,等那個視窗收工後一起部署,或由該視窗順帶帶上去",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-24 17:32",
   "closed": null,
   "note": ""
  }
