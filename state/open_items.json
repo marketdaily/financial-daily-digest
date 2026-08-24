@@ -5598,5 +5598,35 @@
   "opened": "2026-08-24 16:35",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 561,
+  "what": "Kaiwa 語音練習 App:真人在真實裝置上講話的路徑尚未驗證",
+  "why": "WSL headless 下 Chrome 假麥克風訊號為 0(含內建嗶聲),麥克風進音這段自動測不到;協定層已用 TTS 真語音驗過模型聽得到並回話,但瀏覽器音訊堆疊→WS 這段只跑過靜音",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-24 16:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 562,
+  "what": "Kaiwa:未在手機(iOS Safari/Android Chrome)實測",
+  "why": "AudioWorklet 取樣率與 iOS Safari 的 AudioContext 行為是已知地雷區,只在桌面 Chromium 跑過",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 16:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 563,
+  "what": "Kaiwa:思考時間預設 1800ms 未經真人校準",
+  "why": "實測 800ms 也能容忍 2.5 秒停頓,4.5 秒停頓才會切成兩輪;真正該設多少要真人講話才知道",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-24 16:35",
+  "closed": null,
+  "note": ""
  }
 ]

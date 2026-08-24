@@ -7958,3 +7958,14 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   ADMIN_TOKEN 原本只存在 Worker secret、本機無副本 ⇒ 旋轉一次並存進 `~/crew/.env`(已 gitignore)。
 - 皇海站實查:`kingconn.com.tw` = Laravel + 首岳自建後台(session cookie `atteipo_session`),**無公開 API**
   ⇒ 8/25 話術改為「內容那半一鍵進草稿(要一組可撤銷的 Application Password),模板那半要有網站控制權=接管」。
+
+### 2026-08-24 (續4) 老闆的英日文口說練習 App(Kaiwa)—— 新專案 ~/kaiwa,已上線
+- 需求:老闆要給朋友家人練英文+日文,要 roleplay、體感像真人。決策=純自用不上架/先網頁/品質優先。
+- 選型:**Gemini Live 原生語音**(手上有 key,speech-to-speech 可打斷)。⚠️ **不要換 3.1-flash-live**——它忽略 `silenceDurationMs`(js-genai#1467 仍開),而那是「學習者停下來想單字不被搶話」的唯一旋鈕;用 `gemini-2.5-flash-native-audio-latest`。
+- 資安:臨時憑證 + `bidiGenerateContentSetup` + 全欄位 `fieldMask` 把人設鎖在伺服器。實測模擬憑證外洩改系統指令拿去當免費 ChatGPT → 被鎖定人設壓過,AI 回「日本語でのみお答えいたします」。
+- ⭐⭐ **三個坑(全寫進 ~/kaiwa/README.md)**:
+  1. 臨時憑證的連線方式**跟官方文件不一樣**:要 `v1alpha`+`BidiGenerateContentConstrained`+`access_token=`,照文件寫會被 1008 擋。是翻 @google/genai 的 dist 才找到的。
+  2. ⭐⭐ `START_SENSITIVITY_LOW` 讓模型**整段聽不到使用者說話且零錯誤訊息**。我把 START/END 兩個參數用「對稱」直覺一起設 LOW,但語意相反:START=多快認定開始講(要 HIGH),END=多慢認定講完(要 LOW)。這是最惡劣的失敗模式——使用者對著麥克風講話,畫面毫無反應。
+  3. `app.js`/`ui.js` 都宣告 `const $` → SyntaxError 讓 **ui.js 整支從未執行**,頁面看起來正常但按鈕全死。只有真瀏覽器測得出來(Node 語法檢查、curl 全綠)。
+- ⭐ **測試自己說謊三次**:①判準拿「整段音檔結束」當基準,我加了 6 秒尾巴靜音就自動判成「沒搶話」②串流中斷≠偵測到靜音,測試餵完就停 → 誤判成模型壞掉 ③重寫時把診斷拿掉,結果連續兩輪對著空結果猜原因。教訓:判準要對著「真正要問的事」(AI 插嘴幾次)寫,不要對著「方便量的東西」寫。
+- open:#真人實裝未驗(WSL headless 連 Chrome 內建嗶聲假麥克風都測到 0.000,麥克風進音自動測不到)、手機未測、思考時間預設值未校準。
