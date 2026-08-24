@@ -548,6 +548,19 @@ class ClaudeQuotaExhausted(RuntimeError):
     """claude CLI 額度耗盡(429)——基礎設施狀態,不是這則新聞的問題,不標 seen。"""
 
 
+# 上游暫時性故障(529 Overloaded / 5xx / 逾時)——與額度耗盡是**兩種不同的失敗**:
+# 額度耗盡要換模型(等再久也不會回來),暫時性故障要等一下再打同一個(換模型不會讓上游變不忙)。
+# 2026-08-24 在命書那條線實際踩到:opus 回 529,而模型鏈只認 429,RuntimeError 直接往上炸,
+# 整批內容補貨失敗。同一個缺陷這裡也有,一起修。
+_TRANSIENT_RE = re.compile(
+    r"api_error_status\D{0,4}(429|500|502|503|504|529)|overloaded|"
+    r"internal server error|bad gateway|gateway timeout|timed? ?out", re.I)
+
+
+class ClaudeTransient(RuntimeError):
+    """上游暫時性故障 —— 重試同一個模型。"""
+
+
 def _claude_once(prompt, timeout_s, model=None):
     cmd = ["claude", "-p", prompt, "--dangerously-skip-permissions", "--output-format", "json"]
     if model:
@@ -564,10 +577,15 @@ def _claude_once(prompt, timeout_s, model=None):
         result_txt = str(payload.get("result", ""))
         if payload.get("api_error_status") == 429 or _QUOTA_RE.search(result_txt):
             raise ClaudeQuotaExhausted(f"{tag}: {result_txt[:140]}")
+        if payload.get("api_error_status") in (500, 502, 503, 504, 529) or \
+                _TRANSIENT_RE.search(result_txt):
+            raise ClaudeTransient(f"{tag}: {result_txt[:140]}")
     if r.returncode != 0:
         err = (r.stderr or raw)[-300:]
         if _QUOTA_RE.search(err):
             raise ClaudeQuotaExhausted(f"{tag}: {err[-140:]}")
+        if _TRANSIENT_RE.search(err):
+            raise ClaudeTransient(f"{tag}: {err[-140:]}")
         raise RuntimeError(f"claude rc={r.returncode} (model={tag}): {err}")
     body = (payload if payload is not None else json.loads(raw))["result"]
     body = re.sub(r"^```(json)?|```$", "", body.strip(), flags=re.M).strip()
@@ -577,16 +595,27 @@ def _claude_once(prompt, timeout_s, model=None):
     return json.loads(body[start:end + 1])
 
 
-def call_claude(prompt, timeout_s):
-    """opus 額度滿才依序降級;全滿才拋 ClaudeQuotaExhausted(單一則告警)。"""
+def call_claude(prompt, timeout_s, transient_tries=3, backoff_s=20):
+    """opus 額度滿才依序降級;全滿才拋 ClaudeQuotaExhausted(單一則告警)。
+    上游 529/5xx/逾時則原地退避重試 —— 那不是額度問題,換模型解不掉。"""
     errs = []
     for model in CLAUDE_MODEL_CHAIN:
-        try:
-            return _claude_once(prompt, timeout_s, model)
-        except ClaudeQuotaExhausted as e:
-            errs.append(str(e))
-            print(f"  ⚠ 額度耗盡({model or 'default'}),降級下一個模型")
-    raise ClaudeQuotaExhausted("所有模型額度皆耗盡:" + " | ".join(errs))
+        for attempt in range(1, transient_tries + 1):
+            try:
+                return _claude_once(prompt, timeout_s, model)
+            except ClaudeQuotaExhausted as e:
+                errs.append(str(e))
+                print(f"  ⚠ 額度耗盡({model or 'default'}),降級下一個模型")
+                break
+            except ClaudeTransient as e:
+                errs.append(str(e))
+                if attempt == transient_tries:
+                    print(f"  ⚠ {model} 連續 {transient_tries} 次上游暫時性故障,降級下一個模型")
+                    break
+                wait = backoff_s * attempt
+                print(f"  ⚠ 上游暫時性故障({model},第 {attempt} 次),{wait}s 後重試")
+                time.sleep(wait)
+    raise ClaudeQuotaExhausted("所有模型都打不通(額度耗盡或連續上游故障):" + " | ".join(errs[-4:]))
 
 
 FORBIDDEN = ["買進", "買入", "賣出", "進場", "出場", "停損", "停利", "目標價", "加碼", "減碼",
