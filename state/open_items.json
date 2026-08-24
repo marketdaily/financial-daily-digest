@@ -5368,5 +5368,45 @@
   "opened": "2026-08-24 13:01",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 538,
+  "what": "HN 投稿帳號 delvinchang 仍被新帳號過濾器壓著(留言公開視角 flagged),申訴信已寫好等你送出",
+  "why": "申訴須用 Delvin 本人 Gmail 寄給 hn@ycombinator.com,不可代寄(CLAUDE.md 禁止手動代寄規則)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-24 13:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 539,
+  "what": "cardkit 新圖卡風格與新聞四題材線尚未在真實發文跑過(本機全鏈驗證過,含閘門)",
+  "why": "要等排程觸發下一則真實貼文才算生產驗收",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 13:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 540,
+  "what": "命書 @ 提及白名單待 Delvin 指定(命理主題無可確認官方帳號,真人 tag 有名譽權風險)",
+  "why": "需要老闆給名單才能加白名單",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-24 13:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 541,
+  "what": "news_reactive 分平台上限(threads8/IG4/FB4)與 09:00-23:30 連續窗首班未驗",
+  "why": "上限與窗口今天才改,尚未經過一整天",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 13:18",
+  "closed": null,
+  "note": ""
  }
 ]
