@@ -5686,6 +5686,46 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-24 17:32",
+  "closed": "2026-08-24 17:37",
+  "note": "阻塞已解除:那些未提交的改動是我這個視窗的,已 commit+push;我後續的部署把稽核席一起帶上線,線上 /api/agents 實查 16 席且含 audit,四張表對帳測試全綠"
+ },
+ {
+  "id": 570,
+  "what": "8/25 皇海會的 CREW demo 動線尚未被人實際走過一遍",
+  "why": "技術面已在生產驗完(沙盒 WordPress 一鍵送草稿、打贏全部 6/6、雙語報告、PDF 下載);但沒有人在真實會議情境下從頭點過一次,明天現場的每一下我都沒看過。#559 我先前誤收,這是更正後的誠實版本",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 17:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 571,
+  "what": "CREW 兩個量測引擎額度用盡(Tavily http_432 / Gemini 429)",
+  "why": "是我今天回測燒掉的:10+ 次掃描與兩輪「打贏全部」。現在起跑的掃描會全部顯示未量測,8/25 demo 前必須補額度或換 key;產品側已改成大聲告知而不是安靜給空殼",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-24 18:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 572,
+  "what": "我覆寫了 crew 原本的 GEMINI_API_KEY_2,舊值無法讀回",
+  "why": "為了裝新 key 直接 wrangler secret put 覆蓋,沒有先確認舊值是哪個專案。今天兩個專案都已 429 所以看不出損失,但如果舊那把來自第三個還有額度的專案,那個桶就被我弄丟了。應改用新的 secret 名稱而不是覆寫",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 18:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 573,
+  "what": "MarketDaily 日報的 Gemini key 今日配額已見底(我造成的一部分)",
+  "why": "crew 的主 key 原本就是 Delvin-agent/.env 的 GEMINI_API_KEY(尾碼 z87E),也就是日報在用的那把;我今天十幾輪回測都在吃它,現在該 key 純生成也 429。明早 05:20 早報離配額重置(TW 15-16 點)最遠,有掉弱模型鏈的風險。CREW 已隔離到專屬 key,不會再惡化,但今晚這一輪的風險仍在",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-24 18:59",
   "closed": null,
   "note": ""
  }
