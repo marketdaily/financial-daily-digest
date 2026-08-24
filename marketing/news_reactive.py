@@ -706,6 +706,9 @@ def render_news_card(cand, tech, headline_zh, out_png):
         body.append(line3)
     body.append("來源:" + ("鉅亨網" if "cnyes" in cand["url"] else "外電"))
     spec = {"tag": f"{cand.get('lane_zh', '新聞快評')} · {_tw_today()}", "headline": headline_zh,
+            # 題材線直接當底圖選擇的依據 —— 國際新聞配油輪、AI 新聞配機房。
+            # 底圖跟內容有關係,才不是「隨機貼一張漂亮照片」。
+            "topic": cand.get("lane"),
             "body": "\n".join(body), "cta": "完整個股分析 marketdaily.ai →"}
     make_card(spec, out_png)
     return out_png

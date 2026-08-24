@@ -229,6 +229,8 @@ def make_card(spec, out_path, w=W, h=H):
                 "left": spec.get("left"), "right": spec.get("right"),
                 "left_label": spec.get("left_label"), "right_label": spec.get("right_label"),
                 "prefer": spec.get("prefer"),
+                # 題材 → 選哪張真實底圖(國際配油輪、AI 配機房…);對不上就雜湊挑
+                "topic": spec.get("topic"),
             }
             img, _style = _ck.render(ck_spec, "marketdaily", size=(w, h))
             out_path = Path(out_path)

@@ -343,7 +343,8 @@ def pillars(size, pal, rng):
 
 
 def photo(size, pal, rng, src=None, strength=0.55):
-    """真實素材背景（命書龍首等）。找不到檔就退回 ink，絕不因為缺圖產不出卡。"""
+    """真實素材背景（Higgsfield Nano Banana 2 產的片場級底圖）。找不到檔就退回 ink，
+    絕不因為缺圖產不出卡。"""
     if src:
         try:
             im = Image.open(src).convert("RGB")
@@ -356,20 +357,31 @@ def photo(size, pal, rng, src=None, strength=0.55):
             im = im.crop((left, top, left + side_w, top + side_h))
             img = Image.blend(_blank(size, pal), im, strength)
             # ⚠️ 遮罩是**對比度保證，不是裝飾**：沒有它，金色標題會落在龍鱗的金線上整段讀不出來
-            # (命書 2026-08-17 第一版圖就是這樣)。上半 scrim_to 保證接近純底色，字只排在那裡。
+            # (命書 2026-08-17 第一版圖就是這樣)。
+            #
+            # ⭐ 但它要**看圖說話**：底圖是照著「上緣 45% 是純黑」的構圖規格生成的，
+            #    對本來就黑的上緣再壓一層 88% 的遮罩，等於把花錢生的圖蓋掉，卡片又變回純色塊。
+            #    所以先量上緣實際亮度，暗就少壓、亮才多壓 —— 判準是「字讀不讀得到」，
+            #    不是「有沒有蓋滿」。
             w, h = size
+            # 量的是**上緣 45%** —— 那正是生成時下給模型的構圖規格所涵蓋的區域，
+            # 也正是標題會壓下去的位置。量整張或量上四成都會被下半的主體拉偏。
+            top = img.crop((0, 0, w, int(h * 0.45))).convert("L").resize((16, 16))
+            lum = sum(top.getdata()) / 256.0
+            peak = 248 if lum > 70 else (205 if lum > 40 else 170)
+            fade_to = 0.70 if lum > 70 else 0.60
             scrim = Image.new("L", (1, h))
-            a, bnd = int(h * 0.20), int(h * 0.62)
+            a, bnd = int(h * 0.16), int(h * fade_to)
             for y in range(h):
                 if y <= a:
-                    v = 225
+                    v = peak
                 elif y >= bnd:
                     v = 0
                 else:
-                    v = int(225 * (1 - (y - a) / (bnd - a)) ** 1.25)
+                    v = int(peak * (1 - (y - a) / (bnd - a)) ** 1.25)
                 scrim.putpixel((0, y), v)
             img = Image.composite(_blank(size, pal), img, scrim.resize(size))
-            return _vignette(img, 0.42)
+            return _vignette(img, 0.40)
         except Exception:
             pass
     return ink(size, pal, rng)

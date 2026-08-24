@@ -162,7 +162,13 @@ def penalty(lines):
         if i > 0 and ln[0] in HEAD_BAN:
             p += 3
     if len(lines) > 1 and len(lines[-1]) <= 2:
-        p += 4                                           # 孤字行
+        p += 4                                           # 尾端孤字行
+    # ⚠️ 硬斷行(\n)把文字切成幾段，每一段各自會產生自己的尾行 —— 只罰整塊的最後一行，
+    # 中間那些「一個字自成一行」的段尾就完全沒被罰到("…不是會不會斷 / 供 / 是通行成本…")。
+    # 單字行不管落在哪裡都是排版事故。
+    for i, ln in enumerate(lines):
+        if len(ln) == 1 and len(lines) > 1 and i != len(lines) - 1:
+            p += 6
     return p
 
 

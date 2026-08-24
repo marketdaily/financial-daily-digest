@@ -430,9 +430,13 @@ def lay_vertical(img, spec, pal, st):
     while math.ceil(len(text) / per_col) > 3 and size > 48:
         size -= 8
         per_col = max(4, int((bot - top) // (size * 1.16)))
+    # ⚠️ 直排的孤字欄:len=25、per_col=12 會排成 12/12/1 —— 最後一欄一個字，
+    # 看起來像排版壞掉。改成把總字數平均分到欄數上(12/12/1 → 9/8/8)。
+    ncol = math.ceil(len(text) / per_col)
+    if ncol > 1:
+        per_col = math.ceil(len(text) / ncol)
     f = font(size, 700, "serif")
     step = int(size * 1.16)
-    ncol = math.ceil(len(text) / per_col)
     used_h = min(len(text), per_col) * step
     y0 = _place(top, bot, used_h, 0.30)
     x = w - pad - size
@@ -505,6 +509,57 @@ LAYOUTS = {
 }
 
 
+
+# ── 真實底圖(plates) ────────────────────────────────────────────────────────
+# 2026-08-24 老闆:「你他媽只是換了個顏色而已，去用我的 higgsfield credit
+# nano banana 2 去生成一些圖」。程序化背景解決的是「每張都一樣」，但它們仍然是圖形不是
+# 影像 —— 卡片裡沒有任何「畫面」。這 14 張是 Nano Banana 2 依 genai-prompt-pro §4.5
+# 片場 rig block 生成的:MarketDaily 走 Sony Venice 2 + Cooke S7/i 40mm + Greig Fraser /
+# Villeneuve / Sicario 夜間車隊 / Vision3 500T 冷調;命書走 Hasselblad H6D-100c +
+# HC 120mm macro + Sugimoto 極簡 / 王家衛環境光 / Eterna 近單色暖褐。兩組 rig 五欄全異。
+# 每張都下了同一條交付約束:上緣 45% 是無細節暗場(標題要壓在那裡)、畫面零文字、燈具不入鏡。
+PLATE_DIR = Path(__file__).parent / "plates"
+
+PLATES = {
+    "marketdaily": {
+        "world": ["world_strait", "cargo_port"],
+        "macro": ["macro_podium", "energy_lng"],
+        "ai": ["ai_datacenter", "chip_wafer"],
+        "company": ["chip_wafer", "market_floor"],
+        "market": ["market_floor", "taipei_rain"],
+        "local": ["taipei_rain"],
+    },
+    "mingshu": {
+        "dragon": ["dragon_ink"],
+        "sky": ["starfield_ridge", "moon_water"],
+        "tool": ["luopan_compass"],
+        "ritual": ["incense_smoke"],
+        "season": ["dew_grass"],
+    },
+}
+
+
+def plate_path(brand_key, name):
+    p = PLATE_DIR / brand_key / f"{name}.jpg"
+    return str(p) if p.exists() else None
+
+
+def pick_plate(brand_key, topic, key):
+    """(品牌, 題材, 卡片鍵) → 底圖檔。題材對得上就用該桶，對不上就在全部底圖裡雜湊挑。
+
+    題材優先是重點:國際新聞配油輪、AI 新聞配機房、節氣配露水 —— 底圖跟內容有關係，
+    才不是「隨機貼一張漂亮照片」。對不上時退回雜湊，永遠挑得到一張。
+    """
+    buckets = PLATES.get(brand_key, {})
+    names = buckets.get(topic) if topic else None
+    if not names:
+        names = sorted({n for v in buckets.values() for n in v})
+    if not names:
+        return None
+    n = int(hashlib.sha256(f"{brand_key}:{key}".encode()).hexdigest()[:8], 16)
+    return plate_path(brand_key, names[n % len(names)])
+
+
 # ── 品牌 ────────────────────────────────────────────────────────────────────
 class Brand:
     def __init__(self, key, footer, styles, palettes, kicker=None):
@@ -545,12 +600,19 @@ MD_STYLES = [
     _s("versus",     "duel",    "void",     "ice"),
     _s("orbit",      "hero",    "bokeh",    "violet"),
     _s("flowfield",  "left",    "flow",     "green"),
+    # ── 真實底圖組(Nano Banana 2) ──
+    _s("plate_hero",   "hero",    "photo", "amber",  photo_strength=0.66),
+    _s("plate_left",   "left",    "photo", "ice",    photo_strength=0.62),
+    _s("plate_banner", "banner",  "photo", "ember",  photo_strength=0.58),
+    _s("plate_stat",   "bigstat", "photo", "green",  photo_strength=0.60),
+    _s("plate_sticker", "sticker", "photo", "violet", weight=900, photo_strength=0.68),
+    _s("plate_quote",  "quote",   "photo", "slate",  family="serif", weight=600, photo_strength=0.58),
 ]
 
 # 命書：12 種。主色票黑金取自官網 :root，龍首(photo)保留當其中一種而不是唯一一種。
 MS_STYLES = [
     _s("dragon",     "hero",     "photo",    "moxin",    family="serif", weight=700,
-       photo=str(Path.home() / "fortune-ai/marketing/assets/dragon_hero.png"), photo_strength=0.52),
+       topic="dragon", photo_strength=0.58),
     _s("seal_min",   "hero",     "void",     "moxin",    family="serif", weight=700),
     _s("starmap",    "hero",     "starmap",  "xuanshui", family="serif", weight=700),
     _s("ink_quote",  "quote",    "ink",      "moxin",    family="serif", weight=600),
@@ -562,6 +624,17 @@ MS_STYLES = [
     _s("banner_zhu", "banner",   "ink",      "zhusha",   family="serif", weight=700),
     _s("split_myth", "split",    "halftone", "cangmu",   family="serif", weight=700),
     _s("bold_ms",    "sticker",  "mesh",     "zhusha",   family="serif", weight=800),
+    # ── 真實底圖組(Nano Banana 2) ──
+    _s("plate_dragon", "hero",    "photo", "moxin",  family="serif", weight=700,
+       topic="dragon", photo_strength=0.70),
+    _s("plate_sky",    "hero",    "photo", "xuanshui", family="serif", weight=700,
+       topic="sky", photo_strength=0.66),
+    _s("plate_tool",   "left",    "photo", "moxin",  family="serif", weight=700,
+       topic="tool", photo_strength=0.62),
+    _s("plate_ritual", "quote",   "photo", "zhusha", family="serif", weight=600,
+       topic="ritual", photo_strength=0.62),
+    _s("plate_season", "vertical", "photo", "cangmu", family="serif", weight=700,
+       topic="season", photo_strength=0.60),
 ]
 
 BRANDS = {
@@ -666,7 +739,10 @@ def render(spec, brand_key="marketdaily", style=None, size=SIZE_45, seed=None):
                                  .hexdigest()[:8], 16))
     bd = backdrops.REGISTRY[style["backdrop"]]
     if style["backdrop"] == "photo":
-        img = bd(size, pal, rng, src=style.get("photo"), strength=style.get("photo_strength", 0.5))
+        src = (spec.get("plate_path") or style.get("photo")
+               or pick_plate(brand_key, spec.get("topic") or style.get("topic"),
+                             spec.get("id") or spec["headline"]))
+        img = bd(size, pal, rng, src=src, strength=style.get("photo_strength", 0.62))
     else:
         img = bd(size, pal, rng)
     img = LAYOUTS[style["layout"]](img, spec, pal, style)
@@ -674,7 +750,8 @@ def render(spec, brand_key="marketdaily", style=None, size=SIZE_45, seed=None):
     return img, style
 
 
-def carousel(post_id, hook, bodies, cta_lines, brand_key="mingshu", size=SIZE_45, note=None):
+def carousel(post_id, hook, bodies, cta_lines, brand_key="mingshu", size=SIZE_45,
+             note=None, topic=None):
     """一則貼文 → 整串輪播圖(封面 + 內文 × n + CTA)。
 
     風格在**貼文層級**指派：整串共用同一個色票與背景家族，所以一則貼文看起來是一件作品；
@@ -683,16 +760,16 @@ def carousel(post_id, hook, bodies, cta_lines, brand_key="mingshu", size=SIZE_45
     st = assign(brand_key, post_id)
     calm = dict(st, layout="body", backdrop=st.get("body_backdrop", "void"))
     out = []
-    cover_img, _ = render({"id": post_id, "headline": hook, "kicker": BRANDS[brand_key].kicker},
-                          brand_key, style=st, size=size)
+    cover_img, _ = render({"id": post_id, "headline": hook, "kicker": BRANDS[brand_key].kicker,
+                           "topic": topic}, brand_key, style=st, size=size)
     out.append(("cover", cover_img))
     n = len(bodies)
     for i, text in enumerate(bodies, 1):
         img, _ = render({"id": f"{post_id}#b{i}", "headline": text, "page": i, "pages": n,
-                         "note": note}, brand_key, style=calm, size=size)
+                         "note": note, "topic": topic}, brand_key, style=calm, size=size)
         out.append(("body", img))
     cta_style = dict(st, layout="cta")
-    img, _ = render({"id": f"{post_id}#cta", "headline": cta_lines[0], "cta_lines": cta_lines},
-                    brand_key, style=cta_style, size=size)
+    img, _ = render({"id": f"{post_id}#cta", "headline": cta_lines[0], "cta_lines": cta_lines,
+                     "topic": topic}, brand_key, style=cta_style, size=size)
     out.append(("cta", img))
     return out
