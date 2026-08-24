@@ -673,7 +673,7 @@ def photo_styles(brand_key):
     return [s for s in BRANDS[brand_key].styles if s["backdrop"] == "photo"]
 
 
-def assign(brand_key, key, prefer=None, spread=5, photo_only=False):
+def assign(brand_key, key, prefer=None, spread=5, photo_only=False, exclude_photo=False):
     """(品牌, 卡片鍵) → 風格，且**寫進指派表**。
 
     為什麼要指派表而不是純雜湊：
@@ -697,13 +697,15 @@ def assign(brand_key, key, prefer=None, spread=5, photo_only=False):
     #    錢花了、畫面上完全看不到，而且程式一路回報成功。
     #    (2026-08-24 命書 ms_shenyue_shehe 首次實跑就踩到;先前的測試只測了新 key，
     #     沒測到「這個 key 已經有非 photo 指派」那條路，所以是假綠。)
-    lookup = f"{key}#photo" if photo_only else key
+    lookup = f"{key}#photo" if photo_only else (f"{key}#nophoto" if exclude_photo else key)
     if lookup in amap:
         cached = next((s for s in BRANDS[brand_key].styles if s["id"] == amap[lookup]), None)
-        if cached and (not photo_only or cached["backdrop"] == "photo"):
+        if cached and (not photo_only or cached["backdrop"] == "photo") \
+                and not (exclude_photo and cached["backdrop"] == "photo"):
             return cached
     recent = [amap[k] for k in order[-spread:] if k in amap]
-    st = pick(brand_key, key, avoid=recent, prefer=prefer, photo_only=photo_only)
+    st = pick(brand_key, key, avoid=recent, prefer=prefer, photo_only=photo_only,
+              exclude_photo=exclude_photo)
     amap[lookup] = st["id"]
     order.append(lookup)
     led["order"] = order[-400:]
@@ -713,7 +715,7 @@ def assign(brand_key, key, prefer=None, spread=5, photo_only=False):
     return st
 
 
-def pick(brand_key, key, avoid=None, prefer=None, photo_only=False):
+def pick(brand_key, key, avoid=None, prefer=None, photo_only=False, exclude_photo=False):
     """(品牌, 貼文id) → 風格。同一個 id 永遠得到同一個結果。
 
     avoid = 最近用過的風格 id；全部都被 avoid 掉時退回純雜湊(不會挑不到)。
@@ -726,6 +728,11 @@ def pick(brand_key, key, avoid=None, prefer=None, photo_only=False):
     #    畫面上一點都看不到,而且程式一路回報成功。
     if photo_only:
         pool = photo_styles(brand_key) or pool
+    # 照片版位要**被賺到**:一張沒有題材的卡(TLDR 脈搏數據、戰績、品牌貼文)配上一張
+    # 隨機的貨櫃碼頭,那不是「有畫面」,那是貼了一張不相干的漂亮照片。
+    # 沒有 topic 也沒有現生圖 ⇒ 只走程序化背景那 14/12 種。
+    elif exclude_photo:
+        pool = [s for s in pool if s["backdrop"] != "photo"] or pool
     if prefer:
         hinted = [s for s in pool if prefer in (s.get("tags") or []) or s["layout"] == prefer]
         if hinted:
@@ -744,8 +751,10 @@ def render(spec, brand_key="marketdaily", style=None, size=SIZE_45, seed=None):
     """
     brand = BRANDS[brand_key]
     if style is None:
+        has_plate = bool(spec.get("plate_path"))
         style = assign(brand_key, spec.get("id") or spec["headline"], prefer=spec.get("prefer"),
-                       photo_only=bool(spec.get("plate_path")))
+                       photo_only=has_plate,
+                       exclude_photo=not (has_plate or spec.get("topic")))
     elif isinstance(style, str):
         style = next((s for s in brand.styles if s["id"] == style), brand.styles[0])
     # 安全區依品牌招牌的位置而定：MarketDaily 頂部有字標要讓開，命書只有右下朱印。

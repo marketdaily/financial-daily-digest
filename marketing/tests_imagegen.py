@@ -79,6 +79,31 @@ check("CARDKIT_IMAGEGEN_OFF=1 一律不產圖",
       ig.generate("marketdaily", GOOD, "k", None, log=lambda *_: None) is None)
 del os.environ["CARDKIT_IMAGEGEN_OFF"]
 
+print("\n[連續降級告警：安靜退回庫存不等於沒事]")
+import json as _json  # noqa: E402
+_pushed = []
+_orig_push, ig._push_admin = ig._push_admin, lambda m: _pushed.append(m)
+_orig_led = ig.LEDGER
+with tempfile.TemporaryDirectory() as td:
+    ig.LEDGER = Path(td) / "l.json"
+    for _ in range(5):
+        ig._note(False, "token 死了")
+    check("連續降級只推一則（同日防重）", len(_pushed) == 1, str(len(_pushed)))
+    check("門檻是第 3 次才響", "連續 3 次" in (_pushed[0] if _pushed else ""))
+    ig._note(True)
+    check("成功一次就歸零", _json.loads(ig.LEDGER.read_text())["fail_streak"] == 0)
+ig.LEDGER, ig._push_admin = _orig_led, _orig_push
+
+print("\n[照片版位要被題材賺到]")
+nophoto = sum(1 for i in range(30)
+              if styles.render({"id": f"d{i}", "headline": "VIX 恐慌指數 18.2"},
+                               "marketdaily")[1]["backdrop"] == "photo")
+check("沒有 topic 也沒有現生圖的資料卡，永遠不配照片", nophoto == 0, f"{nophoto}/30 配到照片")
+withtopic = sum(1 for i in range(30)
+                if styles.render({"id": f"t{i}", "headline": "荷姆茲通行費上路", "topic": "world"},
+                                 "marketdaily")[1]["backdrop"] == "photo")
+check("有 topic 的卡拿得到照片版位", withtopic > 0, "一次都沒有")
+
 print("\n[⭐ 有現生底圖 → 風格必須落在 photo 版位]")
 plate = styles.plate_path("marketdaily", "world_strait")
 bad = []

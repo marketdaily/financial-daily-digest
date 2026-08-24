@@ -131,3 +131,8 @@ state/GITHUB_ACTIONS_REINSTATEMENT.md
 intel/*.lock
 arb/orders.jsonl
 arb/.cache/
+
+# cardkit 的執行期產物:每次算圖都會變,進版控只會讓每支 cron 的工作樹變髒、
+# 跟其他 actor 的 autostash 打架(多 session 共享本地 git 紀律)。
+marketing/cardkit/state/
+marketing/cardkit/gen_cache/

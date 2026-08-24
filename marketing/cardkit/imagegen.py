@@ -40,6 +40,9 @@ UA = "marketdaily-cardgen/1.0 (winrig)"
 # 沒有上限就是一夜燒光。超過上限不是報錯,是安靜退回固定素材(發文照常)。
 DAILY_CREDIT_CAP = int(os.environ.get("CARDKIT_IMAGE_DAILY_CAP", "40"))
 COST_PER_IMAGE = 2
+# 連續這麼多次降級就推播一次(每天最多一則)。3 次≈半天的新聞量,夠短到當天就知道,
+# 又長到不會被單一則的主體不合格吵醒。
+FAIL_ALERT_AFTER = 3
 
 # ── 片場規格(§4.5;兩組五欄全異,所以兩個帳號不像同一個攝影師拍的) ──────────
 RIGS = {
@@ -119,6 +122,46 @@ def _spent_today():
     return int(led.get(date.today().isoformat(), 0))
 
 
+def _note(ok, reason=""):
+    """記錄成功/降級,連續降級到門檻就推播一次。
+
+    ⚠️ 沒有這一段的話,四道防線的「安靜退回庫存底圖」就變成**沉默的失效**:
+    token 過期、額度用光、API 改介面 —— 三種情況畫面都照出、程式都回 0,
+    只是每一張都是庫存圖,而沒有任何人會知道。降級是對的,不講就不對了。
+    """
+    try:
+        led = json.loads(LEDGER.read_text(encoding="utf-8")) if LEDGER.exists() else {}
+    except Exception:
+        led = {}
+    if not isinstance(led, dict):
+        led = {}
+    if ok:
+        led["fail_streak"] = 0
+        led["last_ok"] = date.today().isoformat()
+    else:
+        led["fail_streak"] = int(led.get("fail_streak", 0)) + 1
+        led["last_fail_reason"] = reason[:160]
+        today = date.today().isoformat()
+        if led["fail_streak"] >= FAIL_ALERT_AFTER and led.get("alerted_on") != today:
+            led["alerted_on"] = today
+            _push_admin(f"🖼️ 貼文現生底圖連續 {led['fail_streak']} 次降級成庫存圖："
+                        f"{reason[:120]}（上次成功 {led.get('last_ok', '不明')}）")
+    LEDGER.parent.mkdir(parents=True, exist_ok=True)
+    LEDGER.write_text(json.dumps(led, ensure_ascii=False), encoding="utf-8")
+
+
+def _push_admin(msg):
+    """推播失敗絕不能反過來害到發文,所以整段吞例外。"""
+    try:
+        subprocess.run(
+            [str(Path.home() / "Delvin-agent/.venv/bin/python"),
+             str(Path.home() / ".marketdaily-fallback/notify_admin.py"), msg],
+            env={**os.environ, "MD_REPO": str(Path.home() / "Delvin-agent")},
+            capture_output=True, timeout=45)
+    except Exception:
+        pass
+
+
 def _charge(n=COST_PER_IMAGE):
     try:
         led = json.loads(LEDGER.read_text(encoding="utf-8"))
@@ -162,6 +205,8 @@ def generate(brand, subject, key, out_path, timeout_s=180, log=print):
         return None
     ok, why = vet_subject(subject)
     if not ok:
+        # 主體不合格是**內容**問題不是基礎設施問題,不計入連續失敗(否則守衛會被
+        # 一則寫壞的稿子吵醒,而真的 token 死掉時反而混在雜訊裡)。
         log(f"  ⚠️ 產圖主體不合格({why}),改用固定素材")
         return None
 
@@ -179,6 +224,7 @@ def generate(brand, subject, key, out_path, timeout_s=180, log=print):
     tok = _token()
     if not tok:
         log("  ⚠️ 拿不到 Higgsfield token,改用固定素材")
+        _note(False, "拿不到 higgsfield token(CLI 未登入或 PATH 缺 .npm-global/bin)")
         return None
     try:
         _rpc(tok, {"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
@@ -191,6 +237,7 @@ def generate(brand, subject, key, out_path, timeout_s=180, log=print):
         jobs = _structured(sub).get("jobs") or []
         if not jobs or not jobs[0].get("job_id"):
             log(f"  ⚠️ 產圖送出失敗:{json.dumps(sub, ensure_ascii=False)[:180]}")
+            _note(False, "送出失敗:" + json.dumps(sub, ensure_ascii=False)[:120])
             return None
         job_id = jobs[0]["job_id"]
         _charge()          # 送出即計費,不等成功 —— 額度是送出當下就扣的
@@ -206,9 +253,11 @@ def generate(brand, subject, key, out_path, timeout_s=180, log=print):
                 break
             if row.get("status") in ("failed", "canceled"):
                 log(f"  ⚠️ 產圖 job 失敗:{row.get('status')}")
+                _note(False, f"job {row.get('status')}")
                 return None
         if not url:
             log("  ⚠️ 產圖逾時,改用固定素材")
+            _note(False, f"逾時 {timeout_s}s")
             return None
         req = urllib.request.Request(url, headers={"User-Agent": UA})
         with urllib.request.urlopen(req, timeout=120) as r:
@@ -220,8 +269,10 @@ def generate(brand, subject, key, out_path, timeout_s=180, log=print):
         if out_path:
             Path(out_path).parent.mkdir(parents=True, exist_ok=True)
             im.save(out_path, "JPEG", quality=86, optimize=True)
+        _note(True)
         log(f"  🖼️ 依貼文主題產圖完成({COST_PER_IMAGE}cr,今日 {_spent_today()}/{DAILY_CREDIT_CAP})")
         return str(cached)
     except Exception as e:  # noqa: BLE001
         log(f"  ⚠️ 產圖例外({type(e).__name__}: {e}),改用固定素材")
+        _note(False, f"{type(e).__name__}: {e}")
         return None
