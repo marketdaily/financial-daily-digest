@@ -74,26 +74,71 @@ def _strip_html_to_text(html: str) -> str:
     return re.sub(r"\s+", " ", txt).strip()
 
 
+def _block_close(html: str, start: int, after_open: int, tag: str = "div") -> str:
+    """從已配對的開標籤掃到它自己的收尾標籤(**支援巢狀**,不被內層 </tag> 提早切斷),
+    回傳整段(含開閉標籤)。收尾標籤找不到時回傳到字串結尾。"""
+    open_re = re.compile(rf"<{tag}\b", re.I)
+    close_re = re.compile(rf"</{tag}\s*>", re.I)
+    depth = 1
+    i = after_open
+    while i < len(html) and depth > 0:
+        open_m = open_re.search(html, i)
+        close_m = close_re.search(html, i)
+        if not close_m:
+            return html[start:]
+        if open_m and open_m.start() < close_m.start():
+            depth += 1
+            i = open_m.end()
+        else:
+            depth -= 1
+            i = close_m.end()
+    return html[start:i]
+
+
 def _section(html: str, class_name: str) -> str:
     """抓出特定 class 的 div 內容,**支援巢狀 div**(配對開合,不被內層 </div> 提早切斷)。"""
     m = re.search(rf'<div class="{class_name}"[^>]*>', html, re.I)
     if not m:
         return ""
-    start = m.start()
-    i = m.end()
-    depth = 1
-    while i < len(html) and depth > 0:
-        open_m = re.search(r'<div\b', html[i:], re.I)
-        close_m = re.search(r'</div\s*>', html[i:], re.I)
-        if not close_m:
-            return html[start:]
-        if open_m and open_m.start() < close_m.start():
-            depth += 1
-            i += open_m.end()
-        else:
-            depth -= 1
-            i += close_m.end()
-    return html[start:i]
+    return _block_close(html, m.start(), m.end(), "div")
+
+
+# ── .tldr 區塊定位(2026-08-24 週一班事故:老闆本人 + 1 位掉閹割備援版)──────────────
+# 原本只認 `<div class="tldr"` —— 要求 class 是**第一個屬性**、標籤必須是 **div**、
+# tldr 必須是**唯一 class**。實測跑完整條生產鏈(_repair_undefined_classes → premailer)
+# 後,下列三種寫法 .tldr 的樣式全部正常內聯、訂閱者收到的信完全正確,卻一律被判
+# tldr_section_missing(HIGH)→ retry 也同款 → 整封信降級成閹割備援版:
+#   <section class="tldr">      /  <div class="tldr news-card">  /  <div id="x" class="tldr">
+# 08-24 早報三位第一輪中招(全是 groq:gpt-oss-120b),兩位連 retry 都中。
+# 改成跟瀏覽器/CSS 同一套判準:區塊級標籤 + class token 命中。
+# 這是**收緊誤判、不是放寬防線**:token 必須正好是 "tldr",容器被改名(tldr-box)或被
+# _repair_undefined_classes 剝成 class="" 的仍然定位不到 → 真的沒有 TLDR 照樣 HIGH。
+_BLOCK_OPEN_RE = re.compile(r"<(div|section)\b[^>]*>", re.I)
+_CLASS_ATTR_IN_TAG_RE = re.compile(r"""\bclass\s*=\s*(?:"([^"]*)"|'([^']*)')""", re.I)
+
+
+def _tag_has_class(open_tag: str, name: str) -> bool:
+    """開標籤的 class 屬性(單雙引號皆可)是否含有這個 class token。"""
+    m = _CLASS_ATTR_IN_TAG_RE.search(open_tag)
+    if not m:
+        return False
+    return name in (m.group(1) or m.group(2) or "").split()
+
+
+def _tldr_open(html: str):
+    """.tldr 區塊的開標籤 Match(group(1)=標籤名);找不到回 None。"""
+    for m in _BLOCK_OPEN_RE.finditer(html):
+        if _tag_has_class(m.group(0), "tldr"):
+            return m
+    return None
+
+
+def _tldr_block(html: str) -> str:
+    """.tldr 區塊全文(含開閉標籤);沒有這個區塊回空字串。"""
+    m = _tldr_open(html)
+    if not m:
+        return ""
+    return _block_close(html, m.start(), m.end(), m.group(1))
 
 
 def _all_sections(html: str, class_name: str) -> List[str]:
@@ -196,7 +241,7 @@ def audit_digest(
                           "msg": "今晚美股休市,卻寫「今晚開盤」"})
 
     # ───── TLDR 個人化 ─────
-    tldr = _section(html, "tldr")
+    tldr = _tldr_block(html)
     if not tldr:
         fails.append({"check": "tldr_section_missing", "severity": "high",
                       "msg": "整份日報沒有 .tldr 30 秒重點區塊"})

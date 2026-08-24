@@ -546,17 +546,36 @@ cron_abort_if_untracked_scoped() {
 # 這樣 apply 的逐檔鏡像=恰好修復代理的變動。殘餘 race(別視窗在修復進行的幾分鐘內動主樹
 # SCOPE 內同一檔)無合作鎖不可根治,窗口已排程隔離(08:20-08:49 保留給 site_scan)。
 cron_fix_wt_create() {   # cron_fix_wt_create WT_PATH ; rc!=0=建立失敗(呼叫端要處理)
-  git -C "$CRON_LIB_REPO" worktree add --detach "$1" HEAD >/dev/null 2>&1
+  git -C "$CRON_LIB_REPO" worktree add --detach "$1" HEAD >/dev/null 2>&1 || return 1
+  # 起跑點存成兄弟檔(放 worktree 外,才不會自己變成一筆 untracked 變動)。
+  # cron_fix_wt_changes 要靠它才看得到「代理把修復 commit 進 worktree」那條路徑。
+  git -C "$CRON_LIB_REPO" rev-parse HEAD > "$1.base" 2>/dev/null || true
 }
 
-cron_fix_wt_changes() {  # 列出 worktree 內全部變動(tracked M/A/D + untracked ??),一行一檔
-  # -uall:untracked 新子目錄逐檔展開(否則 porcelain 只列「dir/」一條,apply 的 cp 會拒目錄)
-  ( cd "$1" || exit 0
-    git status --porcelain -z --no-renames -uall 2>/dev/null |
-      while IFS= read -r -d '' entry; do
-        [ "${#entry}" -lt 4 ] && continue
-        printf '%s\n' "${entry:3}"
-      done )
+cron_fix_wt_changes() {  # 列出 worktree 內全部變動(tracked M/A/D + untracked ?? + 已 commit),一行一檔
+  # ⭐⭐ 2026-08-24 實鍋:這支原本只讀 `git status`(=未 commit 的改動),而
+  #    scripts/digest_fix_playbook.md 第 5 步**明寫叫代理 `git commit`**。代理照著做 ⇒
+  #    worktree working tree 乾淨 ⇒ 這裡回空 ⇒ 呼叫端判 verdict=none「代理判斷無法安全修復」
+  #    ⇒ cron_fix_wt_destroy 把整包銷毀。當天自癒其實已經把 tldr_section_missing 誤判根治完
+  #    (49/49 測試綠、gate 9/9 綠),修復卻連同 worktree 一起被丟掉,只剩一顆懸空 commit,
+  #    老闆隔天照樣收到閹割備援版。**兩個半邊守同一件事卻用不同語意**的典型形狀:
+  #    playbook 說「commit」、guard 說「我只看沒 commit 的」。
+  #    ⇒ 改成 status ∪ (base..HEAD),兩種交付方式都收得到;base 由 cron_fix_wt_create 落檔。
+  #    沒有 .base(舊呼叫端/手建 worktree)時退回純 status = 與修改前完全同行為,不會有人變糟。
+  local wt="$1" base=""
+  [ -f "$wt.base" ] && base="$(cat "$wt.base" 2>/dev/null)"
+  {
+    # -uall:untracked 新子目錄逐檔展開(否則 porcelain 只列「dir/」一條,apply 的 cp 會拒目錄)
+    ( cd "$wt" || exit 0
+      git status --porcelain -z --no-renames -uall 2>/dev/null |
+        while IFS= read -r -d '' entry; do
+          [ "${#entry}" -lt 4 ] && continue
+          printf '%s\n' "${entry:3}"
+        done )
+    if [ -n "$base" ] && git -C "$wt" cat-file -e "${base}^{commit}" 2>/dev/null; then
+      git -C "$wt" diff --name-only --no-renames "$base" HEAD 2>/dev/null
+    fi
+  } | awk 'NF && !seen[$0]++'
 }
 
 # cron_fix_wt_apply WT SCOPE  把 worktree 變動清單中 SCOPE 下的檔逐一鏡回主樹(worktree 有
@@ -602,6 +621,7 @@ cron_fix_wt_unapply() {
 
 cron_fix_wt_destroy() {
   git -C "$CRON_LIB_REPO" worktree remove --force "$1" >/dev/null 2>&1 || rm -rf "$1"
+  rm -f "$1.base"
   git -C "$CRON_LIB_REPO" worktree prune >/dev/null 2>&1 || true
 }
 

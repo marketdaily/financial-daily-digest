@@ -2102,29 +2102,42 @@ def _pp_tldr_structure(html: str) -> str:
     audit 的 tldr_too_short 照樣抓得到 0 條;只有 2 條的仍然只有 2 條(MED 照樣失分)。
     順便把模型自己換掉的標題 class(週一版常寫成 section-label)正規化回 tldr-title,
     否則 _pp_hoist_verdict_chip 的 <div class="tldr-title"> 比對永遠 miss、偏多/偏空 chip
-    整個週一班次靜默消失(08-17 公版實鍋:tldr-chip 一顆都沒有)。"""
+    整個週一班次靜默消失(08-17 公版實鍋:tldr-chip 一顆都沒有)。
+
+    2026-08-24(又是週一)補:容器定位改用 digest_audit._tldr_open —— 舊版跟 audit 一樣
+    只認 `<div class="tldr"`,模型寫成 <section class="tldr"> / class="tldr news-card" /
+    id 排在 class 前面時,這道死防線與 audit **同時失明**(pp 直接 return、audit 判
+    tldr_section_missing HIGH)。定位對齊後順手把容器正規化回標準 <div class="tldr">,
+    下游(chip hoist、main._inject_ai_banner 錨點、audit 快路)才不用各自再認一次變體。"""
     import re as _re
-    m = _re.search(r'<div class="tldr"[^>]*>', html, _re.I)
-    if not m:
-        return html
     try:
-        from digest_audit import _section  # 與 audit 同一套巢狀切分,不另手刻第二份判準
-        block = _section(html[m.start():], "tldr")
+        from digest_audit import _tldr_open, _block_close  # 與 audit 同一套定位/巢狀切分
+        m = _tldr_open(html)
+        if not m:
+            return html
+        block = _block_close(html, m.start(), m.end(), m.group(1))
     except Exception:
         return html
     if not block:
         return html
+    # 收尾標籤沒配對到(_block_close 掃到字串結尾)→ 區塊邊界不明,重寫會把整封信的
+    # 後半段全部吞進 TLDR。寧可不動,讓 audit 自己去判。
+    if not _re.search(rf"</{m.group(1)}\s*>$", block, _re.I):
+        return html
     head = m.group(0)
+    # 已是標準 <div class="tldr"...> 開頭 → 原樣保留(行為與 08-17 版逐字相同);
+    # 變體容器 → 重建成標準開標籤,額外的 class/屬性一併正規化掉。
+    head_ok = bool(_re.match(r'<div class="tldr"[^>]*>', head, _re.I))
+    head_out = head if head_ok else '<div class="tldr">'
     inner = block[len(head):]
-    if inner.endswith("</div>"):
-        inner = inner[:-len("</div>")]
+    inner = _re.sub(r"</(?:div|section)\s*>$", "", inner, count=1, flags=_re.I)
     title_m = _re.match(r'\s*<div class="(tldr-title|section-label)"[^>]*>(.*?)</div>',
                         inner, _re.S)
     title = title_m.group(2).strip() if title_m else "☕ 30 秒看完今天重點"
     rest = inner[title_m.end():] if title_m else inner
     title_ok = bool(title_m) and title_m.group(1) == "tldr-title"
     if "<li" in rest.lower():
-        if title_ok:
+        if title_ok and head_ok:
             return html
         items_html = rest
     else:
@@ -2137,7 +2150,7 @@ def _pp_tldr_structure(html: str) -> str:
             return html
         items_html = "\n".join(f"  <li>{c.strip()}</li>" for c in items[:_TLDR_MAX_ITEMS])
         items_html = f"\n<ul>\n{items_html}\n</ul>\n"
-    fixed = f'{head}\n<div class="tldr-title">{title}</div>{items_html}</div>'
+    fixed = f'{head_out}\n<div class="tldr-title">{title}</div>{items_html}</div>'
     return html[:m.start()] + fixed + html[m.start() + len(block):]
 
 
