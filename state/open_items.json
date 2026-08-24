@@ -1956,8 +1956,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-09 19:37",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 14:27",
+  "note": "08-24 Delvin 已用備用碼進入帳號,並把驗證器換到自己手機+加了救援電話。winrig 那把 TOTP 金鑰已標記 RETIRED"
  },
  {
   "id": 197,
@@ -5006,8 +5006,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-23 14:22",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 14:23",
+  "note": "08-24 Bob拍板+Delvin定案:正式業務,主體=Delvin自己的獨立公司(非鴻海業務線),皇海=首客"
  },
  {
   "id": 502,
@@ -5346,8 +5346,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-24 12:38",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 14:27",
+  "note": "08-24 已進入。解法=用 winrig 上那把 TOTP 過 2SV 那關(那正是他一直卡住的原因)。已補做備用碼+自有驗證器+救援電話,不會再發生"
  },
  {
   "id": 536,
@@ -5386,8 +5386,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-24 13:18",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 14:35",
+  "note": "cardkit/新聞四題材線已走完整生產路徑驗證(含兩道閘);仍待排程首班"
  },
  {
   "id": 540,
@@ -5416,8 +5416,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-24 13:31",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 14:29",
+  "note": "❌ 我判斷錯了:8/22 那封 Set up billing 是試用到期通知,不是未設定。08-24 實看 admin 訂閱頁=Status Active / Flexible plan / 卡已綁,9/1 只是下一期帳單產生日,不是停用死線。教訓:別拿一封行銷式提醒信推斷系統狀態,要去看狀態頁本身"
  },
  {
   "id": 543,
@@ -5456,6 +5456,56 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-24 13:52",
+  "closed": "2026-08-24 14:13",
+  "note": "根因追到底:①寫入檔案時用了非 raw 三引號字串,\\t/\\b 被 Python 解讀成真的 TAB/BACKSPACE 控制字元寫進 logic.py,讓我第一版的 time_branch_dead_ranges 正則從未真的執行過 ②真正形狀是兩條鏈疊在一起(第一條依$HM分支各自設MODE變數,第二條依MODE分支才是呼叫點所在)——新增 cross_chain_dead_ranges 做跨鏈變數關聯排除,唯一無歧義才排除(兩個危險方向的反對照:歧義/賦值看不懂都驗證不排除)。videobrief_us 750→1390min,max_age 5760→5400 落在新 4x 門檻內。硬檢查✅全過,112/112含6個新斷言,拿反對照(未修版本)重跑確認4條真的會紅。schedule_fragility 21/21、cron_catchup 153段皆零回歸"
+ },
+ {
+  "id": 547,
+  "what": "CREW 的 SEO 席要能做到 Delvin 給的 IG reel 裡那套做法",
+  "why": "reel 網址 https://www.instagram.com/reel/DcZaWTqjgH2/ —— 我還沒真的看過影片內容(規矩:看影片必須真的看畫面,不能只讀字幕/描述)。他要收工所以我沒開新戰線,下次先用 video-watcher 抽格看完再改 seats.js",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 14:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 548,
+  "what": "form.quietfix.studio 的已登入瀏覽器快照已過期(Signed out)",
+  "why": "~/.marketdaily-secrets/quietfix_gws_profile.tar.gz 是 08-11 的 Google Workspace 登入快照,README 說『用完更新回來』但沒有任何機制在維護它,今天實測已 Signed out。要嘛救回帳號後重存一份,要嘛把這個檔標記為失效以免下次有人以為它能用",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-24 14:15",
+  "closed": "2026-08-24 14:27",
+  "note": "08-11 那份登入快照確認已 Signed out,但帳號已救回且 2FA 在他手上,不再需要靠快照免密碼登入"
+ },
+ {
+  "id": 549,
+  "what": "皇海案開票公司(Delvin獨立公司)全名+統編未定→定案後填 ~/qfx/deals/kingconn/ 報價與合約兩份文件,並統一 qfx 商業架構口徑",
+  "why": "公司定名/登記中,文件就差這兩格;8/25三方會不受影響(口徑=公司名未定不點名)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 14:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 550,
+  "what": "Google 付款設定檔沒有已驗證的主要聯絡人,關鍵帳務信可能收不到",
+  "why": "admin 訂閱頁紅色橫幅:『This payments profile has no verified primary contact』。08-09 那次把聯絡人設成 delvinchang.com@delvinchang.com(不存在的信箱)所以永遠驗不過。後果=扣款失敗/卡片過期/即將停用這類通知寄到黑洞,等發現時服務已停。修法=橫幅右邊 UPDATE 改成 delvin@quietfix.studio 或他 gmail 並完成驗證",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 14:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 551,
+  "what": "每則貼文現生底圖(imagegen)尚未經過一整天真實發文,實際量與成本待觀察",
+  "why": "今天才上線,本機走過完整生產路徑但排程未跑滿一天",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 14:35",
   "closed": null,
   "note": ""
  }
