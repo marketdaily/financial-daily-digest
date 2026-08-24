@@ -6,7 +6,7 @@
   <atom:link href="https://marketdaily.ai/feed.xml" rel="self" type="application/rss+xml"/>
   <description>MarketDaily 個股深度分析 — 美股、台股長尾主題,每週更新。</description>
   <language>zh-tw</language>
-  <lastBuildDate>Wed, 19 Aug 2026 22:29:53 +0800</lastBuildDate>
+  <lastBuildDate>Mon, 24 Aug 2026 16:48:39 +0800</lastBuildDate>
   <ttl>720</ttl>
   <generator>MarketDaily blog_feed.py</generator>
   <image>
@@ -14,6 +14,36 @@
     <title>MarketDaily 個股分析</title>
     <link>https://marketdaily.ai/blog/</link>
   </image>
+  <item>
+    <title>中華化(1727) 多方籌碼訊號同日觀察：多重資訊巧合解析</title>
+    <link>https://marketdaily.ai/blog/1727-confluence-20260823?utm_source=rss&amp;utm_medium=feed&amp;utm_content=1727-confluence-20260823</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/1727-confluence-20260823</guid>
+    <pubDate>Mon, 24 Aug 2026 16:48:39 +0800</pubDate>
+    <description>在瞬息萬變的股票市場中，投資人經常會透過各種公開資訊來觀察個股動態。當多個獨立的籌碼訊號在同一天同時出現時，往往會引起市場參與者的關注。今天，我們將以中華化(1727)為例，觀察其在2026年8月23日這一天，有哪些公開籌碼資訊同時亮起，並探討這類多重訊號巧合的解讀方式。</description>
+    <category>1727</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/1727-confluence-20260823.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/1727-confluence-20260823.png" medium="image"/>
+  </item>
+  <item>
+    <title>台積電(2330) 法說會前瞻：掌握半導體巨擘的最新動態</title>
+    <link>https://marketdaily.ai/blog/2330-event-20260824?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-event-20260824</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2330-event-20260824</guid>
+    <pubDate>Mon, 24 Aug 2026 16:48:30 +0800</pubDate>
+    <description>台積電 (2330) 法說會前瞻 — MarketDaily 整理。</description>
+    <category>2330</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/2330-event-20260824.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/2330-event-20260824.png" medium="image"/>
+  </item>
+  <item>
+    <title>股票分割是什麼？2026 年對投資人影響全解析</title>
+    <link>https://marketdaily.ai/blog/term-股票分割-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-股票分割-202608</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/term-股票分割-202608</guid>
+    <pubDate>Mon, 24 Aug 2026 16:48:20 +0800</pubDate>
+    <description>對於剛踏入股市的投資新手來說，許多專業術語可能令人望而卻步。其中，「股票分割」就是一個常見但常被誤解的概念。究竟股票分割是什麼？它對投資人又會產生哪些影響？在 2026 年的市場環境下，了解股票分割的來龍去脈，將幫助您更清晰地判斷市場動態，做出更明智的投資決策。</description>
+    <category>TERM</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/term-股票分割-202608.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/term-股票分割-202608.png" medium="image"/>
+  </item>
   <item>
     <title>免費的台股盤前電子報有哪些?把「幾點送到」攤開比一次</title>
     <link>https://marketdaily.ai/blog/guide-free-premarket-newsletter-tw-202608?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-free-premarket-newsletter-tw-202608</link>

@@ -53,6 +53,8 @@ strong { color:#fbbf24; font-weight:700; }
 .ahero[data-h="term"] { background-image:url(assets/cat/hero-term.webp?v=2); }
 .ahero[data-h="macro"] { background-image:url(assets/cat/hero-macro.webp?v=2); }
 .ahero[data-h="supply"] { background-image:url(assets/cat/hero-supply.webp?v=2); }
+.cta-top { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; text-align:center; background:rgba(99,102,241,0.10); border:1px solid rgba(99,102,241,0.28); border-radius:12px; padding:12px 16px; margin:0 0 26px; font-size:14px; color:#c7d2fe; line-height:1.7; }
+.cta-top a { color:#fff; background:linear-gradient(135deg,#6366f1,#a855f7); font-weight:800; text-decoration:none; padding:8px 16px; border-radius:8px; white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -64,6 +66,8 @@ strong { color:#fbbf24; font-weight:700; }
   <div class="ahero" data-h="guide"></div>
   <div class="crumb">MARKETDAILY · 新手</div>
   <h1>免費的台股盤前電子報有哪些?把「幾點送到」攤開比一次</h1>
+  <!-- md-top-cta -->
+  <div class="cta-top">📬 喜歡這類拆解?MarketDaily 每天早上 7 點把美股 + 台股 AI 過濾日報寄到你信箱。<a href="https://marketdaily.ai/?utm_source=blog&utm_medium=cta_top&utm_campaign=seo_guide-free-premarket-newsletter-#email-step">免費訂閱 →</a></div>
   <p>直接回答:<strong>免費、而且真的在台股開盤前送到信箱的每日電子報,選擇比想像中少。</strong>
 台灣幾家主要的免費財經電子報,出刊時間多半落在盤後或下午——它們是好東西,但回答的是
 「今天發生了什麼」,不是「等一下開盤我要注意什麼」。這兩件事看起來很像,實際用途完全不同。</p>
@@ -137,17 +141,59 @@ MarketDaily 沒有投顧牌照,所以我們寫的是市場脈絡與你持股相�
   <div style="margin:32px 0 0;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
     <p style="font-size:13px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px;">相關文章</p>
     <ul style="margin:0;padding:0;list-style:none;">
-    <li style="margin:8px 0;"><a href="guide-除權息旺季來了-7-9月除權息投資人該注意什麼-202607.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">除權息旺季來了：7-9月除權息投資人該注意什麼</a></li>
+    <li style="margin:8px 0;"><a href="guide-風險承受度自我評估-我適合哪種投資-202607.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">風險承受度自我評估：我適合哪種投資？2026 新手指南</a></li>
+    <li style="margin:8px 0;"><a href="guide-零股交易是什麼-小額投資新手指南-202607.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">零股交易是什麼:小額投資新手指南(2026 完整教學)</a></li>
     <li style="margin:8px 0;"><a href="guide-除權息旺季來了-7-9月除權息投資人該注意什麼-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">除權息旺季 7-9月來了！2026 年投資新手必看注意事項</a></li>
-    <li style="margin:8px 0;"><a href="guide-緊急預備金該存多少才能開始投資-202607.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">緊急預備金該存多少才能開始投資？2026年新手必看的準備清單</a></li>
-    <li style="margin:8px 0;"><a href="guide-多少錢可以開始投資-小資族入門攻略-202607.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">多少錢可以開始投資?小資族 2026 入門攻略</a></li>
-    <li style="margin:8px 0;"><a href="guide-新手投資最常犯的5個錯誤-202607.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">投資新手常犯的 5 個錯誤：2026 年第一步前必知</a></li>
+    <li style="margin:8px 0;"><a href="guide-除權息旺季來了-7-9月除權息投資人該注意什麼-202607.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">除權息旺季來了：7-9月除權息投資人該注意什麼</a></li>
+    <li style="margin:8px 0;"><a href="guide-證券開戶要準備什麼文件-新手開戶流程-202608.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;">2026 證券開戶新手必看：準備文件、完整流程一次搞懂！</a></li>
     </ul>
   </div>
   <div class="cta">
     <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">想每天早上 7 點收到這類分析?</p>
     <p style="font-size:14px;color:rgba(255,255,255,0.65);margin:6px 0 0;">免費訂閱 MarketDaily — 美股 + 台股 AI 過濾日報,30 秒讀完。</p>
-    <a href="https://marketdaily.ai/?utm_source=blog&utm_medium=cta&utm_campaign=seo_guide-free-premarket-newsletter-">免費訂閱 →</a>
+    <!-- md-inline-subscribe:start --><form id="mdsub-form" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin:0 0 10px;"><input id="mdsub-email" type="email" autocomplete="email" inputmode="email" placeholder="your@email.com" aria-label="Email" style="width:100%;max-width:280px;box-sizing:border-box;padding:13px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#fff;font-size:15px;outline:none;"><button id="mdsub-btn" type="submit" style="padding:13px 26px;border:0;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:15px;font-weight:800;cursor:pointer;white-space:nowrap;">免費訂閱 →</button></form><p id="mdsub-msg" role="status" aria-live="polite" style="display:none;font-size:13px;line-height:1.7;margin:0 0 6px;"></p><noscript><a href="https://marketdaily.ai/?utm_source=blog&utm_medium=cta&utm_campaign=seo_guide-free-premarket-newsletter-#email-step">到 marketdaily.ai 訂閱 →</a></noscript><script>
+(function(){
+  var API='https://api.marketdaily.ai';
+  var f=document.getElementById('mdsub-form'),e=document.getElementById('mdsub-email'),b=document.getElementById('mdsub-btn'),m=document.getElementById('mdsub-msg');
+  if(!f||!e||!b||!m){return;}
+  function say(t,ok){m.textContent=t;m.style.color=ok?'#6ee7b7':'#fca5a5';m.style.display='block';}
+  function attr(){
+    var p,real=null;
+    try{p=new URL(window.location.href).searchParams;real=p.get('utm_source');}catch(x){p=null;}
+    var vid=null;try{vid=sessionStorage.getItem('md-visit-id')||null;}catch(x){}
+    return {visit_id:vid,
+      utm_source: real||'blog',
+      utm_medium: (p&&p.get('utm_medium'))||(real?null:'cta'),
+      utm_campaign: (p&&p.get('utm_campaign'))||'seo_guide-free-premarket-newsletter-',
+      utm_content: (p&&p.get('utm_content'))||'inline_form'};
+  }
+  f.addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var email=(e.value||'').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){say('請輸入有效的 Email',false);return;}
+    var old=b.textContent;
+    b.disabled=true;b.textContent='送出中...';
+    var body=attr();body.email=email;
+    fetch(API+'/subscribe-free-direct',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json().catch(function(){return {};});})
+      .then(function(d){
+        d=d||{};
+        if(d.resubscribe_pending){
+          say(d.sent?'📬 你先前退訂過 —— 確認信已寄到這個信箱,點一下就恢復寄送。':'你先前退訂過,但確認信寄不出去。請到「聯絡我們」告訴我們,我們手動幫你恢復。',!!d.sent);
+          b.textContent='已寄確認信 ✓';return;
+        }
+        if(d.ok){
+          say('✅ 訂閱成功!明天早上 7 點就會收到第一封(沒看到請看垃圾郵件匣)。',true);b.textContent='已訂閱 ✓';e.disabled=true;return;
+        }
+        if(d.error==='undeliverable_email'){say('這個 Email 好像收不到信,請確認拼字是否正確。',false);}
+        else if(d.error==='rate_limited'||d.error==='too_many_attempts'){say('剛剛已經送出過一次了,請等幾分鐘再試。',false);}
+        else{say('出了點問題,請稍後再試。',false);}
+        b.disabled=false;b.textContent=old;
+      })
+      .catch(function(){say('網路錯誤,請稍後再試。',false);b.disabled=false;b.textContent=old;});
+  });
+})();
+</script><!-- md-inline-subscribe:end -->
   </div><!-- ↑ 這顆連結是就地訂閱表單的注入錨點:頁面寫出後由 insert_bottom_form() 換成表單 -->
   <p class="disc">本文僅供資訊整理,非投資建議。投資有風險,請評估自身狀況。資料更新:2026-08-19</p>
 </article>
