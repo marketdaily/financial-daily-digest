@@ -46,8 +46,13 @@ KV_NAMESPACE = "9f3b5e510de04803bd0b59d451911d58"
 MEDIA_BASE = "https://media.marketdaily.ai"
 SITE_URL = "https://marketdaily.ai/?utm_source=social&utm_medium=post&utm_campaign=news_reactive"
 POST_PLATFORMS = ["instagram", "facebook", "threads"]
-DAILY_CAP = 3
-MIN_GAP_MIN = 120
+# 2026-08-24 老闆令:「MarketDaily 應該是一個 follow 了就知道世界在發生什麼的帳號」
+# + 「一天 100 篇也可以」。上限從 3 拉到 8,但**分平台**:Threads 吃得下高頻(它就是這樣被用的),
+# IG 動態一天 4 篇已經是新聞帳號的上限,再多會被自己的粉絲當成洗版而降互動。
+# 「一天 100 篇」在 IG 上不是更多曝光,是更少 —— 所以這裡照平台性格分配,不是照數字照抄。
+DAILY_CAP = 8
+PLATFORM_DAILY_CAP = {"instagram": 4, "facebook": 4, "threads": 8}
+MIN_GAP_MIN = 45
 FRESH_HOURS = 14          # cnyes 即時源只看這麼新的
 SWEEP_HOURS = 36          # NewsAPI backstop(免費層延遲,分數自帶衰減)
 UA = "Mozilla/5.0"
@@ -95,6 +100,46 @@ EVENT_TYPES = [
      ["surges", "plunges", "soars", "tumbles", "record high", "sell-off"],
      ["暴漲", "暴跌", "飆", "重挫", "創新高", "崩", "反彈"]),
 ]
+
+
+
+# ── 題材線 ──────────────────────────────────────────────────────────────────
+# 2026-08-24 之前,候選必須**同時**命中 EVENT_TYPES 與 COMPANIES 名單才進得了佇列
+# (`if not cls or not comp: continue`)。那一行就是「為什麼這個帳號每天都在講同樣幾檔股票」
+# 的結構性原因 —— 世界上發生的其他事情,對這支程式來說根本不存在。
+# 現在改成四條題材線,公司只是其中一條;其餘三條不需要命中個股名單。
+LANES = [
+    ("company", "公司大事", 0, [], []),   # 特例:走 EVENT_TYPES × COMPANIES(見 fetch_candidates)
+    ("ai", "AI 快訊", 5,
+     ["openai", "anthropic", "deepmind", "gemini", "chatgpt", "claude", "llm",
+      "large language model", "gpu", "data center", "datacenter", "inference",
+      "humanoid", "robotaxi", "autonomous", "ai chip", "ai model", "agent"],
+     ["人工智慧", "生成式", "大模型", "語言模型", "算力", "資料中心", "機器人",
+      "自駕", "晶片", "推論", "訓練成本", "AI 眼鏡", "智慧體"]),
+    ("macro", "總經", 4,
+     ["fed", "federal reserve", "rate cut", "rate hike", "inflation", "cpi", "ppi",
+      "jobs report", "payrolls", "gdp", "tariff", "yield", "recession", "central bank"],
+     ["聯準會", "升息", "降息", "利率", "通膨", "消費者物價", "非農", "失業率",
+      "國內生產毛額", "關稅", "公債殖利率", "衰退", "央行", "匯率", "油價"]),
+    ("world", "國際", 4,
+     ["sanction", "export control", "chip ban", "election", "coup", "strike",
+      "supply chain", "opec", "ceasefire", "trade deal", "blockade"],
+     ["制裁", "出口管制", "禁令", "大選", "罷工", "供應鏈", "停火", "貿易協議",
+      "地緣", "封鎖", "軍演", "談判破局"]),
+]
+
+
+def _classify_lane(title):
+    """回 (lane, 中文標籤, 基礎權重)。同時命中多條時取權重最高的。"""
+    low = title.lower()
+    best = None
+    for lane, zh, w, kw_en, kw_zh in LANES:
+        if lane == "company":
+            continue
+        if any(k in low for k in kw_en) or any(k in title for k in kw_zh):
+            if best is None or w > best[2]:
+                best = (lane, zh, w)
+    return best
 
 
 def _utcnow():
@@ -166,17 +211,96 @@ def fetch_candidates():
     for a in arts:
         cls = _classify(a["title"])
         comp = _match_company(a["title"])
-        if not cls or not comp:
-            continue
-        typ, zh, w = cls
         age_h = max(0.0, (now - a["date"]).total_seconds() / 3600)
-        score = w + (3 if age_h <= 3 else (1 if age_h <= 8 else 0)) - (2 if age_h > 20 else 0)
-        if comp["ticker"] in ("NVDA", "2330", "TSLA", "AAPL", "MSFT", "GOOGL"):
-            score += 2
-        out.append({**a, "age_h": round(age_h, 1), "company": comp,
-                    "etype": typ, "etype_zh": zh, "score": score,
+        fresh = (3 if age_h <= 3 else (1 if age_h <= 8 else 0)) - (2 if age_h > 20 else 0)
+        if cls and comp:
+            # 公司線:個股事件 + 技術面快照(這條線才有數字可講)
+            typ, zh, w = cls
+            score = w + fresh
+            if comp["ticker"] in ("NVDA", "2330", "TSLA", "AAPL", "MSFT", "GOOGL"):
+                score += 2
+            out.append({**a, "age_h": round(age_h, 1), "company": comp, "lane": "company",
+                        "lane_zh": "公司大事", "etype": typ, "etype_zh": zh, "score": score,
+                        "key": hashlib.sha1(a["title"].encode()).hexdigest()[:16]})
+            continue
+        lane = _classify_lane(a["title"])
+        if not lane:
+            continue
+        lane_key, lane_zh, w = lane
+        # 事件型別命中時加分,但**不是必要條件** —— 「Fed 降息兩碼」不屬於任何個股事件型別,
+        # 而它正是這個帳號最該講的東西。
+        score = w + fresh + (1 if cls else 0) + (1 if comp else 0)
+        out.append({**a, "age_h": round(age_h, 1), "company": comp, "lane": lane_key,
+                    "lane_zh": lane_zh, "etype": cls[0] if cls else lane_key,
+                    "etype_zh": cls[1] if cls else lane_zh, "score": score,
                     "key": hashlib.sha1(a["title"].encode()).hexdigest()[:16]})
     out.sort(key=lambda c: (-c["score"], c["age_h"]))
+    return out
+
+
+
+# ── @ 提及 ──────────────────────────────────────────────────────────────────
+# 老闆 2026-08-24:「make sure to tag or mention relevant people or subjects」。
+# 提及是**確定性**加上去的,不交給 LLM —— 模型掰一個不存在的 handle 出來,
+# 我們就會公開 tag 到一個無關的路人身上,那比不 tag 糟得多。
+#
+# 只收「我確定是官方帳號」的 handle。台股公司(台積電/鴻海/聯發科)沒有可確認的官方 IG,
+# 所以它們只留純文字名稱不加 @ —— 寧可少 tag,不可 tag 錯人。
+# IG 與 Threads 共用 handle;FB 走的是粉專名稱另一套,所以 FB 版本會把提及拿掉。
+MENTION_HANDLES = {
+    "nvidia": "nvidia", "輝達": "nvidia",
+    "tesla": "tesla", "特斯拉": "tesla",
+    "apple": "apple", "蘋果": "apple",
+    "microsoft": "microsoft", "微軟": "microsoft",
+    "google": "google", "谷歌": "google", "alphabet": "google",
+    "meta": "meta",
+    "amazon": "amazon", "亞馬遜": "amazon",
+    "amd": "amd", "超微": "amd",
+    "intel": "intel", "英特爾": "intel",
+    "openai": "openai",
+    "anthropic": "anthropicai",
+}
+
+# 這些情境**不 tag 當事人**:把公司 tag 進它自己的醜聞/暴跌新聞,是把對方的通知欄
+# 變成我們的曝光工具,對方多半只會檢舉。負面題材靠 hashtag 觸及就好。
+NO_MENTION_MARKERS = ["訴訟", "調查", "罰款", "反壟斷", "制裁", "禁令", "召回",
+                      "暴跌", "重挫", "崩", "爆倉", "破產", "裁員", "外洩", "起訴"]
+
+LANE_HASHTAGS = {
+    "company": ["#美股", "#台股"],
+    "ai": ["#AI", "#人工智慧"],
+    "macro": ["#總經", "#聯準會"],
+    "world": ["#國際財經", "#地緣政治"],
+}
+
+
+def mentions_for(cand):
+    """這則新聞該 @ 誰。回 handle 清單(可能是空的)。"""
+    title = cand["title"]
+    if any(m in title for m in NO_MENTION_MARKERS) or cand.get("etype") == "regulatory":
+        return []
+    low = title.lower()
+    hits = []
+    for alias, handle in MENTION_HANDLES.items():
+        if (alias in low if alias.isascii() else alias in title) and handle not in hits:
+            hits.append(handle)
+    return hits[:2]          # 一則最多兩個;塞滿 @ 是垃圾訊號不是社交訊號
+
+
+def decorate(caption, cand, platform, limit=None):
+    """把提及與題材 hashtag 補上去。**在所有閘門之後才做** —— handle 與 hashtag 都是
+    寫死的常數,不是模型產出的內容,不需要也不應該進入事實查核的比對範圍。
+    FB 的粉專提及是另一套語法,純文字 @handle 在那裡只是雜訊,所以 FB 不加。"""
+    out = caption
+    tags = [t for t in LANE_HASHTAGS.get(cand.get("lane", "company"), []) if t not in out]
+    if tags:
+        out = out.rstrip() + " " + " ".join(tags)
+    if platform in ("instagram", "threads"):
+        hs = [f"@{h}" for h in mentions_for(cand) if f"@{h}" not in out]
+        if hs:
+            out = out.rstrip() + "\n\n" + " ".join(hs)
+    if limit and len(out) > limit:
+        return caption          # 塞不下就整組不加,不要切一半留半個 handle
     return out
 
 
@@ -197,15 +321,26 @@ def pick(state, cands):
     today = _tw_today()
     pair_recent = {(p["ticker"], p.get("etype")) for p in state["posted"]
                    if p["date"] >= (_utcnow() - datetime.timedelta(days=2)).strftime("%Y-%m-%d")}
+    # 題材輪替:今天已經發過的線先讓路。一天八篇全是「公司大事」的話,
+    # 追蹤者得到的仍然是同一種東西 —— 老闆要的是「follow 了就知道世界在發生什麼」,
+    # 那是**題材涵蓋面**的問題,不是則數的問題。
+    lanes_today = [p.get("lane", "company") for p in state["posted"] if p["date"] == today]
+    last_lane = lanes_today[-1] if lanes_today else None
+    ranked = []
     for c in cands:
         if c["key"] in state["seen"]:
             continue
-        if (c["company"]["ticker"], c["etype"]) in pair_recent:
+        if c["company"] and (c["company"]["ticker"], c["etype"]) in pair_recent:
             continue
         if c["score"] < 6:      # 水位:平庸新聞不值得發,寧缺勿濫
             continue
-        return c
-    return None
+        # 罰分而不是硬排除:某條線今天真的沒別的可發時,還是要發得出東西。
+        pen = lanes_today.count(c["lane"]) * 2 + (3 if c["lane"] == last_lane else 0)
+        ranked.append((pen - c["score"], c))
+    if not ranked:
+        return None
+    ranked.sort(key=lambda t: t[0])
+    return ranked[0][1]
 
 
 def tech_snapshot(ysym):
@@ -264,20 +399,34 @@ def source_excerpt(url, limit=1200):
         return None
 
 
+LANE_BRIEF = {
+    "company": "個股事件:講這家公司發生什麼事,再用 tech_snapshot 的數字讀技術面。",
+    "ai": "AI/科技大事:講清楚發生什麼、為什麼是個轉折,以及對台灣供應鏈或投資人的意義。"
+          "沒有 tech_snapshot 時不要點名任何個股的價位。",
+    "macro": "總體經濟:講數據或政策本身,以及它會怎麼傳導到市場(利率/匯率/資金成本)。",
+    "world": "國際事件:講事件本身與它的財經影響路徑(能源/供應鏈/避險)。不做政治立場評論。",
+}
+
+
 def build_facts(cand, tech, excerpt):
-    return {
+    comp = cand.get("company")
+    facts = {
         "news_headline": cand["title"],
         "news_source_url": cand["url"],
         "news_published_utc": cand["date"].strftime("%Y-%m-%d %H:%M"),
         "event_type": cand["etype_zh"],
-        "company": cand["company"]["name"],
-        "ticker": cand["company"]["ticker"],
-        "market": "台股" if cand["company"]["market"] == "tw" else "美股",
+        "lane": cand.get("lane", "company"),
+        "lane_zh": cand.get("lane_zh", "公司大事"),
+        "lane_brief": LANE_BRIEF.get(cand.get("lane", "company"), ""),
+        "company": comp["name"] if comp else None,
+        "ticker": comp["ticker"] if comp else None,
+        "market": ("台股" if comp["market"] == "tw" else "美股") if comp else None,
         "tech_snapshot": tech,
         "source_excerpt": excerpt,
         "site_url": SITE_URL,
         "today_tw": _tw_today(),
     }
+    return facts
 
 
 DRAFT_PROMPT = """<role>
@@ -331,7 +480,12 @@ source since no source link is attached to the post.
 5. If tech_snapshot is null, skip section 3's numbers and write a qualitative line instead.
 6. Do not translate company names oddly; use the name given in <facts>.
 7. card_headline: max 16 Chinese characters, punchy, factual, no digits unless in <facts>.
-8. Traditional Chinese (zh-TW) characters ONLY, in every field. Never emit Simplified forms
+8. facts.lane tells you which kind of story this is; follow facts.lane_brief.
+   When facts.company is null (lane = ai / macro / world) this is NOT a single-stock post:
+   REPLACE section 3 with 「為什麼這件事重要」(mechanism, 2-3 sentences) and section 4 with
+   「對台灣投資人的意義」. Do NOT name any individual stock, price, or level that is not
+   already in <facts>. Never invent a ticker.
+9. Traditional Chinese (zh-TW) characters ONLY, in every field. Never emit Simplified forms
    (亚这两个们时说对现实发产业经济资报导观软数变电华应场关开门问间车东马头银长国图 …).
    Mixed Simplified/Traditional output is an automatic reject.
 </constraints>
@@ -513,8 +667,8 @@ def caption_gate(caption, threads_caption, headline, facts):
 
 
 def render_news_card(cand, tech, headline_zh, out_png):
-    comp = cand["company"]
-    body = [f"{comp['name']}({comp['ticker']}) · {cand['etype_zh']}"]
+    comp = cand.get("company")
+    body = [f"{comp['name']}({comp['ticker']}) · {cand['etype_zh']}"] if comp else [cand["etype_zh"]]
     if tech:
         body.append(f"收盤 {tech['收盤價']}({tech['當日漲跌%']}%) · 5日 {tech['5日漲跌%']}%")
         line3 = f"RSI14 {tech['RSI14']} · 距MA20 {tech['距MA20%']}%"
@@ -522,7 +676,7 @@ def render_news_card(cand, tech, headline_zh, out_png):
             line3 += f" · 量能 {tech['量能比20日均']}"
         body.append(line3)
     body.append("來源:" + ("鉅亨網" if "cnyes" in cand["url"] else "外電"))
-    spec = {"tag": f"新聞快評 · {_tw_today()}", "headline": headline_zh,
+    spec = {"tag": f"{cand.get('lane_zh', '新聞快評')} · {_tw_today()}", "headline": headline_zh,
             "body": "\n".join(body), "cta": "完整個股分析 marketdaily.ai →"}
     make_card(spec, out_png)
     return out_png
@@ -554,14 +708,29 @@ def upload_media(jpg, key):
     raise RuntimeError(f"上傳後 {url} 驗不到正確檔案")
 
 
-def post_direct(env, post_id, image_url, caption, threads_caption=None):
+def platforms_open(state, today):
+    """今天還沒發滿的平台。分平台上限讓 Threads 可以高頻,同時 IG 動態不被自己洗版。"""
+    used = {p: 0 for p in POST_PLATFORMS}
+    for rec in state["posted"]:
+        if rec["date"] != today:
+            continue
+        for plat, r in (rec.get("results") or {}).items():
+            if r.get("ok") and plat in used:
+                used[plat] += 1
+    return [p for p in POST_PLATFORMS if used[p] < PLATFORM_DAILY_CAP.get(p, DAILY_CAP)], used
+
+
+def post_direct(env, post_id, image_url, caption, threads_caption=None, cand=None,
+                platforms=None):
     """直發(不入 social_posts.json 品牌佇列——兩條內容流分開);冪等靠 LOG_FILE。
     Threads API 上限 500 字 → 用 draft 一起產出並過同一套閘門的短版。"""
     results = {}
     print(f"發布 [{post_id}] → {image_url}")
-    for plat in POST_PLATFORMS:
+    for plat in (platforms or POST_PLATFORMS):
         fn = PLATFORMS[plat]
         text = threads_caption if (plat == "threads" and threads_caption) else caption
+        if cand:
+            text = decorate(text, cand, plat, limit=480 if plat == "threads" else None)
         try:
             ok, detail = fn(env, image_url, caption_for(text, plat))
         except KeyError as e:
@@ -581,8 +750,10 @@ def cmd_scan():
     print(f"候選 {len(cands)} 則(門檻分=6):")
     for c in cands[:10]:
         mark = "seen" if c["key"] in state["seen"] else ""
-        print(f"  [{c['score']:>2}] {c['age_h']:>4}h {c['company']['ticker']:<6} "
-              f"{c['etype_zh']:<6} {c['title'][:52]} {mark}")
+        who = c["company"]["ticker"] if c.get("company") else "-"
+        at = ",".join("@" + h for h in mentions_for(c)) or ""
+        print(f"  [{c['score']:>2}] {c['age_h']:>4}h {c['lane_zh']:<5} {who:<6} "
+              f"{c['etype_zh']:<6} {c['title'][:44]} {at} {mark}")
     chosen = pick(state, cands)
     print(f"\n本輪會選:{chosen['title'][:60] if chosen else '(無達標候選)'}")
 
@@ -645,9 +816,13 @@ def cmd_run(dry=False, force=False):
     today = _tw_today()
     retry_rc = 0 if dry else retry_failed(state)
     todays = [p for p in state["posted"] if p["date"] == today]
+    open_plats, used = platforms_open(state, today)
     if not force:
         if len(todays) >= DAILY_CAP:
             print(f"今日已發 {len(todays)}/{DAILY_CAP},收工。")
+            return retry_rc
+        if not open_plats:
+            print(f"所有平台今日都發滿了({used}),收工。")
             return retry_rc
         if state["posted"]:
             last_ts = state["posted"][-1].get("ts", 0)
@@ -660,13 +835,14 @@ def cmd_run(dry=False, force=False):
     if not cand:
         print("無達標新聞候選,本輪不發。")
         return retry_rc
-    comp = cand["company"]
-    print(f"選中:[{cand['score']}] {cand['title']}\n  → {comp['name']} {cand['url']}")
+    comp = cand.get("company")
+    print(f"選中:[{cand['score']}][{cand['lane_zh']}] {cand['title']}\n"
+          f"  → {comp['name'] if comp else '(非個股題材)'} {cand['url']}")
 
-    tech = tech_snapshot(comp["yahoo"])
+    tech = tech_snapshot(comp["yahoo"]) if comp else None
     if tech:
         print(f"  技術面:{tech}")
-    else:
+    elif comp:
         print("  ⚠ 技術面抓取失敗,走 qualitative 路徑")
     excerpt = source_excerpt(cand["url"])
     facts = build_facts(cand, tech, excerpt)
@@ -692,7 +868,8 @@ def cmd_run(dry=False, force=False):
         print("[dry] 不發文、不記 state。")
         return 0
 
-    post_id = f"newsr_{today.replace('-', '')}_{comp['ticker'].lower()}"
+    slug = comp["ticker"].lower() if comp else f"{cand['lane']}_{cand['key'][:6]}"
+    post_id = f"newsr_{today.replace('-', '')}_{slug}"
     if post_id in posted_ids():
         print(f"{post_id} 已發過(LOG_FILE),跳過。")
         state["seen"][cand["key"]] = today
@@ -705,20 +882,22 @@ def cmd_run(dry=False, force=False):
     _png_to_jpg_playwright(png, jpg)
     image_url = upload_media(jpg, f"social/{post_id}.jpg")
     env = load_env()
-    results = post_direct(env, post_id, image_url, caption, threads_caption)
+    results = post_direct(env, post_id, image_url, caption, threads_caption,
+                          cand=cand, platforms=open_plats)
     ok_n = sum(1 for r in results.values() if r["ok"])
     state["seen"][cand["key"]] = today
     state["reject_streak"] = 0
     if ok_n:
         state["posted"].append({"date": today, "ts": time.time(), "id": post_id,
-                                "ticker": comp["ticker"], "etype": cand["etype"],
+                                "ticker": comp["ticker"] if comp else None,
+                                "lane": cand.get("lane", "company"), "etype": cand["etype"],
                                 "title": cand["title"][:80],
                                 "image_url": image_url, "caption": caption,
                                 "threads_caption": threads_caption,
                                 "results": {p: {"ok": r["ok"], "detail": r["detail"][:200]}
                                             for p, r in results.items()}})
     save_state(state)
-    print(f"完成:{ok_n}/{len(POST_PLATFORMS)} 平台成功。")
+    print(f"完成:{ok_n}/{len(open_plats)} 平台成功(今日各平台已用 {used})。")
     return (0 if ok_n else 1) or retry_rc
 
 
