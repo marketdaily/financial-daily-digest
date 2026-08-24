@@ -834,3 +834,12 @@
 {"date": "2026-08-22", "code": "NVDA", "source": "us_analyst", "level": "red", "signal": "🇺🇸 NVDA 目標價⬆️+55.9%→$335(D.A. Davidson)", "price_at_signal": null}
 {"date": "2026-08-22", "code": "AAPL", "source": "us_analyst", "level": "red", "signal": "🇺🇸 AAPL ⬇️ Buy→Outperform(BMO Capital)", "price_at_signal": null}
 {"date": "2026-08-22", "code": "7631", "source": "sbl", "level": "yellow", "signal": "聚賢研發-創(7631):機構借券賣出5日遽減-66.7%(回補潮,空頭力道減弱)", "price_at_signal": 147.5}
+{"date": "2026-08-24", "code": "2221", "source": "tw_rank", "level": "yellow", "signal": "大甲(2221) 今日漲幅排行第11(+9.9%),異常活躍", "price_at_signal": null}
+{"date": "2026-08-24", "code": "3413", "source": "institutional", "level": "red", "signal": "京鼎(3413):外資連 5 日賣超(5日淨賣 -1,597 張)", "price_at_signal": null}
+{"date": "2026-08-24", "code": "6534", "source": "institutional", "level": "yellow", "signal": "正瀚-創(6534):法人 20 日淨賣超 -205 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-08-24", "code": "9958", "source": "margin", "level": "red", "signal": "世紀鋼(9958):券資比18.2%(相對高檔,看空押注集中,軋空風險留意)", "price_at_signal": null}
+{"date": "2026-08-24", "code": "3444", "source": "leadflow", "level": "red", "signal": "利機(3444) 無消息近漲停+9.9%(量能4.5×,5日+11.3%),疑資訊先行資金|外資+投信近3日僅-57張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-24", "code": "8093", "source": "leadflow", "level": "red", "signal": "保銳(8093) 無消息近漲停+9.9%(連2根,5日+10.5%),疑資訊先行資金|外資+投信近3日僅-5張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-24", "code": "4956", "source": "leadflow", "level": "red", "signal": "光鋐(4956) 無消息近漲停+9.9%(連2根,5日+19.3%),疑資訊先行資金|外資+投信近3日+597張", "price_at_signal": null}
+{"date": "2026-08-24", "code": "3259", "source": "leadflow", "level": "yellow", "signal": "鑫創(3259) 無消息近漲停+9.6%(量能2.9×,5日-22.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-24", "code": "2762", "source": "investor_conf", "level": "yellow", "signal": "世界健身-KY(2762):法說會17天後召開", "price_at_signal": null}
