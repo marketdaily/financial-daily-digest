@@ -1,5 +1,5 @@
 {
- "ts": "2026-08-24T10:50:06",
+ "ts": "2026-08-24T13:00:06",
  "jobs_n": 107,
  "silent_n": 4,
  "silent": [
@@ -255,8 +255,8 @@
    "status": "gated"
   },
   "fleet_liveness": {
-   "last": "2026-08-23",
-   "age_d": 1,
+   "last": "2026-08-24",
+   "age_d": 0,
    "median_gap_d": 4.0,
    "thresh_d": 7.0,
    "status": "ok"
@@ -269,8 +269,8 @@
    "status": "ok"
   },
   "geo_agent": {
-   "last": "2026-08-19",
-   "age_d": 5,
+   "last": "2026-08-24",
+   "age_d": 0,
    "status": "observing"
   },
   "higgsfield_token_sync": {
@@ -373,9 +373,11 @@
    "status": "ok"
   },
   "meta_token_refresh": {
-   "last": "2026-08-02",
-   "age_d": 22,
-   "status": "observing"
+   "last": "2026-08-24",
+   "age_d": 0,
+   "median_gap_d": 22,
+   "thresh_d": 34.0,
+   "status": "ok"
   },
   "mingshu_pages_audit": {
    "last": "2026-08-24",
@@ -601,9 +603,11 @@
    "status": "observing"
   },
   "threads_token_refresh": {
-   "last": "2026-08-01",
-   "age_d": 23,
-   "status": "observing"
+   "last": "2026-08-24",
+   "age_d": 0,
+   "median_gap_d": 23,
+   "thresh_d": 35.5,
+   "status": "ok"
   },
   "tldr_distribution": {
    "last": "2026-08-23",

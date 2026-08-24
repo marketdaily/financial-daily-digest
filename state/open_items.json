@@ -5316,8 +5316,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-24 12:17",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 13:01",
+  "note": "機構參數(PUSH/NON-PUSH/HINGE/HEADER/REVERSE)已從官網文字接上,61/118顆生效,滑塊/彈片正確消失或反貼(report.json核對非磁碟殘檔)。但誠實記錄:這個攝影機角度本來就看不太到滑塊,型錄縮圖的視覺同質化改善有限——真正讓客戶一眼分出來的是外殼比例,那部分沒做。"
  },
  {
   "id": 533,
@@ -5326,6 +5326,46 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 12:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 534,
+  "what": "記憶索引只剩 12 字元餘裕(17088/17100),下次新增記憶即再爆",
+  "why": "本輪已跑 hubify 兩層化把 🔴 壓回上限內,但最肥那行(守衛/憑證/部署事故群 1328 字元)08-17 已證實壓不動;記憶 hub_selftest_honesty_lessons 明載正解是『併群』不是再造壓縮器,那是獨立任務",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 12:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 535,
+  "what": "Delvin 進不去 Workspace 管理員帳號 delvin@quietfix.studio,Google 把一般復原壓 30 天冷卻",
+  "why": "密碼與 Authenticator 都失效;08-24 04:35 的 Critical security alert 明寫『check after 30 days』。繞法=Workspace 管理員專用的網域所有權復原(toolbox.googleapps.com/apps/recovery/form),Google 給一組 CNAME/TXT,我加進 quietfix.studio 的 DNS(已實測有讀寫權)即可重設管理員密碼,不吃 30 天。等 Delvin 把那組記錄貼給我",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-24 12:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 536,
+  "what": "hi@qfxsolution.com 目前仍只能收不能寄",
+  "why": "Google 路線卡在管理員帳號進不去(見上一項);Brevo 路線憑證備妥可用但連結會被改寫成 sendibt2.com 且官方不開放關閉。兩條都沒收乾",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 12:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 537,
+  "what": "皇海 card_connector 型錄縮圖視覺仍偏同質(外殼比例差異小),機構參數雖已接上但這個相機角度看不太到差異",
+  "why": "要做的是逐系列調整外殼造型或縮圖取景角度,不是這次的參數修復能解決",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-24 13:01",
   "closed": null,
   "note": ""
  }
