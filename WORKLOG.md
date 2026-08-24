@@ -7937,3 +7937,24 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - Delvin 授權「你決定就好」→ 決定+執行(非留兩域並存):NS 傳播完成後 headless 截圖比對零差異,`~/crew/src/index.js` 加 hostname 判斷 301(path+query 全保留,舊報告連結永久有效)。
 - ⭐ 踩坑:`wrangler.jsonc` run_worker_first 只列 /api/* 與 /r/*,首頁等路徑不進 Worker,轉址一開始對它們不生效——擴大成 /* 修正,生產全路徑實測過(舊域皆301/新域皆200)+npm test 全過。
 - 作戰卡、qfx記憶、vendor_takeover記憶三處網址已同步換新;已 commit+push(crew repo + Delvin-agent repo)。open #555 已關。
+
+### 2026-08-24 (續4) CREW 沙盒 WordPress:讓「一鍵送進客戶網站」變成看得到的實射 demo
+- 起因:Delvin 測皇海站後問「CREW 只會吐一大串字給我,我要自己貼進網站嗎?」
+- 查證結果:**publish 層本來就會真的送**(connections.js AES-GCM 保管 + publish.js dry-run→WP/Ghost 草稿+編輯連結),
+  他看不到是因為 `public/app.js:1072` `if (!token || !cs.length) return "";` —— 沒登入/沒接目的地時那一列**整個不畫**,一句話都不說。
+- ⚠️ 皇海站 `kingconn.com.tw` 是 **Laravel + 首岳自建後台**(session cookie 名 `atteipo_session`),**無公開 API** ⇒
+  就算拿到後台帳密 CREW 也接不上。→ 對外話術改成「內容那半一鍵進草稿、模板那半要有網站控制權(=接管)」。
+- 本輪要做:①架沙盒 WordPress(docker + cloudflared tunnel)當 8/25 實射 demo 目標 ②修掉空狀態靜默,改露「接上你的網站」入口。
+- **實測結果(生產,非模擬)**:沙盒 `sandbox.crewhq.digital`(docker WP + cloudflared tunnel,keepalive cron */5)
+  收到三篇草稿 —— 英文 SEO 指南、同一工作項目的中文版(1713 漢字)與英文版,標題各自正確、狀態皆 draft。
+- 老闆中途追加:「客戶群用中文搜就該做中文,英文就英文,兩個都要,或可選幾種語言」⇒ 每個工作項目旁加語言選單
+  (自動/繁體中文/English),存檔鍵帶語言(auto 不加後綴 ⇒ 舊成品不必重產),publish 一路帶 lang。
+- ⭐⭐ 語言真正的攔路石不是 prompt:`const out = { ...data, title: item.title }` **無條件用計畫項目的英文標題
+  蓋掉模型寫的標題** ⇒ 中英兩版標題一字不差。我先改了兩輪 prompt(加 LANGUAGE 段、把 `title:` 改成
+  `brief_title:` 並標明不是輸出)都沒動靜,因為**沒有任何 prompt 改得動一行確定性的覆寫**。
+- ⭐ 另外兩個「修好了卻看不到」:①`publishBar` 空狀態 `return ""`(靜默)②`loadConnections` 把抓資料與畫清單
+  綁在一起,而 `#conn-list` 只存在於首頁 ⇒ 報告頁 `window.__conns` 恆空,接好了也不出現送出列。
+- 新增 `/api/admin/plan`(示範帳號沒金流永遠卡免費兩份)與 `/api/admin/uncache`(壞成品躺在 DO 會再吐一次)。
+  ADMIN_TOKEN 原本只存在 Worker secret、本機無副本 ⇒ 旋轉一次並存進 `~/crew/.env`(已 gitignore)。
+- 皇海站實查:`kingconn.com.tw` = Laravel + 首岳自建後台(session cookie `atteipo_session`),**無公開 API**
+  ⇒ 8/25 話術改為「內容那半一鍵進草稿(要一組可撤銷的 Application Password),模板那半要有網站控制權=接管」。

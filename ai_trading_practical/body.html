@@ -1,0 +1,207 @@
+<!-- ===================== COVER ===================== -->
+<section class="cover">
+  <div class="seal">FOR DELVIN · 2026</div>
+  <div class="kicker">私人工程教程 · 第三冊</div>
+  <h1>AI 交易動手實作課</h1>
+  <div class="sub">一步步拆解一個「真的能跑」的交易閉環<br>訊號 → 回測 → 驗證 → 風控 → paper 下單</div>
+  <div class="meta">
+    搭配專案：<code>~/Delvin-agent/ai_trading_course/demo/</code>（可直接 <code>python3 run.py</code>）<br>
+    對象：讀完《AI 交易工程地圖》後，要親手把它跑起來的你<br>
+    立場：誠實第一 · 這個 demo 的目的不是賺錢，是讓你親眼看到「驗證怎麼殺掉漂亮的假策略」<br>
+    完成日：2026 年 6 月
+  </div>
+</section>
+
+<!-- ===================== 老師序 ===================== -->
+<h1>老師的話：這次我們動手</h1>
+<p class="lead">《地圖》給你全貌，這本帶你動手。我已經幫你把一個<strong>真的能跑</strong>的最小閉環寫好放在你電腦裡了。這本書的每一章，對應 demo 裡的一個檔案——你可以一邊讀、一邊打開那個檔對照、一邊改。</p>
+<div class="key box"><b>先把它跑起來（30 秒）：</b>
+<pre>cd ~/Delvin-agent/ai_trading_course/demo
+python3 run.py</pre>
+第一次會抓 FinMind 台股資料並快取，之後秒跑。看到一堆數字後，再回來讀這本書，你會懂每個數字怎麼來、為什麼重要。</div>
+<p>這個 demo 把《地圖》第一部的九階段，濃縮成一條可執行管線：</p>
+<pre>FinMind 取台股日線 → MA 交叉訊號 → 向量化回測(扣真實成本)
+   → 驗證(walk-forward + Deflated Sharpe + 多重檢定示範)
+   → 風控(1% 風險式部位大小) → 今日 paper 下單指令</pre>
+<div class="warn box"><b>再強調一次立場：</b>這個策略（MA 交叉）<b>故意選一個簡單、而且大概率沒有 edge 的策略</b>。因為這本書要教的不是「這招會賺」，而是「<b>怎麼用工程方法證明一招到底有沒有用</b>」——這才是你老闆要你學的真本事。</div>
+
+<!-- ===================== 目錄 ===================== -->
+<section class="toc">
+<h1 class="nobreak">目錄</h1>
+<ol>
+  <li>環境與專案結構（怎麼跑、檔案地圖）</li>
+  <li>階段 1-2　資料：FinMind 抓 + 清洗（<code>data.py</code>）</li>
+  <li>階段 3-4　訊號：MA 交叉 + 防未來函數（<code>strategy.py</code>）</li>
+  <li>階段 5　回測：向量化 + 真實成本（<code>backtest.py</code>）</li>
+  <li>★ 階段 5 的靈魂　驗證：DSR + walk-forward（<code>validation.py</code>）</li>
+  <li>階段 6　風控：1% 風險式部位大小（<code>risk.py</code>）</li>
+  <li>階段 7　執行：今日 paper 指令（<code>paper.py</code>）</li>
+  <li>跑出來的誠實結果（怎麼解讀每個數字）</li>
+  <li>怎麼把它改成「你的東西」（換策略 / 接 LLM / 接券商）</li>
+  <li>結語：你已經會了最難的那一塊</li>
+</ol>
+</section>
+
+<!-- ===================== 1 ===================== -->
+<h1>1　環境與專案結構</h1>
+<p>專案在 <code>~/Delvin-agent/ai_trading_course/demo/</code>。依賴（requests / pandas / numpy / scipy）winrig 已裝好。檔案對照《地圖》的九階段：</p>
+<table>
+<tr><th>檔案</th><th>對應階段</th><th>做什麼</th></tr>
+<tr><td><code>config.py</code></td><td>—</td><td>集中設定（標的/期間/參數/成本），<b>改這裡就好</b></td></tr>
+<tr><td><code>data.py</code></td><td>1-2 資料/清洗</td><td>FinMind 抓台股日線 + 本地快取 + 清洗</td></tr>
+<tr><td><code>strategy.py</code></td><td>3-4 特徵/訊號</td><td>MA 交叉訊號（防 look-ahead）+ ATR</td></tr>
+<tr><td><code>backtest.py</code></td><td>5 回測</td><td>向量化算每日報酬，扣手續費+稅+滑價</td></tr>
+<tr><td><code>validation.py</code></td><td>5 的靈魂</td><td>Sharpe / Deflated Sharpe / walk-forward</td></tr>
+<tr><td><code>risk.py</code></td><td>6 風控</td><td>依停損距離反推張數，單筆風險固定 1%</td></tr>
+<tr><td><code>paper.py</code></td><td>7 執行</td><td>把訊號+風控變成「今天該怎麼下單」</td></tr>
+<tr><td><code>run.py</code></td><td>閉環</td><td>串起全部，印出誠實報告</td></tr>
+</table>
+<div class="tip box"><b>工程觀念：為什麼要拆成這麼多檔？</b>因為交易系統是「資料生產線」，每一道工序該能<b>獨立測試、獨立替換</b>。你想換策略，只動 <code>strategy.py</code>；想換成本假設，只動 <code>config.py</code>。這就是《地圖》說的「可重現、可維護」的工程紀律。</div>
+
+<!-- ===================== 2 ===================== -->
+<h1>2　階段 1-2　資料：FinMind 抓 + 清洗</h1>
+<p>第一步永遠是「把乾淨、正確的資料拿進來」。<code>data.py</code> 做三件事：打 FinMind API、本地快取（不重複打 API）、清洗。</p>
+<pre>def get_prices(stock_id, start, end):
+    f = CACHE / f"{stock_id}_{start}_{end}.csv"
+    if f.exists():                      <span class="c"># 有快取就讀檔，不重打 API</span>
+        df = pd.read_csv(f, parse_dates=["date"])
+    else:
+        r = requests.get(API, params={"dataset":"TaiwanStockPrice",
+            "data_id":stock_id, "start_date":start, "end_date":end})
+        df = pd.DataFrame(r.json()["data"]); df.to_csv(f, index=False)
+    ...
+    df = df[(df["volume"] &gt; 0) &amp; (df["close"] &gt; 0)]   <span class="c"># 清洗：濾掉停牌/異常</span>
+    return df</pre>
+<div class="warn box"><b>這裡的工程坑（《地圖》第四部）：</b>
+<ul>
+<li><b>快取很重要：</b>免費 API 有額度，每跑一次都重打會被限流。快取讓你可以反覆實驗。</li>
+<li><b>FinMind 給的是「已還原權息」的價格</b>，所以不用自己處理除權息跳空——但你<b>必須知道</b>你的資料是哪一種，否則回測會出現假跳空。</li>
+<li><b>免費資料沒有 point-in-time 保證、可能缺已下市股</b>——學習夠用，認真上線要換更可靠的源。</li>
+</ul>
+</div>
+
+<!-- ===================== 3 ===================== -->
+<h1>3　階段 3-4　訊號：MA 交叉 + 防未來函數</h1>
+<p>訊號是「把資料變成決定」。這裡用最簡單的：快線（20 日均）站上慢線（60 日均）就持有，跌破就空手。</p>
+<pre>def ma_cross_signal(df, fast, slow):
+    f = df["close"].rolling(fast).mean()
+    s = df["close"].rolling(slow).mean()
+    raw = (f &gt; s).astype(int)
+    return raw.shift(1).fillna(0)        <span class="c"># ← 關鍵：shift(1) 防未來函數</span></pre>
+<div class="key box"><b>這一行 <code>shift(1)</code> 是新人最常漏、最致命的防呆。</b>沒有它，你會用「今天的收盤價」算出訊號、然後假裝「今天就能用這個訊號交易」——但收盤價要收盤才知道，你等於偷看了未來（look-ahead bias）。<code>shift(1)</code> 的意思是「<b>昨天收盤算出的訊號，今天才進場</b>」，這才符合現實。<br><b>很多「神級回測」拿掉這一行就現形。</b></div>
+<p>同檔還有 <code>atr()</code>（平均真實波幅），等一下風控設停損會用到——它衡量「這檔股票平常一天波動多大」，用來把停損設在「技術上合理」的距離，而不是隨便抓一個 %。</p>
+
+<!-- ===================== 4 ===================== -->
+<h1>4　階段 5　回測：向量化 + 真實成本</h1>
+<p>回測 = 「如果當時照訊號做，會怎樣」。向量化作法：訊號 × 隔日報酬，一次算完整段歷史。</p>
+<pre>def run_backtest(df, signal):
+    ret = df["close"].pct_change().fillna(0)
+    strat_ret = signal * ret                       <span class="c"># 有持倉才吃當日報酬</span>
+    turn = signal.diff().abs().fillna(0)           <span class="c"># 訊號改變=換手</span>
+    cost = turn * (FEE + SLIPPAGE) \
+         + (signal.diff() &lt; 0) * TAX               <span class="c"># 賣出才扣證交稅</span>
+    return strat_ret - cost                        <span class="c"># 報酬要扣成本！</span></pre>
+<div class="warn box"><b>新人最常見的自欺：回測假設「零成本、收盤價成交」。</b>台股一買一賣的手續費(0.1425%×2)+證交稅(0.3%)就吃掉約 0.6%，加滑價更多。<b>很多看起來會賺的策略，把成本加回去就翻負</b>——尤其進出頻繁的。這個 demo 一開始就把成本算進去，你看到的數字才誠實。</div>
+
+<!-- ===================== 5 ===================== -->
+<h1>5　★ 階段 5 的靈魂　驗證：DSR + walk-forward</h1>
+<p class="lead">這是整個 demo（也是整個工作）最重要的一章。<code>validation.py</code> 的工作是當「測謊機」——分辨一個 edge 是真的，還是你在歷史雜訊裡挖到的運氣。</p>
+
+<h2>5.1　Sharpe 不夠，要 Deflated Sharpe</h2>
+<p>一般 Sharpe 只看「報酬÷波動」，但它<b>不知道你試了幾次</b>。Deflated Sharpe（DSR）把「你掃了幾組參數」也算進去，回頭把 Sharpe 打折：</p>
+<pre>def deflated_sharpe(returns, n_trials):
+    sr = sharpe(returns) / sqrt(252)           <span class="c"># 每期 Sharpe</span>
+    sk, kt = skew(returns), kurtosis(returns)  <span class="c"># 報酬分布的偏度/峰度</span>
+    <span class="c"># 你試 n_trials 次，純運氣下「最好那組」的期望 Sharpe 基準：</span>
+    sr0 = expected_max_sharpe(n_trials, T)
+    <span class="c"># 回傳「這個 Sharpe 真的 &gt; 純運氣基準」的機率</span>
+    return norm.cdf((sr - sr0) * sqrt(T-1) / denom)</pre>
+<div class="key box"><b>白話：你掃描的參數越多（n_trials 越大），純運氣也能造出越高的 Sharpe，所以同樣一個 Sharpe 就越不值錢。</b>DSR 把這件事量化成一個 0~1 的機率：越接近 1 越可信，低於 ~0.95 就該高度懷疑。這正是你 CLAUDE.md 裡 <code>backtest-validation</code> / <code>quant-math</code> 技能在做的事。</div>
+
+<h2>5.2　walk-forward：只算「沒看過的年份」</h2>
+<pre>def walk_forward(df, fast, slow):
+    oos = []
+    for 每個測試年份 in 訓練期之後的年份:
+        sig = ma_cross_signal(df, fast, slow)[該年份]
+        oos.append(run_backtest(該年份, sig))   <span class="c"># 只收樣本外報酬</span>
+    return concat(oos)</pre>
+<p>它強迫策略在「開發時沒看過」的年份反覆證明自己。<b>這才是真正算數的數字</b>——全期回測很容易因為「剛好擬合到那段歷史」而虛胖。</p>
+<div class="tip box"><b>三個指標一起看才安全：</b>① 全期 Sharpe（參考）② DSR（扣掉「試幾次」的真相）③ walk-forward 樣本外（沒看過的年份）。三個都好，才有資格進下一關。任何一個垮，這個策略就該死在這。</div>
+
+<!-- ===================== 6 ===================== -->
+<h1>6　階段 6　風控：1% 風險式部位大小</h1>
+<p>就算策略是對的，部位開太大一樣會死。風控的核心問題是「<b>這次該下多少</b>」。這個 demo 用「固定風險法」：每筆交易最多只虧帳戶的 1%。</p>
+<pre>def position_size(entry, stop):
+    risk_amt = ACCOUNT * 0.01              <span class="c"># 每筆最多虧 1% = 10,000</span>
+    per_share_risk = entry - stop          <span class="c"># 一股的最大虧損</span>
+    shares = risk_amt / per_share_risk     <span class="c"># 反推能買幾股</span>
+    return (shares // 1000) * 1000          <span class="c"># 台股整張</span></pre>
+<div class="key box"><b>反推邏輯：停損距離越遠 → 一股風險越大 → 買越少（讓總風險固定）。</b>這就是《地圖》第六部說的「選股決定你賺多少，部位大小決定你能不能留在牌桌上」。</div>
+<div class="warn box"><b>跑出來你會看到一個真實限制：</b>台積電 1075 元、停損 1036，一股風險約 39 元，一整張（1000 股）風險就 39,286 元 &gt; 你的 1% 預算（10,000）→ <b>shares = 0，買不起一整張</b>。程式會老實提示你「放寬風險% / 加大帳戶 / 改用零股」。這不是 bug，是風控的真實數學——很多人從沒算過這個，就重壓下去了。</div>
+
+<!-- ===================== 7 ===================== -->
+<h1>7　階段 7　執行：今日 paper 指令</h1>
+<p>最後一步：把「訊號 + 風控」變成一張人看得懂的下單指令。<b>paper = 模擬，不是真下單</b>。</p>
+<pre>def todays_order(df):
+    sig = ma_cross_signal(df, FAST, SLOW)
+    holding, prev = sig.iloc[-1], sig.iloc[-2]
+    if holding==1 and prev==0:  action = "BUY 進場";  size = position_size(...)
+    elif holding==0 and prev==1: action = "SELL 出場"
+    elif holding==1:            action = "HOLD 續抱"
+    else:                       action = "FLAT 空手觀望"
+    return {...}</pre>
+<div class="tip box"><b>從 paper 到真錢的唯一正確路徑（《地圖》第四部）：</b>回測 → <b>paper（用真實行情、模擬資金）</b> → 小資金實盤 → 逐步放大。paper 會抓出回測永遠看不到的東西：滑價、延遲、API 斷線、你自己的 bug。要接真券商，就是把這張指令送進 ccxt（加密）或 Shioaji（台股）——但<b>永遠先 paper 跑夠久</b>。</div>
+
+<!-- ===================== 8 ===================== -->
+<h1>8　跑出來的誠實結果（怎麼解讀）</h1>
+<p>以台積電（2330，2018–2024）為例，<code>run.py</code> 實際輸出：</p>
+<pre>策略 MA20/60（單一參數）：CAGR 0.18  Sharpe 0.92  DSR 0.99
+基準 Buy &amp; Hold        ：CAGR 0.25  Sharpe 0.95  DSR 0.99
+⚠ 掃了 47 組參數，挑最好的 MA15/60：
+   天真看：Sharpe 1.065  →  看起來很神
+   誠實看：DSR 0.70   ← 把「試了47次」打折後
+樣本外 walk-forward：CAGR 0.09  Sharpe 0.50</pre>
+<div class="key box"><b>怎麼讀這四行（這就是工程的判斷力）：</b>
+<ol>
+<li><b>單一參數策略 CAGR 0.18 &lt; Buy&amp;Hold 0.25</b> → 連最笨的「買了抱著」都打不過。第一關就該淘汰。</li>
+<li><b>掃 47 組挑出 Sharpe 1.065</b> → 天真的人會興奮上線。但這是 data snooping：試夠多次總有一組好看。</li>
+<li><b>那組的 DSR 掉到 0.70</b> → 低於 0.95 門檻，<b>統計上不可信</b>，多半是運氣。</li>
+<li><b>walk-forward 樣本外 Sharpe 只剩 0.50</b>（另一檔 2454 甚至變 -0.3）→ 沒看過的年份才是真相，edge 蒸發。</li>
+</ol>
+<b>結論：這個策略沒有真 edge。而你，用工程方法「證明」了它沒有——這比盲目上線值錢一萬倍。</b></div>
+<div class="tip box"><b>接你自己的經驗：</b>這跟你 <code>trading_bot</code> 當年「Sharpe 1.58 的 pair trade、+39%/年 的 funding spike」栽的跟頭一模一樣——窄窗口 + 挑最好那組 + 忘了算「試幾次」。你已經用真錢上過這堂課，現在用 30 行程式碼隨時能重演它，提醒自己別再犯。</div>
+
+<!-- ===================== 9 ===================== -->
+<h1>9　怎麼把它改成「你的東西」</h1>
+<p>這個 demo 是骨架，真正的學習是你拿它去長肉。建議順序：</p>
+
+<h2><span class="step">1</span>換標的與期間（5 分鐘）</h2>
+<p>改 <code>config.py</code> 的 <code>UNIVERSE</code>、<code>START/END</code>，重跑。感受不同股票、不同期間結論差多少（這本身就是一課：edge 常常 regime-dependent）。</p>
+
+<h2><span class="step">2</span>換一個新策略（半天）</h2>
+<p>在 <code>strategy.py</code> 加一個新訊號函式（RSI 超賣、突破 20 日高、動能），在 <code>run.py</code> 接上去跑驗證。<b>關鍵練習：看它過不過 DSR 與 walk-forward</b>——大部分你想到的策略都會死在這關，這是正常的、健康的。</p>
+
+<h2><span class="step">2</span>接 LLM 特徵（核心，連回《地圖》第二部）</h2>
+<p>這是你老闆最想要的方向。把「新聞情緒分數」當成<b>額外的進場過濾條件</b>：</p>
+<pre><span class="c"># 概念：LLM 把新聞變成 -1~+1 情緒分數（你 MarketDaily 已有這套）</span>
+sentiment = llm_sentiment(news_for(stock_id, date))   <span class="c"># 文字→結構化特徵</span>
+signal = ma_cross_signal(df, 20, 60)
+signal = signal &amp; (sentiment &gt; 0)    <span class="c"># 只在「均線多頭 且 新聞不負面」時持有</span></pre>
+<div class="key box"><b>但這裡是整本書的試金石：情緒到底有沒有加分，用 DSR 說話，不要用感覺。</b>跑驗證比較「有情緒過濾 vs 沒有」的樣本外 Sharpe。如果加了沒變好甚至變差——那就誠實承認這個特徵沒用，丟掉。<b>這就是「AI 當研究助理、人來嚴格證偽」的真實工作流。</b></div>
+
+<h2><span class="step">4</span>接真券商 paper（進階）</h2>
+<p>把 <code>paper.py</code> 的指令字典，改送 <code>ccxt</code>（加密貨幣，你已有此技能）或 Shioaji（台股）的 paper / testnet 端點。先讓它在模擬環境跑幾週，確認沒有 API 斷線、下單邏輯、時區的 bug，再談小資金。</p>
+
+<!-- ===================== 結語 ===================== -->
+<h1>結語：你已經會了最難的那一塊</h1>
+<p class="lead">很多人學「AI 交易」，學的是怎麼把模型疊得更複雜。但你現在手上這個 demo 教你的，是這一行業真正稀缺的能力——<strong>誠實地證明一個 edge 到底是不是真的。</strong></p>
+<div class="key box"><b>你現在能做到的（第一天上班就能展示）：</b>
+<ol>
+<li>講清楚一筆交易從資料到下單的完整流程，AI 該插哪、不該插哪。</li>
+<li>拿任何「會賺的策略」來，用 walk-forward + DSR + 真實成本把它驗一遍，當場判斷它是真 edge 還是運氣。</li>
+<li>把 LLM 放在對的位置（讀文件、生特徵、做研究），而不是叫它預測漲跌。</li>
+<li>用一個可跑的閉環當底，逐步長成你公司真正要的工具。</li>
+</ol>
+</div>
+<p>下一步，就是動手把第 9 章的練習做過一遍——尤其是「接 LLM 情緒特徵 + 用 DSR 驗證它有沒有用」那個。做完那個，你就真的入門了「讓 AI 幫忙交易」的工程。有問題隨時問我。慢慢來，比較快。</p>
+<div class="foot">《AI 交易動手實作課》· 為 Delvin 編纂 · 2026 · 搭配 demo/ 可執行專案</div>

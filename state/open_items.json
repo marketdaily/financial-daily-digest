@@ -5306,8 +5306,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 12:17",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 15:01",
+  "note": "已改回 Google Workspace 並完成切換(MX/SPF/DKIM/DMARC 全部指向 Google)。Brevo 連結改寫的問題不再存在"
  },
  {
   "id": 532,
@@ -5356,8 +5356,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-24 12:38",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 15:01",
+  "note": "MX 已切到 smtp.google.com,hi@ 是 delvin@quietfix.studio 的別名。收信實測 250。寄信只剩 Gmail 端加『以此地址寄信』"
  },
  {
   "id": 537,
@@ -5426,8 +5426,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-24 13:31",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 15:26",
+  "note": "併入新開的冷信投遞率問題:名單有無效地址只是小事,真正的問題是整批可能都進垃圾匣"
  },
  {
   "id": 544,
@@ -5506,6 +5506,96 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-24 14:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 552,
+  "what": "crew.digital 網域註冊:Delvin 已拍板『現在註冊』,等他在 CF dashboard 購買(Registrar 無註冊API);買完由我接手 DNS+worker custom domain+301+與QFX錨價分層(#519)",
+  "why": "CF Registrar 只能 dashboard 買,需本人動作;換域工程依老闆指示排在 8/25 會後",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-24 14:46",
+  "closed": "2026-08-24 15:07",
+  "note": "crew.digital買不到(premium/reserved),已提替代方案crewhq.digital等5個+改名QFX Digital已否決,等Delvin選一個"
+ },
+ {
+  "id": 553,
+  "what": "hi@qfxsolution.com 尚未做過真正的端到端收發實測",
+  "why": "SMTP 交握證明 Google 會收(250),但那只證明到伺服器層——實際有沒有進到信箱、Gmail 能不能用 hi@ 寄出去,都還沒有一封真信走完全程。Delvin 從手機寄一封到 hi@ 我就能用 IMAP(delvin@quietfix.studio 的應用程式密碼)確認落地",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 15:01",
+  "closed": "2026-08-24 15:26",
+  "note": "端到端已證明:08-24 15:04 從外部 gmail 寄到 hi@qfxsolution.com,實際落進 delvin@quietfix.studio 收件匣(IMAP 確認)。⚠️ 寄給自己別名不會出現在收件匣是 Gmail 正常行為,不是失敗"
+ },
+ {
+  "id": 554,
+  "what": "CREW 網域待 Delvin 選定(候選 crewhq.digital/crewdigital.io/joincrew.digital/getcrew.digital/usecrew.digital,建議 crewhq.digital)+dashboard 購買",
+  "why": "crew.digital 09-24 確認買不到;改名QFX Digital已否決(會拆錨價防火牆+qfxdigital.com已被註冊);domain availability capability 記憶已補RDAP誤判教訓",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-24 15:07",
+  "closed": "2026-08-24 15:15",
+  "note": "Delvin 買了 crewhq.digital(非 vip);已 attach 到 crew worker(CF Workers Custom Domain,zone active/cert已發),等NS委派傳播到CF(通常<1hr),尚未實測200"
+ },
+ {
+  "id": 555,
+  "what": "crewhq.digital NS委派傳播中,尚未實測能打通(200)——等傳播完成後 curl 驗證+更新作戰卡/qfx記憶的正式對外網址",
+  "why": "剛attach,.digital registry NS委派通常數分鐘~1小時,生產驗證判準=已跑過且驗證,現在只完成設定未完成驗證",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-24 15:15",
+  "closed": "2026-08-24 15:24",
+  "note": "crewhq.digital NS已傳播完成,實測200(首頁/靜態資源/api/health/report頁皆過,headless截圖與舊網域逐像素一致)。已決定並執行:crew.marketdaily.ai全站301到crewhq.digital(hostname轉址+run_worker_first擴大成/*,path+query保留),生產實測過。作戰卡已換新網址。"
+ },
+ {
+  "id": 556,
+  "what": "🔴 QuietFix 冷信很可能全進垃圾匣:19 封零回覆,同網域寄普通信實測進 spam",
+  "why": "quietfix.studio 註冊於 2026-08-09(僅 15 天),SPF/DKIM/DMARC/MX 全部正確 ⇒ 不是技術問題,是新網域零寄件信譽。直接證據:08-24 從 delvin@quietfix.studio 寄一封普通信給 davidlaid.9199@gmail.com 進了 spam。間接證據:08-09 起 19 封真冷信、0 封真人回覆。每多發一封進垃圾匣信譽再降,佇列 63 封照發會把網域燒掉。建議①暫停發送②接 Google Postmaster Tools 拿實際 spam rate③真暖機是有來有回的通信不是每天 6 封冷信",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-24 15:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 557,
+  "what": "QuietFix 冷信已暫停,63 封佇列凍結,等新 .com 網域養好再開",
+  "why": "08-24 Delvin 拍板。恢復條件=①新網域(傾向 quietfixstudio.com)買好並設定完 ②養信 2-3 週(前期只做有來有回的真實通信,每天 1-2 封往上爬) ③恢復要同時改 storefront/.env 的 SEND_ENABLED=1 並刪掉 OUTREACH_PAUSED.md。在那之前不要重開",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 15:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 558,
+  "what": "delvin@quietfixstudio.com 別名尚未生效,Gmail 仍把 From 改寫回 quietfix.studio",
+  "why": "08-24 實寄驗證:寄出 From=quietfixstudio.com,收到 From=quietfix.studio,交叉查零筆 ⇒ 別名沒建或未生效。加別名只能在 admin console(需 Delvin 登入,API/SMTP 都繞不過)。他做完我用 storefront/scripts/verify_sender_alias.py 自行複驗。在通過之前冷信絕對不能開,否則等於繼續燒主網域且無人察覺",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 16:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 559,
+  "what": "CREW 沙盒 WordPress 與語言功能尚未經過 8/25 現場實際 demo",
+  "why": "端到端已在生產跑通(三篇草稿落地),但沒有在真實會議情境下被人操作過;tunnel 靠 */5 keepalive,主機重開後首次自癒未實測",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 16:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 560,
+  "what": "CREW 掃描階段仍只跑單一語言的買家問題",
+  "why": "皇海被判 primary_language=en,6 條查詢全英文 ⇒ 中文買家怎麼問、有沒有被引用完全沒量到;產出側已可選語言,量測側還沒有",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 16:35",
   "closed": null,
   "note": ""
  }
