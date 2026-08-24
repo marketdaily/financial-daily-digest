@@ -3,6 +3,7 @@
 供 make_launch_cards.py（首批貼文）與 digest_to_social.py（每日日報）共用。
 渲染策略：把卡片內容嵌進方形外框再交給 qlmanage（方形渲染才可靠），最後裁切回 w×h。
 """
+import os
 import shutil
 import subprocess
 import tempfile
@@ -198,7 +199,52 @@ def _render_with_playwright(spec, out_path, w, h):
 
 
 def make_card(spec, out_path, w=W, h=H):
-    """spec → PNG。優先用 rsvg-convert(跨平台),退回 macOS qlmanage,再退回 Playwright headless Chrome(跨平台)。"""
+    """spec → PNG。**預設走 cardkit 多風格引擎**(2026-08-24 老闆令「why is everything the same?」)。
+
+    在此之前這支只有一個版面，所以 v3 品牌貼文、TLDR 脈搏卡、戰績卡、新聞快評卡——
+    全站每一張社群圖都長同一個樣子，九宮格滑下來像同一張圖貼了九次。
+    cardkit 把版面/背景/色票/字體拆開組合成 14 種策展風格，依卡片鍵指派(同一張卡永遠同一個
+    風格，相鄰的卡不撞版)。
+
+    退路(缺一不可):
+      - 環境變數 `CARDKIT_OFF=1` → 走舊的單一 SVG 模板(出事時一個開關回得去)。
+      - cardkit import 或算圖失敗 → 自動退回舊模板，**絕不因為換皮讓發文那條腿斷掉**。
+    """
+    if os.environ.get("CARDKIT_OFF") != "1":
+        try:
+            import sys as _sys
+            _here = str(Path(__file__).parent)
+            if _here not in _sys.path:
+                _sys.path.insert(0, _here)
+            from cardkit import styles as _ck
+            ck_spec = {
+                "id": Path(out_path).stem,
+                "kicker": spec.get("tag"),
+                "headline": spec["headline"],
+                "body": spec.get("body"),
+                "cta": spec.get("cta"),
+                "items": spec.get("items"),
+                "stat": spec.get("stat"),
+                "stat_label": spec.get("stat_label"),
+                "left": spec.get("left"), "right": spec.get("right"),
+                "left_label": spec.get("left_label"), "right_label": spec.get("right_label"),
+                "prefer": spec.get("prefer"),
+            }
+            img, _style = _ck.render(ck_spec, "marketdaily", size=(w, h))
+            out_path = Path(out_path)
+            out_path.parent.mkdir(parents=True, exist_ok=True)
+            img.save(out_path)
+            return out_path
+        except Exception as e:  # noqa: BLE001
+            print(f"  ⚠️ cardkit 產圖失敗，退回舊模板：{type(e).__name__}: {e}")
+            if os.environ.get("CARDKIT_DEBUG") == "1":
+                import traceback as _tb
+                _tb.print_exc()
+    return make_card_legacy(spec, out_path, w, h)
+
+
+def make_card_legacy(spec, out_path, w=W, h=H):
+    """舊的單一 SVG 模板。優先 rsvg-convert，退回 macOS qlmanage，再退回 Playwright。"""
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     if shutil.which("rsvg-convert"):
