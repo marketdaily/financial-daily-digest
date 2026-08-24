@@ -7923,3 +7923,8 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **第三輪實跑結果**：兩則新聞走完整路徑 —— 確定性閘 PASS、獨立驗證者**兩則都退回**（一則編了 facts 裡沒有的跌勢，一則把 TD 證券的話掛到 ING 頭上），退回理由皆成立。生圖排在兩道閘之後，所以被退的稿子零 credit 成本。畫面主體本身很準：人形機器人 → 空組裝廠的機械臂；全球央行年會 → 木樑山莊大廳與晨霧松林（facts 只寫「年會」，模型自己知道那是 Jackson Hole 那種場地，固定素材庫做不到）。
 - ⭐⭐ 第三個 prompt 缺陷：交付約束寫「萬一有人就壓成遠處剪影」，模型把條件句當清單項**真的放了一個人**進央行那張的講台區 —— 在聯準會主席的新聞上那個剪影會被讀成他本人。改正向宣告 `The scene is unoccupied`。同一 subject 舊/新各生一張並排驗證才算修好。
 - open：#542 每則現生尚未經過一整天真實發文。#539 已收（完整生產路徑已驗）。
+
+### 2026-08-24 (續) 8/25 皇海會 CREW demo 素材備妥
+- Delvin 提議「網站維護+SEO 直接 demo CREW Digital」。查證:CREW=活產品 crew.marketdaily.ai(舊記憶「查無資產#511」過時,已修正 qfx 記憶)。
+- 會前實跑 kingconn.com.tw 掃描(API 逐步,10/10 零錯):**報告 crew.marketdaily.ai/r/b3c7f1ae18a54f958119**——6 個買家問題皇海全 NOT CITED,被引用=Samtec/Molex/Amphenol/TE。headless 驗渲染 OK、頁上零價格、可切中文。
+- 作戰卡新增 05 Demo 動線段(含兩雷:不開 CREW 首頁防 US$49 錨價;Print/PDF 網路備援),同 URL 重發佈。
