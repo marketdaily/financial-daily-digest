@@ -449,25 +449,81 @@ def lay_vertical(img, spec, pal, st):
     return img
 
 
+
+def lay_body(img, spec, pal, st):
+    """輪播內文卡 —— 這張是拿來**讀**的不是拿來掃的：字距鬆、置中、頁碼在上、免責在下。
+
+    刻意比封面安靜：一則貼文裡風格要一致，變化發生在**貼文與貼文之間**。
+    整串輪播每張都在搶眼睛的話，讀者一張都讀不完。
+    """
+    w, h = img.size
+    d = ImageDraw.Draw(img)
+    pad = int(w * 0.115)
+    cw = w - 2 * pad
+    top, bot = zone(st, img.size)
+    if spec.get("pages"):
+        text_center(d, f"{spec.get('page', 1)} / {spec['pages']}", w / 2, top, font(32, 500), pal.accent)
+    f, lines, lh = fit(spec["headline"], cw, int((bot - top) * 0.62), [56, 52, 48, 44, 40, 36, 32],
+                       st["family"], 400, 1.62)
+    y = _place(top + 60, bot - 60, len(lines) * lh)
+    draw_lines(d, lines, pad, y, f, lh, pal.ink, "center", cw)
+    if spec.get("note"):
+        text_center(d, spec["note"], w / 2, bot - 6, font(30, 400), pal.body)
+    return img
+
+
+def lay_cta(img, spec, pal, st):
+    """輪播末頁 CTA。IG caption 裡的網址不可點，所以講「連結在個人檔案」而不是印一串 UTM。
+
+    ⚠️ 這裡不可以放 emoji：明體(NotoSerifTC)沒有 emoji glyph，PIL 不報錯，
+       會靜靜畫一個豆腐方框出去(命書 2026-08-17 首版被抓到)。
+    """
+    w, h = img.size
+    d = ImageDraw.Draw(img)
+    top, bot = zone(st, img.size)
+    lines = spec.get("cta_lines") or [spec["headline"]]
+    # (字級, 字重, 下方間距)。間距寫死而不是用行高倍率 —— 這四行的角色不同
+    # (問句／說明／網址／指路)，讓它們等距反而看起來像四句沒有關係的話。
+    ROLES = [(72, 700, 54), (40, 400, 46), (58, 600, 34), (34, 400, 0)]
+    total = sum(ROLES[min(i, 3)][0] + ROLES[min(i, 3)][2] for i in range(len(lines))) + 40
+    y = _place(top, bot, total)
+    for i, ln in enumerate(lines):
+        size, weight, gap = ROLES[min(i, 3)]
+        col = pal.accent if i == 2 else (pal.ink if i == 0 else pal.body)
+        text_center(d, ln, w / 2, y, font(size, weight, st["family"]), col)
+        y += size + gap
+        if i == 1:
+            d.line([(w / 2 - 120, y - 26), (w / 2 + 120, y - 26)], fill=pal.accent, width=2)
+    return img
+
+
 LAYOUTS = {
     "hero": lay_hero, "left": lay_left, "bigstat": lay_bigstat, "quote": lay_quote,
     "list": lay_list, "rank": lay_rank, "split": lay_split, "duel": lay_duel,
     "banner": lay_banner, "sticker": lay_sticker, "vertical": lay_vertical,
+    "body": lay_body, "cta": lay_cta,
 }
 
 
 # ── 品牌 ────────────────────────────────────────────────────────────────────
 class Brand:
-    def __init__(self, key, footer, styles, palettes):
+    def __init__(self, key, footer, styles, palettes, kicker=None):
         self.key = key
         self.footer = footer
         self.styles = styles
         self.palettes = palettes
+        self.kicker = kicker
+
+
+CALM = {"photo": "ink", "scanline": "void", "mesh": "void", "ticker": "grid",
+        "nodes": "void", "rays": "void", "starmap": "void", "halftone": "paper",
+        "bokeh": "void", "arcs": "paper", "pillars": "paper", "flow": "void",
+        "topo": "paper", "grid": "grid", "ink": "ink", "void": "void", "paper": "paper"}
 
 
 def _s(sid, layout, backdrop, palette, family="sans", weight=800, **extra):
     d = {"id": sid, "layout": layout, "backdrop": backdrop, "palette": palette,
-         "family": family, "weight": weight}
+         "family": family, "weight": weight, "body_backdrop": CALM.get(backdrop, "void")}
     d.update(extra)
     return d
 
@@ -510,7 +566,7 @@ MS_STYLES = [
 
 BRANDS = {
     "marketdaily": Brand("marketdaily", "@marketdaily · marketdaily.ai", MD_STYLES, MD_PALETTES),
-    "mingshu": Brand("mingshu", "mingshu.tw", MS_STYLES, MS_PALETTES),
+    "mingshu": Brand("mingshu", "mingshu.tw", MS_STYLES, MS_PALETTES, kicker="命書"),
 }
 
 
@@ -616,3 +672,27 @@ def render(spec, brand_key="marketdaily", style=None, size=SIZE_45, seed=None):
     img = LAYOUTS[style["layout"]](img, spec, pal, style)
     img = chrome(img, brand, pal, spec)
     return img, style
+
+
+def carousel(post_id, hook, bodies, cta_lines, brand_key="mingshu", size=SIZE_45, note=None):
+    """一則貼文 → 整串輪播圖(封面 + 內文 × n + CTA)。
+
+    風格在**貼文層級**指派：整串共用同一個色票與背景家族，所以一則貼文看起來是一件作品；
+    下一則才換風格 —— 變化發生在時間軸上，不是在同一串裡。
+    """
+    st = assign(brand_key, post_id)
+    calm = dict(st, layout="body", backdrop=st.get("body_backdrop", "void"))
+    out = []
+    cover_img, _ = render({"id": post_id, "headline": hook, "kicker": BRANDS[brand_key].kicker},
+                          brand_key, style=st, size=size)
+    out.append(("cover", cover_img))
+    n = len(bodies)
+    for i, text in enumerate(bodies, 1):
+        img, _ = render({"id": f"{post_id}#b{i}", "headline": text, "page": i, "pages": n,
+                         "note": note}, brand_key, style=calm, size=size)
+        out.append(("body", img))
+    cta_style = dict(st, layout="cta")
+    img, _ = render({"id": f"{post_id}#cta", "headline": cta_lines[0], "cta_lines": cta_lines},
+                    brand_key, style=cta_style, size=size)
+    out.append(("cta", img))
+    return out

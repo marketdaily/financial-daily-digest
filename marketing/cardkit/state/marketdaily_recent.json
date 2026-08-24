@@ -81,7 +81,13 @@
 "t_38": "terminal",
 "t_39": "orbit",
 "t_40": "ai_nodes",
-"t_41": "ledger"
+"t_41": "ledger",
+"card": "myth_split",
+"src": "ice_stat",
+"newsr_20260824_world_2cffff": "flowfield",
+"after_md_0": "neon_mesh",
+"after_md_1": "tape",
+"after_md_2": "breaking"
 },
 "order": [
 "demo_0",
@@ -165,6 +171,12 @@
 "t_38",
 "t_39",
 "t_40",
-"t_41"
+"t_41",
+"card",
+"src",
+"newsr_20260824_world_2cffff",
+"after_md_0",
+"after_md_1",
+"after_md_2"
 ]
 }

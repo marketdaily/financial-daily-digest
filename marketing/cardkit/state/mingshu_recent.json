@@ -1,0 +1,18 @@
+{
+"map": {
+"ms_demo_a": "starmap",
+"ms_demo_b": "duel_gpt",
+"ms_qiufen_border": "zhi_pai",
+"ms_test": "pan_grid",
+"ms_many": "banner_zhu",
+"ms_shenyue_shehe": "rank_zhu"
+},
+"order": [
+"ms_demo_a",
+"ms_demo_b",
+"ms_qiufen_border",
+"ms_test",
+"ms_many",
+"ms_shenyue_shehe"
+]
+}
