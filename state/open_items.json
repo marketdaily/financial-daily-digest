@@ -5336,8 +5336,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-24 12:28",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 13:52",
+  "note": "如預期在 1 小時內復現(17088→17415,別視窗同時寫入新記憶),mechanical squeeze 再壓只省 13 字元(17402,仍超支 302)——證實撞天花板;不是我沒做,是正解真的是併群不是再擠"
  },
  {
   "id": 535,
@@ -5406,6 +5406,56 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-24 13:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 542,
+  "what": "⏰ 9/1 前必須登進 delvin@quietfix.studio 設定帳單,否則 Workspace 停用",
+  "why": "Google 08-22 寄的 [Action required] Set up billing 明寫 paid start 2026-09-01,而 Delvin 現在登不進去(見 #535)。帳號一停 = delvin@quietfix.studio 不能寄信 = QuietFix 冷信管線(63 封排隊)整條死。目前應用程式密碼還活著(SMTP/IMAP 實測可用),但那擋不住帳號停用",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-24 13:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 543,
+  "what": "QuietFix 冷信名單有無效地址(gtv3337194@gmail.com 退信 550)",
+  "why": "暖機期退信傷寄件信譽。名單需要一輪存在性驗證再發,我還沒做",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 13:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 544,
+  "what": "form.quietfix.studio 後台密碼是 8 位純數字",
+  "why": "後台裝著全部客戶名單與冷信內容,而 QuietFix/QFX 正在賣資安。有速率限制(連錯8次鎖15分)撐著,線上破不了,但強度配不上定位。換法已記在 DOMAIN.md(secret + .admin_token 兩處一起換),等 Delvin 說換",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-24 13:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 545,
+  "what": "記憶索引併群(非壓縮)待辦:17402/17100,mechanical hubify --apply 只再省 13 字元",
+  "why": "hub_selftest_honesty_lessons 08-17 已證實壓不動;53 群多數已兩層化或標記『人工改寫不自動削』,唯一解是把語意重疊的群合併成一群(需理解內容、驗零遺失),機械壓縮這條路已經走到底。selftest ⑧a 會持續紅到這個任務被做",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 13:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 546,
+  "what": "ok_stamp_lint 對 videobrief_us 誤判 MAX_AGE_TOO_LOOSE:unreachable_ranges 只認 $1 派發,不懂 if/elif 用 $HM 時間比較做分支",
+  "why": "追根因追到底:video_brief_runner.sh 用 if[HM 07:20 窗口].../elif[HM 20:00 窗口]... 兩個分支各呼叫不同戳記名,但 unreachable_ranges(logic.py) 的死碼排除只認得 case/if \"$1\"=X 這種對 crontab 位置參數的派發,對這種時間條件式 if/elif 完全沒有分支排除 ⇒ prefix_facts 把兩個分支的窗口文字全部當成同一呼叫點的閘吃進去,算出假的『750min』(應為只認晚上 20:00-20:59 那 60min 窗口+daily_lock)。videobrief_us 真實週期含週末斷檔應為 ~4320min,現registered max_age=5760 觸發假紅;修好 unreachable_ranges 泛化支援任意布林條件分支排除風險較高(共用偵測器,已過多輪驗證者驗證),不在本次告警巡查範圍內處理",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-24 13:52",
   "closed": null,
   "note": ""
  }
