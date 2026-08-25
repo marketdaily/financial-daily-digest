@@ -58,3 +58,7 @@
 {"date": "2026-08-24", "market": "tw", "from": "00891", "to": "4967", "from_px": 33.65, "to_px": 276.0}
 {"date": "2026-08-25", "market": "tw", "from": "00891", "to": "6488", "from_px": 33.51, "to_px": 1010.0}
 {"date": "2026-08-25", "market": "tw", "from": "2454", "to": "6488", "from_px": 3765.0, "to_px": 1010.0}
+{"date": "2026-08-25", "market": "us", "from": "SOXX", "to": "SMCI", "from_px": 506.18, "to_px": 35.17}
+{"date": "2026-08-25", "market": "us", "from": "QQQM", "to": "SMCI", "from_px": 290.81, "to_px": 35.17}
+{"date": "2026-08-25", "market": "us", "from": "TSLA", "to": "SMCI", "from_px": 348.95, "to_px": 35.17}
+{"date": "2026-08-25", "market": "us", "from": "META", "to": "SMCI", "from_px": 559.02, "to_px": 35.17}
