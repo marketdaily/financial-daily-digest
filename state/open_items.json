@@ -6398,5 +6398,15 @@
   "opened": "2026-08-26 23:41",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 641,
+  "what": "皇海簡中首頁還用舊版 hero 載入器(開頁把 121 幀全部解碼常駐)",
+  "why": "2026-08-27 修 prefers-reduced-motion 時發現:v5.html 與 v5-en.html 已換成滑動視窗解碼(壓縮 blob 全下載才 3MB,只解碼游標附近十幾幀,離開視窗立刻 release),而 cn/v5.html 與 cn/v5-en.html 仍是舊版  —— 也就是 v5.html 註解裡明寫『121 幀實測讓 Chromium RSS 多吃 977MB』的那一版。簡中訪客(舊站記錄裡中國佔 28.9%,雖然多數是 bot)開簡中首頁會吃掉大量記憶體,低階手機可能直接當掉。這輪只把 reduced 旗標補上去(兩版都受惠),沒有移植載入器——那是一大塊程式碼替換,要單獨開一次並逐項比對",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-27 02:25",
+  "closed": null,
+  "note": ""
  }
 ]
