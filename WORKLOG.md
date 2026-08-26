@@ -8162,3 +8162,36 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   canonical 被驗收閘擋下時**正解是給搜尋頁正確的 canonical,不是放寬門檻**。
   剩餘 0.5% = /gdpr 45 次(#631 等拍板)+ 1 次寫壞的連結。
   收工:dev server 與後台瀏覽器都已關;登入 profile 留在 `~/.kc-admin-profile`(下次免拖驗證碼)。
+
+### 2026-08-26(續二) 「三件我自己扛」：政策頁自己寫、搜尋自己做、GSC 卡在 Google 設計上
+- **#631 隱私權政策**：舊站那份是【複製微軟文件】的 GDPR 說明（8 條 docs.microsoft.com 外連），
+  照搬＝把第三方版權內容放到客戶站 ⇒ **重寫**，三語 `/privacy` 已上預覽站。
+  每一句都對應到量過的事實：表單欄位取自 `functions/api/inquiry.js`；
+  **實測全站 `Set-Cookie` 0 個**（含 POST /api/inquiry，真瀏覽器 `document.cookie` 也空）；
+  處理者只有 Brevo 與 Cloudflare。刻意不寫保留月數／收件信箱／DPO（那是編造）。
+  順手修 920 頁那句**與事實不符**的「本網站使用 Cookie…繼續瀏覽即表示同意」。
+- ⭐⭐ **最嚴重的發現，而且是我們自己會帶上線的**：英文首頁 `v5-en.html` 用相對路徑，
+  卻被 200 rewrite 服務在 `/en/` ⇒ **127 個 404**（site.js/bp.js、logo、認證圖、
+  hero 121 幀全掉）＋ **每一條導覽連結都死**（`en/products` → `/en/en/products`）。
+  同一份檔案在 `/v5-en` 是 0 個。繁中（服務在 `/`）與簡中（用 `../`）都沒事 ——
+  **只有英文踩到，而英文是 87% 訪客的語言**。已修，`/en/` 現在 0 個失敗請求。
+  ⭐ 我第一版把 `cn/v5-en.html` 也改了（它用 `../` 本來就對）⇒ `/../en/products`，
+  是 verify 的「內部連結零死鏈」當場判紅救回來的。**「長得像相對路徑」不是判準，「被服務在哪」才是。**
+- **語言層三修**：bp.js 連結基底寫死 `'en/'`（註解還說「both pages sit at root」）；
+  site.js 語言切換器備援用相對 `'cn/v5'`；x-default 指繁中。全部改掉，
+  切換器改讀本頁 hreflang（只取 pathname，免得在預覽站跳去正式站），順帶修好
+  「英文產品頁切不到簡體」。線上逐頁實測：三語切換器全站 200、零死鏈。
+- **量出一個沒人量過的代價**：舊站根目錄是英文、新站是繁中 ⇒ 12 個網址換語言，
+  涵蓋 **2,716 次 = 全站 28.4%**。加了**不自動轉址**的語言提示（Google 不建議自動跳轉）。
+  ⚠️ 它一開始被 cookie 條蓋住點不到、首頁又因 script 順序量到高度 0 —— 都是 Playwright 實測抓到的。
+- **#632 站內搜尋自己做掉了**：不是新功能，是【現成能力沒有入口】（404 頁早就內嵌 250 顆料號索引）。
+- **#635 我自己的結論先錯後正**：一度寫成新站掉了 63 顆料號；用接管時的 `redirect_map_draft.csv`
+  對帳後確認 **我們的遷移零損失**，那 63 顆是首岳改版時就沒的。⭐ **有現成權威產物就別自己再解析一次**
+  （我前兩版手刻的檔名解析器都切錯料號，產生假的缺席清單）。
+- **#629 GSC 是唯一我做不到的**：gcloud 確實有 Delvin 兩個帳號的 refresh token，
+  但 scope 只有 `cloud-platform`，**Google 不允許用既有 refresh token 換新 scope**——
+  那一次人工同意是設計上擋死的。其餘全部做完。
+- 新工具：`tools/content_parity.py`（內容層對帳，轉址解析**直接問線上站台**，不手刻第三份判準）、
+  `tools/build_privacy.py`＋`privacy_content.py`、`tools/fix_cookie_notice.py`、
+  `tools/fix_root_relative.py`、`tools/build_search.py`、`tools/kc_index.py`。
+- **最終線上實測：1,516 個網址 / 9,567 次命中 → 接得住 99.99%**（唯一漏的是別人網站拼壞的 1 條連結）。
