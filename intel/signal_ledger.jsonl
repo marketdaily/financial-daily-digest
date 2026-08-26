@@ -857,3 +857,23 @@
 {"date": "2026-08-25", "code": "3490", "source": "leadflow", "level": "red", "signal": "單井(3490) 無消息近漲停+9.9%(連2根,5日+22.7%),疑資訊先行資金|外資+投信近3日僅+379張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-08-25", "code": "6588", "source": "leadflow", "level": "yellow", "signal": "東典光電(6588) 無消息近漲停+9.9%(量能1.5×,5日+18.0%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-08-25", "code": "3259", "source": "leadflow", "level": "red", "signal": "鑫創(3259) 無消息近漲停+9.8%(連2根,5日-6.3%),疑資訊先行資金|外資+投信近3日僅+35張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-26", "code": "3006", "source": "mops_news", "level": "yellow", "signal": "晶豪科(3006) 重訊[2026-08-25]:代子公司誠風投資（股）公司公告取得有價證券", "price_at_signal": null}
+{"date": "2026-08-26", "code": "3339", "source": "leadflow", "level": "red", "signal": "泰谷(3339) 無消息近漲停+9.9%(量能7.1×,5日+14.5%),疑資訊先行資金|外資+投信近3日+957張", "price_at_signal": null}
+{"date": "2026-08-26", "code": "3702", "source": "mops_news", "level": "yellow", "signal": "大聯大(3702) 重訊[2026-08-25]:代子公司世友投資股份有限公司公告處分有價證券(補充115/07/28公告)", "price_at_signal": null}
+{"date": "2026-08-26", "code": "4566", "source": "sbl", "level": "yellow", "signal": "時碩工業(4566):機構借券賣出5日增13.9%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-08-26", "code": "5381", "source": "institutional", "level": "red", "signal": "光譜(5381):外資連 5 日買超(5日淨買 +448 張)", "price_at_signal": null}
+{"date": "2026-08-26", "code": "8422", "source": "mops_news", "level": "yellow", "signal": "可寧衛*(8422) 重訊[2026-08-25]:更正112至114年每月背書保證資訊揭露明細表、112至114年 第一季至第四季個體暨合併財務報告及IFRSs iXBR", "price_at_signal": null}
+{"date": "2026-08-26", "code": "6658", "source": "mops_news", "level": "red", "signal": "聯策(6658) 重訊[2026-08-25]:公告本公司115年第一次私募普通股收足股款暨增資基準日", "price_at_signal": null}
+{"date": "2026-08-26", "code": "6658", "source": "investor_conf", "level": "yellow", "signal": "聯策(6658):法說會6天後召開", "price_at_signal": null}
+{"date": "2026-08-26", "code": "5263", "source": "sbl", "level": "yellow", "signal": "智崴(5263):機構借券賣出5日增11.3%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-08-26", "code": "3313", "source": "leadflow", "level": "red", "signal": "斐成(3313) 無消息近漲停+10.0%(量能6.8×,5日+12.7%),疑資訊先行資金|外資+投信近3日僅-63張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-26", "code": "4609", "source": "leadflow", "level": "red", "signal": "唐鋒(4609) 無消息近漲停+10.0%(量能25.8×,5日+1.1%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-26", "code": "8077", "source": "leadflow", "level": "red", "signal": "洛碁(8077) 無消息近漲停+10.0%(量能5.8×,5日-2.0%),疑資訊先行資金|外資+投信近3日僅-1張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-26", "code": "6983", "source": "leadflow", "level": "yellow", "signal": "華洋精機(6983) 無消息近漲停+10.0%(量能2.7×,5日+6.7%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-26", "code": "3081", "source": "leadflow", "level": "yellow", "signal": "聯亞(3081) 無消息近漲停+10.0%(量能2.4×,5日+21.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-26", "code": "3211", "source": "leadflow", "level": "yellow", "signal": "順達(3211) 無消息近漲停+10.0%(量能1.5×,5日-1.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-26", "code": "2491", "source": "leadflow", "level": "red", "signal": "吉祥全(2491) 無消息近漲停+9.6%(連2根,5日+22.3%),疑資訊先行資金|外資+投信近3日+1347張", "price_at_signal": null}
+{"date": "2026-08-26", "code": "8240", "source": "leadflow", "level": "red", "signal": "華宏(8240) 無消息近漲停+9.9%(量能4.4×,5日+10.6%),疑資訊先行資金|外資+投信近3日僅-75張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-26", "code": "5425", "source": "leadflow", "level": "yellow", "signal": "台半(5425) 無消息近漲停+9.9%(量能2.7×,5日+5.2%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-26", "code": "3228", "source": "leadflow", "level": "yellow", "signal": "金麗科(3228) 無消息近漲停+9.9%(量能1.8×,5日+12.2%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-26", "code": "3354", "source": "leadflow", "level": "red", "signal": "律勝(3354) 無消息近漲停+9.8%(量能7.1×,5日+11.2%),疑資訊先行資金|外資+投信近3日僅-77張,法人未同步=隱形買盤", "price_at_signal": null}
