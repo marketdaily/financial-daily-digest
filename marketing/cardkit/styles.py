@@ -758,8 +758,11 @@ def render(spec, brand_key="marketdaily", style=None, size=SIZE_45, seed=None):
     elif isinstance(style, str):
         style = next((s for s in brand.styles if s["id"] == style), brand.styles[0])
     # 安全區依品牌招牌的位置而定：MarketDaily 頂部有字標要讓開，命書只有右下朱印。
+    # ⚠️ 2026-08-26 修復：底界原本 0.875/0.845 蓋過 chrome() CTA 膠囊的實際頂部(h-0.158h≈0.842h)，
+    # sticker 版面(壓底對齊)兩行標題會直接疊上「完整個股分析」CTA 按鈕文字(newsr_20260825_macro_e626db、
+    # newsr_20260826_ai_5104b2 實際發文可見)。底界下修到明顯低於 CTA 頂部，留安全間距。
     style = dict(style)
-    style.setdefault("_zone", (0.165, 0.875) if brand_key == "marketdaily" else (0.115, 0.845))
+    style.setdefault("_zone", (0.165, 0.80) if brand_key == "marketdaily" else (0.115, 0.78))
     pal = PALETTES[style["palette"]]
     rng = random.Random(seed if seed is not None
                         else int(hashlib.sha256((spec.get("id") or spec["headline"]).encode())

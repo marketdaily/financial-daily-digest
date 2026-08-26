@@ -348,6 +348,15 @@ def photo(size, pal, rng, src=None, strength=0.55):
     if src:
         try:
             im = Image.open(src).convert("RGB")
+            # ⚠️ 2026-08-26 修復：Nano Banana 2 偶爾會生出帶「相片相框/白邊」的圖
+            # (實際發文 newsr_20260825_macro_4539f3、newsr_20260825_ai_bfc89f 四邊都能量到
+            # 一圈均勻淺灰,不是照片內容)。cover-fit 縮放+裁切在直式構圖時邊界幾乎不裁,
+            # 相框會整圈留在成品卡上。生成源一律先內縮 3.5% 甩掉這圈,沒有相框時只是
+            # 極輕微裁邊,肉眼看不出差異。
+            sw0, sh0 = im.size
+            bx, by = int(sw0 * 0.035), int(sh0 * 0.035)
+            if sw0 > 2 * bx and sh0 > 2 * by:
+                im = im.crop((bx, by, sw0 - bx, sh0 - by))
             sw, sh = im.size
             side_w, side_h = size
             scale = max(side_w / sw, side_h / sh)
