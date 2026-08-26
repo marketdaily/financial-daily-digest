@@ -4806,8 +4806,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-19 23:49",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-25 16:43",
+  "note": "2026-08-25 修掉:13 個分類 slug 改成語意網址(/p/nfc-rfid-microsd-copy0001→/p/cf 等),84 條舊 slug 301,288 個網址受影響;預覽站線上驗過。名稱與內容本來就是對的,錯的只有網址"
  },
  {
   "id": 482,
@@ -5696,8 +5696,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 17:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-25 09:00",
+  "note": "8/25 動線已用真實網址(kingconn.com.tw)完整彩排 27/27:掃描 113s、閘門、判決、六大區塊、起草一頁、做出來、下載三連結、中英切換、零錯誤。腳本 scripts/e2e_demo_kingconn.py 可重跑。⚠️ 仍非真人在會議情境下走過"
  },
  {
   "id": 571,
@@ -5706,8 +5706,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-24 18:32",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 22:44",
+  "note": "Tavily 換新帳號後 948/1000 可用(約 158 次掃描),/api/admin/engines?deep=1 回 can_measure_now:true、blocking:[]。Gemini grounding 仍 429(每日重置)⇒ 目前單引擎量測,不擋 demo。"
  },
  {
   "id": 572,
@@ -5726,8 +5726,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-24 18:59",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-24 23:10",
+  "note": "CREW 已隔離到自己的 Gemini key(GEMINI_API_KEY,tail cqi0),不再與日報共用;今日日報配額見底那一次已過,明早 05:20 用的是 MarketDaily 自己那把,未再被我消耗"
  },
  {
   "id": 574,
@@ -5746,6 +5746,356 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-24 20:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 576,
+  "what": "ProtoForge /kc:97 顆重讀撞 LLM 額度、保留舊模型(已於 22:03 額度恢復後重跑中);另 4 顆真建模失敗待查",
+  "why": "批次回報「完成 227 顆」但其中 101 顆其實是舊模型 —— 尚未在完整重跑後驗證",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-24 22:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 577,
+  "what": "CREW 明天 demo 是單引擎量測(Gemini grounding 429,只剩 Tavily)",
+  "why": "Gemini 免費層 grounding 每日配額已用盡,約台灣時間下午重置;報告會照實標「未量測」不會假裝有量,但雙引擎交叉驗證那半明天可能不在",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 22:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 578,
+  "what": "CREW 站外地圖只到「告訴你該去哪」,還沒有「幫你去」",
+  "why": "名錄申請/媒體投稿/論壇參與都需要真人或各平台帳號,產品端目前只交付清單與可送進客戶 CMS 的草稿;這是老闆 08-24 問「沒有真正解決到問題」剩下的一半",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 23:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 579,
+  "what": "CREW 量不到 ChatGPT / Claude / Perplexity(沒有免費查詢介面)",
+  "why": "報告已具名列出未涵蓋,不會謊稱;要涵蓋需付費(DataForSEO 約 US$0.10/次 或 OpenRouter online),是老闆要拍板的成本決定",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 23:10",
+  "closed": "2026-08-24 23:39",
+  "note": "已接上:OpenRouter(Perplexity 原生搜尋,key 已裝)+ DataForSEO(ChatGPT/Claude 真實產品畫面)。程式完成、fail-closed 已驗;剩下純粹是儲值動作 → 轉為 #581 追蹤"
+ },
+ {
+  "id": 580,
+  "what": "CREW 每週重掃(/api/weekly/run + 週一 cron)從未被端到端跑過",
+  "why": "沒有 before/after 就無法向客戶證明我們做的事有效;五支 e2e 都沒碰這條路徑",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-24 23:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 581,
+  "what": "CREW 付費引擎(OpenRouter/Perplexity、DataForSEO/ChatGPT+Claude)成功路徑尚未對真實 API 驗證",
+  "why": "程式已寫完、fail-closed 與 402 無餘額路徑已對真實 API 驗過,但兩個帳號都還沒有餘額 ⇒ 有引用時的回應解析(annotations 形狀)只用假回應測過。OpenRouter 需儲值(key 已裝進 Worker),DataForSEO 需註冊且最低入金 US$50",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 23:39",
+  "closed": "2026-08-24 23:49",
+  "note": "OpenRouter/Perplexity 那半已對真實 API 驗證:老闆儲值 $10 後實打回 200,10 筆 annotations、url_citation 結構與解析器一致,9 個網域正確解出;成本記帳與 OpenRouter 帳本 total_usage=0.05184 一分不差。DataForSEO 那半仍未驗(尚無帳號)⇒ 轉 #582"
+ },
+ {
+  "id": 582,
+  "what": "CREW 的 DataForSEO 引擎(ChatGPT/Claude 真實產品畫面)尚未有帳號,成功路徑未驗證",
+  "why": "程式已寫完並 fail-closed(沒帳密連問都不問),但 annotations 解析只用假回應測過;DataForSEO 最低入金 US$50,要 Delvin 註冊後把 API login/password 給我",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 23:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 583,
+  "what": "對話裡貼過的憑證要旋轉:DataForSEO 後台密碼、Tavily key、CREW owner 密碼",
+  "why": "91998668Dd 是後台登入密碼(可能與其他服務重複使用),Tavily key 與 crew-3Cmbhuemy7Ry 也都在對話紀錄裡;demo 後一起換掉",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 23:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 584,
+  "what": "DataForSEO 帳號需在 app.dataforseo.com 完成驗證才能打 ai_optimization",
+  "why": "憑證已裝進 Worker、餘額 $51,但 API 回 40104;驗證完 ChatGPT/Claude 兩個引擎自動上線(熔斷 10 分鐘 TTL)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-24 23:58",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 585,
+  "what": "Kaiwa 四關互動改版:錄音真收音、通話關(④用)只有我用合成語音驗過協定層,沒有真人實測",
+  "why": "WSL 無頭瀏覽器沒有音訊裝置,假麥克風送出的是靜音,拾音這段機器測不了",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-25 00:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 586,
+  "what": "我把 delvin.12345678@gmail.com 的方案設成 crew(測試時打錯帳號)",
+  "why": "受測 token 其實屬於 +crewdemo 那個帳號;我在還原時寫死 crew,若該帳號原本是 free 就被我悄悄升級了。兩個都是老闆本人的帳號所以無外部風險,但要讓他知道",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-25 00:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 587,
+  "what": "皇海 demo 動線只有無頭彩排走過,老闆本人還沒點過一次",
+  "why": "我收 #570 時的結案說明自己寫著「仍非真人在會議情境下走過」—— 那句話出現在結案理由裡就代表它沒收乾。機器彩排 27/27 證明的是「不會壞」,不是「你點得順」。建議 demo 前自己走一次:登入 delvin.12345678+crewdemo@gmail.com,輸入 kingconn.com.tw",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-25 09:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 588,
+  "what": "crewhq.digital 對外界目前完全不能用(免費掃描已移除 + Stripe 未接)",
+  "why": "老闆指令「不要給人免費掃描」已實作,但四把 Stripe secret 一把都沒設 ⇒ 匿名訪客 401、註冊了沒買 402,而付款按鈕會誠實說「金流還沒開通」。老闆自己的 crew 帳號與 admin 不受影響,demo 沒問題。開好 Stripe 後跑 scripts/stripe_setup.mjs 即可上線",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-25 09:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 589,
+  "what": "Kaiwa:21 段角色台詞語音卡在 Gemini TTS 每日配額(台灣 15:00 後重置),cron 每2小時自動補,補滿自動移除排程",
+  "why": "三個 TTS 模型今日配額都真的用完(429 RESOURCE_EXHAUSTED, tried=3 skipped=0);影響 yuna(只有 b8 一關)與 kai/leo 的單元頁打招呼,畫面有字幕不會出錯",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-25 09:46",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 590,
+  "what": "Kaiwa:TTS 配額滿時的即時語音備援未完成(Worker 連得上並 accept,送出 setup 後伺服器不回訊息也不關閉),已停用不影響正式流程",
+  "why": "原因未明,不把沒驗證過的路徑塞進生產;現況靠 cron 在配額重置後補齊語音",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-25 10:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 591,
+  "what": "皇海 SEO：Search Console / Bing Webmaster 尚未在【舊站】驗證，換站前的關鍵字基準線每天都在流失",
+  "why": "GSC 不回填歷史資料，今天驗證資料才從今天開始長；驗證只需在 Cloudflare 加一筆 DNS TXT，不碰首岳機器、不影響其合約。卡在 kingconn.com.tw 的 CF 帳號歸屬未知（NS 指 alla/arnold），需王董把 delvin.12345678@gmail.com 加成 Administrator 或給 scoped token",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-25 16:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 592,
+  "what": "皇海 CF zone 的『AI 爬蟲封鎖』開關尚未查證",
+  "why": "Cloudflare 可能在該 zone 開了 Bot Fight Mode / AI Scrapers 封鎖；若開著，我們做的 llms.txt、robots.txt 具名允許 15 個 AI 爬蟲全部無效——GEO 這條線會整條白做。拿到 CF 權限後第一件要查的就是它",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-25 16:43",
+  "closed": "2026-08-25 16:54",
+  "note": "2026-08-25 查證降級:kingconn.com.tw 的 A 記錄直接回原始 IP 43.134.170.211(RDAP=Aceville/新加坡騰訊雲) ⇒ CF 目前是灰雲、只當權威 DNS、沒有代理流量,因此現在沒有任何 CF 端的 AI 爬蟲封鎖在擋。⚠️ 換站到 CF Pages 之後流量會經過 CF,屆時要重查一次(已併入 #593 換站檢查表)"
+ },
+ {
+  "id": 593,
+  "what": "皇海換站日期未定：等首岳合約到期日與終止條款",
+  "why": "老闆會去問首岳合約簽到什麼時候；沒問到之前不承諾切換日期（錨價與紅線）。⚠️ MX 目前是 mail.kingconn.com.tw，切 A 記錄時不能動到它，企業信箱若也在首岳那邊要先確認否則斷信",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-25 16:43",
+  "closed": "2026-08-26 13:17",
+  "note": "首岳合約 2023/10/1～2025/10/1 已到期且無新約（2026-08-26 王董提供）⇒「等合約到期日與終止條款」這個前提不存在了。切換日期改由 #606 追蹤（純商業決定，無法律障礙）。MX 風險改由 #607 追蹤且性質不同：不是切換會斷信，是 zone 留在對方手上可能被收掉。"
+ },
+ {
+  "id": 594,
+  "what": "皇海 248 份 datasheet 有 222 份是掃描圖，規格沒有任何一個字是 HTML 文字",
+  "why": "這是 AEO/GEO 最大的單一缺口：料號頁中位數只有 255 字，規格全鎖在圖檔 PDF 裡，Google 讀不到、答案引擎不會引用。競品(Molex/Samtec/TE)全都出完整參數表。要做視覺抽取管線+防捏造閘門(每個數值可回溯到來源 PDF，無法佐證就留白絕不編)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-25 16:43",
+  "closed": "2026-08-25 19:07",
+  "note": "2026-08-25 完成:248 份全部抽完(雙模型),3,066 個值通過對帳,673 個料號頁長出規格表 + 6,117 筆 Product additionalProperty。料號頁字數中位數 255→296,薄頁 330→34。⚠️ 未收乾的部分已轉 #600(上正式網域前需 RD 簽核)"
+ },
+ {
+  "id": 595,
+  "what": "皇海 off-site 實體footprint 為零：LinkedIn／產業目錄／Google 商家一個檔案都沒有",
+  "why": "8/23 全站鏡像實查，舊站連社群連結都沒有 ⇒ 答案引擎沒有任何第三方來源可以佐證這家公司。schema 的 sameAs 因此刻意留空(指到不存在的檔案是造假也無效)。CREW 實測被引用的正是 globalsources/metoree/trustedparts 這類目錄。這半要客戶授權才能以皇海名義申請",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-25 16:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 596,
+  "what": "皇海舊站 6 條新聞網址的 301 在 CF Pages 無法命中（網址含中括號與空白）",
+  "why": "_redirects 無論用 %28 或字面括號都比對不到，CF 沒有文件說明比對前如何正規化；不用萬用字元硬接是因為 /news/* 會連新站真正的新聞頁一起劫走(轉址優先權高於靜態檔)。目前誠實回 404 並落在可導回的錯誤頁，其中 2 條在首岳舊站上本來就是 404",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-25 16:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 597,
+  "what": "皇海換站:CF Pages 上線後要重查 Cloudflare 的 Bot Fight / AI Scrapers 封鎖設定",
+  "why": "現在是灰雲所以無風險,但搬上 CF Pages 之後流量會經過 CF,若封鎖打開,llms.txt 與 15 個 AI 爬蟲白名單會全部無效",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-25 16:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 598,
+  "what": "皇海 GSC 備案 B1:用皇海自己的 webseo 後台帳號塞 Google 驗證 meta,不必等首岳",
+  "why": "後台角色就叫「SEO管理員」且每筆資料都有 Title/Keywords/Description/og:* 欄位,很可能能自助驗證。⚠️ 卡在騰訊滑塊驗證 headless 過不了(不寫繞過),需要 Delvin 本人登入拖一下我再接手",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-25 16:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 599,
+  "what": "皇海:舊站裝著 GA4 G-E65JC7GYM2,尚未取得存取權",
+  "why": "這是比 DNS 更好走的路:①GA4 本身是 GSC 的驗證方式(有 gtag+編輯權限即可,免 DNS/免改站/免碰首岳)②GA4【有歷史資料】而 GSC 不回填 ⇒ 換站前基準線可以回溯取得。要求也比要 DNS 軟得多(只是看流量統計)。已寫成權限階梯 artifact d5fb39cf,等 Delvin 明天問王董",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-25 18:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 600,
+  "what": "皇海規格表未經 RD 簽核不得上正式網域",
+  "why": "3,066 個工程數值從圖面抽出、已渲染到 673 個料號頁與 6,117 筆結構化資料。雖經雙模型對帳且每張表都連回來源圖面,但這是客戶會照著設計 PCB 的資料 ⇒ 上正式網域前必須皇海工程簽核(同 #434)。覆核頁已備:預覽站 /spec-review(noindex),含 264 個留白待判斷欄位",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-25 19:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 601,
+  "what": "皇海 AI 引用追蹤 cron 尚未在真實排程跑過（首班 9/1 09:10）",
+  "why": "腳本本地手動跑過一次、帳本有首筆基準(3/12)，但 crontab 那一行從未被 cron 觸發過。依判準「只有在生產/真實排程跑過才算完成」，這是 open 項。首班要驗:①有沒有真的執行 ②有沒有 append 帳本並 commit ③logs/ok 戳記有沒有寫出來",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-26 00:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 602,
+  "what": "皇海：ODM 6 顆、新聞 3 個分類、4 顆缺圖面料號、2 顆重複料號 —— 已 noindex 止血，等客戶回覆才能開放",
+  "why": "已寄可轉寄的信給 Delvin(含更正版)。noindex 是可逆的暫時措施:客戶補上內容/確認歸屬後要記得拿掉,否則那些頁面會永遠不進 Google。verify 有閘門守住現況,但『何時該解除』只能靠人記得",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-26 02:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 603,
+  "what": "皇海：繁體頁裡有簡體字、簡體頁裡有繁體字（規格值來自圖面未轉換）",
+  "why": "稽核員量到的既有狀況。轉換工程數值的中文字有風險(材質名稱可能被轉錯),而且那是客戶圖面上的原文。要不要轉、轉到什麼程度,是內容決策不是技術決策,需要 Delvin 或客戶拍板",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-26 02:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 604,
+  "what": "皇海第二輪的修復本身沒有第三方獨立稽核過",
+  "why": "第一輪修復由三個獨立複驗員驗過(抓到 6 個閘門誤殺與 1 條從沒跑過的規則);第二輪的修復只有我自己的突變測試與單元測試(76/76),沒有獨立的眼睛看過。依判準這不算完成",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-26 02:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 605,
+  "what": "皇海:可見規格值仍有繁簡混字（22 頁，來自客戶圖面原文）",
+  "why": "簡體站的 meta/schema 已用 OpenCC 轉乾淨,但【可見的規格值】兩邊仍有混字(繁體頁有簡體字/簡體頁有繁體字),因為那是客戶圖面上的原文。要不要連圖面原文一起轉是內容決策,需 Delvin 或客戶拍板",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-26 02:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 606,
+  "what": "皇海換站日期待王董拍板（已無合約障礙）",
+  "why": "首岳合約 2025/10/1 到期且無新約 ⇒ 沒有到期日要等、沒有違約金、沒有通知期。剩下純粹是王董要選哪一天。我方技術面已可隨時切（新站 39/39 驗收綠、1,241 條 301 實測、DNS 6 筆已存檔）；唯一還卡的是 #600 規格表要 RD 簽核才能上正式網域",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-26 13:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 607,
+  "what": "🔴 皇海企業信箱的存續掛在首岳的善意上：NS 應先搬離，與換站脫鉤",
+  "why": "kingconn.com.tw 的 NS 指向首岳掌握的 Cloudflare zone，而 MX/mail A/SPF/DKIM/DMARC 五筆全住在同一個 zone。合約已到期近 11 個月＝對方沒有任何維持服務或事先通知的義務，zone 被刪就連公司信箱一起死。交接手冊原本寫的『網站與信箱是兩套基礎設施』只適用於我們自己動 A 記錄，擋不住這個。建議動作：皇海到遠傳/Seednet 把 NS 改指我們的 CF 帳號並重建 6 筆（DKIM 公鑰已存檔），不需首岳同意、搬完對方刪 zone 也無事。這是保險動作，不必等換站日",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-26 13:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 608,
+  "what": "皇海舊站鏡像只在 winrig 一顆磁碟上，異地副本要放哪裡待拍板",
+  "why": "合約過期後這份 8/23 鏡像的性質變了：舊站被關掉後它是唯一能證明『原站有什麼』的東西（改版案鐵則＝原站有的新站都要有）。完整性已驗 3314/3316。已備妥可外送的乾淨壓縮檔 migration/legacy_mirror_20260823.tar.gz（250MB，附 SHA-256，已排除首岳後台登入後截圖 admin/ 與 macOS ._* 垃圾）。R2 權限仍缺（#533）；上 GitHub private release 是把客戶資料送到外部服務，要 Delvin 同意才做",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-26 13:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 609,
+  "what": "皇海資產守望 cron 尚未在真實排程跑過（首班 14:17）",
+  "why": "本地手動跑過 runner（六項全綠、ok 戳記已寫、推播管道實測 200）、突變測試 28/28，但 crontab 那一行從未被 cron 觸發過。依判準只有在真實排程跑過才算完成。首班要驗：①有沒有真的執行 ②ok 戳記時間有沒有跟著走 ③狀態檔有沒有 commit",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-26 13:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 610,
+  "what": "自主機器的積木自測(selftest)已連續紅 15 天：戳記停在 2026-08-11 09:09",
+  "why": "順手發現、不在皇海案範圍內所以沒動它(範圍鎖死)。cron_catchup --check 列它 STALE(>1560 分鐘)，而 SessionStart 注入的機器近況也顯示 8/25 21:22『積木自測失敗』⇒ 它有在跑、只是一直失敗，戳記只在成功時前進。影響:37 個能力積木的迴歸把關等於停擺 15 天。要單獨開一個任務查 selftest.sh 為什麼紅",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-26 13:24",
   "closed": null,
   "note": ""
  }

@@ -345,8 +345,8 @@
 {"date": "2026-08-06", "ticker": "TSLA", "entry": 321.54998779296875, "rsi": 26.2, "chg": 0.06394}
 {"date": "2026-08-07", "ticker": "TSLA", "entry": 319.5299987792969, "rsi": 27.8, "chg": 0.04166}
 {"date": "2026-08-12", "ticker": "6488", "entry": 849.0, "rsi": 25.8, "chg": 0.05359}
-{"date": "2026-08-17", "ticker": "2412", "entry": 135.0, "rsi": 17.6, "chg": null}
-{"date": "2026-08-18", "ticker": "2412", "entry": 136.0, "rsi": 22.2, "chg": null}
+{"date": "2026-08-17", "ticker": "2412", "entry": 135.0, "rsi": 17.6, "chg": 0.00368}
+{"date": "2026-08-18", "ticker": "2412", "entry": 136.0, "rsi": 22.2, "chg": -0.00365}
 {"date": "2026-08-20", "ticker": "2412", "entry": 136.0, "rsi": 28.6, "chg": null}
 {"date": "2026-08-22", "ticker": "GOOG", "entry": 341.75, "rsi": 20.6, "chg": null}
 {"date": "2026-08-22", "ticker": "GOOGL", "entry": 344.82000732421875, "rsi": 25.6, "chg": null}
@@ -354,3 +354,13 @@
 {"date": "2026-08-23", "ticker": "GOOGL", "entry": 344.82000732421875, "rsi": 25.6, "chg": null}
 {"date": "2026-08-24", "ticker": "GOOG", "entry": 341.75, "rsi": 20.6, "chg": null}
 {"date": "2026-08-24", "ticker": "GOOGL", "entry": 344.82000732421875, "rsi": 25.6, "chg": null}
+{"date": "2026-08-25", "ticker": "4989", "entry": 60.70000076293945, "rsi": 29.6, "chg": null}
+{"date": "2026-08-25", "ticker": "ARM", "entry": 238.77999877929688, "rsi": 27.3, "chg": null}
+{"date": "2026-08-25", "ticker": "GOOG", "entry": 344.5899963378906, "rsi": 20.6, "chg": null}
+{"date": "2026-08-25", "ticker": "GOOGL", "entry": 348.05999755859375, "rsi": 24.4, "chg": null}
+{"date": "2026-08-25", "ticker": "INTC", "entry": 87.26000213623047, "rsi": 29.8, "chg": null}
+{"date": "2026-08-25", "ticker": "VSH", "entry": 30.43000030517578, "rsi": 27.9, "chg": null}
+{"date": "2026-08-26", "ticker": "4542", "entry": 265.0, "rsi": 28.5, "chg": null}
+{"date": "2026-08-26", "ticker": "8210", "entry": 965.0, "rsi": 27.3, "chg": null}
+{"date": "2026-08-26", "ticker": "GOOG", "entry": 343.3399963378906, "rsi": 28.1, "chg": null}
+{"date": "2026-08-26", "ticker": "INTC", "entry": 87.4800033569336, "rsi": 29.9, "chg": null}
