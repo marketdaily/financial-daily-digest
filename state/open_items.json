@@ -6006,8 +6006,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-26 00:50",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-26 23:41",
+  "note": "已實跑整條 runner 路徑並驗過每一段:exit 0 · 帳本 1→2 行(gemini-2.5-flash,12 題 cited 4 mentioned 1,比 8/25 基準 3/12 略升但 n=1 不具意義) · 戳記寫進艦隊在看的 ~/Delvin-agent/logs/ok/kingconn_citation_watch.ok · 自動 commit 並 push(1316007)。唯一還沒被證明的是『cron 會不會敲門』——但同一份 crontab 的 asset_watch(17 * * * *)每小時都在敲且戳記持續更新,所以那半有旁證;crontab 行、runner 路徑、戳記目錄都逐一核對過"
  },
  {
   "id": 602,
@@ -6246,8 +6246,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-26 17:48",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-26 23:37",
+  "note": "已做並線上端到端驗過:KV 落地每一筆詢價(單號沿用舊系統 202608260001 格式)、狀態沿用舊後台五個值、/admin/inquiries 管理頁(密碼閘/搜尋/篩選/詳情/回信/CSV)、/api/inquiries(固定時間比對密碼)。⭐先落地再寄信:寄信掛了詢價也不會消失。robots+noindex+X-Robots-Tag 三道擋住個資頁。隱私權政策三語已同步揭露。部署腳本加了部署後煙霧測試(這輪我改壞過一次而 bundle 照樣上傳、部署照樣成功)"
  },
  {
   "id": 626,
@@ -6296,8 +6296,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-26 18:18",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-26 23:37",
+  "note": "異地副本已做且【驗過還原】:tools/offsite_backup.py 把 15 個檔 tar+gzip → gpg AES-256 → 上傳 Cloudflare KV(KINGCONN_BACKUP,不在這台機器上)。密碼在 winrig .env 的 KINGCONN_BACKUP_PASS(已確認被 gitignore 擋住)。驗證不是只看檔案在:實際下載→解密→雜湊相符→15 檔逐名對帳→再完整還原到暫存目錄逐位元組比對 0 不符。R2 是更自然的去處但這把 CF token 沒 R2 權限(實測回 10000)"
  },
  {
   "id": 631,
@@ -6386,6 +6386,16 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-26 23:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 640,
+  "what": "皇海:CF token 沒有 Zone Settings 權限,browser_check 改不了(切換當天要人進後台)",
+  "why": "2026-08-26 實測:這把 CLOUDFLARE_API_TOKEN 列得到 zone(4f95ec9a…,status=pending)但讀不到也改不了 zone 設定(9109 Unauthorized)、R2 也沒權限(10000)。所以 #617 的 browser_check=on 我無法先關掉。緩解:已寫 tools/verify_crawler_access.py —— 不看設定值,直接用 16 個爬蟲身分(Googlebot/Bingbot/GPTBot/ClaudeBot/PerplexityBot…)實打 7 個代表頁,要求 200 且回真頁面(偵測 CF 挑戰頁特徵)。預覽站基準 112/112 全通。**切到自訂網域(橘雲)當天必須再跑一次**,紅了就是被擋。要根治得補 Zone:Zone Settings:Edit 權限或進後台關 browser_check",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-26 23:41",
   "closed": null,
   "note": ""
  }
