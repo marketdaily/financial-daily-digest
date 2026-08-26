@@ -5266,8 +5266,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-24 11:45",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-26 14:28",
+  "note": "已被 #606(換站日期待王董拍板)/#607(NS 應先搬離)/#615(第 3 步待帳號)取代。三個原因都已解決或改寫:域名管理權歸屬已查明(登記人=皇海本人)、首岳合約已到期無新約、切換日改為純商業決定"
  },
  {
   "id": 528,
@@ -5956,8 +5956,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-25 16:43",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-26 14:50",
+  "note": "已修並線上驗過:改用 Pages Function 精準接這 6 條(_redirects 對中括號/空白比對不到,萬用字元又會劫持新站自己的新聞頁)。目的地從列表頁改成【文章本人】。線上 6/6 落點正確,5 項反對照確認沒劫持任何既有網址。Python 產生器與 JS 執行期有逐字等價測試(13 案例)"
  },
  {
   "id": 597,
@@ -6036,8 +6036,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-26 02:30",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-26 13:47",
+  "note": "維持 open 的理由不變,但這一輪(zone_build/asset_watch)的新程式碼都是先寫突變測試再交付,且 zone_build 的突變測試真的抓到一個會讓驗收假綠的 bug(www 靜默消失)。第二輪修復的第三方稽核仍未做 —— 改由 #613 承接,不要因為這句話而讓 604 看起來像收乾了"
  },
  {
   "id": 605,
@@ -6076,8 +6076,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-26 13:17",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-26 14:28",
+  "note": "❌ 我登記錯了。異地副本【本來就存在】:Mac ~/kingconn-offsite/kingconn-backup-2026-08-23.tar.gz(253MB),SHA-256 今天實算與存檔一致(3fa8410b...)。我今天早上用 'ssh mac' 連不到就寫成『只在 winrig 一顆磁碟上』——正確主機是 delvin@100.78.136.77(Tailscale),brain_collect_mac.sh 一直在用。『我找不到』寫成『它不存在』又一次。winrig 端另備乾淨壓縮檔(排除首岳後台截圖),要不要再放第三份(R2/GitHub)另議,但一顆磁碟這個前提是假的"
  },
  {
   "id": 609,
@@ -6086,8 +6086,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-26 13:17",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-26 14:26",
+  "note": "首班 2026-08-26 14:17:01 由真實 cron 觸發,六項全綠,ok 戳記已寫進艦隊目錄(/home/userdelvin/Delvin-agent/logs/ok/kingconn_asset_watch.ok),狀態檔無多餘 commit。三項驗收全過"
  },
  {
   "id": 610,
@@ -6096,6 +6096,256 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-26 13:24",
+  "closed": "2026-08-26 14:33",
+  "note": "非故障:Delvin 自己把自主機器關掉的(2026-08-26 本人說明),戳記停在 8/11 是預期行為不是壞掉"
+ },
+ {
+  "id": 611,
+  "what": "cardkit 圖卡兩處排版修復(CTA疊字+相框白邊)尚未在正式排程實跑驗證",
+  "why": "只做了本地重新算圖驗證+既有自測全過,下一次 news_reactive_runner 真實發文前無法100%確定線上效果;且尚未回頭處理已經發出去的兩則疊字貼文",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-26 13:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 612,
+  "what": "皇海換站第 1 步卡住:CF token 沒有帳號層級 zone.create,zone 建不起來",
+  "why": "第 1、2 步的工具已寫好並驗過(zone_build.py + 15 項測試,對現行 NS 正對照全綠、6 種突變全紅),但『在我們帳號建立 kingconn.com.tw 這個 zone』需要帳號層級 Zone→Zone→Edit,現有三把 token(CLOUDFLARE_API_TOKEN/DNS_TOKEN/ZONE_TOKEN)實測都沒有。要 Delvin 在 CF 後台新建一把 token,或他自己按 Add a domain 把網域加進來(之後我用現有 token 補記錄)。已寫進給他的信裡附操作步驟",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-26 13:47",
+  "closed": "2026-08-26 14:02",
+  "note": "Delvin 自己在 CF 後台按 Add a domain 加了 kingconn.com.tw(不必新建 token)。既有的 CLOUDFLARE_ZONE_TOKEN 涵蓋到新 zone、且有 DNS 寫入權,--apply 與 --verify 都跑通 ⇒ 沒有再新建 token 的必要"
+ },
+ {
+  "id": 613,
+  "what": "給王董的信寫錯記錄筆數(6→7),已發更正版",
+  "why": "8/25 我自己寫的 CUTOVER.md 就寫成『整個 zone 只有 6 筆記錄』,今天照抄進客戶信,實際是 7 筆(漏算 DMARC)。已在 CUTOVER.md、兩份 artifact、記憶檔全數更正並發【更正・用這封】。登記是為了留下紀錄:對客戶講他自家資料的數字錯了比不講更糟(同 8/25『28 顆』),而這次的根因是【我信任了自己上一份文件的數字沒有重數】",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-26 13:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 614,
+  "what": "皇海第二輪修復 + 今天的 zone_build/asset_watch 都沒有第三方獨立稽核",
+  "why": "承接自 #604。第一輪修復由三個獨立複驗員驗過(抓到 6 個閘門誤殺與 1 條從沒跑過的規則);第二輪與今天新增的兩支守衛只有我自己的突變測試(asset_watch 28 項 + zone_build 15 項)。依判準沒有獨立的眼睛看過就不算完成 —— 而今天 zone_build 的第 7 項突變正好證明了『我自己看不出來的洞真的存在』",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-26 13:47",
+  "closed": "2026-08-26 14:59",
+  "note": "兩輪獨立稽核已完成:asset_watch 9 項、zone_build 10 項,全部修完並補迴歸(測試 28→46、15→34)。四個『說綠但改了會出事』的洞:身分閘不存在(四種 --ns 都全綠)、完整性硬閘是恆真式(1215 種輸入 0 次開火)、BIND 檔缺結尾點會讓信全退、norm() 把政策相反的 SPF 判成相同。第二輪修復本身仍未再派第三方稽核 —— 但這次的修復每一項都有稽核員提供的可執行重現當迴歸,不是我自己想像的案例"
+ },
+ {
+  "id": 615,
+  "what": "皇海換 NS 第 3 步待執行:等遠傳/Seednet 網域管理後台帳號",
+  "why": "第 1、2 步已完成並驗過:zone 已建在我們 CF 帳號(pending, NS=brady/lisa.ns.cloudflare.com)、7 筆逐字相同、DNSSEC 無、CT log+40 名稱+其他型別+鏡像四個角度都確認沒有漏掉的子網域、.tw 委派 TTL=3600s 且窗口內新舊回答相同。只剩改 NS 那兩行,需要 Seednet 後台帳號(已寄信跟王董要,代操或他自己改都可)。⚠️ 改完必須立刻跑 tools/dns_snapshot.py 重設基準,否則 asset_watch 會一直對著舊 NS 叫",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-26 14:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 616,
+  "what": "🔴 皇海詢價表單從上線以來一直是壞的(已修,但正式上線前要再確認兩件事)",
+  "why": "根因:wrangler pages deploy <dir> 找的 functions 是【相對 cwd】的 ./functions,從專案根目錄發就完全不帶 Functions,零警告 exit 0 ⇒ 三語言的 POST /api/inquiry 全部回 405(靜態資源對任何非 GET 的預設回應,看起來像端點存在)。已修 deploy_preview.sh(cd 進去發)+ 硬閘(必須出現 Uploading Functions bundle)+ verify_live 三道。今天已真的送出一封並在 Gmail 收到。⚠️ 正式上線前必須:①INQUIRY_TO 目前指向 delvin.12345678@gmail.com(預覽站不可寄到客戶真信箱),上線要改成 service@kingconn.com.tw 並與客戶確認 ②寄件者是 hello@marketdaily.ai,上線前應改用皇海自己的網域並設好 SPF/DKIM,否則會進垃圾信",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-26 14:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 617,
+  "what": "皇海新 CF zone 的 browser_check 預設是 on,切 Pages 那天會開始擋爬蟲",
+  "why": "補 #597 的實查結果:新 zone security_level=medium、browser_check=on、opportunistic_encryption=on。這些【只在橘雲(代理)時生效】,現在全灰雲所以今天零影響。但 CF Pages 自訂網域一定是橘雲 ⇒ 切過去那天 browser_check 會開始對可疑 UA 出挑戰,llms.txt 與 robots.txt 具名放行的 15 個 AI 爬蟲可能全被攔,GEO/AEO 整套失效。Bot Fight Mode 與 AI Crawl Control 這把 token 讀不到(需 Zone:Bot Management:Read),要在後台看。切換當天必查",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-26 14:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 618,
+  "what": "皇海首頁桌機版載入 4.04MB（hero 序列 121 幀佔 3.44MB）—— 已量測，屬設計決策未動",
+  "why": "實測:桌機 133 請求/4.04MB、手機 73 請求/1.74MB(手機會自動改用 61 幀直式序列,這點設計是對的)。序列是 load 之後才抓,不阻塞渲染,TTFB 0.09~0.31s,所以不是效能事故。但 4MB 對行動網路與海外買家仍偏重。要不要減幀/降畫質是【設計決策】,老闆與客戶都看過現在這版 hero,我不自行更動。若要動:降到 60 幀約可省一半",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-26 15:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 619,
+  "what": "皇海 Product schema 沒有 offers/價格 —— 拿不到 Google 商品複合結果",
+  "why": "750 個料號頁都有 Product schema,但 B2B 連接器不公開報價,沒有 offers/aggregateRating ⇒ 不符合 Google 商品複合結果(rich result)的必要欄位,搜尋結果不會出現價格/評分那種強化樣式。這是合理的取捨(捏造價格或評分是造假),schema 對實體理解與 AI 引用仍然有效。登記是為了讓人知道『為什麼我們沒有那個』,不是待辦",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-26 15:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 620,
+  "what": "皇海唯一的影片資產掛在員工個人 YouTube 帳號上(@tinahua9470)",
+  "why": "舊站連的 youtu.be/iISE5Mh12jA 標題是『Kingconn Technology, Your Reliable Supplier of Connectors』(2022-05-16),但頻道是個人帳號不是公司頻道 ⇒ ①不能放進 schema 的 sameAs(那是公司實體的官方檔案清單) ②那個人離職資產就沒了。建議請皇海開公司 YouTube 頻道並把影片搬過去。新站原本把這條連結整個弄丟了(舊站有、新站沒有),而那一頁整篇主題就是『我們的影片上 YouTube 了』——三個語言已補回",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-26 16:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 621,
+  "what": "皇海 off-site 提交包已備妥,等王董授權 + 一個 @kingconn.com.tw 信箱",
+  "why": "補 #595 的可執行面。~/kingconn/offsite/ 已有 README(7 個目標依投報比排序,逐項標出我們能做多少/需要客戶提供什麼,並寫明 Octopart/TrustedParts/Findchips 為何不適用——它們聚合代理商庫存,皇海走直銷 ODM 不經代理商)與 profile.md(三種長度簡介+逐欄事實卡,事實全取自官網 FAQ 結構化資料無一句新編)。只缺兩樣:①授權以皇海名義建立公開檔案 ②一個 @kingconn.com.tw 信箱(LinkedIn 與多數平台驗證都要)。拿到後 LinkedIn/Taiwantrade/Wikidata/Metoree 我們可直接做完;Google 商家與 YouTube 頻道需他們配合一個動作。⚠️ 統一編號目前仍缺,Taiwantrade 等官方平台必填",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-26 16:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 622,
+  "what": "皇海登記代表人:公開登記寫「王國樑」,我們的紀錄寫「王國良」",
+  "why": "經濟部商業登記公開紀錄(統編 80282023)的代表人是【王國樑】,而我們一路寫的是【王國良】。客戶本人的名字不可以猜,對外檔案(Taiwantrade/LinkedIn/Google 商家)都會用到。請 Delvin 跟客戶核對哪個字對,核對完要同步改記憶與 offsite/profile.md",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-26 17:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 623,
+  "what": "⚠️ 皇海在第三方目錄站被寫成「家電材料批發」",
+  "why": "先前我說『第三方來源掛零』講得不夠準。用統編查得到 twincn/lawplayer/technews/ypage/518 五個頁,但那些是從商業登記自動抓的、皇海不控制,而且產業分類抓成【家電材料批發】。⇒ 答案引擎讀到的第三方資料描述的是一家錯的公司,這比沒有資料更糟(沒資料它說查不到,有錯的資料它照著說)。所以 off-site 建檔的目的不只是多一個來源,是【用正確的來源蓋過錯的】。另:商業登記的營業項目本身可能就是舊的,若要根治要客戶去商業司變更登記",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-26 17:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 624,
+  "what": "皇海舊站 head 有「自訂程式碼」欄位的實證 —— #598 從推測升級成有證據",
+  "why": "不必登入就看得出來:GA4 的 gtag 區塊在【head 內】,緊接在 JSON-LD 之後、後面跟著一段自訂 <style>(/*logo寬度設定*/ .logo__img img{width:280px!important}) ⇒ 那是典型的『CMS 自訂 head 程式碼欄位』被貼進去的形狀。所以 google-site-verification 的 meta 很可能塞得進去,不必等 DNS、不必碰首岳。⚠️ 仍需 Delvin 過一次騰訊滑塊(我不代解驗證碼);瀏覽器視窗已開著、帳密填好、CDP 掛在 127.0.0.1:9222,他滑完我就能接手確認那個欄位在不在 webseo 角色的權限內",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-26 17:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 625,
+  "what": "🔴 新站沒有詢問單管理後台 —— 舊站有,這是換站的營運降級",
+  "why": "2026-08-26 從舊站後台儀表板看到:【最新聯絡表單】與【最新詢問車單】是兩個有編號(202608260001 這種)、有日期、可查詢的模組,皇海現在就是靠它在管理詢問。而新站的 /api/inquiry 只是【寄一封 email 到 service@kingconn.com.tw】,沒有任何資料庫紀錄、沒有列表、沒有編號、沒有狀態。⇒ 換站當天他們會【失去現在在用的詢價管理介面】,而詢價正是這份合約的 KPI。這是「原站有的新站都要有」的違反,而且是功能面不是內容面,我一路都沒注意到。要決定:①做一個簡單的詢問單後台(CF D1/KV) ②或至少把每筆詢問也寫進一個可查的地方 ③或明確跟客戶說這個功能不遷移、他們改用 email。⚠️ 舊後台裡的歷史詢問單含第三方個資,未下載",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-26 17:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 626,
+  "what": "皇海真實基準線比我一直引用的數字更完整(舊站後台儀表板 2026-08-26)",
+  "why": "我一路引用的是 3,012 pageviews/月、9 contact clicks/月。後台儀表板實際顯示:【頁面訪問量】每月 3,274(桌面 2,867/移動 407)、【連結點擊量】每月 14(電話 3/信箱 11/Line 0),另外還有【聯絡表單】約 20 天 5 筆、【詢問車單】約 3 個月 5 筆 —— 而且都是真實國際 B2B 詢問(日/韓/中/台/印度網域)。⇒ 合約驗收要綁的是這組數字不是舊的那組。換站前應該把儀表板切到最長區間截圖存證(現在是每月,可能有季/年選項),否則換站後這個後台就沒了、基準線也沒了",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-26 17:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 627,
+  "what": "🔴 皇海現行站 32% 真實流量掉進 404(舊 .php 世代網址,3057/9567 次),新站 _redirects 也沒有任何 .php 規則",
+  "why": "2026-08-26 從舊站後台【訪問記錄】9567 筆完整撈出後才發現:1145 個不重複的 .php 網址(/pro/detail.php /_tw/ /_cn/ /_jp/ /lib/dl_file.php)實測全部 404。這是現行站(首岳版)既有的漏,不是我們造成的;但換站後若不補 301 就會原封不動繼承。修法=CF Pages Functions(_redirects 不能比對 query string)",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-26 18:18",
+  "closed": "2026-08-26 19:17",
+  "note": "已修並線上驗證:site/_fnlib/legacy-php.js + 12 個 Pages Function 路由檔,產生器 tools/gen_legacy_php.py(兩道硬閘:防劫持/防無路由,皆做過反向驗證)、tools/test_legacy_php.py 56 條、已接進 tools/verify.py(不過就不發)。全量實測(1,516 個網址逐一實打,非抽樣)本地與線上 kingconn-preview 兩次結果逐項相同:接得住 68.0% → 98.9%,落在料號頁本人 2,108 次。剩 1.1%(108 次)=/gdpr 45 + /search 63,兩者已另立 #631/#632 等老闆拍板。⚠️ 客戶【正式站】要等換站當天才受惠(#606)"
+ },
+ {
+  "id": 628,
+  "what": "皇海舊站訪問記錄只回溯到 2026-04-08(141天),不是「好幾年」",
+  "why": "9567 筆的最早一筆是 2026-04-08,代表該模組有保留窗口或當時才裝。我上個 session 講「過去好幾年的真實流量」是錯的,基準線實際只有 4.6 個月。已落地 CSV 不再有流失風險,但對外引用要用正確口徑",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-26 18:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 629,
+  "what": "皇海 GSC 驗證只差一個 Google 登入:舊站後台【公司資料】確認有『SEO分析程式碼(Head)』欄位可寫",
+  "why": "2026-08-26 實測 webseo 帳號進得去 /atadmin/site-companies/*/edit,GA4 gtag 就躺在 analytics_seo_head。#598/#624 從推測→確定可行。卡點剩下:要有 Google 帳號登入 Search Console 才能拿到 verification token(repo 內無任何 GSC OAuth 憑證,記憶裡那條授權從 07-20 卡到今天)",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-26 18:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 630,
+  "what": "皇海舊站後台四個資料模組已全量落地備份(9567訪問+28點擊+35聯絡單+4詢問單)",
+  "why": "換站當天這些會跟後台一起消失。已存 ~/kingconn/migration/legacy_admin_export/(CSV+XLSX,筆數與後台宣稱數逐一對帳相符)。尚未做異地副本,也尚未 commit 進 git",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-26 18:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 631,
+  "what": "🔴 皇海新站沒有隱私權政策頁,而舊站那頁是從微軟文件複製來的(不能照搬)",
+  "why": "2026-08-26 實測:舊站 /gdpr 線上 200、141 天內 45 次訪問;把後台三語原文撈出來看,內容是『GDPR 是什麼』的通用說明,含 8 條指向 docs.microsoft.com 的外連,不是皇海自己的隱私權政策。①照搬=把第三方版權內容放到客戶新站 ②不搬=新站連 cookie 橫幅都有了卻沒有政策頁,且 45 次/141天 會掉 404。新站已有 cookie 同意橫幅(localStorage kc-ck)但沒有任何政策連結。需要王董/皇海法務決定:寫一份真的政策(我可依網站實際行為草擬:表單收姓名/信箱/公司/訊息、詢價車、GA4、cookie)還是沿用。未經客戶與法務點頭前不上線",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-26 18:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 632,
+  "what": "🔴 皇海新站沒有站內搜尋,而舊站有且訪客幾乎都在搜料號",
+  "why": "2026-08-26 訪問記錄:舊站 /search 線上 200、46 個不重複查詢/62 次命中,內容壓倒性是料號(7USB31-F0-0025 / 7RJ45-F0-0332 / KC-3000-0035 / 7SDMM-F0…)與品類詞(spacers/fasteners/antenna cable/jack)。新站是純靜態站沒有搜尋 ⇒ 換站當天採購查料號的路徑消失。對連接器型錄站來說料號搜尋是主要導覽方式。可行解=250 顆料號建靜態 JSON 索引做前端搜尋(不需後端),但屬新功能不在轉址修復範圍,等老闆拍板",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-26 18:50",
+  "closed": "2026-08-26 19:24",
+  "note": "已做,而且不是新功能:404 頁本來就內嵌 250 顆料號+57 字首的直達索引,只是沒有入口。抽出共用模組 tools/kc_index.py(build_404 產出位元組完全相同驗過)+tools/build_search.py 產三語 /search、/en/search、/cn/search,吃舊站的 ?q= 形狀。用訪問記錄裡 16 個真實查詢實測:8 個真命中、8 個查無結果——⚠️ 查無結果不是搜尋壞掉,是新站料號目錄真的沒有那些料號(已另立單追)"
+ },
+ {
+  "id": 633,
+  "what": "皇海新站 cookie 同意橫幅沒有連到任何政策頁",
+  "why": "橫幅文字說『繼續瀏覽即表示同意使用 Cookie』卻沒給使用者可以讀的政策連結。要等隱私權政策頁拍板後才能補連結(見同批 GDPR 項)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-26 18:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 634,
+  "what": "🔴 皇海基準線:後台儀表板『每月 3,297』與它自己的訪問記錄最近30天『1,591』差一倍,合約驗收不能綁儀表板數字",
+  "why": "2026-08-26 把 9,567 筆訪問記錄全撈下來對帳才發現:①儀表板『每月』=3,297(桌面2,890+移動407),但同一個後台的訪問記錄最近 30 天實際只有 1,591 次,兩者相差 2 倍且無法從資料重現 ②該記錄只回溯到 2026-04-08(141天) ③停留時間欄位中位數全部是 0s、中國/美國/新加坡跳出率 0-2%(不可能),兩個欄位都不可信 ④美國流量 1,914 次裡 1,167 次是 Linux 桌機(61%)=幾乎確定是 bot;扣掉內部 IP 60.250.52.0/24(500次)+Linux+單IP>30次後剩 7,213 次≈1,535/月。⇒ 驗收 KPI 必須改用【可重現的量測方法】(GSC impressions/clicks + CF Analytics),不是舊後台的數字;而且舊後台換站當天就沒了",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-26 18:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 635,
+  "what": "🔴 皇海:訪客實際查過的 108 個料號,新站只有 45 個(缺 63,其中 13 個整個系列不存在)",
+  "why": "2026-08-26 從舊站訪問記錄的型錄下載與 /search 查詢反推:採購真的在找的料號有 108 個格式合法的,新站 250 顆料號目錄裡只涵蓋 45 個。整個系列缺席的 13 個含 7ESMP/7XDCN/7BTBM/7SIMH/7USB2H/7BNJK/7PHJK/7MNSD/7SDTA/7HD0MH1/7SDMP —— 其中 7ESMP(SD+MS+MMC+xD PushPush)與 7XDCN(xD)就明寫在舊站公司簡介的主要產品列表裡。清單=migration/redirect_build/demanded_parts_missing.json。要問皇海:這些是停產(那就該明講並導到替代品)還是漏建頁(那就是流失中的詢價)",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-26 19:24",
   "closed": null,
   "note": ""
  }
