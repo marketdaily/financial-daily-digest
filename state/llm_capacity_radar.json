@@ -116,6 +116,8 @@
       "google/gemma-4-26b-a4b-it:free",
       "google/gemma-4-31b-it:free",
       "liquid/lfm-2.5-2.6b:free",
+      "minimax/minimax-m2.7:free",
+      "minimax/minimax-m3:free",
       "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
       "nvidia/nemotron-3-super-120b-a12b:free",
       "nvidia/nemotron-3-ultra-550b-a55b:free",
@@ -128,5 +130,5 @@
       "z-ai/glm-5.2:free"
     ]
   },
-  "updated": "2026-08-25 10:10"
+  "updated": "2026-08-26 10:10"
 }
