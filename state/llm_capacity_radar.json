@@ -42,6 +42,7 @@
       "openai/gpt-oss-20b",
       "openai/gpt-oss-safeguard-20b",
       "qwen/qwen3.6-27b",
+      "qwen/qwen3.8-27b",
       "whisper-large-v3",
       "whisper-large-v3-turbo"
     ],
@@ -53,7 +54,6 @@
       "devstral-2512",
       "devstral-latest",
       "devstral-medium-latest",
-      "glm-5-2",
       "labs-leanstral-1-5",
       "labs-leanstral-1-5-1",
       "magistral-medium-latest",
@@ -100,8 +100,7 @@
       "voxtral-mini-tts-2603",
       "voxtral-mini-tts-latest",
       "voxtral-small-2507",
-      "voxtral-small-latest",
-      "zai-glm-5-2"
+      "voxtral-small-latest"
     ],
     "ollama": [
       "nomic-embed-text:latest",
@@ -130,5 +129,5 @@
       "z-ai/glm-5.2:free"
     ]
   },
-  "updated": "2026-08-26 10:10"
+  "updated": "2026-08-27 10:10"
 }
