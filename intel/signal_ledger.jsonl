@@ -877,3 +877,22 @@
 {"date": "2026-08-26", "code": "5425", "source": "leadflow", "level": "yellow", "signal": "台半(5425) 無消息近漲停+9.9%(量能2.7×,5日+5.2%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-08-26", "code": "3228", "source": "leadflow", "level": "yellow", "signal": "金麗科(3228) 無消息近漲停+9.9%(量能1.8×,5日+12.2%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-08-26", "code": "3354", "source": "leadflow", "level": "red", "signal": "律勝(3354) 無消息近漲停+9.8%(量能7.1×,5日+11.2%),疑資訊先行資金|外資+投信近3日僅-77張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-27", "code": "3006", "source": "mops_news", "level": "red", "signal": "晶豪科(3006) 重訊[2026-08-26]:公告本公司發行國內第二次有擔保轉換公司債案向金管會 申請延長募集期間", "price_at_signal": null}
+{"date": "2026-08-27", "code": "4541", "source": "mops_news", "level": "red", "signal": "晟田(4541) 重訊[2026-08-26]:公告本公司訂定115年現金增資認股基準日等相關事宜", "price_at_signal": null}
+{"date": "2026-08-27", "code": "6658", "source": "investor_conf", "level": "red", "signal": "聯策(6658):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-08-27", "code": "META", "source": "us_analyst", "level": "red", "signal": "🇺🇸 META ⬇️ Strong Buy→Neutral(Citigroup)", "price_at_signal": null}
+{"date": "2026-08-27", "code": "6725", "source": "margin", "level": "yellow", "signal": "矽科宏晟(6725):融資5日暴增19.5%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-08-27", "code": "3406", "source": "leadflow", "level": "red", "signal": "玉晶光(3406) 無消息近漲停+9.9%(連2根,5日+28.3%),疑資訊先行資金|外資+投信近3日+1531張", "price_at_signal": null}
+{"date": "2026-08-27", "code": "3543", "source": "leadflow", "level": "red", "signal": "州巧(3543) 無消息近漲停+10.0%(連2根,5日+14.7%),疑資訊先行資金|外資+投信近3日+2346張", "price_at_signal": null}
+{"date": "2026-08-27", "code": "6668", "source": "leadflow", "level": "red", "signal": "中揚光(6668) 無消息近漲停+10.0%(連2根,5日+18.6%),疑資訊先行資金|外資+投信近3日+802張", "price_at_signal": null}
+{"date": "2026-08-27", "code": "4909", "source": "leadflow", "level": "red", "signal": "新復興(4909) 無消息近漲停+10.0%(量能4.0×,5日+11.4%),疑資訊先行資金|外資+投信近3日僅+341張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-27", "code": "5543", "source": "leadflow", "level": "red", "signal": "桓鼎-KY(5543) 無消息近漲停+10.0%(量能13.3×,5日+18.4%),疑資訊先行資金|外資+投信近3日僅+11張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-27", "code": "3230", "source": "leadflow", "level": "red", "signal": "錦明(3230) 無消息近漲停+10.0%(量能3.1×,5日+14.0%),疑資訊先行資金|外資+投信近3日僅+181張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-27", "code": "3529", "source": "leadflow", "level": "red", "signal": "力旺(3529) 無消息近漲停+10.0%(連2根,5日+19.9%),疑資訊先行資金|外資+投信近3日僅-5張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-27", "code": "4529", "source": "leadflow", "level": "yellow", "signal": "淳紳(4529) 無消息近漲停+9.9%(量能2.5×,5日+7.2%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-27", "code": "5475", "source": "leadflow", "level": "yellow", "signal": "德宏(5475) 無消息近漲停+9.9%(量能2.9×,5日+13.1%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-27", "code": "6141", "source": "leadflow", "level": "red", "signal": "柏承(6141) 無消息近漲停+8.9%(連2根,5日+24.9%),疑資訊先行資金|外資+投信近3日+1186張", "price_at_signal": null}
+{"date": "2026-08-27", "code": "6217", "source": "leadflow", "level": "red", "signal": "中探針(6217) 無消息近漲停+9.9%(量能3.6×,5日+15.6%),疑資訊先行資金|外資+投信近3日+572張", "price_at_signal": null}
+{"date": "2026-08-27", "code": "6418", "source": "leadflow", "level": "red", "signal": "詠昇(6418) 無消息近漲停+9.9%(量能8.9×,5日+12.6%),疑資訊先行資金|外資+投信近3日僅+119張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-27", "code": "8358", "source": "leadflow", "level": "yellow", "signal": "金居(8358) 無消息近漲停+9.9%(量能1.6×,5日+19.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-27", "code": "3219", "source": "leadflow", "level": "red", "signal": "倚強科(3219) 無消息近漲停+9.9%(量能5.5×,5日+20.9%),疑資訊先行資金|外資+投信近3日僅+185張,法人未同步=隱形買盤", "price_at_signal": null}
