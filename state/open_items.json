@@ -6406,8 +6406,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-27 02:25",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-27 21:32",
+  "note": "已移植:cn/v5.html + cn/v5-en.html 各 77→230 行;線上實測 reduced 121→2 幀、hero 透明度與一般模式逐點相同;加 hero_parity.py 閘門(verify 第 10 道)防四份再度不同步"
  },
  {
   "id": 642,
@@ -6416,8 +6416,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-08-27 21:00",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-27 21:32",
+  "note": "已建 requirements.txt 並用乾淨 venv 實測裝得起來;三支工具皆 fail-closed(沒裝就 sys.exit)"
  },
  {
   "id": 643,
@@ -6446,6 +6446,16 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-27 21:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 646,
+  "what": "皇海 cn_convert.py 的冪等修法只在 7 條單元案例與全站 dry-run 驗過,沒有針對「未來新寫的繁體內容」跑過真實情境",
+  "why": "改法是【只把含繁體形的漢字段落丟給詞彙轉換器】,正反 7 條都過、全站 dry-run 0/307 冪等。但真正的考驗是下次有人寫進一段新的繁體中文時它有沒有正確轉換而且沒有波及旁邊已是簡體的字——那要等真的發生。verify 的字表已擴成完整集合(366→3554)會先叫",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-27 21:32",
   "closed": null,
   "note": ""
  }
