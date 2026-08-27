@@ -8282,3 +8282,18 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   `site/index.html` 是**沒有人走得到的孤兒檔**。線上五個入口實測 canonical 全對。
 - 登記 #644（裸網域/www 沒有 301 正規化，只靠 canonical）、
   #645（**cutover 關 1~5 只在假 CF 上驗過，真實 API 的回傳形狀那天才驗得到**）。
+
+## 2026-08-27 21:5x — 新開案 collectibles-ca(加拿大端收藏公仔電商,對標 heroesworld.ca)
+- 新 repo `~/collectibles-ca`(依規則:新獨立產品不塞進本 repo)。貨源=蝦皮 XNX_FASCINATE(shopid 48809406,1023 件)。
+- **蝦皮封鎖面實測**(別重查):`shop_detail`/`get_shop_base` 匿名可用;**商品頁 `/product/<shopid>/<itemid>` 匿名可用且 SSR 含完整商品描述**;
+  `shop/search_items`·`rcmd_items`·`search/search_items`·`pdp/get_pc` 全部 error 90309999(需 JS 算的 `af-ac-enc-dat` 簽章,
+  session 暖機+csrftoken 都無效);賣場頁用 Playwright/patchright/camoufox 開一律登入牆;Googlebot UA/sitemap/Bing/DDG/BigGo/飛比都沒索引。
+  ⇒ **只有「列舉商品 id」這一步需要登入 cookie,其餘全匿名**。登記 #647(owner=delvin)。
+- ⭐ **擋我的是 TLS 指紋不是登入狀態**:同一個 URL,curl 出登入牆/403,scrapling `Fetcher.get(stealthy_headers=True)`(curl-cffi impersonate)拿到 200 完整 SSR。
+  但這只救得了「頁面」,救不了「API」——API 那道閘是 JS 簽章,換指紋沒用。兩種封鎖不要混為一談。
+- ⭐ 價格解析器兩個當場抓到的自己的 bug:①單位過濾器寫 `^\s*` 讓 `\n` 也算空白 ⇒「22000\n盒況良好」被「盒」當單位殺掉;
+  ②標籤取「起始位置最近」⇒「售價 12800」會被更後面的單字「價」搶走,「訂金 3000\n尾款 9800」的 9800 會被上一行的「訂金」搶走。
+  正解=按**標籤結尾離數字的距離**排序,同結尾取最長。17 項迴歸全過。
+- ⚠️ **但那 17 項全是我自己寫的合成樣本**,零真實描述可校準(唯一抓得到的那件描述是「全新未拆/下標前請先詢問」,**根本沒有價格**)。登記 #648。
+- fx.py 雙源對帳(er-api 0.043579 / Yahoo 0.0436,分歧 0.05%),>2% 或快取 >48h 即停整批不出價;×1.2 後無條件進位到 `$XXX.99`。
+- 前台展示站尚未開工(#649),要走 website-design-team SOP。

@@ -6458,5 +6458,35 @@
   "opened": "2026-08-27 21:32",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 647,
+  "what": "collectibles-ca:蝦皮列舉 1023 件商品卡住,需 Delvin 提供已登入 cookie",
+  "why": "蝦皮清單 API 需 JS 簽章、賣場頁對所有瀏覽器指紋都出登入牆;商品頁本身匿名可抓,只有列舉這步過不去",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-27 22:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 648,
+  "what": "collectibles-ca:價格解析器只對過我自己寫的合成樣本",
+  "why": "唯一抓得到的那件商品描述是「全新未拆/下標前請先詢問」根本沒價格,零真實樣本可校準;拿到 cookie 後必須用真實描述重驗",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-27 22:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 649,
+  "what": "collectibles-ca:前台展示站尚未開工",
+  "why": "等真實商品資料進來才做得出有意義的展示站;要走 website-design-team SOP",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-27 22:03",
+  "closed": null,
+  "note": ""
  }
 ]
