@@ -5996,8 +5996,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-25 19:07",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-27 21:00",
+  "note": "拆開:--strip 讓規格表可整批拿下來,料號頁其餘不動,簽核後一道指令放回去(往返逐位元組相同)。RD 簽核本身仍是 open,但不再擋換站"
  },
  {
   "id": 601,
@@ -6406,6 +6406,26 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-27 02:25",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 642,
+  "what": "皇海 spec_render 的簡體轉換依賴 opencc,而 opencc 只裝在專案 .venv(沒有 provisioning 腳本)",
+  "why": "換機/重灌會少這個套件;本檔已改成 fail-closed 會停下來(不會靜默寫繁體),但沒有東西會自動補回來。cn_convert.py 原本更慘——它依賴的是 scratchpad 的臨時 venv,那個目錄是會被清掉的",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-27 21:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 643,
+  "what": "皇海規格表(3,066 個工程數值/673 頁)仍未經 RD 簽核——不擋換站了,但規格表本身不可在未簽核狀態下上正式網域",
+  "why": "2026-08-27 加了 spec_render.py --strip:規格表可整批拿下來、料號頁其餘不動,簽核後一道指令放回去(往返逐位元組相同)⇒ 它不再是【換站】的硬閘。但【規格數值上正式網域】這件事的簽核義務完全沒變(客戶會照著設計 PCB)。覆核頁在預覽站 /spec-review(noindex),含 264 個留白待判斷欄位。上線若選擇先 --strip,要明確告知王董站上暫時沒有規格表",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-27 21:00",
   "closed": null,
   "note": ""
  }
