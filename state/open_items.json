@@ -6428,5 +6428,25 @@
   "opened": "2026-08-27 21:00",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 644,
+  "what": "皇海換站後裸網域與 www 兩邊都會回 200,沒有 301 正規化(只靠 canonical 收斂)",
+  "why": "新站每頁 canonical 都指 www,Google 會收斂,實務上可接受;但 301 更乾淨。要做需在 CF zone 加 Redirect Rule(Bulk Redirect/Ruleset),那是另一組權限與另一次測試,不塞進換站當天的路徑。上線後可補",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-27 21:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 645,
+  "what": "cutover.py 的關 1~5 只在假 CF 上驗過,從未對真的 Cloudflare 跑過",
+  "why": "zone 還 pending,關 0 就擋住 ⇒ 真實 API 的回傳形狀(欄位名/狀態字串,例如 Pages domain 的 status 到底是不是 'active')只有那天才驗得到。11 項假貨測試證明的是邏輯對,不是形狀對。切換當天要先跑檢查模式看關 2/3 印出來的實際字串,再決定 --go",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-27 21:15",
+  "closed": null,
+  "note": ""
  }
 ]
