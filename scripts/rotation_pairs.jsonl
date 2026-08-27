@@ -70,3 +70,6 @@
 {"date": "2026-08-26", "market": "us", "from": "GOOGL", "to": "SMCI", "from_px": 346.96, "to_px": 38.46}
 {"date": "2026-08-27", "market": "tw", "from": "2327", "to": "3443", "from_px": 537.0, "to_px": 6125.0}
 {"date": "2026-08-27", "market": "tw", "from": "2308", "to": "3443", "from_px": 1750.0, "to_px": 6125.0}
+{"date": "2026-08-27", "market": "us", "from": "SOXX", "to": "LITE", "from_px": 515.4, "to_px": 939.03}
+{"date": "2026-08-27", "market": "us", "from": "NVDA", "to": "LITE", "from_px": 209.66, "to_px": 939.03}
+{"date": "2026-08-27", "market": "us", "from": "GOOGL", "to": "LITE", "from_px": 342.0, "to_px": 939.03}
