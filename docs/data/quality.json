@@ -112,11 +112,11 @@
     "date": "2026-08-28",
     "market": "tw",
     "start": "05:20:01",
-    "done": null,
-    "lateness_min": null,
-    "verdict": "incomplete",
+    "done": "05:58:11",
+    "lateness_min": -61.8,
+    "verdict": "on_time",
     "llm_tiers": {
-     "gemini": 1
+     "gemini": 39
     }
    }
   ]
@@ -142,5 +142,5 @@
   "guard_alert_tw": false,
   "guard_alert_us": false
  },
- "generated_utc": "2026-08-27T21:38:01Z"
+ "generated_utc": "2026-08-27T22:08:01Z"
 }
