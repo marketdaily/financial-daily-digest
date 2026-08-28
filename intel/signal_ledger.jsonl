@@ -896,3 +896,25 @@
 {"date": "2026-08-27", "code": "6418", "source": "leadflow", "level": "red", "signal": "詠昇(6418) 無消息近漲停+9.9%(量能8.9×,5日+12.6%),疑資訊先行資金|外資+投信近3日僅+119張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-08-27", "code": "8358", "source": "leadflow", "level": "yellow", "signal": "金居(8358) 無消息近漲停+9.9%(量能1.6×,5日+19.5%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-08-27", "code": "3219", "source": "leadflow", "level": "red", "signal": "倚強科(3219) 無消息近漲停+9.9%(量能5.5×,5日+20.9%),疑資訊先行資金|外資+投信近3日僅+185張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-28", "code": "2221", "source": "mops_news", "level": "red", "signal": "大甲(2221) 重訊[2026-08-27]:公告本公司發行國內第一次無擔保轉換公司債代收價款 及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-08-28", "code": "3209", "source": "sbl", "level": "yellow", "signal": "全科(3209):機構借券賣出5日增10.1%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-08-28", "code": "3219", "source": "margin", "level": "red", "signal": "倚強科(3219):券資比18.1%(相對高檔,看空押注集中,軋空風險留意)", "price_at_signal": null}
+{"date": "2026-08-28", "code": "3289", "source": "institutional", "level": "red", "signal": "宜特(3289):外資連 5 日買超(5日淨買 +379 張)", "price_at_signal": null}
+{"date": "2026-08-28", "code": "3533", "source": "institutional", "level": "yellow", "signal": "嘉澤(3533):法人 20 日淨賣超 -7,860 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-08-28", "code": "6534", "source": "institutional", "level": "red", "signal": "正瀚-創(6534):外資連 5 日賣超(5日淨賣 -44 張)", "price_at_signal": null}
+{"date": "2026-08-28", "code": "7740", "source": "sbl", "level": "yellow", "signal": "熙特爾-創(7740):機構借券賣出5日增10.1%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-08-28", "code": "8021", "source": "margin", "level": "yellow", "signal": "尖點(8021):融資5日暴增22.0%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-08-28", "code": "1312", "source": "tw_rank", "level": "red", "signal": "國喬(1312) 量能竄榜:今日量榜第3(近10日未進過top50,-1.1%,211,640張)", "price_at_signal": null}
+{"date": "2026-08-28", "code": "4198", "source": "tw_rank", "level": "yellow", "signal": "欣大健康(4198) 今日漲幅排行第3(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-08-28", "code": "4198", "source": "leadflow", "level": "red", "signal": "欣大健康(4198) 無消息近漲停+10.0%(量能6.4×,5日+7.4%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-28", "code": "8442", "source": "sbl", "level": "yellow", "signal": "威宏-KY(8442):機構借券賣出5日遽減-23.5%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-08-28", "code": "7835", "source": "leadflow", "level": "red", "signal": "永悅健康-創(7835) 無消息近漲停+10.0%(連2根,5日+23.0%),疑資訊先行資金|外資+投信近3日僅+4張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-28", "code": "3066", "source": "leadflow", "level": "red", "signal": "李洲(3066) 無消息近漲停+10.0%(量能5.2×,5日+16.0%),疑資訊先行資金|外資+投信近3日+721張", "price_at_signal": null}
+{"date": "2026-08-28", "code": "6584", "source": "leadflow", "level": "red", "signal": "南俊國際(6584) 無消息近漲停+10.0%(量能6.5×,5日+16.0%),疑資訊先行資金|外資+投信近3日僅+12張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-28", "code": "3664", "source": "leadflow", "level": "red", "signal": "安瑞-KY(3664) 無消息近漲停+10.0%(量能3.3×,5日+8.5%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-28", "code": "6179", "source": "leadflow", "level": "red", "signal": "亞通(6179) 無消息近漲停+9.9%(量能7.6×,5日+11.8%),疑資訊先行資金|外資+投信近3日+3921張", "price_at_signal": null}
+{"date": "2026-08-28", "code": "8431", "source": "leadflow", "level": "red", "signal": "匯鑽科(8431) 無消息近漲停+9.9%(量能7.2×,5日+11.8%),疑資訊先行資金|外資+投信近3日僅+27張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-28", "code": "4529", "source": "leadflow", "level": "red", "signal": "淳紳(4529) 無消息近漲停+9.9%(連2根,5日+17.4%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-28", "code": "6173", "source": "leadflow", "level": "red", "signal": "信昌電(6173) 無消息近漲停+9.9%(連2根,5日+12.7%),疑資訊先行資金|外資+投信近3日+2213張", "price_at_signal": null}
+{"date": "2026-08-28", "code": "6620", "source": "leadflow", "level": "red", "signal": "漢達(6620) 無消息近漲停+9.9%(量能3.2×,5日+12.7%),疑資訊先行資金|外資+投信近3日僅+82張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-28", "code": "4716", "source": "leadflow", "level": "red", "signal": "大立(4716) 無消息近漲停+9.7%(量能7.8×,5日+13.0%),疑資訊先行資金|外資+投信近3日+795張", "price_at_signal": null}
