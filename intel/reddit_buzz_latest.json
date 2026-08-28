@@ -1,29 +1,17 @@
 {
- "date": "2026-08-27",
+ "date": "2026-08-28",
  "mode": "rss",
  "by_code": {
   "MRVL": {
-   "note": "MRVL 今日 Reddit 提及 3 則(近21日均 0.1,z=2.9)|例:MRVL Q2'27",
+   "note": "MRVL 今日 Reddit 提及 3 則(近21日均 0.3,z=2.7)|例:MRVL put options: $14,896 profit.",
    "total": 3,
-   "baseline": 0.1,
-   "z": 2.86,
+   "baseline": 0.3,
+   "z": 2.71,
    "score": 0,
    "samples": [
-    "MRVL Q2'27",
-    "$450k RIDING ON MRVL",
-    "MRVL- How are we feeling pre earnings?"
-   ]
-  },
-  "NVDA": {
-   "note": "NVDA 今日 Reddit 提及 6 則(近21日均 0.7,z=5.3)|例:Just Buy NVDA at $12/share",
-   "total": 6,
-   "baseline": 0.7,
-   "z": 5.29,
-   "score": 0,
-   "samples": [
-    "Just Buy NVDA at $12/share",
-    "My NVDA tendies",
-    "$30,000 YOLO NVDA $225 strike 8/28 put - Be a Good Player, R"
+    "MRVL put options: $14,896 profit.",
+    "MRVL Just Reminded Everyone Why Earnings Calls Are a Casino",
+    "$MRVL CEO Says Custom Chip Revenue is Expected to More Than "
    ]
   }
  }
