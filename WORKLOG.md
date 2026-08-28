@@ -8297,3 +8297,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⚠️ **但那 17 項全是我自己寫的合成樣本**,零真實描述可校準(唯一抓得到的那件描述是「全新未拆/下標前請先詢問」,**根本沒有價格**)。登記 #648。
 - fx.py 雙源對帳(er-api 0.043579 / Yahoo 0.0436,分歧 0.05%),>2% 或快取 >48h 即停整批不出價;×1.2 後無條件進位到 `$XXX.99`。
 - 前台展示站尚未開工(#649),要走 website-design-team SOP。
+
+## 2026-08-28 15:xx 主視窗:新開案 kc-mailpilot(皇海客戶郵件助理:Gmail 讀信→分類→分區報價→同語言草稿)
+- Delvin:老闆(皇海)客戶多語(英/中/日/東南亞),報價都他親自回,要一套接他 Gmail 幫他回信的系統;
+  追加「分區策略」:中國會殺價、日本龜毛、美國報價要高。
+- 新 repo `~/kc-mailpilot`(依規則獨立產品不塞本 repo)。路線=IMAP+App Password(GCP 專案免費層已被收回、
+  Gmail MCP 只接得到 Delvin 自己的信箱),草稿 APPEND 進老闆草稿匣掛原串,**第一版絕不自動寄**。
+- 事實層:皇海站 248 料號 JSON-LD 建目錄(三語規格+圖面PDF);價目表 config/pricing.xlsx(老闆填);
+  regions.yaml 老闆可改(multiplier/floor/tiers/playbook/avoid)。守衛:草稿裡每個數字必須來自事實層或客戶原信。
+- 驗證資料=舊站後台匯出的 35 聯絡單+4 詢問車(含個資,在 ~/kingconn/migration/,不進 repo)。
