@@ -6216,8 +6216,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-08-26 17:18",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-28 14:58",
+  "note": "已查證:登記代表人=王國樑(經濟部商業登記/台灣公司網/LawPlayer/mygov 多來源一致,統編 80282023)。我們原記的王國良是錯的,kingconn 的 offsite/profile.md 與 CUTOVER.md 已更正。⚠️ 仍建議送 Seednet 件前當面跟王董對一次身分證上的字"
  },
  {
   "id": 623,
@@ -6486,6 +6486,56 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-27 22:03",
+  "closed": "2026-08-27 23:33",
+  "note": "展示站已上線 northside-collectibles.pages.dev,63件真實商品/28件有CAD價"
+ },
+ {
+  "id": 650,
+  "what": "collectibles-ca:品牌名未定(現為佔位符 NORTHSIDE COLLECTIBLES)",
+  "why": "Delvin 還沒給店名,全站 wordmark/footer/title 都要跟著改",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-27 23:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 651,
+  "what": "collectibles-ca:蝦皮只抓到65/1023件,翻頁觸發captcha",
+  "why": "間隔4.5分鐘翻第2頁仍被判crawler_item;下一輪改走分類tab/站內搜尋繞開翻頁,尚未實作驗證",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-27 23:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 652,
+  "what": "collectibles-ca:抓取覆蓋率僅 187/1023,關鍵字路徑剛修好未驗證",
+  "why": "61 個關鍵字查詢用錯網址全貢獻 0(靜默無紅燈);已改用 /search?keyword=X&shop=<id> 並補 shopid 過濾,但尚未實跑驗證",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-28 02:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 653,
+  "what": "collectibles-ca:圖片 27.7MB 進 CF Pages,尚未驗證部署上限與載入效能",
+  "why": "255 張自家 host 圖,單次 deploy 上傳量大增,還沒量過首頁 LCP 與行動網路載入",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-28 02:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 654,
+  "what": "皇海 Seednet 密碼取回:表單版本與能否改 Email 送件,尚未向客服確認",
+  "why": "流程是從 rs.seed.net.tw/changeword.htm 的頁面文字讀出來的(該頁看起來有些年份),傳真號碼 02-2659-9789 與必附文件(設立登記表+負責人雙證件)都照抄自該頁,但沒有真的打 02-7715-1611 確認現行版本;也還沒問能不能改用 rs@seed.net.tw 寄掃描件免傳真——那是最可能省掉一天的一句話。這通電話不需身分驗證,我方可代打,等 Delvin 決定誰打",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-28 14:58",
   "closed": null,
   "note": ""
  }
