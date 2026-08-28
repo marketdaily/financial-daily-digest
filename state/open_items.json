@@ -6538,5 +6538,45 @@
   "opened": "2026-08-28 14:58",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 655,
+  "what": "kc-mailpilot 尚未接老闆真實 Gmail(需老闆產 App Password 填 ~/kc-mailpilot/.env),IMAP 讀信/放草稿路徑只有單元測試沒在真信箱跑過",
+  "why": "老闆端憑證未取得",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-28 15:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 656,
+  "what": "kc-mailpilot 價目表 config/pricing.xlsx 只有 2 個示範料號、regions.yaml 系數/底線是示意預設,老闆未定稿前不可上線",
+  "why": "等老闆給價目表與各區系數",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-28 15:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 657,
+  "what": "kc-mailpilot 尚未進 winrig cron(上線後每 15 分 run --days 1 + logs/ok 戳記),目前只在 dry 回放驗過",
+  "why": "前置條件:老闆憑證與價目表",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-28 15:08",
+  "closed": "2026-08-28 16:22",
+  "note": "runner 已寫好 ~/kc-mailpilot/scripts/cron_runner.sh(走 cron_run_and_alert,缺憑證 exit 2 不假活),等 #655 憑證到位後裝 crontab 即可;改由 #655 涵蓋"
+ },
+ {
+  "id": 658,
+  "what": "kc-mailpilot:老闆憑證到位後要做四步—填 .env → touch .DRY 跑首班 --dry 看草稿 → 拿掉 .DRY → 裝 crontab */15;開通說明頁 https://claude.ai/code/artifact/8fc7c802-de0e-430c-8622-7fa21b65b128 尚未給老闆看",
+  "why": "等老闆三樣東西(#655/#656)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-28 16:22",
+  "closed": null,
+  "note": ""
  }
 ]

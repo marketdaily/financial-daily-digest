@@ -8306,3 +8306,5 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 事實層:皇海站 248 料號 JSON-LD 建目錄(三語規格+圖面PDF);價目表 config/pricing.xlsx(老闆填);
   regions.yaml 老闆可改(multiplier/floor/tiers/playbook/avoid)。守衛:草稿裡每個數字必須來自事實層或客戶原信。
 - 驗證資料=舊站後台匯出的 35 聯絡單+4 詢問車(含個資,在 ~/kingconn/migration/,不進 repo)。
+- (續 kc-mailpilot)Delvin「finish everything else」:cron runner 寫好未裝(走 lib_cron_runner,缺憑證 exit 2);
+  老闆開通說明頁 artifact(App Password 三步/價目表六欄/分區係數表)。皇海站三語 Overview 補齊+deploy preview,見 ~/kingconn/WORKLOG.md。
