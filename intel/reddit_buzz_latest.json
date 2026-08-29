@@ -1,18 +1,5 @@
 {
- "date": "2026-08-28",
+ "date": "2026-08-29",
  "mode": "rss",
- "by_code": {
-  "MRVL": {
-   "note": "MRVL 今日 Reddit 提及 3 則(近21日均 0.3,z=2.7)|例:MRVL put options: $14,896 profit.",
-   "total": 3,
-   "baseline": 0.3,
-   "z": 2.71,
-   "score": 0,
-   "samples": [
-    "MRVL put options: $14,896 profit.",
-    "MRVL Just Reminded Everyone Why Earnings Calls Are a Casino",
-    "$MRVL CEO Says Custom Chip Revenue is Expected to More Than "
-   ]
-  }
- }
+ "by_code": {}
 }
