@@ -340,3 +340,34 @@
 - **hook = 產出物本身**:日報/訊號卡內容片開頭直接放成品畫面,不要先講「我們有 AI 日報」
 - **⚠️ 我們不能學的**:「免費無限」把付費節點/雲端/付費軟體藏在畫面裡——法務部紅線;我們講免費就要整條路徑真的免費(這正好是 MarketDaily 全站免費的差異化)
 - **winrig 5080 = 我們自己的「算力自由」素材**:本地 SDXL/Kronos/Ollama 已在跑,可拍同款「Mac vs winrig」對照卡,但數字要自己實測、標型號
+
+## O. ⭐ 名人語錄+框架圖型觀點片 Reel 拆解(@heystevetan,2026-08-29 video-watcher 實看)
+
+> 源:https://www.instagram.com/reel/DcgYKgmD10z/(2026-08-26 發,1,135 讚/12 留言,留言:讚比 ≈**1.06%**——無留言閘門只有 FOLLOW,對照 J 70%/N 221%/L 2.9%)
+> caption:比口播嚴謹的長文(把「tuning apparatus」明列成 data/evaluations/workflows/domain expertise/feedback loops;口播的「唯一沒擠爆」在 caption 軟化成「not necessarily another wrapper」)+ 20 個方括號 SEO 關鍵字尾巴,零 hashtag、零 CTA 獎品。
+> 內容:77 秒英文口播,整句燒字(白字一般/黃色大字=重點詞 BILLIONAIRE/AUTOMATION/NOT A GOOD moat/MEDICINE/ACCUMULATED),Sam Altman Greylock 對談原聲 6 秒、黑底金線三層金字塔動畫貫穿全片、Claude/Tuned 機器人玩具道具、「Fable/Opus/Sonnet/Haiku」白紙、Thinking Machines 官網+CNBC 截圖。
+> 完整拆解與「我們能做什麼」三條事業線 → `research/2026-08-29_ai_middle_layer_tuning_apparatus.md`
+
+### 影片結構(timeline beats,frames+Groq whisper 雙流實讀)
+1. **0–3s 權威 hook**:Sam 戴白墨鏡對 Bloomberg 麥克風 B-roll +「this BILLIONAIRE just told you how to become rich, and it's actually solid advice」——名字不說、只說 billionaire,讓你多看兩秒認人
+2. **3–9s 原聲證據**:Greylock 講台(背板可讀 greylock,Reid Hoffman 同台)Sam 原聲「a whole new set of startups that take an existing very large model of the future and tune it」→ 本人小視窗「I'll explain」接手
+3. **10–20s 框架圖**:三層金字塔,底層放 ChatGPT+Claude logo、頂層放兩個 app icon、**中間層全片留白不放品牌**——留白本身就是論點(「這裡還沒有人」)
+4. **21–34s 底層/頂層各給一段 B-roll**:自動化工具 UI(Instructions/Runs: Scheduled·Manual·API·Webhook)、Claude Research 對話(影片模型排名)、金字塔頂層 icon 拉線接 API;口播「wrapper 用 API 把特定任務做得比通用模型好一點」
+5. **34–40s 轉折**:黃字「NOT A GOOD moat」+ 白紙「Fable / Opus / Sonnet / Haiku」+ 紅方塊吃掉黑圓動畫 =「下一代一出就吃掉你的 wrapper」——用現役模型名當時間軸,觀眾自己補完「還會再來」
+6. **40–62s 主論點**:紅色「Claude」機器人 → 藍色「Tuned」機器人;MEDICINE 黃字 + 交易室 B-roll(醫療/房地產/資產管理);52–56s 金句「your asset was never the tuned model, it is the tuning apparatus that you accumulated」;同一張白紙 58s 再用一次表達「更強底層=更強基底」
+7. **62–68s 社會證明**:Thinking Machines 官網(「Inkling: Our Open-Weights Models NEW」)+ CNBC 2025-07-15「raises $2 billion」高亮
+8. **68–74s 收束**:金字塔全景「唯一還沒擠爆的空間/那個黃金機會」→ 換書桌場景講「so if you're LOOKING」
+9. **74–77s CTA**:黃色 FOLLOW 按鈕動畫,無閘門詞
+
+### 為什麼有效(可搬的骨架)
+- **⭐⭐ 「權威一句話 → 我來翻譯」結構**:名人原聲只用 6 秒當證據,其餘 70 秒是創作者的框架;觀眾記住的是金字塔不是 Sam。可搬:任何大佬語錄都能包成「他說了 X,我畫給你看 X 長什麼樣」
+- **⭐ 框架圖留白當論點**:中間層不放 logo,視覺上就是「空位」;比口述「沒人做」強
+- **⭐ 用現役產品名當「時間會一直來」的證據**:「Fable/Opus/Sonnet/Haiku」一張白紙、零解說,觀眾自己腦補「下一代」;同道具正反兩用(先當威脅、後當紅利)
+- **黃字只給名詞**(BILLIONAIRE/AUTOMATION/MEDICINE/ACCUMULATED):沒聲音也能讀出論點骨架
+- **(honest-extraction 註)** ①Sam 那段是 **2022-09-13** Greylock「AI for the Next Era」講的,「just told you」是四年前的話;原句下一句「which is **not just fine tuning**, all of the things you can do」剛好推翻 reel 的窄化 ②Thinking Machines 同時做底層(Inkling)與中間層(Tinker 微調 API),$50B 輪 2026-01 破局未募到,拿它當「純中間層被驗證」只對一半 ③「唯一沒擠爆」是意見:微調基礎設施很擠,沒擠的是垂直領域的資料+評測+回饋迴路 ④頂層兩個 icon 與自動化工具未辨識(gap)
+
+### 我們自己的搬法
+- **⭐ 「金字塔/分層圖 + 中間留白」可直接當 MarketDaily 世界新聞線的框架卡**(例:「AI 供應鏈三層,台灣在哪一層」)——一張圖撐 60 秒
+- **名人語錄一律回原文查日期與下一句**再引用(法務部+誠實線):我們的版本可以反過來做「大家都在轉這句,其實他 2022 就說了,下一句更重要」——拆穿型內容比轉述型更有記憶點
+- **「Fable/Opus/Sonnet/Haiku」白紙手法**:我們講「模型一直換、我們的評測不換」時可用同款道具
+- 這支證明**觀點片不靠閘門也有 1,135 讚**,但留言只 12——要互動就得有閘門(對照 N 段)
