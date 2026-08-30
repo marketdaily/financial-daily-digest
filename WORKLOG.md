@@ -8325,3 +8325,9 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - branch ours:CJK display-width title/meta 閾值、/cdn-cgi/ 連結跳過、CJK 字數(對方)、audit-cli.ts / kw-cli.ts。付費實測共約 $0.07。詳 ~/oss/ig9/open-seo/OURS.md。
 
 ## 2026-08-29 21:5x i-have-adhd 接手視窗(PID 1706285):原 claude -p(PID 1687069)沒死,21:57 已 commit 7e5ee8f;兩窗撞同一批檔。我方貢獻=adhd_smoke.py prompt 改 stdin(argv 遇 `---` 開頭 `unknown option`,已重現)+契約測試+.gitignore .pytest_cache+skill SKILL.md/LESSONS.md 首版;peer 以我版為底合併其 smoke 實證。等它第二次 commit 再驗,不搶寫。CATALOG/GOVERNANCE 留主視窗。
+
+### 08-30 進度(Mac 視窗接手)
+- **已落地並串路由層四處(5/9)**:i-have-adhd / open-seo / book-to-skill / open-notebook / no-ai-slop。四處=frontmatter description + CATALOG.md + GOVERNANCE.md 任務→唯一路徑 + CLAUDE.md 分類速查(依 08-23 親令「你自己要知道什麼時候要用」)。7 支 description 全過合規自測(雙引號/YAML 可解析/60-350 字/含觸發詞/含分流)。
+- **兩個事故**:①winrig Claude 週額度 08-29 深夜用完(08-30 10:00 重置)⇒ 改派 Mac 端 subagent 走 winrig shell 接手,不等重置。②winrig MCP server 被 6 個並發 session 打掛(`ASGI callable returned without completing response` ×17,systemd NRestarts=2),**client 端 MCP 工具不會自己恢復** ⇒ 改走 SSH 備援腿 `ssh winrig 'wsl -d Ubuntu -- bash -lc "<base64>"`(橋接腳本 /tmp/wr),已把通道交給 6 個 agent 續作。
+- **⭐ 順手查獲記憶三處反轉**(`project_winrig_remote_mcp` 已更正):OAuth 早被停用(env key 帶 `_DISABLED`)⇒ 對的 URL 從 `/mcp` 反轉回 `/qMfJ.../mcp`;自啟其實**是** systemd(兩個 unit enabled)不是 WSL boot command;新增並發 crash 坑與 SSH 備援腿。教訓:憑證/路徑類記憶用之前一定要先實打。
+- **open items**:#660 日報卡片 prompt 在量產 AI 腔(111 份日報「顯示…信心」39 次、「將是關注焦點」23 次,真修法要動 main.py prompt+拿 ai_slop_lint --lines 當迴歸,屬 heavy 需獨立任務)、#661 IG9 剩四支未落地。
