@@ -8308,3 +8308,20 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 驗證資料=舊站後台匯出的 35 聯絡單+4 詢問車(含個資,在 ~/kingconn/migration/,不進 repo)。
 - (續 kc-mailpilot)Delvin「finish everything else」:cron runner 寫好未裝(走 lib_cron_runner,缺憑證 exit 2);
   老闆開通說明頁 artifact(App Password 三步/價目表六欄/分區係數表)。皇海站三語 Overview 補齊+deploy preview,見 ~/kingconn/WORKLOG.md。
+
+## 2026-08-29 IG evolving.ai「9 個開源取代付費軟體」→ 全 clone 進 ~/oss/ig9 + 逐一做成 skill(Mac 視窗下令,winrig 執行)
+- 9 repo:open-notebook / no-ai-slop / i-have-adhd / open-seo / book-to-skill / OmniRoute / ai-job-search / strix / ComfyUI(ComfyUI 已在 C:\AI 跑,不重裝,只做 API 積木)。
+- 9 個 run_claude 平行學+寫 skill,主視窗串 CATALOG/GOVERNANCE/CLAUDE.md 三處。
+
+## 2026-08-29 21:48 i-have-adhd 子視窗:照 ~/oss/ig9/job_i-have-adhd.md 學→對帳→smoke→branch ours 改進→寫 delvin-tools skill i-have-adhd→OURS.md(不碰本 repo git)
+
+## 2026-08-29 22:xx 子視窗:no-ai-slop(IG9 第2支)學→對帳→smoke→branch ours→skill
+- repo=petergyang/no-ai-slop(MIT)純 prompt skill(SKILL.md+eval.md,零程式碼掃描器);對帳 ai_slop_lint(確定性密度偵測器)=互補非重疊。改動在 ~/oss/ig9/no-ai-slop(branch ours)+ ~/autonomous/capabilities/ai_slop_lint(補 pattern+測試)+ skills/no-ai-slop;不碰本 repo git。
+
+## 2026-08-29 22:xx 子視窗:ai-job-search(IG9 第7支)學→對帳→smoke→branch ours(Delvin 個人版+台灣市場適配)→skill ai-job-search→OURS.md(不碰本 repo git)
+
+## 2026-08-29 21:xx open-seo(IG9 批次,視窗 delvin-agent-c1 + open-seo-0f 兩份同任務並跑,已分工)
+- 學+對帳+smoke:資料層=DataForSEO(CREW 既有帳號 $43.8 餘額),site audit 引擎純 Node 可脫 CF 跑;MCP 46 工具 local_noauth 實測通過(create_project TW/zh-TW→run_site_audit→get_audit_issues 全鏈)。
+- branch ours:CJK display-width title/meta 閾值、/cdn-cgi/ 連結跳過、CJK 字數(對方)、audit-cli.ts / kw-cli.ts。付費實測共約 $0.07。詳 ~/oss/ig9/open-seo/OURS.md。
+
+## 2026-08-29 21:5x i-have-adhd 接手視窗(PID 1706285):原 claude -p(PID 1687069)沒死,21:57 已 commit 7e5ee8f;兩窗撞同一批檔。我方貢獻=adhd_smoke.py prompt 改 stdin(argv 遇 `---` 開頭 `unknown option`,已重現)+契約測試+.gitignore .pytest_cache+skill SKILL.md/LESSONS.md 首版;peer 以我版為底合併其 smoke 實證。等它第二次 commit 再驗,不搶寫。CATALOG/GOVERNANCE 留主視窗。
