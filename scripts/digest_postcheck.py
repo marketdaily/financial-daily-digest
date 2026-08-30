@@ -420,6 +420,42 @@ def format_report(date, edition, problems, notices):
     return "\n".join(out)
 
 
+SLOP_ALARM_PER_DIGEST = 4      # 單份命中幾次算「災難」→ 推播。106 份歷史存檔只有 3 份會觸發,
+                               # 而修法前最近 14 份平均 1.50 次/份、08-29 那份 7 次 ⇒ 門檻夠寬不是噪音機。
+
+
+def slop_check(html):
+    """寄後複檢:實際落地的公版裡還有幾句萬用樣板(open item #660,2026-08-30)。
+
+    為什麼在這裡而不是另開 cron:寄後複檢是「對實際落地的產物再驗一次」的既有唯一路徑,
+    夜巡 selftest(04:50)只跑到隔天才輪到,對 07:00 寄出的日報等於延遲 21 小時。
+
+    pattern 取自 analyzer._SLOP_ALL(單一真源;analyzer 那份與 ai_slop_lint ZH_STRUCT 的
+    逐字對帳由 scripts/test_digest_slop_prompt.py 擋住漂移)。生產熱路徑不 import ~/autonomous。
+
+    回傳 (problems, notices):
+      ≥SLOP_ALARM_PER_DIGEST 次 → problems(rc=1 → 推播 admin,代表後製層失效或退化)
+      1..SLOP_ALARM_PER_DIGEST-1 次 → notices(只記在 log,不吵人)
+    ⚠️ import 失敗一律回空:這是品質註記,不該讓寄後複檢因為它自己壞掉而誤報整班失分。
+    """
+    try:
+        sys.path.insert(0, str(REPO))
+        from analyzer import _SLOP_ALL
+    except Exception as e:                                   # pragma: no cover
+        return [], [f"[slop] 無法載入 analyzer._SLOP_ALL({e}) — 本班未做樣板句檢查"]
+    text = re.sub(r"<[^>]+>", " ", html)
+    hits = []
+    for pat in _SLOP_ALL:
+        hits.extend(m.group(0) for m in re.finditer(pat, text))
+    if not hits:
+        return [], []
+    sample = "、".join(f"「{h}」" for h in hits[:3])
+    if len(hits) >= SLOP_ALARM_PER_DIGEST:
+        return ([f"[slop] 公版裡有 {len(hits)} 句萬用樣板(門檻 {SLOP_ALARM_PER_DIGEST}):{sample}"
+                 f" — 後製層 _pp_despam_filler 可能失效或被繞過"], [])
+    return [], [f"[slop] 樣板句 {len(hits)} 句(未達 {SLOP_ALARM_PER_DIGEST} 的推播門檻):{sample}"]
+
+
 def main():
     edition, date, dry = parse_args(sys.argv[1:])
     now = _now_tw()
@@ -540,6 +576,11 @@ def main():
 
     # ── 7. 個人語音快報:manifest 每人一支 pa mp3 都要上線+個人頁可播 ──
     problems.extend(personal_audio_check(date, edition))
+
+    # ── 8. 萬用樣板句(AI 腔)——修法 2026-08-30 上線,這是它的首班與長期迴歸閘 ──
+    slop_problems, slop_notices = slop_check(html)
+    problems.extend(slop_problems)
+    notices.extend(slop_notices)
 
     # 用戶看得到的失分排前面,LLM 鏈這種「內部領先指標」排最後——一則推播裡真問題不准被埋
     # (2026-07-31:個人語音 15/15 掛掉跟慢路徑常態訊號混在同一則,人眼只會看到第一行)。

@@ -202,6 +202,42 @@ try:
 except Exception as e:
     check(f"_pp_despam_filler 區段可執行(實際:{type(e).__name__}: {e})", False)
 
+# ── E. 寄後複檢接線(open #660 首班驗收,2026-08-30) ───────────────────────────
+# 為什麼要接:夜巡 selftest 04:50 才跑,對 07:00 寄出的日報等於延遲 21 小時。寄後複檢
+# (07:45-09:15 / 21:05-23:15)是「對實際落地的產物再驗一次」的既有唯一路徑,不另開 cron。
+# ⚠️ 本檔是【模組層直接跑 check()】的風格,沒有測試函式收集器 —— 寫成 def test_xxx() 會
+#    定義了但從沒被呼叫(2026-08-30 首版就這樣寫,37/37 全過而新測試一條都沒跑)。
+from digest_postcheck import slop_check, SLOP_ALARM_PER_DIGEST
+from analyzer import _pp_despam_filler as _DESPAM
+import digest_postcheck as _DP
+
+_PC_SRC = Path(_DP.__file__).read_text(encoding="utf-8")
+
+check("推播門檻是 4 次/份(改小=噪音機,改大=漏災難)", SLOP_ALARM_PER_DIGEST == 4)
+
+_bad = "<p>" + "".join(f"<li>台積電{i}將是關注焦點。</li>" for i in range(5)) + "</p>"
+_pb, _nb = slop_check(_bad)
+check("5 句樣板 → problems(會推播 admin)", len(_pb) == 1 and not _nb)
+check("問題訊息帶次數與樣本句", bool(_pb) and "5 句" in _pb[0] and "將是關注焦點" in _pb[0])
+
+_pm, _nm = slop_check("<p><li>台積電將是關注焦點。</li><li>今日收 2420 元。</li></p>")
+check("1 句樣板 → notices(只記 log,不吵人)", not _pm and len(_nm) == 1)
+
+_pc, _nc = slop_check("<p>台積電收 NT$2,420，站上 MA20；跌破 NT$2,350 先減碼。</p>")
+check("乾淨內容零命中(誤告面)", not _pc and not _nc)
+
+_pf, _ = slop_check(_DESPAM(_bad))
+check("過後製層後不再推播(兩層不打架)", not _pf)
+
+check("import 失敗回 notices 不回 problems(品質註記≠交付失敗)",
+      'return [], [f"[slop] 無法載入' in _PC_SRC)
+check("main 真的呼叫 slop_check(不是定義了沒接)",
+      "slop_problems, slop_notices = slop_check(html)" in _PC_SRC)
+check("排在 chain_problems 之前(真問題不被內部指標埋掉)",
+      _PC_SRC.index("slop_problems, slop_notices") < _PC_SRC.index("problems.extend(chain_problems)"))
+
+
+
 
 bad = [n for n, ok in R if not ok]
 print(f"\n{len(R) - len(bad)}/{len(R)} 過")
