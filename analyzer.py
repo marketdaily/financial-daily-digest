@@ -2259,6 +2259,58 @@ def _pp_anchor_vague_reasons(html: str, data: dict) -> str:
     )
 
 
+
+# 萬用樣板句的三條「刪掉那句就會變好」的結構式(open item #660)。
+# ⚠️ 這是 ai_slop_lint ZH_STRUCT 同三條 pattern 的第二份拷貝——生產日報不可在寄送熱路徑上
+# 依賴 ~/autonomous 的積木(跨 repo、可能不在),所以這裡自己留一份;漂移由
+# scripts/test_digest_slop_prompt.py 對著積木原文逐字比對擋住(兩份不一致 = 紅)。
+_SLOP_FILLER_TAIL = r"將是(?:市場)?(?:關注焦點|關注重點|關鍵|重要指標|觀察重點|一大看點)"
+_SLOP_CONFIDENCE = (
+    r"(?:顯示|反映|凸顯|彰顯|突顯)(?:出|了)?(?:市場|外資|投資人|公司|其|該公司|管理層)?"
+    r"[^，。；\n]{0,10}(?:信心|決心|承諾|重視|韌性)"
+)
+_SLOP_PUFF = r"有助於(?:提升|強化)(?:其|公司)?[^，。；\n]{0,8}(?:形象|潛力|競爭力|地位)"
+_SLOP_ALL = (_SLOP_FILLER_TAIL, _SLOP_CONFIDENCE, _SLOP_PUFF)
+
+# 版面標籤前綴(「💡 為什麼重要：」「📊 影響分析：」…):砍句子時必須原樣保留,
+# 否則整段的標籤會跟著第一句一起被吃掉(2026-08-30 首版真的吃掉了)。
+_LABEL_PREFIX = re.compile(r"^(\s*(?:[^\w\s]{1,3}\s*)?[\u4e00-\u9fff]{2,8}[：:]\s*)")
+
+
+def _pp_despam_filler(html: str) -> str:
+    """萬用樣板句確定性清除層(open item #660,2026-08-30)。
+
+    為什麼不能只靠 prompt:加了 _ANTI_SLOP_BLOCK 之後做 A/B(同一支週末 prompt、同一份輸入、
+    gemini-2.5-flash 各 3 輪),「將是關鍵 / 將是觀察重點」**三輪全中**——負面清單擋得住
+    原句、擋不住句型變體。本專案對「模型就是不聽」的既有解法就是確定性後製層
+    (_pp_fix_speculative_causality / _pp_clear_placeholders 同款),這裡照做。
+
+    兩種動作,都不發明內容:
+      ① 整句只是萬用結論 → 刪掉那一句(同段還有別的句子、且刪完剩 ≥8 字時才刪)
+      ② 刪了會把整段清空 → 退而改寫成不裝分析的短句(「重點看 X」/ 砍掉「顯示…信心」尾巴)
+    只在 tag 之間的可見文字上動,不碰任何屬性/URL/class;版面標籤前綴原樣保留。
+    """
+    import re as _re
+
+    def _fix_run(run: str) -> str:
+        if not run.strip():
+            return run
+        m = _LABEL_PREFIX.match(run)
+        head, body = (m.group(1), run[m.end():]) if m else ("", run)
+        parts = _re.findall(r"[^。；!?！？]*[。；!?！？]|[^。；!?！？]+$", body)
+        if len(parts) > 1:
+            kept = [x for x in parts if not any(_re.search(pat, x) for pat in _SLOP_ALL)]
+            if kept and len("".join(kept).strip()) >= 8:
+                return head + "".join(kept)
+        # 退路 ①:「A，顯示…信心。」→ 砍掉尾巴子句,保留前面的事實
+        out = _re.sub(r"[,，](?:並|也|亦|這|此)?" + _SLOP_CONFIDENCE + r"[^。；\n]{0,20}", "", body)
+        # 退路 ②:「A 將是關注焦點」→「重點看 A」(不裝分析,也不編內容)
+        out = _re.sub(r"([^，。；：、,\n]{2,30})" + _SLOP_FILLER_TAIL, r"重點看\1", out)
+        return head + out if out.strip() else run
+
+    return _re.sub(r">([^<>]+)<", lambda m: ">" + _fix_run(m.group(1)) + "<", html)
+
+
 def _pp_expand_us_tickers(html: str) -> str:
     """知名美股裸代號補公司名(2026-08-02,audit ticker_no_zh_name 08-01 AMD 實鍋)。
     ±12 字脈絡必須用「去 tag 後的純文字」看(與 digest_audit 同視角):卡片標頭的
@@ -2352,6 +2404,8 @@ def _postprocess_html(html: str, data: dict) -> str:
     # 必須在 _pp_markdown_bold 之前跑:markdown ** 轉成 <strong> 後,regex 的 [^<] 會被
     # tag 截斷導致漏網(2026-07-07 獨立驗證抓到)。
     html = _pp_fix_speculative_causality(html)
+    # 同樣必須在 _pp_markdown_bold 之前:** → <strong> 之後 [^<] 會被 tag 截斷而漏網
+    html = _pp_despam_filler(html)
     html = _pp_markdown_bold(html)
     html = _pp_fix_bare_wait(html)
     return html
@@ -3165,6 +3219,26 @@ _PICKS_PROMPT_NOTE = (
 )
 
 
+# 反樣板句鐵則(三個報告變體 + signal-card 共用單一真源)。
+# 2026-08-30 open item #660:ai_slop_lint 對 106 份存檔日報實測,「顯示…信心」命中 39 次/31 份、
+# 「將是關注焦點」23 次/17 份(08-29 那份六則 catalysts 清一色這兩句收尾)。根因是三支 prompt 的
+# 【寫作風格】只規範了「數字要具體」,沒有任何一條擋萬用結論句 → 模型每天用同一組句子收尾。
+# 只寫負面清單會讓模型改用別的樣板或無話可說,所以負面清單必須配「換一檔就不成立」的正面規範。
+# 迴歸:scripts/digest_slop_watch.py(呼叫 ~/autonomous/capabilities/ai_slop_lint,不另造掃描器)。
+_ANTI_SLOP_BLOCK = """
+【🚫 禁用樣板句(違反=該句作廢重寫)】以下句式已被實測證明是本日報的模板腔,一律不得出現:
+- 「顯示/反映/凸顯/彰顯 ⋯⋯ 信心 / 決心 / 重視 / 韌性」(例:「顯示市場對台股的信心」)——換到任何一檔、任何一天都成立=等於沒說。改寫成具體後果:錢往哪流、價格站上或跌破哪個位置、下一個要看的數字是什麼。
+- 「⋯⋯ 將是關注焦點 / 關注重點 / 觀察重點 / 將是關鍵 / 一大看點」——每家公司都能套的填充句。改成這家公司這一次獨有的看點,並附可驗證門檻(例:「Azure 年增率掉到 28% 以下就是警訊」)。
+- 「不僅⋯⋯而且/更是」「整體而言」「總結來說」「值得注意的是」「不可或缺」「有助於提升其形象/競爭力/潛力」「解鎖」——空話,直接刪掉或換成事實。
+
+【✅ 正面規範:每一句都要「換一檔就不成立」】
+- 每則 catalyst、每段「為什麼重要」、每張卡的理由,都必須含至少一個具體數字或門檻(市場預期值、價位、百分比、日期);寫不出數字就不要寫那一則。
+- 同一份報告內,各則 catalyst / 各張卡的收尾句型必須彼此不同,禁止 N 則共用同一個句型收尾。
+- 判斷句寫成「A 會造成 B」而不是「A 顯示了 C 的信心」:講會發生什麼、對持股的影響、以及要看哪個數字才算確認。
+- 寧可少寫一則、寧可句子短,也不要用萬用句填版面。
+"""
+
+
 def _depth_directive(depth: str) -> str:
     """日報深度客製(全體用戶可選)注入 prompt 的指令。simple=精簡 / deep=深入 / standard=不加。"""
     if depth == "simple":
@@ -3244,7 +3318,8 @@ def _signal_card_format_rules(mkt_status: dict, regime: dict = None, macro_event
 - ‼️ **進場必須有站穩確認(任何市場狀態都適用)**:買進條件一律寫「回測 $X 不破、收盤收復 $Y 再分批接」這種**確認式條件**,嚴禁「跌到 $X 就接」「回到買區即買進」— 操作模擬實測:照「跌入買區就接」執行,77 筆掃停損 vs 2 筆達標(期望值 -4.1%/筆),跌勢中價格進入買區正是刀還在掉的時候
 - ‼️ **同質性禁令**:若整批標的多數同向漲跌,不可每支複製同一套「跌到 20 日低 → 低接買進反彈 MA20」模板;逐支看趨勢位置(站上/跌破 MA20)、動能與消息差異,verdict 與 reason 必須有真實差異
 - ‼️ **趨勢結構鐵則(量化 prior,優先於你自己的方向判斷)**:技術行標「結構:空頭」的個股**禁止 buy verdict**——只能 wait/hold + 站回 MA20 之上的條件單(系統會強制改寫違規卡,別浪費字);標「結構:多頭」的不寫「跌到 X 低接」,改順勢條件(回測 MA20 不破續抱、突破前高加碼)。方向交給結構,你負責講清楚理由、風險與條件價位
-- 信心欄位照 45-65 填即可,系統會用歷史戰績校準表覆寫成實測命中率,你的數字只是版面占位"""
+- 信心欄位照 45-65 填即可,系統會用歷史戰績校準表覆寫成實測命中率,你的數字只是版面占位
+{_ANTI_SLOP_BLOCK}"""
 
 
 def _vol_str(t: dict) -> str:
@@ -4541,6 +4616,7 @@ def _gr_build_prompt(date: str, all_holdings: list, has_holdings: bool,
 - 繁體中文
 - 內文提到個股：一律「中文名（代號）」——美股例如「輝達（NVDA）」，台股例如「台積電（2330）」「聯發科（2454）」；**不可只寫代號**，也不可只在第一次出現時寫名字之後全用代號。台股代號務必是正確的四位數（不確定就只寫公司名，寧可少寫也不要寫錯）
 {few_stocks_note}
+{_ANTI_SLOP_BLOCK}
 日期：{date}
 
 {watchlist_section}
@@ -4756,6 +4832,7 @@ def generate_weekend_report(data: dict, user_us_stocks: list = None, user_tw_sto
 - 用戶持倉:{', '.join(holdings) if has_holdings else '尚未設定持股,以大盤龍頭股為例'}
 - 內容要圍繞他的持股做本週復盤 + 下週展望
 - 台股一律用公司名稱(可附代號),不要只報數字
+{_ANTI_SLOP_BLOCK}
 
 {weekend_body}
 【日期】{date}(週六)
@@ -4923,6 +5000,7 @@ def generate_monday_report(data: dict, user_us_stocks: list = None, user_tw_stoc
 - 用戶持倉:{', '.join(holdings) if has_holdings else '尚未設定持股,以大盤龍頭股為例'}
 - {'內容圍繞他的持股做:週末新聞影響 + 今早 gap 方向 + 每支持股操作建議(純重點,省略大盤收盤回顧段與本週事件預告清單)' if _simple else '內容圍繞他的持股做:上週五表現 + 週末新聞影響 + 本週催化劑 + 操作建議'}
 - 台股一律用公司名稱(可附代號),不要只報數字
+{_ANTI_SLOP_BLOCK}
 
 【🚫 不要自己生持股操作卡】
 每檔持股的 signal-card(操作訊號卡)由系統另外分批生成並填入,**你不要輸出任何 <div class="signal-card"> 卡片**。
