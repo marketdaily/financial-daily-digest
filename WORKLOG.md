@@ -8339,3 +8339,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **⭐ 子代理查出前人假宣稱**:open-notebook 的繁中補丁實測沒生效、podcast 從沒成功(修掉上游真 bug);Yourator 九個搜尋參數全是假的(照轉發會做出「200 OK、JSON 合法、資料好看、完全沒在篩」的假工具)。
 - **基建副產品**:OOM 連坐防線從「只保護 init.scope」改成清單驅動(`scripts/wsl_oom_units.txt` 單一真源),納管 init.scope / winrig-remote-server / cron.service 三個 cgroup,正反對照都驗過。詳見 commit 087585f2。
 - **open items**:#661 已收;新登記 #662(ai-job-search 缺 LaTeX 產不出 PDF,待 Delvin 拍板裝 TinyTeX)、#663(OmniRoute node_modules 4.4G 未清 + HTTP 層從未實驗證);#660(日報 prompt 量產 AI 腔)、#659(i-have-adhd 未在真實 session 驗證)仍開著。
+
+### 08-30 收工補記:#659 推翻了「路由層已接好」這個結論
+- **舊 description 0/2 次被喚起**——skill 有安裝、slash command 也在,但**路由沒發動**。根因=description 前 100 字全在講「這是什麼」,觸發詞埋在 60% 處;**模型在載入 skill 前只看得到 description,看不到 SKILL.md 內文**。
+- ⚠️ **我自己的路由檢查是假判準**:用「description 字串含不含觸發詞」掃全庫得出「8/8 正確」,那只證明詞存在、不證明模型會叫它。複查後 IG9 其餘七支同款病(觸發詞埋在 34–52%,`open-seo` 開頭 55 字全是產品名與授權)。
+- **全部重寫成觸發條件前置(觸發詞@0%)並逐支真實驗證**(`claude -p --output-format stream-json --strict-mcp-config`,判準=stream 有無 Skill tool_use):8/8 真實喚起。過程還順帶看到 genai-prompt-pro 強制前置層與 i-have-adhd 規則 0 在真 session 生效。
+- **判準教訓**:驗「能力接好了沒」,靜態比對只能證明東西在那裡;要證明**它會被用到**,必須跑真實 session 看工具呼叫。
+- 另補基建守衛 `skill_health`(起因:security-team SKILL.md 的非法 UTF-8 躺 19 天,會讓任何讀技能庫的程式崩潰)。首版判準把「建議」當「壞掉」⇒96/151 紅=噪音機,改成只判真災難後誤告面 0。
+- #659 已收;#664 新開(release gate 要在乾淨隔離下重跑 + 人工複評)。
