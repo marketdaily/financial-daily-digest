@@ -8331,3 +8331,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **兩個事故**:①winrig Claude 週額度 08-29 深夜用完(08-30 10:00 重置)⇒ 改派 Mac 端 subagent 走 winrig shell 接手,不等重置。②winrig MCP server 被 6 個並發 session 打掛(`ASGI callable returned without completing response` ×17,systemd NRestarts=2),**client 端 MCP 工具不會自己恢復** ⇒ 改走 SSH 備援腿 `ssh winrig 'wsl -d Ubuntu -- bash -lc "<base64>"`(橋接腳本 /tmp/wr),已把通道交給 6 個 agent 續作。
 - **⭐ 順手查獲記憶三處反轉**(`project_winrig_remote_mcp` 已更正):OAuth 早被停用(env key 帶 `_DISABLED`)⇒ 對的 URL 從 `/mcp` 反轉回 `/qMfJ.../mcp`;自啟其實**是** systemd(兩個 unit enabled)不是 WSL boot command;新增並發 crash 坑與 SSH 備援腿。教訓:憑證/路徑類記憶用之前一定要先實打。
 - **open items**:#660 日報卡片 prompt 在量產 AI 腔(111 份日報「顯示…信心」39 次、「將是關注焦點」23 次,真修法要動 main.py prompt+拿 ai_slop_lint --lines 當迴歸,屬 heavy 需獨立任務)、#661 IG9 剩四支未落地。
+
+### 08-30 收工:9/9 全數落地
+- **成果**:8 支新 skill(i-have-adhd / no-ai-slop / book-to-skill / open-seo / open-notebook / omni-route / comfy-api / ai-job-search)+ 1 支回填(strix→security-team 從「寫了方法沒實裝」推進到實測跑通,對自建有洞 Flask app 找出 4 個真漏洞)。路由層四處全串,新開「個人/職涯」群。九個 repo branch `ours` 全 commit、工作樹乾淨、未 push。
+- **⭐⭐ 判決:兩支不做重複 skill**。Strix 早就是 security-team 的引擎、ComfyUI 早在 Windows 常駐 ⇒ 改成「回填」與「包 API 層」,守住 GOVERNANCE「同任務同一路徑」。收編外部 repo 時先對帳既有資產再決定形狀,不是每支都變新 skill。
+- **⭐⭐ 三次兩條 agent 線撞同一工作樹**:根因①winrig job 回報「✅完成」但活交給子代理還在跑 ②週額度 10:00 重置後死 session 自己復活。它們自行協調合併了,但 OURS.md 被互相覆寫過。**派工前先確認目標 repo 沒有活躍 session**。
+- **⭐ 子代理查出前人假宣稱**:open-notebook 的繁中補丁實測沒生效、podcast 從沒成功(修掉上游真 bug);Yourator 九個搜尋參數全是假的(照轉發會做出「200 OK、JSON 合法、資料好看、完全沒在篩」的假工具)。
+- **基建副產品**:OOM 連坐防線從「只保護 init.scope」改成清單驅動(`scripts/wsl_oom_units.txt` 單一真源),納管 init.scope / winrig-remote-server / cron.service 三個 cgroup,正反對照都驗過。詳見 commit 087585f2。
+- **open items**:#661 已收;新登記 #662(ai-job-search 缺 LaTeX 產不出 PDF,待 Delvin 拍板裝 TinyTeX)、#663(OmniRoute node_modules 4.4G 未清 + HTTP 層從未實驗證);#660(日報 prompt 量產 AI 腔)、#659(i-have-adhd 未在真實 session 驗證)仍開著。
