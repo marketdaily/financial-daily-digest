@@ -129,6 +129,15 @@ oom_hits=$(journalctl -k --since "$since" --no-pager 2>/dev/null | grep -a 'Out 
 # (已用 /etc/systemd/system/init.scope.d/ 的 OOMPolicy=continue 修掉,這裡是迴歸哨兵——
 #  萬一那份 drop-in 被誰移掉或 systemd 升級洗掉,這行會再度出現而我們會知道)
 collateral=$(journalctl --since "$since" --no-pager 2>/dev/null | grep -a 'init.scope: Stopping timed out' | tail -5)
+# 2026-08-30 補:連坐還有第二種形狀——systemd 直接把【整個 unit】判 Failed(result=oom-kill)。
+# 當天 winrig-remote-server.service 就是這樣被拖死兩次(MCP server 陪葬、遠端控制斷線),
+# 而舊哨兵只認 init.scope 那一種字串,所以全程零告警。
+# ⚠️ 判準只認「unit 真的被停掉」(Failed with result 'oom-kill')。
+#   不要認 "The kernel OOM killer killed some processes in this unit" ——那是記帳訊息:
+#   ①對 *.slice 永遠會出現(slice 是容器不是服務) ②`systemctl daemon-reload` 會讓 systemd
+#   重報歷史 oom_kill 計數,產生「事故明明在 20 分鐘前、卻在 reload 當下響」的假警報
+#   (2026-08-30 首版判準就是這樣自己誤告一次)。假告警=哨兵自殺,寧可窄。
+unit_oom=$(journalctl --since "$since" --no-pager 2>/dev/null | grep -a "Failed with result 'oom-kill'" | grep -av '\.slice:' | tail -8)
 
 if [ -n "$oom_hits" ]; then
   out="${out}🔴 偵測到 WSL OOM 擊殺(自 ${since} 起):
@@ -143,6 +152,14 @@ ${collateral}
 "
   rc=1
 fi
+if [ -n "$unit_oom" ]; then
+  out="${out}🔴 有 systemd unit 遭 OOM 連坐(自 ${since} 起):
+${unit_oom}
+⚠️ 該 unit 的 cgroup 內某進程被 OOM 殺 → 整個 unit 被停掉。若該 unit 不在
+   scripts/wsl_oom_units.txt 清單裡,就是防線漏保護它 —— 加一行進清單再跑 install guard。
+"
+  rc=1
+fi
 
 # 檢查點永遠往前推(事件本身已由 cron_run_and_alert 的指紋去重擋住重複推播),
 # 否則同一批舊事件會每輪重推,變成警報疲勞。
@@ -152,12 +169,25 @@ date '+%F %T' > "$STATE" 2>/dev/null || true
 #
 # 層1:init.scope 的 OOMPolicy drop-in。這是治本那層——沒有它,任何一次 OOM
 #      都會連坐殺光所有互動 session。裝法見 scripts/wsl_oom_install_guard.sh。
-policy=$(systemctl show init.scope -p OOMPolicy --value 2>/dev/null)
-if [ "$policy" != "continue" ]; then
-  out="${out}🔴 init.scope OOMPolicy=${policy:-未知}(應為 continue)——連坐防線未生效,一次 OOM 會再次殺光所有分頁。
-   修法:sudo bash ~/Delvin-agent/scripts/wsl_oom_install_guard.sh
+# 2026-08-30 改成清單驅動:原本只檢查 init.scope,所以 winrig-remote-server.service
+# 從來沒被守到,08-30 在它身上復發時零告警。清單=scripts/wsl_oom_units.txt(單一真源)。
+UNITS_FILE="$(dirname "$0")/wsl_oom_units.txt"
+if [ ! -f "$UNITS_FILE" ]; then
+  out="${out}🔴 找不到 ${UNITS_FILE} —— 防線清單遺失,無法自檢(沉默的守衛=沒有守衛)。
 "
   rc=1
+else
+  while IFS='|' read -r _unit _section _reason; do
+    case "$_unit" in ''|\#*) continue ;; esac
+    policy=$(systemctl show "$_unit" -p OOMPolicy --value 2>/dev/null)
+    if [ "$policy" != "continue" ]; then
+      out="${out}🔴 ${_unit} OOMPolicy=${policy:-未知}(應為 continue)——連坐防線未生效。
+   該 cgroup 的用途:${_reason}
+   修法:sudo bash ~/Delvin-agent/scripts/wsl_oom_install_guard.sh
+"
+      rc=1
+    fi
+  done < "$UNITS_FILE"
 fi
 
 # 層2:.wslconfig 的 swap 是否真的套用了。

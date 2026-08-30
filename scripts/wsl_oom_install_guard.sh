@@ -7,9 +7,11 @@ set -euo pipefail
 
 [ "$(id -u)" -eq 0 ] || { echo "❌ 需要 root:sudo bash $0"; exit 1; }
 
-DIR=/etc/systemd/system/init.scope.d
-mkdir -p "$DIR"
-cat > "$DIR/oom-no-collateral.conf" <<'EOF'
+UNITS_FILE="$(dirname "$0")/wsl_oom_units.txt"
+[ -f "$UNITS_FILE" ] || { echo "❌ 找不到清單 $UNITS_FILE"; exit 1; }
+
+# 共用根因說明（寫進每份 drop-in 的檔頭，讓十個月後打開檔案的人看得懂為什麼有這行）
+read -r -d '' RATIONALE <<'RAT' || true
 # 2026-08-05 根因修復:WSL 全部 claude 分頁被一次殺光(當天第 4 次)
 #
 # 根因鏈:
@@ -31,18 +33,41 @@ cat > "$DIR/oom-no-collateral.conf" <<'EOF'
 #
 # OOMPolicy=continue 斷開最後一環:別的進程 OOM 死了,不要連坐殺掉整個 init.scope。
 # 這不讓記憶體問題消失,但讓「一個失控進程 = 全部工作階段陣亡」不再成立。
-[Scope]
-OOMPolicy=continue
-EOF
+#
+# ⚠️ 2026-08-30 復發:同一機制在 winrig-remote-server.service 上原封不動再演一次——
+#   run_claude 派出的子 Claude(node)寄生在該 unit 的 cgroup,吃到 7.7GB/10.2GB 觸發
+#   global OOM,systemd 依 OOMPolicy=stop 把【整個 unit】判 Failed(result=oom-kill),
+#   MCP server 本體陪葬 → CF tunnel 502 → 遠端控制中斷,且 client 端 MCP 不會自己恢復。
+#   根因不是「並發打掛」(那是我當時的錯誤歸因),是 OOM 連坐漏保護第二個 cgroup。
+#   受保護清單已抽成 wsl_oom_units.txt,新增 unit 只改那一處。
+RAT
+
+fail=0
+while IFS='|' read -r unit section reason; do
+  case "$unit" in ''|\#*) continue ;; esac
+  DIR="/etc/systemd/system/${unit}.d"
+  mkdir -p "$DIR"
+  {
+    printf '%s\n' "$RATIONALE"
+    printf '#\n# 本 drop-in 保護:%s\n# 理由:%s\n' "$unit" "$reason"
+    printf '[%s]\nOOMPolicy=continue\n' "$section"
+  } > "$DIR/oom-no-collateral.conf"
+  echo "  裝上 $DIR/oom-no-collateral.conf"
+done < "$UNITS_FILE"
 
 systemctl daemon-reload
 
-policy=$(systemctl show init.scope -p OOMPolicy --value)
 echo "--- 驗收 ---"
-echo "init.scope OOMPolicy = $policy"
-if [ "$policy" = "continue" ]; then
-  echo "✅ 連坐防線已生效"
-else
-  echo "❌ 仍為 $policy,未生效 —— 請回報,不要當作已修好"
-  exit 1
-fi
+while IFS='|' read -r unit section reason; do
+  case "$unit" in ''|\#*) continue ;; esac
+  policy=$(systemctl show "$unit" -p OOMPolicy --value 2>/dev/null)
+  if [ "$policy" = "continue" ]; then
+    echo "✅ $unit OOMPolicy=continue"
+  else
+    echo "❌ $unit OOMPolicy=${policy:-未知} —— 未生效,不要當作已修好"
+    fail=1
+  fi
+done < "$UNITS_FILE"
+
+[ "$fail" -eq 0 ] || exit 1
+echo "✅ 連坐防線已在全部 $(grep -cv '^#\|^$' "$UNITS_FILE") 個 cgroup 生效"

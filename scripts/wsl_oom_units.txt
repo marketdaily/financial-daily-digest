@@ -1,0 +1,16 @@
+# 受 OOM 連坐防線保護的 cgroup 清單(單一真源:install guard 與 watch 都讀這份)
+# 格式:<unit>|<drop-in 段名>|<為什麼這個 cgroup 需要保護>
+#
+# ⚠️ 2026-08-30 復發教訓:08-05 只把 OOMPolicy=continue 裝在 init.scope,
+#    漏掉 winrig-remote-server.service —— 而 run_claude 派出去的子 Claude(node)
+#    正是寄生在它的 cgroup。同一個連坐機制在另一個 unit 上原封不動重演一次,
+#    MCP server 陪葬、遠端控制命脈中斷。修法不是再貼一份,是把清單抽成這個檔。
+#    新增任何會孵出 claude/node 子行程的 unit → 只加這裡一行。
+init.scope|Scope|裝著所有互動 session(08-05 事故現場)
+winrig-remote-server.service|Service|run_claude 派出的子 Claude 寄生在它的 cgroup(08-30 峰值 12G/swap 8.5G,NRestarts=2)
+cron.service|Service|winrig 是排程主場,cron 被連坐殺掉=全部排程靜默停擺(journal 有 1 次前科)
+#
+# 已知但未納管(2026-08-30 盤點 journal 全歷史的 oom-kill 受害者):
+#   jarvis-f5.service —— 是 **user** unit(systemctl --user),drop-in 路徑不同
+#     (~/.config/systemd/user/),本清單目前只處理 system 層。待評估是否納管。
+#   run-r*.scope ×4 —— systemd-run 產生的 transient scope,用完即消失,無法也不需固定保護。
