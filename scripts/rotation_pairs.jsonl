@@ -47,12 +47,12 @@
 {"date": "2026-08-13", "market": "tw", "from": "2308", "to": "6223", "from_px": 1790.0, "to_px": 6600.0, "from_ret": -7.43, "to_ret": -13.01, "rel": -5.58, "win": false, "settled": true}
 {"date": "2026-08-13", "market": "tw", "from": "2412", "to": "6223", "from_px": 136.0, "to_px": 6600.0, "from_ret": 0.37, "to_ret": -13.01, "rel": -13.38, "win": false, "settled": true}
 {"date": "2026-08-13", "market": "us", "from": "VSH", "to": "DELL", "from_px": 33.55, "to_px": 484.5, "from_ret": -4.47, "to_ret": -12.08, "rel": -7.61, "win": false, "settled": true}
-{"date": "2026-08-17", "market": "tw", "from": "8299", "to": "3081", "from_px": 2080.0, "to_px": 2540.0}
-{"date": "2026-08-17", "market": "us", "from": "VSH", "to": "AAOI", "from_px": 35.08, "to_px": 150.28}
-{"date": "2026-08-17", "market": "us", "from": "QQQM", "to": "AAOI", "from_px": 301.01, "to_px": 150.28}
-{"date": "2026-08-20", "market": "tw", "from": "2412", "to": "6907", "from_px": 136.0, "to_px": 192.5}
-{"date": "2026-08-20", "market": "us", "from": "SOXX", "to": "HIMS", "from_px": 519.67, "to_px": 31.09}
-{"date": "2026-08-20", "market": "us", "from": "META", "to": "HIMS", "from_px": 546.03, "to_px": 31.09}
+{"date": "2026-08-17", "market": "tw", "from": "8299", "to": "3081", "from_px": 2080.0, "to_px": 2540.0, "from_ret": 2.4, "to_ret": -0.9, "rel": -3.29, "win": false, "settled": true}
+{"date": "2026-08-17", "market": "us", "from": "VSH", "to": "AAOI", "from_px": 35.08, "to_px": 150.28, "from_ret": -14.47, "to_ret": -30.51, "rel": -16.04, "win": false, "settled": true}
+{"date": "2026-08-17", "market": "us", "from": "QQQM", "to": "AAOI", "from_px": 301.01, "to_px": 150.28, "from_ret": -3.23, "to_ret": -30.51, "rel": -27.28, "win": false, "settled": true}
+{"date": "2026-08-20", "market": "tw", "from": "2412", "to": "6907", "from_px": 136.0, "to_px": 192.5, "from_ret": -0.73, "to_ret": -4.12, "rel": -3.39, "win": false, "settled": true}
+{"date": "2026-08-20", "market": "us", "from": "SOXX", "to": "HIMS", "from_px": 519.67, "to_px": 31.09, "from_ret": 0.59, "to_ret": -0.63, "rel": -1.22, "win": false, "settled": true}
+{"date": "2026-08-20", "market": "us", "from": "META", "to": "HIMS", "from_px": 546.03, "to_px": 31.09, "from_ret": 4.63, "to_ret": -0.63, "rel": -5.26, "win": false, "settled": true}
 {"date": "2026-08-22", "market": "tw", "from": "00891", "to": "4967", "from_px": 33.65, "to_px": 276.0}
 {"date": "2026-08-22", "market": "tw", "from": "2454", "to": "4967", "from_px": 3790.0, "to_px": 276.0}
 {"date": "2026-08-24", "market": "tw", "from": "00891", "to": "4967", "from_px": 33.65, "to_px": 276.0}
