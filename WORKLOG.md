@@ -8366,3 +8366,6 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 ## 2026-08-31 主視窗(續):老闆「現在能做的全部做」——修復批當天上線
 - kingconn 稽核修復批全上線並線上驗證(11 項):#666/667/669/670 已收(細節見 ~/kingconn/WORKLOG.md 08-31 下午段),IndexNow 2,024 條提交 200,en title 118 頁帶規格。剩 #668(等老闆關 CF 託管 robots.txt)、#671(四欄視覺萃取+交叉料號頁+應用文,另開工作段)、Bing Webmaster 主控台(等 Microsoft 帳號)。
 - 跨視窗:與 Seednet/click-track 視窗 SendMessage 協調分工,代 commit 其兩筆成品,零衝突。戰情 Artifact cef2b259 已更新為「已修」狀態。
+
+## 2026-08-31 傍晚 主視窗:#671 工作段執行(詳見 ~/kingconn/WORKLOG.md 同日段)
+- 四欄補萃取 81 筆過閘(Pitch 69→91/腳位 31→69/壽命 58→76)+三語應用文×3+930 頁告示誠實化+新聞 9 頁升級+Switch 退路修,三批 deploy 全 verify_live 綠,IndexNow 888 條重推。#671 剩:交叉料號(競品規格值=零,主工程)+RD 覆核 /spec-review 新衝突批。

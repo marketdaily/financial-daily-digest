@@ -6676,8 +6676,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-31 15:11",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-31 15:41",
+  "note": "老闆已在 CF 後台關掉託管 robots.txt/Content Signals;線上實測:託管區塊 0 殘留、Disallow 0、我方 15 個 AI 爬蟲 Allow 完整、Sitemap 行在——robots.txt 從此只有一份真話"
  },
  {
   "id": 669,
