@@ -4996,8 +4996,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-23 14:22",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-31 12:58",
+  "note": "08-25 複查結論:**RD 是對的,我們問錯料號**。7SDCN-X0-0015 / 7USB31-F0-0025 實測規格文字逐字相同、PDF md5 只有兩種值、照片亦然——所謂不一致是「同料號被建兩筆商品資料、每建一次重傳一份同樣的圖」導致檔名長出 -1~-5。改掃全站 749 頁後找到【真的】衝突:P0 `7SDMM-X0-2211` 兩頁一寫 6 IN 1 一寫 5 IN 1,且 6 IN 1 那頁掛的 PDF 圖面標題欄印的是 2210。我方站內缺陷已修(卡片連錯頁/重複卡/JSON-LD/301)。此項以「前提有誤」結案,真正待 RD 的是 7SDMM-X0-2211,已另記於 memory。"
  },
  {
   "id": 501,
@@ -6576,6 +6576,136 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-08-28 16:22",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 659,
+  "what": "i-have-adhd skill 首建(IG9),尚未在真實 Claude Code session 以 skill 喚起驗證;smoke 只用 haiku 單 trial,語音錯字校正線遵從不穩",
+  "why": "只做過隔離 claude --print 形狀快篩,沒跑上游 run_evals 人工評分閘,也沒在生產 session 用過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-29 21:59",
+  "closed": "2026-08-30 14:51",
+  "note": "已真 session 驗過(2026-08-30):~/Delvin-agent 開 claude -p sonnet-5 看 stream-json 的 Skill tool_use——舊 description 0/2 被喚起,重寫成「第一句就是觸發條件」後 4/4,第一行就是理解校正線;上游 run_evals gate 兩模型各 3 trials×5 case 實跑(人工評分那段由新寫的 judge_evals.py 盲評代跑):candidate 每維度都贏 baseline(加權 2.84→3.64 / 3.60→4.09)但兩輪都沒過閘(仍有 blocker);「校正線不穩」真因=harness 沒隔離 MCP,補 --strict-mcp-config 後 haiku 0/9→6/9,再升成規則 0 到 9/9。commit dc415da(branch ours,未 push)"
+ },
+ {
+  "id": 660,
+  "what": "日報卡片 prompt 在量產 AI 腔:111 份日報「顯示…信心」39 次、「將是關注焦點」23 次(08-29 那份六則 catalysts 清一色這兩句收尾)",
+  "why": "真修法是改 main.py 卡片 prompt 負面清單+拿 no-ai-slop 的 ai_slop_lint --lines 當迴歸,動生產 prompt 屬 heavy,需獨立任務;寄前擋是治標",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-30 13:23",
+  "closed": "2026-08-30 14:04",
+  "note": "兩層修法:analyzer._ANTI_SLOP_BLOCK 插進四支 prompt(平日/週末/週一/signal-card)+ _pp_despam_filler 確定性後製層(A/B 實測光靠 prompt 4/5 輪仍出現變體,後製層才是真解)。實測 106 份存檔日報過後製:樣板句 76→14 次(-81.6%),顯示…信心 39→1、將是關注焦點 23→0,單份最高 7→2,零檔案變差零元素清空;LLM 端到端 A/B N=5 過後製全 0。迴歸=scripts/digest_slop_watch.py(呼叫既有 ai_slop_lint,EPOCH 後單份≥4 或平均>1.2 即紅)+ test_digest_slop_prompt.py 37 斷言 + 夜巡 digest_slop_watch.test.sh。commit 70585be2"
+ },
+ {
+  "id": 661,
+  "what": "IG9 九支 repo 收編:剩 comfy-api/ai-job-search/omni-route/strix 四支未完成路由層落地",
+  "why": "winrig Claude 週額度 08-30 10:00 才重置,改本地 subagent 走 SSH 接手中",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-30 13:23",
+  "closed": "2026-08-30 13:41",
+  "note": "9/9 全數落地:8 支新 skill + strix 回填 security-team;路由層四處(description/CATALOG/GOVERNANCE/CLAUDE 分類速查)無缺口;九個 repo branch ours 全 commit 且工作樹乾淨"
+ },
+ {
+  "id": 662,
+  "what": "ai-job-search 產不出 PDF:winrig 無 lualatex/xelatex/pdflatex,/apply 產得出 .tex 但編不出成品",
+  "why": "子代理問要不要裝 TinyTeX,屬新增系統依賴需 Delvin 拍板;且求職是他個人線不急",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-08-30 13:41",
+  "closed": "2026-08-30 13:51",
+  "note": "TinyTeX 226MB 已裝(xelatex/lualatex/pdflatex/latexmk 四引擎),PATH 進 .bashrc+.profile;新增 texfly 自動補件編譯器;CV 實測 2頁A4/1922字元、求職信 1頁/899字元,兩份都用 pymupdf 驗過內容非空白"
+ },
+ {
+  "id": 663,
+  "what": "OmniRoute node_modules 佔 4.4G 未清;/v1/chat/completions 因 OOM 從未實驗證",
+  "why": "清空間要確認不會再用;HTTP 層要跑起來得先解決 npm run dev 寫死 8GB heap 撞 13G 機器的問題",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-30 13:41",
+  "closed": "2026-08-30 14:12",
+  "note": "OOM 真因是 Turbopack 原生記憶體不受 --max-old-space-size 管(非 8192 這個數字);改 OMNIROUTE_USE_TURBOPACK=0 + BUILD_MEMORY_MB=6144 在 winrig build 成功,serve 起得來且 /v1/chat/completions、儀表板、quota status 全部實 curl 驗過,招牌換家功能首次在真實 HTTP 路徑上帶正反對照驗證通過;磁碟改刪 .build(6.7G 純中間產物,比原本要刪的 4.4G 還多),保留 dist+node_modules 讓系統維持可用"
+ },
+ {
+  "id": 664,
+  "what": "i-have-adhd:release gate 要在乾淨隔離下重跑並找人工複評",
+  "why": "08-30 那兩輪跑在補 --strict-mcp-config 之前(操作者的 Gmail/Calendar MCP 漏進兩個 condition);配對設計讓勝負方向可信,但絕對分數不可跨輪比。評分是 LLM 盲評代跑(judge_evals.py),跟被測模型同家族可能同方向偏,押注前要人工複評。另 zh-destructive 那題會被工作樹 git status 漂移污染,重跑時工作樹要整輪凍住。指令與數字見 ~/oss/ig9/i-have-adhd/OURS.md ⑧",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-30 14:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 665,
+  "what": "皇海新站已上線 kingconn.com.tw(2026-08-31),進入維運+SEO 期",
+  "why": "換站當日完成:Seednet 改密碼/修登記資料 → 建 CF zone 7 筆 → 搬 NS → 建 Pages 自訂網域 → 切 A/CNAME → 線上驗收。零停機。⭐ 上線後查出【正式站被 X-Robots-Tag: noindex】(預覽站用的靜態 _headers 分不了主機)已修成 Function 主機感知。測試信實寄實收由皇海確認通過。最終驗收 19/19。",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-31 12:58",
+  "closed": "2026-08-31 12:58",
+  "note": "待辦(獨立於換站,屬接管進度):①收回內部郵件主機控制權——先取得管理員帳密再撤首岳存取/關 PPTP 1723 ②官網主機已脫離首岳(現在跑 CF Pages),其騰訊雲主機可停用 ③GSC 加皇海帳號為擁有者 ④切站後提交 sitemap ⑤接 seo_page_traffic 到 kingconn zone。守望 kingconn_ns_watch.py cron */10 監測中(含正式站 noindex 偵測,突變測試驗過)。"
+ },
+ {
+  "id": 666,
+  "what": "皇海 P0:154 條舊網址 301 落到 /p /en/p /cn/p 三個不存在的頁(全量 1037 條實測,占舊站流量權重 13.1%)——補三個產品總覽頁即回收",
+  "why": "coverage_probe 只驗 hop-1 301 存在率沒驗落點,且探的是 preview 站;修法要動 ~/kingconn,今日 Mac session 工作樹有未 commit 改動,等它收工再修",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-31 15:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 667,
+  "what": "皇海 P0:834 個料號頁語言切換鍵全壞(EN 鍵指到 ../../en/about 而非對應料號頁;en 版無回中文連結)——料號頁正是所有舊網址 301 落點與詢價轉換頁",
+  "why": "nav 模板 bug,20/20 抽驗全中;系列頁是好的只有三段式料號頁壞;同因等 Mac session 收工再修",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-08-31 15:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 668,
+  "what": "皇海 P0:CF 託管 robots.txt(Content Signals)在我方規則上方對 ClaudeBot/GPTBot/CCBot 等 9 個 AI 爬蟲 Disallow:/,與我方 Allow 打架,靠 RFC 9309 同長度 Allow 勝才沒死",
+  "why": "三把 token 都無 Zone:Bot Management 權限,只能 CF 後台關(kingconn zone→Bots/AI Crawl Control→關 managed robots.txt/Content Signals)或發一把有權限的 token 給我;GEO 整條線的協議層風險",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-08-31 15:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 669,
+  "what": "皇海 P1 批次:①/en/ 首頁 meta description 是繁中(全球英文 SERP 那行) ②zh/en 首頁 og:image 指 kingconn-preview.pages.dev ③裸網域 https 不 301 收斂到 www ④9 個新聞內頁零站內入口(news 列表零連結) ⑤/en/products title 只有 Connector Products",
+  "why": "都要動 ~/kingconn,等 Mac session 收工;preview 站整站可爬也該關或加 noindex header",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-31 15:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 670,
+  "what": "皇海 SEO:Bing 檢查表打勾但 repo 無任何 Bing/IndexNow 工具,無法驗證真的提交;IndexNow 未建(Bing 索引=ChatGPT/Copilot 檢索底層,是最快影響 AEO 的槓桿)",
+  "why": "要嘛 Mac session 有做但沒留工具/紀錄,要嘛沒做;建 IndexNow key 檔要動 site/ 根目錄",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-31 15:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 671,
+  "what": "皇海 GEO 結構缺口:規格表四大篩選欄覆蓋率低(pitch 35%/插拔壽命 30%/腳位數 17.5%/對接高度 15%,抽 40 頁)+料號頁 title 無規格語意+零交叉料號對照頁+零應用文——參數查詢與 broker 站料號查詢打不贏的直接原因",
+  "why": "圖面 PDF 在手上可補;title 是模板一次改 242 頁;交叉料號表需皇海 RD 簽核跨廠牌對應宣稱",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-31 15:11",
   "closed": null,
   "note": ""
  }
