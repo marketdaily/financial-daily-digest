@@ -6656,8 +6656,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-31 15:11",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-31 15:33",
+  "note": "fallback /p→/products(gen_legacy_php 7處+等價測試63/63)+redirects_head 三條 301;全量 1145 條舊網址線上重測 100% 最終 200(僅存的 4 條紅是探測端未編碼/未帶UA,curl 驗過皆活)"
  },
  {
   "id": 667,
@@ -6666,8 +6666,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-31 15:11",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-31 15:33",
+  "note": "fix_product_lang_switch.py 750 頁(zh/en/cn 各250)語言鍵重指同料號頁,en 版補回中文鍵;線上抽驗過"
  },
  {
   "id": 668,
@@ -6686,8 +6686,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-31 15:11",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-31 15:33",
+  "note": "五項全修並線上驗證:en 首頁英文描述/og:image 回正式網域(v5+v5-en+3d×2)/裸網域 301 收斂+HSTS(middleware)/新聞 9 內頁有站內入口/en products title;preview 站 x-robots noindex 本來就由主機感知 middleware 蓋著"
  },
  {
   "id": 670,
@@ -6696,8 +6696,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-08-31 15:11",
-  "closed": null,
-  "note": ""
+  "closed": "2026-08-31 15:33",
+  "note": "IndexNow key 檔上線+2024 條(sitemap 879+舊網址1145)提交 api.indexnow.org 回 200;⚠️ Bing Webmaster 主控台(報表面)仍無 Microsoft 帳號可登,已列入老闆動作清單"
  },
  {
   "id": 671,

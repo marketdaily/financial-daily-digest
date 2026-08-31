@@ -8362,3 +8362,7 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   ①154 條舊網址 301→/p /en/p /cn/p 三個不存在頁(全量1037實測,權重13.1%;前次98.9%只量301存在率沒驗落點且探的是preview站) ②834 料號頁語言切換鍵全壞(EN→/en/about) ③CF 託管 robots.txt 在我方規則上方對 9 個 AI 爬蟲 Disallow:/,三把 token 皆無 Bot Management 權限只能後台關。
 - GEO 站外:買家查詢 8/8 仍零曝光(索引未換血,預期);料號直查第一名是俄美 broker 站;「家電材料批發」根因=財政部稅籍主碼456111(六目錄站照抄,改國稅局一處根治);英文品牌實體被深圳同名太陽能公司佔用;規格表四大篩選欄覆蓋率 15~35%=參數查詢打不贏的直接原因;可抄對象=ATTEND(機構型一頁+規格進title)/Rego(Mouser+GlobalSpec通路權重)。
 - open items #666-671 已登記;交付 Artifact cef2b259(30秒版+行動清單+基準線 3,274pv/14點擊/詢價雙軌)。修復刻意全數不動 ~/kingconn(Mac 視窗工作樹有未 commit 改動),等其收工再動工。
+
+## 2026-08-31 主視窗(續):老闆「現在能做的全部做」——修復批當天上線
+- kingconn 稽核修復批全上線並線上驗證(11 項):#666/667/669/670 已收(細節見 ~/kingconn/WORKLOG.md 08-31 下午段),IndexNow 2,024 條提交 200,en title 118 頁帶規格。剩 #668(等老闆關 CF 託管 robots.txt)、#671(四欄視覺萃取+交叉料號頁+應用文,另開工作段)、Bing Webmaster 主控台(等 Microsoft 帳號)。
+- 跨視窗:與 Seednet/click-track 視窗 SendMessage 協調分工,代 commit 其兩筆成品,零衝突。戰情 Artifact cef2b259 已更新為「已修」狀態。
