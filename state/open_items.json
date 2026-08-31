@@ -6708,5 +6708,15 @@
   "opened": "2026-08-31 15:11",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 672,
+  "what": "皇海獲客主動線:ICP v1 已落(ICP.md,歐洲近半/日本第二/料號直搜驗證);目標帳戶名單 v1 研究中;outbound 序列材料備妥後【須王董授權才可以皇海名義發射】",
+  "why": "以皇海名義對外聯繫=客戶的決定;kc-mailpilot(inbound 回信加速)也卡皇海信箱 IMAP 授權",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-08-31 17:18",
+  "closed": null,
+  "note": ""
  }
 ]
