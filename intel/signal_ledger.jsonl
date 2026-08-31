@@ -930,3 +930,17 @@
 {"date": "2026-08-29", "code": "GS", "source": "us_insider", "level": "red", "signal": "🇺🇸 GS 內部人買進:GOLDMAN SACHS GROUP INC 85,000股 均價$21.0(約$1,785,000)", "price_at_signal": null}
 {"date": "2026-08-29", "code": "GS", "source": "us_insider", "level": "yellow", "signal": "🇺🇸 GS 內部人賣出:GOLDMAN SACHS GROUP INC 105,807股 均價$21.2808(分23筆執行)(約$2,251,658)", "price_at_signal": null}
 {"date": "2026-08-29", "code": "3095", "source": "holders", "level": "red", "signal": "及成(3095):千張大戶持股比週增27.41個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-08-31", "code": "1727", "source": "institutional", "level": "red", "signal": "中華化(1727):外資連 5 日買超(5日淨買 +6,546 張)", "price_at_signal": null}
+{"date": "2026-08-31", "code": "2368", "source": "institutional", "level": "yellow", "signal": "金像電(2368):法人 20 日淨賣超 -9,806 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-08-31", "code": "2368", "source": "revenue", "level": "red", "signal": "金像電(2368):2026/07 營收公告、YoY +77.4%(強勁)、MoM +21.3%", "price_at_signal": null}
+{"date": "2026-08-31", "code": "2368", "source": "tw_rank", "level": "yellow", "signal": "金像電(2368) 今日成交額排行第14(+3.1%),異常活躍", "price_at_signal": null}
+{"date": "2026-08-31", "code": "2368", "source": "sbl", "level": "red", "signal": "金像電(2368):機構借券賣出5日遽增59.2%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": null}
+{"date": "2026-08-31", "code": "3141", "source": "leadflow", "level": "red", "signal": "晶宏(3141) 無消息近漲停+8.7%(量能4.7×,5日+13.8%),疑資訊先行資金|外資+投信近3日+1395張", "price_at_signal": null}
+{"date": "2026-08-31", "code": "7740", "source": "institutional", "level": "yellow", "signal": "熙特爾-創(7740):法人 20 日淨賣超 -578 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-08-31", "code": "6919", "source": "tw_rank", "level": "red", "signal": "康霈*(6919) 量能竄榜:今日量榜第18(近10日未進過top50,-4.8%,75,766張)", "price_at_signal": null}
+{"date": "2026-08-31", "code": "6933", "source": "leadflow", "level": "red", "signal": "AMAX-KY(6933) 無消息近漲停+10.0%(連4根,5日+47.0%),疑資訊先行資金|外資+投信近3日+716張", "price_at_signal": null}
+{"date": "2026-08-31", "code": "8111", "source": "leadflow", "level": "yellow", "signal": "立碁(8111) 無消息近漲停+9.9%(量能2.3×,5日+8.7%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-08-31", "code": "6654", "source": "leadflow", "level": "red", "signal": "天正國際(6654) 無消息近漲停+9.9%(量能5.5×,5日+17.9%),疑資訊先行資金|外資+投信近3日僅-1張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-31", "code": "3555", "source": "leadflow", "level": "red", "signal": "博士旺(3555) 無消息近漲停+9.8%(連2根,5日+25.5%),疑資訊先行資金|外資+投信近3日僅-27張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-31", "code": "6895", "source": "leadflow", "level": "red", "signal": "宏碩系統(6895) 無消息近漲停+9.7%(量能6.3×,5日+18.5%),疑資訊先行資金|外資+投信近3日僅+18張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-08-31", "code": "3324", "source": "leadflow", "level": "red", "signal": "雙鴻(3324) 無消息近漲停+9.6%(量能3.8×,5日+23.2%),疑資訊先行資金|外資+投信近3日+5807張", "price_at_signal": null}
