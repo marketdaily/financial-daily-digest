@@ -494,6 +494,18 @@
       "caption_zh": "2026-08-21 台積電(2330):當時建議觀望,5個交易日後變動 +0.41%,避開追高/追空正確。 完整對帳見 marketdaily.ai/track-record"
     },
     {
+      "date": "2026-08-21",
+      "ticker": "00878",
+      "name": "國泰永續高股息",
+      "market": "tw",
+      "verdict_class": "wait",
+      "verdict_label": "觀望",
+      "verdict_text": "📉 BEARISH",
+      "pct_move_5d": 1.91,
+      "source_anchor": "marketdaily.ai/track-record",
+      "caption_zh": "2026-08-21 國泰永續高股息(00878):當時建議觀望,5個交易日後變動 +1.91%,避開追高/追空正確。 完整對帳見 marketdaily.ai/track-record"
+    },
+    {
       "date": "2026-08-20",
       "ticker": "TSLA",
       "name": "特斯拉 Tesla",
