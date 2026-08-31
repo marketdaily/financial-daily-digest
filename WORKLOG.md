@@ -8347,3 +8347,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **判準教訓**:驗「能力接好了沒」,靜態比對只能證明東西在那裡;要證明**它會被用到**,必須跑真實 session 看工具呼叫。
 - 另補基建守衛 `skill_health`(起因:security-team SKILL.md 的非法 UTF-8 躺 19 天,會讓任何讀技能庫的程式崩潰)。首版判準把「建議」當「壞掉」⇒96/151 紅=噪音機,改成只判真災難後誤告面 0。
 - #659 已收;#664 新開(release gate 要在乾淨隔離下重跑 + 人工複評)。
+
+## 2026-08-31 皇海網域接管:Seednet 實查 → 改密碼/修登記 → 建 zone → 搬 NS(Mac 視窗,Delvin 在皇海現場)
+- 王國樑當場交付 Seednet 帳密。實際登入查核(唯讀)→ 判定**網域可搬、不需首岳配合**:登記人是皇海自己、DNS 指定欄位可編輯、**DNSSEC DS 空且 zone 未簽署**(無 SERVFAIL 地雷)。到期 2028-10-20。
+- **已執行(皆經回查驗證)**:①Seednet 密碼已更換(新可登入/舊回 `RED CODE 2032`)②登記資料四處瑕疵修正(CCity/ECity 由字串 `none` → 桃園市/Taoyuan City、中文地址全形數字轉半形、英文地址 `Luju Shiang`(2014 已廢止的蘆竹鄉)→ `Luzhu Dist., Taoyuan City`)③全庫「王國良」筆誤 9 處改為「王國樑」④新 zone 建 7 筆並四台 NS md5 逐筆對帳⑤**NS 已搬** brady/lisa(`SUCCESS 4201`,24h 生效)。
+- **零停機**:新舊 zone 給同答案;中華電信 168.95.1.1 與 a.dns.tw 已切新。守望 `kingconn_ns_watch.py` cron `*/10`(cron_run_and_alert 包裝),**11:50 首班自主觸發成功 ok=True**,反向告警測試亦通過。
+- **⚠️ 三個我自己的坑(都已修)**:①`d.get('result') or []` 把「token 無讀取權」的 API 錯誤吞成「zone 是空的」⇒誤報 0 筆並建了 3 筆重複 TXT(含 SPF,重複會 permerror),改用 `assert ok,d` 才抓到、已刪回 7 筆;NS 未搬故無實害 ②CF 五個 token 只有 `CLOUDFLARE_ZONE_TOKEN` 有 DNS 寫入權(「憑證有≠憑證能」)③我引用的告警腳本 `push_admin_alert.sh` 根本不存在、`notify_admin.notify()` 還漏傳 title ⇒ 改用標準 `cron_run_and_alert`,不自己接告警。另:比 DNS 回應 raw bytes 會因壓縮指標必然不同,不可當竄改偵測(已撤回)。
+- **資安評估**:首岳已無法碰委派層(密碼已改+新 zone 在我方 CF+管理 Email `hunk@` 是內部員工)。殘餘=①過渡 24h 舊 zone 仍在首岳帳號(守望雙解析器比對值防守)②**官網主機仍是首岳的騰訊雲**——但 NS 歸我方後改一筆 A 記錄即可切離,主動權在我們。皇海漏洞:**PPTP VPN 1723 對外開放**(疑首岳遠端維護通道,協定已淘汰)、FTP 21 明文、**Seednet 無轉移鎖功能**(阻止轉移的唯一屏障就是那組 8 碼無 2FA 密碼)、DMARC `p=none`;良好項=WHOIS 公開查詢已關閉。
+- **接管待辦(獨立於搬 NS)**:①收回信箱主機控制權——先取得管理員帳密→再撤首岳存取/關 PPTP/改密碼,**順序不可顛倒**;籌碼=機器實體在皇海可斷網 ②官網搬離首岳主機。
+- 交付 Artifact:https://claude.ai/code/artifact/ff9ee1c9-c18d-4190-8ee1-939330913b98
