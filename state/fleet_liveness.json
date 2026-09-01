@@ -1,6 +1,6 @@
 {
- "ts": "2026-09-01T10:50:07",
- "jobs_n": 114,
+ "ts": "2026-09-01T21:35:07",
+ "jobs_n": 116,
  "silent_n": 0,
  "silent": [],
  "intel": {
@@ -9,11 +9,6 @@
  },
  "intel_problems": [],
  "outputs": {
-  "券商喊單(sinopac_line)": {
-   "age_days": 20,
-   "newest": "2026-08-12.md",
-   "max_age": 5
-  },
   "大腦送Mac(brain_deliver_mac)": {
    "age_days": 0,
    "newest": "brain_deliver_mac.beat",
@@ -25,9 +20,7 @@
    "max_age": 1
   }
  },
- "output_problems": [
-  "券商喊單(sinopac_line):最新產出 2026-08-12.md 已 20 天(容忍 5 天)——兩種死法:①Windows 的 LINE 登出(截圖是登入/QR 頁,需 Delvin 本人重新登入) ②解析層 claude 認證過期(截圖有抓到但解不出來)。先看 line_group_cron.log 分辨"
- ],
+ "output_problems": [],
  "jobs": {
   "agent_board_deploy": {
    "last": "2026-08-31",
@@ -37,9 +30,9 @@
    "status": "ok"
   },
   "agent_board_gen": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -79,9 +72,9 @@
    "status": "ok"
   },
   "brain_parity": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -168,9 +161,9 @@
    "status": "ok"
   },
   "crawler_coverage_ledger": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -243,9 +236,9 @@
    "status": "ok"
   },
   "email_quota_guard": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -255,8 +248,8 @@
    "status": "gated"
   },
   "fleet_liveness": {
-   "last": "2026-08-31",
-   "age_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
    "median_gap_d": 4.0,
    "thresh_d": 7.0,
    "status": "ok"
@@ -296,6 +289,11 @@
    "thresh_d": 2.5,
    "status": "ok"
   },
+  "kingconn_afc_drain": {
+   "last": "2026-09-01",
+   "age_d": 0,
+   "status": "observing"
+  },
   "kingconn_asset_watch": {
    "last": "2026-09-01",
    "age_d": 0,
@@ -327,10 +325,17 @@
    "thresh_d": 2.5,
    "status": "ok"
   },
-  "kingconn_traffic_ledger": {
-   "last": "2026-08-31",
-   "age_d": 1,
+  "kingconn_pdf_leak_watch": {
+   "last": "2026-09-01",
+   "age_d": 0,
    "status": "observing"
+  },
+  "kingconn_traffic_ledger": {
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1,
+   "thresh_d": 2.5,
+   "status": "ok"
   },
   "kospi_open_alert": {
    "last": "2026-09-01",
@@ -371,9 +376,9 @@
    "status": "observing"
   },
   "macro_rates_ledger": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -402,9 +407,9 @@
    "status": "ok"
   },
   "mem_valuation": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -444,16 +449,16 @@
    "status": "ok"
   },
   "mingshu_seo_livecheck": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
   "mingshu_seo_pull": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -486,9 +491,9 @@
    "status": "ok"
   },
   "pe_ratio_ledger": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -547,9 +552,9 @@
    "status": "ok"
   },
   "regime_ledger": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -568,9 +573,9 @@
    "status": "ok"
   },
   "seo_page_traffic_ledger": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -589,9 +594,9 @@
    "status": "ok"
   },
   "social_buzz": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -603,9 +608,9 @@
    "status": "ok"
   },
   "social_reel_us": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -641,8 +646,8 @@
    "status": "observing"
   },
   "threads_token_refresh": {
-   "last": "2026-08-24",
-   "age_d": 8,
+   "last": "2026-09-01",
+   "age_d": 0,
    "status": "observing"
   },
   "tldr_distribution": {
@@ -660,9 +665,9 @@
    "status": "ok"
   },
   "tw_financials_ledger": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -672,9 +677,9 @@
    "status": "observing"
   },
   "us_13f_ledger": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },
@@ -721,9 +726,9 @@
    "status": "ok"
   },
   "videobrief_us": {
-   "last": "2026-08-31",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-01",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "status": "ok"
   },

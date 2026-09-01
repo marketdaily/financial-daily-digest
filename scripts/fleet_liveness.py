@@ -118,9 +118,9 @@ def classify(jobs, today=None):
 # 產出級心跳:(標籤, 產出物 glob, 容忍天數, 診斷提示)
 # 容忍天數要蓋過週末+連假;寧可晚一天報,不要每個週一誤報。
 OUTPUT_HEARTBEATS = [
-    ("券商喊單(sinopac_line)", "~/sinopac_line/*.md", 5,
-     "兩種死法:①Windows 的 LINE 登出(截圖是登入/QR 頁,需 Delvin 本人重新登入) "
-     "②解析層 claude 認證過期(截圖有抓到但解不出來)。先看 line_group_cron.log 分辨"),
+    # 2026-09-01 老闆令退役:line_group_runner.sh 的 5 個 cron 班次已從 crontab 移除
+    # (備份 ~/.marketdaily-fallback/crontab.bak.20260901-213357)。來源刻意不再產出,
+    # 這條產出物心跳留著只會永久紅=哨兵自殺,故一併下架。若日後恢復排程,把本條加回來。
     # 下面兩支 2026-08-05 補:輸出全進 /dev/null 或不符 <job>_<date>.log,原本完全不在納管範圍,
     # 靜默死掉沒人知道。心跳由腳本自己在每輪完成時蓋戳記(Mac 離線的合法跳過也算活著)。
     ("大腦送Mac(brain_deliver_mac)", "~/.marketdaily-fallback/state/brain_deliver_mac.beat", 1,
