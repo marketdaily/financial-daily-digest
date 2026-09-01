@@ -8387,3 +8387,13 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 未收尾(已登記):#685 cron 首班未驗+onboard/adopt 零真實流量(等第一位成員);#686 team-brain git 歷史含 internship 檔,加 collaborator 前建議 squash(force push 需老闆核可)。
 ## 2026-09-01 深夜 主視窗:CHOSEN 首頁 v2 重做(老闆批「same template」後)
 - 老闆痛罵每站同模板→寫入永久記憶 feedback_no_same_template_websites;實查 Awwwards 2026-08 兩個 SOTD(Aardvark Book Club/Decathlon Yestalgia:淺色兩色高對比+typography主導+觸感互動)。首頁 v2=「收藏誌/拆卡桌」:紙白+墨+品牌紅、Oswald 巨型字 hero+甩卡進場、規格條、佈告欄活動卡(API保留)、盲盒編號大列01-03、9宮格卡冊陳列(環孔+口袋sheen)、MEMBER PASS票券、INDEX目錄。手機+桌機截圖驗證(桌機body鎖900px要高viewport拍);v1深色版存 index.v1-dark.json、原版在 theme_backup_20260902,兩層皆可回退。storefront a8b7893。
+
+## 2026-09-01 CLAUDE.md 瘦身落地(Mac 視窗發起,winrig 端動刀)
+- 老闆丟 Boris Cherny(Claude Code 原作者)talk 要求照原作者工作法優化 setup。video-watcher 真看:Threads 5min 節錄(frames+Groq whisper)+完整版 27:53 字幕 838 行全讀。
+- 判決:十一招我們十招已超前;唯一中鏢=CLAUDE.md 太長。根因=harness 每 session 已自動注入工具表+全部 skill 名與 description,寫在 CLAUDE.md=同一份字付兩次錢。
+- winrig main:32,665B→27,850B(砍工具節 1,435+分類速查 3,531),38 條鐵則 checklist 全過零遺失;補「工作法核心」(plan 先行+自驗迴路);檔頭加瘦身紀律註解防復胖。commit 0e1e30f2。
+- 改制(老闆核可):skill 三處同步第三處由「CLAUDE.md 分類速查」改為「屬強制路徑/鏈才回寫強制路徑行」;CATALOG.md/GOVERNANCE.md 兩處舊表述已同步;CATALOG 補 cc-notify/claudio 的 Mac-only 標記。
+- ⚠️ 我自己造成的風險已修:先在 Mac 分支拿舊 base(22.2KB)瘦身,那版併回 main 會洗掉 main 上較新的規則(雙寄防線/模型分層/部署兩條腿)。已用 git checkout origin/main -- CLAUDE.md 對齊,兩機 md5 一致(626158022941f1a5e46a70414dd01d3f)。
+- ⚠️ 另一坑:base64 經 Claude context 轉抄整檔會壞(16680→16686,md5 不符)。跨機搬檔一律走 git/SSH,別讓檔案穿過 context。
+- docs/CLAUDE.md(1.1KB)與 marketing/CLAUDE.md(7.4KB)檢查過:純規則零 harness 重複,正是 Boris 講的 nested 用法,不動。settings.json(bypass+20 條 deny+hooks)已是他推的權限分層最佳解,不動。
+- 記憶已登記(Mac inbox):feedback_claude_md_slimming_discipline.md
