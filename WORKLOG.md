@@ -8408,3 +8408,10 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **待拍板:5 份帶舊規則的副本**——winrig .md-verify-wt-796(265M,08-17,孤兒 worktree,HEAD 已含於 main,刪除安全)、tmp_review/harness_test(137M,07-04,**連 LINE 退役與全面免費化都沒有**,刪除安全);Mac Downloads/financial-daily-digest-main(112M,06-30,非git)、.marketdaily-agent(352M,07-08,21 個未提交檔要先看)、.marketdaily-fallback/repo(2.6G,07-07)。風險不是磁碟是規則:在那些目錄開 session 會吃到 6/30-8/17 舊鐵則。
 - paper_trade/CLAUDE.md 今天 pull 後已自動同步成 27.9KB(它是分支 checkout,**不能手改**否則製造髒樹)。
 - 交付 Artifact:見 session。
+
+## 2026-09-02 稽核落地:清 5 份舊副本 + skill parity 守衛上線
+- **winrig 兩個孤兒 worktree 已移除**(402MB):`.md-verify-wt-796`(08-17 #796 驗證殘留)、`tmp_review/harness_test`(07-04,連 LINE 退役與全面免費化都沒有)。worktree 清單只剩 Delvin-agent + paper_trade。
+- **Mac 三份(3.06GB)**:刪除指令被 settings.json 的 `Bash(rm -rf *)` deny 規則擋下(守衛正常運作),**未繞過**,交老闆用 `!` 執行。刪前已做兩件事:①4 個 .env 逐 key 比對確認 winrig 是超集(X_*/YT_*/SPARKLOOP 全有),無獨有憑證 ②**70MB 行銷素材是唯一副本**(winrig marketing/assets 206M 但沒有這批檔名)⇒用 winrig→Mac 既有 SSH 腿 rsync 到 `~/archive/marketdaily-agent-marketing-20260902`,**164 檔 md5 逐檔對帳全綠**才敢往下走。
+- **⭐⭐ skill 兩副本 parity 守衛上線**:`bundle_parity/configs/skills.json`(PLUG↔BRAIN,authoritative=PLUG,790 檔)。原本 bundle_parity 只顧 design-material 40 檔,skill 樹零偵測面。接進 `tests/bundle_parity.test.sh` 第 ⑭ 案(含 manifest<500 即判紅的假綠燈守衛),14/14 通過;夜巡 selftest.sh:109 glob `tests/*.test.sh` 自動撿到;實測 1.68s(基準 1.6s,憲法上限 30s)。
+- **⚠️⚠️ 我自己造成的事故(已修)**:做反對照時把假漂移 `# DRIFT INJECT` 注入 **live 樹**的 BRAIN 副本,而 `sync.sh` 的 restore 腿是 `rsync -au`(新者勝)⇒5 分鐘內把污染推回**正式被載入的 PLUG 檔**,還被 sync 自動 commit 進 brain repo。MCP 逾時中止讓復原那步沒跑到,是我主動回查才發現。已從 /tmp/vcp.bak 復原、三方 md5 一致、brain repo commit 6763dd1e1 讓 HEAD 乾淨。**教訓:live 樹有自動同步腿時,絕不可就地注入測試資料——測試檔本身的 mk_bundle 沙盒就是為此存在,該用它而不是手動改 live 檔。** 另:長於 5 分鐘的 MCP 指令會被中止,含「復原」步驟的指令一律拆開跑,別把清理綁在同一條命令尾巴。
+- 新增 open item #701(paper_trade cron 靜默 pull 失敗引信),依 scope-lock 未順手修。
