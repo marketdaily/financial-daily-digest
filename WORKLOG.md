@@ -8415,3 +8415,10 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **⭐⭐ skill 兩副本 parity 守衛上線**:`bundle_parity/configs/skills.json`(PLUG↔BRAIN,authoritative=PLUG,790 檔)。原本 bundle_parity 只顧 design-material 40 檔,skill 樹零偵測面。接進 `tests/bundle_parity.test.sh` 第 ⑭ 案(含 manifest<500 即判紅的假綠燈守衛),14/14 通過;夜巡 selftest.sh:109 glob `tests/*.test.sh` 自動撿到;實測 1.68s(基準 1.6s,憲法上限 30s)。
 - **⚠️⚠️ 我自己造成的事故(已修)**:做反對照時把假漂移 `# DRIFT INJECT` 注入 **live 樹**的 BRAIN 副本,而 `sync.sh` 的 restore 腿是 `rsync -au`(新者勝)⇒5 分鐘內把污染推回**正式被載入的 PLUG 檔**,還被 sync 自動 commit 進 brain repo。MCP 逾時中止讓復原那步沒跑到,是我主動回查才發現。已從 /tmp/vcp.bak 復原、三方 md5 一致、brain repo commit 6763dd1e1 讓 HEAD 乾淨。**教訓:live 樹有自動同步腿時,絕不可就地注入測試資料——測試檔本身的 mk_bundle 沙盒就是為此存在,該用它而不是手動改 live 檔。** 另:長於 5 分鐘的 MCP 指令會被中止,含「復原」步驟的指令一律拆開跑,別把清理綁在同一條命令尾巴。
 - 新增 open item #701(paper_trade cron 靜默 pull 失敗引信),依 scope-lock 未順手修。
+
+## 2026-09-02 修 open item #701(paper_trade cron 靜默 pull 失敗引信)
+- 病:5 條交易 cron 各自寫 `cd ~/paper_trade && git pull -q origin <branch> >/dev/null 2>&1; cd quant_lab/auto_trade && python3 …`。分號串接讓 pull 失敗完全不擋後面的 python,`-q`+雙重導向讓失敗連 log 都沒有;而 `.paper/{index.html,backtest.json}` 是 tracked 卻被 runner 每天就地重寫(paper_daily.py:605 / gen_backtest_view.py:107)。
+- 修:新增 `~/.marketdaily-fallback/paper_trade_pull.sh` 當唯一入口。①先試 pull(**plain merge,與原語義完全一致**)②失敗且髒的 tracked 檔⊆已知產物白名單→只還原那幾個檔重試一次 ③其他任何情況(白名單外髒檔/網路死/衝突)**一律不動樹**+推 admin;成功寫 `logs/ok/paper_trade_pull.ok` 戳記。一律 exit 0 保持「pull 失敗仍照跑交易腳本」的原行為——本次要治的是靜默,不是要擋交易。
+- **⚠️ 兩個我自己差點裝上的坑,都在驗證時攔下**:①第一版 sed 把 `cd ~/paper_trade &&` 一起吃掉,而後面的 `cd quant_lab/auto_trade` 是相對路徑⇒五條交易腳本會全部跑不起來(改成只換 pull 片段,並斷言 5 條都仍有前綴、行數 199 不變)②第一版腳本用 `--rebase`,它在「任何 tracked 檔髒」時就拒絕,比原本的 plain pull 嚴格⇒生產實射當場把每天重生的 index.html 還原成 committed 版=我自己造的 dashboard 回歸;改回 plain pull 後再實射確認產物完好。
+- 驗到什麼程度:自測 6 案(成功路徑/產物還原重試/**WIP 保護:白名單外髒檔絕不動且必告警**/remote 死/repo 缺/白名單與生產對帳),沙盒假 repo 全程不碰 live 樹;3 種真突變(告警變 no-op×2、白名單放寬吞 WIP、失敗也寫戳記)全部被殺——第一次突變「存活」查出是我的 sed 沒對到行(突變體假殺),補了改動行數斷言;夜巡 218ms;生產實射兩次。
+- crontab 改動前備份於 `~/.marketdaily-fallback/state/crontab.bak.20260902-004852`;艦隊快照已自動把新腳本+新 crontab 收進 brain repo。
