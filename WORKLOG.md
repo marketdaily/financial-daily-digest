@@ -8377,4 +8377,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 老闆指「11:20pm 那個 LINE 群 cron 刪掉」→ 確認後選「整個 line_group 全刪」。crontab 移除 `line_group_runner.sh` 5 個平日班次(08:45 / 09:05 / 21:20 / 22:20 / 23:20);備份 `~/.marketdaily-fallback/crontab.bak.20260901-213357`(204→199 行)。
 - ⚠️ 第一版 `grep -v 'line_group_runner\.sh'` 會連 08-06 interop 事故那行**註解**一起吃掉(204→198,少了 6 行不是 5 行),改用 `grep -vE '^[^#]*/line_group_runner\.sh'` 只殺實際 cron 行,diff 逐行確認後才套用。
 - 一併下架 `scripts/fleet_liveness.py` 的「券商喊單(sinopac_line)」產出物心跳——來源刻意退役後這條會永久紅(已紅 20 天)=哨兵自殺。跑過驗證:艦隊全綠、output_problems 清空。
-- **未收乾**:`line_watch.sh`(cron `*/3 7-23`)的事件觸發路徑仍在,新訊息 toast 一樣會叫起 `line_group_runner.sh`,已當面告知老闆待其決定是否一併停。
+- 老闆回「ok」後**一併移除 `line_watch.sh`**(cron `*/3 7-23`)事件觸發路徑,整條 LINE 群擷取產線完全停止(crontab 199→198 行)。#683 已收。剩下的 `line_agent_runner.sh`(QuietFix 官方帳號客服代理,每分鐘)是不同東西,未動。

@@ -6718,5 +6718,115 @@
   "opened": "2026-08-31 17:18",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 673,
+  "what": "冷信退信閘門:每日 runner 首班尚未在生產跑過",
+  "why": "程式已上線並在真實信箱/真實 DB 驗過,但 cli.cmd_followup 的退信掃描接線只用 stub 測過,下個平日 10:05 TW 才會真的跑第一班",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-08-31 21:46",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 674,
+  "what": "quietfix 冷信名單 90/154 地址無法主動驗證",
+  "why": "HiNet 拒絕 SMTP 探測+catch-all 主機+我方住宅 IP 在 Spamhaus,只能靠退信事後回流,每個死址仍要先燒掉一次寄信信譽",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-08-31 21:46",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 675,
+  "what": "CHOSEN 刮刮卡:回信 Darren(附 scratch-card.html+chosentcg.com/pages/scratch-card)待老闆看過核可後寄",
+  "why": "對外內容送出前必先給老闆看(08-17 親令);信未寄",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-01 17:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 676,
+  "what": "CHOSEN 任務一:盲盒專區頁靜態設計稿(website-design-team SOP,8-12假商品卡,交HTML demo)",
+  "why": "Darren 0901 交接規格新任務,未動工",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-01 19:11",
+  "closed": "2026-09-01 21:29",
+  "note": "改口徑:任務一改為透過 Shopify 佈景主題做(排版我們/內容他們),重新登記"
+ },
+ {
+  "id": 677,
+  "what": "CHOSEN 任務二:消息頁設計稿(活動+最新消息兩區,三種卡片狀態)",
+  "why": "Darren 0901 交接規格新任務,未動工",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-01 19:11",
+  "closed": "2026-09-01 21:29",
+  "note": "同上,重新登記"
+ },
+ {
+  "id": 678,
+  "what": "CHOSEN 交接:repo邀請 kevinhuang0620-arch+回信對任務三介面(HANDOFF_DARREN.md 已備)",
+  "why": "對外動作,等老闆看過OK才發",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-01 19:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 679,
+  "what": "CHOSEN 寄碼email寄件人升級為 chosentcg.com 網域(現為 Brevo+gmail,顯示 brevosend.com)",
+  "why": "需 DNS 權限或他們信箱,待 Darren 方配合",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-01 19:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 680,
+  "what": "CHOSEN 開幕海報 v3 回寄 Darren(HTML 單檔,待老闆看過 OK)",
+  "why": "對外交付先給老闆看(08-17 親令)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-01 21:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 681,
+  "what": "CHOSEN 任務一:盲盒專區頁美化 — 直接改 Shopify 佈景主題 collection 模板(內容吃他們商品資料,不做假資料 demo)",
+  "why": "老闆 0901 定案:透過 Shopify 改頁面,排版我們/內容他們;未動工",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-01 21:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 682,
+  "what": "CHOSEN 任務二:消息頁美化 — member.chosentcg.com/news 前端排版(內容他們後台管理)",
+  "why": "同上;消息頁在 member 子網域,先查它吃哪個資料源再動工",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-01 21:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 683,
+  "what": "LINE 群券商喊單:cron 5 班已刪,但 line_watch.sh(*/3 7-23)事件觸發路徑仍會叫起 line_group_runner.sh",
+  "why": "老闆只選了刪 cron 那 5 行,是否連事件觸發一起停待他一句話",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-01 21:35",
+  "closed": "2026-09-01 21:40",
+  "note": "老闆核可,line_watch.sh cron 已一併移除,整條 LINE 群擷取產線停止"
  }
 ]
