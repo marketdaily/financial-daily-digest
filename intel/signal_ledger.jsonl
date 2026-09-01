@@ -944,3 +944,21 @@
 {"date": "2026-08-31", "code": "3555", "source": "leadflow", "level": "red", "signal": "博士旺(3555) 無消息近漲停+9.8%(連2根,5日+25.5%),疑資訊先行資金|外資+投信近3日僅-27張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-08-31", "code": "6895", "source": "leadflow", "level": "red", "signal": "宏碩系統(6895) 無消息近漲停+9.7%(量能6.3×,5日+18.5%),疑資訊先行資金|外資+投信近3日僅+18張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-08-31", "code": "3324", "source": "leadflow", "level": "red", "signal": "雙鴻(3324) 無消息近漲停+9.6%(量能3.8×,5日+23.2%),疑資訊先行資金|外資+投信近3日+5807張", "price_at_signal": null}
+{"date": "2026-09-01", "code": "2368", "source": "institutional", "level": "red", "signal": "金像電(2368):投信連 3 日買超(認養訊號,20日淨買 +6,672 張)", "price_at_signal": null}
+{"date": "2026-09-01", "code": "2368", "source": "margin", "level": "yellow", "signal": "金像電(2368):融資5日暴增21.6%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-09-01", "code": "3141", "source": "tw_rank", "level": "yellow", "signal": "晶宏(3141) 今日漲幅排行第11(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-09-01", "code": "3141", "source": "margin", "level": "yellow", "signal": "晶宏(3141):融資5日暴增25.1%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-09-01", "code": "4906", "source": "mops_news", "level": "yellow", "signal": "正文(4906) 重訊[2026-08-31]:更正113年12月至114年11月資金貸與資訊揭露明細表暨 113年度個體財務報告及113年度、114第1季、114第2", "price_at_signal": null}
+{"date": "2026-09-01", "code": "6285", "source": "investor_conf", "level": "red", "signal": "啟碁(6285):法說會1天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-09-01", "code": "6669", "source": "tw_rank", "level": "yellow", "signal": "緯穎(6669) 今日成交額排行第13(+9.9%),異常活躍", "price_at_signal": null}
+{"date": "2026-09-01", "code": "1409", "source": "tw_rank", "level": "red", "signal": "新纖(1409) 量能竄榜:今日量榜第20(近10日未進過top50,+4.3%,65,199張)", "price_at_signal": null}
+{"date": "2026-09-01", "code": "2762", "source": "tw_financials", "level": "yellow", "signal": "世界健身-KY(2762):負債比率85.3%(較 115Q1 至 115Q2)", "price_at_signal": null}
+{"date": "2026-09-01", "code": "4580", "source": "leadflow", "level": "red", "signal": "捷流閥業(4580) 無消息近漲停+10.0%(量能14.2×,5日+10.4%),疑資訊先行資金|外資+投信近3日僅-17張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-01", "code": "1326", "source": "leadflow", "level": "red", "signal": "台化(1326) 無消息近漲停+8.8%(連2根,5日+28.1%),疑資訊先行資金|外資+投信近3日+64724張", "price_at_signal": null}
+{"date": "2026-09-01", "code": "3169", "source": "leadflow", "level": "red", "signal": "亞信(3169) 無消息近漲停+10.0%(量能3.5×,5日+11.8%),疑資訊先行資金|外資+投信近3日僅+50張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-01", "code": "4563", "source": "leadflow", "level": "red", "signal": "百德(4563) 無消息近漲停+10.0%(量能3.8×,5日+12.4%),疑資訊先行資金|外資+投信近3日僅+4張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-01", "code": "6683", "source": "leadflow", "level": "red", "signal": "雍智科技(6683) 無消息近漲停+9.9%(連2根,5日+17.7%),疑資訊先行資金|外資+投信近3日僅-351張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-01", "code": "6727", "source": "leadflow", "level": "yellow", "signal": "亞泰金屬(6727) 無消息近漲停+9.9%(量能1.7×,5日+22.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-01", "code": "3691", "source": "leadflow", "level": "yellow", "signal": "碩禾(3691) 無消息近漲停+9.6%(量能2.9×,5日+8.7%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-01", "code": "6530", "source": "leadflow", "level": "red", "signal": "創威(6530) 無消息近漲停+9.4%(量能4.4×,5日+13.9%),疑資訊先行資金|外資+投信近3日僅-229張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-01", "code": "3583", "source": "investor_conf", "level": "red", "signal": "辛耘(3583):法說會2天內召開(波動事件窗口逼近)", "price_at_signal": null}
