@@ -1,5 +1,10 @@
 # Delvin Agent 專案
 
+<!-- 瘦身紀律(2026-09-01,源自 Claude Code 原作者 Boris Cherny talk「keep CLAUDE.md short, tune it」,老闆核可):
+     本檔每 session 全額進 context,目標 ≤20KB。harness 每場已自動注入完整工具/延遲工具/MCP/skill 清單(含 description),
+     禁止在此重複列表=同一份字付兩次錢(同 08-17 索引超支病)。
+     新內容進來先問:能不能放 nested CLAUDE.md / skill / memory 就地載入?來龍去脈一律留 memory pointer。 -->
+
 ## 語言偏好
 - 回覆語言：繁體中文
 - 主要開發語言：Python
@@ -51,64 +56,20 @@ npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true
 noise grain、scroll progress bar、page transition wipe、magnetic buttons、click ripple、scene reveal IntersectionObserver
 （**自訂游標已移除**，不要再加回去）
 
-## 可用工具權限
-
-### 直接可用工具
-| 工具 | 功能 |
-|------|------|
-| `Bash` | 執行 shell 命令 |
-| `Read` | 讀取本地檔案 |
-| `Edit` | 編輯檔案（精確替換） |
-| `Write` | 寫入/覆蓋檔案 |
-| `Agent` | 啟動子代理執行複雜任務 |
-| `AskUserQuestion` | 向用戶提問（互動選擇） |
-| `ToolSearch` | 搜尋並載入延遲工具 |
-| `ScheduleWakeup` | 排程自動喚醒（loop 模式） |
-| `ShareOnboardingGuide` | 分享 ONBOARDING.md |
-| `Skill` | 呼叫內建技能 |
-
-### 延遲工具（需透過 ToolSearch 載入）
-- **任務管理**：`TaskCreate`, `TaskGet`, `TaskList`, `TaskUpdate`, `TaskStop`, `TaskOutput`
-- **排程/自動化**：`CronCreate`, `CronDelete`, `CronList`, `RemoteTrigger`, `Monitor`
-- **網路**：`WebFetch`, `WebSearch`
-- **其他**：`NotebookEdit`, `PushNotification`, `EnterPlanMode`, `ExitPlanMode`, `EnterWorktree`, `ExitWorktree`
-
-### MCP 整合工具（延遲，需透過 ToolSearch 載入）
-- **Gmail**：搜尋郵件、建立草稿、標籤管理（`create_draft`, `search_threads`, `label_message` 等）
-- **Google Calendar**：建立/修改/刪除活動、查詢行程（`create_event`, `list_events`, `update_event` 等）
-- **Firecrawl**：網頁爬取、搜尋、瀏覽器互動（`scrape`, `crawl`, `search`, `firecrawl_agent` 等）
-- **Playwright**：瀏覽器自動化（`browser_navigate`, `browser_click`, `browser_take_screenshot` 等）
-
-### 內建技能（Skills）
-| 技能 | 用途 |
-|------|------|
-| `update-config` | 修改 settings.json、hooks、權限設定 |
-| `keybindings-help` | 自訂鍵盤快捷鍵 |
-| `simplify` | 審查並精簡修改過的程式碼 |
-| `fewer-permission-prompts` | 減少重複的權限提示 |
-| `loop` | 設定週期性重複任務 |
-| `schedule` | 建立/管理排程自動化任務 |
-| `claude-api` | 建構/除錯 Claude API 應用 |
-| `init` | 初始化 CLAUDE.md |
-| `review` | 審查 Pull Request |
-| `security-review` | 執行安全性審查 |
-
+## Skills
 ### 自訂技能（Delvin Custom Skills）— 134 個
 位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
 **完整目錄（每個 skill 一行中文用途）→ 同目錄 `CATALOG.md`；重疊裁決/任務唯一路徑 → `GOVERNANCE.md`（挑 skill 前先查）**
 
 **🏢 公司組織（2026-07-29 老闆拍板）**：整個 Claude 系統=一家公司,老闆=Delvin,10 部門 hub 在記憶庫 `dept_*.md`(08-02 增設 Dropshipping 部)(中心=dept_ceo_office 董事長室,Obsidian graph 橘色層+《公司組織圖.canvas》);新資產入庫要歸部門;組織變動→更新對外名片 artifact(網址與鐵則見 dept_ceo_office)。品質戰情頁=status.html+quality.json。
 
-分類速查（只列名，說明見 CATALOG.md；⚠️=退役或 Mac-only）：
-- **MarketDaily 營運**：workflow（日報pipeline）、site-doctor（全站巡檢必跑）、ui-ux-pro-max（含品牌設計系統）、claude-design、email-marketing-bible、growth-strategy、referral-program、pricing-strategy、landing-page-copy、ab-test-analyzer、sales-funnel-planner、sales-funnel-optimizer、cro（單頁轉換診斷）、onboarding（註冊後活化）、programmatic-seo（規模化SEO頁）、marketing-psychology（行為科學原則庫）、legal-compliance（⚖️法務長:上線前合規審查唯一路徑）、open-seo（任一站站審/關鍵字/排名/外鏈,MIT 替代 Semrush,IG9）
-- **行銷鏈（「Marketing Agents」＝五連跑，順序不可跳）**：spy → competitive-ads-extractor → bulk-creative → ads-score → ads-meta（2026-07-06 起每週日 10:00 TW 由 `~/.marketdaily-fallback/marketing_agents_weekly.sh` 全自動跑：生成＋獨立驗證者核可＋入佇列，見 `marketing/CLAUDE.md`）
-- **內容/創作**：content-engine、crosspost、content-repurposing、content-refresh、content-research-writer、brand-voice-amplifier（⚠️enhancer 退役）、podcast-outline、video-style、video-editing、story-script、youtube-summarizer、video-watcher（真的看影片:下載+抽格視覺讀+timeline beats,IG牆有Playwright fallback）、impeccable（第三方AI設計語言:/impeccable detect 58+反樣板檢查,接案新站硬閘）、article-extractor、recording-analysis（本地錄音→逐字稿→結構化分析）、no-ai-slop（去 AI 腔:逐行點名 pattern+繁中 tell,IG9）
-- **交易/量化**：quant-math（下注前必算）、backtest-validation（上實盤前必驗）、stock-analyzer、invest-skill、dcf-valuation、tw-financial-analysis、tw-stock-agent、tw-stock-scraper、trading-skills-pro、trade-bot、tradingagents、ccxt、finrobot（參考）、pm-mispricing、portfolio-optimization、regime-detection、order-execution、options-strategy-advisor、position-sizer、vcp-screener、market-breadth-analyzer、macro-regime-detector、institutional-flow-tracker、stanley-druckenmiller-investment、ai-trader、intel-signal-lookup（查`~/Delvin-agent/intel/`信息差引擎,免費層替代13F/insider）；edge 鏈：edge-pipeline-orchestrator → edge-signal-aggregator → edge-strategy-designer → signal-postmortem
-- **AI/Agent 工程**：agentic-engineering、ai-first-engineering、ai-regression-testing、agent-eval、eval-harness、council、iterative-retrieval、cost-aware-llm-pipeline、context-budget、cost-tracking、autonomous-loops、continuous-agent-loop、continuous-learning-v2、skill-creator、skill-seekers、mcp-builder、i-have-adhd（回覆形狀:先給動作/零寒暄,IG9）、omni-route（LLM 閘道:撞額度自動換家,IG9）
-- **開發紀律/測試/hooks**：superpowers、superpowers-lab、tdd-workflow、systematic-debugging、root-cause-tracing、finish-branch、pypict、playwright-testing、browser-qa、click-path-audit、security-team（⚠️資安總入口:分派Strix動態實攻/fuzz-security/defense-in-depth/defi-amm-security/內建security-review）、fuzz-security、defense-in-depth、deployment-patterns、error-handling、api-connector-builder、data-scraper-agent、scrapling（自適應爬蟲:adaptive選擇器+隱身反爬,取代7%覆蓋率OSM）、code-quality-hooks、typescript-quality-hooks、cc-hooks-python、claude-hooks-sdk（備用）、cc-notify（⚠️Mac-only）、claudio（⚠️Mac-only）、discord-notifier、activity-tracker、wayfinder（超大工程決策票地圖）、domain-modeling（詞彙表+ADR）、code-review-skill（⚠️退役→內建 /code-review）
-- **研究/知識**：deep-research、tapestry、research-indexer、academic-analyzer、knowledge-ops、doc-coauthoring、grill-me（idea 拷問/壓力測試）、book-to-skill（書/長PDF→按章懶載入 skill,IG9）、open-notebook（自架 NotebookLM:引用式問答+繁中 podcast,IG9）
-- **產能/雜項**：docx、pptx、xlsx、pdf、invoice-organizer、file-organizer、website-design-team（⚠️做整站/landing 唯一入口）、web-artifacts-builder、dashboard-builder、sql-generator、excel-formula、api-docs-generator、genai-prompt-pro（⚠️生成prompt/任務spec強制前置層）、nano-banana-pro、antigravity、open-generative-ai、comfy-api（本機零元生圖/生影片可程式呼叫層,IG9）、ui-wireframe-generator、creative-direction、color-palette-generator、font-pairing（⚠️typography-pairing 退役）、defi-amm-security、evm-token-decimals
-- **個人/職涯（Delvin 本人用,非事業線）**：ai-job-search（找職缺/評適配度/改履歷/求職信/面試準備;台灣 104+Yourator+LinkedIn 實測可跑,IG9）
+**強制路徑（違者＝走錯路，harness 每 session 已注入全部 skill 名＋description，分類速查 2026-09-01 併入 CATALOG.md）**：
+看影片→`video-watcher`（禁只讀 transcript）｜做整站/landing→`website-design-team` 唯一入口（接案新站硬閘＝`impeccable` detect）｜合規審查→`legal-compliance` 唯一路徑，判「不過」不得繞道｜資安→`security-team` 總入口｜下注前→`quant-math` 必算｜上實盤前→`backtest-validation` 必驗｜生成式 prompt→`genai-prompt-pro` 前置｜全站巡檢→`site-doctor`｜去 AI 腔→`no-ai-slop`｜行銷鏈五連跑順序不可跳：spy→competitive-ads-extractor→bulk-creative→ads-score→ads-meta（週日 10:00 TW 自動，見 `marketing/CLAUDE.md`）｜edge 鏈：edge-pipeline-orchestrator→edge-signal-aggregator→edge-strategy-designer→signal-postmortem
+已退役（SKILL.md 標 DEPRECATED 不刪檔）：typography-pairing、brand-voice-enhancer、code-review-skill（→內建 /code-review）；cc-notify / claudio＝Mac-only
+
+## 工作法核心（Claude Code 原作者實踐，2026-09-01 補）
+- **動手寫碼前先 brainstorm／出 plan 給用戶確認**（大改動必做；小修直接做）
+- **給 Claude 可自驗的回饋迴路**（測試／截圖／site_scan），讓它自己迭代 2-3 輪再交——原作者點名這是最有效的一招
 
 ## 📋 未收尾事項必須主動報（2026-07-30 Delvin 追責，最高優先）
 Delvin 原話：「你為什麼沒有直接收掉而是要等我問你才跟我講…我以後沒有問你怎麼辦，誰要負責」。
@@ -130,7 +91,7 @@ Delvin 原話：「你為什麼沒有直接收掉而是要等我問你才跟我�
 
 ## Skill 管理規則
 - **🔁 skill 自主學習迴圈(2026-07-29 老闆親令,全 skill 適用)**:每個 skill 目錄可有 `LESSONS.md` 教訓帳本;全域 PostToolUse hook(`~/.claude/hooks/skill-lessons.py`)在每次 skill 被呼叫時自動注入該帳本+回寫指令。使用 skill 撞到門檻/bug/更好做法且解決後,**收尾前必須 append 一節**(日期+坑+修法,≤6行);過時條目順手修正;沒新教訓不寫不灌水
-- **每次用戶分享或要求建立新 skill，必須同步更新三處**：`skills/CATALOG.md`（完整表：名稱＋一行中文用途）＋ 上方分類速查（列名）＋ `skills/GOVERNANCE.md`（歸群裁決）
+- **每次用戶分享或要求建立新 skill，必須同步更新三處**：`skills/CATALOG.md`（完整表：名稱＋一行中文用途）＋ `skills/GOVERNANCE.md`（歸群裁決）＋（若屬強制路徑／鏈）上方「強制路徑」行（2026-09-01 改制，老闆核可：分類速查已併入 CATALOG.md）
 - Skill 檔案位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
 - 有 URL 的 skill → 先 WebFetch 讀完再建立，確保內容正確
 - **⚖️ 治理裁決表（2026-07-03 起）**：同任務永遠走同一條路徑。多個 skill 都能做時查 `skills/GOVERNANCE.md`（任務→唯一路徑表＋重疊群主用/備用/退役＋抓網頁工具選擇順序）。新 skill 入庫必須同步歸群裁決；已退役：typography-pairing、brand-voice-enhancer、code-review-skill（SKILL.md 已標 DEPRECATED，不刪檔）
