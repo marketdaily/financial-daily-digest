@@ -1,66 +1,135 @@
 # Delvin Agent 專案
 
-<!-- 瘦身紀律(2026-09-01,源自 Claude Code 原作者 Boris Cherny talk「keep CLAUDE.md short, tune it」):
-     本檔每 session 全額進 context,目標 ≤12KB。harness 每場已自動注入完整工具/延遲工具/MCP/skill 清單
-     (含每個 skill 的說明),禁止在此重複列表=同一份字付兩次錢(見 memory hub_selftest_honesty_lessons 08-17)。
-     新內容進來先問:能不能放 nested CLAUDE.md / skill / memory 就地載入?全文細節一律留 memory pointer。 -->
+<!-- 瘦身紀律(2026-09-01,源自 Claude Code 原作者 Boris Cherny talk「keep CLAUDE.md short, tune it」,老闆核可):
+     本檔每 session 全額進 context,目標 ≤20KB。harness 每場已自動注入完整工具/延遲工具/MCP/skill 清單(含 description),
+     禁止在此重複列表=同一份字付兩次錢(同 08-17 索引超支病)。
+     新內容進來先問:能不能放 nested CLAUDE.md / skill / memory 就地載入?來龍去脈一律留 memory pointer。 -->
 
-## 語言與環境
-- 回覆語言：繁體中文；主要開發語言：Python
-- 主力機＝winrig（Windows 家用主機,WSL2/Ubuntu,24h 不睡）；Mac＝純視窗副機
-- 語音輸入：Win+H（詳見 memory feedback_voice_dictation_terminal）
-- **⚠️ Mac 禁止新增 launchd/cron/常駐排程（2026-07-09 發燙事故鐵則）**：排程與背景工作一律放 winrig；Mac 只允許 `~/.mac-guard/allowlist.txt` 清單內項目，守衛每日 08:30/20:30 自動掃，違規即 web push。確要在 Mac 加合法項目：先問用戶，核可後同步加進 allowlist
+## 語言偏好
+- 回覆語言：繁體中文
+- 主要開發語言：Python
 
-## 專案：MarketDaily
-每日財經 AI Email 日報平台——訂閱者設偏好（美股/台股），後台每日產生個人化 HTML Email 寄送。
+## 開發環境
+- 平台：Windows（家用主機，WSL2 / Ubuntu）—— 原 macOS 已非主力機
+- 終端機：WSL bash
+- 語音輸入：Windows 內建 Win+H（需接麥克風；詳見 memory feedback_voice_dictation_terminal）
+- **⚠️ Mac 禁止新增 launchd / cron / 常駐排程（2026-07-09 發燙事故鐵則）**：排程與背景工作一律放 winrig；Mac 只允許 `~/.mac-guard/allowlist.txt` 清單內項目（遠端控制、同步類等必須在 Mac 本機的東西）。守衛 `com.delvin.launchagent-guard` 每日 08:30/20:30 自動掃，違規即 web push 告警。確要在 Mac 加合法項目：先問用戶，核可後同步加進 allowlist
 
-- **前端**＝`docs/`（靜態 HTML/CSS/JS，Cloudflare Pages）；**後端**＝CF Workers＋KV（tuna_pipeline / stripe-webhook）；**AI 產圖**＝`image_generator.py`、`opengenai_client.py`
-- **子目錄就地規範：`docs/CLAUDE.md`（前端鐵則）、`marketing/CLAUDE.md`（發文鐵則）——動該目錄先讀**
-- 關鍵頁：`index.html`（首頁，i18n 預設中文）、`dashboard.html`（用戶後台＋管理員面板）、`preferences.html`（偏好，含公司名）、`admin.html`（KV 管理）、`ui-pro.js`（共用 UI 層）；`output/`＝Email digest 存檔
-- 部署：`npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true`（一律 `npx wrangler`；有未 commit 變更加 `--commit-dirty=true`）。站＝`https://marketdaily.ai`；CF 帳號 delvin.12345678@gmail.com；Account ID `a92082d84f08b1d4883facbf1a1dc445`
-- i18n：`data-i18n` / `data-i18n-html` / `data-i18n-placeholder` 標記＋`applyLang(lang)`，`localStorage("md-lang-v2") || "zh"`；全站頁面皆有
-- ui-pro.js：grain、scroll progress、transition wipe、magnetic buttons、ripple、scene reveal（**自訂游標已移除，不要加回去**）
+## 專案說明
+
+**MarketDaily** — 每日財經 AI Email 日報平台。
+訂閱者設定股票偏好（美股 / 台股），後台每日產生個人化 HTML Email 並寄送。
+
+### 架構
+- **前端**：`docs/` 資料夾（靜態 HTML/CSS/JS），部署在 Cloudflare Pages
+- **後端**：Cloudflare Workers + KV 儲存（tuna_pipeline / stripe-webhook）
+- **AI 產圖**：`image_generator.py`、`opengenai_client.py`
+- **子目錄就地規範**：`docs/CLAUDE.md`（前端鐵則）、`marketing/CLAUDE.md`（發文鐵則）——動該目錄先讀
+
+### 關鍵檔案
+| 檔案 | 說明 |
+|------|------|
+| `docs/index.html` | 首頁（Landing page，i18n 中英切換，預設中文） |
+| `docs/dashboard.html` | 用戶後台（股票偏好摘要、管理員面板） |
+| `docs/preferences.html` | ⚠️ 已廢棄＝redirect 到 `dashboard?focus=stocks`；股票偏好 UI 只在 dashboard.html 維護（見 memory `feedback_dashboard_prefs_sync`、`docs/CLAUDE.md`） |
+| `docs/admin.html` | 管理員後台（KV 資料管理、用戶清單） |
+| `docs/ui-pro.js` | 共用 UI 強化層（grain、scroll bar、transition、ripple） |
+| `output/` | 產生的 HTML Email digest |
+
+### 部署指令
+```bash
+npx wrangler pages deploy docs --project-name marketdaily --commit-dirty=true
+```
+- 網站 URL：`https://marketdaily.ai`
+- Cloudflare 帳號：`delvin.12345678@gmail.com`
+- Account ID：`a92082d84f08b1d4883facbf1a1dc445`
+- 一律用 `npx wrangler`（非全域安裝），有未 commit 變更加 `--commit-dirty=true`
+- **⚠️ 部署有兩條腿，本機這條不是唯一（2026-08-12 事故）**：winrig 的 `npx wrangler` 走 OAuth 憑證，那份憑證死掉時 12 支會 deploy 的 runner 一起啞、公版存檔頁 404 而**每支 cron 各自 exit 0**。第二條腿＝`bash scripts/deploy_docs_via_actions.sh "<原因>" [驗證URL]`（GH Actions `pages_deploy.yml` + GH secret `CLOUDFLARE_API_TOKEN`，不碰本機憑證）。⚠️ 它發的是 **origin/main**，不是磁碟現狀——腳本會擋住有落差的呼叫，要先 push。**cron 裡不要自己寫這兩條腿**：一律呼叫 `cron_deploy_docs "<tag>" "<commit message>" [verify_url]`（`scripts/lib_cron_runner.sh`，2026-08-12 起 11 個呼叫端都用它）——本機腿死掉自動退備援腿；新內容還沒 push 時**不發舊版**，改留 pending 單等 push 後由 deploy_drift 補發。`deploy_drift` 守衛（*/30）偵測到線上落後 origin 時會自己走這條腿補發（每日 3 次上限，發前用 `deploy_autoheal_verdict.py` 判 HEAL/REGRESS/NOGAIN，線上比 origin 新一律不發＝不自己製造回捲）。
+
+### i18n 系統
+- 用 `data-i18n`、`data-i18n-html`、`data-i18n-placeholder` 屬性標記需翻譯元素
+- `applyLang(lang)` 函數讀取 `localStorage("md-lang-v2")` 套用語言
+- 預設語言：**中文（zh）**（`localStorage.getItem("md-lang-v2") || "zh"`）
+- 全站頁面皆有 i18n（含 dashboard / preferences / contact / guide / agents / filter / success）
+
+### ui-pro.js 包含功能
+noise grain、scroll progress bar、page transition wipe、magnetic buttons、click ripple、scene reveal IntersectionObserver
+（**自訂游標已移除**，不要再加回去）
+
+## Skills
+### 自訂技能（Delvin Custom Skills）— 134 個
+位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
+**完整目錄（每個 skill 一行中文用途）→ 同目錄 `CATALOG.md`；重疊裁決/任務唯一路徑 → `GOVERNANCE.md`（挑 skill 前先查）**
+
+**🏢 公司組織（2026-07-29 老闆拍板）**：整個 Claude 系統=一家公司,老闆=Delvin,10 部門 hub 在記憶庫 `dept_*.md`(08-02 增設 Dropshipping 部)(中心=dept_ceo_office 董事長室,Obsidian graph 橘色層+《公司組織圖.canvas》);新資產入庫要歸部門;組織變動→更新對外名片 artifact(網址與鐵則見 dept_ceo_office)。品質戰情頁=status.html+quality.json。
+
+**強制路徑（違者＝走錯路，harness 每 session 已注入全部 skill 名＋description，分類速查 2026-09-01 併入 CATALOG.md）**：
+看影片→`video-watcher`（禁只讀 transcript）｜做整站/landing→`website-design-team` 唯一入口（接案新站硬閘＝`impeccable` detect）｜合規審查→`legal-compliance` 唯一路徑，判「不過」不得繞道｜資安→`security-team` 總入口｜下注前→`quant-math` 必算｜上實盤前→`backtest-validation` 必驗｜生成式 prompt→`genai-prompt-pro` 前置｜全站巡檢→`site-doctor`｜去 AI 腔→`no-ai-slop`｜行銷鏈五連跑順序不可跳：spy→competitive-ads-extractor→bulk-creative→ads-score→ads-meta（週日 10:00 TW 自動，見 `marketing/CLAUDE.md`）｜edge 鏈：edge-pipeline-orchestrator→edge-signal-aggregator→edge-strategy-designer→signal-postmortem
+已退役（SKILL.md 標 DEPRECATED 不刪檔）：typography-pairing、brand-voice-enhancer、code-review-skill（→內建 /code-review）；cc-notify / claudio＝Mac-only
+
+## 工作法核心（Claude Code 原作者實踐，2026-09-01 補）
+- **動手寫碼前先 brainstorm／出 plan 給用戶確認**（大改動必做；小修直接做）
+- **給 Claude 可自驗的回饋迴路**（測試／截圖／site_scan），讓它自己迭代 2-3 輪再交——原作者點名這是最有效的一招
+
+## 📋 未收尾事項必須主動報（2026-07-30 Delvin 追責，最高優先）
+Delvin 原話：「你為什麼沒有直接收掉而是要等我問你才跟我講…我以後沒有問你怎麼辦，誰要負責」。
+
+- **收工摘要不准只講已完成**：還沒收乾的、還沒在生產驗證的、我自己造成的風險，一律當場講，不等他問。
+- 任何未收乾的事項在做的當下就登記：`scripts/open_items.py add "一句話" --why "為什麼還沒收" [--risk high|med|low] [--owner me|delvin]`；收掉了 `close <id> --note`。
+- **機器保證，不靠良心**：`.claude/settings.json` 的 Stop hook 在每次 session 結束執行 `open_items.py push`，還有 open 項就自動推播到 Delvin 手機（零 open 項時完全靜默，不製造噪音）。
+- 判準：「已完成」= 已在**生產/真實排程**跑過並驗證；只有單元測試/模擬驗證過的一律是 open 項，寫明「尚未在生產跑過」。
 
 ## 編碼規範
-- 使用 Python 開發；不加不必要的註解；保持程式碼簡潔
+- 使用 Python 開發
+- 不加不必要的註解
+- 保持程式碼簡潔
 - **機密一律 `.env`**（已在 .gitignore）：key/token 絕不硬編碼進程式或 commit；新增 secret 先確認 .gitignore 擋得住，git 只放 `.env.example`
 - **前後端分離**：`docs/` 只放前端；Workers / Python pipeline 不產頁面 markup（email HTML 模板例外）。改前端任務不碰後端目錄，反之亦然
-- **關注點分離**：新代碼按 data / logic / render 分層；既有大檔（main.py / analyzer.py、docs 內嵌 JS）的抽離開獨立任務做，禁止順手夾帶（scope-lock）；抽離計畫見 `~/autonomous/research/2026-07-03_clean_code_audit_extraction_plan.md`
-- **新的獨立產品不再塞進本 repo**，另開 repo；既有歷史產品目錄（fortune-ai / ganla-app / youtube_space 等）維持現狀不搬
-- 背景：memory `feedback_engineer_structure_review`
+- **關注點分離**：新代碼按 data / logic / render 分層寫；既有大檔（根目錄 main.py / analyzer.py、docs 內嵌 JS）的抽離要開獨立任務做，禁止順手夾帶（見 scope-lock 規則）；抽離計畫見 `~/autonomous/research/2026-07-03_clean_code_audit_extraction_plan.md`
+- **新的獨立產品不再塞進本 repo**，另開 repo；本 repo 已有的歷史產品目錄（fortune-ai / ganla-app / youtube_space 等）維持現狀不搬
+- 詳細背景：memory `feedback_engineer_structure_review`（2026-07-03 工程師 7 點體檢）
 
-## 工作法核心（源自 Claude Code 原作者實踐＋歷次親令）
-- **動手寫碼前先 brainstorm／出 plan 給用戶確認**（大改動必做；小修直接做）；**給 Claude 可自驗的回饋迴路**（測試／截圖／site_scan），讓它自己迭代 2-3 輪再交
-- **🧬 白話→先重寫成精準 prompt 並【明寫給用戶看】再執行（2026-06-26 親令＋07-10 升級）**：任務／專業需求才重寫（閒聊不用），像 PM 開 spec（目標/脈絡/範圍/限制/產出/驗收六欄，模板見 `genai-prompt-pro` Part 1），貼一兩句「我理解成___」讓他即時校正；明顯指令邊寫邊做，模糊或高風險才停下等點頭。**所有生成式 prompt（圖/影/音/LLM pipeline）呼叫前必過 skill `genai-prompt-pro`**，禁止隨手一句話 prompt。詳見 memory `feedback-voice-prompt-rewrite`
-- **🧠 大腦語意搜尋（所有 session 都該用）**：`python3 ~/autonomous/brainsearch/search.py "問題" -k 5 [--graph]`——找「以前學過什麼/踩過什麼坑/有沒有現成積木」先用它再 grep；`graph.py related/stats/hubs` 走記憶圖譜
-- **🔁 版控全自動（2026-08-10 親令）**：完成一批改動當場 commit（有意義訊息）＋push，不等用戶說；例外仍先問：force push／改寫歷史／刪 branch／對外發布
-- **🔁 模型交接（2026-07-07）**：換模型接手的第一個 session，開工前先讀 memory `feedback_model_handoff_playbook.md` 全文
+## Skill 管理規則
+- **🔁 skill 自主學習迴圈(2026-07-29 老闆親令,全 skill 適用)**:每個 skill 目錄可有 `LESSONS.md` 教訓帳本;全域 PostToolUse hook(`~/.claude/hooks/skill-lessons.py`)在每次 skill 被呼叫時自動注入該帳本+回寫指令。使用 skill 撞到門檻/bug/更好做法且解決後,**收尾前必須 append 一節**(日期+坑+修法,≤6行);過時條目順手修正;沒新教訓不寫不灌水
+- **每次用戶分享或要求建立新 skill，必須同步更新三處**：`skills/CATALOG.md`（完整表：名稱＋一行中文用途）＋ `skills/GOVERNANCE.md`（歸群裁決）＋（若屬強制路徑／鏈）上方「強制路徑」行（2026-09-01 改制，老闆核可：分類速查已併入 CATALOG.md）
+- Skill 檔案位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`
+- 有 URL 的 skill → 先 WebFetch 讀完再建立，確保內容正確
+- **⚖️ 治理裁決表（2026-07-03 起）**：同任務永遠走同一條路徑。多個 skill 都能做時查 `skills/GOVERNANCE.md`（任務→唯一路徑表＋重疊群主用/備用/退役＋抓網頁工具選擇順序）。新 skill 入庫必須同步歸群裁決；已退役：typography-pairing、brand-voice-enhancer、code-review-skill（SKILL.md 已標 DEPRECATED，不刪檔）
 
-## Skills（127 個自訂）
-- 位置：`~/.claude/plugins/marketplaces/delvin-custom/plugins/delvin-tools/skills/<name>/SKILL.md`；**完整目錄＝同目錄 `CATALOG.md`；重疊裁決／任務唯一路徑＝`GOVERNANCE.md`（挑 skill 前先查）**。harness 每 session 已注入全部 skill 名稱＋說明，本檔不再維護分類速查（2026-09-01 併入 CATALOG.md）
-- **強制路徑（違者＝走錯路）**：看影片→`video-watcher`（禁只讀 transcript）｜做整站/landing→`website-design-team` 唯一入口｜下注前→`quant-math` 必算｜上實盤前→`backtest-validation` 必驗｜生成式 prompt→`genai-prompt-pro` 前置｜全站巡檢→`site-doctor`｜行銷鏈五連跑順序不可跳：spy→competitive-ads-extractor→bulk-creative→ads-score→ads-meta（週日 10:00 TW 自動，見 `marketing/CLAUDE.md`）｜edge 鏈：edge-pipeline-orchestrator→edge-signal-aggregator→edge-strategy-designer→signal-postmortem
-- 已退役（SKILL.md 標 DEPRECATED 不刪檔）：typography-pairing、brand-voice-enhancer、code-review-skill（→內建 /code-review）；cc-notify / claudio＝Mac-only
-- **新 skill 必同步三處**：`CATALOG.md`＋`GOVERNANCE.md` 歸群裁決＋（若屬強制路徑／鏈）本檔「強制路徑」行。有 URL 的 skill→先 WebFetch 讀完再建立
-- **每 skill 有 LESSONS.md 帳本（07-29 親令）**：用完撞到坑必回寫；Mac 上改既有 skill 檔一律經 winrig MCP
+## 自動守望系統（2026-06-11 上線,不要重複建）
+- **🤖 自主進步機器 `~/autonomous/`（2026-07-02 上線,是「我」的一部分,不要當陌生東西關掉/重建）**：winrig 24/7 冷血自學引擎,用戶沒在用電腦時自己找事做、自己學、自己進步。北極星=擴充 `capabilities/INDEX.md` 能力庫,讓未來一句「幫我自動化 X」即 100%。`driver.sh`(cron `*/15`)→活動閘門(用戶互動就完全讓路)+50%用量閘門(`config.sh` `STOP_AT_USD`)+斷點記憶(`state/current_task.md`)+`--dangerously-skip-permissions` 全自主。死線=絕不寄信(全域 hook 擋)。詳見 memory `project_autonomous_machine`;控制:`~/autonomous/看我.txt`。
+- **🧠 大腦語意搜尋（所有 session 都該用,不只機器）**：`python3 ~/autonomous/brainsearch/search.py "問題" -k 5 [--graph]` —— 語意搜全部記憶庫/能力庫/WORKLOG/CLAUDE.md,零 token 秒回;找「以前學過什麼/踩過什麼坑/有沒有現成積木」先用它再 grep。`--graph` 附每筆命中的 wikilink 鄰居;`graph.py related "一句話" -d 2` 沿記憶連結圖擴展(GraphRAG,語意+圖譜),`graph.py stats|hubs|orphans|broken` 看圖譜健康。索引每晚 04:40 自動增量重建,04:50 重建 Obsidian vault。
+- **🕸️ Obsidian 大腦 vault（2026-07-07 上線）**：`~/delvin-claude-brain` 整個 repo=Obsidian vault(記憶 299 檔+wikilink 圖譜+自動生成 HOME/MOC-*/GRAPH-HEALTH 導覽頁)。⚠️ Obsidian 的 fs.watch 吃不了 `\\wsl.localhost` 9P 路徑(EISDIR),所以 Windows 端開的是 NTFS 鏡像 `C:\Users\USER\ClaudeBrain`(`mirror_win.sh` cron */10 **雙向**:去程 WSL→Win 只鏡 *.md+WORKLOG;回程 `INBOX/` 資料夾=Delvin 在 Obsidian 手寫交辦→`obsidian_inbox_ingest.py` 自動進 `~/autonomous/backlog.md` 佇列+推播回執)。桌面捷徑「Claude 大腦」直開。`graph.py suggest`=連結預測(brain.db 向量找「語意近但未連結」記憶對,GRAPH-HEALTH 每晚列 top15)。⚠️ 除 INBOX 外 vault 是唯讀鏡像,改記憶一律在 Claude session 改真源;`.obsidian/workspace*` 已 gitignore。
+- **digest-watchdog worker**（`digest-watchdog/`,2026-07-20 起 v2 dead-man 模式,4 cron）：TW 07:30/08:00 驗早報、20:25/21:00 驗晚報——只查 `marketdaily.ai/output/digest_<date>[_us].html` 公版存檔新鮮度(不依賴 GitHub/winrig),缺席即 web push admin(KV `watchdog:*` 防重)。⚠️ **不再是「只告警不代跑」**(2026-07-26 起 GitHub 帳號解封、Actions 復活):第一檢(07:30 / 20:25)撲空即 `dispatchFailover()` 派 `daily_digest.yml`(failover=1)雲端接手生成寄送,每班每天最多派一次。背景:v1 綁 GitHub Actions 已死、winrig heartbeat.sh 會跟主機一起死(0720 早報靜默事故)。診斷:`curl https://watchdog.marketdaily.ai/status`;查是否被代打 `gh run list`。
+- **⚠️ 雙寄防線必須兩邊都在(2026-07-30 事故,21 位每人收到兩封)**：winrig 與雲端 failover 是**兩個都會寄的實體**,判準統一在 `main._archive_delivered()`(=網站 `_archive_online` OR git origin `_archive_in_origin` 雙軌;公版存檔是**寄完才推**的,「還沒寄它就在線上/在 origin」= 另一邊已交付)。⚠️ 07-31 再犯教訓:晚班原本沒人 deploy,只查網站=盲到隔天早上,交付訊號必須含 push 即可見的 origin 軌+run.sh us 班也 deploy(2026-08-02 三重修,含 US 起跑提前 18:20)。雲端側 `_failover_send_clearance`(07-28 補)、winrig 側 `_local_send_clearance`(07-30 補)缺一不可——只裝單邊就只擋得住單一方向。查不到存檔一律照寄(死線是絕不缺信);`MARKET=both` 手動補寄與 `MD_FORCE_SEND=1` 放行。⚠️ **判準只准呼叫 `main._archive_delivered()` 本人,任何地方都不准自己 curl 重寫一份**(2026-08-12:daily_digest.yml 的起跑閘自己用 `curl -s` 比對 200,但存檔活著時線上回 **308**,那道閘自上線起從未射出過,而且只查網站漏掉 origin 那半 ⇒ 憑證死掉那天誤派的備援跑滿 51m47s 才在第③層退場)。迴歸 `scripts/test_dupe_delivery_guard.py` + `scripts/test_failover_gate_contract.py`,兩支已接夜巡 `~/autonomous/capabilities/tests/digest_dupe_guard.test.sh`(在此之前**沒有任何東西在跑它們**)。
+- **信息差渠道體檢**（`intel/doctor.py` + `~/.marketdaily-fallback/intel_doctor_runner.sh`,2026-08-04）：24 個連接器收斂成 22 個上游渠道,每晚 21:00(刻意在 intel_patrol 21:30 **之前**)真實探測+驗回傳形狀,分三態 可用/需設定(附申請處方)/壞掉(附診斷),並標出每條死渠道供給 latest.json 的哪些 source——**解的是「訊源缺席到底是沒事件還是渠道死了」這個致命歧義**。只在狀態轉變時推播(持續壞不重推、缺金鑰不推、純恢復用🟢),體檢自己掛掉也會推。手動:`./.venv/bin/python -m intel.doctor`。⚠️ 加新探測時**必須沿用該 connector 在 production 的 transport 與 UA**(curl vs urllib、瀏覽器 UA vs 預設 UA),首版沒做到就誤報了 4 個健康渠道。
+- **site_scan.yml**：scan（`scripts/site_scan.py`,14 項,源頭=site-doctor skill 的 scan.py,改 skill 版要同步）→ fail 即推播告警 → Claude 在 CI 按 `scripts/site_fix_playbook.md` 自動修（只准動 docs/,guard 強制）→ 重掃全過才部署+push,否則 revert+推播告警。
+- **⚠️ LINE 已全面退役（2026-07-06 連 admin 備援也拔了）**：admin 告警唯一通道 = 自有 web push（alert-worker `/internal/admin-line-push`,路徑名沿用但只發 web push）。任何 session 不得再向用戶提 LINE、不得重接 LINE。
+- **🔔 告警解決回寫（2026-07-30 Delvin 拍板工作流）**：所有 admin 推播自動落 KV `admin_events`,admin.html「系統告警」頁可看歷史。Delvin 的流程=收到告警截圖丟給 Claude 處理。**修完任何曾推播 admin 告警的事故後,必須呼叫 `scripts/resolve_admin_alert.sh "<告警關鍵字>" "<一句怎麼解的>"` 把該則標「✅ 已解決」+解決說明**——Delvin 只看後台就知道哪些處理完,不用自己判斷。token 在 winrig .env（Mac 的 MARKETDAILY_ALERT_TOKEN 是舊值,Mac session 經 winrig MCP `run_bash` 打）。
+- **🤖 cron 呼叫 `claude -p` 的模型分層(2026-07-30 Delvin 親令,先「都用 opus」再「分層,日常小任務走 sonnet」)**：一律用 `scripts/lib_cron_runner.sh` 的 `claude_model TIER`，禁止自己寫 `--model`（會疊成兩個旗標）。**切法是「失敗代價」不是「任務大小」**：`heavy`=會改到生產程式碼／對外發布／做合規把關 → opus(降級 sonnet)；`light`=只讀資料的內部整理、摘要、機械性檢查 → sonnet(降級 haiku)。現役 heavy：site_scan 自修站、digest_selfheal 自癒、marketing_agents_weekly(對外投放素材)、news_reactive 起草+驗證(Python 端鏈 opus→sonnet→haiku)；現役 light：line_group(讀 LINE 截圖產內部 md/推播)。⚠️ **驗證者／把關者不准降級**——把關者變寬鬆＝放行壞內容，省的 token 不值那個風險。絕不吃 CLI 預設(=Fable 5,週額度見底整批 cron 同時失敗刷屏,07-30 news_reactive 每 10 分鐘告警即此因)。
+- **日報整點寄出**：cron 早 05:20/晚 18:20 TW 觸發只為生成（早報 2026-07-26 起 05:20 夜盤收完即起跑；晚報 2026-08-02 起 18:20＝06:20 ET 仍盤前，兩班皆 100 分 runway 供品質重生迴圈＋LLM 配額荒退避），main.py `_hold_until_send_time` 等到 07:00/20:00 整點一齊寄。⚠️ 05:30 preflight 已隨 GitHub Actions 停擺退役(2026-07-06 才發現,勿當它還在);寄前防線=①`build_email_html` 未定義 CSS class 確定性修復層 ②同一 HIGH audit check 生成中連中 3 位即熔斷推 admin(`_push_systemic_alert`,趕在整點寄出前)。
+- **日報備援防線三層(2026-07-24,Delvin「絕對不要再看到閹割版」,不要重複建)**：①**老闆護盾**——老闆本人若只因「軟錯」check(`_SOFT_HIGH_CHECKS`:reason_shallow/vague、tldr_too_short)要掉備援→改寄 AI 完整版(main.py `_owner_shield_applies`);硬錯仍走安全備援。②**老闆掉備援紅色 canary**——`_push_admin_halt_alert` 老闆在名單即最上方刺眼告警+push 重試3次。③**寄後自動根因修**——`~/.marketdaily-fallback/digest_selfheal_runner.sh`(cron */10,窗口 TW08:50-09:10/US21:20-21:40)用 `scripts/digest_selfheal_detect.py` 偵測「檢查造成的硬錯備援」(排除 429/503 infra)→spawn `claude -p`(playbook=`scripts/digest_fix_playbook.md`)worktree 內根因修+白名單guard+digest測試把關→過才 push;修未來不重寄今日;kill-switch=`~/.marketdaily-fallback/digest_selfheal.DISABLED`。owner email 由 env `MARKETDAILY_OWNER_EMAIL` 定(預設 delvin)。
+- 相關 token（同一把值,**旋轉要「八處」一起**,2026-07-30 再校正,原記「三端/七處」不完整——漏了 Mac 守衛那份）：
+  - **alert-worker 四把 secret**：`ADMIN_PUSH_TOKEN`、`ADMIN_PUSH_TOKEN_2`、`MARKETING_TARGETS_TOKEN`、`INTERNAL_TOKEN`（admin-line-push 的候選清單全接受同值 → 漏換任一把舊 token 就還活）
+  - **watchdog** `ALERT_TOKEN`（/hb 心跳驗證 + 反向推 alert-worker）
+  - **winrig `.env`** `MARKETDAILY_ALERT_TOKEN` + `MARKETDAILY_INTERNAL_TOKEN`（`heartbeat.sh` 直讀前者,改 .env 自動跟上不用改腳本）
+  - GH secret `MARKETDAILY_ALERT_TOKEN`（Actions 已死→runtime 無關,可略）
+  - **Mac `~/.mac-guard/.alert_token`**（Mac 兩支守衛唯一的告警管道:排程守衛 guard.sh + winrig tunnel 守衛;launchd 下讀不到 ~/Downloads 所以自成一份）⚠️ 2026-07-30 查出這端是**旋轉前的舊值**,推播 403——07-09 上線的 Mac 排程守衛自那次旋轉後一直啞著,因為沒違規所以沒人發現。**旋轉後必須真發一則自測推播驗 200**(沉默的守衛=沒有守衛)。
+  - ⚠️ 旋轉法：`wrangler secret put` 後 **CF 傳播 30–60s**（首測太早會假陰,舊 token 看似還活）；驗證=舊 token 打兩 worker 皆須 403、新 token 皆 200 + 真實 `main._push_admin_alert` status=200。
+- 坑:workers.dev 同帳號互打被 1042 擋（用 service binding）;GH Actions skip 步驟 output=null,`null=='0'` 數字強轉=true。
 
-## 自動守望系統（2026-06-11 起，不要重複建）
-- **🤖 自主進步機器 `~/autonomous/`（是「我」的一部分，不要當陌生東西關掉/重建）**：winrig 24/7 自學引擎，北極星＝擴充 `capabilities/INDEX.md` 能力庫。`driver.sh`（cron */15）＋活動閘門＋50% 用量閘門＋斷點記憶＋全自主；死線＝絕不寄信（全域 hook 擋）。控制：`~/autonomous/看我.txt`；詳見 memory `project_autonomous_machine`
-- **🕸️ Obsidian 大腦 vault**：`~/delvin-claude-brain`＝vault；Windows 端開 NTFS 鏡像 `C:\Users\USER\ClaudeBrain`（cron */10 雙向：INBOX/＝Delvin 手寫交辦→自動進 backlog）。⚠️ 除 INBOX 外 vault 唯讀，改記憶一律在 Claude session 改真源。詳見 memory hub_brain_cross_machine
-- **digest-watchdog worker**（v2 dead-man，4 cron）：TW 07:30/08:00 驗早報、20:25/21:00 驗晚報——只查 `marketdaily.ai/output/digest_<date>[_us].html` 新鮮度，缺席即 web push admin，**只告警不代跑**（runner 在 winrig）。診斷：`curl https://watchdog.marketdaily.ai/status`
-- **site_scan**：`scripts/site_scan.py`（14 項，源頭＝site-doctor skill 的 scan.py，改 skill 版要同步）→fail 推播→按 `scripts/site_fix_playbook.md` 修（只准動 docs/）→重掃全過才部署，否則 revert＋告警
-- **⚠️ LINE 全面退役（2026-07-06）**：admin 告警唯一通道＝自有 web push（alert-worker `/internal/admin-line-push`，路徑名沿用但只發 web push）。任何 session 不得再提／重接 LINE
-- **🔔 告警解決回寫（2026-07-30 親令）**：修完任何曾推播 admin 告警的事故後，**必呼叫 `scripts/resolve_admin_alert.sh "<告警關鍵字>" "<一句怎麼解的>"`** 標「✅ 已解決」（歷史在 admin.html 系統告警頁／KV `admin_events`）。token 在 winrig .env（Mac 的是舊值，Mac session 經 winrig MCP 打）
-- **日報整點寄出**：cron 06:20/19:25 TW 只為生成，main.py `_hold_until_send_time` 等到 07:00/20:00 整點寄。⚠️ 05:30 preflight 已退役勿當還在；寄前防線＝①未定義 CSS class 確定性修復層 ②同一 HIGH audit 連中 3 位即熔斷推 admin
-- token 同值三端：alert-worker `ADMIN_PUSH_TOKEN`＝GH `MARKETDAILY_ALERT_TOKEN`＝watchdog `ALERT_TOKEN`（旋轉要三端一起）。坑：workers.dev 同帳號互打被 1042 擋（用 service binding）；GH Actions skip 步驟 output=null，`null=='0'` 強轉＝true
-
-## 重要慣例（歷次事故鐵則）
-- **🧠 記憶單機主寫制 B 級（2026-07-30 拍板）**：winrig＝唯一寫者。Mac 可「新增」記憶 topic 檔（會送出，需登記 `MEMORY_INBOX_MAC.md`），**不能「修改」既有記憶/skill 檔**（sync `--ignore-existing` 程式收權；在 Mac 改不會傳出去只會存證告警）→要改就經 winrig MCP。winrig 端改索引只准 Edit 錨定，禁整檔 Write。詳見 memory `feedback_memory_single_writer`
-- **⚖️ 合規鐵則：個股分析內容永不與付費掛鉤（COMPLIANCE_STRUCTURE.md）**：無投顧牌，依法（投信投顧法§4/§107）任何個股分析/建議/價位內容必須**免費開放全體且完全相同**——不得因付費差異化數量/深度/速度/先後；行銷文案不得把個股功能與付費連結；新功能先對照 COMPLIANCE_STRUCTURE.md
-- **💸 全面免費化＋早鳥口徑（2026-07-09 用戶指令）**：付費方案與 Stripe 金流全下架，全站零收費。對外唯一口徑＝「限時免費＋早鳥鎖定」（現在訂閱者未來永久免費）。**個股分析依法永遠免費，任何文案不得暗示未來分析內容會收費**；推薦獎勵不承諾任何回報。詳見 memory `project_marketdaily_free_earlybird`
-- **🚫 禁止手動寄信（2026-05-22 明確指令）**：非 TW 早上 7:00 禁止任何會寄 email 給訂閱者的動作（手動觸發 workflow、跑 send_*.py、curl Brevo 全算）。日報只能由 digest-cron worker 排程寄出；唯一例外＝新訂閱歡迎信（Worker 自動發）。已有 PreToolUse hook `block-mass-email.sh` 強制攔；有疑慮一律先問
-- **🚫 社群發文前必逐字驗 caption（2026-05-26 出包）**：`daily_run.py` 跑前先 `--dry` 看下一篇 id→讀 `social_posts.json` 該 id caption＋圖，逐字比對現行方案/事實（價格、來源數、勝率、邀請制、市況）；任一條不符→停手先問。教訓與地雷清單見該日 backup `marketing/social_posts.json.bak-2026-05-26`
-- **社群排程＝winrig cron single-source（2026-07-01 現況）**：`~/.marketdaily-fallback/social_post_runner.sh`（crontab */10，14:00-14:19 TW 窗口＋每日鎖發一篇）；GitHub Actions 已死、social-post-cron Worker crons=[] 停用。**斷更先查三件**：①`daily_run.py --dry` 存貨 ②winrig crontab 有無 runner ③Meta token（`auto_post.py check`）。詳見 memory `project_social_post_winrig_restore`
-- **不加自訂游標**（ui-pro.js 已刪，不要加回）
-- **Email 樣式**：日報一律完整 HTML 卡片，不能純文字
-- **台股顯示**：偏好 tag 同時顯示代碼＋公司名稱
-- **Admin 記住 Email**：`localStorage("md-admin-email-saved")` 儲存，登入自動填入並 focus 密碼欄
+## 重要慣例（從過去 session 學到）
+- **🔁 版控全自動（2026-08-10 Delvin 親令）**：完成一批檔案改動後當場自動 commit（有意義訊息）+push，不等用戶說「進版控」；storefront 另有每小時 autocommit cron 保底。例外仍要先問：force push/改寫歷史/刪 branch/對外發布
+- **🪟 Mac=純視窗（2026-07-30 Delvin 拍板 A 級，最高優先）**：所有思考/編碼/commit 走 winrig。**Mac 不跑 git 也不跑 sync**（launchd 已停用）；winrig 用 SSH 主動來收（`brain_collect_mac.sh`，`--ignore-existing` 只收新增、尊重墓碑防殭屍復活）、主動送回（`brain_deliver_mac.sh`，含墓碑刪除）。**排程一律 winrig**——Mac 會睡眠，放這裡會靜默不執行（07-01 的 update_stocks 就這樣沒跑、資料停更近兩個月）。⚠️ 代價：Mac 無本地能力，winrig 不可達時互動工作全停——**備援通道=`ssh winrig`（Windows 帳號，Tailscale）**，可經它 `wsl -d Ubuntu` 進 WSL 救援。詳見 memory `project_mac_pure_window`。
+- **🧠 記憶單機主寫制 → B 級（2026-07-30 升級，A 級的基礎）**：記憶索引 `MEMORY.md` 唯一寫者=winrig。**Mac 可「新增」記憶 topic 檔（winrig 會收走），但不能「修改」既有記憶/skill 檔**——寫入權由程式收掉（`--ignore-existing`），不靠自律；在 Mac 改既有檔不會生效，會被偵測並推播。新增記憶仍需登記 `MEMORY_INBOX_MAC.md`（winrig 每 2h SSH 拉走；該檔已排除在 sync 之外）。winrig 端改索引只准 Edit 錨定，禁整檔 Write。詳見 memory `feedback_memory_single_writer`、`project_brain_sync_realtime`。
+- **🔁 模型交接手冊（2026-07-07 建立）**：換模型接手（Fable 週額度見底改用 Opus 4.8 等）的**第一個 session,開工前先讀 memory `feedback_model_handoff_playbook.md` 全文**——Fable 隱性工作法一頁版（十鐵則/驗證者分離/e2e驗證/收工四件套/武器庫/陷阱Top清單）。CLAUDE.md+記憶+skills 換模型自動繼承,手冊補的是「工作法靈魂」。
+- **⚖️ 合規鐵則：個股分析內容永不與付費掛鉤（2026-07-02 上線,COMPLIANCE_STRUCTURE.md）**：MarketDaily 無投顧牌,依法(投信投顧法§4/§107,橋頭111金訴235判例)任何含「個別有價證券分析/建議/買賣價位」的內容必須**免費開放全體用戶且完全相同**——不得因付費差異化數量、深度、速度、先後;行銷文案不得把個股功能與付費連結;新功能開發前先對照 COMPLIANCE_STRUCTURE.md 永久規則。已拆閘門:持股上限統一80、深度全開、AI對話全開(30則/日)、推播全開。
+- **💸 全面免費化＋早鳥口徑（2026-07-09,用戶指令,法律風險考量）**：Premium 付費方案與 Stripe 金流全部下架,全站零收費。對外唯一口徑=**「限時免費＋早鳥鎖定」**:「目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權」。未來若恢復收費只能收非分析類價值(或拿牌後另議),**個股分析依法永遠免費,任何文案不得暗示未來分析內容會收費**。後端:`/stripe/checkout-trial` 已 410、D7/D14/D21/D45 升級信全停(模板保留)、welcome/客服 AI 口徑已改、推薦獎勵不再承諾任何回報(純分享)。既有 Stripe 訂戶皆親友未付錢,無退款議題。詳見 memory `project_marketdaily_free_earlybird`。
+- **🧬 白話 → 先重寫成精準 prompt 並【明寫出來給用戶看】再執行（用戶 2026-06-26 指令,2026-06-27 確認要「看得到的重寫」,所有 session 通用,含主終端機與語音終端機）**：用戶講話常很白話、口語、省略脈絡(語音輸入還有同音字/聽錯)。收到指令後**先別照字面做**：用「我記得關於老闆的一切」(CLAUDE.md、記憶庫、最近在做的事)把這句白話**重寫成一段精準的專業指令**——補省略脈絡、修同音字、講清楚真正目標。**關鍵:重寫後的 prompt 要先用一兩句明寫出來貼給用戶看(例如「我把你的意思理解成:___,這樣對嗎/開始做了」),讓他能即時校正同音字與方向,而不是只在心裡默默重寫**(2026-06-27 用戶反映「我怎麼都沒看到你在做」=之前內化不外顯,他要看得到)。確認/明顯的指令可邊寫邊做不必等回覆;模糊或高風險才停下等他點頭。用戶原話:「你用專業的 prompt 貼給自己看,你比較好做事…讓它成為基因的一部分」。已燒進 voice_term `_start_session` priming + memory `feedback-voice-prompt-rewrite`。**2026-07-10 升級(用戶再批「重寫功能做得不夠好+我做的 prompt 都很爛」)**:①分流——閒聊不重寫,任務/專業需求才重寫,且要像 PM 開 spec(目標/脈絡/範圍/限制/產出/驗收六欄,模板見 skill `genai-prompt-pro` Part 1),不是換句話說;②所有生成式 prompt(圖/影/音/LLM pipeline)呼叫前**必過 skill `genai-prompt-pro`**(模型方言矩陣+7層骨架+checklist,最終 prompt 一律英文),禁止隨手一句話 prompt。
+- **🚫 禁止手動寄信（用戶 2026-05-22 明確指令）**：非台灣時間早上 7:00，禁止做任何會寄 email 給訂閱者的動作 —— 包括手動觸發 `daily_digest` workflow、跑 `send_*.py` 測試腳本、直接 curl Brevo 寄信 API。日報**只能**由 digest-cron worker 的排程 cron（每天 06:55 UTC）自動寄出。**唯一例外**：新訂閱者歡迎信，由 Cloudflare Worker 在註冊當下自動發送，允許。已加 PreToolUse hook（`.claude/hooks/block-mass-email.sh`）強制攔截。任何發信動作有疑慮一律先問用戶，不可自行觸發。
+- **🚫 社群自動發文：發前必逐字驗 caption（2026-05-26 出包）**：`marketing/daily_run.py` 跑前**必須**先 `python daily_run.py --dry` 看下一篇 id，然後讀 `social_posts.json` 對該 id 的 caption + 圖片內容，逐字比對現行方案/事實（價格、來源數、勝率、邀請制、即時市況）。任何一條對不上 → 停手不發、先問用戶。歷史教訓:5/26 我直接補發 `referral`,caption 還寫「免費方案邀請制」+「推薦 3 人 → Pro 免費 1 個月」(早改掉的舊文案);同一批 `social_posts.json` 還埋有「75+ 來源」「勝率 75.5%」「捏造訂戶 Jason」「寫死 Fed/台積電/油價」等地雷,全清空 backup 在 `marketing/social_posts.json.bak-2026-05-26`。
+- **社群排程改 winrig cron single-source（2026-07-01 現況）**：演進 launchd(Mac睡眠missed)→ social-post-cron Worker→workflow_dispatch → **GitHub帳號6/12被flag後Actions全停,Worker觸發路徑死**。現改 winrig `~/.marketdaily-fallback/social_post_runner.sh`(crontab `*/10 * * * *`,只在14:00-14:19 TW窗口+每日鎖發一篇,`daily_run.py`發下一篇未發的)。social-post-cron Worker `crons=[]` 已停用(防解封後Actions復活雙發)。**發文斷更先查三件**:①`daily_run.py --dry`看存貨(空=要補內容,跑Marketing Agents鏈產v3批次+`make_v3_cards.py`圖卡)②winrig crontab有無social_post_runner③Meta token(`auto_post.py check`;459 checkpoint要用戶登入facebook.com解)。詳見 memory `project_social_post_winrig_restore`。
+- **不加自訂游標**：ui-pro.js 裡的 custom cursor 已刪除，不要再加
+- **Email 樣式**：日報一律用完整 HTML 卡片樣式，不能是純文字
+- **台股顯示**：偏好 tag 要同時顯示股票代碼 + 公司名稱
+- **Admin 記住 Email**：用 `localStorage("md-admin-email-saved")` 儲存，登入時自動填入並 focus 到密碼欄
