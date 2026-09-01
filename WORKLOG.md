@@ -8397,3 +8397,14 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⚠️ 另一坑:base64 經 Claude context 轉抄整檔會壞(16680→16686,md5 不符)。跨機搬檔一律走 git/SSH,別讓檔案穿過 context。
 - docs/CLAUDE.md(1.1KB)與 marketing/CLAUDE.md(7.4KB)檢查過:純規則零 harness 重複,正是 Boris 講的 nested 用法,不動。settings.json(bypass+20 條 deny+hooks)已是他推的權限分層最佳解,不動。
 - 記憶已登記(Mac inbox):feedback_claude_md_slimming_discipline.md
+
+## 2026-09-02 常駐 context 全機稽核(把 CLAUDE.md 瘦身法套到全系統)
+- 掃 107 份 CLAUDE.md(winrig 88+Mac 19)+151 支 skill frontmatter description。
+- ⭐ 結論與預期相反:**沒有第二個「同一份字付兩次錢」**。88 份 winrig CLAUDE.md 有 85 份不是我們的(OmniRoute 40 國語系 64+uv cache 11+eval scaffold 產物 10),只在 session 開在該目錄才載入。docs/(1.1KB)與 marketing/ 是純規則。
+- skill descriptions 32,901 字元/session:平均 217(自訂標準 60-350 內),11 支超標但逐條讀過皆為觸發詞+分流語,砍到上限只省 0.7KB(2%)卻可能讓該 skill 對某類任務「不存在」⇒判定不動。151 支 YAML 全健康(無壞檔/無缺 key/無折疊標量吞 key——我первый版 regex 誤報 higgsfield 吞掉 user-invocable,原文查證是假警報)。
+- **已修**:3 支退役 skill(typography-pairing/brand-voice-enhancer/code-review-skill)的完整功能描述→一行「不要使用改用X」,700→225 字元。它們本來就不該被路由到。
+- ⭐⭐ **新缺陷:skill 兩副本零 parity 守衛**。bundle_parity 夜巡只顧 design-material 40 檔,skill 樹不在 config 裡。實測我改完 3 檔兩副本 md5 立刻分岔而沒有任何東西發現,靠 sync.sh(*/5)碰巧收斂⇒sync 一死漂移零偵測面(同 08-16 兩條部署腿同死形狀)。修法便宜:bundle_parity 本來就吃 BP_CONFIG json,加 skills bundle 設定+接夜巡。**未做,等老闆點頭**。
+- ⭐ **新缺陷:paper_trade 8 條交易 cron 靜默引信**。`git pull -q ... >/dev/null 2>&1` 失敗不擋後面 python 也不告警,而 tracked 檔 .paper/index.html 被 runner 就地改寫⇒上游一旦動到它,pull 必撞髒樹、cron 從此跑舊碼零告警。今天僥倖(上游只動 CLAUDE.md)。依 scope-lock 未順手改,登記 open item #701(med)。
+- **待拍板:5 份帶舊規則的副本**——winrig .md-verify-wt-796(265M,08-17,孤兒 worktree,HEAD 已含於 main,刪除安全)、tmp_review/harness_test(137M,07-04,**連 LINE 退役與全面免費化都沒有**,刪除安全);Mac Downloads/financial-daily-digest-main(112M,06-30,非git)、.marketdaily-agent(352M,07-08,21 個未提交檔要先看)、.marketdaily-fallback/repo(2.6G,07-07)。風險不是磁碟是規則:在那些目錄開 session 會吃到 6/30-8/17 舊鐵則。
+- paper_trade/CLAUDE.md 今天 pull 後已自動同步成 27.9KB(它是分支 checkout,**不能手改**否則製造髒樹)。
+- 交付 Artifact:見 session。
