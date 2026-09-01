@@ -8385,3 +8385,5 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **Phase 1**:①`marketdaily/claude-skills`(private)=整個 delvin-custom marketplace 134 skills,推前 secret 掃描零命中 ②`marketdaily/team-brain`(private)=755 檔公司層記憶+過濾版 MEMORY.md+onboard.sh+rules/TEAM_CLAUDE.md+INBOX ③同步引擎 `sync_team_brain.py`(winrig=唯一合併者:pull→adopt 收編成員新增→真源 regenerate→fail-closed secret 閘→push),cron 每日 05:10(`cron_run_and_alert team_brain_sync`)。
 - 順手修:真源記憶目錄挖出 160 個 macOS AppleDouble `._*.md` 垃圾檔(Mac 同步時代殘留,曾污染首次匯出 916 檔假象),驗 magic bytes 後備份清除;sync 加 dotfile 濾網。
 - 未收尾(已登記):#685 cron 首班未驗+onboard/adopt 零真實流量(等第一位成員);#686 team-brain git 歷史含 internship 檔,加 collaborator 前建議 squash(force push 需老闆核可)。
+## 2026-09-01 深夜 主視窗:CHOSEN 首頁 v2 重做(老闆批「same template」後)
+- 老闆痛罵每站同模板→寫入永久記憶 feedback_no_same_template_websites;實查 Awwwards 2026-08 兩個 SOTD(Aardvark Book Club/Decathlon Yestalgia:淺色兩色高對比+typography主導+觸感互動)。首頁 v2=「收藏誌/拆卡桌」:紙白+墨+品牌紅、Oswald 巨型字 hero+甩卡進場、規格條、佈告欄活動卡(API保留)、盲盒編號大列01-03、9宮格卡冊陳列(環孔+口袋sheen)、MEMBER PASS票券、INDEX目錄。手機+桌機截圖驗證(桌機body鎖900px要高viewport拍);v1深色版存 index.v1-dark.json、原版在 theme_backup_20260902,兩層皆可回退。storefront a8b7893。
