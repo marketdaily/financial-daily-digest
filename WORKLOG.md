@@ -8378,3 +8378,10 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⚠️ 第一版 `grep -v 'line_group_runner\.sh'` 會連 08-06 interop 事故那行**註解**一起吃掉(204→198,少了 6 行不是 5 行),改用 `grep -vE '^[^#]*/line_group_runner\.sh'` 只殺實際 cron 行,diff 逐行確認後才套用。
 - 一併下架 `scripts/fleet_liveness.py` 的「券商喊單(sinopac_line)」產出物心跳——來源刻意退役後這條會永久紅(已紅 20 天)=哨兵自殺。跑過驗證:艦隊全綠、output_problems 清空。
 - 老闆回「ok」後**一併移除 `line_watch.sh`**(cron `*/3 7-23`)事件觸發路徑,整條 LINE 群擷取產線完全停止(crontab 199→198 行)。#683 已收。剩下的 `line_agent_runner.sh`(QuietFix 官方帳號客服代理,每分鐘)是不同東西,未動。
+
+## 2026-09-01 主視窗:公司大腦 Phase 0+1 上線(多人共享大腦基建)
+- 老闆拍板 AI 新創多人共腦架構(Artifact 7ef1ebd8「公司大腦」),當日落地 Phase 0(切層)+Phase 1(git 化):
+- **Phase 0**:真源 `memory/LAYERS.json` 切層——default=team、personal 9 檔(user_*×5/quantum×2/personal_life_brief/internship_9chapter)。⚠️ 新增個人記憶必加 personal 清單,否則隔天 05:10 被匯出(見 memory `project_team_brain_phase01`)。
+- **Phase 1**:①`marketdaily/claude-skills`(private)=整個 delvin-custom marketplace 134 skills,推前 secret 掃描零命中 ②`marketdaily/team-brain`(private)=755 檔公司層記憶+過濾版 MEMORY.md+onboard.sh+rules/TEAM_CLAUDE.md+INBOX ③同步引擎 `sync_team_brain.py`(winrig=唯一合併者:pull→adopt 收編成員新增→真源 regenerate→fail-closed secret 閘→push),cron 每日 05:10(`cron_run_and_alert team_brain_sync`)。
+- 順手修:真源記憶目錄挖出 160 個 macOS AppleDouble `._*.md` 垃圾檔(Mac 同步時代殘留,曾污染首次匯出 916 檔假象),驗 magic bytes 後備份清除;sync 加 dotfile 濾網。
+- 未收尾(已登記):#685 cron 首班未驗+onboard/adopt 零真實流量(等第一位成員);#686 team-brain git 歷史含 internship 檔,加 collaborator 前建議 squash(force push 需老闆核可)。
