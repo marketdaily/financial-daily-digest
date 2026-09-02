@@ -8434,3 +8434,9 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - (續 2)RD 確認皇海交叉表 39 對(#707 收);依 RD 要求四語頁面+96 料號頁區塊加「下單前先詢問皇海」提示與 CTA,已部署。
 - (續 3)皇海交叉表入口進全站下拉+頁尾 1,356 頁(add_xref_nav.py 接 verify);GSC 實查=Discovered not indexed(上線 4h,正常),工具 gsc_inspect.py。
 - 皇海交叉表 GSC 收錄守望上線:~/.marketdaily-fallback/kingconn_xref_gsc_watch.py,cron 每日 10:00 TW 推老闆手機,四語全收錄自拔 cron,最晚 09-16 收工;首班實射 0/4 + 推播 200。jp 料號頁 09-02 已重爬(含替代區塊)。
+
+## 2026-09-02 下午 主視窗:皇海公司信箱 f1@ → 公司帳號資產全線(詳 ~/kingconn/WORKLOG.md + memory project_kingconn_company_accounts)
+- 王董交付 f1@kingconn.com.tw;老闆令「用它註冊 SEO 最終目標所需一切」。實測 IMAP/SMTP 通,憑證入 .env。
+- 落地:Google 公司帳號(stealth 建號卡手機 QR 兩次→改 Delvin 真裝置建號+我從 IMAP 餵碼一次過)、GSC f1@ 成 owner(手動 TXT,拒 CF OAuth)、Bing Webmaster 走 Google 登入匯入+sitemap(MS 帳號建不了:f1@ 已是他人 MS 復原信箱)、YouTube @kingconntech+2022 公司影片公開、GBP 既有 Maps 列表認領進 f1@(只剩影片驗證)。站內 sameAs/影片連結由 fork 走 verify+deploy。
+- 沒過:Kompass/Crunchbase/ThomasNet 三家 WAF(DataDome 已暫封本 IP)。open items #711-714;收 #591/#620/#621/#694/#710。
+- 積木:kc-mailpilot/tools/mailbox_otp.py(唯讀 IMAP 驗證碼輪詢,憑證走 .env)。
