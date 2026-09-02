@@ -280,3 +280,4 @@
 {"ts": "2026-09-02T11:33:06.512041", "post": "newsr_20260902_ai_d8a2e1", "results": {"instagram": {"ok": true, "detail": "18336984661281552"}, "facebook": {"ok": true, "detail": "1133333363197689_122130923337345835"}, "threads": {"ok": true, "detail": "18123933439837887"}}}
 {"ts": "2026-09-02T12:22:57.487946", "post": "newsr_20260902_avgo", "results": {"threads": {"ok": true, "detail": "17918302782434496"}}}
 {"ts": "2026-09-02T13:12:49.420919", "post": "newsr_20260902_ai_96cfb6", "results": {"threads": {"ok": true, "detail": "18115012336986636"}}}
+{"ts": "2026-09-02T14:00:52.879854", "post": "win_2026-08-04_NBIS_wait", "results": {"instagram": {"ok": true, "skipped": false, "detail": "18022310831916421"}, "facebook": {"ok": true, "skipped": false, "detail": "1133333363197689_122130953559345835"}, "threads": {"ok": true, "skipped": false, "detail": "18185220481405023"}}}
