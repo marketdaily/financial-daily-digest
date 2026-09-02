@@ -8431,3 +8431,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 ## 2026-09-02 主視窗:皇海交叉料號表上線(老闆:RD 已確認基準,直接做)
 - 39 顆 Molex/ALPS 停產卡座料號→皇海 22 型號,/cross-reference ×4語+料號頁區塊+搜尋別名,線上四語 200;實證走 Digi-Key/Mouser lifecycle,verify 接「產生器一致+實證≤30天」兩閘。詳見 ~/kingconn/WORKLOG.md。三個自造坑(UA 403 第三次/build_jp.py 單跑回退/IO threshold 整表隱形)皆攔下。RD 逐對勾選登記 open item(owner delvin)。
 - (續)老闆「全部做好」:皇海 172 頁殼頁根治(切換鍵指同頁+補 site.css,手機溢出根治),新 fix_shell_chrome.py 接 verify;jp_polish/check_jp_links 加語言切換鍵豁免(三支工具互打)。詳 ~/kingconn/WORKLOG.md。
+- (續 2)RD 確認皇海交叉表 39 對(#707 收);依 RD 要求四語頁面+96 料號頁區塊加「下單前先詢問皇海」提示與 CTA,已部署。
