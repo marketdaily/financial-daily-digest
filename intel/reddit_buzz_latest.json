@@ -1,5 +1,18 @@
 {
- "date": "2026-09-01",
+ "date": "2026-09-02",
  "mode": "rss",
- "by_code": {}
+ "by_code": {
+  "AVGO": {
+   "note": "AVGO 今日 Reddit 提及 3 則(近21日均 0.0,z=3.0)|例:Can we turn on the money printer tomorrow?",
+   "total": 3,
+   "baseline": 0.0,
+   "z": 3.0,
+   "score": 0,
+   "samples": [
+    "Can we turn on the money printer tomorrow?",
+    "Holding 80% of my portfolio in AVGO going into earnings.",
+    "AVGO Buy before ER"
+   ]
+  }
+ }
 }
