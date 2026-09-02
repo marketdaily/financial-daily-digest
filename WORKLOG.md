@@ -8433,3 +8433,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - (續)老闆「全部做好」:皇海 172 頁殼頁根治(切換鍵指同頁+補 site.css,手機溢出根治),新 fix_shell_chrome.py 接 verify;jp_polish/check_jp_links 加語言切換鍵豁免(三支工具互打)。詳 ~/kingconn/WORKLOG.md。
 - (續 2)RD 確認皇海交叉表 39 對(#707 收);依 RD 要求四語頁面+96 料號頁區塊加「下單前先詢問皇海」提示與 CTA,已部署。
 - (續 3)皇海交叉表入口進全站下拉+頁尾 1,356 頁(add_xref_nav.py 接 verify);GSC 實查=Discovered not indexed(上線 4h,正常),工具 gsc_inspect.py。
+- 皇海交叉表 GSC 收錄守望上線:~/.marketdaily-fallback/kingconn_xref_gsc_watch.py,cron 每日 10:00 TW 推老闆手機,四語全收錄自拔 cron,最晚 09-16 收工;首班實射 0/4 + 推播 200。jp 料號頁 09-02 已重爬(含替代區塊)。
