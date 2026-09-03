@@ -8466,3 +8466,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 ## 2026-09-03 晚 主視窗:CHOSEN 會員站 /news 白底改版(老闆令)
 - 成品+交接文件在 storefront `clients/chosen/site/member-news/`(commit 3b4cf9c),預覽 artifact 03894ccf;impeccable 全流程(PRODUCT.md 代填→seed 3a9b6f7c→兩輪自檢→獨立審查 8 修+1 回歸→DESIGN.md)。細節見 ~/storefront/WORKLOG.md。未收:Kevin 拍板+Darren 移植(open #742)。
 - (續)老闆問「怎麼網站上看不到」。查實:會員站在 Vercel(Darren),我方無 Vercel/repo 權限,Kevin 09-01 信=我們交 HTML、他們整合上線。補齊 Darren 規格(有圖/無圖/無按鈕三態、任意張數)→ storefront 3a8d6d3;Gmail 草稿已建在 Kevin 09-01 那串(附 lite zip),**等老闆 OK 才寄**。
+- (續)CRO 五條全上線+全站 rail+漏斗量測;B2B 平台實查發現皇海早在台灣經貿網(找回帳號 #744);老闆一頁摘要 Artifact 待線上實射後發布。
