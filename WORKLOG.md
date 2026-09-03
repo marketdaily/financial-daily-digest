@@ -8449,3 +8449,10 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 老闆問「這家公司在做什麼酷東西」。走 video-watcher:Meta Graph API business_discovery 列全帳號(匿名網頁只給 12/137)+9 支 API 不給的用 ig_sniff 撈,133 支全下載、Groq whisper 逐字、4x4 sheet 逐格,7 個子代理平行看+主視窗抽驗高互動片。
 - 結論:產品=錄音吊墜($89)+Omi for Mac+Glass,但帳號真正的機器是 2026-01 找成長長後的辦公室短劇工廠(前三爆片 5.9 萬/4.4 萬/2 萬讚全是 AI 職場梗,產品只是道具);白板漏出 LLM Gateway/PTT→Gemini/OpenClaw;「$80M 賣掉公司」對照公開紀錄是 $52M。報告:https://claude.ai/code/artifact/e317cf4d-c9f7-464d-8bbd-a8749a7514cd
 - 坑(已回寫 video-watcher LESSONS):`while read` 迴圈裡 ffmpeg 吃 stdin 讓 24/133 靜默沒產 sheet;子代理補看時撞 session 429,7 支高價值片改由主視窗親看,其餘 17 支只靠逐字稿。
+- (續 2)老闆改口只留四線(kingconn/marketdaily/mingshu/qfxsolution)。已上線:MarketDaily 存檔頁 title/H1/prev-next/author+`/archive/` 索引+首頁中文預設 title+數字牆改真數+導覽不自動彈+戰績頁 DOM 29k→1.2k(commit 114b451b);QFX title/meta/heading/JSON-LD(2e770ff);CREW head/robots/sitemap/www/文案 16 席(範圍縮前已完成,0139dc5);ProtoForge head/robots/sitemap/手機溢出(976c81c,無 remote)。kingconn 與 mingshu 實作進行中。五份審查報告在 scratchpad review_*.md,老闆拍板項 open #722-#727、#735。
+
+## 2026-09-03 傍晚 主視窗:Sidekick(24h 盯螢幕語音助理)P0+P1 上線 winrig、P2 Mac 待權限
+- 老闆看完 Omi 解剖後說要「這樣的工具給自己用」,追問後真需求=隨時盯著電腦、用講的教他下一步、講不懂就圈給他看、全免費。brainstorming 三輪拍板:看層本機 qwen3.5:9b(0 元)、教層 Claude 訂閱(有額度守衛)。spec 已 commit。
+- 上線:`~/sidekick`(server :8990 systemd、WSL 擷取橋、AHK 浮窗/熱鍵、Tuna 嘴+intent、cb-tunnel `sidekick.marketdaily.ai`)。9 單元測試+1 真 Ollama 測試全綠;e2e 一問 17.7s 答對並圈到位置。
+- 坑:Defender AMSI 整檔封鎖「截圖+上傳」.ps1 → 改 WSL 餵 stdin 給常駐 powershell;看片/打遊戲誤判卡住 → passive 退避。詳 memory project_sidekick。
+- 未收:Mac 端要老闆點兩個權限(open #733);P3 每晚回顧未做(#732 續)。
