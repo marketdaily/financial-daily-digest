@@ -295,7 +295,16 @@ cron_git_persist() {
     done
     [ "${#paths[@]}" -eq 0 ] && exit 0
     git add "${paths[@]}" 2>/dev/null
-    git -c user.name=winrig -c user.email=winrig@marketdaily commit -m "$msg" -- "${paths[@]}" >/dev/null 2>&1 || exit 0
+    # 2026-09-03:commit 失敗不再靜默——09-01 agent_board 那班 board.json commit 失敗被
+    # `>/dev/null || exit 0` 吞掉,檔案留髒兩天,所有 docs 面 runner 對它讓路=全站凍在 09-01。
+    # 失敗仍 exit 0(呼叫端語義不變),但把 git 的原話印進 log,並在 stderr 留一行可 grep 的標記。
+    local cout
+    if ! cout=$(git -c user.name=winrig -c user.email=winrig@marketdaily commit -m "$msg" -- "${paths[@]}" 2>&1); then
+      if ! git diff --quiet HEAD -- "${paths[@]}" 2>/dev/null; then
+        echo "[cron_git_persist] ⚠️ commit 失敗,檔案留髒(${paths[*]}):$(printf '%s' "$cout" | tail -3 | tr '\n' ' ')" >&2
+      fi
+      exit 0
+    fi
     if ! git status --porcelain 2>/dev/null | grep -qv '^??'; then
       # 衝突時 abort:保住本機 commit 完整,絕不停在半途 broken rebase 狀態
       # (broken 狀態會誘發別的 actor 用「退回舊版」收拾→丟掉未 push 的工作,2026-07-22 事故根因)
@@ -422,6 +431,27 @@ _cron_dirty_starve_mark() {
 
 _cron_dirty_starve_clear() {
   rm -f "$(_cron_dirty_starve_state_dir)/dirty_starve_${1}" 2>/dev/null || true
+}
+
+# cron_reclaim_own_output "commit msg" PATH...  (2026-09-03)
+# 給「守門在 persist 之前」的 runner(agent_board/quality_board)用:上一班自家輸出檔若 commit
+# 失敗留髒,下一班會被自己的 dirty guard 擋在門外→永遠不再 persist=自鎖(09-01~09-03 全站
+# 凍結兩天的第二根因)。本函式在守門之前把「自家 tracked 輸出檔」撿回來入庫:只認 tracked
+# 修改(untracked 不碰,那是別人的草稿)、.json 必須能 parse(截斷檔不入庫,交回守門+starve 告警)。
+cron_reclaim_own_output() {
+  local msg="$1"; shift
+  local p claim=()
+  for p in "$@"; do
+    [ -n "$(git -C "$CRON_LIB_REPO" status --porcelain -- "$p" 2>/dev/null | grep -E '^( M|M |MM)')" ] || continue
+    case "$p" in
+      *.json) "$CRON_LIB_REPO/.venv/bin/python" -c "import json,sys;json.load(open(sys.argv[1]))" "$CRON_LIB_REPO/$p" 2>/dev/null \
+                || { echo "[cron_reclaim_own_output] $p 不是合法 JSON,不撿(留給守門擋)"; continue; } ;;
+    esac
+    claim+=("$p")
+  done
+  [ "${#claim[@]}" -eq 0 ] && return 0
+  echo "[cron_reclaim_own_output] 上一班留髒的自家輸出撿回入庫:${claim[*]}"
+  cron_git_persist "$msg" "${claim[@]}"
 }
 
 # cron_abort_if_dirty_scoped NAME SCOPE...  path-scoped 版守門(2026-07-18,根治
