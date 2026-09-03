@@ -8456,3 +8456,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 上線:`~/sidekick`(server :8990 systemd、WSL 擷取橋、AHK 浮窗/熱鍵、Tuna 嘴+intent、cb-tunnel `sidekick.marketdaily.ai`)。9 單元測試+1 真 Ollama 測試全綠;e2e 一問 17.7s 答對並圈到位置。
 - 坑:Defender AMSI 整檔封鎖「截圖+上傳」.ps1 → 改 WSL 餵 stdin 給常駐 powershell;看片/打遊戲誤判卡住 → passive 退避。詳 memory project_sidekick。
 - 未收:Mac 端要老闆點兩個權限(open #736);P3 每晚回顧未做(#732 續)。
+- (收工)四線全部落地+線上驗證:皇海(c02a2479:搜尋入口/CTA 帶料號/.wrap/交叉表手機卡/hreflang ja/計數同步/title 公式)、MarketDaily(114b451b)、命書(c1912a6,本機無 remote)、QFX(2e770ff)。總報告 Artifact 已交老闆;拍板項 #720/#722-#724/#726/#728/#730/#735,我方未收乾 #721/#727/#733/#734/#738/#739。
