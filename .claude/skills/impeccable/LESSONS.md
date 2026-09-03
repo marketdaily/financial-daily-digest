@@ -29,3 +29,7 @@
 - 坑:在 site.css 殼裡直接用 `var(--accent)`/`var(--page-pad)`(那些只在 styles.css 定義,殼沒載)→ 長條圖全黑、頁面零內距;另外 `#curtain`(過場簾幕)/`#kc-qrail`/`#ck` 這幾個 position:fixed 層在 full_page 截圖與實際畫面都會壓住資料。
 - 修:內部頁自訂 token(`.ops{--acc:#d6ac57}`)、內距寫死 clamp;`#curtain,#kc-qrail,#ck{display:none!important}`。用殼之前先 `getComputedStyle` 抓一次真的有沒有這個變數,別看檔名猜。
 - 另:flex 容器裡的長文字(`.kpi .d`)在 minmax(0,1fr) 格子裡仍會撐出 scrollWidth,要 `flex-wrap:wrap;min-width:0;overflow-wrap:anywhere`。
+
+### 2026-09-04 自訂 class 與 SVG 標記 class 撞名:DOM 數值全對,只有截圖看得出來
+- 坑:頂列 `.bar{height:52px;position:sticky…}` 與圖表長條 `<rect class="bar">` 同名 → SVG2 的 height 是 presentation property,CSS 直接把每根長條改成 52px;`getAttribute`/`outerHTML` 查出來的 height 全對,Playwright 數值斷言零紅,只有截圖裡長條變形。
+- 修:結構性 class 一律加前綴(`.topbar`),圖表標記 class 用 `.ck-bar` 之類;dataviz 的「第 7 步 render it and look at it」不可省——數值檢查抓不到 cascade 撞名。
