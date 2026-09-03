@@ -7146,8 +7146,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-02 22:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-03 15:13",
+  "note": "繞過:MX 暫切 CF Email Routing 16 分鐘,LinkedIn 驗證信落 Delvin gmail,f1@ 已在 LinkedIn 驗證;MX 已還原且 zone 與備份逐筆一致"
  },
  {
   "id": 716,
@@ -7186,6 +7186,336 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-02 22:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 720,
+  "what": "GitHub Actions 備援部署腿又死(HTTP 422 Actions has been disabled for this user,09-03 自癒 dispatch 失敗);deploy_drift 自癒目前只綁這條腿",
+  "why": "GitHub 帳號層停用只有 Delvin 能向 GitHub 申訴/換帳號;我這邊改為自癒先走本機 worktree 腿",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-03 14:57",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 721,
+  "what": "deploy_drift 自癒新增本機 worktree 腿(發 origin/main)+board runner 防自鎖(cron_reclaim_own_output)尚未在生產排程班次驗證",
+  "why": "今天手動修好後線上已同步,新腿與新守門只有沙盒/手動實射,要等下一次真的落後/留髒才會走到",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-03 14:57",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 722,
+  "what": "QuietFix 三件要老闆拍板:①老闆親定 hero 文案「只有你想不到的,沒有我們做不出來的」線上 0 命中(08-10 noth.in 改版時被拿掉,未見核可紀錄)②/guide/website-cost 放市場行情帶 NT$ 表是否違反「不放金額」③效果菜單轉盤/金光影片素材=去模板感與手機 7.7MB 兩案要先看對照",
+  "why": "三件都動到老闆親令或紅線,我不自行決定;審查報告 review_quietfix.md",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-03 15:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 723,
+  "what": "MarketDaily 首屏/主色/導覽重構 plan 待老闆看設計:hero 講「什麼/給誰/為什麼現在」+真日報卡取代假樣本卡(5月29日)+主色收斂橘黃拿掉格線與>_ eyebrow+共用 header;戰績頁 build 端分月檔",
+  "why": "對外視覺改版要老闆先看(08-17 親令);審查證據 review_marketdaily.md",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 15:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 724,
+  "what": "ProtoForge 首頁 intro 層(老闆兩句話從孤頁 /kc 搬到首頁)+ /kc 皇海品牌歸屬(同網域兩品牌)待老闆拍板",
+  "why": "文案與品牌歸屬是老闆的決定;review_pf_crew.md 站A D1/A1",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 15:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 725,
+  "what": "CREW 開真 URL(/pricing /method /zh/ /account)+ hreflang,取代單頁 #錨點;GEO 產品自己沒有可被引用的頁面",
+  "why": "M 級結構改動,本輪只做 head/sitemap/文案;review_pf_crew.md 站B",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-03 15:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 726,
+  "what": "命書 mingshu.tw 設計案待老闆看:576 頁同一殼(塔羅無牌面圖/長生無十二階段環)→族群皮膚;首頁 hero 置中改書名頁式+潤例單;首屏加價格區間與「解讀=AI+確定性校驗」信任帶(文案要過 legal-compliance)",
+  "why": "動 render.py 殼與首頁視覺=對外設計,老闆先看;review_mingshu.md §1-2/§1-3",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 15:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 727,
+  "what": "皇海手機版 hamburger/語言 drawer(≤860px 語言切換消失、導覽 11px 無漢堡、雙橫幅蓋 CTA)+首頁品類格+ODM 殼頁定位",
+  "why": "D4 動 site.js 全站 M 級另開;D6/T4 要老闆定;review_kingconn.md",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-03 15:11",
+  "closed": "2026-09-03 20:29",
+  "note": "09-03 晚全收:手機語言鍵(膠囊+底部 sheet+sticky)、漢堡抽屜、雙橫幅改位(語言提示掛 header 下、cookie 桌機右下小卡/手機 53px)、en/jp 實據卡補齊;新閘 home_parity_probe(靜態接 verify,--live 四語×桌機手機真實點擊全過)"
+ },
+ {
+  "id": 728,
+  "what": "CREW 首頁「Free to start / Start free / Scan — Free」文案與後端不符:08-25 起掃描需額度(needs_payment),新帳號 0 張;JSON-LD 已刻意不放免費 Offer,頁面文案待老闆拍板改法",
+  "why": "價格口徑要老闆拍板,本次任務範圍明定不改價格口徑",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-03 15:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 729,
+  "what": "皇海郵件閘道會靜默丟 LinkedIn 等外部驗證信(RCPT 250 卻不進箱):這次用 MX 暫切繞過,根因仍在皇海/首岳的 UMail 閘道,下次任何平台驗證信收不到先想到這個;建議請皇海 IT 查白名單",
+  "why": "根因在客戶端閘道,我方只能繞不能修",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 15:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 730,
+  "what": "crewhq.digital zone 未開 Always Use HTTPS(http:// 回 200 不轉),API token 無 zone settings 權限,要老闆在 CF 後台 SSL/TLS→Edge Certificates 開一下(或給 token 加 Zone Settings:Edit)",
+  "why": "token 權限不足,我做不到",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 15:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 731,
+  "what": "LinkedIn 皇海公司頁:個人檔案已修(Chang/headline/industry/Experience KINGCONN),建頁仍被「not enough connections」擋;等 Delvin 手機送邀請並被接受≥10 後由我重跑 /company/setup/new(素材全備)",
+  "why": "LinkedIn 硬門檻是已接受聯絡人數,只有本人能加",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 16:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 732,
+  "what": "Sidekick(24h 盯螢幕語音助理)開工:P0 後端/P1 winrig/P2 Mac/P3 回顧,尚未在生產跑過",
+  "why": "2026-09-03 老闆核可 spec 開工,全流程尚未實射",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-03 16:45",
+  "closed": "2026-09-03 17:39",
+  "note": "2026-09-03 老闆喊停 Sidekick(太麻煩):winrig 兩個 service disable、AHK 退出+工作停用、Mac Hammerspoon 停+init.lua 改名;程式留在 ~/sidekick 不刪"
+ },
+ {
+  "id": 733,
+  "what": "digest_archive_seo_runner 新接的 archive_nav.py + build_archive_index.py 尚未在真實 cron 窗口(TW 20:20-20:59 / 07:20-07:49)跑過,只手動跑過三輪冪等驗證",
+  "why": "commit 114b451b 後第一班 cron 還沒到;要看 ~/.marketdaily-fallback/logs/digest_archive_seo_<date>.log 有 archive_nav exit=0 / build_archive_index exit=0 且 /archive/ 收到新一天的存檔",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-03 16:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 734,
+  "what": "build_track_record.py 新增 track-record.stats.json 輸出 + 回寫 track-record.html 的 TR_DATA_VERSION,refresh_track_record.sh LEDGER_PATHS 已擴,但尚未在明早 08:00+ TW 真實排程跑過",
+  "why": "只驗過 regex 錨點與 stamp 函式語法;要看 logs/trackrec_<date>.log builder exit=0 且線上 /track-record 的 TR_DATA_VERSION 與 stats.json generated_at 同步更新",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-03 16:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 735,
+  "what": "QFX Solution 待老闆拍板:①客群到底是「外商在台分公司」(記憶 08-23)還是站上寫的「Taiwanese company/台灣企業」(commit fdc27d0 起),決定 eyebrow/文案;②具名負責人+法人資訊上站;③mailto 帶 subject/body+複製按鈕的措辭",
+  "why": "客群定義與具名資料只有老闆能給;review_qfx.md",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 16:57",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 736,
+  "what": "Sidekick Mac 端:Hammerspoon 已裝,要老闆在系統設定允許螢幕錄製+輔助使用,之後驗 /frame 有 mac 截圖",
+  "why": "macOS 權限只能本人點",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 17:01",
+  "closed": "2026-09-03 17:39",
+  "note": "2026-09-03 老闆喊停 Sidekick(太麻煩):winrig 兩個 service disable、AHK 退出+工作停用、Mac Hammerspoon 停+init.lua 改名;程式留在 ~/sidekick 不刪"
+ },
+ {
+  "id": 737,
+  "what": "Sidekick P3:每晚回顧 recap.py+推播+「我今天做了什麼」問答未做;Tuna 聊天模型改 qwen3.5:9b 防顯存爆",
+  "why": "P0-P2 先上,P3 待做",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-03 17:01",
+  "closed": "2026-09-03 17:39",
+  "note": "2026-09-03 老闆喊停 Sidekick(太麻煩):winrig 兩個 service disable、AHK 退出+工作停用、Mac Hammerspoon 停+init.lua 改名;程式留在 ~/sidekick 不刪"
+ },
+ {
+  "id": 738,
+  "what": "kingconn jp 料號頁 meta 仍是 mirror 翻譯的一句式(S2 兩句式只做 zh/en/cn),jp 首頁 hero 搜尋框若重跑 build_jp_landing.py 會由 v5-en 重新翻譯",
+  "why": "jp 料號頁不重建(build_jp_mirror 不覆蓋既有頁),翻譯要走 LLM;本輪未動",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-03 17:12",
+  "closed": "2026-09-03 20:56",
+  "note": "fix_jp_meta.py 242 頁套用+接 verify,線上抽驗 jp 料號頁 meta 已是概要前兩句"
+ },
+ {
+  "id": 739,
+  "what": "fortune-ai: web/sitemap.xml 尚未含新頁 /p(cron 擁有該檔,本次未動);cron 重建前 tests/test_seo.py::test_sitemap_in_sync_with_web 會紅",
+  "why": "指令明令不動 sitemap.xml;build_sitemap 輸出與現檔只差 /p 四行,等 cron 重建",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-03 17:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 740,
+  "what": "fortune-ai commit c1912a6 只在本機(repo 無 remote、分支 master),未 push",
+  "why": "~/fortune-ai 沒有設定任何 git remote,push 無目標;需 Delvin 決定是否建遠端",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-03 17:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 741,
+  "what": "皇海首頁品類格(hero 下方 7 大類×型號數)+ ODM 殼頁定位(mega menu「其他」下的 noindex 殼頁做成真 ODM 能力頁或拿掉)待老闆拍板",
+  "why": "#727 只收了手機導覽/語言/橫幅/實據卡那半;這兩件是設計與定位決定",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 20:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 742,
+  "what": "CHOSEN /news 白底改版:成品+交接文件已備,待 Kevin 看版拍板、Darren 移植進 Next.js 上線",
+  "why": "會員站原始碼在 Darren 手上,我們只能交靜態成品;尚未在生產跑過",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 20:56",
+  "closed": "2026-09-03 22:00",
+  "note": "改走 Shopify 主題:chosentcg.com/pages/news 上線+首頁看全部已指過去,線上驗證綠"
+ },
+ {
+  "id": 743,
+  "what": "皇海需求回收(消失料號型錄下載→搜尋頁詢問卡+PART_SLUG 直達)已部署但尚未在生產驗證:要 curl 舊 dl_file 網址看 301 落點+Playwright 看線上搜尋頁詢問卡",
+  "why": "剛發布,線上實射未跑",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-03 21:09",
+  "closed": "2026-09-03 21:12",
+  "note": "線上實射:G0186/G0222 舊型錄網址 301→/search?q=<PN>,詢問卡→contact?pn 預填 en/jp 皆驗;7HDMI-F0-0017 直達料號頁"
+ },
+ {
+  "id": 744,
+  "what": "皇海台灣經貿網公司頁(taiwantrade companyid=12449)2017 年起未更新:聯絡人/料號/地址皆舊,頁上自帶 RFQ 表單——要找回帳號(FAQ:統編重複不能再註冊,打 0800 找回)後更新為現行 250 料號+f1@ 聯絡",
+  "why": "帳號找回需公司身分(王董/皇海出面或授權),我方備妥更新內容",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-03 21:25",
+  "closed": "2026-09-03 21:59",
+  "note": "老闆 09-03:台灣經貿網頁上的 Fion 是皇海現職員工⇒不用打 0800,直接請 Fion 登入更新或交帳密給我方更新;改開 #749"
+ },
+ {
+  "id": 745,
+  "what": "皇海 Europages 免費 profile(歐洲=主市場):全站 AWS WAF 真人驗證擋 headless,需真人過一次;Global Sources 免費層需 SMS OTP;兩者用 f1@ 建檔,內容=現行 /en/about 核可文案",
+  "why": "對外建檔前要老闆 OK(08-17 親令)+真人過驗證",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 21:25",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 746,
+  "what": "皇海付費曝光候選拍板:DirectIndustry(歐洲工業買家、同業 ATTEND 是 Verified)為最佳付費候選;GlobalSpec 報價(#698)與 europages 付費案同批",
+  "why": "花皇海的錢=老闆決定",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 21:25",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 747,
+  "what": "皇海詢價漏斗量測(rfq_cta/cart_add→詢價單)09-03 上線,數字要累積 2-4 週;09-17 起用 /api/inquiries?funnel=30 看轉換並回報,同時看 message 改選填後垃圾詢價有無變多",
+  "why": "剛上線,還沒有一個完整週期的資料",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-03 21:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 748,
+  "what": "皇海 /how-to-order 四語「如何採購」頁已上線(流程說明+原廠直供+目前無授權經銷商,零數字承諾),對外文案需老闆/王董過目,尤其「目前沒有授權經銷商」與「回答可能為英文或中文」兩句",
+  "why": "對外新頁面依 08-17 親令要老闆看過;為收 /goal 第二句先上線再報",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-03 21:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 749,
+  "what": "台灣經貿網公司頁更新:請皇海 Fion(現職員工,該帳號聯絡人)登入 taiwantrade 後台更新(或授權我方代操):公司英文名/地址/聯絡信箱 f1@/產品 20 品(我方備妥料號與圖)——頁上自帶 RFQ 表單,更新完買家詢價直接進來",
+  "why": "帳號在 Fion 手上,需她登入或授權",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 21:59",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 750,
+  "what": "member.chosentcg.com/news 仍是舊版:等 Darren 用交付包(Next.js 元件)換版或 redirect 到 /pages/news;順便要 repo/Vercel 權限",
+  "why": "會員站在 Darren 的 Vercel,我方無權限,只能交件",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-03 22:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 751,
+  "what": "皇海營運戰情板 /admin/ops 上線後未以真管理密碼實射 /api/ops(密碼是 CF Pages secret,我方無紀錄);只驗到 401 閘與 KV 內容,老闆或皇海業務第一次登入請回報是否正常",
+  "why": "INQUIRY_ADMIN_PW 讀不到,無法端到端打通",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-04 00:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 752,
+  "what": "kingconn_ops_board cron(7,37 分)首班未在真實排程跑過;戰情板守衛格會在 90 分鐘後自己標過時",
+  "why": "剛裝進 crontab,下一班才看得到戳記",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 00:15",
   "closed": null,
   "note": ""
  }

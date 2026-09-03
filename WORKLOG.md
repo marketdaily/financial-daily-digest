@@ -8468,3 +8468,6 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - (續)老闆問「怎麼網站上看不到」。查實:會員站在 Vercel(Darren),我方無 Vercel/repo 權限,Kevin 09-01 信=我們交 HTML、他們整合上線。補齊 Darren 規格(有圖/無圖/無按鈕三態、任意張數)→ storefront 3a8d6d3;Gmail 草稿已建在 Kevin 09-01 那串(附 lite zip),**等老闆 OK 才寄**。
 - (續)CRO 五條全上線+全站 rail+漏斗量測;B2B 平台實查發現皇海早在台灣經貿網(找回帳號 #744);老闆一頁摘要 Artifact 待線上實射後發布。
 - (續 2)老闆截圖=首頁「活動專區 › 看全部」要是新版。改走 Shopify 主題(我們有 write_themes):`cd-news.liquid`+`page.news.json` 上正式主題、admin UI(Xvfb+舊 session)建 /pages/news、index.json 看全部→/pages/news;線上驗證綠。Darren 交付信已寄(Kevin 09-01 那串,附 Next.js 元件 zip,順便要 repo/Vercel 權限)。細節+坑見 ~/storefront/WORKLOG.md 與 memory project_chosen_tcg。open #742 收、#750 開(member 站仍舊版等 Darren)。
+
+## 2026-09-04 凌晨 主視窗:/goal 皇海營運戰情板上線(詳 ~/kingconn/WORKLOG.md)
+- 老闆:「build an operation dashboard,先學企業級長什麼樣」→ 補正 for kingconn。研究(Few/SRE 黃金訊號/Grafana/PagerDuty)→ 三層落地:`build_ops_board.py`(cron 7,37 分→KV)→`/api/ops`→`/admin/ops`;快照 Artifact 48bd4180。順手修:asset_watch 基準紅 82 輪(刻意變更)重拍;網域到期守衛補狀態檔。open #751(未以真密碼實射)、#752(cron 首班)。

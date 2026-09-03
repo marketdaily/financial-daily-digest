@@ -24,3 +24,8 @@
 - 坑:new-work 的 serve-question 決策頁要開瀏覽器給用戶選;winrig 鐵則禁止搶前景,且 session 無人值守。同時 harness 沒註冊 `impeccable-finish-reviewer` agent type。
 - 修:PRODUCT.md 自己代填(推定項逐條標【推定】,收工時揭露)、concept-seed 照擲,指派+挑戰者融合後直接建,收工報告寫明假設;審查者改 spawn general-purpose 並餵 `reference/degraded/finish-reviewer.md` 路徑當角色。
 - 另:`overflow-x:clip` 後 playwright `full_page` 截圖仍含溢出寬度(陸塊 bleed 被拍成白邊),要帶 `clip={'width':viewport}` 才是使用者看到的畫面;detect 對過衝 easing 一律報 bounce-easing,挑戰者世界本身要求過衝時屬 brief-earned,交給審查者判用量即可。
+
+### 2026-09-04 皇海站台殼的 CSS 變數不全+固定層會壓內部工具頁
+- 坑:在 site.css 殼裡直接用 `var(--accent)`/`var(--page-pad)`(那些只在 styles.css 定義,殼沒載)→ 長條圖全黑、頁面零內距;另外 `#curtain`(過場簾幕)/`#kc-qrail`/`#ck` 這幾個 position:fixed 層在 full_page 截圖與實際畫面都會壓住資料。
+- 修:內部頁自訂 token(`.ops{--acc:#d6ac57}`)、內距寫死 clamp;`#curtain,#kc-qrail,#ck{display:none!important}`。用殼之前先 `getComputedStyle` 抓一次真的有沒有這個變數,別看檔名猜。
+- 另:flex 容器裡的長文字(`.kpi .d`)在 minmax(0,1fr) 格子裡仍會撐出 scrollWidth,要 `flex-wrap:wrap;min-width:0;overflow-wrap:anywhere`。
