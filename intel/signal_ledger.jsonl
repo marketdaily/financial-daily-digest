@@ -978,3 +978,9 @@
 {"date": "2026-09-02", "code": "6486", "source": "leadflow", "level": "red", "signal": "互動(6486) 無消息近漲停+9.9%(量能11.1×,5日+11.5%),疑資訊先行資金|外資+投信近3日僅-4張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-02", "code": "6510", "source": "leadflow", "level": "red", "signal": "精測(6510) 無消息近漲停+9.9%(連2根,5日+31.1%),疑資訊先行資金|外資+投信近3日僅-470張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-02", "code": "6535", "source": "leadflow", "level": "yellow", "signal": "順藥(6535) 無消息近漲停+9.9%(量能2.3×,5日-0.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-03", "code": "3533", "source": "investor_conf", "level": "red", "signal": "嘉澤(3533):法說會1天內召開(波動事件窗口逼近)", "price_at_signal": 1670.0}
+{"date": "2026-09-03", "code": "3702", "source": "sbl", "level": "yellow", "signal": "大聯大(3702):機構借券賣出5日遽減-34.3%(回補潮,空頭力道減弱)", "price_at_signal": 102.0}
+{"date": "2026-09-03", "code": "4540", "source": "margin", "level": "yellow", "signal": "全球傳動(4540):融資5日暴增15.0%(散戶追高過熱)", "price_at_signal": 59.5}
+{"date": "2026-09-03", "code": "3564", "source": "leadflow", "level": "red", "signal": "其陽(3564) 無消息近漲停+10.0%(量能19.4×,5日+16.0%),疑資訊先行資金|外資+投信近3日僅+19張,法人未同步=隱形買盤", "price_at_signal": 52.9}
+{"date": "2026-09-03", "code": "7772", "source": "leadflow", "level": "red", "signal": "耀穎(7772) 無消息近漲停+9.9%(量能4.6×,5日+11.8%),疑資訊先行資金|外資+投信近3日僅+51張,法人未同步=隱形買盤", "price_at_signal": 99.5}
+{"date": "2026-09-03", "code": "4924", "source": "leadflow", "level": "red", "signal": "欣厚-KY(4924) 無消息近漲停+9.9%(量能12.0×,5日+5.8%),疑資訊先行資金|外資+投信近3日僅+77張,法人未同步=隱形買盤", "price_at_signal": 10.9}
