@@ -8440,3 +8440,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 落地:Google 公司帳號(stealth 建號卡手機 QR 兩次→改 Delvin 真裝置建號+我從 IMAP 餵碼一次過)、GSC f1@ 成 owner(手動 TXT,拒 CF OAuth)、Bing Webmaster 走 Google 登入匯入+sitemap(MS 帳號建不了:f1@ 已是他人 MS 復原信箱)、YouTube @kingconntech+2022 公司影片公開、GBP 既有 Maps 列表認領進 f1@(只剩影片驗證)。站內 sameAs/影片連結由 fork 走 verify+deploy。
 - 沒過:Kompass/Crunchbase/ThomasNet 三家 WAF(DataDome 已暫封本 IP)。open items #711-714;收 #591/#620/#621/#694/#710。
 - 積木:kc-mailpilot/tools/mailbox_otp.py(唯讀 IMAP 驗證碼輪詢,憑證走 .env)。
+
+## 2026-09-03 主視窗:Fable 5.1 全產品線總體檢(老闆 /goal:設計/SEO/結構三軸「就是變更好」)
+- 範圍:marketdaily.ai、皇海 kingconn、QuietFix/storefront、CHOSEN TCG、ProtoForge 線上站;路徑=site-doctor(MD 前台)+open-seo 站審+impeccable detect/audit+ui-ux-pro-max 檢核;小修當場做+部署+驗證,大改出 plan;總報告 Artifact。
+- (續)體檢途中抓到生產事故:09-01 14:40 agent_board 的 board.json commit 靜默失敗留髒→所有 docs 面 runner 讓路→全站凍在 09-01 兩天(09-02/09-03 存檔頁 404、schema 沒注入),deploy_drift 紅了 20+ 輪但自癒只綁 GitHub Actions(帳號層又停用 422)。修:補 commit、手動走 cron_deploy_docs 上線;根治 cron_git_persist 失敗不再靜默+cron_reclaim_own_output 防自鎖+deploy_docs_via_worktree.sh 本機腿接進 deploy_drift 三腿鏈(迴歸 4 套全綠,生產實射 rc=0)。另修 /stock-quotes 2454/2308 null(5m intraday edge 失效→退 1d/1d)。open #720-#723。
+
+## 2026-09-03 主視窗:@omidotme(Omi / Based Hardware)IG 全帳號 134 則看完 → Artifact 解剖報告
+- 老闆問「這家公司在做什麼酷東西」。走 video-watcher:Meta Graph API business_discovery 列全帳號(匿名網頁只給 12/137)+9 支 API 不給的用 ig_sniff 撈,133 支全下載、Groq whisper 逐字、4x4 sheet 逐格,7 個子代理平行看+主視窗抽驗高互動片。
+- 結論:產品=錄音吊墜($89)+Omi for Mac+Glass,但帳號真正的機器是 2026-01 找成長長後的辦公室短劇工廠(前三爆片 5.9 萬/4.4 萬/2 萬讚全是 AI 職場梗,產品只是道具);白板漏出 LLM Gateway/PTT→Gemini/OpenClaw;「$80M 賣掉公司」對照公開紀錄是 $52M。報告:https://claude.ai/code/artifact/e317cf4d-c9f7-464d-8bbd-a8749a7514cd
+- 坑(已回寫 video-watcher LESSONS):`while read` 迴圈裡 ffmpeg 吃 stdin 讓 24/133 靜默沒產 sheet;子代理補看時撞 session 429,7 支高價值片改由主視窗親看,其餘 17 支只靠逐字稿。
