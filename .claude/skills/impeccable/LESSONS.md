@@ -19,3 +19,8 @@
 
 ## 2026-09-03 detect 對 docs/ 整目錄會被 docs/output/ 130+ 篇日報存檔淹沒
 - 修法:只點名主要頁面 `detect.mjs docs/index.html docs/dashboard.html …`;存檔頁是 email 本體(side-tab 色條是 email 樣式),不算站台設計 tell。全站主要頁命中固定四樣:Inter、codex-grid 格線背景、#6366f1 dark-glow、bounce easing——這就是老闆罵的「同一套模板」在程式碼層的指紋。
+
+### 2026-09-03 無人值守+winrig 禁開視窗時,new-work 的決策頁走不了
+- 坑:new-work 的 serve-question 決策頁要開瀏覽器給用戶選;winrig 鐵則禁止搶前景,且 session 無人值守。同時 harness 沒註冊 `impeccable-finish-reviewer` agent type。
+- 修:PRODUCT.md 自己代填(推定項逐條標【推定】,收工時揭露)、concept-seed 照擲,指派+挑戰者融合後直接建,收工報告寫明假設;審查者改 spawn general-purpose 並餵 `reference/degraded/finish-reviewer.md` 路徑當角色。
+- 另:`overflow-x:clip` 後 playwright `full_page` 截圖仍含溢出寬度(陸塊 bleed 被拍成白邊),要帶 `clip={'width':viewport}` 才是使用者看到的畫面;detect 對過衝 easing 一律報 bounce-easing,挑戰者世界本身要求過衝時屬 brief-earned,交給審查者判用量即可。

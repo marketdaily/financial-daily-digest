@@ -8459,3 +8459,9 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - (收工)四線全部落地+線上驗證:皇海(c02a2479:搜尋入口/CTA 帶料號/.wrap/交叉表手機卡/hreflang ja/計數同步/title 公式)、MarketDaily(114b451b)、命書(c1912a6,本機無 remote)、QFX(2e770ff)。總報告 Artifact 已交老闆;拍板項 #720/#722-#724/#726/#728/#730/#735,我方未收乾 #721/#727/#733/#734/#738/#739。
 - 皇海 connectorsupplier.com 供稿已寄(ajborn@,news release 車道;稿內「全 248 份 PDF 可搜尋」修正為不帶數字,實為 242/248)。
 - (續)老闆 17:38 喊停 Sidekick(「太麻煩了」):winrig `sidekick`/`sidekick-capture` disable、AHK 以 reload→ExitApp 退出+Sidekick-AHK 工作停用、Mac Hammerspoon 殺掉+init.lua 改名 .sidekick-stopped;cloudflared ingress 與 Tuna intent 留著無害;程式碼保留(~/sidekick git)。open #732/#736/#737 關閉。重開=還原 sidekick.ahk + enable 兩個 service + 啟用工作。
+
+## 2026-09-03 晚 主視窗:/goal 皇海獲客——老闆修正「不做下單入口,只要更多人來詢價」(詳 ~/kingconn/WORKLOG.md)
+- 需求回收(63 顆消失料號的型錄下載改接搜尋頁+詢問卡)+ PART_SLUG 直達修洞;CRO 體檢與 B2B 詢盤平台研究兩個子代理平行中。
+
+## 2026-09-03 晚 主視窗:CHOSEN 會員站 /news 白底改版(老闆令)
+- 成品+交接文件在 storefront `clients/chosen/site/member-news/`(commit 3b4cf9c),預覽 artifact 03894ccf;impeccable 全流程(PRODUCT.md 代填→seed 3a9b6f7c→兩輪自檢→獨立審查 8 修+1 回歸→DESIGN.md)。細節見 ~/storefront/WORKLOG.md。未收:Kevin 拍板+Darren 移植(open #742)。
