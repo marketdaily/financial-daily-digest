@@ -2436,10 +2436,14 @@ export default {
               .then(r => r.ok ? r.json() : null).catch(() => null)
           : Promise.resolve(null);
         // Yahoo:台股(.TW 上市 / .TWO 上櫃 自動切換)
-        const [r, fd] = await Promise.all([
+        let [r, fd] = await Promise.all([
           fetchYahooChart(t, isTW, "5m", "1d", yfHeaders, 15),
           fhQuote
         ]);
+        // 2026-09-03:2454/2308 兩檔 5m intraday 在 edge 持續拿不到(同批 2330 正常、/stock-chart 的日線
+        // 對同兩檔正常)⇒ 不是限流是該 granularity 對特定檔失效。退回 interval=1d 但 **range 仍 1d**:
+        // 前收語意(meta.chartPreviousClose=昨收)只跟 range=1d 有關,與 interval 無關,不會踩 5d 錯位坑。
+        if (!r) r = await fetchYahooChart(t, isTW, "1d", "1d", yfHeaders, 15);
         let price = null, prev = null, name = t, high = null, low = null, volume = null;
         if (r) {
           const meta = r.meta;
