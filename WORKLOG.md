@@ -8455,4 +8455,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 老闆看完 Omi 解剖後說要「這樣的工具給自己用」,追問後真需求=隨時盯著電腦、用講的教他下一步、講不懂就圈給他看、全免費。brainstorming 三輪拍板:看層本機 qwen3.5:9b(0 元)、教層 Claude 訂閱(有額度守衛)。spec 已 commit。
 - 上線:`~/sidekick`(server :8990 systemd、WSL 擷取橋、AHK 浮窗/熱鍵、Tuna 嘴+intent、cb-tunnel `sidekick.marketdaily.ai`)。9 單元測試+1 真 Ollama 測試全綠;e2e 一問 17.7s 答對並圈到位置。
 - 坑:Defender AMSI 整檔封鎖「截圖+上傳」.ps1 → 改 WSL 餵 stdin 給常駐 powershell;看片/打遊戲誤判卡住 → passive 退避。詳 memory project_sidekick。
-- 未收:Mac 端要老闆點兩個權限(open #733);P3 每晚回顧未做(#732 續)。
+- 未收:Mac 端要老闆點兩個權限(open #736);P3 每晚回顧未做(#732 續)。
