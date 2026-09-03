@@ -30,6 +30,10 @@ ROOT = Path(__file__).resolve().parent.parent
 DIGEST_DIR = ROOT / "docs" / "output"
 OUT_DIR = ROOT / "docs" / "data"
 OUT_FILE = OUT_DIR / "track-record.json"
+# 2026-09-03 總體檢 §2.1/§1.4:首頁只需要 stats(<5KB),不該為了三個數字抓 3MB 全檔
+STATS_FILE = OUT_DIR / "track-record.stats.json"
+TRACK_HTML = ROOT / "docs" / "track-record.html"
+_TR_VERSION_RE = re.compile(r'const TR_DATA_VERSION = "[^"]*";')
 CACHE_FILE = ROOT / "scripts" / ".price_cache.json"
 # 匿名化逐筆帳本(修5):不進 docs/(不對外部署),只給機器自己稽核用
 LEDGER_FILE = ROOT / "scripts" / "personal_ledger.jsonl"
@@ -1556,6 +1560,20 @@ def run_ledger_edge_audit() -> None:
         print(f"[warn] ledger edge_audit failed: {exc}", file=sys.stderr)
 
 
+def _stamp_track_record_html(version: str) -> None:
+    """把 generated_at 回寫進 docs/track-record.html 的 TR_DATA_VERSION(?v= cache-bust 用)。
+    找不到錨點就不動(頁面改版時 fail-quiet 但下面 print 讓 log 看得到)。"""
+    if not TRACK_HTML.exists():
+        return
+    html = TRACK_HTML.read_text(encoding="utf-8")
+    new = _TR_VERSION_RE.sub(f'const TR_DATA_VERSION = "{version}";', html, count=1)
+    if new == html:
+        if not _TR_VERSION_RE.search(html):
+            print("[warn] track-record.html 找不到 TR_DATA_VERSION 錨點,未回寫版本戳", file=sys.stderr)
+        return
+    TRACK_HTML.write_text(new, encoding="utf-8")
+
+
 def main() -> int:
     # 2026-07-07 Delvin 指令:舊世代引擎(結構 prior+校準信心上線前)的預測不是現行系統產的,
     # 混進公開頭條勝率=不真實 → 公開戰績只計 MODEL_ERA_START 起的記錄,全程用現行規則重算。
@@ -1962,6 +1980,8 @@ def main() -> int:
         json.dumps({"stats": stats, "records": visible_records}, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
+    STATS_FILE.write_text(json.dumps({"stats": stats}, ensure_ascii=False, indent=2), encoding="utf-8")
+    _stamp_track_record_html(stats["generated_at"])
     # 內部逐筆明細(含個股+用戶token):寫本地檔,由 winrig 排程 POST 到 worker
     # /internal/plan-trades 歸戶進 KV,admin 後台認證後才看得到。
     # 絕不進公開 JSON、絕不 commit(.gitignore 已擋)。

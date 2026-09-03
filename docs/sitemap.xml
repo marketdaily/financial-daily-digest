@@ -56,6 +56,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://marketdaily.ai/archive/</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://marketdaily.ai/blog/0056-競爭優勢與護城河-202606</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

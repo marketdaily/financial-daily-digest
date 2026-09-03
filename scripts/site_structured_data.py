@@ -37,6 +37,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 from seo_articles import _truncate_to_desc  # noqa: E402  單一句界截斷邏輯來源
+import archive_nav  # noqa: E402  存檔頁 <title>/<h1> 主句與個股名抽取的單一事實來源
 
 DOCS = ROOT / "docs"
 BASE = "https://marketdaily.ai"
@@ -166,9 +167,12 @@ def backfill_core(dry: bool) -> list:
 #  所以那班對結構化資料實際上無事可做 —— open item #236 要驗的正是這一段。)
 DATE_RE = re.compile(r"digest_(\d{4}-\d{2}-\d{2})(_us)?\.html$")
 # 兩版原本共用同一個 <title>財經日報 {date}</title> ⇒ 進了 sitemap 就是一對重複標題,
-# 對 SERP 互相稀釋。美股版改寫成自己的標題(冪等:已經是新標題就不再動)。
-US_TITLE_RE = re.compile(r"<title>財經日報 (\d{4}-\d{2}-\d{2})</title>")
+# 對 SERP 互相稀釋。2026-09-03 起 <title> 一律重算成 SEO 模板
+# `台股日報 2026-09-01｜特斯拉、聯發科、輝達 — MarketDaily`(`_us` → 美股晚報),
+# 個股名從內文 signal-ticker 抽(archive_nav.extract_stock_names,零捏造;抽不到就不帶個股)。
+# 冪等:標題只由檔名+內文決定,重跑結果相同。
 DIGEST_TITLE_RE = re.compile(r"<title>[^<]*</title>")
+AUTHOR = {"@type": "Person", "name": "Delvin Chang", "url": f"{BASE}/about"}
 # div/ul 允許額外屬性(如 style=""/class=""),避免漏抓真實有 TL;DR 內容但 markup 稍有差異的舊版本頁面。
 TLDR_RE = re.compile(r'<div class="tldr"[^>]*>.*?<ul[^>]*>(.*?)</ul>', re.S)
 LI_RE = re.compile(r"<li[^>]*>(.*?)</li>", re.S)
@@ -190,18 +194,19 @@ def _extract_tldr_text(html: str) -> str:
     return " ".join(parts)
 
 
-def _digest_schema_json(date: str, desc: str, url: str, market: str = "tw") -> str:
+def _digest_schema_json(date: str, desc: str, url: str, market: str = "tw", names=None) -> str:
     # 台股班 07:00 寄出、美股班 20:00 寄出(TW 時間)——datePublished 照各自的班次寫,
     # 兩篇才不會宣稱同一時刻發佈。
     published = f"{date}T07:00:00+08:00" if market == "tw" else f"{date}T20:00:00+08:00"
     article = {
         "@type": "Article",
-        "headline": _digest_headline(date, market),
+        "headline": _digest_headline(date, market, names),
         "description": desc,
         "image": [OG_IMAGE],
         "datePublished": published,
         "dateModified": published,
-        "author": {"@type": "Organization", "name": "MarketDaily"},
+        # about 頁已公開主編身分 → author 用 Person(E-E-A-T),publisher 仍是 Organization
+        "author": AUTHOR,
         "publisher": PUBLISHER,
         "mainEntityOfPage": {"@type": "WebPage", "@id": url},
     }
@@ -209,18 +214,20 @@ def _digest_schema_json(date: str, desc: str, url: str, market: str = "tw") -> s
     return json.dumps(schema, ensure_ascii=False).replace("</", "<\\/")
 
 
-def _digest_headline(date: str, market: str) -> str:
-    return f"財經日報 {date}" if market == "tw" else f"美股日報 {date}"
+def _digest_headline(date: str, market: str, names=None) -> str:
+    """<h1>/og:title/JSON-LD headline 主句(不帶品牌);<title> = 主句 + " — MarketDaily"。"""
+    return archive_nav.headline(date, market == "us", list(names or []))
 
 
 def inject_archive_page(fpath: Path, date: str, dry: bool, market: str = "tw") -> bool:
     original = fpath.read_text(encoding="utf-8")
     html = _strip_existing_block(original)
-    if market == "us":
-        html = US_TITLE_RE.sub(r"<title>美股日報 \1</title>", html, count=1)
     if not DIGEST_TITLE_RE.search(html):
         raise ValueError(f"{fpath.name}: 找不到 <title> 標籤,無法插入結構化資料區塊,需人工檢查頁面結構")
-    title = _digest_headline(date, market)
+    names = archive_nav.extract_stock_names(html)
+    title = _digest_headline(date, market, names)
+    full_title = archive_nav.page_title(date, market == "us", names)
+    html = DIGEST_TITLE_RE.sub(lambda m: f"<title>{_esc(full_title, quote=False)}</title>", html, count=1)
     url = f"{BASE}/output/digest_{date}" + ("_us" if market == "us" else "")
     fallback = (f"MarketDaily {date} AI 財經日報:美股與台股當日重點整理,個股分析全免費開放。"
                 if market == "tw" else
@@ -236,16 +243,16 @@ def inject_archive_page(fpath: Path, date: str, dry: bool, market: str = "tw") -
         f'<link rel="canonical" href="{url}">',
         '<meta property="og:type" content="article">',
         '<meta property="og:site_name" content="MarketDaily">',
-        f'<meta property="og:title" content="{title}">',
+        f'<meta property="og:title" content="{_esc(title, quote=True)}">',
         f'<meta property="og:description" content="{desc_a}">',
         f'<meta property="og:url" content="{url}">',
         f'<meta property="og:image" content="{OG_IMAGE}">',
         '<meta name="twitter:card" content="summary_large_image">',
-        f'<meta name="twitter:title" content="{title}">',
+        f'<meta name="twitter:title" content="{_esc(title, quote=True)}">',
         f'<meta name="twitter:description" content="{desc_a}">',
         f'<meta name="twitter:image" content="{OG_IMAGE}">',
     ]
-    schema_json = _digest_schema_json(date, desc, url, market)
+    schema_json = _digest_schema_json(date, desc, url, market, names)
     block_lines.append(f'<script type="application/ld+json">{schema_json}</script>')
 
     new_html = DIGEST_TITLE_RE.sub(lambda m: m.group(0) + "\n" + _wrap_block(block_lines), html, count=1)

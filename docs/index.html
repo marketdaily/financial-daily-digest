@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google-site-verification" content="Dmue4XJrjV3lfmoI2N6t7x3301zt61-csJUI13pvoaI" />
-<title>MarketDaily — 台灣投資人的每日 AI 財經日報</title>
+<title>免費美股・台股 AI 財經早報｜每天 7 點寄到你的 Email — MarketDaily</title>
 <meta name="description" content="台股早上 7 點、美股晚上 8 點，AI 為你精選市場簡報。假訊息全過濾，像聰明朋友傳訊息給你一樣好懂，30 秒掌握市場大事。">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="MarketDaily">
-<meta property="og:title" content="MarketDaily — 台灣投資人的每日 AI 財經日報">
+<meta property="og:title" content="免費美股・台股 AI 財經早報｜每天 7 點寄到你的 Email — MarketDaily">
 <meta property="og:description" content="台股早上 7 點、美股晚上 8 點，AI 為你精選市場簡報。假訊息全過濾，像聰明朋友傳訊息給你一樣好懂，30 秒掌握市場大事。">
 <meta property="og:url" content="https://marketdaily.ai/">
 <meta property="og:image" content="https://marketdaily.ai/assets/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MarketDaily — 台灣投資人的每日 AI 財經日報">
+<meta name="twitter:title" content="免費美股・台股 AI 財經早報｜每天 7 點寄到你的 Email — MarketDaily">
 <meta name="twitter:description" content="台股早上 7 點、美股晚上 8 點，AI 為你精選市場簡報。假訊息全過濾，像聰明朋友傳訊息給你一樣好懂，30 秒掌握市場大事。">
 <meta name="twitter:image" content="https://marketdaily.ai/assets/og.png">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
@@ -898,7 +898,7 @@ footer {
 
 <!-- Nav -->
 <nav>
-  <a class="logo" href="index.html">
+  <a class="logo" href="/">
     <div class="logo-icon">
       <svg width="16" height="16" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
         <rect x="1" y="14" width="4" height="7" rx="1.5" fill="white" fill-opacity="0.55"/>
@@ -910,10 +910,10 @@ footer {
     Market<em>Daily</em>
   </a>
   <div class="nav-right">
-    <a href="track-record.html" class="lang-btn" data-i18n="nav_record">戰績</a>
-    <a href="blog/" class="lang-btn" data-i18n="nav_learn">投資學堂</a>
-    <a href="vs.html" class="lang-btn" data-i18n="nav_vs">vs 對手</a>
-    <a href="pricing.html" class="lang-btn" data-i18n="nav_pricing">定價</a>
+    <a href="/track-record" class="lang-btn" data-i18n="nav_record">戰績</a>
+    <a href="/blog/" class="lang-btn" data-i18n="nav_learn">投資學堂</a>
+    <a href="/vs" class="lang-btn" data-i18n="nav_vs">vs 對手</a>
+    <a href="/pricing" class="lang-btn" data-i18n="nav_pricing">定價</a>
 </div>
   <button class="lang-btn" id="lang-toggle" onclick="toggleLang()">中文</button>
 </nav>
@@ -950,12 +950,11 @@ footer {
   <div class="hero-inner">
     <div class="hero-pill">
       <span class="live-dot"></span>
-      <span data-i18n="pill">AI-Curated · Fake-News Filtered · 7AM & 8PM</span>
+      <span data-i18n="pill">美股＋台股 · AI 精選 · 假訊息過濾</span>
     </div>
-    <h1 data-i18n-html="hero_h1">Your daily stock market<br><span class="gradient">briefing in 30 seconds</span></h1>
+    <h1 data-i18n-html="hero_h1">台股早 7 點 · 美股晚 8 點<br><span class="gradient">30 秒看完財經大事</span></h1>
     <p class="hero-sub" data-i18n="hero_sub">
-      AI-curated US & Taiwan market news, fake-news filtered,
-      written like a smart friend texting you — all before the market opens.
+      AI 精選美股＋台股大事，假訊息全過濾，像聰明朋友傳訊息給你一樣好懂——開盤前就掌握全局。
     </p>
 
     <div class="hero-form-wrap">
@@ -1163,19 +1162,20 @@ footer {
   <div class="stats">
     <div class="stat-item">
       <span class="stat-num">7AM<span style="opacity:.5;font-weight:700;">·</span>8PM</span>
-      <div class="stat-label" data-i18n="stat1">Taiwan Time Daily</div>
+      <div class="stat-label" data-i18n="stat1">台灣時間每日發送</div>
+    </div>
+    <!-- 2026-09-03 總體檢 §1.4:「100% / 0」不是量測值 → 改成 /data/track-record.stats.json 可查證數字,讀不到顯示「—」 -->
+    <div class="stat-item">
+      <span class="stat-num" id="stat-wall-total">—</span>
+      <div class="stat-label" data-i18n="stat2">累計判斷筆數 · 公開可查</div>
     </div>
     <div class="stat-item">
-      <span class="stat-num" data-count-to="100" data-suffix="%">100%</span>
-      <div class="stat-label" data-i18n="stat2">Personalized Filter</div>
+      <span class="stat-num" id="stat-wall-days">—</span>
+      <div class="stat-label" data-i18n="stat3">統計天數</div>
     </div>
     <div class="stat-item">
-      <span class="stat-num" data-count-to="0">0</span>
-      <div class="stat-label" data-i18n="stat3">Fake News Got Through</div>
-    </div>
-    <div class="stat-item">
-      <span class="stat-num" data-i18n="stat4_num">30s</span>
-      <div class="stat-label" data-i18n="stat4">Per Briefing</div>
+      <span class="stat-num" id="stat-wall-arate">—</span>
+      <div class="stat-label" data-i18n="stat4">看多勝率 · 隔日結算</div>
     </div>
   </div>
 </div>
@@ -1312,6 +1312,13 @@ footer {
     if (a) a.innerHTML = fmt(src.a_rate, src.a_count);
     if (c) c.innerHTML = fmt(src.c_rate, src.c_count);
     if (t && typeof trData.stats.total_records === 'number') t.textContent = trData.stats.total_records;
+    // 數字牆(§1.4):與上方戰績卡同源同口徑
+    const wt = document.getElementById('stat-wall-total');
+    const wd = document.getElementById('stat-wall-days');
+    const wa = document.getElementById('stat-wall-arate');
+    if (wt && typeof trData.stats.total_records === 'number') wt.textContent = trData.stats.total_records.toLocaleString('en-US');
+    if (wd && typeof trData.stats.days_covered === 'number') wd.textContent = trData.stats.days_covered;
+    if (wa) wa.innerHTML = fmt(src.a_rate, src.a_count);
     // Hero chip 帶頭數字:避坑勝率(與大卡片同源 one_day,可對照紀錄表)
     if (heroChip) {
       const raw = fmt(src.c_rate, src.c_count);
@@ -1321,8 +1328,10 @@ footer {
         : raw;
     }
   };
-  fetch('data/track-record.json', { cache: 'no-cache' })
-    .then(r => r.ok ? r.json() : null)
+  // 先讀 stats 小檔(<5KB,build_track_record.py 同步產出);缺檔才退回 3MB 全檔
+  fetch('data/track-record.stats.json', { cache: 'no-cache' })
+    .then(r => r.ok ? r.json() : Promise.reject(new Error('stats.json ' + r.status)))
+    .catch(() => fetch('data/track-record.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : null))
     .then(d => {
       if (!d || !d.stats) return;
       trData = d;
@@ -1885,12 +1894,13 @@ footer {
 <footer>
   <div class="footer-brand">Market<span style="color:#818cf8;">Daily</span></div>
   <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:18px;margin:18px 0 12px;font-size:13px;">
-    <a href="track-record.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_record">戰績紀錄</a>
-    <a href="vs.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_vs">vs 對手比較</a>
-    <a href="about.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_about">主編 · 編輯流程</a>
-    <a href="pricing.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_pricing">定價</a>
-    <a href="contact.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_contact">聯絡客服</a>
-    <a href="faq.html" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_faq">常見問題</a>
+    <a href="/track-record" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_record">戰績紀錄</a>
+    <a href="/archive/" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_archive">日報存檔</a>
+    <a href="/vs" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_vs">vs 對手比較</a>
+    <a href="/about" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_about">主編 · 編輯流程</a>
+    <a href="/pricing" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_pricing">定價</a>
+    <a href="/contact" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_contact">聯絡客服</a>
+    <a href="/faq" style="color:#a5b4fc;text-decoration:none;font-weight:600;" data-i18n="footer_faq">常見問題</a>
   </div>
   <div class="footer-note">
     <span data-i18n="footer2">✅ Multi-source verified &nbsp;|&nbsp; ⚠️ Single source — read with caution</span><br>
@@ -1979,7 +1989,7 @@ const i18n = {
     or_divider: "or",
     btn_use_invite: "Claim my free briefing →",
     remember_email: "Remember my email",
-    stat1: "Taiwan Time Daily", stat2: "Personalized Filter", stat3: "Fake News Got Through", stat4_num: "30s", stat4: "Per Briefing",
+    stat1: "Taiwan Time Daily", stat2: "Calls Logged · Verifiable", stat3: "Days Tracked", stat4: "Bullish Hit Rate · Next-day",
     feat_title: "Built for busy people",
     f1_title: "30-Second Summary", f1_desc: "3 bullet points at the top. Catch the most important thing even on your most hectic morning.",
     f2_title: "Fake News Filtered", f2_desc: "Only news from Reuters, CNBC, Bloomberg, FT and other verified sources. Every story is cross-checked.",
@@ -2039,6 +2049,7 @@ const i18n = {
     footer3: "For informational purposes only. Not financial advice.",
     footer_contact: "Contact Us / Support",
     footer_faq: "FAQ",
+    footer_archive: "Daily Archive",
     founder_text: "I used to spend an hour every morning reading Bloomberg, CNBC, and PTT — just to figure out what happened overnight to my stocks. Half the news was noise. Some of it was flat-out wrong. I built MarketDaily because I was tired of doing that work myself. Now it just shows up in my inbox, already filtered, already personalized. I haven't opened a financial news app in months.",
     founder_name: "The Founder", founder_role: "Investor · Engineer · Built this for himself first",
     testimonials_eyebrow: "Early Users", testimonials_title: "What people are saying",
@@ -2143,7 +2154,7 @@ const i18n = {
     or_divider: "或",
     btn_use_invite: "領取我的免費日報 →",
     remember_email: "記住我的 Email",
-    stat1: "台灣時間每日發送", stat2: "個人化篩選", stat3: "假新聞漏網數", stat4_num: "30s", stat4: "每篇讀完",
+    stat1: "台灣時間每日發送", stat2: "累計判斷筆數 · 公開可查", stat3: "統計天數", stat4: "看多勝率 · 隔日結算",
     feat_title: "專為忙碌的人打造",
     f1_title: "30 秒快速摘要", f1_desc: "最上方三個重點，再忙的早晨也能在 30 秒內掌握市場大事。",
     f2_title: "假訊息過濾", f2_desc: "只採用 Reuters、CNBC、Bloomberg、FT 等可信媒體，每則新聞交叉比對。",
@@ -2203,6 +2214,7 @@ const i18n = {
     footer3: "本日報為 AI 生成，僅供參考，不構成投資建議。",
     footer_contact: "聯絡我們 / 客服",
     footer_faq: "常見問題",
+    footer_archive: "日報存檔",
     founder_text: "我以前每天早上花一個小時讀 Bloomberg、CNBC 還有 PTT，就只是為了搞清楚昨晚我持倉的股票發生了什麼事。一半的新聞是雜訊，有些根本是假的。我做 MarketDaily，是因為我不想再自己做這件事。現在它每天早上在信箱等我，已經過濾好了，已經個人化好了。我幾個月沒打開任何財經 App 了。",
     founder_name: "創辦人", founder_role: "投資者 · 工程師 · 先為自己打造這個工具",
     testimonials_eyebrow: "早期用戶", testimonials_title: "用過的人說什麼",
@@ -2923,9 +2935,9 @@ function switchAbout(panel, btn) {
 
 <!-- Meta Pixel: 設好 META_PIXEL_ID 才會載 fbevents.js,沒設整支 noop -->
 <script>window.META_PIXEL_ID = "1497334655104185";</script>
-<script src="meta-pixel.js"></script>
-<script src="analytics.js?v=20260708a"></script>
-<script src="ui-pro.js?v=20260610a"></script>
+<script src="meta-pixel.js" defer></script>
+<script src="analytics.js?v=20260708a" defer></script>
+<script src="ui-pro.js?v=20260610a" defer></script>
 
 <!-- Financial 3D particle background -->
 <canvas id="fin-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
@@ -3043,8 +3055,10 @@ function switchAbout(panel, btn) {
 })();
 </script>
 <!-- service worker 已移除 —— 純網路供應,避免快取導致看到舊版或跳轉失敗 -->
-<script src="onboarding-tour.js?v=20260614c"></script>
+<script src="onboarding-tour.js?v=20260614c" defer></script>
 <script>
+// onboarding-tour.js 已 defer(在 DOMContentLoaded 前依序執行完)→ mount 放進 DOMContentLoaded 才拿得到 MDTour
+document.addEventListener("DOMContentLoaded", function () {
 MDTour.mount([
   { selector: "#hero-email",
     title: { zh: "第 1 步:輸入你的 Email", en: "Step 1: Enter your email" },
@@ -3054,8 +3068,9 @@ MDTour.mount([
     body: { zh: "Email 打好後,按這個按鈕進入下一步。", en: "Once your email is in, click this button to move on." } },
   { title: { zh: "接下來會發生什麼", en: "What happens next" },
     body: { zh: "留下 Email 就能直接訂閱,目前全功能限時免費(台股早上 7 點、美股晚上 8 點收日報,週一到週六,週日休息;個人化分析與 AI 助手對話全部包含)。現在訂閱的早鳥用戶,未來恢復收費後仍永久免費。週六是「本週回顧 + 下週重點」特別版。之後想登入「我的專區」時,系統才會請你設一組密碼。", en: "Just leave your email to subscribe — every feature is currently free for a limited time (TW digest 7AM, US digest 8PM TWT, Mon–Sat, Sun off; personalized analysis and AI chat included). Early subscribers stay free forever when paid plans return. Saturday is a special 'weekly recap + next-week catalysts' edition. You’ll only set a password later when logging in to “My Account.”" } }
-], { tourId: "index", auto: true });
+], { tourId: "index", auto: false }); // 2026-09-03 §1.2:首頁不自動啟動(hero 被壓暗),只留右下「新手教學」手動開;dashboard 維持 auto
+});
 </script>
-<script src="terminal.js?v=1"></script>
+<script src="terminal.js?v=1" defer></script>
 </body>
 </html>

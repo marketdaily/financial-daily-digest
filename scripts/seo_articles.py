@@ -328,7 +328,7 @@ def related_html(ticker: str, exclude_slug: str, articles: list) -> str:
     if not same:
         return ""
     items = "\n".join(
-        f'    <li style="margin:8px 0;"><a href="{a["slug"]}.html" '
+        f'    <li style="margin:8px 0;"><a href="{a["slug"]}" '
         f'style="color:#a5b4fc;text-decoration:none;font-weight:600;">{a["title"]}</a></li>'
         for a in same[:5]
     )
@@ -1868,7 +1868,7 @@ strong {{ color:#fbbf24; font-weight:700; }}
 <body>
 <div class="topnav">
   <a href="/">MarketDaily ←</a>
-  <a href="/blog/index.html">所有文章</a>
+  <a href="/blog/">所有文章</a>
 </div>
 <article class="wrap">
   <div class="ahero" data-h="{cat}"></div>
@@ -2098,7 +2098,7 @@ def regenerate_blog_index(dry: bool):
     filters = "\n      ".join(pills)
 
     cards = "\n".join(
-        '<a class="card" data-cat="%s" href="%s.html">'
+        '<a class="card" data-cat="%s" href="%s">'
         '<span class="tag" style="--tc:%s">%s</span>'
         '<div class="card-title">%s</div>'
         '<div class="card-sum">%s</div>'
@@ -2184,7 +2184,7 @@ h1{ font-size:clamp(30px,5vw,44px); font-weight:900; color:#fff; letter-spacing:
 </style>
 </head>
 <body>
-<div class="topnav"><a href="/">← MarketDaily</a><a href="/dashboard.html">我的後台</a></div>
+<div class="topnav"><a href="/">← MarketDaily</a><div style="display:flex;gap:18px;"><a href="/archive/">日報存檔</a><a href="/dashboard">我的後台</a></div></div>
 <div class="wrap">
   <div class="eyebrow">投資學堂 · Learn</div>
   <h1>財經知識庫</h1>

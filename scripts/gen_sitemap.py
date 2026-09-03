@@ -22,6 +22,7 @@ CORE = [
     ("/contact", "monthly", "0.4"),
     ("/testimonials", "monthly", "0.5"),
     ("/blog/", "weekly", "0.7"),
+    ("/archive/", "daily", "0.7"),  # 2026-09-03 公版日報存檔總索引(scripts/build_archive_index.py)
 ]
 
 # 2026-08-18:`_us`(美股班存檔)原本被這條 regex 的 `$` 擋掉 ⇒ 40 篇公開頁既不在 sitemap

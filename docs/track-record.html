@@ -254,6 +254,13 @@ h1 {
   align-items: center;
 }
 .rec-row:last-child { border-bottom: none; }
+.rec-more {
+  display: block; width: 100%; margin-top: 14px; padding: 14px 18px; cursor: pointer;
+  font: inherit; font-size: 14px; font-weight: 700; color: #a5b4fc;
+  background: rgba(99,102,241,0.10); border: 1px solid rgba(99,102,241,0.32); border-radius: 12px;
+  transition: background-color .2s, border-color .2s;
+}
+.rec-more:hover { background: rgba(99,102,241,0.18); border-color: rgba(99,102,241,0.55); }
 .rec-row.header {
   background: rgba(255,255,255,0.02);
   font-size: 11px; font-weight: 700;
@@ -745,6 +752,12 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 // 真實資料來源:/data/track-record.json(由 scripts/build_track_record.py 每週從歷史日報抽出,
 // Yahoo Finance 計算 outcome)。fetch 失敗或無資料 → 顯示「資料準備中」空狀態,絕不顯示 mock。
 let RECORDS = [];
+// 資料檔版本戳:scripts/build_track_record.py 每次產出後回寫此值(?v= cache-bust)。
+// 取代原本 ?t=Date.now()+no-cache:那讓每個訪客/爬蟲都重抓 3MB,現在版本沒變就走快取/304。
+const TR_DATA_VERSION = "2026-09-03T08:19:20";
+// 表格分頁(2026-09-03 §2.1):原本 3,500+ 筆一次塞進 DOM(29k 節點、頁高 32 萬 px),改預設 100 筆+載入更多
+const PAGE_SIZE = 100;
+let shownCount = PAGE_SIZE;
 
 // Normalize record from JSON file or inline fallback to unified shape
 function normalize(r) {
@@ -814,7 +827,7 @@ function renderRecords(filter) {
   };
 
   const zhTable = currentLang !== "en";
-  filtered.forEach(r => {
+  filtered.slice(0, shownCount).forEach(r => {
     const row = document.createElement("div");
     row.className = "rec-row";
     const isTWTicker = /^\d{4,6}$/.test(r.ticker || "");
@@ -847,6 +860,19 @@ function renderRecords(filter) {
     `;
     table.appendChild(row);
   });
+  // 載入更多:按鈕放表格外(table.innerHTML 重繪不會吃掉它)
+  let more = document.getElementById("rec-more");
+  if (!more) {
+    more = document.createElement("button");
+    more.id = "rec-more"; more.type = "button"; more.className = "rec-more";
+    more.addEventListener("click", () => { shownCount += PAGE_SIZE; renderRecords(currentFilter); });
+    table.parentNode.insertBefore(more, table.nextSibling);
+  }
+  const remaining = Math.max(0, filtered.length - shownCount);
+  more.style.display = remaining > 0 ? "" : "none";
+  more.textContent = zhTable
+    ? `載入更多(已顯示 ${Math.min(shownCount, filtered.length)} / ${filtered.length} 筆)`
+    : `Load more (${Math.min(shownCount, filtered.length)} / ${filtered.length} shown)`;
 
   // Stats: only count judged
   const a = NORMALIZED.filter(r => r.type === "A" && (r.outcome === "win" || r.outcome === "loss"));
@@ -895,6 +921,7 @@ function applyFilter(btn) {
   document.querySelectorAll(".fpill").forEach(p => p.classList.remove("active"));
   btn.classList.add("active");
   currentFilter = btn.dataset.filter;
+  shownCount = PAGE_SIZE;
   renderRecords(currentFilter);
 }
 
@@ -918,7 +945,7 @@ let STATS = null;
 let dataLoaded = false;
 (async () => {
   try {
-    const res = await fetch("/data/track-record.json?t=" + Date.now(), { cache: "no-cache" });
+    const res = await fetch("/data/track-record.json?v=" + encodeURIComponent(TR_DATA_VERSION));
     if (res.ok) {
       const data = await res.json();
       if (data && Array.isArray(data.records) && data.records.length > 0) {
