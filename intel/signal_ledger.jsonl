@@ -984,3 +984,23 @@
 {"date": "2026-09-03", "code": "3564", "source": "leadflow", "level": "red", "signal": "其陽(3564) 無消息近漲停+10.0%(量能19.4×,5日+16.0%),疑資訊先行資金|外資+投信近3日僅+19張,法人未同步=隱形買盤", "price_at_signal": 52.9}
 {"date": "2026-09-03", "code": "7772", "source": "leadflow", "level": "red", "signal": "耀穎(7772) 無消息近漲停+9.9%(量能4.6×,5日+11.8%),疑資訊先行資金|外資+投信近3日僅+51張,法人未同步=隱形買盤", "price_at_signal": 99.5}
 {"date": "2026-09-03", "code": "4924", "source": "leadflow", "level": "red", "signal": "欣厚-KY(4924) 無消息近漲停+9.9%(量能12.0×,5日+5.8%),疑資訊先行資金|外資+投信近3日僅+77張,法人未同步=隱形買盤", "price_at_signal": 10.9}
+{"date": "2026-09-04", "code": "2221", "source": "sbl", "level": "red", "signal": "大甲(2221):機構借券賣出5日遽增20.9%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": null}
+{"date": "2026-09-04", "code": "2316", "source": "sbl", "level": "red", "signal": "楠梓電(2316):機構借券賣出5日遽增20.8%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": null}
+{"date": "2026-09-04", "code": "2368", "source": "mops_news", "level": "yellow", "signal": "金像電(2368) 重訊[2026-09-03]:代子公司Gold Circuit Electronics (Thailand) Co.,Ltd. 公告取得廠務工程", "price_at_signal": null}
+{"date": "2026-09-04", "code": "3413", "source": "investor_conf", "level": "red", "signal": "京鼎(3413):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-09-04", "code": "3701", "source": "sbl", "level": "yellow", "signal": "大眾控(3701):機構借券賣出5日增12.2%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-09-04", "code": "6669", "source": "mops_news", "level": "red", "signal": "緯穎(6669) 重訊[2026-09-03]:公告調整本公司第一次及第二次海外無擔保可轉換公司債 轉換價格", "price_at_signal": null}
+{"date": "2026-09-04", "code": "6937", "source": "institutional", "level": "yellow", "signal": "天虹(6937):法人 20 日淨買超 +858 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-09-04", "code": "6937", "source": "revenue", "level": "red", "signal": "天虹(6937):2026/07 營收公告、YoY +61.6%(強勁)、MoM -44.6%", "price_at_signal": null}
+{"date": "2026-09-04", "code": "8021", "source": "sbl", "level": "red", "signal": "尖點(8021):機構借券賣出5日遽增39.2%(聰明錢加碼放空,股價走勢待確認)", "price_at_signal": null}
+{"date": "2026-09-04", "code": "2012", "source": "revenue", "level": "yellow", "signal": "春雨(2012):2026/07 營收公告、YoY -2.2%、MoM +3.9%", "price_at_signal": null}
+{"date": "2026-09-04", "code": "AAPL", "source": "us_congress", "level": "red", "signal": "🏛️ AAPL 國會群聚買進:30天內 2 位議員申報買進(Cleo Fields、Ed Case)", "price_at_signal": null}
+{"date": "2026-09-04", "code": "6290", "source": "leadflow", "level": "yellow", "signal": "良維(6290) 無消息近漲停+10.0%(量能1.7×,5日+8.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-04", "code": "7709", "source": "leadflow", "level": "red", "signal": "榮田(7709) 無消息近漲停+10.0%(量能5.2×,5日+8.9%),疑資訊先行資金|外資+投信近3日僅-23張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-04", "code": "8042", "source": "leadflow", "level": "yellow", "signal": "金山電(8042) 無消息近漲停+10.0%(量能2.0×,5日+1.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-04", "code": "3624", "source": "leadflow", "level": "yellow", "signal": "光頡(3624) 無消息近漲停+9.9%(量能1.5×,5日+1.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-04", "code": "7717", "source": "leadflow", "level": "red", "signal": "萊德光電-KY(7717) 無消息近漲停+9.9%(量能8.8×,5日+2.2%),疑資訊先行資金|外資+投信近3日僅+248張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-04", "code": "4706", "source": "leadflow", "level": "red", "signal": "大恭(4706) 無消息近漲停+9.9%(量能77.6×,5日+7.9%),疑資訊先行資金|外資+投信近3日僅+1張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-04", "code": "6667", "source": "leadflow", "level": "red", "signal": "信紘科(6667) 無消息近漲停+9.9%(量能6.8×,5日+8.4%),疑資訊先行資金|外資+投信近3日僅+33張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-04", "code": "8064", "source": "leadflow", "level": "red", "signal": "東捷(8064) 無消息近漲停+9.8%(量能6.5×,5日+8.7%),疑資訊先行資金|外資+投信近3日僅-676張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-04", "code": "3499", "source": "leadflow", "level": "red", "signal": "環天科(3499) 無消息近漲停+9.7%(量能10.9×,5日+8.4%),疑資訊先行資金|外資+投信近3日僅+7張,法人未同步=隱形買盤", "price_at_signal": null}
