@@ -89,3 +89,8 @@
 {"date": "2026-09-04", "market": "tw", "from": "2308", "to": "8996", "from_px": 1760.0, "to_px": 1185.0}
 {"date": "2026-09-04", "market": "tw", "from": "8299", "to": "8996", "from_px": 2000.0, "to_px": 1185.0}
 {"date": "2026-09-04", "market": "us", "from": "GOOGL", "to": "PLTR", "from_px": 342.48, "to_px": 182.53}
+{"date": "2026-09-05", "market": "us", "from": "SOXX", "to": "NBIS", "from_px": 519.86, "to_px": 226.39}
+{"date": "2026-09-05", "market": "us", "from": "TSLA", "to": "NBIS", "from_px": 354.08, "to_px": 226.39}
+{"date": "2026-09-05", "market": "us", "from": "GOOGL", "to": "NBIS", "from_px": 338.46, "to_px": 226.39}
+{"date": "2026-09-05", "market": "us", "from": "META", "to": "NBIS", "from_px": 616.77, "to_px": 226.39}
+{"date": "2026-09-05", "market": "tw", "from": "8299", "to": "8996", "from_px": 2015.0, "to_px": 1300.0}
