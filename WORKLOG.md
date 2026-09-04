@@ -8473,3 +8473,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 老闆:「build an operation dashboard,先學企業級長什麼樣」→ 補正 for kingconn。研究(Few/SRE 黃金訊號/Grafana/PagerDuty)→ 三層落地:`build_ops_board.py`(cron 7,37 分→KV)→`/api/ops`→`/admin/ops`;快照 Artifact 48bd4180。順手修:asset_watch 基準紅 82 輪(刻意變更)重拍;網域到期守衛補狀態檔。open #751(未以真密碼實射)、#752(cron 首班)。
 - (續)老闆:「white background and use apple design skill」→ 沒有 Apple 專用 skill,依 impeccable `reference/ios.md`(HIG)+artifact-design 重做:白底、系統字、語意色只做狀態、髮絲線分組、不掛官網殼;修 `.bar` 撞名(SVG 長條被 CSS height:52px 套到)。Artifact 同址更新;第三次部署 → 線上驗證見下一條。
 - (續 2)白底版線上驗證:/admin/ops 新版已傳播(`--tint:#0071e3` 命中)、body 白底、錯密碼回「密碼不對」、/api/ops 無密碼 401、零 JS 錯。第三次部署曾被 verify 擋(死鏈 /favicon.ico + 缺 canonical),補齊後第四次過四道閘上線。
+- (續 3)老闆貼 Cloudflare zone Dashboards 連結「i want something like this」→ 自架 `/admin/traffic` 流量分析(GraphQL 逐日快照→KV→頁,24h/7d/30d,16 維度),詳 ~/kingconn/WORKLOG.md。密碼補正:在 ~/kingconn/.inquiry_admin_pw,#751/#752 已收。
