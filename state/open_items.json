@@ -7506,8 +7506,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-04 00:15",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-04 14:36",
+  "note": "密碼其實在 ~/kingconn/.inquiry_admin_pw(CUTOVER.md 有記);用它實射 /api/ops 與 funnel 皆 ok=true"
  },
  {
   "id": 752,
@@ -7516,7 +7516,7 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-04 00:15",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-04 14:36",
+  "note": "cron 已在真實排程跑過:KV board generated_at 2026-09-04T14:07"
  }
 ]
