@@ -28,7 +28,8 @@
   "models": {
     "cerebras": [
       "gemma-4-31b",
-      "gpt-oss-120b"
+      "gpt-oss-120b",
+      "qwen-3.8-27b"
     ],
     "groq": [
       "allam-2-7b",
@@ -65,8 +66,6 @@
       "mistral-code-latest",
       "mistral-embed",
       "mistral-embed-2312",
-      "mistral-large-2512",
-      "mistral-large-latest",
       "mistral-medium",
       "mistral-medium-2604",
       "mistral-medium-3",
@@ -124,5 +123,5 @@
       "z-ai/glm-5.2:free"
     ]
   },
-  "updated": "2026-09-03 10:10"
+  "updated": "2026-09-04 10:10"
 }
