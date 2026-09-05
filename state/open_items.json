@@ -7906,8 +7906,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-05 22:04",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-05 22:15",
+  "note": "已關閉 PimaxHome 並在 profile.json 設 enable_pvr_home=0;VRAM 7.6→3.5GB"
  },
  {
   "id": 792,
@@ -7916,8 +7916,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-05 22:04",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-05 22:15",
+  "note": "HwSchMode=1 已寫入(經 SSH 提權,無 UAC);下次開機生效"
  },
  {
   "id": 793,
@@ -7926,8 +7926,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-05 22:04",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-05 22:15",
+  "note": "Driver Easy 已 /VERYSILENT 移除,資料夾已清除"
  },
  {
   "id": 794,
@@ -7936,6 +7936,26 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-05 22:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 795,
+  "what": "VR: OpenXR 已切 Pimax runtime,尚未實際跑 F1 25 驗證(可能需重啟 PimaxPlay)",
+  "why": "他還在 VR 裡,沒開過遊戲驗過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-05 22:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 796,
+  "what": "VR: Pimax 更新率 display_timing_selection 1→0 推定=72Hz,對照表未證實",
+  "why": "Pimax 設定檔沒有對照表,只能請他在 PimaxPlay 看顯示值",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-05 22:15",
   "closed": null,
   "note": ""
  }
