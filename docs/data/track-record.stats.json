@@ -1,36 +1,36 @@
 {
   "stats": {
-    "generated_at": "2026-09-04T08:20:09",
+    "generated_at": "2026-09-05T08:18:37",
     "horizon": "5d",
     "records_since": "2026-06-12",
-    "days_covered": 59,
-    "total_records": 4557,
-    "judged_records": 3061,
+    "days_covered": 60,
+    "total_records": 4653,
+    "judged_records": 3193,
     "one_day": {
-      "a_count": 1175,
-      "a_wins": 823,
-      "a_rate": 70.0,
-      "c_count": 2350,
-      "c_wins": 1460,
-      "c_rate": 62.1
+      "a_count": 1236,
+      "a_wins": 864,
+      "a_rate": 69.9,
+      "c_count": 2461,
+      "c_wins": 1516,
+      "c_rate": 61.6
     },
     "monthly": {
-      "a_count": 544,
-      "a_wins": 469,
-      "a_rate": 86.2,
+      "a_count": 579,
+      "a_wins": 500,
+      "a_rate": 86.4,
       "a_ci95": [
-        83.1,
+        83.3,
         88.9
       ],
-      "a_pending": 730,
-      "c_count": 863,
-      "c_wins": 346,
-      "c_rate": 40.1,
+      "a_pending": 722,
+      "c_count": 904,
+      "c_wins": 354,
+      "c_rate": 39.2,
       "c_ci95": [
-        36.9,
-        43.4
+        36.0,
+        42.4
       ],
-      "c_pending": 1698
+      "c_pending": 1704
     },
     "quarterly": {
       "a_count": 0,
@@ -40,7 +40,7 @@
         0.0,
         0.0
       ],
-      "a_pending": 1274,
+      "a_pending": 1301,
       "c_count": 0,
       "c_wins": 0,
       "c_rate": 0.0,
@@ -48,226 +48,226 @@
         0.0,
         0.0
       ],
-      "c_pending": 2561
+      "c_pending": 2608
     },
     "holder": {
       "note": "持有者框架建議(用戶自填進場成本):judge_holder 獨立結算,不計入 A/C 頭條",
-      "count": 509,
-      "wins": 374,
-      "rate": 73.5,
+      "count": 587,
+      "wins": 436,
+      "rate": 74.3,
       "ci95": [
-        69.5,
-        77.1
+        70.6,
+        77.6
       ],
-      "pending": 213
+      "pending": 157
     },
-    "a_count": 1054,
-    "a_wins": 741,
-    "a_rate": 70.3,
+    "a_count": 1103,
+    "a_wins": 790,
+    "a_rate": 71.6,
     "a_ci95": [
-      67.5,
-      73.0
+      68.9,
+      74.2
     ],
-    "c_count": 2007,
-    "c_wins": 1013,
-    "c_rate": 50.5,
+    "c_count": 2090,
+    "c_wins": 1040,
+    "c_rate": 49.8,
     "c_ci95": [
-      48.3,
-      52.7
+      47.6,
+      51.9
     ],
     "calibration": {
-      "n": 1054,
-      "brier": 0.2547,
+      "n": 1103,
+      "brier": 0.2563,
       "coin_flip_brier": 0.25,
       "bins": {
         "51-60": {
-          "n": 335,
+          "n": 348,
           "hit_rate": 70.1
         },
         "61-70": {
-          "n": 78,
-          "hit_rate": 60.3
+          "n": 88,
+          "hit_rate": 60.2
         },
         "<=50": {
-          "n": 641,
-          "hit_rate": 71.6
+          "n": 667,
+          "hit_rate": 73.9
         }
       }
     },
     "by_regime": {
       "up": {
-        "a_count": 403,
-        "a_wins": 311,
-        "a_rate": 77.2,
+        "a_count": 453,
+        "a_wins": 351,
+        "a_rate": 77.5,
         "ci95": [
-          72.8,
-          81.0
+          73.4,
+          81.1
         ]
       },
       "down": {
-        "a_count": 507,
-        "a_wins": 309,
-        "a_rate": 60.9,
+        "a_count": 502,
+        "a_wins": 315,
+        "a_rate": 62.7,
         "ci95": [
-          56.6,
-          65.1
+          58.4,
+          66.9
         ]
       }
     },
     "by_market": {
       "tw": {
-        "a_count": 547,
-        "a_wins": 390,
-        "a_rate": 71.3,
+        "a_count": 567,
+        "a_wins": 411,
+        "a_rate": 72.5,
         "a_ci95": [
-          67.4,
-          74.9
+          68.7,
+          76.0
         ],
-        "c_count": 1004,
-        "c_wins": 490,
-        "c_rate": 48.8,
+        "c_count": 1041,
+        "c_wins": 498,
+        "c_rate": 47.8,
         "c_ci95": [
-          45.7,
-          51.9
+          44.8,
+          50.9
         ],
         "era": {
           "since": "2026-06-12",
-          "a_count": 547,
-          "a_wins": 390,
-          "a_rate": 71.3,
+          "a_count": 567,
+          "a_wins": 411,
+          "a_rate": 72.5,
           "a_ci95_day_cluster": [
-            59.4,
-            82.3
+            60.6,
+            83.3
           ],
-          "c_count": 1004,
-          "c_wins": 490,
-          "c_rate": 48.8,
+          "c_count": 1041,
+          "c_wins": 498,
+          "c_rate": 47.8,
           "c_ci95_day_cluster": [
-            38.7,
-            59.8
+            38.2,
+            57.6
           ],
-          "days": 46
+          "days": 47
         }
       },
       "us": {
-        "a_count": 507,
-        "a_wins": 351,
-        "a_rate": 69.2,
+        "a_count": 536,
+        "a_wins": 379,
+        "a_rate": 70.7,
         "a_ci95": [
-          65.1,
-          73.1
+          66.7,
+          74.4
         ],
-        "c_count": 1003,
-        "c_wins": 523,
-        "c_rate": 52.1,
+        "c_count": 1049,
+        "c_wins": 542,
+        "c_rate": 51.7,
         "c_ci95": [
-          49.0,
-          55.2
+          48.6,
+          54.7
         ],
         "era": {
           "since": "2026-06-12",
-          "a_count": 507,
-          "a_wins": 351,
-          "a_rate": 69.2,
+          "a_count": 536,
+          "a_wins": 379,
+          "a_rate": 70.7,
           "a_ci95_day_cluster": [
-            59.0,
-            78.2
+            60.8,
+            79.6
           ],
-          "c_count": 1003,
-          "c_wins": 523,
-          "c_rate": 52.1,
+          "c_count": 1049,
+          "c_wins": 542,
+          "c_rate": 51.7,
           "c_ci95_day_cluster": [
-            45.1,
-            59.9
+            44.5,
+            59.0
           ],
-          "days": 52
+          "days": 53
         }
       }
     },
     "era": {
       "note": "僅計 2026-06-12 起(結構prior+校準信心上線後)的現行模型;信心反推(_calibrated_confidence)應以此為準,避免舊世代反指標數據汙染",
       "since": "2026-06-12",
-      "a_count": 1054,
-      "a_wins": 741,
-      "a_rate": 70.3,
+      "a_count": 1103,
+      "a_wins": 790,
+      "a_rate": 71.6,
       "a_ci95_day_cluster": [
-        60.0,
-        79.2
+        61.8,
+        79.8
       ],
-      "c_count": 2007,
-      "c_wins": 1013,
-      "c_rate": 50.5,
+      "c_count": 2090,
+      "c_wins": 1040,
+      "c_rate": 49.8,
       "c_ci95_day_cluster": [
-        42.5,
-        58.7
+        42.4,
+        58.1
       ],
       "by_regime": {
         "up": {
-          "a_count": 403,
-          "a_wins": 311,
-          "a_rate": 77.2,
+          "a_count": 453,
+          "a_wins": 351,
+          "a_rate": 77.5,
           "a_ci95": [
-            72.8,
-            81.0
+            73.4,
+            81.1
           ]
         },
         "down": {
-          "a_count": 507,
-          "a_wins": 309,
-          "a_rate": 60.9,
+          "a_count": 502,
+          "a_wins": 315,
+          "a_rate": 62.7,
           "a_ci95": [
-            56.6,
-            65.1
+            58.4,
+            66.9
           ]
         }
       },
       "by_verdict_regime": {
         "buy|up": {
-          "count": 65,
-          "wins": 21,
-          "rate": 32.3,
+          "count": 75,
+          "wins": 26,
+          "rate": 34.7,
           "status": null
         },
         "buy|down": {
-          "count": 148,
-          "wins": 58,
-          "rate": 39.2,
+          "count": 146,
+          "wins": 59,
+          "rate": 40.4,
           "status": null
         },
         "hold|up": {
-          "count": 338,
-          "wins": 290,
-          "rate": 85.8,
+          "count": 378,
+          "wins": 325,
+          "rate": 86.0,
           "status": null
         },
         "hold|down": {
-          "count": 359,
-          "wins": 251,
-          "rate": 69.9,
+          "count": 356,
+          "wins": 256,
+          "rate": 71.9,
           "status": null
         },
         "sell|up": {
-          "count": 14,
-          "wins": 7,
-          "rate": null,
-          "status": "insufficient_data"
+          "count": 17,
+          "wins": 9,
+          "rate": 52.9,
+          "status": null
         },
         "sell|down": {
-          "count": 58,
-          "wins": 24,
-          "rate": 41.4,
+          "count": 57,
+          "wins": 23,
+          "rate": 40.4,
           "status": null
         },
         "wait|up": {
-          "count": 752,
-          "wins": 345,
-          "rate": 45.9,
+          "count": 841,
+          "wins": 401,
+          "rate": 47.7,
           "status": null
         },
         "wait|down": {
-          "count": 927,
-          "wins": 524,
-          "rate": 56.5,
+          "count": 907,
+          "wins": 487,
+          "rate": 53.7,
           "status": null
         }
       },
@@ -295,38 +295,38 @@
             "status": "insufficient_data"
           },
           "buy|dn": {
-            "count": 93,
-            "wins": 29,
+            "count": 95,
+            "wins": 30,
             "days": 11,
-            "rate": 31.2,
+            "rate": 31.6,
             "status": null
           },
           "buy|up": {
-            "count": 32,
-            "wins": 19,
+            "count": 33,
+            "wins": 22,
             "days": 7,
-            "rate": 59.4,
+            "rate": 66.7,
             "status": null
           },
           "hold|dn_deep": {
-            "count": 41,
-            "wins": 40,
+            "count": 43,
+            "wins": 42,
             "days": 3,
-            "rate": 97.6,
+            "rate": 97.7,
             "status": null
           },
           "hold|dn": {
-            "count": 85,
-            "wins": 51,
+            "count": 88,
+            "wins": 53,
             "days": 12,
-            "rate": 60.0,
+            "rate": 60.2,
             "status": null
           },
           "hold|up": {
-            "count": 292,
-            "wins": 250,
-            "days": 24,
-            "rate": 85.6,
+            "count": 304,
+            "wins": 263,
+            "days": 25,
+            "rate": 86.5,
             "status": null
           },
           "sell|dn_deep": {
@@ -337,38 +337,38 @@
             "status": "insufficient_data"
           },
           "sell|dn": {
-            "count": 20,
-            "wins": 14,
+            "count": 21,
+            "wins": 15,
             "days": 6,
-            "rate": 70.0,
+            "rate": 71.4,
             "status": null
           },
           "sell|up": {
-            "count": 32,
-            "wins": 7,
+            "count": 35,
+            "wins": 9,
             "days": 11,
-            "rate": 21.9,
+            "rate": 25.7,
             "status": null
           },
           "wait|dn_deep": {
-            "count": 54,
-            "wins": 29,
+            "count": 56,
+            "wins": 30,
             "days": 3,
-            "rate": 53.7,
+            "rate": 53.6,
             "status": null
           },
           "wait|dn": {
-            "count": 368,
-            "wins": 197,
+            "count": 381,
+            "wins": 203,
             "days": 16,
-            "rate": 53.5,
+            "rate": 53.3,
             "status": null
           },
           "wait|up": {
-            "count": 528,
-            "wins": 241,
-            "days": 26,
-            "rate": 45.6,
+            "count": 546,
+            "wins": 239,
+            "days": 27,
+            "rate": 43.8,
             "status": null
           }
         },
@@ -381,38 +381,38 @@
             "status": "insufficient_data"
           },
           "buy|dn": {
-            "count": 48,
-            "wins": 14,
-            "days": 13,
-            "rate": 29.2,
+            "count": 50,
+            "wins": 15,
+            "days": 12,
+            "rate": 30.0,
             "status": null
           },
           "buy|up": {
-            "count": 55,
-            "wins": 31,
-            "days": 14,
-            "rate": 56.4,
+            "count": 59,
+            "wins": 33,
+            "days": 15,
+            "rate": 55.9,
             "status": null
           },
           "hold|dn_deep": {
-            "count": 22,
-            "wins": 20,
+            "count": 24,
+            "wins": 22,
             "days": 2,
-            "rate": 90.9,
+            "rate": 91.7,
             "status": null
           },
           "hold|dn": {
-            "count": 143,
-            "wins": 101,
+            "count": 141,
+            "wins": 107,
             "days": 17,
-            "rate": 70.6,
+            "rate": 75.9,
             "status": null
           },
           "hold|up": {
-            "count": 238,
-            "wins": 185,
-            "days": 24,
-            "rate": 77.7,
+            "count": 261,
+            "wins": 202,
+            "days": 25,
+            "rate": 77.4,
             "status": null
           },
           "sell|dn_deep": {
@@ -423,72 +423,72 @@
             "status": "insufficient_data"
           },
           "sell|dn": {
-            "count": 9,
-            "wins": 4,
-            "days": 7,
+            "count": 7,
+            "wins": 3,
+            "days": 6,
             "rate": null,
             "status": "insufficient_data"
           },
           "sell|up": {
-            "count": 19,
+            "count": 20,
             "wins": 7,
-            "days": 10,
-            "rate": 36.8,
+            "days": 11,
+            "rate": 35.0,
             "status": null
           },
           "wait|dn_deep": {
-            "count": 42,
+            "count": 43,
             "wins": 17,
             "days": 3,
-            "rate": 40.5,
+            "rate": 39.5,
             "status": null
           },
           "wait|dn": {
-            "count": 385,
-            "wins": 259,
+            "count": 373,
+            "wins": 247,
             "days": 21,
-            "rate": 67.3,
+            "rate": 66.2,
             "status": null
           },
           "wait|up": {
-            "count": 548,
-            "wins": 236,
-            "days": 25,
-            "rate": 43.1,
+            "count": 606,
+            "wins": 268,
+            "days": 26,
+            "rate": 44.2,
             "status": null
           }
         }
       },
       "calibration": {
-        "n": 1054,
-        "brier": 0.2547,
+        "n": 1103,
+        "brier": 0.2563,
         "coin_flip_brier": 0.25,
         "bins": {
           "51-60": {
-            "n": 335,
+            "n": 348,
             "hit_rate": 70.1
           },
           "61-70": {
-            "n": 78,
-            "hit_rate": 60.3
+            "n": 88,
+            "hit_rate": 60.2
           },
           "<=50": {
-            "n": 641,
-            "hit_rate": 71.6
+            "n": 667,
+            "hit_rate": 73.9
           }
         }
       },
-      "days": 52
+      "days": 53
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 240,
-      "no_fill": 137,
-      "pending": 10,
-      "hit_target": 25,
-      "hit_stop": 52,
-      "expired": 16,
-      "avg_ret_pct": -0.16,
+      "simulated": 256,
+      "no_fill": 147,
+      "pending": 15,
+      "hit_target": 23,
+      "hit_stop": 53,
+      "expired": 18,
+      "avg_ret_pct": -0.21,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值",
       "by_day": [
         {
@@ -595,27 +595,17 @@
           ]
         },
         {
-          "d": "2026-07-21",
-          "n_cards": 3,
-          "rets": [
-            10.66,
-            18.22
-          ]
-        },
-        {
           "d": "2026-07-22",
-          "n_cards": 8,
+          "n_cards": 4,
           "rets": [
             -15.76,
             12.2,
-            -11.07,
-            -9.62,
-            -8.52
+            -11.07
           ]
         },
         {
           "d": "2026-07-23",
-          "n_cards": 16,
+          "n_cards": 17,
           "rets": [
             -3.31,
             -3.51,
@@ -630,7 +620,8 @@
             -5.73,
             -9.44,
             9.49,
-            8.47
+            8.47,
+            -2.35
           ]
         },
         {
@@ -646,10 +637,11 @@
         },
         {
           "d": "2026-08-06",
-          "n_cards": 15,
+          "n_cards": 16,
           "rets": [
             2.96,
             2.25,
+            11.83,
             9.16,
             -5.58
           ]
@@ -671,7 +663,7 @@
         },
         {
           "d": "2026-08-12",
-          "n_cards": 23,
+          "n_cards": 25,
           "rets": [
             -7.76,
             9.62,
@@ -680,7 +672,7 @@
         },
         {
           "d": "2026-08-17",
-          "n_cards": 22,
+          "n_cards": 24,
           "rets": [
             2.81,
             -1.5,
@@ -692,6 +684,7 @@
             -3.61,
             5.19,
             1.15,
+            -2.47,
             23.27,
             -2.29,
             17.3,
@@ -702,17 +695,19 @@
         },
         {
           "d": "2026-08-18",
-          "n_cards": 18,
+          "n_cards": 20,
           "rets": [
             -4.68,
             0.83,
             -17.25,
             17.88,
             11.01,
+            0.0,
             -1.69,
             5.66,
             -7.68,
             5.19,
+            -1.22,
             1.93,
             -9.97,
             0.86
@@ -728,7 +723,7 @@
         },
         {
           "d": "2026-08-22",
-          "n_cards": 13,
+          "n_cards": 14,
           "rets": [
             5.05,
             7.01,
@@ -763,6 +758,11 @@
           "rets": [
             21.5
           ]
+        },
+        {
+          "d": "2026-09-03",
+          "n_cards": 9,
+          "rets": []
         }
       ],
       "trades": [
@@ -845,12 +845,6 @@
           "ret": -1.72
         },
         {
-          "c": "2026-07-21",
-          "e": "2026-07-22",
-          "x": "2026-07-28",
-          "ret": 10.66
-        },
-        {
           "c": "2026-07-22",
           "e": "2026-07-23",
           "x": "2026-07-28",
@@ -861,18 +855,6 @@
           "e": "2026-07-23",
           "x": "2026-07-28",
           "ret": -15.76
-        },
-        {
-          "c": "2026-07-22",
-          "e": "2026-07-23",
-          "x": "2026-07-29",
-          "ret": -8.52
-        },
-        {
-          "c": "2026-07-21",
-          "e": "2026-07-23",
-          "x": "2026-07-30",
-          "ret": 18.22
         },
         {
           "c": "2026-07-22",
@@ -905,16 +887,16 @@
           "ret": -12.9
         },
         {
-          "c": "2026-07-22",
+          "c": "2026-07-23",
           "e": "2026-07-24",
-          "x": "2026-07-28",
-          "ret": -9.62
+          "x": "2026-07-29",
+          "ret": -11.85
         },
         {
           "c": "2026-07-23",
           "e": "2026-07-24",
           "x": "2026-07-29",
-          "ret": -11.85
+          "ret": -2.35
         },
         {
           "c": "2026-07-23",
@@ -1019,6 +1001,12 @@
           "ret": 2.25
         },
         {
+          "c": "2026-08-06",
+          "e": "2026-08-07",
+          "x": "2026-08-21",
+          "ret": 11.83
+        },
+        {
           "c": "2026-08-07",
           "e": "2026-08-10",
           "x": "2026-08-11",
@@ -1076,6 +1064,12 @@
           "c": "2026-08-17",
           "e": "2026-08-18",
           "x": "2026-08-19",
+          "ret": -2.47
+        },
+        {
+          "c": "2026-08-17",
+          "e": "2026-08-18",
+          "x": "2026-08-19",
           "ret": -2.29
         },
         {
@@ -1113,6 +1107,12 @@
           "e": "2026-08-19",
           "x": "2026-08-20",
           "ret": 5.66
+        },
+        {
+          "c": "2026-08-18",
+          "e": "2026-08-19",
+          "x": "2026-08-20",
+          "ret": -1.22
         },
         {
           "c": "2026-08-17",
@@ -1229,6 +1229,12 @@
           "ret": 17.88
         },
         {
+          "c": "2026-08-18",
+          "e": "2026-08-21",
+          "x": "2026-09-04",
+          "ret": 0.0
+        },
+        {
           "c": "2026-08-20",
           "e": "2026-08-24",
           "x": "2026-08-27",
@@ -1237,7 +1243,7 @@
         {
           "c": "2026-08-20",
           "e": "2026-08-24",
-          "x": "2026-09-04",
+          "x": "2026-09-03",
           "ret": 7.86
         },
         {
@@ -1321,7 +1327,7 @@
         {
           "c": "2026-08-28",
           "e": "2026-09-01",
-          "x": "2026-09-04",
+          "x": "2026-09-03",
           "ret": 21.5
         }
       ]
@@ -1330,11 +1336,11 @@
       "note": "降級卡雙軌結算:shown=降級後顯示判斷勝率,blocked=若沒降級原判斷勝率;shown>blocked=閘門擋對",
       "gates": {
         "overnight": {
-          "n": 142,
-          "shown_wins": 70,
-          "blocked_wins": 92,
-          "shown_rate": 49.3,
-          "blocked_rate": 64.8
+          "n": 150,
+          "shown_wins": 75,
+          "blocked_wins": 96,
+          "shown_rate": 50.0,
+          "blocked_rate": 64.0
         },
         "autogate": {
           "n": 12,
@@ -1351,25 +1357,25 @@
           "blocked_rate": 50.0
         },
         "crash": {
-          "n": 73,
-          "shown_wins": 42,
+          "n": 76,
+          "shown_wins": 45,
           "blocked_wins": 42,
-          "shown_rate": 57.5,
-          "blocked_rate": 57.5
+          "shown_rate": 59.2,
+          "blocked_rate": 55.3
         },
         "chase": {
-          "n": 109,
-          "shown_wins": 62,
-          "blocked_wins": 57,
-          "shown_rate": 56.9,
-          "blocked_rate": 52.3
+          "n": 122,
+          "shown_wins": 70,
+          "blocked_wins": 60,
+          "shown_rate": 57.4,
+          "blocked_rate": 49.2
         },
         "oversold": {
-          "n": 109,
-          "shown_wins": 57,
+          "n": 115,
+          "shown_wins": 61,
           "blocked_wins": 26,
-          "shown_rate": 52.3,
-          "blocked_rate": 23.9
+          "shown_rate": 53.0,
+          "blocked_rate": 22.6
         },
         "exdiv": {
           "n": 2,
@@ -1379,23 +1385,23 @@
           "blocked_rate": 50.0
         },
         "uptrend_chase": {
-          "n": 3,
-          "shown_wins": 2,
+          "n": 4,
+          "shown_wins": 3,
           "blocked_wins": 2,
-          "shown_rate": 66.7,
-          "blocked_rate": 66.7
+          "shown_rate": 75.0,
+          "blocked_rate": 50.0
         }
       }
     },
     "public_only": {
-      "a_count": 131,
-      "a_wins": 82,
-      "a_rate": 62.6,
-      "c_count": 215,
-      "c_wins": 114,
+      "a_count": 136,
+      "a_wins": 86,
+      "a_rate": 63.2,
+      "c_count": 217,
+      "c_wins": 115,
       "c_rate": 53.0
     },
-    "personal_samples_added": 4162,
-    "visible_personal_added": 3440
+    "personal_samples_added": 4251,
+    "visible_personal_added": 3507
   }
 }
