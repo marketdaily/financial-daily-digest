@@ -8474,3 +8474,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - (續)老闆:「white background and use apple design skill」→ 沒有 Apple 專用 skill,依 impeccable `reference/ios.md`(HIG)+artifact-design 重做:白底、系統字、語意色只做狀態、髮絲線分組、不掛官網殼;修 `.bar` 撞名(SVG 長條被 CSS height:52px 套到)。Artifact 同址更新;第三次部署 → 線上驗證見下一條。
 - (續 2)白底版線上驗證:/admin/ops 新版已傳播(`--tint:#0071e3` 命中)、body 白底、錯密碼回「密碼不對」、/api/ops 無密碼 401、零 JS 錯。第三次部署曾被 verify 擋(死鏈 /favicon.ico + 缺 canonical),補齊後第四次過四道閘上線。
 - (續 3)老闆貼 Cloudflare zone Dashboards 連結「i want something like this」→ 自架 `/admin/traffic` 流量分析(GraphQL 逐日快照→KV→頁,24h/7d/30d,16 維度),詳 ~/kingconn/WORKLOG.md。密碼補正:在 ~/kingconn/.inquiry_admin_pw,#751/#752 已收。
+
+## 2026-09-05 深夜 主視窗:VR sim racing 上車前相容性體檢(Pimax Crystal Light + F1 25)
+- 老闆:「VR 到了裝不起來,記憶體滿了,電腦當機,幫我確認全部相容」。全程 headless(PowerShell interop),沒碰滑鼠/前景。
+- **結論:硬體八項全合,且超過 Crystal Light 官方建議**(5080>建議4080、9800X3D>建議5900X、DP 直插 NVIDIA 已由 `Pimax (NVIDIA High Definition Audio)` 佐證、USB3.1 xHCI OK、MOZA 驅動掛載 OK、C: 剩 150GB)。**不是相容性問題**。
+- 真因=資源被自己人吃光:RAM 31.2GB 中 vmmemWSL 佔 12.2–14.1GB、Windows+背景 13GB,剩 6.0GB;VRAM 16GB 中 **PimaxHome 大廳 4.07GB**+vmwp(WSL GPU-PV)1.75GB+pi_server/overlay 1.35GB,剩 6.9GB。F1 25 VR 要 ~12GB RAM/10-12GB VRAM ⇒ 進不去。
+- 事故鏈實證(9/5 20:56-21:54):LiveKernelEvent 193(VIDEO_DXGKRNL_LIVEDUMP)×8、F1_25.exe AppHangB1 ×2 + RADAR_PRE_LEAK_64、vrserver/vrdashboard 0xc0000409、兩次重開。**System log 無 Kernel-Power 41 ⇒ 排除電供/斷電**。
+- 已交付:`C:\Users\USER\vr-mode.ps1`(on/off/status;不關 WSL 只 drop_caches,日報 cron 不受影響)+ Artifact 報告 8f646489。
+- ⚠️ 坑:寫 .ps1 給 Windows PowerShell 5.1 **必須加 UTF-8 BOM**(`printf '\xEF\xBB\xBF' > f`),否則中文被當 cp950 解,引號被吃掉整支 parse error。
+- 未收:#790(vr-mode on/off 未在真實開賽驗證) #791(關 PimaxHome) #792(HAGS) #793(移除 Driver Easy) #794(RAM 升 64GB)。

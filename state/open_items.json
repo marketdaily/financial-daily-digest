@@ -7166,8 +7166,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-02 22:22",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-04 15:31",
+  "note": "併入新項:第二引擎加入後首班一起驗"
  },
  {
   "id": 718,
@@ -7206,8 +7206,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-03 14:57",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-04 14:56",
+  "note": "09-04 真實排程驗收:07:20 archive_seo 跑 archive_nav/build_archive_index(133 份)+deploy ok、08:20 track_record stats.json 線上 200、14:40 agent_board 自行 persist+deploy(不再自鎖)、deploy_drift 全綠"
  },
  {
   "id": 722,
@@ -7326,8 +7326,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-03 16:56",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-04 14:56",
+  "note": "09-04 真實排程驗收:07:20 archive_seo 跑 archive_nav/build_archive_index(133 份)+deploy ok、08:20 track_record stats.json 線上 200、14:40 agent_board 自行 persist+deploy(不再自鎖)、deploy_drift 全綠"
  },
  {
   "id": 734,
@@ -7336,8 +7336,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-03 16:56",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-04 14:56",
+  "note": "09-04 真實排程驗收:07:20 archive_seo 跑 archive_nav/build_archive_index(133 份)+deploy ok、08:20 track_record stats.json 線上 200、14:40 agent_board 自行 persist+deploy(不再自鎖)、deploy_drift 全綠"
  },
  {
   "id": 735,
@@ -7518,5 +7518,425 @@
   "opened": "2026-09-04 00:15",
   "closed": "2026-09-04 14:36",
   "note": "cron 已在真實排程跑過:KV board generated_at 2026-09-04T14:07"
+ },
+ {
+  "id": 753,
+  "what": "皇海 citation_watch 09-04 加第二引擎 perplexity/sonar(OpenRouter,約 US$0.09/週),cron 首班 2026-09-07 09:10 才在真實排程跑過;跑完看 intel/citation_watch.log 兩引擎都有分數+ops_board citations_perplexity 有值",
+  "why": "週一才有排程;本機只用 --limit 2 自測過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 15:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 754,
+  "what": "皇海六個品類 hub 頁 09-04 上線,效果要等收錄:09-18 起用 GSC 查 /products/<slug> 曝光與「板對板/FPC/HDMI 連接器廠商」排名是否從 50~79 名上移;lastmod 指紋化後看舊網址 /product/* 曝光占比是否從 2/3 下降",
+  "why": "Google 換索引要 2~4 週,現在看不到",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 15:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 755,
+  "what": "皇海 site/jp/faq.html 可見文字與 FAQPage schema 仍是英文(既有問題,子代理做品類頁時發現);品類頁 jp 的樣品/ODM/公司三題因此無日文原句可逐字沿用,是依同一事實譯的",
+  "why": "範圍外未動;要重跑 jp 翻譯車道",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 15:50",
+  "closed": "2026-09-05 08:22",
+  "note": "jp/faq 8 條答案已補譯成日文(D3/D4 判準抓到的),sync_faq_schema 的 URL 表補上 jp(同 build_guides LANGS 缺 jp 的根因),並補 inLanguage(四語 schema 原本都沒有,Google 分不出語言)。四語實查:zh-Hant/en/zh-Hans/ja 各 8 題"
+ },
+ {
+  "id": 756,
+  "what": "皇海 rank_watch 每週一 09:30 cron 首班 2026-09-07 未在真實排程跑過(本機手動實射一次 6/22,US$0.40);跑完看 ~/.marketdaily-fallback/kingconn_rank_watch_cron.log + rank_ledger 第二筆",
+  "why": "週一才有排程",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 16:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 757,
+  "what": "皇海關鍵字缺口地圖(intel/research/keyword_gap_20260904.md)的行動未做:①en guide/系列頁 title/H1 換成採購查詢字(m.2 connector/pcb connectors/micro sd socket…)②M.2 key 與 PCB/板對板兩篇說明文(attend 靠這兩篇吃 11 萬月量)",
+  "why": "要老闆看過地圖點頭再動 title(全站 title 公式是既定規範)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-04 16:24",
+  "closed": "2026-09-04 16:45",
+  "note": "a) 7 篇 title/H1 已上線 12ef602b;b) 兩篇說明文子代理進行中,另立項"
+ },
+ {
+  "id": 758,
+  "what": "皇海 title/H1 改採購查詢字(09-04 上線)效果:與 #754 同批 09-18 用 rank_watch 帳本看 m.2 connector / pcb connectors / micro sd socket / sd card connector / cfast / sim card connector 名次",
+  "why": "要等重新收錄",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 16:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 759,
+  "what": "皇海 30 天打贏 attend 計畫(2026-10-04 驗收):我方五件未做完——剩 14 篇指南/系列頁 title 換採購字(已改 7)、四篇技術說明文(已寫 2)、前 20 料號套明星落地頁(已做 1)、舊網址曝光清理、每週記分板已自動",
+  "why": "內容量還沒補完,且要等 Google 重新收錄",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-04 21:37",
+  "closed": "2026-09-04 22:26",
+  "note": "五件全做完並上線 b08adba2:14 篇指南+27 個系列頁 title、四篇說明文四語、20 顆明星落地頁、舊網址 301 全修、每週記分板自動"
+ },
+ {
+  "id": 760,
+  "what": "皇海站外四件卡在老闆/皇海端,是 attend 有而我們沒有的第三方足跡:LinkedIn 公司頁(#731 人脈不足)、GBP 影片驗證(#711)、台灣經貿網請 Fion 更新(#749)、稅籍主碼送件(#706)",
+  "why": "都需要真人動作,我方做不了",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-04 21:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 761,
+  "what": "皇海 jp 版 guide-microsd-connector 沒有明星料號連結(zh/en/cn 都有):build_jp_mirror --only 重翻沒生效,未追根因",
+  "why": "jp 是翻譯鏡像車道,重翻要花 LLM 呼叫且旗標行為待查",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 21:37",
+  "closed": "2026-09-05 00:45",
+  "note": "jp 手寫指南頁(結構與 en 不同)在お見積り段補上代表品番連結;jp_lane_audit 四面仍全綠"
+ },
+ {
+  "id": 762,
+  "what": "皇海 fix_meta_lengths.py 與現行 CJK 寬度規則打架:它想改寫 258 頁(多是 cross-reference 頁),但用的是舊的字元數規則,而站規已改成 CJK=1.5 寬度;它不在 verify 閘裡所以目前是休眠的。要嘛把它校準到新規則,要嘛標 DEPRECATED,不要留著兩套規則",
+  "why": "跑下去會用舊規則改 258 頁 meta,沒人審過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 21:59",
+  "closed": "2026-09-04 23:00",
+  "note": "fix_meta_lengths 依新寬度規則實測 258 頁裡 208 頁是誤殺;它的截斷法對 CJK 本來就錯(截到 155 字元仍超過 100 字上限)且會製造未跳脫 HTML,又與七個既有欄位主人衝突 ⇒ 標 DEPRECATED 並把 --apply 改成直接 exit 1(拆引信,不只寫文件)"
+ },
+ {
+  "id": 763,
+  "what": "皇海 jp 翻譯車道兩個既有缺陷只在新四篇補了閘,舊資產沒稽核:①LLM 會偷改 href(p/sd4-0→sd4-0 死鏈,畫面看不出來)②數字守衛 fail-open 靜默保留英文原文。21 篇既有 jp 指南與 250 頁 jp 料號頁未掃",
+  "why": "掃全站要跑翻譯比對,且要先決定壞掉的怎麼補",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-04 22:26",
+  "closed": "2026-09-04 23:08",
+  "note": "jp_lane_audit.py 三面全綠:死鏈 0(既有資產本來就沒有)、連結多重集與 en 一致、未翻譯段落 106→0。⭐ 真災情不是死鏈是【106 段英文殘留】(5 篇指南半頁英文、faq 全 8 題、privacy 8 段),既有 check_jp_links 的 regex 看不到含 <b> 的段落所以一直報綠。守衛精準化(英文數詞→阿拉伯數字白名單,9 個正反測試)救回 9 段,公司地址寫死不交給 LLM(它把南工路譯成南崗路)"
+ },
+ {
+  "id": 764,
+  "what": "皇海 19 顆新明星料號的 zh/en/cn meta 還是概述前兩句(那欄主人是 enrich_overview),不是查詢語言口吻;只有 7MSDP-B0-2210 改過",
+  "why": "跨工具的欄位主權要先決定",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 22:27",
+  "closed": "2026-09-04 23:00",
+  "note": "build_flagship 對 PICKS 取得 zh/en/cn meta 主權(有 verify 閘那一邊),enrich_overview 對這些 slug 跳過 meta 且名單直接 import 不手抄;19 顆 zh/cn 74-97 字、en 120-155 字元,7MSDP-B0-2210 四語逐字未變。順手修 enrich_overview 錨點會把概述插到明星區塊後面的順序坑"
+ },
+ {
+  "id": 765,
+  "what": "皇海 build_guides.py 兩則英文 desc 含 second-row / Three generations,害 jp/guides.html 整頁重翻會觸發數字守衛 fail-open;目前用確定性插入繞過,根因未修",
+  "why": "要改 en 母版措辭,會動到既有 21 篇的 jp 譯文基準",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 22:27",
+  "closed": "2026-09-05 00:43",
+  "note": "根因用更好的方式解掉了:不是把英文散文裡的 second-row/Three generations 改述掉(那是遷就守衛),而是把守衛量準——NUM_WORDS 白名單讓 three→3、second→2、December→12 這類封閉類對應合法,原文沒有該詞時那個數字照樣判紅。jp 站 D3/D4 現在皆 0"
+ },
+ {
+  "id": 766,
+  "what": "皇海外部連結真相(09-04 實測):只有 6 個有 rank 的引用網域 vs attend 1,460;attend 權威度來自 DigiKey 全套國別站上架。⚠️ 要不要上代理商(DigiKey/Mouser)是王董的商業決定,會與現行「原廠直供、無授權經銷商」定位衝突——需要老闆帶著這個數字去跟王董談",
+  "why": "商業定位變更只有客戶能決定",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-04 22:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 767,
+  "what": "皇海 cn 料號頁 meta 普遍偏短(50-62 字,上限 100):根因是 enrich_overview 的 cn meta_tail 是空字串,en/zh 都有尾綴。不是錯但浪費了 SERP 版面",
+  "why": "要決定 cn 尾綴寫什麼(繁簡轉換過的尾綴曾把「索取樣品」轉成錯字「索采样品」)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 23:00",
+  "closed": "2026-09-05 00:42",
+  "note": "cn 尾綴直接寫簡體不靠轉換;cn 料號頁 meta 中位 68→87 字、超標 0、繁體專用字 0"
+ },
+ {
+  "id": 768,
+  "what": "kingconn jp:10 段英文正文補不進去(數字守衛把日文的「1つ/3世代」算成新增數字而否決),jp_lane_audit --check 仍紅",
+  "why": "修法要動 build_jp_mirror 數字守衛(只允許來自英文數詞的新增數字),屬放寬守衛範疇,需老闆拍板",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-04 23:04",
+  "closed": "2026-09-04 23:08",
+  "note": "已用選項 A 修好:NUM_WORDS 白名單只允許原文真有的英文數詞對應的數字新增,原文的數字一個都不能掉,LLM 亂編仍判紅;地址寫死進 TMPL_JA"
+ },
+ {
+  "id": 769,
+  "what": "皇海 jp 站第三類半翻譯(同段中日英混雜)10 段未修:news/latest-news-title-1、privacy 3 段、guide-m2-mini-pci-sockets、solution-industrial-imaging 等。jp_lane_audit 的 D3 判準看不到(區塊含假名就略過),要另一種判準=句內連續英文 run",
+  "why": "換判準有誤報風險,要先驗過再上;非阻斷性",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 23:08",
+  "closed": "2026-09-05 00:42",
+  "note": "新增 D4 半翻譯判準(拉丁 run + 虛詞門檻,誤報 0)並補譯 16 段;⭐ 抓到 jp/faq 8 條答案整段是英文。最後 1 段用月份名進 NUM_WORDS 救回。jp 四面全綠"
+ },
+ {
+  "id": 770,
+  "what": "皇海 17 個 jp 系列頁缺 guide-link 內鏈:build_guides.py 與 build_explainers.link_series() 的 LANGS 沒有 jp,jp 系列頁只有鏡像當下那批,之後 en 新增的 6 篇都沒跟上",
+  "why": "另一個代理正在改同一批產生器,等它收工",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-04 23:08",
+  "closed": "2026-09-05 00:42",
+  "note": "jp 系列頁 guide-link 補 52 處(17 缺的+35 錨文字改成跟 jp h1 走);共用函式讓 build_guides 與 build_explainers 都呼叫,不手刻第二份;順手修 sync_faq_schema 的 URL 表也缺 jp"
+ },
+ {
+  "id": 771,
+  "what": "皇海 95 頁 meta 沒有產生器也沒有長度斷言(系列頁 74、about 10、index、products、v5×3、料號頁 5):今天就地改短了,但下次有人手寫一句長的沒東西會紅。tools/meta_limits.py 已是現成積木,要接一支全站 lint 或給那幾類頁面補產生器",
+  "why": "要決定是加 lint 還是補產生器,兩者代價不同",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-04 23:30",
+  "closed": "2026-09-05 00:42",
+  "note": "選 lint 不補產生器:tools/meta_lint.py 唯讀全站掃 title 寬度+meta 長度+簡體壞詞,16 條突變測試,PENDING_TITLE 雙向帳本(豁免過期一樣判紅),已接 verify"
+ },
+ {
+  "id": 772,
+  "what": "皇海 build_privacy.py / privacy_content.py 落後於線上頁面:跑它會刪掉「只在自己主機匿名累計聯絡按鈕點擊」的揭露(站上真的有 click-track.js,刪掉就是官網宣稱與機制對不上)並洗掉 ja hreflang。今天只就地改 meta 沒跑產生器",
+  "why": "要先把產生器補到與線上一致才敢跑",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-04 23:30",
+  "closed": "2026-09-05 00:13",
+  "note": "build_privacy.py 本身是壞的(前一輪加的 assert_meta 引用了迴圈外的 lang,NameError)先修好;產生器落後的三處全部補進真源:①第一方匿名點擊統計的揭露(站上真有 click-track.js)②收尾自跑 fix_shell_chrome/add_jp_lang_link/fix_hreflang_ja(實測三頁的 ja hreflang 與語言鍵都會被洗掉)③簡體段的「蒐集」改「搜集」。重跑後四語逐字零漂移"
+ },
+ {
+  "id": 773,
+  "what": "皇海 68 頁 description/og:description 屬性內有生的 & (多是 en 系列頁 R&D、CF express & XQD);build_guides/build_solutions 的 title 與 og:title 也吐生 &。desc 那條線已接 esc(),title 沒動——動它會改到 69 頁 title 而 jp mirror 是拿 en title 去翻的",
+  "why": "會連動日文車道,要一起規劃",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 23:30",
+  "closed": "2026-09-05 00:43",
+  "note": "實測:全站 183 個裸 & 中【真的會解碼成別的字的是 0 個】(全是 R&D、CF express & XQD、A&B 這種,瀏覽器與 Google 都當字面讀)。改 99 個檔是零收益且會動到 jp 拿 en title 去翻那條線 ⇒ 不改;改成在 meta_lint 加「只抓真的會解碼錯」的檢查,判準對著災難寫不是對著不夠標準寫"
+ },
+ {
+  "id": 774,
+  "what": "皇海 5 個料號頁 meta 沒有主人:7SDMM-X0-2211 在 _overview_zh.json 是 ok:false、兩個 7MPCI-F0-101x 沒入快取 ⇒ enrich_overview 跳過,--check 綠但頁上是舊工具留的字",
+  "why": "要先補 overview 快取",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-04 23:30",
+  "closed": "2026-09-05 00:42",
+  "note": "五顆全補、無主料號帳本上線。⭐ 真因不是資料不足:sku 鍵碰撞讓 noindex 重複頁蓋掉真頁,內容全寫錯地方而 --check 一路綠;另三顆各有獨立根因(舊 sku 快取鍵、守衛把公司自寫的 USB 3.0*2 當 markdown 誤殺、LLM 在英吋記號可重現產生壞 JSON)"
+ },
+ {
+  "id": 775,
+  "what": "皇海六支產生器重跑會洗掉後製(build_how_to_order/build_guides_index/build_second_source/build_solutions/add_news_2026/build_cross_reference 會洗掉 fix_shell_chrome、add_jp_lang_link、fix_hreflang_ja);只有 build_guides 自己收尾補跑。今天每次都手動補了,但這是現存地雷",
+  "why": "要逐支加收尾自跑,比照 build_guides/build_search 的修法",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-04 23:30",
+  "closed": "2026-09-04 23:33",
+  "note": "六支產生器全部加上收尾自跑 fix_shell_chrome/add_jp_lang_link/fix_hreflang_ja(比照 build_guides、build_search 的修法);逐支重跑後 verify 與 jp_lane_audit 仍全綠"
+ },
+ {
+  "id": 776,
+  "what": "⚠️ 皇海 cn 站 258 頁帶著錯字「索采样品」(正確是「索取样品」)已在線上:177 處在 og/twitter description、7 處 meta、20 處系列 FAQ 標題含 JSON-LD、6 處 CTA 按鈕。根因=產生器在繁中側寫「索取樣品」交給 cn_convert 轉,而 tw2sp 把「取樣」誤轉成「采样」",
+  "why": "修法要動 cn_convert 已知壞映射 + 重跑 build_flagship/build_category_pages(會連 jp 一起重建),日文代理還在跑",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-05 00:34",
+  "closed": "2026-09-05 00:42",
+  "note": "根因修在 cn_convert(判準對著「原文真的有那個詞」寫,取樣頻率不誤傷)+ 重跑產生器 49 處 + og:description 509 處確定性替換;meta_lint 加簡體壞詞防復發檢查(負向測試驗過)。線上實查 0 處"
+ },
+ {
+  "id": 777,
+  "what": "皇海 meta_lint 的 PENDING_TITLE 7 筆 title 超標未收(en/cross-reference 91 寬、jp/cross-reference 76.5、jp/index 75.5 等):主人是 build_cross_reference/build_how_to_order/add_news_2026/build_solutions 四支會同時寫 jp 的產生器。收掉後要把 meta_lint.py 的豁免行刪掉(豁免不准活得比問題久)",
+  "why": "四支產生器同時寫 jp,要與日文車道一起排",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-05 00:34",
+  "closed": "2026-09-05 00:45",
+  "note": "七筆全收:五支產生器改短 title(build_cross_reference en+jp、build_how_to_order、build_solutions、add_news_2026、build_jp/build_jp_landing),兩頁一次性工具管的直接改頁;PENDING_TITLE 帳本清空,雙向偵測(過期豁免判紅)實測有效"
+ },
+ {
+  "id": 778,
+  "what": "皇海交叉表 6 列的退卡機構待 RD 一句話確認(7SIMC-FA-0013×3、7MSDP-AA-1110/7SDCN-F0-0033 已由圖面補、5045200691 針退式已明寫不同)",
+  "why": "皇海型錄字串與通路描述都查不到機構,頁面目前只宣稱介面相同;RD 回一句就能補完整。清單已在 /xref-review「需要 RD 補一句話」區",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-05 08:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 779,
+  "what": "簡體站沿用台灣用語「介面」(應為「接口」),交叉表 39 處+指南/方案頁多處",
+  "why": "跨多支產生器的既有站規問題,今天的 scope 是交叉料號對照,沒順手夾帶;需獨立任務改 tw2sp 詞表並全站重產",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-05 08:40",
+  "closed": "2026-09-05 13:06",
+  "note": "TW_ONLY 台灣用語表 7 條上線,356 次/60 處已轉;--check 接 verify,30 條正反測試;順手收掉 enrich_overview 的第二份轉換器實作與 hero_parity 的正規化盲點。線上四頁實查乾淨"
+ },
+ {
+  "id": 780,
+  "what": "皇海 30 顆料號頁缺落地區塊(資料缺口):17 顆圖面規格未整理(agreed_clean 無 title)、10 顆頁面沒連圖面 PDF(含 odm/01-06 佔位頁)、2 顆 mini-pci 兩顆共頁、1 顆 switch/7whte-f0-0228 en 規格表對不上",
+  "why": "要先補圖面規格擷取與掛 PDF,不是程式問題;odm 佔位頁本來就不該有內容",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-05 13:23",
+  "closed": "2026-09-05 13:52",
+  "note": "17 顆已補(根因不是規格未整理,是 title 欄卡在雙模型對帳閘;門檻改掉即可)。覆蓋 237/250,線上已驗"
+ },
+ {
+  "id": 781,
+  "what": "jp_polish 規則5 把 JSON-LD Product.description 換成 100 字上限的 jp meta,246 頁描述被截半句(如「…備えていま」)",
+  "why": "今天跑 jp_polish 修 privacy 時發現並已還原誤傷,但根因未修:meta 長度規則不該套到 JSON-LD description。任何人下次跑 jp_polish 就會再截一次",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-05 13:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 782,
+  "what": "jp_lane_audit.py 沒有接在 verify,D4 半翻譯已漂到 22 段/11 頁(料號頁照抄圖面的英文材質字串)",
+  "why": "守衛存在但沒有任何東西在跑它,所以會漂;要先裁決『圖面照抄的英文材質字串算不算半翻譯』再決定接不接",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-05 13:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 783,
+  "what": "皇海 13 顆料號頁仍無落地區塊:6 顆 odm/01-06 佔位頁(本來就不該有內容)、3 顆圖面 PDF 根本不存在(7DCJK-F0-0013/7RJ45-F0-0078/7SATA-F0-1009,只有皇海能給)、2 顆 mini-pci 兩顆共頁待拆、1 顆 type-c/7usb31-f0-0025 規格與圖面都在被 noindex 的重複頁上(歸 #500 由 RD 判定)、1 顆 switch/7whte-f0-0228 規格值全中文英文站無表",
+  "why": "全是資料缺口與 RD 判定,不是程式能補的",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-05 13:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 784,
+  "what": "kingconn:verify 曾一次判 17 個 jp 區塊不一致,重跑即綠且查不出誰改的;同時段另一個視窗也在動 kingconn 且 _ja_cache.json 被改 —— 疑似兩個 session 同時寫同一棵樹",
+  "why": "沒查出根因就不宣稱修好;要加同樹寫入互斥或偵測",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-05 13:52",
+  "closed": "2026-09-05 15:29",
+  "note": "deploy_preview.sh 加互斥鎖(flock)+撕裂偵測(site/ 指紋量三點),test_deploy_guards.sh 三題已接 verify.py;真部署跑過一次不誤殺"
+ },
+ {
+  "id": 785,
+  "what": "皇海 10 頁待王董給資料(3 顆缺工程圖面/7USB31-F0-0025 重複頁擇一/ODM 01-06 六顆型號):8-25 已問過無回覆,9-05 追蹤信已寄到 Delvin 信箱待轉貼",
+  "why": "只有皇海能答;上一封 11 天無回音,不確定有沒有轉出去",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-05 14:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 786,
+  "what": "皇海 mini-pci 兩頁各塞兩顆料號(7MPCI-F0-1012&1013、1014&1015)待拆成一頁一顆——圖面都在,是我方工作,但會產生新網址+動到系列型號數,等老闆決定拆不拆",
+  "why": "拆頁動到網址與計數,不自行決定",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-05 14:06",
+  "closed": "2026-09-05 14:10",
+  "note": "查圖面標題後推翻:1013/1015 是卡扣(LATCH)不是連接器,拆頁會做錯。改開 #787 問皇海"
+ },
+ {
+  "id": 787,
+  "what": "皇海 mini-pci 2 頁(7MPCI-F0-1012&1013、1014&1015)是【本體+卡扣】共頁,不是兩顆同類料號:要問王董 1013/1015 在型錄上是不是獨立可訂購料號,才知道該拆成本體頁+配件頁還是合併。在那之前不放行規格表——畫面加但書擋不住 JSON-LD 把本體規格掛在「A & B」實體上",
+  "why": "產品目錄結構是皇海的決定,不是我能判的",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-05 14:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 788,
+  "what": "皇海 mini-pci 卡扣問題已併入給王董的追蹤信第四項(thread 1a0702c95200fb8c,msg 1a07033d4c9ddc9c),等 Delvin 轉貼",
+  "why": "信已寄到 Delvin 信箱,尚未轉給客戶",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-05 14:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 789,
+  "what": "同樹互斥/撕裂偵測目前只做在 kingconn 的 deploy_preview.sh;Delvin-agent 的 docs 部署(cron_deploy_docs)與 storefront 還沒有同一道保護",
+  "why": "刻意不擴散範圍,等確認這套在 kingconn 用得住再移植",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-05 15:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 790,
+  "what": "VR: vr-mode.ps1 只跑過 status,on/off 未在真實開賽情境驗證",
+  "why": "Delvin 可能正戴著頭顯,不敢在他面前殺 PimaxHome/Chrome",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-05 22:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 791,
+  "what": "VR: 關 Pimax Home(enable_pvr_home=1→0)未執行,單項可省 4.07GB VRAM",
+  "why": "改的是執行中的 pi_server 設定檔,要等他不在 VR 裡",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-05 22:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 792,
+  "what": "VR: HAGS 關閉未做(LiveKernelEvent 193 公認修法),要重開機且影響 WSL CUDA",
+  "why": "要 Delvin 點頭才動全機設定",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-05 22:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 793,
+  "what": "VR: 移除 Driver Easy 7.1.2(第三方驅動更新器,LKE193 常見來源)",
+  "why": "未經他同意不移除已安裝軟體",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-05 22:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 794,
+  "what": "VR: 記憶體 32GB→64GB(2×32GB DDR5-6000 CL30)採購決策",
+  "why": "要花錢,他決定",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-05 22:04",
+  "closed": null,
+  "note": ""
  }
 ]
