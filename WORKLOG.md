@@ -8488,3 +8488,5 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⭐ OpenXR loader **根本不讀 HKCU**(Khronos 官方文件確認),我先寫的 HKCU 覆寫是死的、已清掉——差點就當成「已完成」交出去。
 - MOZA(R12/FSR2/mBooster+CRP2):**設定存在軸的韌體裡,硬碟上沒有使用者設定檔**(`%LOCALAPPDATA%\Moza` 與 `MOZA Racing` 只有事件 db 與 feature flag),所以無法 headless 推設定 ⇒ 改交完整設定表(Pit House 基本/進階/EQ、mBooster 校正法、CRP2、F1 25 遊戲內),已併入同一份 Artifact 8f646489。
 - 未收:#790(vr-mode on/off 未在真實開賽驗證) #794(RAM 升 64GB 待採購) #795(OpenXR 切換未實跑 F1 25 驗證) #796(display_timing_selection 0=72Hz 為推定,待他在 PimaxPlay 目視確認)。
+- (續 22:45)老闆下令重開機讓 HAGS 生效。重開前狀態:主 repo 已 push;PimaxHome 又自己回來過一次(VRAM 8.1GB)已再殺掉。⚠️ **profile.json 那條路確認是死的**——pi_server 在 22:21:40 把整個檔案重寫,`enable_pvr_home` 被蓋回 1、`display_timing_selection` 變成 2(老闆自己在 UI 改的);Pimax 的設定只能在 PimaxPlay 介面改,從外面寫檔一定被覆蓋。對照組:F1 25 的 VR XML 設唯讀後 14 項全部守住 ✅(唯讀是有效的手段,Pimax 那邊不能用是因為 pi_server 常駐會整檔重寫)。
+- 重開機後要做:①確認 HwSchMode=1 生效(`Get-ComputerInfo` 或 dxdiag)②PimaxPlay 裡手動關 Pimax Home ③重跑 `C:\Users\USER\f1-testrun.ps1` 做 F1 25 五分鐘實測(這次才算數,先前那次是在 HAGS 未生效狀態)。
