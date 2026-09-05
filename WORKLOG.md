@@ -8490,3 +8490,10 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 未收:#790(vr-mode on/off 未在真實開賽驗證) #794(RAM 升 64GB 待採購) #795(OpenXR 切換未實跑 F1 25 驗證) #796(display_timing_selection 0=72Hz 為推定,待他在 PimaxPlay 目視確認)。
 - (續 22:45)老闆下令重開機讓 HAGS 生效。重開前狀態:主 repo 已 push;PimaxHome 又自己回來過一次(VRAM 8.1GB)已再殺掉。⚠️ **profile.json 那條路確認是死的**——pi_server 在 22:21:40 把整個檔案重寫,`enable_pvr_home` 被蓋回 1、`display_timing_selection` 變成 2(老闆自己在 UI 改的);Pimax 的設定只能在 PimaxPlay 介面改,從外面寫檔一定被覆蓋。對照組:F1 25 的 VR XML 設唯讀後 14 項全部守住 ✅(唯讀是有效的手段,Pimax 那邊不能用是因為 pi_server 常駐會整檔重寫)。
 - 重開機後要做:①確認 HwSchMode=1 生效(`Get-ComputerInfo` 或 dxdiag)②PimaxPlay 裡手動關 Pimax Home ③重跑 `C:\Users\USER\f1-testrun.ps1` 做 F1 25 五分鐘實測(這次才算數,先前那次是在 HAGS 未生效狀態)。
+
+## 2026-09-06 00:35 主視窗:老闆選 B —— VR 期間整個關掉 WSL(釋放 1.1GB VRAM + ~9GB RAM)
+- 起因:F1 25 進 VR 後 lag。實測 **VRAM 13.9/16.0 GB**,遊戲拿到之前已被吃掉 5.9GB(vrcompositor 2.17 + vrserver 1.29 + **vmwp(WSL GPU-PV) 1.14** + pi_server 0.88 + dwm 0.41)。可用 RAM 尚有 6.1GB、分頁檔 7.9%、Pages/sec=0 ⇒ **瓶頸是 VRAM 不是 RAM**。
+- ⚠️ **我要更正 #794 的判斷**:先前建議升 64GB RAM,看到真實數字後 RAM 不是瓶頸,升 RAM 解決不了這個 lag。真正的限制是 16GB 顯存要同時養 Crystal Light VR + SteamVR 3.5GB 開銷 + 24h WSL 大腦。
+- 先擠出 600MB(卸 Ollama 模型 nomic-embed/llama-server),不夠。
+- **⏰ 死線:WSL 必須在 TW 05:20 之前回來**,否則早報生成 cron 不會跑。雲端 failover(digest-watchdog 07:30 撲空即 dispatch daily_digest.yml)會接住但會遲到,07:00 整點寄不出去。
+- 復原方式已寫到 `C:\Users\USER\Desktop\WSL復原.txt`。
