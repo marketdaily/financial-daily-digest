@@ -8028,5 +8028,75 @@
   "opened": "2026-09-06 13:29",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 804,
+  "what": "SteamVR power.pauseCompositorOnStandby 未關(頭顯一放下就待機+dashboard 搶輸入)",
+  "why": "SteamVR 正在執行,現在改 steamvr.vrsettings 會被它退出時覆蓋;要等他關掉 SteamVR 才能改",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-06 13:54",
+  "closed": "2026-09-06 14:15",
+  "note": "SteamVR 關閉後已寫入 power.pauseCompositorOnStandby=false + turnOffScreensTimeout=1800;下次啟動生效,頭顯放下不再暫停合成器/彈 dashboard 搶輸入"
+ },
+ {
+  "id": 805,
+  "what": "VR_HzSwitch 守衛只用假行程(ping 改名)驗過,真實 AMS2/F1 25 開賽尚未驗 Hz 切換是否趕在 VR 初始化前生效",
+  "why": "遊戲還在下載,尚未真開",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-06 13:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 806,
+  "what": "F1 25 VR XML 被兩個 Claude 視窗反方向修改(我 22:09 調輕 / 另一視窗 13:23 整組調重含 dynamicresolution 打開)",
+  "why": "沒有互斥鎖,兩邊都在改同一個檔;dynamicresolution 在 VR 是 Pimax 指南點名的 wobble 元凶,但我刻意不動以免一小時內第三次變更毀掉這次量測",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-06 14:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 807,
+  "what": "SteamVR motionSmoothing 設不進去(退出時被它自己改回 false)",
+  "why": "Pimax aapvr 驅動應該不支援 SteamVR 的 Motion Smoothing;而這版 PimaxClient 也沒有 smart_smoothing 設定鍵可用 ⇒ 掉幀時仍是凍結畫面而非重投影,只能靠壓解析度避免掉幀",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-06 14:15",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 808,
+  "what": "xoops-demo tunnel 是 nohup 模式,WSL 重開後不會自動回來(容器會)；要 ~/xoops-demo/tunnel.sh start 或另立 systemd/cron @reboot",
+  "why": "老闆指定 nohup 方式,且現有 crew-sandbox 同模式;改 systemd 需 sudo 未授權",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-06 16:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 809,
+  "what": "xoops-demo 內部檔案 PDF 只擋列表不擋直連:知道 /uploads/tdmdownloads/downloads/<檔名> 就抓得到",
+  "why": "tdmdownloads visit.php 是 302 轉到檔案 URL,要真擋得改成串流+目錄 deny;示範夠用先不動",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-06 16:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 810,
+  "what": "xoops-demo seed.sql 把公告日期凍在 2026-09-06 附近,一個月後示範看起來會舊",
+  "why": "restore 回到快照;要刷新跑 seed.php + backup.sh 重拍即可",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-06 16:34",
+  "closed": null,
+  "note": ""
  }
 ]

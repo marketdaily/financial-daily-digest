@@ -8545,5 +8545,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 驗證(真打):HEAD 200、首頁 title「XOOPS 示範站」+xswatch4、0 fatal、demoadmin POST /user.php 302→index、帶 cookie GET /admin.php 200 含 Control Panel Home、compose log 無 500/fatal;`install/`→404、`install_disabled/`加 .htaccess→403。
 - 未收:#808(tunnel nohup 模式 WSL 重開不自動回來)。模組/佈景下一階段。
 
-## 2026-09-06 16:10 主視窗:xoops-demo 第二階段(繁中語系/Publisher+TDMDownloads+XForms/示範內容/群組權限/xswatch4 換色/seed.sql+restore.sh/keepalive)
-- 進行中。全部在 ~/xoops-demo(不在本 repo),此條只做交接紀錄。
+## 2026-09-06 16:35 主視窗:xoops-demo 第二階段完成——空站→可拿給客戶看的繁中示範站(全部在 ~/xoops-demo,README 有完整操作)
+- 語系:XoopsLanguages/tchinese 只有 core 2.7.x 包(對 2.5.11 缺/多 define),`lang_fill_gaps.php`(PHP tokenizer 比對 english↔tchinese,缺的 guarded 補 english 值,133 條)。三模組沒有繁中包,`translate_modules.py` 表驅動產 tchinese(315 條)。模組名稱存在 xoops_modules.name(裝機當下的英文)要另 UPDATE。
+- ⭐ 三個模組各撞一個 bug 才裝得起/用得了:tdmdownloads `version_compare('2.5.11-Stable','2.5.11')` 判低(-Stable 在 version_compare 排在數字前面)→裝不了;xforms Configurator `paths` 被 paths.php 的 object 蓋掉→oninstall 500;⭐⭐ xforms `Request::getCmd('submit')` 把「送出」濾成空字串→**中文按鈕的表單永遠送不出去且零錯誤**(curl POST 回原表單才抓到)。xswatch4 自帶的模組模板 include `db:tag_bar.tpl`(tag 模組沒裝→fatal),而且 theme override 蓋過 module 目錄與 DB tplsource 三處都要改。
+- ⭐ mysql CLI 沒帶 `--default-character-set=utf8mb4` 的 UPDATE 會把中文雙重編碼(頁面看到 æª”æ¡ˆ),查 SELECT 看起來像 ??? 是顯示層、頁面出 mojibake 才是真壞。⭐ Cloudflare 對 .css 快取 4h(cf-cache-status HIT)→改 CSS 截圖沒變,theme.tpl 加 `?v=` 版本號。
+- 權限示範:群組 一般會員(4)/內部人員(5);publisher category_read + tdmdownloads_view/download(_item) 兩層;`verify_perms.sh` 三身分 curl:訪客/demouser 6 篇+3 檔、demostaff 8 篇+5 檔(itemid=7 302 vs 200、viewcat cid=2 302 vs 200)。
+- 佈景:flatly 底 + my_xoops.css 深藍/金;375px 公告表格隱藏分類/發布者欄;`shots.py`(playwright)雙寬度 scrollWidth 全 = viewport。素材 `make_assets.py`(PyMuPDF subset_fonts 才從 7.6MB→60KB;PIL Noto Sans TC)。
+- 備份:`backup.sh`/`restore.sh`(DB 全砍重灌 + 容器內 root 解 tar,實測 1s;host tar 對 www-data 目錄 utime 會炸)。keepalive cron */5 實測 stop tunnel→下一輪拉回(log 只記異常)。
+- 未收:#809(內部檔案 PDF 只擋列表,知道 /uploads 路徑仍可直接抓;要真擋要改 visit.php 走串流+目錄 deny)、#810(seed.sql 把「近三個月」日期凍住,一個月後看起來會舊;重跑 seed.php 即刷新)。#808(WSL 重開 tunnel/cron 不回來)維持。
