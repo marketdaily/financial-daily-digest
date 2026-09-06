@@ -7958,5 +7958,25 @@
   "opened": "2026-09-05 22:15",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 797,
+  "what": "F1 25 VR 新設定(SteamVR 60%解析度+MotionSmoothing+關Home)未在真實開賽驗證",
+  "why": "只改了設定檔,尚未上車跑 vr_report.sh 看 GPU 幀時間是否降到 13.9ms 以下",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-06 13:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 798,
+  "what": "PimaxPlay 端三項只能老闆手動改:關 Pimax Home(enable_pvr_home 已回到1)、Render Quality 降到0.75-0.85、FOV 縮到 Normal",
+  "why": "pi_server 常駐會整檔重寫 profile.json,外部寫入一定被覆蓋(09-05 已實證)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-06 13:02",
+  "closed": null,
+  "note": ""
  }
 ]

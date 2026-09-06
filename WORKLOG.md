@@ -8497,3 +8497,17 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 先擠出 600MB(卸 Ollama 模型 nomic-embed/llama-server),不夠。
 - **⏰ 死線:WSL 必須在 TW 05:20 之前回來**,否則早報生成 cron 不會跑。雲端 failover(digest-watchdog 07:30 撲空即 dispatch daily_digest.yml)會接住但會遲到,07:00 整點寄不出去。
 - 復原方式已寫到 `C:\Users\USER\Desktop\WSL復原.txt`。
+
+## 2026-09-06 13:00 主視窗:VR「平面螢幕跟著頭轉 + 黑畫面」根因定案(log 實證)
+- 老闆症狀:①VR 裡是一塊平面螢幕浮在眼前且跟著頭轉,零沉浸 ②偶爾整個黑畫面。
+- **證據(SteamVR 日誌,昨晚 23:21–01:06 那場 104 分鐘)**:
+  - `HMD driver recommended: 3234x3826 72.0Hz` + `Clamping render target scale to 1.5x total area` ⇒ 實際渲染約 **3960×4686/眼**。
+  - `Game Info..FPS Average Target 72  ApplicationTime GPU: 22.808ms` ⇒ 72Hz 每幀預算 13.89ms,**超支 1.64 倍**。
+  - `Timed out. 11 total....208369 presents` / 總 310,602 ⇒ **67.1% 的畫面在 compositor timeout 狀態**;且 `0 reprojected`(motionSmoothing=false)⇒ 掉幀時直接把上一幀原封不動貼在面板上=**影像黏在頭上、看起來就是平面螢幕跟著頭轉**,嚴重時黑畫面。
+  - System log 23:00–01:10 **無** TDR / LiveKernelEvent / Kernel-Power ⇒ 黑畫面不是 GPU 驅動崩潰,是 compositor timeout。
+- **另一半是設計如此**:F1_25 退出時 destroy 了 `virtual_monitor (openvr_vm_overlay)` overlay ⇒ 官方說法「UI/選單/過場一律 16:9」,選單本來就是平面虛擬螢幕,只有上賽道才立體。
+- ⭐ **F1 25 是 OpenVR/SteamVR 原生**(遊戲目錄只有 `openvr_api.dll`,無 openxr_loader)⇒ 09-05 我把 OpenXR runtime 切到 PiOpenXR **對 F1 25 完全無效**(不害也不幫);同理 Pimax Quad Views/FFR 是 OpenXR 專屬,對 F1 25 沒用。唯一槓桿是原始解析度。
+- 已做(headless,SteamVR 未執行時改 `Steam/config/steamvr.vrsettings`,已備份 .bak-20260906-130049):
+  `supersampleManualOverride=true` / `supersampleScale=0.6`(約 2505×2964/眼)、`motionSmoothing=true`(掉幀改用重投影而非凍結)、`enableHomeApp=false`(不再自動起 SteamVR Home 吃 VRAM)、`showMirrorView=false`。
+- 交回饋迴路:`~/vr_report.sh` —— 讀 vrcompositor.txt 直接印「渲染解析度 / GPU 每幀 ms vs 幀預算 / timeout 佔比」並下判決,下次上車後跑它就知道有沒有修好。
+- 未收:#797(新設定未在真實開賽驗證) #798(PimaxPlay 三項只能老闆手動:關 Pimax Home、Render Quality 0.75–0.85、FOV 縮小)。
