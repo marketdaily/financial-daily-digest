@@ -7946,8 +7946,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-05 22:15",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-06 13:26",
+  "note": "F1 25 只有 openvr_api.dll,走 SteamVR;OpenXR runtime 切換對它是 no-op,不需驗證"
  },
  {
   "id": 796,
@@ -7956,8 +7956,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-05 22:15",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-06 13:26",
+  "note": "SteamVR log 實證:selection=2 時 HMD 跑 72.0Hz(runtime_display_timing_count=4);現值 2 就是 72,不必改"
  },
  {
   "id": 797,
@@ -7986,6 +7986,26 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-06 13:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 800,
+  "what": "F1 25 VR 畫質檔重寫(AF16/材質2048/陰影/SSAO/VRS/動態解析度)未在真實開賽驗證,需跑 vr_report 看 GPU ms",
+  "why": "改的當下遊戲沒開,只有 XML 驗證與 log 基準",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-06 13:25",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 801,
+  "what": "F1 25 VR 選單是否有 DLSS 未確認(先留 TAA);老闆試過回報後用 f1vr.ps1 aa dlss 寫死",
+  "why": "存檔加密+不能無頭開遊戲,無法驗證選項存在",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-06 13:25",
   "closed": null,
   "note": ""
  }

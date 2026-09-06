@@ -8519,3 +8519,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   - 工具:`~/pimax_ctl.sh status|home on/off|fov normal/narrow|quality get/low/mid/high`(WS 客戶端 `C:\Users\USER\pimaxws.ps1`,.NET ClientWebSocket,需 UTF-8 BOM;⚠️ WSL 的 127.0.0.1 不是 Windows 的,客戶端必須跑 Windows 端)。
   - ⭐⭐ 教訓:昨天「pi_server 會整檔重寫 profile.json」觀察是對的,但我從它導出「外部無法設定」是錯的結論。**檔案被守護行程覆寫 ⇒ 去找那支守護行程的控制 API,不是宣告做不到**。記憶 `capability_pimax_headless_control`。
   - #798 已收;新增 #799。
+
+## 2026-09-06 14:30 主視窗:F1 25「全部調到最適合 VR」——三層無頭設定 + 上車手動清單
+- 老闆:「go into my f1 25 and do all the setting that is best for my vr experience, all the views and all quality」。全程 headless,遊戲/SteamVR 未執行時改檔。
+- 探查:Pimax(Home 關/FOV Normal/72Hz idx2/畫質 mid=pixels_per_display_pixel_rate 0.75)與 SteamVR(SS 0.6/motionSmoothing/Home 關)已是對的;**真正最爛的是 F1 25 自己的 VR 畫質檔=全部最低**(AF 0、材質池 768、陰影 512/2 層、景深開、鏡子隔幀)。
+- 改 `hardware_settings_config_vr.xml`(備份 .bak-20260906-14xx,改完重新 +R 唯讀):AF 16、texture 2048、TAA q2/sharp 0.6+CAS、動態解析度開(72fps 底 0.85)、SSAO、陰影 1024–2048/4 層、lighting 2、DoF/lens flare/god rays 關、鏡子 both+樹、crowd/trees/ground 中、rain sheets+beads、VRS 開。值域全部照遊戲自己寫的桌機檔(AF=16、texture=2048、mirrors=both…)取,不是猜的。
+- **DLSS 刻意不開**:DLL 在(nvngx_dlss/sl.dlss),但無法無頭驗證 VR 選單有它、aa_quality 在 DLSS 下的枚舉義不明,不拿第一場賭 → 留 TAA,給 `C:\Users\USER\f1vr.ps1 aa taa|dlss` 一鍵切(另有 lock/unlock/status)。
+- 視角/HUD/鏡頭:存檔 `AppData\Local\F1 25\savegame\ea\profile\*.BWW` 是加密二進位,做不到 → 交照唸清單(Recentre 綁鍵、camera shake/movement 0、look-to-apex 關、HUD 收中、手臂開)。
+- 產出 Artifact「F1 25 VR Setup Sheet」37824287。驗收=跑完一場 `~/vr_report.sh`(GPU<10ms 加解析度、>13.9 先 FOV narrow)。
+- 未收:#800(新畫質檔未實跑) #801(DLSS 未確認)。收掉:#795(F1 25 走 OpenVR,OpenXR 切換 no-op) #796(log 實證 idx2=72Hz)。
