@@ -8553,3 +8553,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 佈景:flatly 底 + my_xoops.css 深藍/金;375px 公告表格隱藏分類/發布者欄;`shots.py`(playwright)雙寬度 scrollWidth 全 = viewport。素材 `make_assets.py`(PyMuPDF subset_fonts 才從 7.6MB→60KB;PIL Noto Sans TC)。
 - 備份:`backup.sh`/`restore.sh`(DB 全砍重灌 + 容器內 root 解 tar,實測 1s;host tar 對 www-data 目錄 utime 會炸)。keepalive cron */5 實測 stop tunnel→下一輪拉回(log 只記異常)。
 - 未收:#809(內部檔案 PDF 只擋列表,知道 /uploads 路徑仍可直接抓;要真擋要改 visit.php 走串流+目錄 deny)、#810(seed.sql 把「近三個月」日期凍住,一個月後看起來會舊;重跑 seed.php 即刷新)。#808(WSL 重開 tunnel/cron 不回來)維持。
+
+## 2026-09-06 22:5x 主視窗:Marshall Acton III「連不上電腦」= VR 偷走預設音訊裝置(已根治)
+- 老闆報「Marshall Acton III 接不上 PC,AUX 跟電源都插了」。**真因與線無關**:SteamVR/Pimax 啟動把 Windows 預設輸出搶去 `Pimax (NVIDIA High Definition Audio)`,結束後不還;走 AUX 的音箱從此靜音。切回 `喇叭 (Realtek(R) Audio)`(老闆已自行改名 `marshal`)即有聲。
+- ⭐⭐ **量尺自己說謊**:第一版用 `Start-Job` 播測試音,`$job` 是 null 沒起來,四個端點量到全 0——差一步就寫成「Windows 根本沒輸出」這個相反結論。改成播放器獨立行程 + **全 0 判「量尺無效」而非「沒訊號」**。修正後量到 Realtek 峰值 0.7217、其餘全 0 ⇒ 確定 PC 端無罪,問題在 PC 之外。
+- ⭐ **AUX 音箱不會出現在音效輸出清單**(它不是裝置,就是 Realtek 那項)——老闆截圖說「根本沒有」是在找 ACTON III。順帶查到 ACTON III 藍牙是配對過但 Code 45 未連線。
+- 新積木 `C:\Users\USER\audio_default.ps1`(`Get|Save|Restore|Set`):Save 拒存 VR 裝置、Restore 存檔失效退回「優先 Realtek 的非 VR ACTIVE 端點」。已接 `vr-on.ps1`(Save,VR 搶走之前)+ `vr-off.ps1`(Restore,殺完 vrserver 之後)。**7 條路徑實測全過,含真的切去 Pimax 再救回**;三支 ps1 都過 Parser 語法檢查。
+- ⭐ 坑:`Add-Type` 的 C# 原始碼不可含中文(PS5.1 用 Big5 讀 temp .cs ⇒「常數中包含新行字元」);中文只放 PowerShell 字串層 + 檔案 UTF-8 BOM。
+- 未收:#813(vr-off.ps1 全流程首班待驗)。

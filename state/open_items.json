@@ -8108,5 +8108,25 @@
   "opened": "2026-09-06 16:35",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 812,
+  "what": "openvrpaths.vrpath 被搬開以強制平面模式(備份 .flatmode-bak)",
+  "why": "沒還原的話 VR 完全開不起來;已把還原做進 vr-on.ps1 的第 0 步,但那條路徑本身還沒實跑驗證過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-06 19:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 813,
+  "what": "vr-off.ps1 的『還原預設播放裝置』步驟尚未在真實 vr-off 全流程跑過",
+  "why": "audio_default.ps1 七條路徑與該呼叫行都單獨驗過(含真的切去 Pimax 再救回),但整支 vr-off.ps1 從未在這次改動後執行;老闆下次說『我玩完了』才是首班",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-06 23:13",
+  "closed": null,
+  "note": ""
  }
 ]
