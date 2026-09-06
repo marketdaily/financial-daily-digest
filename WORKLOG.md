@@ -8511,3 +8511,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   `supersampleManualOverride=true` / `supersampleScale=0.6`(約 2505×2964/眼)、`motionSmoothing=true`(掉幀改用重投影而非凍結)、`enableHomeApp=false`(不再自動起 SteamVR Home 吃 VRAM)、`showMirrorView=false`。
 - 交回饋迴路:`~/vr_report.sh` —— 讀 vrcompositor.txt 直接印「渲染解析度 / GPU 每幀 ms vs 幀預算 / timeout 佔比」並下判決,下次上車後跑它就知道有沒有修好。
 - 未收:#797(新設定未在真實開賽驗證) #798(PimaxPlay 三項只能老闆手動:關 Pimax Home、Render Quality 0.75–0.85、FOV 縮小)。
+- (續 13:40)老闆罵「這三個我根本不知道在哪裡，你不能控制我的滑鼠自己去關嗎」⇒ **我先前說「只能你在 PimaxPlay 按」是錯的,已推翻並落地無頭控制**:
+  - ⭐⭐ PimaxClient(Electron)自己開了本機 `ws://127.0.0.1:8766`,信封 `{"id":N,"type":"invoke"|"send","channel":"...","args":[...]}`;要的兩個 channel = `config:get` / `config:set`(args `[{key,keyType,value}]`,keyType ∈ int/float/string/globalAppInt/globalAppFloat/globalAppVector3f),另有 `config:togglePvrHome`。協定是從 `pimaxui/resources/app.asar` 挖出來的。
+  - ⭐ 還有一支**沒有任何文件**的官方 CLI:`PimaxClient\pimaxui\resources\pimaxcli\pimax.exe`(status/graphics quality/overlay-scale/display brightness/device ipd|reboot/keys)。⚠️ 它的 `config get/set` 是 electron-store,**不是**頭顯設定那本帳(打 runtime_* 會 Key not found)。
+  - 已做:`runtime_enable_pvr_home` 1→0 + 停掉正在跑的 PimaxHome-Win64-Shipping。**VRAM 已用 13.9GB(昨晚遊玩時)→ 3.5GB/16GB**。更新率確認 `display_timing_selection=2`＝72Hz(SteamVR 日誌實測 72.000565)。
+  - 刻意**不套** FOV Narrow 與 Pimax quality low(#799):兩者都拿畫面換效能,縮 FOV 會讓老闆抱怨的「不沉浸」更嚴重;SteamVR 已 1.5×→0.6×(少 60% 像素),先測這一刀夠不夠。
+  - 工具:`~/pimax_ctl.sh status|home on/off|fov normal/narrow|quality get/low/mid/high`(WS 客戶端 `C:\Users\USER\pimaxws.ps1`,.NET ClientWebSocket,需 UTF-8 BOM;⚠️ WSL 的 127.0.0.1 不是 Windows 的,客戶端必須跑 Windows 端)。
+  - ⭐⭐ 教訓:昨天「pi_server 會整檔重寫 profile.json」觀察是對的,但我從它導出「外部無法設定」是錯的結論。**檔案被守護行程覆寫 ⇒ 去找那支守護行程的控制 API,不是宣告做不到**。記憶 `capability_pimax_headless_control`。
+  - #798 已收;新增 #799。

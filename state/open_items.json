@@ -7976,6 +7976,16 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-06 13:02",
+  "closed": "2026-09-06 13:18",
+  "note": "找到官方無頭路徑:PimaxClient 本機 WebSocket ws://127.0.0.1:8766(channel config:set/config:get)+內建 pimaxcli;Pimax Home 已關(設定0+行程停),FOV/畫質可一行指令切換,不需老闆手動"
+ },
+ {
+  "id": 799,
+  "what": "FOV Narrow 與 Pimax 畫質 low 兩檔刻意保留未套用",
+  "why": "兩者都會犧牲畫面(FOV 縮會讓老闆抱怨的『不沉浸』更嚴重),SteamVR 已從1.5×降到0.6× 先測這一刀夠不夠;不夠再用 pimax_ctl.sh 一行切",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-06 13:18",
   "closed": null,
   "note": ""
  }
