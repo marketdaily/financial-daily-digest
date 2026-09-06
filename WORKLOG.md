@@ -8528,3 +8528,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 視角/HUD/鏡頭:存檔 `AppData\Local\F1 25\savegame\ea\profile\*.BWW` 是加密二進位,做不到 → 交照唸清單(Recentre 綁鍵、camera shake/movement 0、look-to-apex 關、HUD 收中、手臂開)。
 - 產出 Artifact「F1 25 VR Setup Sheet」37824287。驗收=跑完一場 `~/vr_report.sh`(GPU<10ms 加解析度、>13.9 先 FOV narrow)。
 - 未收:#800(新畫質檔未實跑) #801(DLSS 未確認)。收掉:#795(F1 25 走 OpenVR,OpenXR 切換 no-op) #796(log 實證 idx2=72Hz)。
+- (續 13:35)老闆立協定:「我要玩VR」→自動切;「我玩完了」→自動還原;**「如果我再晚的話要把所有位置讓給我」**。已落地:
+  - `C:\Users\USER\vr-on.ps1`(5 步:關 Pimax Home→停 ComfyUI/噪音→高效能電源+關 Game DVR→最小化開 PimaxClient+EA app(SteamVR 由遊戲自己拉)→驗安全網→`wsl --shutdown`)、`vr-off.ps1`(叫回 WSL+驗 cron+還原)。桌面 `VR開始.cmd`/`VR結束.cmd`。**⚠️ 桌面真實路徑是 `C:\Users\USER\OneDrive\桌面`,昨晚那個視窗寫的 `C:\Users\USER\Desktop\WSL復原.txt` 是空路徑,檔案從來沒存在過**——已補寫到對的地方。
+  - ⭐⭐ **讓路靠程式不靠自律**:排程 `WSL_Keepalive`(每10分,00:02 起 23h55m,免提權)先偵測 `F1_25/vrserver/vrcompositor/vrmonitor`,在跑就 exit 0 完全不動;不在跑且 WSL 沒起來才叫回來 ⇒ 老闆關掉遊戲 10 分內 WSL 自動回來,他連捷徑都不用點。兩條分支都實測過(SKIP 分支用替身行程 pi_server 驗)。
+  - 時間餘裕查證:`_hold_until_send_time` 只在距整點 60 分內才 sleep ⇒ WSL 約 06:00 前回來都來得及;真玩過頭由 digest-watchdog 07:30 雲端 failover 接手。
+  - ⚠️ **拆掉定時炸彈 `WSLShutdownOnce`**——昨晚那個視窗留下的排程,每晚 23:59 `wsl --shutdown`,無人認領。
+  - ⭐ 坑一:`wsl -l --running` 回 **UTF-16**,不設 `$env:WSL_UTF8='1'` 字串比對必然失敗(第一版因此誤判「WSL 沒在跑」還真的去啟動了一次)⇒ 判存活主看 `Get-Process vmmemWSL`。⭐ 坑二:`-AtStartup` 觸發器要提權(其他不用);既有 `StartWSL-AtBoot`/`StartWSL-Ollama` 已覆蓋開機/登入。
+  - 協定已寫進**全域 `~/.claude/CLAUDE.md`**(所有 session 適用)+記憶 `feedback_vr_session_protocol`。
+  - 未收:#802(`wsl --shutdown` 那一步從未真跑過,只做 -KeepWsl 空跑;WSL 真斷線後 keepalive 能否叫回也沒驗) #803(讓路分支只用替身行程驗過)。

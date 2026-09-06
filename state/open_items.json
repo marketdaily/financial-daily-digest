@@ -8008,5 +8008,25 @@
   "opened": "2026-09-06 13:25",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 802,
+  "what": "vr-on.ps1 的 wsl --shutdown 那一步從未真的執行過",
+  "why": "驗證它會殺掉我自己的 session,只做了 -KeepWsl 空跑;WSL 關掉後 keepalive 能否把它叫回來也還沒在真實斷線狀態下驗過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-06 13:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 803,
+  "what": "WSL_Keepalive 的『老闆在玩就讓路』分支只用替身行程(pi_server)驗過",
+  "why": "沒有在 F1_25.exe 真的在跑的情況下驗;下次他開賽時順手確認 log 會寫 SKIP",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-06 13:29",
+  "closed": null,
+  "note": ""
  }
 ]
