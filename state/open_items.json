@@ -8128,5 +8128,25 @@
   "opened": "2026-09-06 23:13",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 814,
+  "what": "VR_DisplayUnblock 排程首班『真的殺到 SteamVR 殘留』未在生產驗證",
+  "why": "四個分支都用替身(explorer)測過且排程跑過一輪 result=0x0,但那輪是無殘留的靜默路徑;真正的 CLEAN 分支要等下次老闆玩完 VR 忘記點結束才會射出",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 01:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 815,
+  "what": "vr-off.ps1 加殺 vrwebhelper 後的全流程首班待驗",
+  "why": "只做了 Parser 語法檢查,沒真的整支跑過(會動 WSL/電源/ComfyUI/音訊);與既有 #813 同一支腳本",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 01:16",
+  "closed": null,
+  "note": ""
  }
 ]

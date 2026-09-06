@@ -8561,3 +8561,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 新積木 `C:\Users\USER\audio_default.ps1`(`Get|Save|Restore|Set`):Save 拒存 VR 裝置、Restore 存檔失效退回「優先 Realtek 的非 VR ACTIVE 端點」。已接 `vr-on.ps1`(Save,VR 搶走之前)+ `vr-off.ps1`(Restore,殺完 vrserver 之後)。**7 條路徑實測全過,含真的切去 Pimax 再救回**;三支 ps1 都過 Parser 語法檢查。
 - ⭐ 坑:`Add-Type` 的 C# 原始碼不可含中文(PS5.1 用 Big5 讀 temp .cs ⇒「常數中包含新行字元」);中文只放 PowerShell 字串層 + 檔案 UTF-8 BOM。
 - 未收:#813(vr-off.ps1 全流程首班待驗)。
+
+## 2026-09-07 01:1x 主視窗:螢幕不自動關 = SteamVR 殘留壓著 DISPLAY power request(已修+加自動兜底)
+- 老闆報「螢幕不會自動關」。**電源設定沒問題**(AC 5 分鐘);真因=昨晚 21:59 起跑的 SteamVR 沒退,`powercfg /requests` 的 DISPLAY 段掛著 `vrcompositor.exe` + `vrwebhelper.exe`(還有 pi_server 壓 SYSTEM,但主機本來就不休眠,無影響)。⚠️ `powercfg /requests` **要 admin**,WSL interop 的過濾 token 看不到 ⇒ 走 [[capability_winrig_elevated_no_uac]] 的 paramiko SSH 腿(`~/elev.py` 重建)。
+- 現場處置:殺 vrmonitor/vrdashboard/vrcompositor/vrserver→隔 3s 殺 vrwebhelper,DISPLAY 回「無」。
+- ⭐ 根因兩層:①老闆玩完沒點「VR結束」(他本來就不必點,見 WSL_Keepalive 讓路設計);②**就算他點了也不會好——`vr-off.ps1` 的 kill 清單漏了 vrwebhelper**,而 vrwebhelper 自己就是 DISPLAY 註冊者之一。已補殺 + 補一行殘留自檢輸出(備份 `vr-off.ps1.bak-20260907`)。
+- 新積木 `C:\Users\USER\display-unblock.ps1` + 排程 `VR_DisplayUnblock`(每 10 分,Interactive/Limited,同 VR_HzSwitch 模式)。三條件全成立才動手:無 VR 遊戲 + 鍵鼠閒置 ≥30 分 + 真的有殘留 ⇒ 絕不會在他戴著頭顯時把 SteamVR 殺掉。
+- ⭐⭐ **量尺又差點說謊(第 N 次)**:`Add-Type -UsingNamespace System.Runtime.InteropServices` 與預設 using 重複 ⇒ 整個 GetLastInputInfo 型別編譯失敗,`$ErrorActionPreference='SilentlyContinue'` 把它吞掉。**但這次守衛設計是對的**:「閒置量尺失效」走獨立第三態直接 exit,而不是併進「閒置=0 ⇒ 人不在 ⇒ 殺」。4 個分支都用 explorer 當替身實測射出(SKIP/HOLD/WHATIF/靜默),且驗 explorer 沒被誤殺。
+- ⭐ log 用 `Tee-Object` 在 PS5.1 會寫成 UTF-16,WSL 讀是亂碼 ⇒ 改 `[IO.File]::AppendAllText` + UTF8Encoding($false)。
+- 未收:#814(VR_DisplayUnblock 的 CLEAN 分支未在生產真的射過)、#815(vr-off.ps1 改後全流程未跑,與 #813 同支)。
