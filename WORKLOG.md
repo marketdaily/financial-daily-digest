@@ -8544,3 +8544,6 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 安裝走真精靈(curl+cookie jar 走公網 14 頁,`install_wizard.sh`),XOOPS_URL 自動偵測成 https://xoops-demo.crewhq.digital;https 判定靠 apache `SetEnvIf X-Forwarded-Proto https HTTPS=on`。⭐ 精靈 theme 頁我第一版 grep `[0-9]+$` 吃不到 `value="7"` 的尾引號⇒conf_ids 空、users.theme 沒更新,補 POST 修正;sitename 用 utf8mb4 client 查 HEX 確認中文沒壞(預設 client 顯示 ??? 是顯示層問題)。
 - 驗證(真打):HEAD 200、首頁 title「XOOPS 示範站」+xswatch4、0 fatal、demoadmin POST /user.php 302→index、帶 cookie GET /admin.php 200 含 Control Panel Home、compose log 無 500/fatal;`install/`→404、`install_disabled/`加 .htaccess→403。
 - 未收:#808(tunnel nohup 模式 WSL 重開不自動回來)。模組/佈景下一階段。
+
+## 2026-09-06 16:10 主視窗:xoops-demo 第二階段(繁中語系/Publisher+TDMDownloads+XForms/示範內容/群組權限/xswatch4 換色/seed.sql+restore.sh/keepalive)
+- 進行中。全部在 ~/xoops-demo(不在本 repo),此條只做交接紀錄。
