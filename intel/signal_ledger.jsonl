@@ -1004,3 +1004,11 @@
 {"date": "2026-09-04", "code": "6667", "source": "leadflow", "level": "red", "signal": "信紘科(6667) 無消息近漲停+9.9%(量能6.8×,5日+8.4%),疑資訊先行資金|外資+投信近3日僅+33張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-04", "code": "8064", "source": "leadflow", "level": "red", "signal": "東捷(8064) 無消息近漲停+9.8%(量能6.5×,5日+8.7%),疑資訊先行資金|外資+投信近3日僅-676張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-04", "code": "3499", "source": "leadflow", "level": "red", "signal": "環天科(3499) 無消息近漲停+9.7%(量能10.9×,5日+8.4%),疑資訊先行資金|外資+投信近3日僅+7張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-06", "code": "2530", "source": "sbl", "level": "yellow", "signal": "華建(2530):機構借券賣出5日遽減-21.1%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-09-06", "code": "2762", "source": "investor_conf", "level": "red", "signal": "世界健身-KY(2762):法說會4天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-09-06", "code": "3006", "source": "sbl", "level": "red", "signal": "晶豪科(3006):機構借券賣出5日遽增40.0%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": null}
+{"date": "2026-09-06", "code": "3706", "source": "holders", "level": "red", "signal": "神達(3706):千張大戶持股比週增1.02個百分點(大戶顯著加碼,且戶數減少3戶(籌碼更集中在更少大戶手中))", "price_at_signal": null}
+{"date": "2026-09-06", "code": "6944", "source": "holders", "level": "red", "signal": "兆聯實業(6944):千張大戶持股比週增2.26個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-09-06", "code": "7740", "source": "holders", "level": "red", "signal": "熙特爾-創(7740):千張大戶持股比週增1.59個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-09-06", "code": "2756", "source": "sbl", "level": "yellow", "signal": "聯發國際(2756):機構借券賣出5日遽減-32.1%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-09-06", "code": "6658", "source": "sbl", "level": "yellow", "signal": "聯策(6658):機構借券賣出5日增10.9%(溫和加碼放空)", "price_at_signal": null}
