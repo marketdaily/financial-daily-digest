@@ -8098,5 +8098,15 @@
   "opened": "2026-09-06 16:34",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 811,
+  "what": "MEMORY.md 索引 20.3KB 逼近 24.4KB 上限,要照 hub_file_hygiene 規則(先確認子句在 topic 檔有副本)壓到 17KB 以下",
+  "why": "hook 提示;groom 有吃字風險,要獨立 session 做並驗連結零遺失",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-06 16:35",
+  "closed": null,
+  "note": ""
  }
 ]
