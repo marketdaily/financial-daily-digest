@@ -8536,3 +8536,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   - ⭐ 坑一:`wsl -l --running` 回 **UTF-16**,不設 `$env:WSL_UTF8='1'` 字串比對必然失敗(第一版因此誤判「WSL 沒在跑」還真的去啟動了一次)⇒ 判存活主看 `Get-Process vmmemWSL`。⭐ 坑二:`-AtStartup` 觸發器要提權(其他不用);既有 `StartWSL-AtBoot`/`StartWSL-Ollama` 已覆蓋開機/登入。
   - 協定已寫進**全域 `~/.claude/CLAUDE.md`**(所有 session 適用)+記憶 `feedback_vr_session_protocol`。
   - 未收:#802(`wsl --shutdown` 那一步從未真跑過,只做 -KeepWsl 空跑;WSL 真斷線後 keepalive 能否叫回也沒驗) #803(讓路分支只用替身行程驗過)。
+
+## 2026-09-06 16:05 主視窗:XOOPS 2.5.11 示範站上線 xoops-demo.crewhq.digital
+- 全新獨立目錄 `~/xoops-demo`(compose 專案 xoops-demo:mysql:5.7 + php:7.4-apache 自建映像含 mysqli/gd/zip/mbstring+mod_rewrite,web 只綁 127.0.0.1:8090),獨立 tunnel `xoops-demo`(config `~/.cloudflared/xoops-demo-config.yml`,nohup,log 在專案目錄),沒動任何既有 tunnel/容器。
+- ⭐ GitHub release v2.5.11 **沒有附 tar.gz asset**(release 頁 404),改抓 tag tarball(`api.github.com/.../tarball/v2.5.11`,version.php 確認 2.5.11-Stable)。
+- ⭐⭐ `cloudflared tunnel route dns` 把記錄加成 `xoops-demo.crewhq.digital.marketdaily.ai`——cert.pem 綁 marketdaily.ai zone,對其他 zone 的 hostname 會當子網域黏上去。正解=REST API 直接在 crewhq.digital zone 建 CNAME→`<tunnel-id>.cfargotunnel.com`(`~/xoops-demo/cf_dns_fix.py`,用 Delvin-agent `.env` 的 CLOUDFLARE_ZONE_TOKEN,冪等,錯記錄已刪)。crew-sandbox 當初應該也是這樣建的。
+- 安裝走真精靈(curl+cookie jar 走公網 14 頁,`install_wizard.sh`),XOOPS_URL 自動偵測成 https://xoops-demo.crewhq.digital;https 判定靠 apache `SetEnvIf X-Forwarded-Proto https HTTPS=on`。⭐ 精靈 theme 頁我第一版 grep `[0-9]+$` 吃不到 `value="7"` 的尾引號⇒conf_ids 空、users.theme 沒更新,補 POST 修正;sitename 用 utf8mb4 client 查 HEX 確認中文沒壞(預設 client 顯示 ??? 是顯示層問題)。
+- 驗證(真打):HEAD 200、首頁 title「XOOPS 示範站」+xswatch4、0 fatal、demoadmin POST /user.php 302→index、帶 cookie GET /admin.php 200 含 Control Panel Home、compose log 無 500/fatal;`install/`→404、`install_disabled/`加 .htaccess→403。
+- 未收:#808(tunnel nohup 模式 WSL 重開不自動回來)。模組/佈景下一階段。
