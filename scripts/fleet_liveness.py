@@ -36,6 +36,111 @@ FNAME_RE = re.compile(r"^(?P<job>.+)_(?P<date>\d{4}-\d{2}-\d{2})\.log$")
 GATED_PATTERNS = [re.compile(p) for p in (r"^deploy_docs_", r"^fallback$", r"^dryrun$",
                                            r"^lint$", r"^locks$", r"_TEST$")]
 
+# ── 排程契約(2026-09-07 補;三個「靜默」全是誤告)────────────────────────────
+# 自校準門檻 max(1.5×中位間隔+1, 2) 的前提是「這支本來就每天跑」。兩類 job 不成立,
+# 而且是【結構性】不成立,不是抖動:
+#
+#  ① 稀疏排程:kingconn_domain_expiry 的 cron 是 `0 9 1,15 * *`(每月 1 號與 15 號),
+#     正常間隔 14~17 天,自校準卻算出 2.5 天門檻(戳記史被幾次手動連跑污染)⇒ 它只要
+#     正常運作就每天被判靜默,一路紅了 11 天。門檻要照【宣告的排程】寫,不是照觀察到的歷史。
+#
+#  ② 父閘控:videobrief_us / social_reel_us 的 runner 明寫「當日美股存檔存在才該有貨」
+#     (`[ -f docs/output/digest_<date>_us.html ] || exit 0`)。週末與美股國定假日沒有晚報
+#     ⇒ 它們正確地不跑,卻被當成靜默。2026-09-05(六)、09-06(日)、09-07(Labor Day)
+#     連三天沒晚報,於是 09-07 兩支同時紅 —— 這是本次告警盤點裡第三個「不認美股休市」的哨兵。
+#     判準不重打日曆:直接問父閘自己看的那個檔在不在(與 runner 同一條訊號)。
+PARENT_ARTIFACT = {
+    # job → (glob 樣式, 說明)。最後一個存在的日期 <= 最後一次成功日 ⇒ 沒有欠交,不算靜默。
+    "videobrief_us": ("docs/output/digest_*_us.html", "美股晚報存檔(runner 的 exit 0 閘)"),
+    "social_reel_us": ("docs/output/digest_*_us.html", "美股晚報存檔(runner 的 exit 0 閘)"),
+}
+
+
+def _crontab_max_gap_days(job, horizon_days=120):
+    """從 crontab 宣告的排程推「兩次觸發之間最多隔幾天」。推不出來回 None(不猜)。
+
+    只解析 day-of-month / day-of-week / month 三欄(小時分鐘不影響天數間隔)。
+    支援 * 、逗號列表、a-b 範圍、星號斜線 n step —— 生產 crontab 用到的就這些;
+    看到不認得的語法一律回 None,退回自校準,絕不把「解析不出來」寫成「每天跑」。
+    """
+    import subprocess
+    try:
+        lines = subprocess.run(["crontab", "-l"], capture_output=True, text=True,
+                               timeout=20).stdout.splitlines()
+    except Exception:
+        return None
+    hit = [ln for ln in lines
+           if not ln.lstrip().startswith("#")
+           and re.search(r"cron_run_and_alert\s+[\"']?" + re.escape(job) + r"\b", ln)]
+    if len(hit) != 1:                       # 0 條=不是直接掛 crontab;>1 條=多班次,別猜
+        return None
+    fields = hit[0].split()
+    if len(fields) < 5:
+        return None
+    _mi, _h, dom, mon, dow = fields[:5]
+
+    def expand(spec, lo, hi):
+        out = set()
+        for part in spec.split(","):
+            step = 1
+            if "/" in part:
+                part, st = part.split("/", 1)
+                if not st.isdigit():
+                    return None
+                step = int(st)
+            if part == "*":
+                a, b = lo, hi
+            elif "-" in part.lstrip("-"):
+                a_s, b_s = part.split("-", 1)
+                if not (a_s.isdigit() and b_s.isdigit()):
+                    return None
+                a, b = int(a_s), int(b_s)
+            elif part.isdigit():
+                a = b = int(part)
+            else:
+                return None                  # 名稱式(JAN/MON)不解析
+            out |= set(range(a, b + 1, step))
+        return out
+
+    doms = expand(dom, 1, 31) if dom != "*" else None
+    dows = expand(dow, 0, 7) if dow != "*" else None
+    mons = expand(mon, 1, 12) if mon != "*" else None
+    if (dom != "*" and doms is None) or (dow != "*" and dows is None) or (mon != "*" and mons is None):
+        return None
+    if doms is None and dows is None and mons is None:
+        return 1                             # 每天都跑
+
+    today = datetime.date.today()
+    fires = []
+    for i in range(horizon_days):
+        d = today + datetime.timedelta(days=i)
+        if mons is not None and d.month not in mons:
+            continue
+        w = d.isoweekday() % 7               # cron: 0=週日
+        # cron 語意:dom 與 dow 都不是 * 時取【聯集】
+        if doms is not None and dows is not None:
+            ok = (d.day in doms) or (w in dows) or (7 in dows and w == 0)
+        elif doms is not None:
+            ok = d.day in doms
+        else:
+            ok = (w in dows) or (7 in dows and w == 0)
+        if ok:
+            fires.append(d)
+    if len(fires) < 2:
+        return None
+    return max((b - a).days for a, b in zip(fires, fires[1:]))
+
+
+def _parent_artifact_latest(pattern):
+    """父閘那個檔案家族裡最新的日期(檔名含 YYYY-MM-DD)。查不到回 None。"""
+    import glob as _glob
+    dates = []
+    for f in _glob.glob(os.path.join(REPO, pattern)):
+        m = re.search(r"(\d{4}-\d{2}-\d{2})", os.path.basename(f))
+        if m:
+            dates.append(m.group(1))
+    return max(dates) if dates else None
+
 
 def collect_success_dates():
     """{job: sorted set of ISO dates having >=1 成功(end rc=0 或 runner done 行)}"""
@@ -103,13 +208,31 @@ def classify(jobs, today=None):
         if len(dates) < 2:
             report[job] = {"last": dates[-1], "age_d": age, "status": "observing"}
             continue
+        # 父閘控:父閘自己看的那個檔案最新到哪一天?沒有比最後一次成功更新的,就沒有欠交。
+        if job in PARENT_ARTIFACT:
+            pat, why = PARENT_ARTIFACT[job]
+            newest = _parent_artifact_latest(pat)
+            if newest is not None:
+                st = "silent" if newest > dates[-1] else "ok"
+                report[job] = {"last": dates[-1], "age_d": age, "status": st,
+                               "gate": why, "gate_newest": newest}
+                if st == "silent":
+                    silent.append(f"{job}(last={dates[-1]},父閘已到 {newest} 卻沒跑)")
+                continue
+
         ds = [datetime.date.fromisoformat(x) for x in dates]
         gaps = [(b - a).days for a, b in zip(ds, ds[1:])] or [1]
         med = statistics.median(gaps)
         thresh = max(med * 1.5 + 1, 2)
+        # 宣告的排程贏過觀察到的歷史:稀疏排程(每月 1/15、每週一)的戳記史會被幾次
+        # 手動連跑污染成「中位間隔 1 天」,於是它只要正常運作就天天被判靜默。
+        declared = _crontab_max_gap_days(job)
+        src = "self"
+        if declared is not None and declared + 1 > thresh:
+            thresh, src = declared + 1, f"crontab(最大間隔 {declared}d)"
         status = "silent" if age > thresh else "ok"
         report[job] = {"last": dates[-1], "age_d": age, "median_gap_d": med,
-                       "thresh_d": round(thresh, 1), "status": status}
+                       "thresh_d": round(thresh, 1), "thresh_src": src, "status": status}
         if status == "silent":
             silent.append(f"{job}(last={dates[-1]},{age}d>{thresh:.0f}d)")
     return silent, report

@@ -53,6 +53,22 @@ _CARD_TARGETS_RE = re.compile(r"標的\([^)]*\)[:：]\s*([^\n]+)")
 _CARD_STUB_SKIP = ("TSLA",)
 
 
+_STUB_HASH_RE = re.compile(r"固定樁卡 [0-9a-f]{8}")
+
+
+def _diff_kind(gold, now):
+    """差異的種類:prompt-only(只有樁卡雜湊變)還是 render(渲染/流程真的變了)。
+
+    樁卡的雜湊吃 (代號, len(prompt)) —— 那是 harness 刻意設計的「prompt 改動可見」訊號。
+    把雜湊遮掉後兩邊逐字相同 ⇒ 這次差異只證明 prompt 文字被改過,不是行為回歸。
+    行數不等一律算 render(寧可保守:多說一次「去查」不會有人受傷,說錯成 prompt-only
+    會讓真的回歸被當成例行祝福蓋過去)。
+    """
+    g = [_STUB_HASH_RE.sub("固定樁卡 X", x) for x in gold.splitlines()]
+    n = [_STUB_HASH_RE.sub("固定樁卡 X", x) for x in now.splitlines()]
+    return "prompt-only" if g == n else "render"
+
+
 def _card_stub(prompt):
     """卡片批次 prompt → 每支一張合格樁卡;不是卡片 prompt 回 None。"""
     m = _CARD_TARGETS_RE.search(prompt)
@@ -381,6 +397,7 @@ def cmd_golden():
 def cmd_diff():
     v = _variants()
     bad = 0
+    prompt_only = 0
     for name, content in v.items():
         gp = os.path.join(GOLD_DIR, f"{name}.golden")
         if not os.path.exists(gp):
@@ -392,7 +409,10 @@ def cmd_diff():
         now = _norm(content)
         if now != gold:
             bad += 1
-            print(f"🔴 {name}: DIFF")
+            kind = _diff_kind(gold, now)
+            if kind == "prompt-only":
+                prompt_only += 1
+            print(f"🔴 {name}: DIFF({'只有 prompt 文字改了' if kind == 'prompt-only' else '渲染/流程改了'})")
             diff = list(difflib.unified_diff(
                 gold.splitlines(), now.splitlines(),
                 fromfile=f"golden/{name}", tofile="current", lineterm=""))[:40]
@@ -401,6 +421,15 @@ def cmd_diff():
             print(f"  ✅ {name}")
     if bad:
         print(f"🔴 {bad} 個變體與黃金基線不符")
+        # 2026-09-07:這支從 08-30(反 AI 腔改卡片 prompt)起連紅 11 天沒人動。
+        # 原因不是沒人看告警,是告警只說「不符」——讀的人分不出「prompt 改了該重新祝福」
+        # 與「渲染真的回歸了」,於是每天都留給下一個人。差異的【種類】必須寫在告警裡。
+        if prompt_only == bad:
+            print("ℹ️ 全部差異只在樁卡的 prompt 雜湊 ⇒ 渲染與流程逐字未變,這是【prompt 內容被改過】"
+                  "(harness 刻意讓 prompt 改動可見,見檔頭)。確認那次改動是有意的之後,"
+                  "重新祝福基線:.venv/bin/python scripts/refactor_harness.py golden")
+        else:
+            print("⚠️ 有差異落在 prompt 雜湊【以外】的地方 ⇒ 渲染或流程真的變了,先查回歸再談祝福。")
         sys.exit(1)
     print("✅ 全部變體與黃金基線一致(行為凍結成立)")
 
