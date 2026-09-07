@@ -8568,5 +8568,25 @@
   "opened": "2026-09-07 23:11",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 858,
+  "what": "GitHub Actions 帳號層再度被停用(Actions has been disabled for this user),日報雲端 failover 與部署備援腿兩條都射不出去",
+  "why": "23:10 告警自 winrig toast 抓到,主路還活著所以沒斷信,但主路一死就沒有第二條路;要不要再次申訴/換帳號是老闆決定",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-07 23:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 859,
+  "what": "自主學習機器(~/autonomous driver)自 2026-08-18 13:50 起被 state/DISABLED 停機整整 20 天,週考連 21 次沒開考都是這件事的下游;要不要重開是老闆的決定",
+  "why": "重開=放一個帶 --dangerously-skip-permissions 的自主代理回去改程式碼與花額度,不是我該自己翻的開關;旗標是空檔沒寫理由也沒寫誰放的,20 天後沒人分得出是故意還是忘了拿掉(08-18 當天有『自測把生產機 /tmp 清了』事故,推測是那次關的)。重開:find ~/autonomous ~/autonomous/state -maxdepth 1 -name DISABLED -delete",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 23:30",
+  "closed": null,
+  "note": ""
  }
 ]

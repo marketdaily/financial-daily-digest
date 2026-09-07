@@ -179,17 +179,36 @@ def p_twse():
     return OK, f"月營收 {len(d)} 筆,欄位正常"
 
 
+# www.tpex.org.tw 解析到兩個 Cloudflare 節點,其中一個送出的憑證鏈被 OpenSSL 3.x 拒收
+# (CERTIFICATE_VERIFY_FAILED: Missing Subject Key Identifier)。單發失敗率實測約 5~20%,
+# 多試幾次必中好節點(retries=4 實測 10/10 過)。
+# 2026-09-07:這條原本一路報 BROKEN,08-28 起推了 3 則「1 條壞掉」——但渠道根本沒死,
+# production 照樣抓得到資料。這隻 doctor 存在的理由就是分辨「訊源缺席是沒事件還是渠道死了」;
+# 把「上游其中一個節點憑證鏈壞掉」講成「渠道壞掉」,正好是它自己要消滅的那種歧義。
+# ⇒ 有任何一次成功 = 渠道活著(把壞節點的比例講出來);全數失敗才是真的死。
+_TPEX_URL = "https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes"
+_TPEX_TRIES = 5
+
+
 def p_tpex():
-    code, body = fetch("https://www.tpex.org.tw/openapi/v1/tpex_mainboard_daily_close_quotes")
+    code, body, bad_node = 0, "", 0
+    for _ in range(_TPEX_TRIES):
+        code, body = fetch(_TPEX_URL, retries=0)
+        if code == 200:
+            break
+        if "Missing Subject Key Identifier" in str(body):
+            bad_node += 1
+        time.sleep(0.4)
     if code != 200:
-        return BROKEN, f"HTTP {code} — {body[:120]}"
+        return BROKEN, f"HTTP {code} — {body[:120]}(連試 {_TPEX_TRIES} 次全敗)"
     try:
         d = json.loads(body)
     except Exception:
         return BROKEN, "回傳非 JSON(疑上游改版)"
     if not isinstance(d, list) or not d:
         return BROKEN, "櫃買日收盤回傳空陣列"
-    return OK, f"櫃買日收盤 {len(d)} 筆"
+    note = f"(其中 {bad_node} 次撞到憑證鏈壞掉的節點,上游 CDN 問題,非渠道故障)" if bad_node else ""
+    return OK, f"櫃買日收盤 {len(d)} 筆{note}"
 
 
 def p_finmind():

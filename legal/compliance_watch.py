@@ -133,6 +133,9 @@ SURFACES = [
     {"id": "md_archive_all", "label": "日報公版存檔(全部,glob 自動納管)",
      "url": "@archive_all", "kind": "html_multi",
      "packs": ["marketdaily", "marketdaily_disclaimer"]},
+    {"id": "md_archive_index", "label": "日報存檔索引頁 /archive/(glob 自動納管)",
+     "url": "@archive_index", "kind": "html_multi",
+     "packs": ["marketdaily", "marketdaily_marketing"]},
     {"id": "ms_index", "label": "命書首頁",
      "url": "https://mingshu.tw/", "kind": "html",
      "packs": ["mingshu"]},
@@ -190,6 +193,11 @@ DOCS_DIR_ROUTES = {
     "": "@docs_rest",            # 頂層
     "blog": "@blog_all",
     "output": "@archive_all",    # 公版存檔(capability_archive_cta_public_funnel:全站最大流量頁面群)
+    # 2026-09-07 20:20 新增的存檔索引頁(/archive/)。它冒出來的當下,這個 lint 就照設計
+    # fail-closed 擋住整輪掃描 ⇒ 哨兵推「0 面違規 / 0 面乾淨 / 0 面未涵蓋」、
+    # compliance_watch 自測五案連紅。lint 判得對(新目錄=靜默零覆蓋),缺的是認領。
+    # 它是索引/導覽頁,文案性質同 blog index ⇒ 走行銷包,不是免責包。
+    "archive": "@archive_index",
 }
 
 
@@ -204,6 +212,19 @@ def archive_urls(limit=None):
     if limit:
         files = files[:limit]
     return [f"https://marketdaily.ai/output/{f}" for f in files]
+
+
+def archive_index_urls(limit=None):
+    """存檔索引頁(/archive/)。目前只有 index.html,用 glob 而不是寫死檔名——
+    這個目錄未來很可能長出月份分頁,寫死等於下次再來一次「新頁面沒人認領」。"""
+    d = _docs_dir("archive")
+    try:
+        files = sorted(f for f in os.listdir(d) if f.endswith(".html"))
+    except Exception:
+        return []
+    if limit:
+        files = files[:limit]
+    return [f"https://marketdaily.ai/archive/{f}" for f in files]
 
 
 def blog_urls(limit=None):
@@ -299,7 +320,7 @@ def orphan_docs_problems():
     root = _docs_dir()
     covered = set()
     for fn, urls in (("@docs_rest", docs_page_urls()), ("@blog_all", blog_urls()),
-                     ("@archive_all", archive_urls())):
+                     ("@archive_all", archive_urls()), ("@archive_index", archive_index_urls())):
         for u in urls:
             covered.add(u.split("marketdaily.ai/", 1)[-1])
     named = {f for f in _named_doc_files()}
@@ -975,7 +996,8 @@ SUB_WORKERS = 6   # html_multi 內層的併發(外層 5 × 內層 6 對自家 Pa
 
 def _expand_multi(token):
     return {"@docs_rest": docs_page_urls, "@blog_all": blog_urls,
-            "@archive_all": archive_urls, "@ms_sitemap": sitemap_urls}.get(token, list)()
+            "@archive_all": archive_urls, "@archive_index": archive_index_urls,
+            "@ms_sitemap": sitemap_urls}.get(token, list)()
 
 
 EXPAND_HIST = 5           # 基準保留近 N **晚**(去重後的相異日期數),判準用其中的**最大值**
