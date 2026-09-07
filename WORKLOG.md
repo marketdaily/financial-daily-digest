@@ -8570,3 +8570,18 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⭐⭐ **量尺又差點說謊(第 N 次)**:`Add-Type -UsingNamespace System.Runtime.InteropServices` 與預設 using 重複 ⇒ 整個 GetLastInputInfo 型別編譯失敗,`$ErrorActionPreference='SilentlyContinue'` 把它吞掉。**但這次守衛設計是對的**:「閒置量尺失效」走獨立第三態直接 exit,而不是併進「閒置=0 ⇒ 人不在 ⇒ 殺」。4 個分支都用 explorer 當替身實測射出(SKIP/HOLD/WHATIF/靜默),且驗 explorer 沒被誤殺。
 - ⭐ log 用 `Tee-Object` 在 PS5.1 會寫成 UTF-16,WSL 讀是亂碼 ⇒ 改 `[IO.File]::AppendAllText` + UTF8Encoding($false)。
 - 未收:#814(VR_DisplayUnblock 的 CLEAN 分支未在生產真的射過)、#815(vr-off.ps1 改後全流程未跑,與 #813 同支)。
+
+## 2026-09-07 XOOPS 示範站交付前實測與修復（阿傑 PRO360 案，Mac 視窗指揮 / winrig 執行）
+- 背景：9/6 對客戶承諾「兩天內一套 XOOPS 2.5.11 示範站＋後台操作影片」，客戶已回「Ok，可以」。接手 9/6 那支 session 的成果做交付前驗收。
+- ⭐⭐ **接手先驗它宣稱做完的東西**：README 寫「聯絡表單 5 欄」已完成，實查 `xforms_userdata` **0 筆**＝那個表單從來沒有人成功送出過。往下挖出 5 個真缺陷：
+  1. **表單任何人都送不出去**（最嚴重）。根因不是 JS 也不是後端，是 `maxlength="0"`：`seed.php` 用原生整數 key `serialize()` 寫 `ele_value`，但 xforms 的 `Element::setVar()` 存的是 **base64 編碼過的 key**，讀回時 `base64_decode('0')=''` → 五個索引全壓成同一個 `''` key、只剩最後一個值 → size/maxlength 取到 0 → **瀏覽器連一個字都不讓打**。修 seed.php ＋ 一次性重寫既有資料。
+  2. 表單驗證 JS 整個沒定義：模組產的 regex 結尾 `/i` 後直接接 `if` → 被當成 flag `iif`（Invalid regular expression flags）；且 `filter.test(ele_2)` 取不存在的變數、無條件 return 跳過後續欄位。另發現 `customValidationCode` 一有值，核心就不再產必填檢查。
+  3. 後台「表單回報」500：`GROUP BY form_id` 撞 MySQL 5.7 的 `ONLY_FULL_GROUP_BY`。修在模組 SQL 不修主機 sql_mode（客戶自架主機不一定能改）。
+  4. 後台新增公告跳錯誤頁：沒附檔時 `$_FILES[...]['tmp_name']` 是 null 丟進 `is_uploaded_file()`。
+  5. 後台首頁四條紅色安全警告（install_disabled 還在、mainfile.php 可寫、xoops_lib／xoops_data 在 web root）。全清，兩個目錄搬到 web root 外，公網 404。
+- 手機版聯絡頁溢版 375→661px（模組把 size 寫成 inline `width:40em`）；修後桌機×5＋手機×5 全部 scrollWidth＝視窗寬。
+- 後台中文化 **293 條**（xforms/publisher/tdmdownloads 的 admin/modinfo＋publisher common.php＝新增公告表單的欄位標籤都在這裡）；核心三群組改中文。
+- ⭐ **自測工具自己會說謊**：`verify_perms.sh` 的「首頁公告數」是比對**寫死的 8 個標題**，新增公告不在清單、又把舊的擠出區塊 → 數字無聲從 6 掉到 5。改成數實際的公告連結。
+- ⭐ **一次誤判要記下來**：先斷定「送出表單後沒有任何確認」，動手加了佈景 flash 層，之後才查出 XOOPS 核心本來就有 jGrowl 浮動通知——我第一次只看送出後 0.7 秒、只截前 260 字，剛好沒抓到。整層已還原。教訓：**「我沒看到」不等於「它不存在」**（同 hub_seo／hub_schedule_coverage 既有教訓，這是第 N 次）。
+- 影片：`~/xoops-demo/record_demo_video.py`（Playwright 錄影＋中文字幕條）→ 86 秒 mp4。**真的抽格看畫面**才抓到前兩版的問題（第一版最後一格是錯誤頁、後台四條紅字全被拍進去）。共錄三次。
+- 交付物：https://xoops-demo.crewhq.digital ＋ demoadmin 後台帳號 ＋ `xoops_admin_demo.mp4`（已 scp 到 Mac ~/Downloads）。`restore.sh` 一鍵還原已實測（8→9 篇）。
