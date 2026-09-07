@@ -8606,3 +8606,20 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 走錯的兩條路(已記在 memory,別再試):改 delegation 登錄檔成 conhost GUID(OpenConsole 沒了但**照樣搶前景**,已還原全零)、`conhost --headless`(從 WSL 呼叫根本不執行子命令)。`Set-ScheduledTask` 被過濾 token 擋(0x80070005),走 SSH 提權腿。
 - 驗收驗兩件事:①不閃 ②腳本真的還在跑(`wsl-keepalive.log` 23:13:00 新行、`vr-hz.log` 23:14:45「守衛啟動 pid 26560」、`display-unblock` result=0x0 且無殘留時本來就靜默)。
 - 漏網掃描器 `C:\Users\USER\scan_flash_risk.ps1`(所有「週期觸發 + Interactive + console 執行檔」的任務)→ 現在回 0 筆。
+
+## 2026-09-07(深夜)MarketDaily 告警 feed 全面盤點與根治(561 則 / 500 未解)
+- 起點:老闆說「check marketdaily 告警 and fix it all」。從 KV `admin_events` 撈全部 561 則,分類出 **20 個不同缺陷家族**(13 個是每天都在響的慢性紅)。
+- ⭐⭐ **當晚最嚴重的兩件都不是「哪一支壞了」,是「哨兵在說謊」與「備援腿其實不存在」**:
+  1. **09-07 是 Labor Day 美股休市**,winrig 依 `analyzer._US_HOLIDAYS` 正確整輪不發,但**四個哨兵都不認美股假日**(digest-watchdog / heartbeat.sh / council_check / fleet_liveness)⇒ 一晚推了 5 則紅 + 白派一輪雲端備援。同一個「今天該不該有日報」判斷被手刻四次,只有 main.py 那份知道假日。修法不是打第五份日曆:守望犬的日曆由 winrig 隨 `/hb` 心跳送上雲(唯一真源=analyzer),其餘三支改認生產自己印出來的裁決(`MARKET=us 但今晚美股休市`)。生產已驗 `/status` 回 `us: skipped: us-holiday`。
+  2. ⭐⭐ **兩條備援腿同時是死的,42 天零告警**:GitHub 在**帳號層**停用 Actions("Actions has been disabled for this user"),`daily_digest.yml` 的 workflow run 總數 = **0** —— 從 2026-07-26 建起【沒有成功派過一次】;`pages_deploy.yml`(部署第二條腿)同死。repo 層 `/actions/permissions` 仍回 `enabled:true` 所以完全看不出來,而它只在主路死掉那天才會用到、用到那天的告警寫「需人工補救」讀起來像單次意外。→ `scripts/failover_leg_probe.py` 每日 06:40 用假 ref 實射 workflow_dispatch(不會建 run,422 訊息可乾淨分辨「腿死」vs「腿活」);解封需本人申訴 → open #857。
+- ⭐⭐ **一個根因餵三個告警家族**:`docs/data/board.json` 髒 ⇒ 唯一會 commit 它的 `agent_board` 被自己的產物擋住,而它一天只跑 14:40 一次沒有重試 ⇒ 整條 docs cron 生態鏈餓死 24h 起跳(09-01 兩天、09-07 復發)。當天早班 `digest_archive_seo` 全讓路 ⇒ 早報存檔頁一整天沒有訂閱 CTA(`cta_funnel_lint` 09:20 紅)、`site_scan` 自修讓路推「需人工」、`quality_board` 連兩班讓路。→ `lib_cron_runner.sh` 加 `CRON_OWN_OUTPUTS`(入口守門不把自己全量重生的產物當別視窗 WIP;deploy 面守門**不吃**這份豁免)。
+- 其他修掉的判準缺陷(全部配對照組驗鑑別力):
+  - `fleet_liveness` 三個「靜默」全誤告 → 稀疏排程(`0 9 1,15 * *`)門檻改照 crontab 宣告推導;美股班改問父閘看的那個檔。129 jobs 全綠。
+  - `refactor_harness` 連紅 11 天不是回歸 → 15/15 變更行對把樁卡雜湊遮掉後逐字相同。真正的缺口是告警只說「不符」,分不出「該重新祝福」與「真回歸」→ 加 `_diff_kind` 分類並印出對應指令;基線已重祝福,三模式全綠。
+  - `intel.doctor` 把 tpex 的**單一 CDN 節點憑證鏈壞掉**講成「渠道壞掉」—— 那正是這隻 doctor 存在要消滅的歧義。→ 有任一次成功=渠道活著並講出撞壞節點幾次;全敗才是死。
+  - `compliance_watch`:今天 20:20 新增的 `docs/archive/` 沒有面認領,孤兒 lint fail-closed 擋住整輪掃描(判得對,缺的是認領)→ 補 `md_archive_index` 面,自測 84 突變全殺。
+  - 告警**可讀性**三修:憑證體檢標題現在帶死掉的憑證名(推播預覽只看得到第一行,12 則同長相告警因此全被略過);`pro360_fastpoll` 失敗診斷不再被 `tail -3` 砍成 playwright 噪音(27 則告警沒一則說得出原因);`/tmp` 超標時列出占空間前幾名(說得出兇手才處理得了)。
+- ⭐ **查獲:自主學習機器自 2026-08-18 13:50 起被 `state/DISABLED` 停機 20 天**(空檔沒寫理由),週考「連 21 次沒開考」全是這件事的下游。重開=放一個 `--dangerously-skip-permissions` 的代理回去改程式碼花額度,**不是我該自己翻的開關** → open #859。
+- 記憶索引 21,616 → 21,174(仍超上限 17,100)。VR/winrig 6 行併成一群(零遺失、帳本追蹤、三道閘全過);另修好 plan.json 與帳本裡兩個過期群名——那兩個名字讓 `hubify` 直接 rc=3 拒動,並在 `--verify` 產生假的「找不到索引行」遮住真漂移。剩餘超支全是 ⭐ 教訓正文(設計上刻意留第一層),要壓得先決定「哪些教訓不再是第一層」→ open #860。
+- 告警 feed:未解決 500 → **276**,其中「長得像故障」的從 410 降到 **8**(剩下的是 needs-delvin 或單次舊事件)。全部修完的都已用 `resolve_admin_alert.sh` 回寫「✅ 已解決 + 一句怎麼解的」。
+- ⚠️ **未收乾**:`~/.marketdaily-fallback/*.sh` 與 `~/autonomous/` 都不在任何 git repo、也沒有備份機制 —— 今晚 6 支 runner 的修改是裸的。這是既有結構問題不是我造成的,但值得單開任務處理。
