@@ -8597,3 +8597,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⭐ 語系陷阱：每個模組都同附 `tchinese`(Big5) 與 `tchinese_utf8`。站台語系叫 `tchinese` 就會載 Big5 版 → 亂碼，且 Big5 第二位元組 `0x5C`（反斜線）會吃掉引號造成 **PHP Parse error**。SQL 檔同理（tadnews 的零日期只存在 Big5 版，作者在 utf8 版早就修好）。
 - ⭐ **對報價的意義**：Smarty 那一類**只有「裝最新版 XOOPS」才會踩到**，留在他現行舊站不會發生 → 這正是先前報價裡「C 方案唯一會爆的地方」，今天已經整批做完並留下可重複的修法。建議把它含進 NT$24,000 但在確認單寫明「已含，本來是加價項」，日後再丟新模組即另計。
 - 站台現況：xswatch4（已驗證 0 溢版）為預設，school2015 在允許清單內。school2015 未收乾：手機溢版、logo 與 2 張輪播圖是佈景包裡就缺的檔。
+
+## 2026-09-07（夜）修掉「終端機一直閃一下又消失」——排程黑視窗搶前景
+- 老闆在看 YouTube 時被每 5-10 分鐘閃現的黑視窗打斷。**三支排程都早就寫了 `-WindowStyle Hidden`、Task `Settings.Hidden` 也是 True,照樣閃**——那旗標是 PowerShell 起來之後才藏自己,視窗是它啟動**之前**由 Windows 11 的預設終端機委派(`OpenConsole.exe -Embedding`)畫出來的。
+- 兇手(實測抓到,不是猜):`VR_HzSwitch`(每5分)、`VR_DisplayUnblock`(每10分)、`WSL_Keepalive`(每10分)。WSL cron 那條**無罪**(父行程=wsl/wslhost 的 powershell 只建 conhost、不畫視窗、不搶前景)。
+- ⭐ 量測法:150ms 輪詢器同記「新 console 程序 + CommandLine + **ParentProcessId**」與「`GetForegroundWindow()` 變化」。抓到決定性一幕:`23:08:12.731 FOREGROUND-> powershell.exe` → `23:08:12.902 FOREGROUND-> Chrome`,前景被搶 171ms。父行程那一欄一次就把 WSL 側洗清嫌疑。
+- 解法:`wscript.exe //B //Nologo C:\Users\USER\runhidden.vbs powershell.exe -... -File <x>.ps1`(wscript 是 GUI 子系統,`sh.Run cmd,0,True` 以 SW_HIDE 啟動 ⇒ conhost 從第一刻就隱藏)。對照實驗確認:舊 Action 拉起 OpenConsole,新 Action 零 OpenConsole、零前景變化。
+- 走錯的兩條路(已記在 memory,別再試):改 delegation 登錄檔成 conhost GUID(OpenConsole 沒了但**照樣搶前景**,已還原全零)、`conhost --headless`(從 WSL 呼叫根本不執行子命令)。`Set-ScheduledTask` 被過濾 token 擋(0x80070005),走 SSH 提權腿。
+- 驗收驗兩件事:①不閃 ②腳本真的還在跑(`wsl-keepalive.log` 23:13:00 新行、`vr-hz.log` 23:14:45「守衛啟動 pid 26560」、`display-unblock` result=0x0 且無殘留時本來就靜默)。
+- 漏網掃描器 `C:\Users\USER\scan_flash_risk.ps1`(所有「週期觸發 + Interactive + console 執行檔」的任務)→ 現在回 0 筆。
