@@ -1012,3 +1012,11 @@
 {"date": "2026-09-06", "code": "7740", "source": "holders", "level": "red", "signal": "熙特爾-創(7740):千張大戶持股比週增1.59個百分點(大戶顯著加碼)", "price_at_signal": null}
 {"date": "2026-09-06", "code": "2756", "source": "sbl", "level": "yellow", "signal": "聯發國際(2756):機構借券賣出5日遽減-32.1%(回補潮,空頭力道減弱)", "price_at_signal": null}
 {"date": "2026-09-06", "code": "6658", "source": "sbl", "level": "yellow", "signal": "聯策(6658):機構借券賣出5日增10.9%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-09-07", "code": "8021", "source": "tw_rank", "level": "yellow", "signal": "尖點(8021) 今日漲幅排行第5(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-09-07", "code": "2756", "source": "margin", "level": "yellow", "signal": "聯發國際(2756):融資5日暴增17.4%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-09-07", "code": "3167", "source": "leadflow", "level": "red", "signal": "大量(3167) 無消息近漲停+10.0%(連2根,5日+11.2%),疑資訊先行資金|外資+投信近3日僅+172張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-07", "code": "5314", "source": "leadflow", "level": "yellow", "signal": "世紀*(5314) 無消息近漲停+10.0%(量能1.5×,5日-2.2%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-07", "code": "5274", "source": "leadflow", "level": "yellow", "signal": "信驊(5274) 無消息近漲停+10.0%(量能2.2×,5日+19.6%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-07", "code": "6877", "source": "leadflow", "level": "yellow", "signal": "鏵友益(6877) 無消息近漲停+10.0%(量能2.5×,5日+7.0%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-07", "code": "8042", "source": "leadflow", "level": "red", "signal": "金山電(8042) 無消息近漲停+10.0%(連2根,5日+15.7%),疑資訊先行資金|外資+投信近3日+1290張", "price_at_signal": null}
+{"date": "2026-09-07", "code": "7794", "source": "leadflow", "level": "red", "signal": "宏碁智新(7794) 無消息近漲停+9.9%(量能12.3×,5日+9.9%),疑資訊先行資金|外資+投信近3日僅-1張,法人未同步=隱形買盤", "price_at_signal": null}
