@@ -8585,3 +8585,15 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⭐ **一次誤判要記下來**：先斷定「送出表單後沒有任何確認」，動手加了佈景 flash 層，之後才查出 XOOPS 核心本來就有 jGrowl 浮動通知——我第一次只看送出後 0.7 秒、只截前 260 字，剛好沒抓到。整層已還原。教訓：**「我沒看到」不等於「它不存在」**（同 hub_seo／hub_schedule_coverage 既有教訓，這是第 N 次）。
 - 影片：`~/xoops-demo/record_demo_video.py`（Playwright 錄影＋中文字幕條）→ 86 秒 mp4。**真的抽格看畫面**才抓到前兩版的問題（第一版最後一格是錯誤頁、後台四條紅字全被拍進去）。共錄三次。
 - 交付物：https://xoops-demo.crewhq.digital ＋ demoadmin 後台帳號 ＋ `xoops_admin_demo.mp4`（已 scp 到 Mac ~/Downloads）。`restore.sh` 一鍵還原已實測（8→9 篇）。
+
+## 2026-09-07（續）客戶模組相容性驗收：8 模組 + 1 佈景全數裝通（阿傑 PRO360 案）
+- 客戶把技術驗收條件講明了：「稍晚我丟三個模組檔案給你，你幫我安裝看看，如果成功，後續應該就沒問題了。」實際丟來 **8 個模組 + 1 個佈景**（tad 系列＝台灣 XOOPS 社群學校/機關網站那一套）。
+- 結果：**8 個模組全裝成功，前台＋後台 16/16 正常；school2015 佈景也跑通**。但不是解壓縮就能用，修了三類 11 種問題（細節在 `~/xoops-demo/README.md`「2026-09-07 客戶模組相容性實測」）：
+  - **環境層（MySQL 5.7 嚴格模式＋utf8mb4）**：MyISAM 索引 1000 bytes 上限（varchar(255)×utf8mb4=1020）、`NO_ZERO_DATE` 擋掉 `0000-00-00` 預設值。
+  - **⭐⭐ Smarty 2→3（XOOPS 2.5.11 用 Smarty 3.1.48）＝真正的大宗**：`includeq` 標籤不存在（7 模組 **111 處**，補一個相容外掛一次全解）、`foreach from=$x item=x` 同名（24 處）、函式參數要引號（99 處）、`{php}` 內 `$this->assign()`（38 處）、`{php}` 內函式宣告不再 hoist、`{php}` 內不能有 `use` 匯入、`<{else if if}>` 作者打字錯。
+  - **模組自身 bug**：ugm_tools2 的 `demo_index.tpl` 樣板宣告被作者註解掉，前台在**任何** XOOPS 版本都壞。
+- ⭐⭐ **修錯一次要記**：`{php}` 內 `$this->assign()` 只換成 `$_smarty_tpl->assign()` **是錯的**——Smarty 2 的 `$this` 是 Smarty 物件（全域指派），Smarty 3 的 `$_smarty_tpl` 只作用在自己那層，父樣板讀不到 → 症狀從 `$this` 錯誤變成 `Unable to load template '.../.tpl'`（因為 `$theme_type` 是空的）。正解是寫 `xq_assign()` 同時指派到自己/父層/根層。
+- ⭐⭐ **grep 檢查給了假綠**：用「HTML 裡有沒有 `Error :`」判斷健康，回報「無錯誤 ✅」，但截圖一看畫面是 tad_themes 自己的錯誤頁「哎呀！資料庫有點問題呢！Data truncated for column 'theme_enable'」。**純字串比對永遠可能漏掉『模組自己畫的錯誤頁』，一定要看畫面。**（同 hub_selftest_honesty_lessons 的假綠家族）
+- ⭐ 語系陷阱：每個模組都同附 `tchinese`(Big5) 與 `tchinese_utf8`。站台語系叫 `tchinese` 就會載 Big5 版 → 亂碼，且 Big5 第二位元組 `0x5C`（反斜線）會吃掉引號造成 **PHP Parse error**。SQL 檔同理（tadnews 的零日期只存在 Big5 版，作者在 utf8 版早就修好）。
+- ⭐ **對報價的意義**：Smarty 那一類**只有「裝最新版 XOOPS」才會踩到**，留在他現行舊站不會發生 → 這正是先前報價裡「C 方案唯一會爆的地方」，今天已經整批做完並留下可重複的修法。建議把它含進 NT$24,000 但在確認單寫明「已含，本來是加價項」，日後再丟新模組即另計。
+- 站台現況：xswatch4（已驗證 0 溢版）為預設，school2015 在允許清單內。school2015 未收乾：手機溢版、logo 與 2 張輪播圖是佈景包裡就缺的檔。
