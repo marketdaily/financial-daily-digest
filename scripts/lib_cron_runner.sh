@@ -462,6 +462,25 @@ cron_reclaim_own_output() {
 # revert/deploy 都只碰 SCOPE 內路徑;wrangler pages deploy docs 上傳磁碟現狀,所以
 # 有 deploy 的 runner SCOPE 必含 docs/。做不到就用 blanket 版 cron_abort_if_dirty。
 # 呼叫點放在 cron_daily_lock【之前】:讓路不消耗當日鎖,同日樹變乾淨後續 tick 可重試。
+# CRON_OWN_OUTPUTS(2026-09-07 根治自鎖):呼叫端可宣告「這幾個檔是我自己每輪全量重生的
+# 產物」,入口守門不把它們當別視窗 WIP。
+#   為什麼要有:agent_board 的 scope 是 docs、而它自己的產物 docs/data/board.json 也在 docs
+#   底下 ⇒ 只要那檔因為任何原因留成髒的(上一輪 persist 失敗、Claude session 的
+#   sync-track-data-before-deploy hook 覆寫過),【負責 commit 它的那支 runner 自己被它擋住】,
+#   而 agent_board 一天只跑一次 14:40 沒有重試 ⇒ 整條 docs cron 生態鏈餓死 24h 起跳。
+#   09-01 餓死兩天、09-07 又復發一次(當天早班 digest_archive_seo 全讓路 ⇒ 早報存檔頁一整天
+#   沒有訂閱 CTA,cta_funnel_lint 09:20 紅;site_scan 自動修復也讓路推「需人工」)。
+# 前提(缺一不可,違反=可能把別人的手改覆蓋掉):
+#   ①該檔由本 runner【全量重生】(不是增量更新),髒版本裡沒有任何找得回來的東西;
+#   ②只豁免 tracked 的修改;untracked 仍由 cron_abort_if_untracked_scoped 擋;
+#   ③只豁免入口守門。deploy 面守門(cron_deploy_surface_gate)【不】吃這份豁免——
+#     走到那裡自己的產物還是髒的,代表 persist 失敗,那時就不該部署。
+_cron_is_own_output() {
+  local f="$1" o
+  for o in ${CRON_OWN_OUTPUTS:-}; do [ "$f" = "$o" ] && return 0; done
+  return 1
+}
+
 cron_abort_if_dirty_scoped() {
   local name="$1"; shift
   if [ "$#" -eq 0 ]; then   # 忘了宣告 scope=fail-safe 退回 blanket,絕不因參數缺失變成永遠放行
@@ -469,9 +488,10 @@ cron_abort_if_dirty_scoped() {
     cron_abort_if_dirty
     return 0
   fi
-  local f s hit blocked="" ignored=""
+  local f s hit blocked="" ignored="" own=""
   while IFS= read -r f; do
     [ -n "$f" ] || continue
+    if _cron_is_own_output "$f"; then own="${own}${f} "; continue; fi
     hit=0
     for s in "$@"; do
       while [ "${s%/}" != "$s" ]; do s="${s%/}"; done
@@ -485,6 +505,7 @@ cron_abort_if_dirty_scoped() {
     exit 0
   fi
   [ -n "$ignored" ] && echo "[cron_abort_if_dirty_scoped:$name] scope 外髒檔(與本 runner 無關,續行): ${ignored}"
+  [ -n "$own" ] && echo "[cron_abort_if_dirty_scoped:$name] 自家產物髒(本輪會全量重生並 commit,不讓路): ${own}"
   _cron_dirty_starve_clear "$name"
 }
 

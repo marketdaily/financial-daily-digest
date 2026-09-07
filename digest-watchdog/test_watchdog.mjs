@@ -12,7 +12,7 @@
 //   ⑤ ② 的 🟡 每班每天只推一次
 //
 // 跑:node digest-watchdog/test_watchdog.mjs
-import { checkShift, originHasArchive } from "./src/index.js";
+import { checkShift, originHasArchive, shiftSkipped } from "./src/index.js";
 
 let PASS = 0, FAIL = 0;
 const chk = (name, got, want) => {
@@ -132,6 +132,42 @@ for (const [name, originVal] of [["5xx", 500], ["例外", "throw"]]) {
   globalThis.fetch = async (u, i) => { if (String(u).includes("/contents/")) seen = String(u); return real(u, i); };
   await originHasArchive(env, "us", "2026-08-17");
   chk("⑨ 晚報查的是 _us 存檔", /digest_2026-08-17_us\.html/.test(seen), true);
+}
+
+// ⑩ 美股國定假日(2026-09-07 Labor Day)——winrig 整輪不發是預期行為。
+//    修法前這裡會推 🔴「日報極可能沒寄」+ 派雲端備援(2026-09-07 真的發生了)。
+//    日曆是 winrig 隨心跳送上來的(analyzer._US_HOLIDAYS 匯出),不是這裡第三份手打日曆。
+{
+  const LABOR = new Date("2026-09-07T12:30:00Z");   // TW 09-07 20:30 週一晚(美股 Labor Day)
+  const { env, pushes, dispatched, kv } = makeEnv({ site: 404, origin: 404 });
+  kv.set("watchdog:mktcal", JSON.stringify({ us: ["2026-09-07"], tw: [], generated: "2026-09-07" }));
+  await checkShift(env, "us", 1, LABOR);
+  await checkShift(env, "us", 2, LABOR);
+  chk("⑩ 美股休市日晚報:不推不派", [pushes.length, dispatched.length], [0, 0]);
+}
+
+// ⑪ 對照組:同一天、同樣兩軌皆無,但日曆說今天有開盤 → 必須照常告警+派備援。
+//    沒有這一條,「shiftSkipped 永遠回 skipped」也會讓 ⑩ 綠(判準沒有鑑別力)。
+{
+  const LABOR = new Date("2026-09-07T12:30:00Z");
+  const { env, pushes, dispatched } = makeEnv({ site: 404, origin: 404 });
+  await checkShift(env, "us", 1, LABOR);
+  chk("⑪ 日曆說有開盤 → 照常 🟠+派備援", [pushes.length > 0, dispatched.length], [true, 1]);
+}
+
+// ⑫ 日曆問不到 ⇒ 退回「只認週末」,不可把非假日的平日靜音(fail-loud)
+{
+  const { env } = makeEnv({ site: 404, origin: 404 });
+  chk("⑫ 無日曆:平日不 skip", await shiftSkipped(env, "us", MON), null);
+  chk("⑫ 無日曆:週六仍 skip", await shiftSkipped(env, "us", new Date("2026-08-15T12:00:00Z")), "weekend");
+}
+
+// ⑬ 台股早報不吃美股日曆(國定假日早報照發,它主要在講昨晚美股)
+{
+  const LABOR = new Date("2026-09-07T00:00:00Z");
+  const { env, kv } = makeEnv({ site: 404, origin: 404 });
+  kv.set("watchdog:mktcal", JSON.stringify({ us: ["2026-09-07"], tw: [], generated: "2026-09-07" }));
+  chk("⑬ 美股休市日早報照查", await shiftSkipped(env, "tw", LABOR), null);
 }
 
 console.log(`── digest-watchdog: ${PASS}✓ ${FAIL}✗`);

@@ -29,10 +29,39 @@ function twNow(now = new Date()) { return new Date(now.getTime() + 8 * 3600 * 10
 function twDay(now = new Date()) { return twNow(now).getUTCDay(); }
 function twDate(now = new Date()) { return twNow(now).toISOString().slice(0, 10); }
 
-function shiftSkipped(shift, now = new Date()) {
+// ── 該班次今天本來就不該有日報嗎 ──
+// 回傳 null(該有) / "weekend" / "us-holiday"。
+//
+// 2026-09-07 事故:Labor Day 美股休市,winrig 端 main.py 依 analyzer._US_HOLIDAYS 正確
+// 跳過晚報(log:「MARKET=us 但今晚美股休市 → 跳過本輪」),但這裡只認週末 ⇒ 20:25 推 🟠、
+// 21:00 推 🔴「日報極可能沒寄」,還派了一輪雲端備援。同一個「今天該不該有日報」判斷被手刻
+// 兩次,只有 winrig 那份知道國定假日。修法不是在這裡再打第三份日曆 —— 是讓 winrig 把
+// analyzer 的日曆隨心跳送上來(scripts/market_calendar_json.py),這裡只讀。
+//
+// 日曆問不到(從未送達 / winrig 死超過 30 天讓 KV 過期)⇒ 退回「只認週末」= 今天的行為,
+// 也就是寧可誤告也不漏告(死線是絕不缺信,不是絕不吵人)。
+function weekendSkipped(shift, now = new Date()) {
   const d = twDay(now);
   if (shift === "tw") return d === 0;            // 週日台股休市,早報本來就不派
   return d === 0 || d === 6;                      // 美股晚報:TW 週六/週日晚 skip
+}
+
+async function marketCalendar(env) {
+  try {
+    const raw = await env.USER_PREFS.get("watchdog:mktcal");
+    if (!raw) return null;
+    const cal = JSON.parse(raw);
+    return Array.isArray(cal && cal.us) ? cal : null;
+  } catch (e) { return null; }
+}
+
+async function shiftSkipped(env, shift, now = new Date()) {
+  if (weekendSkipped(shift, now)) return "weekend";
+  // 台股早報在國定假日照發(它主要在講昨晚美股),只有美股晚報遇美股休市才整輪不發
+  if (shift !== "us") return null;
+  const cal = await marketCalendar(env);
+  if (!cal) return null;
+  return cal.us.includes(twDate(now)) ? "us-holiday" : null;
 }
 
 function archiveUrl(shift, date) {
@@ -138,7 +167,8 @@ async function checkHeartbeat(env, now = Date.now()) {
 
 // ── 層2:公版存檔新鮮度(v2 原封語意) ──
 async function checkShift(env, shift, phase, now = new Date()) {
-  if (shiftSkipped(shift, now)) { console.log(`skip ${shift}(weekend)`); return; }
+  const skip = await shiftSkipped(env, shift, now);
+  if (skip) { console.log(`skip ${shift}(${skip})`); return; }
   const date = twDate(now);
   const label = shift === "tw" ? "早報" : "晚報";
 
@@ -233,7 +263,7 @@ async function dispatchFailover(env, shift, date, label) {
 async function checkArchivePersistence(env, now = new Date()) {
   const date = twDate(now);
   for (const shift of ["tw", "us"]) {
-    if (shiftSkipped(shift, now)) continue;
+    if (await shiftSkipped(env, shift, now)) continue;
     if (!(await kvGet(env, `seen:${date}:${shift}`))) continue;   // 還沒確認上線過→班次檢查在管,這層不插手
     const vanishKey = `vanished:${date}:${shift}`;
     if (await kvGet(env, vanishKey)) continue;                    // 今天這班已告警過
@@ -277,7 +307,15 @@ export default {
     if (url.pathname === "/hb" && request.method === "POST") {
       if (!authed(request, env)) return new Response("forbidden", { status: 403 });
       await env.USER_PREFS.put("watchdog:hb:winrig", String(Date.now()), { expirationTtl: 604800 });
-      return new Response(JSON.stringify({ ok: true }), { headers: { "content-type": "application/json" } });
+      // 順便收休市日曆(winrig 端 scripts/market_calendar_json.py 由 analyzer 匯出)。
+      // 搭心跳走 ⇒ 不必多開一條 cron 或一個 authed 端點,而且「日曆新不新鮮」自動綁在
+      // 「winrig 還活著嗎」上。30 天 TTL:winrig 死超過 30 天才會退回只認週末。
+      let cal = null;
+      try { cal = (await request.json()).cal; } catch (e) { /* 舊版 heartbeat 不帶 body */ }
+      if (cal && Array.isArray(cal.us)) {
+        await env.USER_PREFS.put("watchdog:mktcal", JSON.stringify({ us: cal.us, tw: cal.tw || [], generated: cal.generated || null }), { expirationTtl: 30 * 86400 });
+      }
+      return new Response(JSON.stringify({ ok: true, cal: !!cal }), { headers: { "content-type": "application/json" } });
     }
     // 手動觸發一次心跳檢查(部署驗證/演練用,與 cron 同一條邏輯)
     if (url.pathname === "/check-hb" && request.method === "POST") {
@@ -316,8 +354,9 @@ export default {
           // 這時守望犬只剩半隻眼睛 —— 要在診斷端看得見,不能等明天早上從告警文字反推。
           // 週末判斷要跟著**被查詢的那一天**走,不是跟著「現在」——查歷史日期時
           // 拿今天的星期幾去判,會對著一個交易日回 skipped:weekend(診斷說謊)。
-          out[shift] = shiftSkipped(shift, new Date(`${date}T00:00:00Z`))
-            ? { skipped: "weekend" }
+          const sk = await shiftSkipped(env, shift, new Date(`${date}T00:00:00Z`));
+          out[shift] = sk
+            ? { skipped: sk }
             : {
                 archived: await archiveExists(shift, date),
                 inOrigin: await originHasArchive(env, shift, date),
@@ -329,6 +368,12 @@ export default {
       const ageMin = raw ? Math.round((Date.now() - Number(raw)) / 60000) : null;
       const stRaw = await env.USER_PREFS.get("watchdog:hb_state");
       out.hb = { ageMin, stale: !raw || ageMin > HB_STALE_MIN, state: stRaw ? JSON.parse(stRaw) : null };
+      // 日曆在不在、涵蓋到哪一年,要看得見。沒有這行,「winrig 停送日曆」只會在下一個
+      // 美股國定假日以一則假紅告警的形式現身(而那正是這次要修掉的東西)。
+      const cal = await marketCalendar(env);
+      out.calendar = cal
+        ? { generated: cal.generated, us_count: cal.us.length, covers_year: cal.us.some((d) => d.slice(0, 4) === date.slice(0, 4)) }
+        : { missing: true, fallback: "只認週末(國定假日會誤告)" };
       // CORS:status.html(品質戰情室)跨網域直拉;唯讀無敏感資料
       return new Response(JSON.stringify(out, null, 2), { headers: { "content-type": "application/json", "access-control-allow-origin": "https://marketdaily.ai" } });
     }
@@ -341,4 +386,4 @@ export default {
 
 // 具名匯出只給自測用(Workers runtime 只讀 default export,多這幾個不影響部署)。
 // 沒有這幾行,雙軌交付判斷就只能靠「部署上去等明天早上看」來驗——那不是驗證。
-export { checkShift, originHasArchive, archiveExists, shiftSkipped, twDate };
+export { checkShift, originHasArchive, archiveExists, shiftSkipped, weekendSkipped, twDate };

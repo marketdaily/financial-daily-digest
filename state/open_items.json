@@ -6846,8 +6846,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-01 21:57",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-07 14:32",
+  "note": "sync cron 09-02~09-07 連六班全綠(ok 戳記 09-07 05:10,755→775 檔)"
  },
  {
   "id": 686,
@@ -7101,13 +7101,13 @@
  },
  {
   "id": 711,
-  "what": "皇海 GBP 驗證:列表已認領進 f1@(代碼 08501925148705838502)但 Google 只給「商家影片」驗證⇒需皇海現場人員錄影(門口招牌/內部設備/管理權證據),Delvin 轉達王董",
+  "what": "皇海 GBP 驗證:商家 08501925148705838502 只給「商家影片」驗證⇒老闆本人以管理員身分到皇海現場用自己手機在商家檔案內錄+上傳(方案 A,09-07 拍板);f1@ 保持主要擁有者",
   "why": "只有現場的人拍得到;沒驗證前客戶看不到我們編輯的資訊",
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-02 15:12",
   "closed": null,
-  "note": ""
+  "note": "[2026-09-07 11:44 A線] f1@ 登入實查:仍「須驗證」、驗證頁只有「商家影片」(gbp_status/gbp_verify_options_20260907.png)。指引 gbp_video_guide_20260907.md 已寫;⚠️Google 規定必須手機在商家檔案內現場錄、不得預錄上傳⇒現場同仁手機要登 f1@ 自己錄自己傳,不是拍完傳 Delvin。剩:老闆把指引+f1@ 密碼交現場同仁。 [2026-09-07 13:15 GBP job] 改方案 A:老闆 gmail delvin.12345678@gmail.com 已由 f1@ 邀請為「管理員」(待處理,evidence_20260907/gbp_manager_invite.png;工具 offsite/tools/gbp_managers.py)。邀請信在老闆 gmail,待他按接受;接受後下次到皇海用手機現場錄影驗證(指引 gbp_video_guide_20260907.md)。驗證頁 09-07b 複查仍只有商家影片。"
  },
  {
   "id": 712,
@@ -7486,8 +7486,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-03 21:59",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-07 13:01",
+  "note": "[2026-09-07 A線] 老闆轉交主帳號後代操完成:公司資料 EN/ZH 存檔(新制地址/https/主要出口產品)、20 品匯入(19 新+1 覆蓋)、圖面 PDF 附件、f1@ 子帳號啟用可登入;免費型錄會員 10 張啟用上限 ⇒ 9 舊品停用(未刪)、10 新品上線、10 新品未啟用;前台待同步。細節 WORKLOG 09-07 經貿網段。"
  },
  {
   "id": 750,
@@ -7526,8 +7526,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-04 15:31",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-07 09:23",
+  "note": "09-07 09:10 cron 首班真跑:Gemini 9/18 + Perplexity 9/18 都落帳(citation_ledger 兩筆),ops_board 09:37 起會帶 citations_perplexity"
  },
  {
   "id": 754,
@@ -7556,8 +7556,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-04 16:24",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-07 09:38",
+  "note": "09-07 09:30 cron 首班真跑(rank_ledger 第 3 筆,US/bin/bash.45):m.2 key 進榜 24、nano sim 50→37、rj45 connector 進榜 61、fpc連接器 進榜 65"
  },
  {
   "id": 757,
@@ -7597,7 +7597,7 @@
   "risk": "med",
   "opened": "2026-09-04 21:37",
   "closed": null,
-  "note": ""
+  "note": "[2026-09-07 13:0x] 台灣經貿網(#749)已由我方代操收掉(見 #834/#835 餘項);剩 LinkedIn/GBP 影片/稅籍主碼三件"
  },
  {
   "id": 761,
@@ -7657,7 +7657,7 @@
   "risk": "high",
   "opened": "2026-09-04 22:44",
   "closed": null,
-  "note": ""
+  "note": "[2026-09-07 11:44 A線] 王董已授權「談」。DigiKey 線上申請表已全填(evidence_20260907/digikey_filled_not_submitted.png)未送:3 題必填政策題(接受退貨?退貨地址?能否提供 $2M 產險 COI?)站上無依據→請王董答(intel/research/digikey_questionnaire_draft_20260907.md §B),答完跑 offsite/tools/fill_digikey.py --submit --answers。LCSC 已送出(API:under review,勿重送)。WIN SOURCE 原站 524 三次未送。前置頁 /rohs-reach + /authorized-distributors 四語已上線。"
  },
  {
   "id": 767,
@@ -7806,8 +7806,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-05 13:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-07 09:41",
+  "note": "jp_polish 規則5 改取「製品概要」全文(與 fix_jp_meta 同真源 overview_text),無概要才退 meta 且在。切句;舊規則對 250 顆會改 242 筆/22 筆半句,新規則 0/0 冪等;jp_polish --check 接進 verify(綠),d7aba885"
  },
  {
   "id": 782,
@@ -7816,8 +7816,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-05 13:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-07 09:41",
+  "note": "jp_lane_audit --check/--self-test 接進 verify(cdeb2dad/d7aba885);D4 28段/14頁全是量尺誤報(「、」不切 run 20 筆+型式説明逐字引用 8 筆),修量尺不加白名單,D4 28→0,自測釘住真半翻譯照抓;verify 三道皆綠"
  },
  {
   "id": 783,
@@ -8146,6 +8146,426 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-07 01:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 816,
+  "what": "皇海 GSC KPI 帳本要拆 brand/non-brand/noise:近 7 天 ~60 點擊裡 11 次是「18xxxxx」數字查詢誤落 7BTBF-F0-18xxxxx 萬用料號頁、~15 次是品牌字,真正產品意圖查詢只有個位數;合約 KPI 若照總數講會高估",
+  "why": "09-07 抽 GSC 查詢層才看到,ledger 目前只存總數",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-07 09:23",
+  "closed": "2026-09-07 09:32",
+  "note": "gsc_kpi.py 加 query 維度拉取+classify() 三桶(brand/noise/nonbrand,差額歸 nonbrand)+top_nonbrand_7d+query_coverage_28d;ops_board 透傳、ops.html 卡片顯示「非品牌/品牌/噪音」;test_gsc_kpi_classify.py 接 verify.py;今日 28d 64=非品牌37/品牌15/噪音12"
+ },
+ {
+  "id": 817,
+  "what": "皇海每日 cron(GSC KPI 09:20/PDF 洩漏 09:40)在 VR 停機窗口會靜默漏班:09-06 WSL 01:10→13:26 停機兩支都沒跑,戰情板容忍 2 個週期所以零告警;keepalive 09-06 13:26 才上線,之後曝險縮到「他玩的期間」,但漏班仍不會被通知",
+  "why": "要不要補班(cron 補跑 anacron 式)或改讓 ops_board 對『錯過一班』就標 warn,待決定",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 09:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 818,
+  "what": "皇海週報 kingconn_weekly_brief 首班(週一 10:00 cron)尚未在生產跑過,守衛列 unknown 到首班為止;首次真推由老闆手動觸發",
+  "why": "09-07 建好+dry 驗過+cron 已掛,但推播/冪等/戳記都還沒在真排程驗證",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 09:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 819,
+  "what": "皇海 11 條舊圖面 301 修完,apex 那條被我自己的 pre-deploy 探測留下 4 小時邊緣快取,尚未在快取過期後複驗",
+  "why": "CF token 無 purge_cache 權限,只能等 max-age=14400 過期;已在 pages.dev 直打證明規則本身正確",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 09:40",
+  "closed": "2026-09-07 15:01",
+  "note": "2026-09-07 06:59Z 邊緣快取 EXPIRED 後在正式網域複驗:1,513 條規則 1,512 條落 200,唯一非 200 是字面 * 那條(預期)。11 條舊圖面 301 全數修復確認。"
+ },
+ {
+  "id": 820,
+  "what": "皇海 248 份工程圖 PDF 新網址 Google 全數不知道(URL is unknown),舊網址是 2026-05 爬過的 not indexed",
+  "why": "要不要把 PDF 放進 sitemap 是策略決定(圖面在 SERP 會跟料號頁搶,而 PDF 上沒有詢價 CTA),舊站 sitemap 也沒放 ⇒ 不算改版落差,等 Delvin 拍板",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 09:40",
+  "closed": "2026-09-07 12:09",
+  "note": "09-07 老闆拍板放。build_sitemap.py 新增 sitemap-files.xml(245 條:248 份扣 3 份有去空白孿生檔的重複;8 份空白檔名以 %20 列出;lastmod=git 最後 commit 日)+robots.txt Sitemap: 一行;verify 靜態閘(突變測試會紅)+sitemap_files_live.py 線上普查(deploy c3fe730e 245/245 200+pdf);GSC 已提交(SA,04:03Z 登記)、IndexNow 245 條 200。後續 #831 09-21 複驗。"
+ },
+ {
+  "id": 821,
+  "what": "皇海 disavow 清單(35 個賭博 PBN/連結販售網域,intel/research/disavow_kingconn_20260907.txt)要用 f1@kingconn.com.tw 登入 GSC 手動上傳 https://search.google.com/search-console/disavow-links(GSC 無 API);上傳前 spam 加權 18.1→預估 2.8",
+  "why": "需要真人 Google 登入,我不碰帳號登入",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 09:40",
+  "closed": "2026-09-07 11:55",
+  "note": "09-07 f1@ 以 gsc_disavow.py(真 Chrome+xvfb)上傳:disavow 工具不吃網域資源,先新增網址前置資源 https://www.kingconn.com.tw/ 與 https://kingconn.com.tw/(網域擁有者自動驗證,無 DNS/OAuth);兩資源各上傳同一份 35 網域 0 網址(www 11:53:15、apex 11:54:17 UTC+8)。證據 intel/research/evidence_20260907/disavow_uploaded_{www,apex}.png"
+ },
+ {
+  "id": 822,
+  "what": "皇海反鏈月檢未自動化:同樣兩支 DataForSEO 呼叫(~US/bin/bash.05)每月重跑一次比對新出現的 PBN 樣板網域並追加 disavow 檔;目前只有 09-07 一次性掃描",
+  "why": "先看第一次上傳後 spam score 有沒有動再決定要不要接 cron",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 09:40",
+  "closed": "2026-09-07 09:41",
+  "note": "文字誤植(shell 把 $0 吃掉)重登"
+ },
+ {
+  "id": 823,
+  "what": "皇海反鏈月檢未自動化:同樣兩支 DataForSEO 呼叫(每次約 0.05 美元)每月重跑一次,比對新出現的 PBN 樣板網域並追加 disavow 檔;目前只有 09-07 一次性掃描",
+  "why": "先看第一次上傳後 spam score 有沒有動再決定要不要接 cron",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 09:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 824,
+  "what": "皇海 jp 22 顆料號頁的 meta description(非 JSON-LD)仍被 fix_jp_meta.build() 的 meta[:CAP] 硬切在 100 字半句;#781 只修了 JSON-LD 那層",
+  "why": "09-07 jp 代理收 #781 時發現,另一層沒動",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 09:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 825,
+  "what": "皇海 Global Sources 帳號已啟用(regId 492785,f1@),但公司檔案與產品尚未在供應商後台建立/上架;等『Log in and post your products』信後登入後台補齊(內容=offsite/profile.md 250 字版+20 品)",
+  "why": "09-07 只做到帳號啟用;後台上架另一段流程可能再有拼圖",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 11:43",
+  "closed": "2026-09-07 14:39",
+  "note": "09-07 續跑:公司檔案已 Submit(Under review);20 品進後台為 Draft(MOQ 必填擋 Submit→#844);09-08 回查→#845"
+ },
+ {
+  "id": 826,
+  "what": "皇海 Europages 免費檔案對台灣不開放(國別清單 66 國歐洲限定,09-07 實抓),#745 的 Europages 半作廢;要上只能 Visable 付費(#695),與 DirectIndustry(#746)同批由王董拍板;客戶版文件已改",
+  "why": "免費車道結構上不存在,付費=花皇海的錢",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-07 11:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 827,
+  "what": "DigiKey 供應商申請表停在送出前:3 題必填政策題(接受退貨 Y/N+退貨地址、$2M 產險 COI Y/N/Unsure、選填年營收級距)要王董答;答案 JSON 給我跑 fill_digikey.py --submit",
+  "why": "站上無退貨政策/保險資訊,不編造",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 11:44",
+  "closed": "2026-09-07 11:58",
+  "note": "09-07 12:5x 送出成功(接受退貨=Yes/退貨地址=公司地址/COI=Unsure/營收留空),DigiKey 回 2 個工作天內聯絡"
+ },
+ {
+  "id": 828,
+  "what": "WIN SOURCE 賣家表單未送出:09-07 11:2x~12:0x 原站三次 Cloudflare 524(evidence_20260907/winsource_524.png),表單值已備(submit_winsource.py);隔日重跑,若仍死改寄 hk-sales@win-source.net",
+  "why": "對方站掛了",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 11:44",
+  "closed": "2026-09-07 13:09",
+  "note": "09-07 13:5x 重跑 submit_winsource.py 成功:頁面回「Your application has been received」(截圖 /tmp/kc/ws_after_submit.png);等 WIN SOURCE 回信到 f1@"
+ },
+ {
+  "id": 829,
+  "what": "LCSC 供應商申請已送出(09-07),等 sell-on-lcsc 回信到 f1@(官方口徑 3 工作天);mailbox_otp.py lcsc 查",
+  "why": "等對方回",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 11:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 830,
+  "what": "DigiKey 供應商申請已送出(09-07),等 PM 2 個工作天內聯絡 f1@;來信後要交 Prospective Supplier Questionnaire,缺王董/RD 補的欄位(各區市場量、3 年營收預估、ISO 證書掃描、250 SKU 價目含量階、產險 COI)——草稿 intel/research/digikey_questionnaire_draft_20260907.md",
+  "why": "等對方來信;問卷缺的是皇海內部數字與文件",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 11:58",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 831,
+  "what": "皇海 09-21 複驗:工程圖 PDF 進 sitemap-files.xml(245 條,09-07 老闆拍板)兩週後用 GSC 看 PDF 收錄數與料號頁點擊有無此消彼長(PDF 無詢價 CTA、可能與料號頁搶 SERP 位)",
+  "why": "策略風險是老闆接受的,但要量化驗證;GSC 資料延遲 2~3 天,09-21 再看才有兩週樣本",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 12:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 832,
+  "what": "台灣經貿網公司資料「聯絡人行動電話」必填、原空白 ⇒ 暫填公司市話 033524367(不顯示前台)存檔;請老闆轉 Fion 換成她的手機(後台 公司資料設定→聯絡資料)",
+  "why": "不編造號碼,只能先用可查證的公司市話過必填",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-07 13:01",
+  "closed": "2026-09-07 13:25",
+  "note": "09-07 14:2x 老闆拍板改成他手機 0975317572;f1@ 子帳號登入後台 公司資料設定→聯絡資料,英文+正體中文分頁各自的「聯絡人行動電話」都由 033524367 改為 0975317572,儲存成功、重載回讀兩頁皆 0975317572;截圖 intel/research/taiwantrade_backoffice_20260907/contact_mobile_updated{,_zh}.png;其他欄位未動(聯絡人仍 Fion/鄭慧茹)"
+ },
+ {
+  "id": 833,
+  "what": "台灣經貿網認證欄未填:向皇海要 ISO 9001:2015(台灣,2024-12 複驗)與蘇州廠 ISO 9001/ISO 14001/QC 080000 證書掃描檔,拿到後上傳後台「認證資料」+ 產品認證",
+  "why": "沒有證書檔不硬塞;後台有一份 2017 年 ISO9001.pdf 太舊未沿用",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-07 13:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 834,
+  "what": "台灣經貿網免費「型錄會員」啟用上限 10 張:10 新品已上線、10 新品(7CFST/7CFHC/7MSD4/7SIMC-F0-0022/7SIMC-AA-0008/7MPCI/7DDR2/7USB3/7USB2-F0-0003-I/7SATA)已匯入未啟用、9 舊品停用未刪;要全部上線得升級企業會員(付費,0800-506-088)——請王董決定",
+  "why": "付費方案未授權,我方只能在 10 張內排最有代表性的組合",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 13:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 835,
+  "what": "台灣經貿網前台公開頁(companyid 12449)09-07 13:0x 仍顯示 2017 舊版(公司資料+產品),後台已審核通過 ⇒ 疑批次同步;09-08 用 tt_public_check.py 複驗,48h 仍舊版就洽客服",
+  "why": "前台與後台是兩套索引,今天無法確認同步時程",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 13:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 836,
+  "what": "台灣經貿網未填欄位待皇海確認:主要出口市場(現為全球九區,建議依實際出貨 Europe/Japan/North America/Asia)、員工人數(FAQ 只有台灣 36 人)、營業額;另 f1@ 無法加為第二聯絡信箱(單欄位,現值 service@)",
+  "why": "站上無依據不填",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-07 13:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 837,
+  "what": "台灣經貿網「線上對談」有 1 則待回(2020-07-26 英國 Mr. Salam Abubakar,買主未公開)——六年前舊詢價,未動;請老闆決定要不要回或忽略",
+  "why": "不代皇海回買主",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-07 13:01",
+  "closed": "2026-09-07 14:43",
+  "note": "老闆 09-07 拍板:2020 年英國舊詢價不回"
+ },
+ {
+  "id": 838,
+  "what": "經貿網聯絡人已改為 Delvin Chang(Fion 不再是聯絡人),請老闆知會 Fion/王董",
+  "why": "後台聯絡人由 Ms. Fion/鄭慧茹 改為 Mr. Delvin Chang + 職稱 Digital & SEO Consultant,Fion/王董尚未被告知",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-07 13:32",
+  "closed": "2026-09-07 14:43",
+  "note": "老闆 09-07:王董已授權他當經貿網聯絡人,不用另知會"
+ },
+ {
+  "id": 839,
+  "what": "09-14 週檢(rank_watch 週一 09:30)看 attend 頭對頭 5 字名次有無移動:mini pci express(zh,38→?)、cfast connector(en,38→?)、m.2 key(zh,24→?)、micro sd socket(en,未進榜→?)、mini pcie connector(en,未進榜→?);對照 intel/research/attend_h2h_20260907.md 第三節。沒動再看是否要補 type-c/rj45 兩頁(build_h2h_intro.SERIES 加兩條)",
+  "why": "09-07 上線的直答段/H1 副標/meta/追加問答要一週才會在 SERP 反映;先量再決定下一批",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 13:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 840,
+  "what": "WIN SOURCE 把我們的供應商表單當成買家詢價(Freda King 13:08 回信,24h 內會報價);要回一封說明皇海是連接器製造商、要上 Market Portal 賣家端——信稿已給老闆,OK 後由 f1@ 回覆(附型錄與 /authorized-distributors 頁)",
+  "why": "對外信件要老闆先看過(08-17 親令)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-07 14:28",
+  "closed": "2026-09-07 14:37",
+  "note": "15:0x 老闆 OK 後由 f1@ 回 Freda(同串),等其轉供應商窗口"
+ },
+ {
+  "id": 841,
+  "what": "Darren 端 onboard.sh 與成員記憶 adopt 收編路徑仍零真實流量(09-07 origin 無其 commit)",
+  "why": "等他貼 onboard 驗證輸出/第一條新記憶被 05:10 收編才算驗過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 14:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 842,
+  "what": "WIN SOURCE:15:0x 已回信說明是供應商申請,等對方轉 Market Portal 窗口回覆到 f1@(mailbox_otp.py win-source 查)",
+  "why": "等對方",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 14:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 843,
+  "what": "冷信 batch1(12 封)等老闆看過 batch1_preview.md 才寄",
+  "why": "以皇海名義對外,老闆 08-17 親令送出前先給他看",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 14:37",
+  "closed": "2026-09-07 15:04",
+  "note": "09-07 15:0x 老闆看過名單說「寄」;send.py --live 寄出 10 封(每日上限 10),Testo/PAPAGO 2 封留 queue,cron kingconn_outbound_send 週一至五 09:30 續寄"
+ },
+ {
+  "id": 844,
+  "what": "皇海 Global Sources 20 品只能存草稿(Draft),Submit 上線被『Minimum Order Quantity』必填數字擋住,MOQ 零依據不編:請老闆/Fion 給每系列(或統一)MOQ 數字(單位 Pieces),拿到後跑 gs_products.py SUBMIT=True MOQ_MAP 一鍵送審",
+  "why": "平台 Submit 必填 MOQ 數量;規則:沒依據的數字不准編。草稿已填齊品名/料號/品牌/產地/圖/PDF/描述/ISO+RoHS/Negotiable",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 14:38",
+  "closed": "2026-09-07 15:56",
+  "note": "老闆 09-07 15:0x 拍板:不承諾 MOQ 數字,描述末句「MOQ negotiable. For a quotation, email service@kingconn.com.tw or use the inquiry form at https://www.kingconn.com.tw/en/contact」;平台必填數字填 1+Pieces+FOB Negotiable。20/20 已 Submit,16:2x 後台 All Products 20 | Online 19、7BTBF Pending Online。"
+ },
+ {
+  "id": 845,
+  "what": "Global Sources 公司檔案已 Submit(Under review,09-07 14:35);產品送審後約 24h 上線→09-08 回查公開頁(supplier 頁/產品頁)+ 後台 Inquiry 有無詢盤;產品要等 MOQ open item 收掉才能 Submit ｜09-07 16:2x 補:產品已送審 20 品(19 Online、7BTBF-F0-0208XX Pending Online,MOQ=1/Pieces/Negotiable+描述 MOQ 文案);09-08 回查:公開 supplier 頁與 20 品產品頁可否搜到、7BTBF 是否轉 Online、後台 Inquiry。",
+  "why": "平台審核非同步,公司檔案是否過審與產品是否上線都要隔天驗",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 14:38",
+  "closed": null,
+  "note": " 09-07 16:2x 送審 20 品(19 Online/1 Pending Online),09-08 回查審核結果與公開頁"
+ },
+ {
+  "id": 846,
+  "what": "皇海 GBP 影片驗證:老闆 09-09(三)到皇海用自己手機錄;前提=先在 gmail 接受管理員邀請(09-07 15:xx 後台仍顯示 delvin gmail『待處理』,尚未接受)",
+  "why": "邀請未接受就沒有驗證入口",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 14:48",
+  "closed": "2026-09-07 15:27",
+  "note": "併入 09-09 現場錄影計畫:用 f1@ 直接登入(已在 Mac 驗證可見商家),登入挑戰時由我從 f1@ IMAP 餵碼"
+ },
+ {
+  "id": 847,
+  "what": "GBP 管理員邀請卡住:f1@ 後台顯示 delvin gmail『待處理』,但老闆 gmail 無邀請信(含 in:anywhere)、business.google.com 登入後也無邀請橫幅、後台找不到『取消邀請』鈕重發 ⇒ 09-09(三)備援=老闆手機直接登 f1@(密碼他知道;Google 登入挑戰用 email 碼,我從 f1@ IMAP 即時餵)進商家檔案錄影驗證;邀請若 09-08 前自己到就走原方案",
+  "why": "Google 邀請信未投遞,非我方可控",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 14:56",
+  "closed": "2026-09-07 15:27",
+  "note": "15:2x 老闆在 Mac 直接登 f1@ 進商家檔案管理工具,看到皇海『須驗證/進行驗證』⇒ 不靠邀請;09-09(三)他到皇海用手機登 f1@ 錄影驗證。gmail 邀請 Google 兩次都沒寄出,放棄"
+ },
+ {
+  "id": 848,
+  "what": "皇海冷信 batch1 剩 2 封(Testo/PAPAGO)留 queue,等 09-08 09:30 cron kingconn_outbound_send 首班寄出並驗 ok 戳記;回信監看 cron kingconn_outbound_inbox(*/30)首班已手動跑過,需看 09-08 有無回信/退信正確落單",
+  "why": "首班尚未在真實排程跑過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-07 15:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 849,
+  "what": "皇海 GBP 影片驗證:老闆 09-09(三)到皇海,手機登 f1@ → 你的商家檔案 → 進行驗證 → 商家影片(一鏡到底≥30s:招牌門牌街景→內部設備→開門/員工區);登入若要 email 碼,主視窗跑 ~/kc-mailpilot/tools/mailbox_otp.py google 餵他;錄完 5 工作天審核,09-16 前查 gbp_managers.py verify 狀態",
+  "why": "只有現場的人能錄;Google 不接受預錄",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 15:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 850,
+  "what": "皇海:把六件事文件轉給王董(https://claude.ai/code/artifact/edf5b4d2-0a7d-4750-90d7-ef0eabbb9b3b),要他拍板三個付費案(DirectIndustry 報價/Europages Visable 付費/經貿網企業網頁會員 3 萬年費)+DigiKey 問卷要的數字與 ISO 掃描檔",
+  "why": "只有老闆能對王董",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 15:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 851,
+  "what": "LinkedIn 公司頁前置:老闆自己從 LinkedIn App 複製個人頁連結給皇海人員送邀請,接受滿 10 位後通知我跑 /company/setup/new(#731 主項);我方抓連結失敗(winrig 中繼不穩+乾淨瀏覽器跳安全驗證不繞)",
+  "why": "只有本人能加聯絡人",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-07 15:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 852,
+  "what": "attend→KINGCONN 料號對照表(intel/research/attend_catalog_20260907 + attend_xref_20260907.md)待老闆看 + 法務(legal-compliance)審才可上線;上線形式=cross-reference 頁+詢價 CTA",
+  "why": "09-07 純研究產出,老闆情報 attend 轉賣皇海料;引用第三方料號要過 nominative use/不暗示關係/不貶損三關,未審不得上線",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 15:50",
+  "closed": "2026-09-07 17:05",
+  "note": "研究收尾完成,併入新項(最終數字 A 5/A* 6/B 0)"
+ },
+ {
+  "id": 853,
+  "what": "皇海 service@ 釣魚守衛只接了 f1@,service@ 尚未接(等王董給 service@ 密碼+原信 .eml 轉寄 f1@);主機端 SpamAssassin SPF/DKIM DNS 壞掉的根治掛接管清單(需 UMail 管理員帳密+內網)",
+  "why": "三樣都要王董給;守衛程式已上線但只保護 f1@",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 16:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 854,
+  "what": "09-14 回查站外目錄第三波各站審核與公開頁:1111 商搜(帳號 kingconn,待審)、中華黃頁 iyp(電話 033524367 查)、Owler(公司檔案審核中,搜 KINGCONN)、Hotfrog TW(註冊未回信)、TradeKey/wlw.de(視 09-07 結果)、Cybo 兩筆既有頁(台北那筆要改桃園+補官網,需換環境過 Turnstile)、Octopart 製造商頁是否隨 LCSC 上架長出;有公開頁的網域餵進 bench_attend 外鏈量測;評估表在 intel/research/directories_20260907.md",
+  "why": "第三方引用網域 attend 1,460 vs 皇海 49;本波多站送審,一週後才看得到公開頁與是否被拒",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-07 16:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 855,
+  "what": "attend 對照表 11 組(A 5/A* 6/B 0;建議可上線只 2 組)待老闆看 + legal-compliance 審才上線;老闆情報「轉賣」公開資料只能部分證實(圖面同源≠採購),見 attend_findings_20260907.md §0b",
+  "why": "引用第三方料號與宣稱原廠關係需法務判(商標描述性使用/公平法 §21§24/契約 NDA/圖面權利鏈:attend CFast 圖印 CYTECH)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-07 17:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 856,
+  "what": "冷信 batch2 已排進 queue(batch=2,只有 send.py --batch 2 才寄;cron 只寄 batch 1)——等老闆看 outbound/engine/batch2_preview.md 說 OK 再改 cron 或手動寄",
+  "why": "以皇海名義對外,收件人名單老闆 08-17 親令要先看",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-07 17:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 857,
+  "what": "GitHub 帳號層 Actions 被停用 → MarketDaily 兩條備援腿(日報雲端 failover + 部署備援腿)同時是死的,需 Delvin 去 github.com 申訴解封",
+  "why": "帳號申訴只有本人做得到;探針已上線(scripts/failover_leg_probe.py,每日 06:40)會持續告警。實證:daily_digest.yml 的 workflow run 總數=0,從 2026-07-26 建起沒成功派過一次;repo 層 /actions/permissions 仍回 enabled:true 所以看不出來",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-07 23:11",
   "closed": null,
   "note": ""
  }
