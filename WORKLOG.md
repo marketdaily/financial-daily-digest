@@ -8711,3 +8711,20 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⭐⭐ 三個「判準/量測」教訓:①版面高度寫死數字+overflow:hidden 把②的 7 款預購裁成 4 款(漏資訊),正解是瀏覽器量測且**必須等 document.fonts.ready**;②字級下限做成 gate.py 掃 DOM computed fontSize(首跑 19 處違規),豁免只給商標字標並寫進交付說明;③底板要拿來合成前先用 numpy 逐列量亮度確認受光帶深度,肉眼「不錯」≠「放得下五顆商品」。
 - ⭐ genai-prompt-pro LESSONS 已回寫:燈具名詞入鏡復發(「just outside the frame」擋不住 `lamp` 這個名詞)、正向封閉列舉寫法、rembg 對矩形卡片是錯工具。
 - open items #884-#887 已登記(⑤日版30週年未做/等 Darren 回饋/chosen-delivery 專案待收尾/Random PSA10 卡未經確認)。
+
+## 2026-09-09(凌晨)皇海零件庫上架:做成 KiCad 一鍵安裝 + 查出 GitHub 帳號對外是死的
+- 老闆「點頭」(同意公開)+「keep doing」。先把 repo 轉公開,接著要讓工程師「找得到、裝得起來」。
+- ⭐⭐ **重大發現:GitHub 帳號 `marketdaily` 對外界不存在。** 轉公開後匿名抓 raw 一律 404,回頭做對照實驗:
+  `github.com/KiCad/kicad-symbols` 匿名 200、raw 200;而 `github.com/marketdaily`(**帳號首頁本身**)、
+  `kingconn-kicad`、`financial-daily-digest`(public)全部匿名 404 —— 已認證 API 卻回報 public。
+  與 #857/#858「Actions 被帳號層停用」同根因,但影響大得多:**這個帳號放什麼上去外面都看不到**
+  (對外開源、raw 連結、GitHub 帶來的引用網域全部無效)。→ open #883,只有本人申訴解得開。
+  ⭐ 教訓:「我把它設成 public」不等於「外面看得到」——發布類動作要用**匿名、無憑證**的路徑實測,
+  用自己已登入的身分去看永遠是綠的。
+- 改走真的會對外服務的路:自建 Cloudflare Pages `kingconn-eda.pages.dev`(新專案,不碰另一視窗的 kingconn-preview):
+  落地頁 + 12 顆停產料號逐顆頁 + 4 顆零件直接下載 + **KiCad PCM 套件**(repository.json/packages.json/zip)。
+  工程師在 KiCad 的 Plugin and Content Manager 加一行網址就能安裝。
+- 對外實測(關鍵,不是只看自己開得起來):頁面/逐顆頁/PCM 索引/zip 全 200;zip sha256 與 packages.json 宣告值相符;
+  **改用 KiCad 自己的 User-Agent(KiCad/7.0.11、8.0.4)抓也 200** —— 套件管理器不是瀏覽器,只驗瀏覽器等於沒驗。
+- 通用讀圖器嘗試後暫停:能自動定位 PCB 佈局區並自我校準,但「用圖面數字自動裁決」的判準還不夠有鑑別力
+  (碎片矩形常比真焊盤多、`7*1.00` 是間距數不是焊盤數),再逼下去會變成為了通用而通用 → 留 open #884。

@@ -8667,7 +8667,7 @@
   "risk": "med",
   "opened": "2026-09-08 13:18",
   "closed": null,
-  "note": ""
+  "note": "2026-09-09 首批真實潛客(10 家,~/qfx/audits/prospects_2026-09-08/)已跑,「登記人像廠商」黃旗**第一次撞到真實案例,一真一假,兩件都已人工複核**:①真陽性 chunsin-forge.com.tw(彰昕工業)登記人=CHYP Multimedia Marketing & Communications,複核其官網自述為中華黃頁多媒體整合行銷(中華電信集團子公司),該網域 NS iyp.com.tw 登記人亦同;報告只寫「公開紀錄上寫的是別人的名字」,不寫「你失去控制權」。②假陽性 cob-web.tw(凱琦工業)登記人其實就是公司自己 COB-WEB INDUSTRIAL CORP.,因比對只正規化單邊(帶連字號的 sld 沒剝符號)且網域名含 web 命中廠商字眼;已修並補回歸斷言(selftest 26→30 全過),該公司的一頁裡如實揭露首跑誤報。本項仍 open:樣張與「疑似」措辭寄給陌生公司的分寸、要不要附 HTML,還沒經老闆看過。"
  },
  {
   "id": 868,
@@ -8723,12 +8723,12 @@
  {
   "id": 873,
   "what": "皇海 email 序列 Email 2 與 /en/privacy「not for marketing campaigns」牴觸:寄前要改隱私政策或砍 Email 2;M2 表單告知/M3 一鍵退訂實射/M4 王董書面授權亦未成立",
-  "why": "campaign kit 只產文字不寄;放行條件在客戶端基礎設施與老闆授權",
+  "why": "campaign kit 只產文字不寄;放行條件在客戶端基礎設施與老闆授權 〔2026-09-09〕A/B 兩案已備好並各過一次法務審(見 05_email_sequence/PRIVACY_OPTIONS_AB.md),等老闆選;A 案另查出日文站政策同句未同步(A2)。M2/M3/M4/M5 兩案都還要做。",
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-08 21:36",
   "closed": null,
-  "note": ""
+  "note": "2026-09-09 rev2:兩案已備好並各過一次 legal-compliance,#873 刻意不關,等老闆選 A 或 B。決策一張紙 ~/qfx/deals/kingconn/campaign_kit_2026-09-08/05_email_sequence/PRIVACY_OPTIONS_AB.md。A=改隱私政策(EN/ZH/CN diff privacy_policy_optionA.diff,已驗 patch 後可 import、三語 assert_meta 全過;判決 legal_compliance_verdict_optionA.md 🟡,新增 A1 政策生效前的舊詢價未被告知新目的、A2 site/jp/privacy.html 也寫著「マーケティング活動には利用せず」且走 build_jp_mirror 翻譯車道要人審、A3 退訂與零追蹤要實測為真、A4 皇海法務蓋章)。B=序列砍成兩封 E1+原E3(email_sequence_EN_optionB_2emails.md,判決 optionB.md 🟡,M1 消滅,剩 M2-M5 與 A 完全重疊)。建議先 B、A 留成升級;若要保留 E2 則選 A 並照 A1(a) 只對詢價日≥政策上線日的人啟用。現況:diff 未套用到 ~/kingconn、三封版原樣保留、Email 2 仍不得啟用、零寄送。"
  },
  {
   "id": 874,
@@ -8797,8 +8797,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-08 23:35",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 00:24",
+  "note": "已解決(換通道):repo 已轉公開,但查出該帳號對外 404 等於沒發布 → 改用 Cloudflare Pages 自建 kingconn-eda.pages.dev,對外實測全通(頁面/逐顆料號頁/PCM 索引/套件 zip 雜湊相符,KiCad UA 亦 200)"
  },
  {
   "id": 881,
@@ -8827,6 +8827,116 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-08 23:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 884,
+  "what": "CHOSEN 海報⑤ 日版30週年 未產出",
+  "why": "品名/價格/期間資料未到,已在信中向 Darren 要;版型備好待補",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 00:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 885,
+  "what": "CHOSEN 海報交付等 Darren 回饋修改",
+  "why": "09-09 已寄出 12 張海報+5 張盲盒圖,他會回要改的地方;尚未經客戶驗收",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 00:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 886,
+  "what": "新開 Cloudflare Pages 專案 chosen-delivery 待收尾",
+  "why": "為交付檔案臨時開的下載頁(公開可存取URL),客戶取檔後應撤除或納入資產清單",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-09 00:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 887,
+  "what": "CHOSEN 自製 Random PSA10 卡未經客戶/法務確認",
+  "why": "交接說明要求自製,已用客戶提供標章+CHOSEN logo,但未經他們回覆確認可用",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 00:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 888,
+  "what": "N=3 抽樣讓付費引擎成本 ×3(完整掃描 US$0.79→約 US$2.4),是否調價待老闆決定",
+  "why": "PRICING 沒動(硬約束),但單次掃描 NT$249 的毛利被 N=3 吃掉一大塊;N 上限已寫死後端(一般 3/管理員 5),要嘛調價、要嘛降 N、要嘛只對付費引擎用 N=1",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 00:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 889,
+  "what": "perplexity 走 OpenRouter 要錢,卻不在 paid 閘門裡 —— 免費掃描一直在花錢",
+  "why": "2026-09-08 實測:paid_engines:false 的驗證掃描仍花了 US$0.152。已加 freeOnly 硬停損(驗證用)與 FREE_ENGINES 正面名單,但【產品預設仍讓免費掃描跑 perplexity】—— 改掉會讓免費掃描從 4 引擎變 3,那是產品決定不是工程決定",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-09 00:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 890,
+  "what": "N=3 也把免費層配額燒成 3 倍:Gemini/Mistral 在 kingconn 實測整批 429",
+  "why": "Gemini grounding 免費 500/日,6 題×3=18 次/掃描 ⇒ 每日可掃次數從 ~83 掉到 ~27;Mistral 免費層 1 req/s,已把間隔調到 1200ms 仍在第 2 題後整批 429。要嘛加第二把 key、要嘛對免費層引擎降 N",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-09 00:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 891,
+  "what": "Tavily 是檢索索引、N 次回完全相同的結果 —— 對它做抽樣是白花配額,而且 Wilson 區間會暗示一個不存在的隨機性",
+  "why": "kingconn 實測 3 次抽樣 excerpt 與 domains 逐字相同。統計誠實上這比較微妙:對決定性引擎報 [0,56%] 的區間,是在暗示我們沒量夠,而其實它根本不會變。傾向對 tavily 用 N=1 並在報告上註明它是決定性的,但要老闆看過文案再改",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-09 00:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 892,
+  "what": "10 家桃園/臺中製造業潛客體檢已出(~/qfx/audits/prospects_2026-09-08/),待老闆挑選要談哪幾家與填引薦路徑",
+  "why": "報告+每家一頁『首30天』+彙總表 PROSPECTS.md 都在,但 PROSPECTS.md 的『引薦路徑』欄十家全是『待老闆填』。依藍圖 W6『引薦制、不冷開發』,沒有引薦人就不動;另 #867 未收(『疑似在廠商手上』這種話寄給陌生公司的分寸還沒經老闆看過),所以連要不要把 HTML 當附件都還不能決定。零封信已寄、零人已聯絡。",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 00:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 893,
+  "what": "⚠️ GitHub 帳號 marketdaily 對外界不存在:匿名訪問 github.com/marketdaily 本身就 404,所有 public repo(financial-daily-digest/kingconn-site/storefront/kingconn-kicad)公開網路一律 404,但已認證 API 回報 public",
+  "why": "與 #857/#858(Actions 被帳號層停用)同一根因但影響大得多——這個帳號放什麼上去外面都看不到:對外開源、raw 連結、GitHub 帶來的引用網域全部無效。只有本人申訴解得開",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-09 00:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 894,
+  "what": "皇海零件庫通用讀圖器未完成(只能半自動):可自動定位 PCB 佈局區、自我校準比例尺,但自動判準鑑別力不足,型錄其餘 240+ 張圖仍需逐顆寫檢查表",
+  "why": "碎片矩形常比真焊盤多、數量標註「7*1.00」是間距數不是焊盤數;寧可停在 4 顆全驗過,不要放一個會出錯圖的自動產線",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-09 00:24",
   "closed": null,
   "note": ""
  }
