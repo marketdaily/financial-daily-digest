@@ -8977,8 +8977,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-09 01:00",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 01:27",
+  "note": "已解決:交叉料號表(四語系主表 + 156 頁逐顆料號頁)已接上 CAD 下載入口,指向 cad.kingconn.com.tw;沒有零件檔的型號不放連結。走 tools/deploy_preview.sh(含 flock 互斥鎖),全部閘門過,線上四語系各 12 條連結已驗;160 條網址已推 IndexNow"
  },
  {
   "id": 899,
