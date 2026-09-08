@@ -8735,3 +8735,21 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   同時解掉「pages.dev 零權重」與「車道衝突」兩個問題。PCM 套件的 homepage/contact 也從對外 404 的 GitHub 改成
   cad.kingconn.com.tw 與 kingconn.com.tw/contact。對外全部重驗一次(頁面/逐顆頁/PCM/sitemap/IndexNow 金鑰,含 KiCad UA)。
 - 誠實記錄:到此為止產生的是**通路的入口**,還不是詢問。詢問要等 ①kingconn.com.tw 連過來 ②SnapMagic 上架 ③搜尋引擎收錄。
+
+## 2026-09-09(凌晨)螢幕又不自動關:根因不是 VR,是 WSLg(msrdc.exe)
+- 老闆回報「螢幕又不會自動休眠」。09-07 那次是 vrcompositor/vrwebhelper 註冊 DISPLAY power request,
+  這次**不是同一個東西**——先量再修:`powercfg /requests`(要 admin,走 elev.py paramiko SSH 免 UAC 那條腿)顯示
+  `DISPLAY: [PROCESS] ...\WSL\msrdc.exe  RAIL Power Request`。
+- ⭐⭐ **根因:WSL 內跑 headed 瀏覽器,Windows 這端的螢幕就永遠不會關。** 另一個視窗的 GlobalSources 自動化
+  用 Playwright 開 Chrome 帶 `--ozone-platform=x11`,接上 WSLg 的 X server ⇒ WSLg 的 RDP 用戶端 `msrdc.exe`
+  替它註冊 RAIL DISPLAY power request。電源方案本身完全正常(平衡,AC 300s 關螢幕)。
+- 修法(不碰任何正在跑的工作、不停 WSLg):`powercfg /requestsoverride PROCESS msrdc.exe DISPLAY`。
+  不選 `.wslconfig guiApplications=false`——那會當場弄壞另一個視窗正在跑的 headed 自動化。
+- ⭐ **量尺教訓:`powercfg /requests` 在 override 生效後「仍然」列出提出者**(它列的是「誰提出」,不是「誰生效」)
+  ⇒ 拿它當驗收會永遠看起來沒修好。真正的黑白量尺=監聽 `GUID_CONSOLE_DISPLAY_STATE`:
+  新增 `display-state-watch.ps1`(隱形 Form + RegisterPowerSettingNotification,寫 `display-state.log`),
+  由 `launch-display-watch.ps1` 起(wscript //B runhidden.vbs,不閃視窗不搶前景)+ 排程 `DisplayStateWatch` ONLOGON 自啟。
+  螢幕真的暗下去才會寫一行 `DISPLAY OFF`。
+- 誠實記錄:到此為止只證明「override 已註冊 + 監聽器活著」,**還沒證明螢幕真的關**(老闆此刻在用電腦,
+  閒置計時到不了 5 分鐘)→ open #902,等 log 出現 OFF 才算完成。
+- 附帶事實:`pi_server.exe`(Pimax runtime)只掛在 SYSTEM 上=擋睡眠不擋螢幕,winrig 本來就不睡眠,無害不動。

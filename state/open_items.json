@@ -8979,5 +8979,45 @@
   "opened": "2026-09-09 01:00",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 899,
+  "what": "audit.qfxsolution.com 已上線,但 qfxsolution.com 官網的『所有權體檢』段還沒真的連過去(仍是 mailto)",
+  "why": "site/index.html、site/zh/index.html、site/site.js 當下是平行 job 12a3ce39 的未提交 WIP,依多 session git 紀律不搶同一批檔案;逐行改法已寫進 ~/qfx/_handoff_audit_link.md 等對方併入",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-09 01:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 900,
+  "what": "線上體檢報告拿不到 TLS 憑證簽發者與到期日(邊緣端無 TLS socket),目前誠實標 ❔",
+  "why": "要補這一項需要一條伺服器端連線(本機 asset_audit.py 有,或改用 CF Browser Rendering / 一支小 VPS 代跑);未決定值不值得為一個欄位加基礎設施",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-09 01:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 901,
+  "what": "產業報告《Whose website is it?》(台灣製造業官網資產體檢,~350 家)待老闆決定是否公開發表",
+  "why": "法務判決 ✅ 可發表(LEGAL_REVIEW.md),但發表與否是商業決定;HTML 已產好未部署,掛站路徑等官網重做 job 12a3ce39 落地",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 01:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 902,
+  "what": "螢幕不自動關:已用 powercfg requestsoverride 豁免 msrdc.exe(WSLg),但尚未在真實閒置情境驗證螢幕真的 OFF",
+  "why": "驗收證據要等 display-state.log 出現 DISPLAY OFF;老闆此刻在用電腦,閒置計時不會到",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-09 01:25",
+  "closed": null,
+  "note": ""
  }
 ]
