@@ -8789,5 +8789,45 @@
   "opened": "2026-09-08 23:13",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 880,
+  "what": "皇海 KiCad 零件庫已建好但還在私有 repo(github.com/marketdaily/kingconn-kicad),沒有公開=工程師還是找不到,design-in 通路等於還沒開",
+  "why": "公開 repo 掛皇海品牌與工程資料=對外發布,08-17 親令要先給老闆看過;檔案與驗證報告都已就緒,轉公開只差一個指令",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-08 23:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 881,
+  "what": "7MSDP-FA-0024 與 7TFCN-F0-0126 的 KiCad 零件未產出:這兩張圖的焊盤在 PDF 裡只有剖面線、沒有外框線,閉合矩形測不到",
+  "why": "已確認是圖檔畫法差異不是抽取器 bug;要補一條「只有剖面線」的路徑並用同排已驗證焊盤的尺寸當判準。7TFCN 的比例尺/中心線/焊盤尺寸已各自驗過,只差覆蓋率",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-08 23:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 882,
+  "what": "皇海 KiCad footprint 尚未經皇海 RD 確認(PCB LAYOUT 視角假設為上視圖、腳1方位)",
+  "why": "22 個圖面標註全對得上,但視角與腳位方位是讀圖的解讀,量測驗不出來;上生產線前要 RD 簽一次",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-08 23:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 883,
+  "what": "Global Sources 全目錄上架跑中(176 顆主批次 + 17 顆無圖面);37 顆(開關/線材/電源座/ODM)類別待確認後補上",
+  "why": "批次約 3.4 小時,跑完要逐顆抽驗;37 顆類別要先在平台類別樹確認,不猜",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-08 23:36",
+  "closed": null,
+  "note": ""
  }
 ]
