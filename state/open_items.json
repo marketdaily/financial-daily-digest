@@ -9069,5 +9069,35 @@
   "opened": "2026-09-09 01:44",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 908,
+  "what": "QFX 競品週掃 cron 未加(週一 08:00,~/qfx/intel/qfx_intel_runner.sh)",
+  "why": "老闆令:先列指令不自己加進 crontab;指令與首班驗收寫在 ~/qfx/intel/README.md「cron 接線」",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-09 02:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 909,
+  "what": "春樹科技官網網域未確認(競品追蹤名單第 12 家)",
+  "why": "已排除 springhouse.com.tw(春水堂)與 springtree.com.tw(Spring Tree Industry);DDG/Bing 對本機 curl 回人機驗證,GCIS 商工登記 API 對所有查詢回 200/0 bytes(管道失效)。要老闆給網址或下輪換管道,不寫成「不存在」",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 02:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 910,
+  "what": "Digi-Key 供應商申請表已備妥(~/qfx/deals/kingconn/digikey_supplier_application_2026-09-09.md,artifact 69b784eb),等王董回 6 題商業承諾即可送出:年營收級距/退貨政策與退貨地址/出貨區域/BTO 與前置時間/COI/統編與聯絡人",
+  "why": "這 6 題是對通路的正式商業陳述(退貨、保險、營收),我不能替公司編;Digi-Key 核准後 2 個工作天內業務會直接打給表上那位聯絡人談價格條件,必須是能拍板的人",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 02:22",
+  "closed": null,
+  "note": ""
  }
 ]

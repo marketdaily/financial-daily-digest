@@ -8779,3 +8779,14 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   ③誠實邊界:DISPLAY 那筆在我殺 msrdc **之前**就自己消失了(01:34 還在、01:37 已無),無法歸因是 override 還是
     headed chrome 視窗剛好關掉 ⇒ 兩層處方都留著,下次 headed 瀏覽器開起來時 log 會給答案。
   教訓已寫進 memory `hub_winrig_host`(第二種根因 + powercfg 的兩種說謊法)。
+- ⭐⭐ **「上通路」原來不是我以為的那道門**(2026-09-09,老闆說「do Digi-Key」):我一直把它記成要王董拍板的大商業決定
+  (#766 也是這樣寫的)。實查後是兩條路,而 **Digi-Key Marketplace 免費、不收月費上架費、【不需要簽任何合約】**,
+  皇海自己定價自己出貨、成交才抽成,官方說多數供應商一個月內上線,而且 **Marketplace 商品混在一般搜尋結果裡沒有視覺區別**。
+  ⇒ 我把一個「其實是線上表單」的東西,當成需要老闆拍板的商業談判擱了好幾輪。教訓:**把事情歸類成「要老闆決定」之前,
+  先去查那件事到底需要什麼** —— 歸類錯會讓它一直躺著。
+- ⭐ 舊資料的申請網址 `dkplus.digikey.com` 已停用(DNS 不解析),現行入口 digikey.com/en/resources/sell-on-dk → Apply now
+  → /en/resources/supplier-submission-form。表單欄位與下拉選項已實地讀出。
+- 已備妥:可查證欄位全填(公司英文名/地址/電話/類別 Connectors, Interconnects/型態 Manufacturer/方案 Marketplace/
+  SKU 250 個料號 37 族)+ 英文公司簡介草稿 + 申請理由(停產頁 12 個空門、attend 已在架上、GSC 實測死料號搜尋、免費 CAD)。
+  → `~/qfx/deals/kingconn/digikey_supplier_application_2026-09-09.md`,artifact 69b784eb。
+- 剩 6 題是對通路的正式商業陳述(營收級距/退貨/出貨區域/BTO/COI/統編與聯絡人),我不替公司編 → open #908。
