@@ -1,0 +1,34 @@
+{
+  "_about": "皇海交叉料號表 39 顆停產料號中,24 顆 Molex 在 Digi-Key 產品頁上的『替代位』被誰佔住。手法:逐顆抓 Digi-Key 產品頁公開內容(WebFetch),記錄 Product Status 與頁面推薦的 substitute。ALPS 15 顆走 Mouser,Mouser 擋自動抓取(兩次 60s timeout)→ 本輪未測,不以推測填補。",
+  "_measured_at": "2026-09-08",
+  "_method_limits": [
+    "只讀 Digi-Key 產品頁公開內容;若替代品清單靠 JS 展開,可能低估(結論方向不變:低估只會漏掉更多對手,不會憑空生出皇海)",
+    "ALPS/Mouser 15 顆未測,任何比率只對 24 顆 Molex 成立"
+  ],
+  "parts": [
+    {"mpn":"0677990004","status":"Obsolete","sub":[{"mpn":"693120015011","mfr":"Würth Elektronik","stock":32,"usd":10.32}]},
+    {"mpn":"0539275078","status":"Obsolete","sub":[]},
+    {"mpn":"0553560011","status":"Obsolete","sub":[]},
+    {"mpn":"5009980900","status":"Obsolete","sub":[{"mpn":"DM1AA-SF-PEJ(82)","mfr":"Hirose","stock":0,"usd":4.96}]},
+    {"mpn":"5033980891","status":"Obsolete","sub":[{"mpn":"ST1W008S4ER1500","mfr":"JAE","stock":18993,"usd":2.03}]},
+    {"mpn":"5031821852","status":"Obsolete","sub":[{"mpn":"ST11S008V4HR2000","mfr":"JAE","stock":29865,"usd":2.61}]},
+    {"mpn":"5027740891","status":"Obsolete","sub":[{"mpn":"MSD-7-A","mfr":"Same Sky (CUI)","stock":1871},{"mpn":"DM3BT-DSF-PEJS","mfr":"Hirose"}]},
+    {"mpn":"5009010801","status":"Obsolete","sub":[{"mpn":"0472192001","mfr":"Molex","stock":16798},{"mfr":"GCT"},{"mfr":"JAE"}]},
+    {"mpn":"1051620001","status":"Not For New Designs","sub":[{"mpn":"MEM2075-00-140-01-A","mfr":"GCT","stock":33598}],"note":"本顆仍有現貨 24,076,狀態是 NRND 不是 Obsolete"},
+    {"mpn":"1050270001","status":"Obsolete","sub":[{"mpn":"0473092651","mfr":"Molex","stock":687,"usd":2.11}]},
+    {"mpn":"5033980892","status":"Obsolete","sub":[]},
+    {"mpn":"0475710101","status":"Obsolete","sub":[{"mpn":"0475710001","mfr":"Molex","stock":31098,"usd":1.12}]},
+    {"mpn":"0472192021","status":"Obsolete","sub":[{"mpn":"0472192001","mfr":"Molex","stock":16798}]},
+    {"mpn":"5009010800","status":"Obsolete","sub":[]},
+    {"mpn":"0473091525","status":"Obsolete","sub":[]},
+    {"mpn":"0912280001","status":"Obsolete","sub":[]},
+    {"mpn":"0912280002","status":"Obsolete","sub":[]},
+    {"mpn":"0912283001","status":"Obsolete","sub":[]},
+    {"mpn":"0473880001","status":"Obsolete","sub":[{"mpn":"0473882001","mfr":"Molex","stock":15131,"usd":1.83}]},
+    {"mpn":"1510590001","status":"Obsolete","sub":[]},
+    {"mpn":"5045200691","status":"Obsolete","sub":[{"mpn":"KP13B-SF-PEJ(800)","mfr":"Hirose","stock":2377,"usd":2.37},{"mpn":"115S-ACA0","mfr":"ATTEND Technology","stock":1706,"usd":4.21}],"note":"⭐ 頭號對手 attend 已站在這一格的替代位上"},
+    {"mpn":"0483400001","status":"Obsolete","sub":[]},
+    {"mpn":"0943040108","status":"Obsolete","sub":[]},
+    {"mpn":"0679138008","status":"Obsolete","sub":[]}
+  ]
+}

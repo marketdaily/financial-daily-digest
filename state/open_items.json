@@ -8706,8 +8706,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-08 21:29",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-08 22:28",
+  "note": "09-08 已補完不需老闆決定的欄位並讀回驗證 20/20;仍待老闆:價格/交期/付款方式/含包裝尺寸重量"
  },
  {
   "id": 872,
@@ -8747,6 +8747,46 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-08 21:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 876,
+  "what": "Global Sources 價格/交期/付款/包裝尺寸重量待王董給(其餘欄位 09-08 補齊並驗證);品質等級仍全 Low,待平台重評後複查一次",
+  "why": "商業條件要老闆問王董;平台重新評分需要時間",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-08 22:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 877,
+  "what": "皇海 ALPS 15 顆停產料號的 Digi-Key/Mouser 替代位未量到(Mouser 三次擋自動抓取,Digi-Key 不進這幾顆)",
+  "why": "本輪只量到 24 顆 Molex;要補需改走 CF Browser Rendering 或 scrapling,不以推測填補",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-08 23:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 878,
+  "what": "皇海貨架體檢的三條路待老闆拍板:①上通路(=#766 的證據已補齊)②要不要我把皇海料號做進 SnapEDA/KiCad 零件庫 ③12 個空門要不要做逐顆替代頁(要動 site/,現有另一視窗在做 GlobalSources 我沒碰)",
+  "why": "①是王董的商業決定;②③要老闆說了才動,對外內容與網站改動都在他核可線上",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-08 23:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 879,
+  "what": "cron 艦隊有 19 支腳本活不過磁碟死亡:cardvault-pc 8 支+crew-sandbox/xoops-demo/taifex_archive 各 1 完全無版控;cb-desk 5+fortune-ai 2+granthawk 1 有 git 但無 remote(fortune-ai 還有 81 個未 commit 檔且是真付費產品)",
+  "why": "今晚查到但老闆中途轉向皇海,只做到盤點與機密掃描(4 個 repo 工作區與完整 git 歷史皆乾淨,可安全開私有 remote),尚未建 repo/push",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-08 23:13",
   "closed": null,
   "note": ""
  }

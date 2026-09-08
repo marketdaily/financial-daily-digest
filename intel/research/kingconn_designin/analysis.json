@@ -1,0 +1,3922 @@
+{
+ "parts": {
+  "0472192021": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": "hinged",
+   "kc": [
+    "7MSDH-F0-1012"
+   ],
+   "raw_repos": 65,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {
+    "Matthausz/Navigating-Barren-Plateaus-in-Variational-Quantum-Computing": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "Part 2/FINAL_3R_PRETRAINED/P_Seed_111_Qubits_16_Layers_256.txt"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 208
+  },
+  "0473091525": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": null,
+   "kc": [
+    "7TFCN-F0-0126",
+    "7MSDH-F0-1012"
+   ],
+   "raw_repos": 76,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 252
+  },
+  "0473880001": {
+   "brand": "Molex",
+   "card": "mini-sim",
+   "mech": null,
+   "kc": [
+    "7SIMC-FA-0006",
+    "7SIMC-FA-0005"
+   ],
+   "raw_repos": 81,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {
+    "ciniml/M5Stack_WiSUN": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "firmware and schematic for M5Stack WiSUN board",
+     "files": [
+      "EC21.lib"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 724
+  },
+  "0475710101": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": "hinged",
+   "kc": [
+    "7MSDH-F0-1012"
+   ],
+   "raw_repos": 10,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 17
+  },
+  "0483400001": {
+   "brand": "Molex",
+   "card": "smart-card",
+   "mech": null,
+   "kc": [
+    "7SCCN-F0-0002",
+    "7SCCN-F0-0003"
+   ],
+   "raw_repos": 64,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [
+    "edipoarg/la-plata"
+   ],
+   "repos": {
+    "edipoarg/la-plata": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Mapa de la Policía / La Plata",
+     "files": [
+      "src/data/departamentos.json",
+      "public/data/departamentos.json"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 3184
+  },
+  "0539275078": {
+   "brand": "Molex",
+   "card": "cf",
+   "mech": "header",
+   "kc": [
+    "7CFHD-F9-9008",
+    "7CFHC-FA-0001"
+   ],
+   "raw_repos": 76,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {
+    "robustini/eXploraVTOL": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "eXplora Tailsitter VTOL",
+     "files": [
+      "STEP/eXplora_VTOL_V1.00_Elevon_L1.step",
+      "STEP/eXplora_VTOL_V1.00_Elevon_L2.step"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 229
+  },
+  "0553560011": {
+   "brand": "Molex",
+   "card": "cf",
+   "mech": "header",
+   "kc": [
+    "7CFHD-F9-9008",
+    "7CFHC-FA-0001"
+   ],
+   "raw_repos": 85,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {
+    "mrinmoysarkar/eVTOL_performance_evaluation": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "logs/profiles_eval/profile_aircraft_electronics_909480.csv"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 254
+  },
+  "0677990004": {
+   "brand": "Molex",
+   "card": "cf",
+   "mech": "header",
+   "kc": [
+    "7CFHD-F9-9008",
+    "7CFHC-FA-0001"
+   ],
+   "raw_repos": 33,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [
+    "TheEngineRoom-UniGe/TER_HAR_Dataset"
+   ],
+   "repos": {
+    "TheEngineRoom-UniGe/TER_HAR_Dataset": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Simone's dataset with python scripts to extract it and load it",
+     "files": [
+      "dataset/s17/ASSEMBLY2_RIGHT/0/right_wristPose.txt"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 49
+  },
+  "0679138008": {
+   "brand": "Molex",
+   "card": "combo",
+   "mech": null,
+   "kc": [
+    "7SDMS-F0-0002"
+   ],
+   "raw_repos": 2,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 2
+  },
+  "0912280001": {
+   "brand": "Molex",
+   "card": "mini-sim",
+   "mech": "push-push",
+   "kc": [
+    "7SIMC-FA-0006",
+    "7SIMC-FA-0013"
+   ],
+   "raw_repos": 115,
+   "design_repos": 0,
+   "lib_repos": 31,
+   "orgs": [],
+   "repos": {
+    "robertstarr/lbr_user": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Eagle LBR-EX Part Library Repository",
+     "files": [
+      "chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "zumbik/Eagle-Libraries": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "diyaudiocircuits/eagle-cad-files": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A collection of PCB (printed circuit board) designs made with the Eagle CAD program.",
+     "files": [
+      "lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "robertstarr/lbr_plus": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Eagle Libraries Plus",
+     "files": [
+      "chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "kevin-ledinh/banana-tree": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hw/PCB/lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "PTE-BPPT/libraries-eagle-PTE-BPPT": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Eagle component library for PTE BPPT Design",
+     "files": [
+      "Expand lib/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "Hauzman/Eagle_Library": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Eagle library with 3D model ",
+     "files": [
+      "Unsorted/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "ekoch1/EAGLE-Designs": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Cal Poly FSAE EAGLE PCB Designs",
+     "files": [
+      "EAGLE Libraries/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "ThanicsRobotics/ProjectHaloCAD": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "ECAD and MCAD Files for the Thanics Halo Project",
+     "files": [
+      "ECAD-Files/EAGLE-Files/lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "noizhardware/EagleLibraries": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Eagle Cad parts libraries",
+     "files": [
+      "LBR/eagle_7_6_0/chipcard-siemens.lbr",
+      "Legacy/LBR-2019k06/eagle_7_6_0/chipcard-siemens.lbr",
+      "Legacy/LBR-2019j15/eagle_7_6_0/chipcard-siemens.lbr",
+      "Legacy/LBR-2020i22/eagle_7_6_0/chipcard-siemens.lbr",
+      "Legacy/LBR-2019k20/eagle_7_6_0/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "mustafaakgul/lora-circuits-pcb": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Collection of LoRa peripheral circuits for various applications",
+     "files": [
+      "EAGLE/libraries/lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "jensenr30/cad": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Schematics, PCBs, Simulations, ...",
+     "files": [
+      "eagle6/_EAGLE-6.6.0/lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "mrenouf/eagle-libraries": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "eagle-libraries",
+     "files": [
+      "Eagle/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "il-dionigi/IEEE-AP-CircuitBoardDesign": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Schematic Design as part of our AP group at IEEE during the 2017-2018 school year at UCLA.",
+     "files": [
+      "EagleLibraryFiles/Provided/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "AleReb/C-BibliotecaHardware": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "LibreriaSebaEagle/adsk.eagle_library_117/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "meyskens/docker-eagle": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "eagle/cache/lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "Tomaszu97/line-follower": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "line follower robot project with custom pcb design",
+     "files": [
+      "brd/old drive backup with sch/EAGLE-7.2.0/lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "Meisterschulen-am-Ostbahnhof-Munchen/EAGLE_Library_Backup": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Elektronik: Backup der EAGLE-Bibliotheken",
+     "files": [
+      "adsk.eagle_library_117/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "abl20/Domotic-controller-based-on-Arduino-compatible-with-DALI-and-Bluetooth-standards": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "The main purpose of domotic is in fact bringing an additional comfortableness for their own users. It’s also intended an energy saving by the increase of home’s energetic efficiency according to meteo",
+     "files": [
+      "2. Libraries/Librerias Eagle/lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "cpeniche/hardware": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "libraries/3dparty/lbr_user/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "ZeroUI/Industrial-Quark": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Industrial version of Quark",
+     "files": [
+      "Ziro-master/Electronics/V2.0 Wifi/Hardware/PCB/Component Library/Default/chipcard-siemens.lbr",
+      "Ziro-master/Electronics/V2.0 Wifi/Hardware/PCB/Component Library/_Archive/Default/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "achase90/thesisEagleLibs": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "moderndevice/EagleLibraries": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Eagle Libraries",
+     "files": [
+      "chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "pschuster/lbr": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Eagle Libraries",
+     "files": [
+      "chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "moosepr/eaglez": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "My hand crafted eagle libraries",
+     "files": [
+      "chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "epukaza/eagle-libraries": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "personal eagle libraries",
+     "files": [
+      "chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "Dloranger/Eagle_libr": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "evan-swinney/CRAP": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "temporaryuser132/wakameboard": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Wakame ARM Single Computer Board development and auxiliary files.",
+     "files": [
+      "lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "iscumd/Eagle": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    },
+    "drtrigon/eagle": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "lbr/chipcard-siemens.lbr"
+     ],
+     "kind": "B"
+    }
+   },
+   "max_total": 514
+  },
+  "0912280002": {
+   "brand": "Molex",
+   "card": "mini-sim",
+   "mech": "push-push",
+   "kc": [
+    "7SIMC-FA-0006",
+    "7SIMC-FA-0013"
+   ],
+   "raw_repos": 26,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 52
+  },
+  "0912283001": {
+   "brand": "Molex",
+   "card": "mini-sim",
+   "mech": "push-push",
+   "kc": [
+    "7SIMC-FA-0006",
+    "7SIMC-FA-0013"
+   ],
+   "raw_repos": 88,
+   "design_repos": 3,
+   "lib_repos": 1,
+   "orgs": [
+    "autosportlabs/CellTelemetry"
+   ],
+   "repos": {
+    "autosportlabs/CellTelemetry": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Cellular Telemetry module for RaceCapture/Pro",
+     "files": [
+      "RCPCell.bom",
+      "RCPCell.brd"
+     ],
+     "kind": "A"
+    },
+    "myildiz-rd/VB-IoT1": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "VB-IoT1_v1/VB-IoT1_v1.sch",
+      "VB-IoT1_v1/VB-IoT1_v1-cache.lib"
+     ],
+     "kind": "A"
+    },
+    "mustafaakgul/lora-circuits-pcb": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Collection of LoRa peripheral circuits for various applications",
+     "files": [
+      "EAGLE/libraries/lbr/eagle_lbr-master/simcard.lbr"
+     ],
+     "kind": "B"
+    },
+    "mrinmoysarkar/eVTOL_performance_evaluation": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "logs/profiles_eval/profile_aircraft_electronics_784810.csv"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 266
+  },
+  "0943040108": {
+   "brand": "Molex",
+   "card": "smart-card",
+   "mech": null,
+   "kc": [
+    "7SCCN-F0-0002",
+    "7SCCN-F0-0003"
+   ],
+   "raw_repos": 82,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {
+    "sgna2124-web/-": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "local_results/8V11_LONG_SHORT_MAIN_MAX_400_NEW_NO_TRADE_CAP/short_max_v1_98_sx_vol_reversal_sx098/per_symbol_summary.json"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 280
+  },
+  "1050270001": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": "push-pull",
+   "kc": [
+    "7TFCN-F0-0126"
+   ],
+   "raw_repos": 31,
+   "design_repos": 20,
+   "lib_repos": 1,
+   "orgs": [
+    "emfcamp/Mk2-Hardware"
+   ],
+   "repos": {
+    "ErichStyger/mcuoneclipse": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "McuOnEclipse projects and examples",
+     "files": [
+      "KiCAD/Library/symbols/McuOnEclipse.dcm"
+     ],
+     "kind": "B"
+    },
+    "Muriukidavid/tinyk20": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "KIcad open hardware design for a tiny NXP Kinetis k20 based debugger and data logger board",
+     "files": [
+      "tinyK20.cmp"
+     ],
+     "kind": "A"
+    },
+    "consolesunleashed/nintendo-gamecube-sd2sp2-microsd-card-adapter": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "My popular upgraded SD2SP2 shared for all to enjoy.  Nothing special over the standard SD2SP2 other than it looks much better.",
+     "files": [
+      "project-files/SD2SP2 v1p2b.sch",
+      "project-files/SD2SP2 v1p2b.brd"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/avrcraft": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Minecraft server optimized for 8-bit devices.",
+     "files": [
+      "avr_hardware/kicad/avrcraft-microsd.net",
+      "avr_hardware/kicad/avrcraft-microsd-cache.lib",
+      "avr_hardware/kicad/avrcraft-microsd-glass.net",
+      "avr_hardware/kicad/avrcraft-microsd-glass-cache.lib",
+      "usb_minecraft/hw/usb_minecraft.sch",
+      "avr_hardware/kicad/avrcraft-microsd.sch",
+      "avr_hardware/kicad/avrcraft-microsd.brd",
+      "avr_hardware/kicad/avrcraft-microsd-glass.sch",
+      "avr_hardware/kicad/avrcraft-poeb.sch",
+      "avr_hardware/kicad/avrcraft-poec.sch",
+      "avr_hardware/kicad/avrcraft-m644.sch",
+      "avr_hardware/kicad/avrcraft-poed.sch",
+      "avr_hardware/kicad/avrcraft-microsd_glass.brd"
+     ],
+     "kind": "A"
+    },
+    "citrus3000psi/SD2SP2": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Micro SD Card Adapter for Gamecube's Serial Port 2",
+     "files": [
+      "Kicad/gc_sp2.net",
+      "V1.2a/gc_sp2.net",
+      "V1.2a/gc_sp2.sch",
+      "Kicad/gc_sp2.sch",
+      "Kicad/gc_sp2.kicad_pcb",
+      "V1.2a/gc_sp2.kicad_pcb"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/espusb": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Software-only ESP8266 USB Device",
+     "files": [
+      "hardware/usb_8285/usb_8285.sch",
+      "hardware/usb_8285_tiny/usb_8285_tiny.sch"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/colorchord": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Chromatic Sound to Light Conversion System",
+     "files": [
+      "embedded8266/hardware/esp12e-generics.sch"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/esptracker": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Lighthouse-based tracker using the TS4231",
+     "files": [
+      "esp12f_base/esp12f_base.sch"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/espthernet": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "ESP8266 10-Base-T Ethernet Driver",
+     "files": [
+      "hardware/esp12e-ethernet.sch"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/esp82xx": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Useful ESP8266 C Environment",
+     "files": [
+      "hardware/esp12f-generics.sch"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/ethertiny": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A firmware-only half-duplex 10Base-T implementation for AVRs",
+     "files": [
+      "hardware/t85.sch",
+      "hardware/t85spi-with-driver.sch"
+     ],
+     "kind": "A"
+    },
+    "kmod/ee": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A catchall repo for my more EE-related projects",
+     "files": [
+      "tools/A13 v0.1.bom"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/wiflier": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "ESP8266-based Quadcopter Brain",
+     "files": [
+      "hardware/wiflier.sch",
+      "wiflier8285/wiflier8285.sch"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/swadge2019": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "the repo for the 2019 swadge",
+     "files": [
+      "hardware/swadge2019.sch"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/esp8266lighthouse": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "DO NOT USE THIS PROJECT - WILL BE SUPERCEDED",
+     "files": [
+      "filter_dual/filter_dual.sch",
+      "hardware/esp_power_with_op.sch"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/donut": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "MAGFest /is/ a donut.",
+     "files": [
+      "donut.sch"
+     ],
+     "kind": "A"
+    },
+    "emfcamp/Mk2-Hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Hardware for the TiLDA v2 Badge",
+     "files": [
+      "TiLDA Mk2 Prototype v0.1 Parts.txt"
+     ],
+     "kind": "A"
+    },
+    "rmfharvey/EE4951_REPO": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "EE4951 Barzagan group repository",
+     "files": [
+      "PCBA/EE4951_BPM_REV_A/EE4951_BPM_REVA.txt"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/wi07clight": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Using the wi07c's ESP8266 to control a desk light.",
+     "files": [
+      "hardware/wi07light.sch"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/attiny85_tb": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "ATTiny85 Test Bench Tool with Screw Terminals",
+     "files": [
+      "avr_tb_t85.sch"
+     ],
+     "kind": "A"
+    },
+    "cnlohr/esp8266_link_test": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Test link between an ESP8266 and a base station or another ESP8266 easily.",
+     "files": [
+      "hardware/esp12e-generics.sch"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 87
+  },
+  "1051620001": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": "push-pull",
+   "kc": [
+    "7TFCN-F0-0126"
+   ],
+   "raw_repos": 51,
+   "design_repos": 28,
+   "lib_repos": 3,
+   "orgs": [
+    "Groboards/giant-board-design-files",
+    "MillerTechnologyPeru/boysenboard",
+    "OSHPark/ohs18badge",
+    "QUT-Motorsport/QUTMS_AMS",
+    "SoCXin/STM32H730",
+    "orangecrab-fpga/orangecrab-hardware",
+    "toasterllc/MDCBoard"
+   ],
+   "repos": {
+    "martinribelotta/h730duino": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "STM32H7 Arduino form factor and software compatible board",
+     "files": [
+      "105162-0001.lib",
+      "h730duino-cache.lib",
+      "h730duino.sch",
+      "docs/octopart-20210221_h730_duino.csv"
+     ],
+     "kind": "A"
+    },
+    "OSHPark/ohs18badge": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Open Hardware Summit 2018 Badge",
+     "files": [
+      "lib_sch/105162-0001.lib",
+      "oshw2018badgeprototype-rescue.lib",
+      "oshw2018badgeprototype-cache.lib",
+      "oshw2018badgeprototype.net",
+      "lib_fp/SK6812MINI .pretty/oshw2018badgeprototype.net",
+      "oshw2018badgeprototype.sch",
+      "_saved_oshw2018badgeprototype.sch"
+     ],
+     "kind": "A"
+    },
+    "martinribelotta/h7dragonman": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "STM32H7 board for industrial protocol bridge",
+     "files": [
+      "105162-0001.lib",
+      "dragonmanh7-cache.lib",
+      "dragonmanh7.sch"
+     ],
+     "kind": "A"
+    },
+    "Mr-Bossman/f1c200s-dev-board": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A custom development board for an soc",
+     "files": [
+      "105162-0001/105162-0001.lib",
+      "f1c200s-rescue.lib",
+      "f1c200s-cache.lib",
+      "f1c200s.net",
+      "memory.sch"
+     ],
+     "kind": "A"
+    },
+    "hulkco/Varios": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Varios",
+     "files": [
+      "Drew_ohs18badge/lib_sch/105162-0001.lib",
+      "Drew_ohs18badge/oshw2018badgeprototype-rescue.lib",
+      "Drew_ohs18badge/oshw2018badgeprototype-cache.lib"
+     ],
+     "kind": "A"
+    },
+    "SoCXin/STM32H730": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "L6 R5：ST Cortex-M7 550MHz MCU (STM32H730)",
+     "files": [
+      "hardware/105162-0001.lib",
+      "hardware/h730duino-cache.lib"
+     ],
+     "kind": "A"
+    },
+    "Mr-Bossman/SD_Swap": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A development tool which swaps an sdcard between a usb3 card reader or a SBC. ",
+     "files": [
+      "board/SD_Swap/SD_Swap.kicad_sch"
+     ],
+     "kind": "A"
+    },
+    "hamuelbones/e-e-paper": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "An ESP32-C-based internet-connected decorative e-paper display",
+     "files": [
+      "hardware/eepaper/symbols/105162-0001.lib"
+     ],
+     "kind": "B"
+    },
+    "ben5049/Smart-Watch": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "PCBs/component_library/watch_symbols/105162-0001.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "dartcom/ssd2828-dev": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A carrier board for the ssd2828 and the LH154Q01 & VS035ZSM lcd panels",
+     "files": [
+      "hardware/libs/SamacSys/SamacSys_Parts.dcm",
+      "hardware/libs/SamacSys/SamacSys_Parts.lib",
+      "hardware/libs/SamacSys/SamacSys_Parts.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "zfeuers1/z-zener-zero": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "components/105162-0001/105162-0001.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "androda/PCBDesigns": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "PCB Designs By Androda",
+     "files": [
+      "BlueSCSI/MacPortable/V0/Parts list.txt",
+      "BlueSCSI/PowerBook/V4/Parts List For V4.txt",
+      "BlueSCSI/PowerBook/V3/Parts List For V3.txt",
+      "BlueSCSI/PowerBook/V2/Parts List For V2.txt",
+      "BlueSCSI/Desktop/F1.TbA.DSK.V1/Parts List For V1.0.txt",
+      "BlueSCSI/Desktop/F1.TbA.D.THT.V1/Parts List For V1.0.txt",
+      "BlueSCSI/MacPortable/F1.TbA.MP.THT.V1/PartsList/PartsList.txt",
+      "BlueSCSI/PowerBook/V4/DesignFiles/PowerBook_V4.kicad_sch",
+      "BlueSCSI/MacPortable/F1.TbA.MP.THT.V1/MacPortable_THTV1.kicad_sch"
+     ],
+     "kind": "A"
+    },
+    "Mr-Bossman/rk3368-dev-board": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "rk3368-devboard-cache.lib",
+      "sd.sch"
+     ],
+     "kind": "A"
+    },
+    "yimengq/Small_VineRobot_Electronics": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "Hardware/Gen4/PoE_v1/symbols/1051620001.kicad_sym"
+     ],
+     "kind": "B"
+    },
+    "acamilo/MoonBadge": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "moonbadge-cache.lib",
+      "moonbadge.net"
+     ],
+     "kind": "A"
+    },
+    "fehlfarbe/ESP32-Alarm-clock": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hardware/pcb/mp3alarm-cache.lib",
+      "hardware/pcb/mp3alarm-rescue.lib"
+     ],
+     "kind": "A"
+    },
+    "Groboards/giant-board-design-files": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Giant Boards kicad design files",
+     "files": [
+      "4LayerV1/ATSAMA5D27-1G.lib",
+      "4LayerV1/ATSAMA5D27-1G.net",
+      "4LayerV1/ATSAMA5D27-1G-cache.lib",
+      "4LayerV0.9.2/ATSAMA5D27-1G.net",
+      "4LayerV0.9.2/ATSAMA5D27-1G-cache.lib",
+      "4LayerV1/ATSAMA5D27-1G.sch",
+      "4LayerV0.9.2/ATSAMA5D27-1G.sch"
+     ],
+     "kind": "A"
+    },
+    "ademuri/iconograph-cnc": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "iconograph-pcb/iconograph-pcb-cache.lib"
+     ],
+     "kind": "A"
+    },
+    "gsteiert/a5e2pmod": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "a5e2pmod.kicad_sch",
+      "a5e2pmod.kicad_pcb"
+     ],
+     "kind": "A"
+    },
+    "toasterllc/MDCBoard": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "PCB for the Photon camera",
+     "files": [
+      "NextPCB-Order/BOM/MDCBoard.csv"
+     ],
+     "kind": "A"
+    },
+    "wmeckman/LCDC1000": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "An ESP32 based controller that can drive any kind of LED strip, or motor. Includes microSD, USB-UART, and large voltage range input.",
+     "files": [
+      "lc_dc1000-rescue.lib",
+      "lc_dc1000.sch"
+     ],
+     "kind": "A"
+    },
+    "WRansohoff/Magrat_v0": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Design files and test firmwares for a single-core STM32H7 board with extra RAM and a side of Flash.",
+     "files": [
+      "stm32_linux.sch"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_footprint_doc_no_longer_used": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints/esden/pkl_misc/microsd_hc_molex_1051620001/readme.md",
+      "footprints/esden/pkl_misc/microsd_hc_molex_1051620001/readme_src.md"
+     ],
+     "kind": "B"
+    },
+    "orangecrab-fpga/orangecrab-hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "ECP5 breakout board in a feather physical format",
+     "files": [
+      "hardware/orangecrab_r0.1/fileSDMMC.sch",
+      "hardware/orangecrab_r0.1/bom/OrangeCrab.csv"
+     ],
+     "kind": "A"
+    },
+    "rjhsun/bifrost": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Arduino Nano RGB LED controller",
+     "files": [
+      "bifrost.sch"
+     ],
+     "kind": "A"
+    },
+    "rjhsun/nibelung": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Teensy 4.0 WS8211 LED Controller",
+     "files": [
+      "breakout-boards/teensy40-sd-adapter/teensy40-sd-adapter.sch"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_footprint_src": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints_flat/esden_pkl_misc_microsd_hc_molex_1051620001/working/readme.md"
+     ],
+     "kind": "A"
+    },
+    "MillerTechnologyPeru/boysenboard": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Linux capable single board computer using the F1C200s in an Arduino form-factor.",
+     "files": [
+      "hardware/boysenboard.dcm",
+      "hardware/boysenboard.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "engstad/BetsyBoard": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "An STM32L4 prototyping board",
+     "files": [
+      "BetsyBoard.net",
+      "BetsyBoardBig.net"
+     ],
+     "kind": "A"
+    },
+    "meh2481/beatsequencer": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Beat sequencer/soundboard with Adafruit MultiTrellis",
+     "files": [
+      "pcb/BeatSequencer_bom.csv"
+     ],
+     "kind": "A"
+    },
+    "QUT-Motorsport/QUTMS_AMS": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "Hardware/QUTMS-AMU-V1.PrjPcb"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 217
+  },
+  "1510590001": {
+   "brand": "Molex",
+   "card": "nano-sim",
+   "mech": null,
+   "kc": [
+    "7SIMC-F0-0043",
+    "7SIMC-FA-0021",
+    "7SIMC-F0-0030"
+   ],
+   "raw_repos": 37,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 55
+  },
+  "5009010800": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": "hinged",
+   "kc": [
+    "7MSDH-F0-1012"
+   ],
+   "raw_repos": 5,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 8
+  },
+  "5009010801": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": "hinged",
+   "kc": [
+    "7MSDH-F0-1012"
+   ],
+   "raw_repos": 12,
+   "design_repos": 10,
+   "lib_repos": 1,
+   "orgs": [
+    "UWCubeSat/minimee-electronics",
+    "akornsys-rdi/acoustic-impact-ball",
+    "calstar/blackbox-ng",
+    "enacuavlab/boards",
+    "m-labs/board-m1"
+   ],
+   "repos": {
+    "calstar/blackbox-ng": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Blackbox Next Generation",
+     "files": [
+      "lib/500901-0801.lib",
+      "blackbox-ng/blackbox-ng-cache.lib",
+      "blackbox-ng/blackbox-ng.sch"
+     ],
+     "kind": "A"
+    },
+    "Sani7/SEM": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "KiCad/lib/500901-0801/500901-0801.dcm",
+      "KiCad/SEM/SEM.csv",
+      "KiCad/SEM/SEM.xml",
+      "KiCad/SEM/SEM.kicad_pcb",
+      "KiCad/SEM2/SEM2.kicad_pcb",
+      "KiCad/SEM/SEM.kicad_sch"
+     ],
+     "kind": "A"
+    },
+    "going-digital/sdnes": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "SD converter mod-board for the Nintendo NES Classic, Famicom classic, SNES Classic and Superfamicom classic. For use with Hakchi.",
+     "files": [
+      "sdnes.lib",
+      "nes/sdnes.sch",
+      "shvc/sdnes.sch",
+      "nes/sdnes.kicad_pcb",
+      "shvc/sdnes.kicad_pcb"
+     ],
+     "kind": "A"
+    },
+    "inventor02/low-cost-mmwave": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "University of Southampton Group Design Project: Collaborative Robot Perception with mm-Wave Radar",
+     "files": [
+      "pcbs/CM4RadarBoard/500901-0801.kicad_sym",
+      "pcbs/Dual HF AWR2243 Radar Cascade Board/AWR2243RadarBoard/500901-0801.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "UWCubeSat/minimee-electronics": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "KiCAD files for the MiniMEE mission, adapted from BONK",
+     "files": [
+      "spaceduino/spaceduino.lib"
+     ],
+     "kind": "A"
+    },
+    "calstar/hardware-sch-blocks": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Schematic Hierarchical blocks to be included as a submodule in other projects",
+     "files": [
+      "star-common-lib.lib",
+      "star-common-lib.kicad_sym"
+     ],
+     "kind": "B"
+    },
+    "m-labs/board-m1": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Milkymist One PCB design files",
+     "files": [
+      "r4/m1.cmp",
+      "r4/m1.net",
+      "r4/Misc.sch",
+      "dsv/milkymist_one_bom_r4.csv"
+     ],
+     "kind": "A"
+    },
+    "enacuavlab/boards": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "ENAC's electronic boards related resources",
+     "files": [
+      "Tawaki/hardware/Tawaki_v110-cache.lib",
+      "Tawaki/hardware/Tawaki_v110.sch"
+     ],
+     "kind": "A"
+    },
+    "MikhailBerezhanov/CNCU-01": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Ethernet-CAN converter board based on STM32F407",
+     "files": [
+      "pcb/ETH_CAN_converter.PrjPcb"
+     ],
+     "kind": "A"
+    },
+    "akornsys-rdi/acoustic-impact-ball": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Acustic impact ball, the system behind «Monster game» artwork",
+     "files": [
+      "brd/acoustic-impact-ball.net",
+      "brd/acoustic-impact-ball.sch"
+     ],
+     "kind": "A"
+    },
+    "koudis/robot": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "kastelan/hw/SRV-1_Expansion_Board/2.0/SRV-1_Expansion_Board.brd",
+      "kastelan/hw/SRV-1_Expansion_Board/1.0/SRV-1_Expansion_Board.brd"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 53
+  },
+  "5009980900": {
+   "brand": "Molex",
+   "card": "sd",
+   "mech": "push-push",
+   "kc": [
+    "7SDCN-F0-0028",
+    "7SDCN-F0-0037",
+    "7SDCN-F0-1012"
+   ],
+   "raw_repos": 5,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {
+    "wiretap-retro/MigStorm-ITX": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A 68000 socketed ITX form factor Minimig.",
+     "files": [
+      "v0.6/MigStorm-ITX-cache.lib",
+      "v0.6/MigStorm-ITX.net",
+      "v0.6/IO.sch"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 17
+  },
+  "5027740891": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": "reverse",
+   "kc": [
+    "7MSDP-AA-1110"
+   ],
+   "raw_repos": 80,
+   "design_repos": 36,
+   "lib_repos": 3,
+   "orgs": [
+    "BroncoSpace-Lab/scales-hardware",
+    "GJN-Aerospace/Halcyon",
+    "LaosLaser/Hardware",
+    "Merophy/enzyme",
+    "SpacePicklesRocketry/2025-Electrical-2",
+    "SpaceScienceSweden/ulv_electronics",
+    "UBC-Thunderbots/PCB_MainBoard",
+    "UWARG/hardware",
+    "lab11/embedded-gw",
+    "land-boards/lb-boards",
+    "snug-eco/user-board",
+    "xiphonics/picoTracker-pcb"
+   ],
+   "repos": {
+    "paulvollmer/FritzingParts": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Fritzing Parts Website Mockup",
+     "files": [
+      "parts/microSD-socket-molex-502774-0891.html",
+      "parts/microSD-socket-molex-502774-0891/index.json",
+      "parts.json"
+     ],
+     "kind": "A"
+    },
+    "mxmxmx/eurotrash_mkII": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "teensy 3.2 / pcm5102a eurorack wav file player ",
+     "files": [
+      "hard/BOM.md"
+     ],
+     "kind": "A"
+    },
+    "mxmxmx/eurotrash": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "wav player",
+     "files": [
+      "hard/BOM.md"
+     ],
+     "kind": "A"
+    },
+    "mxmxmx/minitrash": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "...",
+     "files": [
+      "hard/BOM.md"
+     ],
+     "kind": "A"
+    },
+    "SpaceScienceSweden/ulv_electronics": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Root electronics repo",
+     "files": [
+      "cpu4/cpu4.sch",
+      "cpu3/cpu3.sch"
+     ],
+     "kind": "A"
+    },
+    "LaosLaser/Hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Hardware (Mainboard PCB designs etc.)",
+     "files": [
+      "laos-board-rev5/laos-board.cmp",
+      "laos-board-rev6/laos-board.cmp",
+      "laos-board-rev5/laos-board.net",
+      "laos-board-rev6/laos-board.net",
+      "laos-board-rev6/laos-board.sch",
+      "laos-board-rev5/laos-board.sch"
+     ],
+     "kind": "A"
+    },
+    "ole00/hardware_mister_de0-nano-soc": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "MiSTer add-on board for DE0-Nano-SoC FPGA dev board.",
+     "files": [
+      "addons/io_board/de0_io_board_bom.txt"
+     ],
+     "kind": "A"
+    },
+    "SpacePicklesRocketry/2025-Electrical-2": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "New electrical repo(buggy old one)",
+     "files": [
+      "vanguard/Graphics.pretty/new sd card/2025-03-07_17-03-39.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "ChristianLerche/3DPCB": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "3DPCB DRV8825 files - KiCAD",
+     "files": [
+      "3DPCB Rev B DRV8825.cmp"
+     ],
+     "kind": "A"
+    },
+    "GJN-Aerospace/Halcyon": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "GitHub repository for actively stabilized model rocket project.",
+     "files": [
+      "Hardware/Electronics/ControlUnit/ControlUnit.net"
+     ],
+     "kind": "A"
+    },
+    "jason-merlo/muse": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A Spark Core based music visualizer using the MSEGEQ7 graphic equalizer IC",
+     "files": [
+      "Hardware V1.3/lib/contrib-kicad_parts/conn-sdcard/README.md"
+     ],
+     "kind": "B"
+    },
+    "ChristianLerche/3DPCB-4LAYER": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "This is the 3DPCB with 4 layer PCB - A5984_edge works.",
+     "files": [
+      "3DPCB_4L.cmp",
+      "3DPCB_4L.net",
+      "3DPCB_4L.csv",
+      "3DPCB_4L.xml",
+      "3DPCB_4L.sch"
+     ],
+     "kind": "A"
+    },
+    "snug-eco/user-board": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "PCB schematics and layout for user board",
+     "files": [
+      "MOLEX-SD-CONNECTOR/KiCAD/2025-11-27_21-35-30.lib"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_footprint_doc_no_longer_used": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints/christianlerche/lerchetech/lerche_molex_502774_0891/readme.md",
+      "footprints/christianlerche/lerchetech/lerche_molex_502774_0891/readme_src.md"
+     ],
+     "kind": "B"
+    },
+    "oomlout/oomlout_oomp_footprint_src": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints_flat/christianlerche_lerchetech_lerche_molex_502774_0891/working/readme.md"
+     ],
+     "kind": "A"
+    },
+    "land-boards/lb-boards": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "land-boards - Board Designs",
+     "files": [
+      "BeagleBoneBlack Cards/BBB Overall/beaglebone-black-master/BBB_BOM.csv",
+      "BeagleBoneBlack Cards/BBB Overall/beaglebone-black-master/BBB_Industrial_BOM.csv"
+     ],
+     "kind": "A"
+    },
+    "legokor/UPRA_Eagle_Libraries": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Eagle component libraries for UPRA HW development",
+     "files": [
+      "UPRA_SD_card.lbr"
+     ],
+     "kind": "B"
+    },
+    "millerlp/OWHL": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "OWHL - Open Wave Height Logger",
+     "files": [
+      "Hardware_files/OWHL_revC/EAGLE_CAD_files/OWHL_POWER_RevC.sch",
+      "Hardware_files/OWHL_revC/EAGLE_CAD_files/OWHL_POWER_RevC.brd"
+     ],
+     "kind": "A"
+    },
+    "akw0088/FlightController": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "BOM_FlightController.csv",
+      "Project/FlightController/FlightController.PrjPcb"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_project_bot_v_2": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "projects/christianlerche_3dpcb_4layer_3dpcb_4l/current_version/working/readme.md",
+      "projects/christianlerche_3dpcb_3dpcb_rev_b_drv8825/current_version/working/readme.md"
+     ],
+     "kind": "A"
+    },
+    "demyanenko-d/ZXEvoPro": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "Hardware/PCB/RevA2.5/zxRevo rev2.5.PrjPcb"
+     ],
+     "kind": "A"
+    },
+    "millerlp/MusselTracker": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "MusselTracker arduino code",
+     "files": [
+      "Eagle_files/MusselTracker2_RevC.brd",
+      "Eagle_files/MusselTracker2_RevC.sch"
+     ],
+     "kind": "A"
+    },
+    "sagar-koirala/M5Stack-CORE2-PCB-RE": {
+     "owner_type": "User",
+     "private": false,
+     "desc": " Reverse-engineered PCB design of the M5Stack CORE2 development kit created in Altium Designer",
+     "files": [
+      "M5_CORE2.PrjPcb"
+     ],
+     "kind": "A"
+    },
+    "millerlp/Thermocouple_datalogger_2": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "8 channel thermocouple datalogger, arduino-based",
+     "files": [
+      "Eagle_files/RevA/Thermocouple_datalogger_RevA.sch",
+      "Eagle_files/RevB/Thermocouple_datalogger_RevB.sch",
+      "Eagle_files/RevA/Thermocouple_datalogger_RevA.brd",
+      "Eagle_files/RevB/Thermocouple_datalogger_RevB.brd"
+     ],
+     "kind": "A"
+    },
+    "xiphonics/picoTracker-pcb": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "main/lib/5027740891/5027740891.kicad_sym",
+      "keys/lib/5027740891/5027740891.kicad_sym",
+      "main/fabrication/picoTracker-bom.csv"
+     ],
+     "kind": "A"
+    },
+    "nrdsp/rvPhone": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hw/rvPhone/rvPhone.net",
+      "hw/rvPhone/exp.sch",
+      "hw/rvPhone/periph.sch"
+     ],
+     "kind": "A"
+    },
+    "BroncoSpace-Lab/scales-hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Hardware design files for the Spacecraft Compartmentalized Autonomous Learning and Edge Computing System (SCALES)",
+     "files": [
+      "imx8x_eps_leviathan/bootConfig.kicad_sch",
+      "imx8x_eps_leviathan_v2/bootConfig.kicad_sch",
+      "imx8x_eps_leviathan_v2/.history/bootConfig.kicad_sch",
+      "imx8x_carrier_board/imx8x_carrier_v1/imx_microSD.kicad_sch",
+      "imx8x_carrier_board/imx8x_carrier_v2/imx_microSD.kicad_sch",
+      "imx8x_eps_leviathan/libs/imx8_carrier_board_symbol_library.kicad_sym",
+      "imx8x_eps_leviathan_v2/libs/imx8_carrier_board_symbol_library.kicad_sym",
+      "imx8x_carrier_board/imx8x_carrier_v2/libs/imx8_carrier_board_symbol_library.kicad_sym",
+      "imx8x_carrier_board/imx8x_carrier_v1/libs/imx8_carrier_board_symbol_library.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "lab11/embedded-gw": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hardware/rev_c/embedded-gw_bom.txt",
+      "hardware/rev_c/embedded-gw_bom.csv",
+      "hardware/rev_c/embedded-gw.brd",
+      "hardware/rev_c/embedded-gw.sch"
+     ],
+     "kind": "A"
+    },
+    "millerlp/parts_guide": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A list of common part numbers",
+     "files": [
+      "parts_guide.md"
+     ],
+     "kind": "A"
+    },
+    "r00sta/kicad_libs": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "My collection of KiCad component libraries",
+     "files": [
+      "cdo2.dcm"
+     ],
+     "kind": "A"
+    },
+    "UWARG/hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "PCB designs for the Waterloo Aerial Robotics Group",
+     "files": [
+      "Projects/Zeropilot 3.0 Primary/BOM_[No Variations].csv"
+     ],
+     "kind": "A"
+    },
+    "Retrodolivo/bench-power-measurment": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "Hardware/Новый текстовый документ.txt"
+     ],
+     "kind": "A"
+    },
+    "UBC-Thunderbots/PCB_MainBoard": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Schematics and PCB layouts for the main control board.",
+     "files": [
+      "mainboard-v2.0/pcb/MainBoard.PrjPCB"
+     ],
+     "kind": "A"
+    },
+    "Merophy/enzyme": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Enzymes are proteins that help speed up metabolism, or the chemical reactions in our bodies. They build some substances and break others down. All living things have enzymes.",
+     "files": [
+      "kiCad-symbols/CoE_Connector.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "millerlp/MusselGapeTracker_hardware": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Mussel Gape Tracker circuit board designs",
+     "files": [
+      "deprecated/Eagle_files/MusselGapeTracker_RevB.sch",
+      "deprecated/Eagle_files/MusselGapeTracker_RevA_2.sch"
+     ],
+     "kind": "A"
+    },
+    "DominicKlukas/DBLibTest": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "AltiumLibraries_SchLib.xml"
+     ],
+     "kind": "A"
+    },
+    "millerlp/Tidepool_heater": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Arduino-based tidepool heating apparatus",
+     "files": [
+      "hardware/Tidepool_heater_RevC/Tidepool_heater_RevC.sch",
+      "hardware/Tidepool_heater_RevC/Tidepool_heater_RevC.brd"
+     ],
+     "kind": "A"
+    },
+    "NonayMete/GENG5551": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "GENG5551 Group 15",
+     "files": [
+      "Telemetry PCB/Design 1 - Telemetry Module/Design 1 - Telemetry Module.PrjPcb"
+     ],
+     "kind": "A"
+    },
+    "Neruzzz/TFG": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Trabajo de fin de grado de Ingenieria de Telecomunicaciones UAB",
+     "files": [
+      "Datasheets&HardwareFiles/nRF9160-DK - Hardware files 0_15_0/PCA10090-nRF9160 Development Board 0_15_0/Altium Designer files/pca10090.PrjPCB"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 173
+  },
+  "5031821852": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": "push-push",
+   "kc": [
+    "7MSDP-FA-0024",
+    "7MSDP-F0-0037"
+   ],
+   "raw_repos": 61,
+   "design_repos": 28,
+   "lib_repos": 7,
+   "orgs": [
+    "Badger-Embedded/badgerd-sdwirec",
+    "MajenkoProjects/RTmFM",
+    "RespiraWorks/KiCad-Library",
+    "RespiraWorks/Ventilator",
+    "Sierra-Lobo/mainboard-hardware",
+    "TUDelft-SPC-Lab/spcl_midge_hardware",
+    "hsfl/artemis-hardware",
+    "openretroMGB/OpenRetroMGB",
+    "pycubed/hardware",
+    "retro-esp32/RetroESP32-Design-Files",
+    "retro-esp32/RetroESP32-X",
+    "stanford-ssi/samwise-avionics",
+    "stanford-ssi/sapling-avionics",
+    "usbarmory/usbarmory"
+   ],
+   "repos": {
+    "usbarmory/usbarmory": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "USB armory - The open source compact secure computer",
+     "files": [
+      "hardware/lib/snapeda.lib",
+      "hardware/mark-two/armory-cache.lib",
+      "hardware/mark-two/armory.net",
+      "hardware/mark-two-beta/armory-cache.lib",
+      "hardware/mark-two-beta/armory.net",
+      "hardware/mark-two/microsd.sch",
+      "hardware/mark-two-beta/microsd.sch"
+     ],
+     "kind": "A"
+    },
+    "Badger-Embedded/badgerd-sdwirec": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Our way of re-creating sdwire of Tizen. Checkout our website to get one yourself: https://www.badgerd.nl/sdwirec/",
+     "files": [
+      "sdwirec-hw/components/503182-1852.lib",
+      "sdwirec-hw/components/503182-1852.dcm",
+      "sdwirec-hw/sdwirec.kicad_sch"
+     ],
+     "kind": "A"
+    },
+    "dbuchwald/kicad-simple": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Simple designs in KiCAD that do not require separate projects",
+     "files": [
+      "microSD_breakout/socket/503182-1852.dcm",
+      "microSD_breakout/socket/503182-1852.lib",
+      "microSD_breakout/microSD_breakout-cache.lib",
+      "microSD_breakout/microSD_breakout.sch"
+     ],
+     "kind": "A"
+    },
+    "pycubed/hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Pycubed PC104 layout design files ",
+     "files": [
+      "mainboard-v04/mainboard.lib",
+      "mainboard-v02/mainboard.lib",
+      "mainboard-v01/mainboard.lib",
+      "mainboard-v05/mainboard.lib",
+      "mainboard-v04/mainboard.net",
+      "mainboard-v01/mainboard-cache.lib",
+      "mainboard-v05/mainboard.net",
+      "mainboard-v04/mainboard-cache.lib",
+      "mainboard-v05/mainboard-cache.lib",
+      "mainboard-v05/bom/mainboardv05.csv",
+      "mainboard-v02/Connectors.sch",
+      "mainboard-v01/Connectors.sch",
+      "mainboard-v04/Connectors.sch",
+      "mainboard-v05/Connectors.sch"
+     ],
+     "kind": "A"
+    },
+    "lnis-uofu/FROG_test_infrastructure": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "Testboard/Hardware/Libraries/503182-1852.lbr"
+     ],
+     "kind": "B"
+    },
+    "oresat/oresat-eagle-libraries": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "EAGLE CAD libraries for the OreSat CubeSat Project",
+     "files": [
+      "J-Molex-micro-sd-503182-1852.lbr"
+     ],
+     "kind": "B"
+    },
+    "gsr-personal-projects/hikebuddy": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "An ESP32 based hike/bike computer with weather monitoring, GPS tracking and BLE sensor support (and a general purpose development board)",
+     "files": [
+      "Hardware/Reference/EAGLE lbr/503182-1852.lbr"
+     ],
+     "kind": "B"
+    },
+    "matternet/DataLogger": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Board Layout and code for data logging using thermocouple",
+     "files": [
+      "503182-1852.lbr"
+     ],
+     "kind": "B"
+    },
+    "marqs85/ossc_pro_hw": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "OSSC Pro HW files",
+     "files": [
+      "custom_components.lib"
+     ],
+     "kind": "A"
+    },
+    "hikebuddy32/hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "Reference/EAGLE lbr/503182-1852.lbr"
+     ],
+     "kind": "B"
+    },
+    "stanford-ssi/samwise-avionics": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Avionics for 2U Rev of Sputnik Satellite",
+     "files": [
+      "symbol_libraries/ssi_connector.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "Albert-IV/om-keyboard": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "rev3/pcb/footprints/kleeb/README.md"
+     ],
+     "kind": "B"
+    },
+    "will127534/Miniature-CM4-Cluster": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A dense cluster for four Raspberry Pi Compute Module 4",
+     "files": [
+      "CM4Card/CM4Card.kicad_sch"
+     ],
+     "kind": "A"
+    },
+    "ahmad-ih/USB-Armory": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "lib/snapeda.lib",
+      "mark-two/armory.net"
+     ],
+     "kind": "A"
+    },
+    "MajenkoProjects/RTmFM": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "2025-09-05_17-36-29.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "Sierra-Lobo/mainboard-hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "PyCubed mainboard v5 fork by Sierra Lobo for Foras Promineo CubeSat",
+     "files": [
+      "revB-em/Connectors.sch",
+      "revA-proto/Connectors.sch"
+     ],
+     "kind": "A"
+    },
+    "stanford-ssi/sapling-avionics": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "PyCubed/mainboard-v05/mainboard.net"
+     ],
+     "kind": "A"
+    },
+    "hsfl/artemis-hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Hardware design resources for the Artemis Kit, an affordable 1U CubeSat that encompasses all the essential subsystems of a fully operational passive small satellite, commonly known as a smallsat.",
+     "files": [
+      "Eagle Designs/PDU/PDUv2.2/CAMOutputs/Assembly/PnP_PDU_v2.2_front.txt",
+      "Eagle Designs/PDU/PDUv2.2/CAMOutputs/Assembly/PDU_v2.2.txt"
+     ],
+     "kind": "A"
+    },
+    "retro-esp32/RetroESP32-X": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Official Release of Retro ESP32 Hardware",
+     "files": [
+      "bom/RetroESP32-X.clean.csv",
+      "bom/RetroESP32-X.csv",
+      "bom/RetroESP32.serial.csv",
+      "bom/RetroESP32.serial.top.csv"
+     ],
+     "kind": "A"
+    },
+    "RespiraWorks/Ventilator": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Fully-featured ICU ventilator design, optimized for manufacture using commonly available components and free to license. Repository tracks all mechanical, electrical and systems design, software, requ",
+     "files": [
+      "pcb/cycle_controller.sch"
+     ],
+     "kind": "A"
+    },
+    "ffxx68/Sharp_ce140f_emul": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "KiCad_v1/sharp-ce140f-emul.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "wattnotions/OpenWave": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Open Source Ocean Wave Sensor",
+     "files": [
+      "OLD/openwave-kicad/OpenWave-rescue.dcm",
+      "OLD/openwave-kicad/OpenWave-rescue.lib",
+      "OLD/openwave-kicad/OpenWave-cache.lib",
+      "OLD/openwave-kicad/OpenWave.net",
+      "OLD/openwave-kicad/wattnotions.lib"
+     ],
+     "kind": "A"
+    },
+    "ChrisHayward-dev/SapphireKicad": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "SapphineMinimal-rescue.lib",
+      "SapphineMinimal-rescue.dcm"
+     ],
+     "kind": "A"
+    },
+    "RespiraWorks/KiCad-Library": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Repository for containing RespiraWorks' electrical KiCad Library",
+     "files": [
+      "RespiraWorks.dcm",
+      "RespiraWorks.lib"
+     ],
+     "kind": "A"
+    },
+    "openretroMGB/OpenRetroMGB": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Introducing Open Retro MGB, the open-source, modular gaming board designed for gamers and hobbyists! 🎮",
+     "files": [
+      "bom/carts/RetroESP32/RetroESP32.csv",
+      "bom/carts/RetroESP32/RetroESP32-seeed-studio.csv",
+      "eagle/carts/RetroESP32/RetroESP32.brd",
+      "eagle/carts/RetroESP32/RetroESP32.sch"
+     ],
+     "kind": "A"
+    },
+    "db-electronics/kicadlib": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "kicad parts libraries",
+     "files": [
+      "db-connectors.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "maholli/SAM32": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Feather-sized SAMD51 with M4 core serving as UART bridge to WROOM ESP32 ",
+     "files": [
+      "hardware/SAM32_v23/SAM32.cmp",
+      "hardware/SAM32_v25/SAM32.net",
+      "hardware/SAM32_v26/SAM32.net",
+      "hardware/SAM32_v24/SAM32.sch",
+      "hardware/SAM32_v25/SAM32.sch",
+      "hardware/SAM32_v26/SAM32.sch",
+      "hardware/SAM32_v21/SAM32.sch",
+      "hardware/SAM32_v23/SAM32.sch",
+      "hardware/SAM32_v22/SAM32.sch"
+     ],
+     "kind": "A"
+    },
+    "retro-esp32/RetroESP32-Design-Files": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "bom/RetroESP32.csv"
+     ],
+     "kind": "A"
+    },
+    "RevFur/PurrEngine-hardware": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "PCB/Purr_Amp.cmp",
+      "PCB/Purr_Amp.net",
+      "PCB/BOM/PurrEngine_PCB_BOM.csv"
+     ],
+     "kind": "A"
+    },
+    "glydrfreak/vSpeed-Vario": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "vSpeed Vario - DIY Paragliding Variometer",
+     "files": [
+      "Eagle/P4/PROTOTYPE4.brd",
+      "Eagle/P5/PROTOTYPE4.brd",
+      "Eagle/P5/PROTOTYPE5_PCB/PROTOTYPE5.brd"
+     ],
+     "kind": "A"
+    },
+    "ppusapati/weather": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "docs/HARDWARE.md"
+     ],
+     "kind": "A"
+    },
+    "The-Faulty/Lyra": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "!! This project has become PicoMod please see https://github.com/The-Faulty/PicoMod !!  SamD21 Based Rocket Deployment Altimeter ",
+     "files": [
+      "PCB Files/Data_Board_4_Panel/CAMOutputs/Assembly/dataOut_2x2.html"
+     ],
+     "kind": "A"
+    },
+    "TUDelft-SPC-Lab/spcl_midge_hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Hardware design files for the SPC lab MIDGE wearable devices for in-the-wild social data collection.",
+     "files": [
+      "Hardware_Design_v1/PCB/KiCad/rythm_badge_tudelft.net",
+      "Hardware_Design_v1/PCB/KiCad/rythm_badge_tudelft-cache.lib"
+     ],
+     "kind": "A"
+    },
+    "CMGeldenhuys/kleinvoet": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Spatially-Distributed Temporally-Synchronised Infrasonic Recorder",
+     "files": [
+      "Connectors.sch"
+     ],
+     "kind": "A"
+    },
+    "marekr/eagle-libraries": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Libraries used by created by me for EAGLE",
+     "files": [
+      "borkedlabs-connectors.lbr"
+     ],
+     "kind": "B"
+    }
+   },
+   "max_total": 249
+  },
+  "5033980891": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": "push-push",
+   "kc": [
+    "7MSDP-FA-0024",
+    "7MSDP-F0-0037"
+   ],
+   "raw_repos": 0,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 0
+  },
+  "5033980892": {
+   "brand": "Molex",
+   "card": "micro-sd",
+   "mech": "push-push",
+   "kc": [
+    "7MSDP-FA-0024",
+    "7MSDP-F0-0037"
+   ],
+   "raw_repos": 1,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {
+    "Pclika/mcp-platform": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Open-source MCU platform for building MCP-ready hardware and development workflows with Claude, Codex, Cursor, and similar AI tools.",
+     "files": [
+      "hardware/kicad/pclika-esp32s3-v01.kicad_sch"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 1
+  },
+  "5045200691": {
+   "brand": "Molex",
+   "card": "nano-sim",
+   "mech": "tray",
+   "kc": [
+    "7SIMC-F0-0043",
+    "7SIMC-FA-0021",
+    "7SIMC-F0-0030"
+   ],
+   "raw_repos": 63,
+   "design_repos": 5,
+   "lib_repos": 4,
+   "orgs": [
+    "Digi-Key/digikey-kicad-library"
+   ],
+   "repos": {
+    "johnyHV/EagleLib": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Eagle library",
+     "files": [
+      "504520-0691.lbr"
+     ],
+     "kind": "B"
+    },
+    "iutrilladn/kicadlib": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Simple kicad library to use with all my projects",
+     "files": [
+      "nelium.lib",
+      "nelium.kicad_sym",
+      "nelium.dcm"
+     ],
+     "kind": "A"
+    },
+    "golubev-artem/AltiumLL": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "https://www.samacsys.com/",
+     "files": [
+      "BACKUP_TEST/digikey_upload_list_part00.txt",
+      "BACKUP_TEST/digikey_upload_list_part00_FULL.txt",
+      "BACKUP_TEST/digikey_updates_part00.tsv"
+     ],
+     "kind": "A"
+    },
+    "Digi-Key/digikey-kicad-library": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "An atomic parts  library for Ki-Cad.",
+     "files": [
+      "src/Source_Symbols/WM12731CT-ND.lib",
+      "digikey-symbols/dk_Memory-Connectors-PC-Card-Sockets.dcm",
+      "digikey-symbols/dk_Memory-Connectors-PC-Card-Sockets.lib"
+     ],
+     "kind": "A"
+    },
+    "computergeek1507/PB_16": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Open source FPP PB16 Pixel Controller",
+     "files": [
+      "libraries/digikey/digikey-symbols/dk_Memory-Connectors-PC-Card-Sockets.lib",
+      "libraries/digikey/digikey-symbols/dk_Memory-Connectors-PC-Card-Sockets.dcm"
+     ],
+     "kind": "B"
+    },
+    "fabiansteiner/OpenValve": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "3D-printable pinch valve for irrigation and sensor-driven liquid control.",
+     "files": [
+      "hardware/pcb/specific_parts/digikey-kicad-library-master/src/Source_Symbols/WM12731CT-ND.lib"
+     ],
+     "kind": "A"
+    },
+    "VolksEEG/VolksEEG": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Open Source EEG project",
+     "files": [
+      "hardware/KiCAD/VolksEEG/Library/digikey-kicad-library-master/src/Source_Symbols/WM12731CT-ND.lib"
+     ],
+     "kind": "B"
+    },
+    "oomlout/oomlout_oomp_footprint_doc_no_longer_used": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints/digikey/oomp_digi_key/sim_nano_5045200691/readme.md",
+      "footprints/digikey/oomp_digi_key/sim_nano_5045200691/readme_src.md",
+      "footprints/digikey/digikey_footprints/sim_nano_5045200691/readme.md",
+      "footprints/digikey/sim_nano_5045200691/sim_nano_5045200691/readme.md",
+      "footprints/digikey/digikey_footprints/sim_nano_5045200691/readme_src.md",
+      "footprints/digikey/sim_nano_5045200691/sim_nano_5045200691/readme_src.md",
+      "footprints/digikey/oomp_digi_key_digikey_footprints/sim_nano_5045200691/readme.md",
+      "footprints/digikey/oomp_digi_key_digikey_footprints/sim_nano_5045200691/readme_src.md"
+     ],
+     "kind": "B"
+    },
+    "TranDangKhoaTechnology/KICAD_MEGA_LIBRARY": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "Sources/DigiKey/digikey-symbols-kicad/5045200691.kicad_sym"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 510
+  },
+  "SCDA2A0100": {
+   "brand": "ALPS Alpine",
+   "card": "sd",
+   "mech": null,
+   "kc": [
+    "7SDCN-F0-0028",
+    "7SDCN-F0-0037",
+    "7SDCN-F0-1012"
+   ],
+   "raw_repos": 0,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 0
+  },
+  "SCDA2A0101": {
+   "brand": "ALPS Alpine",
+   "card": "sd",
+   "mech": "reverse",
+   "kc": [
+    "7SDCN-F0-0026",
+    "7SDCN-F0-0033"
+   ],
+   "raw_repos": 0,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 0
+  },
+  "SCDA3A0100": {
+   "brand": "ALPS Alpine",
+   "card": "sd",
+   "mech": "push-push",
+   "kc": [
+    "7SDCN-F0-0028",
+    "7SDCN-F0-0037",
+    "7SDCN-F0-1012"
+   ],
+   "raw_repos": 0,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 0
+  },
+  "SCDA3A0102": {
+   "brand": "ALPS Alpine",
+   "card": "sd",
+   "mech": "push-push",
+   "kc": [
+    "7SDCN-F0-0028",
+    "7SDCN-F0-0037",
+    "7SDCN-F0-1012"
+   ],
+   "raw_repos": 1,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {
+    "SamuraiCrow/MiniMig-KiCAD": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A conversion of MiniMig PCB from Altium to KiCAD",
+     "files": [
+      "MyMinimig-SchDoc-cache.lib",
+      "MyMinimig-SchDoc.sch"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 2
+  },
+  "SCDA6A0101": {
+   "brand": "ALPS Alpine",
+   "card": "sd",
+   "mech": null,
+   "kc": [
+    "7SDCN-F0-0028",
+    "7SDCN-F0-0037",
+    "7SDCN-F0-1012"
+   ],
+   "raw_repos": 1,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 1
+  },
+  "SCDA7A0101": {
+   "brand": "ALPS Alpine",
+   "card": "sd",
+   "mech": "push-push",
+   "kc": [
+    "7SDCN-F0-0028",
+    "7SDCN-F0-0037",
+    "7SDCN-F0-1012"
+   ],
+   "raw_repos": 4,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 20
+  },
+  "SCDA8A0201": {
+   "brand": "ALPS Alpine",
+   "card": "sd",
+   "mech": "reverse",
+   "kc": [
+    "7SDCN-F0-0026",
+    "7SDCN-F0-0033"
+   ],
+   "raw_repos": 0,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 0
+  },
+  "SCDA9A0400": {
+   "brand": "ALPS Alpine",
+   "card": "sd",
+   "mech": "push-push",
+   "kc": [
+    "7SDCN-F0-0028",
+    "7SDCN-F0-0037",
+    "7SDCN-F0-1012"
+   ],
+   "raw_repos": 0,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 0
+  },
+  "SCDABA0101": {
+   "brand": "ALPS Alpine",
+   "card": "sd",
+   "mech": "push-push",
+   "kc": [
+    "7SDCN-F0-0028",
+    "7SDCN-F0-0037",
+    "7SDCN-F0-1012"
+   ],
+   "raw_repos": 0,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 0
+  },
+  "SCDABA0801": {
+   "brand": "ALPS Alpine",
+   "card": "sd",
+   "mech": "push-push",
+   "kc": [
+    "7SDCN-F0-0028",
+    "7SDCN-F0-0037",
+    "7SDCN-F0-1012"
+   ],
+   "raw_repos": 0,
+   "design_repos": 0,
+   "lib_repos": 0,
+   "orgs": [],
+   "repos": {},
+   "max_total": 0
+  },
+  "SCHA1B0100": {
+   "brand": "ALPS Alpine",
+   "card": "micro-sd",
+   "mech": "push-push",
+   "kc": [
+    "7MSDP-F0-0037",
+    "7MSDP-F0-0027",
+    "7MSDP-FA-0024"
+   ],
+   "raw_repos": 1,
+   "design_repos": 1,
+   "lib_repos": 0,
+   "orgs": [
+    "apachecn/hackaday-blog-zh-part1"
+   ],
+   "repos": {
+    "apachecn/hackaday-blog-zh-part1": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "docs/parts-microsd-memory-card-holders.md"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 1
+  },
+  "SCHA4B0100": {
+   "brand": "ALPS Alpine",
+   "card": "micro-sd",
+   "mech": "push-push",
+   "kc": [
+    "7MSDP-F0-0037",
+    "7MSDP-F0-0027",
+    "7MSDP-FA-0024"
+   ],
+   "raw_repos": 15,
+   "design_repos": 7,
+   "lib_repos": 1,
+   "orgs": [],
+   "repos": {
+    "oomlout/oomlout_oomp_footprint_doc_no_longer_used": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints/kubix89/kicad/alps_scha4b0100_sd_socket/readme.md",
+      "footprints/cuzdaori/kicad/alps_scha4b0100_sd_socket/readme.md",
+      "footprints/cormoran/kicad/alps_scha4b0100_sd_socket/readme.md",
+      "footprints/celeritous/kicad/alps_scha4b0100_sd_socket/readme.md",
+      "footprints/kubix89/kicad/alps_scha4b0100_sd_socket/readme_src.md",
+      "footprints/cormoran/kicad/alps_scha4b0100_sd_socket/readme_src.md",
+      "footprints/cuzdaori/kicad/alps_scha4b0100_sd_socket/readme_src.md",
+      "footprints/celeritous/kicad/alps_scha4b0100_sd_socket/readme_src.md",
+      "footprints/jeff-russ/oomp_jeff_russ_kicad/alps_scha4b0100_sd_socket/readme.md",
+      "footprints/jeff-russ/oomp_jeff_russ_kicad/alps_scha4b0100_sd_socket/readme_src.md",
+      "footprints/codemercenary-os/oomp_codemercenary_os_kicad/alps_scha4b0100_sd_socket/readme.md",
+      "footprints/codemercenary-os/oomp_codemercenary_os_kicad/alps_scha4b0100_sd_socket/readme_src.md",
+      "footprints/kubix89/kicad/alps_scha4b0100_sd_socket/working.yaml",
+      "footprints/cormoran/kicad/alps_scha4b0100_sd_socket/working.yaml",
+      "footprints/cuzdaori/kicad/alps_scha4b0100_sd_socket/working.yaml",
+      "footprints/celeritous/kicad/alps_scha4b0100_sd_socket/working.yaml",
+      "footprints/jeff-russ/oomp_jeff_russ_kicad/alps_scha4b0100_sd_socket/working.yaml",
+      "footprints/codemercenary-os/oomp_codemercenary_os_kicad/alps_scha4b0100_sd_socket/working.yaml"
+     ],
+     "kind": "B"
+    },
+    "oomlout/oomlout_oomp_footprint_src": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints_flat/kubix89_kicad_alps_scha4b0100_sd_socket/working/readme.md",
+      "footprints_flat/cuzdaori_kicad_alps_scha4b0100_sd_socket/working/readme.md",
+      "footprints_flat/cormoran_kicad_alps_scha4b0100_sd_socket/working/readme.md",
+      "footprints_flat/jeff_russ_kicad_alps_scha4b0100_sd_socket/working/readme.md",
+      "footprints_flat/celeritous_kicad_alps_scha4b0100_sd_socket/working/readme.md",
+      "footprints_flat/codemercenary_os_kicad_alps_scha4b0100_sd_socket/working/readme.md",
+      "footprints_flat/kubix89_kicad_alps_scha4b0100_sd_socket/working/working.yaml",
+      "footprints_flat/cuzdaori_kicad_alps_scha4b0100_sd_socket/working/working.yaml",
+      "footprints_flat/cormoran_kicad_alps_scha4b0100_sd_socket/working/working.yaml",
+      "footprints_flat/jeff_russ_kicad_alps_scha4b0100_sd_socket/working/working.yaml",
+      "footprints_flat/celeritous_kicad_alps_scha4b0100_sd_socket/working/working.yaml",
+      "footprints_flat/codemercenary_os_kicad_alps_scha4b0100_sd_socket/working/working.yaml"
+     ],
+     "kind": "A"
+    },
+    "celeritous/KiCad.lib": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Celeritous KiCad schematic symbol library",
+     "files": [
+      "Celeritous_Connector.lib"
+     ],
+     "kind": "A"
+    },
+    "brannondorsey/DreamMachines": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Research into using Machine Learning to hallucinate circuit board schematics",
+     "files": [
+      "data/sch/lcd_sw_sd.sch_1478983805756.sch"
+     ],
+     "kind": "A"
+    },
+    "celeritous/STM32F745VE_Module": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "STM32F745VE_Hardware/REV1.0/STM32F745VE_Module.net",
+      "STM32F745VE_Hardware/REV1.1/STM32F745VE_REV1.1.net",
+      "STM32F745VE_Hardware/REV1.1/STM32F745VE_REV1.1-cache.lib",
+      "STM32F745VE_Hardware/REV1.0/STM32F745VE_Module-cache.lib"
+     ],
+     "kind": "A"
+    },
+    "celeritous/STM32L151VDT_Module": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "STM32L151VDT_Module",
+     "files": [
+      "STM32L151VDT_Module_Hardware/Rev1.0/STM32L151VDT_Module.net",
+      "STM32L151VDT_Module_Hardware/Rev1.0/STM32L151VDT_Module-cache.lib"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_project_bot": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "projects/celeritous_stm32f745ve_module/version_current/working/working.kicad_sch",
+      "projects/celeritous_stm32l151vdt_module/version_current/working/working.kicad_sch"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_project_bot_v_2": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "projects/celeritous_stm32l151vdt_module_stm32l151vdt_module/current_version/working/working.kicad_sch"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 69
+  },
+  "SCHA4B0419": {
+   "brand": "ALPS Alpine",
+   "card": "micro-sd",
+   "mech": "push-push",
+   "kc": [
+    "7MSDP-F0-0037",
+    "7MSDP-F0-0027",
+    "7MSDP-FA-0024"
+   ],
+   "raw_repos": 35,
+   "design_repos": 29,
+   "lib_repos": 3,
+   "orgs": [
+    "1Bitsy/1bitsy-1up",
+    "OpenSourceSDRLab/PortaRF",
+    "freerouting/freerouting",
+    "portapack-mayhem/mayhem-firmware",
+    "sharebrained/library-kicad"
+   ],
+   "repos": {
+    "daveshah1/openMixR": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "4k Mixed Reality headset",
+     "files": [
+      "hardware/headset-r1.0/mainboard/a64_user_if.sch"
+     ],
+     "kind": "A"
+    },
+    "portapack-mayhem/mayhem-firmware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "The firmware for the HackRF+PortaPack H1/H2/H4/H4M",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "sharebrained/library-kicad": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "My KiCad symbols and footprints",
+     "files": [
+      "sd.lib"
+     ],
+     "kind": "A"
+    },
+    "abhishek-kakkar/beaglelogic-standalone": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "BeagleLogic implemented as a turnkey and standalone logic analyzer",
+     "files": [
+      "beaglelogic-standalone.sch"
+     ],
+     "kind": "A"
+    },
+    "gralco/dvk-mx8m-bsb": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Librem 5 Developer Kit using EmCraft's i.MX 8M System-on-Module.",
+     "files": [
+      "dvk-mx8m-bsb.dcm",
+      "references.sch",
+      "sd.sch",
+      "BoM/dvk-mx8m-bsb_bom.csv"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_footprint_doc_no_longer_used": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints/esden/pkl_misc/scha4b0419/readme.md",
+      "footprints/esden/pkl_misc/scha4b0419/readme_src.md",
+      "footprints/esden/pkl_misc/scha4b0419/working.yaml"
+     ],
+     "kind": "B"
+    },
+    "proegssilb/lightsaber-hardware": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "PCBs and other files for lightsaber soundboard hardware.",
+     "files": [
+      "system-board/library/SCHA4B0419/SCHA4B0419.kicad_sym",
+      "system-board/library/imported-footprints/SCHA4B0419.kicad_sym"
+     ],
+     "kind": "B"
+    },
+    "emard/ulx3s": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "PCB for ULX3S FPGA R&D board",
+     "files": [
+      "doc/ordered_components/Mouser.html"
+     ],
+     "kind": "A"
+    },
+    "RocketGod-git/HackRF-Treasure-Chest": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "HackRF software and captures by everyone and for everyone. Argh matey.",
+     "files": [
+      "Software/portapack-mayhem/hardware/portapack_h1/portapack_h1.net",
+      "Software/portapack-mayhem/hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "1Bitsy/1bitsy-1up": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "1Bitsy 1UP retro inspired handheld game console.",
+     "files": [
+      "hardware/contrib/1up-mini/README.md",
+      "hardware/V0.1/1bitsy-1up.sch",
+      "hardware/v0.2/1bitsy-1up.sch",
+      "hardware/contrib/1up-mini/1up-mini.sch"
+     ],
+     "kind": "A"
+    },
+    "freerouting/freerouting": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Advanced PCB auto-router",
+     "files": [
+      "scripts/benchmark/fixtures/PCBench/SPEX_HAB_Mainboard_Hardware_Spex-Mainboard-Hardware/unrouted.kicad_pcb",
+      "scripts/benchmark/fixtures/PCBench/SPEX_HAB_Mainboard_Hardware_Spex-Mainboard-Hardware_rev1/unrouted.kicad_pcb",
+      "scripts/benchmark/fixtures/PCBench/SPEX_HAB_Mainboard_Hardware__autosave-Spex-Mainboard-Hardware/unrouted.kicad_pcb"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_footprint_src": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints_flat/esden_pkl_misc_scha4b0419/working/readme.md",
+      "footprints_flat/esden_pkl_misc_scha4b0419/working/working.yaml"
+     ],
+     "kind": "A"
+    },
+    "manvalan/mikilab-kicad-library": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "legacy/symbols/sd.lib"
+     ],
+     "kind": "B"
+    },
+    "Josephrp/meshtonic": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Meshtonic H4M Companion — ESP32-S3 carrier for PortaPack H4M / Mayhem with multi-slot LoRa and standalone Meshtastic",
+     "files": [
+      "firmwares/mayhem-firmware/hardware/portapack_h1/portapack_h1.net",
+      "firmwares/mayhem-firmware/hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_project_bot_v_2": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "projects/1bitsy_1bitsy_1up_1up_mini/current_version/working/working_bom.csv",
+      "projects/1bitsy_1bitsy_1up_1bitsy_1up/current_version/working/working_bom.csv",
+      "projects/1bitsy_1bitsy_1up_1up_mini/current_version/working/working_bom_schematic.csv",
+      "projects/1bitsy_1bitsy_1up_1up_mini/current_version/working/working.kicad_sch"
+     ],
+     "kind": "A"
+    },
+    "brannondorsey/DreamMachines": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Research into using Machine Learning to hallucinate circuit board schematics",
+     "files": [
+      "data/sch/Data_Input_Output.sch_1478983806038.sch",
+      "data/sch/Data_Input_Output.sch_1478983806351.sch",
+      "data/sch/Data_Input_Output.sch_1478983806350.sch"
+     ],
+     "kind": "A"
+    },
+    "arsscriptum/SmartMeter-ReverseEngineering": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "smart-meter rever engineering",
+     "files": [
+      "Projects/portapack-havoc/hardware/portapack_h1/portapack_h1.net",
+      "Projects/portapack-havoc/hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "SugaryPumpkin822/Flipper-Zero-Mods": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "HackRF/hardware/portapack_h1/portapack_h1.net",
+      "HackRF/hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_project_bot": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "projects/1bitsy_1bitsy_1up/version_current/working/working_bom.csv"
+     ],
+     "kind": "A"
+    },
+    "arsscriptum/sdr.mayhem": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Software Defined Radio - Mayhem Firmware",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "jamesshao8/portapack-havoc-modified": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Custom Firmware for PortaPack (mainly for new APPs). Compatible with H3 and H1(with add-on).",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "Acetolyne/portapack-carnage": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "HackRF One firmware customized for carnage",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "OpenSourceSDRLab/PortaRF": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Custom Hardware and Firmware Bin Files for the PortaRF Gadget",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "09AZ014/EAGLE-FIRMWARE-HACKRF": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "?? EAGLE-FIRMWARE v2.0.0 - Advanced PortaPack Mayhem Fork for HackRF One",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "stat2188/drone-detector": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "zipper177/havoc-mayhem-177": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "RodgerCheetoHere/Portapack": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "mksmiffy/Havoc": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "emtee40/portapack-havoc": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "ronmozer/portapack": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "the-unknown-00/Acars-msg": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "hardware/portapack_h1/portapack_h1.net",
+      "hardware/portapack_h1/lcd_sw_sd.sch"
+     ],
+     "kind": "A"
+    },
+    "joeedh/dvk-mx8m-bsb": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "dvk-mx8m-bsb.dcm"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 104
+  },
+  "SCHA5B0200": {
+   "brand": "ALPS Alpine",
+   "card": "micro-sd",
+   "mech": "reverse",
+   "kc": [
+    "7MSDP-AA-1110"
+   ],
+   "raw_repos": 17,
+   "design_repos": 10,
+   "lib_repos": 2,
+   "orgs": [
+    "ArduPilot/Schematics",
+    "ciaa/Hardware",
+    "freerouting/freerouting"
+   ],
+   "repos": {
+    "ciaa/Hardware": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Hardware de la CIAA",
+     "files": [
+      "PCB/NXP/components/SCHA5B0200.lib",
+      "PCB/PIC/components/SCHA5B0200.lib",
+      "PCB/RX/hw/components/SCHA5B0200.lib",
+      "PCB/PIC/components/logo.lib",
+      "PCB/PIC/components/openHW.lib",
+      "PCB/PIC/components/1461353-2.lib",
+      "PCB/FSL-MINI/kicadlibs/CIAAK60LIB.lib",
+      "PCB/FSL/CIAA_K60/kicadlibs/CIAAK60LIB.lib",
+      "PCB/EDU-FSL/EDU_CIAA_K60/kicadlibs/edu-ciaa-fsl.lib",
+      "PCB/PIC/gpio.sch",
+      "PCB/NXP/mem.sch",
+      "PCB/PIC/mem.sch",
+      "PCB/RX/hw/mem.sch",
+      "PCB/NXP/gpio.sch",
+      "PCB/NXP/usb_otg.sch",
+      "PCB/PIC/usb_otg.sch",
+      "PCB/RX/hw/usb_otg.sch",
+      "PCB/RX/hw/gpio.sch",
+      "PCB/NXP/fuente.sch",
+      "PCB/NXP/din.sch",
+      "PCB/PIC/fuente.sch",
+      "PCB/PIC/din.sch",
+      "PCB/PIC/cpu.sch",
+      "PCB/NXP/analog_out.sch",
+      "PCB/RX/hw/fuente.sch",
+      "PCB/RX/hw/din.sch",
+      "PCB/NXP/dout.sch",
+      "PCB/RX/hw/analog_out.sch",
+      "PCB/PIC/JTAG.sch",
+      "PCB/NXP/cpu.sch",
+      "PCB/PIC/ciaa-pic.sch",
+      "PCB/PIC/dout.sch",
+      "PCB/NXP/ciaa-nxp.sch",
+      "PCB/NXP/analog.sch",
+      "PCB/RX/hw/cpu.sch",
+      "PCB/PIC/analog.sch",
+      "PCB/RX/hw/ciaa-rx.sch",
+      "PCB/RX/hw/dout.sch",
+      "PCB/NXP/ethernet.sch",
+      "PCB/RX/hw/analog.sch",
+      "PCB/PIC/analog_out.sch",
+      "PCB/PIC/ethernet.sch",
+      "PCB/RX/hw/ethernet.sch",
+      "PCB/NXP/rsS485_rs232_can.sch",
+      "PCB/PIC/rsS485_rs232_can.sch",
+      "PCB/RX/hw/rsS485_rs232_can.sch"
+     ],
+     "kind": "A"
+    },
+    "ciaa/Ponchos": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "Educativo1/lib/components/SCHA5B0200.lib"
+     ],
+     "kind": "B"
+    },
+    "mwelling/pocketbone-kicad": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Smalls mint tin sized BeagleBone (KiCAD version)",
+     "files": [
+      "pocketbone-kicad-cache.lib",
+      "pocketbone-kicad.sch"
+     ],
+     "kind": "A"
+    },
+    "savenlid/kicad": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "kicad files top directory",
+     "files": [
+      "lib/Alps.lib"
+     ],
+     "kind": "B"
+    },
+    "ranzbak/qmtech_minimig": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "KiCad design for a minimig compatible board for the QM_XC7A100T_DDR3 board.",
+     "files": [
+      "qmtech-minimig-rescue.lib",
+      "sd_card.sch"
+     ],
+     "kind": "A"
+    },
+    "pluggee/KiCADLibs": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "KiCAD heavy libraries for parts used by plugg.ee Labs",
+     "files": [
+      "sch/datastorage.lib",
+      "sch/datastorage.dcm"
+     ],
+     "kind": "A"
+    },
+    "freerouting/freerouting": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "Advanced PCB auto-router",
+     "files": [
+      "scripts/benchmark/fixtures/PCBench/jadonk_PocketBone/unrouted.kicad_pcb",
+      "scripts/benchmark/fixtures/PCBench/PocketBone_pocketbone-kicad/unrouted.kicad_pcb",
+      "scripts/benchmark/fixtures/PCBench/pocketbone-kicad_pocketbone-kicad/unrouted.kicad_pcb",
+      "scripts/benchmark/fixtures/PCBench/pocketbone-kicad_pocketbone-kicad/processed.kicad_pcb"
+     ],
+     "kind": "A"
+    },
+    "jadonk/PocketBone": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Smalls mint tin sized BeagleBone",
+     "files": [
+      "pocketbone-kicad.lib",
+      "pocketbone-kicad-cache.lib",
+      "pocketbone-kicad.sch"
+     ],
+     "kind": "A"
+    },
+    "ArduPilot/Schematics": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "BeagleBone-Blue/BeagleBone_Blue_BOM.csv"
+     ],
+     "kind": "A"
+    },
+    "jadonk/beaglebone-blue": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "BeagleBoard.org BeagleBone Blue - BeagleBone optimized for educational robotics",
+     "files": [
+      "BeagleBone_Blue_BOM.csv"
+     ],
+     "kind": "A"
+    },
+    "abhishek-kakkar/beaglelogic-standalone": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "BeagleLogic implemented as a turnkey and standalone logic analyzer",
+     "files": [
+      "beaglelogic-standalone-cache.lib",
+      "beaglelogic-standalone.sch"
+     ],
+     "kind": "A"
+    },
+    "jadonk/beaglebone-black-wireless": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "WiFi/BT version of BeagleBone Black done in EAGLE using Octavo OSD3358 SIP",
+     "files": [
+      "BeagleBone_Black_Wireless_BOM.csv"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 143
+  },
+  "SCHD3A0100": {
+   "brand": "ALPS Alpine",
+   "card": "micro-sd",
+   "mech": "push-pull",
+   "kc": [
+    "7TFCN-F0-0126"
+   ],
+   "raw_repos": 26,
+   "design_repos": 13,
+   "lib_repos": 2,
+   "orgs": [
+    "WeberLab-UW/OSH_Datasets",
+    "intergalaktik/ULX4M-CM4-HAT"
+   ],
+   "repos": {
+    "emard/ulx3s": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "PCB for ULX3S FPGA R&D board",
+     "files": [
+      "doc/pcb-v1.7-upgrade.md",
+      "doc/old/ulx3s_bom_1.8.csv",
+      "doc/ulx3s_bom.csv",
+      "wifi.sch",
+      "doc/old/bom-ulx3s-v1.7.6.csv",
+      "doc/old/parts-cost-estimate.csv"
+     ],
+     "kind": "A"
+    },
+    "pluggee/KiCADLibs": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "KiCAD heavy libraries for parts used by plugg.ee Labs",
+     "files": [
+      "sch/datastorage.lib",
+      "sch/datastorage.dcm",
+      "sch/datastorage.kicad_sym"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_footprint_doc_no_longer_used": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints/xesscorp/xess/xess_schd3a0100/readme.md",
+      "footprints/xesscorp/xess/xess_schd3a0100/readme_src.md",
+      "footprints/xesscorp/xess/xess_schd3a0100/working.yaml"
+     ],
+     "kind": "B"
+    },
+    "engstad/engstad-kicad-lib": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "A repository for additional KiCad schematics and footprints",
+     "files": [
+      "engstad/engstad.dcm"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_footprint_src": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "footprints_flat/xesscorp_xess_xess_schd3a0100/working/readme.md",
+      "footprints_flat/xesscorp_xess_xess_schd3a0100/working/working.yaml"
+     ],
+     "kind": "A"
+    },
+    "emard/ulx2s": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "PCB for ULX2S",
+     "files": [
+      "sdcard.sch",
+      "ulx2s.kicad_pcb"
+     ],
+     "kind": "A"
+    },
+    "intergalaktik/ULX4M-CM4-HAT": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "",
+     "files": [
+      "ulx4m-cm4-hat/backup/wifi.sch",
+      "wifi.sch"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_project_doc_v_2": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "projects/dangerousprototypes/buspirateultrahardware/bpuv2a/readme.md",
+      "projects/dangerousprototypes/buspirateultrahardware/bpuv2a/working.yaml"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_project_bot_v_2": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "projects/dangerousprototypes_buspirateultrahardware_bpuv2a/current_version/working/readme.md",
+      "projects/dangerousprototypes_buspirateultrahardware_bpuv2a/current_version/working/working_bom.csv",
+      "projects/dangerousprototypes_buspirateultrahardware_bpuv2a/current_version/working/working.yaml"
+     ],
+     "kind": "A"
+    },
+    "engstad/BetsyBoard": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "An STM32L4 prototyping board",
+     "files": [
+      "BetsyBoardBig.kicad_sch"
+     ],
+     "kind": "A"
+    },
+    "WeberLab-UW/OSH_Datasets": {
+     "owner_type": "Organization",
+     "private": false,
+     "desc": "A repository for developing scripts and working on classifiers for assembling OSH datasets",
+     "files": [
+      "data/raw/github/bom_cache/emard/ulx3s/doc/ulx3s_bom.csv",
+      "data/raw/github/bom_cache/emard/ulx3s/doc/old/bom-ulx3s-v1.7.6.csv"
+     ],
+     "kind": "A"
+    },
+    "CarlosYAlvarez/Eagle-Cad-Library": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Libraries for Eagle Cad",
+     "files": [
+      "Magister-Libraries.lbr"
+     ],
+     "kind": "B"
+    },
+    "ademenev/open_spectre": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "An open-source FPGA-based EMS SPECTRE video synth",
+     "files": [
+      "fpga/hw/legacy/kicad_zynq_template/OBPeripheral.kicad_sch"
+     ],
+     "kind": "A"
+    },
+    "oomlout/oomlout_oomp_project_bot": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "",
+     "files": [
+      "projects/dangerousprototypes_buspirateultrahardware/version_current/working/working_bom.csv",
+      "projects/dangerousprototypes_buspirateultrahardware/version_current/working/working.yaml"
+     ],
+     "kind": "A"
+    },
+    "devbisme/KiField": {
+     "owner_type": "User",
+     "private": false,
+     "desc": "Edit/insert/delete part fields in KiCad schematics or libraries using a spreadsheet.",
+     "files": [
+      "tests/integration/kicad5/xess.csv"
+     ],
+     "kind": "A"
+    }
+   },
+   "max_total": 73
+  }
+ },
+ "repo_to_mpns": {
+  "Matthausz/Navigating-Barren-Plateaus-in-Variational-Quantum-Computing": [
+   "0472192021"
+  ],
+  "ciniml/M5Stack_WiSUN": [
+   "0473880001"
+  ],
+  "edipoarg/la-plata": [
+   "0483400001"
+  ],
+  "robustini/eXploraVTOL": [
+   "0539275078"
+  ],
+  "mrinmoysarkar/eVTOL_performance_evaluation": [
+   "0553560011",
+   "0912283001"
+  ],
+  "TheEngineRoom-UniGe/TER_HAR_Dataset": [
+   "0677990004"
+  ],
+  "autosportlabs/CellTelemetry": [
+   "0912283001"
+  ],
+  "myildiz-rd/VB-IoT1": [
+   "0912283001"
+  ],
+  "sgna2124-web/-": [
+   "0943040108"
+  ],
+  "Muriukidavid/tinyk20": [
+   "1050270001"
+  ],
+  "consolesunleashed/nintendo-gamecube-sd2sp2-microsd-card-adapter": [
+   "1050270001"
+  ],
+  "cnlohr/avrcraft": [
+   "1050270001"
+  ],
+  "citrus3000psi/SD2SP2": [
+   "1050270001"
+  ],
+  "cnlohr/espusb": [
+   "1050270001"
+  ],
+  "cnlohr/colorchord": [
+   "1050270001"
+  ],
+  "cnlohr/esptracker": [
+   "1050270001"
+  ],
+  "cnlohr/espthernet": [
+   "1050270001"
+  ],
+  "cnlohr/esp82xx": [
+   "1050270001"
+  ],
+  "cnlohr/ethertiny": [
+   "1050270001"
+  ],
+  "kmod/ee": [
+   "1050270001"
+  ],
+  "cnlohr/wiflier": [
+   "1050270001"
+  ],
+  "cnlohr/swadge2019": [
+   "1050270001"
+  ],
+  "cnlohr/esp8266lighthouse": [
+   "1050270001"
+  ],
+  "cnlohr/donut": [
+   "1050270001"
+  ],
+  "emfcamp/Mk2-Hardware": [
+   "1050270001"
+  ],
+  "rmfharvey/EE4951_REPO": [
+   "1050270001"
+  ],
+  "cnlohr/wi07clight": [
+   "1050270001"
+  ],
+  "cnlohr/attiny85_tb": [
+   "1050270001"
+  ],
+  "cnlohr/esp8266_link_test": [
+   "1050270001"
+  ],
+  "martinribelotta/h730duino": [
+   "1051620001"
+  ],
+  "OSHPark/ohs18badge": [
+   "1051620001"
+  ],
+  "martinribelotta/h7dragonman": [
+   "1051620001"
+  ],
+  "Mr-Bossman/f1c200s-dev-board": [
+   "1051620001"
+  ],
+  "hulkco/Varios": [
+   "1051620001"
+  ],
+  "SoCXin/STM32H730": [
+   "1051620001"
+  ],
+  "Mr-Bossman/SD_Swap": [
+   "1051620001"
+  ],
+  "ben5049/Smart-Watch": [
+   "1051620001"
+  ],
+  "dartcom/ssd2828-dev": [
+   "1051620001"
+  ],
+  "zfeuers1/z-zener-zero": [
+   "1051620001"
+  ],
+  "androda/PCBDesigns": [
+   "1051620001"
+  ],
+  "Mr-Bossman/rk3368-dev-board": [
+   "1051620001"
+  ],
+  "acamilo/MoonBadge": [
+   "1051620001"
+  ],
+  "fehlfarbe/ESP32-Alarm-clock": [
+   "1051620001"
+  ],
+  "Groboards/giant-board-design-files": [
+   "1051620001"
+  ],
+  "ademuri/iconograph-cnc": [
+   "1051620001"
+  ],
+  "gsteiert/a5e2pmod": [
+   "1051620001"
+  ],
+  "toasterllc/MDCBoard": [
+   "1051620001"
+  ],
+  "wmeckman/LCDC1000": [
+   "1051620001"
+  ],
+  "WRansohoff/Magrat_v0": [
+   "1051620001"
+  ],
+  "orangecrab-fpga/orangecrab-hardware": [
+   "1051620001"
+  ],
+  "rjhsun/bifrost": [
+   "1051620001"
+  ],
+  "rjhsun/nibelung": [
+   "1051620001"
+  ],
+  "oomlout/oomlout_oomp_footprint_src": [
+   "1051620001",
+   "5027740891",
+   "SCHA4B0100",
+   "SCHA4B0419",
+   "SCHD3A0100"
+  ],
+  "MillerTechnologyPeru/boysenboard": [
+   "1051620001"
+  ],
+  "engstad/BetsyBoard": [
+   "1051620001",
+   "SCHD3A0100"
+  ],
+  "meh2481/beatsequencer": [
+   "1051620001"
+  ],
+  "QUT-Motorsport/QUTMS_AMS": [
+   "1051620001"
+  ],
+  "calstar/blackbox-ng": [
+   "5009010801"
+  ],
+  "Sani7/SEM": [
+   "5009010801"
+  ],
+  "going-digital/sdnes": [
+   "5009010801"
+  ],
+  "inventor02/low-cost-mmwave": [
+   "5009010801"
+  ],
+  "UWCubeSat/minimee-electronics": [
+   "5009010801"
+  ],
+  "m-labs/board-m1": [
+   "5009010801"
+  ],
+  "enacuavlab/boards": [
+   "5009010801"
+  ],
+  "MikhailBerezhanov/CNCU-01": [
+   "5009010801"
+  ],
+  "akornsys-rdi/acoustic-impact-ball": [
+   "5009010801"
+  ],
+  "koudis/robot": [
+   "5009010801"
+  ],
+  "wiretap-retro/MigStorm-ITX": [
+   "5009980900"
+  ],
+  "paulvollmer/FritzingParts": [
+   "5027740891"
+  ],
+  "mxmxmx/eurotrash_mkII": [
+   "5027740891"
+  ],
+  "mxmxmx/eurotrash": [
+   "5027740891"
+  ],
+  "mxmxmx/minitrash": [
+   "5027740891"
+  ],
+  "SpaceScienceSweden/ulv_electronics": [
+   "5027740891"
+  ],
+  "LaosLaser/Hardware": [
+   "5027740891"
+  ],
+  "ole00/hardware_mister_de0-nano-soc": [
+   "5027740891"
+  ],
+  "SpacePicklesRocketry/2025-Electrical-2": [
+   "5027740891"
+  ],
+  "ChristianLerche/3DPCB": [
+   "5027740891"
+  ],
+  "GJN-Aerospace/Halcyon": [
+   "5027740891"
+  ],
+  "ChristianLerche/3DPCB-4LAYER": [
+   "5027740891"
+  ],
+  "snug-eco/user-board": [
+   "5027740891"
+  ],
+  "land-boards/lb-boards": [
+   "5027740891"
+  ],
+  "millerlp/OWHL": [
+   "5027740891"
+  ],
+  "akw0088/FlightController": [
+   "5027740891"
+  ],
+  "oomlout/oomlout_oomp_project_bot_v_2": [
+   "5027740891",
+   "SCHA4B0100",
+   "SCHA4B0419",
+   "SCHD3A0100"
+  ],
+  "demyanenko-d/ZXEvoPro": [
+   "5027740891"
+  ],
+  "millerlp/MusselTracker": [
+   "5027740891"
+  ],
+  "sagar-koirala/M5Stack-CORE2-PCB-RE": [
+   "5027740891"
+  ],
+  "millerlp/Thermocouple_datalogger_2": [
+   "5027740891"
+  ],
+  "xiphonics/picoTracker-pcb": [
+   "5027740891"
+  ],
+  "nrdsp/rvPhone": [
+   "5027740891"
+  ],
+  "BroncoSpace-Lab/scales-hardware": [
+   "5027740891"
+  ],
+  "lab11/embedded-gw": [
+   "5027740891"
+  ],
+  "millerlp/parts_guide": [
+   "5027740891"
+  ],
+  "r00sta/kicad_libs": [
+   "5027740891"
+  ],
+  "UWARG/hardware": [
+   "5027740891"
+  ],
+  "Retrodolivo/bench-power-measurment": [
+   "5027740891"
+  ],
+  "UBC-Thunderbots/PCB_MainBoard": [
+   "5027740891"
+  ],
+  "Merophy/enzyme": [
+   "5027740891"
+  ],
+  "millerlp/MusselGapeTracker_hardware": [
+   "5027740891"
+  ],
+  "DominicKlukas/DBLibTest": [
+   "5027740891"
+  ],
+  "millerlp/Tidepool_heater": [
+   "5027740891"
+  ],
+  "NonayMete/GENG5551": [
+   "5027740891"
+  ],
+  "Neruzzz/TFG": [
+   "5027740891"
+  ],
+  "usbarmory/usbarmory": [
+   "5031821852"
+  ],
+  "Badger-Embedded/badgerd-sdwirec": [
+   "5031821852"
+  ],
+  "dbuchwald/kicad-simple": [
+   "5031821852"
+  ],
+  "pycubed/hardware": [
+   "5031821852"
+  ],
+  "marqs85/ossc_pro_hw": [
+   "5031821852"
+  ],
+  "stanford-ssi/samwise-avionics": [
+   "5031821852"
+  ],
+  "will127534/Miniature-CM4-Cluster": [
+   "5031821852"
+  ],
+  "ahmad-ih/USB-Armory": [
+   "5031821852"
+  ],
+  "MajenkoProjects/RTmFM": [
+   "5031821852"
+  ],
+  "Sierra-Lobo/mainboard-hardware": [
+   "5031821852"
+  ],
+  "stanford-ssi/sapling-avionics": [
+   "5031821852"
+  ],
+  "hsfl/artemis-hardware": [
+   "5031821852"
+  ],
+  "retro-esp32/RetroESP32-X": [
+   "5031821852"
+  ],
+  "RespiraWorks/Ventilator": [
+   "5031821852"
+  ],
+  "ffxx68/Sharp_ce140f_emul": [
+   "5031821852"
+  ],
+  "wattnotions/OpenWave": [
+   "5031821852"
+  ],
+  "ChrisHayward-dev/SapphireKicad": [
+   "5031821852"
+  ],
+  "RespiraWorks/KiCad-Library": [
+   "5031821852"
+  ],
+  "openretroMGB/OpenRetroMGB": [
+   "5031821852"
+  ],
+  "db-electronics/kicadlib": [
+   "5031821852"
+  ],
+  "maholli/SAM32": [
+   "5031821852"
+  ],
+  "retro-esp32/RetroESP32-Design-Files": [
+   "5031821852"
+  ],
+  "RevFur/PurrEngine-hardware": [
+   "5031821852"
+  ],
+  "glydrfreak/vSpeed-Vario": [
+   "5031821852"
+  ],
+  "ppusapati/weather": [
+   "5031821852"
+  ],
+  "The-Faulty/Lyra": [
+   "5031821852"
+  ],
+  "TUDelft-SPC-Lab/spcl_midge_hardware": [
+   "5031821852"
+  ],
+  "CMGeldenhuys/kleinvoet": [
+   "5031821852"
+  ],
+  "Pclika/mcp-platform": [
+   "5033980892"
+  ],
+  "iutrilladn/kicadlib": [
+   "5045200691"
+  ],
+  "golubev-artem/AltiumLL": [
+   "5045200691"
+  ],
+  "Digi-Key/digikey-kicad-library": [
+   "5045200691"
+  ],
+  "fabiansteiner/OpenValve": [
+   "5045200691"
+  ],
+  "TranDangKhoaTechnology/KICAD_MEGA_LIBRARY": [
+   "5045200691"
+  ],
+  "SamuraiCrow/MiniMig-KiCAD": [
+   "SCDA3A0102"
+  ],
+  "apachecn/hackaday-blog-zh-part1": [
+   "SCHA1B0100"
+  ],
+  "celeritous/KiCad.lib": [
+   "SCHA4B0100"
+  ],
+  "brannondorsey/DreamMachines": [
+   "SCHA4B0100",
+   "SCHA4B0419"
+  ],
+  "celeritous/STM32F745VE_Module": [
+   "SCHA4B0100"
+  ],
+  "celeritous/STM32L151VDT_Module": [
+   "SCHA4B0100"
+  ],
+  "oomlout/oomlout_oomp_project_bot": [
+   "SCHA4B0100",
+   "SCHA4B0419",
+   "SCHD3A0100"
+  ],
+  "daveshah1/openMixR": [
+   "SCHA4B0419"
+  ],
+  "portapack-mayhem/mayhem-firmware": [
+   "SCHA4B0419"
+  ],
+  "sharebrained/library-kicad": [
+   "SCHA4B0419"
+  ],
+  "abhishek-kakkar/beaglelogic-standalone": [
+   "SCHA4B0419",
+   "SCHA5B0200"
+  ],
+  "gralco/dvk-mx8m-bsb": [
+   "SCHA4B0419"
+  ],
+  "emard/ulx3s": [
+   "SCHA4B0419",
+   "SCHD3A0100"
+  ],
+  "RocketGod-git/HackRF-Treasure-Chest": [
+   "SCHA4B0419"
+  ],
+  "1Bitsy/1bitsy-1up": [
+   "SCHA4B0419"
+  ],
+  "freerouting/freerouting": [
+   "SCHA4B0419",
+   "SCHA5B0200"
+  ],
+  "Josephrp/meshtonic": [
+   "SCHA4B0419"
+  ],
+  "arsscriptum/SmartMeter-ReverseEngineering": [
+   "SCHA4B0419"
+  ],
+  "SugaryPumpkin822/Flipper-Zero-Mods": [
+   "SCHA4B0419"
+  ],
+  "arsscriptum/sdr.mayhem": [
+   "SCHA4B0419"
+  ],
+  "jamesshao8/portapack-havoc-modified": [
+   "SCHA4B0419"
+  ],
+  "Acetolyne/portapack-carnage": [
+   "SCHA4B0419"
+  ],
+  "OpenSourceSDRLab/PortaRF": [
+   "SCHA4B0419"
+  ],
+  "09AZ014/EAGLE-FIRMWARE-HACKRF": [
+   "SCHA4B0419"
+  ],
+  "stat2188/drone-detector": [
+   "SCHA4B0419"
+  ],
+  "zipper177/havoc-mayhem-177": [
+   "SCHA4B0419"
+  ],
+  "RodgerCheetoHere/Portapack": [
+   "SCHA4B0419"
+  ],
+  "mksmiffy/Havoc": [
+   "SCHA4B0419"
+  ],
+  "emtee40/portapack-havoc": [
+   "SCHA4B0419"
+  ],
+  "ronmozer/portapack": [
+   "SCHA4B0419"
+  ],
+  "the-unknown-00/Acars-msg": [
+   "SCHA4B0419"
+  ],
+  "joeedh/dvk-mx8m-bsb": [
+   "SCHA4B0419"
+  ],
+  "ciaa/Hardware": [
+   "SCHA5B0200"
+  ],
+  "mwelling/pocketbone-kicad": [
+   "SCHA5B0200"
+  ],
+  "ranzbak/qmtech_minimig": [
+   "SCHA5B0200"
+  ],
+  "pluggee/KiCADLibs": [
+   "SCHA5B0200",
+   "SCHD3A0100"
+  ],
+  "jadonk/PocketBone": [
+   "SCHA5B0200"
+  ],
+  "ArduPilot/Schematics": [
+   "SCHA5B0200"
+  ],
+  "jadonk/beaglebone-blue": [
+   "SCHA5B0200"
+  ],
+  "jadonk/beaglebone-black-wireless": [
+   "SCHA5B0200"
+  ],
+  "engstad/engstad-kicad-lib": [
+   "SCHD3A0100"
+  ],
+  "emard/ulx2s": [
+   "SCHD3A0100"
+  ],
+  "intergalaktik/ULX4M-CM4-HAT": [
+   "SCHD3A0100"
+  ],
+  "oomlout/oomlout_oomp_project_doc_v_2": [
+   "SCHD3A0100"
+  ],
+  "WeberLab-UW/OSH_Datasets": [
+   "SCHD3A0100"
+  ],
+  "ademenev/open_spectre": [
+   "SCHD3A0100"
+  ],
+  "devbisme/KiField": [
+   "SCHD3A0100"
+  ]
+ }
+}

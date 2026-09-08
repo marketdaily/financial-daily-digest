@@ -1,0 +1,2226 @@
+[
+ {
+  "repo": "Matthausz/Navigating-Barren-Plateaus-in-Variational-Quantum-Computing",
+  "stars": 1,
+  "pushed": "2024-10-20",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "0472192021"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "ciniml/M5Stack_WiSUN",
+  "stars": 8,
+  "pushed": "2019-10-29",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "0473880001"
+  ],
+  "desc": "firmware and schematic for M5Stack WiSUN board",
+  "home": ""
+ },
+ {
+  "repo": "edipoarg/la-plata",
+  "stars": 0,
+  "pushed": "2025-02-16",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "0483400001"
+  ],
+  "desc": "Mapa de la Policía / La Plata",
+  "home": ""
+ },
+ {
+  "repo": "robustini/eXploraVTOL",
+  "stars": 163,
+  "pushed": "2026-06-07",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "0539275078"
+  ],
+  "desc": "eXplora Tailsitter VTOL",
+  "home": ""
+ },
+ {
+  "repo": "mrinmoysarkar/eVTOL_performance_evaluation",
+  "stars": 13,
+  "pushed": "2025-03-03",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "0553560011",
+   "0912283001"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "TheEngineRoom-UniGe/TER_HAR_Dataset",
+  "stars": 0,
+  "pushed": "2023-06-14",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "0677990004"
+  ],
+  "desc": "Simone's dataset with python scripts to extract it and load it",
+  "home": ""
+ },
+ {
+  "repo": "autosportlabs/CellTelemetry",
+  "stars": 0,
+  "pushed": "2014-11-01",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "0912283001"
+  ],
+  "desc": "Cellular Telemetry module for RaceCapture/Pro",
+  "home": ""
+ },
+ {
+  "repo": "myildiz-rd/VB-IoT1",
+  "stars": 9,
+  "pushed": "2021-11-10",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "0912283001"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "sgna2124-web/-",
+  "stars": 0,
+  "pushed": "2026-06-16",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "0943040108"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "Muriukidavid/tinyk20",
+  "stars": 0,
+  "pushed": "2020-07-23",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "KIcad open hardware design for a tiny NXP Kinetis k20 based debu",
+  "home": ""
+ },
+ {
+  "repo": "consolesunleashed/nintendo-gamecube-sd2sp2-microsd-card-adapter",
+  "stars": 2,
+  "pushed": "2023-07-30",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "My popular upgraded SD2SP2 shared for all to enjoy.  Nothing spe",
+  "home": "https://www.consolesunleashed.com/product/nintendo-gamecube-sd2sp2-microsd-card-adapter/"
+ },
+ {
+  "repo": "cnlohr/avrcraft",
+  "stars": 472,
+  "pushed": "2021-04-27",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "Minecraft server optimized for 8-bit devices.",
+  "home": ""
+ },
+ {
+  "repo": "citrus3000psi/SD2SP2",
+  "stars": 131,
+  "pushed": "2019-11-06",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "Micro SD Card Adapter for Gamecube's Serial Port 2",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/espusb",
+  "stars": 1548,
+  "pushed": "2022-09-08",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "Software-only ESP8266 USB Device",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/colorchord",
+  "stars": 710,
+  "pushed": "2026-08-17",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "Chromatic Sound to Light Conversion System",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/esptracker",
+  "stars": 67,
+  "pushed": "2018-08-05",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "Lighthouse-based tracker using the TS4231",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/espthernet",
+  "stars": 253,
+  "pushed": "2017-05-23",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "ESP8266 10-Base-T Ethernet Driver",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/esp82xx",
+  "stars": 299,
+  "pushed": "2022-11-12",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "Useful ESP8266 C Environment",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/ethertiny",
+  "stars": 134,
+  "pushed": "2024-10-08",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "A firmware-only half-duplex 10Base-T implementation for AVRs",
+  "home": ""
+ },
+ {
+  "repo": "kmod/ee",
+  "stars": 3,
+  "pushed": "2019-08-05",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "A catchall repo for my more EE-related projects",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/wiflier",
+  "stars": 92,
+  "pushed": "2016-10-30",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "ESP8266-based Quadcopter Brain",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/swadge2019",
+  "stars": 8,
+  "pushed": "2020-11-12",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "the repo for the 2019 swadge",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/esp8266lighthouse",
+  "stars": 17,
+  "pushed": "2018-04-20",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "DO NOT USE THIS PROJECT - WILL BE SUPERCEDED",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/donut",
+  "stars": 8,
+  "pushed": "2018-02-03",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "MAGFest /is/ a donut.",
+  "home": ""
+ },
+ {
+  "repo": "emfcamp/Mk2-Hardware",
+  "stars": 2,
+  "pushed": "2015-05-13",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "Hardware for the TiLDA v2 Badge",
+  "home": ""
+ },
+ {
+  "repo": "rmfharvey/EE4951_REPO",
+  "stars": 1,
+  "pushed": "2015-12-28",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "EE4951 Barzagan group repository",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/wi07clight",
+  "stars": 16,
+  "pushed": "2014-11-29",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "Using the wi07c's ESP8266 to control a desk light.",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/attiny85_tb",
+  "stars": 11,
+  "pushed": "2015-03-05",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "ATTiny85 Test Bench Tool with Screw Terminals",
+  "home": ""
+ },
+ {
+  "repo": "cnlohr/esp8266_link_test",
+  "stars": 26,
+  "pushed": "2016-07-09",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1050270001"
+  ],
+  "desc": "Test link between an ESP8266 and a base station or another ESP82",
+  "home": ""
+ },
+ {
+  "repo": "martinribelotta/h730duino",
+  "stars": 45,
+  "pushed": "2026-05-18",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "STM32H7 Arduino form factor and software compatible board",
+  "home": ""
+ },
+ {
+  "repo": "OSHPark/ohs18badge",
+  "stars": 20,
+  "pushed": "2018-10-06",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "Open Hardware Summit 2018 Badge",
+  "home": ""
+ },
+ {
+  "repo": "martinribelotta/h7dragonman",
+  "stars": 15,
+  "pushed": "2026-05-18",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "STM32H7 board for industrial protocol bridge",
+  "home": ""
+ },
+ {
+  "repo": "Mr-Bossman/f1c200s-dev-board",
+  "stars": 16,
+  "pushed": "2020-08-24",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "A custom development board for an soc",
+  "home": ""
+ },
+ {
+  "repo": "hulkco/Varios",
+  "stars": 2,
+  "pushed": "2022-02-12",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "Varios",
+  "home": ""
+ },
+ {
+  "repo": "SoCXin/STM32H730",
+  "stars": 1,
+  "pushed": "2021-09-18",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "L6 R5：ST Cortex-M7 550MHz MCU (STM32H730)",
+  "home": "https://docs.soc.xin/STM32H730"
+ },
+ {
+  "repo": "Mr-Bossman/SD_Swap",
+  "stars": 11,
+  "pushed": "2025-06-09",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "A development tool which swaps an sdcard between a usb3 card rea",
+  "home": ""
+ },
+ {
+  "repo": "ben5049/Smart-Watch",
+  "stars": 0,
+  "pushed": "2025-03-17",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "dartcom/ssd2828-dev",
+  "stars": 22,
+  "pushed": "2024-12-15",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "A carrier board for the ssd2828 and the LH154Q01 & VS035ZSM lcd ",
+  "home": ""
+ },
+ {
+  "repo": "zfeuers1/z-zener-zero",
+  "stars": 0,
+  "pushed": "2025-10-20",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "androda/PCBDesigns",
+  "stars": 21,
+  "pushed": "2023-08-19",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "PCB Designs By Androda",
+  "home": ""
+ },
+ {
+  "repo": "Mr-Bossman/rk3368-dev-board",
+  "stars": 4,
+  "pushed": "2021-01-11",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "acamilo/MoonBadge",
+  "stars": 1,
+  "pushed": "2021-10-04",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "fehlfarbe/ESP32-Alarm-clock",
+  "stars": 1,
+  "pushed": "2025-12-11",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "Groboards/giant-board-design-files",
+  "stars": 13,
+  "pushed": "2020-10-30",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "Giant Boards kicad design files",
+  "home": ""
+ },
+ {
+  "repo": "ademuri/iconograph-cnc",
+  "stars": 2,
+  "pushed": "2021-03-08",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "gsteiert/a5e2pmod",
+  "stars": 4,
+  "pushed": "2024-07-18",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "toasterllc/MDCBoard",
+  "stars": 0,
+  "pushed": "2025-03-07",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "PCB for the Photon camera",
+  "home": "https://toaster.llc/photon"
+ },
+ {
+  "repo": "wmeckman/LCDC1000",
+  "stars": 6,
+  "pushed": "2019-07-06",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "An ESP32 based controller that can drive any kind of LED strip, ",
+  "home": ""
+ },
+ {
+  "repo": "WRansohoff/Magrat_v0",
+  "stars": 0,
+  "pushed": "2020-10-01",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "Design files and test firmwares for a single-core STM32H7 board ",
+  "home": ""
+ },
+ {
+  "repo": "orangecrab-fpga/orangecrab-hardware",
+  "stars": 542,
+  "pushed": "2024-11-06",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "ECP5 breakout board in a feather physical format",
+  "home": ""
+ },
+ {
+  "repo": "rjhsun/bifrost",
+  "stars": 0,
+  "pushed": "2021-01-26",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "Arduino Nano RGB LED controller",
+  "home": ""
+ },
+ {
+  "repo": "rjhsun/nibelung",
+  "stars": 1,
+  "pushed": "2021-03-28",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "Teensy 4.0 WS8211 LED Controller",
+  "home": ""
+ },
+ {
+  "repo": "oomlout/oomlout_oomp_footprint_src",
+  "stars": 0,
+  "pushed": "2023-09-23",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001",
+   "5027740891",
+   "SCHA4B0100",
+   "SCHA4B0419",
+   "SCHD3A0100"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "MillerTechnologyPeru/boysenboard",
+  "stars": 2,
+  "pushed": "2022-02-02",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "Linux capable single board computer using the F1C200s in an Ardu",
+  "home": ""
+ },
+ {
+  "repo": "engstad/BetsyBoard",
+  "stars": 1,
+  "pushed": "2024-01-12",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001",
+   "SCHD3A0100"
+  ],
+  "desc": "An STM32L4 prototyping board",
+  "home": ""
+ },
+ {
+  "repo": "meh2481/beatsequencer",
+  "stars": 0,
+  "pushed": "2023-05-08",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "Beat sequencer/soundboard with Adafruit MultiTrellis",
+  "home": ""
+ },
+ {
+  "repo": "QUT-Motorsport/QUTMS_AMS",
+  "stars": 0,
+  "pushed": "2022-03-28",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "1051620001"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "calstar/blackbox-ng",
+  "stars": 1,
+  "pushed": "2020-03-09",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5009010801"
+  ],
+  "desc": "Blackbox Next Generation",
+  "home": ""
+ },
+ {
+  "repo": "Sani7/SEM",
+  "stars": 0,
+  "pushed": "2024-03-07",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5009010801"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "going-digital/sdnes",
+  "stars": 13,
+  "pushed": "2022-03-22",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5009010801"
+  ],
+  "desc": "SD converter mod-board for the Nintendo NES Classic, Famicom cla",
+  "home": ""
+ },
+ {
+  "repo": "inventor02/low-cost-mmwave",
+  "stars": 0,
+  "pushed": "2025-01-20",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5009010801"
+  ],
+  "desc": "University of Southampton Group Design Project: Collaborative Ro",
+  "home": ""
+ },
+ {
+  "repo": "UWCubeSat/minimee-electronics",
+  "stars": 1,
+  "pushed": "2021-06-10",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5009010801"
+  ],
+  "desc": "KiCAD files for the MiniMEE mission, adapted from BONK",
+  "home": ""
+ },
+ {
+  "repo": "m-labs/board-m1",
+  "stars": 6,
+  "pushed": "2012-06-27",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5009010801"
+  ],
+  "desc": "Milkymist One PCB design files",
+  "home": "http://www.milkymist.org"
+ },
+ {
+  "repo": "enacuavlab/boards",
+  "stars": 0,
+  "pushed": "2024-11-18",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5009010801"
+  ],
+  "desc": "ENAC's electronic boards related resources",
+  "home": ""
+ },
+ {
+  "repo": "MikhailBerezhanov/CNCU-01",
+  "stars": 25,
+  "pushed": "2022-04-22",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5009010801"
+  ],
+  "desc": "Ethernet-CAN converter board based on STM32F407",
+  "home": ""
+ },
+ {
+  "repo": "akornsys-rdi/acoustic-impact-ball",
+  "stars": 0,
+  "pushed": "2023-10-07",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5009010801"
+  ],
+  "desc": "Acustic impact ball, the system behind «Monster game» artwork",
+  "home": ""
+ },
+ {
+  "repo": "koudis/robot",
+  "stars": 1,
+  "pushed": "2016-06-28",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5009010801"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "wiretap-retro/MigStorm-ITX",
+  "stars": 26,
+  "pushed": "2025-11-09",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5009980900"
+  ],
+  "desc": "A 68000 socketed ITX form factor Minimig.",
+  "home": ""
+ },
+ {
+  "repo": "paulvollmer/FritzingParts",
+  "stars": 2,
+  "pushed": "2014-12-02",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "Fritzing Parts Website Mockup",
+  "home": "http://paulvollmer.github.io/FritzingParts"
+ },
+ {
+  "repo": "mxmxmx/eurotrash_mkII",
+  "stars": 57,
+  "pushed": "2017-02-13",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "teensy 3.2 / pcm5102a eurorack wav file player ",
+  "home": ""
+ },
+ {
+  "repo": "mxmxmx/eurotrash",
+  "stars": 15,
+  "pushed": "2018-08-20",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "wav player",
+  "home": ""
+ },
+ {
+  "repo": "mxmxmx/minitrash",
+  "stars": 14,
+  "pushed": "2018-04-06",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "...",
+  "home": ""
+ },
+ {
+  "repo": "SpaceScienceSweden/ulv_electronics",
+  "stars": 1,
+  "pushed": "2020-02-07",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "Root electronics repo",
+  "home": ""
+ },
+ {
+  "repo": "LaosLaser/Hardware",
+  "stars": 18,
+  "pushed": "2015-03-08",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "Hardware (Mainboard PCB designs etc.)",
+  "home": ""
+ },
+ {
+  "repo": "ole00/hardware_mister_de0-nano-soc",
+  "stars": 8,
+  "pushed": "2018-02-23",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "MiSTer add-on board for DE0-Nano-SoC FPGA dev board.",
+  "home": ""
+ },
+ {
+  "repo": "SpacePicklesRocketry/2025-Electrical-2",
+  "stars": 0,
+  "pushed": "2025-05-21",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "New electrical repo(buggy old one)",
+  "home": ""
+ },
+ {
+  "repo": "ChristianLerche/3DPCB",
+  "stars": 9,
+  "pushed": "2016-08-21",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "3DPCB DRV8825 files - KiCAD",
+  "home": ""
+ },
+ {
+  "repo": "GJN-Aerospace/Halcyon",
+  "stars": 0,
+  "pushed": "2021-05-24",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "GitHub repository for actively stabilized model rocket project.",
+  "home": ""
+ },
+ {
+  "repo": "ChristianLerche/3DPCB-4LAYER",
+  "stars": 1,
+  "pushed": "2022-06-26",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "This is the 3DPCB with 4 layer PCB - A5984_edge works.",
+  "home": ""
+ },
+ {
+  "repo": "snug-eco/user-board",
+  "stars": 0,
+  "pushed": "2025-12-26",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "PCB schematics and layout for user board",
+  "home": ""
+ },
+ {
+  "repo": "land-boards/lb-boards",
+  "stars": 31,
+  "pushed": "2024-12-02",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "land-boards - Board Designs",
+  "home": "http://land-boards.com/blwiki/index.php?title=Board_Designs_by_Function"
+ },
+ {
+  "repo": "millerlp/OWHL",
+  "stars": 14,
+  "pushed": "2025-07-31",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "OWHL - Open Wave Height Logger",
+  "home": ""
+ },
+ {
+  "repo": "akw0088/FlightController",
+  "stars": 5,
+  "pushed": "2024-12-25",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "oomlout/oomlout_oomp_project_bot_v_2",
+  "stars": 0,
+  "pushed": "2023-10-08",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891",
+   "SCHA4B0100",
+   "SCHA4B0419",
+   "SCHD3A0100"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "demyanenko-d/ZXEvoPro",
+  "stars": 3,
+  "pushed": "2023-01-11",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "millerlp/MusselTracker",
+  "stars": 2,
+  "pushed": "2019-08-21",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "MusselTracker arduino code",
+  "home": ""
+ },
+ {
+  "repo": "sagar-koirala/M5Stack-CORE2-PCB-RE",
+  "stars": 0,
+  "pushed": "2024-12-22",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": " Reverse-engineered PCB design of the M5Stack CORE2 development ",
+  "home": ""
+ },
+ {
+  "repo": "millerlp/Thermocouple_datalogger_2",
+  "stars": 3,
+  "pushed": "2024-02-16",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "8 channel thermocouple datalogger, arduino-based",
+  "home": ""
+ },
+ {
+  "repo": "xiphonics/picoTracker-pcb",
+  "stars": 35,
+  "pushed": "2026-05-29",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "nrdsp/rvPhone",
+  "stars": 0,
+  "pushed": "2022-08-06",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "BroncoSpace-Lab/scales-hardware",
+  "stars": 6,
+  "pushed": "2026-06-30",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "Hardware design files for the Spacecraft Compartmentalized Auton",
+  "home": "https://scales-docs.readthedocs.io/en/latest/"
+ },
+ {
+  "repo": "lab11/embedded-gw",
+  "stars": 0,
+  "pushed": "2022-06-08",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "millerlp/parts_guide",
+  "stars": 0,
+  "pushed": "2016-12-22",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "A list of common part numbers",
+  "home": ""
+ },
+ {
+  "repo": "r00sta/kicad_libs",
+  "stars": 1,
+  "pushed": "2024-01-05",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "My collection of KiCad component libraries",
+  "home": ""
+ },
+ {
+  "repo": "UWARG/hardware",
+  "stars": 59,
+  "pushed": "2026-03-25",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "PCB designs for the Waterloo Aerial Robotics Group",
+  "home": "https://www.uwarg.com/"
+ },
+ {
+  "repo": "Retrodolivo/bench-power-measurment",
+  "stars": 1,
+  "pushed": "2023-01-23",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "UBC-Thunderbots/PCB_MainBoard",
+  "stars": 1,
+  "pushed": "2022-04-03",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "Schematics and PCB layouts for the main control board.",
+  "home": ""
+ },
+ {
+  "repo": "Merophy/enzyme",
+  "stars": 0,
+  "pushed": "2026-01-16",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "Enzymes are proteins that help speed up metabolism, or the chemi",
+  "home": ""
+ },
+ {
+  "repo": "millerlp/MusselGapeTracker_hardware",
+  "stars": 0,
+  "pushed": "2025-03-18",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "Mussel Gape Tracker circuit board designs",
+  "home": ""
+ },
+ {
+  "repo": "DominicKlukas/DBLibTest",
+  "stars": 0,
+  "pushed": "2021-04-03",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "millerlp/Tidepool_heater",
+  "stars": 0,
+  "pushed": "2020-04-02",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "Arduino-based tidepool heating apparatus",
+  "home": ""
+ },
+ {
+  "repo": "NonayMete/GENG5551",
+  "stars": 0,
+  "pushed": "2024-05-27",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "GENG5551 Group 15",
+  "home": ""
+ },
+ {
+  "repo": "Neruzzz/TFG",
+  "stars": 0,
+  "pushed": "2024-07-19",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5027740891"
+  ],
+  "desc": "Trabajo de fin de grado de Ingenieria de Telecomunicaciones UAB",
+  "home": ""
+ },
+ {
+  "repo": "usbarmory/usbarmory",
+  "stars": 1497,
+  "pushed": "2026-08-28",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "USB armory - The open source compact secure computer",
+  "home": ""
+ },
+ {
+  "repo": "Badger-Embedded/badgerd-sdwirec",
+  "stars": 27,
+  "pushed": "2025-02-19",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Our way of re-creating sdwire of Tizen. Checkout our website to ",
+  "home": ""
+ },
+ {
+  "repo": "dbuchwald/kicad-simple",
+  "stars": 10,
+  "pushed": "2021-11-02",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Simple designs in KiCAD that do not require separate projects",
+  "home": ""
+ },
+ {
+  "repo": "pycubed/hardware",
+  "stars": 95,
+  "pushed": "2022-01-21",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Pycubed PC104 layout design files ",
+  "home": ""
+ },
+ {
+  "repo": "marqs85/ossc_pro_hw",
+  "stars": 29,
+  "pushed": "2026-09-06",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "OSSC Pro HW files",
+  "home": ""
+ },
+ {
+  "repo": "stanford-ssi/samwise-avionics",
+  "stars": 13,
+  "pushed": "2026-05-26",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Avionics for 2U Rev of Sputnik Satellite",
+  "home": ""
+ },
+ {
+  "repo": "will127534/Miniature-CM4-Cluster",
+  "stars": 96,
+  "pushed": "2023-07-02",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "A dense cluster for four Raspberry Pi Compute Module 4",
+  "home": "https://will127534.github.io/Miniature-CM4-Cluster/"
+ },
+ {
+  "repo": "ahmad-ih/USB-Armory",
+  "stars": 0,
+  "pushed": "2020-04-06",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "MajenkoProjects/RTmFM",
+  "stars": 4,
+  "pushed": "2026-05-27",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "Sierra-Lobo/mainboard-hardware",
+  "stars": 1,
+  "pushed": "2023-08-16",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "PyCubed mainboard v5 fork by Sierra Lobo for Foras Promineo Cube",
+  "home": ""
+ },
+ {
+  "repo": "stanford-ssi/sapling-avionics",
+  "stars": 0,
+  "pushed": "2023-05-19",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "hsfl/artemis-hardware",
+  "stars": 28,
+  "pushed": "2024-04-17",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Hardware design resources for the Artemis Kit, an affordable 1U ",
+  "home": "https://sites.google.com/hawaii.edu/artemiscubesatkit"
+ },
+ {
+  "repo": "retro-esp32/RetroESP32-X",
+  "stars": 69,
+  "pushed": "2024-07-31",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Official Release of Retro ESP32 Hardware",
+  "home": ""
+ },
+ {
+  "repo": "RespiraWorks/Ventilator",
+  "stars": 168,
+  "pushed": "2025-02-08",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Fully-featured ICU ventilator design, optimized for manufacture ",
+  "home": ""
+ },
+ {
+  "repo": "ffxx68/Sharp_ce140f_emul",
+  "stars": 21,
+  "pushed": "2026-09-04",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "wattnotions/OpenWave",
+  "stars": 8,
+  "pushed": "2023-11-22",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Open Source Ocean Wave Sensor",
+  "home": ""
+ },
+ {
+  "repo": "ChrisHayward-dev/SapphireKicad",
+  "stars": 0,
+  "pushed": "2025-09-10",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "RespiraWorks/KiCad-Library",
+  "stars": 0,
+  "pushed": "2022-06-01",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Repository for containing RespiraWorks' electrical KiCad Library",
+  "home": ""
+ },
+ {
+  "repo": "openretroMGB/OpenRetroMGB",
+  "stars": 26,
+  "pushed": "2024-08-27",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Introducing Open Retro MGB, the open-source, modular gaming boar",
+  "home": ""
+ },
+ {
+  "repo": "db-electronics/kicadlib",
+  "stars": 8,
+  "pushed": "2024-04-11",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "kicad parts libraries",
+  "home": ""
+ },
+ {
+  "repo": "maholli/SAM32",
+  "stars": 42,
+  "pushed": "2021-09-13",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Feather-sized SAMD51 with M4 core serving as UART bridge to WROO",
+  "home": "https://maholli.github.io/SAM32/"
+ },
+ {
+  "repo": "retro-esp32/RetroESP32-Design-Files",
+  "stars": 14,
+  "pushed": "2020-06-15",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "RevFur/PurrEngine-hardware",
+  "stars": 8,
+  "pushed": "2018-11-15",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "glydrfreak/vSpeed-Vario",
+  "stars": 40,
+  "pushed": "2020-11-10",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "vSpeed Vario - DIY Paragliding Variometer",
+  "home": ""
+ },
+ {
+  "repo": "ppusapati/weather",
+  "stars": 0,
+  "pushed": "2026-04-19",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "The-Faulty/Lyra",
+  "stars": 4,
+  "pushed": "2022-03-22",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "!! This project has become PicoMod please see https://github.com",
+  "home": ""
+ },
+ {
+  "repo": "TUDelft-SPC-Lab/spcl_midge_hardware",
+  "stars": 1,
+  "pushed": "2026-08-07",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Hardware design files for the SPC lab MIDGE wearable devices for",
+  "home": ""
+ },
+ {
+  "repo": "CMGeldenhuys/kleinvoet",
+  "stars": 3,
+  "pushed": "2026-01-23",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5031821852"
+  ],
+  "desc": "Spatially-Distributed Temporally-Synchronised Infrasonic Recorde",
+  "home": ""
+ },
+ {
+  "repo": "Pclika/mcp-platform",
+  "stars": 2,
+  "pushed": "2026-06-27",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5033980892"
+  ],
+  "desc": "Open-source MCU platform for building MCP-ready hardware and dev",
+  "home": "https://www.pclika.com/"
+ },
+ {
+  "repo": "iutrilladn/kicadlib",
+  "stars": 0,
+  "pushed": "2024-02-20",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5045200691"
+  ],
+  "desc": "Simple kicad library to use with all my projects",
+  "home": ""
+ },
+ {
+  "repo": "golubev-artem/AltiumLL",
+  "stars": 0,
+  "pushed": "2026-09-08",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5045200691"
+  ],
+  "desc": "https://www.samacsys.com/",
+  "home": ""
+ },
+ {
+  "repo": "Digi-Key/digikey-kicad-library",
+  "stars": 1935,
+  "pushed": "2024-03-16",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "5045200691"
+  ],
+  "desc": "An atomic parts  library for Ki-Cad.",
+  "home": ""
+ },
+ {
+  "repo": "fabiansteiner/OpenValve",
+  "stars": 271,
+  "pushed": "2026-09-03",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5045200691"
+  ],
+  "desc": "3D-printable pinch valve for irrigation and sensor-driven liquid",
+  "home": "https://open-valve.com/"
+ },
+ {
+  "repo": "TranDangKhoaTechnology/KICAD_MEGA_LIBRARY",
+  "stars": 1,
+  "pushed": "2026-08-07",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "5045200691"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "SamuraiCrow/MiniMig-KiCAD",
+  "stars": 4,
+  "pushed": "2019-05-27",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCDA3A0102"
+  ],
+  "desc": "A conversion of MiniMig PCB from Altium to KiCAD",
+  "home": ""
+ },
+ {
+  "repo": "apachecn/hackaday-blog-zh-part1",
+  "stars": 2,
+  "pushed": "2023-01-09",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "SCHA1B0100"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "celeritous/KiCad.lib",
+  "stars": 0,
+  "pushed": "2018-06-25",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0100"
+  ],
+  "desc": "Celeritous KiCad schematic symbol library",
+  "home": ""
+ },
+ {
+  "repo": "brannondorsey/DreamMachines",
+  "stars": 12,
+  "pushed": "2016-12-14",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0100",
+   "SCHA4B0419"
+  ],
+  "desc": "Research into using Machine Learning to hallucinate circuit boar",
+  "home": ""
+ },
+ {
+  "repo": "celeritous/STM32F745VE_Module",
+  "stars": 0,
+  "pushed": "2018-04-19",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0100"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "celeritous/STM32L151VDT_Module",
+  "stars": 1,
+  "pushed": "2018-03-07",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0100"
+  ],
+  "desc": "STM32L151VDT_Module",
+  "home": ""
+ },
+ {
+  "repo": "oomlout/oomlout_oomp_project_bot",
+  "stars": 0,
+  "pushed": "2023-09-07",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0100",
+   "SCHA4B0419",
+   "SCHD3A0100"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "daveshah1/openMixR",
+  "stars": 40,
+  "pushed": "2017-10-07",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "4k Mixed Reality headset",
+  "home": ""
+ },
+ {
+  "repo": "portapack-mayhem/mayhem-firmware",
+  "stars": 5395,
+  "pushed": "2026-09-03",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "The firmware for the HackRF+PortaPack H1/H2/H4/H4M",
+  "home": "https://hackrf.app"
+ },
+ {
+  "repo": "sharebrained/library-kicad",
+  "stars": 24,
+  "pushed": "2021-09-01",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "My KiCad symbols and footprints",
+  "home": ""
+ },
+ {
+  "repo": "abhishek-kakkar/beaglelogic-standalone",
+  "stars": 15,
+  "pushed": "2017-10-21",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419",
+   "SCHA5B0200"
+  ],
+  "desc": "BeagleLogic implemented as a turnkey and standalone logic analyz",
+  "home": "https://hackaday.io/project/25745-beaglelogic-standalone"
+ },
+ {
+  "repo": "gralco/dvk-mx8m-bsb",
+  "stars": 7,
+  "pushed": "2024-10-11",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "Librem 5 Developer Kit using EmCraft's i.MX 8M System-on-Module.",
+  "home": ""
+ },
+ {
+  "repo": "emard/ulx3s",
+  "stars": 460,
+  "pushed": "2025-04-27",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419",
+   "SCHD3A0100"
+  ],
+  "desc": "PCB for ULX3S FPGA R&D board",
+  "home": ""
+ },
+ {
+  "repo": "RocketGod-git/HackRF-Treasure-Chest",
+  "stars": 750,
+  "pushed": "2024-11-13",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "HackRF software and captures by everyone and for everyone. Argh ",
+  "home": ""
+ },
+ {
+  "repo": "1Bitsy/1bitsy-1up",
+  "stars": 24,
+  "pushed": "2018-05-24",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "1Bitsy 1UP retro inspired handheld game console.",
+  "home": ""
+ },
+ {
+  "repo": "freerouting/freerouting",
+  "stars": 1961,
+  "pushed": "2026-09-08",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419",
+   "SCHA5B0200"
+  ],
+  "desc": "Advanced PCB auto-router",
+  "home": "https://www.freerouting.app"
+ },
+ {
+  "repo": "Josephrp/meshtonic",
+  "stars": 10,
+  "pushed": "2026-08-04",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "Meshtonic H4M Companion — ESP32-S3 carrier for PortaPack H4M / M",
+  "home": ""
+ },
+ {
+  "repo": "arsscriptum/SmartMeter-ReverseEngineering",
+  "stars": 1,
+  "pushed": "2024-08-11",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "smart-meter rever engineering",
+  "home": ""
+ },
+ {
+  "repo": "SugaryPumpkin822/Flipper-Zero-Mods",
+  "stars": 1,
+  "pushed": "2026-04-28",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "arsscriptum/sdr.mayhem",
+  "stars": 0,
+  "pushed": "2024-10-24",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "Software Defined Radio - Mayhem Firmware",
+  "home": ""
+ },
+ {
+  "repo": "jamesshao8/portapack-havoc-modified",
+  "stars": 185,
+  "pushed": "2026-03-18",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "Custom Firmware for PortaPack (mainly for new APPs). Compatible ",
+  "home": ""
+ },
+ {
+  "repo": "Acetolyne/portapack-carnage",
+  "stars": 46,
+  "pushed": "2022-07-21",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "HackRF One firmware customized for carnage",
+  "home": ""
+ },
+ {
+  "repo": "OpenSourceSDRLab/PortaRF",
+  "stars": 55,
+  "pushed": "2026-09-02",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "Custom Hardware and Firmware Bin Files for the PortaRF Gadget",
+  "home": "https://opensourcesdrlab.com/products/portarf"
+ },
+ {
+  "repo": "09AZ014/EAGLE-FIRMWARE-HACKRF",
+  "stars": 6,
+  "pushed": "2025-10-29",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "?? EAGLE-FIRMWARE v2.0.0 - Advanced PortaPack Mayhem Fork for Ha",
+  "home": ""
+ },
+ {
+  "repo": "stat2188/drone-detector",
+  "stars": 3,
+  "pushed": "2026-09-08",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "zipper177/havoc-mayhem-177",
+  "stars": 3,
+  "pushed": "2020-06-20",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "RodgerCheetoHere/Portapack",
+  "stars": 0,
+  "pushed": "2026-03-20",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "mksmiffy/Havoc",
+  "stars": 1,
+  "pushed": "2022-02-22",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "emtee40/portapack-havoc",
+  "stars": 1,
+  "pushed": "2025-04-27",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "",
+  "home": "https://github.com/sharebrained/portapack-hackrf"
+ },
+ {
+  "repo": "ronmozer/portapack",
+  "stars": 0,
+  "pushed": "2024-01-23",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "the-unknown-00/Acars-msg",
+  "stars": 0,
+  "pushed": "2026-09-08",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "joeedh/dvk-mx8m-bsb",
+  "stars": 0,
+  "pushed": "2024-07-10",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA4B0419"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "ciaa/Hardware",
+  "stars": 217,
+  "pushed": "2021-09-18",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "SCHA5B0200"
+  ],
+  "desc": "Hardware de la CIAA",
+  "home": "www.proyecto-ciaa.com.ar"
+ },
+ {
+  "repo": "mwelling/pocketbone-kicad",
+  "stars": 59,
+  "pushed": "2018-10-02",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA5B0200"
+  ],
+  "desc": "Smalls mint tin sized BeagleBone (KiCAD version)",
+  "home": ""
+ },
+ {
+  "repo": "ranzbak/qmtech_minimig",
+  "stars": 24,
+  "pushed": "2023-03-26",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA5B0200"
+  ],
+  "desc": "KiCad design for a minimig compatible board for the QM_XC7A100T_",
+  "home": ""
+ },
+ {
+  "repo": "pluggee/KiCADLibs",
+  "stars": 5,
+  "pushed": "2025-12-02",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA5B0200",
+   "SCHD3A0100"
+  ],
+  "desc": "KiCAD heavy libraries for parts used by plugg.ee Labs",
+  "home": ""
+ },
+ {
+  "repo": "jadonk/PocketBone",
+  "stars": 58,
+  "pushed": "2017-03-28",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA5B0200"
+  ],
+  "desc": "Smalls mint tin sized BeagleBone",
+  "home": ""
+ },
+ {
+  "repo": "ArduPilot/Schematics",
+  "stars": 241,
+  "pushed": "2026-06-29",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "SCHA5B0200"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "jadonk/beaglebone-blue",
+  "stars": 38,
+  "pushed": "2020-06-09",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA5B0200"
+  ],
+  "desc": "BeagleBoard.org BeagleBone Blue - BeagleBone optimized for educa",
+  "home": "https://beagleboard.org/blue"
+ },
+ {
+  "repo": "jadonk/beaglebone-black-wireless",
+  "stars": 15,
+  "pushed": "2020-10-28",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHA5B0200"
+  ],
+  "desc": "WiFi/BT version of BeagleBone Black done in EAGLE using Octavo O",
+  "home": "http://beagleboard.org/black-wireless"
+ },
+ {
+  "repo": "engstad/engstad-kicad-lib",
+  "stars": 5,
+  "pushed": "2024-12-16",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHD3A0100"
+  ],
+  "desc": "A repository for additional KiCad schematics and footprints",
+  "home": ""
+ },
+ {
+  "repo": "emard/ulx2s",
+  "stars": 3,
+  "pushed": "2017-11-21",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHD3A0100"
+  ],
+  "desc": "PCB for ULX2S",
+  "home": ""
+ },
+ {
+  "repo": "intergalaktik/ULX4M-CM4-HAT",
+  "stars": 2,
+  "pushed": "2021-12-09",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "SCHD3A0100"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "oomlout/oomlout_oomp_project_doc_v_2",
+  "stars": 0,
+  "pushed": "2023-09-15",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHD3A0100"
+  ],
+  "desc": "",
+  "home": ""
+ },
+ {
+  "repo": "WeberLab-UW/OSH_Datasets",
+  "stars": 1,
+  "pushed": "2026-05-30",
+  "otype": "Organization",
+  "arch": false,
+  "mpns": [
+   "SCHD3A0100"
+  ],
+  "desc": "A repository for developing scripts and working on classifiers f",
+  "home": ""
+ },
+ {
+  "repo": "ademenev/open_spectre",
+  "stars": 2,
+  "pushed": "2025-06-15",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHD3A0100"
+  ],
+  "desc": "An open-source FPGA-based EMS SPECTRE video synth",
+  "home": ""
+ },
+ {
+  "repo": "devbisme/KiField",
+  "stars": 74,
+  "pushed": "2023-08-24",
+  "otype": "User",
+  "arch": false,
+  "mpns": [
+   "SCHD3A0100"
+  ],
+  "desc": "Edit/insert/delete part fields in KiCad schematics or libraries ",
+  "home": ""
+ }
+]

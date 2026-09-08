@@ -8645,3 +8645,39 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 研究:代操行情 10 條來源(15–25% / 月費 3 千–5 萬)、KOL 行情四層級帶(全是代理商整理,無平台正式報告)、公平會 2023-02 網紅納管+2024-09 首宗團購裁處 → `~/qfx/research/2026-09-08_*.md`;行情機器可讀版 `marketing/team/kol_rates_tw.json`。
 - 路由層:roster 加 KOL 席(gap→partial)+ 媒體代操席;ads-meta SKILL.md 接 adops 迴路;GOVERNANCE 兩列;marketing/CLAUDE.md 一條。scoreboard 對 Okara 10 勝 5 落後(KOL 由「無」改「半套」)。
 - ⚠ 未收乾:adops 只在 fixture 驗過、無真客戶帳戶;KOL 行情要報價前重查;LinkedIn 探索靠老闆手列。
+
+## 2026-09-08(深夜)cron 艦隊備份覆蓋率補洞:19 支「活不過磁碟死亡」的腳本
+- 起點:老闆說另一視窗在做皇海 GlobalSources,叫我去做別的。挑昨晚 WORKLOG 標的「未收乾」項。
+- ⚠️ **先更正昨晚那句話**:昨晚寫「`~/.marketdaily-fallback/` 與 `~/autonomous/` 都不在任何 git repo、也沒有備份機制」是**錯的**。`fleet_snapshot` 積木(08-12 建,open #289 收)一直活著,今天 22:45 還跑過,113 支 runner + 遮蔽後的 crontab 都在私有 brain repo。差點照那句話重造一次已有的能力(靠 brainsearch 攔下)。
+- 真正的洞=覆蓋率報告自己講出來的 19 支:UNCOVERED 11(cardvault-pc 8、crew-sandbox/xoops-demo/taifex_archive 各 1)+ local_git_only 8(cb-desk 5、fortune-ai 2、granthawk 1)。
+
+## 2026-09-09（凌晨）CHOSEN TCG 開幕海報 14 張 + 必賺盲盒商品頁 5 張
+- 來源:Kevin 09-08 22:53 信(kevinhuang0620@gmail.com,cc Darren)+ Drive 交接說明 257 行。官網 9/9 開幕。
+- 產出目標:7 主題 ×(1600×900 輪播 / 1080×1350 社群)+ 盲盒商品頁 4 張合成圖 + 封面禮盒實拍優化。
+- 交付方式:只交圖給 Darren,不碰網站。
+- 中途老闆轉向(「去做皇海的事,沒有目標沒有計畫,自己研究,impress me」)→ 備份補洞停在盤點階段,已登記 open #879
+  (含成果:4 個候選 repo 的工作區與**完整 git 歷史**機密掃描皆乾淨 ⇒ 可安全開私有 remote;fortune-ai .git 226M、無 >50MB 大 blob)。
+
+## 2026-09-08(深夜)皇海:停產替代線的「貨架體檢」— 換料那一刻站在架上的不是我們
+- 起點:老闆「go do your research and impress me」。切入點=皇海那張 39 顆停產 Molex/ALPS → 自家 22 型號的交叉料號表,
+  但不問表對不對,問**換料這個動作實際發生在哪裡、那裡站著誰**。交付 artifact 2bde3849;原始資料 `intel/research/kingconn_designin/`。
+- ⭐⭐ **發現一(今晚最值錢)**:換料成交點是 **Digi-Key 停產頁的「替代位」**——它直接告訴工程師改用哪顆。24 顆量得到的 Molex
+  停產料號:皇海 **0 格**;Molex 自家 5、Hirose 3、JAE 3、GCT 2、Würth 1、Same Sky 1、**ATTEND 1**;**12 格空著沒人站**。
+  ⇒ attend 贏我們靠的是**貨在架上有現貨**(115S-ACA0,1,706 顆),不是內容也不是 SEO。這正是 09-04 十四軸報告
+  「輸的 6 條全在權威度」的因果證據,也是 #766(要不要上代理商)缺的那塊。
+- ⭐ **發現二**:第二個貨架是工程師畫板時的零件庫。SnapEDA 搜 kingconn = **0 筆**。實證來自 `usbarmory/usbarmory`(★1,497,
+  WithSecure 商品化產品):它設計檔裡那顆停產 Molex 的符號存在 **`hardware/lib/snapeda.lib`**——檔名就寫著它從哪來。
+  反例更毒:停產的 mini-SIM `0912280001` 出現在 31 個 repo 但**沒有一塊板子真的在用**,那 31 個全是互相複製的零件庫檔
+  ⇒ 停產料號靠零件庫在生態系裡繁殖。皇海只有 SolidWorks 檔,沒有工程師吃得下的格式。
+- **發現三**:需求還在且極度集中——184 個公開設計檔仍在用這 39 顆,**92% 是 micro-SD**(169/184),全尺寸 SD 的 11 顆料號
+  只換到 2 個。皇海三顆型號吃下幾乎全部(7MSDP-FA-0024/F0-0037 各 62、7TFCN-F0-0126 59)。表上 39 列等權,市場不是。
+  真在做產品的:PortaPack Mayhem(★5,395,量產機種,命中 .net+.sch)、usbarmory、ArduPilot、RespiraWorks 呼吸器。
+- ⭐⭐ **三道誠實閘,少一道結論就是錯的**(方法本身是這次的資產,寫進 README):
+  ① **料號寫法**:同一顆 `0472192021` 命中 0、`472192021` 命中 208 ⇒ 只搜官方寫法會漏九成。
+  ② **78% 是數字巧合**:九位純數字撈到程式裡任何數字串,2,665 命中只認列 597 個真 EDA 檔;不裝這閘我會報一個灌水三倍的數字。
+  ③ ⭐⭐ **零件庫檔 ≠ 有人拿它畫板子**:`.lbr` 是貨架、`-cache.lib`/`.sch`/BOM 才是採用。切開後**排行第一名整個換人**
+  (mini-SIM 那顆從「31 個使用者」變成 0)。
+- 誠實邊界(都寫在報告與 README 裡):ALPS 15 顆的替代位在 Mouser,三次被擋⇒**未測不寫**(#877);GitHub 每查只取第一頁=抽樣;
+  184 個多為個人開源專案,**明講它不是 B2B 名單**(cnlohr 一人佔 8 筆),它證明的是殘留需求與零件庫繁殖,不是客戶清單;
+  freerouting 那筆是 benchmark 測試檔不是它的產品,不列入名單。
+- **沒有碰 `~/kingconn/site/`**(另一視窗在做 GlobalSources),逐顆替代頁只當建議交出去 → #878 待老闆拍板。
