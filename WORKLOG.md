@@ -8771,3 +8771,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   不是去放寬閘門。jp 尾句被 clip 掉 ⇒ 改成狀態在前,兩個事實都保住。
 - **存下改動前基準** `intel/xref_cad_cta_baseline_20260909.json`,10-09 回查 CTR 有沒有動(open #899)。
   沒有基準就等於永遠沒辦法證明這件事有沒有用。
+- **收尾(01:46,已在生產驗到)**:`01:45:53 DISPLAY DIMMED` → `01:46:08 DISPLAY OFF` → `01:46:19 IDLE 到 300s`,
+  螢幕準時關閉,open #902 已收。過程中的兩個修正:
+  ①我第一次宣告「override 已修好」是**講太早**——override 註冊成功 ≠ 生效,而 `powercfg /requests` 生效後仍會列出提出者,
+    等於拿一個永遠不會變綠的量尺去驗;②殺 msrdc **不會**弄死 WSL 裡的 X client(chrome pid 完全沒變,Xwayland 在 WSL 內,
+    msrdc 只是 RDP 檢視端),所以這招對正在跑的 headed 自動化是安全的。
+  ③誠實邊界:DISPLAY 那筆在我殺 msrdc **之前**就自己消失了(01:34 還在、01:37 已無),無法歸因是 override 還是
+    headed chrome 視窗剛好關掉 ⇒ 兩層處方都留著,下次 headed 瀏覽器開起來時 log 會給答案。
+  教訓已寫進 memory `hub_winrig_host`(第二種根因 + powercfg 的兩種說謊法)。
