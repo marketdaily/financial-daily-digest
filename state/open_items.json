@@ -9019,5 +9019,55 @@
   "opened": "2026-09-09 01:25",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 903,
+  "what": "qfxsolution.com hero 用藍圖 §6.3 方案 A(老闆未選,依授權用主推版);要換 B 是改 scripts/build_site.py 的 I18N['hero_h1'] 與 hero_sub 兩行後重跑 build_site.py + build_fonts.py 再部署",
+  "why": "老闆沒指定 A/B,授權寫「沒選就用主推那版,上線後告訴他一行可換成 B」——這是通知,不是待辦",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 01:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 904,
+  "what": "qfxsolution.com 案例頁 /work/kingconn/ 與 /zh/work/kingconn/ 仍雙層 noindex(HTML meta + _headers X-Robots-Tag),等王董書面同意具名才開",
+  "why": "客戶未書面同意;開的動作=改 scripts/build_site.py 的 HEADERS 拿掉 /work/* 兩段 + build_case 的 noindex=True 改 False + sitemap 加該 URL,三處必須同一次 commit",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 01:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 905,
+  "what": "qfxsolution.com TTFB/LCP 輸給 adGeek 與 cacaFly,根因是 zone 拿到的 Cloudflare 免費共用網段(104.21/172.67)被這條 ISP 路由到 SJC,對手網段路由到 TPE;同一份頁面強制走台北 PoP 是 LCP 304ms(勝過全部六家)vs 實際 732ms",
+  "why": "兩個修法都要 dashboard 或花錢:①Cache Rule「Cache Everything」快取 HTML(免費,但本機四把 token 對 zone ruleset 全無權限,_headers 的 s-maxage 實測無效)②Argo Smart Routing 或換方案(要錢=老闆決定)。證據在 intel/head_to_head.md §二.1",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 01:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 906,
+  "what": "Cloudflare 在 qfxsolution.com 邊緣注入自家 Web Analytics beacon,被我們的 CSP 擋掉,每頁留一條 console error",
+  "why": "本機四把 token 對 RUM API 全無權限,關掉要 dashboard。維持擋著是對的(站宣稱零第三方腳本,實測 third_party_hosts=0),但 console 有噪音會遮住真錯誤;已在 verify_site.py 列成「已知且已解釋」會印出來不會被當通過",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 01:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 907,
+  "what": "2026-10-09 回查:皇海交叉料號表 CAD CTA 的成效(基準 kingconn/intel/xref_cad_cta_baseline_20260909.json:28天 83 曝光/5 點擊/CTR 6.0%,5031821852 均位 10.5、5027740891 6.4、scha4b0419 2.0)",
+  "why": "標題與摘要 09-09 才改,Google 重抓+累積要一個月才看得出 CTR 有沒有動;現在下結論等於自欺",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-09 01:44",
+  "closed": null,
+  "note": ""
  }
 ]
