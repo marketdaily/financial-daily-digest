@@ -8728,3 +8728,10 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   **改用 KiCad 自己的 User-Agent(KiCad/7.0.11、8.0.4)抓也 200** —— 套件管理器不是瀏覽器,只驗瀏覽器等於沒驗。
 - 通用讀圖器嘗試後暫停:能自動定位 PCB 佈局區並自我校準,但「用圖面數字自動裁決」的判準還不夠有鑑別力
   (碎片矩形常比真焊盤多、`7*1.00` 是間距數不是焊盤數),再逼下去會變成為了通用而通用 → 留 open #884。
+- 老闆核可後續:用 f1@kingconn.com.tw 註冊 **SnapMagic(SnapEDA)**(帳號 kingconntech,密碼存 ~/.marketdaily-secrets/),
+  信箱驗證碼自己從 IMAP 收,全程 headless 未搶前景。⭐ Turnstile 是隱形的,token 在按下送出當下才產生 ——
+  我原本「等到 token 出現再送出」的寫法永遠等不到,直接送出就過了。4 顆零件已上傳(平台處理中)→ open #896。
+- ⭐⭐ **把零件庫搬上皇海自己的網域 `cad.kingconn.com.tw`**:新開 Pages 專案 + CNAME,**完全不碰另一視窗在動的 `site/`**,
+  同時解掉「pages.dev 零權重」與「車道衝突」兩個問題。PCM 套件的 homepage/contact 也從對外 404 的 GitHub 改成
+  cad.kingconn.com.tw 與 kingconn.com.tw/contact。對外全部重驗一次(頁面/逐顆頁/PCM/sitemap/IndexNow 金鑰,含 KiCad UA)。
+- 誠實記錄:到此為止產生的是**通路的入口**,還不是詢問。詢問要等 ①kingconn.com.tw 連過來 ②SnapMagic 上架 ③搜尋引擎收錄。

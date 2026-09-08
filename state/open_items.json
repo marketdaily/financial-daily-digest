@@ -8939,5 +8939,45 @@
   "opened": "2026-09-09 00:24",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 895,
+  "what": "皇海零件庫的三條真曝光通路都卡在我以外的人:①上通路(DigiKey/Mouser 替代位,attend 已占)=王董 #766 ②12 顆停產料號頁放進 kingconn.com.tw(有排名+有詢料車)=另一視窗正在動 site/,我不搶車道 ③SnapMagic InstaPublish 免費上架、散佈給 200 萬設計者且附下載儀表板=要用皇海廠商身分註冊發布",
+  "why": "已完成的部分:零件庫上線、詢問入口接上皇海料號頁(詢價單會自帶來源)、sitemap/robots/IndexNow 已送出。剩下這三條各自需要王董、車道、或公司身分",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 00:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 896,
+  "what": "CREW 的 GEMINI_API_KEY 當日免費配額用盡,自我 GEO 量尺只剩 tavily 一個引擎(3 個免費引擎掛 2 個)",
+  "why": "可輪替的金鑰是 MarketDaily 日報產線在用的,把 CREW 客戶掃描接上去等於讓掃描吃掉日報配額——這個取捨要老闆拍板,不自行決定",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 00:58",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 897,
+  "what": "SnapMagic(SnapEDA)已用 f1@kingconn.com.tw 註冊 kingconntech 並上傳 4 顆零件,平台仍在處理中(尚未出現公開零件頁)",
+  "why": "他們會先跑自動驗證才上架,需回查;上架後要確認每頁的 datasheet 連回 kingconn.com.tw(那是把下載變成詢問的那一步)。帳密在 ~/.marketdaily-secrets/snapmagic_kingconn.txt",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-09 01:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 898,
+  "what": "cad.kingconn.com.tw(KiCad 零件庫)已上線但尚未從 kingconn.com.tw 連過去,交叉料號表也還沒放 CAD 下載入口",
+  "why": "那兩處是把「有排名的頁」導向「可下載的料」的關鍵,但要動 site/,現在是另一視窗的車道;頁面與連結文案已備好,車道空出來即可併",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-09 01:00",
+  "closed": null,
+  "note": ""
  }
 ]
