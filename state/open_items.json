@@ -8608,5 +8608,146 @@
   "opened": "2026-09-07 23:49",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 862,
+  "what": "皇海 SD7.0 兩顆(7SD70-F0-0008/0007)應用領域段已 commit 36b55642+push,尚未部署正式站",
+  "why": "對外內容(en/cn/jp 是我的翻譯)依 08-17 親令先給 Delvin 看 OK 再發;OK 後跑 ~/kingconn/tools/deploy_preview.sh(=正式站,www 即 kingconn-preview 自訂網域)+IndexNow",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-08 12:40",
+  "closed": "2026-09-08 12:44",
+  "note": "Delvin 09-08 OK 發+擴到系列 8 顆;deploy 0ebf2986 上傳 32 檔,IndexNow 200×32,線上四語 8 顆實查"
+ },
+ {
+  "id": 863,
+  "what": "QFX 對手戰情圖 90 天動作清單待老闆拍板(公司登記/皇海案例公開同意/資安分包)",
+  "why": "研究已交付 artifact e993defd,8 項動作尚未開工,3 項需 Delvin 本人決定",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-08 12:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 864,
+  "what": "QFX 合約模板第 5.5 條 SLA 超時折抵比例(每次 ＿＿＿% / 月上限 ＿＿＿%)待老闆填,填完才可對外送出",
+  "why": "比例是商業決策不是技術決策;模板已把位置與計算方式備好,只差數字。金額留空是錨價鐵則,我不自己填",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-08 13:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 865,
+  "what": "care SLA 月報尚未在生產跑過一個完整月(2026-09 是第一個月,10/1 才有第一份真月報)",
+  "why": "引擎與 75 條 e2e 已綠、生產庫遷移已在複本實測,但真月報要等月底資料齊;另生產現有一筆 MarketDaily visual 告警自 09-05 未認領未恢復,九月數字現況 0%/0%",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-08 13:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 866,
+  "what": "皇海三支影片提案待老闆批 credits(①LinkedIn 15s spot 130cr ②官網 hero 循環 40cr ③展場 loop 130cr = 350cr;提案已排練到只差按下生成 ~/qfx/deals/kingconn/video_proposal.md)",
+  "why": "零 credit 任務,老闆說 don't use my credit yet;開閘需他一句 OK,另有 4 個未決事項(展場螢幕比例/廠房要不要實拍/要不要先看零元版/售價錨未取得)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-08 13:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 867,
+  "what": "asset_audit.py 尚未對真實潛在客戶跑過;5 份報告樣張待老闆看過再決定要不要當開發信附件",
+  "why": "工具與 5 份 demo 報告(audits/2026-09-08/)已完成、selftest 26 條全過,但全是拿競品/已知客戶網域自跑。真正要用它開發客戶之前,老闆得先看過樣張認可這個講法與版面——尤其『疑似在廠商手上』這種話寄給陌生公司的分寸,以及要不要在信裡直接附 HTML。另外五個 demo 網域裡沒有一個觸發『登記人像網站廠商』的黃旗(登記人不是真公司名就是被遮蔽),所以那條規則還沒被真實案例驗證過。",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-08 13:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 868,
+  "what": "Global Sources 香港展邀請信尚未到 f1@(09-08 21:00 查 INBOX/Spam/Junk/Trash 皆無);守望 kingconn_gs_show_forward 每10分自動轉寄+推播,信到即自動收掉",
+  "why": "對方業務說已寄但信箱查無;可能寄錯地址/延遲/被隔離,守望只在信到時轉寄,還沒在生產真的命中過一次",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-08 21:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 869,
+  "what": "皇海影片提案兩個待決:展場 16:9(465cr) 或 9:16(328cr);開閘前 Kling 3.0 1080p 價要 generate cost 預檢(可能翻到 522cr)",
+  "why": "老闆說先別花 credit,零元排練版已出片待他看",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-08 21:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 870,
+  "what": "皇海 campaign kit(~/qfx/deals/kingconn/campaign_kit_2026-09-08)待老闆與王董看;未經 OK 不得對外",
+  "why": "對外內容送出前必先給老闆看 OK(08-17 親令);以皇海名義發射須王董授權",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-08 21:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 871,
+  "what": "Global Sources 20 料號待老闆給的欄位:價格區間/交期/付款方式/含包裝尺寸重量(其餘欄位 09-08 已補);另 20 顆品質等級是否從 Low 升級待平台重審後查",
+  "why": "價格與交期是商業條件,Delvin 要問王董;品質等級平台重審後才更新",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-08 21:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 872,
+  "what": "QFX 行銷公司轉型藍圖待老闆拍板(~/qfx/strategy/2026-09-08_marketing_company_blueprint.md):§2.2 不做清單、§4 月費錨 NT$6–12 萬、§6 官網 hero 方案 A/B;拍板前不改 site/、不對外",
+  "why": "老闆 09-08 令改定位為 AI 原生行銷公司;藍圖已寫完(21 條線 已有12/半成品6/沒有3),但定位、價格錨、官網文案都是商業決策,我不自行部署",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-08 21:33",
+  "closed": null,
+  "note": "",
+  "text": ""
+ },
+ {
+  "id": 873,
+  "what": "皇海 email 序列 Email 2 與 /en/privacy「not for marketing campaigns」牴觸:寄前要改隱私政策或砍 Email 2;M2 表單告知/M3 一鍵退訂實射/M4 王董書面授權亦未成立",
+  "why": "campaign kit 只產文字不寄;放行條件在客戶端基礎設施與老闆授權",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-08 21:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 874,
+  "what": "Google Ads API developer token(需 MCC 管理員帳戶)與 LinkedIn Advertising API 憑證待申請;Meta 端缺 user/system-user token(ads_read)+ 客戶廣告帳戶 ID",
+  "why": "adops 積木只能 fixture dry-run,沒有任何真實廣告帳戶可讀;申請要老闆本人建 MCC / LinkedIn Page / Business Manager 合作夥伴存取",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-08 21:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 875,
+  "what": "KOL 外聯草稿(皇海 08_kol/outreach)待老闆核可才寄;任何 KOL 聯絡未經核可不得發出",
+  "why": "老闆 08-17 親令對外內容送出前必先給他看;草稿含品牌名與合作條件",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-08 21:53",
+  "closed": null,
+  "note": ""
  }
 ]

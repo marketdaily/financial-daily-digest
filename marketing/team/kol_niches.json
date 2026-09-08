@@ -1,0 +1,45 @@
+{
+  "_doc": "KOL 探索利基模板。keywords 用於主題相關度(標題/描述比對,權重 1-3);seeds 是免費來源可直接抓的公開頁(YouTube 頻道 / Apple Podcasts 搜尋詞);manual 是抓不到指標只能手列的平台(LinkedIn/Threads),指標一律 ❔。",
+  "niches": {
+    "kingconn_b2b": {
+      "name": "台灣 B2B 製造 / 電子零件(連接器)",
+      "brand": "皇海科技 Kingconn",
+      "language": ["zh-TW", "en"],
+      "keywords": {
+        "連接器": 3, "connector": 3, "端子": 2, "排針": 2, "排母": 2, "FPC": 2, "板對板": 2, "線對板": 2, "wire-to-board": 2, "board-to-board": 2,
+        "PCB": 2, "電路板": 2, "電子零件": 2, "電子元件": 2, "electronics": 2, "硬體": 1, "hardware": 1, "嵌入式": 1, "embedded": 1,
+        "Arduino": 1, "Raspberry": 1, "焊接": 2, "soldering": 2, "拆解": 1, "teardown": 1, "工業": 1, "自動化": 1, "工程師": 1, "engineer": 1,
+        "電子": 1, "電路": 2, "circuit": 2, "設計": 1, "USB": 1, "Type-C": 1, "線材": 2, "cable": 2, "SMT": 2, "製造": 1, "manufacturing": 1
+      },
+      "collab_formats": [
+        "技術開箱:寄樣品(板對板 / FPC 卡座),創作者做實測與焊接/組裝示範,標「合作 / 產品由皇海提供」",
+        "工程知識置入:一支關於連接器選型(pitch / 電流 / 插拔次數)的教學影片,皇海提供型錄與交叉料號表當素材",
+        "Podcast 訪談:王董談台灣連接器供應鏈 / 轉單潮,節目描述放型錄與 RFQ 連結(帶 UTM)",
+        "LinkedIn 共同貼文:創作者以工程觀點寫一則選型筆記,tag 皇海公司頁"
+      ],
+      "kpi_hint": "B2B 不看銷售,看 RFQ 表單來源鏈(utm_source=kol_<slug>)+型錄下載+LinkedIn 公司頁追蹤增量",
+      "brand_safety_extra": ["中國製", "山寨", "假貨", "抵制"],
+      "youtube_seeds": [],
+      "podcast_terms": ["電子 工程師", "硬體 創業", "半導體 供應鏈", "PCB 設計", "Maker 電子"],
+      "manual_platforms": ["linkedin", "threads"]
+    },
+    "consumer_goods": {
+      "name": "消費品(3C / 生活 / 開箱)",
+      "brand": null,
+      "language": ["zh-TW"],
+      "keywords": {
+        "開箱": 3, "評測": 3, "推薦": 2, "好物": 2, "生活": 1, "3C": 2, "居家": 1, "美食": 1, "穿搭": 1, "保養": 1, "測試": 1, "比較": 2, "CP值": 2, "團購": 2, "vlog": 1
+      },
+      "collab_formats": [
+        "IG Reels / YouTube Shorts 開箱 30-60 秒,固定第一句揭露「合作」",
+        "限動 3 則 + 貼文 1 則(附折扣碼,折扣碼即歸屬證據)",
+        "長片置入 60-90 秒段落 + 資訊欄連結"
+      ],
+      "kpi_hint": "折扣碼兌換數 / UTM 來源 / 貼文儲存數;CPE 看 (讚+留言+儲存)/報價",
+      "brand_safety_extra": ["業配之亂", "翻車", "詐騙"],
+      "youtube_seeds": [],
+      "podcast_terms": ["生活 好物", "3C 開箱"],
+      "manual_platforms": ["instagram", "threads"]
+    }
+  }
+}

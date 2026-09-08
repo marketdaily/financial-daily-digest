@@ -1,0 +1,65 @@
+{
+  "_doc": "台灣網紅業配行情帶(NT$,稅前),供 kol_agent 估 CPE 用。全部是代理商/比價網整理,無一來自 Kolr/AsiaKOL/DMA 正式報告;每筆附來源與年份。層級門檻依來源:奈米 <5K、微 5K–25K、小 25K–100K、大 100K–1M、名人 1M+。",
+  "collected_at": "2026-09-08",
+  "tiers": [
+    {"id": "nano", "label": "奈米", "min": 0, "max": 5000},
+    {"id": "micro", "label": "微", "min": 5000, "max": 25000},
+    {"id": "small", "label": "小/中", "min": 25000, "max": 100000},
+    {"id": "large", "label": "大", "min": 100000, "max": 1000000},
+    {"id": "celebrity", "label": "名人", "min": 1000000, "max": null}
+  ],
+  "bands": {
+    "youtube_video": {
+      "nano": [0, 5000], "micro": [5000, 15000], "small": [15000, 100000], "large": [100000, 500000], "celebrity": [500000, null],
+      "source": "PRO360 YouTube 業配行情(2023-08 更新) https://www.pro360.com.tw/price/youtube_advertorial;AD POST 2025-03 https://blog.adpost.com.tw/KOL_marketing/collaborate-with-kol 給 奈米 互惠–1萬 / 微 1–2萬 / 小 2–12萬 / 大 12–60萬",
+      "kind": "業者整理"
+    },
+    "youtube_mention": {
+      "nano": null, "micro": null, "small": null, "large": null, "celebrity": null,
+      "source": "❔ 口播置入獨立單價查無(PRO360/AD POST/brainmax/Sky Digital 皆只列整支影片);Sky Digital 2026-05 給 YT 全形式 8,000–500,000+ https://skydigital.com.tw/posts/kol-pricing-taiwan/",
+      "kind": "❔"
+    },
+    "instagram_post": {
+      "nano": [0, 2000], "micro": [3000, 9000], "small": [5000, 20000], "large": [20000, 100000], "celebrity": null,
+      "source": "PRO360 IG 業配行情(2024-10) https://www.pro360.com.tw/price/instagram_advertorial;brainmax 2025 https://www.brainmax-marketing.com/article_d.php?lang=tw&tb=6&id=1685 微 3,000–10,000 / 小中 6,000–50,000 / 大 5–10 萬",
+      "kind": "業者整理"
+    },
+    "instagram_story": {
+      "nano": [0, 500], "micro": [500, 2500], "small": [2500, 10000], "large": [10000, 100000], "celebrity": null,
+      "source": "brainmax 2025 https://www.brainmax-marketing.com/article_d.php?lang=tw&tb=6&id=1685",
+      "kind": "業者整理"
+    },
+    "instagram_reels": {
+      "nano": [4000, 6000], "micro": [6000, 15000], "small": [15000, 80000], "large": [80000, 200000], "celebrity": null,
+      "source": "PRO360 IG 2024-10(Reels 5,000 起 / 微 8,000–15,000 / 小中 1.5–8 萬 / 大 8–20 萬);brainmax 2025 奈米 4,000–6,000 / 微 6,000–15,000",
+      "kind": "業者整理"
+    },
+    "threads_post": {
+      "nano": null, "micro": null, "small": null, "large": null, "celebrity": null,
+      "source": "❔ 無分級行情;Sky Digital 2026-05 只說「數千到數萬元/篇」;創作者端指南提廣告授權加收 20–50% https://richsong112.com/threads-sponsored-post-workflow/",
+      "kind": "❔"
+    },
+    "podcast_mention_30s": {
+      "any": [20000, 40000],
+      "source": "PRO360 Podcast 業配(2023-02) https://www.pro360.com.tw/category/podcast_advertorial:30 秒口播約 2–4 萬、2–3 分鐘置入 5–15 萬(依排行浮動);按下載數分級 ❔",
+      "kind": "業者整理"
+    },
+    "podcast_segment_2_3min": {
+      "any": [50000, 150000],
+      "source": "同上 PRO360 Podcast 2023-02",
+      "kind": "業者整理"
+    },
+    "linkedin_post": {
+      "nano": null, "micro": null, "small": null, "large": null, "celebrity": null,
+      "source": "❔ 台灣 LinkedIn 創作者業配行情查無公開來源",
+      "kind": "❔"
+    }
+  },
+  "modifiers": {
+    "short_video_vs_static": "+30–50%",
+    "vertical_premium_3c_medical_baby": "+20–50%",
+    "agency_cut": "20–40%",
+    "source": "tenten.co https://tenten.co/learning/kol-pricing-reveal/(業者自述)"
+  },
+  "cpe_market_band": "❔ 台灣 CPE/CPM 市場帶查無;只有定義與範例(PreFluencer:CPE=費用÷互動,例 1,000/50=20 元 https://www.prefluencer.com/articles/detail/influencer_marketing_terms)"
+}

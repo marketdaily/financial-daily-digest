@@ -1,3 +1,16 @@
+- [2026-09-08 13:20] [已完成] **學「當代理商用 Higgsfield」**(老闆:「learn how to properly use higgsfield as a marketing agency」+「don't use my credit yet」)。**本輪零 credit——未呼叫任何生成端點。**
+  - CLI 現況(唯讀查):已登入、workspace `Private`(3d88647c…)、plan **plus**、餘額 **2,451.28cr**、**未選 workspace**(`account status` 報 No workspace selected)。刻意沒跑 `workspace set`——零 credit 任務裡不動老闆帳號的計費情境。token sync cron `17 */6` 仍在。
+  - ⭐⭐ **既有腳本沒有任何花費閘門**:`~/qfx/scripts/hf.py` 帶著 bearer token、可以直接 POST `generate_video`(135cr/鏡),repo 裡沒有東西擋它(session 中途另一個 session 補過一個 `HIGGSFIELD_SPEND_OK!=1` 的粗閘,但它連 read-only 查詢都擋、無預算、無帳本)。
+    補了 `~/qfx/scripts/hf_guard.py`:七條件 fail-closed(旗標+具名任務+預算+單次上限 200cr+累計+硬天花板 500cr+可寫帳本),每次判決**含拒絕**都寫進 `db/ledger/_spend.jsonl`。`hf.py` 已接上(read-only 與 `get_cost` 預檢照常通行)。實測拒絕發生在**碰網路之前**。
+  - ⭐ **selftest 釘的全是歪輸入不是 happy path**(27 案全綠):估價 `None`/`""`/`NaN`/`inf` 一律拒絕(**「不知道多少錢」不等於「免費」**)、budget 解析失敗不回退預設值、**沒聽過的工具名當成會花錢**(read-only 是白名單不是預設)、ledger 寫不進去就不准花。同型 [[capability_arb_price_anchor]] #5:最陰的失敗是閘門在作者沒想過的輸入下發假綠燈。
+  - ⭐⭐ **最有價值的一課:接受率要按車道估,不是按平台估。** `production-benchmarks.md` 的 1.0%/1.5%(65–100 生/保留鏡)量的是 **t2v 敘事電影**;同帳號皇海 hero 實測 **i2v 從鎖定 keyframe 是 2–5 次/鏡**(18.75cr 出一顆保留鏡)。照電影錨報 B2B 產品片會貴 20–40 倍。機制:t2v 每次重擲構圖/幾何/材質/打光/運鏡五件事,i2v 前四件已被一張 2cr、可逐像素檢查的靜圖決定完。⇒ **代理商的核心動作=把變異數從影片階段搬到靜圖階段。**
+  - ⭐ 連接器產業的**業界標準用詞本身是內容政策地雷**:`male`/`female connector`、`mating cycle` → NSFW 誤判;`blade` → violence;`windows`(開孔)→ brand-IP(建築案已實錘)。改 `plug`/`receptacle`、`insertion cycle`、`contact fin`、`apertures`。
+  - 交付:手冊 `~/qfx/playbooks/higgsfield_agency_playbook.md`(7 種交付物型錄含 credit/交期/QA 閘、B2B 守則、生產紀律、報價法、零 credit 排練流程);皇海首案 `~/qfx/deals/kingconn/video_proposal.md`(三支排練到只差按下生成,英文 prompt 全文、參考圖全部本機、可證偽判準;①130cr ②40cr ③130cr = **350cr**)。
+  - ⭐ 排產順序決定成本:③ 展場 loop 有 3 段可重用 ①、1 段走本地既有 Blender 序列 ⇒ 130cr;若只批 ③ 不批 ①,③ 會回到 260cr。
+  - skill 回寫(winrig):`higgsfield/LESSONS.md` + `higgsfield-marketing-studio` v1.1.0 新增 §13「B2B manufacturing product films — when NOT to use Marketing Studio」。`validate.py` / 132 pytest / 58 evals 全綠(validate.py 當場抓到我的相對路徑寫錯,已修)。
+  - ⚠️ 誠實邊界:①marketplace repo **沒有 committer identity**,我的 4 個 skill 檔與先前 session 的 10 個檔一樣留在工作區未 commit(該 repo 慣例如此),沒有替它設全域身分。②`~/qfx/scripts/check_media.py` 是 QuietFix 專用(硬編碼「灰階+唯一硃紅物件」),**對皇海黑金跑了會誤判**,變體未寫——所以皇海現階段的 QA 閘是人工逐項對表,不是機器閘。③手冊裡「t2v 產品/抽象 B-roll 15–30 次/鏡」是**內插值,我們沒有實測**,已標未驗證。
+  - qfx commit fb42326 已 push origin/main(已 fetch 對照確認 remote 同 hash);open #866 登記等老闆批 credits。
+
 - [2026-07-27 21:10] [已完成] 主視窗(Mac遠端) · **rc=4 reel 告警根因=YouTube 帳號 07-10 起遭 Google 停權(authenticatedUserAccountSuspended),已連 17 天每日 rc=4**。IG/FB 全程正常,最後一次 YT 成功上傳=07-09(p2QeQnJAEsc)。修復:auto_post.py 加 `SOCIAL_PAUSED_PLATFORMS` 明示暫停機制(post_reel_direct+cmd_post 兩路徑皆接,skipped=True 進帳本,log 印原因),.env 設 `youtube:帳號停權07-10起 待Delvin申訴`,隔離測試(LOG_FILE 導 tmp)驗證 rc=4 不再觸發。commit 09eb8b2 已 push origin/main。**已拍板(07-27):Delvin 決定不再用 YouTube,不申訴——YT 永久退役,SOCIAL_PAUSED_PLATFORMS 保留為長期狀態,結案。**
 
 - [2026-08-17 12:05] [已完成] KINGCONN hero 3D 序列 **從 Mac/Metal 搬到 winrig/RTX 5080**,並收斂成單一 pipeline。
@@ -8623,3 +8636,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 記憶索引 21,616 → 21,174(仍超上限 17,100)。VR/winrig 6 行併成一群(零遺失、帳本追蹤、三道閘全過);另修好 plan.json 與帳本裡兩個過期群名——那兩個名字讓 `hubify` 直接 rc=3 拒動,並在 `--verify` 產生假的「找不到索引行」遮住真漂移。剩餘超支全是 ⭐ 教訓正文(設計上刻意留第一層),要壓得先決定「哪些教訓不再是第一層」→ open #860。
 - 告警 feed:未解決 500 → **276**,其中「長得像故障」的從 410 降到 **8**(剩下的是 needs-delvin 或單次舊事件)。全部修完的都已用 `resolve_admin_alert.sh` 回寫「✅ 已解決 + 一句怎麼解的」。
 - ⚠️ **未收乾**:`~/.marketdaily-fallback/*.sh` 與 `~/autonomous/` 都不在任何 git repo、也沒有備份機制 —— 今晚 6 支 runner 的修改是裸的。這是既有結構問題不是我造成的,但值得單開任務處理。
+
+## 2026-09-08(夜)QFX 兩條新服務線:媒體代操(Ad Ops)+ KOL — 從「不做」到「有引擎、有規格、有可跑積木」
+- 老闆 09-08 加令「媒體代操跟 KOL 也要做,全部都要」。零付費 API、零廣告花費、零 Higgsfield credit、未寄信、未聯絡任何 KOL。
+- **平台盤點(唯讀實查)**:Meta `META_ACCESS_TOKEN` 是 Page token(scopes 含 ads_management/business_management 但打 `/me/adaccounts` 400)⇒ 讀不到任何廣告帳戶,缺 user/system-user token + 客戶 `act_` + 合作夥伴存取;Google Ads(無 MCC/developer token)與 LinkedIn Advertising API(只有個人登入帳密)都缺,申請門檻與流程寫進 `~/qfx/strategy/service_lines_adops_kol.md` A1 → open #874。YouTube Data API 也缺(Gemini 專案 API_KEY_SERVICE_BLOCKED)。
+- **adops 積木** `marketing/adops/`:insights_pull(沒憑證自動退 fixture 且每列 `source=fixture`)→ optimizer(HOLD/SWAP_CREATIVE/PAUSE/SCALE_UP/WATCH,等於門檻不觸發,附 data_hash+rules_hash)→ report(白牌週報,§21 代理商連帶責任揭露)。`test_adops.py` 39 斷言全過、零斷言 exit 2、tmp 目錄跑不碰 repo 帳本、原始碼層驗零 POST。
+- **KOL 席** `marketing/team/kol_agent.py`(BLACKEDGE 第 15 席):YouTube 公開頁+影片頁(ytInitialData/lockupViewModel 新版結構)、Apple Podcasts 搜尋 API、RSS;瀏覽器 UA、逐站 robots、≥2s、不登入、fetch_log 留痕;分數附覆蓋率並用 √覆蓋率折扣排名(否則抓不到互動的 Podcast 靠兩個維度衝第一——首版就撞到)。對皇海連接器利基實跑:22 候選 / 125 次抓取 / 前 10 簡報+中英草稿+合約 → `~/qfx/deals/kingconn/campaign_kit_2026-09-08/08_kol/`。LinkedIn 一格 ❔(登入牆),外聯草稿只產不寄 → open #875。
+- 研究:代操行情 10 條來源(15–25% / 月費 3 千–5 萬)、KOL 行情四層級帶(全是代理商整理,無平台正式報告)、公平會 2023-02 網紅納管+2024-09 首宗團購裁處 → `~/qfx/research/2026-09-08_*.md`;行情機器可讀版 `marketing/team/kol_rates_tw.json`。
+- 路由層:roster 加 KOL 席(gap→partial)+ 媒體代操席;ads-meta SKILL.md 接 adops 迴路;GOVERNANCE 兩列;marketing/CLAUDE.md 一條。scoreboard 對 Okara 10 勝 5 落後(KOL 由「無」改「半套」)。
+- ⚠ 未收乾:adops 只在 fixture 驗過、無真客戶帳戶;KOL 行情要報價前重查;LinkedIn 探索靠老闆手列。

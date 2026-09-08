@@ -312,15 +312,55 @@
       "id": "influencer",
       "name": "KOL 席",
       "okara_counterpart": "Influencer Agent",
-      "mission": "campaign brief→找創作者→議價→追交付→付款→回收成效",
-      "owns": [],
+      "mission": "利基→免費來源探索創作者→評分(互動/相關/假粉/品牌安全)→一頁簡報+CPE→中英外聯草稿+brief→合約與公平會揭露條款;議價/付款/追交付仍是人",
+      "owns": [
+        "marketing/team/kol_agent.py",
+        "marketing/team/kol_niches.json",
+        "marketing/team/kol_rates_tw.json",
+        "marketing/team/kol_templates/"
+      ],
+      "stamps": [],
+      "max_age_h": 720,
+      "backlog": null,
+      "brands": [
+        "kingconn"
+      ],
+      "status": "partial",
+      "gap_note": "2026-09-08 建席:探索/評分/簡報/草稿/合約五段有引擎並對皇海實跑;缺 議價、escrow 付款、交付追蹤、成效回收(Okara 的 outreach→escrow→results 三段)。LinkedIn/IG/Threads 有登入牆只能手列(指標 ❔);外聯草稿只產不寄,寄送需老闆核可(open #875)。",
+      "edge": "Okara 只在自家平台內找;我方用 YouTube 公開頁+Apple Podcasts 免費源實抓近 10 作互動、假粉結構訊號、品牌安全關鍵字,分數附覆蓋率(抓不到就 ❔ 不假設),CPE 用有出處的台灣行情帶算,合約自帶公平會揭露條款",
+      "evidence": {
+        "kind": "newest_glob",
+        "patterns": [
+          "marketing/team/kol_state.json"
+        ]
+      },
+      "first_run": "2026-09-08 皇海連接器 B2B 利基:10 YouTube 種子 + 5 Podcast 詞 → ~/qfx/deals/kingconn/campaign_kit_2026-09-08/08_kol/"
+    },
+    {
+      "id": "adops",
+      "name": "媒體代操席",
+      "okara_counterpart": "❔(未查證 Okara 有無付費廣告席)",
+      "mission": "Meta insights 帳本→規則式優化建議(暫停/加碼/換素材/觀察/樣本不足)→白牌週報含可稽核戳記;只建議不自動改帳戶、不代墊媒體費",
+      "owns": [
+        "marketing/adops/insights_pull.py",
+        "marketing/adops/optimizer.py",
+        "marketing/adops/report.py",
+        "marketing/adops/test_adops.py",
+        "skill:ads-meta"
+      ],
       "stamps": [],
       "max_age_h": null,
       "backlog": null,
       "brands": [],
-      "status": "gap",
-      "gap_note": "完全沒有。Okara 這席最完整(brief→shortlist→outreach→escrow→campaign results)。這是他們對我最大的領先。",
-      "edge": null
+      "status": "partial",
+      "gap_note": "2026-09-08 建席:三支積木 fixture 跑通(39 斷言);無任何真實廣告帳戶、無 ads_read user token、Google Ads/LinkedIn 憑證未申請(open #874)。素材端由 bulk-creative→ads-score→ads-meta 鏈供給。",
+      "edge": null,
+      "evidence": {
+        "kind": "newest_glob",
+        "patterns": [
+          "marketing/adops/ledger/insights_act_*.jsonl"
+        ]
+      }
     },
     {
       "id": "competitor",

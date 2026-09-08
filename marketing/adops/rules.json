@@ -1,0 +1,16 @@
+{
+  "version": "2026-09-08.1",
+  "_doc": "optimizer 規則。所有門檻可被客戶 profile 覆寫(--profile x.json)。只出建議,不自動改帳戶。",
+  "window_days": 7,
+  "min_impressions": 2000,
+  "min_spend": 1500,
+  "min_conversions_for_scale": 5,
+  "ctr_floor_pct": 0.5,
+  "frequency_cap": 3.5,
+  "cpa_target": 600,
+  "cpa_scale_ratio": 0.8,
+  "cpa_pause_ratio": 1.5,
+  "scale_step_pct": 20,
+  "cpc_ceiling": null,
+  "currency": "TWD"
+}

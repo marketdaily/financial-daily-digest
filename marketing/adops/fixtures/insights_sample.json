@@ -1,0 +1,2593 @@
+{
+ "_note": "FIXTURE:合成資料,非任何真實廣告帳戶;數字由 profile 亂數產生(seed 20260908),只用來跑通 insights_pull→optimizer→report 與規則邊界測試。",
+ "account": "act_FIXTURE",
+ "currency": "TWD",
+ "designed_behaviours": {
+  "ad_3001": "winner 低CPA→應建議加碼",
+  "ad_3002": "fatigue 頻率>3.5→應建議換素材",
+  "ad_3003": "lowctr CTR<0.5%→應建議暫停",
+  "ad_3004": "thin 花費不足→應 HOLD",
+  "ad_3005/3006": "steady 無轉換事件(TRAFFIC)→只看 CTR/CPC"
+ },
+ "rows": [
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3001",
+   "ad_name": "A1_技術規格開箱",
+   "objective": "OUTCOME_LEADS",
+   "spend": "1556.71",
+   "impressions": "9730",
+   "reach": "6277",
+   "frequency": "1.55",
+   "clicks": "166",
+   "inline_link_clicks": "152",
+   "ctr": "1.7144",
+   "cpc": "9.3778",
+   "cpm": "159.9908",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "152"
+    },
+    {
+     "action_type": "lead",
+     "value": "9"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "172.97"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3001",
+   "ad_name": "A1_技術規格開箱",
+   "objective": "OUTCOME_LEADS",
+   "spend": "2028.21",
+   "impressions": "9035",
+   "reach": "5346",
+   "frequency": "1.69",
+   "clicks": "170",
+   "inline_link_clicks": "156",
+   "ctr": "1.8905",
+   "cpc": "11.9306",
+   "cpm": "224.4837",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "156"
+    },
+    {
+     "action_type": "lead",
+     "value": "10"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "202.82"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3001",
+   "ad_name": "A1_技術規格開箱",
+   "objective": "OUTCOME_LEADS",
+   "spend": "2378.52",
+   "impressions": "11604",
+   "reach": "7252",
+   "frequency": "1.6",
+   "clicks": "246",
+   "inline_link_clicks": "226",
+   "ctr": "2.1272",
+   "cpc": "9.6688",
+   "cpm": "204.9741",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "226"
+    },
+    {
+     "action_type": "lead",
+     "value": "16"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "148.66"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3001",
+   "ad_name": "A1_技術規格開箱",
+   "objective": "OUTCOME_LEADS",
+   "spend": "1801.87",
+   "impressions": "9802",
+   "reach": "5904",
+   "frequency": "1.66",
+   "clicks": "161",
+   "inline_link_clicks": "148",
+   "ctr": "1.6491",
+   "cpc": "11.1917",
+   "cpm": "183.8268",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "148"
+    },
+    {
+     "action_type": "lead",
+     "value": "8"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "225.23"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3001",
+   "ad_name": "A1_技術規格開箱",
+   "objective": "OUTCOME_LEADS",
+   "spend": "1919.52",
+   "impressions": "9826",
+   "reach": "6968",
+   "frequency": "1.41",
+   "clicks": "167",
+   "inline_link_clicks": "153",
+   "ctr": "1.7043",
+   "cpc": "11.4941",
+   "cpm": "195.3511",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "153"
+    },
+    {
+     "action_type": "lead",
+     "value": "12"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "159.96"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3001",
+   "ad_name": "A1_技術規格開箱",
+   "objective": "OUTCOME_LEADS",
+   "spend": "2269.49",
+   "impressions": "9355",
+   "reach": "6634",
+   "frequency": "1.41",
+   "clicks": "197",
+   "inline_link_clicks": "181",
+   "ctr": "2.1138",
+   "cpc": "11.5203",
+   "cpm": "242.5965",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "181"
+    },
+    {
+     "action_type": "lead",
+     "value": "13"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "174.58"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3001",
+   "ad_name": "A1_技術規格開箱",
+   "objective": "OUTCOME_LEADS",
+   "spend": "2385.39",
+   "impressions": "9719",
+   "reach": "6436",
+   "frequency": "1.51",
+   "clicks": "212",
+   "inline_link_clicks": "195",
+   "ctr": "2.1843",
+   "cpc": "11.2518",
+   "cpm": "245.4357",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "195"
+    },
+    {
+     "action_type": "lead",
+     "value": "12"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "198.78"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3002",
+   "ad_name": "A2_價格對比",
+   "objective": "OUTCOME_LEADS",
+   "spend": "1358.48",
+   "impressions": "13487",
+   "reach": "3615",
+   "frequency": "3.73",
+   "clicks": "94",
+   "inline_link_clicks": "86",
+   "ctr": "0.704",
+   "cpc": "14.4519",
+   "cpm": "100.7251",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "86"
+    },
+    {
+     "action_type": "lead",
+     "value": "2"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "679.24"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3002",
+   "ad_name": "A2_價格對比",
+   "objective": "OUTCOME_LEADS",
+   "spend": "1099.65",
+   "impressions": "11893",
+   "reach": "2734",
+   "frequency": "4.35",
+   "clicks": "72",
+   "inline_link_clicks": "66",
+   "ctr": "0.6113",
+   "cpc": "15.2729",
+   "cpm": "92.462",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "66"
+    },
+    {
+     "action_type": "lead",
+     "value": "1"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "1099.65"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3002",
+   "ad_name": "A2_價格對比",
+   "objective": "OUTCOME_LEADS",
+   "spend": "1750.31",
+   "impressions": "12423",
+   "reach": "3059",
+   "frequency": "4.06",
+   "clicks": "100",
+   "inline_link_clicks": "92",
+   "ctr": "0.8107",
+   "cpc": "17.5031",
+   "cpm": "140.8927",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "92"
+    },
+    {
+     "action_type": "lead",
+     "value": "2"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "875.15"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3002",
+   "ad_name": "A2_價格對比",
+   "objective": "OUTCOME_LEADS",
+   "spend": "1434.41",
+   "impressions": "12545",
+   "reach": "3250",
+   "frequency": "3.86",
+   "clicks": "97",
+   "inline_link_clicks": "89",
+   "ctr": "0.7761",
+   "cpc": "14.7877",
+   "cpm": "114.3412",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "89"
+    },
+    {
+     "action_type": "lead",
+     "value": "2"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "717.21"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3002",
+   "ad_name": "A2_價格對比",
+   "objective": "OUTCOME_LEADS",
+   "spend": "1438.11",
+   "impressions": "11552",
+   "reach": "2810",
+   "frequency": "4.11",
+   "clicks": "97",
+   "inline_link_clicks": "89",
+   "ctr": "0.8442",
+   "cpc": "14.8259",
+   "cpm": "124.4901",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "89"
+    },
+    {
+     "action_type": "lead",
+     "value": "2"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "719.05"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3002",
+   "ad_name": "A2_價格對比",
+   "objective": "OUTCOME_LEADS",
+   "spend": "1202.14",
+   "impressions": "12285",
+   "reach": "2967",
+   "frequency": "4.14",
+   "clicks": "83",
+   "inline_link_clicks": "76",
+   "ctr": "0.6757",
+   "cpc": "14.4836",
+   "cpm": "97.8543",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "76"
+    },
+    {
+     "action_type": "lead",
+     "value": "2"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "601.07"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": "ad_3002",
+   "ad_name": "A2_價格對比",
+   "objective": "OUTCOME_LEADS",
+   "spend": "1438.23",
+   "impressions": "13101",
+   "reach": "3011",
+   "frequency": "4.35",
+   "clicks": "83",
+   "inline_link_clicks": "76",
+   "ctr": "0.6378",
+   "cpc": "17.3281",
+   "cpm": "109.7802",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "76"
+    },
+    {
+     "action_type": "lead",
+     "value": "2"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "719.12"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3003",
+   "ad_name": "B1_品牌形象",
+   "objective": "OUTCOME_LEADS",
+   "spend": "380.92",
+   "impressions": "8265",
+   "reach": "4195",
+   "frequency": "1.97",
+   "clicks": "21",
+   "inline_link_clicks": "19",
+   "ctr": "0.2557",
+   "cpc": "18.139",
+   "cpm": "46.0883",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "19"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3003",
+   "ad_name": "B1_品牌形象",
+   "objective": "OUTCOME_LEADS",
+   "spend": "720.34",
+   "impressions": "8197",
+   "reach": "4037",
+   "frequency": "2.03",
+   "clicks": "32",
+   "inline_link_clicks": "29",
+   "ctr": "0.3986",
+   "cpc": "22.5106",
+   "cpm": "87.8785",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "29"
+    },
+    {
+     "action_type": "lead",
+     "value": "1"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "720.34"
+    }
+   ],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3003",
+   "ad_name": "B1_品牌形象",
+   "objective": "OUTCOME_LEADS",
+   "spend": "484.74",
+   "impressions": "9568",
+   "reach": "5315",
+   "frequency": "1.8",
+   "clicks": "26",
+   "inline_link_clicks": "23",
+   "ctr": "0.2814",
+   "cpc": "18.6438",
+   "cpm": "50.6626",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "23"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3003",
+   "ad_name": "B1_品牌形象",
+   "objective": "OUTCOME_LEADS",
+   "spend": "554.06",
+   "impressions": "8889",
+   "reach": "4489",
+   "frequency": "1.98",
+   "clicks": "27",
+   "inline_link_clicks": "24",
+   "ctr": "0.3061",
+   "cpc": "20.5207",
+   "cpm": "62.331",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "24"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3003",
+   "ad_name": "B1_品牌形象",
+   "objective": "OUTCOME_LEADS",
+   "spend": "457.14",
+   "impressions": "8371",
+   "reach": "4123",
+   "frequency": "2.03",
+   "clicks": "25",
+   "inline_link_clicks": "23",
+   "ctr": "0.3029",
+   "cpc": "18.2856",
+   "cpm": "54.61",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "23"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3003",
+   "ad_name": "B1_品牌形象",
+   "objective": "OUTCOME_LEADS",
+   "spend": "752.34",
+   "impressions": "8272",
+   "reach": "3829",
+   "frequency": "2.16",
+   "clicks": "32",
+   "inline_link_clicks": "29",
+   "ctr": "0.3924",
+   "cpc": "23.5106",
+   "cpm": "90.9502",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "29"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3003",
+   "ad_name": "B1_品牌形象",
+   "objective": "OUTCOME_LEADS",
+   "spend": "539.43",
+   "impressions": "8361",
+   "reach": "4447",
+   "frequency": "1.88",
+   "clicks": "27",
+   "inline_link_clicks": "24",
+   "ctr": "0.3348",
+   "cpc": "19.9789",
+   "cpm": "64.5174",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "24"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3004",
+   "ad_name": "B2_限時樣品",
+   "objective": "OUTCOME_LEADS",
+   "spend": "32.18",
+   "impressions": "267",
+   "reach": "261",
+   "frequency": "1.02",
+   "clicks": "3",
+   "inline_link_clicks": "2",
+   "ctr": "1.481",
+   "cpc": "10.7267",
+   "cpm": "120.5243",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "2"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3004",
+   "ad_name": "B2_限時樣品",
+   "objective": "OUTCOME_LEADS",
+   "spend": "30.98",
+   "impressions": "293",
+   "reach": "259",
+   "frequency": "1.13",
+   "clicks": "3",
+   "inline_link_clicks": "2",
+   "ctr": "1.0338",
+   "cpc": "10.3267",
+   "cpm": "105.7338",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "2"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3004",
+   "ad_name": "B2_限時樣品",
+   "objective": "OUTCOME_LEADS",
+   "spend": "11.22",
+   "impressions": "172",
+   "reach": "170",
+   "frequency": "1.01",
+   "clicks": "1",
+   "inline_link_clicks": "0",
+   "ctr": "1.0576",
+   "cpc": "11.22",
+   "cpm": "65.2326",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "0"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3004",
+   "ad_name": "B2_限時樣品",
+   "objective": "OUTCOME_LEADS",
+   "spend": "20.19",
+   "impressions": "262",
+   "reach": "233",
+   "frequency": "1.12",
+   "clicks": "2",
+   "inline_link_clicks": "1",
+   "ctr": "1.0255",
+   "cpc": "10.095",
+   "cpm": "77.0611",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "1"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3004",
+   "ad_name": "B2_限時樣品",
+   "objective": "OUTCOME_LEADS",
+   "spend": "20.11",
+   "impressions": "204",
+   "reach": "190",
+   "frequency": "1.07",
+   "clicks": "2",
+   "inline_link_clicks": "1",
+   "ctr": "1.1639",
+   "cpc": "10.055",
+   "cpm": "98.5784",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "1"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3004",
+   "ad_name": "B2_限時樣品",
+   "objective": "OUTCOME_LEADS",
+   "spend": "23.27",
+   "impressions": "220",
+   "reach": "196",
+   "frequency": "1.12",
+   "clicks": "2",
+   "inline_link_clicks": "1",
+   "ctr": "1.0717",
+   "cpc": "11.635",
+   "cpm": "105.7727",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "1"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": "ad_3004",
+   "ad_name": "B2_限時樣品",
+   "objective": "OUTCOME_LEADS",
+   "spend": "23.56",
+   "impressions": "212",
+   "reach": "190",
+   "frequency": "1.11",
+   "clicks": "2",
+   "inline_link_clicks": "1",
+   "ctr": "1.1286",
+   "cpc": "11.78",
+   "cpm": "111.1321",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "1"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3005",
+   "ad_name": "C1_應用案例",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "774.68",
+   "impressions": "5349",
+   "reach": "3364",
+   "frequency": "1.59",
+   "clicks": "71",
+   "inline_link_clicks": "65",
+   "ctr": "1.3401",
+   "cpc": "10.911",
+   "cpm": "144.8271",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "65"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3005",
+   "ad_name": "C1_應用案例",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "606.24",
+   "impressions": "5150",
+   "reach": "3301",
+   "frequency": "1.56",
+   "clicks": "69",
+   "inline_link_clicks": "63",
+   "ctr": "1.3534",
+   "cpc": "8.7861",
+   "cpm": "117.7165",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "63"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3005",
+   "ad_name": "C1_應用案例",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "788.11",
+   "impressions": "6279",
+   "reach": "3270",
+   "frequency": "1.92",
+   "clicks": "72",
+   "inline_link_clicks": "66",
+   "ctr": "1.1528",
+   "cpc": "10.946",
+   "cpm": "125.5152",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "66"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3005",
+   "ad_name": "C1_應用案例",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "435.49",
+   "impressions": "5048",
+   "reach": "2713",
+   "frequency": "1.86",
+   "clicks": "54",
+   "inline_link_clicks": "49",
+   "ctr": "1.0698",
+   "cpc": "8.0646",
+   "cpm": "86.2698",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "49"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3005",
+   "ad_name": "C1_應用案例",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "813.26",
+   "impressions": "6734",
+   "reach": "4182",
+   "frequency": "1.61",
+   "clicks": "81",
+   "inline_link_clicks": "74",
+   "ctr": "1.2161",
+   "cpc": "10.0402",
+   "cpm": "120.7692",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "74"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3005",
+   "ad_name": "C1_應用案例",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "623.85",
+   "impressions": "5637",
+   "reach": "3166",
+   "frequency": "1.78",
+   "clicks": "70",
+   "inline_link_clicks": "64",
+   "ctr": "1.257",
+   "cpc": "8.9121",
+   "cpm": "110.6706",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "64"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3005",
+   "ad_name": "C1_應用案例",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "732.53",
+   "impressions": "6776",
+   "reach": "4208",
+   "frequency": "1.61",
+   "clicks": "75",
+   "inline_link_clicks": "69",
+   "ctr": "1.1102",
+   "cpc": "9.7671",
+   "cpm": "108.1066",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "69"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3006",
+   "ad_name": "C2_型錄下載",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "744.66",
+   "impressions": "5955",
+   "reach": "3768",
+   "frequency": "1.58",
+   "clicks": "76",
+   "inline_link_clicks": "69",
+   "ctr": "1.283",
+   "cpc": "9.7982",
+   "cpm": "125.0479",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "69"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3006",
+   "ad_name": "C2_型錄下載",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "531.33",
+   "impressions": "5341",
+   "reach": "3087",
+   "frequency": "1.73",
+   "clicks": "66",
+   "inline_link_clicks": "60",
+   "ctr": "1.237",
+   "cpc": "8.0505",
+   "cpm": "99.4814",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "60"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3006",
+   "ad_name": "C2_型錄下載",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "737.99",
+   "impressions": "6919",
+   "reach": "3476",
+   "frequency": "1.99",
+   "clicks": "73",
+   "inline_link_clicks": "67",
+   "ctr": "1.0602",
+   "cpc": "10.1095",
+   "cpm": "106.6614",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "67"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3006",
+   "ad_name": "C2_型錄下載",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "623.98",
+   "impressions": "5274",
+   "reach": "2979",
+   "frequency": "1.77",
+   "clicks": "72",
+   "inline_link_clicks": "66",
+   "ctr": "1.3776",
+   "cpc": "8.6664",
+   "cpm": "118.3125",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "66"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3006",
+   "ad_name": "C2_型錄下載",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "622.93",
+   "impressions": "6226",
+   "reach": "3176",
+   "frequency": "1.96",
+   "clicks": "73",
+   "inline_link_clicks": "67",
+   "ctr": "1.1824",
+   "cpc": "8.5333",
+   "cpm": "100.053",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "67"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3006",
+   "ad_name": "C2_型錄下載",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "576.82",
+   "impressions": "5266",
+   "reach": "2941",
+   "frequency": "1.79",
+   "clicks": "63",
+   "inline_link_clicks": "57",
+   "ctr": "1.197",
+   "cpc": "9.1559",
+   "cpm": "109.5367",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "57"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": "ad_3006",
+   "ad_name": "C2_型錄下載",
+   "objective": "OUTCOME_TRAFFIC",
+   "spend": "613.99",
+   "impressions": "5690",
+   "reach": "3214",
+   "frequency": "1.77",
+   "clicks": "57",
+   "inline_link_clicks": "52",
+   "ctr": "1.0103",
+   "cpc": "10.7718",
+   "cpm": "107.9069",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "52"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "ad"
+  },
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "2915.19",
+   "impressions": "23217",
+   "reach": "9892",
+   "clicks": "260",
+   "inline_link_clicks": "238",
+   "frequency": "2.35",
+   "ctr": "1.1199",
+   "cpc": "11.2123",
+   "cpm": "125.5627",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "238"
+    },
+    {
+     "action_type": "lead",
+     "value": "11"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "265.02"
+    }
+   ],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "3127.86",
+   "impressions": "20928",
+   "reach": "8080",
+   "clicks": "242",
+   "inline_link_clicks": "222",
+   "frequency": "2.59",
+   "ctr": "1.1563",
+   "cpc": "12.925",
+   "cpm": "149.4581",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "222"
+    },
+    {
+     "action_type": "lead",
+     "value": "11"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "284.35"
+    }
+   ],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "4128.83",
+   "impressions": "24027",
+   "reach": "10311",
+   "clicks": "346",
+   "inline_link_clicks": "318",
+   "frequency": "2.33",
+   "ctr": "1.44",
+   "cpc": "11.933",
+   "cpm": "171.8413",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "318"
+    },
+    {
+     "action_type": "lead",
+     "value": "18"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "229.38"
+    }
+   ],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "3236.28",
+   "impressions": "22347",
+   "reach": "9154",
+   "clicks": "258",
+   "inline_link_clicks": "237",
+   "frequency": "2.44",
+   "ctr": "1.1545",
+   "cpc": "12.5437",
+   "cpm": "144.8194",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "237"
+    },
+    {
+     "action_type": "lead",
+     "value": "10"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "323.63"
+    }
+   ],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "3357.63",
+   "impressions": "21378",
+   "reach": "9778",
+   "clicks": "264",
+   "inline_link_clicks": "242",
+   "frequency": "2.19",
+   "ctr": "1.2349",
+   "cpc": "12.7183",
+   "cpm": "157.0601",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "242"
+    },
+    {
+     "action_type": "lead",
+     "value": "14"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "239.83"
+    }
+   ],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "3471.63",
+   "impressions": "21640",
+   "reach": "9601",
+   "clicks": "280",
+   "inline_link_clicks": "257",
+   "frequency": "2.25",
+   "ctr": "1.2939",
+   "cpc": "12.3987",
+   "cpm": "160.4265",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "257"
+    },
+    {
+     "action_type": "lead",
+     "value": "15"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "231.44"
+    }
+   ],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2001",
+   "adset_name": "冷_台灣製造業採購",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "3823.62",
+   "impressions": "22820",
+   "reach": "9447",
+   "clicks": "295",
+   "inline_link_clicks": "271",
+   "frequency": "2.42",
+   "ctr": "1.2927",
+   "cpc": "12.9614",
+   "cpm": "167.5557",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "271"
+    },
+    {
+     "action_type": "lead",
+     "value": "14"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "273.12"
+    }
+   ],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "413.1",
+   "impressions": "8532",
+   "reach": "4456",
+   "clicks": "24",
+   "inline_link_clicks": "21",
+   "frequency": "1.91",
+   "ctr": "0.2813",
+   "cpc": "17.2125",
+   "cpm": "48.4177",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "21"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "751.32",
+   "impressions": "8490",
+   "reach": "4296",
+   "clicks": "35",
+   "inline_link_clicks": "31",
+   "frequency": "1.98",
+   "ctr": "0.4122",
+   "cpc": "21.4663",
+   "cpm": "88.4947",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "31"
+    },
+    {
+     "action_type": "lead",
+     "value": "1"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "751.32"
+    }
+   ],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "495.96",
+   "impressions": "9740",
+   "reach": "5485",
+   "clicks": "27",
+   "inline_link_clicks": "23",
+   "frequency": "1.78",
+   "ctr": "0.2772",
+   "cpc": "18.3689",
+   "cpm": "50.9199",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "23"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "574.25",
+   "impressions": "9151",
+   "reach": "4722",
+   "clicks": "29",
+   "inline_link_clicks": "25",
+   "frequency": "1.94",
+   "ctr": "0.3169",
+   "cpc": "19.8017",
+   "cpm": "62.7527",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "25"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "477.25",
+   "impressions": "8575",
+   "reach": "4313",
+   "clicks": "27",
+   "inline_link_clicks": "24",
+   "frequency": "1.99",
+   "ctr": "0.3149",
+   "cpc": "17.6759",
+   "cpm": "55.656",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "24"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "775.61",
+   "impressions": "8492",
+   "reach": "4025",
+   "clicks": "34",
+   "inline_link_clicks": "30",
+   "frequency": "2.11",
+   "ctr": "0.4004",
+   "cpc": "22.8121",
+   "cpm": "91.3342",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "30"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": "as_2002",
+   "adset_name": "暖_官網訪客30d",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "562.99",
+   "impressions": "8573",
+   "reach": "4637",
+   "clicks": "29",
+   "inline_link_clicks": "25",
+   "frequency": "1.85",
+   "ctr": "0.3383",
+   "cpc": "19.4134",
+   "cpm": "65.6701",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "25"
+    },
+    {
+     "action_type": "lead",
+     "value": "0"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1519.34",
+   "impressions": "11304",
+   "reach": "7132",
+   "clicks": "147",
+   "inline_link_clicks": "134",
+   "frequency": "1.58",
+   "ctr": "1.3004",
+   "cpc": "10.3356",
+   "cpm": "134.4073",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "134"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1137.57",
+   "impressions": "10491",
+   "reach": "6388",
+   "clicks": "135",
+   "inline_link_clicks": "123",
+   "frequency": "1.64",
+   "ctr": "1.2868",
+   "cpc": "8.4264",
+   "cpm": "108.4329",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "123"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1526.1",
+   "impressions": "13198",
+   "reach": "6746",
+   "clicks": "145",
+   "inline_link_clicks": "133",
+   "frequency": "1.96",
+   "ctr": "1.0987",
+   "cpc": "10.5248",
+   "cpm": "115.6312",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "133"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1059.47",
+   "impressions": "10322",
+   "reach": "5692",
+   "clicks": "126",
+   "inline_link_clicks": "115",
+   "frequency": "1.81",
+   "ctr": "1.2207",
+   "cpc": "8.4085",
+   "cpm": "102.6419",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "115"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1436.19",
+   "impressions": "12960",
+   "reach": "7358",
+   "clicks": "154",
+   "inline_link_clicks": "141",
+   "frequency": "1.76",
+   "ctr": "1.1883",
+   "cpc": "9.3259",
+   "cpm": "110.8171",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "141"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1200.67",
+   "impressions": "10903",
+   "reach": "6107",
+   "clicks": "133",
+   "inline_link_clicks": "121",
+   "frequency": "1.79",
+   "ctr": "1.2198",
+   "cpc": "9.0276",
+   "cpm": "110.1229",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "121"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": "as_2003",
+   "adset_name": "興趣_PCB設計",
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1346.52",
+   "impressions": "12466",
+   "reach": "7422",
+   "clicks": "132",
+   "inline_link_clicks": "121",
+   "frequency": "1.68",
+   "ctr": "1.0589",
+   "cpc": "10.2009",
+   "cpm": "108.0154",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "121"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "adset"
+  },
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "3328.29",
+   "impressions": "31749",
+   "reach": "14348",
+   "clicks": "284",
+   "inline_link_clicks": "259",
+   "frequency": "2.21",
+   "ctr": "0.8945",
+   "cpc": "11.7193",
+   "cpm": "104.8313",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "259"
+    },
+    {
+     "action_type": "lead",
+     "value": "11"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "302.57"
+    }
+   ],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "3879.18",
+   "impressions": "29418",
+   "reach": "12376",
+   "clicks": "277",
+   "inline_link_clicks": "253",
+   "frequency": "2.38",
+   "ctr": "0.9416",
+   "cpc": "14.0043",
+   "cpm": "131.8642",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "253"
+    },
+    {
+     "action_type": "lead",
+     "value": "12"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "323.26"
+    }
+   ],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "4624.79",
+   "impressions": "33767",
+   "reach": "15796",
+   "clicks": "373",
+   "inline_link_clicks": "341",
+   "frequency": "2.14",
+   "ctr": "1.1046",
+   "cpc": "12.3989",
+   "cpm": "136.9618",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "341"
+    },
+    {
+     "action_type": "lead",
+     "value": "18"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "256.93"
+    }
+   ],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "3810.53",
+   "impressions": "31498",
+   "reach": "13876",
+   "clicks": "287",
+   "inline_link_clicks": "262",
+   "frequency": "2.27",
+   "ctr": "0.9112",
+   "cpc": "13.2771",
+   "cpm": "120.9769",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "262"
+    },
+    {
+     "action_type": "lead",
+     "value": "10"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "381.05"
+    }
+   ],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "3834.88",
+   "impressions": "29953",
+   "reach": "14091",
+   "clicks": "291",
+   "inline_link_clicks": "266",
+   "frequency": "2.13",
+   "ctr": "0.9715",
+   "cpc": "13.1783",
+   "cpm": "128.0299",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "266"
+    },
+    {
+     "action_type": "lead",
+     "value": "14"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "273.92"
+    }
+   ],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "4247.24",
+   "impressions": "30132",
+   "reach": "13626",
+   "clicks": "314",
+   "inline_link_clicks": "287",
+   "frequency": "2.21",
+   "ctr": "1.0421",
+   "cpc": "13.5262",
+   "cpm": "140.9545",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "287"
+    },
+    {
+     "action_type": "lead",
+     "value": "15"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "283.15"
+    }
+   ],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1001",
+   "campaign_name": "KC_2609_LEAD_連接器RFQ",
+   "objective": "OUTCOME_LEADS",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "4386.61",
+   "impressions": "31393",
+   "reach": "14084",
+   "clicks": "324",
+   "inline_link_clicks": "296",
+   "frequency": "2.23",
+   "ctr": "1.0321",
+   "cpc": "13.5389",
+   "cpm": "139.7321",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "296"
+    },
+    {
+     "action_type": "lead",
+     "value": "14"
+    }
+   ],
+   "cost_per_action_type": [
+    {
+     "action_type": "lead",
+     "value": "313.33"
+    }
+   ],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-02",
+   "date_stop": "2026-09-02",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1519.34",
+   "impressions": "11304",
+   "reach": "7132",
+   "clicks": "147",
+   "inline_link_clicks": "134",
+   "frequency": "1.58",
+   "ctr": "1.3004",
+   "cpc": "10.3356",
+   "cpm": "134.4073",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "134"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-03",
+   "date_stop": "2026-09-03",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1137.57",
+   "impressions": "10491",
+   "reach": "6388",
+   "clicks": "135",
+   "inline_link_clicks": "123",
+   "frequency": "1.64",
+   "ctr": "1.2868",
+   "cpc": "8.4264",
+   "cpm": "108.4329",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "123"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-04",
+   "date_stop": "2026-09-04",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1526.1",
+   "impressions": "13198",
+   "reach": "6746",
+   "clicks": "145",
+   "inline_link_clicks": "133",
+   "frequency": "1.96",
+   "ctr": "1.0987",
+   "cpc": "10.5248",
+   "cpm": "115.6312",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "133"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-05",
+   "date_stop": "2026-09-05",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1059.47",
+   "impressions": "10322",
+   "reach": "5692",
+   "clicks": "126",
+   "inline_link_clicks": "115",
+   "frequency": "1.81",
+   "ctr": "1.2207",
+   "cpc": "8.4085",
+   "cpm": "102.6419",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "115"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-06",
+   "date_stop": "2026-09-06",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1436.19",
+   "impressions": "12960",
+   "reach": "7358",
+   "clicks": "154",
+   "inline_link_clicks": "141",
+   "frequency": "1.76",
+   "ctr": "1.1883",
+   "cpc": "9.3259",
+   "cpm": "110.8171",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "141"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-07",
+   "date_stop": "2026-09-07",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1200.67",
+   "impressions": "10903",
+   "reach": "6107",
+   "clicks": "133",
+   "inline_link_clicks": "121",
+   "frequency": "1.79",
+   "ctr": "1.2198",
+   "cpc": "9.0276",
+   "cpm": "110.1229",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "121"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "campaign"
+  },
+  {
+   "date_start": "2026-09-08",
+   "date_stop": "2026-09-08",
+   "account_currency": "TWD",
+   "campaign_id": "c_1002",
+   "campaign_name": "KC_2609_TRAFFIC_產業應用文",
+   "objective": "OUTCOME_TRAFFIC",
+   "adset_id": null,
+   "adset_name": null,
+   "ad_id": null,
+   "ad_name": null,
+   "spend": "1346.52",
+   "impressions": "12466",
+   "reach": "7422",
+   "clicks": "132",
+   "inline_link_clicks": "121",
+   "frequency": "1.68",
+   "ctr": "1.0589",
+   "cpc": "10.2009",
+   "cpm": "108.0154",
+   "actions": [
+    {
+     "action_type": "link_click",
+     "value": "121"
+    }
+   ],
+   "cost_per_action_type": [],
+   "level": "campaign"
+  }
+ ]
+}
