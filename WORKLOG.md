@@ -8707,3 +8707,7 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⭐ 每次改抽取器都回頭重跑已交付的零件(加 `re` 圖元支援會影響所有圖)——三顆數字一字未變,才敢繼續。
 - 對帳工具:圖上「數量-尺寸」標註(`9-0.45`=9 顆 0.45 寬)拿來核焊盤清單,抓到的兩次都是**我的對帳表寫錯**不是抽取錯
   (寬 1.30 的除了 2 顆角盤還有右下角另標的 1 顆;寬 0.70 的除了 2 顆角盤還有 8 顆訊號盤)。
+- 交付:12 張海報 + 盲盒商品頁 7 檔,下載頁 https://chosen-delivery.pages.dev(新開 CF Pages project,用 storefront/.env 的 CLOUDFLARE_API_TOKEN 部署——本機 wrangler OAuth 在非互動環境不可用)。已回信 Darren(thread 1a08182276c7cff4)列六個待確認。
+- ⭐⭐ 三個「判準/量測」教訓:①版面高度寫死數字+overflow:hidden 把②的 7 款預購裁成 4 款(漏資訊),正解是瀏覽器量測且**必須等 document.fonts.ready**;②字級下限做成 gate.py 掃 DOM computed fontSize(首跑 19 處違規),豁免只給商標字標並寫進交付說明;③底板要拿來合成前先用 numpy 逐列量亮度確認受光帶深度,肉眼「不錯」≠「放得下五顆商品」。
+- ⭐ genai-prompt-pro LESSONS 已回寫:燈具名詞入鏡復發(「just outside the frame」擋不住 `lamp` 這個名詞)、正向封閉列舉寫法、rembg 對矩形卡片是錯工具。
+- open items #884-#887 已登記(⑤日版30週年未做/等 Darren 回饋/chosen-delivery 專案待收尾/Random PSA10 卡未經確認)。
