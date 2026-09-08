@@ -1020,3 +1020,15 @@
 {"date": "2026-09-07", "code": "6877", "source": "leadflow", "level": "yellow", "signal": "鏵友益(6877) 無消息近漲停+10.0%(量能2.5×,5日+7.0%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-09-07", "code": "8042", "source": "leadflow", "level": "red", "signal": "金山電(8042) 無消息近漲停+10.0%(連2根,5日+15.7%),疑資訊先行資金|外資+投信近3日+1290張", "price_at_signal": null}
 {"date": "2026-09-07", "code": "7794", "source": "leadflow", "level": "red", "signal": "宏碁智新(7794) 無消息近漲停+9.9%(量能12.3×,5日+9.9%),疑資訊先行資金|外資+投信近3日僅-1張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-08", "code": "2368", "source": "sbl", "level": "yellow", "signal": "金像電(2368):機構借券賣出5日增18.8%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-09-08", "code": "3450", "source": "margin", "level": "red", "signal": "聯鈞(3450):融資5日驟減-16.5%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-09-08", "code": "8021", "source": "institutional", "level": "red", "signal": "尖點(8021):投信連 3 日賣超(棄養警訊,20日淨賣 -1,810 張)", "price_at_signal": null}
+{"date": "2026-09-08", "code": "8021", "source": "twse_notetrans", "level": "yellow", "signal": "尖點(8021):注意累計異常:115年8月26日至115年9月7日等九個營業日已有五次(逼近處置門檻)", "price_at_signal": null}
+{"date": "2026-09-08", "code": "8222", "source": "institutional", "level": "red", "signal": "寶一(8222):外資連 5 日賣超(5日淨賣 -272 張)", "price_at_signal": null}
+{"date": "2026-09-08", "code": "8996", "source": "institutional", "level": "yellow", "signal": "高力(8996):法人 20 日淨賣超 -7,852 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-09-08", "code": "MSFT", "source": "us_congress", "level": "yellow", "signal": "🏛️ MSFT 國會議員買進:Gilbert Cisneros(House) 2026-09-04 揭露", "price_at_signal": null}
+{"date": "2026-09-08", "code": "6922", "source": "margin", "level": "red", "signal": "宸曜(6922):融資5日驟減-15.3%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-09-08", "code": "3095", "source": "sbl", "level": "yellow", "signal": "及成(3095):機構借券賣出5日增11.1%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-09-08", "code": "3529", "source": "leadflow", "level": "yellow", "signal": "力旺(3529) 無消息近漲停+9.9%(量能2.2×,5日+7.0%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-08", "code": "6231", "source": "leadflow", "level": "red", "signal": "系微(6231) 無消息近漲停+9.8%(量能4.4×,5日+5.6%),疑資訊先行資金|外資+投信近3日僅+166張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-08", "code": "7828", "source": "leadflow", "level": "red", "signal": "創新服務(7828) 無消息近漲停+8.8%(連2根,5日+12.4%),疑資訊先行資金|外資+投信近3日僅+447張,法人未同步=隱形買盤", "price_at_signal": null}
