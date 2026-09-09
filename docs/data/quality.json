@@ -1,22 +1,13 @@
 {
- "date": "2026-09-09",
+ "date": "2026-09-10",
  "kpi": {
   "subscribers": 26,
   "digest_clean_days_7d": "7/7",
   "fallback_7d": 2,
-  "social_posts_7d": 80
+  "social_posts_7d": 69
  },
  "digest": {
-  "audit": {
-   "date": "2026-09-09",
-   "total_subscribers": 26,
-   "audit_failed": 1,
-   "fallback": 0,
-   "personalization_failed": 0,
-   "per_check": {
-    "verdict_monoculture": 1
-   }
-  },
+  "audit": null,
   "trend": [
    {
     "date": "2026-08-19",
@@ -135,8 +126,8 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": 0,
-  "us": 1
+  "tw": null,
+  "us": null
  },
  "sitescan": {
   "date": "2026-09-09",
@@ -147,8 +138,8 @@
  "flags": {
   "hb_miss_tw": false,
   "hb_miss_us": false,
-  "guard_alert_tw": true,
-  "guard_alert_us": true
+  "guard_alert_tw": false,
+  "guard_alert_us": false
  },
- "generated_utc": "2026-09-09T13:38:00Z"
+ "generated_utc": "2026-09-09T16:08:00Z"
 }
