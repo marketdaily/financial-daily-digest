@@ -1032,3 +1032,17 @@
 {"date": "2026-09-08", "code": "3529", "source": "leadflow", "level": "yellow", "signal": "力旺(3529) 無消息近漲停+9.9%(量能2.2×,5日+7.0%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-09-08", "code": "6231", "source": "leadflow", "level": "red", "signal": "系微(6231) 無消息近漲停+9.8%(量能4.4×,5日+5.6%),疑資訊先行資金|外資+投信近3日僅+166張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-08", "code": "7828", "source": "leadflow", "level": "red", "signal": "創新服務(7828) 無消息近漲停+8.8%(連2根,5日+12.4%),疑資訊先行資金|外資+投信近3日僅+447張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-09", "code": "2012", "source": "institutional", "level": "red", "signal": "春雨(2012):外資連 5 日買超(5日淨買 +78 張)", "price_at_signal": null}
+{"date": "2026-09-09", "code": "2530", "source": "mops_news", "level": "red", "signal": "華建(2530) 重訊[2026-09-08]:公告本公司發行國內第五次無擔保轉換公司債案向 金管會申請延長募集期間", "price_at_signal": null}
+{"date": "2026-09-09", "code": "2646", "source": "mops_news", "level": "red", "signal": "星宇航空(2646) 重訊[2026-09-08]:公告本公司發行115年度國內第一次及第二次無擔保轉換公司債 之代收價款行庫及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-09-09", "code": "8021", "source": "mops_news", "level": "red", "signal": "尖點(8021) 重訊[2026-09-08]:公告本公司115年現金增資發行新股認股基準日暨 公司債停止轉換期間相關事宜公告", "price_at_signal": null}
+{"date": "2026-09-09", "code": "8021", "source": "twse_punish", "level": "red", "signal": "尖點(8021):處置中(第二次處置):最近十個營業日已有六次,期間 115/09/09～115/09/15", "price_at_signal": null}
+{"date": "2026-09-09", "code": "8147", "source": "margin", "level": "yellow", "signal": "正淩(8147):融資5日暴增15.9%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-09-09", "code": "8147", "source": "sbl", "level": "yellow", "signal": "正淩(8147):機構借券賣出5日增17.2%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-09-09", "code": "5314", "source": "tw_rank", "level": "red", "signal": "世紀*(5314) 量能竄榜:今日量榜第16(近10日未進過top50,+9.9%,49,416張)", "price_at_signal": null}
+{"date": "2026-09-09", "code": "5464", "source": "leadflow", "level": "red", "signal": "霖宏(5464) 無消息近漲停+10.0%(連2根,5日+19.5%),疑資訊先行資金|外資+投信近3日僅-374張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-09", "code": "8937", "source": "leadflow", "level": "red", "signal": "合騏*(8937) 無消息近漲停+9.9%(量能4.1×,5日+2.9%),疑資訊先行資金|外資+投信近3日僅+23張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-09", "code": "5211", "source": "leadflow", "level": "red", "signal": "蒙恬(5211) 無消息近漲停+9.9%(量能35.2×,5日+9.0%),疑資訊先行資金|外資+投信近3日僅-35張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-09", "code": "5209", "source": "leadflow", "level": "red", "signal": "新鼎(5209) 無消息近漲停+9.8%(量能4.3×,5日+8.4%),疑資訊先行資金|外資+投信近3日僅-18張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-09", "code": "8047", "source": "leadflow", "level": "red", "signal": "星雲(8047) 無消息近漲停+9.3%(量能4.7×,5日+4.5%),疑資訊先行資金|外資+投信近3日僅+20張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-09", "code": "3680", "source": "leadflow", "level": "red", "signal": "家登(3680) 無消息近漲停+8.6%(量能6.6×,5日+8.8%),疑資訊先行資金|外資+投信近3日+2234張", "price_at_signal": null}
