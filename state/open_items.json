@@ -9007,8 +9007,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-09 01:24",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 03:41",
+  "note": "報告已收乾定稿:n=386(非約350)、三態貫穿、驗收閘機器化、已 commit+push bc01f05。改開新項承載『是否公開發表』的商業決定。"
  },
  {
   "id": 902,
@@ -9077,8 +9077,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-09 02:03",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 02:46",
+  "note": "已加 crontab 0 8 * * 1 並當場跑首班(2026-09-09 02:30–02:40 TW):18 家 ok15/blocked2/❔1、604 秒,diff 與 report 都正常輸出,三支 logs/ok 戳記全寫入;另用 QFX_INTEL_ALERTTEST=1 實測告警會響(webpush+desktop)且失敗班戳記不前進。README「cron 接線」已改成已加並附首班原文。"
  },
  {
   "id": 909,
@@ -9097,7 +9097,77 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-09 02:22",
+  "closed": "2026-09-09 09:34",
+  "note": "重複登記:同一件事 09-07 已送出並登記為 #830(evidence digikey_submitted_20260907.png + f1@ 收件確認信)。我沒先查既有紀錄就重做一遍。"
+ },
+ {
+  "id": 911,
+  "what": "qfxsolution.com TTFB 約 470 ms 仍未修 —— 根因是這個 zone 的 Cloudflare 邊緣路由把流量送到 SJC(對手 adGeek 同樣在 CF 但走 TPE)",
+  "why": "兩個修法都不在 repo 裡:(a) Cache Rule『Cache Everything』讓 HTML 在邊緣被快取 —— 免費但要 dashboard,_headers 的 s-maxage 實測無效(cf-cache-status 仍是 DYNAMIC);(b) Argo Smart Routing 要花錢,是老闆的決定。這台機器上四把 token 對 zone ruleset/RUM/DNS 三個端點全部回 Authentication error 10000。",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 02:47",
+  "closed": "2026-09-09 02:47",
+  "note": "與 #905 是同一件事(同一個根因、同一組證據),重複登記。以 #905 為準,不留兩本帳。"
+ },
+ {
+  "id": 912,
+  "what": "週一 08:00 競品全掃與 09:45 qfx_self_watch 的 --skip-slow 掃描同日重疊,對 18 家各多抓一輪",
+  "why": "共用同一本 ledger/<date>.jsonl(flock 保護,同日重跑覆蓋),所以不會壞事,只是多一輪對外請求。要收掉是拿掉 09:45 那支的第③步,但那會讓自我週報少一份當日指紋 —— 先記著不動別人的班。",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-09 02:47",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 913,
+  "what": "官網 /notes/ 只有一篇,第二篇沒有排程也沒有負責人",
+  "why": "這條線存在的理由是『我們賣內容產線,自己站上不能零篇帶日期的東西』。一篇解決了『零』,解決不了『停更』—— 競品週掃第 8 件量的就是別人的停更天數,下一輪它會量到我們自己。",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-09 02:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 914,
+  "what": "CREW 自我 GEO 掃描的引擎覆蓋只有 1/3(gemini 與 mistral 當日配額用盡回 429)",
+  "why": "那幾把免費金鑰是 MarketDaily 日報產線在用的,把自我掃描接上去等於去吃日報的配額;要另開金鑰或接付費引擎都要老闆拍板。已在 /services/geo-ledger/ 的『這條線做不到什麼』與 notes 那篇裡照實寫出來,不是藏著。",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 02:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 915,
+  "what": "產業報告《Whose website is it?》(386 家台灣製造業官網資產體檢)待老闆決定是否公開發表",
+  "why": "法務判決 ✅ 可發表且 10 條硬條件已機器複驗全過(check_legal.py);報告/方法學/資料集三件已備齊並 push(bc01f05)。但『發表與否是商業決定不是法務決定』——要老闆拍板。硬條件:三件事必須同時可取得,只發報告不發資料不在本判決範圍。未部署,掛站路徑見 _handoff_research_page.md,等官網 job 12a3ce39 落地",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 03:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 916,
+  "what": "LCSC 09-07 回信要求填 Supplier Evaluation Survey 寄回,已躺 2 天沒人動;表已填好(~/kingconn/offsite/outbox/LCSC_Supplier_Overview_KINGCONN.xlsx),只缺王董兩個數字:去年銷貨成本 + 各系列年銷額",
+  "why": "商業數字我不替公司編;補上即可回信給 sell-on-lcsc@lcsc.com",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 09:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 917,
+  "what": "皇海通路回信哨兵 kingconn_channel_reply_watch 已上 cron(*/15),自測推播 200、dry-run 去重 0 新,但【尚未在生產跑過首班】",
+  "why": "首班 cron 未驗;要確認 cron_run_and_alert 包裝下能正常 exit 0 並寫 ok 戳記",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-09 09:44",
+  "closed": "2026-09-09 09:46",
+  "note": "已用 cron 完整包裝實跑(cron_run_and_alert kingconn_channel_reply_watch -- … --live):exit=0、~/logs/ok/kingconn_channel_reply_watch.ok 09:45 寫入、0 新命中未誤推播。"
  }
 ]
