@@ -7026,8 +7026,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-02 00:39",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-10 20:38",
+  "note": "SEO Phase 1 已在 2026-09-10 提案中重新定義並交付客戶(artifact ddc55770);開站日已到,改由新 open item 追蹤核可與 GSC 權限"
  },
  {
   "id": 704,
@@ -8296,8 +8296,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-07 11:58",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 22:36",
+  "note": "Digi-Key PM 已於 2026-09-09 20:56 TW 來信(Alex Stoe, Product Manager – New Market Development),附 Marketplace Program 與責任險要求 PDF。後續改由新項目追蹤。"
  },
  {
   "id": 831,
@@ -8827,8 +8827,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-08 23:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 16:31",
+  "note": "全目錄上架收斂完成:平台 All 146(Online 96 + Pending Online 4 = 100 上限滿載,Offline 46,Rejected 0)。37 顆保留件已定案=17 顆開關全部上架(14 Online + 3 復活中),其餘 20 顆(線材6/電源座6/ODM6/2顆型別過於籠統)平台無對應葉節點或描述不足以歸類,不猜。剩下 ~145 顆的瓶頸不是類別而是 100 上限 → 另立單"
  },
  {
   "id": 884,
@@ -8847,8 +8847,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-09 00:13",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 16:44",
+  "note": "第一輪回饋已收到並全數處理(定稿文案+全系列+換圖),第二版 09-09 已寄出"
  },
  {
   "id": 886,
@@ -8878,7 +8878,7 @@
   "risk": "med",
   "opened": "2026-09-09 00:14",
   "closed": null,
-  "note": ""
+  "note": "2026-09-09 毛利試算(價格未動,決定權在老闆)。實測 N=3 六題掃描 52ae1fdbdd574594a16d:scan_cost_usd 原文=1.510394(perplexity $0.155510 / chatgpt $1.354884 / claude $0 —— 六題全 api_40501,型號 claude-sonnet-4 已被 DataForSEO 下架,已改 sonnet-4-5 但未再驗)。把 claude 用 08-25 錨點 $0.0488/題 補回 ⇒ 六引擎 N=3 = US$2.39 ≈ NT$75.5(N=1 為 US$0.796 ≈ NT$25)。毛利:單次 NT$790 成本 NT$75.5 → 毛利 NT$714.5(90.4%);打 DELVIN 50% 折售 NT$395 → 毛利 NT$319.5(80.9%);月費 NT$1,990 含 6 次跑滿成本 NT$453 → 毛利 NT$1,537(77.2%);月費再打 50% 折(最壞情況)售 NT$995 → 毛利 NT$542(54.5%)。⇒ 付費方案有覆蓋成本,即使 N=3 + 六引擎全通 + 50% 折 + 6 次跑滿仍有 54.5% 毛利,所以【不建議調價】,價格待老闆。⚠️ 此表只算引擎 API;產出端走 Gemini 免費層,零帳單但吃配額(#890/#914),那條線的天花板是配額不是錢。⚠️ 原 why 欄寫的『單次掃描 NT$249』是舊價,現行單一真源 src/billing.js 是 NT$790。"
  },
  {
   "id": 889,
@@ -8887,8 +8887,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-09 00:14",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 16:44",
+  "note": "2026-09-09 老闆拍板「免費的必須真的零邊際成本;要用到會花錢的引擎就得付錢」後收掉。改法:①activeEngines() 判準改成正面白名單 —— 免費=FREE_ENGINES(gemini/mistral/tavily)句點,perplexity/chatgpt/claude 一律走 paid 閘門(新增具名 PAID_ENGINES);②paid 預設從 true 改成 false(fail-closed),舊 run/每週重掃/cron/API 直打/未來新呼叫端一律預設不花錢;③admin 掃描不再無條件 paid_engines:true,要顯式帶旗標(原本 paidOk=isAdmin||… 就是 09-08 花掉 US$0.152 的那條路);④報告頁三態:免費掃描的那三欄顯示「未量測(需付費方案)」+「這三個引擎每次查詢有實際成本,免費方案不執行」,不是 0 引用。實測:免費掃描 88de0ba5026146d5a9c8 引擎=[gemini,mistral,tavily]、scan_cost_usd 原文=0;付費掃描 52ae1fdbdd574594a16d 六引擎全到、scan_cost_usd 原文=1.510394。npm test 17 支全過;新增真瀏覽器驗收 scripts/e2e_paid_gate_report.py 13/13。已部署 9474f569。"
  },
  {
   "id": 890,
@@ -8907,8 +8907,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-09 00:14",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 11:07",
+  "note": "先實測再改(同題連問 3 次 × 2 題,外加隔 90 秒重問):answer 逐字相同、結果 URL 與排序相同、relevance score 到小數第 7 位都相同;只有 request_id / response_time / 每筆結果 id 這些請求識別碼會變(response_time 首次 1.64s、之後 0.0s,直接回快取)。改法:engines.js 加 DETERMINISTIC_ENGINES + isDeterministic(),tavily 結果帶 deterministic 旗標,judge 走靜態名單(錯誤回應裡沒有這欄位);agents.js 決定性引擎一律 N=1;sampling.js 的 aggregateEngine 收 {deterministic} 並把 ci 設 null;app.js/index.js 那一格改印「單次查詢(此來源為檢索索引,重複查詢結果相同)」,方法學那句補上檢索索引的但書。測試把抽樣斷言從 tavily 換到 mistral(拿 N=1 的引擎測不出抽樣層還活著),換完照出一個本來被 tavily 250ms 節流蓋住的限制:mistral 1200ms × 3000ms 發射窗口 ⇒ 管理員 N=5 實際只發得出 3 次,已寫成斷言。npm test 16 支全過;部署後對 qfxsolution.com 實跑一輪:tavily n=1/ci=null,mistral 仍 n=3 帶區間。Tavily 呼叫 18→6,減輕 #890/#896。commit 1d164b7(crew repo)。"
  },
  {
   "id": 892,
@@ -8987,8 +8987,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-09 01:05",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 11:07",
+  "note": "現況先查:job 12a3ce39 已把首頁主 CTA 中英兩邊都改成指向 audit.qfxsolution.com(先前 grep mailto 掃線上頁看不到,是 Cloudflare email 混淆,不是真的沒改),那半不重做。補完它沒收的兩個缺口:①首頁輸入框原本是死的——打的字只進 mailto 主旨、Enter 還會跳出信件視窗;現在把清乾淨的網域拼進 ?d=(工具端自動填入並開跑),Enter 走工具,EN 帶 &lang=en,mailto 留成第二條路。②服務線頁 /services/ownership-audit/ 原本把工具網址寫成純文字、是死巷;service_detail 加選用 cta 欄位,中英各一(其餘線沒有,不生假按鈕)。CSSV 6→7、JSV 3→4。Playwright 打真站驗過:EN 打 kingconn.com.tw → ?d=kingconn.com.tw&lang=en;ZH 貼整條 URL → 清成 ?d=example.com.tw;Enter 後落地頁已預填且狀態「查詢中」。commit f479d4a,已部署 qfx-preview。"
  },
  {
   "id": 900,
@@ -9117,8 +9117,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-09 02:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-09 11:08",
+  "note": "scan.py 加 --reuse-today,qfx_self_watch.sh 步驟③ 帶上它。重疊不只是浪費:第二輪的 --skip-slow 會覆蓋掉第一輪較完整的行——驗證時實測到 welly/tenmax 的 reputation 從 ok 被抹成 unknown(已還原原始帳本)。判準是逐家比對 targets.json 而非「檔案存在就跳過」:08:00 掛在第 7 家時帳本只有 7 行,半份帳本看起來跟完整的一模一樣;缺哪幾家指名印出來、補掃,補完仍缺就 return 1 進 self_watch 的 FAILED,週報不會被當成完整的一份。三態一律對整本帳報。三案例實跑:帳本完整→重用 18 家、0 秒零連網;砍成 16 家→指名 welly/tenmax、只補那 2 家、覆蓋率回 18/18;缺口判準(含壞 JSON 行算成缺那一家)進 --selftest 零網路。手動跑整支 qfx_self_watch.sh:步驟③ 印「重用當日帳本:18 家…不需要連網」✅,週報照常產出。commit ccee45b。"
  },
  {
   "id": 913,
@@ -9169,5 +9169,265 @@
   "opened": "2026-09-09 09:44",
   "closed": "2026-09-09 09:46",
   "note": "已用 cron 完整包裝實跑(cron_run_and_alert kingconn_channel_reply_watch -- … --live):exit=0、~/logs/ok/kingconn_channel_reply_watch.ok 09:45 寫入、0 新命中未誤推播。"
+ },
+ {
+  "id": 918,
+  "what": "皇海首頁 design-in 區塊已 commit 未部署(7875b756)",
+  "why": "同樹另一 session 正在修 NON-PUSH 型式 30 頁,verify 兩紅屬那批;他們收尾後才 deploy",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-09 11:52",
+  "closed": "2026-09-09 12:01",
+  "note": "另一 session 的部署已把 7875b756/8cbae3ae 一起帶上線;四語首頁實查 200 且 #design-in 皆在"
+ },
+ {
+  "id": 919,
+  "what": "皇海 SD Express 開發信:service@ 憑證錯,尚未寄出任何一封",
+  "why": "老闆給的 kingconn123 在 IMAP/SMTP/webmail 三路皆 auth failed(已用 f1@ 對照組證明是密碼本身錯,非信箱沒開權限);名單95家+信稿+事實對帳已備妥,等正確密碼才能發射",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 12:07",
+  "closed": "2026-09-09 14:34",
+  "note": "老闆 09-09 提供正確密碼 tbes4957;IMAP993/SMTP465 皆登入成功,測試信實寄 Gmail 進收件匣(非垃圾桶),batch3 首批 10 封已真寄成功"
+ },
+ {
+  "id": 920,
+  "what": "皇海 batch3 寄前必查 service@ 的 in:sent(老闆說有些公司之前往來過)",
+  "why": "拿到 service@ 正確密碼才查得到;名單 39 家中若有已往來對象,冷信口吻失禮,須改續談口吻或跳過。與 #919 同一個密碼阻塞",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-09 12:23",
+  "closed": "2026-09-09 14:34",
+  "note": "已用 service@ IMAP 唯讀掃 INBOX+Sent 共 225 封,比對 39 家名單網域=0 家有往來,可安全寄冷信。⚠️ 首版比對把 com.tw 當網域主體導致誤判(kingconn 自己的測試信被算成同致電子往來),修正為完整網域比對後才是 0"
+ },
+ {
+  "id": 921,
+  "what": "皇海 GBP:影片驗證結果未知+商家簡介尚未貼上",
+  "why": "簡介文案已產出(中英兩版,均在750字元內)但需 Delvin 用 f1@ 帳號手動貼進 GBP;Google 影片驗證審核尚未確認通過",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 13:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 922,
+  "what": "皇海 batch3 續發 cron 首班未在生產驗證(明天 09:30 才第一次帶 --batch 3 跑)",
+  "why": "今天的 10 封是我手動 --live 跑的;cron 那條剛從『沒帶 batch 所以每天空轉』改成明確 --batch 3,改完還沒有任何一次真實觸發。首班要驗:真的寄出 10 封且 sent 表有紀錄",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-09 14:36",
+  "closed": "2026-09-10 16:09",
+  "note": "2026-09-10 09:30 台北 cron 首班真實觸發,實寄 10 封(Delair/雷虎/同致/怡利/華晶/Milesight/MOBOTIX/BlackVue/VIOFO/Nextbase),sent 表有紀錄,累計 20/39"
+ },
+ {
+  "id": 923,
+  "what": "皇海 batch2 的 39 封待老闆決定要不要發",
+  "why": "09-07 排好的嵌入式工業電腦名單,因 send.py cron 沒帶 --batch 的 bug 躺了兩天;bug 已修但我把排程鎖在 batch3,不擅自發老闆沒看過的名單",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 14:36",
+  "closed": "2026-09-10 16:27",
+  "note": "09-10 放行:重檢收件人全乾淨、逐封重 render 修簽名(f1@→service@,diff 只有那一行)、剔除 12 封與 batch1 重複者;cron 拿掉 --batch 3,實際待寄 batch3 19 + batch2 27 = 46 封,已開始的批次優先"
+ },
+ {
+  "id": 924,
+  "what": "Global Sources 免費層 100 件上限卡住 ~145 顆料號,要不要跟業務談升級由王董拍板",
+  "why": "已把 100 個名額做到最佳化(所有有搜尋需求的料號都在線上,offline 46 顆全部 0 曝光),再往上只能加名額;同時免費層在公開搜尋只進『1 other suppliers』未連結桶、樣品政策/影片/證書欄位付費才開⇒品質分永遠上不去。這三件是同一場商業對話,與 #746 DirectIndustry/#695 Visable 同批",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 16:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 925,
+  "what": "皇海 jp 站 7 頁頁尾仍是英文(含 jp/guide-odm-custom-connector、jp/contact)",
+  "why": "在日文客製動線上,日本是第二大詢價來源;要改 jp 頁尾產生器不是就地改檔",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-09 16:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 926,
+  "what": "皇海 /p/odm 6 張案例照片內容未確認(實際是 PCBA 板卡)",
+  "why": "皇海 ODM 做到板卡層級與否需老闆/王董確認才能寫說明;現在只寫「ODM 案例照片」不描述內容",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 16:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 927,
+  "what": "CHOSEN 海報第二版等 Darren 回覆三件",
+  "why": "①④滿額禮文字他還在調 ②30週年十張商品在334px看不清單款,已給兩個替代方案待他選 ③盲盒獎池四張是否改用官方白底圖重做",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 16:44",
+  "closed": "2026-09-09 17:42",
+  "note": "第三輪已交付 35 張輪播;剩④文字與⑤日版30週年仍待客戶"
+ },
+ {
+  "id": 928,
+  "what": "CREW 的 Claude 引擎型號從已下架的 claude-sonnet-4 改成 claude-sonnet-4-5,但【沒有在生產跑過一次付費掃描驗證】",
+  "why": "2026-09-09 付費驗證掃描實測 Claude 六題全回 api_40501(DataForSEO 已下架 sonnet-4;免費 models 端點證實名單從 4-5 起跳)。已改型號並把 /api/admin/engines?deep=1 的探針升級成會檢查『我們點的型號今天還在不在』(改前那把探針會亮綠,現在會紅),線上實測 listed=true。但驗收上限是【一次付費掃描】而那一次已經用掉,所以『改完真的問得到 Claude』尚未在生產證明。下一次任何付費掃描跑完,看 Claude 那一欄不是 api_40501 即可收掉。⚠️ 影響:在此之前所有付費掃描的客戶都只拿到五個引擎(Claude 六題全『未量測』——誠實但不是交貨)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-09 16:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 929,
+  "what": "CHOSEN 輪播 35 張等 Darren 挑版本",
+  "why": "7 主題×5 版本已交付,他要挑編號;另④滿額禮最終文字未給、⑤日版30週年無資料;MEGA 卡盒補成 8 款待他確認「全套」定義",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-09 17:42",
+  "closed": "2026-09-09 18:33",
+  "note": "第四輪(手繪稿+截圖)已全數改完上線並回信;剩⑤日版30週年無資料與挑版本"
+ },
+ {
+  "id": 930,
+  "what": "CHOSEN 輪播等 Darren 挑③④⑦版本",
+  "why": "①②⑥⑧已定稿;③IG④滿額禮⑦直播各5版待他挑;⑤日版30週年仍無資料",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 19:21",
+  "closed": "2026-09-09 20:36",
+  "note": "七張全部定稿並交付;剩⑤日版30週年無資料"
+ },
+ {
+  "id": 931,
+  "what": "CHOSEN 輪播⑤日版30週年未做",
+  "why": "品名/價格/期間客戶仍未提供;其餘七張已定稿交付",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 20:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 932,
+  "what": "CHOSEN:已寄 Darren(七張定稿+品牌 logo 高解析與 5 秒動畫),等他回覆是否還要改",
+  "why": "客戶尚未回覆,可能還有修改",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 22:03",
+  "closed": "2026-09-09 22:45",
+  "note": "已寄 Darren:七張定稿+高解析 logo+開箱動畫(Reels/橫式各三版)"
+ },
+ {
+  "id": 933,
+  "what": "Digi-Key PM Alex Stoe 來信要兩樣:①上架產品類別與 SKU 數(我已用真實目錄算好並起草回信 ~/kingconn/offsite/outbox/digikey_reply_alex_20260909_DRAFT.md)②COI 產險證明。回信只差 COI 那段二選一,待老闆/王董定",
+  "why": "對外信件送出前必先給老闆看過;COI 是對通路的正式承諾,我不替公司答",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-09 22:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 934,
+  "what": "皇海產險 COI:Digi-Key 要求商業一般責任險【每次事故 US$1M / 累積至少 US$2M】,證書須正本、列出所有子公司/DBA、載明取消或變更前 30 天通知、保險公司名須為 A.M. Best 名冊全名、填妥並簽署;且我方在蘇州自有工廠=保單須按【製造商】而非單純網路賣家承保。Digi-Key 台灣區建議 AIG Insurance",
+  "why": "王董需確認現有保單是否存在與額度;沒有 COI 就無法完成 Marketplace onboarding",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-09 22:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 935,
+  "what": "CHOSEN:logo 動畫依開箱語意重做並寄出(Reels 直式+橫式各三版),等 Darren 回覆",
+  "why": "客戶尚未回覆;另『7 支動畫』的疑問老闆也還沒回",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-09 22:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 936,
+  "what": "已寄出的 20 封 SD Express 開發信,回信位址仍是 service@(會被 POP3 搶走)",
+  "why": "Reply-To 改 f1@ 是 09-10 才生效,只涵蓋剩餘 19 封;前 20 家(含 Leica/DJI/Autel/同致等)若回信會進 service@ 然後從伺服器消失,只能靠王董那台收信軟體看到再轉給我們",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-10 16:09",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 937,
+  "what": "皇海 favicon 已上線,但 Google 搜尋結果那一格仍是空白地球——待 Google 重爬確認",
+  "why": "站台端已驗證(md5 相符、四支資產 200、1581 頁 head 有標籤),但 SERP 顯示要等 Google 重新爬過首頁,通常數天到數週,尚未在 Google 上眼見為憑",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-10 16:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 938,
+  "what": "VIOFO 工單 #209938 的真人回覆會落在 service@(王董信箱),我們的 inbox_sync 只讀 f1@ 讀不到",
+  "why": "helpdesk 回信給 requester(From=service@)而非 Reply-To;service@ 又被某台 POP3 收信軟體下載後刪除,IMAP 永遠掃不到",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-10 16:24",
+  "closed": "2026-09-10 16:29",
+  "note": "政策改變:回信由王董自己回,我們不需要讀得到,只需確保他看得到。原本『inbox_sync 看不到』不再是缺陷——VIOFO 這種回到 service@ 的信王董本來就看得到。改開新項目追真正的風險。"
+ },
+ {
+  "id": 939,
+  "what": "回信送達王董眼前的唯一自動路徑(f1@ 收到→POST /api/inquiry→通知信落 service@)從未在真實客戶回信上跑過",
+  "why": "32 封已寄出,replies 僅 3 筆:2 筆是測試信(is_test 設計上不轉)、1 筆是 autoreply(設計上不轉),forwarded_at 全部為 None。/api/inquiry 只在 09-07 做過唯讀 probe(ok),端到端未驗。回信若走 Reply-To=f1@ 而這條斷掉,王董完全不會知道有客戶回信",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-10 16:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 940,
+  "what": "Claude Code /voice 尚未由老闆實跑過(sox+預設麥克風已修好並實測到人聲,但 push-to-talk 端到端沒驗)",
+  "why": "要老闆本人按住空白鍵講一次才算生產驗證;我無法代按",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-10 20:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 941,
+  "what": "vr-on/vr-off 新增的『預設麥克風存檔/還原』尚未在真實 VR 場次跑過",
+  "why": "已用手動把預設切成 Pimax 做過完整劇本測試(拒存+還原皆正確),但沒有經過真的開 VR 那條路徑;首場 VR 後要回頭確認 HyperX 有被還原",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-10 20:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 942,
+  "what": "皇海產險詢價卡在營業額:台灣外銷產品責任險費率分【美加/非美加】兩格,Digi-Key 是美國通路落在較貴那格,且保費依營業額核算 ⇒ 連『詢價』都需要王董給外銷美加年營業額區間、產品類別、近三年理賠紀錄。AIG 台灣無線上詢價(02-7747-1988 / aigtaiwan@aig.com),另一路=富邦產險外銷產品責任保險專區有線上試算",
+  "why": "沒有這三項資料,任何保費數字都是我編的;已於 2026-09-09 寄信請老闆轉王董",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-10 20:22",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 943,
+  "what": "CHOSEN SEO/AEO/GEO 提案已交(artifact ddc55770),等 Darren 核可才可開工;七個待回覆事項未回前 Phase 1 卡住",
+  "why": "客戶硬閘:先提案再開工,尚未核可;GSC 權限未取得",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-10 20:38",
+  "closed": null,
+  "note": ""
  }
 ]

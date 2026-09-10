@@ -8842,3 +8842,16 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 已做:apt 裝 sox+pulse 外掛(sudo 由老闆按)、`~/.local/bin/rec` 包一層走 pulse、`~/.asoundrc`、IPolicyConfig 無頭切回 HyperX(⚠️ 舊 IPolicyConfigVista IID 在 Win11 26200 已 E_NOINTERFACE,要用 {f8679f50-...})。
 - 復發防線:`audio_default.ps1` 原本只存/還原**播放端**(flow 寫死 0),錄音端沒人管 ⇒ 每玩一次 VR 就再壞一次。已加 `-Flow Render|Capture` 並接進 vr-on(Save)/vr-off(Restore),拿災難本人測過(設成 Pimax→拒存→還原回 HyperX)。備份 *.bak-20260910。
 - 未收乾:#940 `/voice` 待老闆實跑;#941 新的麥克風還原未經真實 VR 場次。
+
+## 2026-09-10（晚）CHOSEN TCG：SEO / AEO / GEO 提案（Darren 硬閘：先提案再開工）
+- 來源：Darren 09-10 兩封信。①「SEO GEO」＝先讀站、不要動作、先提案、絕不改框架外的東西；②「文案」＝30 週年＋美版烈空座預購長文＋9 附件（含我們做的 logo Reels）。老闆令：拉到皇海檔次，且要含 AEO。
+- 交付：Artifact https://claude.ai/code/artifact/ddc55770-5787-41fd-9219-02175630a8f9 · open #943 追核可（#703 已收，被本提案取代）。
+- 實測：自架爬蟲 300 頁（sitemap 233、0 錯誤、avg 0.25s）＋六家同業逐軸對帳＋DataForSEO 台灣 zh-TW（花費 US$0.16）。
+- ⭐⭐ **先量權威度再談內容（皇海那條）再次成立**：CHOSEN 引用網域 1 / rank 0，龍頭 tcsb 1,153 / rank 291。排名硬戰十二個月內判死 ⇒ 戰略改押 AEO+GEO，因為那一軸**全品類六家皆空**（龍頭 JSON-LD 0、三家無 llms.txt、三家是平台罐頭）。這是提案的主論點，不是補充。
+- ⭐⭐ **高量低難度的字可能整個是別的品類**：「寶可夢卡盒」590/月 KD 0，SERP 實查第一頁幾乎全是**收納盒**。差點寫進 18 個分類頁標題＝整批帶錯客人。要進 title 的字一律先跑 serp 看品類。
+- ⭐ **TTFB 單次取樣差三倍**：初測 1.66s／2.48s，三次中位數 0.64s。原稿寫的「快 12–18 倍」是採到最差值，實際約 8 倍，發布前改掉。對外報速度一律三次取中位數。
+- ⭐ audit 的 11 個 `blocked` 是我自己掃太快吃 429，逐頁重驗全 200 ⇒ 報告寫明是我造成的，不列成站的缺陷。
+- 站況真實缺口（皆對線上 HTML 驗過）：18 個分類頁 title 只有分類名；/pages/about 與 /pages/about-us 同名打架；「最新消息最新消息」；12 頁缺 meta；121 頁 meta 超寬；FAQ 頁 16 組問答零結構化（AEO 現成彈藥）；llms.txt 是 Shopify 罐頭；全站只有 1 篇文章。
+- 9 月初預鋪的 `chx-seo.liquid` 換版後仍活著（商品頁 Product/Offer/BreadcrumbList 齊全，領先龍頭）。
+- 框架邊界寫死三個容器（chx- 檔／後台 SEO 欄位／只新增內容），明列不動 index.json（09-04 被靜默覆蓋那條）、商品資料、金流、member 站、承諾性文案。
+- ⚠️ 未收乾：提案未獲核可、GSC 權限未取得、七個待回覆事項（#943）；②「文案」那封仍只當素材收著，尚未確認 Darren 要我做什麼。
