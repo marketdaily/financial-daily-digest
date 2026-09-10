@@ -8833,3 +8833,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   - ⭐⭐ **我做的閘門出現假綠**:量 `#ticketwrap` 拿到 0 高度(它 scale 且子元素絕對定位),於是「上下各 185px」數字漂亮但畫面仍壓掉網址。改量真正的 `.ticket`,並加「量到的高度必須合理(≥80px)」擋同類假通過。**閘門量到的物件是不是那個東西,要自己先驗一次。**
   - ⭐⭐ 30週年商品互蓋根因=尺寸上限**只夾高度不夾寬度**:UPC 長寬比 1.71 ⇒ 寬度是格子的 2.3 倍。改成每件依自己長寬比算高度、寬度上限=格子 1.35 倍。
   - ⭐ 殘留檔清理**內建進 carousel.py**:改 chosen 後上一輪的多版檔仍在目錄,這次差點把 22 張打包交出去(上一輪是手動清的,靠記得不可靠)。
+
+## 2026-09-10(晚) 麥克風在 Claude Code 終端機不能用 → 兩層根因修完
+- 老闆:「my mic doesn't work here but works elsewhere」。**兩個獨立根因疊在一起**,不是麥克風壞。
+- 根因① **Win+H 送不進 Claude Code 輸入框**:Windows 語音輸入靠 TSF text store 投遞,TUI 輸入框沒註冊 ⇒ 靜默丟棄。已知迴歸 claude-code#37095 / wezterm#7791,不可修 ⇒ 改用內建 `/voice`(push-to-talk,Anthropic 自家 STT)。
+- 根因② `/voice` 在 WSL 要 sox/arecord(沒裝)+ **Windows 預設錄音裝置被設成「麥克風 (Pimax)」而非 HyperX SoloCast**。
+- ⭐⭐ **「錄得到檔案」≠「錄得到聲音」**:錄滿 32000 samples、exit 0、零錯誤,整段卻是數位靜音(max amp 0.000031=1 LSB);Windows 音量面板還顯示未靜音/89%。判準必須量振幅,而且**逐秒印**——只看整段 max/RMS 分不出「他沒講話」與「裝置是啞的」。修好後 t=04~08s 明確有人聲(峰值 0.065)。
+- 已做:apt 裝 sox+pulse 外掛(sudo 由老闆按)、`~/.local/bin/rec` 包一層走 pulse、`~/.asoundrc`、IPolicyConfig 無頭切回 HyperX(⚠️ 舊 IPolicyConfigVista IID 在 Win11 26200 已 E_NOINTERFACE,要用 {f8679f50-...})。
+- 復發防線:`audio_default.ps1` 原本只存/還原**播放端**(flow 寫死 0),錄音端沒人管 ⇒ 每玩一次 VR 就再壞一次。已加 `-Flow Render|Capture` 並接進 vr-on(Save)/vr-off(Restore),拿災難本人測過(設成 Pimax→拒存→還原回 HyperX)。備份 *.bak-20260910。
+- 未收乾:#940 `/voice` 待老闆實跑;#941 新的麥克風還原未經真實 VR 場次。
