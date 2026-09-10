@@ -9447,8 +9447,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-10 23:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-11 00:06",
+  "note": "已上線並在生產驗證:2026-09-11 用 Shopify CLI(員工帳號,佈景主題權限)推送 snippets/chx-seo.liquid + sections/chx-hero.liquid,--nodelete --only。線上實查 /collections/pokemon、onepiece、preorder、series-sv、blindbox、/cart 全部改為「集換式卡牌…美版・日版」,違規 meta 0 筆。變更清單:僅 2 檔修改、0 新增、0 刪除,檔案總數 503→503"
  },
  {
   "id": 946,
@@ -9457,8 +9457,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-10 23:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-11 00:06",
+  "note": "不需寄:Delvin 是把 artifact 連結寄給客戶,客戶已讀過並逐條回覆。Gmail 草稿(id r5242384921653310293)內容已被後續往來取代,建議刪除"
  },
  {
   "id": 947,
@@ -9467,6 +9467,36 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-10 23:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 948,
+  "what": "Pimax P3C9 頭盔 22:54 實體斷線後未回來(USB+DP 全消失),待 Delvin 檢查供電/線材後我再無頭驗證重連",
+  "why": "根因在實體層,軟體端無法自行修復;需要他插拔後我才能驗",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-10 23:15",
+  "closed": "2026-09-10 23:20",
+  "note": "根因改判:非實體斷線。setupapi 顯示 DsmSvc(Windows 裝置安裝服務)於 22:54:09 主動 Delete Device 並 Setting needs reboot"
+ },
+ {
+  "id": 949,
+  "what": "winrig 待重開機:Windows Update 刪掉 Pimax 裝置節點且卡 pending-reboot(WU/CBS 皆 True,uptime 73h),頭盔重開前不會列舉;重開後我要驗證 HMD 列舉+SteamVR",
+  "why": "重開機會中斷 Delvin 使用中的畫面與 WSL,必須由他決定時機",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-10 23:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 950,
+  "what": "CHOSEN 第二階段試算表已產出(deliver/CHOSEN_第二階段_SEO欄位建議_20260911.xlsx,4分頁18/10/20/117列)但【尚未寄給客戶】,且未經 Delvin 過目",
+  "why": "對外內容送出前必先給老闆看(08-17 親令)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-11 00:06",
   "closed": null,
   "note": ""
  }
