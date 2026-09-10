@@ -9429,5 +9429,45 @@
   "opened": "2026-09-10 20:38",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 944,
+  "what": "F5 聽寫(繞開 Win+H)整條鏈已上線,但『按 F5 講話→字出現』只有老闆能驗",
+  "why": "我不能替他按鍵(按鍵模擬會搶他的實體鍵盤,且貼上會打進他當下的視窗);錄音/辨識/轉繁/Windows->WSL 通道/hook 安裝我都各自驗過了,缺的是真的按下去那一次",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-10 21:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 945,
+  "what": "CHOSEN 條件一:chx-seo/chx-hero 五處日版字樣已在本機改好+守衛通過,但【尚未推上線】——缺 Shopify write_themes 憑證(舊 token 已遺失),線上18個分類頁仍在對 Google 說「日版」",
+  "why": "無主題寫入憑證,已在回信向客戶索取",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-10 23:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 946,
+  "what": "CHOSEN 回信草稿已建(thread 1a08bc71c0fa539d)未寄出,等 Delvin 看過核可",
+  "why": "對外內容送出前必先給老闆看(08-17 親令)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-10 23:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 947,
+  "what": "CHOSEN templates/agents.md.liquid 具名例外未獲客戶書面同意,條件五在同意前不得寫入",
+  "why": "檔名由 Shopify 規定無法加 chx- 前綴,牴觸客戶條件四",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-10 23:01",
+  "closed": null,
+  "note": ""
  }
 ]

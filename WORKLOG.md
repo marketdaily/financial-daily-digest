@@ -8855,3 +8855,14 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 9 月初預鋪的 `chx-seo.liquid` 換版後仍活著（商品頁 Product/Offer/BreadcrumbList 齊全，領先龍頭）。
 - 框架邊界寫死三個容器（chx- 檔／後台 SEO 欄位／只新增內容），明列不動 index.json（09-04 被靜默覆蓋那條）、商品資料、金流、member 站、承諾性文案。
 - ⚠️ 未收乾：提案未獲核可、GSC 權限未取得、七個待回覆事項（#943）；②「文案」那封仍只當素材收著，尚未確認 Darren 要我做什麼。
+
+## 2026-09-10（深夜）CHOSEN：客戶核可＋五項前提條件 → 回信草稿＋範圍守衛
+- 客戶（kevinhuang0620@ 署名 Darren）核可方向，附五項前提。全部接受，回信草稿已建未寄（open #946，artifact cab4c419）。
+- ⭐⭐ **條件一是我造成的線上錯誤**：09-01 鋪的 chx-seo.liquid 把本店寫成「日版專門店」。客戶說三處，**逐檔比對實際五處**（chx-seo ×3、chx-hero default ×2）。
+- ⭐⭐ **但「有這個字串」≠「線上生效」**：真正在傷害的只有分類頁（18 頁 Google 描述）與購物車；首頁那處被客戶自填的 SEO 欄位覆蓋、chx-hero 兩處因欄位已填而從未 render（線上首頁 4 個「日版」全是商品 handle，正常）。**回報前逐頁對線上 HTML 驗過生效狀態，沒有把未生效的算成災情。**
+- ⭐ 五處已改（順帶修掉日文漢字「専」→「專」）。`~/storefront/clients/chosen/scope_guard.py` 新建：snapshot/diff/scope/lint 四命令；index.json 與 settings_data.json 列永不可寫（09-04 靜默覆蓋那個檔，改由程式擋）。突變測試四情境：現況綠／舊檔紅 5 處／空目錄紅（沒量到不算綠）／混合清單正確擋下 index.json 與原生檔。
+- ⭐⭐ **憑證有≠憑證能，這次是「連有都沒有」**：舊 Shopify custom app token 存在已消失的 session scratchpad，環境內找不到 ⇒ 檔案改好但推不上線，線上 18 個分類頁仍在對 Google 說「日版」（open #945，high）。回信直接向客戶索取新 write_themes 憑證，不迴避。
+- 條件五做法已查證（非猜測）：Shopify 官方 `templates/agents.md.liquid`，一檔管 /agents.md + /llms.txt + /llms-full.txt（後兩者 fallback），**不需動 robots.txt 或 DNS**。兩個風險已寫進信：①覆寫非合併，現有 UCP/MCP 結帳導引段要照抄保留否則弄壞 agentic 結帳；②檔名不能加 chx- 前綴，牴觸條件四 ⇒ 列為具名例外請客戶單獨核可（open #947）。
+- 客戶推翻我對 about/about-us 的建議（改留 /pages/about，因頁尾與首頁按鈕都指它且是品牌故事頁）——照客戶決定，並提醒有摘要的是 about-us、要留的 about 反而空白。
+- ⚠️ 未收乾：#945 條件一未上線（high）、#946 信未寄、#947 具名例外未同意；GSC 使用者權限尚未收到。
+- ⚠️ 寄件信箱是 Kevin 的、署名 Darren，草稿回到寄件信箱；是否副本 Darren 本人待 Delvin 決定。
