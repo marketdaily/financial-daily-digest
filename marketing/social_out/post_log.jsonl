@@ -370,3 +370,4 @@
 {"ts": "2026-09-11T11:53:35.992291", "post": "newsr_20260911_aapl", "results": {"instagram": {"ok": true, "detail": "18092482346440210"}, "facebook": {"ok": true, "detail": "1133333363197689_122132892243345835"}, "threads": {"ok": true, "detail": "18127458757806550"}}}
 {"ts": "2026-09-11T12:43:01.684779", "post": "newsr_20260911_meta", "results": {"threads": {"ok": true, "detail": "18048204011603701"}}}
 {"ts": "2026-09-11T13:43:04.935191", "post": "newsr_20260911_macro_e72a2a", "results": {"threads": {"ok": true, "detail": "18411197815085787"}}}
+{"ts": "2026-09-11T14:00:50.572446", "post": "win_2026-08-12_6223_wait", "results": {"instagram": {"ok": true, "skipped": false, "detail": "18097248509530063"}, "facebook": {"ok": true, "skipped": false, "detail": "1133333363197689_122132907069345835"}, "threads": {"ok": true, "skipped": false, "detail": "17868469587649060"}}}
