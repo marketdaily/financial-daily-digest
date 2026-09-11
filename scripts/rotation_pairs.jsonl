@@ -110,3 +110,6 @@
 {"date": "2026-09-10", "market": "us", "from": "QQQM", "to": "MRVL", "from_px": 294.97, "to_px": 235.01}
 {"date": "2026-09-10", "market": "us", "from": "AMZN", "to": "MRVL", "from_px": 252.4, "to_px": 235.01}
 {"date": "2026-09-11", "market": "tw", "from": "2308", "to": "3443", "from_px": 1675.0, "to_px": 6225.0}
+{"date": "2026-09-12", "market": "tw", "from": "2327", "to": "3324", "from_px": 544.0, "to_px": 1360.0}
+{"date": "2026-09-12", "market": "tw", "from": "2308", "to": "3324", "from_px": 1620.0, "to_px": 1360.0}
+{"date": "2026-09-12", "market": "us", "from": "GOOGL", "to": "SMCI", "from_px": 338.5, "to_px": 40.1}
