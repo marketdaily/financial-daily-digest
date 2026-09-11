@@ -21,8 +21,8 @@
       "note": "200, 5 models"
     },
     "openrouter:nemotron-ultra-550b": {
-      "alive": true,
-      "note": "200"
+      "alive": false,
+      "note": "HTTPSConnectionPool(host='openrouter.ai', port=443): Read ti"
     }
   },
   "models": {
@@ -109,6 +109,7 @@
       "google/gemma-4-31b-it:free",
       "inclusionai/ling-3.0-flash-fin:free",
       "inclusionai/ling-3.0-flash-sante:free",
+      "inclusionai/ling-3.0-flash-vl:free",
       "liquid/lfm-2.5-2.6b:free",
       "nex-agi/nex-n2.5-mini:free",
       "nex-agi/nex-n2.5-pro:free",
@@ -123,5 +124,5 @@
       "thinkingmachines/inkling:free"
     ]
   },
-  "updated": "2026-09-10 10:10"
+  "updated": "2026-09-11 10:10"
 }
