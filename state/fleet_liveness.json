@@ -1,13 +1,13 @@
 {
- "ts": "2026-09-10T10:50:07",
- "jobs_n": 137,
+ "ts": "2026-09-11T10:50:07",
+ "jobs_n": 138,
  "silent_n": 1,
  "silent": [
-  "line_agent(last=2026-09-05,5d>2d)"
+  "line_agent(last=2026-09-05,6d>2d)"
  ],
  "intel": {
   "latest_age_d": 1,
-  "sources_n": 12
+  "sources_n": 14
  },
  "intel_problems": [],
  "outputs": {
@@ -17,15 +17,17 @@
    "max_age": 1
   },
   "cb_server 守護(keepalive)": {
-   "age_days": 1,
+   "age_days": 2,
    "newest": "cb_server_keepalive.beat",
    "max_age": 1
   }
  },
- "output_problems": [],
+ "output_problems": [
+  "cb_server 守護(keepalive):最新產出 cb_server_keepalive.beat 已 2 天(容忍 1 天)——本支 */5,戳記超過 1 天=守護自己死了,cb_server 掛掉將不再自癒"
+ ],
  "jobs": {
   "agent_board_deploy": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -33,7 +35,7 @@
    "status": "ok"
   },
   "agent_board_gen": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -41,15 +43,15 @@
    "status": "ok"
   },
   "arb_cost_model_selftest": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "arb_dashboard": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -57,7 +59,7 @@
    "status": "ok"
   },
   "arb_radar": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -65,7 +67,7 @@
    "status": "ok"
   },
   "arb_radar_selftest": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -73,7 +75,7 @@
    "status": "ok"
   },
   "arb_render": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -81,7 +83,7 @@
    "status": "ok"
   },
   "brain_parity": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -89,7 +91,7 @@
    "status": "ok"
   },
   "brain_revert": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -97,7 +99,7 @@
    "status": "ok"
   },
   "cap_trust": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -105,7 +107,7 @@
    "status": "ok"
   },
   "capacity_radar": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -113,7 +115,7 @@
    "status": "ok"
   },
   "care_daily": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -121,7 +123,7 @@
    "status": "ok"
   },
   "care_fast": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -130,11 +132,11 @@
   },
   "care_report": {
    "last": "2026-09-01",
-   "age_d": 9,
+   "age_d": 10,
    "status": "observing"
   },
   "cb_conv_watch": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -142,7 +144,7 @@
    "status": "ok"
   },
   "cb_etf_watch": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -150,7 +152,7 @@
    "status": "ok"
   },
   "cb_mail_ingest": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -159,14 +161,14 @@
   },
   "churn_sniper": {
    "last": "2026-09-07",
-   "age_d": 3,
+   "age_d": 4,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "comment_funnel": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -174,7 +176,7 @@
    "status": "ok"
   },
   "conf_charts": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -182,7 +184,7 @@
    "status": "ok"
   },
   "crawler_coverage_ledger": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -190,7 +192,7 @@
    "status": "ok"
   },
   "cta_funnel_lint": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -198,42 +200,42 @@
    "status": "ok"
   },
   "deploy_docs_daily_digest": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "status": "gated"
   },
   "deploy_docs_digest_archive_seo": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "status": "gated"
   },
   "deploy_docs_seo": {
    "last": "2026-09-07",
-   "age_d": 3,
+   "age_d": 4,
    "status": "gated"
   },
   "deploy_docs_site_scan": {
    "last": "2026-07-28",
-   "age_d": 44,
+   "age_d": 45,
    "status": "gated"
   },
   "deploy_docs_tldr": {
-   "last": "2026-09-08",
-   "age_d": 2,
+   "last": "2026-09-10",
+   "age_d": 1,
    "status": "gated"
   },
   "deploy_docs_track_record": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "status": "gated"
   },
   "deploy_docs_win_card": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "status": "gated"
   },
   "deploy_drift": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -242,11 +244,11 @@
   },
   "deploy_two_leg_smoke": {
    "last": "2026-08-12",
-   "age_d": 29,
+   "age_d": 30,
    "status": "observing"
   },
   "digest_archive_seo": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -255,14 +257,14 @@
   },
   "edge_cuts_weekly": {
    "last": "2026-09-06",
-   "age_d": 4,
+   "age_d": 5,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "email_quota_guard": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -270,28 +272,28 @@
    "status": "ok"
   },
   "failover_leg_probe": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "fallback": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "status": "gated"
   },
   "fleet_liveness": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
-   "median_gap_d": 7,
-   "thresh_d": 11.5,
+   "median_gap_d": 14.0,
+   "thresh_d": 22.0,
    "thresh_src": "self",
    "status": "ok"
   },
   "fortune_fulfill": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -300,22 +302,22 @@
   },
   "geo_agent": {
    "last": "2026-09-08",
-   "age_d": 2,
+   "age_d": 3,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "higgsfield_token_sync": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "intel_patrol": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -323,7 +325,7 @@
    "status": "ok"
   },
   "key_health": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -332,158 +334,163 @@
   },
   "kingconn_afc_drain": {
    "last": "2026-09-01",
-   "age_d": 9,
+   "age_d": 10,
    "status": "observing"
   },
   "kingconn_archive_snapshot": {
    "last": "2026-09-08",
-   "age_d": 2,
+   "age_d": 3,
    "median_gap_d": 1,
    "thresh_d": 8,
    "thresh_src": "crontab(最大間隔 7d)",
    "status": "ok"
   },
   "kingconn_asset_watch": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "status": "observing"
   },
   "kingconn_channel_reply_watch": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "kingconn_citation_watch": {
    "last": "2026-09-07",
-   "age_d": 3,
+   "age_d": 4,
    "status": "observing"
   },
   "kingconn_domain_expiry": {
    "last": "2026-09-01",
-   "age_d": 9,
+   "age_d": 10,
    "median_gap_d": 1,
    "thresh_d": 18,
    "thresh_src": "crontab(最大間隔 17d)",
    "status": "ok"
   },
-  "kingconn_gs_show_forward": {
+  "kingconn_favicon_crawl": {
    "last": "2026-09-10",
+   "age_d": 1,
+   "status": "observing"
+  },
+  "kingconn_gs_show_forward": {
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "kingconn_gsc_kpi": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "kingconn_legacy_urls": {
    "last": "2026-09-07",
-   "age_d": 3,
+   "age_d": 4,
    "status": "observing"
   },
   "kingconn_ns_watch": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "kingconn_ops_board": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "kingconn_outbound_inbox": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "kingconn_outbound_send": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 4,
    "thresh_src": "crontab(最大間隔 3d)",
    "status": "ok"
   },
   "kingconn_pdf_leak_watch": {
-   "last": "2026-09-10",
-   "age_d": 0,
-   "median_gap_d": 1.0,
-   "thresh_d": 2.5,
-   "thresh_src": "self",
-   "status": "ok"
-  },
-  "kingconn_phish_guard": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
-  "kingconn_phish_guard_digest": {
-   "last": "2026-09-09",
-   "age_d": 1,
+  "kingconn_phish_guard": {
+   "last": "2026-09-11",
+   "age_d": 0,
    "median_gap_d": 1.0,
+   "thresh_d": 2.5,
+   "thresh_src": "self",
+   "status": "ok"
+  },
+  "kingconn_phish_guard_digest": {
+   "last": "2026-09-10",
+   "age_d": 1,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "kingconn_rank_watch": {
    "last": "2026-09-07",
-   "age_d": 3,
+   "age_d": 4,
    "status": "observing"
   },
   "kingconn_seo_bench": {
    "last": "2026-09-07",
-   "age_d": 3,
+   "age_d": 4,
    "status": "observing"
   },
   "kingconn_traffic_board": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "kingconn_traffic_ledger": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
-   "median_gap_d": 1,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "kingconn_weekly_brief": {
    "last": "2026-09-07",
-   "age_d": 3,
+   "age_d": 4,
    "status": "observing"
   },
   "kingconn_xref_gsc_watch": {
    "last": "2026-09-03",
-   "age_d": 7,
+   "age_d": 8,
    "status": "observing"
   },
   "kospi_open_alert": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -491,16 +498,16 @@
    "status": "ok"
   },
   "lead_reply_watch": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "ledger_freshness": {
    "last": "2026-09-07",
-   "age_d": 3,
+   "age_d": 4,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "thresh_src": "self",
@@ -508,7 +515,7 @@
   },
   "line_agent": {
    "last": "2026-09-05",
-   "age_d": 5,
+   "age_d": 6,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
@@ -516,7 +523,7 @@
   },
   "ma_weekly": {
    "last": "2026-09-08",
-   "age_d": 2,
+   "age_d": 3,
    "median_gap_d": 22,
    "thresh_d": 34.0,
    "thresh_src": "self",
@@ -524,14 +531,14 @@
   },
   "ma_weekly_deploy": {
    "last": "2026-09-08",
-   "age_d": 2,
+   "age_d": 3,
    "median_gap_d": 22,
    "thresh_d": 34.0,
    "thresh_src": "self",
    "status": "ok"
   },
   "macro_rates_ledger": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -540,16 +547,16 @@
   },
   "manual_recover_20260820": {
    "last": "2026-08-20",
-   "age_d": 21,
+   "age_d": 22,
    "status": "observing"
   },
   "manual_recover_20260820_cta": {
    "last": "2026-08-20",
-   "age_d": 21,
+   "age_d": 22,
    "status": "observing"
   },
   "market_forecast_a": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -557,7 +564,7 @@
    "status": "ok"
   },
   "market_forecast_b": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -565,20 +572,20 @@
    "status": "ok"
   },
   "mem_valuation": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "meta_token_refresh": {
    "last": "2026-09-02",
-   "age_d": 8,
+   "age_d": 9,
    "status": "observing"
   },
   "mingshu_pages_audit": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -586,7 +593,7 @@
    "status": "ok"
   },
   "mingshu_pages_build": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -594,7 +601,7 @@
    "status": "ok"
   },
   "mingshu_pages_fonts": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -602,7 +609,7 @@
    "status": "ok"
   },
   "mingshu_pages_ship": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -611,14 +618,14 @@
   },
   "mingshu_seo_livecheck": {
    "last": "2026-09-09",
-   "age_d": 1,
+   "age_d": 2,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "mingshu_seo_pull": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -627,14 +634,14 @@
   },
   "mingshu_seo_weekly": {
    "last": "2026-09-07",
-   "age_d": 3,
+   "age_d": 4,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "news_reactive": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -642,7 +649,7 @@
    "status": "ok"
   },
   "nvidia_key_watch": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -650,20 +657,20 @@
    "status": "ok"
   },
   "paid_lead_followup": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "paper_trade_pull": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "status": "observing"
   },
   "pe_ratio_ledger": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -671,29 +678,29 @@
    "status": "ok"
   },
   "pro360_fastpoll": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "pro360_radar": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "probe": {
    "last": "2026-08-20",
-   "age_d": 21,
+   "age_d": 22,
    "status": "observing"
   },
   "qfx_intel_diff": {
    "last": "2026-09-09",
-   "age_d": 1,
+   "age_d": 2,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
@@ -701,7 +708,7 @@
   },
   "qfx_intel_report": {
    "last": "2026-09-09",
-   "age_d": 1,
+   "age_d": 2,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
@@ -709,7 +716,7 @@
   },
   "qfx_intel_scan": {
    "last": "2026-09-09",
-   "age_d": 1,
+   "age_d": 2,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
@@ -717,14 +724,14 @@
   },
   "qfx_self_watch": {
    "last": "2026-09-09",
-   "age_d": 1,
+   "age_d": 2,
    "median_gap_d": 1,
    "thresh_d": 8,
    "thresh_src": "crontab(最大間隔 7d)",
    "status": "ok"
   },
   "quality_board_deploy": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -732,7 +739,7 @@
    "status": "ok"
   },
   "quality_board_gen": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -740,15 +747,15 @@
    "status": "ok"
   },
   "quietfix_leads": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "reddit_buzz": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -756,15 +763,15 @@
    "status": "ok"
   },
   "refactor_harness": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 2.5,
-   "thresh_d": 4.8,
+   "median_gap_d": 3.0,
+   "thresh_d": 5.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "regime_ledger": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -773,7 +780,7 @@
   },
   "rotation_settle": {
    "last": "2026-09-06",
-   "age_d": 4,
+   "age_d": 5,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "thresh_src": "self",
@@ -781,14 +788,14 @@
   },
   "seo": {
    "last": "2026-09-07",
-   "age_d": 3,
+   "age_d": 4,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "seo_page_traffic_ledger": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -796,7 +803,7 @@
    "status": "ok"
   },
   "social": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -805,14 +812,14 @@
   },
   "social_brand": {
    "last": "2026-09-09",
-   "age_d": 1,
+   "age_d": 2,
    "median_gap_d": 2.0,
    "thresh_d": 4.0,
    "thresh_src": "self",
    "status": "ok"
   },
   "social_buzz": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -820,22 +827,22 @@
    "status": "ok"
   },
   "social_reel_tw": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1.0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "social_reel_us": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "status": "ok",
    "gate": "美股晚報存檔(runner 的 exit 0 閘)",
-   "gate_newest": "2026-09-09"
+   "gate_newest": "2026-09-10"
   },
   "stale_base_lint": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -843,7 +850,7 @@
    "status": "ok"
   },
   "supply_chain_watch": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -851,46 +858,46 @@
    "status": "ok"
   },
   "tasker": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "team_brain_sync": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "test_leg3_chain": {
    "last": "2026-08-16",
-   "age_d": 25,
+   "age_d": 26,
    "status": "observing"
   },
   "test_ok_del": {
    "last": "2026-07-01",
-   "age_d": 71,
+   "age_d": 72,
    "status": "observing"
   },
   "threads_token_refresh": {
    "last": "2026-09-01",
-   "age_d": 9,
+   "age_d": 10,
    "status": "observing"
   },
   "tldr_distribution": {
-   "last": "2026-09-08",
-   "age_d": 2,
+   "last": "2026-09-10",
+   "age_d": 1,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "trackrec": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -898,7 +905,7 @@
    "status": "ok"
   },
   "tw_financials_ledger": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -907,11 +914,11 @@
   },
   "update_stocks": {
    "last": "2026-09-01",
-   "age_d": 9,
+   "age_d": 10,
    "status": "observing"
   },
   "us_13f_ledger": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -919,7 +926,7 @@
    "status": "ok"
   },
   "us_8k_poll": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -927,7 +934,7 @@
    "status": "ok"
   },
   "us_analyst_poll": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -935,7 +942,7 @@
    "status": "ok"
   },
   "us_insider_poll": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -943,7 +950,7 @@
    "status": "ok"
   },
   "valuation_ledger": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -951,7 +958,7 @@
    "status": "ok"
   },
   "videobrief": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -959,22 +966,22 @@
    "status": "ok"
   },
   "videobrief_tw": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
-   "median_gap_d": 1,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "videobrief_us": {
-   "last": "2026-09-09",
+   "last": "2026-09-10",
    "age_d": 1,
    "status": "ok",
    "gate": "美股晚報存檔(runner 的 exit 0 閘)",
-   "gate_newest": "2026-09-09"
+   "gate_newest": "2026-09-10"
   },
   "warmup_daily": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -983,7 +990,7 @@
   },
   "watch_bizdesc_build": {
    "last": "2026-09-06",
-   "age_d": 4,
+   "age_d": 5,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "thresh_src": "self",
@@ -991,7 +998,7 @@
   },
   "watch_industry_build": {
    "last": "2026-09-06",
-   "age_d": 4,
+   "age_d": 5,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "thresh_src": "self",
@@ -999,14 +1006,14 @@
   },
   "watch_profile_build": {
    "last": "2026-09-06",
-   "age_d": 4,
+   "age_d": 5,
    "median_gap_d": 7,
    "thresh_d": 11.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "win_card_promote": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
@@ -1014,7 +1021,7 @@
    "status": "ok"
   },
   "wrangler_log_prune": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -1022,7 +1029,7 @@
    "status": "ok"
   },
   "wsl_interop_watch": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
@@ -1030,7 +1037,7 @@
    "status": "ok"
   },
   "wsl_oom_watch": {
-   "last": "2026-09-10",
+   "last": "2026-09-11",
    "age_d": 0,
    "median_gap_d": 1.0,
    "thresh_d": 2.5,
