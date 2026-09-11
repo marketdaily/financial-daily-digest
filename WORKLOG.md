@@ -8887,3 +8887,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⭐ **自己查得到的不要問客戶**：先驗證服務帳號 `gsc-bot@marketdaily.iam.gserviceaccount.com` 對 chosentcg.com **沒有權限**（現有六個資源皆無它），才在信裡提出具體請求（皇海當初是 siteFullUser 同一模式）。`~/.marketdaily-secrets/gsc_sa.json` 是 0 bytes，實際走 `gcloud --impersonate-service-account`。
 - 新草稿 `r-5598837155583310703`（thread 1a08c0a2bdeca087）未寄：條件一完成報告＋變更清單＋主動揭露守衛缺陷＋三件確認＋GSC 機器帳號＋Bing 帳號＋第二階段試算表說明。舊草稿 #951 已收（被取代）。
 - ⚠️ 未收乾：#956（運費無出處／退貨矛盾／雙 agent 共寫）、#955（站內退貨政策矛盾）、#950 試算表未寄、#947 agents.md 文字稿未寫、新草稿未寄。
+
+## 2026-09-12（凌晨續）CHOSEN：回覆兩封 GSC 轉寄 + 信已寄出
+- Darren 轉來兩封 GSC 通知（產品摘要 aggregateRating/review、流量開始收集）。兩封都是裸轉寄無附註，內容與我們直接收到的相同 ⇒ 信裡告訴他**不用轉，我們也在收件名單上**（已實查我方信箱有同樣兩封）。
+- ⭐ **「非重大問題」不是都要修**：aggregateRating/review 刻意不補——客戶尚未開評價功能，沒有真實評價卻生評分＝捏造，Google 的處置比缺欄位嚴重。等評價功能開了再取真實資料補。
+- 第三封（商家資訊 hasMerchantReturnPolicy/shippingDetails）他沒轉，因為他的 agent 已動手補了——而那正是我要確認的兩個無出處數字。信裡把三封串成一條敘事。
+- 試算表改走交付站不走附件（附件要把 23KB 二進位拖過 context 且會被截斷）：`chosen-delivery.pages.dev/seo/CHOSEN-phase2-seo-fields-20260912.xlsx`，ASCII 檔名、正式網域 md5 相符、4 分頁完整、交付站首頁未受影響。⚠️ wrangler OAuth 已失效（`CLOUDFLARE_API_TOKEN` 未設即 ERROR），改走 `cf_token.resolve` 取得 token 才部署成功。
+- **信已寄出**（msg 1a0923fc93155b36 / thread 1a08c0a2bdeca087）：兩封轉寄的處置、條件一完成報告＋變更清單＋主動揭露守衛缺陷、三件確認（運費三級距出處／退貨兩頁矛盾／chx-seo 唯一寫者）、GSC 機器帳號 gsc-bot@marketdaily.iam.gserviceaccount.com、Bing 帳號、試算表連結。
+- ⚠️ 未收乾：#956（運費無出處／退貨矛盾／雙 agent 共寫，等客戶回）、#955（站內退貨政策矛盾）、#947 agents.md 文字稿未寫、#958 兩封作廢草稿未刪（我無刪除草稿工具）。

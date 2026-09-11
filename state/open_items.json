@@ -9497,8 +9497,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-11 00:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-12 04:54",
+  "note": "已交付:放上 chosen-delivery.pages.dev/seo/CHOSEN-phase2-seo-fields-20260912.xlsx,線上 md5 與本機相符、4 分頁完整,連結已寫進 09-12 寄出的信"
  },
  {
   "id": 951,
@@ -9567,6 +9567,16 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-12 04:29",
+  "closed": "2026-09-12 04:54",
+  "note": "已寄出 2026-09-12 04:5x(msg 1a0923fc93155b36, thread 1a08c0a2bdeca087)。含兩封轉寄的處置、條件一完成報告、三件確認、GSC 機器帳號、Bing、試算表連結"
+ },
+ {
+  "id": 958,
+  "what": "CHOSEN Gmail 有兩封作廢草稿未刪(r5242384921653310293、r-5598837155583310703),內容已被 09-12 寄出的信取代",
+  "why": "我沒有刪除草稿的工具;留著可能誤寄重複內容",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-12 04:54",
   "closed": null,
   "note": ""
  }
