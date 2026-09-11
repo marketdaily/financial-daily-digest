@@ -8877,3 +8877,13 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 用詞守則寫進試算表：標題避開「卡盒」（實查 SERP 幾乎全是收納盒）；但分類頁 **描述** 沿用客戶自己的品牌語彙（其首頁 title 本來就寫「卡盒・盲盒專門店」）——標題講精準投放，描述講品牌一致，兩者刻意不同。
 - ⚠️ 未收乾：#950 試算表未寄且未經 Delvin 過目；agents.md 文字稿未寫（#947 具名例外客戶已核可，附兩條件：UCP/MCP 段落原封保留、上線後客戶實測三路徑）；GSC「完整」權限客戶說會加、尚未收到。
 - ⚠️ Gmail 草稿 r5242384921653310293 未寄且已被後續往來取代（#946 已收，建議刪草稿）。Darren 確認 kevinhuang0620@gmail.com 就是他本人，沒有第二人代發。
+
+## 2026-09-12（凌晨）CHOSEN：pull 發現對方 agent 改過我們的檔，擬新信要五件確認
+- GSC 權限已到（Google 擁有者通知信 09/11 進信箱，曝光資料自 9/9 起累積）。
+- ⭐⭐ **例行 pull 救了一次覆寫**：線上 `chx-seo.liquid` 在我 09-11 推送後又被改過（Delvin 確認是 Darren 那邊的 agent），補了 `hasMerchantReturnPolicy` + `shippingDetails`（對應 GSC 兩封結構化資料通知）。我本機那份已成舊版；**若沒照條件四先 pull 就推，會靜默蓋掉它**。已回填本機（storefront `c4c7a59`），未動線上。
+- ⭐⭐ **對方 agent 補的內容有兩個實質問題**（不是誰對誰錯，是對 Google 發話的內容沒有出處）：
+  ①運費三級距 60–100／150／610 TWD 站上查無出處（FAQ 只寫「結帳時依配送方式計算」）；**610 那段還列了 28 國國際配送，而站上完全沒提國際配送**。
+  ②`merchantReturnDays: 7` 採信 `/policies/refund-policy`，但 `/pages/faq` 寫「恕不適用七天鑑賞期退貨＋25% 處理費」——**站內兩頁互相矛盾**，屬消保法通訊交易解除權，客戶法遵決定，我不動。
+- ⭐ **自己查得到的不要問客戶**：先驗證服務帳號 `gsc-bot@marketdaily.iam.gserviceaccount.com` 對 chosentcg.com **沒有權限**（現有六個資源皆無它），才在信裡提出具體請求（皇海當初是 siteFullUser 同一模式）。`~/.marketdaily-secrets/gsc_sa.json` 是 0 bytes，實際走 `gcloud --impersonate-service-account`。
+- 新草稿 `r-5598837155583310703`（thread 1a08c0a2bdeca087）未寄：條件一完成報告＋變更清單＋主動揭露守衛缺陷＋三件確認＋GSC 機器帳號＋Bing 帳號＋第二階段試算表說明。舊草稿 #951 已收（被取代）。
+- ⚠️ 未收乾：#956（運費無出處／退貨矛盾／雙 agent 共寫）、#955（站內退貨政策矛盾）、#950 試算表未寄、#947 agents.md 文字稿未寫、新草稿未寄。

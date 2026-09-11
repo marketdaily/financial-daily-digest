@@ -9499,5 +9499,75 @@
   "opened": "2026-09-11 00:06",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 951,
+  "what": "CHOSEN 給 Darren 的條件一完成報告+第二階段試算表:草稿已建(需手動拖 xlsx 附件)未寄,等 Delvin 過目",
+  "why": "對外內容送出前必先給老闆看;附件需人工加掛",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-11 00:24",
+  "closed": "2026-09-12 04:29",
+  "note": "被新版信取代:舊草稿只講條件一+試算表,新信另加三件確認(運費數字出處/退貨矛盾/chx-seo 唯一寫者)+GSC 服務帳號請求。新草稿 r-5598837155583310703 在 thread 1a08c0a2bdeca087"
+ },
+ {
+  "id": 952,
+  "what": "皇海 09-11 型式導覽頁/術語表/品牌交叉頁 28 頁已上線但「有沒有真的被 AI 引用/排名」尚未驗證:週一 09:10 citation_watch(push-push/Molex alternative 題)與 09:30 rank_watch 首班才有第一個可比讀數;GSC 收錄要 URL Inspection 抽驗",
+  "why": "被引用需要索引+檢索時間,發了不等於有;Bing 索引無法用 DataForSEO 查(site: 對 attend 也回 0=端點不支援),只推了 IndexNow 33 條",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-11 00:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 953,
+  "what": "記憶索引 MEMORY.md 逼近讀取上限(hook 要求壓到 17.1KB,今壓到 19.9K 字元):還要再併群一輪,砍前逐句確認 topic 檔有副本(groom 鐵則)",
+  "why": "本 session 只壓了 5 行(hub 逐句 grep 驗過),其餘長行沒逐句驗不敢砍;是索引衛生不是本任務",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-11 00:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 954,
+  "what": "CHOSEN 線上 chx-seo.liquid 被第三方改過(非我方 commit):新增的結構化資料把【查無出處的運費數字】餵給 Google(60-100/150/610 TWD),且 merchantReturnDays:7 與 /pages/faq「恕不適用七天鑑賞期退貨+25%處理費」直接矛盾",
+  "why": "需先查明是誰改的(客戶條件四說我方才碰 chx- 檔)+運費數字要客戶確認是否等同 Shopify 出貨設定;在確認前不動它,但已回填本機避免被舊副本覆蓋",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-12 04:24",
+  "closed": "2026-09-12 04:24",
+  "note": "已查明:是 Darren 那邊的 agent 改的,不是未知第三方。改以 #956 追蹤實質問題(數字無出處+雙 agent 同檔覆寫風險)"
+ },
+ {
+  "id": 955,
+  "what": "CHOSEN 退貨政策站內自相矛盾:/policies/refund-policy 寫「七天猶豫期未拆封全額退款」,/pages/faq 寫「恕不適用七天鑑賞期退貨,收25%處理費」——兩頁都在線上,結構化資料採信前者",
+  "why": "屬客戶法遵決定(消保法通訊交易解除權),我只負責指出並建議統一;未經客戶拍板不改任何一頁",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-12 04:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 956,
+  "what": "CHOSEN chx-seo.liquid 變成雙 agent 共寫:①Darren 的 agent 加的運費數字(60-100/150/610 TWD)站上查無出處,正餵給 Google ②merchantReturnDays:7 與 FAQ「恕不適用七天鑑賞期」矛盾 ③我方與對方 agent 都會寫同一檔=last-write-wins,條件四的分工已失效,需重談檔案邊界",
+  "why": "需客戶確認運費數字是否等同 Shopify 出貨設定、退貨口徑以哪頁為準、以及誰是 chx-seo.liquid 的唯一寫者",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-12 04:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 957,
+  "what": "CHOSEN 新信草稿(r-5598837155583310703)未寄:需 Delvin 過目並手動拖 xlsx 附件;內含 5 個待客戶回覆事項",
+  "why": "對外內容送出前必先給老闆看;附件需人工加掛",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-12 04:29",
+  "closed": null,
+  "note": ""
  }
 ]
