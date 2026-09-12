@@ -8901,3 +8901,13 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⭐⭐ **算截斷時撈到比長度更值得處理的事**：公開商品名裡有內部訂貨備註「(訂四個給原箱)」「(訂六個給原箱)」「(訂10個給原箱)」「(手雷)」——會出現在 Google 結果、分享連結、訂單確認信，而且佔掉標題前 30 字最值錢的位置。已指出但不自行更動（無商品權限）。
 - 描述題分兩層講清楚，避免客戶誤砍正文：meta description **不是排名因素**、Google 高比例自行改寫，長只會被截斷；**商品頁正文越完整越好，不要為此刪短**（他們的摘要是 Shopify 自動從正文抓的，太長只是正文寫得夠詳細的副作用）。
 - 草稿 r-6558393296675142470 未寄。⚠️ 原始 audit JSON 已隨 scratchpad 清掉，改從交付的 xlsx 重算——**交付物本身要能當資料源**這點這次救了一次。
+
+## 2026-09-12 CHOSEN：GSC 新警告＝下一層問題，結構化資料已對齊新政策並上線
+- 客戶三題全定案：①運費前兩段正確（超商 60–100 五段依申報價值、宅配順豐 150）；**610/28 國是 Shopify 建店自帶的預設 International 區域、且一直是啟用狀態**（那 28 國訪客真的可以結帳）——我那題問對了，客戶已整區刪除 ②退貨改以「不適用七天鑑賞期＋25% 處理費」為準，兩頁已對齊 ③chx-seo.liquid 自即日起由我方單獨維護 ④GSC 服務帳號已加為完整使用者 ⑤Bing 用 kevinhuang0620@gmail.com ⑥試算表①②④採用、③跳過。
+- ⭐⭐ **「Google 又寄了同一封」是誤會**：9/11 報的是外層兩欄缺（hasMerchantReturnPolicy/shippingDetails），補上後 Google **往裡面看下一層**，9/12 報的是 returnShippingFeesAmount 與 deliveryTime。**不是重寄，是進度往前一格。**
+- ⭐⭐ **改政策頁文字不會讓這類信停**：報告讀的是佈景檔裡的 JSON-LD，不是政策頁正文。客戶改了兩頁但 schema 沒動，所以照樣紅。
+- ⭐ **returnShippingFeesAmount 不是缺資料，是選錯值**：原本用 `ReturnShippingFees`（商家向消費者收退貨運費）→ 規格要求必附金額；實際政策是「買家自付」＝`ReturnFeesCustomerResponsibility`，而規格明訂該值**不得**附金額 ⇒ 改對值就同時解掉警告。（規格以 developers.google.com/search/docs/appearance/structured-data/return-policy 實查為準，不憑記憶。）
+- 已上線並驗證（現貨＋預購各抓一頁，JSON 皆解析通過）：刪國際段、移除 merchantReturnDays:7、returnFees 改對值、新增 restockingFee:25、現貨補完整 deliveryTime。變更清單：修改 1、新增 0、刪除 0、503→503。
+- ⭐ **兩處刻意留白並向客戶說明**：①預購不輸出 deliveryTime（出貨自「到貨後」起算，無法自下單日推估）②returnPolicyCategory/merchantReturnDays 留白（政策未明訂天數）——**寧可留一個非重大警告，也不編數字餵 Google**（與先前拒補 aggregateRating 同一原則）。已向客戶要那一個數字（#960）。
+- 系列名問題（客戶問「寶可夢/海賊王」前綴要不要拿掉）：建議**保留**。區分店名（CHOSEN TCG，已在結尾自動接，位置正確）與系列名（IP 名，是搜尋量最大的詞：寶可夢卡牌 33,100/月、ptcg 33,100/月）。拿掉＝每個商品頁與最大的詞斷開關聯。⭐ 細節：海賊王中文量極低、主要搜法是英文 ONE PIECE，他們寫「海賊王ONE PIECE卡牌」兩者都涵蓋，是對的。
+- 草稿 r5858962300942595978 未寄。

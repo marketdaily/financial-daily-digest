@@ -9547,8 +9547,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-12 04:24",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-12 17:37",
+  "note": "客戶已改寫 /policies/refund-policy 與 /pages/faq 對齊,採 25% 處理費版本"
  },
  {
   "id": 956,
@@ -9557,8 +9557,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-12 04:24",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-12 17:37",
+  "note": "客戶 09-12 定案:①運費前兩段正確(超商60-100五段/宅配150),國際段是 Shopify 預設區域、確實開著、已刪除 ②退貨以「不適用七天鑑賞期+25%處理費」為準,兩頁已對齊 ③chx-seo.liquid 自即日起由我方單獨維護。結構化資料已對齊並上線驗證"
  },
  {
   "id": 957,
@@ -9587,6 +9587,26 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-12 17:22",
+  "closed": "2026-09-12 17:38",
+  "note": "併入 09-12 那封綜合回信草稿 r5858962300942595978(GSC 新警告說明+已修上線+系列名建議+標題長度實算+內部備註發現)"
+ },
+ {
+  "id": 960,
+  "what": "CHOSEN 結構化資料 returnPolicyCategory/merchantReturnDays 刻意留白,等客戶給「未拆封退換貨受理天數」才補;在此之前 GSC 會留一個非重大警告",
+  "why": "現行政策未明訂天數,不編數字餵 Google",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-12 17:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 961,
+  "what": "CHOSEN 綜合回信草稿 r5858962300942595978 未寄(thread 1a094f2e24318ee8);等 Delvin 過目",
+  "why": "對外內容送出前必先給老闆看",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-12 17:38",
   "closed": null,
   "note": ""
  }
