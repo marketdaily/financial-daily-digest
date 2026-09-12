@@ -9607,8 +9607,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-12 17:38",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-12 19:01",
+  "note": "內容已被 09-12 寄出的兩封信取代(1a0950e9 未寄草稿改由 1a0954730 涵蓋)"
  },
  {
   "id": 962,
@@ -9617,8 +9617,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-12 17:59",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-12 19:01",
+  "note": "⚠️ 時效已燒掉:客戶在我寄出前就用 v1 填完 140 列。已於 09-12 寄出綜合信(msg 1a09547306195e4d)請其重填 4 條(onepiece/unionarena/weiss/dragonball),其餘 12 條不動"
  },
  {
   "id": 963,
@@ -9627,6 +9627,26 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-12 17:59",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 964,
+  "what": "CHOSEN 4 條分類標題待客戶重填(onepiece 航海王OPCG/unionarena +ua卡牌/weiss Schwarz+ws卡牌/dragonball +Fusion World);線上目前仍是舊版文字",
+  "why": "欄位在客戶後台,我無商品/分類權限",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-12 19:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 965,
+  "what": "CHOSEN /collections/all 的 <title> 仍是 Shopify 自動產的「商品」,佈景層無法覆寫;已向客戶說明並判定為低價值不處理",
+  "why": "需覆寫主題 title 輸出才做得到,超出核可容器;客戶已知悉",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-12 19:01",
   "closed": null,
   "note": ""
  }
