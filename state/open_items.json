@@ -9609,5 +9609,25 @@
   "opened": "2026-09-12 17:38",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 962,
+  "what": "CHOSEN v2 試算表修訂草稿 r8053337100081568855 未寄【有時效】:客戶說分頁①將直接填入,舊版的 onepiece/unionarena/weiss/dragonball/all 五條需先換成 v2",
+  "why": "對外內容送出前必先給老闆看;客戶可能已開始填舊版",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-12 17:59",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 963,
+  "what": "CHOSEN「海賊王→航海王」是否連分類名稱與商品名稱一起改,待客戶拍板(SEO 欄位已在 v2 建議稿處理;網址 handle=onepiece 英文,改顯示名不動網址)",
+  "why": "涉及品牌習慣與商品命名,是客戶決定;我無商品權限",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-12 17:59",
+  "closed": null,
+  "note": ""
  }
 ]
