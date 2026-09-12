@@ -9467,8 +9467,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-10 23:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-12 19:13",
+  "note": "具名例外客戶 09-10 已書面核可;草稿已完成並寄出待審,改由新 open item 追蹤寫入"
  },
  {
   "id": 948,
@@ -9647,6 +9647,26 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-12 19:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 966,
+  "what": "CHOSEN agents.md.liquid 草稿完成未寫入線上:依約等客戶審過;寫入後客戶要實測 /agents.md /llms.txt /llms-full.txt 三路徑確認 UCP/MCP 段仍在",
+  "why": "客戶條件:文字稿先看過才寫入",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-12 19:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 967,
+  "what": "CHOSEN GSC 兩個警告需客戶提供數字才能消:①非瑕疵退換貨受理天數(returnPolicyCategory) ②預購出貨天數上限(預購 deliveryTime);aggregateRating/review 無真實評價前無解,已告知可關閉通知",
+  "why": "不編數字餵 Google;修完還需客戶在 GSC 按「驗證修正」(我只有讀取權限)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-12 19:13",
   "closed": null,
   "note": ""
  }
