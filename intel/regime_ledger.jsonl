@@ -61,3 +61,4 @@
 {"date": "2026-09-09", "label": "neutral", "vix": 15.72, "spx_chg": -0.58, "ndx_chg": -0.32, "twii_chg": -0.3}
 {"date": "2026-09-10", "label": "neutral", "vix": 16.46, "spx_chg": -0.48, "ndx_chg": -0.64, "twii_chg": -0.35}
 {"date": "2026-09-11", "label": "neutral", "vix": 17.84, "spx_chg": -0.58, "ndx_chg": -0.65, "twii_chg": -2.12}
+{"date": "2026-09-12", "label": "risk_on", "vix": 15.84, "spx_chg": 0.86, "ndx_chg": 0.96, "twii_chg": -1.61}
