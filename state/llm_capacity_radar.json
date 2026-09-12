@@ -21,8 +21,8 @@
       "note": "200, 5 models"
     },
     "openrouter:nemotron-ultra-550b": {
-      "alive": false,
-      "note": "HTTPSConnectionPool(host='openrouter.ai', port=443): Read ti"
+      "alive": true,
+      "note": "200"
     }
   },
   "models": {
@@ -124,5 +124,5 @@
       "thinkingmachines/inkling:free"
     ]
   },
-  "updated": "2026-09-11 10:10"
+  "updated": "2026-09-12 10:10"
 }
