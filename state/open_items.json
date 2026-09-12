@@ -9679,5 +9679,25 @@
   "opened": "2026-09-12 19:39",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 969,
+  "what": "CHOSEN FAQPage 結構化資料:chx-faq-schema.liquid 已推送但【尚未生效】,需客戶在 sections/cd-faq.liquid 插一行 render(那是他們的檔案);插完我要線上驗證",
+  "why": "AEO 主力,企劃第三階段點名項目,我先前漏做且對客戶宣稱「三階段全部上線」",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-13 02:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 970,
+  "what": "CHOSEN 未做完的:第四階段內容層未開始、每月 AI 引用抽查未建、指定關鍵字排名追蹤未建(後兩者付費軸,建議月跑)",
+  "why": "內容層要客戶點頭大綱;引用抽查要等有內容才有意義",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-13 02:16",
+  "closed": null,
+  "note": ""
  }
 ]
