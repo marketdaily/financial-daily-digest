@@ -1053,3 +1053,22 @@
 {"date": "2026-09-10", "code": "6739", "source": "leadflow", "level": "red", "signal": "竹陞科技(6739) 無消息近漲停+10.0%(量能3.3×,5日+22.8%),疑資訊先行資金|外資+投信近3日僅-48張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-10", "code": "5345", "source": "leadflow", "level": "yellow", "signal": "馥鴻(5345) 無消息近漲停+10.0%(量能2.5×,5日+4.4%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-09-10", "code": "3623", "source": "leadflow", "level": "red", "signal": "富晶通(3623) 無消息近漲停+9.9%(量能24.6×,5日+12.9%),疑資訊先行資金|外資+投信近3日僅+65張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-12", "code": "2492", "source": "institutional", "level": "yellow", "signal": "華新科(2492):法人 20 日淨賣超 -21,368 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "2492", "source": "revenue", "level": "red", "signal": "華新科(2492):2026/08 營收公告、YoY +45.5%(強勁)、MoM +2.8%", "price_at_signal": null}
+{"date": "2026-09-12", "code": "2492", "source": "tw_rank", "level": "yellow", "signal": "華新科(2492) 今日成交量排行第12(-6.7%),異常活躍", "price_at_signal": null}
+{"date": "2026-09-12", "code": "2492", "source": "margin", "level": "yellow", "signal": "華新科(2492):融資5日暴增18.7%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "2492", "source": "holders", "level": "red", "signal": "華新科(2492):千張大戶持股比週增3.63個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "2762", "source": "sbl", "level": "red", "signal": "世界健身-KY(2762):機構借券賣出5日遽增35.5%(聰明錢加碼放空,股價走勢待確認)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "3033", "source": "institutional", "level": "yellow", "signal": "威健(3033):法人 20 日淨賣超 -21,210 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "3033", "source": "revenue", "level": "red", "signal": "威健(3033):2026/08 營收公告、YoY +56.8%(強勁)、MoM -14.1%", "price_at_signal": null}
+{"date": "2026-09-12", "code": "3033", "source": "holders", "level": "yellow", "signal": "威健(3033):千張大戶持股比週減-1.96個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "3413", "source": "tw_analyst", "level": "yellow", "signal": "京鼎(3413):FactSet共識目標價調降至360元(-5.26%)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "3455", "source": "holders", "level": "yellow", "signal": "由田(3455):千張大戶持股比週減-1.99個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "4542", "source": "institutional", "level": "yellow", "signal": "科嶠(4542):法人 20 日淨賣超 -876 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "5381", "source": "holders", "level": "yellow", "signal": "光譜(5381):千張大戶持股比週增0.54個百分點(溫和加碼)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "6669", "source": "sbl", "level": "yellow", "signal": "緯穎(6669):機構借券賣出5日增17.4%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "6669", "source": "holders", "level": "yellow", "signal": "緯穎(6669):千張大戶持股比週減-1.51個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "8422", "source": "mops_news", "level": "red", "signal": "可寧衛*(8422) 重訊[2026-09-11]:公告本公司國內第三次無擔保轉換公司債代收價款及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-09-12", "code": "8996", "source": "twse_notetrans", "level": "yellow", "signal": "高力(8996):注意累計異常:115年9月1日至115年9月11日等九個營業日已有五次(逼近處置門檻)", "price_at_signal": null}
+{"date": "2026-09-12", "code": "2012", "source": "mops_news", "level": "yellow", "signal": "春雨(2012) 重訊[2026-09-11]:公告本公司內部稽核主管異動", "price_at_signal": null}
+{"date": "2026-09-12", "code": "2338", "source": "tw_rank", "level": "red", "signal": "光罩(2338) 量能竄榜:今日量榜第8(近10日未進過top50,+4.6%,66,646張)", "price_at_signal": null}
