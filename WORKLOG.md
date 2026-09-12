@@ -8943,3 +8943,13 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - GSC 警告全清單已交代客戶：4 項已修上線、2 項需客戶給數字（非瑕疵退換受理天數、預購出貨天數上限）、aggregateRating/review **無真實評價前無解**（並說明可在 GSC 關閉該類通知，不建議為消警告生假評價）。另提醒修完要在 GSC 按「驗證修正」——我只有讀取權限。
 - 航海王改名：我**無商品權限**做不到，已按客戶當初「擋到就具體講哪一項」的協定提出 A（他們做，我給清單）／B（加產品編輯權限給我）二選一，建議 A。
 - ⚠️ 未收乾：#966 agents.md 待審、#967 兩個數字、#964 四條標題待重填、#963 全站改名待拍板、#965 /collections/all title 改不了。
+
+## 2026-09-12（續三）CHOSEN：退換貨 3 日/25% + 預購 handlingTime 依到貨標籤計算
+- 客戶信與我的信在路上交錯，他主動把我要的兩個數字給齊：非瑕疵退換「收到後 3 日內」提出；預購商品帶「到貨:M/D發售」標籤（實查 13/13 都有，格式一致）。
+- 已實作上線並驗證：`merchantReturnDays:3` + `MerchantReturnFiniteReturnWindow`；預購 handlingTime = 距到貨日天數 + 1~3 天出貨作業；標籤缺漏/格式不符/日期已過 ⇒ 整段 deliveryTime 不輸出（**不退回現貨的 1–3 天**）。
+- ⭐ **客戶給的 schema 值是錯的，但他授權我判斷**：他建議 `returnFees: RestockingFees` —— schema.org 沒這個值（合法只有 FreeReturn / ReturnFeesCustomerResponsibility / ReturnShippingFees），處理費是獨立的 `restockingFee` 屬性。維持 `ReturnFeesCustomerResponsibility + restockingFee:25`，並在信裡說明理由。**客戶說「以上是事實不是 schema 指令」⇒ 事實照收、規格由我負責。**
+- ⭐⭐ **`divided_by` 捨去造成少一天**：把「還有 54.5 天」算成 54，等於**對 Google 承諾早一天到貨**。改無條件進位（`plus: 86399`）。三個到貨日 9/16、10/2、11/6 全部驗證正確。出貨承諾一律往保守方向取整。
+- ⭐ 順手修：預購商品原本一律報 `InStock`（product.available=true）→ 改 `PreOrder`；三態線上驗證正確。
+- ⚠️ 查證後確認 **Google 不支援 `availabilityStarts`**，所以無法把「等發售」與「發售後出貨」分開表達；56–58 天雖然難看但是唯一誠實的寫法（不填＝客戶不想要的警告，填 1–3 天＝說謊）。數字每天自動變小，不需人工維護。
+- ⚠️ 新登記：到貨日過後若商品仍掛預購標籤，deliveryTime 會停止輸出 ⇒ 該警告會重新出現。成因先記下來。
+- 已寄出變更清單與說明（msg 1a09568b95bbe070），並依老闆指示**詢問「假一賠二」是否漏放上站**——該句只在社群文案出現，站上 about/faq/退款政策皆無，故未寫進 agents.md；已說明它是同業都沒有的信任訊號，放上站我才能寫進去。
