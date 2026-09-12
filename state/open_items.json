@@ -9627,8 +9627,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-12 17:59",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-12 22:40",
+  "note": "客戶選 A 並自行執行完畢:分類名、4 條 SEO 標題、36 個商品名全改;刻意不動 handle 與標籤(標籤是排序機器人與庫存同步依據)"
  },
  {
   "id": 964,
@@ -9637,8 +9637,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-12 19:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-12 22:40",
+  "note": "客戶已自行重填 4 條並改分類顯示名與 36 個商品名;線上驗證 /collections/onepiece title=航海王 OPCG 卡牌補充盒・卡包｜ONE PIECE"
  },
  {
   "id": 965,
@@ -9657,8 +9657,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-12 19:13",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-12 22:40",
+  "note": "客戶 09-12 核可,已寫入上線。三路徑實測 200/9639 bytes,UCP/MCP 段完整、假一賠二與航海王皆在"
  },
  {
   "id": 967,
