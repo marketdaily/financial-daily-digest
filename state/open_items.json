@@ -9699,5 +9699,25 @@
   "opened": "2026-09-13 02:16",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 971,
+  "what": "CHOSEN 完全不在 Google 購物裡:全站零 Google 標記(無 Merchant Center/Analytics/site verification)。免費刊登門票=Shopify「Google & YouTube」銷售管道 App,免費且免廣告預算;結構化資料已就緒,缺的是 feed",
+  "why": "App 安裝與 Merchant Center 在客戶後台,我無權限;需先跟老闆確認要不要提這條",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-13 02:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 972,
+  "what": "CHOSEN Merchant Center 前置缺兩項(客戶端):①Shopify vendor 201 件全填 CHOSEN TCG,應為商品品牌 ②429 個變體 GTIN/條碼 0 筆,封裝商品有條碼、缺了會被降級或拒登",
+  "why": "商品欄位在客戶後台;我已先把網頁端 brand 改對,但 feed 端要他們填",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-13 02:31",
+  "closed": null,
+  "note": ""
  }
 ]

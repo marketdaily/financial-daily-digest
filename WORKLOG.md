@@ -8970,3 +8970,10 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 首跑即證明 GEO 差異化成立：llms.txt 狀態 chosentcg=**自訂**、bravesoulcard/card-cellar=平台罐頭、tcsb/battlecity/tcgstore=沒有。六家只有我們是自訂。
 - 早期訊號（不當成效，量還太小）：GSC 09-12 曝光 5/點擊 3/排名 3.4/頁面 1 → 09-13 曝光 9/點擊 6/排名 2.3/**頁面 4**。值得看的是有曝光的頁面從 1 變 4＝收錄在擴散。
 - ⚠️ 未收乾：#969 FAQPage 待客戶插一行、#970 第四階段內容層/AI 引用抽查/排名追蹤皆未建、#968 預購標籤維護、#965 /collections/all title。
+
+## 2026-09-13（續）CHOSEN：Google 購物盤點 + 自我稽核抓到 brand 寫錯
+- 老闆問「怎麼讓商品帶價格出現在搜尋/進 Google 購物」。查證結果：**他們完全不在 Google 購物裡**——線上首頁零 Google 標記（無 gtag/GTM/site verification），代表沒有 Merchant Center、沒有 Analytics。
+- 查 Google 官方文件確認免費刊登條件（不是憑印象）：需 Merchant Center 帳號＋商品 feed＋退貨政策＋運費設定＋必要屬性（id/title/link/image/price/description/availability/condition/brand/GTIN 或 MPN）。**免費刊登本身零費用**，出現在 Shopping 分頁、搜尋、圖片、Lens、YouTube、地圖。付費的「贊助產品」才要 Google Ads 預算。
+- ⭐⭐ **自我稽核抓到自己寫錯**：`brand` 寫死成 "CHOSEN TCG" —— 寶可夢卡盒的品牌是寶可夢，不是賣它的店。Shopify 的 `vendor` 欄位 201 件也全填 CHOSEN TCG，同樣不能拿來當 brand。已改為從商品標籤推導系列，**推不出來就整個不輸出 brand，不猜**。線上四品類驗證：Pokémon / ONE PIECE / Union Arena / Magic: The Gathering。
+- 另查出客戶端兩個 Merchant Center 前置缺口：vendor 全填零售商名；**429 個變體 GTIN/條碼 0 筆**（封裝商品本身有條碼，缺了會被降級或拒登）。SKU 429/429 齊全，可當 MPN。
+- ⚠️ FAQPage 客戶尚未插那一行（線上 FAQPage 出現 0 次）。
