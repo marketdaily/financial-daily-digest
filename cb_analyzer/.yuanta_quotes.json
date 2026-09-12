@@ -292,5 +292,26 @@
   "issue_lots": 99.0,
   "vol_21d_pct": null,
   "quote_date": "2026-09-07"
+ },
+ "82221": {
+  "start_date": "9/17(四)",
+  "name": "寶一一",
+  "bond_code": "82221",
+  "collateral": "永豐銀",
+  "tcri": 7,
+  "premium_pct": 6.08,
+  "discount_rate_pct": 3.0,
+  "opt_expiry": "2028-08-28",
+  "put_date": "2028-09-10",
+  "tenor_year": 1.99,
+  "put_price": 100.0,
+  "conv_price": 42.3,
+  "parity": 82.03,
+  "cb_price": 110.5,
+  "premium_discount_pct": 35.0,
+  "unit_price_nt": 4000.0,
+  "issue_lots": 37.0,
+  "vol_21d_pct": null,
+  "quote_date": "2026-09-14"
  }
 }
