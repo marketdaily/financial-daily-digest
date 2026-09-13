@@ -9687,8 +9687,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-13 02:16",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-13 14:28",
+  "note": "客戶已在 sections/cd-faq.liquid 插入 render;線上驗證 FAQPage 有效、15 組問答全抓到"
  },
  {
   "id": 970,
@@ -9697,8 +9697,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-13 02:16",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-13 14:28",
+  "note": "已建:--ranks(20 字排名+Google AI 概覽引用)接每月 1 號 cron;⚠️只涵蓋 Google AI 概覽不是六引擎,已在程式與信中註明"
  },
  {
   "id": 971,
@@ -9727,6 +9727,26 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-13 02:43",
+  "closed": "2026-09-13 14:28",
+  "note": "已寄(msg 1a0996b7c13b34e6);客戶已核可第四階段並指名要大綱"
+ },
+ {
+  "id": 974,
+  "what": "CHOSEN 條碼 GTIN 仍 0/429:客戶說「會」從供應商 API 批次寫回(日版 149 件已綁定、覆蓋率 100%),美版無來源未解;寫完要再驗一次",
+  "why": "客戶進行中,非謊報(信中用未來式);Merchant Center 免費刊登會看這欄",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-13 14:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 975,
+  "what": "CHOSEN 第一篇部落格草稿(blog/01-union-arena-intro.md)未寄:附三點要客戶確認的事實(作品代號/日版流通說法/內部連結)",
+  "why": "依約大綱與稿件都要 Darren 審過才發",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-13 14:28",
   "closed": null,
   "note": ""
  }
