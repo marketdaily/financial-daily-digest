@@ -9064,3 +9064,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 結論=需求面非管線(每段實射證據見 ~/kingconn/WORKLOG.md 同日條)。⭐ CF 每日千餘 504 全是 `nginx-ssl early hints` 假象。⭐⭐ 冷信 09-12 週五班 cron 沒觸發(81 支同分鐘起跑,唯獨它沒有 CMD 紀錄)→ 加 13:30 第二班(DAILY_CAP 防重寄)#985。新哨兵 kingconn_inquiry_pulse(09:35)分辨「沒人詢價」vs「管線死了」。Chrome 登入走 PowerShell UIAutomation 不碰滑鼠;f1@ 驗證登入、service@(無痕)無法程式驗證 #984。
 - 09-14 續：審稿站帳密＋用法已寄客戶（msg 1a09bad2917678f9，收件 kevinhuang0620@gmail.com，沿用「Darren 好」稱呼）。#982 關、改登記等客戶登入與四篇裁決。
 - (續)皇海全數據分析+料號頁快速詢價小表單上線(1,000 頁四語,e2e 本機+線上全綠,#988 等第一張真單)。結論:on-page 已飽和,瓶頸=權威度與需求;三個假訊號(CF 504=early hints、7sata、18xxxxx 佔一半點擊)。artifact e47bc50d。
+- (續二,「go do what you can」)能自己推的:4 顆有 KiCad 零件的料號頁加零件庫入口(16 頁,verify 閘)+cad.kingconn.com.tw 重新部署(線上是 09-08 舊版,錨點一直沒上)+零件庫擴張判死(通用讀圖器 17/18 拒出檔,不硬出)+SnapEDA 無頭登入查到 4 顆 6 天未上架(平台側)。日文 64 頁未收錄=Google 從未爬,無可改。
