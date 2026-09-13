@@ -9327,8 +9327,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-09 22:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 00:33",
+  "note": "回信已依第一手 PDF 重寫為 offsite/outbox/digikey_reply_alex_20260914.md(COI 段改成問 certificate holder 規格,零承諾零不實);舊 0909 草稿已標作廢。待核可寄出,改見新項。"
  },
  {
   "id": 934,
@@ -9337,8 +9337,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-09 22:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 00:33",
+  "note": "規格修正後重開:Digi-Key 要的是 CGL $1M/occ $2M agg,產品責任險【非必要】(第一手 PDF p.1 原文)。改見新項。"
  },
  {
   "id": 935,
@@ -9417,8 +9417,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-10 20:22",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 00:33",
+  "note": "判準錯誤,作廢重開:『外銷美加/非美加兩格費率+依營業額核保費』是【產品責任險】的規則,而 Digi-Key 要求書原文明寫 products liability 'not a requirement for participation' ⇒ 該詢價門檻根本不成立於本案。改見新項。"
  },
  {
   "id": 943,
@@ -9807,6 +9807,86 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-13 19:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 982,
+  "what": "CHOSEN 審稿站 chosen-staging.pages.dev:Kevin 帳密尚未交到他手上,且他尚未真的登入裁決過任何一筆",
+  "why": "帳密要 Delvin 轉交(在 storefront/clients/chosen/staging/.credentials);首班驗收=客戶真的按過核可",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 00:27",
+  "closed": "2026-09-14 00:50",
+  "note": "09-14 已寄 kevinhuang0620@gmail.com(msg 1a09bad2917678f9):網址+帳密+三步用法+四篇待裁決;首班驗收改登記為等他登入回「打得開」"
+ },
+ {
+  "id": 983,
+  "what": "CHOSEN 審稿站:鏡像是 09-14 快照,正式站商品/文案變動後要重跑 mirror.py 再 build,否則 before 會過期(build 會擋 html 類但 title/description 類不會)",
+  "why": "還沒排 cron 定期重抓,先手動",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 00:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 984,
+  "what": "皇海 service@ 的 webmail 無痕視窗登入只送出未驗證(UIA 看不到背景視窗的網頁樹);f1@ 已驗證登入",
+  "why": "Chrome 只對前景視窗暴露網頁 accessibility 樹,背景無痕視窗查不到登出鈕;老闆點開那個視窗看一眼即可",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 00:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 985,
+  "what": "皇海冷信 09-12(週五)09:30 那班 cron 根本沒觸發(syslog 無 CMD 紀錄、crontab 未變、同分鐘其他 5 支皇海 job 都有跑),根因未明",
+  "why": "已加 13:30 第二班(DAILY_CAP=10 保證不重寄)當備援;要真的查根因得抓 cron 在 81 支同時起跑那一分鐘的行為",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 00:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 986,
+  "what": "Digi-Key 回信 digikey_reply_alex_20260914.md 待老闆核可寄出(COI 段只問規格不表態,無不實陳述)",
+  "why": "對外信件送出前必先給老闆看過",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-14 00:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 987,
+  "what": "皇海保險真相修正:Digi-Key 門檻=CGL US$1M/occ+US$2M agg,【產品責任險明文非必要】;COI 在 onboarding 第2步收不是現在;Digi-Key 自己的文件預設『供應商從未投保』並附台灣格=AIG ⇒ 王董『B2B 無保險』的成本顧慮與名譽顧慮都建立在我 9/9 信誤框的前提上",
+  "why": "要向王董更正並重新取得決定:甲買CGL基本盤(可自己掛名上架)/乙找有保單的貿易商掛名(抽成+與原廠直供定位衝突)/丙暫緩;另需清查公司現有公共意外責任險可否擴大承保(從零投保 vs 擴保成本差很多)",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-14 00:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 988,
+  "what": "皇海料號頁快速詢價小表單 09-14 上線,只做過 mock 攔截 e2e,尚未有一張真單從它進來(第一張真單=生產驗證)",
+  "why": "真送一筆=寄一封通知信給皇海業務;等真客戶用,或老闆點頭用 SYSTEM TEST 標示實射一筆",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 00:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 989,
+  "what": "CHOSEN 審稿站:等客戶回「打得開」+四篇文章裁決(信 09-14 已寄);核可後要整理「貼進哪個欄位」清單給他",
+  "why": "客戶尚未登入、尚未裁決任何一筆",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 00:50",
   "closed": null,
   "note": ""
  }

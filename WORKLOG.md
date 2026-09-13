@@ -9062,3 +9062,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 
 ## 2026-09-14（凌晨）皇海：詢價歸零體檢 + 信箱全掃 + Chrome UIA 登入
 - 結論=需求面非管線(每段實射證據見 ~/kingconn/WORKLOG.md 同日條)。⭐ CF 每日千餘 504 全是 `nginx-ssl early hints` 假象。⭐⭐ 冷信 09-12 週五班 cron 沒觸發(81 支同分鐘起跑,唯獨它沒有 CMD 紀錄)→ 加 13:30 第二班(DAILY_CAP 防重寄)#985。新哨兵 kingconn_inquiry_pulse(09:35)分辨「沒人詢價」vs「管線死了」。Chrome 登入走 PowerShell UIAutomation 不碰滑鼠;f1@ 驗證登入、service@(無痕)無法程式驗證 #984。
+- 09-14 續：審稿站帳密＋用法已寄客戶（msg 1a09bad2917678f9，收件 kevinhuang0620@gmail.com，沿用「Darren 好」稱呼）。#982 關、改登記等客戶登入與四篇裁決。
