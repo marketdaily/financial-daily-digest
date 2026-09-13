@@ -9737,8 +9737,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-13 14:28",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-13 17:56",
+  "note": "客戶已寫入 208 變體(0→47%)。⚠️我先前的驗證方法無效(公開 products.json 無 barcode 欄位);已改為輸出 gtin 到商品頁結構化資料,抽 24 件實測 14 件有 GTIN=58%,與客戶說法一致"
  },
  {
   "id": 975,
@@ -9757,6 +9757,16 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-13 14:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 977,
+  "what": "CHOSEN 第四階段客戶改挑七題(含我建議不寫的真偽/PSA 兩題,客戶重申仍要寫、理由是客服與 AI 引用不是搜尋量);第6、7 題無需數字我先寫,第1-5 題等客戶補數字清單",
+  "why": "已寄數字清單(msg 1a09a323bba9047e);Union Arena 草稿改為 parking,七篇後再議",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-13 17:56",
   "closed": null,
   "note": ""
  }
