@@ -9050,3 +9050,15 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 日版那組數字做了自洽檢查：C90+U45+R8+RR4+RRR2+AR3+SR1 ≈ 153，對上一盒 150 張在區間誤差內 ⇒ **結構自洽比數字本身更能說明它不是編的**，此檢查也寫進文章。
 - 三處刻意設計並交客戶拍板：①是否列來源網址（可信度 vs 導流）②「想要特定卡不如買單卡」會減少拆盒銷售但建議留著（他們也賣單卡，且講實話的店客人才信）③文末「我們不保證你拆出什麼、只保證商品本身」的口徑。
 - ⚠️ 未收乾：#981 第 2 題待審、#980 研究報告待核、#978 第 6/7 題待審、第 1 題待寫、第 3 題仍需客戶第一手驗貨經驗。
+
+## 2026-09-14 CHOSEN：私有審稿站（staging）— 客戶要逐字審過才准動正式站
+- 老闆令：客戶怕我們「想像出文字」，要求先做一份含全部商品的網站副本、只有他跟老闆能看，所有 SEO/GEO/AEO 文字先在那裡改，他點頭才推正式站。
+- 做法：`storefront/clients/chosen/staging/` — `mirror.py` 把正式站 246+ 頁一字不改抓成基準（節流 2.5s，09-13 兩次 429 的教訓）；`changes/*.json` 每筆必有 before/after；`build.py` 組成 dist + 每頁審稿列 + `/_review/` 審稿中心（字級 diff：紅=現況、黃=提案）；Pages Functions 登入閘（kevin/delvin 兩組帳密，HMAC cookie，全站 noindex/no-store）；裁決寫 KV `CHOSEN_STAGING_REVIEW`。
+- 線上 https://chosen-staging.pages.dev；本機 `./dev.sh` → localhost:8788。帳密在 `.credentials`（gitignored）。
+- 刻意取捨：資產與 canonical 仍指正式站（不搬圖、不會變第二個站）；拔掉像素/分析腳本（不污染他們 Shopify 報表）；下單/表單擋掉。
+- ⭐ 提案的 before 過期就擋：html 類 before 必須在頁面逐字找得到，title/description 類 before 必須等於鏡像現況，否則 build 直接失敗——不准靜默套在變過的基準上。
+- 首批灌入：4 篇部落格草稿（新頁）+ 第二階段試算表「線上尚未照做」的列（自動比對，已照做的不重列）。
+- ⚠️ 未收乾：#982 帳密未交 Kevin、客戶未真的裁決過一筆；#983 鏡像是快照，正式站變動要重抓。
+
+## 2026-09-14（凌晨）皇海：詢價歸零體檢 + 信箱全掃 + Chrome UIA 登入
+- 結論=需求面非管線(每段實射證據見 ~/kingconn/WORKLOG.md 同日條)。⭐ CF 每日千餘 504 全是 `nginx-ssl early hints` 假象。⭐⭐ 冷信 09-12 週五班 cron 沒觸發(81 支同分鐘起跑,唯獨它沒有 CMD 紀錄)→ 加 13:30 第二班(DAILY_CAP 防重寄)#985。新哨兵 kingconn_inquiry_pulse(09:35)分辨「沒人詢價」vs「管線死了」。Chrome 登入走 PowerShell UIAutomation 不碰滑鼠;f1@ 驗證登入、service@(無痕)無法程式驗證 #984。
