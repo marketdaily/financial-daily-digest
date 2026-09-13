@@ -9917,6 +9917,16 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-14 01:06",
+  "closed": "2026-09-14 01:10",
+  "note": "老闆 09-14 拍板:①36 封公用信箱信 hold(queue status=held_v1_role,cron 照跑但 0 封)②不做子網域,寄件人切回 f1@(.env KINGCONN_MAIL_USER/PASS,備份 .env.bak-20260914-coldmail-f1,SMTP 235 驗證)③20 家具名工程師名單研究中"
+ },
+ {
+  "id": 993,
+  "what": "皇海冷信 v2:20 家具名工程師名單建好後交老闆核可才入 queue;v2 序列(4 觸點 step 欄)引擎尚未實作",
+  "why": "名單 4 個研究員 09-14 01:40 起跑;引擎 step 支援等名單核可再做,避免白做",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 01:10",
   "closed": null,
   "note": ""
  }
