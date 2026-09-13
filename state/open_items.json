@@ -9857,8 +9857,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-14 00:33",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 01:01",
+  "note": "已實際寄出(f1@ SMTP 465,In-Reply-To 接 Alex Message-ID,已存 Sent);寄前抓到並修掉草稿的 REACH 用字(站上無 REACH 證書不得宣稱)"
  },
  {
   "id": 987,
@@ -9887,6 +9887,36 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-14 00:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 990,
+  "what": "Digi-Key Alex Stoe 回信待覆:①certificate holder vs additional insured ②蘇州廠保單怎麼載明 ③COI 死線 —— 他回了才知道真正要買什麼規格",
+  "why": "已於 09-14 寄出提問,等對方回;channel_reply_watch cron */15 會抓到並推播",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 01:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 991,
+  "what": "皇海 LCSC 表的 drop-in 已改成同介面二供,但表仍未寄出(缺王董兩個數字:去年銷貨成本/各系列年銷額),已躺 7 天",
+  "why": "商業數字我不替公司編;LCSC 不要 COI,這條線跟保險無關卻被一起卡住",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 01:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 992,
+  "what": "皇海冷信 v2 等老闆拍板三件事:①queue 剩 36 封公用信箱信停或寄 ②專用子網域暖機 ③先做 20 家具名工程師名單不寄",
+  "why": "09-14 診斷:42 封 100% 寄到 info@/sales@、零跟進、186-230 字,結構問題確定;報告已交 Artifact,等決定才動引擎",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 01:06",
   "closed": null,
   "note": ""
  }
