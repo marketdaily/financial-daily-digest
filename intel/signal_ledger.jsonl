@@ -1072,3 +1072,10 @@
 {"date": "2026-09-12", "code": "8996", "source": "twse_notetrans", "level": "yellow", "signal": "高力(8996):注意累計異常:115年9月1日至115年9月11日等九個營業日已有五次(逼近處置門檻)", "price_at_signal": null}
 {"date": "2026-09-12", "code": "2012", "source": "mops_news", "level": "yellow", "signal": "春雨(2012) 重訊[2026-09-11]:公告本公司內部稽核主管異動", "price_at_signal": null}
 {"date": "2026-09-12", "code": "2338", "source": "tw_rank", "level": "red", "signal": "光罩(2338) 量能竄榜:今日量榜第8(近10日未進過top50,+4.6%,66,646張)", "price_at_signal": null}
+{"date": "2026-09-13", "code": "1569", "source": "revenue", "level": "red", "signal": "濱川(1569):2026/08 營收公告、YoY -25.3%(衰退)、MoM +0.8%", "price_at_signal": null}
+{"date": "2026-09-13", "code": "3455", "source": "revenue", "level": "red", "signal": "由田(3455):2026/08 營收公告、YoY +22.4%(強勁)、MoM +38.0%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
+{"date": "2026-09-13", "code": "4542", "source": "revenue", "level": "red", "signal": "科嶠(4542):2026/08 營收公告、YoY +194.7%(強勁)、MoM +6.8%", "price_at_signal": null}
+{"date": "2026-09-13", "code": "5381", "source": "revenue", "level": "red", "signal": "光譜(5381):2026/08 營收公告、YoY -35.9%(衰退)、MoM -46.0%", "price_at_signal": null}
+{"date": "2026-09-13", "code": "1295", "source": "revenue", "level": "yellow", "signal": "生合(1295):2026/08 營收公告、YoY -0.6%、MoM -4.6%", "price_at_signal": null}
+{"date": "2026-09-13", "code": "4198", "source": "revenue", "level": "yellow", "signal": "欣大健康(4198):2026/08 營收公告、YoY -3.2%、MoM -31.2%", "price_at_signal": null}
+{"date": "2026-09-13", "code": "7743", "source": "revenue", "level": "yellow", "signal": "金利食安(7743):2026/08 營收公告、YoY -16.6%、MoM -2.4%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
