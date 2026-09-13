@@ -9927,6 +9927,36 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-14 01:10",
+  "closed": "2026-09-14 01:34",
+  "note": "名單交付 Artifact(100 人/20 家,Tier1 31/Tier2 39/Tier3 30),等老闆勾選;引擎 step 支援仍未做"
+ },
+ {
+  "id": 994,
+  "what": "SnapEDA 4 顆零件 09-08 上傳、09-14 仍未上架(profile 有列、公開搜尋無、view-part 匿名 403);要不要用 f1@ 寫信問 support 由老闆定",
+  "why": "對外信件先給老闆看;平台審核時程不在我手上",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 01:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 995,
+  "what": "皇海 LinkedIn 公司頁:素材與文案全備(artifact e0ed5e6e,圖檔在 C:\\Users\\USER\\kingconn_linkedin),建頁表單開在老闆 Chrome 背景分頁;要老闆貼 3 分鐘,或他說「現在」我用 UIA 代填(會搶前景)",
+  "why": "LinkedIn 建頁只能用本人帳號在前景分頁做;他正在看 YouTube,不自作主張切分頁",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 01:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 996,
+  "what": "皇海冷信 v2:等老闆勾選名單(Tier1+2 70 人?Tier3 補拼音?)→寫每家客製開頭給他看→實作 step 序列(D0/+3/+8/+15)→才開寄",
+  "why": "09-14 02:10 名單已交,寄信前三道還沒過",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 01:34",
   "closed": null,
   "note": ""
  }
