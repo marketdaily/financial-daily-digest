@@ -9937,8 +9937,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-14 01:13",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 02:24",
+  "note": "09-14 02:24 已從 f1@ 寄信給 info@snapeda.com 問審核狀態/KiCad 格式/vendor program(Message-ID kc-snapeda),副本在 Sent;等回信"
  },
  {
   "id": 995,
@@ -9947,8 +9947,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-14 01:18",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 02:09",
+  "note": "LinkedIn 公司頁已建:linkedin.com/company/kingconn-technology,Details/Locations 全填並存檔,官網 sameAs+llms.txt 已上線"
  },
  {
   "id": 996,
@@ -9957,6 +9957,46 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-14 01:34",
+  "closed": "2026-09-14 02:32",
+  "note": "名單老闆 ok;序列引擎做完(8 案例迴歸綠);44 人×4 封全文已交 Artifact 預覽"
+ },
+ {
+  "id": 997,
+  "what": "LinkedIn 皇海頁收尾兩個真人點擊:①Edit page→Page info→Edit background 上傳 C:\\Users\\USER\\kingconn_linkedin\\kingconn_cover_1128x191.png ②Buttons→Custom button 開關→Contact us→https://www.kingconn.com.tw/en/contact;另 LinkedIn 自動生成的孤兒頁 /company/kingconn 要走表單申請合併",
+  "why": "檔案選擇器與 React 開關只認真人點擊,UIA 不吃;合併孤兒頁要 LinkedIn 客服表單",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 02:09",
+  "closed": "2026-09-14 02:14",
+  "note": "自訂按鈕已改成 Contact us→/en/contact 並存檔;封面與孤兒頁合併另開"
+ },
+ {
+  "id": 998,
+  "what": "LinkedIn 皇海頁:①封面仍未上傳(Edit page→Page info→Edit background 選 C:\\Users\\USER\\kingconn_linkedin\\kingconn_cover_1128x191.png,只認真人點)②孤兒頁 /company/kingconn 走 LinkedIn 表單申請合併",
+  "why": "檔案選擇器不吃 UIA;合併要客服表單",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 02:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 999,
+  "what": "SnapEDA 客服回信待收(f1@,主旨 KINGCONN KiCad uploads … status?);收到後照答覆補格式或走 vendor program",
+  "why": "平台回覆時程不在我手上;channel_reply_watch 會掃 f1@ 但 snapeda.com 網域不在它的通路清單,要人看",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 02:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1000,
+  "what": "皇海冷信 v2 首批 44 人×4 封全文等老闆看過說 OK → queue_v2.py --write → 09:30/13:30 cron 自動寄;首班寄出後要驗:退信數/In-Reply-To 串接/跟進 D+3 是否準時",
+  "why": "對外內容送出前必先給他看(08-17 親令);尚未入 queue",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 02:32",
   "closed": null,
   "note": ""
  }
