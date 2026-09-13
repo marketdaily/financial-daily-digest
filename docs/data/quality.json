@@ -56,17 +56,6 @@
    {
     "date": "2026-09-09",
     "market": "us",
-    "start": "18:20:01",
-    "done": null,
-    "lateness_min": null,
-    "verdict": "incomplete",
-    "llm_tiers": {
-     "gemini": 2
-    }
-   },
-   {
-    "date": "2026-09-09",
-    "market": "us",
     "start": "20:00:01",
     "done": "20:39:03",
     "lateness_min": 39.0,
@@ -119,6 +108,17 @@
      "gemini": 60,
      "groq_free": 1
     }
+   },
+   {
+    "date": "2026-09-14",
+    "market": "tw",
+    "start": "05:20:00",
+    "done": "05:57:38",
+    "lateness_min": -62.4,
+    "verdict": "on_time",
+    "llm_tiers": {
+     "gemini": 44
+    }
    }
   ]
  },
@@ -143,5 +143,5 @@
   "guard_alert_tw": false,
   "guard_alert_us": false
  },
- "generated_utc": "2026-09-13T16:08:01Z"
+ "generated_utc": "2026-09-13T22:08:01Z"
 }
