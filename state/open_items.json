@@ -10527,8 +10527,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-14 20:02",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 01:02",
+  "note": "Android APK 已建(v3.1.0)並在 Mac 的 Android 15 arm64 模擬器實裝實玩:年齡閘門→引導→首頁→遊戲全過,零 FATAL;順手修掉 render process 崩潰、白狀態列兩個原生 bug"
  },
  {
   "id": 1054,
@@ -10537,8 +10537,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-14 20:02",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 01:02",
+  "note": "Mac venv 跑 Playwright WebKit:QA 80/80、猴子測試 0 錯"
  },
  {
   "id": 1055,
@@ -10687,6 +10687,76 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 00:50",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1070,
+  "what": "皇海 FB 粉專未設使用者名稱(@kingconntech 實測未被佔用)",
+  "why": "page id 61594580241075 已建立,但網址仍是 profile.php?id=;FB canonical 是一長串 /p/...-61594580241075/,不該寫進 775 頁 sameAs。設好帳號名稱後我才接 org_schema/build_llms",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 00:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1071,
+  "what": "乾啦 Android 只在模擬器驗過,沒有真手機;上 Google Play 前要在真機走一遍(尤其震動、分享、多人連線)",
+  "why": "沒有實體 Android 裝置",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 01:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1072,
+  "what": "皇海 248 顆料號中 99 顆的規格欄位是【中文寫在工程圖面上】(title 89/housing_color 13/material_contacts 8/durability_cycles 7/溫度電流耐壓各數顆),英文站因此顯示不了那些值,英文規格表只能整欄捨棄。要補須由有圖面的人登錄英文值——我不自己翻圖面上的字",
+  "why": "翻譯工程圖面上的規格字等於製造第二個真源;要原廠或王董那邊出英文值",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-15 01:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1073,
+  "what": "皇海指南第二輪成效驗收:27 篇全數加厚後(中位 329→852 字、圖 27→244 張)排名要 2–4 週反映;併入 #1058 的 10-04 判準一起看,另看指南頁在 GSC 的曝光/點擊是否隨深度上升",
+  "why": "內容 09-15 才上線,尚未在生產驗證成效",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 01:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1074,
+  "what": "皇海寄件主機 60.250.52.44(=mail.kingconn.com.tw)在趨勢科技 ERS-KSSL 黑名單,未申請解除也沒有任何東西在監測",
+  "why": "09-14 vivotek 三封退信直接點名該 IP;那台是公司全部往來信件的出口,不只冷信線。Spamhaus/Barracuda/SpamCop/SORBS/PSBL 五張表皆乾淨,只有趨勢那張。解除要走 ers.trendmicro.com 表單,需公司身分與聯絡人,可能要老闆出面",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 01:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1075,
+  "what": "冷信探路信閘門(send.py canary_hold,09-14 13:27 補)尚未在生產跑過",
+  "why": "上次寄送 cron 是 09-14 13:30,正是出事那批;新閘門要等 09-15 09:30 TW 那班才第一次帶著它跑,在那之前不能說退信率已經壓下來",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 01:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1076,
+  "what": "明欣診所站定稿後要接 Google:①GSC 網域資產 sc-domain:mingxinclinic.com(DNS TXT,我們有 CF zone 寫權限)②提交 sitemap ③IndexNow 給 Bing ④MedicalClinic/LocalBusiness JSON-LD ⑤Google 商家檔案(要院方本人驗證)",
+  "why": "老闆令「when you are done, put it on the google search thing」;站還在重做版面與照片,定稿才做",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 01:09",
   "closed": null,
   "note": ""
  }
