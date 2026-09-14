@@ -9206,3 +9206,22 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 其他修:有偏洗牌→Fisher-Yates、抽題改 bag 不重複(30 抽零相鄰重複)、prompt/confirm→in-app sheet(並還原房主選單 handler)、`{d}` 確定性代換層(KING/DICE 規則現在也吃得到微醺模式)、對比不足→強調色上的文字統一深色墨(WCAG 全過)、危險/隱私題軟化(閉氣、把手機交給別人代發訊息、翻別人對話紀錄)。
 - ⭐⭐ 最後一個也是最嚴重的 bug:我自己加的兩個 MutationObserver(圖示替換 / 微醺替換)**互相觸發成無限迴圈**,開第二款遊戲就卡死、CPU 燒滿(手機上=當機+耗電)。症狀是 QA 跑到第 4 個斷言就不動、15 分鐘超時——一開始以為是機器忙。正解=收斂成**單一裝飾迴圈**,動手前 `disconnect()`、做完再 `observe()`。修後 26 款全開 9.2 秒。教訓:**同一個容器上不要掛兩個會改內容的 observer**。
 - 收工狀態:QA 83/83 在 chromium 與 Mac 真 WebKit 都全綠;猴子測試(26 單機×30 次 + 9 連線×18 輪)兩引擎 0 錯;content_lint / code_lint 0 命中;Android APK v3.1.0 在 Android 15 模擬器實裝實玩零當機;iOS 模擬器建置啟動正常。preview 已更新。待老闆:ASC API 金鑰 + 建 App 紀錄(#1052)、正式站放行(#1046)、商標檢索(#1048)、Android 真機(#1071)。
+
+## 2026-09-15 01:50 — 乾啦 v3.1.0 上 TestFlight(winrig + Mac)
+- 老闆給了 ASC API 金鑰。第一把 `7A9AD3HBU6` 是 **App Manager**,**所有寫入都 403**(建憑證、改文案、改版本全擋),
+  ⭐ 教訓:ASC API 金鑰的角色決定一切,要碰「憑證/識別碼/描述檔」與商店文案**一定要 Admin**,App Manager 只能讀。
+- 換第二把 Admin 金鑰 `WRM67WC2GD` 後全部打通。
+- ⭐⭐ SSH 無頭簽章的解法:**不要用 `-allowProvisioningUpdates` 自動簽章**——它要動 login keychain,
+  SSH 下必死在 `User interaction is not allowed`。正解=API 自己建憑證+描述檔,裝進**獨立 keychain**
+  (`ganla.keychain-db`,密碼自己生、`set-key-partition-list` 授權 codesign),改**手動簽章**:
+  `CODE_SIGN_STYLE=Manual` + `PROVISIONING_PROFILE_SPECIFIER` + `OTHER_CODE_SIGN_FLAGS="--keychain ..."`。
+- ⭐ `POST /v1/certificates` 的 `csrContent` 要**原始 PEM 全文**(含 BEGIN/END 行),再 base64 一次會回 409 Invalid Certificate。
+- ⭐ `xcodebuild -exportArchive` **沒有 `-keychain` 旗標**(傳了會印 usage 然後 exit 0 假成功);
+  keychain 靠 `security list-keychains` 加進搜尋清單就夠。
+- ⭐ 年齡分級 `ageRatingDeclarations` 的欄位型別 bool/enum 混雜且會改版(`healthOrWellnessTopics` 是 bool、
+  `ageAssurance` 2026 起必填)。寫了自動依 409 錯誤訊息修型別的迴圈,不要手動猜。
+- 已灌進 App Store Connect:版本 3.1.0、中英文案、6.9吋+6.5吋各 6 張截圖×雙語、年齡分級(→ **17+**)、
+  類別(遊戲/休閒+益智,次要娛樂)、價格免費、175 個地區、內容版權宣告、送審備註、IDFA=否、build 已掛上版本。
+- Build `202609150147` 上傳成功(Delivery UUID 9ec8e379-…),處理狀態 VALID。
+- 未收乾:#1111 App 隱私問卷(API 不開放,老闆要在 UI 勾「不蒐集資料」)、#1112 正式站還是 v2.0
+  但送審備註叫審查員去那裡測多人連線、#1101 DSA 貿易商狀態、#1048 商標檢索、#1071 Android 真機。
