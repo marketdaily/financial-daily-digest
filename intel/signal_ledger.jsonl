@@ -1079,3 +1079,8 @@
 {"date": "2026-09-13", "code": "1295", "source": "revenue", "level": "yellow", "signal": "生合(1295):2026/08 營收公告、YoY -0.6%、MoM -4.6%", "price_at_signal": null}
 {"date": "2026-09-13", "code": "4198", "source": "revenue", "level": "yellow", "signal": "欣大健康(4198):2026/08 營收公告、YoY -3.2%、MoM -31.2%", "price_at_signal": null}
 {"date": "2026-09-13", "code": "7743", "source": "revenue", "level": "yellow", "signal": "金利食安(7743):2026/08 營收公告、YoY -16.6%、MoM -2.4%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
+{"date": "2026-09-14", "code": "2492", "source": "institutional", "level": "red", "signal": "華新科(2492):外資連 5 日賣超(5日淨賣 -13,826 張)", "price_at_signal": null}
+{"date": "2026-09-14", "code": "3597", "source": "institutional", "level": "red", "signal": "映興(3597):外資連 5 日賣超(5日淨賣 -9 張)", "price_at_signal": null}
+{"date": "2026-09-14", "code": "6706", "source": "leadflow", "level": "red", "signal": "惠特(6706) 無消息近漲停+9.8%(連2根,5日+22.3%),疑資訊先行資金|外資+投信近3日+949張", "price_at_signal": null}
+{"date": "2026-09-14", "code": "2468", "source": "leadflow", "level": "red", "signal": "華經(2468) 無消息近漲停+9.9%(連2根,5日+17.5%),疑資訊先行資金|外資+投信近3日僅+374張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-14", "code": "1528", "source": "leadflow", "level": "red", "signal": "恩德(1528) 無消息近漲停+9.9%(連3根,5日+21.7%),疑資訊先行資金|外資+投信近3日+1039張", "price_at_signal": null}
