@@ -87,6 +87,11 @@ CAPTION RULES (these come from the two largest AI news accounts on Instagram; fo
 5. Last paragraph is a single question to the reader, ending with an emoji.
 6. Explain like the reader has never used the product. No jargon. If you must use a technical term,
    define it in the same sentence in four words or less.
+6b. Do NOT add general background, legal commentary, historical context, or statements about how
+    things usually work. "A judge blocking something is usually not the last word" and "which is
+    how a lot of Asia reads American news" are both inventions even though they sound reasonable.
+    Explaining a term means DEFINING it in four words, not adding facts about the world.
+    If FACTS does not contain it, it does not go in, no matter how obviously true it seems.
 7. Do not use em dashes. Do not use the words "delve", "landscape", "testament", "game-changer",
    "revolutionize", "seamless", "unlock", "leverage".
 8. NEVER state a number, percentage, price, or date that is not in FACTS. If you are unsure, omit it.

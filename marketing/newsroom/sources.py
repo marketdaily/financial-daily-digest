@@ -26,16 +26,20 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
 # (key, 顯示名, url, kind, 權威分) —— 權威分只影響排序,不影響是否採用
 FEEDS = [
     # (key, 顯示名, url, wire, 權威分)
+    # ⚠️ 名稱後綴 "!" = 抓不到內文(Google News 轉址 / 付費牆)。
+    # 這種源**仍然算跨源熱度**(它們報了就代表事情大),但**不准被選為代表文章** ——
+    # 代表文章是我們要讀來寫稿的那一篇,選一篇讀不到的等於逼模型看著標題編故事。
+    # 實測:不做這件事的話十則有六則因為代表文章讀不到而整則跳過。
     # wire=True ⇒ 通訊社/國際大報,整份 feed 都是新聞 → 免過「這是不是新聞」的閘
     # wire=False ⇒ 專業媒體或社群,混雜評論/教學/live blog → 必須過 rank.is_news()
     # ── 國際通訊社與大報(帳號的骨幹)──────────────────────────────────────
     ("bbc_world", "BBC", "https://feeds.bbci.co.uk/news/world/rss.xml", True, 6),
     ("bbc_top", "BBC", "https://feeds.bbci.co.uk/news/rss.xml", True, 6),
-    ("reuters_wp", "Reuters", "https://news.google.com/rss/search?q=when:12h+site:reuters.com&hl=en-US&gl=US&ceid=US:en", True, 6),
-    ("ap_top", "AP", "https://news.google.com/rss/search?q=when:12h+site:apnews.com&hl=en-US&gl=US&ceid=US:en", True, 6),
+    ("reuters_wp", "Reuters!", "https://news.google.com/rss/search?q=when:12h+site:reuters.com&hl=en-US&gl=US&ceid=US:en", True, 6),
+    ("ap_top", "AP!", "https://news.google.com/rss/search?q=when:12h+site:apnews.com&hl=en-US&gl=US&ceid=US:en", True, 6),
     ("aljazeera", "Al Jazeera", "https://www.aljazeera.com/xml/rss/all.xml", True, 5),
     ("guardian_world", "The Guardian", "https://www.theguardian.com/world/rss", True, 5),
-    ("nyt_world", "NYT", "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", True, 6),
+    ("nyt_world", "NYT!", "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", True, 6),
     ("npr", "NPR", "https://feeds.npr.org/1004/rss.xml", True, 5),
     ("cnn_world", "CNN", "http://rss.cnn.com/rss/edition_world.rss", True, 4),
     ("sky_world", "Sky News", "https://feeds.skynews.com/feeds/rss/world.xml", True, 4),
@@ -43,8 +47,8 @@ FEEDS = [
     ("france24", "France 24", "https://www.france24.com/en/rss", True, 4),
     ("abc_intl", "ABC News", "https://abcnews.go.com/abcnews/internationalheadlines", True, 4),
     # ── 亞洲(Threads 那一側是台灣讀者,亞洲新聞的權重要拉得起來)──────────
-    ("nhk", "NHK World", "https://news.google.com/rss/search?q=when:12h+site:nhk.or.jp&hl=en-US&gl=US&ceid=US:en", True, 5),
-    ("kyodo", "Kyodo News", "https://news.google.com/rss/search?q=when:12h+site:kyodonews.net&hl=en-US&gl=US&ceid=US:en", True, 4),
+    ("nhk", "NHK World!", "https://news.google.com/rss/search?q=when:12h+site:nhk.or.jp&hl=en-US&gl=US&ceid=US:en", True, 5),
+    ("kyodo", "Kyodo News!", "https://news.google.com/rss/search?q=when:12h+site:kyodonews.net&hl=en-US&gl=US&ceid=US:en", True, 4),
     ("scmp", "SCMP", "https://www.scmp.com/rss/91/feed", True, 4),
     ("straits", "Straits Times", "https://www.straitstimes.com/news/world/rss.xml", True, 4),
     ("toi_world", "Times of India", "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms", True, 3),
@@ -56,7 +60,7 @@ FEEDS = [
     ("defensenews", "Defense News", "https://www.defensenews.com/arc/outboundfeeds/rss/", True, 3),
     # ── 商業與市場 ────────────────────────────────────────────────────────
     ("cnbc", "CNBC", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114", True, 4),
-    ("ft_world", "FT", "https://www.ft.com/world?format=rss", True, 5),
+    ("ft_world", "FT!", "https://www.ft.com/world?format=rss", True, 5),
     ("bbc_business", "BBC", "https://feeds.bbci.co.uk/news/business/rss.xml", True, 5),
     # ── 科學與健康 ────────────────────────────────────────────────────────
     ("nature_news", "Nature", "https://www.nature.com/nature.rss", False, 5),
@@ -170,7 +174,10 @@ def fetch(feeds=None, fresh_hours=30, workers=8):
 
     out = []
     for c in clusters:
-        lead = max(c["sources"], key=lambda s: (s["authority"], -s["age_h"]))
+        # 代表文章:先挑讀得到的(名稱不帶 "!"),同樣讀得到才比權威分。
+        # 讀不到的源仍留在 c["sources"] 裡,所以 confluence(熱度)完全不受影響。
+        lead = max(c["sources"],
+                   key=lambda s: (not s["src_label"].endswith("!"), s["authority"], -s["age_h"]))
         out.append({
             "key": hashlib.sha1(lead["url"].encode()).hexdigest()[:12],
             "title": lead["title"],
@@ -178,11 +185,13 @@ def fetch(feeds=None, fresh_hours=30, workers=8):
             "summary": lead["summary"],
             "published": lead["published"].isoformat(),
             "age_h": lead["age_h"],
-            "src_label": lead["src_label"],
+            "src_label": lead["src_label"].rstrip("!"),
+            "lead_readable": not lead["src_label"].endswith("!"),
             "authority": lead["authority"],
             "wire": any(s["wire"] for s in c["sources"]),
             "confluence": len({s["src"] for s in c["sources"]}),
-            "also": sorted({s["src_label"] for s in c["sources"]} - {lead["src_label"]}),
+            "also": sorted({s["src_label"].rstrip("!") for s in c["sources"]}
+                           - {lead["src_label"].rstrip("!")}),
         })
     return out, health
 

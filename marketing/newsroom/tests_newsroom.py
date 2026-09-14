@@ -161,6 +161,24 @@ check("台灣正當用法不該被誤殺(程序正義/雲端/後台/裡面)",
       not gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x"),
       str(gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x")))
 
+print("== 代表文章必須是讀得到的那一篇 ==")
+import datetime as _dt  # noqa: E402
+_now = _dt.datetime.now(_dt.timezone.utc)
+def _mk(lbl, auth, title="Same big story about a ferry sinking today"):
+    return {"title": title, "url": f"https://{lbl.rstrip('!')}.example/a", "summary": "",
+            "published": _now, "src": lbl, "src_label": lbl, "wire": True,
+            "authority": auth, "age_h": 1.0}
+_raw = [_mk("AP!", 6), _mk("BBC", 5)]
+import marketing.newsroom.sources as _S  # noqa: E402
+_lead = max(_raw, key=lambda s: (not s["src_label"].endswith("!"), s["authority"], -s["age_h"]))
+check("⭐權威分最高但讀不到的源不能當代表(否則模型只能看著標題編故事)",
+      _lead["src_label"] == "BBC", _lead["src_label"])
+_raw2 = [_mk("AP!", 6), _mk("CNN", 3), _mk("BBC", 5)]
+_lead2 = max(_raw2, key=lambda s: (not s["src_label"].endswith("!"), s["authority"], -s["age_h"]))
+check("讀得到的當中仍比權威分", _lead2["src_label"] == "BBC", _lead2["src_label"])
+check("讀不到的源仍然算熱度(它們報了就代表事情大)",
+      len({s["src_label"] for s in _raw2}) == 3)
+
 print("== 報導年齡不是事件年齡(模型一再把數字錨到另一個對象上) ==")
 _f = D.build_facts({"title": "t", "summary": "s", "url": "https://x.example/a",
                     "src_label": "BBC", "age_h": 2.9, "lane": "breaking", "also": []}, "")

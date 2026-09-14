@@ -95,6 +95,30 @@ Return ONLY JSON: {{"verdict": "pass" or "fail", "problems": ["..."], "worst": "
 """
 
 
+# 讀不到內文就不要寫。實測八則候選有五則抓不到內文(AP/Reuters 走 Google News 轉址、
+# NYT 付費牆只給 41 字),模型拿一個標題被要求寫五段 ⇒ 只能編 ⇒ 驗證者再擋下來。
+# 整條管線在六成候選上**結構性注定失敗**,而且每次失敗都先燒掉兩次 LLM 呼叫。
+# 這道閘把「我們沒讀過的新聞」擋在生成之前,同時省下額度。
+MIN_EXCERPT = 600
+
+
+def resolve_url(url, timeout=15):
+    """Google News RSS 給的是轉址連結,要先解析成真正的文章網址才抓得到內文。"""
+    if "news.google.com" not in url:
+        return url
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            final = r.geturl()
+            if "news.google.com" not in final:
+                return final
+            html = r.read(200000).decode("utf-8", "ignore")
+        m = re.search(r'data-n-au="([^"]+)"', html) or re.search(r'<a[^>]+href="(https?://(?!news\.google)[^"]+)"', html)
+        return m.group(1) if m else url
+    except Exception:
+        return url
+
+
 def article_excerpt(url, limit=2500):
     try:
         req = urllib.request.Request(url, headers={"User-Agent": UA})
@@ -140,7 +164,14 @@ def cmd_draft(args):
             break
         tried += 1
         print(f"\n── [{cand['lane']}] {cand['title'][:80]}")
-        facts = D.build_facts(cand, article_excerpt(cand["url"]))
+        real_url = resolve_url(cand["url"])
+        excerpt = article_excerpt(real_url)
+        if len(excerpt) < MIN_EXCERPT:
+            print(f"  ✗ 讀不到內文({len(excerpt)} 字 < {MIN_EXCERPT})——沒讀過的新聞不寫,"
+                  f"也不浪費 LLM 額度")
+            continue
+        cand = {**cand, "url": real_url}
+        facts = D.build_facts(cand, excerpt)
         try:
             d = call_claude(D.build_prompt(facts), timeout_s=240)
         except Exception as e:
