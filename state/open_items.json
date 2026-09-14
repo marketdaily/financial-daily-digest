@@ -10227,8 +10227,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-14 13:04",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 13:34",
+  "note": "09-14 15:05 以皇海名義(Delvin Chang, f1@)向 Trend Micro ERS 送出 60.250.52.44 移除申請,頁面回 Request Submitted;等待評估,3 天後回查 ip-lookup"
  },
  {
   "id": 1024,
@@ -10237,6 +10237,136 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-14 13:25",
+  "closed": "2026-09-14 15:54",
+  "note": "v4(38deed1)與 v5(be70f45)皆上線但老闆判「像 AI/沒質感」;09-14 15:5x 改做方向 B 第六版 job d8c8d4d8"
+ },
+ {
+  "id": 1025,
+  "what": "Trend Micro ERS 移除申請結果回查(60.250.52.44 仍 Bad/RBL 則要再送或改 relay)",
+  "why": "09-14 送件,Trend 不保證回覆;lookup 頁可匿名查",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 13:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1026,
+  "what": "艾訊 Edward Chang 回信(轉給同事游宗哲 FYI)的回覆稿等老闆 OK 才寄",
+  "why": "對外內容送出前必先給老闆看(08-17 親令);已自動轉成詢價單 #202609140001 通知 service@",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 13:34",
+  "closed": "2026-09-14 13:36",
+  "note": "老闆 09-14 定案:冷信回覆一律由皇海自己的人回,我們不回;引擎已把回信轉成詢價單 #202609140001 通知 service@"
+ },
+ {
+  "id": 1027,
+  "what": "精品代購調查:第二批 84 個 FB 社團加入中+20 個私密團待審核,核准後要補抓私密團貼文並更新報告",
+  "why": "FB 審核與第二批加入尚未跑完,私密團內容今天讀不到",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 14:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1028,
+  "what": "精品代購 C 線:日本中古精品→台灣二手毛利,雷達尚未接三籃子(LV 老花/Chanel CF/入門 Rolex),台灣端錨已有(FB 二手 p25)",
+  "why": "報告只給了台灣端掛價,日本進價還沒對,判定停在待雷達",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 14:37",
+  "closed": "2026-09-14 15:19",
+  "note": "C 線雷達 13 籃子實跑:LV 老花打平/倒掛、Rolex 日本比台灣貴、vintage Chanel 紙上 25-35% 但對王吉娜(台中老字號)售價只剩 0-10%;判定有肉但不夠,7 萬探針等老闆拍板"
+ },
+ {
+  "id": 1029,
+  "what": "FB 帳號風險:老闆本人帳號一天內申請 100+ 社團,可能觸發 checkpoint;第二批跑完要看一次帳號狀態",
+  "why": "尚未在生產驗證 FB 有無限制",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 14:37",
+  "closed": "2026-09-14 15:52",
+  "note": "134 團全跑完(82 核准/47 送審/6 未解),FB 未跳 checkpoint,頁面狀態正常;之後若收到驗證要求再重開"
+ },
+ {
+  "id": 1030,
+  "what": "AI 新聞引擎只在本機跑過首班,尚未在生產排程跑過、也還沒發過任何一篇",
+  "why": "對外發布需老闆先看過草稿並核可(08-17 親令);post 指令刻意未接",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 15:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1031,
+  "what": "IG 非追蹤者觸及等於零的根因未確認(帳號層限制 vs 內容)",
+  "why": "Account Status 只能在 App 看,API 讀不到;要老闆本人開 IG→設定→帳號狀態回報",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-14 15:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1032,
+  "what": "改名/新帳號決策未定,官網 250 檔 1,928 處品牌字串尚未動",
+  "why": "等老闆拍板名稱與「新帳號 vs 改名沿用」",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 15:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1033,
+  "what": "IG/Threads handle 可用性無法機器驗證",
+  "why": "IG API 429、Threads 對不存在帳號回 200,兩個探測器都沒過校準;一律標 ❔ 由老闆在 App 當場試",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 15:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1034,
+  "what": "精品代購 C 線 vintage Chanel 探針(7 萬一顆,Buyee 標+檢品+正規報關+社團賣)等老闆拍板;不拍板就關線",
+  "why": "毛利 0-10% 對老字號,只有真實成交才能裁決",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 15:19",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1035,
+  "what": "vintage Chanel 探針候選已備好一鍵下單:雅虎 w1244179279(1円起標 極美品 黑羊皮金釦 vintage,賣家評價 99.5%,9/16 20:35 JST 截標),出價上限 ¥265,000(售 75,000/毛利 8,000),指令 arb.order --confirm;等老闆明確說買",
+  "why": "要花老闆 7 萬,不能拿一句 ok 當授權",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 15:24",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1036,
+  "what": "qfxsolution.com 第六版(Pinterest 方向 B 台北在動,老闆指定)進行中 job d8c8d4d8;成敗看「質感」,自審三輪對照 #19/#34 後才上線",
+  "why": "前五版全被判死(像AI/沒質感);這版加自審迴路,Higgsfield 上限 150cr",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-14 15:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1037,
+  "what": "官網案例截圖(Google/ChatGPT)保留客戶產品型號字串——反查可能指到客戶;要不要連型號也遮,待老闆拍板",
+  "why": "v5 anonymity_gate 只擋客戶名/網域,型號不在禁字表",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 15:54",
   "closed": null,
   "note": ""
  }
