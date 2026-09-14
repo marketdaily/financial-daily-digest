@@ -17,12 +17,14 @@
 
 ## 專案說明
 
-**⚠️ 願景轉向中（2026-09-14 老闆 /goal，尚未完成）**：從「股票新聞日報」轉成**全球 AI 新聞資訊平台**，目標是**觸及不是營收**，對標 @getintoai（858.6K）／@aipagedaily（3.1M），**整個公司/專案要改名**。
-- **⭐⭐ 轉向當天查到的關鍵事實**：IG @marketdailyhq **發了 310 篇 = 5 個追蹤者**、FB 0，最近 25 篇 reach 平均 **2.8**、讚與留言全 0 ⇒ **非追蹤者觸及等於零**，瓶頸在帳號層不在題材 ⇒ **換題材救不了**，建議開新帳號而非改名沿用。詳見 memory `project_ainews_pivot`。
-- **新內容線 `marketing/ainews/`**（已上線、**尚未發過任何一篇**）：29 個英文 AI 新聞源 → 跨源聚類 → 相關性閘 → 七題材線 → 三版型（新聞解釋文／24h 彙整卡／存檔誘餌清單）→ 確定性閘 → 分版型獨立驗證者 → 草稿標 `pending_owner_review`。`post` 指令刻意未接：**對外發布需老闆先看過**（08-17 親令）。**改名＝只改 `marketing/ainews/brand.json` 一個檔**，有測試擋硬編品牌字串。
-- **四件已定案（2026-09-14 老闆授權「你全部都自己決定」）**：①**新名＝Emergent Daily / @emergentdaily**（48 個候選裡唯一 .com/.ai/IG/Threads 四位置全乾淨；探測器全部先過校準才採信）②**語言＝英文** ③**開新帳號不改名沿用**（310 篇→5 追蹤者是帳號層現象，改名沿用等於把它帶著走）④**不轉發別人的爆紅影片**（觸及最大的槓桿，但那是別人的素材，不替老闆承擔版權風險）。⚠️ 網域與三個社群帳號**尚未建立/購買**（需老闆本人裝置驗證與付款，open item #1038）；在那之前官網品牌字串不要動——叫 Emergent Daily 的站掛在 marketdaily.ai 比兩者任一都糟。
-- **⭐ 語言分平台（2026-09-14 老闆令）**：IG/FB **英文**、Threads **繁體中文（台灣）**。Threads 在台灣的用戶密度遠高於 IG，中文 AI 新聞競爭也稀薄。語言寫在 `brand.json.lang`，不是硬編。⚠️ **中文有兩個英文沒有的陷阱，都已做成確定性閘**（`gates.check_chinese`，只套 Threads 欄位）：①簡體字混入 ②**用繁體字寫中國用語**（視頻/軟件/芯片/算法——字是繁體詞是中國的，簡繁檢查完全看不見）；第三道擋書面語起手式。中國用語表刻意排除在台灣也合法的詞（程序正義/雲端/後台），誤告會教人忽略告警。帳號門面文案在 `brand.json.profile`（IG 英文、Threads 中文兩套）。
-- **Threads 是首發平台（老闆點名）**：`auto_post.post_threads_chain` 原生回覆串（純文字不需圖＝全平台最便宜的觸及）；每則接在**前一則**下面而非全掛根上（全掛根上會攤成平行散則）；`ainews_runner.sh` cron 每天 07:30 draft／12:30 list／22:30 roundup 只產草稿不發文，kill switch＝`~/.marketdaily-fallback/AINEWS_DISABLED`。
+**⚠️ 願景轉向中（2026-09-14 老闆 /goal，尚未完成）**：從「股票新聞日報」轉成**全世界最大的新聞帳號**，目標是**觸及不是營收**。
+- **⭐⭐ 這不是 AI 帳號（09-14 老闆當日糾正，原話「我要你做的不是介紹 AI 是什麼，而是新聞」）**：第一版做成了 AI 教學帳號（「七個 prompt 讓聊天機器人別打太極」），方向整個錯。正解＝**世界新聞**，AI／科技只是八條題材線之一。教學型／工具介紹／清單型一律不是新聞（`rank.is_news()` 擋掉），`listicle` 版型已 DEPRECATED。
+- **⭐⭐ Threads 的觸及是 IG 的一百倍（09-14 實測）**：同帳號同內容同自動化，Threads 每則 165–442 views（昨日總計 2,412），**IG 每則 3**、FB 0 追蹤者、310 篇貼文只換到 5 個追蹤者。⇒ **IG 是死的，Threads 是活的**，資源優先給 Threads。但 Threads 幾乎全部 0 讚 0 留言 ⇒ **有觸及沒互動**才是要解的題。IG 非追蹤者觸及為零的根因未確認（要老闆看 Settings→Account Status）。詳見 memory `project_ainews_pivot`。
+- **內容線 `marketing/newsroom/`**（已上線、**尚未發過任何一篇**）：33 個世界新聞源（BBC／Reuters／AP／Al Jazeera／NYT／NHK／中央社／Politico／FT…，全部存活、575 則新鮮素材）→ 跨源聚類 → `is_news()` 閘 → 八條新聞線 → 兩版型（新聞解釋文／24h 彙整）→ 確定性閘 → 分版型獨立驗證者 → 草稿標 `pending_owner_review`。`post` 指令刻意未接（08-17 親令）。核稿頁 `python -m marketing.newsroom.review`。**改名＝只改 `marketing/newsroom/brand.json` 一個檔**。
+- **⭐ 蹭流量＝速度不是數量**：`rank.velocity()`＝confluence／age_h。六家都報但事情過了 22 小時，那波流量已被吃完，進去只是追尾；五家在 18 分鐘內同時發才是正在成形的浪。⛔ **蹭大帳號討論串實測判死**：Threads `keyword_search` 回 200 但只搜得到自己（118／118 筆都是本帳號），`reply_radar.py` 標 BLOCKED 不接上線。
+- **名稱＝World Wire／@worldwire**（09-14 定案，取代只適用 AI 帳號的 Emergent Daily）：wire＝通訊社供稿線的本名，中英雙語都成立。IG／Threads／.ai 皆可用（探測器 3 點校準過）；.com／.net／.news 已被註冊。⚠️ 網域與帳號**尚未建立／購買**（需老闆本人裝置驗證與付款，open item #1038）；在那之前官網品牌字串不要動。
+- **⭐ 語言分平台（老闆令）**：IG/FB **英文**、Threads **繁體中文（台灣）**，寫在 `brand.json.lang`。⚠️ 中文有兩個英文沒有的陷阱，都已做成確定性閘（`gates.check_chinese`，只套 Threads 欄位）：①簡體字混入 ②**用繁體字寫中國用語**（視頻／軟件／芯片／算法——字是繁體詞是中國的，簡繁檢查完全看不見）；第三道擋書面語起手式。中國用語表刻意排除在台灣也合法的詞（程序正義／雲端／後台），誤告會教人忽略告警。中文那側加「台灣視角」一句（僅在事實支持時）——大英文帳號永遠不會做這件事，那是中文讀者選我們的唯一實質理由。
+- **Threads 原生回覆串**：`auto_post.post_threads_chain`（純文字不需圖＝最便宜的觸及）；每則接在**前一則**下面而非全掛根上（全掛根上會攤成平行散則）。根貼文可掛**一個**主題標籤（原本一律禁止＝自己把流量入口關掉）。`newsroom_runner.sh` cron 07/10/13/16/19 每 3 小時掃 + 22:30 彙整，**只產草稿不發文**，kill switch＝`~/.marketdaily-fallback/NEWSROOM_DISABLED`。
 - **既有股票線一律不動**：日報 email、`news_reactive`、社群排程照跑——早鳥訂戶被承諾永久免費，轉向不等於毀約。
 
 **MarketDaily（既有、轉向前）** — 每日財經 AI Email 日報平台。
