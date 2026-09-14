@@ -10047,8 +10047,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-14 11:16",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 11:39",
+  "note": "三個 job 全完成且主 session 獨立線上驗證:qfxsolution.com 首頁/工作索引/兩案例頁 200 無 noindex、舊 /work/kingconn/ 301、案例頁具名字串 0;crewhq.digital / 302→官網、?internal=1 200+cookie、/r/ 200;audit.qfxsolution.com 帶 x-robots noindex;CHOSEN 審稿站 18 筆 changes 部署"
  },
  {
   "id": 1006,
@@ -10097,6 +10097,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-14 11:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1011,
+  "what": "官網不具名案例仍用客戶自家 GSC 數據——legal 但書:王董(#904)與 Kevin 的書面同意要涵蓋「不具名刊登」;業內可從桃園+連接器+1,500 頁辨識",
+  "why": "09-14 上線時老闆令 go do,但書已寫成 check_legal_site.py 斷言;同意書是老闆動作",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 11:39",
   "closed": null,
   "note": ""
  }
