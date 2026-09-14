@@ -9132,3 +9132,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **Threads 原生回覆串**(`auto_post.post_threads_chain`):純文字不需圖=最便宜觸及;⚠️ 每則接在**前一則**而非全掛根上(全掛根上在 Threads 介面會攤成平行散則,讀者看不出順序);中途失敗即停(半串比不發更糟)。三版型 prompt 全部產 `threads_chain`,閘門擴到串裡——⭐ **數字溯源/統計型宣稱/外部網址三道閘原本只看 caption,等於串是沒人守的**。自測 23→36 條。
 - **`ainews_runner.sh` cron 已上線**(*/10 tick,07:30 draft／12:30 list／22:30 roundup,各自每日鎖+flock+成功戳記,kill switch `AINEWS_DISABLED`):**只產草稿不發文**。⭐ 首班驗收走完整真實路徑(`AINEWS_FORCE_SLOT=list`)：rc=0、戳記寫出、草稿產出並過驗證者、第二次跑被每日鎖擋住。⚠️ draft 與 roundup 兩個 slot 尚未在真實排程時間跑過(open item #1039)。
 - 改名驗證:新批次 3 則裡舊 handle 出現 **0 次**、新 handle 9 次 ⇒「改名只改 brand.json 一個檔」成立。
+- (續 2)官網一天六版:v4 照沃德母版 1:1(38deed1)、v5 Pinterest 方向 C(be70f45)、v6 老闆指定方向 B「台北在動」(43cc750)。老闆評語依序「worst i have ever seen」「still looks ai generated」「一點質感都沒有」。v6 加自審三輪(六條 1–5 對照 #19/#34/#20)才部署;⚠️ v6 照片用本機 Z-Image(Higgsfield token 401),與老闆「用我的額度」指令有落差,已開 open item。review 頁三張 Artifact 已發老闆。

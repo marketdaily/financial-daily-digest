@@ -10357,8 +10357,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-14 15:54",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 16:28",
+  "note": "v6 上線 43cc750(deploy 2530c4ed),自審三輪 r3 全 ≥4;等老闆看 review_v6"
  },
  {
   "id": 1037,
@@ -10387,6 +10387,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-14 15:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1040,
+  "what": "qfx v6 照片是本機 Z-Image-Turbo 生成(Higgsfield MCP token 本 session 401,付費模型比對沒跑)——老闆明令用 Higgsfield 額度;token 修好後要用 gpt_image/seedream 重生 hero 與 Work 縮圖比真實感",
+  "why": "老闆看的是質感,照片真實感自評只有 4/5;401 原因未查",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 16:28",
   "closed": null,
   "note": ""
  }
