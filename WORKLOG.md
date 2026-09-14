@@ -9067,6 +9067,12 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - (續二,「go do what you can」)能自己推的:4 顆有 KiCad 零件的料號頁加零件庫入口(16 頁,verify 閘)+cad.kingconn.com.tw 重新部署(線上是 09-08 舊版,錨點一直沒上)+零件庫擴張判死(通用讀圖器 17/18 拒出檔,不硬出)+SnapEDA 無頭登入查到 4 顆 6 天未上架(平台側)。日文 64 頁未收錄=Google 從未爬,無可改。
 - (續三)LinkedIn 公司頁建成 linkedin.com/company/kingconn-technology(老闆過 Persona 驗證+點三個真人點擊,其餘 UIA 填;認領孤兒頁失敗改 slug)。Details/Locations 全存;官網 sameAs+llms.txt 加 LinkedIn+GBP 已上線。⭐UIA 邊界:file input/React 勾選框/開關要真人;同名分頁用 index;多開 admin 分頁=「Another admin」衝突。
 
+## 2026-09-14 QFX 改純代理(老闆令「不做給別人用的工具;皇海+CHOSEN 先做出績效;fake it until you make it, go do」)
+- 定義界線:呈現像成熟代理公司,但客戶數/數字/見證全真且不具名(公平法 §21/§24)。
+- 派三個 winrig job 平行:①`~/qfx` 官網改代理定位+兩不具名案例 `/work/connector-maker/`、`/work/card-store/`(job 9aebf8d3)②CREW crewhq.digital 與 audit.qfxsolution.com 收內部(首頁 302 回官網+noindex,`/r/` 報告頁保留;job b512e266)③CHOSEN on-page SEO 第一輪進審稿站(job 5ad57834)。
+- 主 session 落地:客戶登記簿 `~/qfx/clients/clients.json`(基準線 09-14+60 天目標)、跨客戶曝光週報 `~/qfx/scripts/client_weekly_report.py`(三態 ❔;首推 status=200;cron `qfx_client_weekly` 週一 10:30)、藍圖 v1.3 §0(改向+預算答案 90 天約 NT$25–35 萬待拍板+找客戶順序)、`~/qfx/strategy/2026-09-14_agency_only_plan.md`、記憶 project_qfx_solution/project_chosen_tcg/MEMORY.md 索引、open #1005–#1010。
+- 皇海 09-14 基準:GSC 28d 非品牌點擊 128(上週 38)/曝光 7,598/頁面 895;AI 引用 gemini 9/18·sonar 15/18·gpt-4.1-mini 11/18(平均 65%)。CHOSEN:曝光 26/點擊 14/排名 2.3/10 頁。
+
 ## 2026-09-14 CHOSEN 曝光第一輪：on-page SEO 層 18 筆進審稿站（job 5ad57834，不動正式站）
 - ⭐ **任務前提三條裡兩條已過時**：首頁 meta description **有**（是我們 09-02 chx-seo 的預設句）、13 個分類頁 title/description **都有**（09-12 試算表①的標題 Kevin 已全部貼上，`seed_changes.py` 比對 0 列未做）。真正的洞是：13 個分類頁 description 全是同一句模板「CHOSEN TCG「X」：N 款集換式卡牌…」，只差分類名與數字 ⇒ 重複摘要；三個 0 件分類（others/series-sp/weiss）還在輸出「0 款」。
 - ⭐ **GSC 查詢字維度 28/90/480 天全部 0 列**：曝光 26 全在 Google 匿名門檻下，`chosen_watch.py` 帳本 `querys: []` 不是 bug。非品牌字清單只能靠 09-13 `--ranks` 那 20 個 TRACK 字（全部不在前 30、11 個有 AI 概覽、0 引用我們）。

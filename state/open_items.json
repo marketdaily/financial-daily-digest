@@ -9907,8 +9907,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-14 01:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 10:58",
+  "note": "財務欄改成 Not disclosed + 可查證規模指標(自有廠/實收資本/統編/員工數/ISO/SONY料號/專利/250料號),已連表寄回 sell-on-lcsc@lcsc.com 並存 Sent"
  },
  {
   "id": 992,
@@ -9987,8 +9987,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-14 02:24",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 09:50",
+  "note": "SnapMagic 02:49 回:走 InstaPublish;已上傳 zip 成功,等 InstaPublish 團隊聯絡 f1@"
  },
  {
   "id": 1000,
@@ -10007,6 +10007,96 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-14 09:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1002,
+  "what": "SnapMagic InstaPublish:09-14 已上傳 4 顆 KiCad 庫(kingconntech),等 InstaPublish 團隊聯絡 f1@ 上架;回信草稿待老闆核可寄出",
+  "why": "平台側處理;回信是對外內容要老闆口頭核可",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 09:50",
+  "closed": "2026-09-14 09:51",
+  "note": "回信已寄(英文,同串,cc cad@);InstaPublish 已上傳;等對方聯絡"
+ },
+ {
+  "id": 1003,
+  "what": "SnapMagic InstaPublish 等回:4 顆 KiCad 庫已上傳、回信已寄(cc cad@snapmagic.com);對方聯絡 f1@ 後照需求給其餘 246 顆圖面清單",
+  "why": "平台側處理時程",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 09:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1004,
+  "what": "LCSC 待回:已寄回供應商評估表(財務欄標不揭露);若對方堅持要財務數字才 onboarding,要回頭問王董走不走 NDA",
+  "why": "已寄出等對方回;channel_reply_watch cron */15 監看 lcsc.com",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 10:58",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1005,
+  "what": "QFX 改純代理(09-14):官網改版/CREW+體檢收內部/CHOSEN SEO 審稿稿 三個 job 產出尚未逐項線上驗證",
+  "why": "三個 run_claude 平行跑,主 session 要收結果並逐 URL 驗",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 11:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1006,
+  "what": "QFX 跨客戶週報 cron qfx_client_weekly(週一 10:30)首班未在生產跑過",
+  "why": "09-14 只手動 --force 推過一次,下週一 09-21 首班要驗戳記 logs/ok/qfx_client_weekly.ok",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 11:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1007,
+  "what": "QFX 預算表(90天約 NT$25–35萬:工具 US$100–150/月、付費測試每客戶 NT$3萬/月、KOL 上限 5萬、公司設立)待老闆拍板",
+  "why": "藍圖 v1.3 §0 第 5 點;老闆問了但沒拍",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 11:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1008,
+  "what": "CHOSEN 曝光第一輪(on-page SEO)進審稿站後要店主 Kevin 逐字核可才能上正式站",
+  "why": "審稿站流程是客戶要求;核可前正式站零改動",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 11:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1009,
+  "what": "CHOSEN 在地曝光(GBP/IG/Threads)需要店主給 Google 商家檔案與 IG 存取",
+  "why": "目前只有 GSC;沒存取就只能量站內",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 11:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1010,
+  "what": "皇海 W2 LinkedIn 15 秒 spot 10 變體 ads-score+campaign spec 未做",
+  "why": "09-14 改向當天優先做客戶基準線與官網,W2 排 09-15~21",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 11:16",
   "closed": null,
   "note": ""
  }
