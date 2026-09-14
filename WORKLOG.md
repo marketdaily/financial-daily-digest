@@ -9122,3 +9122,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 改名候選 RDAP 實查(4 點校準:google.com/亂碼.com/openai.ai/亂碼.ai 全對):48 個候選只有 **emergentdaily** 的 .com 與 .ai **同時 free**;theaiwire/machinehour/silicondaily/circuitdaily/synthwire/latentdaily/axonfeed/tomorrowdaily/wavelengthai/airundown 的 .ai free。⚠️ **IG/Threads handle 可用性判不出來**(IG API 429、Threads 對不存在帳號也回 200,兩種探測器都沒過校準)⇒ 一律標 ❔ 不猜,由老闆在 App 當場試。
 - ⚠️ 自己踩的坑(記著):`pkill -f "marketing.ainews.run"` 會比對到**自己這行 bash 指令**而自殺(rc=-15),清程序要用 `ps -eo pid,args | grep 'x[y]z'` 排除自己。
 - 交付 Artifact(診斷+對標拆解+實際成品+四個待拍板決策+命名表+分期):https://claude.ai/code/artifact/ad36a95d-1f5c-4bdd-805b-cfd18d8815d4
+- C 線雷達補算(晚):13 籃子;LV 老花打平/倒掛、Rolex 日本比台灣貴、vintage Chanel 紙上 25-37% 但對王吉娜售價只剩 0-10%;#1028 收,#1034 探針等老闆拍板。watchlist 加 lux_* 13 籃子(關稅:包 6.6%/錶 4%)
