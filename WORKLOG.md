@@ -9174,3 +9174,35 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 其他:draft_2000 班產 0 則(候選全被閘門擋);roundup 撞當日額度上限(12am 重置)⇒ 彙整版型在新世界新聞設定下**仍未驗證過**(#1044)。推播已接上 runner,且**正確保持安靜**(沒新草稿不吵人)。
 - **⭐⭐ 2026-09-15 老闆授權改自動發**:「你覺得好的都發可以一篇發好幾篇文也不會怎麼樣」⇒ newsroom 線 `post --auto` 產完即發,不再逐則核可。**這是老闆推翻自己 08-17 的「對外發布先給老闆看」,僅限這條線**,日報寄信與行銷素材不受影響。品質交給閘門:每則仍走確定性閘→獨立驗證者→發文前重驗。三道剎車:每日 8 則上限、篇距 90 秒、kill switch `NEWSROOM_AUTOPOST_OFF`(已實測有效)。⭐ 手動與自動共用同一個 `_prepare_for_post()`,不為自動模式另寫寬鬆版。首則自動發:roundup_2026-09-15 → 18432367636198210。
 - ⚠️ 過程自省:改 `cmd_post` 時我用疊補丁的方式改到一半,引用了還沒建立的函式、還插了佔位符,把檔案改成半殘。**正解是 `git checkout` 還原後整段重寫**,而不是繼續疊。補丁疊到第三層就該停下來重寫。
+
+## 2026-09-15 明欣內科兒科診所 ・ 明欣藥局 — 第一個套用 ClaPat 模板底子鐵則的客戶案
+
+**線上**：https://mingxin-preview.pages.dev/ ｜ **報告**：`~/clients/mingxin-clinic/REPORT.md`
+｜ **審閱頁**：`~/clients/mingxin-clinic/_work/review_mingxin.html`
+
+- **模板**：ClaPat Bundle `07. Harington`（index.html 版型）。從 30 套挑 3 套（07 Harington／11 Antro／26 Maestro）
+  各截 1440＋390 並排比。依五判準選 07：字級最大、區塊庫最全（25 頁可借）、照片位最多、Three.js 可整層拆、
+  **游標用框架內建 `disable-cursor` 一行關掉**（Antro 要手拆 `#magic-cursor`，風險高——這是 Antro 落選主因）。
+  型錄點名 Antro 適合診所，實驗後不採用，理由寫在 REPORT §1。
+- **照片**：13 張 → 上站 7 張。**4 張有真實民眾入鏡，全部不可逆模糊並逐張目視複查**；
+  整面藥廠海報的 IMG_4943 不採用，IMG_4942／4944 裁切至海報完全出框。零生成圖。WebP 1440/800/390 共 772KB。
+- **⚠️ 門診時間與 brief 不一致（已依照片更正）**：把門口時間表放大 10 倍逐格判讀紅點，
+  **週日下午那一格是空的** ⇒ 週日只有早診。brief 原寫「週六至週日 早上＋下午」。老闆提示「逐格看清楚」是對的。
+  另週六兩節都有診，但**舊站寫週六休診**，矛盾已列入客戶確認清單。
+- **⓪a 救回的內容**：brief 沒提醫師，但線上舊站有**六位真實醫師與完整學經歷**，依「原站有的新站都要有」全部搬過來。
+- **🔴 授權地雷（新）**：Harington 內附 Basis Grotesque Pro，檔名 `fontsfree-net-*`＝盜版字型站來源。
+  ClaPat 授權 §7 明示第三方字型不在授權內 ⇒ 不隨客戶站上線；把那兩個 family 名稱改指向自託管
+  Noto Sans TC 子集（OFL，430→474 glyph，兩個字重共 152KB），模板 13 處引用自動沿用，不必逐處改。
+- **合規**：醫療法 §85／§86 逐條過。**移除「AI 骨齡檢測（AIBoneAge）特約合作」**——§85③ 只容許
+  健保與非商業性保險特約字樣，商業第三方特約不在列舉範圍。判不過就不繞道。
+  法源 `COMPLIANCE_STRUCTURE.md` 無醫療廣告章，已寫進 `~/autonomous/DECISIONS.md` 上呈補法源。
+- **閘門**：自寫 `_work/verify_site.py`（事實 41 串／違禁字 22 串／WCAG 對比／字級／溢出／console／alt／游標／電話），
+  對線上跑全綠，且做**反向測試**（竄改醫師名、加「保證療效」、淡化對比 → 三項皆正確變紅）。
+- **自審三輪**：R1 照片質感 3 分（誤判＋真缺陷混在一起）→ 修 hero band 手機比例、**漢堡鈕三條線透明（手機等於沒導覽）**、
+  logo 在深色照片帶上深底深字、門診表「—」對比 2.25:1。R2／R3 六項全 ≥4.5。
+- 未寄信給客戶（交付物只落檔由老闆轉交）；未動 ~/qfx、MEMORY.md、舊站 docs/index.html。
+- ⭐ Android 實機驗證打通(Mac arm64 模擬器 + HVF;winrig 的 x86 模擬器因無 KVM 權限只能軟體模擬,慢到 SystemUI ANR,已登記 #1057 給老闆一行 sudo)。過程抓到並修掉三個 Android 原生 bug:①WebView render process 被系統回收時整支 App abort(加 `WebViewListener.onRenderProcessGone` → recreate)②狀態列一條白帶=`Theme.AppCompat.DayNight` 在淺色模式給 #fafafa 視窗背景(固定成深色主題)③沒有 `postSplashScreenTheme`,Activity 一直停在 SplashScreen 主題。另補 VIBRATE 權限(Haptics 在 Android 沒它會靜默失效)、portrait 鎖定、versionName 3.1.0。
+- ⭐⭐ `tools/code_lint.py` 抓到圖示系統的真 bug:**沒有對照的 emoji 會被直接刪掉**(骰子規則/牌組選單/規則大全的圖示變成空的)。改成沒對照就保留原樣 + 補對照 + 撲克花色永不替換。這類「靜默刪除」的退路最危險——畫面少東西沒人會發現。
+- 其他修:有偏洗牌→Fisher-Yates、抽題改 bag 不重複(30 抽零相鄰重複)、prompt/confirm→in-app sheet(並還原房主選單 handler)、`{d}` 確定性代換層(KING/DICE 規則現在也吃得到微醺模式)、對比不足→強調色上的文字統一深色墨(WCAG 全過)、危險/隱私題軟化(閉氣、把手機交給別人代發訊息、翻別人對話紀錄)。
+- ⭐⭐ 最後一個也是最嚴重的 bug:我自己加的兩個 MutationObserver(圖示替換 / 微醺替換)**互相觸發成無限迴圈**,開第二款遊戲就卡死、CPU 燒滿(手機上=當機+耗電)。症狀是 QA 跑到第 4 個斷言就不動、15 分鐘超時——一開始以為是機器忙。正解=收斂成**單一裝飾迴圈**,動手前 `disconnect()`、做完再 `observe()`。修後 26 款全開 9.2 秒。教訓:**同一個容器上不要掛兩個會改內容的 observer**。
+- 收工狀態:QA 83/83 在 chromium 與 Mac 真 WebKit 都全綠;猴子測試(26 單機×30 次 + 9 連線×18 輪)兩引擎 0 錯;content_lint / code_lint 0 命中;Android APK v3.1.0 在 Android 15 模擬器實裝實玩零當機;iOS 模擬器建置啟動正常。preview 已更新。待老闆:ASC API 金鑰 + 建 App 紀錄(#1052)、正式站放行(#1046)、商標檢索(#1048)、Android 真機(#1071)。
