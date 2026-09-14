@@ -10657,8 +10657,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 00:42",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 01:38",
+  "note": "LinkedIn 半:logo+封面已親手換成金色新版(經 portproxy+Playwright connect_over_cdp 連他活著的登入瀏覽器,公開頁實查 licdn 新媒體)。YouTube 半拆出 #1084(那 Chrome 沒登入 Google 帳號,走不到)"
  },
  {
   "id": 1067,
@@ -10837,8 +10837,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 01:29",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 01:42",
+  "note": "改走更有效的路:整治說明已以兩則留言寫進【既有開啟中案件】0775f973(API 驗證留言數=2),重複單 8971e5d4 已留言請對方關閉。我 09-15 送的第三張表單畫面回 Request Submitted 但 15 分鐘無確認信(09-14 兩張是 9 秒內到)⇒ 判定趨勢對同一 IP 做了去重、未開新案。追蹤改由 ers_watch 每日負責"
  },
  {
   "id": 1085,
@@ -10907,6 +10907,106 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 01:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1092,
+  "what": "mingxinclinic.com www→apex 301 尚未生效:兩把 CF token 皆無 Rules 權限(API 10000),apex 與 www 目前都回 200 同內容=Google 得自己猜正版",
+  "why": "需老闆在 CF 後台點 Redirect Rules,或退而合併 _redirects(住在部署輸出裡,重 build 容易掉)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 01:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1093,
+  "what": "皇海 YouTube @kingconntech 頻道橫幅/大頭貼未上傳",
+  "why": "圖已產好(offsite/assets/yt/);可 CDP 連活瀏覽器的那個 Chrome profile 沒登入 KingConn Google 帳號,YouTube Studio 導向登入。需在有登入該 Google 帳號的瀏覽器做",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-15 01:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1094,
+  "what": "安全:皇海主機 Chrome 常態開 remote-debugging-port(9222/9224),本機任何程序可無密碼接管登入 session",
+  "why": "今天用它完成 LinkedIn 換圖是便利,但同樣的洞任何本機惡意程序都能用;建議非自動化時關掉該 flag",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 01:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1095,
+  "what": "🔴明欣官網刊登「內科/耳鼻喉科/皮膚科」科別,但網站列出的兩位醫師(黃鈺玲、陳銘真)皆為小兒科專科——醫療法施行細則§59:醫療廣告之診療科別以核准登記服務醫師之專科別為限,違者§103罰5-25萬",
+  "why": "須向院方索取開業執照與執業登記核對是否另有內科醫師;釐清前不得把內科相關詞做SEO/GEO擴張。此為法規×實抓內容交叉比對推出的疑點,非結論",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 01:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1096,
+  "what": "GEO 最強槓桿(外部品牌提及,Ahrefs ρ=0.664)在台灣醫療業違法——醫療法§86⑤明文禁止藉採訪或報導為宣傳,罰5-25萬;明欣 GEO 策略須改走健保署VPN資料維護",
+  "why": "原規格第6項要刪;純衛教投稿不掛聯絡資訊是否安全屬邊界操作,無函釋背書,要做之前須送 legal-compliance 或執業律師",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 01:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1097,
+  "what": "醫療機構網際網路資訊管理辦法§3備查範圍含FB/IG/LINE OA/GBP等網路工具,不只網域——明欣FB粉專已在營運中(有疫苗公告)且未報備",
+  "why": "#1087 報備信目前只寫網域,須擴充;首次多需公文用印;GBP是否須納入無針對性函釋,保守作法一併列入",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 01:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1098,
+  "what": "皇海寄件 IP 60.250.52.44 仍在 Trend Micro RBL,等對方處理案件 0775f973(狀態 Open,solution 仍為空)",
+  "why": "解除與否由趨勢科技決定,不在我們手上;整治說明已補進案件、重複單已請求關閉。ers_watch 每日 08:15 會在解除當天告訴我們(狀態轉變才推播)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 01:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1099,
+  "what": "乾啦:ASC API 金鑰權限不足(App Manager 全部寫入 403),需老闆改發 Admin 團隊金鑰才能建憑證/推文案/上傳",
+  "why": "Certificates 與 metadata 寫入皆 403,唯一解是換角色的金鑰",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 01:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1100,
+  "what": "乾啦:App Store Connect 商務→合約 需確認「免費 App 合約」已生效(新帳號未簽會擋上架)",
+  "why": "帳號 09-14 才入會,尚未確認合約狀態",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 01:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1101,
+  "what": "乾啦:歐盟《數位服務法》貿易商狀態未填(ASC 橫幅提示),不填會被移出歐盟 App Store",
+  "why": "只有帳號持有人/管理角色能填",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 01:43",
   "closed": null,
   "note": ""
  }

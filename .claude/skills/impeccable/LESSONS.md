@@ -33,3 +33,13 @@
 ### 2026-09-04 自訂 class 與 SVG 標記 class 撞名:DOM 數值全對,只有截圖看得出來
 - 坑:頂列 `.bar{height:52px;position:sticky…}` 與圖表長條 `<rect class="bar">` 同名 → SVG2 的 height 是 presentation property,CSS 直接把每根長條改成 52px;`getAttribute`/`outerHTML` 查出來的 height 全對,Playwright 數值斷言零紅,只有截圖裡長條變形。
 - 修:結構性 class 一律加前綴(`.topbar`),圖表標記 class 用 `.ck-bar` 之類;dataviz 的「第 7 步 render it and look at it」不可省——數值檢查抓不到 cascade 撞名。
+
+### 2026-09-14 flex 置中容器裡的區塊子元素會縮成 0 寬,DOM 斷言全綠只有截圖看得出來
+- 坑:遊戲舞台 `.stage-card{display:flex;flex-direction:column;align-items:center}`,裡面的觸控區 `.finger-zone` 沒寫 `width:100%` ⇒ 寬度塌成一條 1px 虛線;v2.0 上線版就長這樣,QA「開啟遊戲 innerHTML>80」照樣綠。我第一輪截圖也拍到了卻沒看出來(當成裝飾線)。
+- 修:`.finger-zone{width:100%}`;QA 加 `getBoundingClientRect().width>250` 斷言,並用 `dispatchEvent(new PointerEvent('pointerdown',{pointerId:...}))` 模擬 5 根手指真的跑完倒數。
+- 避:批次截圖回合要「每一款遊戲都拍」,看到任何細線/空白區先量 `getBoundingClientRect()`;多點觸控類遊戲的 QA 要模擬到選出結果,不只開得起來。
+
+### 2026-09-15 圖示系統的「沒對照就刪掉」是會靜默壞掉的退路
+- 坑:把 emoji 換成自繪 SVG 的替換層寫成 `return key ? icon(key) : ""` —— 沒建對照的 emoji **直接消失**(骰子規則、牌組選單、規則大全的圖示全變空)。截圖看起來只是「那裡本來就沒圖」,沒人會發現。
+- 修:退路改成 `: e`(原樣留著),另建 lint 掃「畫面文字裡出現但沒有對照的 emoji」,並把撲克花色 ♠♥♦♣ 列為永不替換(那是牌面內容不是裝飾)。
+- 通則:任何「轉換層」的 fallback 都不要選「丟掉」;選「原樣通過」才會在下次截圖時被看見。
