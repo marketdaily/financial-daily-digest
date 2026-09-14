@@ -9066,3 +9066,15 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - (續)皇海全數據分析+料號頁快速詢價小表單上線(1,000 頁四語,e2e 本機+線上全綠,#988 等第一張真單)。結論:on-page 已飽和,瓶頸=權威度與需求;三個假訊號(CF 504=early hints、7sata、18xxxxx 佔一半點擊)。artifact e47bc50d。
 - (續二,「go do what you can」)能自己推的:4 顆有 KiCad 零件的料號頁加零件庫入口(16 頁,verify 閘)+cad.kingconn.com.tw 重新部署(線上是 09-08 舊版,錨點一直沒上)+零件庫擴張判死(通用讀圖器 17/18 拒出檔,不硬出)+SnapEDA 無頭登入查到 4 顆 6 天未上架(平台側)。日文 64 頁未收錄=Google 從未爬,無可改。
 - (續三)LinkedIn 公司頁建成 linkedin.com/company/kingconn-technology(老闆過 Persona 驗證+點三個真人點擊,其餘 UIA 填;認領孤兒頁失敗改 slug)。Details/Locations 全存;官網 sameAs+llms.txt 加 LinkedIn+GBP 已上線。⭐UIA 邊界:file input/React 勾選框/開關要真人;同名分頁用 index;多開 admin 分頁=「Another admin」衝突。
+
+## 2026-09-14 CHOSEN 曝光第一輪：on-page SEO 層 18 筆進審稿站（job 5ad57834，不動正式站）
+- ⭐ **任務前提三條裡兩條已過時**：首頁 meta description **有**（是我們 09-02 chx-seo 的預設句）、13 個分類頁 title/description **都有**（09-12 試算表①的標題 Kevin 已全部貼上，`seed_changes.py` 比對 0 列未做）。真正的洞是：13 個分類頁 description 全是同一句模板「CHOSEN TCG「X」：N 款集換式卡牌…」，只差分類名與數字 ⇒ 重複摘要；三個 0 件分類（others/series-sp/weiss）還在輸出「0 款」。
+- ⭐ **GSC 查詢字維度 28/90/480 天全部 0 列**：曝光 26 全在 Google 匿名門檻下，`chosen_watch.py` 帳本 `querys: []` 不是 bug。非品牌字清單只能靠 09-13 `--ranks` 那 20 個 TRACK 字（全部不在前 30、11 個有 AI 概覽、0 引用我們）。
+- 同業實查（節流 2.6s，5 家首頁+3 家分類頁）：只有台南紙牌屋分類頁摘要寫出當季系列名（M3 虛無歸零、M4 忍者飛旋）；決鬥城市 JSON-LD 最全（Organization+ContactPoint+PostalAddress）但摘要全站同一句；墊腳石/TCGSTORE 沒有可用分類頁。方向定為「每頁摘要只寫該頁真的有的系列名（取自 ItemList JSON-LD 前 24 件）」。
+- 產出 `staging/changes/2026-09-14_seo_round1.json` 18 筆：首頁 description 1、首頁 title 1（選配，Kevin 後台欄位，可單獨退回）、分類 description 13、Store JSON-LD 1（只填站上查得到：IG、LINE OA、兩家營運公司、付款方式、退換貨；地址/電話/營業時間站上沒有不填）、分類導言 html 2（寶可夢/航海王）。用詞守則沿用 09-12：避「卡盒」（SERP=收納盒）、版本寫「美版日版」。
+- 去 AI 腔兩層：`ai_slop_lint` density 0.00、no-ai-slop LLM detect `TOTAL_FINDINGS: 0`。
+- 部署 chosen-staging（deploy 05ae0fdd）：登入後 curl 逐頁比對 **18/18** title/description/data-chg 相符；playwright 無頭確認審稿列「此頁提案 3 處」與抽屜 diff 真的渲染。
+- 給 Kevin 的說明 `staging/REVIEW_2026-09-14_seo_round1.md`（不寄，只落檔）。三件要他決定：首頁標題改不改、分類導言走「同意在 cd-collection 加一行 render」或「後台分類描述欄貼字」、分類摘要由他貼後台或我們寫進 chx-seo 對照表。
+- ⚠️ 上線路徑限制：導言要顯示得動 `cd-collection.liquid`（不在核可的 chx- 容器內，本機也沒有這個檔的現行版，只有 09-02 備份）；Store JSON-LD 與佈景自帶 Organization 會並存（那段不是我們的檔，刪不掉），用 @id 對齊。
+- 未做：0 件分類 noindex（要 Kevin 點頭）、商品頁 ③④ 分頁 160 多列、分頁（page/2+）在審稿站仍是舊摘要（正式站會自動一致）。盲盒那一筆標了「須過法務」。
+- 未收乾：18 筆待 Kevin 裁決；新彈上下架後分類摘要的系列名要跟著改（週巡檢比對 ItemList）。
