@@ -9977,8 +9977,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-14 02:14",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 00:43",
+  "note": "拆成兩件重登:①封面檔已被取代(它指的 kingconn_cover_1128x191.png 是前朝藍色 logo 版,與全站金色品牌不一致)→改由 #1066 追新的 li_cover_1128x191.png/li_logo_400.png ②孤兒頁 /company/kingconn 合併申請→#1068"
  },
  {
   "id": 999,
@@ -10647,6 +10647,46 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-15 00:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1066,
+  "what": "皇海:LinkedIn/YouTube 新圖未上傳(公司頁還掛前朝藍色 logo)",
+  "why": "圖已產好寄出(commit 614b3101),但要 Delvin 或皇海方登入 LinkedIn 公司頁與 YouTube 頻道換上去;我方無這兩個平台的登入權",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 00:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1067,
+  "what": "皇海:LinkedIn 公司頁零貼文(殭屍頁比沒有頁更傷驗證)",
+  "why": "09-15 實查:頁在、簡介在、0 篇貼文。八週內容線已排好但一篇都還沒發",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 00:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1068,
+  "what": "皇海 LinkedIn 孤兒頁 /company/kingconn 未與正式頁 /company/kingconn-technology 合併",
+  "why": "LinkedIn 要走表單申請合併,只認真人操作;兩個頁並存會稀釋 sameAs 佐證與品牌字搜尋",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-15 00:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1069,
+  "what": "ClaPat 模板 06.serano 與 07.harington 內含盜版商用字型 Basis Grotesque Pro(fontsfree-net-*.woff 共 8 檔)——明欣案已改指 OFL Noto,但模板原檔還在 ~/assets/templates/clapat-bundle",
+  "why": "任何人下次直接拿這兩套上線就會散布盜版字型;已寫進 skill LESSONS,但原檔未清也未加警告檔",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 00:50",
   "closed": null,
   "note": ""
  }
