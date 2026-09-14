@@ -12,6 +12,7 @@ import json
 import pathlib
 import re
 import sys
+import time
 import urllib.request
 
 from . import sources, rank, draft as D, gates, formats
@@ -19,6 +20,12 @@ from . import sources, rank, draft as D, gates, formats
 ROOT = pathlib.Path(__file__).resolve().parent
 OUT = ROOT / "drafts"
 LOG_FILE = ROOT.parents[0] / "social_out" / "post_log.jsonl"
+
+# 自動發文的三道剎車。老闆 2026-09-15:「你覺得好的都發,可以一篇發好幾篇文也不會怎麼樣」——
+# 但「不會怎麼樣」不等於無上限:來源哪天爆量時,一次把版洗掉會傷到的是自己的觸及。
+AUTOPOST_DAILY_CAP = 8
+AUTOPOST_GAP_S = 90
+AUTOPOST_OFF = pathlib.Path.home() / ".marketdaily-fallback" / "NEWSROOM_AUTOPOST_OFF"
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
       "(KHTML, like Gecko) Version/17.0 Safari/605.1.15")
 
@@ -290,34 +297,100 @@ def cmd_list(args):  # DEPRECATED 2026-09-14:世界新聞帳號不發教學型�
     return rec
 
 
-def cmd_post(args):
-    """把老闆核可過的草稿發出去。
+def _prepare_for_post(it):
+    """發文前的共用準備:handle 遷移 + 重跑確定性閘。手動與自動走**同一套**判準。
 
-    鐵則(2026-08-17 親令):對外發布一律先給老闆看過。所以這支指令:
-      - 一定要指定 --id,不接受「全部發」
-      - 一定要帶 --confirm,不帶就只列出待審清單
-      - 發之前**重跑一次確定性閘**(草稿檔是純文字,可能被手改過;
-        發文是不可逆動作,重驗一次的成本遠低於發錯一則)
-      - 冪等靠 post_log.jsonl 的 (草稿 id, 平台) 粒度
-
-    預設只發 Threads:實測 Threads 每則 165-442 views、IG 每則 3。
-    IG/FB 需要圖卡,還沒接(而且那邊的觸及證明它不值得優先)。
+    ⚠️ 不要為了自動模式另寫一份寬鬆版 —— 同一個不變量被兩種寫法各實作一次,
+    就是便宜那層安靜死掉的起點。
     """
-    from marketing.auto_post import load_env, post_threads_chain, post_threads_text
+    old_h, cur_h = it.get("brand_handle"), D.BRAND["handle"]
+    if old_h and old_h != cur_h:
+        blob = json.dumps(it["draft"], ensure_ascii=False).replace(f"@{old_h}", f"@{cur_h}")
+        it["draft"] = json.loads(blob)
+        it["brand_handle"] = cur_h
+    ok, why = gates.check(it["draft"], it["facts"], D.BRAND)
+    return ok, why, it
 
+
+def _log_post(post_id, ok, res):
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with LOG_FILE.open("a", encoding="utf-8") as f:
+        f.write(json.dumps({"ts": datetime.datetime.now().isoformat(), "post": post_id,
+                            "results": {"threads": {"ok": ok, "detail": res}}},
+                           ensure_ascii=False) + "\n")
+
+
+def _send(it, env):
+    """送一則。回 (ok, detail)。"""
+    from marketing.auto_post import post_threads_chain
+    chain = it["draft"].get("threads_chain") or []
+    if not chain:
+        return False, "沒有 Threads 串"
+    ok, res = post_threads_chain(env, chain)
+    _log_post(it["id"], ok, res)
+    return ok, res
+
+
+def cmd_post(args):
+    """發布。
+
+    ⭐ 2026-09-15 老闆授權改制:「你覺得好的都發,可以一篇發好幾篇文也不會怎麼樣」
+    ⇒ 本內容線改自動發(--auto),不再逐則等核可。這是老闆本人推翻自己 08-17 的
+    「對外發布一律先給老闆看」,**僅限這條新聞線**;日報寄信與行銷素材仍照舊規。
+    品質判準交給閘門不是交給感覺:每一則仍要走完確定性閘 → 獨立驗證者
+    (產稿時)→ 發文前重驗,任何一關不過就不發。
+
+    只發 Threads:實測每則 165-570 views,IG 每則 3。
+    """
     today = args.date or datetime.date.today().isoformat()
     path = OUT / f"{today}.json"
     if not path.exists():
-        print(f"{path} 不存在,今天沒有草稿。")
-        return 1
+        print(f"{today} 沒有草稿。")
+        return 0
     items = json.loads(path.read_text())
 
+    if args.auto:
+        if AUTOPOST_OFF.exists():
+            print("⏸ 自動發文已被 kill switch 停用:", AUTOPOST_OFF)
+            return 0
+        from marketing.auto_post import load_env
+        done = sum(1 for it in items if it.get("status") == "posted")
+        pending = [it for it in items if it.get("status") != "posted"]
+        room = max(0, AUTOPOST_DAILY_CAP - done)
+        if not pending:
+            print("沒有待發草稿。")
+            return 0
+        if room <= 0:
+            print(f"今日已發 {done} 則,達上限 {AUTOPOST_DAILY_CAP}。")
+            return 0
+        env = load_env()
+        sent = 0
+        for it in pending[:room]:
+            ok, why, it = _prepare_for_post(it)
+            if not ok:
+                print(f"✗ {it['id']} 重驗不過,跳過:" + " / ".join(why))
+                continue
+            if sent:
+                time.sleep(AUTOPOST_GAP_S)
+            ok, res = _send(it, env)
+            if ok:
+                it.update({"status": "posted",
+                           "posted_at": datetime.datetime.now().isoformat(),
+                           "threads_ids": res.get("posted")})
+                sent += 1
+                print(f"✅ {it['id']} → {res.get('root')}")
+            else:
+                print(f"✗ {it['id']} 發文失敗:{res}")
+            path.write_text(json.dumps(items, ensure_ascii=False, indent=1))
+        print(f"\n自動發出 {sent} 則(今日累計 {done + sent}/{AUTOPOST_DAILY_CAP})")
+        return 0
+
     if not args.id:
-        print(f"{today} 待審草稿 {len(items)} 則(發文請帶 --id 與 --confirm):\n")
+        print(f"{today} 草稿 {len(items)} 則:\n")
         for it in items:
-            mark = "✅已發" if it.get("status") == "posted" else "⏳待審"
-            print(f"  {mark}  {it['id']}  [{it['lane']}]  {it['draft']['headline']}")
-        print("\n核稿頁:python -m marketing.newsroom.review > review.html")
+            print(f"  {'✅已發' if it.get('status') == 'posted' else '⏳待發'}  "
+                  f"{it['id']}  [{it['lane']}]  {it['draft']['headline']}")
+        print("\n自動發:--auto  ·  單則:--id <id> --confirm")
         return 0
 
     hit = [it for it in items if it["id"] == args.id]
@@ -326,53 +399,28 @@ def cmd_post(args):
         return 1
     it = hit[0]
     if it.get("status") == "posted":
-        print(f"{args.id} 已經發過了(冪等),不重發。")
+        print(f"{args.id} 已發過(冪等),不重發。")
         return 0
-
-    # 品牌 handle 可能在草稿產出後改過(2026-09-14 就發生過一次)。
-    # handle 是**程式供給的常數**不是模型寫的內容,所以換掉它不動文意,
-    # 但一定要有依據(草稿記錄的 brand_handle),不能用猜的去比對 @xxx。
-    old_h = it.get("brand_handle")
-    cur_h = D.BRAND["handle"]
-    if old_h and old_h != cur_h:
-        print(f"  ℹ 草稿是在 @{old_h} 產的,品牌已改為 @{cur_h},替換後重驗")
-        blob = json.dumps(it["draft"], ensure_ascii=False).replace(f"@{old_h}", f"@{cur_h}")
-        it["draft"] = json.loads(blob)
-        it["brand_handle"] = cur_h
-
-    # 發文前重驗:草稿檔是純文字,可能被手改過;發文不可逆,重驗一次遠比發錯便宜
-    ok, why = gates.check(it["draft"], it["facts"], D.BRAND)
+    ok, why, it = _prepare_for_post(it)
     if not ok:
         print("✗ 發文前重驗不過,不發:" + " / ".join(why))
         return 2
-
     chain = it["draft"].get("threads_chain") or []
-    if not chain:
-        print("✗ 這則草稿沒有 Threads 串,不發。")
-        return 2
-
     print(f"即將發到 Threads({len(chain)} 則串):")
     for i, seg in enumerate(chain, 1):
         print(f"  [{i}] {seg[:60]}...")
     if not args.confirm:
-        print("\n⚠️ 沒有帶 --confirm,不發。確認後加上 --confirm 再跑一次。")
+        print("\n⚠️ 沒有帶 --confirm,不發。")
         return 0
-
-    env = load_env()
-    ok, res = post_threads_chain(env, chain)
-    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with LOG_FILE.open("a", encoding="utf-8") as f:
-        f.write(json.dumps({"ts": datetime.datetime.now().isoformat(),
-                            "post": it["id"], "results": {"threads": {"ok": ok, "detail": res}}},
-                           ensure_ascii=False) + "\n")
+    from marketing.auto_post import load_env
+    ok, res = _send(it, load_env())
     if not ok:
         print(f"✗ 發文失敗:{res}")
         return 2
-    it["status"] = "posted"
-    it["posted_at"] = datetime.datetime.now().isoformat()
-    it["threads_ids"] = res.get("posted")
+    it.update({"status": "posted", "posted_at": datetime.datetime.now().isoformat(),
+               "threads_ids": res.get("posted")})
     path.write_text(json.dumps(items, ensure_ascii=False, indent=1))
-    print(f"✅ 已發:{res.get('root')}(共 {len(res.get('posted', []))} 則)")
+    print(f"✅ 已發:{res.get('root')}")
     return 0
 
 
@@ -385,7 +433,8 @@ def main():
     p = sub.add_parser("post")
     p.add_argument("--id", help="要發的草稿 id;不給就只列出待審清單")
     p.add_argument("--date", help="草稿日期 YYYY-MM-DD,預設今天")
-    p.add_argument("--confirm", action="store_true", help="真的發出去(不帶只做預演)")
+    p.add_argument("--confirm", action="store_true", help="單則模式:真的發出去(不帶只做預演)")
+    p.add_argument("--auto", action="store_true", help="自動發出所有通過重驗的待發草稿")
     a = ap.parse_args()
     rc = {"scan": cmd_scan, "draft": cmd_draft, "roundup": cmd_roundup,
           "post": cmd_post}[a.cmd](a)
