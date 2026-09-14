@@ -9084,3 +9084,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - ⚠️ 上線路徑限制：導言要顯示得動 `cd-collection.liquid`（不在核可的 chx- 容器內，本機也沒有這個檔的現行版，只有 09-02 備份）；Store JSON-LD 與佈景自帶 Organization 會並存（那段不是我們的檔，刪不掉），用 @id 對齊。
 - 未做：0 件分類 noindex（要 Kevin 點頭）、商品頁 ③④ 分頁 160 多列、分頁（page/2+）在審稿站仍是舊摘要（正式站會自動一致）。盲盒那一筆標了「須過法務」。
 - 未收乾：18 筆待 Kevin 裁決；新彈上下架後分類摘要的系列名要跟著改（週巡檢比對 ItemList）。
+
+## 2026-09-14 IdleTokens 開工(Mac 視窗,winrig 執行)
+- 老闆原話「redirect claude code user's unused token to other people who need it, they pay each other through me」。字面版=代理訂閱憑證=違反 Anthropic 條款,拒做;改成接單市集(供給方在自己的 Claude Code 跑、交付成果;錢經平台 escrow),老闆選 1 go。
+- 新 repo `~/idletokens`(github.com/marketdaily/idletokens private),一支 Worker+KV+靜態頁,無 build。線上 https://idletokens.marketdaily.ai。
+- 流程:magic link 登入→發任務→付款(Stripe Checkout;無 key 時管理員手動入帳)→接單(≤3 件,48h 未交自動釋放)→交付→核准/改稿×2/爭議→餘額→提領($20 起,人工出金)。cron 每小時掃過期接單與 72h 自動核准。
+- e2e `scripts/e2e.sh` 35 項全過(含權限邊界:外人看不到交付、requester 不能接自己單、provider 不能核准)。⭐ KV list 最終一致(~60s)會讓剛發的任務短暫不見⇒加 `recent:<prefix>` 索引合併。⭐ KV TTL 下限 60s(45 直接 400)。⭐ 同頁兩個 `id=board` 讓 `$()` 抓到標題,板面炸掉。
+- 老闆中途「dont make it look like fucking scam」:改掉「賣掉會浪費的額度」標題、假統計欄、USDT 出金、「寫信給我們轉帳」;頁尾+條款+FAQ 明寫營運者 MarketDaily 台北+同域信箱;Stripe 文案依實際狀態切換。
+- 未收尾見 open_items(Stripe key/webhook/legal-compliance/網域/真人首單)。
