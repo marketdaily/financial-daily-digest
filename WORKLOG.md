@@ -9093,3 +9093,10 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 老闆中途「dont make it look like fucking scam」:改掉「賣掉會浪費的額度」標題、假統計欄、USDT 出金、「寫信給我們轉帳」;頁尾+條款+FAQ 明寫營運者 MarketDaily 台北+同域信箱;Stripe 文案依實際狀態切換。
 - 未收尾見 open_items(Stripe key/webhook/legal-compliance/網域/真人首單)。
 - **同日砍案**:老闆看完成品說「delete this idea, its terrible」。已拆:Worker idletokens(含 custom domain)、KV namespace、~/idletokens、open items #1013–1018 關閉。GitHub repo marketdaily/idletokens 需 delete_repo scope(見收工摘要)。
+
+## 2026-09-14 皇海「這幾天怎麼沒詢價」第二次體檢(Mac 視窗經 winrig)
+- 老闆中午再問(凌晨另一視窗已答一次並建 v1 哨兵)。本輪逐層實證:①探針/表單/KV 全綠 ②真瀏覽器(Playwright)在 /en/contact、/contact、料號頁 quick-rfq 三條路徑用蜜罐欄位實射,皆穿過 CF 回 200 `ok`,console 零錯 ③CF 從 09-04 起有 managed_challenge(每日 159→1,245),但 GraphQL 逐日查 /api/inquiry、/api/click 的 securityAction 全 unknown=沒攔到 ④聯絡頁「每天 1,500 visits」全是 serpstat/DataForSeo/Semrush/Amazonbot,真人一天十幾個。
+- **結論:需求面**。最近真單 09-09,6 張/14 天=一週一兩張,4 天零單是 Poisson 常態。GSC 週對週 64→151 點擊、曝光 2,259→5,987、料號頁 10→58 ⇒ SEO 在漲不是掉。意圖點擊 7d 24 vs 前 7d 41 有降,量太小不下結論。
+- **做了**:哨兵 v2 `~/kingconn/tools/inquiry_pulse.py`(commit 8228a1b7):加漏斗意圖點擊 7d/前7d、GSC 點擊 7d/前7d、判讀口訣(管線紅/流量同時腰斬/常態波動);cron 09:35 改指 repo 檔,`~/.marketdaily-fallback` 舊副本刪除。手動跑 rc=0。
+- **冷信 v2 狀態(另一視窗的線,未動)**:batch 10 的 46 封首封 09:51 才入 queue,錯過 09:30 班,13:30 班起跑,DAILY_CAP=10 ⇒ 5 天寄完。
+- ⚠️ 我在 /api/click 手打了 1 次 rfq_cta 探針(clk:20260914 多 1);09-09 那張單的通知信是否寄達皇海信箱未逐封對帳。
