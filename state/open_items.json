@@ -10119,5 +10119,125 @@
   "opened": "2026-09-14 11:42",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1013,
+  "what": "IdleTokens: STRIPE_SECRET_KEY 尚未設進 worker secret,卡付 checkout 未啟用(現為管理員手動確認入帳)",
+  "why": "Stripe 金鑰只存在既有 Worker secret,磁碟上沒有,需 Delvin 貼一次",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-14 12:05",
+  "closed": "2026-09-14 12:12",
+  "note": "老闆 09-14 拍板砍掉 IdleTokens 整個構想,Worker/KV/repo 全拆"
+ },
+ {
+  "id": 1014,
+  "what": "IdleTokens: Stripe Dashboard 未註冊 webhook https://idletokens.marketdaily.ai/api/stripe/webhook",
+  "why": "有輪詢 Checkout session 的備援,但 webhook 才是即時;需 Dashboard 操作",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 12:05",
+  "closed": "2026-09-14 12:12",
+  "note": "老闆 09-14 拍板砍掉 IdleTokens 整個構想,Worker/KV/repo 全拆"
+ },
+ {
+  "id": 1015,
+  "what": "IdleTokens: 上線行銷前未跑 legal-compliance 正式審查(條款/金流/Anthropic ToS)",
+  "why": "今天先把產品做通,合規 skill 要獨立一輪",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 12:05",
+  "closed": "2026-09-14 12:12",
+  "note": "老闆 09-14 拍板砍掉 IdleTokens 整個構想,Worker/KV/repo 全拆"
+ },
+ {
+  "id": 1016,
+  "what": "IdleTokens: 網域掛在 idletokens.marketdaily.ai,品牌混用;是否買獨立網域待拍板",
+  "why": "反轉只要改 wrangler routes 一行",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 12:05",
+  "closed": "2026-09-14 12:12",
+  "note": "老闆 09-14 拍板砍掉 IdleTokens 整個構想,Worker/KV/repo 全拆"
+ },
+ {
+  "id": 1017,
+  "what": "IdleTokens: 出金為人工(admin 頁 mark paid),尚無 Stripe Connect 自動分帳",
+  "why": "MVP 先人工;量起來再接 Connect",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 12:05",
+  "closed": "2026-09-14 12:12",
+  "note": "老闆 09-14 拍板砍掉 IdleTokens 整個構想,Worker/KV/repo 全拆"
+ },
+ {
+  "id": 1018,
+  "what": "IdleTokens: 尚無真實用戶跑過完整流程(只有 e2e 35 項 + 我自己看截圖)",
+  "why": "要真人第一單才算生產驗證",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 12:05",
+  "closed": "2026-09-14 12:12",
+  "note": "老闆 09-14 拍板砍掉 IdleTokens 整個構想,Worker/KV/repo 全拆"
+ },
+ {
+  "id": 1019,
+  "what": "GitHub private repo marketdaily/idletokens 還在(已砍案),gh token 缺 delete_repo scope 刪不掉",
+  "why": "需本人執行 gh auth refresh -h github.com -s delete_repo 後 gh repo delete marketdaily/idletokens --yes,或在網頁 Settings 刪",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 12:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1020,
+  "what": "皇海詢價脈搏哨兵 v2 首班(09-15 09:35 cron)未在生產跑過",
+  "why": "09-14 只手動跑過 rc=0,cron 路徑剛改指 repo 檔",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 12:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1021,
+  "what": "皇海 09-09 Polar Electro 詢價單的通知信是否寄達 service@ 未逐封對帳",
+  "why": "本輪只驗 KV 落地與探針,沒翻皇海信箱",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 12:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1022,
+  "what": "冷信首封上限 30 的首班(09-14 13:30 TW cron)尚未在生產跑過",
+  "why": "只 dry-run 看到「將寄 30 封」,真寄要 13:30 班驗 sent 表",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 12:47",
+  "closed": "2026-09-14 13:01",
+  "note": "09-14 13:00 手動 --live 首班寄出 30 封(11 家),sent 表對帳 30/30"
+ },
+ {
+  "id": 1023,
+  "what": "皇海郵件主機 IP 60.250.52.44 在 Trend Micro ERS-KSSL 黑名單:用 Trend Micro 閘道的公司(台達集團 deltaww/晶睿)整站拒收皇海所有信,不只冷信",
+  "why": "解除要向 Trend Micro 提 delisting(對外送件,等老闆/王董點頭)或冷信改走別的寄件 relay;DNSBL 七家皆乾淨,只有 ERS 列",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-14 13:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1024,
+  "what": "qfxsolution.com 第四版整站重做(照沃德母版 1:1、Higgsfield 上限 300cr)進行中 job b29d8910;三版被老闆判死",
+  "why": "老闆 09-14 下午命令 redesign the whole thing + copy their code base;交付前要給並排截圖 review_v4.html",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-14 13:25",
+  "closed": null,
+  "note": ""
  }
 ]
