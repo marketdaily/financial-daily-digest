@@ -10617,8 +10617,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 00:23",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 01:17",
+  "note": "sameAs/llms.txt 已接(用 FB canonical,四語 8 頁線上對帳每頁 6 條皆含 FB,IndexNow 10 條 200)。剩下的『加皇海方管理員』拆成 #1078,那件我方無 FB 憑證做不到"
  },
  {
   "id": 1063,
@@ -10627,8 +10627,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-15 00:34",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 01:17",
+  "note": "已部署並在正式網域驗:唯讀探針實射 l./m.facebook.com→「Facebook 粉絲專頁」、linkedin→「LinkedIn 公司頁」、notfacebook.com 未誤判、google.com 不受影響"
  },
  {
   "id": 1064,
@@ -10697,8 +10697,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 00:53",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 01:10",
+  "note": "已解除阻塞:改用 FB 自報的 canonical /p/Kingconn-Technology-Co-Ltd-皇海科技-61594580241075/ 接進 sameAs+llms.txt(commit f7eb71a9),那串含公司全名對實體比對不吃虧。設 @kingconntech 降為美化項→#1071。查證過的死路:①Graph API granular 授權鎖在兩個舊 page id 且缺 pages_manage_metadata ②全機無任何 FB 登入憑證 ③Mac Playwright 壞(macOS 沙箱擋 Chrome for Testing dlopen)④winrig 無 FB session"
  },
  {
   "id": 1071,
@@ -10737,8 +10737,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-15 01:08",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 01:29",
+  "note": "監測半已收:ers_watch.py 上線(每日 08:15 cron,查 ERS + 5 張 DNSBL,首跑真推播 200,狀態轉變才響)。解除申請半未收 → 另立新項追蹤"
  },
  {
   "id": 1075,
@@ -10757,6 +10757,156 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 01:09",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1077,
+  "what": "皇海 FB 粉專設 @kingconntech(美化,非阻塞)",
+  "why": "canonical 網址已接進 sameAs,不影響 SEO/GEO;設使用者名稱需 FB 後台真人操作,我方無憑證。實測三個候選帳號名皆未被佔用",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-15 01:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1078,
+  "what": "SnapMagic 全型錄回信(附 239 料號表)與 Digi-Key COI 回信,草稿已寫但未寄",
+  "why": "對外內容鐵則:等老闆核可才寄",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 01:11",
+  "closed": "2026-09-15 01:17",
+  "note": "兩封皆已寄出並回驗:SnapMagic(含 239 料號 xlsx)01:15、Digi-Key 01:16,均在 f1@ 寄件備份且 In-Reply-To 正確接串"
+ },
+ {
+  "id": 1079,
+  "what": "Digi-Key COI:公共責任險 US$2M、製造商基礎、皇海台灣法人名義——要王董找保險業務辦",
+  "why": "我做不了;沒 COI 則 Digi-Key Marketplace 不能上線開賣",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 01:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1080,
+  "what": "site/files/ 有 11 份規格書檔名帶空白,未編碼即死連結;今天只在申請表內用 %20 繞過",
+  "why": "改檔名要連同舊連結導向一起做,不可順手夾帶",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 01:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1081,
+  "what": "kc-chrome/kc-chrome-svc 與 PowerShell CDP relay 重開機不會自動回來",
+  "why": "本次手動啟動;要不要做成開機自動起等老闆決定",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 01:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1082,
+  "what": "service@kingconn.com.tw 密碼(tbes4957)同樣是弱密碼且經聊天明文交付,與 #714 的 f1@ 同一類風險",
+  "why": "建議皇海端一併改密後告知;在那之前憑證存在 .env 與本對話紀錄",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 01:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1083,
+  "what": "皇海 FB 粉專尚未加皇海方管理員(資產仍掛 Delvin 個人帳號)",
+  "why": "FB 不接受 f1@kingconn.com.tw 開帳號,管理員一定掛真人;我方無任何 FB 登入憑證(Graph API granular 授權鎖在兩個舊 page id、缺 pages_manage_metadata;Mac Playwright 壞;winrig 無 FB session)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 01:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1084,
+  "what": "皇海寄件 IP 60.250.52.44 仍在 Trend Micro RBL:09-14 前一個 session 已送過兩張單(相隔 1 分鐘重複送),20 小時後仍未解除;09-15 我送了第三張(附實際整治內容)",
+  "why": "解除與否由趨勢科技決定,不在我們手上;三張單是否互相打架未知,案號 0775f973 / 8971e5d4 / 第三張確認信待收。ers_watch 每日會告訴我們解了沒",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 01:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1085,
+  "what": "🔴明欣診所健保署登錄「診療科別=不分科」——桃園區588家診所中兒科僅16家、內科25家、內科+兒科6家;掛不分科等於在健保快易通App(1010萬下載)與所有鏡像站的科別篩選中完全隱形",
+  "why": "投報率最高的單一動作且免費;需院方持醫事機構卡登入 medvpn.nhi.gov.tw → 特約醫事機構資料維護 → 改為「內科,兒科」",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 01:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1086,
+  "what": "🔴明欣藥局(健保代碼5932010337)合約終止日2026-10-29,剩約6週——未續約則所有政府與民間目錄會整筆刪除藥局",
+  "why": "最時間敏感項;需院方在健保VPN以藥局帳號查特約資料",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 01:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1087,
+  "what": "🔴明欣官網未依醫療機構網際網路資訊管理辦法§3向桃園市衛生局報備查(法定義務,可電子郵件為之)——目前處於違法狀態",
+  "why": "新網域上線即需報備,異動時亦同;我方代擬信,院方寄出",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 01:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1088,
+  "what": "🔴明欣官網首頁缺「禁止任何網際網路服務業者轉錄」聲明(管理辦法§4法定義務)",
+  "why": "我方可直接加,已擬好文字",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 01:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1089,
+  "what": "明欣NAP不一致:健保署=中正路1098號1樓之1、官網=1098號之一、PinMed=南平路206號之2(舊址);autocomplete實測「明欣診所 南平路」仍是活躍查詢",
+  "why": "病人照舊址跑=直接流失+一星負評;PinMed要走 alleypin.com/tw/get-in-touch 表單更正",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 01:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1090,
+  "what": "明欣GBP(Google商家檔案)現況無法從美國IP實查——是否已認領/地址/類別/評論數全未知,為第2節所有建議的前提",
+  "why": "需院方或台灣瀏覽器確認;藥局應另建獨立GBP(獨立電話3165639、門牌1樓之2,證據=健保特約獨立機構代碼)",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 01:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1091,
+  "what": "明欣是否為公費流感疫苗合約院所、是否登錄成人/兒童預防保健——PinMed顯示有但未經官方實查",
+  "why": "10-12月流感季是診所最大自然流量窗口,對應實測查詢「桃園 疫苗預約」",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 01:30",
   "closed": null,
   "note": ""
  }
