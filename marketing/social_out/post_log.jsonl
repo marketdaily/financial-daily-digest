@@ -398,3 +398,4 @@
 {"ts": "2026-09-14T12:53:06.292115", "post": "newsr_20260914_2330", "results": {"threads": {"ok": true, "detail": "17900561025581111"}}}
 {"ts": "2026-09-14T13:42:19.410687", "post": "newsr_20260914_macro_c37e1a", "results": {"threads": {"ok": false, "detail": "{'error': {'message': 'An unexpected error has occurred. Please retry your request later.', 'type': 'OAuthException', 'is_transient': True, 'code': 2, 'fbtrace_id': 'AGN3dICxks1IL8B98p_GCGP'}}"}}}
 {"ts": "2026-09-14T14:00:47.283287", "post": "win_2026-08-17_AAOI_wait", "results": {"instagram": {"ok": true, "skipped": false, "detail": "18105313523192330"}, "facebook": {"ok": true, "skipped": false, "detail": "1133333363197689_122133650523345835"}, "threads": {"ok": true, "skipped": false, "detail": "18109958273164042"}}}
+{"ts": "2026-09-14T14:22:56.487059", "post": "newsr_20260914_macro_56ef18", "results": {"threads": {"ok": true, "detail": "18119215849946253"}}}
