@@ -9111,3 +9111,14 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **⭐ 首批第一個回覆(13:21,寄出 25 分鐘後)**:艾訊機構工程師 Edward Chang 回信 To 我們+同事游宗哲「Hi Edward.Yu FYI.」=內部轉給對口。引擎已自動轉詢價單 #202609140001、通知 service@、序列對他停止。回覆稿待老闆 OK(#開單)。
 - **老闆定案:冷信回覆一律由皇海自己的人回,我們不回**(#1026 收)。艾訊回信已落 service@(詢價單 #202609140001 通知信,replyTo=客戶),皇海業務照舊流程回。
 - 收工(第一日):Artifact https://claude.ai/code/artifact/c61b1afc-0921-4a1e-ae75-8d527c4de084;41 團 1,762 則;A 線判死(市場全新掛價=專櫃 3.5-6.5 折、賣方 30 倍於買方)、B 日/美連線小物有需求、C 待雷達 #1028、D Rolex 沒貨源、E Hermès 老闆拍板。未收:第二批 84 團+20 私密團審核 #1027、FB checkpoint #1029。研究檔 research/2026-09-14_luxury_daigou_fb_survey.md
+
+## 2026-09-14 MarketDaily → AI 新聞平台轉向(Mac 視窗,老闆 /goal)
+- 老闆令:願景從「只做股票新聞日報」改成「最大的 AI 新聞資訊平台」,含 Threads/IG/FB 全線改內容 + 整個公司/專案改名;目標是**觸及不是賺錢**;對標 @getintoai、@aipagedaily。
+- **⭐⭐ 開工先查自家數據,挖到比策略更重要的事實**:IG @marketdailyhq **發了 310 篇貼文 = 5 個追蹤者**,FB 粉專 0 追蹤者;最近 25 篇 reach 平均 **2.8**(FEED n=21 avg2.8 max3 / REELS n=4 avg4.8 max7),讚與留言**全部是 0**。5 個追蹤者卻只觸及 3 人 ⇒ **非追蹤者觸及等於零**,不是互動差是沒有分發。⇒ **換題材救不了**,瓶頸在帳號層不在內容層。改名(老闆本來就要)剛好是最有用的一步:建議開新帳號而不是改名沿用。⚠️ 待老闆在 App 看 Settings→Account Status 確認是否被限制(API 讀不到)。
+- **對標實抓**(imginn;firecrawl 直打 IG 被擋、Mac playwright 沙盒壞):@aipagedaily 3.1M/301 篇、@getintoai 858.6K/2,547 篇 ⇒ **貼文數不是成長因子**(前者少 8 倍粉多 3.6 倍)。四種版型:白話解釋文/存檔誘餌清單(7 prompts、99 codes)/轉發別人爆紅影片(附註明)/24 小時彙整。共同殼:結尾問句+Follow CTA+固定 5 個 hashtag ⇒ 可程式化。
+- **新引擎 `marketing/ainews/`(已上線可跑,尚未發文)**:29 個英文源(逐源 health,分得出「沒新聞」與「渠道死了」)→ 跨源聚類(熱度訊號)→ AI 相關性閘(95→72)→ 七條題材線輪替 + 故事級去重 → LLM 寫稿 → 確定性閘(8 類駁回)→ 全新 context 獨立驗證者(fail-closed)→ 寫檔 `drafts/<date>.json` 標 pending_owner_review。`post` 指令刻意未接(對外發布需老闆先看,08-17 親令)。首跑 3 選 1 過關(2 則被閘門/驗證者擋下)。
+- ⭐ 三個「不准信任來源標籤」的坑:①MIT News 的 AI 主題 feed 夾帶「塑膠廢料變建材」零 AI 內容 ⇒ 相關性閘對**所有**源都跑,ai_only 只降門檻 ②Jaccard 對同一則的不同寫法太嚴(CNBC「OpenAI rules out IPO」vs Engadget「Sam Altman says OpenAI won't file for IPO」只有 0.27)⇒ 改用 inter/min 判準,否則熱度訊號整個消失 ③reddit 對通用瀏覽器 UA 回 429 且三條同時打只活一條 ⇒ 專屬 UA + 序列化。
+- 自測 15 條全過(對著「災難」寫不是對著「變化」寫)。⭐ 其中一條抓到 `sources.py` 的 reddit UA **硬編品牌名**,改名會漏掉 ⇒ 已改讀 brand.json。**改名 = 只改 `marketing/ainews/brand.json` 一個檔**,並有測試擋住再犯。
+- 改名候選 RDAP 實查(4 點校準:google.com/亂碼.com/openai.ai/亂碼.ai 全對):48 個候選只有 **emergentdaily** 的 .com 與 .ai **同時 free**;theaiwire/machinehour/silicondaily/circuitdaily/synthwire/latentdaily/axonfeed/tomorrowdaily/wavelengthai/airundown 的 .ai free。⚠️ **IG/Threads handle 可用性判不出來**(IG API 429、Threads 對不存在帳號也回 200,兩種探測器都沒過校準)⇒ 一律標 ❔ 不猜,由老闆在 App 當場試。
+- ⚠️ 自己踩的坑(記著):`pkill -f "marketing.ainews.run"` 會比對到**自己這行 bash 指令**而自殺(rc=-15),清程序要用 `ps -eo pid,args | grep 'x[y]z'` 排除自己。
+- 交付 Artifact(診斷+對標拆解+實際成品+四個待拍板決策+命名表+分期):https://claude.ai/code/artifact/ad36a95d-1f5c-4bdd-805b-cfd18d8815d4

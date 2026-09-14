@@ -1,0 +1,11 @@
+{
+  "_comment": "改名只改這一個檔。程式任何地方不准硬編品牌字串。",
+  "name": "MarketDaily",
+  "handle": "marketdailyhq",
+  "tagline_en": "The AI news everyone else finds out about tomorrow",
+  "site": "https://marketdaily.ai",
+  "utm": "?utm_source=ig&utm_medium=social&utm_campaign=ainews",
+  "hashtags": ["#ai", "#artificialintelligence", "#aitools", "#technology", "#chatgpt"],
+  "cta_follow_en": "Follow @{handle} for more.",
+  "locked": false
+}
