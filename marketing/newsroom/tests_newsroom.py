@@ -167,10 +167,13 @@ _f = D.build_facts({"title": "t", "summary": "s", "url": "https://x.example/a",
 check("facts 欄位名要自己講清楚它是報導年齡",
       "report_age_hours_NOT_event_age" in _f and "hours_old" not in _f, sorted(_f))
 _p = D.build_prompt(_f)
-# ⚠️ 比對字串不要跨行:prompt 裡那句被換行+縮排切開了,
-# 第一版測試拿跨行的字串去比對 ⇒ 程式明明是對的卻報紅。
+# ⚠️ 測試去 grep 散文時,比對前先把空白正規化。
+# prompt 裡那句被換行+縮排切開("...NOT how long\n    ago the event..."),
+# 我連兩次拿跨行字串去比對 ⇒ 程式明明是對的卻報紅兩次。
+# 猜第三個字串不是解法,正規化才是。
+_pn = " ".join(_p.split())
 check("prompt 明寫不准把報導年齡寫成事件發生時間",
-      "long ago the event happened" in _p and "report_age_hours_NOT_event_age" in _p)
+      "NOT how long ago the event happened" in _pn and "report_age_hours_NOT_event_age" in _pn)
 
 print("== 是不是新聞閘(這是世界新聞帳號,不是 AI 帳號) ==")
 check("通訊社的國際新聞放行",
