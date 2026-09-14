@@ -112,5 +112,52 @@ src = "".join((ROOT := pathlib.Path(__file__).resolve().parent).joinpath(f).read
 check("rank/gates/run/sources 不含硬編品牌名", "marketdaily" not in src.lower(),
       "有檔案硬編了品牌名,改名會漏掉")
 
+print("== 回歸:decorate 不准覆寫 source_url(覆寫會讓第一道閘永遠空轉) ==")
+_d = D.decorate({"headline": "h", "caption": "c", "threads_caption": "t",
+                 "source_url": "https://model-made-this-up.example"}, FACTS)
+check("模型給的錯網址不會被 decorate 安靜換掉",
+      _d["source_url"] == "https://model-made-this-up.example", _d.get("source_url"))
+_ok, _why = gates.check(_d, FACTS, D.BRAND)
+check("走完整 decorate→gate 流程仍擋得住換來源",
+      not _ok and any("source_url" in w for w in _why), str(_why))
+_d2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "t"}, FACTS)
+check("模型沒給 source_url 時由程式補上", _d2["source_url"] == FACTS["source_url"])
+_d3 = D.decorate({"headline": "h", "caption": "read more at https://spam.example/x",
+                  "threads_caption": "t"}, FACTS)
+_ok, _why = gates.check(_d3, FACTS, D.BRAND)
+check("文案內文夾帶外部網址被擋", not _ok and any("以外的網址" in w for w in _why), str(_why))
+
+print("== 清單型沒有外部來源,模型不准自己生一個網址 ==")
+from marketing.ainews import formats  # noqa: E402
+lf = formats.listicle_facts("prompts for x")
+ld = {"headline": "h", "caption": "c", "threads_caption": "t", "source_url": None}
+ld = D.decorate(ld, lf)
+ok, why = gates.check(ld, lf, D.BRAND)
+check("清單型無來源可放行", ok, str(why))
+ld2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "t",
+                  "source_url": "https://made-up.example"}, lf)
+ok, why = gates.check(ld2, lf, D.BRAND)
+check("清單型模型自己生網址被擋", not ok and any("source_url" in w for w in why), str(why))
+_lg = D.decorate({"headline": "h", "caption": "Keep each answer under 60 words.",
+                  "threads_caption": "t", "items": [{"title": "a", "body": "in 3 bullets"}]}, lf)
+_ok, _why = gates.check(_lg, lf, D.BRAND)
+check("清單型的指令數字(60 字/3 點)不該被當成捏造數字", _ok, str(_why))
+_lb = D.decorate({"headline": "h", "caption": "This saves 87% of your time.",
+                  "threads_caption": "t"}, lf)
+_ok, _why = gates.check(_lb, lf, D.BRAND)
+check("清單型的統計型宣稱(87%)被擋", not ok if False else (not _ok and any("統計型" in w for w in _why)), str(_why))
+_lb2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "t",
+                   "items": [{"title": "a", "body": "studies show this works"}]}, lf)
+_ok, _why = gates.check(_lb2, lf, D.BRAND)
+check("清單項目裡的「研究顯示」被擋", not _ok and any("統計型" in w for w in _why), str(_why))
+_ns = D.decorate({"headline": "h", "caption": "It rose 87% last quarter.",
+                  "threads_caption": "t"}, FACTS)
+_ok, _why = gates.check(_ns, FACTS, D.BRAND)
+check("有來源的貼文仍走數字溯源閘(87 不在 facts)",
+      not _ok and any("沒有的數字" in w for w in _why), str(_why))
+check("清單題目池不重複", len(set(formats.LISTICLE_TOPICS)) == len(formats.LISTICLE_TOPICS))
+check("題目輪替不會連兩次同一題",
+      formats.pick_topic({"posted": [{"topic": formats.LISTICLE_TOPICS[0]}]}) != formats.LISTICLE_TOPICS[0])
+
 print(f"\n{'✅ 全過' if not FAILS else '❌ 失敗: ' + ', '.join(FAILS)}")
 sys.exit(1 if FAILS else 0)

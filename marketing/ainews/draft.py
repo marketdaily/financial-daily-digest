@@ -102,5 +102,9 @@ def decorate(draft, facts, brand=None):
     if len(th) < 460:
         th += f"\n\n@{b['handle']}"
     draft["threads_caption"] = th
-    draft["source_url"] = facts["source_url"]
+    # ⚠️ 這裡曾經寫成 draft["source_url"] = facts["source_url"](直接覆寫)。
+    # 那一行讓 gates 的第一道閘(「模型不准自己換來源」)從上線起永遠射不出來 ——
+    # 模型掰的網址會被安靜換成正確的,閘門看到的永遠是相符的兩個值,報綠。
+    # 用 setdefault:模型沒給才補,模型給錯就留著讓閘門抓。
+    draft.setdefault("source_url", facts["source_url"])
     return draft

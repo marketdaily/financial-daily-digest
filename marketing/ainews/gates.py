@@ -31,6 +31,18 @@ NO_MENTION_MARKERS = ["lawsuit", "sues", "sued", "probe", "investigation", "fine
 _NUM = re.compile(r"\d[\d,\.]*")
 _YEARISH = re.compile(r"^(19|20)\d{2}$")
 
+# 無來源貼文(清單型)專用:數字閘在這裡沒有意義 —— 「限 60 字」是給讀者的指令,
+# 不是對世界的宣稱,而且沒有任何 facts 可以比對。
+# 正解不是放寬成不管,是換一個判準:凡是「查不了的統計型宣稱」一律禁止。
+_STAT_CLAIM = re.compile(
+    r"(\d[\d,\.]*\s*%"                      # 87%
+    r"|\d[\d,\.]*\s*(million|billion|trillion|users|people|companies|hours saved)"
+    r"|[$€£]\s*\d"                            # $500
+    r"|\d[\d,\.]*\s*(x|times)\s+(faster|better|more|cheaper)"
+    r"|studies show|research shows|studies have shown|experts (say|agree)"
+    r"|most people (who|that)? ?(use|say)"
+    r")", re.I)
+
 
 def _numbers(text):
     out = set()
@@ -47,8 +59,12 @@ def _facts_numbers(facts):
     return _numbers(blob)
 
 
-def check(draft, facts, brand, platform_limits=None):
-    """回 (ok, reasons[])。draft 需含 caption / threads_caption / headline / source_url。"""
+def check(draft, facts, brand, platform_limits=None, mode=None):
+    """回 (ok, reasons[])。draft 需含 caption / threads_caption / headline / source_url。
+
+    mode 自動由 facts 推斷:有 source_url = sourced(數字必須可溯源);
+    沒有 = unsourced(清單型,改禁統計型宣稱)。
+    """
     limits = platform_limits or {"caption": 2200, "threads_caption": 500}
     reasons = []
     cap = draft.get("caption", "") or ""
@@ -62,9 +78,18 @@ def check(draft, facts, brand, platform_limits=None):
     if not head.strip():
         reasons.append("headline 空的")
 
-    # 1. 來源必須是這次真的抓到的那則,不准模型自己補一個網址
+    # 1. 來源必須是這次真的抓到的那則,不准模型自己補一個網址。
+    #    清單型貼文沒有外部來源(facts.source_url is None)⇒ 草稿也必須是 None,
+    #    模型自己生一個網址出來一樣要擋。
     if draft.get("source_url") != facts.get("source_url"):
         reasons.append(f"source_url 與 facts 不符:{draft.get('source_url')!r}")
+
+    # 1b. 文案裡不准出現 facts 以外的網址(模型很愛「補一個看起來合理的連結」)
+    allowed_urls = {facts.get("source_url"), brand.get("site")}
+    allowed_urls.discard(None)
+    for u in re.findall(r"https?://[^\s)\]]+", f"{cap} {th}"):
+        if not any(u.startswith(a) for a in allowed_urls):
+            reasons.append(f"文案出現 facts 以外的網址:{u[:60]}")
 
     # 2. 長度
     for k, lim in limits.items():
@@ -72,15 +97,28 @@ def check(draft, facts, brand, platform_limits=None):
         if len(v) > lim:
             reasons.append(f"{k} 超長 {len(v)}/{lim}")
 
-    # 3. 數字必須在 facts 出現過(年份與清單序號除外)
-    allowed = _facts_numbers(facts)
-    for field in ("caption", "threads_caption", "headline"):
-        for n in _numbers(draft.get(field, "")):
-            if n in allowed or _YEARISH.match(n):
-                continue
-            if n in {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}:
-                continue
-            reasons.append(f"{field} 出現 facts 裡沒有的數字:{n}")
+    # 3. 數字
+    mode = mode or ("sourced" if facts.get("source_url") else "unsourced")
+    if mode == "sourced":
+        # 有來源 → 每個數字都要能在 facts 裡找到(年份與清單序號除外)
+        allowed = _facts_numbers(facts)
+        for field in ("caption", "threads_caption", "headline"):
+            for n in _numbers(draft.get(field, "")):
+                if n in allowed or _YEARISH.match(n):
+                    continue
+                if n in {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}:
+                    continue
+                reasons.append(f"{field} 出現 facts 裡沒有的數字:{n}")
+    else:
+        # 無來源 → 數字放行(那是給讀者的指令),但任何查不了的統計型宣稱一律擋
+        for field in ("caption", "threads_caption", "headline"):
+            m = _STAT_CLAIM.search(draft.get(field, "") or "")
+            if m:
+                reasons.append(f"{field} 出現無法查證的統計型宣稱:{m.group(0)[:40]}")
+        for it in (draft.get("items") or []):
+            m = _STAT_CLAIM.search(json.dumps(it, ensure_ascii=False))
+            if m:
+                reasons.append(f"清單項目出現無法查證的統計型宣稱:{m.group(0)[:40]}")
 
     # 4. 禁詞
     low = f"{cap}\n{th}".lower()
