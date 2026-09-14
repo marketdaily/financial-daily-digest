@@ -179,6 +179,51 @@ _t3 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "中文說
                   "threads_chain": ["第一段。", "第二段。", "第三段？"]}, FACTS)
 check("模型沒給標籤時不會炸,也不會亂放", "#" not in _t3["threads_chain"][0])
 
+print("== 可討論性:解「有觸及沒互動」的主訊號 ==")
+check("有兩邊立場的事分數高",
+      rank.debatability({"title": "Minister criticised over deportation plan, denies wrongdoing",
+                         "summary": ""}) >= 50)
+check("純傷亡新聞分數低(沒什麼好爭的,有人看沒人留言)",
+      rank.debatability({"title": "Six dead, 130 missing after ferry capsizes", "summary": ""}) <= 15)
+check("⭐字根要能比到變化形(apologises/criticised);包在 \\b..\\b 裡永遠比不到",
+      rank.debatability({"title": "Hyrox apologises for allowing race to continue",
+                         "summary": ""}) > 0)
+check("爭議分數在總分裡壓得過純速度",
+      rank.score({"title": "Court blocks deportation plan as minister denies wrongdoing",
+                  "summary": "", "confluence": 1, "age_h": 6, "authority": 4})[0]
+      > rank.score({"title": "New bridge opens in city centre",
+                    "summary": "", "confluence": 1, "age_h": 0.5, "authority": 4})[0])
+
+print("== 煽動 ≠ 爭議:會帶來留言但帶來的是檢舉 ==")
+check("煽動題材在排序層就被擋掉(不是擋在文案層)",
+      rank.is_inflammatory({"title": "The deep state conspiracy behind the vote", "summary": ""}))
+check("正常爭議新聞不會被誤殺",
+      not rank.is_inflammatory({"title": "Court blocks deportation plan", "summary": ""}))
+_o = D.decorate({"headline": "h", "caption": "This is absolutely disgusting.",
+                 "threads_caption": "中文說明。", "source_url": FACTS["source_url"]}, FACTS)
+_ok, _why = gates.check(_o, FACTS, D.BRAND)
+check("英文煽動字眼被擋", not _ok and any("煽動字眼" in w for w in _why), str(_why))
+_o2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "這件事真的太扯了。",
+                  "source_url": FACTS["source_url"]}, FACTS)
+_ok, _why = gates.check(_o2, FACTS, D.BRAND)
+check("中文煽動字眼被擋", not _ok and any("煽動字眼" in w for w in _why), str(_why))
+_cas = {**FACTS, "lane": "breaking", "title": "Six dead after ferry capsizes",
+        "summary": "death toll rising"}
+_b = D.decorate({"headline": "h", "caption": "So who do you blame here?",
+                 "threads_caption": "中文說明。", "source_url": FACTS["source_url"]}, _cas)
+_ok, _why = gates.check(_b, _cas, D.BRAND)
+check("傷亡新聞下面找戰犯被擋", not _ok and any("煽動歸咎" in w for w in _why), str(_why))
+_b2 = D.decorate({"headline": "h", "caption": "Should the ferry rules change?",
+                  "threads_caption": "中文說明。", "source_url": FACTS["source_url"]}, _cas)
+_ok, _why = gates.check(_b2, _cas, D.BRAND)
+check("傷亡新聞問制度問題不該被誤殺", _ok, str(_why))
+_pr = D.build_prompt(D.build_facts({"title":"t","summary":"s","url":"https://x.example/a",
+        "src_label":"BBC","age_h":2.0,"lane":"politics","also":[]}, "x"*700))
+_prn = " ".join(_pr.split())
+check("prompt 明令問句要點出分歧而不是問「你怎麼看」",
+      "Name the actual disagreement" in _prn and "Bad:" in _prn)
+check("prompt 明令不准告訴讀者該有什麼感受", "never tell them what the right answer is" in _prn)
+
 print("== 代表文章必須是讀得到的那一篇 ==")
 import datetime as _dt  # noqa: E402
 _now = _dt.datetime.now(_dt.timezone.utc)

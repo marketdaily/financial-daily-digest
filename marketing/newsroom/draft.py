@@ -87,9 +87,25 @@ CAPTION RULES (these come from the two largest AI news accounts on Instagram; fo
 3. If the facts contain a direct quote, put one quote on its own paragraph in quotation marks.
 4. Second-to-last paragraph gives the catch, the tension, or what is still unknown. Be honest that
    it is unconfirmed if the facts say so.
-5. Last paragraph is a single question to the reader, ending with an emoji.
+5. Last paragraph is the question, and it is the most important line in the post. Do NOT write
+   "what do you think?" on its own. Name the actual disagreement first, in one sentence, with both
+   sides as their holders would state them, then ask which one the reader lands on. A reader should
+   be able to disagree with someone specific. End with one emoji.
+   Good: "Stockholm says the recount protects the result; the opposition says it buys time to
+   change it. Which is it?"  Bad: "What are your thoughts on this? 🤔"
+5b. Both sides get their strongest version, not a strawman. If you cannot state the other side in
+   a way its own supporters would accept, you do not understand the story well enough to post it.
+5c. Never tell the reader what to feel and never tell them what the right answer is. The account
+   sets the table; the readers argue. An account that supplies the conclusion gets agreement, and
+   agreement does not produce replies.
 6. Explain like the reader has never used the product. No jargon. If you must use a technical term,
    define it in the same sentence in four words or less.
+5d. Do not farm outrage. No "shocking", "insane", "disgusting", "you won't believe", "nobody is
+   talking about this", "wake up". Those bring reports and blocks, not discussion, and once an
+   account is read that way it does not come back.
+5e. On a story where people have just died, the question is about the system, the rule or the
+   decision, never about the victims and never "who do you blame". Inviting a pile-on under a body
+   count is how a news account loses the readers it just got.
 6b. Do NOT add general background, legal commentary, historical context, or statements about how
     things usually work. "A judge blocking something is usually not the last word" and "which is
     how a lot of Asia reads American news" are both inventions even though they sound reasonable.

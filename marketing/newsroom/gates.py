@@ -9,6 +9,21 @@
 import json
 import re
 
+# ⛔ 煽動字眼(2026-09-14):老闆要的是「有爭議、可討論」,不是帶風向。
+# 這些字會帶來留言,但帶來的是檢舉與封鎖。它們也幾乎不會出現在引述裡,
+# 出現就是我們自己的框架 ⇒ 可以確定性地擋。
+_OUTRAGE = [
+    "shocking", "insane", "disgusting", "disgrace", "outrageous", "sickening",
+    "you won't believe", "you wont believe", "nobody is talking about",
+    "no one is talking about", "wake up", "they don't want you to",
+    "let that sink in", "absolutely unhinged",
+    "震驚", "太扯", "誇張到", "離譜", "看不下去", "醒醒吧", "沒有人敢講",
+    "細思極恐", "你敢信", "氣到發抖",
+]
+# 悲劇新聞下面找戰犯 = 把剛拿到的讀者趕走
+_BLAME_BAIT = ["who do you blame", "who's to blame", "whos to blame",
+               "誰該負責", "誰要負責", "誰的錯", "該砍誰的頭"]
+
 # 合規:本帳號不做個股建議(投顧法),AI 新聞帳也不准夾帶操作字眼
 FORBIDDEN = [
     "buy now", "sell now", "price target", "guaranteed", "guaranteed return",
@@ -183,6 +198,21 @@ def check(draft, facts, brand, platform_limits=None, mode=None):
     for w in FORBIDDEN:
         if w.lower() in low:
             reasons.append(f"禁詞:{w}")
+
+    # 4b. 煽動字眼
+    _all = f"{cap}\n{th}\n" + "\n".join(
+        c for c in (draft.get("threads_chain") or []) if isinstance(c, str))
+    _low = _all.lower()
+    for w in _OUTRAGE:
+        if (w.lower() in _low) if w.isascii() else (w in _all):
+            reasons.append(f"煽動字眼「{w}」—— 那帶來的是檢舉不是討論")
+    # 4c. 有人剛死掉的新聞不在下面找戰犯
+    if facts.get("lane") == "breaking" and re.search(
+            r"(?i)\b(dead|killed|death toll|bodies|fatalities)\b|罹難|死亡|喪生",
+            f"{facts.get('title','')} {facts.get('summary','')}"):
+        for w in _BLAME_BAIT:
+            if (w.lower() in _low) if w.isascii() else (w in _all):
+                reasons.append(f"傷亡新聞不得用「{w}」煽動歸咎")
 
     # 5. @handle 白名單 + 醜聞不 tag
     blob_ctx = f"{facts.get('title','')} {facts.get('summary','')}".lower()
