@@ -216,6 +216,21 @@ check("爭議分數在總分裡壓得過純速度",
       > rank.score({"title": "New bridge opens in city centre",
                     "summary": "", "confluence": 1, "age_h": 0.5, "authority": 4})[0])
 
+print("== 沒有爭議的新聞不要硬造爭議(我自己那條指令的副作用) ==")
+_lowd = rank.score({"title": "Six dead, 130 missing after ferry capsizes", "summary": "",
+                    "confluence": 7, "age_h": 2, "authority": 6})[0]
+_highd = rank.score({"title": "Court blocks deportation plan as minister denies wrongdoing",
+                     "summary": "", "confluence": 3, "age_h": 2, "authority": 6})[0]
+check("可討論性低的故事即使量級大也排在爭議題後面", _highd > _lowd,
+      f"low={_lowd} high={_highd}")
+_f2 = D.build_facts({"title": "t", "summary": "s", "url": "https://x.example/a",
+                     "src_label": "BBC", "age_h": 2.0, "lane": "breaking", "also": [],
+                     "debatability": 0}, "x" * 700)
+check("facts 要把可討論性傳給模型", _f2.get("how_contested_0_to_100") == 0, sorted(_f2))
+_pn2 = " ".join(D.build_prompt(_f2).split())
+check("prompt 明寫低分時不准製造對立面",
+      "you do NOT manufacture a dispute" in _pn2 and "fabricated fact wearing a question mark" in _pn2)
+
 print("== 煽動 ≠ 爭議:會帶來留言但帶來的是檢舉 ==")
 check("煽動題材在排序層就被擋掉(不是擋在文案層)",
       rank.is_inflammatory({"title": "The deep state conspiracy behind the vote", "summary": ""}))

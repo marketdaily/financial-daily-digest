@@ -51,6 +51,9 @@ def build_facts(item, excerpt=""):
         # 那是把數字錨到另一個對象上,而且讀起來完全合理,只有查核者抓得到。
         "report_age_hours_NOT_event_age": item.get("age_h"),
         "lane": item["lane"],
+        # 低分代表這則新聞裡**沒有各方在爭執**。模型看得到這個數字,
+        # 才不會為了湊出一個辯論題而發明一個不存在的對立面。
+        "how_contested_0_to_100": item.get("debatability"),
         "article_excerpt": excerpt[:2500],
     }
 
@@ -93,6 +96,12 @@ CAPTION RULES (these come from the two largest AI news accounts on Instagram; fo
    be able to disagree with someone specific. End with one emoji.
    Good: "Stockholm says the recount protects the result; the opposition says it buys time to
    change it. Which is it?"  Bad: "What are your thoughts on this? 🤔"
+5a. Check "how_contested_0_to_100" first. If it is below 30, this story has no live argument in
+   it. Then the closing line is an honest open question about what is still unknown or what
+   happens next, and you do NOT manufacture a dispute. Inventing a premise so that a debate can
+   exist ("the rule that let it sail into the storm") is the worst thing you can do here: it is a
+   fabricated fact wearing a question mark. Only build a two-sided question when FACTS actually
+   contains two sides.
 5b. Both sides get their strongest version, not a strawman. If you cannot state the other side in
    a way its own supporters would accept, you do not understand the story well enough to post it.
 5c. Never tell the reader what to feel and never tell them what the right answer is. The account

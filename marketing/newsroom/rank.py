@@ -187,7 +187,12 @@ def score(item, lanes_today=None, last_lane=None):
     s += magnitude(item)
     # ⭐ 老闆令:主打有爭議、可討論、會帶來留言的題目。權重給得比量級重,
     #    因為「有觸及沒互動」才是目前的瓶頸,不是沒人看得到。
-    s += debatability(item) * 0.55
+    _deb = debatability(item)
+    s += _deb * 0.55
+    # 老闆要的是有爭議、可討論的題目。可討論性很低的故事(純傷亡、純公告)
+    # 就算量級很大也要往後排 —— 它們帶得來觀看,帶不來留言。
+    if _deb < 15:
+        s -= 18
     s += max(0.0, 14 - item.get("age_h", 99))
     lanes_today = lanes_today or []
     s -= lanes_today.count(lane) * 5
@@ -228,7 +233,7 @@ def rank(items, state=None, today=None):
         if it["key"] in seen or not is_news(it) or is_inflammatory(it):
             continue
         sc, lane = score(it, lanes_today, last_lane)
-        out.append({**it, "score": sc, "lane": lane})
+        out.append({**it, "score": sc, "lane": lane, "debatability": debatability(it)})
     out.sort(key=lambda x: -x["score"])
     return _suppress_same_story(out, state, today)
 
