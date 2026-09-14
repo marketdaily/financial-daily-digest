@@ -9101,3 +9101,8 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **冷信 v2 狀態(另一視窗的線,未動)**:batch 10 的 46 封首封 09:51 才入 queue,錯過 09:30 班,13:30 班起跑,DAILY_CAP=10 ⇒ 5 天寄完。
 - ⚠️ 我在 /api/click 手打了 1 次 rfq_cta 探針(clk:20260914 多 1);09-09 那張單的通知信是否寄達皇海信箱未逐封對帳。
 - **老闆 12:45 令:冷信首封每日上限 10→30**。`common.DAILY_CAP=30`、`send.TOTAL_CAP=60`(首封+跟進合計同步放大,免跟進被擠掉);`test_v2_sequence.py` 原寫死 10 假紅→改讀 DAILY_CAP,8 案全過;dry-run「將寄 30 封;跟進未到期 138」。13:30 班首發,batch 10 的 46 封兩天寄完。
+
+## 2026-09-14 精品代購市場調查(Mac 視窗,老闆 FB 帳號)
+- 老闆令:用他的 FB 帳號加入所有精品代購社團,調查大家買什麼/賣什麼/哪類毛利高,「我們在動工」。前置判決:正規報稅代購 LV 毛利≈0、Chanel 3.7%;老闆更正風險胃納=皇海零風險、自己的線可承擔任何風險(memory feedback_risk_appetite_by_entity)。
+- 技術:Mac Chrome Default profile 有 FB 登入態(到 2027-05);/Applications/Google Chrome.app 其實是 symlink 到 Chrome for Testing(會 exit 133),真 Chrome=「Google Chrome 2.app」;複製 profile 到 scratchpad 用 --remote-debugging-port=9227 + playwright connect_over_cdp。15 關鍵字搜到 341 團→過濾 134 團(84 公開);先加前 45 團(25-50s 間隔,自動答審核問題+勾同意),同時第二分頁抓 30 個公開團貼文。
+- **13:00 老闆令「現在就寄」**:手動 `send.py --live`,30 封首封 12:55–13:00 寄出(11 家,融程/晶睿/中磊/宸曜/威強電/海華/艾訊/安勤/超恩/振樺/磐儀)。**當場退 12 + 30 分鐘內再退 2 = 14/30**:9+2 信箱不存在(EXO 5.4.1 / Address rejected / Mailbox not found,已自動抑制);⭐⭐ **晶睿 3 封=皇海郵件主機 60.250.52.44 在 Trend Micro ERS-KSSL 黑名單**,台達集團閘道(deltaww.in.tmes.trendmicro.com)整站拒收——這是皇海全公司對外信的問題不只冷信(七家 DNSBL 皆乾淨,只有 ERS 列)。修:退信分類新增 IPBLOCK 自動抑制停序列(原判 soft 會讓跟進再撞);3 個晶睿位址手動抑制。根因面:今日 30 封裡 28 封 probe 是 unknown(EXO/Trend 閘道拒探測+catch-all),unknown 的實際退信率 14/28=50%——v2 具名拼音猜信箱在有邊界閘道的公司幾乎驗不了。
