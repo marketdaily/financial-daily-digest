@@ -10297,8 +10297,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-14 15:08",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 15:57",
+  "note": "cron 已上線且 list slot 走完整真實路徑驗收過;剩下的兩件已拆成 #1039(另兩個 slot 未在真實時間跑過)與 #1038(帳號未建立故尚未發文)"
  },
  {
   "id": 1031,
@@ -10317,8 +10317,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-14 15:08",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 15:55",
+  "note": "名稱已定 Emergent Daily(四位置全乾淨),brand.json 已改;官網品牌字串改寫仍等網域購買後才有意義"
  },
  {
   "id": 1033,
@@ -10327,8 +10327,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-14 15:08",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 15:55",
+  "note": "IG/Threads 探測器第三版過校準(IG 3點/Threads 3點),emergentdaily 兩平台皆可用"
  },
  {
   "id": 1034,
@@ -10367,6 +10367,26 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-14 15:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1038,
+  "what": "Emergent Daily 網域與三個社群帳號尚未建立(需老闆本人裝置驗證與付款)",
+  "why": "帳號建立要手機驗證、網域要刷卡,我不代做;在那之前 post 維持未接、引擎只產草稿",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-14 15:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1039,
+  "what": "ainews cron 已安裝並首班驗收過,但只跑過 list 這個 slot",
+  "why": "draft(07:30)與 roundup(22:30)兩個時段尚未在真實排程時間跑過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 15:55",
   "closed": null,
   "note": ""
  }
