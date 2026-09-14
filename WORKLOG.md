@@ -9233,3 +9233,22 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
   是唯一能機器讀的「送審前檢查表」——不要自己猜還差哪些欄位,直接讀它。本案只缺審查聯絡人四欄。
 - 發佈方式 AFTER_APPROVAL(過審自動上架)。年齡分級 17+。
 - 剩下:#1048 TIPO 商標檢索、#1071 Android 真機、Android 尚未送 Google Play。
+
+## 2026-09-15 02:15 — 乾啦 Android 收尾 + 跨平台連線實測 + 商標檢索
+- ⭐⭐ **跨平台連線實測 33/33 全綠**(`ganla_crossplat_qa.py`,打正式站):WebKit(iPhone 引擎)與
+  Chromium(Android 引擎)**同一間房對打**,雙向各跑 9 款連線遊戲 + 表情 + 斷線回座,零錯誤。
+  在此之前 QA 只做「同引擎兩個 client」,證不了 iPhone 跟 Android 能不能一起玩。
+- **Android release 建置完成並實測**:上傳金鑰(RSA 4096,`~/.ganla-keys/`,不在版控)、
+  signingConfig 讀外部 properties、`bundleRelease` 產 3.7MB AAB + 3.9MB APK。
+  release APK 裝進 Android 15 模擬器實跑:年齡閘門 → 引導 → 首頁 26 款 → 國王遊戲 3D 翻牌,
+  logcat 零 FATAL 零 chromium ERROR,圖示無空缺(icon fallback 修法成立),狀態列無白帶。
+- ⚠️ **金鑰遺失 = App 永遠不能更新**。`~/.ganla-keys/ganla-upload.jks` + `upload.pw` 要另外備份到
+  老闆自己的密碼管理器,winrig 掛了就沒了。已寫進 Play SUBMISSION.md。
+- ⭐ **Play 新個人帳號有 12 人 × 14 天封閉測試門檻**(2023 起),不是付 US$25 就能發正式版。
+  組織帳號可免,但要公司登記 + D-U-N-S。時程差一個月,已寫進上架包讓老闆決定走哪條。
+- **TIPO 商標檢索完成**(#1048 收):無頭跑 UI + 直接打 `/api/search/wordSearch` 對帳,兩法同得 6 筆。
+  **第 9 類(軟體)與第 41 類(遊戲)各 0 筆**;文字完全相同的兩件一件核駁、一件到期消滅
+  ⇒ 目前沒有有效的「乾啦」商標。法務判決 ✅ 放行,報告在 `~/ganla/docs/legal/`。
+  ⭐ TIPO 新檢索系統是 SPA,首頁有公告彈窗會攔截點擊(Playwright 報 intercepts pointer events),
+  先 `document.getElementById('popup').remove()` 再操作。
+- 未收乾:#1071 Android 真機(要老闆的手機側載 APK)、#1113 商標未自行註冊、Play 帳號未開。

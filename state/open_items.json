@@ -10477,8 +10477,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-14 19:33",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 02:06",
+  "note": "2026-09-15 實跑 TIPO 檢索完成:第9類與第41類皆 0 筆,無有效「乾啦」商標。報告 ~/ganla/docs/legal/2026-09-15_tipo_trademark_search.md"
  },
  {
   "id": 1049,
@@ -10747,8 +10747,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 01:08",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 02:12",
+  "note": "探路信閘門今天 09:30 TW 第一次帶著跑,但首班尚未跑過 → 併入新項一起追"
  },
  {
   "id": 1076,
@@ -10877,8 +10877,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-15 01:30",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 02:07",
+  "note": "已加在 mingxinclinic.com 頁尾機構資訊下方,線上實查 grep 命中 1;med_ad_gate.py dist 全綠"
  },
  {
   "id": 1089,
@@ -11119,5 +11119,75 @@
   "opened": "2026-09-15 01:54",
   "closed": "2026-09-15 02:00",
   "note": "正式站已部署 v3.1.0(ganla.pages.dev/app.js APP_VERSION=3.1.0),隱私政策改用不轉址的 /privacy"
+ },
+ {
+  "id": 1113,
+  "what": "乾啦:「乾啦」尚未自行註冊商標(第9類軟體/第41類遊戲),目前只是「沒人擋」不是「我們擁有」;識別性偏弱建議文字+icon整體申請",
+  "why": "要不要花規費申請是老闆的商業決定",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-15 02:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1114,
+  "what": "明欣官網 tel: 連結原為 tel:+886333169184(多一碼3)已修為 tel:+88633169189,並補 canonical、地址統一為健保署逐字「中正路1098號1樓之1」、藥局「1樓之2」——但整站仍只有 index.html 一頁,8 個子頁與 6 篇衛教尚未做",
+  "why": "版面 job a531ec18 我中途接手收尾並部署,它原本規劃的多頁結構未完成;單頁站在 GEO 上吃不到非品牌查詢",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 02:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1115,
+  "what": "www.mingxinclinic.com 仍回 200 未 301 導到 apex——CF Pages 的 _redirects 不處理跨主機規則,已部署但無效",
+  "why": "已補 canonical 讓 Google 有依據,但真正的 301 需 CF 後台 Redirect Rules(我方 token 無 Rules 權限,見 #1092)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-15 02:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1116,
+  "what": "冷信三道新閘門(探路信/退信率熔斷/寄件身分)與補貨後的 74 封存貨,今天 09:30 TW 才第一次在生產跑,首班未驗",
+  "why": "全部只在 dry-run 與迴歸測試驗過;真實首班要看:①探路信是否每網域只出一封 ②寄件備份是否自動留存 ③熔斷器是否誤殺。09-15 09:30 與 13:30 兩班後對帳",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 02:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1117,
+  "what": "冷信存貨 09-18 起見底(三天寄完 74 封,之後首封歸零)",
+  "why": "名單見底不是管線問題:原名單 162 家已打過 90 家、其餘多為只放聯絡表單的大廠;要持續 30/天需要固定的名單補給機制,目前是我手動一批批補",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 02:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1118,
+  "what": "乾啦:Android 上傳金鑰 ~/.ganla-keys/ganla-upload.jks + upload.pw 只存在 winrig,弄丟=該 App 永遠無法更新,老闆要另備份",
+  "why": "需老闆存進自己的密碼管理器",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 02:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1119,
+  "what": "乾啦:Google Play 開發者帳號未開(US5);新個人帳號需 12人×14天封測才能發正式版,組織帳號可免但要公司登記+D-U-N-S,走哪條要老闆決定",
+  "why": "帳號註冊與身分驗證只能本人做",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 02:13",
+  "closed": null,
+  "note": ""
  }
 ]
