@@ -161,6 +161,15 @@ check("台灣正當用法不該被誤殺(程序正義/雲端/後台/裡面)",
       not gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x"),
       str(gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x")))
 
+print("== 報導年齡不是事件年齡(模型一再把數字錨到另一個對象上) ==")
+_f = D.build_facts({"title": "t", "summary": "s", "url": "https://x.example/a",
+                    "src_label": "BBC", "age_h": 2.9, "lane": "breaking", "also": []}, "")
+check("facts 欄位名要自己講清楚它是報導年齡",
+      "report_age_hours_NOT_event_age" in _f and "hours_old" not in _f, sorted(_f))
+_p = D.build_prompt(_f)
+check("prompt 明寫不准把報導年齡寫成事件發生時間",
+      "NOT how long ago the event happened" in _p)
+
 print("== 是不是新聞閘(這是世界新聞帳號,不是 AI 帳號) ==")
 check("通訊社的國際新聞放行",
       rank.is_news({"title": "Six dead, 130 missing after Indonesian ferry capsizes", "wire": True}))

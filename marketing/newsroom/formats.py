@@ -160,7 +160,7 @@ def roundup_facts(stories):
         "summary": " | ".join(s["title"] for s in stories),
         "source_url": stories[0]["url"],
         "source_name": ", ".join(sorted({s["src_label"] for s in stories})[:5]),
-        "also_reported_by": [], "lane": "frontier", "hours_old": None,
+        "also_reported_by": [], "lane": "frontier", "report_age_hours_NOT_event_age": None,
         "article_excerpt": " ".join((s.get("summary") or "")[:300] for s in stories)[:2500],
         "stories": [{"title": s["title"], "url": s["url"], "source": s["src_label"]} for s in stories],
     }
@@ -176,7 +176,7 @@ def listicle_facts(topic):
         "summary": topic,
         # 清單型沒有外部來源 —— 用官網當出處,閘門仍會比對 source_url 一致性
         "source_url": None, "source_name": None,
-        "also_reported_by": [], "lane": "product", "hours_old": None,
+        "also_reported_by": [], "lane": "product", "report_age_hours_NOT_event_age": None,
         "article_excerpt": "",
     }
 

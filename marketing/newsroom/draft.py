@@ -45,7 +45,10 @@ def build_facts(item, excerpt=""):
         "source_url": item["url"],
         "source_name": item["src_label"],
         "also_reported_by": item.get("also", []),
-        "hours_old": item.get("age_h"),
+        # ⚠️ 欄位名一定要說清楚這是「報導的年齡」不是「事件的年齡」。
+        # 叫 hours_old 時模型一再寫成「事件發生到現在不到三小時」——
+        # 那是把數字錨到另一個對象上,而且讀起來完全合理,只有查核者抓得到。
+        "report_age_hours_NOT_event_age": item.get("age_h"),
         "lane": item["lane"],
         "article_excerpt": excerpt[:2500],
     }
@@ -87,6 +90,10 @@ CAPTION RULES (these come from the two largest AI news accounts on Instagram; fo
 7. Do not use em dashes. Do not use the words "delve", "landscape", "testament", "game-changer",
    "revolutionize", "seamless", "unlock", "leverage".
 8. NEVER state a number, percentage, price, or date that is not in FACTS. If you are unsure, omit it.
+8b. "report_age_hours_NOT_event_age" is how long ago the ARTICLE was published. It is NOT how long
+    ago the event happened, which FACTS does not tell you. Never write "X hours ago", "just now",
+    "this morning" or 「發生到現在不到 X 小時」 about the event itself. If you want to signal
+    freshness, say the report is recent, not the event.
 9. Do not write any @handle. Do not add hashtags. Do not add a follow line. Those are added later
    by the program.
 10. Do not give investment advice or suggest anyone buy or sell anything.
