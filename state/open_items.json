@@ -10399,5 +10399,155 @@
   "opened": "2026-09-14 16:28",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1041,
+  "what": "今日 Claude session 額度 19:00 前耗盡,draft 三選一只過 1 則",
+  "why": "三層模型全滿;引擎已正確 fail-closed 不放行。若每天此時段都撞到,cron 的 07:30/12:30/22:30 排點需重新評估",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 19:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1042,
+  "what": "乾啦上架:Apple Developer Program 付費入會(US$99/年)+ App Store Connect 建 App com.ganla.app——需老闆本人 Apple ID 與付款,做完 Archive 才能上傳",
+  "why": "Mac 上 security find-identity 0 把憑證,Gmail 只查到 05-23 簽開發者協議,沒有入會收據",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-14 19:10",
+  "closed": "2026-09-14 19:52",
+  "note": "老闆 09-14 自己買了(NT$3,400 訂單 W1534633648,Apple ID davidlaid9199@gmail.com);等生效+ASC API 金鑰+建 App 紀錄"
+ },
+ {
+  "id": 1043,
+  "what": "Threads 有觸及但零互動(每則 165-442 views、0 讚 0 留言)",
+  "why": "新版型每則結尾加真問句是第一次嘗試,尚未驗證有沒有用;這是目前最關鍵的未解問題",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-14 19:31",
+  "closed": "2026-09-14 19:56",
+  "note": "已做成 debatability 排序訊號+分歧式問句+煽動界線;實跑通過一則爭議題(中國拒絕AI減速)。是否真的帶來留言仍需帳號上線後觀察,已轉由 #1038 帳號建立後驗證"
+ },
+ {
+  "id": 1044,
+  "what": "世界新聞線首班只跑過 draft,roundup 版型在新來源下尚未驗證",
+  "why": "22:30 排程今晚才會第一次跑",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 19:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1045,
+  "what": "乾啦 v3 視覺方向(A 夜市帆布 / B 霓虹管線)待老闆拍板,拍板前 26 款遊戲畫面不重做;mockup https://claude.ai/code/artifact/8285a0da-5f1b-43c7-9d31-131095ab6153",
+  "why": "視覺世界是老闆的品味決策(09-14 官網六版被退的教訓),不自作主張",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 19:33",
+  "closed": "2026-09-14 19:43",
+  "note": "老闆拍板 B 霓虹管線(09-14)"
+ },
+ {
+  "id": 1046,
+  "what": "乾啦 v3.0 PWA 只發到 preview(v3-preview.ganla.pages.dev),production(ganla.pages.dev)仍是 v2.0/ganla-v12,等老闆看過 OK 才發正式站",
+  "why": "對外發布需老闆先看(08-17 親令)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 19:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1047,
+  "what": "乾啦原生殼:模擬器只驗到啟動+plugin bridge(StatusBar/App 呼叫成功),沒有實際點過年齡閘門→遊戲→分享(idb companion 在 Mac 裝不起來);上傳 TestFlight 後老闆用真機走一遍",
+  "why": "無頭驅動 WKWebView UI 的工具鏈沒裝成,不想搶 Mac 前景",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 19:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1048,
+  "what": "乾啦上架前:TIPO 商標檢索「乾啦」一次(法務判決但書③)",
+  "why": "沒做正式商標檢索,撞既有註冊會被下架",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 19:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1049,
+  "what": "乾啦 rooms worker 09-14 新版(離線玩家從 turnOrder 移除/名字去標記)已部署,只有 QA 雙 client 驗過,尚未在真人多桌實戰驗證",
+  "why": "尚未在生產真人局跑過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 19:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1050,
+  "what": "皇海攻頂第一梯隊:6 篇中文指南重寫(rj45/usb 腳位/m.2 key/sd/dimm)+每篇 5–10 台灣外鏈,10-04 驗收 8/10 進前 3;rank_watch 加 10 字+Google AIO 引用欄",
+  "why": "09-14 晚只交了診斷與計畫(Artifact bd6694fe),尚未動任何頁面;等老闆看過計畫再開工",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 19:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1051,
+  "what": "乾啦 Phase C:照 B 霓虹管線重做全 App 視覺(35 顆 SVG 圖示、去漸層字、單一珊瑚紅、26 款遊戲畫面),做完發 preview 給老闆看",
+  "why": "09-14 剛拍板,開工中",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 19:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1052,
+  "what": "乾啦上傳 TestFlight 前置:老闆給 App Store Connect API 團隊金鑰(.p8 + Key ID + Issuer ID)並在 ASC 建 App 紀錄 com.ganla.app;然後我在 Mac 用 xcodebuild -allowProvisioningUpdates 無頭 Archive+上傳",
+  "why": "會員 09-14 剛買,生效後才能做;金鑰與建 App 只有老闆能操作",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 19:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1053,
+  "what": "乾啦 Android:winrig 正在裝 JDK+Android SDK 建 debug APK(無 sudo,~/android);APK 建出來後還要在模擬器或真機跑過,目前 Android 側只有 Chromium 引擎 QA 80/80 當代理",
+  "why": "Android 建置鏈 09-14 晚才開始裝,尚未建出 APK",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 20:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1054,
+  "what": "乾啦 iOS 引擎 QA:Mac 上用 Playwright WebKit 跑 ganla_qa.py(winrig 缺 gtk4 系統庫裝不起 webkit)",
+  "why": "跑到一半,結果未回",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 20:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1055,
+  "what": "ClaPat Bundle 30 套模板已下載到 ~/assets/templates/clapat-bundle,尚未做截圖板(哪套適合哪類客戶)也未逐套讀 LICENSE.txt 授權範圍",
+  "why": "老闆 09-14 買的;接案前要知道每套長相與授權",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-14 20:03",
+  "closed": null,
+  "note": ""
  }
 ]
