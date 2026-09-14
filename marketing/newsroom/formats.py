@@ -1,4 +1,13 @@
-"""另外兩種版型 —— 新聞解釋文之外,對標帳號真正長粉的東西。
+"""新聞版型。
+
+⚠️ **listicle(存檔誘餌清單)已退役 —— 2026-09-14 老闆點名**:
+   「我要你做的不是介紹 AI 是什麼，而是新聞」。
+   那個版型產的是「七個 prompt 讓聊天機器人別打太極」這種教學內容,
+   對一個**世界新聞帳號**而言它不是內容不夠好,而是走錯棚。
+   程式碼保留不刪(house rule:退役標 DEPRECATED 不刪檔),但 run.py 的 list 指令已移除,
+   cron 的 12:30 時段已改成再跑一次新聞。要復活請先跟老闆確認方向。
+
+原本的說明(留著當脈絡):
 
 拆解 @getintoai / @aipagedaily 的貼文後,三種版型分工很清楚:
   explainer  單則新聞白話解釋      → 有新聞才有,負責「每天都在」
@@ -66,7 +75,8 @@ C5. Keep company and product names in their original English (OpenAI, Anthropic,
 C6. Use 全形標點 (，。？「」) except inside English names and numbers.
 """
 
-LISTICLE_PROMPT = """You write save-worthy list posts for a large Instagram account about AI.
+LISTICLE_PROMPT = """  # DEPRECATED 2026-09-14,見檔頭
+You write save-worthy list posts for a large Instagram account about AI.
 These posts are what people save and send to friends, so usefulness beats novelty.
 
 TOPIC: {topic}

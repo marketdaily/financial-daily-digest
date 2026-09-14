@@ -1,4 +1,6 @@
-"""來源層:英文 AI 新聞聚合 + 跨源聚類。
+"""來源層:世界新聞聚合 + 跨源聚類。
+
+這個帳號是**世界新聞帳號**,不是 AI 帳號 —— AI/科技只是其中一條題材線。
 
 設計要點(每條都是踩過的坑對應):
 1. 每個來源獨立 try/except —— 一個 feed 掛掉不准讓整批變 0 筆(否則「今天沒新聞」
@@ -23,38 +25,48 @@ UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
 
 # (key, 顯示名, url, kind, 權威分) —— 權威分只影響排序,不影響是否採用
 FEEDS = [
-    # (key, 顯示名, url, ai_only, 權威分)
-    # ai_only=True 的源整個 feed 都是 AI 題材 → 免過相關性閘
-    # ai_only=False 是通用科技/綜合源 → 必須過 rank.is_ai_relevant(),否則麻疹與 MagSafe 線材會混進來
-    ("techcrunch_ai", "TechCrunch", "https://techcrunch.com/category/artificial-intelligence/feed/", True, 5),
-    ("verge_ai", "The Verge", "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", True, 5),
-    ("venturebeat_ai", "VentureBeat", "https://venturebeat.com/category/ai/feed/", True, 4),
-    ("wired_ai", "WIRED", "https://www.wired.com/feed/tag/ai/latest/rss", True, 5),
-    ("mit_tr", "MIT Tech Review", "https://www.technologyreview.com/feed/", False, 5),
-    ("mit_news_ai", "MIT News", "https://news.mit.edu/rss/topic/artificial-intelligence2", True, 4),
-    ("decoder", "The Decoder", "https://the-decoder.com/feed/", True, 4),
-    ("ainews_net", "AI News", "https://www.artificialintelligence-news.com/feed/", True, 3),
-    ("marktechpost", "MarkTechPost", "https://www.marktechpost.com/feed/", True, 3),
-    ("unite_ai", "Unite.AI", "https://www.unite.ai/feed/", True, 3),
-    ("synced", "Synced", "https://syncedreview.com/feed/", True, 3),
-    ("simonw", "Simon Willison", "https://simonwillison.net/atom/everything/", True, 4),
-    ("openai", "OpenAI", "https://openai.com/news/rss.xml", True, 6),
-    ("googleblog_ai", "Google", "https://blog.google/technology/ai/rss/", True, 6),
-    ("deepmind", "Google DeepMind", "https://deepmind.google/blog/rss.xml", True, 6),
-    ("huggingface", "Hugging Face", "https://huggingface.co/blog/feed.xml", True, 4),
-    ("nvidia_blog", "NVIDIA", "https://blogs.nvidia.com/feed/", True, 4),
-    ("microsoft_ai", "Microsoft", "https://blogs.microsoft.com/feed/", False, 4),
-    ("meta_ai", "Meta", "https://about.fb.com/news/tag/artificial-intelligence/feed/", True, 5),
+    # (key, 顯示名, url, wire, 權威分)
+    # wire=True ⇒ 通訊社/國際大報,整份 feed 都是新聞 → 免過「這是不是新聞」的閘
+    # wire=False ⇒ 專業媒體或社群,混雜評論/教學/live blog → 必須過 rank.is_news()
+    # ── 國際通訊社與大報(帳號的骨幹)──────────────────────────────────────
+    ("bbc_world", "BBC", "https://feeds.bbci.co.uk/news/world/rss.xml", True, 6),
+    ("bbc_top", "BBC", "https://feeds.bbci.co.uk/news/rss.xml", True, 6),
+    ("reuters_wp", "Reuters", "https://news.google.com/rss/search?q=when:12h+site:reuters.com&hl=en-US&gl=US&ceid=US:en", True, 6),
+    ("ap_top", "AP", "https://news.google.com/rss/search?q=when:12h+site:apnews.com&hl=en-US&gl=US&ceid=US:en", True, 6),
+    ("aljazeera", "Al Jazeera", "https://www.aljazeera.com/xml/rss/all.xml", True, 5),
+    ("guardian_world", "The Guardian", "https://www.theguardian.com/world/rss", True, 5),
+    ("nyt_world", "NYT", "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", True, 6),
+    ("npr", "NPR", "https://feeds.npr.org/1004/rss.xml", True, 5),
+    ("cnn_world", "CNN", "http://rss.cnn.com/rss/edition_world.rss", True, 4),
+    ("sky_world", "Sky News", "https://feeds.skynews.com/feeds/rss/world.xml", True, 4),
+    ("dw", "DW", "https://rss.dw.com/rdf/rss-en-all", True, 4),
+    ("france24", "France 24", "https://www.france24.com/en/rss", True, 4),
+    ("abc_intl", "ABC News", "https://abcnews.go.com/abcnews/internationalheadlines", True, 4),
+    # ── 亞洲(Threads 那一側是台灣讀者,亞洲新聞的權重要拉得起來)──────────
+    ("nhk", "NHK World", "https://news.google.com/rss/search?q=when:12h+site:nhk.or.jp&hl=en-US&gl=US&ceid=US:en", True, 5),
+    ("kyodo", "Kyodo News", "https://news.google.com/rss/search?q=when:12h+site:kyodonews.net&hl=en-US&gl=US&ceid=US:en", True, 4),
+    ("scmp", "SCMP", "https://www.scmp.com/rss/91/feed", True, 4),
+    ("straits", "Straits Times", "https://www.straitstimes.com/news/world/rss.xml", True, 4),
+    ("toi_world", "Times of India", "https://timesofindia.indiatimes.com/rssfeeds/296589292.cms", True, 3),
+    ("cna_intl", "中央社", "https://feeds.feedburner.com/rsscna/intworld", True, 4),
+    ("cna_top", "中央社", "https://feeds.feedburner.com/rsscna/politics", True, 4),
+    # ── 政治與衝突 ────────────────────────────────────────────────────────
+    ("politico", "Politico", "https://rss.politico.com/politics-news.xml", True, 4),
+    ("thehill", "The Hill", "https://thehill.com/news/feed/", True, 3),
+    ("defensenews", "Defense News", "https://www.defensenews.com/arc/outboundfeeds/rss/", True, 3),
+    # ── 商業與市場 ────────────────────────────────────────────────────────
+    ("cnbc", "CNBC", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114", True, 4),
+    ("ft_world", "FT", "https://www.ft.com/world?format=rss", True, 5),
+    ("bbc_business", "BBC", "https://feeds.bbci.co.uk/news/business/rss.xml", True, 5),
+    # ── 科學與健康 ────────────────────────────────────────────────────────
+    ("nature_news", "Nature", "https://www.nature.com/nature.rss", False, 5),
+    ("sciencealert", "ScienceAlert", "https://www.sciencealert.com/feed", False, 3),
+    ("space", "Space.com", "https://www.space.com/feeds/all", False, 3),
+    # ── 科技/AI:一條線,不是整個帳號 ──────────────────────────────────────
+    ("verge", "The Verge", "https://www.theverge.com/rss/index.xml", False, 5),
+    ("techcrunch", "TechCrunch", "https://techcrunch.com/feed/", False, 4),
     ("arstechnica", "Ars Technica", "https://feeds.arstechnica.com/arstechnica/index", False, 5),
-    ("engadget", "Engadget", "https://www.engadget.com/rss.xml", False, 3),
-    ("ieee", "IEEE Spectrum", "https://spectrum.ieee.org/feeds/topic/artificial-intelligence.rss", True, 4),
-    ("guardian_ai", "The Guardian", "https://www.theguardian.com/technology/artificialintelligenceai/rss", True, 4),
-    ("techxplore_ai", "TechXplore", "https://techxplore.com/rss-feed/machine-learning-ai-news/", True, 3),
-    ("cnbc_tech", "CNBC", "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=19854910", False, 4),
-    ("hn", "Hacker News", "https://hnrss.org/frontpage?points=200", False, 3),
-    ("reddit_ai", "r/artificial", "https://www.reddit.com/r/artificial/top/.rss?t=day", True, 2),
-    ("reddit_sing", "r/singularity", "https://www.reddit.com/r/singularity/top/.rss?t=day", True, 2),
-    ("reddit_llama", "r/LocalLLaMA", "https://www.reddit.com/r/LocalLLaMA/top/.rss?t=day", True, 2),
+    ("hn", "Hacker News", "https://hnrss.org/frontpage?points=300", False, 3),
 ]
 
 
@@ -65,7 +77,7 @@ def _get(url, timeout=20):
     ua = UA
     if "reddit.com" in url:
         # reddit 對通用瀏覽器 UA 會 429;且三條同時打只會活一條 → 序列化 + 間隔
-        ua = f"web:ainews-aggregator:1.0 (contact: {_BRAND['handle']})"
+        ua = f"web:newsroom-aggregator:1.0 (contact: {_BRAND['handle']})"
         with _REDDIT_LOCK:
             import time as _t
             _t.sleep(2.0)
@@ -116,16 +128,16 @@ def fetch(feeds=None, fresh_hours=30, workers=8):
     health, raw_items = [], []
 
     def one(f):
-        key, label, url, ai_only, auth = f
+        key, label, url, wire, auth = f
         try:
             raw = _get(url)
             items = _parse_rss(raw)
-            return key, label, auth, ai_only, items, None
+            return key, label, auth, wire, items, None
         except Exception as e:
-            return key, label, auth, ai_only, [], f"{type(e).__name__}: {e}"
+            return key, label, auth, wire, [], f"{type(e).__name__}: {e}"
 
     with ThreadPoolExecutor(workers) as ex:
-        for key, label, auth, ai_only, items, err in ex.map(one, feeds):
+        for key, label, auth, wire, items, err in ex.map(one, feeds):
             kept = 0
             for it in items:
                 if it["published"] is None:
@@ -133,7 +145,7 @@ def fetch(feeds=None, fresh_hours=30, workers=8):
                 age_h = (now - it["published"]).total_seconds() / 3600
                 if age_h < -2 or age_h > fresh_hours:
                     continue
-                raw_items.append({**it, "src": key, "src_label": label, "ai_only": ai_only,
+                raw_items.append({**it, "src": key, "src_label": label, "wire": wire,
                                   "authority": auth, "age_h": round(age_h, 1)})
                 kept += 1
             health.append({"src": key, "ok": err is None, "raw": len(items),
@@ -168,7 +180,7 @@ def fetch(feeds=None, fresh_hours=30, workers=8):
             "age_h": lead["age_h"],
             "src_label": lead["src_label"],
             "authority": lead["authority"],
-            "ai_only": any(s["ai_only"] for s in c["sources"]),
+            "wire": any(s["wire"] for s in c["sources"]),
             "confluence": len({s["src"] for s in c["sources"]}),
             "also": sorted({s["src_label"] for s in c["sources"]} - {lead["src_label"]}),
         })

@@ -14,6 +14,14 @@ import pathlib
 BRAND = json.loads((pathlib.Path(__file__).resolve().parent / "brand.json").read_text())
 
 LANE_BRIEF = {
+    "breaking":  "Something just happened to people. Lead with what happened and to how many. Numbers only from the facts.",
+    "conflict":  "A military or armed event. Say who did what to whom, where, and what is confirmed versus claimed.",
+    "politics":  "Power changed hands or was contested. Say who now has what they did not have before.",
+    "business":  "Money moved or a market reacted. Say how much and who is affected outside finance.",
+    "science":   "A finding or a launch. Say what was tested or built and what it changes.",
+    "society":   "People, courts, rights, culture. Lead with the human detail.",
+    "sport":     "A result. Say who won, against what odds, and why it is a first if it is.",
+    "world":     "An international development. Say which countries and what changes between them.",
     "frontier": "A new model or capability shipped. Explain what it can do that the previous one could not, in plain words.",
     "product":  "Something people can actually use. Say who it is for and what it replaces.",
     "money":    "Money moved. Say how much, from whom to whom, and what it buys.",
@@ -98,6 +106,11 @@ C4. The Chinese is NOT a translation of the English caption. Same facts, written
 C5. Keep company and product names in their original English (OpenAI, Anthropic, Claude, Gemini,
     GitHub). Do not invent Chinese names for products that have none.
 C6. Use 全形標點 (，。？「」) except inside English names and numbers.
+C7. ⭐ If, and only if, the facts support it, add one sentence on what this means for Taiwan or
+    for Asia: supply chains, shipping lanes, energy prices, semiconductors, tourism, security,
+    people who live there. This is the one thing the big English accounts never do and it is the
+    only real reason a Taiwanese reader follows us instead of them. Never invent the link. If the
+    facts do not support one, leave it out rather than reaching.
 
 Return only the JSON object.
 """

@@ -1,0 +1,41 @@
+{
+ "_comment": "改名只改這一個檔。程式任何地方不准硬編品牌字串(tests_newsroom.py 會擋)。",
+ "name": "World Wire",
+ "handle": "worldwire",
+ "tagline_en": "What just happened, and why it matters",
+ "site": "https://worldwire.ai",
+ "utm": "?utm_source=ig&utm_medium=social&utm_campaign=news",
+ "hashtags": [
+  "#news",
+  "#worldnews",
+  "#breakingnews",
+  "#geopolitics",
+  "#currentaffairs"
+ ],
+ "cta_follow_en": "Follow @{handle} for more.",
+ "locked": false,
+ "_decided": "2026-09-14 老闆糾正方向後改名:Emergent Daily 是為 AI 帳號取的,對世界新聞帳號是錯的。World Wire=wire service(通訊社供稿線)的本名,直接說明帳號是什麼,中英雙語都成立。IG/Threads/.ai 皆可用(探測器 3 點校準過);.com/.net/.news 已被註冊。",
+ "display_name": "World Wire",
+ "_pending": "網域與帳號尚未建立/購買(需老闆本人裝置驗證與付款)。post 指令維持未接。",
+ "lang": {
+  "instagram": "en",
+  "facebook": "en",
+  "threads": "zh-TW"
+ },
+ "_lang_note": "2026-09-14 老闆令:IG/FB 英文,Threads 繁體中文(台灣)。Threads 在台灣滲透率遠高於 IG,且中文 AI 新聞競爭稀薄。",
+ "profile": {
+  "instagram": {
+   "display_name": "World Wire | Global News",
+   "bio": "What just happened, and why it matters\nEvery number traceable to a wire\nNo opinion, no outrage"
+  },
+  "threads": {
+   "display_name": "World Wire｜世界新聞",
+   "bio": "世界上正在發生什麼事，用看得懂的話講\n每個數字都查得到出處\n會告訴你這件事跟台灣有什麼關係"
+  },
+  "facebook": {
+   "display_name": "World Wire",
+   "bio": "What just happened, and why it matters."
+  }
+ },
+ "_profile_note": "Threads 沿用 IG 的 handle,但名稱欄與簡介各自一套:IG 的搜尋吃名稱欄,所以英文關鍵字放 IG;Threads 面向台灣讀者走中文。"
+}

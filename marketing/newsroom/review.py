@@ -4,7 +4,7 @@
 沒有這一層,「對外發布先給老闆看」這條規矩在實務上就會卡住整台機器 ——
 規矩不是靠意志力執行的,是靠那件事夠不夠好做。
 
-用法:python -m marketing.ainews.review [YYYY-MM-DD] > out.html
+用法:python -m marketing.newsroom.review [YYYY-MM-DD] > out.html
 """
 import datetime
 import html

@@ -232,8 +232,8 @@ def cmd_roundup(args):
     return rec
 
 
-def cmd_list(args):
-    """存檔誘餌清單。完全不依賴新聞 —— 沒新聞的日子帳號照樣有東西發。"""
+def cmd_list(args):  # DEPRECATED 2026-09-14:世界新聞帳號不發教學型內容,入口已從 CLI 移除
+    """[已退役] 存檔誘餌清單。"""
     from marketing.news_reactive import call_claude
     state = rank.load_state()
     topic = args.topic or formats.pick_topic(state)
@@ -267,11 +267,10 @@ def main():
     s = sub.add_parser("scan"); s.add_argument("-n", type=int, default=20)
     d = sub.add_parser("draft"); d.add_argument("-n", type=int, default=3)
     r = sub.add_parser("roundup"); r.add_argument("-n", type=int, default=6)
-    l = sub.add_parser("list"); l.add_argument("--topic"); l.add_argument("--items", type=int, default=7)
     p = sub.add_parser("post"); p.add_argument("--confirm", action="store_true")
     a = ap.parse_args()
     rc = {"scan": cmd_scan, "draft": cmd_draft, "roundup": cmd_roundup,
-          "list": cmd_list, "post": cmd_post}[a.cmd](a)
+          "post": cmd_post}[a.cmd](a)
     sys.exit(rc if isinstance(rc, int) else 0)
 
 

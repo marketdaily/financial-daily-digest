@@ -1,4 +1,4 @@
-"""ainews 自測。
+"""newsroom 自測。
 
 每條測試都對著「災難」寫,不是對著「變化」寫:
 問的是「這個閘門擋不住時會發生什麼壞事」,不是「輸出有沒有變」。
@@ -8,7 +8,7 @@ import sys
 import pathlib
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
-from marketing.ainews import gates, rank, draft as D, sources, formats  # noqa: E402
+from marketing.newsroom import gates, rank, draft as D, sources, formats  # noqa: E402
 
 FAILS = []
 
@@ -154,18 +154,39 @@ check("台灣正當用法不該被誤殺(程序正義/雲端/後台/裡面)",
       not gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x"),
       str(gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x")))
 
-print("== 相關性閘 ==")
-check("通用源的非 AI 新聞被濾掉",
-      not rank.is_ai_relevant({"title": "Woman died of measles complications",
-                               "summary": "coroner says", "ai_only": False}))
-check("ai_only 源夾帶的非 AI 新聞也被濾掉(不准信任來源標籤)",
-      not rank.is_ai_relevant({"title": "MIT spinout turns plastic waste into building materials",
-                               "summary": "resilient materials", "ai_only": True}))
-check("真的 AI 新聞放行",
-      rank.is_ai_relevant({"title": "OpenAI launches a new reasoning model",
-                           "summary": "", "ai_only": False}))
-check("said/air 不該被當成 ai",
-      not rank.is_ai_relevant({"title": "He said the air was clean", "summary": "", "ai_only": False}))
+print("== 是不是新聞閘(這是世界新聞帳號,不是 AI 帳號) ==")
+check("通訊社的國際新聞放行",
+      rank.is_news({"title": "Six dead, 130 missing after Indonesian ferry capsizes", "wire": True}))
+check("通訊社的評論也要擋(feed 會混評論)",
+      not rank.is_news({"title": "Opinion: why the ferry disaster was avoidable", "wire": True}))
+check("教學型內容被擋(老闆點名:不要介紹 AI 是什麼)",
+      not rank.is_news({"title": "How to use ChatGPT to plan your week", "wire": False}))
+check("清單型內容被擋",
+      not rank.is_news({"title": "7 best AI tools you should try", "wire": False}))
+check("服務性問句標題被擋(非通訊社)",
+      not rank.is_news({"title": "Should you buy a heat pump this winter?", "wire": False}))
+check("科技新聞仍是新聞(AI 是一條線不是禁區)",
+      rank.is_news({"title": "OpenAI rules out IPO this year", "wire": False}))
+
+print("== 題材線分類 ==")
+check("災難進 breaking",
+      rank.classify({"title": "Six dead, 130 missing after ferry capsizes", "summary": ""})[0] == "breaking")
+check("選舉進 politics",
+      rank.classify({"title": "Election in Sweden Is Too Close to Call", "summary": ""})[0] == "politics")
+check("⭐短關鍵字要字邊界:Britain 裡的 ai 不該讓政治新聞掉進 tech 線",
+      rank.classify({"title": "Britain said it would again review the plan", "summary": ""})[0] != "tech",
+      rank.classify({"title": "Britain said it would again review the plan", "summary": ""})[0])
+check("真的 AI 新聞才進 tech",
+      rank.classify({"title": "OpenAI launches new AI model", "summary": ""})[0] == "tech")
+
+print("== 加速度:蹭流量看的是還在不在加速,不是有多少家報 ==")
+_hot = {"confluence": 5, "age_h": 0.3}
+_cold = {"confluence": 6, "age_h": 22.0}
+check("五家在 18 分鐘內發,排在六家但 22 小時前的前面",
+      rank.velocity(_hot) > rank.velocity(_cold),
+      f"hot={rank.velocity(_hot):.1f} cold={rank.velocity(_cold):.1f}")
+check("剛發布不會讓速度爆掉(0.5h 下限)",
+      rank.velocity({"confluence": 1, "age_h": 0.0}) <= 2.0)
 
 print("== 聚類:同一則不同寫法要合併 ==")
 import datetime  # noqa: E402
