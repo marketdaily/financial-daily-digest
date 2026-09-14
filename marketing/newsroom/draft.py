@@ -10,6 +10,7 @@
 """
 import json
 import pathlib
+import re
 
 BRAND = json.loads((pathlib.Path(__file__).resolve().parent / "brand.json").read_text())
 
@@ -66,6 +67,11 @@ WRITE three things and return ONLY a JSON object with these keys:
   "caption"           - the Instagram/Facebook caption. Rules below.
   "threads_caption"   - the Threads version, IN TRADITIONAL CHINESE, under 300 characters,
                         same story, no hashtags. See CHINESE RULES below.
+  "topic_tag"         - two to six Chinese characters naming this story the way someone searching
+                        for it would type it, no "#", no spaces. Examples: 瑞典大選, 印尼渡輪,
+                        英國獨立. This becomes the Threads topic tag, which is how the post reaches
+                        people who do not follow us, so make it the obvious search term and not a
+                        clever one.
   "threads_chain"     - an array of 3 or 4 strings, the native Threads format. The first string is
                         a hook of at most 200 characters: the news in one line plus the single most
                         surprising detail. Each following string is at most 380 characters and adds
@@ -73,10 +79,7 @@ WRITE three things and return ONLY a JSON object with these keys:
                         the reader. No hashtags anywhere in the chain. Write it so each part still
                         makes sense to someone who scrolls past only the first one.
                         THIS CHAIN IS IN TRADITIONAL CHINESE. See CHINESE RULES below.
-                        End the FIRST string only with exactly one topic tag for the story, on its
-                        own line, in the form #標籤 (Chinese) with no spaces inside it. Use the
-                        words people searching this story would use, for example #瑞典大選 or
-                        #印尼渡輪. One tag, first post only, nowhere else in the chain.
+                        Put NO tags anywhere in the chain; the program adds one (see topic_tag).
 
 CAPTION RULES (these come from the two largest AI news accounts on Instagram; follow them exactly):
 1. First line states the news in one plain sentence, then 1 or 2 emoji at the end of that line.
@@ -161,6 +164,11 @@ def decorate(draft, facts, brand=None):
 
     chain = [c.strip() for c in (draft.get("threads_chain") or []) if c and c.strip()]
     if chain:
+        # 主題標籤由程式放,不靠模型記得。它是新帳號唯一不靠追蹤者被看到的入口,
+        # 「模型有時候會加」等於這個入口有時候不存在。
+        tag = re.sub(r"[#\s]", "", str(draft.get("topic_tag") or ""))[:12]
+        if tag and f"#{tag}" not in chain[0]:
+            chain[0] = chain[0].rstrip() + f"\n\n#{tag}"
         # handle 只掛在最後一則:每一則都掛等於在自己的串裡洗自己的名字
         if f"@{b['handle']}" not in chain[-1] and len(chain[-1]) < 440:
             chain[-1] = chain[-1] + f"\n\n@{b['handle']}"

@@ -161,6 +161,24 @@ check("台灣正當用法不該被誤殺(程序正義/雲端/後台/裡面)",
       not gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x"),
       str(gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x")))
 
+print("== 主題標籤由程式放,不靠模型記得 ==")
+_t = D.decorate({"headline": "h", "caption": "c", "threads_caption": "中文說明。",
+                 "topic_tag": "印尼渡輪", "source_url": FACTS["source_url"],
+                 "threads_chain": ["第一段。", "第二段。", "第三段？"]}, FACTS)
+check("模型給了標籤字面,程式把它放到根貼文",
+      _t["threads_chain"][0].endswith("#印尼渡輪"), _t["threads_chain"][0][-14:])
+_ok, _why = gates.check(_t, FACTS, D.BRAND)
+check("程式放的標籤過得了閘", _ok, str(_why))
+_t2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "中文說明。",
+                  "topic_tag": "#印尼 渡輪", "source_url": FACTS["source_url"],
+                  "threads_chain": ["第一段。", "第二段。", "第三段？"]}, FACTS)
+check("標籤裡的井字號與空白會被清掉(否則變成兩個標籤)",
+      _t2["threads_chain"][0].endswith("#印尼渡輪"), _t2["threads_chain"][0][-14:])
+_t3 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "中文說明。",
+                  "source_url": FACTS["source_url"],
+                  "threads_chain": ["第一段。", "第二段。", "第三段？"]}, FACTS)
+check("模型沒給標籤時不會炸,也不會亂放", "#" not in _t3["threads_chain"][0])
+
 print("== 代表文章必須是讀得到的那一篇 ==")
 import datetime as _dt  # noqa: E402
 _now = _dt.datetime.now(_dt.timezone.utc)
