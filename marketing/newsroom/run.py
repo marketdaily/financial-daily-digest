@@ -18,6 +18,7 @@ from . import sources, rank, draft as D, gates, formats
 
 ROOT = pathlib.Path(__file__).resolve().parent
 OUT = ROOT / "drafts"
+LOG_FILE = ROOT.parents[0] / "social_out" / "post_log.jsonl"
 UA = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 "
       "(KHTML, like Gecko) Version/17.0 Safari/605.1.15")
 
@@ -183,7 +184,8 @@ def cmd_draft(args):
         out.append({"id": f"ai_{cand['key']}", "date": today, "lane": cand["lane"],
                     "score": cand["score"], "source": cand["src_label"],
                     "source_url": cand["url"], "story_keys": cand.get("story_keys", []),
-                    "facts": facts, "draft": d, "status": "pending_owner_review"})
+                    "facts": facts, "draft": d, "brand_handle": D.BRAND["handle"],
+                    "status": "pending_owner_review"})
 
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / f"{today}.json"
@@ -258,7 +260,8 @@ def cmd_roundup(args):
     today = datetime.date.today().isoformat()
     rec = [{"id": f"roundup_{today}", "date": today, "format": "roundup", "lane": "mixed",
             "source": facts["source_name"], "source_url": facts["source_url"],
-            "facts": facts, "draft": d, "status": "pending_owner_review"}]
+            "facts": facts, "draft": d, "brand_handle": D.BRAND["handle"],
+            "status": "pending_owner_review"}]
     _save(rec)
     return rec
 
@@ -281,15 +284,96 @@ def cmd_list(args):  # DEPRECATED 2026-09-14:世界新聞帳號不發教學型�
     today = datetime.date.today().isoformat()
     rec = [{"id": f"list_{abs(hash(topic)) % 10**8}", "date": today, "format": "listicle",
             "lane": "product", "topic": topic, "source": None, "source_url": None,
-            "facts": facts, "draft": d, "status": "pending_owner_review"}]
+            "facts": facts, "draft": d, "brand_handle": D.BRAND["handle"],
+            "status": "pending_owner_review"}]
     _save(rec)
     return rec
 
 
 def cmd_post(args):
-    print("post 尚未接上:對外發布需老闆先看過草稿並核可(2026-08-17 親令)。")
-    print("草稿在", OUT)
-    return 2
+    """把老闆核可過的草稿發出去。
+
+    鐵則(2026-08-17 親令):對外發布一律先給老闆看過。所以這支指令:
+      - 一定要指定 --id,不接受「全部發」
+      - 一定要帶 --confirm,不帶就只列出待審清單
+      - 發之前**重跑一次確定性閘**(草稿檔是純文字,可能被手改過;
+        發文是不可逆動作,重驗一次的成本遠低於發錯一則)
+      - 冪等靠 post_log.jsonl 的 (草稿 id, 平台) 粒度
+
+    預設只發 Threads:實測 Threads 每則 165-442 views、IG 每則 3。
+    IG/FB 需要圖卡,還沒接(而且那邊的觸及證明它不值得優先)。
+    """
+    from marketing.auto_post import load_env, post_threads_chain, post_threads_text
+
+    today = args.date or datetime.date.today().isoformat()
+    path = OUT / f"{today}.json"
+    if not path.exists():
+        print(f"{path} 不存在,今天沒有草稿。")
+        return 1
+    items = json.loads(path.read_text())
+
+    if not args.id:
+        print(f"{today} 待審草稿 {len(items)} 則(發文請帶 --id 與 --confirm):\n")
+        for it in items:
+            mark = "✅已發" if it.get("status") == "posted" else "⏳待審"
+            print(f"  {mark}  {it['id']}  [{it['lane']}]  {it['draft']['headline']}")
+        print("\n核稿頁:python -m marketing.newsroom.review > review.html")
+        return 0
+
+    hit = [it for it in items if it["id"] == args.id]
+    if not hit:
+        print(f"找不到草稿 {args.id}")
+        return 1
+    it = hit[0]
+    if it.get("status") == "posted":
+        print(f"{args.id} 已經發過了(冪等),不重發。")
+        return 0
+
+    # 品牌 handle 可能在草稿產出後改過(2026-09-14 就發生過一次)。
+    # handle 是**程式供給的常數**不是模型寫的內容,所以換掉它不動文意,
+    # 但一定要有依據(草稿記錄的 brand_handle),不能用猜的去比對 @xxx。
+    old_h = it.get("brand_handle")
+    cur_h = D.BRAND["handle"]
+    if old_h and old_h != cur_h:
+        print(f"  ℹ 草稿是在 @{old_h} 產的,品牌已改為 @{cur_h},替換後重驗")
+        blob = json.dumps(it["draft"], ensure_ascii=False).replace(f"@{old_h}", f"@{cur_h}")
+        it["draft"] = json.loads(blob)
+        it["brand_handle"] = cur_h
+
+    # 發文前重驗:草稿檔是純文字,可能被手改過;發文不可逆,重驗一次遠比發錯便宜
+    ok, why = gates.check(it["draft"], it["facts"], D.BRAND)
+    if not ok:
+        print("✗ 發文前重驗不過,不發:" + " / ".join(why))
+        return 2
+
+    chain = it["draft"].get("threads_chain") or []
+    if not chain:
+        print("✗ 這則草稿沒有 Threads 串,不發。")
+        return 2
+
+    print(f"即將發到 Threads({len(chain)} 則串):")
+    for i, seg in enumerate(chain, 1):
+        print(f"  [{i}] {seg[:60]}...")
+    if not args.confirm:
+        print("\n⚠️ 沒有帶 --confirm,不發。確認後加上 --confirm 再跑一次。")
+        return 0
+
+    env = load_env()
+    ok, res = post_threads_chain(env, chain)
+    LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with LOG_FILE.open("a", encoding="utf-8") as f:
+        f.write(json.dumps({"ts": datetime.datetime.now().isoformat(),
+                            "post": it["id"], "results": {"threads": {"ok": ok, "detail": res}}},
+                           ensure_ascii=False) + "\n")
+    if not ok:
+        print(f"✗ 發文失敗:{res}")
+        return 2
+    it["status"] = "posted"
+    it["posted_at"] = datetime.datetime.now().isoformat()
+    it["threads_ids"] = res.get("posted")
+    path.write_text(json.dumps(items, ensure_ascii=False, indent=1))
+    print(f"✅ 已發:{res.get('root')}(共 {len(res.get('posted', []))} 則)")
+    return 0
 
 
 def main():
@@ -298,7 +382,10 @@ def main():
     s = sub.add_parser("scan"); s.add_argument("-n", type=int, default=20)
     d = sub.add_parser("draft"); d.add_argument("-n", type=int, default=3)
     r = sub.add_parser("roundup"); r.add_argument("-n", type=int, default=6)
-    p = sub.add_parser("post"); p.add_argument("--confirm", action="store_true")
+    p = sub.add_parser("post")
+    p.add_argument("--id", help="要發的草稿 id;不給就只列出待審清單")
+    p.add_argument("--date", help="草稿日期 YYYY-MM-DD,預設今天")
+    p.add_argument("--confirm", action="store_true", help="真的發出去(不帶只做預演)")
     a = ap.parse_args()
     rc = {"scan": cmd_scan, "draft": cmd_draft, "roundup": cmd_roundup,
           "post": cmd_post}[a.cmd](a)

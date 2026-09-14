@@ -161,6 +161,19 @@ check("台灣正當用法不該被誤殺(程序正義/雲端/後台/裡面)",
       not gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x"),
       str(gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x")))
 
+print("== 品牌 handle 遷移(草稿產出後品牌改了) ==")
+_old = {"headline": "h", "caption": "c", "threads_caption": "中文說明。",
+        "source_url": FACTS["source_url"], "threads_chain": ["甲。", "乙。", "丙？"]}
+_oldb = dict(D.BRAND); _oldb["handle"] = "oldhandle"
+_od = D.decorate(_old, FACTS, _oldb)
+_ok, _why = gates.check(_od, FACTS, D.BRAND)
+check("⭐用舊 handle 產的草稿,在新品牌下重驗會被擋(否則會發出不存在的帳號名)",
+      not _ok and any("handle" in w for w in _why), str(_why))
+import json as _j
+_mig = _j.loads(_j.dumps(_od, ensure_ascii=False).replace("@oldhandle", f"@{D.BRAND['handle']}"))
+_ok, _why = gates.check(_mig, FACTS, D.BRAND)
+check("依草稿記錄的來源 handle 替換後就過得了閘", _ok, str(_why))
+
 print("== 主題標籤由程式放,不靠模型記得 ==")
 _t = D.decorate({"headline": "h", "caption": "c", "threads_caption": "中文說明。",
                  "topic_tag": "印尼渡輪", "source_url": FACTS["source_url"],
