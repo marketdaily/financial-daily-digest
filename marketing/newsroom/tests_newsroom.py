@@ -179,6 +179,28 @@ _t3 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "中文說
                   "threads_chain": ["第一段。", "第二段。", "第三段？"]}, FACTS)
 check("模型沒給標籤時不會炸,也不會亂放", "#" not in _t3["threads_chain"][0])
 
+print("== 數字閘的跨語言誤殺(比漏抓更糟:一直擋掉正確的稿) ==")
+_mf = {**FACTS, "summary": "The ruling was issued in November after a long hearing.",
+       "article_excerpt": "It said the order takes effect in November."}
+_md = D.decorate({"headline": "h", "caption": "c",
+                  "threads_caption": "法院在 11 月做出這個裁定。",
+                  "source_url": FACTS["source_url"]}, _mf)
+_ok, _why = gates.check(_md, _mf, D.BRAND)
+check("⭐英文 November → 中文「11 月」不該被判成捏造數字", _ok, str(_why))
+_nf = {**FACTS, "summary": "Eleven states joined the case.", "article_excerpt": "Eleven states."}
+_nd = D.decorate({"headline": "h", "caption": "c", "threads_caption": "有 11 個州加入。",
+                  "source_url": FACTS["source_url"]}, _nf)
+_ok, _why = gates.check(_nd, _nf, D.BRAND)
+check("英文 eleven → 中文 11 不該被判成捏造", _ok, str(_why))
+_bf = {**FACTS, "summary": "The court ruled on the case.", "article_excerpt": "No numbers here."}
+_bd = D.decorate({"headline": "h", "caption": "c", "threads_caption": "有 47 個州加入。",
+                  "source_url": FACTS["source_url"]}, _bf)
+_ok, _why = gates.check(_bd, _bf, D.BRAND)
+check("facts 裡真的沒有的數字照樣擋得住(修法不是放寬門檻)",
+      not _ok and any("沒有的數字" in w for w in _why), str(_why))
+check("沒出現在 facts 的月份不會被平白放行",
+      "11" not in gates._facts_numbers({"summary": "a hearing in March"}))
+
 print("== 可討論性:解「有觸及沒互動」的主訊號 ==")
 check("有兩邊立場的事分數高",
       rank.debatability({"title": "Minister criticised over deportation plan, denies wrongdoing",

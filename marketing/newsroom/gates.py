@@ -69,9 +69,34 @@ def _numbers(text):
     return out
 
 
+# 跨語言等價:英文原文的月份名與數字詞,中文會寫成阿拉伯數字。
+# 只有真的出現在 facts 裡的詞才換算,所以捏造的數字照樣擋得住。
+_MONTHS = {"january": "1", "february": "2", "march": "3", "april": "4", "may": "5",
+           "june": "6", "july": "7", "august": "8", "september": "9", "october": "10",
+           "november": "11", "december": "12"}
+_NUMWORDS = {"one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6",
+             "seven": "7", "eight": "8", "nine": "9", "ten": "10", "eleven": "11",
+             "twelve": "12", "thirteen": "13", "fourteen": "14", "fifteen": "15",
+             "sixteen": "16", "seventeen": "17", "eighteen": "18", "nineteen": "19",
+             "twenty": "20", "thirty": "30", "forty": "40", "fifty": "50", "sixty": "60",
+             "seventy": "70", "eighty": "80", "ninety": "90", "hundred": "100",
+             "thousand": "1000", "million": "1000000", "billion": "1000000000",
+             "first": "1", "second": "2", "third": "3", "fourth": "4", "fifth": "5",
+             "sixth": "6", "seventh": "7", "eighth": "8", "ninth": "9", "tenth": "10"}
+
+
+def _cross_language_numbers(blob_low):
+    """facts 裡的英文月份/數字詞對應的阿拉伯數字。"""
+    out = set()
+    for word, digit in list(_MONTHS.items()) + list(_NUMWORDS.items()):
+        if re.search(r"\b" + word + r"\b", blob_low):
+            out.add(digit)
+    return out
+
+
 def _facts_numbers(facts):
     blob = json.dumps(facts, ensure_ascii=False)
-    return _numbers(blob)
+    return _numbers(blob) | _cross_language_numbers(blob.lower())
 
 
 
