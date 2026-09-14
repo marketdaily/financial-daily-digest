@@ -9121,5 +9121,9 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 自測 15 條全過(對著「災難」寫不是對著「變化」寫)。⭐ 其中一條抓到 `sources.py` 的 reddit UA **硬編品牌名**,改名會漏掉 ⇒ 已改讀 brand.json。**改名 = 只改 `marketing/ainews/brand.json` 一個檔**,並有測試擋住再犯。
 - 改名候選 RDAP 實查(4 點校準:google.com/亂碼.com/openai.ai/亂碼.ai 全對):48 個候選只有 **emergentdaily** 的 .com 與 .ai **同時 free**;theaiwire/machinehour/silicondaily/circuitdaily/synthwire/latentdaily/axonfeed/tomorrowdaily/wavelengthai/airundown 的 .ai free。⚠️ **IG/Threads handle 可用性判不出來**(IG API 429、Threads 對不存在帳號也回 200,兩種探測器都沒過校準)⇒ 一律標 ❔ 不猜,由老闆在 App 當場試。
 - ⚠️ 自己踩的坑(記著):`pkill -f "marketing.ainews.run"` 會比對到**自己這行 bash 指令**而自殺(rc=-15),清程序要用 `ps -eo pid,args | grep 'x[y]z'` 排除自己。
-- 交付 Artifact(診斷+對標拆解+實際成品+四個待拍板決策+命名表+分期):https://claude.ai/code/artifact/ad36a95d-1f5c-4bdd-805b-cfd18d8815d4
+- **補上另外兩種版型**(對標拆解:新聞讓帳號活著,清單讓帳號長大——互動最高的全是 7 prompts/99 codes 這種存檔誘餌):`formats.py` roundup(24h 彙整輪播,來源層已聚類故幾乎零成本)+ listicle(完全不依賴新聞,15 題輪替)。三版型今日各產出 1 則可發布成品。
+- ⭐⭐ **三個「守衛看起來在跑但問錯問題」的缺陷,全是自測抓的不是我看出來的**:①`decorate()` 覆寫 `source_url` ⇒「模型不准自己換來源」那道閘**從上線起永遠射不出來**(掰的網址被安靜換成正確的,閘門看到的永遠相符)②數字溯源閘套到無來源的清單型=問錯問題,害那版型**結構上不可能出稿**(正解是改禁「查不了的統計型宣稱」不是放寬門檻)③驗證者只有一份 ⇒ 寫稿 prompt 要求解釋術語、驗證者把解釋判成加料,**兩個 prompt 互打,照做就被駁**(同 [[hub_selftest_honesty_lessons]] 的「兩系統守同一不變量兩半互判紅」)。自測 15→23 條。
+- ⚠️ 我自己踩的坑:`pkill -f "marketing.ainews.run"` 會比對到**自己這行 bash 指令**而自殺(rc=-15);清程序要用 `ps -eo pid,args | grep 'x[y]z'` 排除自己。
+- 交付 Artifact(診斷+對標拆解+三版型實際成品+閘門缺陷+四個待拍板決策+命名表+分期):https://claude.ai/code/artifact/ad36a95d-1f5c-4bdd-805b-cfd18d8815d4
+- **待老闆拍板四件**:①新帳號 vs 改名沿用(建議新帳號)②語言(建議英文)③短影片要不要做 ④要不要轉發別人爆紅影片(版權)。open items #1030–1033。
 - C 線雷達補算(晚):13 籃子;LV 老花打平/倒掛、Rolex 日本比台灣貴、vintage Chanel 紙上 25-37% 但對王吉娜售價只剩 0-10%;#1028 收,#1034 探針等老闆拍板。watchlist 加 lux_* 13 籃子(關稅:包 6.6%/錶 4%)
