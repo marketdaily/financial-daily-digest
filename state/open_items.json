@@ -10827,8 +10827,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 01:17",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 02:14",
+  "note": "老闆拍板:管理員就是他本人,不另加。資產歸屬風險(頁掛個人帳號)已當面告知,老闆決定維持現狀"
  },
  {
   "id": 1084,
@@ -11187,6 +11187,46 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 02:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1120,
+  "what": "明欣多頁站建置中(job 7d358825):/hours /vaccination /visit /pharmacy /pediatrics + 4 篇衛教;刻意不做 /internal-medicine(等 #1095 執照核對)",
+  "why": "尚未在生產驗證;單頁站是非品牌查詢 0/68 的結構性原因",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 02:14",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1121,
+  "what": "QFX 服務【總覽頁】(/services/)本身也要配圖,不能只有文字列表——老闆二次指示;目前 job f51a6cf1 只做六個服務子頁",
+  "why": "f51a6cf1 啟動後才收到這條,winrig job 無法中途傳訊;等它收工後我接著做,圖片來源同樣走 Unsplash/Pexels 可商用或本機生成",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 02:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1122,
+  "what": "QFX /about/(Studio)頁的滑動照片帶仍放自家產品截圖(md-home/geo-report/audit-report/quietfix/protoforge)——老闆親令:自己做過的 project 只准出現在 /work/",
+  "why": "build_v8.py:1133 trail + hover-image 清單;等 job f51a6cf1 建好 photo() helper 與本機生成的圖庫後,用同一套素材換掉,避免兩個 job 撞同一個 build_v8.py",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 02:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1123,
+  "what": "乾啦:Google Play 先擱著(老闆 09-15「等 Apple 先」);AAB/素材/問卷答案已備妥在 store-metadata/play/,等 iOS 結果再啟動",
+  "why": "老闆決定順序",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 02:34",
   "closed": null,
   "note": ""
  }
