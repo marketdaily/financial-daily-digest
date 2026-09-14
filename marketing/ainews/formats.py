@@ -25,6 +25,10 @@ Produce ONLY JSON:
                 then a blank line, then a single question to the reader ending in an emoji.
   "threads_caption" - under 420 characters: the opening line plus the three biggest items as
                 short lines, then the question.
+  "threads_chain"   - an array of 3 or 4 strings for the native Threads format. First string is a
+                hook of at most 200 characters naming the day's biggest item. Each following string
+                is at most 380 characters and covers different items. Last one ends with the
+                question. No hashtags anywhere.
 
 Rules (each one exists because a fact checker rejected a draft for breaking it):
 - Never state a number, name or date that is not in TODAY'S STORIES.
@@ -60,6 +64,10 @@ Produce ONLY JSON:
                 the post. Blank line. One question to the reader ending in an emoji.
   "threads_caption" - under 420 characters: the hook, three of the items compressed to one line
                 each, and the question.
+  "threads_chain"   - an array of 3 or 4 strings for the native Threads format. First string is a
+                hook of at most 200 characters. Each following string gives one or two of the items
+                in full so they are usable on their own. Last one ends with the question.
+                No hashtags anywhere.
 
 Rules (each one exists because a fact checker rejected a draft for breaking it):
 - Every item must be genuinely usable. No filler, no "be creative", no vague advice.

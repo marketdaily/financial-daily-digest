@@ -87,7 +87,8 @@ def check(draft, facts, brand, platform_limits=None, mode=None):
     # 1b. 文案裡不准出現 facts 以外的網址(模型很愛「補一個看起來合理的連結」)
     allowed_urls = {facts.get("source_url"), brand.get("site")}
     allowed_urls.discard(None)
-    for u in re.findall(r"https?://[^\s)\]]+", f"{cap} {th}"):
+    _chain_txt = " ".join(c for c in (draft.get("threads_chain") or []) if isinstance(c, str))
+    for u in re.findall(r"https?://[^\s)\]]+", f"{cap} {th} {_chain_txt}"):
         if not any(u.startswith(a) for a in allowed_urls):
             reasons.append(f"文案出現 facts 以外的網址:{u[:60]}")
 
@@ -102,8 +103,11 @@ def check(draft, facts, brand, platform_limits=None, mode=None):
     if mode == "sourced":
         # 有來源 → 每個數字都要能在 facts 裡找到(年份與清單序號除外)
         allowed = _facts_numbers(facts)
-        for field in ("caption", "threads_caption", "headline"):
-            for n in _numbers(draft.get(field, "")):
+        checked = {f: draft.get(f, "") for f in ("caption", "threads_caption", "headline")}
+        for i, seg in enumerate(draft.get("threads_chain") or []):
+            checked[f"threads_chain[{i+1}]"] = seg if isinstance(seg, str) else ""
+        for field, val in checked.items():
+            for n in _numbers(val):
                 if n in allowed or _YEARISH.match(n):
                     continue
                 if n in {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}:
@@ -111,8 +115,11 @@ def check(draft, facts, brand, platform_limits=None, mode=None):
                 reasons.append(f"{field} 出現 facts 裡沒有的數字:{n}")
     else:
         # 無來源 → 數字放行(那是給讀者的指令),但任何查不了的統計型宣稱一律擋
-        for field in ("caption", "threads_caption", "headline"):
-            m = _STAT_CLAIM.search(draft.get(field, "") or "")
+        _fields = {f: draft.get(f, "") for f in ("caption", "threads_caption", "headline")}
+        for i, seg in enumerate(draft.get("threads_chain") or []):
+            _fields[f"threads_chain[{i+1}]"] = seg if isinstance(seg, str) else ""
+        for field, val in _fields.items():
+            m = _STAT_CLAIM.search(val or "")
             if m:
                 reasons.append(f"{field} 出現無法查證的統計型宣稱:{m.group(0)[:40]}")
         for it in (draft.get("items") or []):
@@ -144,6 +151,27 @@ def check(draft, facts, brand, platform_limits=None, mode=None):
     tags = re.findall(r"#[A-Za-z0-9_]+", cap)
     if not (3 <= len(tags) <= 8):
         reasons.append(f"hashtag 數量 {len(tags)},應在 3–8")
+
+    # 6b. Threads 串
+    chain = draft.get("threads_chain")
+    if chain is not None:
+        if not isinstance(chain, list) or not (2 <= len(chain) <= 5):
+            reasons.append(f"threads_chain 段數不合(需 2–5,實際 {len(chain) if isinstance(chain, list) else 'not a list'})")
+        else:
+            for i, seg in enumerate(chain):
+                if not isinstance(seg, str) or not seg.strip():
+                    reasons.append(f"threads_chain 第 {i+1} 段是空的")
+                    continue
+                if len(seg) > 500:
+                    reasons.append(f"threads_chain 第 {i+1} 段超長 {len(seg)}/500")
+                if re.findall(r"#[A-Za-z0-9_]+", seg):
+                    reasons.append(f"threads_chain 第 {i+1} 段不該有 hashtag")
+            joined = "\n".join(c for c in chain if isinstance(c, str))
+            n_handle = joined.count(f"@{brand['handle']}")
+            if n_handle != 1:
+                reasons.append(f"threads_chain 的品牌 handle 出現 {n_handle} 次(應剛好 1 次,且在最後一段)")
+            elif f"@{brand['handle']}" not in chain[-1]:
+                reasons.append("threads_chain 的品牌 handle 不在最後一段")
 
     # 7. Threads 版不該整包 hashtag(平台慣例不同,照抄 IG 只是雜訊)
     if len(re.findall(r"#[A-Za-z0-9_]+", th)) > 2:

@@ -8,7 +8,7 @@ import sys
 import pathlib
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))
-from marketing.ainews import gates, rank, draft as D, sources  # noqa: E402
+from marketing.ainews import gates, rank, draft as D, sources, formats  # noqa: E402
 
 FAILS = []
 
@@ -73,6 +73,46 @@ d = good_draft(); d["caption"] = "x" * 2400 + f" @{D.BRAND['handle']} #a #b #c"
 ok, why = gates.check(d, FACTS, D.BRAND)
 check("超長被擋", not ok and any("超長" in w for w in why), str(why))
 
+print("== Threads 串 ==")
+def _chain(segs, facts=FACTS):
+    d = {"headline": "h", "caption": "c", "threads_caption": "t",
+         "source_url": facts["source_url"], "threads_chain": list(segs)}
+    return D.decorate(d, facts)
+
+_c = _chain(["hook line", "second thing", "third thing and a question?"])
+ok, why = gates.check(_c, FACTS, D.BRAND)
+check("乾淨的串放行", ok, str(why))
+check("handle 自動補在最後一段且只有一次",
+      _c["threads_chain"][-1].endswith(f"@{D.BRAND['handle']}")
+      and "\n".join(_c["threads_chain"]).count(f"@{D.BRAND['handle']}") == 1)
+
+_c = _chain(["only one segment"])
+ok, why = gates.check(_c, FACTS, D.BRAND)
+check("單段不成串被擋", not ok and any("段數" in w for w in why), str(why))
+
+_c = _chain(["a", "b", "c"]); _c["threads_chain"][0] += f" @{D.BRAND['handle']}"
+ok, why = gates.check(_c, FACTS, D.BRAND)
+check("每段都掛 handle(在自己串裡洗名字)被擋",
+      not ok and any("handle 出現" in w for w in why), str(why))
+
+_c = _chain(["a", "b", "c #ai #tech"])
+ok, why = gates.check(_c, FACTS, D.BRAND)
+check("串裡塞 hashtag 被擋", not ok and any("不該有 hashtag" in w for w in why), str(why))
+
+_c = _chain(["a", "x" * 520, "c"])
+ok, why = gates.check(_c, FACTS, D.BRAND)
+check("串的單段超長被擋", not ok and any("超長" in w for w in why), str(why))
+
+_c = _chain(["a", "revenue jumped to 4,200 units", "c"])
+ok, why = gates.check(_c, FACTS, D.BRAND)
+check("串裡的捏造數字一樣被擋(閘門不能只看 caption)",
+      not ok and any("threads_chain" in w and "沒有的數字" in w for w in why), str(why))
+
+_c = _chain(["a", "see https://spam.example/x", "c"])
+ok, why = gates.check(_c, FACTS, D.BRAND)
+check("串裡夾帶外部網址被擋", not ok and any("以外的網址" in w for w in why), str(why))
+
+_lfx = formats.listicle_facts("t") if False else None
 print("== 相關性閘 ==")
 check("通用源的非 AI 新聞被濾掉",
       not rank.is_ai_relevant({"title": "Woman died of measles complications",
@@ -128,7 +168,6 @@ _ok, _why = gates.check(_d3, FACTS, D.BRAND)
 check("文案內文夾帶外部網址被擋", not _ok and any("以外的網址" in w for w in _why), str(_why))
 
 print("== 清單型沒有外部來源,模型不准自己生一個網址 ==")
-from marketing.ainews import formats  # noqa: E402
 lf = formats.listicle_facts("prompts for x")
 ld = {"headline": "h", "caption": "c", "threads_caption": "t", "source_url": None}
 ld = D.decorate(ld, lf)

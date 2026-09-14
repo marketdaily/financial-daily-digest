@@ -149,6 +149,44 @@ def post_threads(env, image_url, caption):
     return (True, p["id"]) if ok and "id" in p else (False, p)
 
 
+def post_threads_text(env, text, reply_to_id=None):
+    """Threads 純文字貼文;帶 reply_to_id 就變成接在自己那則下面的回覆。
+
+    Threads 原生玩法是「一則鉤子 + 幾則接續」,不是把 IG 文案整包貼過來。
+    純文字不需要圖,所以這是全平台最便宜的一次觸及。
+    """
+    uid, tok = env["THREADS_USER_ID"], env["THREADS_ACCESS_TOKEN"]
+    form = {"media_type": "TEXT", "text": text, "access_token": tok}
+    if reply_to_id:
+        form["reply_to_id"] = reply_to_id
+    ok, c = http(f"{THREADS}/{uid}/threads", "POST", form=form)
+    if not ok or "id" not in c:
+        return False, c
+    time.sleep(6)
+    ok, pub = http(f"{THREADS}/{uid}/threads_publish", "POST",
+                   form={"creation_id": c["id"], "access_token": tok})
+    return (True, pub["id"]) if ok and "id" in pub else (False, pub)
+
+
+def post_threads_chain(env, segments):
+    """一串 Threads:第一則是根,其餘逐則回在**前一則**下面。
+
+    ⚠️ 每一則都要接在前一則(而不是全部接在根)——全掛在根上在 Threads 的介面
+    會攤成平行的散則,讀者看不出順序,整串的意義就沒了。
+    中途失敗就停,不繼續往下發:半串比不發更糟。
+    """
+    ids, prev = [], None
+    for i, seg in enumerate(segments):
+        ok, res = post_threads_text(env, seg, reply_to_id=prev)
+        if not ok:
+            return False, {"posted": ids, "failed_at": i, "detail": res}
+        ids.append(res)
+        prev = res
+        if i + 1 < len(segments):
+            time.sleep(4)
+    return True, {"posted": ids, "root": ids[0]}
+
+
 def get_trending_audio(env):
     """IG Audio API:不帶 search_query 預設回傳 trending 曲目(只含 Meta 授權第三方使用的音樂)。
     目前(2026-07-10)此帳號拿到的第三方曲庫是空的(權限通、回 200 但 0 筆,疑區域/逐步開放);

@@ -54,6 +54,12 @@ WRITE three things and return ONLY a JSON object with these keys:
   "headline"          - 6 to 10 words, for the image card. No emoji. Title case off; sentence case.
   "caption"           - the Instagram/Facebook caption. Rules below.
   "threads_caption"   - the Threads version, under 420 characters, same story, no hashtags.
+  "threads_chain"     - an array of 3 or 4 strings, the native Threads format. The first string is
+                        a hook of at most 200 characters: the news in one line plus the single most
+                        surprising detail. Each following string is at most 380 characters and adds
+                        one new thing, not a restatement. The last string ends with the question to
+                        the reader. No hashtags anywhere in the chain. Write it so each part still
+                        makes sense to someone who scrolls past only the first one.
 
 CAPTION RULES (these come from the two largest AI news accounts on Instagram; follow them exactly):
 1. First line states the news in one plain sentence, then 1 or 2 emoji at the end of that line.
@@ -102,6 +108,13 @@ def decorate(draft, facts, brand=None):
     if len(th) < 460:
         th += f"\n\n@{b['handle']}"
     draft["threads_caption"] = th
+
+    chain = [c.strip() for c in (draft.get("threads_chain") or []) if c and c.strip()]
+    if chain:
+        # handle 只掛在最後一則:每一則都掛等於在自己的串裡洗自己的名字
+        if f"@{b['handle']}" not in chain[-1] and len(chain[-1]) < 440:
+            chain[-1] = chain[-1] + f"\n\n@{b['handle']}"
+        draft["threads_chain"] = chain
     # ⚠️ 這裡曾經寫成 draft["source_url"] = facts["source_url"](直接覆寫)。
     # 那一行讓 gates 的第一道閘(「模型不准自己換來源」)從上線起永遠射不出來 ——
     # 模型掰的網址會被安靜換成正確的,閘門看到的永遠是相符的兩個值,報綠。
