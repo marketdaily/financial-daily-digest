@@ -1,0 +1,83 @@
+[
+ {
+  "id": "roundup_2026-09-15",
+  "date": "2026-09-15",
+  "format": "roundup",
+  "lane": "mixed",
+  "source": "BBC, NYT, SCMP",
+  "source_url": "https://www.bbc.co.uk/news/videos/cx2z5gjj838o?at_medium=RSS&at_campaign=rss",
+  "facts": {
+   "title": "Daily AI roundup",
+   "summary": "Watch: Why a Russian strike on train near Ukraine-Poland border could mark an escalation | France Mocked U.S. for Human Rights Vote, Then Quietly Apologized | China rejects calls for ‘pacing’ on AI development, fearing it would entrench US tech lead | Jury discharged in Boris Johnson wedding plot trial | Trump’s mail-in voting restrictions blocked by a second judge",
+   "source_url": "https://www.bbc.co.uk/news/videos/cx2z5gjj838o?at_medium=RSS&at_campaign=rss",
+   "source_name": "BBC, NYT, SCMP",
+   "also_reported_by": [],
+   "lane": "frontier",
+   "report_age_hours_NOT_event_age": null,
+   "article_excerpt": "No casualties were reported after a Russian drone struck a train shortly after Boris Johnson and top European officials left the area. After the Trump administration blocked a new ambassador to Washington, the country expressed regret for a post from a French official social media account. Calls by US tech leaders for a voluntary slowdown in artificial intelligence development have run into sharp pushback from Chinese researchers and state media, who question whether the proposal is a genuine push for responsibility or an effort to entrench America’s technological lead. The debate int A jury fails to reach a verdict for Tim Speers who was accused of planning a protest at the event. A second federal judge late on Sunday moved to block President Donald Trump’s administration from implementing a new ‌US Postal Service (USPS) rule that would tighten mail-in voting requirements, though the US Supreme Court is still weighing the administration’s request to overturn a separate order ",
+   "stories": [
+    {
+     "title": "Watch: Why a Russian strike on train near Ukraine-Poland border could mark an escalation",
+     "url": "https://www.bbc.co.uk/news/videos/cx2z5gjj838o?at_medium=RSS&at_campaign=rss",
+     "source": "BBC"
+    },
+    {
+     "title": "France Mocked U.S. for Human Rights Vote, Then Quietly Apologized",
+     "url": "https://www.nytimes.com/2026/09/14/world/europe/france-ambassador-trump-tweet.html",
+     "source": "NYT"
+    },
+    {
+     "title": "China rejects calls for ‘pacing’ on AI development, fearing it would entrench US tech lead",
+     "url": "https://www.scmp.com/tech/policy/article/3367448/china-rejects-calls-pacing-ai-development-fearing-it-would-entrench-us-tech-lead?utm_source=rss_feed",
+     "source": "SCMP"
+    },
+    {
+     "title": "Jury discharged in Boris Johnson wedding plot trial",
+     "url": "https://www.bbc.co.uk/news/articles/c9e8enr1m41yo?at_medium=RSS&at_campaign=rss",
+     "source": "BBC"
+    },
+    {
+     "title": "Trump’s mail-in voting restrictions blocked by a second judge",
+     "url": "https://www.scmp.com/news/world/united-states-canada/article/3367478/trumps-mail-voting-restrictions-blocked-second-judge?utm_source=rss_feed",
+     "source": "SCMP"
+    }
+   ]
+  },
+  "draft": {
+   "headline": "A drone, an apology and a fight over AI",
+   "cards": [
+    {
+     "title": "Drone strikes train near Ukraine-Poland border",
+     "line": "No casualties were reported after a Russian drone struck a train shortly after Boris Johnson and European officials left the area."
+    },
+    {
+     "title": "France regrets post mocking the US",
+     "line": "France expressed regret for a post from a French official social media account after the Trump administration blocked a new ambassador."
+    },
+    {
+     "title": "China rejects calls to pace AI",
+     "line": "Chinese researchers and state media have pushed back on US tech leaders' calls for a voluntary slowdown in AI development."
+    },
+    {
+     "title": "Jury discharged in wedding plot trial",
+     "line": "The jury was discharged after failing to reach a verdict for Tim Speers, accused of planning a protest at the wedding."
+    },
+    {
+     "title": "Second judge blocks mail-in voting rule",
+     "line": "A second federal judge moved to block a new US Postal Service rule that would tighten mail-in voting requirements."
+    }
+   ],
+   "caption": "A drone strike, a quiet apology and a fight over the pace of AI 🌍🤖\n\nBBC reports that a Russian drone struck a train near the Ukraine-Poland border, with no casualties reported. It hit shortly after Boris Johnson and top European officials left the area, and BBC frames it as something that could mark an escalation.\n\nFrance expressed regret for a post from a French official social media account that mocked the United States over a human rights vote. The regret came after the Trump administration blocked a new ambassador to Washington.\n\nUS tech leaders have called for pacing on AI, meaning a voluntary slowdown in development. Chinese researchers and state media pushed back, questioning whether the proposal is a genuine push for responsibility or an effort to entrench America's technological lead.\n\nA jury was discharged in the Boris Johnson wedding plot trial after it failed to reach a verdict. Tim Speers was accused of planning a protest at the event.\n\nA second federal judge moved to block a new US Postal Service rule that would tighten mail-in voting requirements. The US Supreme Court is still weighing the administration's request to overturn a separate order.\n\nIf the people in front call for a slowdown, is that responsibility or protection? 🤔\n\nSource: BBC, NYT, SCMP\n\nFollow @marketdailyhq for more.\n\n#news #worldnews #breakingnews #geopolitics #futuretech",
+   "threads_caption": "美國科技圈喊人工智慧該放慢，中國直接說不。\n\n中國研究者與官媒反對自願放慢開發，質疑這是真的為了負責任，還是為了讓美國保住技術領先。\n\n烏克蘭與波蘭邊境附近，一列火車被俄羅斯無人機擊中，沒有傷亡通報。Boris Johnson 和歐洲高層剛離開那一帶。\n\n川普政府擋下新任駐華府大使之後，法國為官方社群帳號嘲諷美國的貼文表達遺憾。\n\n放慢，到底是負責任，還是保住領先？\n\n@marketdailyhq",
+   "threads_chain": [
+    "美國科技圈開始喊人工智慧該放慢腳步，中國研究者和官媒的回應很直接：那比較像是想把領先鎖住。",
+    "SCMP 報導，美國科技界提出的是自願放慢，不是被逼著慢下來。中國研究者與官媒反彈，質疑這個提案到底是真的為了負責任，還是為了讓美國保住技術領先。同一句話，兩邊讀出完全不同的意思。",
+    "另外兩件事。烏克蘭與波蘭邊境附近有一列火車被俄羅斯無人機擊中，BBC 報導沒有傷亡通報，時間點就在 Boris Johnson 和歐洲高層離開那一帶之後，BBC 的說法是這可能代表一次升級。\n\n法國那邊，川普政府擋下新任駐華府大使之後，法國為官方社群帳號的一則貼文表達遺憾，那則貼文嘲諷美國在人權投票上的立場。",
+    "美國國內也有兩條線。第二位聯邦法官出手擋下美國郵政署的新規定，那條規定會收緊郵寄投票的要求；政府要求推翻另一道命令的聲請，最高法院還在審。英國則是 Boris Johnson 婚禮抗議案的陪審團無法達成裁決被解散，被告 Tim Speers 被控計畫在婚禮現場抗議。\n\n回到最吵的那題：由跑在前面的人提出放慢，你會讀成負責任，還是保住領先？\n\n@marketdailyhq"
+   ],
+   "source_url": "https://www.bbc.co.uk/news/videos/cx2z5gjj838o?at_medium=RSS&at_campaign=rss"
+  },
+  "brand_handle": "marketdailyhq",
+  "status": "pending_owner_review"
+ }
+]
