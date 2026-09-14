@@ -9128,3 +9128,7 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **待老闆拍板四件**:①新帳號 vs 改名沿用(建議新帳號)②語言(建議英文)③短影片要不要做 ④要不要轉發別人爆紅影片(版權)。open items #1030–1033。
 - C 線雷達補算(晚):13 籃子;LV 老花打平/倒掛、Rolex 日本比台灣貴、vintage Chanel 紙上 25-37% 但對王吉娜售價只剩 0-10%;#1028 收,#1034 探針等老闆拍板。watchlist 加 lux_* 13 籃子(關稅:包 6.6%/錶 4%)
 - 加團收尾:134 團→82 已核准/47 送審/6 未解(含 Hermes Agent=AI 軟體社團,略);FB 無 checkpoint(#1029 收)。探針候選 w1244179279 備好等老闆說「買」(#1035),dry-run 上限 ¥265,000
+- **老闆回「你全部都自己決定」＋「threads 也很重要」後的四個定案與執行**：①**Emergent Daily / @emergentdaily**——48 候選唯一 .com/.ai/IG/Threads 四位置全乾淨;⭐ **三個探測器前兩版都沒過校準,結果全部作廢重做**(IG 用 web_profile_info 在 winrig 回 429、在 Mac 回 401;最後用「HTML `<title>` 含 `@handle`」判準才 3/3 過校準;Threads 用同法但要先 `html.unescape`,否則 `&#064;` 永遠比不中而全判 FREE)。②語言＝英文 ③開新帳號不改名沿用 ④不轉發別人爆紅影片(不替老闆承擔版權風險)。
+- **Threads 原生回覆串**(`auto_post.post_threads_chain`):純文字不需圖=最便宜觸及;⚠️ 每則接在**前一則**而非全掛根上(全掛根上在 Threads 介面會攤成平行散則,讀者看不出順序);中途失敗即停(半串比不發更糟)。三版型 prompt 全部產 `threads_chain`,閘門擴到串裡——⭐ **數字溯源/統計型宣稱/外部網址三道閘原本只看 caption,等於串是沒人守的**。自測 23→36 條。
+- **`ainews_runner.sh` cron 已上線**(*/10 tick,07:30 draft／12:30 list／22:30 roundup,各自每日鎖+flock+成功戳記,kill switch `AINEWS_DISABLED`):**只產草稿不發文**。⭐ 首班驗收走完整真實路徑(`AINEWS_FORCE_SLOT=list`)：rc=0、戳記寫出、草稿產出並過驗證者、第二次跑被每日鎖擋住。⚠️ draft 與 roundup 兩個 slot 尚未在真實排程時間跑過(open item #1039)。
+- 改名驗證:新批次 3 則裡舊 handle 出現 **0 次**、新 handle 9 次 ⇒「改名只改 brand.json 一個檔」成立。
