@@ -53,13 +53,15 @@ FACTS (this is the only information you may use; inventing anything outside it i
 WRITE three things and return ONLY a JSON object with these keys:
   "headline"          - 6 to 10 words, for the image card. No emoji. Title case off; sentence case.
   "caption"           - the Instagram/Facebook caption. Rules below.
-  "threads_caption"   - the Threads version, under 420 characters, same story, no hashtags.
+  "threads_caption"   - the Threads version, IN TRADITIONAL CHINESE, under 300 characters,
+                        same story, no hashtags. See CHINESE RULES below.
   "threads_chain"     - an array of 3 or 4 strings, the native Threads format. The first string is
                         a hook of at most 200 characters: the news in one line plus the single most
                         surprising detail. Each following string is at most 380 characters and adds
                         one new thing, not a restatement. The last string ends with the question to
                         the reader. No hashtags anywhere in the chain. Write it so each part still
                         makes sense to someone who scrolls past only the first one.
+                        THIS CHAIN IS IN TRADITIONAL CHINESE. See CHINESE RULES below.
 
 CAPTION RULES (these come from the two largest AI news accounts on Instagram; follow them exactly):
 1. First line states the news in one plain sentence, then 1 or 2 emoji at the end of that line.
@@ -77,6 +79,25 @@ CAPTION RULES (these come from the two largest AI news accounts on Instagram; fo
    by the program.
 10. Do not give investment advice or suggest anyone buy or sell anything.
 11. {lane_brief}
+
+CHINESE RULES (apply ONLY to "threads_caption" and "threads_chain"; the Instagram caption, the
+headline, and any card or item text stay in English). The reader is in Taiwan.
+C1. Write 繁體中文 (Traditional Chinese). Not one Simplified character anywhere.
+C2. Taiwanese technical vocabulary, never mainland China vocabulary.
+    Correct:  影片 軟體 硬體 網路 資訊 人工智慧 螢幕 晶片 記憶體 演算法 伺服器 預設 程式碼
+              專案 資料庫 品質 雲端運算 行動裝置 部落格 網際網路 列印 雷射 快取 除錯 選單
+              登入 滑鼠 智慧型手機 影音
+    Wrong:    視頻 軟件 硬件 網絡 信息 人工智能 屏幕 芯片 內存 算法 服務器 默認 代碼
+              數據庫 質量 雲計算 移動端 博客 互聯網 打印 激光 緩存 調試 菜單 登錄 鼠標
+              智能手機
+C3. Write the way a Taiwanese person actually writes online. Short sentences. Never use
+    「首先」「其次」「綜上所述」「值得注意的是」「隨著…的發展」「不僅…更是」. No 成語 padding.
+    No exclamation marks.
+C4. The Chinese is NOT a translation of the English caption. Same facts, written natively.
+    A sentence that reads like machine translation is a failure.
+C5. Keep company and product names in their original English (OpenAI, Anthropic, Claude, Gemini,
+    GitHub). Do not invent Chinese names for products that have none.
+C6. Use 全形標點 (，。？「」) except inside English names and numbers.
 
 Return only the JSON object.
 """

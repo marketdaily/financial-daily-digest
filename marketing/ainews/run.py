@@ -48,6 +48,13 @@ ALLOWED, do not report these as problems:
   whether the definition is ACCURATE; flag it only if it is wrong or misleading.
 - Ordinary connective writing that carries no new claim.
 
+
+The fields "threads_caption" and "threads_chain" are written in Traditional Chinese for a
+Taiwanese reader; everything else is English. Apply the same checks to the Chinese. Additionally
+flag: any Simplified character, any mainland-China technical vocabulary where Taiwan uses a
+different word (視頻/軟件/網絡/信息/人工智能/屏幕/芯片/算法/代碼/質量…), and any sentence that
+reads as a machine translation of the English rather than as native Chinese.
+
 Return ONLY JSON: {{"verdict": "pass" or "fail", "problems": ["..."], "worst": "one sentence"}}
 A claim about the world that cannot be traced to FACTS is a fail. An accurate gloss is not.
 """
@@ -77,6 +84,12 @@ ALLOWED, do not report these as problems:
   "under 80 words"). These are directions to the reader, not claims about the world.
 - The brand handle, the follow line and the hashtag block. The program adds those, not the writer.
 - General craft advice about how to phrase a request.
+
+The fields "threads_caption" and "threads_chain" are written in Traditional Chinese for a
+Taiwanese reader; everything else is English. Apply the same checks to the Chinese. Additionally
+flag: any Simplified character, any mainland-China technical vocabulary where Taiwan uses a
+different word (視頻/軟件/網絡/信息/人工智能/屏幕/芯片/算法/代碼/質量…), and any sentence that
+reads as a machine translation of the English rather than as native Chinese.
 
 Return ONLY JSON: {{"verdict": "pass" or "fail", "problems": ["..."], "worst": "one sentence"}}
 """

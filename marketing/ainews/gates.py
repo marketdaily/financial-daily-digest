@@ -59,6 +59,56 @@ def _facts_numbers(facts):
     return _numbers(blob)
 
 
+
+# ── 中文閘(只套用在 Threads 欄位;IG/FB 是英文)─────────────────────────────
+# 兩個陷阱,英文沒有:
+#  ①簡體字混進來 —— 模型寫中文時很常漏幾個字。
+#  ②**用繁體字寫中國用語** —— 「視頻/軟件/芯片/算法」字是繁體、詞是中國的,
+#    簡繁檢查完全看不見,台灣讀者一眼出戲。這是比簡體字更難抓的那個,
+#    也是 memory「閘門看不見簡繁共用字詞」那條教訓的同一種東西。
+#
+# 取捨:寧可漏抓(false negative)也不要誤抓(false positive)。
+# 誤告會教人學會忽略告警,所以任何在台灣也合法的字詞一律不收進表裡
+# (例如「程序」——法律程序在台灣完全合法,雖然講程式時是中國用法;
+#  「雲」「后」「里」「面」「只」「台」「干」在繁體中都有正當用法)。
+_SIMPLIFIED_ONLY = set(
+    "这么说时实现发过还应该经经济产业务电脑网络开关闭门问题对样学习数据识别让给们与际总结"
+    "众军写备复够华击图变单卖买亿仅优传价儿党决减划剧动协个处体类组织权责员场项认讲论计设"
+    "访语读谁请资费质购贴车转输达远进连选边长间闻队阶险难页顺领风飞马验鱼鸟麦黄龙无韩国会"
+    "亚兴农医双术机检测试线统笔节范围题证监护尽张随营养级细纪续绩绪续纳纯纸线练组细织终绍"
+    "经统绿维绵综缓编缩网罗联职肃脏舰艺苏药虑视觉认订计训议讯记讲许论设访证评识译诉词试诗"
+)
+# 中國用語 → 台灣用語。key 必須是**在台灣不會有正當用法**的詞。
+_CN_TERMS = {
+    "視頻": "影片", "軟件": "軟體", "硬件": "硬體", "網絡": "網路", "信息": "資訊",
+    "人工智能": "人工智慧", "屏幕": "螢幕", "芯片": "晶片", "內存": "記憶體",
+    "算法": "演算法", "服務器": "伺服器", "默認": "預設", "代碼": "程式碼",
+    "數據庫": "資料庫", "質量": "品質", "雲計算": "雲端運算", "移動端": "行動裝置",
+    "博客": "部落格", "互聯網": "網際網路", "打印": "列印", "激光": "雷射",
+    "緩存": "快取", "調試": "除錯", "菜單": "選單", "登錄": "登入", "鼠標": "滑鼠",
+    "智能手機": "智慧型手機", "信息量": "資訊量", "軟件包": "套件",
+}
+# 中文寫作腔調:這些起手式一出現就不像台灣人在 Threads 上講話
+_ZH_STIFF = ["首先", "其次", "綜上所述", "值得注意的是", "總而言之", "不僅", "隨著"]
+
+
+def check_chinese(text, where):
+    """回 reasons[]。只給 Threads 欄位用。"""
+    out = []
+    simp = sorted({c for c in text if c in _SIMPLIFIED_ONLY})
+    if simp:
+        out.append(f"{where} 出現簡體字:{''.join(simp[:8])}")
+    for cn, tw in _CN_TERMS.items():
+        if cn in text:
+            out.append(f"{where} 用了中國用語「{cn}」(台灣用「{tw}」)")
+    for w in _ZH_STIFF:
+        if w in text:
+            out.append(f"{where} 出現書面語起手式「{w}」,不像台灣人在 Threads 上講話")
+    if not re.search(r"[\u4e00-\u9fff]", text):
+        out.append(f"{where} 應該是中文,但整段沒有中文字")
+    return out
+
+
 def check(draft, facts, brand, platform_limits=None, mode=None):
     """回 (ok, reasons[])。draft 需含 caption / threads_caption / headline / source_url。
 
@@ -172,6 +222,15 @@ def check(draft, facts, brand, platform_limits=None, mode=None):
                 reasons.append(f"threads_chain 的品牌 handle 出現 {n_handle} 次(應剛好 1 次,且在最後一段)")
             elif f"@{brand['handle']}" not in chain[-1]:
                 reasons.append("threads_chain 的品牌 handle 不在最後一段")
+
+    # 6c. Threads 欄位是中文(IG/FB 是英文)。品牌 handle 那行不算中文,先剝掉再驗。
+    if (brand.get("lang") or {}).get("threads", "").startswith("zh"):
+        _h = f"@{brand['handle']}"
+        if th.strip():
+            reasons += check_chinese(th.replace(_h, " "), "threads_caption")
+        for i, seg in enumerate(draft.get("threads_chain") or []):
+            if isinstance(seg, str) and seg.strip():
+                reasons += check_chinese(seg.replace(_h, " "), f"threads_chain[{i+1}]")
 
     # 7. Threads 版不該整包 hashtag(平台慣例不同,照抄 IG 只是雜訊)
     if len(re.findall(r"#[A-Za-z0-9_]+", th)) > 2:

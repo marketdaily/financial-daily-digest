@@ -29,7 +29,7 @@ FACTS = {"title": "OpenAI rules out IPO this year",
 def good_draft():
     d = {"headline": "OpenAI rules out an IPO this year",
          "caption": "OpenAI says it will not go public this year.",
-         "threads_caption": "OpenAI says no IPO this year.",
+         "threads_caption": "OpenAI 說今年不會上市。",
          "source_url": FACTS["source_url"]}
     return D.decorate(d, FACTS)
 
@@ -75,44 +75,85 @@ check("超長被擋", not ok and any("超長" in w for w in why), str(why))
 
 print("== Threads 串 ==")
 def _chain(segs, facts=FACTS):
-    d = {"headline": "h", "caption": "c", "threads_caption": "t",
+    d = {"headline": "h", "caption": "c", "threads_caption": "中文說明。",
          "source_url": facts["source_url"], "threads_chain": list(segs)}
     return D.decorate(d, facts)
 
-_c = _chain(["hook line", "second thing", "third thing and a question?"])
+_c = _chain(["鉤子這一句", "第二件事", "第三件事,你怎麼看?"])
 ok, why = gates.check(_c, FACTS, D.BRAND)
 check("乾淨的串放行", ok, str(why))
 check("handle 自動補在最後一段且只有一次",
       _c["threads_chain"][-1].endswith(f"@{D.BRAND['handle']}")
       and "\n".join(_c["threads_chain"]).count(f"@{D.BRAND['handle']}") == 1)
 
-_c = _chain(["only one segment"])
+_c = _chain(["只有一段"])
 ok, why = gates.check(_c, FACTS, D.BRAND)
 check("單段不成串被擋", not ok and any("段數" in w for w in why), str(why))
 
-_c = _chain(["a", "b", "c"]); _c["threads_chain"][0] += f" @{D.BRAND['handle']}"
+_c = _chain(["甲", "乙", "丙"]); _c["threads_chain"][0] += f" @{D.BRAND['handle']}"
 ok, why = gates.check(_c, FACTS, D.BRAND)
 check("每段都掛 handle(在自己串裡洗名字)被擋",
       not ok and any("handle 出現" in w for w in why), str(why))
 
-_c = _chain(["a", "b", "c #ai #tech"])
+_c = _chain(["甲", "乙", "丙 #ai #tech"])
 ok, why = gates.check(_c, FACTS, D.BRAND)
 check("串裡塞 hashtag 被擋", not ok and any("不該有 hashtag" in w for w in why), str(why))
 
-_c = _chain(["a", "x" * 520, "c"])
+_c = _chain(["甲", "文" * 520, "丙"])
 ok, why = gates.check(_c, FACTS, D.BRAND)
 check("串的單段超長被擋", not ok and any("超長" in w for w in why), str(why))
 
-_c = _chain(["a", "revenue jumped to 4,200 units", "c"])
+_c = _chain(["甲", "營收跳到 4,200 台", "丙"])
 ok, why = gates.check(_c, FACTS, D.BRAND)
 check("串裡的捏造數字一樣被擋(閘門不能只看 caption)",
       not ok and any("threads_chain" in w and "沒有的數字" in w for w in why), str(why))
 
-_c = _chain(["a", "see https://spam.example/x", "c"])
+_c = _chain(["甲", "看這裡 https://spam.example/x", "丙"])
 ok, why = gates.check(_c, FACTS, D.BRAND)
 check("串裡夾帶外部網址被擋", not ok and any("以外的網址" in w for w in why), str(why))
 
 _lfx = formats.listicle_facts("t") if False else None
+print("== 中文閘(Threads 是中文,IG 是英文) ==")
+_B = dict(D.BRAND)
+def _zh(seg_list, cap_zh="這是一段正常的中文說明。"):
+    d = {"headline": "h", "caption": "c", "threads_caption": cap_zh,
+         "source_url": FACTS["source_url"], "threads_chain": list(seg_list)}
+    return D.decorate(d, FACTS)
+
+_ok, _why = gates.check(_zh(["第一段鉤子。", "第二段說明。", "第三段收尾,你怎麼看？"]), FACTS, _B)
+check("乾淨的繁體中文串放行", _ok, str(_why))
+
+_ok, _why = gates.check(_zh(["这是简体字。", "第二段。", "第三段？"]), FACTS, _B)
+check("簡體字被擋", not _ok and any("簡體字" in w for w in _why), str(_why))
+
+_ok, _why = gates.check(_zh(["這個視頻很好看。", "第二段。", "第三段？"]), FACTS, _B)
+check("⭐用繁體字寫的中國用語「視頻」被擋(簡繁檢查看不見這種)",
+      not _ok and any("中國用語" in w and "視頻" in w for w in _why), str(_why))
+
+_ok, _why = gates.check(_zh(["這顆芯片用了新的算法。", "第二段。", "第三段？"]), FACTS, _B)
+check("「芯片」「算法」兩個中國用語都被點名",
+      not _ok and sum(1 for w in _why if "中國用語" in w) >= 2, str(_why))
+
+_ok, _why = gates.check(_zh(["首先我們來看這件事。", "第二段。", "第三段？"]), FACTS, _B)
+check("書面語起手式「首先」被擋", not _ok and any("起手式" in w for w in _why), str(_why))
+
+_ok, _why = gates.check(_zh(["This is English.", "第二段。", "第三段？"]), FACTS, _B)
+check("該中文的欄位整段是英文被擋", not _ok and any("沒有中文字" in w for w in _why), str(_why))
+
+_en = dict(_B); _en["lang"] = {"threads": "en"}
+_ok, _why = gates.check(_zh(["首先 this is English 視頻", "b", "c？"]), FACTS, _en)
+check("Threads 設定成英文時不跑中文閘(語言是設定不是硬編)",
+      _ok or not any(("中國用語" in w or "起手式" in w) for w in _why), str(_why))
+
+_ok, _why = gates.check(_zh(["第一段。", "第二段。", "第三段？"],
+                            cap_zh="這個軟件不錯。"), FACTS, _B)
+check("threads_caption 也要過中文閘(不能只守串)",
+      not _ok and any("threads_caption" in w and "中國用語" in w for w in _why), str(_why))
+
+check("台灣正當用法不該被誤殺(程序正義/雲端/後台/裡面)",
+      not gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x"),
+      str(gates.check_chinese("法律程序、雲端服務、後台、裡面都是台灣正當用法。", "x")))
+
 print("== 相關性閘 ==")
 check("通用源的非 AI 新聞被濾掉",
       not rank.is_ai_relevant({"title": "Woman died of measles complications",
@@ -153,44 +194,44 @@ check("rank/gates/run/sources 不含硬編品牌名", "marketdaily" not in src.l
       "有檔案硬編了品牌名,改名會漏掉")
 
 print("== 回歸:decorate 不准覆寫 source_url(覆寫會讓第一道閘永遠空轉) ==")
-_d = D.decorate({"headline": "h", "caption": "c", "threads_caption": "t",
+_d = D.decorate({"headline": "h", "caption": "c", "threads_caption": "中文說明。",
                  "source_url": "https://model-made-this-up.example"}, FACTS)
 check("模型給的錯網址不會被 decorate 安靜換掉",
       _d["source_url"] == "https://model-made-this-up.example", _d.get("source_url"))
 _ok, _why = gates.check(_d, FACTS, D.BRAND)
 check("走完整 decorate→gate 流程仍擋得住換來源",
       not _ok and any("source_url" in w for w in _why), str(_why))
-_d2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "t"}, FACTS)
+_d2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "中文說明。"}, FACTS)
 check("模型沒給 source_url 時由程式補上", _d2["source_url"] == FACTS["source_url"])
 _d3 = D.decorate({"headline": "h", "caption": "read more at https://spam.example/x",
-                  "threads_caption": "t"}, FACTS)
+                  "threads_caption": "中文說明。"}, FACTS)
 _ok, _why = gates.check(_d3, FACTS, D.BRAND)
 check("文案內文夾帶外部網址被擋", not _ok and any("以外的網址" in w for w in _why), str(_why))
 
 print("== 清單型沒有外部來源,模型不准自己生一個網址 ==")
 lf = formats.listicle_facts("prompts for x")
-ld = {"headline": "h", "caption": "c", "threads_caption": "t", "source_url": None}
+ld = {"headline": "h", "caption": "c", "threads_caption": "中文說明。", "source_url": None}
 ld = D.decorate(ld, lf)
 ok, why = gates.check(ld, lf, D.BRAND)
 check("清單型無來源可放行", ok, str(why))
-ld2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "t",
+ld2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "中文說明。",
                   "source_url": "https://made-up.example"}, lf)
 ok, why = gates.check(ld2, lf, D.BRAND)
 check("清單型模型自己生網址被擋", not ok and any("source_url" in w for w in why), str(why))
 _lg = D.decorate({"headline": "h", "caption": "Keep each answer under 60 words.",
-                  "threads_caption": "t", "items": [{"title": "a", "body": "in 3 bullets"}]}, lf)
+                  "threads_caption": "每個回答限 60 字。", "items": [{"title": "a", "body": "in 3 bullets"}]}, lf)
 _ok, _why = gates.check(_lg, lf, D.BRAND)
 check("清單型的指令數字(60 字/3 點)不該被當成捏造數字", _ok, str(_why))
 _lb = D.decorate({"headline": "h", "caption": "This saves 87% of your time.",
-                  "threads_caption": "t"}, lf)
+                  "threads_caption": "中文說明。"}, lf)
 _ok, _why = gates.check(_lb, lf, D.BRAND)
 check("清單型的統計型宣稱(87%)被擋", not ok if False else (not _ok and any("統計型" in w for w in _why)), str(_why))
-_lb2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "t",
+_lb2 = D.decorate({"headline": "h", "caption": "c", "threads_caption": "中文說明。",
                    "items": [{"title": "a", "body": "studies show this works"}]}, lf)
 _ok, _why = gates.check(_lb2, lf, D.BRAND)
 check("清單項目裡的「研究顯示」被擋", not _ok and any("統計型" in w for w in _why), str(_why))
 _ns = D.decorate({"headline": "h", "caption": "It rose 87% last quarter.",
-                  "threads_caption": "t"}, FACTS)
+                  "threads_caption": "中文說明。"}, FACTS)
 _ok, _why = gates.check(_ns, FACTS, D.BRAND)
 check("有來源的貼文仍走數字溯源閘(87 不在 facts)",
       not _ok and any("沒有的數字" in w for w in _why), str(_why))

@@ -23,12 +23,12 @@ Produce ONLY JSON:
   "caption"   - Instagram caption: one opening line summarising the day with 1-2 emoji at the end,
                 then a blank line, then one short paragraph per story (1 to 2 sentences each),
                 then a blank line, then a single question to the reader ending in an emoji.
-  "threads_caption" - under 420 characters: the opening line plus the three biggest items as
-                short lines, then the question.
+  "threads_caption" - IN TRADITIONAL CHINESE, under 300 characters: the opening line plus the
+                three biggest items as short lines, then the question.
   "threads_chain"   - an array of 3 or 4 strings for the native Threads format. First string is a
                 hook of at most 200 characters naming the day's biggest item. Each following string
                 is at most 380 characters and covers different items. Last one ends with the
-                question. No hashtags anywhere.
+                question. No hashtags anywhere. THIS CHAIN IS IN TRADITIONAL CHINESE.
 
 Rules (each one exists because a fact checker rejected a draft for breaking it):
 - Never state a number, name or date that is not in TODAY'S STORIES.
@@ -45,6 +45,25 @@ Rules (each one exists because a fact checker rejected a draft for breaking it):
   explanation the first time it appears, or it gets cut.
 - No em dashes. No @handles. No hashtags. No follow line. Those are added by the program.
 - No investment advice.
+
+CHINESE RULES (apply ONLY to "threads_caption" and "threads_chain"; the Instagram caption, the
+headline, and any card or item text stay in English). The reader is in Taiwan.
+C1. Write 繁體中文 (Traditional Chinese). Not one Simplified character anywhere.
+C2. Taiwanese technical vocabulary, never mainland China vocabulary.
+    Correct:  影片 軟體 硬體 網路 資訊 人工智慧 螢幕 晶片 記憶體 演算法 伺服器 預設 程式碼
+              專案 資料庫 品質 雲端運算 行動裝置 部落格 網際網路 列印 雷射 快取 除錯 選單
+              登入 滑鼠 智慧型手機 影音
+    Wrong:    視頻 軟件 硬件 網絡 信息 人工智能 屏幕 芯片 內存 算法 服務器 默認 代碼
+              數據庫 質量 雲計算 移動端 博客 互聯網 打印 激光 緩存 調試 菜單 登錄 鼠標
+              智能手機
+C3. Write the way a Taiwanese person actually writes online. Short sentences. Never use
+    「首先」「其次」「綜上所述」「值得注意的是」「隨著…的發展」「不僅…更是」. No 成語 padding.
+    No exclamation marks.
+C4. The Chinese is NOT a translation of the English caption. Same facts, written natively.
+    A sentence that reads like machine translation is a failure.
+C5. Keep company and product names in their original English (OpenAI, Anthropic, Claude, Gemini,
+    GitHub). Do not invent Chinese names for products that have none.
+C6. Use 全形標點 (，。？「」) except inside English names and numbers.
 """
 
 LISTICLE_PROMPT = """You write save-worthy list posts for a large Instagram account about AI.
@@ -62,12 +81,12 @@ Produce ONLY JSON:
                 1-2 emoji at the end. Blank line. Two or three short paragraphs explaining when
                 these help and what they are not. Blank line. A line telling the reader to save
                 the post. Blank line. One question to the reader ending in an emoji.
-  "threads_caption" - under 420 characters: the hook, three of the items compressed to one line
-                each, and the question.
+  "threads_caption" - IN TRADITIONAL CHINESE, under 300 characters: the hook, three of the items
+                compressed to one line each, and the question.
   "threads_chain"   - an array of 3 or 4 strings for the native Threads format. First string is a
                 hook of at most 200 characters. Each following string gives one or two of the items
                 in full so they are usable on their own. Last one ends with the question.
-                No hashtags anywhere.
+                No hashtags anywhere. THIS CHAIN IS IN TRADITIONAL CHINESE.
 
 Rules (each one exists because a fact checker rejected a draft for breaking it):
 - Every item must be genuinely usable. No filler, no "be creative", no vague advice.
@@ -78,6 +97,25 @@ Rules (each one exists because a fact checker rejected a draft for breaking it):
 - Do not write "today" or any date reference. This post should read the same in three months.
 - Every product or technical term a general reader would not know gets four words of explanation
   the first time it appears, or it gets cut.
+
+CHINESE RULES (apply ONLY to "threads_caption" and "threads_chain"; the Instagram caption, the
+headline, and any card or item text stay in English). The reader is in Taiwan.
+C1. Write 繁體中文 (Traditional Chinese). Not one Simplified character anywhere.
+C2. Taiwanese technical vocabulary, never mainland China vocabulary.
+    Correct:  影片 軟體 硬體 網路 資訊 人工智慧 螢幕 晶片 記憶體 演算法 伺服器 預設 程式碼
+              專案 資料庫 品質 雲端運算 行動裝置 部落格 網際網路 列印 雷射 快取 除錯 選單
+              登入 滑鼠 智慧型手機 影音
+    Wrong:    視頻 軟件 硬件 網絡 信息 人工智能 屏幕 芯片 內存 算法 服務器 默認 代碼
+              數據庫 質量 雲計算 移動端 博客 互聯網 打印 激光 緩存 調試 菜單 登錄 鼠標
+              智能手機
+C3. Write the way a Taiwanese person actually writes online. Short sentences. Never use
+    「首先」「其次」「綜上所述」「值得注意的是」「隨著…的發展」「不僅…更是」. No 成語 padding.
+    No exclamation marks.
+C4. The Chinese is NOT a translation of the English caption. Same facts, written natively.
+    A sentence that reads like machine translation is a failure.
+C5. Keep company and product names in their original English (OpenAI, Anthropic, Claude, Gemini,
+    GitHub). Do not invent Chinese names for products that have none.
+C6. Use 全形標點 (，。？「」) except inside English names and numbers.
 """
 
 # 清單型題目池:不依賴新聞,可無限輪替。刻意避開會過期的題目(版本號、價格)。

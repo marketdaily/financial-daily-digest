@@ -16,5 +16,11 @@
  "locked": false,
  "_decided": "2026-09-14 老闆授權「你全部都自己決定」後定案。四位置全乾淨(emergentdaily.com/.ai/IG/Threads 皆可用),且 emergent 正是 AI 領域指模型湧現能力的術語。",
  "display_name": "Emergent Daily | AI News",
- "_pending": "帳號與網域尚未建立/購買——需老闆本人裝置驗證與付款。在那之前 handle 仍指向未建立的帳號,post 指令維持未接。"
+ "_pending": "帳號與網域尚未建立/購買——需老闆本人裝置驗證與付款。在那之前 handle 仍指向未建立的帳號,post 指令維持未接。",
+ "lang": {
+  "instagram": "en",
+  "facebook": "en",
+  "threads": "zh-TW"
+ },
+ "_lang_note": "2026-09-14 老闆令:IG/FB 英文,Threads 繁體中文(台灣)。Threads 在台灣滲透率遠高於 IG,且中文 AI 新聞競爭稀薄。"
 }
