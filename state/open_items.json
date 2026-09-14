@@ -10377,8 +10377,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-14 15:55",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 00:16",
+  "note": "老闆拍板不改名、沿用 MarketDaily 與既有帳號,新帳號與新網域都不需要了"
  },
  {
   "id": 1039,
@@ -10387,8 +10387,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-14 15:55",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 00:16",
+  "note": "runner 已改名 newsroom_runner 並重寫排程;draft 與 roundup 兩個 slot 都已在真實路徑驗過,list slot 隨教學版型一起退役"
  },
  {
   "id": 1040,
@@ -10437,8 +10437,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-14 19:31",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 00:15",
+  "note": "2026-09-15 00:20 補驗通過:五張卡+繁中四則串,選題全是爭議題(烏波列車/法國人權投票/中國AI減速/強生婚禮案/川普郵寄投票)。刻意不走 runner 直接跑指令,今晚 22:30 的每日鎖保持乾淨"
  },
  {
   "id": 1045,
@@ -10497,8 +10497,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-14 19:33",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-14 20:36",
+  "note": "09-14 深夜已上線:六篇指南四語重建+板對板/FPC 加厚+新頁 台灣連接器廠商;rank_watch 33 字+AIO 欄;兩次部署 verify 全綠、40 頁實查 200。排名驗收另開"
  },
  {
   "id": 1051,
@@ -10547,6 +10547,106 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-14 20:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1056,
+  "what": "IG 簡介仍寫「試讀首月 4 折」,但全站 2026-07-09 已全面免費且金流下架",
+  "why": "替不存在的付費方案打折,點進去是死路,且與對外口徑「限時免費+早鳥鎖定」牴觸;另有「75+ 來源」「假新聞全過濾」兩個查不到出處的宣稱。IG 簡介 API 不開放寫入,需老闆在 App 改",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-14 20:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1057,
+  "what": "winrig Android 模擬器需要 KVM 權限:老闆在 winrig 終端機跑 `sudo usermod -aG kvm userdelvin && sudo chmod 666 /dev/kvm`(我的 session 被擋 sudo);暫時改在 Mac 跑 arm64 模擬器",
+  "why": "無 sudo,/dev/kvm 是 root:kvm 660",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-14 20:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1058,
+  "what": "皇海攻頂排名驗收:rank_watch 週一 09-21/09-28/10-05 三次量測,10-04 判準=第一梯隊 10 台灣字 ≥8 進前 3、Google AI 摘要引用 4→12、GSC 非品牌點擊 12→40;第二梯隊(板對板/FPC/連接器廠商 新頁)10-12 看進榜",
+  "why": "09-14 內容已上線但排名要 2–4 週才反映,尚未在生產驗證成效",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-14 20:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1059,
+  "what": "皇海指南外鏈(每篇 5–10 條台灣真外鏈):TECA 台灣電子連接產業協會入會列名、taiwantrade 經貿網、web66/台灣黃頁登錄、LinkedIn 公司頁每篇指南發一則——全部需公司名義或老闆帳號",
+  "why": "站內能做的(內容/表格/schema)已做完;權威度那一半只有公司名義能動,我不碰公司帳號登入",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-14 20:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1060,
+  "what": "Threads 外部互動仍為 0(13 追蹤者,樣本不足以判斷內容好壞)",
+  "why": "瓶頸是分發不是內容;能把陌生人變讀者的槓桿(大帳號底下留言)被 API 擋死,只能人工。需決定要不要人工做",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 00:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1061,
+  "what": "皇海 FB 粉專:詢價來源 SOCIAL 標籤(commit b98de6f2)尚未部署到正式站",
+  "why": "另一視窗正在改 guides(site/cn/v5.html、tools/build_guides.py 未 commit),此刻 deploy 會把別人做一半的東西發上客戶官網",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 00:23",
+  "closed": "2026-09-15 00:34",
+  "note": "改判:不是'我猜會撞到',是 deploy 閘門實測擋下——verify.py 報 /cn/guide-taiwan-connector-manufacturers 與產生器不一致(另一視窗正在改 build_guides.py/guide_bodies_v3.py)"
+ },
+ {
+  "id": 1062,
+  "what": "皇海 FB 粉專建立後:sameAs/llms.txt 要補 FB 網址、粉專要加皇海方管理員",
+  "why": "粉專由 Delvin 個人 FB 帳號建立,資產歸屬與 f1@kingconn.com.tw 原則一致前不算收乾;FB 網址未定前無法寫進 org_schema",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 00:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1063,
+  "what": "皇海:詢價來源 FB 標籤(commit b98de6f2)待部署——等 guides 重產",
+  "why": "2026-09-15 00:40 實跑 tools/deploy_preview.sh,verify 第 N 項『技術說明文與產生器一致』紅:/cn/guide-taiwan-connector-manufacturers。另一視窗正在改產生器,頁面未重產。等它收乾後重跑 deploy_preview.sh 即可",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 00:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1064,
+  "what": "COMPLIANCE_STRUCTURE.md 缺醫療法章節——明欣診所案只能直接套醫療法 §85/§86 審,法源沒有對應條文",
+  "why": "法源目前只寫投顧法;之後再接診所/醫美/健康類客戶會重複這個缺口",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 00:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1065,
+  "what": "明欣診所門診時間/電話/地址待客戶(老闆父母)逐項確認——照片上的表與我們七月紀錄「週六休、週日僅早診」不一致,已以照片為準",
+  "why": "事實以現場照片為準但未經客戶書面確認,診所資訊寫錯會害病人白跑",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 00:35",
   "closed": null,
   "note": ""
  }
