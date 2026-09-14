@@ -22,5 +22,20 @@
   "facebook": "en",
   "threads": "zh-TW"
  },
- "_lang_note": "2026-09-14 老闆令:IG/FB 英文,Threads 繁體中文(台灣)。Threads 在台灣滲透率遠高於 IG,且中文 AI 新聞競爭稀薄。"
+ "_lang_note": "2026-09-14 老闆令:IG/FB 英文,Threads 繁體中文(台灣)。Threads 在台灣滲透率遠高於 IG,且中文 AI 新聞競爭稀薄。",
+ "profile": {
+  "instagram": {
+   "display_name": "Emergent Daily | AI News",
+   "bio": "AI news, explained like you have never used it\nEvery claim traceable to a source\nNew here? Start with the pinned post"
+  },
+  "threads": {
+   "display_name": "Emergent Daily｜AI 新聞",
+   "bio": "用看得懂的話講 AI 新聞\n每個數字都查得到出處\n一天幾則，不洗版"
+  },
+  "facebook": {
+   "display_name": "Emergent Daily",
+   "bio": "AI news, explained like you have never used it."
+  }
+ },
+ "_profile_note": "Threads 沿用 IG 的 handle,但名稱欄與簡介各自一套:IG 的搜尋吃名稱欄,所以英文關鍵字放 IG;Threads 面向台灣讀者走中文。"
 }
