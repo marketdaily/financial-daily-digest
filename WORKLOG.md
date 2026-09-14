@@ -9100,3 +9100,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **做了**:哨兵 v2 `~/kingconn/tools/inquiry_pulse.py`(commit 8228a1b7):加漏斗意圖點擊 7d/前7d、GSC 點擊 7d/前7d、判讀口訣(管線紅/流量同時腰斬/常態波動);cron 09:35 改指 repo 檔,`~/.marketdaily-fallback` 舊副本刪除。手動跑 rc=0。
 - **冷信 v2 狀態(另一視窗的線,未動)**:batch 10 的 46 封首封 09:51 才入 queue,錯過 09:30 班,13:30 班起跑,DAILY_CAP=10 ⇒ 5 天寄完。
 - ⚠️ 我在 /api/click 手打了 1 次 rfq_cta 探針(clk:20260914 多 1);09-09 那張單的通知信是否寄達皇海信箱未逐封對帳。
+- **老闆 12:45 令:冷信首封每日上限 10→30**。`common.DAILY_CAP=30`、`send.TOTAL_CAP=60`(首封+跟進合計同步放大,免跟進被擠掉);`test_v2_sequence.py` 原寫死 10 假紅→改讀 DAILY_CAP,8 案全過;dry-run「將寄 30 封;跟進未到期 138」。13:30 班首發,batch 10 的 46 封兩天寄完。
