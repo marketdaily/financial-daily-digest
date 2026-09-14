@@ -10457,8 +10457,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-14 19:33",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 02:00",
+  "note": "v3.1.0 已上正式站,老闆 09-15 口頭放行"
  },
  {
   "id": 1047,
@@ -11007,8 +11007,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 01:43",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 02:00",
+  "note": "老闆已完成 DSA 貿易商狀態申報(非貿易商)"
  },
  {
   "id": 1102,
@@ -11107,8 +11107,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-15 01:54",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 02:00",
+  "note": "老闆已在 ASC 勾「不收集資料」並按發佈"
  },
  {
   "id": 1112,
@@ -11117,7 +11117,7 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-15 01:54",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 02:00",
+  "note": "正式站已部署 v3.1.0(ganla.pages.dev/app.js APP_VERSION=3.1.0),隱私政策改用不轉址的 /privacy"
  }
 ]

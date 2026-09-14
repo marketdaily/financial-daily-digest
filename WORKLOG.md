@@ -9225,3 +9225,11 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - Build `202609150147` 上傳成功(Delivery UUID 9ec8e379-…),處理狀態 VALID。
 - 未收乾:#1111 App 隱私問卷(API 不開放,老闆要在 UI 勾「不蒐集資料」)、#1112 正式站還是 v2.0
   但送審備註叫審查員去那裡測多人連線、#1101 DSA 貿易商狀態、#1048 商標檢索、#1071 Android 真機。
+
+## 2026-09-15 02:00 — 乾啦已送審 App Store ✅
+- 正式站 `ganla.pages.dev` 部署 v3.1.0(老闆放行);隱私政策網址改用不轉址的 `/privacy`(`.html` 會 308)。
+- 送審單 `1d82817a-a152-4855-beba-0a2d0409957e`,狀態 **WAITING_FOR_REVIEW**,submittedDate 2026-09-14T18:00:37Z。
+- ⭐ `POST /v1/reviewSubmissionItems` 的 409 會在 `meta.associatedErrors` 裡列出**所有**還缺什麼,
+  是唯一能機器讀的「送審前檢查表」——不要自己猜還差哪些欄位,直接讀它。本案只缺審查聯絡人四欄。
+- 發佈方式 AFTER_APPROVAL(過審自動上架)。年齡分級 17+。
+- 剩下:#1048 TIPO 商標檢索、#1071 Android 真機、Android 尚未送 Google Play。
