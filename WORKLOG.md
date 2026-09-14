@@ -9133,3 +9133,10 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - **`ainews_runner.sh` cron 已上線**(*/10 tick,07:30 draft／12:30 list／22:30 roundup,各自每日鎖+flock+成功戳記,kill switch `AINEWS_DISABLED`):**只產草稿不發文**。⭐ 首班驗收走完整真實路徑(`AINEWS_FORCE_SLOT=list`)：rc=0、戳記寫出、草稿產出並過驗證者、第二次跑被每日鎖擋住。⚠️ draft 與 roundup 兩個 slot 尚未在真實排程時間跑過(open item #1039)。
 - 改名驗證:新批次 3 則裡舊 handle 出現 **0 次**、新 handle 9 次 ⇒「改名只改 brand.json 一個檔」成立。
 - (續 2)官網一天六版:v4 照沃德母版 1:1(38deed1)、v5 Pinterest 方向 C(be70f45)、v6 老闆指定方向 B「台北在動」(43cc750)。老闆評語依序「worst i have ever seen」「still looks ai generated」「一點質感都沒有」。v6 加自審三輪(六條 1–5 對照 #19/#34/#20)才部署;⚠️ v6 照片用本機 Z-Image(Higgsfield token 401),與老闆「用我的額度」指令有落差,已開 open item。review 頁三張 Artifact 已發老闆。
+- **語言改成分平台(老闆令「ig use english, threads use chinese」)**:IG/FB 英文、Threads 繁體中文。⭐ 判斷:Threads 在台灣的用戶密度遠高於 IG,而中文 AI 新聞的競爭比英文稀薄得多,這個切法比我原本提的全英文更有機會。
+- **⭐⭐ 中文有兩個英文沒有的陷阱,兩個都做成確定性閘**(`gates.check_chinese`,只套 Threads 欄位):①簡體字混入 ②**用繁體字寫中國用語**(視頻/軟件/芯片/算法——字是繁體詞是中國的,**簡繁檢查完全看不見**,台灣讀者一眼出戲;這是 memory「閘門看不見簡繁共用字詞」的同一種東西)。第三道擋書面語起手式(首先/其次/綜上所述/值得注意的是)。⭐ 中國用語表**刻意排除在台灣也合法的詞**(程序正義/雲端/後台/裡面)——誤告會教人學會忽略告警,自測有一條專門守這件事。
+- ⭐ 改完後舊自測紅了 4 條,**紅得對**:舊樣本的 Threads 欄位還是英文,而合約已改成中文 ⇒ 修樣本不是放寬閘門。自測 36→45 條全過。
+- 實跑驗證(繁中串):「大家幾乎都是直接複製貼上」「寫了等於沒寫」「細節還沒確認,這裡先不猜」——台灣人真的會這樣打字,產品名保留英文,零簡體零中國用語。
+- 帳號門面文案已備好(brand.json `profile`):IG 英文名/簡介、Threads 中文名/簡介分兩套(Threads 沿用 IG 的 handle,但名稱欄與簡介各自一套;IG 的搜尋吃名稱欄所以英文關鍵字放 IG)。
+- ⚠️ 基建事故:winrig **整台離線約 4 分鐘**(Tailscale 顯示 offline,ping/SSH 皆不通),之後 Cloudflare tunnel 又閃爍數十分鐘 ⇒ MCP 全程 530。**備援通道 `ssh winrig` + `wsl -d Ubuntu` 全程可用**,改動靠 scp 送補丁檔進去執行(避開多層引號地獄)。⭐ 順手修:cron 的 python 加 `-u`,否則 stdout 塊緩衝 ⇒ log 要整支跑完才一次吐出,線上出事時看不到進度。
+- ⚠️ 今日 Claude session 額度在 19:00 前耗盡,draft 三選一只過 1 則(opus/sonnet/haiku 三層全滿)。引擎**正確 fail-closed**:驗證者打不通一律不放行。
