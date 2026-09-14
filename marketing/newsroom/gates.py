@@ -214,8 +214,16 @@ def check(draft, facts, brand, platform_limits=None, mode=None):
                     continue
                 if len(seg) > 500:
                     reasons.append(f"threads_chain 第 {i+1} 段超長 {len(seg)}/500")
-                if re.findall(r"#[A-Za-z0-9_]+", seg):
-                    reasons.append(f"threads_chain 第 {i+1} 段不該有 hashtag")
+                # ⚠️ 這裡原本是「串裡一律不准有 hashtag」——擋過頭了。
+                # Threads 每則允許**一個**主題標籤,那正是被推進主題動態的入口,
+                # 也就是新帳號唯一不靠追蹤者就能被看到的機制。我把流量入口自己關掉了。
+                # 現在:只有第一則(根)可以掛,且最多一個;其餘各則仍然一個都不准。
+                tags = re.findall(r"#[^\s#]+", seg)
+                if i == 0:
+                    if len(tags) > 1:
+                        reasons.append(f"threads_chain 根貼文最多一個主題標籤(實際 {len(tags)} 個)")
+                elif tags:
+                    reasons.append(f"threads_chain 第 {i+1} 段不該有主題標籤(只有根可以掛)")
             joined = "\n".join(c for c in chain if isinstance(c, str))
             n_handle = joined.count(f"@{brand['handle']}")
             if n_handle != 1:

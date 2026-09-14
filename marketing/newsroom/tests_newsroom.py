@@ -97,7 +97,7 @@ check("每段都掛 handle(在自己串裡洗名字)被擋",
 
 _c = _chain(["甲", "乙", "丙 #ai #tech"])
 ok, why = gates.check(_c, FACTS, D.BRAND)
-check("串裡塞 hashtag 被擋", not ok and any("不該有 hashtag" in w for w in why), str(why))
+check("非根的段落塞主題標籤被擋", not ok and any("只有根可以掛" in w for w in why), str(why))
 
 _c = _chain(["甲", "文" * 520, "丙"])
 ok, why = gates.check(_c, FACTS, D.BRAND)
@@ -122,6 +122,13 @@ def _zh(seg_list, cap_zh="這是一段正常的中文說明。"):
 
 _ok, _why = gates.check(_zh(["第一段鉤子。", "第二段說明。", "第三段收尾,你怎麼看？"]), FACTS, _B)
 check("乾淨的繁體中文串放行", _ok, str(_why))
+
+_ok, _why = gates.check(_zh(["第一段。\n#瑞典大選", "第二段。", "第三段？"]), FACTS, _B)
+check("⭐根貼文可以掛一個主題標籤(那是 Threads 的流量入口,不能自己關掉)", _ok, str(_why))
+_ok, _why = gates.check(_zh(["第一段。\n#甲 #乙", "第二段。", "第三段？"]), FACTS, _B)
+check("根貼文掛兩個標籤被擋", not _ok and any("最多一個主題標籤" in w for w in _why), str(_why))
+_ok, _why = gates.check(_zh(["第一段。", "第二段。\n#乙", "第三段？"]), FACTS, _B)
+check("非根貼文掛標籤被擋", not _ok and any("只有根可以掛" in w for w in _why), str(_why))
 
 _ok, _why = gates.check(_zh(["这是简体字。", "第二段。", "第三段？"]), FACTS, _B)
 check("簡體字被擋", not _ok and any("簡體字" in w for w in _why), str(_why))

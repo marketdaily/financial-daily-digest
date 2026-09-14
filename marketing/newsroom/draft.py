@@ -70,6 +70,10 @@ WRITE three things and return ONLY a JSON object with these keys:
                         the reader. No hashtags anywhere in the chain. Write it so each part still
                         makes sense to someone who scrolls past only the first one.
                         THIS CHAIN IS IN TRADITIONAL CHINESE. See CHINESE RULES below.
+                        End the FIRST string only with exactly one topic tag for the story, on its
+                        own line, in the form #標籤 (Chinese) with no spaces inside it. Use the
+                        words people searching this story would use, for example #瑞典大選 or
+                        #印尼渡輪. One tag, first post only, nowhere else in the chain.
 
 CAPTION RULES (these come from the two largest AI news accounts on Instagram; follow them exactly):
 1. First line states the news in one plain sentence, then 1 or 2 emoji at the end of that line.
