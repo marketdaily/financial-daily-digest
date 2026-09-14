@@ -9092,3 +9092,4 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - e2e `scripts/e2e.sh` 35 項全過(含權限邊界:外人看不到交付、requester 不能接自己單、provider 不能核准)。⭐ KV list 最終一致(~60s)會讓剛發的任務短暫不見⇒加 `recent:<prefix>` 索引合併。⭐ KV TTL 下限 60s(45 直接 400)。⭐ 同頁兩個 `id=board` 讓 `$()` 抓到標題,板面炸掉。
 - 老闆中途「dont make it look like fucking scam」:改掉「賣掉會浪費的額度」標題、假統計欄、USDT 出金、「寫信給我們轉帳」;頁尾+條款+FAQ 明寫營運者 MarketDaily 台北+同域信箱;Stripe 文案依實際狀態切換。
 - 未收尾見 open_items(Stripe key/webhook/legal-compliance/網域/真人首單)。
+- **同日砍案**:老闆看完成品說「delete this idea, its terrible」。已拆:Worker idletokens(含 custom domain)、KV namespace、~/idletokens、open items #1013–1018 關閉。GitHub repo marketdaily/idletokens 需 delete_repo scope(見收工摘要)。
