@@ -9409,3 +9409,78 @@ RED 每 6h 重推、恢復推 🟢;每輪順手回收孤兒 swap。首跑實推 
   兩個管道我都碰不到 ⇒ #1166 給老闆。⚠️ 但**GBP 本來就不在這條路徑上**:GBP 的擁有者是員工帳號,
   不是爸媽帳號,所以就算登進爸媽帳號也拿不到 GBP——真正的關鍵路徑只有「請員工加擁有者」(#1163)。
 - CF Rules 權限仍缺(#1092/#1115 的 www→apex 301 還是做不了,兩把 token 都 10000)。
+
+## 2026-09-15 22:0x–23:1x — /goal「修掉 MarketDaily 告警裡所有 bug」:後台 500 則未解決告警全面體檢
+起點:admin_events 740 則、**500 則未解決**。分群後逐條查根因,不只標已解決。
+
+### ⭐⭐ 今天最大的一件:日報其實有寄,是「交付訊號」斷了
+- watchdog 21:00 喊「🔴 日報極可能沒寄」、heartbeat 兩班各喊一則「今天沒成功寄出」——
+  **全部是假紅**。雲端 failover 兩班都接手成功:tw 29/29(GH run 34909190287)、
+  us 30/30(run 34968784782)。
+- 真因在 `daily_digest.yml` 的 **Persist public digest archive**:`git commit` 成功後
+  `git pull --rebase` 撞到本 job 自己跑日報時改到、卻沒 git add 的其他 tracked 檔 →
+  `cannot pull with rebase: You have unstaged changes` → **exit 128,push 整行沒跑**。
+  runner 是一次性的,commit 隨 job 結束蒸發 ⇒ 公版存檔既不在網站也不在 origin。
+  而交付判準正是「網站 OR origin」⇒ 兩軌皆暗 ⇒ 守望犬與 heartbeat 一起喊沒寄。
+  `continue-on-error: true` 又讓整個 run 標成 ✅,**零人知道**。
+- 修:① pull 改 `-c rebase.autoStash=true`(runner 一次性,樹上改動全是本 job 副產物;
+  winrig 本機「絕不 --autostash」鐵則的前提是多 session 共用一棵樹,不適用於此)
+  ② 新增一步:Persist 失敗即推 admin 明講「信寄了、存檔沒推、接下來那則沒寄是假紅」。
+- ⭐ **heartbeat 的判準本身也違規**:它問的是「winrig **本機 log** 有沒有『發送完成』」,
+  而雲端接手的日子正好就是 winrig 出事的日子 ⇒ 結構上必定誤報。CLAUDE.md 鐵則寫得很清楚:
+  交付判準只准呼叫 `main._archive_delivered()` 本人。已改兩段式(另一條腿交付了 → 降級 🟠
+  「雲端已接手,信沒少,但 winrig 要查」;查不到一律當未交付照告)。
+- ⚠️ 代價:09-15 兩班公版存檔**永久遺失**(open #1170,低風險,信已送達)。
+
+### 根因鏈:C 槽塞爆 → WSL VM 崩 → 一整天的 cron 被殺
+- 05:00–14:00 幾乎每一輪 cron 都被殺在半路(fortune_fulfill 389/1194 輪無結束行、
+  phish_guard 142、lead_reply_watch 52),cb_server 24h 內被 keepalive 拉起 63 次。
+- ⭐⭐ **今天才上線的 C 槽守衛,在 cron 底下從來沒成功執行過一次**:
+  `subprocess.run(["powershell.exe", ...])` 用裸檔名,靠 WSL 把 Windows PATH 併進來才找得到——
+  互動 shell 有,**cron 沒有** ⇒ 每輪 FileNotFoundError。當天那則 17GB 告警其實是人在
+  終端機手動跑出來的。沉默的守衛 = 沒有守衛。改 `statvfs("/mnt/c")` 為主路(零 interop 相依)、
+  PowerShell 絕對路徑為退路,已用空 PATH 實測 rc=0。
+
+### 誤報/失明根因(修的是判準,不是消音)
+| 告警 | 根因 |
+|------|------|
+| `fleet_liveness` 報 line_agent 靜默 10 天 | 假紅:它每分鐘健康執行,只是「待回 0」走快速路徑 `exit 0` **從不蓋成功戳記**。判準要分清「沒跑」與「跑了但沒事做」。補 `_cron_ok_stamp` → 艦隊 152 jobs 全綠 |
+| 跨機大腦同步異常(9 則) | `sync.sh` 把自己的輸出寫進 repo 內**被 git 追蹤的** `sync_cron.log`,commit 之後還會再寫兩行 ⇒ 後置檢查永遠看到自己弄髒的檔,**結構上不可能通過**。改 gitignore |
+| `kingconn_compat_claim_lint` 天天 2 處違規 | 顯示用相對路徑被直接拿去 `load_workbook`,cron 的 cwd 不是 repo 根。文字掃描那支早就分開了絕對/顯示路徑,xlsx 這支沒跟上 |
+| `key_health` brevo「key 死了」 | 只重試**傳輸層例外**;廠商回 HTTP 500 走另一條路零重試。已補 5xx/408 重試(401/403/429 不重試),順手修掉「重試後仍失敗卻寫『第 N 次才通』」的假綠措辭 |
+| `kingconn_phish_guard` 一週 10 則 | cron */2,IMAP 偶發 read timeout 就整支 traceback。加一次傳輸層重試(seen 表以 message-id 去重,重試安全) |
+| 自主學習部已停機(12 則) | 狀態是 **08-18 老闆親令**(吃 weekly limit),不是忘了關。旗標是空檔不帶理由 ⇒ 守衛分不出「故意」與「忘了」,對一個已拍板的決定敲了 28 天門。旗標補理由,`driver.sh` 改成「帶理由→每 7 天並帶出理由;空旗標→維持每天」 |
+
+### 夜巡自測四紅(都是測試自己的耦合,不是被測物壞了)
+- `log_contract_scan`:**第 5 次同類復發** —— 閉標籤寫成群組 `</(?:p|div|li)>` 時,markup
+  判別的三道簽名全接不到(③要求 `</` 後緊接字母,群組是 `</(`)。補簽名④。
+  另兩條(kol_agent 相對時間、newsroom 疑問句標題)是靠 second/should 這種泛用英文字幹
+  連到毫不相干 shell log 行的偽關聯,走 baseline 人工分流。
+- `compliance_watch`:84 則突變序列跑頂到自宣告的 220s 天花板被記 rc=124。宣告上限就是 240s
+  ⇒ 正解是**變快**不是調數字。改 4 路並行(每 worker 一份完整沙盒),鑑別力一字不改,
+  220s→129.2s。坑:`set -u` 下 `local a=$1 b=$SANDBOX/w$a` 會 unbound variable。
+- `time_travel_test`:月長型 fixture `today().replace(day=31)` 在 30 天的月份**基準線就壞**
+  (掃描器正確判 ALREADY_BROKEN)。月長型做不到日期無關(九月配 31/89/181/367 的落點,
+  那個 D 不存在;二月更沒有更短的月),換成寫死未來日期型時炸彈。
+- `content_seo`:blog meta desc 因為正文一句「Hardware & Communications」含 `&` 就**整篇回退**
+  成 45 寬罐頭 stub。姊妹呼叫端 `site_structured_data.py` 早把正解寫在註解裡(屬性槽轉義、
+  JSON-LD 給原始字串),blog 沒跟上。順手抓到:轉義後寬度會讓剛好卡上限的文章從
+  「過短 HIGH」翻成「過長 HIGH」——量尺要量真的會寫進屬性槽的那串字。82 篇全過。
+
+### 告警看板本身的 bug
+- `resolve_admin_alert.sh` 只標掉**第一則**:推播去重擋的是「推播」不是「事件」,同一根因
+  常躺著 5~11 則。修完照慣例打一次,後台仍一整排紅 ⇒ 看板永遠清不乾淨,而它的用途正是
+  「Delvin 只看後台就知道哪些處理完」。worker 改成標掉所有未解決的匹配項並回 count。
+  本輪一次清掉 77 + 16 則。
+
+### 自行恢復/已核實(非 bug)
+GitHub Actions 已解封(實射 daily_digest.yml / pages_deploy.yml 皆 alive)、goldprice 500 已好
+(渠道 20/22 可用 0 壞)、`kingconn_channel_reply_watch` 憑證鍵名已由別視窗補上、
+皇海寄件備份對帳 73/85 缺 0、tunnel 已通。
+
+### 還沒收(open items)
+- #1169 記憶索引超支 29%(22145/17100)+ 12 個 hub 索引行掉了召回觸發字 + 34 則孤兒 —— 兩層索引
+  撞到設計天花板,恢復觸發字會讓超支更嚴重,需要一輪完整 hubify/groom,不適合夾在告警巡檢裡順手做。
+- #1170 09-15 兩班公版存檔永久遺失。
+- 需要老闆本人的:皇海寄件主機被 Trend Micro RBL 列黑名單、PRO360 點數/信用卡、TaskerGo 儲值、
+  HN 帳號申訴、永豐 API 過檔逾期、乾啦被 Apple 退件、FMP 免費層 429。
