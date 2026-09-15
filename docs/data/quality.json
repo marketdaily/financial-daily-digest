@@ -111,7 +111,9 @@
     "done": null,
     "lateness_min": null,
     "verdict": "incomplete",
-    "llm_tiers": {}
+    "llm_tiers": {
+     "gemini": 1
+    }
    }
   ]
  },
@@ -136,5 +138,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-09-15T12:08:01Z"
+ "generated_utc": "2026-09-15T12:38:02Z"
 }
