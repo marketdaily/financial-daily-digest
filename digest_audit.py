@@ -37,6 +37,44 @@ TW_MORNING_ACTION_RE = re.compile(
 _TW_TICKER_UNIVERSE = None
 
 
+# 白名單新鮮度(2026-09-16 補):見下方 _tw_universe_age_days 的說明。
+TICKER_UNIVERSE_STALE_DAYS = 7
+_TW_TICKER_UNIVERSE_AGE = None
+
+
+def _tw_universe_path():
+    import os
+    for p in (os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                           "scripts", ".tw_names_cache.json"),
+              "scripts/.tw_names_cache.json"):
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def _tw_universe_age_days():
+    """白名單檔多舊了(天);檔不在回 None。
+
+    ⚠️ 2026-09-16:`_is_real_ticker` 的正確性整個架在這份名表上,而這一側**直接開磁碟**,
+    不走 data_fetcher.tw_name_map()(那支才會每小時重抓 TWSE/TPEx)。也就是說稽核用的
+    universe 新不新鮮,取決於別人有沒有跑過、跑成功沒有——而全庫沒有任何一處在量它。
+    失敗模式想完:上游連續抓失敗(2026-07-09 winrig certifi 過期害 TPEx SSL 全滅就是一次),
+    磁碟名表凍住 ⇒ **新上市的標的在舊表裡查不到 ⇒ 判定非證券 ⇒ 放行** ⇒ 這道防線在它
+    最該作用的地方(最新、最容易被公版清單帶進來的標的)先瞎掉,而且完全無聲。
+    日報那一側對「抓不到」有明確降級語義(沿用舊名字,不歸零);稽核這一側原本沒有。
+    ⇒ 量出來,當成 MED 記在報告裡(不擋寄信、不進 retry 鏈,只是不准它繼續無聲)。
+    """
+    import os
+    import time
+    p = _tw_universe_path()
+    if not p:
+        return None
+    try:
+        return (time.time() - os.path.getmtime(p)) / 86400.0
+    except OSError:
+        return None
+
+
 def _tw_ticker_universe():
     global _TW_TICKER_UNIVERSE
     if _TW_TICKER_UNIVERSE is None:
@@ -574,6 +612,17 @@ def audit_digest(
             preview = ", ".join(foreign[:8])
             fails.append({"check": "portfolio_lens_foreign_ticker", "severity": "high",
                           "msg": f"組合透視混入非用戶持股標的({preview})— 個人化區塊只准列真實持股"})
+
+        # 17. 上面那道防線的白名單本身是不是舊的(見 _tw_universe_age_days)。
+        #     只在真的用到白名單的場景檢查(有持股的個人化報告),不對純公版報告製造噪音。
+        age = _tw_universe_age_days()
+        if age is None:
+            fails.append({"check": "ticker_universe_stale", "severity": "med",
+                          "msg": "台股代號白名單檔不存在 — portfolio_lens_foreign_ticker 的台股那半形同關閉"})
+        elif age > TICKER_UNIVERSE_STALE_DAYS:
+            fails.append({"check": "ticker_universe_stale", "severity": "med",
+                          "msg": f"台股代號白名單已 {age:.0f} 天沒更新(>{TICKER_UNIVERSE_STALE_DAYS})"
+                                 " — 新上市標的查不到會被判非證券而放行,這道防線正在半瞎"})
 
     return fails
 
