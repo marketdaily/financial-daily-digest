@@ -9279,3 +9279,20 @@ harness 三模式全綠、fleet 靜默名單 2→1。剩下兩件是老闆的:LI
 - 重新驗:742 字 / 9 圖 / 字圖比 82;med_ad_gate PASS、零壞圖/零溢出/零對比不足/零 JS 錯誤、
   JS-off 仍可見(std 69.17);線上 md5 == 本機。對照頁已更新到 v2。
 
+
+## 2026-09-15 21:1x — WSL 反覆整台崩掉的根因:C 槽滿了(不是 OOM)
+症狀:終端機全掛、顯示 press Enter to restart 按了沒反應、要重開才能 `claude --resume`。
+**根因**:C 槽剩 **61MB**(930GB 滿)→ WSL 的 `swap.vhdx` 寫不進去 → kernel
+`Read/Write-error on swap-device (8:32:*)` → 換不回來的頁面讓 mysqld / init-systemd /
+SessionLeader 吃 **SIGBUS(fatal signal 7)** → PID 1 死 → 整個 WSL VM 崩掉(uptime 歸零)。
+⭐ **不是 OOM**:journalctl 七次開機只有一次有 OOM 行,三次崩潰全是 swap I/O 錯誤
+(boot -3/-2/-1 各 130/66/21 行)。往 .wslconfig 加記憶體/swap 完全治不到。
+證據鏈:Windows 事件記錄 Hyper-V-VmSwitch id=71(VM 拆除)18:35 / 20:13 / 21:00,
+對得上 journalctl `--list-boots` 的三次重開。
+**當場處置**:刪掉 Temp 裡 GUID `30175DC2-…` 的孤兒 swap.vhdx(3 天前死掉那台 VM 留的,
+15.22GB)⇒ C 槽 61MB → 17.8GB。活著那台的 swap 被 VM 獨佔鎖住,刪不動 = 天然保險。
+⭐⭐ **零告警**:艦隊 90+ 支 runner 沒有任何一支在看宿主機磁碟,崩三次沒人響。
+補上 `~/.marketdaily-fallback/disk_space_watch.py`(cron `17 * * * *`):門檻**對著災難寫**
+= .wslconfig 的 swap 值 + 8GB(free < swap 上限那刻 swap 就換不進去了),狀態轉變才推、
+RED 每 6h 重推、恢復推 🟢;每輪順手回收孤兒 swap。首跑實推 webpush+desktop 皆送達。
+未收乾:#1160 C 槽仍只有 17GB(門檻 24),真正的肥肉是 ComfyUI 模型 130GB+ 與 /home 214GB,砍哪個要老闆決定。

@@ -11569,5 +11569,35 @@
   "opened": "2026-09-15 20:58",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1158,
+  "what": "王董最在意「被抄走」:DigiKey 上架＝價格/庫存/交期對全世界公開,需他知情決定",
+  "why": "DigiKey 會公開顯示轉售價與可售庫存,這是上架的代價不是可調選項;我已備好說明但尚未送到王董面前",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 21:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1159,
+  "what": "248 份完整工程圖在官網無登入公開且刻意加了 OCR 讓 Google 搜得到,與王董「怕被抄」的立場可能衝突",
+  "why": "這是既有狀態非本次造成,且與 SEO/design-in 策略綁在一起;要當取捨提給王董確認,不可自行改動",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 21:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1160,
+  "what": "winrig C 槽只剩 17GB(門檻 24GB),WSL 隨時可能再崩;要清 ComfyUI 舊模型/關 hiberfil/搬 /home 大目錄,等老闆決定砍哪個",
+  "why": "回收孤兒 swap 只買到 15GB,治標;真正的肥肉是 ComfyUI 130GB+ 模型與 /home 214GB,動它們要老闆拍板",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 21:11",
+  "closed": null,
+  "note": ""
  }
 ]
