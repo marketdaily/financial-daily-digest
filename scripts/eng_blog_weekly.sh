@@ -31,11 +31,21 @@ WEEK=$(( ( $(date +%s) - $(date -d "$START" +%s) ) / 604800 + 1 ))
 [ "$WEEK" -ge 1 ] || exit 0
 DONE=0; [ -f "$PUB" ] && DONE=$(wc -l < "$PUB")
 
+# ⚠️ 2026-09-16:原本用 `grep -qF "$title" "$PUB"` 拿**日曆整格文字**去 published.log 找。
+# 兩邊本來就不會逐字相同——日曆格子寫的是題目草稿(還帶「(本篇,已完稿)」「—— 已發布 …」
+# 這些後綴),published.log 記的是上線後的正式標題。於是第 1 篇從發布那天起就一直被判成
+# 「還沒發」,告警的「下一篇」整整指錯了兩個月,而它長得完全正常所以沒人發現。
+# ⇒ 改用兩個穩定訊號:①日曆格子已被標「已發布」②題目的**前綴鍵**(第一個 : 或 ( 之前)
+#   出現在 published.log 裡。兩者任一成立即視為已發。
 NEXT_HINT=""
 if [ -f "$PUB" ]; then
   NEXT_HINT=$(grep -E '^\|' "$CAL" | grep -vE '^\|[- ]+\||週 |週次|Week' | while IFS= read -r line; do
     title=$(echo "$line" | awk -F'|' '{print $4}' | xargs)
-    [ -n "$title" ] && ! grep -qF "$title" "$PUB" && { echo "$title"; break; }
+    [ -z "$title" ] && continue
+    case "$title" in *已發布*) continue ;; esac
+    key=$(printf '%s' "$title" | sed 's/[:(（].*$//' | xargs)
+    [ -n "$key" ] && grep -qF "$key" "$PUB" && continue
+    printf '%s\n' "$title"; break
   done | head -1)
 else
   NEXT_HINT=$(grep -E '^\|' "$CAL" | grep -vE '^\|[- ]+\||週 |週次|Week' | head -1 | awk -F'|' '{print $4}' | xargs)

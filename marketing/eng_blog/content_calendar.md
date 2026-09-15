@@ -6,7 +6,7 @@
 |---|---|---|---|
 | 1 | 2026-08-02 | LLM council + judge:多模型仲裁系統 75 天實錄(本篇,已完稿) | `analyzer.py` council 區、`digest_audit.py`、`main.py` `_audit_with_retry` |
 | 2 | 2026-08-09 | Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的 —— **已發布 2026-08-12**(`/blog/eng-audit-taxonomy-202608` + `-en-`;動筆查證發現實際 30 項+1 docstring 幽靈,稿內正面更正) | `digest_audit.py` 全檔、memory 事故群、大綱見下 |
-| 3 | 2026-08-16 | 資料隔離事故報告:公版觀察清單怎麼混進「你的持股」 | `digest_audit.py:491-508`、大綱見下 |
+| 3 | 2026-08-16 | 資料隔離事故報告:公版觀察清單怎麼混進「你的持股」 —— **已發布 2026-09-16**(`/blog/eng-portfolio-lens-202609` + `-en-`;查證時發現白名單註解寫 12k 實際 15,273,且稽核側沒人在量它多舊 ⇒ 當場補 `ticker_universe_stale` 檢查) | `digest_audit.py:491-508`、大綱見下 |
 | 4 | 2026-08-23 | 開源發布文:把 council+judge+audit 抽成可重用的最小可靠層 | 第 1-3 篇的機制彙整;發布 repo 需先過 secret 掃描與老闆拍板 |
 | 5 | 2026-08-30 | 免費層 LLM 產能工程:TPM vs TPD、配額桶隔離、晚報保留桶 | `analyzer.py:570-668` `_llm_generate` 註解群(TPD 200,000/197,364、保留桶設計)、memory `capability_free_llm_capacity_sourcing` |
 | 6 | 2026-09-06 | 確定性修復層:不靠 LLM 聽話的五道後處理防線 | `main.py:84-260`(`_repair_undefined_classes`、`_escape_stray_lt`、休市措辭、晨間/今晚動作窗口注入) |
