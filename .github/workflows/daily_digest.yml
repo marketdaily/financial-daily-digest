@@ -116,7 +116,11 @@ jobs:
       # commit 而 fail 時,不可把整個 run 標成 failure——winrig 的 cloud_run_count 以
       # 「completed+success=雲端已代寄」判斷要不要讓位,run 結論必須反映寄信成敗而非存檔成敗
       # (2026-07-28 實例:備援 run 寄出了信卻因 push race 標 failure)。
+      # continue-on-error 的用意是「存檔失敗不要擋掉已經寄出去的信」,但它也讓這一步
+      # 失敗時整個 run 照樣 ✅ —— 09-15 兩班連續失敗、run 都是 success,沒有任何人知道。
+      # ⇒ 保留 continue-on-error,另外補一步把失敗大聲講出來(見下一個 step)。
       - name: Persist public digest archive
+        id: persist_archive
         if: success() && env.SKIP_SEND != '1' && github.event.inputs.dry_run != '1'
         continue-on-error: true
         run: |
@@ -134,6 +138,30 @@ jobs:
             echo "No new public digest to commit."
           else
             git commit -m "chore(digest): persist public archive $(date -u +%Y-%m-%d) (cloud failover)"
-            git pull --rebase origin main
+            # ⚠️ 2026-09-15 事故:裸 `git pull --rebase` 撞到「本輪自己跑日報時改到、但沒被
+            # git add 的其他 tracked 檔」⇒ `cannot pull with rebase: You have unstaged changes`
+            # → exit 128,**push 整行沒執行**。commit 只留在 runner 上,隨 job 結束蒸發。
+            # 後果不是少一份存檔而已:交付訊號(網站 OR git origin)兩軌都沒亮 ⇒ 守望犬第二檢
+            # 喊「日報極可能沒寄!」、heartbeat 喊「今天沒成功寄出」——**信其實 29/29、30/30
+            # 都寄出去了**。雲端備援每接手一次就製造一對假紅,而假紅正好落在最該被相信的那則。
+            # 這裡用 --autostash 是安全的:runner 是一次性的,樹上的未追蹤改動全是本 job 自己
+            # 的副產物,沒有別視窗的 WIP 可偷(winrig 本機那條線的「絕不 --autostash」鐵則
+            # 是為了多 session 共用一棵樹,前提不同,不適用於此)。
+            git -c rebase.autoStash=true pull --rebase origin main
             git push origin HEAD:main
           fi
+
+      # 存檔沒推上去 = 交付訊號兩軌皆暗 = 守望犬與 heartbeat 會在幾十分鐘後推「日報沒寄」
+      # 的假紅。與其讓人去追一則假紅,不如在這裡就講清楚「信寄了、存檔沒推」。
+      - name: Alert if archive persist failed
+        if: always() && steps.persist_archive.outcome == 'failure'
+        env:
+          MARKETDAILY_ALERT_TOKEN: ${{ secrets.MARKETDAILY_ALERT_TOKEN }}
+        run: |
+          MSG="🟠 雲端備援 ${{ github.event.inputs.market }} 班:信已寄出,但【公版存檔沒推上 origin】(Persist 步驟失敗)。"
+          MSG="$MSG 交付訊號兩軌都不會亮 ⇒ 守望犬/heartbeat 接下來的「日報沒寄」是假紅,別照字面追。"
+          MSG="$MSG 查 GitHub Actions run ${{ github.run_id }} 的 Persist public digest archive 步驟。"
+          curl -sS -X POST "https://marketdaily-alert-worker.delvin-12345678.workers.dev/internal/admin-line-push" \
+            -H "Authorization: Bearer $MARKETDAILY_ALERT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$(python3 -c 'import json,sys;print(json.dumps({"message":sys.argv[1]}))' "$MSG")" || true
