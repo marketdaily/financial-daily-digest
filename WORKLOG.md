@@ -9550,11 +9550,23 @@ Stop hook 擋下「剩 5 則都需要老闆」那句收工詞,回去逐則重查
   理由 09-15 中午就查到(Guideline 2.1 要實體裝置錄影),當天 20:03 用雲端真機產出錄影,
   並已掛上 App Store review 附件(id 38c3c0bb,9.8MB)、審核備註逐條重寫。用 ASC API 實查
   版本狀態 REJECTED / reviewSubmission UNRESOLVED_ISSUES ⇒ **只剩「按送出」一個動作**(#1180)。
-- **永豐 API 過檔逾期** — 我本來也要歸給老闆,一查**是偵測器自己瞎了**:shioaji 1.7.0 的 login()
-  拿掉 `fetch_contract`,`check_signed` 每輪 TypeError ⇒「過檔生效了沒」根本量不到
-  (memory「簽署生效偵測器看門人自己是啞的」第二次發作,這次兇手是上游換介面)。
-  修法不寫死任何一版簽名,用 `inspect` 問 SDK 本人吃不吃得下該參數。修好後**實際登入回查權威狀態
-  stock=False / futopt=None ⇒ 告警是真的**,該催營業員。36/36 突變全咬住。
+- **永豐 API 過檔逾期** — ⚠️ **這一則我先寫錯又自己更正,兩個錯都記在這裡**:
+  ① 我用 `/usr/bin/python3`(shioaji **1.7.0**)跑 `check_signed.py`,吃到
+     `TypeError: login() got an unexpected keyword argument 'fetch_contract'`,就判定
+     「偵測器瞎了」。**但生產路徑不是那個解譯器** —— cron 用的是
+     `~/.venvs/shioaji-bridge/bin/python`(shioaji **1.5.6**,login 仍收 fetch_contract),
+     log 一路正常印「尚未生效 states={'stock': False, 'futopt': None}」。偵測器沒壞。
+  ② 更糟的是:**那則「簽署偵測器登入失敗」的 admin 告警是我自己那次誤跑推出去的**
+     (失敗路徑會推播),我隨後還把它當成「我修好的東西」標記已解決。已在此更正。
+  ⇒ 真正學到的:**「我在終端機重跑一次」和「生產在跑的那一份」不是同一件事**——
+    同一支腳本、同一台機器,解譯器不同結論就相反。要判生產壞沒壞,得用 crontab 那一行的
+    絕對路徑跑,不是手邊的 python3。
+  - 改動本身仍然留著且有價值(不是為了圓場):`/usr/bin/python3` 已經是 1.7.0,
+    bridge venv 遲早升級,升上去那天這支就會真的瞎。改成用 `inspect` 問 SDK 本人吃不吃得下
+    `fetch_contract`/`subscribe_trade`,兩版都跑得動,以後上游再改介面也不會再瞎一次。
+    1.5.6(生產解譯器)實跑 rc=0、自測全過、36/36 突變全咬住。
+  - 告警本身是**真的**:用生產解譯器登入,永豐自己回 `signed=False`、`futopt_account: None`;
+    逾期天數 `biz_days_between(2026-07-30, today)=34` 也算得對。這一則沒有任何程式可以修。
 - **技術文週更落後** — 不是提醒,是**管線停住**:腳本裡有 08-02 老闆親令的自動發布模式
   (「直接寫,不要等我」),它會自己把完稿上線;卡住只因為沒有新草稿。⇒ 寫稿本來就是我的事。
 
