@@ -11429,5 +11429,35 @@
   "opened": "2026-09-15 18:35",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1144,
+  "what": "🔴 DigiKey 上架的產品圖片規格不合:全部 256 張是 760×800px WebP(7 張只有 300px),DigiKey 一般要 JPG/PNG 且 1000px 以上。轉檔我方能做但解析度補不回來,需要工廠的原始高解析度產品照或重拍",
+  "why": "我方手上沒有更高解析度的原檔(全站與 specs 目錄都查過);買家是看圖選料的,這件不補上架頁會是最弱的一環",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 18:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1145,
+  "what": "DigiKey 產品資料表 12 個欄位只有皇海/工廠填得出來:原產地口徑、HTS、ECCN、REACH、包裝形式、每包數量、MOQ、交期、庫存、轉售價、單重、外箱尺寸。草稿已備 216 料號在 ~/kingconn/digikey/",
+  "why": "我方已填的 14 欄是官網公開資料與圖面萃取;這 12 欄填了就是造假。定價尤其是王董的商業決定(DigiKey 抽的是售價 25%,定價要先算進去)",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 18:44",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1146,
+  "what": "🔴 WSL 今天至少倒了兩次:①13:42-13:52 整台不在(keepalive 13:52:15 自己把它叫回來)②約 18:35 又重開一次(uptime 9 分鐘、/tmp 被清空)。另有兩段 cron 完全沒觸發的空窗 12:41-13:07、13:21-13:36,但那兩段 keepalive 回報「WSL 已在執行」=VM 活著但停擺",
+  "why": "死因未確認。vmmemWSL 12.66GB/14GB 上限,符合 2026-08-05 那次 OOM 連坐的形狀,但沒有直接證據(WSL 內看不到 dmesg)。keepalive 只檢查 VM 在不在,對「VM 活著但 cron 停擺」完全沒有偵測面",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 18:47",
+  "closed": null,
+  "note": ""
  }
 ]
