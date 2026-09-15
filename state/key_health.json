@@ -1,5 +1,5 @@
 {
- "ts": "2026-09-14T10:50:06",
+ "ts": "2026-09-15T11:00:11",
  "weekly_ran": false,
  "results": {
   "finmind": {
@@ -19,8 +19,8 @@
    "note": "http=200"
   },
   "brevo": {
-   "ok": true,
-   "note": "http=200"
+   "ok": false,
+   "note": "http=500"
   },
   "beehiiv": {
    "ok": true,
