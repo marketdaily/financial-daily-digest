@@ -9654,3 +9654,7 @@ Stop hook 擋下「剩 5 則都需要老闆」那句收工詞,回去逐則重查
 ### 收尾狀態
 告警牆錯誤/警告類 **500 → 1**,剩的那則(永豐過檔逾期)已用修好的偵測器實查為真。
 艦隊 liveness 全綠 · 記憶索引 16403/17100 strict_rc=0 · site_scan 21/21 · 跨機大腦 sync ok。
+
+## 2026-09-16 全機 repo 樹體檢(45 個 git repo)
+掃描 45 個 repo:**無任何 unpushed commit**;15 個 working tree 髒、3 個殘留 stash。
+逐個處理(自用 repo 補 commit / 產物加 gitignore / vendor clone 收本地補丁),詳見本節下方各條。
