@@ -36,10 +36,24 @@
   一次標掉 **41 則**(絕大多數是轉信通知,跟那則額度告警無關),而註記只有一句、對不上它們;
   已標記的事件不會再被下一次 resolve 選中 ⇒ **註記改不回來**。已把這個坑寫進腳本(>5 則就警告)。
 
-  ### 未收乾
-  - storefront runner 的修改**還沒在生產跑過**(下一班 09-16 10:05 TW)。`~/.marketdaily-fallback/` 不在版控裡。
-  - 09-15 那班死掉的**根因沒查出來**(當天 06:50/20:00 都有「接手前一次未完成的班(死鎖)」,
-    WSL 當晚 21:00 重開機過)。現在有逾時與戳記,再犯會被看見,但這次的死因只能存疑。
+  ### 追加(Stop hook 打回來之後,把上面兩條「未收乾」真的收掉)
+  **09-15 的死因不再是存疑,是定案:`imaplib` 預設永遠等下去。** 全庫 **14 條 IMAP 連線
+  沒有一條帶 timeout**(storefront 3 / kingconn 9 / 本 repo 1)。證據鏈:①09-14 正常 log 的第一行
+  「回信掃描:…」在 09-15 **完全沒印出來** ⇒ 卡在第一個 IMAP 連線之前 ②同時段 10:05 / 10:30 / 11:00
+  其他班全部正常跑完 ⇒ 不是機器事件 ③WSL 當晚 21:00:42 重開機 = 那個掛了 11 小時的行程的死亡時間。
+  關鍵不是「它掛了」而是**它無法被任何守衛看見**:所有告警的前提都是「rc != 0」,行程沒結束就走不到那裡。
+  - 14 處全部補 `timeout=60`,三個專案各自 commit+push;phish_guard(每 2 分鐘一輪)也在內。
+  - `scripts/test_imap_timeout_guard.py`:AST 掃三棵樹,每條 IMAP 連線都必須帶 timeout。
+    **用 AST 不用 regex**——呼叫會跨行,而「同一行有沒有 timeout」對跨行呼叫會給出相反的答案。
+  - `scripts/test_storefront_outreach_runner_gate.sh`:沙盒 HOME + 假 python **真跑那支 runner**
+    (不寄信、不碰網路),9 條斷言釘住「三段 rc 全 0 才蓋戳記」與「followup 被硬逾時包住」。
+    兩個突變各自**只殺掉對應的那一條**斷言 ⇒ 鑑別力是真的,不是碰巧全紅。
+  - 六支迴歸接上夜巡 `~/autonomous/capabilities/tests/alert_wall_20260916.test.sh`(2.1s 全綠)。
+    夜巡 cron 04:50 獨立於自主引擎,不受 DISABLED 影響。
+  - ⚠️ 寫那支 gate 時踩到自己的坑:`cp "$RUNNER" 目錄/` 保留來源檔名,而沙盒是用**固定檔名**執行的
+    ⇒ 突變版根本沒被執行,九條斷言全紅但**紅的理由跟它要量的事無關**(假的鑑別力)。已修並在註解裡記下。
+  - 實跑驗證:`phish_guard --live` 兩個信箱 seen=38/8 rc=0 ⇒ 加了 timeout 沒把連線弄壞。
+  - open #1187 / #1188 皆已收。
 
 - [2026-09-08 13:20] [已完成] **學「當代理商用 Higgsfield」**(老闆:「learn how to properly use higgsfield as a marketing agency」+「don't use my credit yet」)。**本輪零 credit——未呼叫任何生成端點。**
   - CLI 現況(唯讀查):已登入、workspace `Private`(3d88647c…)、plan **plus**、餘額 **2,451.28cr**、**未選 workspace**(`account status` 報 No workspace selected)。刻意沒跑 `workspace set`——零 credit 任務裡不動老闆帳號的計費情境。token sync cron `17 */6` 仍在。
