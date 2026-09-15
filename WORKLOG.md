@@ -9484,3 +9484,20 @@ GitHub Actions 已解封(實射 daily_digest.yml / pages_deploy.yml 皆 alive)�
 - #1170 09-15 兩班公版存檔永久遺失。
 - 需要老闆本人的:皇海寄件主機被 Trend Micro RBL 列黑名單、PRO360 點數/信用卡、TaskerGo 儲值、
   HN 帳號申訴、永豐 API 過檔逾期、乾啦被 Apple 退件、FMP 免費層 429。
+
+### 23:2x 續 — 夜巡全跑完(194 支)後再收三件
+完整跑一輪 `selftest.sh` 才看得到的紅(前面是拿 09-13 的舊 log 分流):
+- ⭐ **`us_congress_trades` 的殭屍源守衛,自測是靠磁碟快取碰巧沒暖才會過**。
+  樁只 monkeypatch 了 `_fetch_all_by_ticker`,但守衛問的是 `source_edge()`,而它
+  **優先讀磁碟上的真快取** `_edge:<today>`(那是刻意的:守衛要衡量「上游還活著嗎」,
+  不是我們過濾後留下幾筆)。⇒ 快取一暖,守衛看到新鮮 edge 不開火,「殭屍源必須回空」
+  隨環境忽紅忽綠。連快取一起蓋,而且蓋成殭屍源真實會長的樣子(源自己回報的資料緣就是舊的);
+  另補兩組:快取整個不見要退回 `data_edge` 判、以及**反向對照**「源新鮮但近況被自家過濾濾光
+  ⇒ 不可判殭屍關掉連接器」。反向對照用突變驗過:把 `source_edge` 改成只認 `data_edge`,
+  那條當場紅(rc=1),生產檔已還原且逐字比對一致。
+- `recall_integrity`:`~/autonomous/state/driver.log` 有 38 個 NUL(grep recall 會靜默漏行)。
+  位置正在 04:45→05:45 之間,長度**剛好等於一行** driver tick(38 bytes)——ext4 delayed
+  allocation 下 VM 崩潰留下的空洞。不偽造那一行,改成具名標記寫清楚「遺失什麼、為什麼、
+  無法還原」,原始檔備份成 `driver.log.nulhole-bak`。掃描回綠:1100 檔全乾淨。
+- `ok_stamp_lint` 的 ⑯c 在我退役 `kingconn_favicon_crawl` 註冊列後回綠(112 passed / 0 failed)。
+剩下的夜巡紅只剩 `memory_hubify` / `memory_index_trim`,同一個根因(記憶索引超支),open #1169。
