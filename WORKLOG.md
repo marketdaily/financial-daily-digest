@@ -9344,3 +9344,18 @@ RED 每 6h 重推、恢復推 🟢;每輪順手回收孤兒 swap。首跑實推 
 事後獨立複驗:兩個服務 gone、四個資料夾 gone、`driverquery` 查不到 vgk(不需重開機)。
 **C 槽 60.6 → 97.9GB**;今晚合計 61MB → **97.9GB**。
 ⚠️ 量尺坑:複驗的進程 regex 寫 `vg` 會把 ASUS `AacVga_UserApp` 一起撈進來,不是 Riot 殘留。
+
+### 同日第四輪(老闆:進站不要黑底寫「藥局／兒科」那個畫面)
+- 那是 ClaPat 的 preloader 輪播字(內科/兒科/疫苗/藥局/明欣)+AJAX 換頁遮罩。
+  移除 preloader markup(首頁+pagekit 全站 14 頁)、body 加 `disable-ajaxload`。
+- ⭐⭐ **拆掉之後才發現頁面的顯現本來就綁在那個序列上** ⇒ 變成進站 2.2 秒白屏。
+  要補的有五處:`body.hidden` / `#main` / `#main-page-content`(CSS 可蓋)、
+  **`#header-container` 與 `.hero-title span`(GSAP 行內樣式,要 !important)**。
+- ⭐⭐ 找隱形元素時,截圖與 computed style 互相矛盾(合成層動畫下 computed 說謊):
+  正解=截圖判斷「有沒有問題」、逐元素 computed 找出「是哪一個」。
+- 驗收:進站連拍 120/350/700/1200/2200ms,灰階 std 從 0.00(純白)變成 120ms 就 43.17
+  ≈ 完成態 43.44;全程極暗像素 0.00%(無黑幕);點導覽列換頁無遮罩、網址與標題正確。
+  8 個子頁 160ms 全部完整顯現。線上 md5 == 本機,med_ad_gate PASS。
+- 未提及但仍在:`/vaccination/` 與首頁「怎麼來」仍用夜間燈箱照(未被裁切,且對找路有用),
+  老闆若也要拿掉再說。
+
