@@ -1,6 +1,6 @@
 {
- "ts": "2026-09-15T22:38:19",
- "jobs_n": 152,
+ "ts": "2026-09-15T23:20:10",
+ "jobs_n": 153,
  "silent_n": 0,
  "silent": [],
  "intel": {
@@ -256,6 +256,11 @@
    "thresh_src": "self",
    "status": "ok"
   },
+  "disk_space_watch": {
+   "last": "2026-09-15",
+   "age_d": 0,
+   "status": "observing"
+  },
   "edge_cuts_weekly": {
    "last": "2026-09-13",
    "age_d": 2,
@@ -370,8 +375,8 @@
    "status": "observing"
   },
   "kingconn_compat_claim_lint": {
-   "last": "2026-09-14",
-   "age_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
    "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
@@ -510,8 +515,8 @@
    "status": "ok"
   },
   "kingconn_sent_copy_audit": {
-   "last": "2026-09-14",
-   "age_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
    "status": "observing"
   },
   "kingconn_seo_bench": {
