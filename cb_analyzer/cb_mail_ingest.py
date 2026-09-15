@@ -39,6 +39,11 @@ DESK_EVENT_LOG = os.path.expanduser("~/cb-desk/data/event_notifications.jsonl")
 sys.path.insert(0, HERE)
 import cb_yuanta
 
+# timeout 不是可選的:imaplib 預設永遠等下去,半開的 TCP 連線會讓整支 cron 掛到天荒地老,
+# 而『rc != 0 才告警』的守衛因為行程根本沒結束 ⇒ 一則都不會響
+# (2026-09-15 QuietFix 冷信班整班無聲死掉就是這個死法,log 只寫到標題)。
+IMAP_TIMEOUT_S = 60
+
 
 def _env():
     creds = {}
@@ -172,7 +177,7 @@ def run(days=7):
     seen = _load_seen()
     need_restart = False
     since = (datetime.date.today() - datetime.timedelta(days=days)).strftime("%d-%b-%Y")
-    M = imaplib.IMAP4_SSL("imap.gmail.com")
+    M = imaplib.IMAP4_SSL("imap.gmail.com", timeout=IMAP_TIMEOUT_S)
     try:
         M.login(user, pw)
         M.select("INBOX", readonly=True)
