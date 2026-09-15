@@ -152,3 +152,27 @@
 - 訂閱者姓名/email:07-11 TLDR 空區塊與 07-22 洩漏案的源註解含用戶名,稿內一律改「一位訂閱者/用戶」。
 - 「31 項」對外口徑:第 1 篇已發布的 31 不改稿,本篇正面更正為 30+1 幽靈並附兩條可重跑指令,標題保留 31 作為敘事鉤。
 - 個股買賣建議、付費方案、營收、key/token:未出現。
+
+---
+
+# 第 3 篇〈資料隔離事故報告:公版觀察清單怎麼混進「你的持股」〉查證表(2026-09-16)
+
+| 數字/事實 | 出處(可重跑) |
+|---|---|
+| 白名單今天 15,273 筆;程式註解寫「12k」;寫註解當天紀錄 12,019 | `python3 -c "import json;print(len(json.load(open('scripts/.tw_names_cache.json'))))"` → 15273;`digest_audit.py` `_tw_ticker_universe` 上方註解;WORKLOG 2026-07-24「12,019 代號」 |
+| 名表每小時自己重抓 TWSE+TPEx,抓不到沿用磁碟上最後一次成功(「名字永不歸零」) | `data_fetcher.py:626-670` `tw_name_map()` docstring 與 `_TW_NAME_CACHE_TIME ... seconds < 3600` |
+| 公版預設觀察清單=10 檔 AAPL/MSFT/GOOGL/AMZN/META/NVDA/TSLA/AMD/TSM/JPM | `grep -n "default_us = " analyzer.py` → `analyzer.py:4692` |
+| 2026-07-21 事故:組合透視混進公版清單,市場配置多出美股 10 檔、DCF 偏貴列全非用戶持股 | `digest_audit.py` check #16 上方註解(逐字) |
+| 2026-07-24 誤判:`\d{4,6}`+`[A-Z]{2,5}` 把年份 2026/指數 23150/價位 1085/縮寫 AI·GDP·CPI·ETF 判成外來標的;retry 換模型重生仍中 → 切備援;老手+台股班次幾乎必中 | WORKLOG 2026-07-24「根因 A」段(逐字) |
+| 根因 B:audit JSON 當時只有 personalization_failed / audit_failed / by_email,無 deterministic_fallback ⇒ 報告全綠但收到備援版 | WORKLOG 2026-07-24「根因 B」段 |
+| 修法 `_is_real_ticker`:台股比對代號表、美股比對 stock_names.is_known;AAPL/2330 真洩漏仍抓 | `sed -n '/def _is_real_ticker/,/is_known/p' digest_audit.py`;WORKLOG「修 A」 |
+| 驗證 5 組固定案例 | `scripts/test_portfolio_lens_foreign_ticker.py`(WORKLOG「驗證」段) |
+| 稽核側直接開磁碟、不走 tw_name_map;全庫無任何一處量該檔 mtime | `digest_audit.py` `_tw_ticker_universe()` 內的 `open(p)`;`grep -rn "tw_names_cache" --include=*.py --include=*.sh scripts/ ~/autonomous/capabilities \| grep -iE "age\|mtime\|fresh\|stale"` → 空 |
+| 2026-07-09 winrig certifi 過期害 TPEx SSL 全滅(名表凍住的真實前例) | `data_fetcher.py:628-629` docstring 逐字 |
+| 本篇當場補的檢查 `ticker_universe_stale`(MED,門檻 7 天)+7 條迴歸含突變對照 | `grep -n "ticker_universe_stale" digest_audit.py`;`./.venv/bin/python scripts/test_ticker_universe_stale.py` |
+
+## 刻意不寫進第 3 篇的(合規/紅線自查)
+
+- 訂閱者姓名/email:WORKLOG 該段有具名用戶,稿內一律寫「一位訂閱者/老手級用戶」;「我自己收到」指作者本人,非第三人個資。
+- 第一版稿曾寫「白名單有保存期限」,查證後發現名表每小時自刷 ⇒ **該說法在稿內被正面撤回並改寫**,不留任何未查證的漂亮結論。
+- 個股買賣建議、付費方案、營收、key/token:未出現。文內 AAPL/2330/6488 皆為事故與測試案例的識別用途,非標的推薦。

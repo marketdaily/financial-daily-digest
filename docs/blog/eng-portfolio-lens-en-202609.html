@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
+<link rel="apple-touch-icon" href="/logo-icon.svg">
+<title>The data isolation incident where our own default watchlist leaked into “your holdings” | MarketDaily</title>
+<meta name="description" content="The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects">
+<meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
+<meta property="og:title" content="The data isolation incident where our own default watchlist leaked into “your holdings”">
+<meta property="og:description" content="The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://marketdaily.ai/blog/eng-portfolio-lens-en-202609">
+<meta property="og:site_name" content="MarketDaily">
+<meta property="og:image" content="https://marketdaily.ai/blog/og/eng-portfolio-lens-en-202609.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The data isolation incident where our own default watchlist leaked into “your holdings”">
+<meta name="twitter:description" content="The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects">
+<meta name="twitter:image" content="https://marketdaily.ai/blog/og/eng-portfolio-lens-en-202609.png">
+<link rel="canonical" href="https://marketdaily.ai/blog/eng-portfolio-lens-en-202609">
+<link rel="alternate" hreflang="zh-Hant" href="https://marketdaily.ai/blog/eng-portfolio-lens-202609">
+<link rel="alternate" hreflang="en" href="https://marketdaily.ai/blog/eng-portfolio-lens-en-202609">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "The data isolation incident where our own default watchlist leaked into “your holdings”", "description": "The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects", "datePublished": "2026-08-12T10:00:00+08:00", "dateModified": "2026-08-12", "author": {"@type": "Organization", "name": "MarketDaily"}, "publisher": {"@type": "Organization", "name": "MarketDaily", "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://marketdaily.ai/blog/eng-portfolio-lens-en-202609"}, "image": ["https://marketdaily.ai/blog/og/eng-portfolio-lens-en-202609.png"]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://marketdaily.ai/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://marketdaily.ai/blog/"}, {"@type": "ListItem", "position": 3, "name": "The data isolation incident where our own default watchlist leaked into “your holdings”"}]}]}</script>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background:#0a0a14; color:#e2e8f0; font-family:'Inter','PingFang TC',sans-serif; line-height:1.75; }
+.wrap { max-width:720px; margin:0 auto; padding:48px 24px 80px; }
+.topnav { position:sticky; top:0; background:rgba(10,10,20,0.85); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.08); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; z-index:10; }
+.topnav a { color:#a5b4fc; text-decoration:none; font-weight:700; }
+.crumb { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; letter-spacing:0.5px; text-transform:uppercase; }
+h1 { font-size:36px; font-weight:900; color:#fff; margin:6px 0 24px; letter-spacing:-0.5px; }
+h2 { font-size:24px; font-weight:800; color:#fff; margin:36px 0 14px; }
+h3 { font-size:18px; font-weight:700; color:#c7d2fe; margin:24px 0 10px; }
+p { font-size:16px; color:#cbd5e1; margin:0 0 16px; }
+ul, ol { margin:12px 0 20px 24px; }
+li { font-size:16px; color:#cbd5e1; margin:8px 0; }
+strong { color:#fbbf24; font-weight:700; }
+blockquote { border-left:3px solid rgba(99,102,241,0.55); background:rgba(99,102,241,0.07); border-radius:0 10px 10px 0; padding:14px 18px; margin:0 0 20px; }
+blockquote p { margin:0; color:#c7d2fe; font-size:15px; }
+pre { background:#12121f; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:18px 20px; margin:0 0 20px; overflow-x:auto; font-family:'SF Mono','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace; font-size:13.5px; line-height:1.6; color:#cbd5e1; }
+pre code { background:none; border:none; padding:0; font-size:inherit; color:inherit; }
+code { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.25); border-radius:6px; padding:1px 6px; font-family:'SF Mono','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace; font-size:14px; color:#c7d2fe; }
+table { width:100%; border-collapse:collapse; margin:0 0 20px; font-size:14.5px; }
+th, td { border:1px solid rgba(255,255,255,0.1); padding:8px 12px; text-align:left; color:#cbd5e1; }
+th { background:#12121f; color:#fff; font-weight:700; }
+.cta { background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.15)); border:1px solid rgba(99,102,241,0.35); border-radius:14px; padding:24px; margin:40px 0 0; text-align:center; }
+.cta a { display:inline-block; margin-top:14px; padding:14px 28px; background:linear-gradient(135deg,#6366f1,#a855f7); color:#fff; font-weight:800; text-decoration:none; border-radius:10px; }
+.disc { font-size:12px; color:rgba(255,255,255,0.4); margin-top:32px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
+.cta-top { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; text-align:center; background:rgba(99,102,241,0.10); border:1px solid rgba(99,102,241,0.28); border-radius:12px; padding:12px 16px; margin:0 0 26px; font-size:14px; color:#c7d2fe; line-height:1.7; }
+.cta-top a { color:#fff; background:linear-gradient(135deg,#6366f1,#a855f7); font-weight:800; text-decoration:none; padding:8px 16px; border-radius:8px; white-space:nowrap; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a href="/?lang=en">MarketDaily ←</a>
+  <a href="/blog/">All articles</a>
+</div>
+<article class="wrap">
+  <div class="crumb">MARKETDAILY · ENGINEERING</div>
+  <h1>The data isolation incident where our own default watchlist leaked into “your holdings”</h1>
+  <!-- md-top-cta -->
+  <div class="cta-top">📬 Reading this because you ship LLMs into production? MarketDaily emails you an AI-filtered US + Taiwan digest every morning — free.<a href="https://marketdaily.ai/?lang=en&amp;utm_source=blog&amp;utm_medium=cta_top&amp;utm_campaign=seo_eng-portfolio-lens-en-202609#email-step">Subscribe free →</a></div>
+
+<blockquote><p>The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects a single check, <code>portfolio_lens_foreign_ticker</code>, because it is three things at once: a real data isolation incident, an incident caused by the defence itself, and a design lesson that was still live enough to produce a fix while I was writing this.</p></blockquote>
+
+<h2>First, a correction: the allowlist is 27% larger than the comment says</h2>
+
+<p>Rule one of this series is that every number gets re-verified before I write it down. The first number failed. The comment in the code says:</p>
+
+<pre><code class="language-python"># 改成「必須是真實上市證券」才算外來:台股比對 .tw_names_cache.json(12k 代號)
+# (&quot;must be a real listed security&quot; to count as foreign: Taiwan side checks against
+#  .tw_names_cache.json, ~12k tickers)</code></pre>
+
+<p>The actual count:</p>
+
+<pre><code class="language-bash">python3 -c &quot;import json;print(len(json.load(open(&#x27;scripts/.tw_names_cache.json&#x27;))))&quot;
+# → 15273</code></pre>
+
+<p>The engineering log from the day that line was written records 12,019, so the comment was correct when written. The table grew 27% in two months.</p>
+
+<p>My first draft turned that into a tidy conclusion: &quot;an allowlist-based defence has a shelf life.&quot; Then I went to verify it and found it was <strong>wrong</strong> — that table re-fetches itself from TWSE and TPEx every hour. I nearly shipped a nice-sounding claim I hadn&#x27;t checked, in a post whose first red line is that numbers get verified.</p>
+
+<p>The version that survives verification is smaller and more interesting. It&#x27;s the last section. Everything below is measured today.</p>
+
+<h2>Act one: the most embarrassing way a personalization system can fail</h2>
+
+<p>On 2026-07-21 a section of the daily digest called &quot;Portfolio Lens&quot; broke.</p>
+
+<p>The section header says &quot;your&quot; — its content is supposed to be an allocation and valuation view of the holdings *this subscriber picked*. That day it contained ten US tickers from the public default watchlist:</p>
+
+<pre><code class="language-python"># analyzer.py
+default_us = [&quot;AAPL&quot;, &quot;MSFT&quot;, &quot;GOOGL&quot;, &quot;AMZN&quot;, &quot;META&quot;, &quot;NVDA&quot;, &quot;TSLA&quot;, &quot;AMD&quot;, &quot;TSM&quot;, &quot;JPM&quot;]
+watchlist_us = user_us_stocks if user_us_stocks else default_us</code></pre>
+
+<p>The visible symptoms: the allocation breakdown gained ten US positions out of nowhere, and the &quot;expensive on DCF&quot; row named <strong>not a single ticker the reader actually owned</strong>.</p>
+
+<p>The direction of this leak is worth a pause. When a personalization system has an isolation bug, the failure you imagine is &quot;user A&#x27;s data appeared in user B&#x27;s email&quot; — severe, but easy to explain. This was the opposite: <strong>public data leaked into a private view</strong>. No subscriber&#x27;s privacy was touched. Not one byte crossed between users. But the reader opened &quot;your portfolio&quot; and saw ten stocks they had never bought.</p>
+
+<p>The technical loss was zero. The trust loss was total. A personalization product sells exactly one thing — *this email knows me* — and that section proved on the spot that it didn&#x27;t. It&#x27;s worse than an obvious bug, because the reader now has no way to tell which of the other sections are also fake personalization.</p>
+
+<h3>The fix, in three layers</h3>
+
+<ol><li><strong>Spec layer.</strong> Any section whose header says &quot;your&quot; must draw its tickers <strong>entirely</strong> from the real holdings passed in. In the curated-picks scenario (the subscriber picked no stocks in that market, so the system sends an AI-committee selection instead) holdings *are* the picks list, and the same constraint applies. A pure public report with no holdings is not checked — it never claimed to be personalized.</li><li><strong>Check layer.</strong> <code>digest_audit.py</code> gained <code>portfolio_lens_foreign_ticker</code> at severity HIGH. HIGH carries weight in this system: it triggers the full retry chain — wait 60s, regenerate the whole email with a stronger model, and if that still fails, fall back to a purely deterministic version.</li><li><strong>Fallback layer.</strong> The fallback version is not allowed to pass generic content off as personalized. Degrading is fine; hiding the degradation is not.</li></ol>
+
+<p>Layer 3 reads like boilerplate. It is the setup for act two.</p>
+
+<h2>Act two: the defence turned a subscriber&#x27;s email into the stripped-down version</h2>
+
+<p>Three days later, in the 2026-07-24 Taiwan morning digest, this is what landed in my own inbox:</p>
+
+<blockquote><p>⚠️ AI personalization failed today; this is the fallback version.</p></blockquote>
+
+<p>And that day&#x27;s audit JSON said <code>personalization_failed_count: 0</code>. The report was green. The email was the stripped-down one.</p>
+
+<p><strong>Root cause A: the token extraction was too coarse.</strong> The first version found &quot;tickers mentioned in the text&quot; like this:</p>
+
+<pre><code class="language-python">found  = set(re.findall(r&quot;\b[A-Z]{2,5}\b&quot;, lens_text))
+found |= set(re.findall(r&quot;\b\d{4,6}\b&quot;, lens_text))</code></pre>
+
+<p>Consider what those two regexes catch in a page of financial prose: years (<code>2026</code>), index levels (<code>23150</code>), price targets (<code>1085</code>), ordinary acronyms (<code>AI</code>, <code>GDP</code>, <code>CPI</code>, <code>ETF</code>). Every one of them was classified as &quot;a security you don&#x27;t hold&quot; → HIGH → retry. The stronger model regenerated perfectly reasonable prose, which contained <strong>different</strong> numbers, which tripped the same HIGH → fallback.</p>
+
+<p>The misfire had a cruel distribution: <strong>the richer the narrative, the likelier the hit</strong>. Experienced-tier personalization carries the most numbers, and Taiwan sessions quote index levels daily, so nearly every Taiwan session hit it. The defence punished hardest exactly the readers the system worked hardest for.</p>
+
+<p><strong>Root cause B: the report structurally could not show this.</strong> The audit JSON of the time wrote three kinds of fields — <code>personalization_failed</code>, <code>audit_failed</code>, <code>by_email</code> — and <strong>nothing for deterministic fallbacks</strong>. The fallback version is generated by plain code, so re-auditing it scores zero, it never enters <code>by_email</code>, and the file-write condition didn&#x27;t mention fallbacks either. The result was an airtight blind spot: <strong>&quot;we shipped a fallback&quot; had no field to live in</strong>. Only the person opening the email could see it.</p>
+
+<p>This is the second instance of &quot;the check caused the incident&quot; in this series, and harder to catch than the first — that one (<code>undefined_css_class</code> degrading everyone) at least showed up red in the report.</p>
+
+<h2>The real fix: replace the heuristic with a real universe</h2>
+
+<p>The tempting fix is to subtract the false positives one at a time: years don&#x27;t count, four-digit numbers starting with 20 don&#x27;t count, keep a denylist of common three-letter acronyms. That road never ends, and every gap is another subscriber receiving the stripped-down email.</p>
+
+<p>The actual fix inverts the question. Instead of &quot;does this token *look like* a ticker&quot;, ask &quot;<strong>is this token a real listed security</strong>&quot;:</p>
+
+<pre><code class="language-python">def _is_real_ticker(tok):
+    t = (tok or &quot;&quot;).strip().upper()
+    if not t:
+        return False
+    if t.isdigit():
+        return t in _tw_ticker_universe() or t in stock_names.TW_NAMES
+    return stock_names.is_known(t)</code></pre>
+
+<p>Taiwan tickers check against the local ticker table (15,273 entries today); US tickers check against the name library. The effect:</p>
+
+<ul><li><code>2026</code>, <code>23150</code>, <code>1085</code>, <code>AI</code>, <code>GDP</code> → in no table → passed through, no longer killed.</li><li><code>AAPL</code>, <code>2330</code> — tickers that <strong>actually leaked in</strong> → in the table → still caught. <strong>The defence did not get weaker.</strong> That is the part that matters: after fixing a false positive, the thing it was built to catch must still be caught, otherwise you only turned the alarm off.</li></ul>
+
+<p>Root cause B was closed in the same change: the audit JSON gained <code>deterministic_fallback_count</code> plus the list, and the write condition now covers all three failure kinds (fallback shipped / personalization threw / audit lost points). Shipping a fallback stopped being invisible.</p>
+
+<p>Five frozen cases pin the behaviour: the false-positive samples are no longer killed, real <code>AAPL</code>/<code>6488</code> leaks are still caught, clean content produces nothing, plus a unit test on <code>_is_real_ticker</code>.</p>
+
+<h2>The design rules this produced</h2>
+
+<p><strong>1. Isolate personalized sections with an allowlist contract, not with detection.</strong> &quot;Find everything that shouldn&#x27;t be here&quot; requires enumerating every bad case; &quot;confirm everything here is on the permitted list&quot; requires one list. A gap in the former is silent. A gap in the latter goes red immediately.</p>
+
+<p><strong>2. Make the allowlist&#x27;s membership test a real universe, not a heuristic.</strong> &quot;Looks like a ticker&quot; is a heuristic and produces both false positives and false negatives. &quot;Is in a table of 15,273 listed tickers&quot; is a factual lookup and produces neither. The cost is that you now have to maintain that table — which is rule three.</p>
+
+<p><strong>3. There is a supply line between a defence and its allowlist, and nobody was watching ours.</strong> This rule came out of the verification pass; it wasn&#x27;t in the outline.</p>
+
+<p>The table itself is alive: <code>data_fetcher.tw_name_map()</code> re-fetches TWSE + TPEx hourly, overwrites the disk copy on success, and on failure keeps the last good one (&quot;names never go to zero when the upstream is down&quot; is a deliberate choice, so the digest never prints bare ticker codes).</p>
+
+<p>But the audit side <strong>does not go through that function</strong>. <code>digest_audit._tw_ticker_universe()</code> opens the json on disk directly:</p>
+
+<pre><code class="language-python">with open(p, encoding=&quot;utf-8&quot;) as f:
+    uni = set(json.load(f).keys())</code></pre>
+
+<p>So the freshness of the universe the auditor uses depends entirely on whether *somebody else* — the digest generation pipeline — ran, and succeeded. It never refreshes anything itself, and nothing anywhere measured how old that file was. I checked: not one mtime check in the repo.</p>
+
+<p>On a normal day this is invisible; both sides run in the same pipeline. But follow the failure mode through. The upstream fails repeatedly (this happened on 2026-07-09 — an expired <code>certifi</code> bundle on the host killed TPEx over SSL) and the disk table freezes at that moment. The digest side has explicit degradation semantics: keep the old names, never go to zero. The audit side had none — it would quietly take a stale universe and answer &quot;is this a real security?&quot;, and <strong>a newly listed ticker isn&#x27;t in the stale table ⇒ judged not-a-security ⇒ passed through</strong>. The defence goes blind precisely where it matters most: on the newest tickers, the ones most likely to be dragged in from a public watchlist. Silently.</p>
+
+<p>That wasn&#x27;t an incident. It was a fuse that hadn&#x27;t been lit.</p>
+
+<p>So this post doesn&#x27;t stop at &quot;worth noting&quot; — the fuse got pulled while writing it. New check, <code>ticker_universe_stale</code>, severity MED:</p>
+
+<pre><code class="language-python">age = _tw_universe_age_days()
+if age is None:
+    ...  # file gone = the Taiwan half of the defence is effectively off
+elif age &gt; TICKER_UNIVERSE_STALE_DAYS:      # 7
+    ...  # &quot;newly listed tickers will be judged non-securities and passed through;
+         #  this defence is going half-blind&quot;</code></pre>
+
+<p>Some deliberate choices in there. It <strong>measures file age, not row count</strong> — a count going up or down says nothing about freshness. It is <strong>MED, not HIGH</strong>: a stale allowlist must not send anyone the stripped-down email, which is exactly the mistake of act two. It only runs on personalized reports that actually consult the allowlist, so public reports get no noise. And the message states the <strong>consequence</strong> (&quot;will be judged non-securities and passed through&quot;) rather than the symptom (&quot;file is old&quot;), because whoever sees this alert six months from now needs to know what is being lost, not which file has the older mtime.</p>
+
+<p>Seven regression assertions, the last of which is a mutation control: set the threshold to an absurd number and the preceding assertion must go green. A test that doesn&#x27;t go green under mutation isn&#x27;t measuring the threshold at all.</p>
+
+<p>Verifying your own numbers is itself an audit. This is the second time in this series that the verification pass has caught something in our own code.</p>
+
+<h2>Verification commands</h2>
+
+<pre><code class="language-bash"># actual allowlist size
+python3 -c &quot;import json;print(len(json.load(open(&#x27;scripts/.tw_names_cache.json&#x27;))))&quot;
+
+# the check and its severity
+grep -n &quot;portfolio_lens_foreign_ticker&quot; digest_audit.py
+
+# the public default watchlist (the leak source)
+grep -n &quot;default_us = &quot; analyzer.py
+
+# the post-fix membership test
+sed -n &#x27;/def _is_real_ticker/,/is_known/p&#x27; digest_audit.py
+
+# how old the allowlist is (nothing measured this before 2026-09-16)
+stat -c &#x27;%y  %n&#x27; scripts/.tw_names_cache.json</code></pre>
+
+  <div class="cta">
+    <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">MarketDaily sends its daily digest through this exact audit gate, morning and evening — currently free for a limited time, and early-bird subscribers keep free access permanently if paid plans ever return</p>
+    <!-- md-inline-subscribe:start --><form id="mdsub-form" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin:0 0 10px;"><input id="mdsub-email" type="email" autocomplete="email" inputmode="email" placeholder="your@email.com" aria-label="Email" style="width:100%;max-width:280px;box-sizing:border-box;padding:13px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#fff;font-size:15px;outline:none;"><button id="mdsub-btn" type="submit" style="padding:13px 26px;border:0;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:15px;font-weight:800;cursor:pointer;white-space:nowrap;">Subscribe free →</button></form><p id="mdsub-msg" role="status" aria-live="polite" style="display:none;font-size:13px;line-height:1.7;margin:0 0 6px;"></p><noscript><a href="https://marketdaily.ai/?utm_source=blog&utm_medium=eng_article&utm_campaign=audit_taxonomy#email-step">Subscribe at marketdaily.ai →</a></noscript><script>
+(function(){
+  var API='https://api.marketdaily.ai';
+  var f=document.getElementById('mdsub-form'),e=document.getElementById('mdsub-email'),b=document.getElementById('mdsub-btn'),m=document.getElementById('mdsub-msg');
+  if(!f||!e||!b||!m){return;}
+  function say(t,ok){m.textContent=t;m.style.color=ok?'#6ee7b7':'#fca5a5';m.style.display='block';}
+  function attr(){
+    var p,real=null;
+    try{p=new URL(window.location.href).searchParams;real=p.get('utm_source');}catch(x){p=null;}
+    var vid=null;try{vid=sessionStorage.getItem('md-visit-id')||null;}catch(x){}
+    return {visit_id:vid,
+      utm_source: real||'blog',
+      utm_medium: (p&&p.get('utm_medium'))||(real?null:'eng_article'),
+      utm_campaign: (p&&p.get('utm_campaign'))||'audit_taxonomy',
+      utm_content: (p&&p.get('utm_content'))||'inline_form'};
+  }
+  f.addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var email=(e.value||'').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){say('Please enter a valid email address.',false);return;}
+    var old=b.textContent;
+    b.disabled=true;b.textContent='Sending...';
+    var body=attr();body.email=email;
+    fetch(API+'/subscribe-free-direct',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json().catch(function(){return {};});})
+      .then(function(d){
+        d=d||{};
+        if(d.resubscribe_pending){
+          say(d.sent?'📬 You unsubscribed earlier — we emailed a confirmation link. Click it to resume.':'You unsubscribed earlier and we could not send the confirmation email — please contact us.',!!d.sent);
+          b.textContent='Confirmation sent ✓';return;
+        }
+        if(d.ok){
+          say('✅ You\'re in! The next morning digest lands in your inbox (check spam just in case).',true);b.textContent='Subscribed ✓';e.disabled=true;return;
+        }
+        if(d.error==='undeliverable_email'){say('This email looks undeliverable — please check the spelling.',false);}
+        else if(d.error==='rate_limited'||d.error==='too_many_attempts'){say('You just submitted this — please wait a few minutes and try again.',false);}
+        else{say('Something went wrong. Please try again.',false);}
+        b.disabled=false;b.textContent=old;
+      })
+      .catch(function(){say('Network error. Please try again.',false);b.disabled=false;b.textContent=old;});
+  });
+})();
+</script><!-- md-inline-subscribe:end -->
+  </div>
+  <p class="disc">This article is for informational purposes only and is not investment advice. Investing involves risk; assess your own situation. Last updated: 2026-08-12</p>
+</article>
+<!-- md-attr-beacon -->
+<script>
+(function(){
+  try {
+    var WORKER_URL = "https://api.marketdaily.ai";
+    var p = new URL(window.location.href).searchParams;
+    var real = p.get("utm_source");
+    var utm = {
+      utm_source:   real || "blog",
+      utm_medium:   p.get("utm_medium")   || (real ? null : "organic"),
+      utm_campaign: p.get("utm_campaign") || null,
+      utm_term:     p.get("utm_term")     || null,
+      utm_content:  p.get("utm_content")  || "eng-portfolio-lens-en-202609",
+    };
+    if (real) {
+      var payload = { utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, ts: Date.now() };
+      try { sessionStorage.setItem("md-attr", JSON.stringify(payload)); localStorage.setItem("md-attr-first", JSON.stringify(payload)); } catch (e) {}
+    }
+    if (!navigator.webdriver && !sessionStorage.getItem("md-visit-id")) {
+      fetch(WORKER_URL + "/track/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, utm_term: utm.utm_term, utm_content: utm.utm_content, ts: Date.now() }),
+      })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){ if (d && d.visit_id) { try { sessionStorage.setItem("md-visit-id", d.visit_id); } catch (e) {} } })
+        .catch(function(){});
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>

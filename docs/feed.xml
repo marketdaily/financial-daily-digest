@@ -149,7 +149,7 @@
     <link>https://marketdaily.ai/blog/2330-event-20260824?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2330-event-20260824</link>
     <guid isPermaLink="true">https://marketdaily.ai/blog/2330-event-20260824</guid>
     <pubDate>Mon, 24 Aug 2026 16:48:30 +0800</pubDate>
-    <description>台積電 (2330) 法說會前瞻 — MarketDaily 整理。</description>
+    <description>全球半導體產業的領頭羊——台積電(2330)，即將於 2026 年 8 月 24 日 參加傑富瑞(Jefferies)舉辦的「Jefferies 2026 Semiconductor, IT Hardware &amp; Communications Technology Conference」。</description>
     <category>2330</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/2330-event-20260824.png"/>
     <media:content url="https://marketdaily.ai/blog/og/2330-event-20260824.png" medium="image"/>
@@ -213,6 +213,26 @@
     <category>TERM</category>
     <media:thumbnail url="https://marketdaily.ai/blog/og/term-毛利率與營益率-202608.png"/>
     <media:content url="https://marketdaily.ai/blog/og/term-毛利率與營益率-202608.png" medium="image"/>
+  </item>
+  <item>
+    <title>The data isolation incident where our own default watchlist leaked into “your holdings”</title>
+    <link>https://marketdaily.ai/blog/eng-portfolio-lens-en-202609?utm_source=rss&amp;utm_medium=feed&amp;utm_content=eng-portfolio-lens-en-202609</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/eng-portfolio-lens-en-202609</guid>
+    <pubDate>Wed, 12 Aug 2026 10:00:00 +0800</pubDate>
+    <description>The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects</description>
+    <category>ENG</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/eng-portfolio-lens-en-202609.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/eng-portfolio-lens-en-202609.png" medium="image"/>
+  </item>
+  <item>
+    <title>資料隔離事故報告:公版觀察清單怎麼混進「你的持股」</title>
+    <link>https://marketdaily.ai/blog/eng-portfolio-lens-202609?utm_source=rss&amp;utm_medium=feed&amp;utm_content=eng-portfolio-lens-202609</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/eng-portfolio-lens-202609</guid>
+    <pubDate>Wed, 12 Aug 2026 10:00:00 +0800</pubDate>
+    <description>前兩篇講了 council + judge 的多模型仲裁,以及確定性稽核層的 30 項檢查怎麼分類。這篇只拆其中一項 portfolio_lens_foreign_ticker,因為它同時是一次真實的資料隔離事故、一次防線自己造成的事故,以及一個到今天還沒過期的設計教訓。</description>
+    <category>ENG</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/eng-portfolio-lens-202609.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/eng-portfolio-lens-202609.png" medium="image"/>
   </item>
   <item>
     <title>The 31st check didn't exist: a failure-mode taxonomy of auditing LLM output in production</title>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
+<link rel="apple-touch-icon" href="/logo-icon.svg">
+<title>資料隔離事故報告:公版觀察清單怎麼混進「你的持股」 | MarketDaily</title>
+<meta name="description" content="前兩篇講了 council + judge 的多模型仲裁,以及確定性稽核層的 30 項檢查怎麼分類。這篇只拆其中一項 portfolio_lens_foreign_ticker,因為它同時是一次真實的資料隔離事故、一次防線自己造成的事故,以及一個到今天還沒過期的設計教訓。">
+<meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
+<meta property="og:title" content="資料隔離事故報告:公版觀察清單怎麼混進「你的持股」">
+<meta property="og:description" content="前兩篇講了 council + judge 的多模型仲裁,以及確定性稽核層的 30 項檢查怎麼分類。這篇只拆其中一項 portfolio_lens_foreign_ticker,因為它同時是一次真實的資料隔離事故、一次防線自己造成的事故,以及一個到今天還沒過期的設計教訓。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://marketdaily.ai/blog/eng-portfolio-lens-202609">
+<meta property="og:site_name" content="MarketDaily">
+<meta property="og:image" content="https://marketdaily.ai/blog/og/eng-portfolio-lens-202609.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="資料隔離事故報告:公版觀察清單怎麼混進「你的持股」">
+<meta name="twitter:description" content="前兩篇講了 council + judge 的多模型仲裁,以及確定性稽核層的 30 項檢查怎麼分類。這篇只拆其中一項 portfolio_lens_foreign_ticker,因為它同時是一次真實的資料隔離事故、一次防線自己造成的事故,以及一個到今天還沒過期的設計教訓。">
+<meta name="twitter:image" content="https://marketdaily.ai/blog/og/eng-portfolio-lens-202609.png">
+<link rel="canonical" href="https://marketdaily.ai/blog/eng-portfolio-lens-202609">
+<link rel="alternate" hreflang="zh-Hant" href="https://marketdaily.ai/blog/eng-portfolio-lens-202609">
+<link rel="alternate" hreflang="en" href="https://marketdaily.ai/blog/eng-portfolio-lens-en-202609">
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "資料隔離事故報告:公版觀察清單怎麼混進「你的持股」", "description": "前兩篇講了 council + judge 的多模型仲裁,以及確定性稽核層的 30 項檢查怎麼分類。這篇只拆其中一項 portfolio_lens_foreign_ticker,因為它同時是一次真實的資料隔離事故、一次防線自己造成的事故,以及一個到今天還沒過期的設計教訓。", "datePublished": "2026-08-12T10:00:00+08:00", "dateModified": "2026-08-12", "author": {"@type": "Organization", "name": "MarketDaily"}, "publisher": {"@type": "Organization", "name": "MarketDaily", "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://marketdaily.ai/blog/eng-portfolio-lens-202609"}, "image": ["https://marketdaily.ai/blog/og/eng-portfolio-lens-202609.png"]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "首頁", "item": "https://marketdaily.ai/"}, {"@type": "ListItem", "position": 2, "name": "財經知識庫", "item": "https://marketdaily.ai/blog/"}, {"@type": "ListItem", "position": 3, "name": "資料隔離事故報告:公版觀察清單怎麼混進「你的持股」"}]}]}</script>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background:#0a0a14; color:#e2e8f0; font-family:'Inter','PingFang TC',sans-serif; line-height:1.75; }
+.wrap { max-width:720px; margin:0 auto; padding:48px 24px 80px; }
+.topnav { position:sticky; top:0; background:rgba(10,10,20,0.85); backdrop-filter:blur(12px); border-bottom:1px solid rgba(255,255,255,0.08); padding:14px 24px; display:flex; justify-content:space-between; align-items:center; z-index:10; }
+.topnav a { color:#a5b4fc; text-decoration:none; font-weight:700; }
+.crumb { font-size:13px; color:rgba(255,255,255,0.5); margin-bottom:12px; letter-spacing:0.5px; text-transform:uppercase; }
+h1 { font-size:36px; font-weight:900; color:#fff; margin:6px 0 24px; letter-spacing:-0.5px; }
+h2 { font-size:24px; font-weight:800; color:#fff; margin:36px 0 14px; }
+h3 { font-size:18px; font-weight:700; color:#c7d2fe; margin:24px 0 10px; }
+p { font-size:16px; color:#cbd5e1; margin:0 0 16px; }
+ul, ol { margin:12px 0 20px 24px; }
+li { font-size:16px; color:#cbd5e1; margin:8px 0; }
+strong { color:#fbbf24; font-weight:700; }
+blockquote { border-left:3px solid rgba(99,102,241,0.55); background:rgba(99,102,241,0.07); border-radius:0 10px 10px 0; padding:14px 18px; margin:0 0 20px; }
+blockquote p { margin:0; color:#c7d2fe; font-size:15px; }
+pre { background:#12121f; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:18px 20px; margin:0 0 20px; overflow-x:auto; font-family:'SF Mono','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace; font-size:13.5px; line-height:1.6; color:#cbd5e1; }
+pre code { background:none; border:none; padding:0; font-size:inherit; color:inherit; }
+code { background:rgba(129,140,248,0.12); border:1px solid rgba(129,140,248,0.25); border-radius:6px; padding:1px 6px; font-family:'SF Mono','Cascadia Code','JetBrains Mono',Consolas,'Courier New',monospace; font-size:14px; color:#c7d2fe; }
+table { width:100%; border-collapse:collapse; margin:0 0 20px; font-size:14.5px; }
+th, td { border:1px solid rgba(255,255,255,0.1); padding:8px 12px; text-align:left; color:#cbd5e1; }
+th { background:#12121f; color:#fff; font-weight:700; }
+.cta { background:linear-gradient(135deg,rgba(99,102,241,0.15),rgba(168,85,247,0.15)); border:1px solid rgba(99,102,241,0.35); border-radius:14px; padding:24px; margin:40px 0 0; text-align:center; }
+.cta a { display:inline-block; margin-top:14px; padding:14px 28px; background:linear-gradient(135deg,#6366f1,#a855f7); color:#fff; font-weight:800; text-decoration:none; border-radius:10px; }
+.disc { font-size:12px; color:rgba(255,255,255,0.4); margin-top:32px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
+.cta-top { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:center; text-align:center; background:rgba(99,102,241,0.10); border:1px solid rgba(99,102,241,0.28); border-radius:12px; padding:12px 16px; margin:0 0 26px; font-size:14px; color:#c7d2fe; line-height:1.7; }
+.cta-top a { color:#fff; background:linear-gradient(135deg,#6366f1,#a855f7); font-weight:800; text-decoration:none; padding:8px 16px; border-radius:8px; white-space:nowrap; }
+</style>
+</head>
+<body>
+<div class="topnav">
+  <a href="/">MarketDaily ←</a>
+  <a href="/blog/">所有文章</a>
+</div>
+<article class="wrap">
+  <div class="crumb">MARKETDAILY · 工程</div>
+  <h1>資料隔離事故報告:公版觀察清單怎麼混進「你的持股」</h1>
+  <!-- md-top-cta -->
+  <div class="cta-top">📬 喜歡這類拆解?MarketDaily 每天早上 7 點把美股 + 台股 AI 過濾日報寄到你信箱。<a href="https://marketdaily.ai/?utm_source=blog&amp;utm_medium=cta_top&amp;utm_campaign=seo_eng-portfolio-lens-202609#email-step">免費訂閱 →</a></div>
+
+<blockquote><p>前兩篇講了 council + judge 的多模型仲裁,以及確定性稽核層的 30 項檢查怎麼分類。這篇只拆其中一項 <code>portfolio_lens_foreign_ticker</code>,因為它同時是<strong>一次真實的資料隔離事故</strong>、<strong>一次防線自己造成的事故</strong>,以及<strong>一個到今天還沒過期的設計教訓</strong>。</p></blockquote>
+
+<h2>先坦白:這道防線的白名單,比程式註解說的多了 27%</h2>
+
+<p>動筆第一件事是重跑這篇要用的每個數字。第一個就對不上。程式裡那段註解寫著:</p>
+
+<pre><code class="language-python"># 改成「必須是真實上市證券」才算外來:台股比對 .tw_names_cache.json(12k 代號)</code></pre>
+
+<p>實際數:</p>
+
+<pre><code class="language-bash">python3 -c &quot;import json;print(len(json.load(open(&#x27;scripts/.tw_names_cache.json&#x27;))))&quot;
+# → 15273</code></pre>
+
+<p>當初寫下那行時的紀錄是 12,019 筆,所以註解在<strong>寫的當下是對的</strong>,只是那份名表會隨上市櫃新增而長,兩個月長了 27%。</p>
+
+<p>我第一版稿子在這裡寫了一段很順的結論:「白名單防線的正確性有保存期限」。然後照規矩去查證,發現<strong>是錯的</strong>——那份名表每小時會自己從 TWSE 與 TPEx 重抓一次,不是死的快照。差一點就把一個沒查證的漂亮說法寫進文章裡,而這個系列的紅線第一條就是數字要先查。</p>
+
+<p>真正成立的版本比較小、但比較有意思,留到最後一節講。以下的數字都以今天實測為準。</p>
+
+<h2>第一幕:個人化系統最尷尬的失敗</h2>
+
+<p>2026-07-21,日報裡一個叫「組合透視」的區塊出事了。</p>
+
+<p>這個區塊的標題掛著「你的」兩個字,內容是針對訂閱者<strong>自己選的持股</strong>做市場配置與估值分佈。那天它混進了公版預設觀察清單的 10 檔美股:</p>
+
+<pre><code class="language-python"># analyzer.py
+default_us = [&quot;AAPL&quot;, &quot;MSFT&quot;, &quot;GOOGL&quot;, &quot;AMZN&quot;, &quot;META&quot;, &quot;NVDA&quot;, &quot;TSLA&quot;, &quot;AMD&quot;, &quot;TSM&quot;, &quot;JPM&quot;]
+watchlist_us = user_us_stocks if user_us_stocks else default_us</code></pre>
+
+<p>症狀是「市場配置」憑空多出十檔美股,而「DCF 偏貴」那一列點名的標的<strong>沒有一支是用戶持有的</strong>。</p>
+
+<p>值得停下來想一秒的是這次外洩的方向。個人化系統出資料隔離問題,直覺會想到「A 用戶的資料跑到 B 用戶的信裡」——那是嚴重但好解釋的錯。這次是反過來:<strong>公版資料洩進了個人視角</strong>。沒有任何一個訂閱者的隱私受損,一個 byte 都沒有跨用戶流動,但收信的人打開「你的組合」,看到十檔他從沒買過的股票。</p>
+
+<p>技術上損失是零。信任上損失是全部。個人化產品賣的就是「這封信懂我」,而這個區塊當場證明它不懂——比起一個明顯的 bug,這種「看起來很專業但其實在講別人的事」更傷,因為用戶沒辦法分辨這封信裡還有哪些段落也是假的個人化。</p>
+
+<h3>修法三層</h3>
+
+<ol><li><strong>鐵則化(規格層)</strong>:任何標題掛「你的」的區塊,其標的必須<strong>完全</strong>來自傳入的真實持股清單。公版精選場景(用戶沒選該市場的股票,系統改送 AI 委員會精選)holdings 就等於 picks 清單,同樣受約束。沒有持股的純公版報告不檢查——它從來沒宣稱是個人化的。</li><li><strong>檢查層</strong>:<code>digest_audit.py</code> 新增 <code>portfolio_lens_foreign_ticker</code>,severity HIGH。在這套系統裡 HIGH 的語義很重:觸發完整的 retry 鏈(等 60 秒 → 換更強的模型整封重生 → 仍失敗就切純程式備援版)。</li><li><strong>退路層</strong>:備援版不准偷偷用通用內容冒充個人化版寄出去。降級可以,假裝沒降級不行。</li></ol>
+
+<p>第 3 層看起來像贅述,但它是後面第二幕的伏筆。</p>
+
+<h2>第二幕:防線自己把用戶的信變成了閹割版</h2>
+
+<p>三天後,2026-07-24 的台股早報,我自己收到的是這個:</p>
+
+<blockquote><p>⚠️ 今天 AI 個人化生成異常,這封是備援版本</p></blockquote>
+
+<p>而當天的 audit JSON 寫著 <code>personalization_failed_count: 0</code>。報告全綠,信是閹割版。</p>
+
+<p><strong>根因 A:檢查的 token 抽取太粗。</strong> 初版是這樣找「文字裡出現的證券代號」的:</p>
+
+<pre><code class="language-python">found  = set(re.findall(r&quot;\b[A-Z]{2,5}\b&quot;, lens_text))
+found |= set(re.findall(r&quot;\b\d{4,6}\b&quot;, lens_text))</code></pre>
+
+<p>這兩條正則在一篇財經敘述裡會撈到什麼:年份(<code>2026</code>)、指數點位(<code>23150</code>)、價位(<code>1085</code>)、名詞縮寫(<code>AI</code> / <code>GDP</code> / <code>CPI</code> / <code>ETF</code>)。它們全部被判定成「你沒持有的外來標的」→ HIGH → retry。換更強的模型重生一版文字正常的內容,結果踩到<strong>別的</strong>數字,又是同一個 HIGH → 切備援。</p>
+
+<p>這個誤判有個殘酷的分佈:<strong>敘述越豐富的用戶越容易中</strong>。老手級的個人化內容數字最多,台股班次又天天有指數點位,所以幾乎每個台股班次必中。也就是說,這道防線最先懲罰的是系統對其最用力的那群人。</p>
+
+<p><strong>根因 B:報告看不見這件事。</strong> 當時 audit JSON 只寫三類欄位:<code>personalization_failed</code> / <code>audit_failed</code> / <code>by_email</code>,<strong>完全沒有 deterministic_fallback</strong>。而備援版是純程式產生的,拿去重新稽核當然零失分、不會進 <code>by_email</code>,寫檔條件也不含 fallback。於是形成一個完美的盲區:<strong>掉備援這件事在報告裡沒有任何欄位可以承載</strong>,只有收信的人看得到。</p>
+
+<p>這是上一篇講的「檢查自己引發事故」的第二個實例,而且比第一個更難發現——第一個(undefined_css_class 全員降級)至少在報告裡是紅的。</p>
+
+<h2>真正的修法:把啟發式換成真實 universe</h2>
+
+<p>誘人的修法是「把誤判的樣式一個個排除掉」:年份不算、四位數以 20 開頭的不算、全大寫三字以內的常見縮寫建個黑名單……這條路的問題是它永遠列不完,而且每漏一個就是一次用戶收到閹割版。</p>
+
+<p>實際的修法是把問題反過來問。原本問的是「這個 token 看起來像不像代號」,改成問「<strong>這個 token 是不是一支真實存在的上市證券</strong>」:</p>
+
+<pre><code class="language-python">def _is_real_ticker(tok):
+    &quot;&quot;&quot;token 是否為真實上市證券代號(排除年份/指數/價位/名詞縮寫等非證券數字)。&quot;&quot;&quot;
+    t = (tok or &quot;&quot;).strip().upper()
+    if not t:
+        return False
+    if t.isdigit():
+        return t in _tw_ticker_universe() or t in stock_names.TW_NAMES
+    return stock_names.is_known(t)</code></pre>
+
+<p>台股比對本地代號快取(今天 15,273 筆),美股比對名稱庫。效果:</p>
+
+<ul><li><code>2026</code>、<code>23150</code>、<code>1085</code>、<code>AI</code>、<code>GDP</code> → 不在任何名表 → 放行,不再誤殺。</li><li><code>AAPL</code>、<code>2330</code> 這種<strong>真的洩漏進來的標的</strong> → 在名表裡 → 照抓。<strong>防線一點都沒有變弱</strong>,這是關鍵:誤判修好之後,原本要擋的東西仍然擋得住,否則就只是把警報關掉。</li></ul>
+
+<p>同一輪把根因 B 也補上:audit JSON 加 <code>deterministic_fallback_count</code> 與名單,寫檔條件納入三類失敗(掉備援 / 個人化拋錯 / audit 失分)。掉備援從此不再隱形。</p>
+
+<p>驗證用 5 組固定案例凍住:誤判樣本不再被殺、<code>AAPL</code>/<code>6488</code> 真洩漏仍被抓、乾淨內容不誤報,加上 <code>_is_real_ticker</code> 的單元測試。</p>
+
+<h2>導出的設計準則</h2>
+
+<p><strong>一、個人化區塊的隔離要靠白名單契約,不是靠偵測。</strong> 「找出不該出現的東西」需要枚舉所有壞情況;「確認每個出現的東西都在允許清單裡」只需要一份清單。前者的漏網是無聲的,後者的漏網會當場紅。</p>
+
+<p><strong>二、白名單的例外判準要用真實 universe,不要用啟發式。</strong> 「看起來像代號」是啟發式,會同時產生假陽性與假陰性;「在 15,273 筆上市代號表裡」是事實查詢,兩種錯都消失。代價是你得維護那份表——這正是第三條。</p>
+
+<p><strong>三、防線與它的白名單之間,有一條沒人在看的供給線。</strong> 這條是查證過程中長出來的,原本大綱裡沒有。</p>
+
+<p>名表本身是活的:<code>data_fetcher.tw_name_map()</code> 每小時重抓 TWSE + TPEx,抓到就覆寫磁碟,抓不到就沿用上次成功的版本(「官方源斷線時名字永不歸零」是它刻意的設計,日報才不會出現裸代號)。</p>
+
+<p>但稽核這一側<strong>不走那條函式</strong>。<code>digest_audit._tw_ticker_universe()</code> 是直接開磁碟上那個 json:</p>
+
+<pre><code class="language-python">with open(p, encoding=&quot;utf-8&quot;) as f:
+    uni = set(json.load(f).keys())</code></pre>
+
+<p>也就是說,稽核用的 universe 新不新鮮,完全取決於<strong>別人</strong>(日報生成流程)有沒有跑過、跑成功沒有。它自己不會去刷新,也沒有任何東西在量這個檔多舊了——我找過了,全庫沒有一處檢查它的 mtime。</p>
+
+<p>正常日子這沒差,兩邊在同一個流程裡跑。但把失敗模式想完:上游連續抓失敗(2026-07-09 就發生過一次,winrig 的 certifi 過期害 TPEx SSL 全滅),磁碟名表就凍在那一刻。日報那側有明確的降級語義(沿用舊名字,不歸零);稽核那側沒有——它會安靜地拿一份舊 universe 去判「這是不是真實證券」,而<strong>新上市的標的在舊表裡查不到 ⇒ 判定非證券 ⇒ 放行</strong>。防線會在它最該作用的地方(最新、最容易被公版清單帶進來的標的)先瞎掉,而且不會有人知道。</p>
+
+<p>這不是今天的事故,是一條還沒射出來的引信。寫這篇之前沒人量過它。</p>
+
+<p>所以這篇沒有停在「值得注意」——引信當場拆掉了,新增檢查 <code>ticker_universe_stale</code>(MED):</p>
+
+<pre><code class="language-python">age = _tw_universe_age_days()
+if age is None:
+    ...  # 檔不見了 = 台股那半形同關閉
+elif age &gt; TICKER_UNIVERSE_STALE_DAYS:      # 7 天
+    ...  # 「新上市標的查不到會被判非證券而放行,這道防線正在半瞎」</code></pre>
+
+<p>幾個刻意的選擇:<strong>量的是檔案年齡不是筆數</strong>(筆數變多變少都不代表新鮮);<strong>severity 是 MED 不是 HIGH</strong>(白名單舊了不該讓用戶收到閹割版——那正是第二幕的錯誤);<strong>只在真的用到白名單的個人化報告檢查</strong>,純公版報告不製造噪音;訊息寫的是<strong>後果</strong>(「會被判非證券而放行」)不是症狀(「檔案舊了」),因為半年後看到這則告警的人需要知道的是損失什麼,不是哪個檔案的 mtime 比較小。</p>
+
+<p>迴歸測試 7 條,最後一條是突變對照:把門檻改成天文數字,前面那條斷言必須當場變綠——不會因為突變而變綠的測試,等於沒有在量門檻。</p>
+
+<p>查證數字本身就是稽核,這已經是這個系列第二次在動筆時抓到自己的東西。</p>
+
+<h2>查證指令</h2>
+
+<pre><code class="language-bash"># 白名單實際筆數
+python3 -c &quot;import json;print(len(json.load(open(&#x27;scripts/.tw_names_cache.json&#x27;))))&quot;
+
+# 這道檢查的實作與 severity
+grep -n &quot;portfolio_lens_foreign_ticker&quot; digest_audit.py
+
+# 公版預設觀察清單(事故洩漏源)
+grep -n &quot;default_us = &quot; analyzer.py
+
+# 誤判根治後的判準
+sed -n &#x27;/def _is_real_ticker/,/is_known/p&#x27; digest_audit.py
+
+# 白名單多舊了(稽核側沒有任何東西在量這個)
+stat -c &#x27;%y  %n&#x27; scripts/.tw_names_cache.json</code></pre>
+
+  <div class="cta">
+    <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">MarketDaily 每天早晚用這套系統寄出日報,目前全功能限時免費——現在訂閱的早鳥用戶,未來恢復收費後永久保留免費使用權</p>
+    <!-- md-inline-subscribe:start --><form id="mdsub-form" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin:0 0 10px;"><input id="mdsub-email" type="email" autocomplete="email" inputmode="email" placeholder="your@email.com" aria-label="Email" style="width:100%;max-width:280px;box-sizing:border-box;padding:13px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#fff;font-size:15px;outline:none;"><button id="mdsub-btn" type="submit" style="padding:13px 26px;border:0;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:15px;font-weight:800;cursor:pointer;white-space:nowrap;">免費訂閱 →</button></form><p id="mdsub-msg" role="status" aria-live="polite" style="display:none;font-size:13px;line-height:1.7;margin:0 0 6px;"></p><noscript><a href="https://marketdaily.ai/?utm_source=blog&utm_medium=eng_article&utm_campaign=audit_taxonomy#email-step">到 marketdaily.ai 訂閱 →</a></noscript><script>
+(function(){
+  var API='https://api.marketdaily.ai';
+  var f=document.getElementById('mdsub-form'),e=document.getElementById('mdsub-email'),b=document.getElementById('mdsub-btn'),m=document.getElementById('mdsub-msg');
+  if(!f||!e||!b||!m){return;}
+  function say(t,ok){m.textContent=t;m.style.color=ok?'#6ee7b7':'#fca5a5';m.style.display='block';}
+  function attr(){
+    var p,real=null;
+    try{p=new URL(window.location.href).searchParams;real=p.get('utm_source');}catch(x){p=null;}
+    var vid=null;try{vid=sessionStorage.getItem('md-visit-id')||null;}catch(x){}
+    return {visit_id:vid,
+      utm_source: real||'blog',
+      utm_medium: (p&&p.get('utm_medium'))||(real?null:'eng_article'),
+      utm_campaign: (p&&p.get('utm_campaign'))||'audit_taxonomy',
+      utm_content: (p&&p.get('utm_content'))||'inline_form'};
+  }
+  f.addEventListener('submit',function(ev){
+    ev.preventDefault();
+    var email=(e.value||'').trim().toLowerCase();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){say('請輸入有效的 Email',false);return;}
+    var old=b.textContent;
+    b.disabled=true;b.textContent='送出中...';
+    var body=attr();body.email=email;
+    fetch(API+'/subscribe-free-direct',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json().catch(function(){return {};});})
+      .then(function(d){
+        d=d||{};
+        if(d.resubscribe_pending){
+          say(d.sent?'📬 你先前退訂過 —— 確認信已寄到這個信箱,點一下就恢復寄送。':'你先前退訂過,但確認信寄不出去。請到「聯絡我們」告訴我們,我們手動幫你恢復。',!!d.sent);
+          b.textContent='已寄確認信 ✓';return;
+        }
+        if(d.ok){
+          say('✅ 訂閱成功!明天早上 7 點就會收到第一封(沒看到請看垃圾郵件匣)。',true);b.textContent='已訂閱 ✓';e.disabled=true;return;
+        }
+        if(d.error==='undeliverable_email'){say('這個 Email 好像收不到信,請確認拼字是否正確。',false);}
+        else if(d.error==='rate_limited'||d.error==='too_many_attempts'){say('剛剛已經送出過一次了,請等幾分鐘再試。',false);}
+        else{say('出了點問題,請稍後再試。',false);}
+        b.disabled=false;b.textContent=old;
+      })
+      .catch(function(){say('網路錯誤,請稍後再試。',false);b.disabled=false;b.textContent=old;});
+  });
+})();
+</script><!-- md-inline-subscribe:end -->
+  </div>
+  <p class="disc">本文僅供資訊整理,非投資建議。投資有風險,請評估自身狀況。資料更新:2026-08-12</p>
+</article>
+<!-- md-attr-beacon -->
+<script>
+(function(){
+  try {
+    var WORKER_URL = "https://api.marketdaily.ai";
+    var p = new URL(window.location.href).searchParams;
+    var real = p.get("utm_source");
+    var utm = {
+      utm_source:   real || "blog",
+      utm_medium:   p.get("utm_medium")   || (real ? null : "organic"),
+      utm_campaign: p.get("utm_campaign") || null,
+      utm_term:     p.get("utm_term")     || null,
+      utm_content:  p.get("utm_content")  || "eng-portfolio-lens-202609",
+    };
+    if (real) {
+      var payload = { utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, ts: Date.now() };
+      try { sessionStorage.setItem("md-attr", JSON.stringify(payload)); localStorage.setItem("md-attr-first", JSON.stringify(payload)); } catch (e) {}
+    }
+    if (!navigator.webdriver && !sessionStorage.getItem("md-visit-id")) {
+      fetch(WORKER_URL + "/track/visit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ utm_source: utm.utm_source, utm_medium: utm.utm_medium, utm_campaign: utm.utm_campaign, utm_term: utm.utm_term, utm_content: utm.utm_content, ts: Date.now() }),
+      })
+        .then(function(r){ return r.ok ? r.json() : null; })
+        .then(function(d){ if (d && d.visit_id) { try { sessionStorage.setItem("md-visit-id", d.visit_id); } catch (e) {} } })
+        .catch(function(){});
+    }
+  } catch (e) {}
+})();
+</script>
+</body>
+</html>
