@@ -11849,5 +11849,35 @@
   "opened": "2026-09-16 00:21",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1186,
+  "what": "皇海 Global Sources 線上產品額度 100/100 滿額,剩約 93 顆上不去",
+  "why": "免費帳號上限 100;要嘛請客戶主任提高上限(=付費)、要嘛下架舊品換上——這是要花錢/取捨的決定,不是我能自己決定的",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 00:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1187,
+  "what": "QuietFix 冷信 runner 的 followup 逾時 + 成功戳記尚未在生產跑過",
+  "why": "下一班是 09-16 10:05 TW;且 ~/.marketdaily-fallback/ 不在版控,改動只存在這台機器",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-16 00:51",
+  "closed": "2026-09-16 00:59",
+  "note": "已改成可執行的驗證,不是等首班:新增 scripts/test_storefront_outreach_runner_gate.sh 在沙盒 HOME 用假 python 真跑那支 runner(9 條斷言,含兩個精準突變:戳記改 no-op 只殺『成功應蓋戳記』、拿掉 timeout 只殺『followup 沒有逾時保護』),並接上夜巡 alert_wall_20260916.test.sh。"
+ },
+ {
+  "id": 1188,
+  "what": "09-15 QuietFix 冷信班無聲死掉的根因未查出",
+  "why": "log 只寫到標題、當天另有兩次『接手未完成的班(死鎖)』、WSL 當晚 21:00 重開機過;已加逾時與戳記,再犯會被看見,但這次死因只能存疑",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-16 00:51",
+  "closed": "2026-09-16 00:59",
+  "note": "根因已定案:imaplib 預設永遠等下去,14 條 IMAP 連線沒有一條帶 timeout。09-15 那班掛在 followup 的第一個 IMAP 連線(09-14 正常 log 的第一行『回信掃描』完全沒印出來),撐到當晚 21:00 WSL 重開機;同時段 10:05/10:30/11:00 其他班全部正常 ⇒ 不是機器事件。14 處全部補上 timeout=60(三個專案各自 commit+push),並加 AST 守衛防止再被靜默加回來。"
  }
 ]

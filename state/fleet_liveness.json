@@ -1,5 +1,5 @@
 {
- "ts": "2026-09-16T00:22:03",
+ "ts": "2026-09-16T00:46:20",
  "jobs_n": 154,
  "silent_n": 0,
  "silent": [],
@@ -1133,9 +1133,9 @@
    "status": "ok"
   },
   "wrangler_log_prune": {
-   "last": "2026-09-15",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-16",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
