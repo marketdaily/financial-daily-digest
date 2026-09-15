@@ -11509,5 +11509,55 @@
   "opened": "2026-09-15 20:07",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1152,
+  "what": "mingxinclinic.com 線上版有 11 個「待診所提供」斜線佔位框公開可見(醫師專長/學歷欄),看起來像半成品",
+  "why": "等院方提供醫師專長與學歷資料;在拿到之前應改成隱藏該列而非顯示空框",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 20:24",
+  "closed": "2026-09-15 20:54",
+  "note": "首頁醫師區 611 字搬到新的 /doctors/ 子頁,空欄位改成整列不輸出;線上實查 待診所提供=0"
+ },
+ {
+  "id": 1153,
+  "what": "SnapMagic 回信草稿已備妥但未寄(對外信,等老闆點頭)",
+  "why": "對外內容送出前必先給老闆看 OK;草稿 ~/kingconn/offsite/outbox/snapmagic_reply_20260916.txt,附件兩份 xlsx 已產好對帳過",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 20:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1154,
+  "what": "67 個 DERIVED 料號未經工廠確認,SnapMagic 須押著不得發佈",
+  "why": "編碼規則與合法值都在圖面上,但組合是我推的;已在信裡明寫請對方先不要發,工廠正式清單回來才放行",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 20:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1155,
+  "what": "明欣診所實拍照只有 9 張且室內只拍到櫃台候診那一個空間(三張是同角度),首屏圖仍只有 1 張(日系同業 2-8 張)",
+  "why": "需要院方補拍:診間內部、醫師看診中、藥局取藥口、兒童遊戲區、騎樓入口;手機拍即可,到位後直接換上去",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 20:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1156,
+  "what": "明欣站 ClaPat 模板的 body.hidden/#main opacity:0 會讓 JS 關閉時全站 14 頁全白,已補 noscript 還原;同 bundle 其他客戶站(qfxsolution 等)可能有同一顆地雷未檢查",
+  "why": "本次只修了明欣;其餘用 ClaPat 底子的站要各自跑一次 JS-off 像素量測",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 20:54",
+  "closed": null,
+  "note": ""
  }
 ]
