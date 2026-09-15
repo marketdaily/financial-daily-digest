@@ -9656,5 +9656,31 @@ Stop hook 擋下「剩 5 則都需要老闆」那句收工詞,回去逐則重查
 艦隊 liveness 全綠 · 記憶索引 16403/17100 strict_rc=0 · site_scan 21/21 · 跨機大腦 sync ok。
 
 ## 2026-09-16 全機 repo 樹體檢(45 個 git repo)
-掃描 45 個 repo:**無任何 unpushed commit**;15 個 working tree 髒、3 個殘留 stash。
-逐個處理(自用 repo 補 commit / 產物加 gitignore / vendor clone 收本地補丁),詳見本節下方各條。
+掃描 43 個 repo:**無任何 unpushed commit**;15 個 working tree 髒、3 個殘留 stash。收尾後全數乾淨
+(僅 3 個 vendor clone 刻意 ahead 1 = 本地補丁,上游不是我們的不推)。
+
+**三個殘留 stash 全是 orphan autostash**(kingconn 09-09、brain 07-30、Delvin-agent 07-23),
+正是「cron autostash 吞掉改動再也沒還回來」那個靜默遺失模式。逐檔比對後確認內容已全被 HEAD 取代
+(brain 的 dept_engineering 三行、Delvin-agent 的 /us-ranks+yahooScreener 都已在 HEAD;
+kingconn 那批是被 cron 一直重寫的 state 檔,ledger targets 13/13 無獨有項)才 drop。
+
+### ⭐ 17 個 repo 沒有 git 身分 —— 任何自動 commit 在那裡都會直接 fail
+`user.name/email` 只設在少數 repo 的 local config,全域是空的。也就是說 pokecard-tracker、
+collectibles-ca、Kronos… 這 17 個 repo 裡,**版控全自動(08-10 親令)與任何 autocommit 都是啞的**——
+它不是「沒東西可 commit」,是 `fatal: empty ident name` 當場死掉。已設全域 marketdaily-bot 一次解決。
+
+### 三個「規則寫了但對它不生效」的髒源(修掉根因,不是每次手動清)
+1. **pokecard-tracker**:`inventory.json`/`price_history.json` 早在 e1ac00f 就寫進 .gitignore,
+   但當時已被追蹤 ⇒ ignore 對它們完全無效,跑一次價格引擎就髒一次。`git rm --cached` 讓規則真的生效。
+2. **delvin-claude-brain**:mutation-probe 的髒樹測試樁被誤以 **gitlink(160000)** 提交且無 .gitmodules
+   ⇒ 對 clone 的人是空目錄,對這裡是每跑一次 probe 就把大腦 repo 弄髒。改為不追蹤。
+3. **protoforge / collectibles-ca / granthawk / fortune-ai**:執行期日誌與一次性狀態檔補進 .gitignore。
+
+### ⚠️ fortune-ai 有一支加硬過的測試從 2026-08-18 躺到今天沒進版控
+`tests/node/cl_hehun_parity.test.mjs` 的「交界揭露句必須署名」絕對值斷言(當初的教訓正是
+*parity 只證明兩腿一樣,兩腿一起退化它看不見*)寫完就沒 commit,整整一個月只存在於 working tree,
+任何一次 reset/stash 就沒了。今天實跑 **ALL PASS** 後補收。
+
+### 沒收乾的一件事
+**全艦隊沒有任何東西在盯「working tree 髒了多久 / 有沒有 orphan stash」**。今天這輪是人工掃出來的;
+fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。要不要做成守衛請老闆說一聲。
