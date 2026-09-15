@@ -1,10 +1,10 @@
 {
- "date": "2026-09-15",
+ "date": "2026-09-16",
  "kpi": {
   "subscribers": 28,
   "digest_clean_days_7d": "7/7",
   "fallback_7d": 0,
-  "social_posts_7d": 84
+  "social_posts_7d": 74
  },
  "digest": {
   "audit": null,
@@ -123,8 +123,8 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": 3,
-  "us": 3
+  "tw": null,
+  "us": null
  },
  "sitescan": {
   "date": "2026-09-15",
@@ -133,10 +133,10 @@
   "fixed_in_place": false
  },
  "flags": {
-  "hb_miss_tw": true,
-  "hb_miss_us": true,
-  "guard_alert_tw": true,
-  "guard_alert_us": true
+  "hb_miss_tw": false,
+  "hb_miss_us": false,
+  "guard_alert_tw": false,
+  "guard_alert_us": false
  },
- "generated_utc": "2026-09-15T15:08:01Z"
+ "generated_utc": "2026-09-15T16:08:01Z"
 }
