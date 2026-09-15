@@ -532,8 +532,20 @@ def login_states(env):
     """
     import shioaji as sj
     api = sj.Shioaji(simulation=False)
-    accounts = api.login(api_key=env["SINOPAC_API_KEY"], secret_key=env["SINOPAC_SECRET_KEY"],
-                         fetch_contract=False)
+    # ⚠️ 2026-09-16:原本傳 `fetch_contract=False`,shioaji 1.7.0 的 login() 已經沒有這個參數
+    # (簽名剩 api_key/secret_key/subscribe_trade/receive_window/force_refresh)⇒ 每輪
+    # `TypeError: unexpected keyword argument 'fetch_contract'`,偵測器從此**完全看不到過檔狀態**,
+    # 而它正是「簽署到底生效了沒」的唯一量測面。上游 SDK 換介面把守衛打瞎,是 memory
+    # 「簽署生效偵測器看門人自己是啞的」那條的第二次發作。
+    # ⇒ 只傳這個版本真的吃得下的參數:用 inspect 問 SDK 本人,舊版仍支援 fetch_contract 就照傳,
+    #   不寫死任何一版的簽名(下次 SDK 再改也不會再瞎一次)。
+    import inspect as _inspect
+    kw = {"api_key": env["SINOPAC_API_KEY"], "secret_key": env["SINOPAC_SECRET_KEY"]}
+    if "fetch_contract" in _inspect.signature(api.login).parameters:
+        kw["fetch_contract"] = False          # 舊版:不抓合約檔,省時間
+    if "subscribe_trade" in _inspect.signature(api.login).parameters:
+        kw["subscribe_trade"] = False         # 只查狀態,不需要成交回報訂閱
+    accounts = api.login(**kw)
     try:
         return account_states(accounts), api
     except Exception:
