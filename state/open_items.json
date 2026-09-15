@@ -11567,8 +11567,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-15 20:58",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 21:21",
+  "note": "remote 未受損(main 就是那顆壞 commit),fetch 補回 7 個空物件,fsck exit 0;根因=殘留 index.lock 讓 add/commit 失敗而 push 空推回傳 0 把戳記寫成 ok,已補三道檢查+dead-man 改前綴比對,突變測試 8 種狀態驗過"
  },
  {
   "id": 1158,
