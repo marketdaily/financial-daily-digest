@@ -9296,3 +9296,12 @@ SessionLeader 吃 **SIGBUS(fatal signal 7)** → PID 1 死 → 整個 WSL VM 崩
 = .wslconfig 的 swap 值 + 8GB(free < swap 上限那刻 swap 就換不進去了),狀態轉變才推、
 RED 每 6h 重推、恢復推 🟢;每輪順手回收孤兒 swap。首跑實推 webpush+desktop 皆送達。
 未收乾:#1160 C 槽仍只有 17GB(門檻 24),真正的肥肉是 ComfyUI 模型 130GB+ 與 /home 214GB,砍哪個要老闆決定。
+
+### 同日 21:2x — 空間回收收尾(老闆令:關 hiberfil + 刪 VALORANT)
+- VALORANT 31.98GB 刪除(先停 RiotClientServices/CrashHandler)。⚠️ 同層 **League of Legends 36.26GB 未動**
+  (老闆只點名 VALORANT);Riot Vanguard 保留——LoL 現在也要它。
+- `powercfg /h off` 關休眠回收 hiberfil.sys 12.5GB。非提權 token 做不到,走
+  [[capability_winrig_elevated_no_uac]] 的 paramiko SSH 腿(無視窗、無 UAC、不碰滑鼠);
+  .ps1 先落地 `C:\Users\USER\` 帶 BOM 再 `-File` 呼叫,避免三層引號吃字。
+  ⚠️ 副作用:休眠與**快速啟動**一併關掉(這台 24h 不睡,可接受)。
+- **C 槽 61MB → 61.2GB**,守衛實推 🟢 恢復通知。#1160 收。
