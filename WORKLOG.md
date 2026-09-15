@@ -9391,3 +9391,21 @@ RED 每 6h 重推、恢復推 🟢;每輪順手回收孤兒 swap。首跑實推 
 - 另修「經歷與資格」在窄欄被折成「經歷與資/格」(欄寬 74px→5.6em)。
 - 驗收:三視窗零重疊、med_ad_gate PASS、零壞圖/零溢出/零對比不足/零 JS 錯誤、線上 md5 == 本機。
 
+
+## 2026-09-15 22:0x 續 — 明欣 Google 收錄鏈上線(不等任何人,#1076 收)
+老闆「自己決定,我要看到成果」⇒ 改走**不需要任何人登入**的路徑,用既有 `gsc-bot` SA impersonation
+(`~/.marketdaily-secrets/README.md` 的零金鑰配方)+ 我們自己的 CF DNS 控制權:
+- **Search Console `sc-domain:mingxinclinic.com` 已驗證上線**(siteVerification API `DNS_TXT` → `webmasters.sites PUT` 204,
+  `sites.list` 確認 `siteOwner`)。
+- ⭐⭐ **擁有者用 API 直接加,不必對方登入**:`siteVerification webResource PUT` 把 `owners` 設成
+  SA + Delvin gmail + **boy.cpy@gmail.com(爸媽)** ⇒ 三層架構的「診所擁有、我們操作」當場成立,
+  完全繞過爸媽帳號的裝置驗證卡點。(這是本輪最關鍵的一招:**授權不必經過被授權者的登入**。)
+- sitemap 提交 0 錯 0 警,13 URL;IndexNow 13 URL 推 Bing/Yandex HTTP 200(key 檔早就在線上)。
+- ⭐ **抓到今晚自己挖的坑**:`/doctors/`(今晚新建的醫師頁)線上 200 但**不在 sitemap 裡**——
+  產生器是從 `dist/**/index.html` 自動掃的,只是建完頁沒重跑。補 `/doctors/` 優先權後重跑 13 URL、
+  重新部署、線上 md5 == 本機。典型「新頁三處登記」漏第二處。
+- GSC 基準線:2026-08-16~09-15 **0 列**(網域 09-14 才註冊,屬預期,非 bug)。
+- 密碼三度更正後正解=大寫 H;登入**過了密碼關**,卡在裝置驗證(推播到兩支 iPhone + 備援 `dad••••••@gmail.com`),
+  兩個管道我都碰不到 ⇒ #1166 給老闆。⚠️ 但**GBP 本來就不在這條路徑上**:GBP 的擁有者是員工帳號,
+  不是爸媽帳號,所以就算登進爸媽帳號也拿不到 GBP——真正的關鍵路徑只有「請員工加擁有者」(#1163)。
+- CF Rules 權限仍缺(#1092/#1115 的 www→apex 301 還是做不了,兩把 token 都 10000)。
