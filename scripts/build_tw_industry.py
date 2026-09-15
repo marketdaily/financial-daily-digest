@@ -32,17 +32,33 @@ THEMES = {
 }
 
 
-def _fetch(url):
+def _fetch(url, _tries=2):
+    """抓開放 API 的 JSON。⚠️ 2026-09-15:原本 curl 退路直接 json.loads(stdout),
+    上游短暫掛掉時 stdout 是空字串 → `JSONDecodeError: Expecting value: line 1 column 1`,
+    告警裡只看得到這句,完全看不出是哪一個 URL、回了什麼(09-13 那則就是這樣)。
+    診斷不准比生產路徑脆弱 ⇒ 錯誤訊息帶上 URL 與回應前 120 字;上游空回應再重試一次。"""
+    import subprocess, time as _t
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"})
-    try:
-        with urllib.request.urlopen(req, timeout=30) as r:
-            return json.loads(r.read().decode())
-    except Exception:
-        # TPEx 憑證鏈缺 SKI,python3.14 urllib 拒收 → curl fallback(同 push_tw_fundamentals)
-        import subprocess
-        out = subprocess.run(["curl", "-s", "--max-time", "30", "-H", "User-Agent: Mozilla/5.0",
-                              "-H", "Accept: application/json", url], capture_output=True, timeout=40)
-        return json.loads(out.stdout.decode())
+    last = ""
+    for attempt in range(_tries):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return json.loads(r.read().decode())
+        except Exception:
+            # TPEx 憑證鏈缺 SKI,python3.14 urllib 拒收 → curl fallback(同 push_tw_fundamentals)
+            out = subprocess.run(["curl", "-s", "--max-time", "30", "-H", "User-Agent: Mozilla/5.0",
+                                  "-H", "Accept: application/json", url], capture_output=True, timeout=40)
+            body = out.stdout.decode(errors="replace").strip()
+            if body:
+                try:
+                    return json.loads(body)
+                except json.JSONDecodeError as e:
+                    last = f"回應不是 JSON({e});前 120 字:{body[:120]!r}"
+            else:
+                last = f"curl 回了空 body(rc={out.returncode});stderr:{out.stderr.decode(errors='replace')[:120]!r}"
+        if attempt + 1 < _tries:
+            _t.sleep(5)
+    raise RuntimeError(f"抓不到 {url} —— {last}")
 
 
 def _etf_codes():
