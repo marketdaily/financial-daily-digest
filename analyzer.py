@@ -435,7 +435,7 @@ _GROQ_TPM = {
     "openai/gpt-oss-120b": 8000,
     "openai/gpt-oss-20b": 8000,
     "openai/gpt-oss-safeguard-20b": 8000,
-    "qwen/qwen3.6-27b": 8000,
+    "qwen/qwen3.8-27b": 8000,
     "llama-3.3-70b-versatile": 12000,
     "llama-3.1-8b-instant": 6000,
 }
@@ -446,7 +446,7 @@ _GROQ_TPM_MARGIN = 300   # 估計器再準也有殘差;寧可少要一點輸出,
 # 看起來像「模型不會做」的假陰性。同一支加了 low 立刻 4.3s / 14 張卡齊全。
 # (這正是 07-30 前排除 kimi-k2「8000 output 全燒在 reasoning、答案 0 字」的同一個坑,
 #  當時的結論是「模型不可用」——實際是參數沒給對。判「不可用」前先確認這個開關。)
-# 值不是全家統一:gpt-oss 家接受 low/medium/high,qwen3.6 只收 none/default
+# 值不是全家統一:gpt-oss 家接受 low/medium/high,qwen3.8 只收 none/default
 # (給錯值是 400 `reasoning_effort must be one of none or default`,不是靜默忽略)。
 # ⚠️ gpt-oss-120b 刻意不列:它是生產中已驗證能產好卡的主力(07-30 晚報仍成功 7 次),
 # 而「不加參數會回空字串」只在 20b 上實測到。今天它 TPD 已耗盡無法對照驗證,
@@ -454,7 +454,7 @@ _GROQ_TPM_MARGIN = 300   # 估計器再準也有殘差;寧可少要一點輸出,
 _GROQ_REASONING = {
     "openai/gpt-oss-20b": "low",
     "openai/gpt-oss-safeguard-20b": "low",
-    "qwen/qwen3.6-27b": "none",
+    "qwen/qwen3.8-27b": "none",
 }
 
 
@@ -2915,11 +2915,15 @@ _COUNCIL_SEATS = [
     # (2026-07-01 換模型後連兩天 36/36 全滅的根因)
     # 2026-07-30 換桶(#18):原本用 gpt-oss-120b —— 但那正是生卡主鏈的同一支,council 每班
     # 跑滿 40 支就吃掉它 ~100k tokens,直接把生卡的 TPD 200,000 榨到 197,364 → 晚報整批
-    # 掉去 openrouter 550b 拖 1h35。改用 qwen3.6-27b:各自獨立的日額度,且 council 輸出是
+    # 掉去 openrouter 550b 拖 1h35。改用 qwen3.x-27b:各自獨立的日額度,且 council 輸出是
     # JSON 觀點不含價位,躲得開 qwen「把 385.25 改寫成 385.00」的捏造價位問題(故它不進生卡鏈)。
     # 這跟上面 Gemini 席次刻意用 lite/2.0 把 2.5-flash 留給卡片,是同一條配額保護原則。
-    ("groq:qwen3.6-27b", lambda p: _call_groq(p, system=_COUNCIL_SYS, max_tokens=1000,
-                                              model="qwen/qwen3.6-27b")),
+    # ⚠️ 2026-09-16:Groq 把 qwen3.6-27b 下架換成 3.8,這席自那天起每班都是 404
+    #    (雷達 09-16 實測 404 模型不存在 + groq 模型清單少掉那支)。席次靜默少一把聲音,
+    #    council 不會因此失敗 ⇒ 沒有人會發現。已換 3.8 並實測 200(reasoning_effort 仍只收
+    #    none/default)。「捏造價位精度 ⇒ 只准進 council、不准碰生卡鏈」的限制照舊沿用。
+    ("groq:qwen3.8-27b", lambda p: _call_groq(p, system=_COUNCIL_SYS, max_tokens=1000,
+                                              model="qwen/qwen3.8-27b")),
     # winrig 本地 5080(零配額零429):清晨 Gemini 必空桶時保底的第三把獨立聲音;
     # 雲端 CI 環境連不上 localhost → 席次熔斷自動停用,不影響
     ("local:qwen2.5-14b", lambda p: _call_ollama(p, system=_COUNCIL_SYS, max_tokens=300)),

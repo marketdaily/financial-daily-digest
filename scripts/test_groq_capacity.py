@@ -108,7 +108,7 @@ except Exception as e:      # 沒 key 之類的環境問題不算過
 
 print("\n── ④ 推理型模型的 reasoning_effort(值不同家不通用) ──")
 check("gpt-oss-20b 用 low", analyzer._GROQ_REASONING.get("openai/gpt-oss-20b") == "low")
-check("qwen3.6 只收 none/default", analyzer._GROQ_REASONING.get("qwen/qwen3.6-27b") in ("none", "default"))
+check("qwen3.8 只收 none/default", analyzer._GROQ_REASONING.get("qwen/qwen3.8-27b") in ("none", "default"))
 check("生產主力 gpt-oss-120b 不被動到(未量過不改)",
       "openai/gpt-oss-120b" not in analyzer._GROQ_REASONING)
 

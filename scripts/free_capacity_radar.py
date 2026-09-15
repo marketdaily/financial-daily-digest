@@ -39,7 +39,7 @@ QUIET = "--quiet" in sys.argv
 HEALTH = [
     ("groq:gpt-oss-120b", "groq", "openai/gpt-oss-120b"),
     ("groq:gpt-oss-20b", "groq", "openai/gpt-oss-20b"),
-    ("groq:qwen3.6-27b", "groq", "qwen/qwen3.6-27b"),
+    ("groq:qwen3.8-27b", "groq", "qwen/qwen3.8-27b"),
     ("cerebras:gpt-oss-120b", "cerebras", "gpt-oss-120b"),
     ("openrouter:nemotron-ultra-550b", "openrouter", "nvidia/nemotron-3-ultra-550b-a55b:free"),
     ("local:ollama", "ollama", None),
@@ -58,20 +58,32 @@ def _key(name):
     return (ENV.get(name) or "").strip()
 
 
+# 2026-09-16:探活只有兩態時,一次 Read timeout 就會被寫成「掉線」,下一輪自己「恢復」——
+# 09-11 與 09-14 的兩則 🔴 免費算力掉線:openrouter(Read timeout) 都是這樣來的,那席其實沒死。
+# 假的掉線通知比沒有通知更糟:它教人忽略這個頻道,真的死掉那次就沒人信了。
+# ⇒ 第三態 None =「我們根本沒問到」(逾時/連不上/對方 5xx),它既不是活也不是死。
+UNKNOWN_STREAK_DEAD = 2       # 連續幾輪問不到才當成掉線(cron 每 10 分一輪)
+_RETRY_SLEEP = 3
+
+
 def probe_alive(vendor, model):
-    """回 (alive: bool, note: str)。註記帶 HTTP 狀態/錯誤類型,供分辨配額 vs 帳號死。"""
-    if vendor == "ollama":
-        try:
+    """回 (alive, note)。alive: True=活 / False=對方明確拒絕 / None=問不到(不可當成死)。
+
+    判準的分界不是「成不成功」而是**有沒有拿到對方的答案**:
+    401/402/404/429 是伺服器親口說的(席次真的不能用),逾時與連線錯誤只代表我們沒問到。
+    """
+    def _once():
+        if vendor == "ollama":
             r = requests.get("http://localhost:11434/api/tags", timeout=10)
             n = len((r.json() or {}).get("models") or [])
-            return r.status_code == 200, f"{r.status_code}, {n} models"
-        except Exception as e:
-            return False, str(e)[:60]
-    base, keyname = ENDPOINTS[vendor]
-    key = _key(keyname)
-    if not key:
-        return False, "no key"
-    try:
+            note = f"{r.status_code}, {n} models"
+            if r.status_code == 200:
+                return True, note, 200
+            return (None if r.status_code >= 500 else False), note, r.status_code
+        base, keyname = ENDPOINTS[vendor]
+        key = _key(keyname)
+        if not key:
+            return False, "no key", 0
         r = requests.post(f"{base}/chat/completions",
                           headers={"Authorization": f"Bearer {key}",
                                    "Content-Type": "application/json"},
@@ -80,12 +92,26 @@ def probe_alive(vendor, model):
                                 "max_tokens": 5},
                           timeout=30)
         if r.status_code == 200:
-            return True, "200"
+            return True, "200", 200
         kind = {402: "付費牆", 401: "key 失效", 404: "模型不存在", 429: "配額"}.get(
             r.status_code, "")
-        return False, f"{r.status_code} {kind}".strip()
-    except Exception as e:
-        return False, str(e)[:60]
+        note = f"{r.status_code} {kind}".strip()
+        # 5xx = 對方自己壞了,不是這個席次不能用 ⇒ 問不到,不是死。
+        return (None if r.status_code >= 500 else False), note, r.status_code
+
+    last = ""
+    for attempt in (1, 2):
+        try:
+            alive, note, code = _once()
+            if alive is not None or attempt == 2:
+                return alive, note if alive is not None else f"{note}(重試後仍如此)"
+            last = note
+        except Exception as e:
+            last = f"{type(e).__name__}: {str(e)[:50]}"
+            if attempt == 2:
+                return None, last + "(重試後仍如此)"
+        time.sleep(_RETRY_SLEEP)
+    return None, last
 
 
 def list_models(vendor):
@@ -163,15 +189,26 @@ def main():
 
     health, newly_dead, revived = {}, [], []
     for label, vendor, model in HEALTH:
-        alive, note = probe_alive(vendor, model)
-        health[label] = {"alive": alive, "note": note}
-        was = (prev_health.get(label) or {}).get("alive")
-        if was is True and not alive:
+        probed, note = probe_alive(vendor, model)
+        prev = prev_health.get(label) or {}
+        was = prev.get("alive")
+        streak = int(prev.get("unknown_streak") or 0)
+        if probed is None:
+            streak += 1
+            # 沿用上一輪的判定:問不到不改變「這席是活是死」的認定。
+            # 只有連續問不到 UNKNOWN_STREAK_DEAD 輪,才把「一直問不到」本身當成掉線。
+            alive = False if streak >= UNKNOWN_STREAK_DEAD else was
+            note = f"問不到 · {note}" + (f" · 連續 {streak} 輪" if streak > 1 else "")
+        else:
+            streak, alive = 0, probed
+        health[label] = {"alive": alive, "note": note, "unknown_streak": streak}
+        if was is True and alive is False:
             newly_dead.append(f"{label}({note})")
-        if was is False and alive:
+        if was is False and alive is True:
             revived.append(label)
         if not QUIET:
-            print(f"{'✅' if alive else '❌'} {label:<34} {note}")
+            mark = "✅" if alive else ("❔" if probed is None and alive is not False else "❌")
+            print(f"{mark} {label:<34} {note}")
 
     models, new_models, gone_models = {}, {}, {}
     # 只掃「已經有 key」的廠商:沒 key 的掃了也用不了
