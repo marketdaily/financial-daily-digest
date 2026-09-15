@@ -9334,3 +9334,13 @@ RED 每 6h 重推、恢復推 🟢;每輪順手回收孤兒 swap。首跑實推 
   因為 git 物件是唯讀 444 ⇒ 反證原始損壞來自**寫入中斷**(崩潰/OOM),不是程式覆蓋。
 - 備份留在 `~/.brain-repo-corrupt-backup-20260915-211412/`(7 個空物件 + 殘留鎖 + 兩支腳本原版)。
 
+
+### 同日 21:3x — Riot 全家移除(老闆追加令「league of legends也拿掉 riot也刪掉」)
+走 [[capability_winrig_elevated_no_uac]] 提權腿一次清完,五步驟各自驗證:
+殺進程(vgtray)→ `sc stop/delete` **vgc + vgk**(vgk 是核心層反作弊驅動,非提權殺不掉)→
+刪四個資料夾(`C:\Riot Games` 含 LoL 36.3GB、`Program Files\Riot Vanguard`、
+`ProgramData\Riot Games`、`AppData\Local\Riot Games`)→ 清 HKLM 解除安裝登錄項 →
+清開機自啟(Run 值 `Riot Vanguard` / `RiotClient`)。
+事後獨立複驗:兩個服務 gone、四個資料夾 gone、`driverquery` 查不到 vgk(不需重開機)。
+**C 槽 60.6 → 97.9GB**;今晚合計 61MB → **97.9GB**。
+⚠️ 量尺坑:複驗的進程 regex 寫 `vg` 會把 ASUS `AacVga_UserApp` 一起撈進來,不是 Riot 殘留。
