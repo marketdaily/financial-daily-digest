@@ -1297,15 +1297,27 @@ export default {
       let events = [];
       try { const raw = await env.USER_PREFS.get("admin_events"); if (raw) events = JSON.parse(raw); } catch {}
       if (!Array.isArray(events)) events = [];
-      const ev = ts
-        ? events.find((e) => e && e.ts === ts)
-        : events.find((e) => e && !e.resolved && `${e.title}\n${e.body}`.includes(match));
-      if (!ev) return json({ error: "not_found" }, 404);
-      ev.resolved = Date.now();
+      // 2026-09-15:原本 match 模式只 resolve **第一則**。但推播去重擋的是「推播」不是「事件」,
+      // 同一個根因在 feed 裡常常躺著 5~11 則未解決(lead_reply_watch 11 則、phish_guard 10 則…)。
+      // 修完之後照慣例打一次 resolve_admin_alert.sh,後台仍有一整排紅的同款告警 ⇒ 看板永遠
+      // 清不乾淨,而看板的用途正是「Delvin 只看後台就知道哪些處理完」。預設改成把**所有**
+      // 未解決的匹配項一起標掉(ts 模式仍然只動指名的那一則);要退回舊行為傳 all:false。
       const note = String(body.note || "").slice(0, 300);
-      if (note) ev.resolved_note = note;
+      const stamp = (e) => { e.resolved = Date.now(); if (note) e.resolved_note = note; };
+      if (ts) {
+        const ev = events.find((e) => e && e.ts === ts);
+        if (!ev) return json({ error: "not_found" }, 404);
+        stamp(ev);
+        await env.USER_PREFS.put("admin_events", JSON.stringify(events), { expirationTtl: 90 * 24 * 3600 });
+        return json({ ok: true, ts: ev.ts, title: ev.title, resolved: ev.resolved, count: 1 });
+      }
+      const hits = events.filter((e) => e && !e.resolved && `${e.title}\n${e.body}`.includes(match));
+      if (!hits.length) return json({ error: "not_found" }, 404);
+      const targets = body.all === false ? hits.slice(0, 1) : hits;
+      targets.forEach(stamp);
       await env.USER_PREFS.put("admin_events", JSON.stringify(events), { expirationTtl: 90 * 24 * 3600 });
-      return json({ ok: true, ts: ev.ts, title: ev.title, resolved: ev.resolved });
+      return json({ ok: true, ts: targets[0].ts, title: targets[0].title,
+                    resolved: targets[0].resolved, count: targets.length });
     }
 
     // 供應鏈事件(winrig intel/supply_chain_watch.py 上送):官方公告的新合作/新供應關係。

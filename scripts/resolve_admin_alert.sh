@@ -16,7 +16,11 @@ echo "$RESP"
 # worker 成功時回的是**被更新的那筆事件本身**(含 "resolved": <epoch ms>),不是 {"ok":true}
 # ⇒ 舊版每一次「成功」都掉進最後的 fallback 印「標記未確認生效」。守衛對自己的成功喊失敗,
 # 用的人只會學會不信它(2026-08-12 標記 credential_watch 誤報時發現)。
+# 2026-09-15:worker 的 match 模式改成一次標掉**所有**未解決的匹配項(推播去重擋的是推播、
+# 不是事件,同一根因常躺著 5~11 則)。回應多了 count,印出來讓人知道這次清了幾則。
 if printf '%s' "$RESP" | grep -Eq '"resolved"[[:space:]]*:[[:space:]]*[0-9]+'; then
+  n=$(printf '%s' "$RESP" | sed -n 's/.*"count"[[:space:]]*:[[:space:]]*\([0-9]*\).*/\1/p')
+  echo "✅ 已標記 ${n:-1} 則為已解決"
   exit 0
 fi
 case "$RESP" in
