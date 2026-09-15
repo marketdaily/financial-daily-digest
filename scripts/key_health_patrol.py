@@ -9,6 +9,7 @@
 用法: .venv/bin/python scripts/key_health_patrol.py [--weekly] [--quiet]
 """
 import datetime
+import re
 import json
 import os
 import sys
@@ -123,6 +124,18 @@ WEEKLY = [("alphavantage", chk_alphavantage), ("tavily", chk_tavily),
 _TRANSIENT = (requests.exceptions.Timeout, requests.exceptions.ConnectionError)
 PROBE_RETRIES = 2
 PROBE_BACKOFF = 5
+# ⚠️ 2026-09-15:上面那條「傳輸層抖動才重試」只攔得到**例外**。廠商回了 HTTP 500,
+# requests 不丟例外,check 直接回 (False, "http=500") ⇒ 零重試、當場推 admin
+# 「brevo key 死了」。當天手動重測立刻 200 —— 廠商端 5xx 跟 read timeout 是同一種
+# 東西(對方暫時不行),不是「答案明確的失敗」。401/403/404/429 才是答案明確的:
+# 憑證錯、被擋、路徑錯、額度用完,重試只會把真消息延後兩分鐘才講。
+_RETRY_HTTP = {408, 500, 502, 503, 504, 520, 522, 524}
+_HTTP_NOTE = re.compile(r"http=(\d{3})")
+
+
+def _retryable_note(note):
+    m = _HTTP_NOTE.search(note or "")
+    return bool(m) and int(m.group(1)) in _RETRY_HTTP
 
 
 def _probe(name, fn):
@@ -132,8 +145,14 @@ def _probe(name, fn):
     for attempt in range(PROBE_RETRIES + 1):
         try:
             ok, note = fn()
+            if not ok and _retryable_note(note) and attempt < PROBE_RETRIES:
+                last = note
+                time.sleep(PROBE_BACKOFF)
+                continue
             if attempt:
-                note = f"{note}(第 {attempt + 1} 次才通,前次 {last})"
+                # ok 才叫「才通」;最後一次仍失敗卻寫「第 N 次才通」= 守衛對著紅燈說綠話
+                note = (f"{note}(第 {attempt + 1} 次才通,前次 {last})" if ok
+                        else f"{note}(連續 {attempt + 1} 次都是這個結果)")
             return ok, note
         except _TRANSIENT as e:
             last = f"{type(e).__name__}"

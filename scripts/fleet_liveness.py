@@ -194,9 +194,16 @@ def merge_ok_stamps(jobs):
     return jobs
 
 
-def classify(jobs, today=None):
+def classify(jobs, today=None, parent_latest=None):
     """純函式:成功日史 → (silent紅名單, report)。可測。
-    判準:間隔中位數自校準;成功日<2 的新 job 不判(觀察期)。"""
+    判準:間隔中位數自校準;成功日<2 的新 job 不判(觀察期)。
+
+    parent_latest(pattern) → 'YYYY-MM-DD' | None:父閘最新日的取得方式。
+    ⚠️ 2026-09-15:這一段原本寫死呼叫 _parent_artifact_latest,直接讀 docs/output/ 的
+    真實存檔 ⇒ 判準自測的「父閘沒前進 → 不紅」那組用的不是樁而是**生產現狀**,
+    只要之後多出一份新晚報,同一組輸入就翻成紅,自測從 09-08 起天天失敗,
+    而失敗的理由跟它要守的判準毫無關係。可注入之後對照組才凍得住。
+    """
     today = today or datetime.date.today()
     silent, report = [], {}
     for job, dates in sorted(jobs.items()):
@@ -211,7 +218,7 @@ def classify(jobs, today=None):
         # 父閘控:父閘自己看的那個檔案最新到哪一天?沒有比最後一次成功更新的,就沒有欠交。
         if job in PARENT_ARTIFACT:
             pat, why = PARENT_ARTIFACT[job]
-            newest = _parent_artifact_latest(pat)
+            newest = (parent_latest or _parent_artifact_latest)(pat)
             if newest is not None:
                 st = "silent" if newest > dates[-1] else "ok"
                 report[job] = {"last": dates[-1], "age_d": age, "status": st,
