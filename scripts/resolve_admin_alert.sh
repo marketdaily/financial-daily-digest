@@ -21,6 +21,13 @@ echo "$RESP"
 if printf '%s' "$RESP" | grep -Eq '"resolved"[[:space:]]*:[[:space:]]*[0-9]+'; then
   n=$(printf '%s' "$RESP" | sed -n 's/.*"count"[[:space:]]*:[[:space:]]*\([0-9]*\).*/\1/p')
   echo "✅ 已標記 ${n:-1} 則為已解決"
+  # 2026-09-16 踩到:match 是**子字串批次**,而且沒有預覽。用「Global Sources」當關鍵字
+  # 一次標掉 41 則(絕大多數是轉信通知,跟那則額度告警無關),而註記只有一句、對不上它們;
+  # 已標記的事件不會再被下一次 resolve 選中 ⇒ 註記【改不回來】。關鍵字要窄到只咬住那根因。
+  if [ "${n:-1}" -gt 5 ]; then
+    echo "⚠️ 這次一口氣標了 ${n} 則,而它們共用同一句註記。" >&2
+    echo "   如果它們不是同一個根因,那句註記就貼錯了,而且無法撤回——下次關鍵字取窄一點。" >&2
+  fi
   exit 0
 fi
 case "$RESP" in
