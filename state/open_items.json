@@ -11699,5 +11699,25 @@
   "opened": "2026-09-15 22:52",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1171,
+  "what": "daily_digest.yml 的 Persist 修法(autoStash + 失敗推 admin)尚未在生產跑過",
+  "why": "只在雲端 failover 接手時才會執行,不能為了驗證而手動觸發(會寄信給訂閱者,違反禁止手動寄信鐵則);下次 failover 觸發時才會得到真證據",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 23:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1172,
+  "what": "heartbeat.sh 的雲端接手分岔(🟠 而非 🔴)尚未在生產走過那條路徑",
+  "why": "今天 tw_miss/us_miss 的每日去重旗標已落下,重跑會走 early return;函式本體已用生產資料雙分支實測(09-14 已交付/09-15 未交付),但整支 runner 的告警分岔要等下一次 winrig 沒交付而雲端有交付的日子",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 23:20",
+  "closed": null,
+  "note": ""
  }
 ]
