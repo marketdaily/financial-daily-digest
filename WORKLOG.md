@@ -1,3 +1,46 @@
+- [2026-09-16 01:05] [已完成] 告警牆第二輪 —— 老闆指示「ignore 永豐」後,把剩下的錯誤類告警全部查到底。收工時**錯誤類未解決 = 0**。
+
+  ### 收掉的真 bug
+  1. **逾期文案把兩種「未生效」收成同一句**(`quote_bridge/check_signed.py`)。`account_states` 回三態:
+     `False`=帳號在、簽署完成但沒過檔(該問「卡在系統過檔?」)、`None`=永豐端查無此帳號
+     (該問「這帳戶有沒有開成/掛進 API」)。舊寫法 `is not True` 把兩者合併,於是實際狀態
+     `{'stock': False, 'futopt': None}` 的文案會叫人去問營業員「那個從來沒掛上來的期貨帳號為什麼還沒生效」。
+     拆成 unsigned/missing 兩段;突變錨點原本 ANCHOR-LOST(我改的就是它錨住的那行),已依新結構重寫
+     並補一條新突變守「兩種未生效被收成同一句」⇒ **37/37 全被咬住**。
+  2. **免費算力雷達:一次讀取逾時 = 宣告掉線**(`scripts/free_capacity_radar.py`)。09-11、09-14 兩則
+     「🔴 免費算力掉線:openrouter」都是假的——今天實測那席 200 活著。probe 改三態:
+     True / False(對方明確拒絕 401/402/404/429)/ None(問不到:傳輸例外與 5xx),分界是
+     **有沒有拿到對方的答案**;問不到會重試一次、沿用上一輪判定,連續 2 輪才算掉線。
+  3. **council 的 groq 席次早已 404**(②的實跑撈出來的)。Groq 下架 `qwen/qwen3.6-27b` 換 3.8,
+     那把聲音每班 404——而 **council 少一席不會失敗,只是安靜少一票**,所以沒有人會發現。
+     已換 3.8(實測 200、席次真呼叫回正確 JSON),「捏造價位精度 ⇒ 只准進 council」的限制照舊。
+  4. **QuietFix 冷信 runner 的兩個洞**(`~/.marketdaily-fallback/storefront_outreach_runner.sh`)。
+     09-15 那班的 log 只寫到標題就沒了(沒有 `=== end ===`),整班無聲死在 `followup`,而**一則告警都沒響**——
+     因為每一則的前提都是「腳本活到那一行」,行程被殺根本走不到。加硬逾時 900s;更重要的是它
+     **從上線起就沒有成功戳記**,所以不在 fleet_liveness 的 154 支艦隊裡 ⇒ 補 `_cron_ok_stamp`
+     (只在三段 rc 全 0 才蓋,壞掉時已有告警,再蓋戳記等於對自己謊報成功)。
+  5. **週考告警把「刻意的決定」寫成「疑似故障」**(`~/autonomous/eval/score_status.py`)。引擎自
+     2026-08-18 依老闆親令關機(吃 weekly limit),週考因此連續 31 次 `engine_disabled`,而告警只會說
+     「⚠️ 本考期尚無成績(未考成/未補考)」。新增 `PAUSED` 狀態直接讀 `state/DISABLED` 把原因講出來。
+     **引擎維持關機**——要重開得先問老闆。自測 33/0。
+
+  ### 查完確認不是 bug 的
+  - 「🟢 皇海寄件主機已從黑名單移除」是假解除(ERS 查詢失敗被算成乾淨),但**根因 09-15 當天就修掉了**
+    (三態,查詢失敗沿用上一次判定);IP 現況仍是 `listed=true / ERS=RBL`,等 Trend Micro 處理已送出的兩張單。
+  - 「冷信佇列有死連結」是當時混進佇列的一列測試資料;今天重跑實查 209 封待寄、7 條唯一連結全部 200,死連結 0。
+  - 「冷信寄前複驗擋下 12 封」是守衛在做它該做的事(fail-closed),不是故障。
+  - Global Sources 100/100 滿額 = 要付費或下架換上的取捨,已登記 open #1186(owner=delvin)。
+
+  ### ⚠️ 我自己踩的坑
+  `resolve_admin_alert.sh` 的 match 是**子字串批次**且沒有預覽。我用「Global Sources」當關鍵字
+  一次標掉 **41 則**(絕大多數是轉信通知,跟那則額度告警無關),而註記只有一句、對不上它們;
+  已標記的事件不會再被下一次 resolve 選中 ⇒ **註記改不回來**。已把這個坑寫進腳本(>5 則就警告)。
+
+  ### 未收乾
+  - storefront runner 的修改**還沒在生產跑過**(下一班 09-16 10:05 TW)。`~/.marketdaily-fallback/` 不在版控裡。
+  - 09-15 那班死掉的**根因沒查出來**(當天 06:50/20:00 都有「接手前一次未完成的班(死鎖)」,
+    WSL 當晚 21:00 重開機過)。現在有逾時與戳記,再犯會被看見,但這次的死因只能存疑。
+
 - [2026-09-08 13:20] [已完成] **學「當代理商用 Higgsfield」**(老闆:「learn how to properly use higgsfield as a marketing agency」+「don't use my credit yet」)。**本輪零 credit——未呼叫任何生成端點。**
   - CLI 現況(唯讀查):已登入、workspace `Private`(3d88647c…)、plan **plus**、餘額 **2,451.28cr**、**未選 workspace**(`account status` 報 No workspace selected)。刻意沒跑 `workspace set`——零 credit 任務裡不動老闆帳號的計費情境。token sync cron `17 */6` 仍在。
   - ⭐⭐ **既有腳本沒有任何花費閘門**:`~/qfx/scripts/hf.py` 帶著 bearer token、可以直接 POST `generate_video`(135cr/鏡),repo 裡沒有東西擋它(session 中途另一個 session 補過一個 `HIGGSFIELD_SPEND_OK!=1` 的粗閘,但它連 read-only 查詢都擋、無預算、無帳本)。
