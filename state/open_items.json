@@ -11399,5 +11399,35 @@
   "opened": "2026-09-15 18:07",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1141,
+  "what": "皇海信箱四支哨兵各自實作 IMAP 連線,socket timeout 這個不變量寫了四份、漏掉兩份(gs_show_forward / sent_copy_audit 今天已補)。真正的修法是收斂成一個共用連線函式,否則下一支新哨兵還會再漏一次",
+  "why": "今天只做了止血(補上兩處 timeout+清掉卡死行程),沒有收斂;收斂要動四支上線中的哨兵,值得單獨開一次",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 18:25",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1142,
+  "what": "乾啦 App Review 2.1:實機錄影未拍(老闆的 iPhone 裝 TestFlight build 202609150147 照腳本錄),錄完我掛附件+補機型;回覆尚未送出",
+  "why": "錄影必須在實體裝置上做,winrig 無法代勞",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 18:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1143,
+  "what": "乾啦 rooms 表情白名單已部署並雙 client 實測,但尚未在真人多桌實戰驗證",
+  "why": "只有自動化測試跑過",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 18:35",
+  "closed": null,
+  "note": ""
  }
 ]
