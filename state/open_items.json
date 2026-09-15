@@ -2946,8 +2946,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-08-16 15:07",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 23:32",
+  "note": "偵測面已補上並在生產證明有效:failover_leg_probe(零副作用假 ref 探針)09-15 06:40 推了『備援腿實射失敗』,今天解封後自己翻回 alive —— 死→活兩個方向都偵測到了,不再是 17 天沒人發現"
  },
  {
   "id": 296,
@@ -2996,8 +2996,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-08-16 15:43",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 23:32",
+  "note": "GitHub 已解封(Delvin 09-15 告知)。實測:actions/permissions enabled:true;failover_leg_probe 實射 daily_digest.yml 與 pages_deploy.yml 皆 alive;pages_deploy.yml 真實部署成功(run 34988970614,線上驗證過);daily_digest.yml 今日兩班 failover 實際接手並寄出(tw 29/29、us 30/30)。憑證體檢 6 ok/0 down"
  },
  {
   "id": 301,
@@ -6906,8 +6906,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-01 22:54",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 23:32",
+  "note": "與 #1169 同一件事,合併到 #1169 追蹤(#1169 另含 12 個 hub 索引行掉召回觸發字與 34 則孤兒的量測)"
  },
  {
   "id": 692,
@@ -7196,8 +7196,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-03 14:57",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 23:32",
+  "note": "同 #300:備援部署腿已實射成功(run 34988970614,部署+線上驗證都在 workflow 內完成)。deploy_drift 自癒的那條腿恢復"
  },
  {
   "id": 721,
@@ -11687,8 +11687,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 22:39",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 23:51",
+  "note": "已收:①45 行單連結行併成 6 群(hub_kingconn_sep2026/qfx_crew/client_work_rules/local_3d_video/sep2026_projects/eng_lessons_sep2026)②修好 hubify→trim 的接縫(hubify 原本把標題與註解直接黏住,trim 靠 ' — ' 才認得出可砍的尾巴 ⇒ 第二段管線永遠吃不到第一段產出,這才是『撞天花板』的真因)③索引閘改問對的問題(逐字比對分不出『改寫成更短』與『刪除』,13 個 hub 長期假紅)④真的沒把手的 57 則觸發字逐字補回。結果 22145→16403 字元(上限 17100)、hubify --verify 52 群全綠、trim --verify 138 段全綠、兩支自測 83/0 與 64/0、指標零遺失(108 個全在)"
  },
  {
   "id": 1170,
@@ -11717,6 +11717,66 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-15 23:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1173,
+  "what": "#283 的『備援起跑閘』只驗到一半:09-15 兩班 failover 實跑,ABSENT→照寄那條路徑已生產驗證(log 反覆出現『備援閘:winrig 存活且尚未交付,60 秒後重查』後才寄),但 DELIVERED→退場不重寄 那條從未觸發",
+  "why": "要等『winrig 先交付、雲端才起跑』的日子才會走到;不能人為製造(會寄信)",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 23:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1174,
+  "what": "#690 團隊 repo 的封鎖已解除但未實際使用:invitations API 可讀、Actions 帳號層 enabled:true、Darren 的 deploy key 兩個 repo 都在",
+  "why": "要不要把 Darren 從 fine-grained PAT 換回正式 collaborator 邀請,是影響外部人員存取的決定,不自行動手",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-15 23:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1175,
+  "what": "DigiKey onboarding 要 2 個 seller portal 使用者:f1@kingconn.com.tw 已註冊,第二位要皇海指定(王董或業務)才能給 Katie 開權限",
+  "why": "第二位是皇海端的人事決定,且該人會看到訂單與定價",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 23:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1176,
+  "what": "DigiKey 保險規格自相矛盾:Katie 附件要求 DigiKey 列為 additional insured+additional insured endorsement+A.M. Best 名冊全名,但 PM Alex Stoe 09-14 明說 2026-03-01 起不需列 DigiKey。買錯規格要重開保單",
+  "why": "已起草信問 Katie 釐清(offsite/outbox/digikey_katie_onboarding_20260916.txt),對外信等老闆核可;在答覆前王董不該先簽保單",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 23:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1177,
+  "what": "SnapMagic 開始建料號頁(213 完整+20 確認變體),Dizar 說完成後會給 URL;要回查頁面是否把 datasheet 連回 kingconn.com.tw",
+  "why": "頁面在對方平台,時程不在我手上",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 23:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1178,
+  "what": "DigiKey 賣家後台使用者註冊卡住:表單收下資料與驗證碼,送出回 'Registration Issue…contact Customer Support';auth.digikey.com 隨後出現 Cloudflare 機器人驗證 ⇒ 自動化註冊不再嘗試(再敲會壓到皇海供應商帳號的信用)",
+  "why": "疑似 f1@ 已因 09-07 供應商申請存在於 DigiKey 系統;已在給 Katie 的草稿裡請她從她那端查/開權限,另一條路是老闆本人用真瀏覽器花兩分鐘註冊",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 23:48",
   "closed": null,
   "note": ""
  }
