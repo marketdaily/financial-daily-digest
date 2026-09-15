@@ -1,5 +1,5 @@
 {
- "ts": "2026-09-15T11:00:11",
+ "ts": "2026-09-15T22:40:25",
  "weekly_ran": false,
  "results": {
   "finmind": {
@@ -7,8 +7,8 @@
    "note": "http=200 rows=2"
   },
   "fmp": {
-   "ok": true,
-   "note": "http=200"
+   "ok": false,
+   "note": "http=429"
   },
   "newsapi": {
    "ok": true,
@@ -19,8 +19,8 @@
    "note": "http=200"
   },
   "brevo": {
-   "ok": false,
-   "note": "http=500"
+   "ok": true,
+   "note": "http=200"
   },
   "beehiiv": {
    "ok": true,

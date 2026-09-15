@@ -11677,6 +11677,26 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-15 22:33",
+  "closed": "2026-09-15 22:52",
+  "note": "更正:信其實有寄出。雲端 failover 兩班都接手成功(tw 29/29 @07:30 TW、us 30/30 @21:02 TW,GH run 34909190287/34968784782)。真正壞的是 Persist public digest archive 步驟 git pull --rebase 撞 unstaged → exit 128,push 沒跑 ⇒ 公版存檔沒上線也沒進 origin ⇒ 守望犬/heartbeat 的「日報沒寄」是假紅。已修 workflow(autoStash+失敗即推 admin)與 heartbeat(改認 main._archive_delivered)"
+ },
+ {
+  "id": 1169,
+  "what": "記憶索引超支 29%(22145/17100 字元)+12 個 hub 索引行掉了召回觸發字+34 則孤兒記憶",
+  "why": "兩層索引已撞到設計天花板:恢復觸發字會讓超支更嚴重,需要一輪完整 hubify/groom(內容操作,風險是記憶遺失),不適合夾在告警巡檢裡順手做",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 22:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1170,
+  "what": "2026-09-15 兩班公版存檔永久遺失(digest_2026-09-15.html / _us.html):雲端 runner 上 commit 成功但 push 失敗,runner 一次性⇒檔案已蒸發",
+  "why": "要補只能重跑生成(有誤寄風險,且需 MD_SKIP_SEND 路徑驗證);影響僅存檔頁/ sitemap 少一天,信已送達",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 22:52",
   "closed": null,
   "note": ""
  }

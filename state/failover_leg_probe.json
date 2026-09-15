@@ -1,15 +1,15 @@
 {
- "worst": "dead",
+ "worst": "alive",
  "results": {
   "daily_digest.yml": {
-   "verdict": "dead",
-   "detail": "Actions has been disabled for this user."
+   "verdict": "alive",
+   "detail": "No ref found for: __failover_leg_probe_no_such_ref__"
   },
   "pages_deploy.yml": {
-   "verdict": "dead",
-   "detail": "Actions has been disabled for this user."
+   "verdict": "alive",
+   "detail": "No ref found for: __failover_leg_probe_no_such_ref__"
   }
  },
- "checked": 1789425601.349011,
- "last_alert": 1789425601.349011
+ "checked": 1789483696.882255,
+ "last_alert": 0
 }
