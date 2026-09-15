@@ -753,7 +753,26 @@ def backfill_crumb(dry: bool) -> list:
 # stub(如「台積電 (2330) 法說會前瞻 — MarketDaily 整理。」),Google SERP 約可顯示 78 CJK
 # 字,這些 stub 浪費 >40% 版面且讀起來像樣板。修法=從文章「自身第一段實質 prose」擴寫到
 # SERP 甜蜜區,零捏造(只截既有正文)。content_seo 稽核器 C2 精確標出此缺陷,本函式是修復。
-_DANGER_ASCII = set('"<>&\\')
+# ⚠️ 2026-09-15:原本連 `&` 都擋,理由是「同一個 desc 直塞 3 個 HTML 屬性槽 + 1 個 JSON 槽,
+# 沒有各自轉義能力」。代價是任何含 & 的正文(本例:「Hardware & Communications Technology
+# Conference」)整篇回退成 45 寬的罐頭 stub,content_seo C2 判 HIGH,夜巡天天紅。
+# 姊妹呼叫端 site_structured_data.py 早就把正確做法寫在註解裡了(屬性槽 html.escape、
+# JSON-LD 槽用原始字串交給 json.dumps),blog 這條只是沒跟上 ⇒ 補上,`&` 放行。
+# `" < > \` 仍全擋:那三個會直接打破屬性/JSON 結構,回退比轉義安全。
+from html import escape as _html_escape, unescape as _html_unescape
+
+
+def _attr_esc(s: str) -> str:
+    """寫進 HTML 屬性槽前的轉義。輸入一律是已反轉義的純文字,所以不會二次轉義;
+    JSON-LD 槽不走這裡,交給 json.dumps。
+    ⚠️ 不用 html.escape(quote=True):它連 `'` 都轉成 `&#x27;`(一個字變五個),
+    而屬性用雙引號包,單引號本來就不必轉 —— 白白吃掉 SERP 版面,還讓截斷尺與
+    稽核尺對不起來(英文正文一堆撇號,實測 320 的字寫進去變 325,C2 反而判過長)。"""
+    return (s.replace("&", "&amp;").replace("<", "&lt;")
+             .replace(">", "&gt;").replace('"', "&quot;"))
+
+
+_DANGER_ASCII = set('"<>\\')
 _SENT_END = "。！？!?"
 _CLAUSE_PUNCT = "。！？，、；：!?,;:"
 _TRAIL_SEP = "，、；：,;:"
@@ -775,7 +794,7 @@ def _first_prose(source_html: str) -> str:
     region = re.sub(r'<div class="cta[^"]*">.*?</div>', "", region, flags=re.S)
     region = re.sub(r'<p class="disc">.*?</p>', "", region, flags=re.S)
     for pm in re.finditer(r"<p\b[^>]*>(.*?)</p>", region, re.S):
-        inner = re.sub(r"<[^>]+>", "", pm.group(1))
+        inner = _html_unescape(re.sub(r"<[^>]+>", "", pm.group(1)))
         if len(re.sub(r"\s+", "", inner)) >= 30:
             return re.sub(r"\s+", " ", inner).strip()
     return ""
@@ -834,9 +853,23 @@ def _truncate_to_desc(cand: str, fallback: str, title: str = "",
 def _prose_meta_desc(source_html: str, fallback: str, title: str = "",
                      min_w: int = 110, max_w: int = 320, target: int = 240) -> str:
     """從文章自身第一段 prose 擴寫 SERP 甜蜜區 meta desc,見 `_truncate_to_desc` docstring。
-    blog 用法擋 " < > & \\ 全部(同一字串直塞 4 個槽,無各自轉義能力)。"""
-    return _truncate_to_desc(_first_prose(source_html), fallback, title, min_w, max_w, target,
+    blog 用法擋 " < > \\(這三個會打破屬性/JSON 結構);`&` 放行,由 _attr_esc 轉義。
+
+    ⚠️ 量尺要量「真的會寫進屬性槽的那串字」:截斷是照原始字算寬度,稽核器 content_seo C2
+    讀的卻是轉義後的屬性值。一個 `&` 轉成 `&amp;` 多 4 寬,剛好卡在上限的文章會從
+    「過短 HIGH」變成「過長 HIGH」—— 換一種紅而已。所以截完再用轉義後的寬度收一次尾。"""
+    desc = _truncate_to_desc(_first_prose(source_html), fallback, title, min_w, max_w, target,
                              danger_chars=_DANGER_ASCII)
+    if desc == fallback or _desc_dw(_attr_esc(desc)) <= max_w:
+        return desc
+    trimmed = desc
+    while trimmed and _desc_dw(_attr_esc(trimmed)) > max_w:
+        trimmed = trimmed[:-1]
+    while trimmed and trimmed[-1] in _TRAIL_SEP:
+        trimmed = trimmed[:-1]
+    if not trimmed or _desc_dw(trimmed) < min_w or trimmed == title:
+        return fallback
+    return trimmed
 
 
 def _set_schema_description(html: str, new_desc: str):
@@ -891,15 +924,17 @@ def backfill_meta_desc(dry: bool) -> list:
             cur = cm.group(2) if cm else ""
             tm = re.search(r"<title>(.+?)\s*\|", html)
             title = tm.group(1).strip() if tm else ""
-            new_desc = _prose_meta_desc(html, fallback=cur, title=title)
-            if new_desc == cur:
+            # fallback 要用「反轉義後」的現值,否則現值含 &amp; 時會被當成字面 5 個字元
+            new_desc = _prose_meta_desc(html, fallback=_html_unescape(cur), title=title)
+            new_attr = _attr_esc(new_desc)
+            if new_attr == cur:                  # 冪等:比的是真的會寫進屬性槽的那個字串
                 continue
             # 全篇更新必須原子:3 個 meta 槽與 JSON-LD Article.description 要嘛全改、要嘛整篇
             # 不動——絕不落盤「只改 3 meta 卻留 stale JSON」的 4 槽不一致檔(驗證者 Finding 1)。
             html2 = html
             ok = True
             for rex in _DESC_META_RES:
-                html2, n = rex.subn(lambda mm: mm.group(1) + new_desc + mm.group(3), html2, count=1)
+                html2, n = rex.subn(lambda mm: mm.group(1) + new_attr + mm.group(3), html2, count=1)
                 if n != 1:                       # 缺某個 meta desc 槽 → 放棄整篇(保持原一致值)
                     ok = False
                     break
@@ -2012,7 +2047,7 @@ def write_article(art: dict, dry: bool) -> Path:
     schema_json = _article_schema_json(art["title"], desc, slug, date_published, date_modified, og_image)
     html = PAGE_TEMPLATE.format(
         title=art["title"],
-        desc=desc,
+        desc=_attr_esc(desc),          # 屬性槽轉義;JSON-LD 走上面的原始 desc(json.dumps 自理)
         slug=slug,
         slug_short=slug[:32],
         crumb_label=crumb_label,
