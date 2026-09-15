@@ -10757,8 +10757,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 01:09",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 21:59",
+  "note": "GSC 已完成:sc-domain:mingxinclinic.com 經 DNS TXT 驗證(gsc-bot SA)+爸媽帳號已設為擁有者+sitemap 13 URL 已提交 0 錯+IndexNow 13 URL 推 Bing 200+JSON-LD 原本就有 MedicalClinic;剩 GBP 那項另開 #1163"
  },
  {
   "id": 1077,
@@ -11527,8 +11527,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 20:41",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 22:03",
+  "note": "已寄出 2026-09-15 22:03 TW,Message-ID <178948101211.167430.14994120107765723578.kc-snapmagic@kingconn.com.tw>;f1@ Sent 備份確認 In-Reply-To 接上 Dizar 09-15 12:03 UTC 那封,附件兩份 xlsx 皆在"
  },
  {
   "id": 1154,
@@ -11599,5 +11599,85 @@
   "opened": "2026-09-15 21:11",
   "closed": "2026-09-15 21:16",
   "note": "已回收 61.2GB:孤兒 swap 15.2G + VALORANT 32G + hiberfil 12.5G,遠高於 24GB 門檻,守衛已推 🟢"
+ },
+ {
+  "id": 1161,
+  "what": "明欣 Google 帳號 boy.cpy@gmail.com 密碼被 Google 拒絕(帳號存在,兩次即停手避免鎖帳)——所有 GBP/GSC/GA4 代管工作卡在這裡",
+  "why": "等老闆給正確密碼或改用他本人裝置登入一次",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 21:49",
+  "closed": "2026-09-15 21:59",
+  "note": "密碼正解=Huang0928532656(大寫H),登入已過密碼關"
+ },
+ {
+  "id": 1162,
+  "what": "明欣 GBP 網站欄位指向 facebook.com,不是 mingxinclinic.com——新官網目前拿不到 GBP 這個最大流量入口",
+  "why": "要登入 GBP 才能改",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 21:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1163,
+  "what": "明欣 GBP 由員工個人 Google 帳號實際營運中(1 天前還發疫苗貼文)——需請該員工把爸媽帳號加為擁有者後轉移主要擁有權",
+  "why": "轉移只能由現任擁有者操作,我方做不了",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 21:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1164,
+  "what": "永欣診所 GBP(3.9星/129 則)仍未認領,且無網站欄位——認領後才有人管",
+  "why": "認領要驗證,且需先決定永欣要不要做站",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 21:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1165,
+  "what": "明欣 Google 帳號第二組密碼(huang…)同樣被拒——已用全新登入流程驗證非假訊號,共 4 次全停手",
+  "why": "需老闆本人在自己裝置確認密碼或走忘記密碼重設",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 21:52",
+  "closed": "2026-09-15 21:59",
+  "note": "同上,第三組密碼正確"
+ },
+ {
+  "id": 1166,
+  "what": "明欣 Google 帳號登入卡在裝置驗證:Google 推播到兩支 iPhone 15 Pro Max 要點「是」+數字,備援是 dad••••••@gmail.com 收碼——兩個管道我都碰不到",
+  "why": "需老闆或爸媽本人在手機上點一次",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 21:59",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1167,
+  "what": "QFX 案例頁的 Cloudflare 成果圖是靜態凍結的 15 天,沒有排程每天補帳本",
+  "why": "cf_daily_ledger.py 寫好了但還沒接 cron,圖上的數字會停在 09-14;charts.py --verify 只驗『凍結的列沒漂移』,不會發現帳本不再長",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 22:15",
+  "closed": "2026-09-15 22:20",
+  "note": "cron kingconn_cf_daily_ledger 25 9 * * * 已裝並用 cron_run_and_alert 本人試射(戳記 2026-09-15T14:19:17Z);charts --verify 另加落後 7 天 WARN / 21 天 FAIL,已突變測試射過"
+ },
+ {
+  "id": 1168,
+  "what": "2026-09-15 早晚報兩班皆未寄出(29 位訂閱者零收信);根因鏈=C槽塞爆→WSL VM 崩→生成 process 被殺 + GitHub Actions 帳號層停用⇒雲端 failover 無法接手",
+  "why": "禁止手動寄信鐵則(非 07:00 不得觸發)⇒今日份無法補寄,需 Delvin 決定是否明早補發;GitHub Actions 解封需本人申訴",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 22:33",
+  "closed": null,
+  "note": ""
  }
 ]

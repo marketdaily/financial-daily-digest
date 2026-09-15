@@ -1,13 +1,11 @@
 {
- "ts": "2026-09-15T11:00:13",
- "jobs_n": 149,
- "silent_n": 1,
- "silent": [
-  "line_agent(last=2026-09-05,10d>2d)"
- ],
+ "ts": "2026-09-15T22:35:22",
+ "jobs_n": 152,
+ "silent_n": 0,
+ "silent": [],
  "intel": {
-  "latest_age_d": 1,
-  "sources_n": 12
+  "latest_age_d": 0,
+  "sources_n": 14
  },
  "intel_problems": [],
  "outputs": {
@@ -25,17 +23,17 @@
  "output_problems": [],
  "jobs": {
   "agent_board_deploy": {
-   "last": "2026-09-13",
-   "age_d": 2,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "agent_board_gen": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -91,9 +89,9 @@
    "status": "ok"
   },
   "brain_parity": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -192,9 +190,9 @@
    "status": "ok"
   },
   "crawler_coverage_ledger": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -267,9 +265,9 @@
    "status": "ok"
   },
   "email_quota_guard": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -288,10 +286,10 @@
    "status": "gated"
   },
   "fleet_liveness": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 12,
-   "thresh_d": 19.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 13,
+   "thresh_d": 20.5,
    "thresh_src": "self",
    "status": "ok"
   },
@@ -320,17 +318,17 @@
    "status": "ok"
   },
   "intel_patrol": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "key_health": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -349,6 +347,11 @@
    "status": "ok"
   },
   "kingconn_asset_watch": {
+   "last": "2026-09-15",
+   "age_d": 0,
+   "status": "observing"
+  },
+  "kingconn_cf_daily_ledger": {
    "last": "2026-09-15",
    "age_d": 0,
    "status": "observing"
@@ -476,9 +479,9 @@
    "status": "ok"
   },
   "kingconn_phish_guard_digest": {
-   "last": "2026-09-13",
-   "age_d": 2,
-   "median_gap_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -528,9 +531,9 @@
    "status": "ok"
   },
   "kingconn_traffic_ledger": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -573,12 +576,12 @@
    "status": "ok"
   },
   "line_agent": {
-   "last": "2026-09-05",
-   "age_d": 10,
-   "median_gap_d": 1.0,
-   "thresh_d": 2.5,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 2.0,
+   "thresh_d": 4.0,
    "thresh_src": "self",
-   "status": "silent"
+   "status": "ok"
   },
   "ma_weekly": {
    "last": "2026-09-08",
@@ -597,9 +600,9 @@
    "status": "ok"
   },
   "macro_rates_ledger": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -631,9 +634,9 @@
    "status": "ok"
   },
   "mem_valuation": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -676,17 +679,17 @@
    "status": "ok"
   },
   "mingshu_seo_livecheck": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
   "mingshu_seo_pull": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -700,17 +703,30 @@
    "status": "ok"
   },
   "news_reactive": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
   },
-  "newsroom_draft_1900": {
-   "last": "2026-09-14",
-   "age_d": 1,
+  "newsroom_autopost": {
+   "last": "2026-09-15",
+   "age_d": 0,
    "status": "observing"
+  },
+  "newsroom_draft_1600": {
+   "last": "2026-09-15",
+   "age_d": 0,
+   "status": "observing"
+  },
+  "newsroom_draft_1900": {
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
+   "thresh_d": 2.5,
+   "thresh_src": "self",
+   "status": "ok"
   },
   "newsroom_draft_2000": {
    "last": "2026-09-14",
@@ -718,9 +734,12 @@
    "status": "observing"
   },
   "newsroom_roundup": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "status": "observing"
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
+   "thresh_d": 2.5,
+   "thresh_src": "self",
+   "status": "ok"
   },
   "nvidia_key_watch": {
    "last": "2026-09-14",
@@ -731,9 +750,9 @@
    "status": "ok"
   },
   "paid_lead_followup": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -744,9 +763,9 @@
    "status": "observing"
   },
   "pe_ratio_ledger": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -845,9 +864,9 @@
    "status": "ok"
   },
   "regime_ledger": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -869,9 +888,9 @@
    "status": "ok"
   },
   "seo_page_traffic_ledger": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -893,9 +912,9 @@
    "status": "ok"
   },
   "social_buzz": {
-   "last": "2026-09-13",
-   "age_d": 2,
-   "median_gap_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -958,14 +977,17 @@
    "status": "observing"
   },
   "threads_token_refresh": {
-   "last": "2026-09-01",
-   "age_d": 14,
-   "status": "observing"
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 14,
+   "thresh_d": 22.0,
+   "thresh_src": "self",
+   "status": "ok"
   },
   "tldr_distribution": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1.0,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -979,9 +1001,9 @@
    "status": "ok"
   },
   "tw_financials_ledger": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"
@@ -992,9 +1014,9 @@
    "status": "observing"
   },
   "us_13f_ledger": {
-   "last": "2026-09-14",
-   "age_d": 1,
-   "median_gap_d": 1.0,
+   "last": "2026-09-15",
+   "age_d": 0,
+   "median_gap_d": 1,
    "thresh_d": 2.5,
    "thresh_src": "self",
    "status": "ok"

@@ -86,5 +86,206 @@
    "17918523891433465",
    "17885302725653441"
   ]
+ },
+ {
+  "id": "ai_bb8c8562aa23",
+  "date": "2026-09-15",
+  "lane": "politics",
+  "score": 85.3,
+  "source": "BBC",
+  "source_url": "https://www.bbc.co.uk/news/articles/cw980n0nd0qjo?at_medium=RSS&at_campaign=rss",
+  "story_keys": [
+   "anthropic",
+   "bbc",
+   "calls",
+   "clark",
+   "co-founder",
+   "come",
+   "comments",
+   "fears",
+   "greater",
+   "hoax'",
+   "jack",
+   "kill",
+   "mandatory",
+   "may",
+   "need",
+   "president's",
+   "rejects",
+   "safeguards",
+   "safety",
+   "switch",
+   "told",
+   "trump"
+  ],
+  "facts": {
+   "title": "Trump says AI safety fears a 'hoax' as he rejects calls for greater safeguards",
+   "summary": "The US president's comments come after Anthropic co-founder Jack Clark told the BBC an AI \"kill switch\" may need to be mandatory.",
+   "source_url": "https://www.bbc.co.uk/news/articles/cw980n0nd0qjo?at_medium=RSS&at_campaign=rss",
+   "source_name": "BBC",
+   "also_reported_by": [],
+   "report_age_hours_NOT_event_age": 4.2,
+   "lane": "politics",
+   "how_contested_0_to_100": 58,
+   "article_excerpt": "To play this video you need to enable JavaScript in your browser. This video can not be played Watch: Great or alarming - Should AI be reined in? US President Donald Trump has said fears about the safety of AI are a hoax , as he criticised calls to have more guardrails for the fast-moving technology. It comes after Jack Clark, a co-founder of AI giant Anthropic, told the BBC that a kill switch for dangerous AI that can be checked by a third party may need to be mandatory for the industry. Clark&#x27;s comments followed warnings about the risks the technology poses to humanity that have been raised in recent days by several executives and staff at leading AI firms. Those concerns triggered a selloff in shares of some tech firms on Monday as investors weighed the impact of a potential slowdown in the development of AI. In a series of social media posts on Monday, the US president compared warnings about AI to the Global Warming Scam , that he said was being perpetrated by the Radical Left Dumocrats . Trump also called himself the Hoax Buster , likening concerns about the safety of the technology to what he called the RUSSIA, RUSSIA, RUSSIA HOAX . In another post he wrote: There is a SICK conspiracy going on against AI and Data Centers, and the only one that is happy about it is China. WHOEVER WINS AI, WINS! And earlier on Monday, Trump posted on social media that the only guardrails needed for AI was a strong and smart president. Also on Monday, Chinese state media said experts had warned that Washington&#x27;s growing anxiety over China&#x27;s rapid AI development appears to be increasingly distorting its policy priorities . They know that China has become a strong competitor in AI, and worry that if the US slows down development or tightens regulation, China could catch up even faster, Xin Qiang, a professor of American Studies at Fudan University, told the Global Times. Clark, who is one of Anthropic&#x27;s seven founders, said earlier on Monday that a way of shutting off AI software completely if it gets too dangerous was something society might want to eventually pass rules around . He added that most labs have different ways of being able to pull the plug , including Anthropic, but said lawmakers may need to enforce having one. To play this video you need to enable JavaScript in your browser. This video can not be played AI more powerful by the day , Anthropic co-founder tells BBC Clark&#x27;s comments add to the growing number of tech industry and pol"
+  },
+  "draft": {
+   "headline": "Trump calls AI safety fears a hoax, rejects new rules",
+   "caption": "US President Donald Trump says fears about AI safety are a hoax, and he does not want more rules for the technology. 🇺🇸🤖\n\nThis follows Jack Clark, a co-founder of the AI company Anthropic, telling the BBC that a kill switch, an off switch, may need to be mandatory and checkable by an outside party. Clark said most labs already have ways to pull the plug, including Anthropic. He said lawmakers may need to enforce having one.\n\n\"There is a SICK conspiracy going on against AI and Data Centers, and the only one that is happy about it is China. WHOEVER WINS AI, WINS!\"\n\nTrump also posted that the only guardrails AI needs are a strong and smart president. He compared the warnings to what he called the Global Warming Scam. Chinese state media quoted experts saying US anxiety over China's AI progress is distorting Washington's policy priorities.\n\nWarnings from executives and staff at leading AI firms in recent days helped trigger a selloff in some tech shares on Monday. What is still unsettled is whether any rule gets written, and who would hold that off switch.\n\nClark says an off switch may need to be mandatory because the technology keeps getting more powerful; Trump says slowing down is a conspiracy that only helps China. Which side are you on? 🤔\n\nSource: BBC\n\nFollow @marketdailyhq for more.\n\n#news #worldnews #breakingnews #geopolitics #currentaffairs",
+   "threads_caption": "川普說,擔心 AI 安全是一場騙局,他不覺得 AI 需要更多規範。\n\n起因是 Anthropic 共同創辦人 Jack Clark 告訴 BBC:危險的 AI 需要一個 kill switch(整個關掉的開關),可能得立法強制,還要讓第三方查核。他說多數實驗室自己都有拔插頭的方法,Anthropic 也有,但可能需要立法者出手要求。\n\n川普則在社群上寫,AI 唯一需要的護欄就是一個強悍又聰明的總統,並把這些警告比成他口中的暖化騙局,說只有中國樂見有人對付 AI 和資料中心。\n\nClark 說技術一天比一天強,開關可能得強制;川普說踩煞車只是在幫中國。你站哪一邊?\n\n@marketdailyhq",
+   "topic_tag": "川普",
+   "threads_chain": [
+    "美國總統川普說,擔心 AI 安全是一場騙局。他還說,AI 唯一需要的護欄,就是一個強悍又聰明的總統。\n\n#川普",
+    "起因是 Anthropic 共同創辦人 Jack Clark 告訴 BBC:如果 AI 危險到某個程度,社會可能需要一個可以整個關掉的開關,而且要讓第三方查得到。他說多數 AI 實驗室其實都有自己拔插頭的方法,Anthropic 也有,只是他認為可能需要立法者出手要求每一家都得有。",
+    "川普把這些警告比成他口中的暖化騙局,自稱是騙局終結者,還說有一場針對 AI 和資料中心的陰謀,只有中國樂見。另一邊,中國官媒引述學者說,美國對中國 AI 進展的焦慮正在扭曲自己的政策順序。復旦大學教授信強的說法是:美國如果放慢腳步或收緊管制,中國反而追得更快。",
+    "前幾天多位 AI 公司高層和員工接連示警,週一部分科技股因此被賣出。到現在還沒定的是,這個開關如果真的要有,要握在誰手上。Clark 說技術一天比一天強,所以可能得靠法律強制;川普說任何踩煞車都只是在幫中國。你站哪一邊?\n\n@marketdailyhq"
+   ],
+   "source_url": "https://www.bbc.co.uk/news/articles/cw980n0nd0qjo?at_medium=RSS&at_campaign=rss"
+  },
+  "brand_handle": "marketdailyhq",
+  "status": "posted",
+  "posted_at": "2026-09-15T16:11:32.408017",
+  "threads_ids": [
+   "18125640118696208",
+   "18030687644853061",
+   "17860967970694207",
+   "18123003103854611"
+  ]
+ },
+ {
+  "id": "ai_60791b55f7b7",
+  "date": "2026-09-15",
+  "lane": "politics",
+  "score": 131.4,
+  "source": "BBC",
+  "source_url": "https://www.bbc.co.uk/news/articles/cwn8mjl31p5yo?at_medium=RSS&at_campaign=rss",
+  "story_keys": [
+   "accused",
+   "behaviour",
+   "comment",
+   "danish",
+   "denmark",
+   "fired",
+   "flares",
+   "helicopter",
+   "kremlin",
+   "military",
+   "minister",
+   "prime",
+   "reckless",
+   "russia",
+   "russian",
+   "warship",
+   "while",
+   "yet"
+  ],
+  "facts": {
+   "title": "Denmark says Russian warship fired flares at military helicopter",
+   "summary": "The Danish prime minister has accused Russia of \"reckless\" behaviour, while the Kremlin is yet to comment.",
+   "source_url": "https://www.bbc.co.uk/news/articles/cwn8mjl31p5yo?at_medium=RSS&at_campaign=rss",
+   "source_name": "BBC",
+   "also_reported_by": [
+    "DW",
+    "FT",
+    "France 24",
+    "Reuters",
+    "Straits Times",
+    "The Guardian"
+   ],
+   "report_age_hours_NOT_event_age": 0.8,
+   "lane": "politics",
+   "how_contested_0_to_100": 24,
+   "article_excerpt": "Image source, Rune Dyrholm / Danish Armed Forces By Henry Moore Published 46 minutes ago Denmark has accused a Russian warship of firing two emergency flares at one of its helicopters while it was tracking the vessel in the Baltic Sea. The Danish government has summoned the Russian ambassador over the incident, which it said happened during a routine monitoring operation on Monday. Prime Minister Mette Frederiksen branded the Russian action reckless and said it was designed to intimidate and divide . Moscow has not commented on the incident. It came on the same day Nato forces shot down a drone over Lithuania in the latest security scare on the alliance&#x27;s eastern flank, where tensions remain high during Russia&#x27;s full-scale invasion of Ukraine. In a statement detailing the incident in the Baltic Sea, the Danish armed forces said: One of the air force&#x27;s Fennec helicopters was today fired at with flares during a routine photographic operation of a Russian frigate, which was located in international waters off Gedser. Of the two flares fired at the helicopter, one passed close to it, the statement added. The Danish foreign ministry described the incident as completely unacceptable . Danish Foreign Minister Lars Lokke Rasmussen accused Russia of gradually shifting the boundary for what they consider acceptable behaviour , adding: That is something we cannot accept. Overnight, Nato fighter pilots shot down a drone that entered Lithuania&#x27;s airspace. Authorities said the drone likely entered southern Lithuania, near the second-largest city of Kaunas, from neighbouring Belarus shortly after midnight on Tuesday. The origins of the drone are yet to be determined, the Lithuanian national crisis management centre said, but the country&#x27;s president pointed to increased Russian aggression in recent months. President Gitanas Nausėda wrote on X: With Russia intensifying its aggression against Ukraine, such readiness is vital for our region. Together with our Nato Allies, Lithuania will defend its airspace. Lithuania shares a large part of its southern and eastern border with Belarus, a key Russian ally. Poland also announced there had been aviation operations in its airspace on Monday night due to the activity of Russian Federation&#x27;s jet-powered unmanned aerial vehicles conducting strikes on Ukrainian territory . It said the overnight operations were of a preventive nature and aimed at securing airspace and its protection, especially in areas a"
+  },
+  "draft": {
+   "headline": "Denmark says Russian warship fired flares at its helicopter",
+   "caption": "Denmark says a Russian warship fired two emergency flares at one of its military helicopters over the Baltic Sea. 🇩🇰🚁\n\nThe Danish armed forces said a Fennec helicopter was photographing a Russian frigate in international waters off Gedser on Monday. One of the two flares passed close to the helicopter.\n\nDenmark summoned the Russian ambassador. Prime Minister Mette Frederiksen called the action reckless and said it was designed to intimidate and divide.\n\n\"Russia is gradually shifting the boundary for what they consider acceptable behaviour. That is something we cannot accept.\" Danish Foreign Minister Lars Lokke Rasmussen\n\nThe same day, Nato fighter pilots shot down a drone that entered Lithuanian airspace near Kaunas, likely from Belarus. Lithuanian authorities say the origin of the drone has not been determined, and Moscow has not commented on the flare incident at all.\n\nDenmark is describing this as a line being pushed on purpose, and the other side of that story has not been told because Russia has said nothing. What would you need to hear before you decide which reading is right? 🛩️\n\nSource: BBC\n\nFollow @marketdailyhq for more.\n\n#news #worldnews #breakingnews #geopolitics #currentaffairs",
+   "threads_caption": "丹麥說,一艘俄羅斯軍艦朝一架丹麥軍用直升機發射了兩枚緊急信號彈。\n\n地點在波羅的海、格瑟外海的國際水域。丹麥空軍的 Fennec 直升機當時正在對一艘俄國巡防艦拍照,兩枚信號彈其中一枚從機身旁邊擦過。\n\n丹麥已經召見俄羅斯大使。總理 Mette Frederiksen 說這種行為魯莽,是刻意要恐嚇和分化。莫斯科目前沒有任何回應。\n\n同一天,北約戰機在立陶宛上空擊落一架無人機,來源還沒查出來。\n\n@marketdailyhq",
+   "topic_tag": "丹麥直升機",
+   "threads_chain": [
+    "丹麥說,一艘俄羅斯軍艦朝正在拍照的丹麥軍用直升機射了兩枚緊急信號彈,其中一枚從機身旁邊擦過。地點是波羅的海格瑟外海的國際水域。\n\n#丹麥直升機",
+    "丹麥空軍的說法是,一架 Fennec 直升機在例行拍攝任務中,對一艘俄國巡防艦拍照時被信號彈射擊。丹麥政府隨後召見俄羅斯大使。總理 Mette Frederiksen 用的字是「魯莽」,並說這是刻意要恐嚇和分化。莫斯科到現在一句話都沒說。",
+    "丹麥外交部長 Lars Lokke Rasmussen 講得更直白:俄羅斯正在一點一點推移他們認為可以接受的界線,而這是丹麥不能接受的。同一天,北約戰機在立陶宛上空擊落一架無人機,當局說它可能是在午夜過後從白俄羅斯方向進入考納斯附近空域,來源尚未確認。波蘭當晚也因為俄羅斯的噴射動力無人機攻擊烏克蘭而出動軍機,並說是預防性質。",
+    "所以現在有兩塊空白:莫斯科完全沒有說法,立陶宛那架無人機的來源也還沒查出來。丹麥這邊的講法是,這條界線正在被慢慢往前推。你會先等俄羅斯開口,還是覺得答案根本不會從那裡來?\n\n@marketdailyhq"
+   ],
+   "source_url": "https://www.bbc.co.uk/news/articles/cwn8mjl31p5yo?at_medium=RSS&at_campaign=rss"
+  },
+  "brand_handle": "marketdailyhq",
+  "status": "posted",
+  "posted_at": "2026-09-15T19:05:42.285020",
+  "threads_ids": [
+   "17957899707246324",
+   "17909657400516569",
+   "18379777288239601",
+   "18115345504782575"
+  ]
+ },
+ {
+  "id": "ai_ca9a582da53c",
+  "date": "2026-09-15",
+  "lane": "society",
+  "score": 109.0,
+  "source": "BBC",
+  "source_url": "https://www.bbc.co.uk/news/articles/c5yjpdy4gjlo?at_medium=RSS&at_campaign=rss",
+  "story_keys": [
+   "administration",
+   "asked",
+   "ballots",
+   "block",
+   "blocks",
+   "court",
+   "federal",
+   "had",
+   "judge's",
+   "lift",
+   "mail-in",
+   "plan",
+   "restrict",
+   "rules",
+   "supreme",
+   "temporary",
+   "trump",
+   "trump's"
+  ],
+  "facts": {
+   "title": "Supreme Court blocks Trump's plan to restrict mail-in ballots",
+   "summary": "The Trump administration had asked the court to lift a federal judge's temporary block on new rules for mail-in ballots.",
+   "source_url": "https://www.bbc.co.uk/news/articles/c5yjpdy4gjlo?at_medium=RSS&at_campaign=rss",
+   "source_name": "BBC",
+   "also_reported_by": [
+    "Al Jazeera",
+    "CNBC",
+    "DW",
+    "France 24",
+    "Reuters",
+    "SCMP"
+   ],
+   "report_age_hours_NOT_event_age": 9.7,
+   "lane": "society",
+   "how_contested_0_to_100": 52,
+   "article_excerpt": "Image source, Getty Images By Lisa Lambert , Washington and Kwasi Gyamfi Asiedu Published 15 September 2026, 00:55 BST Updated 8 hours ago The US Supreme Court has rejected President Donald Trump&#x27;s plan to restrict voting by mail before November&#x27;s midterm elections, in a setback for the White House. The justices upheld a federal judge&#x27;s order that temporarily blocked the US Postal Service (USPS) from moving forwards with new requirements for postal ballots. But it is unlikely to be the final word on the matter. Justice Brett Kavanaugh, a conservative, agreed with the ruling, but indicated he might later rule in Trump&#x27;s favour as litigation in the case continues. Trump, who argued the rules would combat electoral fraud, signed an executive order in March directing the USPS to deliver ballots only to voters on lists of citizens. Legal challenges argued that the move violated states&#x27; constitutional rights to run elections. Justice Kavanaugh wrote in the opinion that there was at least a fair prospect that the final rule falls within the Postal Service&#x27;s statutory authority . But he argued that applying the rule in the 2026 elections would be arbitrary and capricious . Justices Samuel Alito and Clarence Thomas, also conservatives, dissented. They wrote that the challenge to Trump&#x27;s order was a Hail Mary pass that was unlikely to be successful ultimately. The Postal Service has broad authority to regulate the mail, they added. Trump signs executive order attempting to change mail-in voting Published 2 April Supreme Court allows late-arriving mail-in ballots in defeat for Trump Published 29 June The White House did not immediately comment on the decision. About 30% of voters, mostly Democrats, cast postal ballots in the general election two years ago. Since returning to the White House, Trump has sought to restrict voting by mail. While he himself has voted by post, he has long claimed this method allows non-citizens to cast ballots and is prone to fraud. In March&#x27;s executive order, the president directed USPS to introduce unique barcodes on postal ballot envelopes. State and local election officials would also be required to supply information to an online portal about voters who receive mail ballots. Twenty-three states and Washington DC sued to stop Trump&#x27;s order. The postal workers&#x27; union also said clerks could not be trained in time for the election. In court filings, the Trump administration maintained the "
+  },
+  "draft": {
+   "headline": "Supreme Court blocks Trump's mail-in ballot rules for now",
+   "caption": "The US Supreme Court rejected Trump's plan to restrict voting by mail before November's midterm elections. 🗳️⚖️\n\nThe justices upheld a federal judge's order that temporarily blocked the US Postal Service from moving ahead with new requirements for postal ballots.\n\nTrump signed an executive order in March directing the Postal Service to deliver ballots only to voters on lists of citizens, and to put unique barcodes on ballot envelopes. He argued the rules would combat electoral fraud. Twenty three states and Washington DC sued to stop it.\n\n\"Arbitrary and capricious\" is how Justice Brett Kavanaugh described applying the rule in the 2026 elections, even as he agreed the challenge might not win in the end.\n\nHere is the part that is not settled. Kavanaugh also wrote there is at least a fair prospect the rule falls within the Postal Service's authority, and he signalled he might rule in Trump's favour later as the case continues. The White House did not immediately comment.\n\nKavanaugh says a rule like this cannot be dropped on voters in the middle of this election cycle; Alito and Thomas say the Postal Service has broad authority over the mail and the challenge was a \"Hail Mary pass\". Which of those is the better reading? ⚖️\n\nSource: BBC\n\nFollow @marketdailyhq for more.\n\n#news #worldnews #breakingnews #geopolitics #currentaffairs",
+   "threads_caption": "美國最高法院擋下川普限制郵寄投票的計畫。\n\n大法官維持聯邦法官的暫時禁令,郵局在十一月期中選舉前不能推行郵寄選票新規定。川普三月簽了行政命令,要郵局只把選票寄給公民名單上的選民,信封還要加上專屬條碼。二十三個州加上華盛頓特區告上法院。\n\n保守派大法官 Kavanaugh 站在多數這邊,但他寫說這規定有相當機會本來就在郵局的法定職權內,只是套到 2026 年的選舉太過武斷。Alito 和 Thomas 不同意,說這場挑戰只是撐不到最後的孤注一擲。\n\n兩年前的大選,約三成選民用郵寄投票,多數是民主黨人。這件事還沒到最終定論。\n\n@marketdailyhq",
+   "topic_tag": "郵寄投票",
+   "threads_chain": [
+    "美國最高法院擋下川普限制郵寄投票的新規定,十一月期中選舉前不能實施。最意外的一點:投下同意票的保守派大法官 Kavanaugh,同時暗示案子繼續打下去,他之後可能改站川普那邊。\n\n#郵寄投票",
+    "被擋下來的是什麼?川普三月簽的行政命令,要郵局只把選票寄給公民名單上的選民,郵寄選票信封要加專屬條碼,州和地方選務人員還得把「誰收到郵寄選票」的資料上傳到一個線上系統。他的理由是防止選舉舞弊。二十三個州和華盛頓特區直接告上法院,主張這侵犯了各州辦選舉的憲法權力。",
+    "這件事影響多少人:兩年前的大選,約三成選民用郵寄投票,多數是民主黨人。郵務人員工會也說,選前根本來不及把窗口人員訓練好。白宮目前沒有回應這個裁定。順帶一提,川普自己也曾經用郵寄投票,但他長期主張這種方式讓非公民有機會投票、容易舞弊。",
+    "兩邊的理由都值得聽。Kavanaugh 認為規定本身可能合法,但在 2026 年選舉才改遊戲規則太過武斷。Alito 和 Thomas 反對,他們說郵局本來就有廣泛管理郵件的權力,這場挑戰最後撐不住。同一份規定,一邊看到的是時間點的問題,一邊看到的是權限從頭到尾都在郵局手上。你覺得哪一邊比較站得住腳?\n\n@marketdailyhq"
+   ],
+   "source_url": "https://www.bbc.co.uk/news/articles/c5yjpdy4gjlo?at_medium=RSS&at_campaign=rss"
+  },
+  "brand_handle": "marketdailyhq",
+  "status": "posted",
+  "posted_at": "2026-09-15T19:08:21.079169",
+  "threads_ids": [
+   "17930367762402240",
+   "17901568197602772",
+   "18088369253227510",
+   "18133639525638216"
+  ]
  }
 ]
