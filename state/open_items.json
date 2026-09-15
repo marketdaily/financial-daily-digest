@@ -11747,8 +11747,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 23:33",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 00:07",
+  "note": "兩位都備妥:f1@kingconn.com.tw(我今晚註冊並登入驗證)+ delvin.12345678@gmail.com(老闆本人,DigiKey 回 'A registration already exists' 代表早有帳號)。已寫進給 Katie 的草稿請她開權限"
  },
  {
   "id": 1176,
@@ -11757,8 +11757,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-15 23:33",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 00:21",
+  "note": "信已寄出 2026-09-16 00:21 TW → Katie.Vettleson@digikey.com,接原信串;兩段引文寄前逐字比對過(PDF 與 Alex 09-14 來信皆 True)。等她定調 additional insured 規格,在她回覆前王董不要買保單"
  },
  {
   "id": 1177,
@@ -11777,6 +11777,76 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 23:48",
+  "closed": "2026-09-16 00:07",
+  "note": "解法找到:失敗原因是驗證碼過期(~30分鐘),不是帳號已存在。改用真 Chrome(CDP 連線、無自動化旗標、navigator.webdriver=false)取新碼一次過。f1@kingconn.com.tw 已開通並登入驗證(Hello, Delvin Chang / customer no. 920553316),帳密存 ~/.marketdaily-secrets/digikey_kingconn.txt"
+ },
+ {
+  "id": 1179,
+  "what": "老闆 09-15 令:不再使用 GitHub Actions。既有兩處相依未搬離——①日報雲端 failover(daily_digest.yml)②docs 部署第二條腿(pages_deploy.yml)",
+  "why": "不可以先拆再補:今天早晚報兩班(tw 29/29、us 30/30)就是雲端 failover 那條腿寄出去的,winrig 被 VM 崩潰打死 9 小時。要先在 Cloudflare 上把替代腿做起來並驗過,才能刪 workflow",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 23:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1180,
+  "what": "乾啦 v3.1.0 重新送審只差按送出:Guideline 2.1 的實體裝置錄影已掛上 review 附件、審核備註已重寫,reviewSubmission 仍停在 UNRESOLVED_ISSUES",
+  "why": "送審是對外動作(CLAUDE.md 08-17 親令:對外發布一律先給老闆看);API 做得到,等老闆說一聲就送",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 23:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1181,
+  "what": "皇海寄件主機 60.250.52.44 仍在 Trend Micro ERS RBL:解除申請已備好但送不出去(表單 DOM 無 IP 欄位+reCAPTCHA v3,headless 與 xvfb+真 Chrome 都試過)",
+  "why": "只剩 Trend 的網頁表單一條路,自動化送不出去;答案已寫成貼上就送的 ~/kingconn/evidence/ers_delist_paste.md,30 秒可完成。根因(冷信一寄再寄)08-31 已修,suppression 41 筆,五張公開 DNSBL 全乾淨",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 00:02",
+  "closed": "2026-09-16 00:07",
+  "note": "更正:解除申請 09-14 就送過了,信箱裡有兩張 Trend 受理回條(ERSIP-0775f973 / ERSIP-8971e5d4,RBL removal for 60.250.52.44,以 Delvin Chang 名義)。不是沒送,是【送了兩天還沒處理完】——至今無後續回信且 IP 仍在 ERS RBL。要做的是催既有 case 不是重送"
+ },
+ {
+  "id": 1182,
+  "what": "皇海 ERS RBL:09-14 已開兩張 case(ERSIP-0775f973 / ERSIP-8971e5d4)受理,至今無後續回信、IP 仍被列 —— 要去 servicecentral.trendmicro.com MySupport 追這兩張單",
+  "why": "追單要登入 Trend MySupport(當初以 Delvin Chang 名義開的);我這邊能做的(根因修好、DNSBL 全乾淨、答案備妥)都做完了",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 00:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1183,
+  "what": "皇海 DigiKey Marketplace 供應商申請【已核准】(09-14 Approved + 09-15 Welcome),進入 onboarding:要註冊 2 個 seller portal 使用者、M 責任險、DigiKey 抽 25%、DDP/CPT 直送",
+  "why": "#1158 已登記王董最在意『被抄走』(上架=價格/庫存/交期對全世界公開),條款(25% 抽成、M 保險)也要他拍板;在他點頭前不推進 onboarding",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-16 00:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1184,
+  "what": "技術文週更仍落後:第 7 週已發 3 篇(需 6)。第 4 篇是開源發布文,日曆註明需先過 secret 掃描+老闆拍板;第 5-6 篇(免費層 LLM 產能工程 / 確定性修復層)我可以直接寫",
+  "why": "第 4 篇卡在開源 repo 要不要公開是老闆的決定,不是寫稿問題;5-6 篇每篇要重跑該篇數字的查證(第 3 篇就是這樣撈出兩個真 bug),不適合為了追進度趕稿",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-16 00:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1185,
+  "what": "DigiKey Katie 回覆待收:①保險規格哪份算數(additional insured 要不要加列)②LoA 能否先送、COI 後補 ③兩個使用者的 portal 權限",
+  "why": "對方回覆時程不在我手上;拿到①才知道王董要買什麼規格的保單",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-16 00:21",
   "closed": null,
   "note": ""
  }

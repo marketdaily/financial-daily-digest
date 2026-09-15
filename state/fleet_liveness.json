@@ -1,6 +1,6 @@
 {
- "ts": "2026-09-15T23:20:10",
- "jobs_n": 153,
+ "ts": "2026-09-15T23:52:59",
+ "jobs_n": 154,
  "silent_n": 0,
  "silent": [],
  "intel": {
@@ -819,6 +819,11 @@
    "thresh_d": 8.5,
    "thresh_src": "self",
    "status": "ok"
+  },
+  "qfx_live_sweep": {
+   "last": "2026-09-15",
+   "age_d": 0,
+   "status": "observing"
   },
   "qfx_self_watch": {
    "last": "2026-09-14",
