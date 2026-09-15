@@ -11559,5 +11559,15 @@
   "opened": "2026-09-15 20:54",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1157,
+  "what": "~/delvin-claude-brain (Obsidian 大腦 vault / 記憶鏡像 repo) 的 git 物件庫損壞:多個 0 byte object,含 refs/heads/main 指向的 commit,git 任何操作都 fatal: bad object HEAD",
+  "why": "工作目錄的 .md 檔案本身完好、GitHub 有 remote 可救,但修復要重建 .git 或重 clone,動的是記憶庫要先問老闆;在修好之前 brain repo 無法 commit/push,記憶與 skill 的跨機同步會停在這裡",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 20:58",
+  "closed": null,
+  "note": ""
  }
 ]
