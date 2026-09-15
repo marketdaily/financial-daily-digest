@@ -208,8 +208,16 @@ def run_suite():
         check("4b 沒有任何 marker",
               not any(os.path.exists(p) for p in m.LEG_MARKER.values()))
         check("4c 逾期已達 2 營業日 → 推播", len(m.pushes) == 1, m.pushes)
+        # ⚠️ 2026-09-16:原本斷言字面 "證券/期貨"。這個 case 的狀態是
+        # {'stock': False, 'futopt': None} —— 兩種**語義不同**的未生效
+        # (False=簽署完成但沒過檔;None=永豐端查無此帳號),文案已改成分開講,
+        # 因為合在一起會讓老闆去問營業員「那個從來沒掛上來的期貨帳號為什麼還沒生效」。
+        # 這條要守的不變量是「兩腿都要被點名,一腿都不許漏」,不是「必須用斜線黏在一起」
+        # ⇒ 斷言改成量意圖:兩個腿名都出現,且各自帶對應的問法。
         check("4d 逾期訊息點名兩邊都缺",
-              m.pushes and "證券/期貨" in m.pushes[0], m.pushes)
+              m.pushes and "證券" in m.pushes[0] and "期貨" in m.pushes[0], m.pushes)
+        check("4d2 ⭐兩種未生效分開講(False=過檔慢 / None=查無此帳號)",
+              m.pushes and "未生效" in m.pushes[0] and "查無此帳號" in m.pushes[0], m.pushes)
 
     # --- 5. ⭐核心迴歸:證券生效但期貨沒有 → 期貨端必須繼續被看守 ---
     with tempfile.TemporaryDirectory() as tmp:
@@ -815,9 +823,27 @@ MUTATIONS = [
     ("null 欄位不算損毀(第2輪F5)",
      '        v = raw.get(key, _MISSING)\n        if v is _MISSING:\n            return',
      '        v = raw.get(key, _MISSING)\n        if v is _MISSING or v is None:\n            return'),
+    # 2026-09-16:文案拆成 unsigned/missing 兩段後,`not settled(k)` 這道守衛
+    # 變成兩行各有一份 ⇒ 錨點跟著改成同時拔掉兩份(replace count=1,所以整塊一起錨)。
     ("逾期文案誣賴已生效的腿(第2輪F6)",
-     '                   if states.get(k) is not True and not settled(k)]',
-     '                   if states.get(k) is not True]'),
+     '        unsigned = [LEG_LABEL[k] for k in ("stock", "futopt")\n'
+     '                    if states.get(k) is False and not settled(k)]\n'
+     '        missing = [LEG_LABEL[k] for k in ("stock", "futopt")\n'
+     '                   if states.get(k) is None and not settled(k)]',
+     '        unsigned = [LEG_LABEL[k] for k in ("stock", "futopt")\n'
+     '                    if states.get(k) is False]\n'
+     '        missing = [LEG_LABEL[k] for k in ("stock", "futopt")\n'
+     '                   if states.get(k) is None]'),
+    # 新規則也要有人守:False(簽了沒過檔)與 None(永豐查無此帳號)收成同一句,
+    # 就會讓人拿著「期貨仍未生效」去追問一個從來沒掛上來的帳號(咬 4d2)。
+    ("兩種未生效被收成同一句(09-16)",
+     '        unsigned = [LEG_LABEL[k] for k in ("stock", "futopt")\n'
+     '                    if states.get(k) is False and not settled(k)]\n'
+     '        missing = [LEG_LABEL[k] for k in ("stock", "futopt")\n'
+     '                   if states.get(k) is None and not settled(k)]',
+     '        unsigned = [LEG_LABEL[k] for k in ("stock", "futopt")\n'
+     '                    if states.get(k) is not True and not settled(k)]\n'
+     '        missing = []'),
     ("腿回退不另外告警(第2輪F6)",
      "    if regressed:\n        alert_leg_regressed(regressed, today, tok)",
      "    if False:\n        alert_leg_regressed(regressed, today, tok)"),

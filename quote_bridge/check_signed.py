@@ -419,15 +419,33 @@ def overdue_alert(states, today, tok):
     if due:
         # 已落 marker 的腿不進逾期文案:永豐回一次抽風的 False 就會讓老闆拿著
         # 「證券自 07-30 起未生效」去找營業員查一個早就生效的帳號(第 2 輪 F6)。
-        pending = [LEG_LABEL[k] for k in ("stock", "futopt")
-                   if states.get(k) is not True and not settled(k)]
-        if not pending:
+        #
+        # ⚠️ 2026-09-16:上面那條教訓只擋住「已生效卻被寫進逾期」,沒擋住**兩種未生效被混成同一句**。
+        # account_states 的語義本來就分得很清楚(它自己的 docstring 寫著 None=永豐根本沒掛這個帳號):
+        #   False = 帳號在、簽署完成,但過檔沒生效  → 要問的是「是不是卡在系統過檔」
+        #   None  = 永豐端查無此帳號             → 要問的是「這個帳戶到底有沒有開成/掛進 API」
+        # 舊寫法 `states.get(k) is not True` 把兩者收成同一個 pending 清單,於是實際狀態是
+        # {'stock': False, 'futopt': None} 時,文案寫成「證券/期貨…仍未生效」——
+        # 老闆拿這句去問營業員,期貨那半是在追問一個**從來沒掛上來**的帳號為什麼沒生效。
+        # 判準與資料的語義對齊:兩種狀態分開講,各自帶各自該問的問題。
+        unsigned = [LEG_LABEL[k] for k in ("stock", "futopt")
+                    if states.get(k) is False and not settled(k)]
+        missing = [LEG_LABEL[k] for k in ("stock", "futopt")
+                   if states.get(k) is None and not settled(k)]
+        if not (unsigned or missing):
             _save_watch(st)
             return
         again = "(持續追蹤)" if last is not None else ""
-        msg = (f"⚠️ 永豐 API 過檔逾期{again}:{'/'.join(pending)}自 {first} 起已過 "
-               f"{waited} 個營業日仍未生效(簽署+測試皆已完成)。"
-               "該找營業員 Norris 查是否卡在系統過檔。")
+        parts = []
+        if unsigned:
+            parts.append(f"{'/'.join(unsigned)}自 {first} 起已過 {waited} 個營業日仍未生效"
+                         "(簽署+測試皆已完成)——該找營業員 Norris 查是否卡在系統過檔。")
+        if missing:
+            # 沒有前半段時不能用「則是」——那是對比連接詞,單獨出現會變成懸空的半句話。
+            joint = "則是" if unsigned else "自 " + str(first) + " 起"
+            parts.append(f"{'/'.join(missing)}{joint}**永豐端查無此帳號**(API 登入回傳裡完全沒有這一腿),"
+                         "那不是過檔慢,要問的是這個帳戶有沒有開成、有沒有掛進 API 權限。")
+        msg = "⚠️ 永豐 API 過檔逾期" + again + ":" + " ".join(parts)
         ok, why = _try_push(msg, tok)
         # 送不出去就不記帳,下一輪照樣重試——記了帳視同已通知,等於把送不出去的告警吃掉。
         if ok:
