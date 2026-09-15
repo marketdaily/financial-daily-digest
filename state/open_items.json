@@ -10897,8 +10897,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-15 01:30",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 02:36",
+  "note": "2026-09-15 實查(Google Maps 真瀏覽器):診所與藥局【兩個 GBP 都已存在且已認領】。診所=明欣診所/小兒科診所/4.0/地址中正路1098號之一 1樓(萊爾富桃市蕙宇店)/電話03-3169189/業主10小時前才發佐劑型流感疫苗到貨貼文。藥局=明欣藥局/藥房/5.0(3則)/中正路1098號/電話03-3165639/20張相片/業主有回覆評論(陳藥師)。⇒原判斷「未認領、需從零建立」錯誤,改為既有資產的欄位修正"
  },
  {
   "id": 1091,
@@ -11087,8 +11087,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 01:49",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 04:31",
+  "note": "藥局頁 /pharmacy/ 已上線,電話 03-316-5639 已在站上(頁面明標「未經院方確認」)"
  },
  {
   "id": 1110,
@@ -11137,8 +11137,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 02:07",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 04:31",
+  "note": "多頁站已完成:11 頁上線。tel/canonical/地址三項修正仍有效,線上逐頁驗過"
  },
  {
   "id": 1115,
@@ -11197,8 +11197,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 02:14",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 04:31",
+  "note": "11 頁全部上線並在生產驗證:HTTP 200×11、med_ad_gate 12頁PASS、canonical/JSON-LD/禁止轉錄/單一h1/tel/地址 逐頁全綠、sitemap 11筆、GSC 已重送(204,Google 已下載)、IndexNow 11筆回200。衛教四篇 §7 三要素齊全"
  },
  {
   "id": 1121,
@@ -11207,8 +11207,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-15 02:23",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 04:22",
+  "note": "已做:/services/ 總覽頁改成模板的 has-hover-image 清單,12 條線各自帶自己那張 hero 照片(不是共用裝飾圖),中英各一份。線上實測 services idx 12 張、zh 12 張,自家作品圖 0"
  },
  {
   "id": 1122,
@@ -11217,8 +11217,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 02:26",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-15 04:22",
+  "note": "已做:/about/ 照片帶(3張)+成果清單 hover(5張)+自家產品格縮圖與 modal(各5張)全部換成本機攝影,共 18 張。線上實測 about 與 zh/about 自家作品圖皆為 0"
  },
  {
   "id": 1123,
@@ -11227,6 +11227,176 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-15 02:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1124,
+  "what": "🔴明欣診所 Google 商家檔案的【網站欄指向 facebook.com】,不是 mingxinclinic.com——GBP 網站欄是在地搜尋最直接的一條導流與權威傳遞路徑,現在整條送給 FB",
+  "why": "需院方以 GBP 管理帳號登入改欄位;我方無登入權。同一個 FB 粉專的地址欄還是南平路舊址(#1106),等於網站欄把人導去一個寫著錯地址的地方",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 02:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1125,
+  "what": "明欣藥局 Google 商家檔案【完全沒有設網站】(顯示「新增網站」)——藥局頁做好後應指向 mingxinclinic.com/pharmacy/",
+  "why": "需院方以 GBP 管理帳號設定;藥局頁由 job 7d358825 建置中",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 02:36",
+  "closed": "2026-09-15 13:39",
+  "note": "藥局頁已上線且電話/營業時段改採健保署開放資料為據;GBP 網站欄仍需院方設定為 mingxinclinic.com/pharmacy/"
+ },
+ {
+  "id": 1126,
+  "what": "明欣診所 GBP 類別只有「小兒科診所」——缺內科相關次要類別",
+  "why": "加類別是對服務範圍的事實主張,與#1095 開業執照科別核對綁在一起;執照確認前不動",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-15 02:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1127,
+  "what": "QFX 自家產品截圖仍出現在 20 個頁面(/about/ 15張、六條服務線各1-3張、/work/ 索引5張,中英各一份)——老闆親令自家 project 只准出現在 /work/",
+  "why": "job f51a6cf1 正在生本機攝影替換服務子頁;/about/ 照片帶(#1122)與 /work/ 索引卡不在它的交接範圍,要我接手;清單凍結在 /tmp/sweep3/result.json",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-15 03:11",
+  "closed": "2026-09-15 04:22",
+  "note": "20 頁已清到剩 /work/ 索引 5 張 —— 老闆原話「唯一放我們自己做過的project就是只有在work那邊」,/work/ 是允許的。服務 12 線+about 中英全部歸零,線上實測"
+ },
+ {
+  "id": 1128,
+  "what": "全站視覺掃描器判準會說謊:①手機版 preloader 就緒條件不成立⇒空等30秒誤報「沒散」②.span-word 遮罩本來就比內容盒短(動畫需要)⇒scrollHeight>clientHeight 是設計不是裁字,英文頁36筆全假陽性",
+  "why": "2026-09-15 兩版掃描共報74筆,逐一比對截圖後只有「自家作品圖」20筆為真;判準修好前這支只能當線索不可當紅綠燈",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 03:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1129,
+  "what": "明欣診所站(客戶醫療院所)也夾帶 ClaPat 模板的盜版商用字型 Basis Grotesque Pro(Colophon Foundry),四個 fontsfree-net-* 檔在 site/webfonts/,14 處 CSS 指名它——已永久刪檔+家族名改指自架 Noto Sans TC,線上實測 4 頁中文 100% Noto Sans TC 零 fallback",
+  "why": "與 #1069(QFX 那邊同一個模板來源)同根;ClaPat 授權§7 明文排除第三方字型。已修但要記著:任何從 ClaPat 模板起的新客戶站都要先掃這個",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 03:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1130,
+  "what": "明欣診所字型子集原本只涵蓋 474 字,擴成 11 頁後全站缺 744 個不重複的字(衛教每篇缺約 350 字)全部掉回系統字型——已寫 scripts/build_fonts.py 依 dist/ 實際用字重建,現涵蓋 1222 字、缺 0",
+  "why": "字型檔 84KB→358KB×2 是必要代價;改版後必須重跑這支,已寫進腳本檔頭。尚未接進任何自動閘門,靠人記得",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 03:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1131,
+  "what": "QFX site/media/og.jpg 過不了 check_media(朱紅覆蓋率 0.00%)——用 git show HEAD 的原版腳本跑也一樣紅,是動手前就存在的",
+  "why": "OG 卡是社群分享時的門面,要重做;不在這次配圖範圍內",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 04:22",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1132,
+  "what": "QFX 全站 36 組最終掃描未跑完:連三次在 winrig 上死掉(前兩次 sync_playwright 開在迴圈內第5頁靜默消失已修;第三次撞 ERR_NETWORK_CHANGED 後整批停住);我判定它是重複驗證,已停手",
+  "why": "核心事實已由其他方式逐項驗過:qcheck 7頁確認自家截圖歸零、手機縮圖12/12、頁重98KB、check_media 38/38、wordcount 16/16、anonymity PASS、配圖job自己的48組144個圖片元素0問題、診所11頁結構全綠。這支只是保險不是唯一證據",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 13:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1133,
+  "what": "明欣藥局健保合約仍未續約:2026-09-15 重抓健保署藥局開放資料(data.gov.tw/dataset/39284,每日更新),終止合約或歇業日期仍為 20261029,距今 44 天。合約起日 20091030",
+  "why": "這是今天最新的官方資料,不是舊快照;續約與否只有院方在健保VPN看得到與做得到",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 13:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1134,
+  "what": "⚠️明欣診所本身的健保合約到 20271027,比藥局晚整整一年——兩個機構不同步,藥局是先到期的那一個",
+  "why": "從健保署診所開放資料(dataset 39283)撈到;提醒院方不要以為診所沒事就代表藥局沒事",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 13:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1135,
+  "what": "健保署診所開放資料的服務項目欄登載明欣有「糞便抗原檢測胃幽門螺旋桿菌服務」,站上原本完全沒寫——已加到首頁附設項目並註明來源",
+  "why": "已上線;但這也代表健保署那份服務項目欄可能還有其他我們沒寫的東西,值得跟院方逐項對一次",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 13:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1136,
+  "what": "桃園市衛生局各科室【沒有公開電子信箱】(2026-09-15 實查,全市科室頁只列電話與傳真)——報備信已改成傳真為主要管道:醫事管理科傳真 03-3370885、直撥 03-3349563(非總機 03-3340935)",
+  "why": "原本信裡寫「先打總機問信箱」,那一步現在可以省掉;信已 send-ready,只剩開業執照字號、負責醫師、電話、FB/LINE/GBP 網址要院方填",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-15 13:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1137,
+  "what": "DigiKey Marketplace 申請【已核准】(09-15 02:14 信),但上線硬門檻=美金 200 萬產品責任險 COI(保單抬頭 KINGCONN Technology Co., Ltd. 桃園、manufacturer basis、須顯示公司名與承保公司);onboarding 團隊 24-48 工作小時內會來信,PM Alex Stoe 同意保單同步辦、但里程碑會被卡住",
+  "why": "保險只有王董/皇海能買,我方無法代辦;COI 一週內拿不出來 onboarding 會停",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-15 18:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1138,
+  "what": "Global Sources 業務 Allison Yang(02-2570-6889#630)要在 9/21-9/30 到皇海拜訪談香港展與海外買家曝光——付費通路提案,需王董/老闆決定見不見、誰出面",
+  "why": "對外約訪與付費決策是老闆的;信已於 09-15 14:02 自動轉寄到老闆 gmail",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-15 18:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1139,
+  "what": "SnapMagic 要求把 26 個通用料號(7BTBF-F0-0208XX 這類 XX=接點數/線長)展開成完整料號清單才能建頁;圖面裡確實有變體表(已 OCR 出 25/26,7BTBF-F0-18XXXXX 無文字層),但【XX 併進料號的寫法要皇海的編碼規則確認】,不可自己拼",
+  "why": "拼錯料號等於對外發布不存在的型號;需王董或業務確認編碼規則,或改回覆「XX 代表什麼+合法值清單」",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 18:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1140,
+  "what": "冷信寄送今天只寄出 1 封(應 30):09:30 那班跑到一半被砍(dated log 只有 start 沒有 end rc=)、13:30 那班連 start 行都沒有=根本沒起跑;新裝的 postcheck_pm 14:05 已抓到並推播「靜默停擺」。熔斷器沒跳(成熟樣本 1<8),佇列還有 74 封",
+  "why": "死因未確認(無 dmesg 權限看 OOM);要看明天 09:30 那班是否復發才知道是偶發還是結構性",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-15 18:07",
   "closed": null,
   "note": ""
  }
