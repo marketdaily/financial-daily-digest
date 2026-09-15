@@ -9359,3 +9359,22 @@ RED 每 6h 重推、恢復推 🟢;每輪順手回收孤兒 swap。首跑實推 
 - 未提及但仍在:`/vaccination/` 與首頁「怎麼來」仍用夜間燈箱照(未被裁切,且對找路有用),
   老闆若也要拿掉再說。
 
+
+## 2026-09-15 22:0x — 明欣 Google 資產代管(老闆給爸媽帳號授權「go do everything」)
+起點:老闆說明欣的 Google 在**員工個人帳號**底下,指定改用爸媽信箱 `boy.cpy@gmail.com` 當診所身分。
+- 建了獨立的背景 Chrome 車道(絕不與皇海 profile 混帳號):`C:\Users\USER\mx-chrome-start.ps1`+`mx-cdp-relay.ps1`
+  (profile `mx-chrome`,9232→relay 9233,`--start-minimized` 不搶前景),WSL 端 `~/clients/mingxin-clinic/_work/google/mxcdp.py`。
+- 🔴 **卡點:密碼被 Google 拒絕**(帳號存在,信箱那步過了,停在「密碼錯誤」)。**只試兩次就停手**——
+  連續失敗會觸發可疑活動鎖,鎖的是爸媽本人的信箱。#1161 等老闆。
+  ⭐ 坑:Google 登入頁的 email 欄是 `#identifierId` 且 **type=text 不是 type=email**(`input[type=email]` 永遠等不到,
+  但截圖上明明看得到欄位=典型「截圖與選擇器互相矛盾」);密碼欄 `input[name=Passwd]`。
+  第一版還誤判「已登入」(拿 body 內含 SignOutOptions 當判準,那字串在登入頁也有)⇒ 判準只認 URL。
+- 趁卡點做完**不需要登入的公開面稽核**(進去之後就是照表改):
+  - 明欣 GBP **已被認領且活躍**(1 天前還發佐劑型流感疫苗貼文,標「由業主提供」)⇒ 員工聯絡得到,
+    走「請他加擁有者再轉移」最快,不必走 Google 7 天申訴。
+  - 🔴 **GBP 網站欄位 = facebook.com,不是 mingxinclinic.com**(#1162)——新站等於拿不到 GBP 這個最大入口。
+  - 地址已是中正路1098號之一(非南平路舊址)✅、電話 03-316-9189 ✅、分類 小兒科診所、4.0★。
+  - ⭐ **GBP 上有 60+ 張相片**——#1155 說官網實拍只有 9 張、室內只有一個空間,這裡可能就是缺的素材庫。
+  - 永欣 GBP 仍未認領(3.9★/129 則、**連網站欄位都沒有**)#1164。
+  - mingxinclinic.com 線上零 Google 標記(無 gtag/GTM/site-verification)⇒ GSC 與 GA4 是全新的,可乾淨地直接建在爸媽帳號下。
+憑證存 `.env`(`MINGXIN_GOOGLE_*`,gitignored,未進版控)。未碰爸媽信箱的任何郵件內容。
