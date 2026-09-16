@@ -12177,8 +12177,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-16 23:03",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 23:05",
+  "note": "09-16 老闆拍板 B(只上停產替代 22 型號小量價)"
  },
  {
   "id": 1219,
@@ -12187,8 +12187,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-16 23:03",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 23:05",
+  "note": "09-16 老闆 OK,已寄 hk-sales cc support,Sent OK <178957103692...kc-winsource>"
  },
  {
   "id": 1220,
@@ -12197,6 +12197,36 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-16 23:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1221,
+  "what": "皇海填 22 型號上架報價表(單價/MOQ/交期/包裝)+RoHS/REACH 聲明+ISO 證書掃描;檔在 ~/kingconn/distributors/ 與 Windows 桌面",
+  "why": "B 方案已定,價格只有王董能給;填回才能上 LCSC/WIN SOURCE https://claude.ai/artifact/MYBVugntCGFQ2cTioBBsjT",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 23:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1222,
+  "what": "WIN SOURCE hk-sales 催件信 09-16 已寄,09-23 前無回則改 sg-sales 或電話",
+  "why": "hk-sales 位址來自 09-02 研究,尚未證實有人收",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-16 23:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1223,
+  "what": "B 方案上架後官網 /authorized-distributors 與「原廠直供、無授權代理商」文案要改",
+  "why": "目前還沒上架,改早了是假宣稱",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-16 23:05",
   "closed": null,
   "note": ""
  }
