@@ -1,5 +1,18 @@
 {
- "date": "2026-09-15",
+ "date": "2026-09-16",
  "mode": "rss",
- "by_code": {}
+ "by_code": {
+  "SPY": {
+   "note": "SPY 今日 Reddit 提及 3 則(近15日均 0.2,z=2.8)|例:HOLY STRESSFUL",
+   "total": 3,
+   "baseline": 0.2,
+   "z": 2.8,
+   "score": 0,
+   "samples": [
+    "HOLY STRESSFUL",
+    "Fed Credibility (94% chance of rate hike) & SPY",
+    "Fed Preview - What Options, Bonds and Positioning Are Tellin"
+   ]
+  }
+ }
 }
