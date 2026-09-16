@@ -9697,3 +9697,11 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - ①**畫面與宣傳的片不是同一場**:27s 舞台片經台詞指紋比對鎖定=**React Conf 2025 Keynote**(YouTube bf3rxc26cC4)34:45,她在宣布 React Compiler 可用,與 AI agent 無關。caption 說的 1 小時 talk 實為 Maven 免費 Lightning Lesson「How Cursor Turned AI Agents Into Better Engineers」(2026-08-12,主持 Colin Matthews),YouTube 三個轉載鏡像皆 59:41(Cmoh-yR-usA / Zc07HI9Ppxk / ONeM6YDmvqA)。caption 的「SpaceX 工程師」與「loops/graphs」皆不符原片(她在 **Cursor**;原片核心是 trust curve/verification skill/pstack/eval/Dune 硬閘)。
 - ②屬實:**「Ship your first Managed Agent」/ Isabella He(Anthropic Applied AI)/ Claude 官方頻道 19HDQ9HppOA / 37:09 / Code w/ Claude London**。IG 那則是「留言 Agent 才給連結」的釣互動,片子本來就公開。
 - 交付 Artifact 給老闆;video-watcher LESSONS 已回寫 5 條(轉發片兩場化、carousel og:description、yt-dlp --download-sections segfault、auto-sub rolling 去重、WSL→Mac 傳圖路徑)。
+
+## 2026-09-16 兩支 agent 影片 → 落地四項(老闆:「不要 artifact,要教我們怎麼用」)
+- ① **FEATURE_MAP.md + feature_map_lint**(commit f1626c9e):24 個功能區塊,符號全部從 docs/ 原始碼抽。雙向對帳:地圖宣告的選取器/函式/端點/狀態要真的在;docs/js/*.js 每支要被認領。接進 pages_deploy.yml + site_scan.yml + Stop hook。首跑抓到我自己寫錯 3 處。
+- ② **RULE_LAYERS.md + rule_layer_audit + skill_registry_lint**(commit 274724e2):22 條鐵則標層級,17 條硬閘宣稱全部屬實;R-22 從散文硬化成 lint,首跑查獲 **45 支 skill 沒進 GOVERNANCE、5 支缺 description**(=永遠不會被自動觸發)。棘輪基線避免變成永遠紅的燈。cron 09:45 / 09:50。
+- ③ **週考盲測工作目錄**(~/autonomous/eval/blind_wd.sh,非 git repo):被考 agent 原本 cwd=eval/runs/<日期>/<題目id>,262 題全洩。抽成單一事實來源供自測直接測生產那份;3 個突變都被抓到。
+- ④ **憑證分盒 env_scope**(commit d44b341e):.env 約 115 個 secret 原本整份傳給 9 支 claude -p 子行程。首支落地 line_group_runner(scope=none)。
+- ⚠️ 查獲:`~/autonomous/` **不是 git repo** —— eval/、capabilities/、tests/ 的改動沒有任何版控。已登記。
+- open items:#1192(skill 登記欠債) #1193(盲測未在真實週考跑過) #1194(分盒只做 1/9) #1195(line_group 未實跑)
