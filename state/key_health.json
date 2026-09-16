@@ -1,5 +1,5 @@
 {
- "ts": "2026-09-15T22:40:25",
+ "ts": "2026-09-16T10:50:06",
  "weekly_ran": false,
  "results": {
   "finmind": {
@@ -7,8 +7,8 @@
    "note": "http=200 rows=2"
   },
   "fmp": {
-   "ok": false,
-   "note": "http=429"
+   "ok": true,
+   "note": "http=200"
   },
   "newsapi": {
    "ok": true,
