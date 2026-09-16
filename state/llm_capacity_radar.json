@@ -15,9 +15,9 @@
       "note": "200",
       "unknown_streak": 0
     },
-    "groq:qwen3.6-27b": {
-      "alive": false,
-      "note": "404 模型不存在",
+    "groq:qwen3.8-27b": {
+      "alive": true,
+      "note": "200",
       "unknown_streak": 0
     },
     "local:ollama": {
@@ -33,7 +33,6 @@
   },
   "models": {
     "cerebras": [
-      "gemma-4-31b",
       "gpt-oss-120b",
       "qwen-3.8-27b"
     ],
@@ -130,5 +129,5 @@
       "z-ai/glm-5.2:free"
     ]
   },
-  "updated": "2026-09-16 00:42"
+  "updated": "2026-09-16 10:10"
 }
