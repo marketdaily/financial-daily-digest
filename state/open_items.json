@@ -7036,8 +7036,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-02 00:47",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 23:03",
+  "note": "兩家都已送件(LCSC 09-14 評估表、WIN SOURCE 09-07);DigiKey 擱置。剩下的價目表/證書併入新決策單 https://claude.ai/artifact/MYBVugntCGFQ2cTioBBsjT"
  },
  {
   "id": 705,
@@ -7656,8 +7656,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-04 22:44",
-  "closed": null,
-  "note": "[2026-09-07 11:44 A線] 王董已授權「談」。DigiKey 線上申請表已全填(evidence_20260907/digikey_filled_not_submitted.png)未送:3 題必填政策題(接受退貨?退貨地址?能否提供 $2M 產險 COI?)站上無依據→請王董答(intel/research/digikey_questionnaire_draft_20260907.md §B),答完跑 offsite/tools/fill_digikey.py --submit --answers。LCSC 已送出(API:under review,勿重送)。WIN SOURCE 原站 524 三次未送。前置頁 /rohs-reach + /authorized-distributors 四語已上線。"
+  "closed": "2026-09-16 23:03",
+  "note": "整理成王董決策單 A/B/C(建議 B 只上停產替代 22 型號) https://claude.ai/artifact/MYBVugntCGFQ2cTioBBsjT"
  },
  {
   "id": 767,
@@ -12167,6 +12167,36 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-16 20:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1218,
+  "what": "王董拍板上代理商 A不上/B只上22停產替代型號(建議)/C全上;選B需22型號單價+MOQ+交期、RoHS/REACH、ISO掃描檔",
+  "why": "價格公開與官網原廠直供定位是王董的商業決定 https://claude.ai/artifact/MYBVugntCGFQ2cTioBBsjT",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 23:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1219,
+  "what": "WIN SOURCE 催件信(改寄 hk-sales 亞洲窗口)等老闆 OK 才寄",
+  "why": "對外信需老闆先看;09-07 回信後 9 天沒回 https://claude.ai/artifact/MYBVugntCGFQ2cTioBBsjT",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-16 23:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1220,
+  "what": "LCSC 09-14 寄回評估表,09-21 前未回就催",
+  "why": "對方說 3 工作天評估,尚未到期",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-16 23:03",
   "closed": null,
   "note": ""
  }
