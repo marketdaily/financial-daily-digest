@@ -9726,3 +9726,8 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
   實查它們讀的 12 個 env key 沒有一個出現在 Delvin-agent/.env ⇒ 剝掉不影響報價
 - FINMIND_TOKEN 寫在 crontab 頂部是**刻意設計**(cron 讀不到 .env),有 finmind_token_check.py
   每天對帳兩處一致 —— 不是疏漏,不要「順手修掉」
+- **#1197 收**:老闆授權我決定 → 推私有 GitHub(marketdaily 帳號)。`delvin-autonomous`(2368 檔)、
+  `delvin-fallback-runners`(320 檔)。判準沿用 `state/lessons/private_manual_into_public_repo.md`
+  的教訓(不是「有沒有 key」而是「這份字能不能幫陌生人接近 Delvin 的帳號」)⇒ 一律私有,
+  **建完與推完各驗一次 visibility**。推前掃全歷史 2816 物件 × 56 個憑證型值 = 命中 0。
+  autocommit 改成 commit+push;push 失敗與無 remote 兩條路徑都做了正對照(rc=0、本機 commit 留著)。
