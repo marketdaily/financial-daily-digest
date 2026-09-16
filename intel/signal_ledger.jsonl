@@ -1100,3 +1100,18 @@
 {"date": "2026-09-15", "code": "6140", "source": "leadflow", "level": "red", "signal": "訊達(6140) 無消息近漲停+9.9%(連2根,5日+22.3%),疑資訊先行資金|外資+投信近3日僅-21張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-15", "code": "6945", "source": "leadflow", "level": "red", "signal": "圓祥生技(6945) 無消息近漲停+9.7%(量能5.6×,5日+14.3%),疑資訊先行資金|外資+投信近3日僅+239張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-15", "code": "5202", "source": "leadflow", "level": "red", "signal": "力新(5202) 無消息近漲停+9.7%(連2根,5日+19.9%),疑資訊先行資金|外資+投信近3日僅+35張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-16", "code": "2451", "source": "mops_news", "level": "red", "signal": "創見(2451) 重訊[2026-09-15]:公告本公司申請展延115年國內第二次無擔保轉換公司債募集 期間", "price_at_signal": null}
+{"date": "2026-09-16", "code": "2492", "source": "sbl", "level": "yellow", "signal": "華新科(2492):機構借券賣出5日增13.9%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-09-16", "code": "3260", "source": "mops_news", "level": "yellow", "signal": "威剛(3260) 重訊[2026-09-15]:代馬來西亞子公司ADATA QUANTUM CORE SDN. BHD.公告取得使用權資產", "price_at_signal": null}
+{"date": "2026-09-16", "code": "6174", "source": "mops_news", "level": "red", "signal": "安碁(6174) 重訊[2026-09-15]:公告本公司發行國內第三次無擔保轉換公司債之委託代收價 款行庫及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-09-16", "code": "6922", "source": "institutional", "level": "red", "signal": "宸曜(6922):外資連 5 日賣超(5日淨賣 -114 張)", "price_at_signal": null}
+{"date": "2026-09-16", "code": "2468", "source": "tw_rank", "level": "red", "signal": "華經(2468) 量能竄榜:今日量榜第13(近10日未進過top50,+0.9%,46,088張)", "price_at_signal": null}
+{"date": "2026-09-16", "code": "6129", "source": "leadflow", "level": "yellow", "signal": "普誠(6129) 無消息近漲停+10.0%(量能1.9×,5日+0.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-16", "code": "3354", "source": "leadflow", "level": "yellow", "signal": "律勝(3354) 無消息近漲停+9.9%(量能2.0×,5日+6.3%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-16", "code": "6560", "source": "leadflow", "level": "red", "signal": "欣普羅(6560) 無消息近漲停+9.9%(量能10.0×,5日+14.2%),疑資訊先行資金|外資+投信近3日僅+14張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-16", "code": "3675", "source": "leadflow", "level": "red", "signal": "德微(3675) 無消息近漲停+9.9%(連2根,5日+8.8%),疑資訊先行資金|外資+投信近3日+821張", "price_at_signal": null}
+{"date": "2026-09-16", "code": "6218", "source": "leadflow", "level": "red", "signal": "豪勉(6218) 無消息近漲停+9.8%(連2根,5日+15.4%),疑資訊先行資金|外資+投信近3日僅-569張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-16", "code": "4744", "source": "leadflow", "level": "red", "signal": "皇將(4744) 無消息近漲停+9.8%(量能6.9×,5日+12.5%),疑資訊先行資金|外資+投信近3日僅-36張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-16", "code": "3021", "source": "leadflow", "level": "red", "signal": "鴻名(3021) 無消息近漲停+9.9%(連2根,5日+9.5%),疑資訊先行資金|外資+投信近3日僅+86張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-16", "code": "8064", "source": "leadflow", "level": "yellow", "signal": "東捷(8064) 無消息近漲停+9.7%(量能1.5×,5日-11.6%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-16", "code": "7825", "source": "leadflow", "level": "red", "signal": "和亞智慧(7825) 無消息近漲停+8.6%(連2根,5日-7.7%),疑資訊先行資金|外資+投信近3日僅-162張,法人未同步=隱形買盤", "price_at_signal": null}
