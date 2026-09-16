@@ -50,6 +50,11 @@ jobs:
           fi
           echo "隱私斷路器通過"
 
+      - name: FEATURE_MAP 對帳(地圖 vs docs/ 原始碼)
+        # 2026-09-16 加:功能被改名/選取器被換掉/新 js 沒人認領 ⇒ 擋在部署之前。
+        # 硬閘的理由見 FEATURE_MAP.md 開頭——這類缺陷靠 site_scan 的 console 掃描看不見。
+        run: python3 scripts/feature_map_lint.py
+
       - name: 部署盤點
         run: |
           echo "commit=$(git rev-parse --short HEAD)"

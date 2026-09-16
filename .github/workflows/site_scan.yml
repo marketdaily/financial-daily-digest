@@ -31,6 +31,10 @@ jobs:
           pip install playwright
           python -m playwright install --with-deps chromium
 
+      - name: FEATURE_MAP 對帳(靜態,先於線上掃描)
+        # 地圖與程式碼不一致時先紅,避免自動修復階段拿著過期的地圖去改站。
+        run: python3 scripts/feature_map_lint.py
+
       - name: Scan
         id: scan1
         run: |
