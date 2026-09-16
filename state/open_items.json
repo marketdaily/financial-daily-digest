@@ -6916,8 +6916,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-01 23:00",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 13:17",
+  "note": "對方 09-02/09-09/09-15 回了三封,我漏看 14 天(這是我的疏失,非對方未回)。09-16 已查明:Metoree=ZAZA株式会社營運,有免費刊登枠(產品/公司登錄+收詢問免費,自助建檔),付費才有分類上位/banner/報表/專人;計費可選月額/刊登/CPA。實查皇海目標分類空位:Smart Card Connector 10 家/Memory Module 9/Card Edge 34/PCB Connector 38/B2B 64,皇海一個都不在"
  },
  {
   "id": 693,
@@ -11879,5 +11879,35 @@
   "opened": "2026-09-16 00:51",
   "closed": "2026-09-16 00:59",
   "note": "根因已定案:imaplib 預設永遠等下去,14 條 IMAP 連線沒有一條帶 timeout。09-15 那班掛在 followup 的第一個 IMAP 連線(09-14 正常 log 的第一行『回信掃描』完全沒印出來),撐到當晚 21:00 WSL 重開機;同時段 10:05/10:30/11:00 其他班全部正常 ⇒ 不是機器事件。14 處全部補上 timeout=60(三個專案各自 commit+push),並加 AST 守衛防止再被靜默加回來。"
+ },
+ {
+  "id": 1189,
+  "what": "全艦隊沒有守衛在盯 working tree 髒多久 / orphan stash;09-16 人工掃才發現 fortune-ai 一支加硬的測試躺了一個月未 commit",
+  "why": "偵測器還沒做,等老闆決定要不要接 cron",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 02:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1190,
+  "what": "qfx 明欣的字標寫『明欣診所』但卡片說明用同意紀錄裡的『明欣內科兒科診所』",
+  "why": "兩者都對(前者是他們官網自稱,後者是正式名),但視覺上不一致,要老闆決定對外統一用哪一個",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-16 02:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1191,
+  "what": "皇海 Metoree:回信稿已備妥(A零元優先+逼書面報價 / B直接約通話),等 Delvin 選版才寄",
+  "why": "對外內容送出前必先給老闆看OK(08-17親令);另需拍板付費預算上限與對外身分改用 f1@kingconn.com.tw。Artifact: https://claude.ai/artifact/7gB1bsCJ7zAwh5Gt4dte6f",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 13:17",
+  "closed": "2026-09-16 13:23",
+  "note": "老闆 09-16 拍板:寄 A 版、只做免費暫不付費。已依此調整措辭(拿掉『open to a paid plan』改成僅索取報價存參)並寄出,副本 f1@kingconn.com.tw。thread 1a064272 / msg 1a0a8aaccacb70e7"
  }
 ]

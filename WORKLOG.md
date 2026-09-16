@@ -9684,3 +9684,10 @@ collectibles-ca、Kronos… 這 17 個 repo 裡,**版控全自動(08-10 親令)�
 ### 沒收乾的一件事
 **全艦隊沒有任何東西在盯「working tree 髒了多久 / 有沒有 orphan stash」**。今天這輪是人工掃出來的;
 fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。要不要做成守衛請老闆說一聲。
+
+## 2026-09-16 皇海站外:Metoree 上架線接回(Mac 視窗,老闆丟第三封跟進信截圖)
+- **根因是我漏看信,不是對方冷信**:09-01 我以皇海授權代理送出上架申請(#692),對方 09-02/09-09/09-15 回三封,我 14 天零回覆。#692 已關並註明疏失。
+- 實查(非照信裡說的):營運=ZAZA株式会社,**免費刊登枠真的存在**(產品/公司登錄+收詢問免費、自助建檔),付費買的是分類上位/banner/成效報表/專人;計費可選月額/刊登/CPA。⚠️ us 版 ad_placement 頁**只賣廣告方案、無免費自助入口**,三封信全導 Calendly 且零報價——所以回信用寫的、不先通話。
+- ⭐ 分類空位實查:Smart Card Connector **10 家**(前三 KLS/CUI/Amphenol)、Memory Module 9、Card Edge 34、PCB Connector 38、B2B 64;皇海一個都不在。分類內已有台廠(CATEK 掛 Nimatsu Electric)⇒不是只收日商。同時這條是 #595(站外檔案為零、答案引擎無第三方佐證)的解法之一。
+- 老闆拍板:寄 A 版、**只做免費暫不付費**⇒依此拿掉「open to a paid plan」改為僅索取報價存參,已寄出(副本 f1@kingconn.com.tw,請對方給自助建檔連結+欄位/圖規+US/JP 是否分開計費)。
+- 交付 Artifact: https://claude.ai/artifact/7gB1bsCJ7zAwh5Gt4dte6f
