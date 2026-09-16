@@ -9705,3 +9705,24 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - ④ **憑證分盒 env_scope**(commit d44b341e):.env 約 115 個 secret 原本整份傳給 9 支 claude -p 子行程。首支落地 line_group_runner(scope=none)。
 - ⚠️ 查獲:`~/autonomous/` **不是 git repo** —— eval/、capabilities/、tests/ 的改動沒有任何版控。已登記。
 - open items:#1192(skill 登記欠債) #1193(盲測未在真實週考跑過) #1194(分盒只做 1/9) #1195(line_group 未實跑)
+
+## 2026-09-16(續) #1196 版控 + #1194 憑證分盒收尾
+- **兩個生產目錄補上版控**(都無 remote,推遠端要老闆點頭):
+  - `~/autonomous` 2368 檔/49M(排除週考 runs 843M、ssf 資料 821M、活體 *.db、venv)
+  - `~/.marketdaily-fallback` 320 檔(排除 crontab 備份——內含 FINMIND_TOKEN 明文)
+  - 兩邊首次 commit 前都用 .env 的 56 個憑證型值逐檔比對:**零外洩**
+  - 每小時 autocommit(同一支 runner,`AUTOCOMMIT_REPO` 注入,不造第二份):
+    大檔閘門 + secret 閘門,兩道都做過正對照
+  - ⚠️ 自己犯的錯:大檔閘門第一版把 `git reset` 寫在 `git add -A` **之前**,印了「略過」卻照樣 commit;
+    正對照抓到,已修並把誤收的 blob 從歷史清掉(`reset --soft` + `gc --prune=now`)
+- **憑證分盒 9/9 支收尾**(#1194 已收):
+  - `md` scope:.env 114 把 → 保留 42、砍 72(皇海/明欣/storefront/10 個 B2B 目錄站/LinkedIn/
+    永豐/PyPI/各家 AI 控制台密碼)。先砍爆炸半徑而非精確白名單——自癒鏈是生產關鍵路徑
+  - `env_scope_cmd`:給 `cron_run_and_alert` 這種只能收 argv 的地方用(它是 `"$@"` 直接執行)
+  - md→digest_chronic/digest_selfheal/marketing_agents_weekly/site_scan;
+    alert→line_agent/pro360_fastpoll/paid_lead_followup/tasker;none→line_group
+  - 自測 12 條(含空跑防護:改測試時誤動 heredoc 分隔符 → 主體被吞 → exit 0 假綠,已加硬錯)
+- **查核而非臆測**:storefront 那條線的憑證在 `~/storefront/.env` 與 `.secrets/`,Python 自己讀檔;
+  實查它們讀的 12 個 env key 沒有一個出現在 Delvin-agent/.env ⇒ 剝掉不影響報價
+- FINMIND_TOKEN 寫在 crontab 頂部是**刻意設計**(cron 讀不到 .env),有 finmind_token_check.py
+  每天對帳兩處一致 —— 不是疏漏,不要「順手修掉」
