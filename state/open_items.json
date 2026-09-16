@@ -9897,8 +9897,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-14 01:01",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 22:53",
+  "note": "09-16 22:00 Alex Stoe 回信:DigiKey onboarding 擱置結案,無待辦"
  },
  {
   "id": 991,
@@ -10787,8 +10787,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-15 01:11",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 22:53",
+  "note": "DigiKey 線擱置(09-16 Alex 確認結案,檔案保留;恢復需重新評估、可能要重申請)。王董未來若買 CGL 保險再重開"
  },
  {
   "id": 1080,
@@ -11367,8 +11367,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-15 18:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 22:53",
+  "note": "DigiKey 線擱置(09-16 Alex 確認結案,檔案保留;恢復需重新評估、可能要重申請)。王董未來若買 CGL 保險再重開"
  },
  {
   "id": 1138,
@@ -11437,8 +11437,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 18:44",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 22:53",
+  "note": "DigiKey 線擱置(09-16 Alex 確認結案,檔案保留;恢復需重新評估、可能要重申請)。王董未來若買 CGL 保險再重開"
  },
  {
   "id": 1145,
@@ -11447,8 +11447,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-15 18:44",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 22:53",
+  "note": "DigiKey 線擱置(09-16 Alex 確認結案,檔案保留;恢復需重新評估、可能要重申請)。王董未來若買 CGL 保險再重開"
  },
  {
   "id": 1146,
@@ -11577,8 +11577,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-15 21:10",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 22:53",
+  "note": "DigiKey 線擱置(09-16 Alex 確認結案,檔案保留;恢復需重新評估、可能要重申請)。王董未來若買 CGL 保險再重開"
  },
  {
   "id": 1159,
@@ -11617,8 +11617,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-15 21:49",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 20:10",
+  "note": "09-16 Delvin 以管理員身分改好;Google 地圖公開頁 19:53 起連續 5 次取樣網站連結皆為 https://mingxinclinic.com/"
  },
  {
   "id": 1163,
@@ -11827,8 +11827,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-16 00:07",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 22:53",
+  "note": "DigiKey 線擱置(09-16 Alex 確認結案,檔案保留;恢復需重新評估、可能要重申請)。王董未來若買 CGL 保險再重開"
  },
  {
   "id": 1184,
@@ -11847,8 +11847,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-16 00:21",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-16 22:53",
+  "note": "09-16 22:00 Alex Stoe 回信:DigiKey onboarding 擱置結案,無待辦"
  },
  {
   "id": 1186,
@@ -11909,5 +11909,265 @@
   "opened": "2026-09-16 13:17",
   "closed": "2026-09-16 13:23",
   "note": "老闆 09-16 拍板:寄 A 版、只做免費暫不付費。已依此調整措辭(拿掉『open to a paid plan』改成僅索取報價存參)並寄出,副本 f1@kingconn.com.tw。thread 1a064272 / msg 1a0a8aaccacb70e7"
+ },
+ {
+  "id": 1192,
+  "what": "skill 三處登記欠債:45 支沒進 GOVERNANCE.md、5 支 SKILL.md 缺 description",
+  "why": "2026-09-16 skill_registry_lint 首跑查獲,已記進棘輪基線不擋 CI,但欠債仍在——缺 description 那 5 支等於永遠不會被自動觸發",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-16 13:51",
+  "closed": "2026-09-16 15:40",
+  "note": "2026-09-16 完成:45 支全數歸群進 GOVERNANCE.md 第六節(逐群裁決+與既有路徑的重疊判定);『5 支缺 description』經查是我 lint 的假陽性(YAML 區塊語法讀不到),已修,實為 151/151 都有。棘輪基線已移除=欠債歸零"
+ },
+ {
+  "id": 1193,
+  "what": "週考盲測工作目錄尚未在真實週考跑過",
+  "why": "2026-09-16 上線,單元自測+3 個突變都過,但要等週日 05:10 TW 那場真的用 EVAL_BLIND=1 跑完 262 題才算在生產驗證過;風險=產物搬回 $WD 若在真實負載下有殘留,verify 會在空目錄跑出假 ❌",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-16 14:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1194,
+  "what": "憑證分盒只做了 1/9 支 claude -p runner",
+  "why": "2026-09-16 env_scope 機制與自測已完成,但只把 line_group_runner 改成 scope=none;另 8 支(digest_chronic/digest_selfheal/line_agent/marketing_agents_weekly/paid_lead_followup/pro360_fastpoll/site_scan/tasker)仍整份繼承 115 個 secret",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-16 14:02",
+  "closed": "2026-09-16 15:23",
+  "note": "2026-09-16 完成:9/9 支 claude -p runner 全部分盒(md/alert/none 三種 scope),自測 12 條全過。仍未在真實 cron 跑過 → 另立 #1195 族"
+ },
+ {
+  "id": 1195,
+  "what": "line_group_runner 分盒後尚未在真實 cron 跑過",
+  "why": "2026-09-16 改 scope=none,語法與子行程可見性都實測過,但沒等到它下一次排程實跑;若 claude 解析層意外需要某個 env 會靜默解析失敗(該 runner 有告警,不會無聲)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-16 14:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1196,
+  "what": "~/autonomous/ 不在版控",
+  "why": "2026-09-16 查獲:eval/、capabilities/(37 積木+248 自測)、state/ 全都沒有 git,改壞了沒得 revert、也沒有歷史。brain repo 只收 memory/skills",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-16 14:02",
+  "closed": "2026-09-16 15:23",
+  "note": "2026-09-16 完成:~/autonomous 建 git(2368 檔/49M,首次 commit 前做過 secret 掃描零外洩),每小時 autocommit + 大檔閘門 + secret 閘門,兩道閘都做過正對照。無 remote(推遠端=對外發布,要老闆點頭)"
+ },
+ {
+  "id": 1197,
+  "what": "~/.marketdaily-fallback 與 ~/autonomous 的 git 都沒有 remote",
+  "why": "2026-09-16 建庫完成,但只有本機。磁碟掛了就全沒了;推遠端=對外發布,要 Delvin 點頭決定放哪(私有 GitHub repo?)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 15:26",
+  "closed": "2026-09-16 15:32",
+  "note": "2026-09-16 我決定:推私有 GitHub(marketdaily 帳號,沿用 delvin-claude-brain 的既有私有庫模式)。delvin-autonomous 2368 檔 / delvin-fallback-runners 320 檔,建完與推完各驗一次 visibility=PRIVATE,遠端檔案數與本機相符。推前掃全歷史 2816 個物件、56 個憑證型值,命中 0。autocommit 已改成 commit+push,推不動不擋下一輪"
+ },
+ {
+  "id": 1198,
+  "what": "7USMF-F0-0013:原廠 STEP 與工程圖的【膠芯底座厚度】對不上(STEP 1.00 / 圖面印刷 1.20 / 手寫實測 1.12),模型照 STEP 建",
+  "why": "要皇海工程確認哪個是對的;三個來源不一致時我不自己選,已在交付頁標明模型依 STEP",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 15:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1199,
+  "what": "7USMF-F0-0013:磁鐵表面處理待確認(BOM 寫 N52 鍍鎳=銀色,實物樣品照片是黑的),渲染用深槍色折衷",
+  "why": "等工程回覆後改 kc_materials 一行即可",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-16 15:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1200,
+  "what": "7USMF-F0-0013:PCBA 未建模,待皇海工程提供實際尺寸後補入爆炸圖",
+  "why": "BOM 有列 1 PCS 但外形圖與 STEP 都沒有任何尺寸;不以推測尺寸充當模型(老闆 09-16 判示意板沒必要)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-16 15:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1201,
+  "what": "7USMF-F0-0013:內部分界面(磁鐵/膠芯 z=1.00、膠芯頂 z=5.40)取自原始 STEP 內部既有面,原廠未標註",
+  "why": "外形已用體積對帳證明與原檔相同,但內部分界是工程推定,正式設計需工程背書",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 15:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1202,
+  "what": "7USMF-F0-0013 檢視器頁目前只在 preview 站(kingconn-preview.pages.dev),未上正式官網",
+  "why": "等老闆確認要不要放正式站;正式站是客戶官網,放上去等於對外",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-16 15:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1203,
+  "what": "autocommit 的『連續 24h 推不動才告警』分支沒被測過",
+  "why": "2026-09-16 push 失敗路徑與無 remote 路徑都做了正對照,但 24h 門檻那段只有在連續推不動一整天才會走到,尚未驗證;最壞情況是備份靜默停更而沒人知道",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-16 15:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1204,
+  "what": "皇海婉拒信兩封待老闆核可:環球資源 Allison(婉拒拜訪) + DigiKey Katie/Alex(COI 不辦→onboarding 擱置)",
+  "why": "對外信送出前需老闆 OK;草稿在 ~/kingconn/offsite/outbox/*_20260916.txt",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 15:33",
+  "closed": "2026-09-16 15:44",
+  "note": "兩封已寄 09-16:環球資源 Allison、DigiKey Katie(cc Alex),接原串,Sent 副本 OK"
+ },
+ {
+  "id": 1205,
+  "what": "QFX 首頁改版:三方向提案待老闆選(A/B/C)+Higgsfield 花費核可",
+  "why": "等老闆拍板;另一視窗仍在改 ~/qfx,落地要等它收完;Higgsfield MCP 今天 502",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-16 15:38",
+  "closed": "2026-09-16 16:08",
+  "note": "老闆選 A 並授權 credit;原型已做完,改由 #新項追上線"
+ },
+ {
+  "id": 1206,
+  "what": "tw-financial-analysis 目錄名與 frontmatter name 不一致",
+  "why": "2026-09-16 查獲:目錄叫 tw-financial-analysis,裡面寫 name: taiwan-stock-analysis。兩個名字並存時路由走哪個不確定;改名要同時動 CATALOG/GOVERNANCE/可能的呼叫端,不宜順手改",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-16 15:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1207,
+  "what": "QFX 其他頁面(首頁/服務/案例)仍是 09-14 那幾輪照母版做的,尚未依 09-16「不要跟他們一樣」重檢",
+  "why": "今天只改了 /contact/,其餘頁面沒逐頁對過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-16 16:03",
+  "closed": "2026-09-16 18:07",
+  "note": "其他頁面已用 check_devices 逐尺寸量過並修完,102/102 乾淨"
+ },
+ {
+  "id": 1208,
+  "what": "QFX 首頁方向 A 原型尚未上線(未併入 build_v8.py)",
+  "why": "等老闆看審閱頁 XpYopDij78FLckZmFc6cjz 核可 + 另一視窗收完 ~/qfx 的 132 檔改動才能併入;原型在 ~/qfx/_work/home-a/,僅本機 headless 驗過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-16 16:08",
+  "closed": "2026-09-16 16:13",
+  "note": "已併入 build_v8.py(未 commit、未部署),改由 #新項追部署協調"
+ },
+ {
+  "id": 1209,
+  "what": "QFX 新首頁已併入 build_v8.py 但未 commit/未部署:等聯絡頁視窗(delvin-agent-8e)收工再乾淨 build+閘門+部署",
+  "why": "兩視窗 16:10-16:12 同時 build 互相覆蓋,site/ 目前缺 contact.js 與 home-hero.js,此狀態部署會讓聯絡表單失效;已發訊息協調",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-16 16:13",
+  "closed": "2026-09-16 17:18",
+  "note": "761de0e5 Production;線上 verify_site 24 頁 PASS、check_devices 68/68、影片與 contact.js 200、循環片實播"
+ },
+ {
+  "id": 1210,
+  "what": "QFX 其他頁面(首頁/服務/案例/我們)的獨立連結觸控目標 <44px,check_devices 已量出但還沒修",
+  "why": "共享樹在 delvin-agent-02 手上併新首頁,不在他 build 期間動同一支檔",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-16 16:55",
+  "closed": "2026-09-16 18:07",
+  "note": "已修並上線(部署 234e09a9):/zh/about/ 獨佔整段連結 19px、/zh/services/ 標題連結 34px,皆只套 pointer:coarse;全站 6 頁 × 17 尺寸 102/102"
+ },
+ {
+  "id": 1211,
+  "what": "明欣診所醫師資料下架中，待 Delvin 逐位確認六位醫師（誰在職、誰是院長、學經歷）後重建 /doctors/",
+  "why": "Delvin 09-16 說資料有些不正確，先全部拿掉；/doctors/ 暫時 302 到首頁",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 17:54",
+  "closed": "2026-09-16 18:55",
+  "note": "09-16 Delvin 確認：陳銘真院長、黃鈺玲/林正章主治，其餘三位不在職；/doctors/ 已恢復上線"
+ },
+ {
+  "id": 1212,
+  "what": "QFX「我們」頁新文案已 commit 在本機(未 push、未部署),等老闆看對照頁核可",
+  "why": "老闆嫌中二;改寫後對外內容需先給他看(08-17 親令)。對照頁 AXLHSph83Qvo7NdWgvJTX8;部署前要與 delvin-agent-8e 協調鑰匙",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-16 17:58",
+  "closed": "2026-09-16 19:08",
+  "note": "老闆核可並部署 d674cc78;線上新句在舊句 0、check_devices about 34/34"
+ },
+ {
+  "id": 1213,
+  "what": "明欣醫師頁三位醫師的學經歷條目仍沿用舊站文字，尚未經 Delvin 逐條確認",
+  "why": "09-16 只確認了人選與職稱；首頁公告「9/12 陳醫師代診」指誰也未確認",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 18:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1214,
+  "what": "QFX 10 個服務內頁改寫 + 網站重建 12 套示範作品:計畫待老闆拍板(費用寫法/無客戶實績寫法/about 標題)",
+  "why": "計畫頁 7CakYk7edQy2ZPTZAb1tvq;證據已盤點,拍板後才生成圖與改寫",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-16 19:49",
+  "closed": "2026-09-16 20:33",
+  "note": "10 服務頁已上線 e279e418(內容/費用/示意圖/FAQ);12 套示範作品另開項"
+ },
+ {
+  "id": 1215,
+  "what": "QFX「我們」頁「替客戶做到什麼」下第 4、5 個數字其實是自家站/內部系統,標題不精準仍在線上",
+  "why": "已在計畫頁請老闆選:拿掉兩個數字或改標題;待回覆一起改",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 19:49",
+  "closed": "2026-09-16 21:51",
+  "note": "「我們」頁標題改「我們做到的事」,09-16 deploy f03d17c8 線上驗證"
+ },
+ {
+  "id": 1216,
+  "what": "QFX 網站重建頁 12 套模板示範作品(換圖截圖)尚未完成",
+  "why": "第二批;老闆 09-16 指示用 ClaPat bundle 換照片放上網站重建頁;授權禁止公開模板原始碼 ⇒ 只放截圖",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-16 20:33",
+  "closed": "2026-09-16 21:51",
+  "note": "網站重建頁 12 套示範作品上線(qfx d6c9d2d,deploy f03d17c8),線上 200+閘門全綠"
+ },
+ {
+  "id": 1217,
+  "what": "QFX 老闆提供的 12 張服務主圖授權/作者不明(photo_credits 標 UNKNOWN),已用於服務頁與首頁卡片",
+  "why": "來源是老闆下載資料夾的檔案,無授權資訊;需老闆確認來源或換成自產圖",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-16 20:33",
+  "closed": null,
+  "note": ""
  }
 ]
