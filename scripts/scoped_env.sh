@@ -24,6 +24,20 @@
 
 SCOPED_ENV_REPO="${SCOPED_ENV_REPO:-$HOME/Delvin-agent}"
 
+# md scope 的允許清單 = .env 全部 key 扣掉「其他事業線」前綴。
+# 扣掉的是:皇海(KINGCONN_)、明欣(MINGXIN_)、QuietFix storefront(STOREFRONT_)、
+# B2B 目錄站(DIR_/TAIWANTRADE_/EUROPAGES_/GLOBALSOURCES_/WIKIDATA_QFX_)、
+# 個人帳號(DELVIN_LINKEDIN_/HN_)、下單(SINOPAC_)、發佈(PYPI_)、
+# 各家 AI 服務的「網站登入密碼」(…_ACCOUNT_PASS/PW,那是控制台密碼,不是 API key)、
+# 以及 CB_DESK_PASSWORD。
+env_scope_md_keys() {
+  local envf="$SCOPED_ENV_REPO/.env"
+  [ -f "$envf" ] || return 0
+  grep -oE '^[A-Z_][A-Z0-9_]*' "$envf" | sort -u | grep -vE \
+    '^(KINGCONN_|MINGXIN_|STOREFRONT_|DIR_|TAIWANTRADE_|EUROPAGES_|GLOBALSOURCES_|WIKIDATA_QFX_|DELVIN_LINKEDIN_|HN_|SINOPAC_|PYPI_|CB_DESK_)' \
+    | grep -vE '_(ACCOUNT_PASS|ACCOUNT_PW)$' | tr '\n' ' '
+}
+
 # scope → 允許帶進子行程的 key(空白分隔)。新增 scope 請一併更新 tests/。
 env_scope_keys() {
   local out=""
@@ -43,6 +57,12 @@ env_scope_keys() {
                         MARKETDATA_API_TOKEN ALPHAVANTAGE_API_KEY FRED_API_KEY
                         NEWS_API_KEY QUOTE_BRIDGE_TOKEN" ;;
       trade) out="$out SINOPAC_API_KEY SINOPAC_SECRET_KEY SINOPAC_SIMULATION" ;;
+      # md = MarketDaily 作業面:保留本業需要的一切,只砍掉「別的事業線」的憑證。
+      # 為什麼先做這一刀而不是一步到位的精確白名單:digest 自癒/站台自修是生產關鍵路徑,
+      # 白名單漏一把就會在半夜壞掉。先砍爆炸半徑(皇海網域帳密、10 個目錄站、LinkedIn、
+      # 下單金鑰、PyPI…)——這些對 MarketDaily 的程式碼路徑零影響,砍了不可能壞。
+      # 清單從 .env 現況推導,新增的同前綴 key 自動一起砍。
+      md)    out="$out $(env_scope_md_keys)" ;;
       all)   out="$out __ALL__" ;;
       *) echo "env_scope: 未知 scope「$s」" >&2; return 2 ;;
     esac
@@ -67,4 +87,21 @@ env_scope() {
     done < <(grep -oE '^[A-Z_][A-Z0-9_]*' "$envf" | sort -u)
   fi
   env "${drop[@]}" "$@"
+}
+
+# env_scope_cmd <scope> —— 印出 `env -u K1 -u K2 …` 前綴。
+# 給「只能收 argv、不能呼叫 shell function」的地方用(例如 cron_run_and_alert 的 "$@")。
+# 與 env_scope 共用 env_scope_keys,不是第二份實作。
+env_scope_cmd() {
+  local allow; allow="$(env_scope_keys "$1")" || return 2
+  case " $allow " in *" __ALL__ "*) echo "env"; return 0 ;; esac
+  local envf="$SCOPED_ENV_REPO/.env" k out="env"
+  if [ -f "$envf" ]; then
+    while read -r k; do
+      [ -n "$k" ] || continue
+      case " $allow " in *" $k "*) continue ;; esac
+      out="$out -u $k"
+    done < <(grep -oE '^[A-Z_][A-Z0-9_]*' "$envf" | sort -u)
+  fi
+  echo "$out"
 }
