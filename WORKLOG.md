@@ -9691,3 +9691,9 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - ⭐ 分類空位實查:Smart Card Connector **10 家**(前三 KLS/CUI/Amphenol)、Memory Module 9、Card Edge 34、PCB Connector 38、B2B 64;皇海一個都不在。分類內已有台廠(CATEK 掛 Nimatsu Electric)⇒不是只收日商。同時這條是 #595(站外檔案為零、答案引擎無第三方佐證)的解法之一。
 - 老闆拍板:寄 A 版、**只做免費暫不付費**⇒依此拿掉「open to a paid plan」改為僅索取報價存參,已寄出(副本 f1@kingconn.com.tw,請對方給自助建檔連結+欄位/圖規+US/JP 是否分開計費)。
 - 交付 Artifact: https://claude.ai/artifact/7gB1bsCJ7zAwh5Gt4dte6f
+
+## 2026-09-16 兩則 IG agent 影片溯源(Mac 視窗發起,winrig 執行)
+- 老闆丟兩則 IG:①@aipagedaily DdU_5bxFCdB「SpaceX 工程師 Lauren Tan 1 小時 agent talk」②@getintoai DdU0Nx6Aev1「Anthropic 免費 37 分鐘 agent 指南」。走 video-watcher(frames+transcript 兩流)。
+- ①**畫面與宣傳的片不是同一場**:27s 舞台片經台詞指紋比對鎖定=**React Conf 2025 Keynote**(YouTube bf3rxc26cC4)34:45,她在宣布 React Compiler 可用,與 AI agent 無關。caption 說的 1 小時 talk 實為 Maven 免費 Lightning Lesson「How Cursor Turned AI Agents Into Better Engineers」(2026-08-12,主持 Colin Matthews),YouTube 三個轉載鏡像皆 59:41(Cmoh-yR-usA / Zc07HI9Ppxk / ONeM6YDmvqA)。caption 的「SpaceX 工程師」與「loops/graphs」皆不符原片(她在 **Cursor**;原片核心是 trust curve/verification skill/pstack/eval/Dune 硬閘)。
+- ②屬實:**「Ship your first Managed Agent」/ Isabella He(Anthropic Applied AI)/ Claude 官方頻道 19HDQ9HppOA / 37:09 / Code w/ Claude London**。IG 那則是「留言 Agent 才給連結」的釣互動,片子本來就公開。
+- 交付 Artifact 給老闆;video-watcher LESSONS 已回寫 5 條(轉發片兩場化、carousel og:description、yt-dlp --download-sections segfault、auto-sub rolling 去重、WSL→Mac 傳圖路徑)。
