@@ -26,8 +26,8 @@
       "unknown_streak": 0
     },
     "openrouter:nemotron-ultra-550b": {
-      "alive": true,
-      "note": "200",
+      "alive": false,
+      "note": "404 模型不存在",
       "unknown_streak": 0
     }
   },
@@ -129,5 +129,5 @@
       "z-ai/glm-5.2:free"
     ]
   },
-  "updated": "2026-09-16 10:10"
+  "updated": "2026-09-17 10:10"
 }
