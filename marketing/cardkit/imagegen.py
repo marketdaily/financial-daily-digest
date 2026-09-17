@@ -33,6 +33,11 @@ CACHE = HERE / "gen_cache"
 LEDGER = HERE / "state" / "imagegen_ledger.json"
 MCP_URL = "https://mcp.higgsfield.ai/mcp"
 MODEL = "nano_banana_2"
+
+# 2026-09-17 老闆親令「stop this entirely」:自動產圖全面停用,貼文一律用固定素材。
+# 寫死在程式裡而非環境變數 —— cron 環境帶不到 env,開關必須不可能被排程自己打開。
+# 要恢復必須刻意改這一行並經老闆同意。
+IMAGEGEN_ENABLED = False
 UA = "marketdaily-cardgen/1.0 (winrig)"
 
 # 每天最多花這麼多 credit 在自動產圖上。8 則新聞 + 1 則命書 ≈ 18cr/天。
@@ -199,7 +204,7 @@ def _structured(resp):
 
 def generate(brand, subject, key, out_path, timeout_s=180, log=print):
     """主體 → 2k 4:5 底圖。任何一步失敗回 None(呼叫端退回固定素材)。"""
-    if os.environ.get("CARDKIT_IMAGEGEN_OFF") == "1":
+    if not IMAGEGEN_ENABLED or os.environ.get("CARDKIT_IMAGEGEN_OFF") == "1":
         return None
     if brand not in RIGS:
         return None

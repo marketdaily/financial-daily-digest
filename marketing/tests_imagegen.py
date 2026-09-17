@@ -136,5 +136,16 @@ _, st2 = styles.render({"id": key, "headline": "測試", "plate_path": plate}, "
 check("render 走完整路徑也拿到 photo 版位", st2["backdrop"] == "photo", st2["id"])
 check("命書也有 photo 版位可用", len(styles.photo_styles("mingshu")) >= 3)
 
+print("\n[⭐⭐ 09-17 老闆令 stop entirely:自動產圖必須停用,且不碰 token/網路]")
+check("IMAGEGEN_ENABLED 寫死為 False", ig.IMAGEGEN_ENABLED is False)
+_orig_token, _touched = ig._token, []
+ig._token = lambda: _touched.append(1) or "x"
+try:
+    _r = ig.generate("marketdaily", "a quiet harbour at dusk with cargo cranes", "t-off", None, log=lambda *a: None)
+finally:
+    ig._token = _orig_token
+check("停用時 generate 回 None", _r is None, _r)
+check("停用時完全沒去拿 token(不可能扣點)", not _touched)
+
 print(f"\n{'❌ 失敗 ' + str(len(FAILS)) + ' 項: ' + ', '.join(FAILS) if FAILS else '✅ 全過'}")
 sys.exit(1 if FAILS else 0)
