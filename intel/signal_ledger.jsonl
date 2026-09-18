@@ -1130,3 +1130,22 @@
 {"date": "2026-09-17", "code": "3372", "source": "leadflow", "level": "red", "signal": "典範(3372) 無消息近漲停+9.7%(量能8.5×,5日+13.9%),疑資訊先行資金|外資+投信近3日僅+429張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-17", "code": "6204", "source": "leadflow", "level": "yellow", "signal": "艾華(6204) 無消息近漲停+9.6%(量能2.5×,5日+12.9%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-09-17", "code": "3264", "source": "leadflow", "level": "red", "signal": "欣銓(3264) 無消息近漲停+9.6%(量能4.1×,5日+1.9%),疑資訊先行資金|外資+投信近3日+5506張", "price_at_signal": null}
+{"date": "2026-09-18", "code": "2344", "source": "institutional", "level": "yellow", "signal": "華邦電(2344):法人 20 日淨賣超 -25,730 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-09-18", "code": "2344", "source": "mops_news", "level": "yellow", "signal": "華邦電(2344) 重訊[2026-09-17]:本公司取得有價證券", "price_at_signal": null}
+{"date": "2026-09-18", "code": "2344", "source": "revenue", "level": "red", "signal": "華邦電(2344):2026/08 營收公告、YoY +289.4%(強勁)、MoM +2.0%", "price_at_signal": null}
+{"date": "2026-09-18", "code": "2344", "source": "tw_rank", "level": "yellow", "signal": "華邦電(2344) 今日成交量排行第6(+5.6%),異常活躍", "price_at_signal": null}
+{"date": "2026-09-18", "code": "2344", "source": "sbl", "level": "red", "signal": "華邦電(2344):機構借券賣出5日遽增36.7%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": null}
+{"date": "2026-09-18", "code": "2344", "source": "holders", "level": "red", "signal": "華邦電(2344):千張大戶持股比週增1.52個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-09-18", "code": "3450", "source": "sbl", "level": "red", "signal": "聯鈞(3450):機構借券賣出5日遽增54.1%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": null}
+{"date": "2026-09-18", "code": "6174", "source": "institutional", "level": "red", "signal": "安碁(6174):外資連 5 日買超(5日淨買 +560 張)", "price_at_signal": null}
+{"date": "2026-09-18", "code": "8996", "source": "tw_rank", "level": "yellow", "signal": "高力(8996) 今日漲幅排行第12(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-09-18", "code": "3437", "source": "leadflow", "level": "red", "signal": "榮創(3437) 無消息近漲停+9.8%(連2根,5日+23.1%),疑資訊先行資金|外資+投信近3日+696張", "price_at_signal": null}
+{"date": "2026-09-18", "code": "6204", "source": "leadflow", "level": "red", "signal": "艾華(6204) 無消息近漲停+10.0%(連2根,5日+23.9%),疑資訊先行資金|外資+投信近3日僅+30張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-18", "code": "6234", "source": "leadflow", "level": "red", "signal": "高僑(6234) 無消息近漲停+10.0%(量能5.9×,5日+15.1%),疑資訊先行資金|外資+投信近3日僅+296張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-18", "code": "1560", "source": "leadflow", "level": "red", "signal": "中砂(1560) 無消息近漲停+9.9%(連2根,5日+13.4%),疑資訊先行資金|外資+投信近3日僅+494張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-18", "code": "3508", "source": "leadflow", "level": "red", "signal": "位速(3508) 無消息近漲停+10.0%(量能3.1×,5日+12.0%),疑資訊先行資金|外資+投信近3日僅+289張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-18", "code": "4923", "source": "leadflow", "level": "red", "signal": "力士(4923) 無消息近漲停+9.9%(量能6.4×,5日+17.6%),疑資訊先行資金|外資+投信近3日+758張", "price_at_signal": null}
+{"date": "2026-09-18", "code": "4951", "source": "leadflow", "level": "red", "signal": "精拓科(4951) 無消息近漲停+9.9%(量能5.3×,5日+9.1%),疑資訊先行資金|外資+投信近3日僅+219張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-18", "code": "6485", "source": "leadflow", "level": "red", "signal": "點序(6485) 無消息近漲停+9.9%(量能9.1×,5日+9.4%),疑資訊先行資金|外資+投信近3日僅+73張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-18", "code": "6432", "source": "leadflow", "level": "yellow", "signal": "今展科(6432) 無消息近漲停+9.9%(量能2.3×,5日+9.7%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-18", "code": "5230", "source": "leadflow", "level": "red", "signal": "雷笛克光學(5230) 無消息近漲停+9.9%(量能19.0×,5日+11.1%),疑資訊先行資金|外資+投信近3日僅+205張,法人未同步=隱形買盤", "price_at_signal": null}
