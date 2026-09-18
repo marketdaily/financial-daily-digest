@@ -1,5 +1,18 @@
 {
- "date": "2026-09-17",
+ "date": "2026-09-18",
  "mode": "rss",
- "by_code": {}
+ "by_code": {
+  "SPY": {
+   "note": "SPY 今日 Reddit 提及 3 則(近17日均 0.4,z=2.6)|例:Not bad this year",
+   "total": 3,
+   "baseline": 0.4,
+   "z": 2.65,
+   "score": 0,
+   "samples": [
+    "Not bad this year",
+    "69k->10k->204k",
+    "OPEX, September Weakness and the Setup Into October"
+   ]
+  }
+ }
 }
