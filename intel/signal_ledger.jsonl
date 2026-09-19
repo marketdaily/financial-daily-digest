@@ -1149,3 +1149,13 @@
 {"date": "2026-09-18", "code": "6485", "source": "leadflow", "level": "red", "signal": "點序(6485) 無消息近漲停+9.9%(量能9.1×,5日+9.4%),疑資訊先行資金|外資+投信近3日僅+73張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-18", "code": "6432", "source": "leadflow", "level": "yellow", "signal": "今展科(6432) 無消息近漲停+9.9%(量能2.3×,5日+9.7%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-09-18", "code": "5230", "source": "leadflow", "level": "red", "signal": "雷笛克光學(5230) 無消息近漲停+9.9%(量能19.0×,5日+11.1%),疑資訊先行資金|外資+投信近3日僅+205張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-19", "code": "1727", "source": "holders", "level": "red", "signal": "中華化(1727):千張大戶持股比週增7.55個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-09-19", "code": "2344", "source": "holders", "level": "yellow", "signal": "華邦電(2344):千張大戶持股比週減-2.08個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-09-19", "code": "2344", "source": "news_tw", "level": "red", "signal": "華邦電(2344) 新聞[mna]:央行不跟進聯準會升息、台積電除息秀、華邦電收購英飛凌記憶體事業 本周大事回顧", "price_at_signal": null}
+{"date": "2026-09-19", "code": "2492", "source": "holders", "level": "yellow", "signal": "華新科(2492):千張大戶持股比週減-3.39個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-09-19", "code": "3209", "source": "mops_news", "level": "yellow", "signal": "全科(3209) 重訊[2026-09-18]:代子公司嵩森科技補發公告向關係人取得使用權資產", "price_at_signal": null}
+{"date": "2026-09-19", "code": "6274", "source": "holders", "level": "red", "signal": "台燿(6274):千張大戶持股比週增1.84個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-09-19", "code": "6669", "source": "holders", "level": "red", "signal": "緯穎(6669):千張大戶持股比週增1.56個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-09-19", "code": "8996", "source": "holders", "level": "red", "signal": "高力(8996):千張大戶持股比週增1.10個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-09-19", "code": "2109", "source": "mops_news", "level": "yellow", "signal": "華豐(2109) 重訊[2026-09-18]:代重要子公司華豐橡膠(蘇州)有限公司公告新增資金貸與華豐橡膠 (中國)有限公司金額達新台幣一千萬元以上且達本公司最近期財", "price_at_signal": null}
+{"date": "2026-09-19", "code": "5381", "source": "mops_news", "level": "yellow", "signal": "光譜(5381) 重訊[2026-09-18]:公告本公司向關係人處分使用權資產(提前終止租約)", "price_at_signal": null}
