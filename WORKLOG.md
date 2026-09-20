@@ -9738,3 +9738,16 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - ⚠️ 閘門全綠卻漏掉①:textnode_overflow 只抽查沒有案例的 kol-line、只量 390px、整頁 overflow:hidden 被當跑馬燈豁免。已改全量服務頁+桌機寬+欄內盒子檢查,正對照抓到舊版 16 頁
 - 未收:#1217 老闆提供的服務主圖授權不明
 - (續)老闆第二輪:「我們」頁游標軌跡改 14 個彩色反光 3D 物件;服務頁字看不到(根因 ajax 換頁不同步 body class,只在點進去時壞)已修 + ajax_nav_gate;首頁手機 Q 置中完整。deploy 1e47b9fa 線上驗證通過
+
+## 2026-09-21 Logo 動態接案線(Threads)企劃 v1
+- 老闆丟 IG Reel CxVA-tUti6e(Joe Hitch / Tesla logo,87K 讚)說「這種貼文我要發到 Threads 接 logo 案」
+- 逐格重拆(10fps/78 格全看):**關鍵發現=那不是輸出檔,是手機對著彎曲螢幕拍的**
+  —— 螢幕弧度/失焦植栽/紅環境光/下半部整片 AE 時間軸(圖表編輯器 6 條錯開鐘形曲線=stagger)
+  ⇒ 「不能看起來像 AI」的正解不是把 AI 調更真,是真的拍。零點數、零片場
+- 三段式節拍:描線 0.1-2.3s → 點火 3.2-4.3s(全片高潮只 1.1s)→ 回冷 → 定版填白 6.4-7.8s;首尾近空場=無縫 loop
+- 87K 的來源排第一的是**選題(借 Tesla 的 audience)**,不是技術
+- 提案:3 支起手式(①QFX 自家 logo ②台灣名牌 spec work ③留言點播)。③ 正好打 Threads「有觸及沒互動」缺口
+- 技術:不必等 AE —— SVG pathLength+stroke-dashoffset+Playwright 逐格+ffmpeg,0 credit,向量級銳利
+- ⚖️ legal-compliance:④商標 🟡 需修改後放行(§36 指示性合理使用難主張+公平法§21 誤認合作);第 2 支不自行放行
+- 交付 Artifact + ~/qfx/campaigns/2026-09_logo_motion_threads/plan_v1.html
+- 未收:#1241 商標拍板 · #1242 Threads 帳號未開 · #1238 WSL 壓縮 · #1235 AE 橋接未驗

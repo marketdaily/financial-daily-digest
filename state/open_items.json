@@ -12229,5 +12229,195 @@
   "opened": "2026-09-16 23:05",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1224,
+  "what": "QFX 30 秒廣告:等老闆拍板片長/花 85-125cr/proof 數字上片",
+  "why": "企劃與 logo 片頭 v1 已交(artifact LgjxNZuAuRAfHBE2JRtqEE),物件鏡頭未生成、廣告未成片、未過 legal-compliance",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-16 23:17",
+  "closed": "2026-09-17 00:01",
+  "note": "併入企劃書 v1 待決事項(artifact CJVt8M5r7asjhp5yaQs61C)"
+ },
+ {
+  "id": 1225,
+  "what": "qfxsolution.com/proof 的 12,689 次健檢實為老闆自營2站(MarketDaily/乾啦),頁面未說明監控對象,§21 誤導風險",
+  "why": "2026-09-16 廣告法務審查時查 storefront.db 發現;另 UTC 截至 09-09 算得 12,839 與頁面數字不一致,截止時區未確認",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-16 23:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1226,
+  "what": "QFX 品牌片投放:adops 缺影片指標(hook/hold/ThruPlay)、CTR 地板會誤殺知名度廣告、低預算全 HOLD(G1-G3)",
+  "why": "05_media_innovation.md 提案階段只寫規格未實作;需在付費上線前補 insights_pull 欄位+profile",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-16 23:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1227,
+  "what": "QFX 品牌影片企劃書 v1 待老闆拍板 7 項(製作核准/關係企業揭露/F3/預算檔/網站改字/audit 對外/本人開戶登記)",
+  "why": "製作可開工但未核准;投放卡公司登記、QFX 零社群帳號、Meta 驗證、音樂授權",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-17 00:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1228,
+  "what": "QFX 實拍:向三家台北器材/製作公司取得書面報價(Alexa Mini/35+電影鏡頭+燈光+棚),手模授權範圍確認",
+  "why": "06_not_ai_and_shoot_costs.md 鏡頭組/Venice/機械臂查無公開價;投資人清單目前是區間估算",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-17 00:43",
+  "closed": "2026-09-17 14:42",
+  "note": "老闆 09-17 改全 AI 製作,不實拍,報價不需要"
+ },
+ {
+  "id": 1229,
+  "what": "QFX 品牌片 luxury_treatment v2（混合實拍＋AI）只是提案：0 生成、0 勘景、std 4k 單價未預檢（Higgsfield MCP 502）",
+  "why": "等老闆核可混合製作與實拍預算、法務審授權條款、MCP 恢復後 get_cost",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-17 00:49",
+  "closed": "2026-09-17 14:39",
+  "note": "被 v3（全 AI、無實拍）取代，改追 #1230"
+ },
+ {
+  "id": 1230,
+  "what": "QFX 品牌片 luxury_treatment v3（31 鏡全 AI）規劃完成、未執行：總額 23,932 cr，第一批代表鏡 5,120 cr，都超過最後紀錄餘額 1,362 cr",
+  "why": "老闆令 DON'T USE MY CREDIT YET；等儲值/方案決定、關係揭露(a/b)、法務確認 AI 廣告揭露條款",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-17 14:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1231,
+  "what": "cardkit 自動產圖停用尚未在生產觀察到實際貼文走固定素材(09-17 16:05 那輪沒有新貼文)",
+  "why": "commit 743e3bef 後帳務無新 NB2 扣點,但也沒有新聞貼文發生,屬未驗證;下一則新聞/命書貼文 log 應出現固定素材且 Higgsfield transactions 無新扣點",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-17 16:05",
+  "closed": "2026-09-20 23:01",
+  "note": "已驗:停用後 3 天(09-17 16:00→09-20 23:00)產圖快取零新檔,先前每天都有;程式 IMAGEGEN_ENABLED=False 在位"
+ },
+ {
+  "id": 1232,
+  "what": "皇海冷信 v3 語氣:98 封跟進信已改寫、暫停中,等老闆看過說 OK 再 retone_v3.py --release",
+  "why": "對外內容送出前要老闆本人確認;另有 8 封寄給 info@/support@ 的公用信箱信還是舊語氣,建議直接停掉",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-17 16:30",
+  "closed": "2026-09-17 18:34",
+  "note": "老闆 09-17 OK;98 封 v3 放行,8 封公用信箱信停寄"
+ },
+ {
+  "id": 1233,
+  "what": "RENEW SALON 官網：老闆 LINE 裡的客戶原始素材(照片/logo原檔/色票/設計師照)尚未取得",
+  "why": "LINE 本機快取加密(.eimg)、Qt UIA 樹無可 invoke 節點，座標點擊違反不搶滑鼠鐵則，只能老闆手動存到 C:\\Users\\USER\\Downloads\\salon\\",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-20 23:21",
+  "closed": "2026-09-21 00:03",
+  "note": "老闆已把 LINE 相簿存到 OneDrive 桌面,15 張已收進 ~/clients/renew-salon/_assets/salon_line/"
+ },
+ {
+  "id": 1234,
+  "what": "RENEW SALON 官網：3 套首屏 mock(Canela白底/Aruba/André)尚未製作，等老闆核可方向",
+  "why": "SOP ⓪-4 提案閘：核可前不動工",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-20 23:21",
+  "closed": "2026-09-20 23:50",
+  "note": "3 套首屏 mock 已完成並發成 Artifact 比稿頁(56UYy9t1L63eSPfUZMDh7H),等老闆選"
+ },
+ {
+  "id": 1235,
+  "what": "Higgsfield for Adobe 橋接從未實際執行過：67 支 ae_* MCP 工具是合約非能力，get_host_status 四欄全 false，且本 session 兩個 Higgsfield MCP 伺服器回 502",
+  "why": "外掛 .msi 還沒裝、AE 還沒買、MCP 連線壞掉；QFX logo motion 服務線的自動化計畫紙上三條腿實證零條腿",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-20 23:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1236,
+  "what": "winrig C: 槽僅剩 27GB，裝不下健康的 AE 環境（需 130-180GB）",
+  "why": "需老闆決定加 NVMe 或清檔；加碟要開機殼需挑他不用電腦的時間",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-20 23:36",
+  "closed": "2026-09-20 23:42",
+  "note": "部分處理:Windows 暫存清出 8.9GB(35.2GB free);WSL 壓縮另開單"
+ },
+ {
+  "id": 1237,
+  "what": "QFX AE 採購文件的 Adobe NT$ 價格全為二手來源（adobe.com/tw 價目表為 JS 動態渲染抓不到）",
+  "why": "需老闆在結帳頁確認實際數字後回報更新；商業版三個數字互相矛盾",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-20 23:36",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1238,
+  "what": "WSL 磁碟壓縮未執行:C 槽仍只剩 35GB,桌面『壓縮WSL磁碟.cmd』要老闆本人跑(會關掉所有 WSL 分頁),預期還回約 54GB",
+  "why": "AE 安裝前置(#1236);Linux 已釋出 32GB 但關在 ext4.vhdx 裡(檔案 296.5GB vs 實際用 242GB)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-20 23:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1239,
+  "what": "RENEW 店內空間圖是 3D 渲染非實拍,能否放官網未確認(要問 Ray:店是否已照圖施工/有無實拍照/原始渲染檔解析度)",
+  "why": "素材剛到手,判定完等老闆問客戶",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-20 23:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1240,
+  "what": "RENEW SALON:店內空間照是 3D 渲染圖不是實拍,若店內現況未如圖不得當實景呈現",
+  "why": "尚未跟店家確認新店是否已完工;內容誠實紀律禁止把非實拍當現場",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 00:03",
+  "closed": "2026-09-21 00:03",
+  "note": "與 #1239 重複(同一件事),保留 #1239"
+ },
+ {
+  "id": 1241,
+  "what": "Logo 動態接案線:第2支是否使用他人註冊商標(星宇等)待老闆拍板",
+  "why": "商標法§36指示性合理使用難主張+公平法§21誤認合作關係;法源未覆蓋,legal-compliance 判 🟡 需修改後放行,不自行放行",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 00:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1242,
+  "what": "QFX 接案用 Threads 帳號尚未開設",
+  "why": "QFX 零社群帳號;@marketdailyhq 是新聞帳號不可混用;帳號沒開整條內容線無法上線",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 00:06",
+  "closed": null,
+  "note": ""
  }
 ]
