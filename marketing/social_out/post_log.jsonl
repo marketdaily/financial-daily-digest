@@ -482,3 +482,4 @@
 {"ts": "2026-09-21T20:01:26.564597", "post": "newsr_20260921_ai_5da500", "results": {"threads": {"ok": true, "detail": "18169917583459687"}}}
 {"ts": "2026-09-21T20:31:00.038880", "post": "reel_daily_2026-09-21_us", "results": {"instagram": {"ok": true, "skipped": false, "detail": "18115963657987076"}, "facebook": {"ok": true, "skipped": false, "detail": "1430135302554045"}, "youtube": {"ok": false, "skipped": true, "detail": "已暫停:Delvin拍板07-27不再用YT(帳號停權不申訴)"}, "tiktok": {"ok": false, "skipped": true, "detail": "已暫停:Delvin拍板07-29退役.勿再接勿再提setup"}}}
 {"ts": "2026-09-21T21:41:30.878706", "post": "newsr_20260921_macro_88760e", "results": {"threads": {"ok": true, "detail": "18071584700737426"}}}
+{"ts": "2026-09-21T22:32:28.178622", "post": "roundup_2026-09-21", "results": {"threads": {"ok": true, "detail": {"posted": ["18364872301246700", "18091386935653997", "17882363718652770", "18127845817766161"], "root": "18364872301246700"}}}}
