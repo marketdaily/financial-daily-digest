@@ -9037,8 +9037,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-09 01:28",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-21 12:21",
+  "note": "09-21 王董口頭同意(Delvin 現場轉達);/work/connector-maker/ 中英標題、內文、首頁/work/llms/disclaimer 全數具名上線,線上實測殘句 0;原 /work/kingconn/ 路徑已隨改版不存在"
  },
  {
   "id": 905,
@@ -9157,8 +9157,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-09 09:44",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-21 11:00",
+  "note": "王董定案財務數字不揭露;09-14 已改填可查證規模指標並寄出"
  },
  {
   "id": 917,
@@ -10037,8 +10037,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-14 10:58",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-21 11:01",
+  "note": "LCSC 09-17 回信未再要財務數字,改問庫存地與大陸窗口;老闆 09-21 定案財務不揭露、不走 NDA"
  },
  {
   "id": 1005,
@@ -10247,8 +10247,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-14 13:34",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-21 11:00",
+  "note": "09-16 ERS 兩案皆回 removed;09-20/21 ers_watch 實測 Unlisted+DNSBL 全乾淨"
  },
  {
   "id": 1026,
@@ -10977,8 +10977,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-15 01:42",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-21 11:00",
+  "note": "同 #1025,已解列,ers_watch 每日 08:15 綠"
  },
  {
   "id": 1099,
@@ -11377,8 +11377,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-15 18:06",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-21 11:00",
+  "note": "09-16 王董裁示不見,婉拒信已寄(kingconn 4de2c869)"
  },
  {
   "id": 1139,
@@ -11817,8 +11817,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-16 00:07",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-21 11:00",
+  "note": "同 #1025,已解列,無需再追 MySupport"
  },
  {
   "id": 1183,
@@ -12347,8 +12347,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-20 23:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-21 21:09",
+  "note": "09-21 21:09 實證:get_host_status aeft=true;ae_create_composition+ae_add_text_layer+ae_export_frame 全程實跑,算出的畫面回讀確認(BRIDGE OK)。外掛 higgsfield-cep-1.0.55.msi 經 elev.py 靜默裝"
  },
  {
   "id": 1236,
@@ -12367,8 +12367,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-20 23:36",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-21 20:56",
+  "note": "實際結帳價:AE 單一應用程式個人版 年約月繳 NT$819/月含稅(Adobe 確認信 09-21)"
  },
  {
   "id": 1238,
@@ -12377,8 +12377,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-20 23:42",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-21 20:49",
+  "note": "09-21 20:38 經 #1262 重跑完成,C 槽剩 116GB"
  },
  {
   "id": 1239,
@@ -12417,6 +12417,216 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-21 00:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1243,
+  "what": "QFX 投放四前提全部等 Delvin 本人動手:公司登記/六平台開帳號/Meta Portfolio+驗證/配樂付款",
+  "why": "四件的最後一鍵都需要本人憑證、手機驗證、FB 本人登入或信用卡,我無法代按;執行包已備妥 ~/qfx/ops/LAUNCH_PREREQS.md",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-21 00:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1244,
+  "what": "adops insights_pull 沒抓影片指標(hook/hold/ThruPlay)+optimizer ctr_floor_pct 0.5 會把 ThruPlay 廣告誤判 PAUSE",
+  "why": "我造成的缺口;帳戶還沒開所以還沒修,但第一筆廣告費花下去之前必須修完,否則投放當天量不到 hook rate 也會收到假的 PAUSE 建議",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-21 00:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1245,
+  "what": "IG/Threads/FB/TikTok 的 qfxsolution handle 可用性無頭查不到(正負對照無鑑別力),尚未確認",
+  "why": "四平台對無頭請求一律回登入牆;不打算為此重建 stealth 瀏覽器——老闆在註冊頁打一次就知道,成本更低",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 00:16",
+  "closed": "2026-09-21 01:21",
+  "note": "IG handle qfxsolution 實測可用(綠勾);FB/IG/Threads 已不靠無頭探測,改實際註冊驗證"
+ },
+ {
+  "id": 1246,
+  "what": "RENEW SALON 官網 preview 已上線但未經店家確認：設計師名字與臉的對應、空間渲染圖能否當實景、營業時間公休日",
+  "why": "資料只能由店家提供，preview 先給老闆看",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 00:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1247,
+  "what": "RENEW SALON:Ian 的 IG 照片未抓到,目前用形象照名片卡當人像",
+  "why": "IG 抓取工作到 renew__ian 時未完成",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-21 00:34",
+  "closed": "2026-09-21 09:42",
+  "note": "IAN 的 IG 作品已抓並接上(6張);各設計師作品集改為自動從 IG 挑圖"
+ },
+ {
+  "id": 1248,
+  "what": "QFX 社群:LinkedIn 公司頁已自動建立完成(linkedin.com/company/qfxsolution,200);IG 卡在 Meta 扣住確認碼;FB/YT 卡在密碼 App-Bound 加密",
+  "why": "LinkedIn 有明文帳密+email OTP 退路故能全自動;IG 全表單可自動化但送出後 Meta 不發確認信到 hi@(反濫用);FB/YT/TikTok 需他本人密碼(v20 加密離線解不了)或手機簡訊",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 01:21",
+  "closed": "2026-09-21 11:22",
+  "note": "推翻上一則:IG 換 plus 別名(delvin.12345678+qfx@gmail)直讀 OTP 成功,@qfxsolution 已建立+登入+bio;Threads 存取已啟用;LinkedIn 公司頁已建。剩 FB/YT/TikTok(密碼加密+手機牆)與 IG 專業帳號轉換(widget 纏鬥,帳號可用)"
+ },
+ {
+  "id": 1249,
+  "what": "RENEW:記事本七張設計師封面照只有螢幕解析度,需老闆從 LINE 下載原圖",
+  "why": "比對器確認 IG 上沒有同一張(最佳相似度0.47/門檻0.72),只能從 LINE 取得",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 09:42",
+  "closed": "2026-09-21 10:24",
+  "note": "改為只需老闆重開記事本面板即可(見 #1251),不必逐張下載"
+ },
+ {
+  "id": 1250,
+  "what": "RENEW:Ace 的 IG 幾乎都是 Reels,作品集只有 1 張",
+  "why": "抓取只取得到貼文靜圖",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-21 09:42",
+  "closed": "2026-09-21 10:24",
+  "note": "作品集已依老闆指示全部停用,只放封面照,此項不再適用"
+ },
+ {
+  "id": 1251,
+  "what": "RENEW:記事本面板需老闆重開,我才能補齊 Eva/IAN/Ray/Diane 四張完整封面",
+  "why": "捲動擷取時斷在那幾張,面板已關閉無法重拍",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 10:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1252,
+  "what": "RENEW:記事本裡的「助理」未放上站(無姓名,share.google 連結已失效)",
+  "why": "需老闆提供姓名與職稱才能上線",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 10:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1253,
+  "what": "QFX 網站重建頁 30 套模板選擇器:18 套示範作品未完成(照片產線+守衛已建,打樣 2 套待老闆看質感)",
+  "why": "老闆 09-21 指令 all 30 for people to choose;線上仍只有 12 套且文案已寫 30=說到做不到",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-21 10:43",
+  "closed": "2026-09-21 12:26",
+  "note": "30/30 已部署上線(qfx-preview 58dcae53 = Production/main/7cf73d0),線上實查:EN+ZH 各 30 張卡、文案 Thirty/30 個、demos.js 200、篩選器閘門對 https://qfxsolution.com 實跑 PASS"
+ },
+ {
+  "id": 1254,
+  "what": "Higgsfield 憑證死了:MCP 502 + 直連 token 401 Unauthorized(~/qfx/.env)",
+  "why": "需要 Delvin 本人重新授權;本次改走本機 ComfyUI 繞過,但 QFX 影片線仍依賴它",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 10:43",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1255,
+  "what": "LCSC 09-17 回信問:庫存在台灣還是大陸?能否推薦大陸聯絡人?——4 天沒回,待王董給庫存地+蘇州廠窗口後回覆",
+  "why": "答案只有王董知道(蘇州廠窗口姓名/電話/email)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 11:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1256,
+  "what": "QFX IG 轉專業帳號未完成(Select a category widget 混淆難點,帳號本身可用);FB粉專/YouTube/TikTok 仍需本人(FB無profile+手機/Google密碼App-Bound/TikTok手機)",
+  "why": "IG @qfxsolution 已 live 可發文,專業帳號只影響 bio 網站連結+洞察+接廣告帳戶,非阻斷;其餘三站是加密與手機帶外驗證的真牆",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-21 11:22",
+  "closed": "2026-09-21 15:42",
+  "note": "IG 已成功轉商業/專業帳號(狀態機逐頁+JS 點 category 列破解);bio 加了 qfxsolution.com。FB/YT/TikTok 徹底驗證是真牆(Meta Account 只有 1 profile 要加 FB=既有登入或手機;YT/TikTok 同),存進 memory capability_social_account_autocreate"
+ },
+ {
+  "id": 1257,
+  "what": "RENEW 首頁 Est. 2023 創立年份未向客戶確認",
+  "why": "老闆口述「應該是2023」,上線前需跟 Ray 對",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 11:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1258,
+  "what": "QFX 皇海案例具名目前只有王董口頭同意(Delvin 09-21 現場轉達),建議補一則書面(email/LINE 一句「同意 QFX 案例頁具名皇海」)",
+  "why": "legal 但書:對外具名+公開客戶 GSC/引用數據,書面紀錄才擋得住日後爭議",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 12:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1259,
+  "what": "RENEW 官網待 Ray 確認後購買網域並接上 CF Pages",
+  "why": "老闆 09-21:Ray 滿意後才買網域;預覽站 renew-preview.pages.dev",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 14:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1260,
+  "what": "乾啦 iOS 送審卡 6 天:API 重新提交被 409 擋(Version is not ready to be submitted yet)",
+  "why": "待老闆看 ASC 網頁有無「Resubmit to App Review」鈕;或拍板撤單重送",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 15:09",
+  "closed": "2026-09-21 15:12",
+  "note": "09-21 撤舊單重送,新單 a4d04cc5 WAITING_FOR_REVIEW;asc_watch 改盯新單"
+ },
+ {
+  "id": 1261,
+  "what": "QFX FB粉專/YouTube/TikTok 需老闆手機各 2 分鐘(FB:Meta Account 加 profile 要既有FB或手機;YT:Google密碼App-Bound;TikTok:無憑證+手機)",
+  "why": "已徹底驗證三站都是加密+帶外驗證真牆,非自動化可破;建帳號後交我用既有 Graph/工具接手發文",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 15:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1262,
+  "what": "WSL vhdx 壓縮未完成:diskpart 靜默失敗(排程未提權),vhdx 仍 296.5GB",
+  "why": "需以系統管理員權限重跑且會關掉 WSL,等老闆決定時段",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 20:29",
+  "closed": "2026-09-21 20:49",
+  "note": "20:38 壓縮成功:vhdx 296.5→264.8 GiB(實量檔案大小),C 槽剩餘 80→116 GiB,WSL 已自動重啟、cron running、crontab 210 行"
+ },
+ {
+  "id": 1263,
+  "what": "AE 買成年約月繳 NT$819/月(訂單 AD05046000033CTW,09-21 20:55),14 天內取消全額退款,期限 2026-10-05",
+  "why": "非建議的月繳無約;若橋接驗不通或服務線不做,10-05 前要取消,過期取消要付剩餘合約 50%",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-21 20:56",
   "closed": null,
   "note": ""
  }

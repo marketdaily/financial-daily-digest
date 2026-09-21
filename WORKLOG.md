@@ -9801,3 +9801,7 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-21 20:31 WSL 壓縮第二次:第一次 diskpart 因排程未提權**靜默失敗**(vhdx 296.5 仍 296.5,log 的 RECLAIMED 31.8GB 是 WSL 關機暫釋放的假數字)。
   修法:腳本改量 vhdx 本身大小非 C 槽剩餘;先驗 IsInRole(544) 不過就 ABORT;加 fstrim、等 vhdx 解鎖、diskpart 輸出落 log;遇 VR/遊戲在跑就不動。
   經 elev.py(paramiko 密碼 SSH=完整 token)註冊 RunLevel Highest 一次性工作 20:33 起跑。結果看 C:\Users\USER\wsl-compact.log。open #1262。
+- 09-21 21:10 **AE 橋接首次實證通過(#1235 收)**:老闆下單 AE 單一應用程式(實際為**年約月繳 NT$819/月**,非建議的無約月繳;14 天全額退款期限 10-05=#1263)。
+  CC 用 winget 靜默裝;**AE 本體裝不了無頭**(個人版 CC 無 CLI、無 creativecloud:// 協定)⇒ 老闆點一次「安裝」。Media Encoder 隨 AE 自動附帶(採購文件 ❔ 已解)。
+  Higgsfield 外掛 = `hf-adobe-updates.higgsfield.ai/adobe/higgsfield-cep-1.0.55.msi`(頁面是 JS 按鈕,headless 點 Windows 截 download 拿到),簽章 Higgsfield Inc. Valid,經 elev.py `msiexec /qn` 靜默裝進 x86 CEP\extensions。
+  坑:①面板剛開 get_host_status 仍全 false——bridgehost log 顯示「no token yet」退避重試,約 60s 後才 connected;**第一次 false 不是壞,看 %TEMP%\CEPHtmlEngine12-AEFT-*-bridge.log** ②export_frame 的 PNG 帶 alpha,comp 背景色不會出現 ③fontFamily 預設 Helvetica 在 winrig 沒裝,會回退成別的字型——正式作品要指定已安裝字型。
