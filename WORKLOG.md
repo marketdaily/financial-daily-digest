@@ -9755,3 +9755,41 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
   認錯不辯,已從提案移除該段,改成誠實的卡點鏈(硬碟→AE→第1天先驗橋接)。
   記憶 feedback_no_cheap_standin:工藝型交付物不做過渡版,工具沒到位就去解卡點不要製造進度感。
   老闆選擇自己晚點跑桌面「壓縮WSL磁碟.cmd」⇒ 這條線在他跑完前完全停住。
+
+## 2026-09-21 QFX 網站重建頁 30 套模板選擇器(進行中)
+- 老闆令:「there is 30 template from clapat, i need all to be on the site rebuild page, for people to choose」
+- 現況缺口:線上服務頁文案寫「library of **30** premium design templates」但只放 12 套示範作品 ⇒ 說 30 給 12。要補 18 套。
+- 拍板(AskUserQuestion):①照片走**本機 ComfyUI 0 元**(Higgsfield 已死,見下) ②版面=**服務頁加篩選器,30 張同頁**(依產業/風格篩)
+- ⚠️ **Higgsfield 兩條路都死**:MCP 502、直連 token 401 Unauthorized(`~/qfx/.env`)。open #1254,要老闆本人重新授權。
+- 產線 `~/qfx/_work/demos30/`:`gen_photos.py`(ComfyUI t2i)→`build_demo.py`(換照片/logo/文字)→`shoot.py`(1440×900+390×844)→接 `scripts/service_pages.py` 的 `DEMOS`
+- ⭐⭐ **Z-Image-Turbo 會把假文字畫進照片,而且 09-16 的 Higgsfield prompt 公式是幫兇**:公式開頭「Photograph for the **website** of…」+ 結尾列舉「No text, no lettering, no logos, no signage」——前者叫模型畫網頁、後者把 text/logo/signage 這些詞餵進去。實測 16 張有 **8 張**被畫上亂碼字(假導覽列/假招牌),其中一張字面是 `allcunts`。**我肉眼看預覽圖時完全沒看到**(縮圖看不出來)。
+- ⇒ 建 `guard_text.py`(cv2 形態學文字行偵測)接進生成迴圈,有字自動換 seed 重生,不靠人看。
+  - 校準過程本身有教訓:第一版把字母連通塊算在**梯度二值圖**上,相鄰字母邊緣黏成一塊 ⇒ glyphs=0 ⇒ **已知的壞照片被判綠**(band=0)。正解=在**原灰階裁切**上 Otsu 分墨/紙再數字母。判準要對著災難(漏放行)寫。
+- 其他四個實作坑(已修):①文字也住在 `data-title`/`data-subtitle` 屬性裡,只換 text node 會漏掉整個 slider 標題 ②模板附**第三方客戶 logo**(`client-*.png`)絕不可上線 ③`5.gif` 動圖 tile 不在 jpg/png 白名單內被漏換 ④logo 換字要看長寬比:方形槽換單字母 monogram、寬槽才換 wordmark;顏色看檔名 `white|light`
+- 未收:open #1253(18 套未完成)、#1254(Higgsfield 憑證)
+
+## 2026-09-21(續) QFX 30 套版型選擇器 —— 18 套做完、篩選器上線、閘門全綠(尚未部署)
+- 老闆「繼續」⇒ 打樣過關後直接批完剩下 16 套。**30/30 示範作品全數就位**,qfx 7cf73d0。
+- 篩選器:10 產業 × 7 風格雙語 pill,狀態全從 DOM 讀 + 監聽掛 document ⇒ ajax 換頁零 re-init
+  (CSP `script-src 'self'` 不能用 inline script)。閘門 `scripts/demos_filter_gate.py`
+  **點下去數真的看得見幾張卡,而且走一次 ajax 再點一次** —— 只驗「有沒有渲染出 pill」那種檢查,
+  在篩選器整個死掉時照樣報綠。
+- 閘門:verify_site 24 頁 / check_parity 26 對 EN-ZH / anonymity_gate 230 張 OCR /
+  textnode_overflow / ajax_nav_gate / check_devices 34/34 / demos_filter_gate 30 張卡 —— 全 PASS。
+- ⭐⭐ **生成照片被畫上亂碼字,16 張中 8 張,我看縮圖沒看出來**(其一字面 `allcunts`)。
+  幫兇是 09-16 的 Higgsfield prompt 公式(開頭 for the **website** of + 結尾列舉 text/logo/signage)。
+  新公式 A/B 實測 舊 2/6 → 新 0/6;`guard_text.py` 接進生成迴圈有字換 seed 重生。
+  ⚠️ 守衛第一版在**梯度二值圖**上數字母,相鄰字母黏成一塊 ⇒ glyphs 恆 0 ⇒ **已知的壞照片被判綠**;
+  正解是在原灰階裁切上 Otsu 分墨紙再數。判準要對著「漏放行」寫。
+- ⭐⭐ **模板裡藏著第三方的東西**:montoya 內嵌 `<div id=awwwards>` 獎項標章(連 awwwards.com)、
+  newave 有掛 Google/L'Oreal/Lancome/Greenpeace 名字的假見證、多套附真客戶 logo `client-*.png`。
+  全部拆掉並建成 `strip_vendor` + `leaks()` 例行檢查(每次組裝都印外洩數)。
+- 其他坑見 `~/qfx/scripts/demos30/README.md`(按住一秒的入場閘/圖位依 HTML 順序指派/深色版型要低光照片…)
+- **未部署**:等老闆點頭再 `npx wrangler pages deploy`。open #1253 仍開著。
+- **已部署並線上驗證**:`qfx-preview 58dcae53` = Production / main / 來源 commit `7cf73d0`
+  (用 `pages deployment list` 回查,不信 Success 綠字)。線上實查:EN+ZH 各 30 張卡、
+  文案 Thirty / 30 個示範網站、`/js/demos.js` 200、新圖 200。open #1253 已收。
+- ⚠️ **我自己差點交出假的線上驗證**:`demos_filter_gate.py` 沒有 argparse,多餘 argv 被靜默
+  吃掉 ⇒ `--base https://qfxsolution.com` 仍起本機伺服器測本地 build,**而且照樣印 PASS**。
+  補了 --base 並先印 `gate target:` 才是真的打線上(0c55925)。一個永遠到不了線上的線上檢查,
+  跟「守衛沒在跑卻報綠」同一族。
