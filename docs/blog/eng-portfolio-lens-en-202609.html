@@ -6,10 +6,10 @@
 <link rel="icon" type="image/svg+xml" href="/logo-icon.svg">
 <link rel="apple-touch-icon" href="/logo-icon.svg">
 <title>The data isolation incident where our own default watchlist leaked into “your holdings” | MarketDaily</title>
-<meta name="description" content="The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects">
+<meta name="description" content="The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects a single check, portfolio_lens_foreign_ticker, because it is three things at once">
 <meta name="facebook-domain-verification" content="ylg7ynhyj5ywyoierjgo7mchqdvbek" />
 <meta property="og:title" content="The data isolation incident where our own default watchlist leaked into “your holdings”">
-<meta property="og:description" content="The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects">
+<meta property="og:description" content="The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects a single check, portfolio_lens_foreign_ticker, because it is three things at once">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://marketdaily.ai/blog/eng-portfolio-lens-en-202609">
 <meta property="og:site_name" content="MarketDaily">
@@ -18,12 +18,12 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="The data isolation incident where our own default watchlist leaked into “your holdings”">
-<meta name="twitter:description" content="The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects">
+<meta name="twitter:description" content="The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects a single check, portfolio_lens_foreign_ticker, because it is three things at once">
 <meta name="twitter:image" content="https://marketdaily.ai/blog/og/eng-portfolio-lens-en-202609.png">
 <link rel="canonical" href="https://marketdaily.ai/blog/eng-portfolio-lens-en-202609">
 <link rel="alternate" hreflang="zh-Hant" href="https://marketdaily.ai/blog/eng-portfolio-lens-202609">
 <link rel="alternate" hreflang="en" href="https://marketdaily.ai/blog/eng-portfolio-lens-en-202609">
-<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "The data isolation incident where our own default watchlist leaked into “your holdings”", "description": "The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects", "datePublished": "2026-08-12T10:00:00+08:00", "dateModified": "2026-08-12", "author": {"@type": "Organization", "name": "MarketDaily"}, "publisher": {"@type": "Organization", "name": "MarketDaily", "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://marketdaily.ai/blog/eng-portfolio-lens-en-202609"}, "image": ["https://marketdaily.ai/blog/og/eng-portfolio-lens-en-202609.png"]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://marketdaily.ai/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://marketdaily.ai/blog/"}, {"@type": "ListItem", "position": 3, "name": "The data isolation incident where our own default watchlist leaked into “your holdings”"}]}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Article", "headline": "The data isolation incident where our own default watchlist leaked into “your holdings”", "description": "The first two posts covered the council + judge multi-model arbitration layer and the taxonomy of the 30 deterministic audit checks. This one dissects a single check, portfolio_lens_foreign_ticker, because it is three things at once", "datePublished": "2026-08-12T10:00:00+08:00", "dateModified": "2026-08-12", "author": {"@type": "Organization", "name": "MarketDaily"}, "publisher": {"@type": "Organization", "name": "MarketDaily", "logo": {"@type": "ImageObject", "url": "https://marketdaily.ai/logo-icon.svg"}}, "mainEntityOfPage": {"@type": "WebPage", "@id": "https://marketdaily.ai/blog/eng-portfolio-lens-en-202609"}, "image": ["https://marketdaily.ai/blog/og/eng-portfolio-lens-en-202609.png"]}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://marketdaily.ai/"}, {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://marketdaily.ai/blog/"}, {"@type": "ListItem", "position": 3, "name": "The data isolation incident where our own default watchlist leaked into “your holdings”"}]}]}</script>
 <style>
 :root { color-scheme: dark; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -204,6 +204,16 @@ sed -n &#x27;/def _is_real_ticker/,/is_known/p&#x27; digest_audit.py
 # how old the allowlist is (nothing measured this before 2026-09-16)
 stat -c &#x27;%y  %n&#x27; scripts/.tw_names_cache.json</code></pre>
 
+    <div style="margin:32px 0 0;padding:20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:14px;">
+    <p style="font-size:13px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:0.5px;margin:0 0 10px;">相關文章</p>
+    <ul style="margin:0;padding:0;list-style:none;">
+    <li style="margin:8px 0;"><a href="eng-portfolio-lens-202609" style="color:#a5b4fc;text-decoration:none;font-weight:600;">資料隔離事故報告:公版觀察清單怎麼混進「你的持股」</a></li>
+    <li style="margin:8px 0;"><a href="eng-llm-council-judge-en-202608" style="color:#a5b4fc;text-decoration:none;font-weight:600;">I run a 9-model LLM council with a judge to write a daily financial newsletter. Here's what actually breaks.</a></li>
+    <li style="margin:8px 0;"><a href="eng-llm-council-judge-202608" style="color:#a5b4fc;text-decoration:none;font-weight:600;">LLM council + judge:一個天天在生產環境寄信的多模型仲裁系統(75 天實錄)</a></li>
+    <li style="margin:8px 0;"><a href="eng-audit-taxonomy-en-202608" style="color:#a5b4fc;text-decoration:none;font-weight:600;">The 31st check didn&#x27;t exist: a failure-mode taxonomy of auditing LLM output in production</a></li>
+    <li style="margin:8px 0;"><a href="eng-audit-taxonomy-202608" style="color:#a5b4fc;text-decoration:none;font-weight:600;">Audit 失效模式分類學:31 項檢查,每項都是一次用戶生氣換來的</a></li>
+    </ul>
+  </div>
   <div class="cta">
     <p style="font-size:18px;color:#fff;font-weight:800;margin:0;">MarketDaily sends its daily digest through this exact audit gate, morning and evening — currently free for a limited time, and early-bird subscribers keep free access permanently if paid plans ever return</p>
     <!-- md-inline-subscribe:start --><form id="mdsub-form" style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;align-items:center;margin:0 0 10px;"><input id="mdsub-email" type="email" autocomplete="email" inputmode="email" placeholder="your@email.com" aria-label="Email" style="width:100%;max-width:280px;box-sizing:border-box;padding:13px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.06);color:#fff;font-size:15px;outline:none;"><button id="mdsub-btn" type="submit" style="padding:13px 26px;border:0;border-radius:10px;background:linear-gradient(135deg,#6366f1,#a855f7);color:#fff;font-size:15px;font-weight:800;cursor:pointer;white-space:nowrap;">Subscribe free →</button></form><p id="mdsub-msg" role="status" aria-live="polite" style="display:none;font-size:13px;line-height:1.7;margin:0 0 6px;"></p><noscript><a href="https://marketdaily.ai/?utm_source=blog&utm_medium=eng_article&utm_campaign=audit_taxonomy#email-step">Subscribe at marketdaily.ai →</a></noscript><script>
