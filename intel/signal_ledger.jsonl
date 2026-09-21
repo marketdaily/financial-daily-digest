@@ -1160,3 +1160,18 @@
 {"date": "2026-09-19", "code": "2109", "source": "mops_news", "level": "yellow", "signal": "華豐(2109) 重訊[2026-09-18]:代重要子公司華豐橡膠(蘇州)有限公司公告新增資金貸與華豐橡膠 (中國)有限公司金額達新台幣一千萬元以上且達本公司最近期財", "price_at_signal": null}
 {"date": "2026-09-19", "code": "5381", "source": "mops_news", "level": "yellow", "signal": "光譜(5381) 重訊[2026-09-18]:公告本公司向關係人處分使用權資產(提前終止租約)", "price_at_signal": null}
 {"date": "2026-09-20", "code": "3141", "source": "holders", "level": "yellow", "signal": "晶宏(3141):千張大戶持股比週減-2.08個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-09-21", "code": "1569", "source": "leadflow", "level": "red", "signal": "濱川(1569) 無消息近漲停+9.9%(量能13.2×,5日+24.5%),疑資訊先行資金|外資+投信近3日+2040張", "price_at_signal": null}
+{"date": "2026-09-21", "code": "2344", "source": "institutional", "level": "red", "signal": "華邦電(2344):投信連 3 日賣超(棄養警訊,20日淨賣 -33,974 張)", "price_at_signal": null}
+{"date": "2026-09-21", "code": "4542", "source": "tw_rank", "level": "yellow", "signal": "科嶠(4542) 今日漲幅排行第3(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-09-21", "code": "8111", "source": "tw_rank", "level": "red", "signal": "立碁(8111) 量能竄榜:今日量榜第20(近10日未進過top50,+3.3%,35,250張)", "price_at_signal": null}
+{"date": "2026-09-21", "code": "3094", "source": "leadflow", "level": "red", "signal": "聯傑(3094) 無消息近漲停+9.9%(連2根,5日+29.1%),疑資訊先行資金|外資+投信近3日+4366張", "price_at_signal": null}
+{"date": "2026-09-21", "code": "3605", "source": "leadflow", "level": "red", "signal": "宏致(3605) 無消息近漲停+9.7%(連3根,5日+33.6%),疑資訊先行資金|外資+投信近3日+2370張", "price_at_signal": null}
+{"date": "2026-09-21", "code": "6508", "source": "leadflow", "level": "red", "signal": "惠光(6508) 無消息近漲停+10.0%(量能64.4×,5日+16.6%),疑資訊先行資金|外資+投信近3日僅+62張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-21", "code": "8110", "source": "leadflow", "level": "red", "signal": "華東(8110) 無消息近漲停+9.9%(連2根,5日+25.5%),疑資訊先行資金|外資+投信近3日僅-2503張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-21", "code": "4903", "source": "leadflow", "level": "red", "signal": "聯光通(4903) 無消息近漲停+10.0%(連2根,5日+18.8%),疑資訊先行資金|外資+投信近3日+1064張", "price_at_signal": null}
+{"date": "2026-09-21", "code": "6425", "source": "leadflow", "level": "red", "signal": "易發(6425) 無消息近漲停+10.0%(量能10.9×,5日+22.7%),疑資訊先行資金|外資+投信近3日僅+485張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-21", "code": "4183", "source": "leadflow", "level": "red", "signal": "福永生技(4183) 無消息近漲停+10.0%(量能30.7×,5日+6.3%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-21", "code": "6872", "source": "leadflow", "level": "yellow", "signal": "浩宇生醫(6872) 無消息近漲停+10.0%(量能1.5×,5日+3.1%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-21", "code": "5489", "source": "leadflow", "level": "red", "signal": "彩富(5489) 無消息近漲停+9.9%(量能7.4×,5日+12.4%),疑資訊先行資金|外資+投信近3日僅+22張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-21", "code": "4174", "source": "leadflow", "level": "yellow", "signal": "浩鼎(4174) 無消息近漲停+9.9%(量能2.9×,5日+19.1%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-21", "code": "5013", "source": "leadflow", "level": "red", "signal": "強新(5013) 無消息近漲停+9.9%(量能8.7×,5日+10.7%),疑資訊先行資金|外資+投信近3日僅+35張,法人未同步=隱形買盤", "price_at_signal": null}
