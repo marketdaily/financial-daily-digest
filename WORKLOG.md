@@ -9793,3 +9793,11 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
   吃掉 ⇒ `--base https://qfxsolution.com` 仍起本機伺服器測本地 build,**而且照樣印 PASS**。
   補了 --base 並先印 `gate target:` 才是真的打線上(0c55925)。一個永遠到不了線上的線上檢查,
   跟「守衛沒在跑卻報綠」同一族。
+- 09-21 20:16 WSL 壓縮腳本從頭到尾沒跑過的根因:**PowerShell 5.1 讀無 BOM 的 UTF-8 會當 Big5**,
+  我寫在腳本裡的中文註解/訊息被打亂 → 字串缺結束引號 → 整支語法錯誤 → 雙擊後視窗閃一下就死。
+  老闆昨天按的那支(wsl-compact.ps1 line 26)與我今天背景丟的那支(line 34)都是同一個 bug。
+  **教訓:交給老闆按的 Windows 腳本,ASCII-only,且交付前必跑 Parser::ParseFile 驗過。**
+  修法:純 ASCII 重寫 + schtasks 一次性工作(與 WSL 脫鉤,WSL 被關也不影響) + 全程寫 C:\Users\USER\wsl-compact.log
+- 09-21 20:31 WSL 壓縮第二次:第一次 diskpart 因排程未提權**靜默失敗**(vhdx 296.5 仍 296.5,log 的 RECLAIMED 31.8GB 是 WSL 關機暫釋放的假數字)。
+  修法:腳本改量 vhdx 本身大小非 C 槽剩餘;先驗 IsInRole(544) 不過就 ABORT;加 fstrim、等 vhdx 解鎖、diskpart 輸出落 log;遇 VR/遊戲在跑就不動。
+  經 elev.py(paramiko 密碼 SSH=完整 token)註冊 RunLevel Highest 一次性工作 20:33 起跑。結果看 C:\Users\USER\wsl-compact.log。open #1262。
