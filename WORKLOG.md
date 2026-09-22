@@ -9812,3 +9812,5 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
   brand-ad-production/website-design-team + CATALOG/GOVERNANCE(skills 7af0b44, qfx 640f6fc)。QFX 概念「只下一刀」
   規則 34°=標誌 x-tail 實測 34.06°;RENEW 提案稿「重新開拍」(renew a0967ec,未套用)。LR 與我們無關係(老闆更正)。
 - 09-22 18:04 學習收尾:新 skill blender-logo-motion(四技法實跑+1080p 成品 ~/qfx/brand/motion/lab_2026-09-22/ex1_1080.mp4)、higgsfield 3.34.0 平台同步(子代理寫回中)、brand-ad-production §2.5/§3/§3.5 補 AE house 數字與平台取捨、CATALOG/GOVERNANCE/CLAUDE.md 強制路徑登記、記憶 capability_blender_higgsfield_learning_20260922。研究 ~/qfx/research/learn_2026-09-22/(六路)。
+- 09-22 18:47 老闆選 ①+② 合體做 QFX 正式 sting＋CHOSEN 同法（「impress me」）。sting_combo/（combo_lib+sting_qfx+mix_sting+finish.sh）、chosen/logo_sting_v6_combo/（light 主候選、dark 備選）。1080p 分段算圖中。老闆令跨 session 交流：已與 d3/05/cc/6a 互換坑與方法，記憶已更新。
+- 09-22 19:06 QFX_sting_v1.mp4 定版(混音依老闆新口味重做:鼓點+點擊+sub,禁 whoosh/旋律);CHOSEN light v1 定版、dark 算圖中;storefront autosave 吞了 76 張預覽 PNG 已 rm --cached+gitignore。

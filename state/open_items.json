@@ -12567,8 +12567,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-21 11:28",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-22 18:41",
+  "note": "Ray 09-22 親寫文案:2024 年創立,已改 Est. 2024"
  },
  {
   "id": 1258,
@@ -12863,7 +12863,7 @@
  {
   "id": 1287,
   "what": "QFX 品牌概念「只下一刀」(34°規則)與 RENEW 概念「重新開拍」待老闆拍板",
-  "why": "概念稿剛寫好,老闆還沒看;RENEW 版未套用到 renew-preview,也還沒給 Ray 看",
+  "why": "概念稿剛寫好,老闆還沒看;RENEW 版未套用到 renew-preview,也還沒給 Ray 看;拍板後連動:delvin-agent-38 的 QFX sting(~/qfx/brand/motion/sting_combo/sting_qfx.py)光掃與 pull-back 方向從水平改 34°(兩個參數)",
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-22 17:38",
@@ -12947,6 +12947,86 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-22 18:04",
+  "closed": "2026-09-22 19:06",
+  "note": "QFX_sting_v1 與 CHOSEN light/dark v1 已出片(1080p+音效),交付頁待老闆判;下一版改點列在交付頁 §3"
+ },
+ {
+  "id": 1296,
+  "what": "CHOSEN logo sting v5 (Blender 3D 開箱) 待老闆/店主看過",
+  "why": "技術閘門全過，但品味只有老闆能判；尚未給他看",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-22 18:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1297,
+  "what": "storefront 歷史被 autosave 吞進 ~140MB CHOSEN 渲染暫存 PNG (commit 82c3a95)",
+  "why": "已 untrack+gitignore，但從歷史移除需 force-push，要老闆同意；本機測試資料夾 test*/pv 也因 rm 被權限擋而留著(~60MB)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 18:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1298,
+  "what": "明欣品牌識別手冊:記號+字標是 QFX 09-16 自繪,診所端尚未正式採用",
+  "why": "手冊把它當主標誌,需爸媽/院方點頭才能印藥袋、看板",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 18:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1299,
+  "what": "明欣手冊與社群稿內 [門診時間]/[日期]/[帳號] 等佔位待填",
+  "why": "週六門診事實仍未確認、社群帳號名未定;填入前不可發佈",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 18:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1300,
+  "what": "明欣社群衛教稿(發燒/腸病毒/流感)尚未經醫師審閱",
+  "why": "內容取自官網已查證文章,但對外發佈前需院內醫師看過;本次零發佈",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 18:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1301,
+  "what": "明欣藥袋欄位需藥師確認法定標示項目",
+  "why": "提案稿依一般法定藥袋欄位排,未經明欣藥局核對",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 18:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1302,
+  "what": "CHOSEN logo sting v5 的 9:16 版沒產出(render 在 30/150 格被主 session 停掉讓 GPU)",
+  "why": "主 session 指示不要重跑；要的話 render_all.sh 可續算(SKIP_EXISTING)，約 1 小時 GPU",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 18:51",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1303,
+  "what": "QFX/CHOSEN sting v1 等老闆判(方向/白或暗);判後做 v2:開場 rim、light linking 去過曝、34° 規則(若拍板)、CHOSEN 末格切官方平面圖過 gate",
+  "why": "v1 是給老闆看的第一版,尚未核可,不能對外",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-22 19:06",
   "closed": null,
   "note": ""
  }
