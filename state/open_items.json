@@ -12629,5 +12629,325 @@
   "opened": "2026-09-21 20:56",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1264,
+  "what": "QFX 新標誌提案01 待老闆選 A/B/C(artifact AmnKYKPJn3tkvnYRuzJdFr)",
+  "why": "選定後才做光學修正/小尺寸版/AE 描光動畫;目前只是方向草稿",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 21:39",
+  "closed": "2026-09-21 21:40",
+  "note": "老闆否決三版(「all looks shit」)"
+ },
+ {
+  "id": 1265,
+  "what": "QFX 標誌探索02 筆刷牆待老闆挑號碼(artifact 4cxRiBTeT59VhsD8YU7cAd)",
+  "why": "挑定後要向量化(保留筆刷質感)+16px 版+AE 描光動畫,目前是探索稿",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 21:51",
+  "closed": "2026-09-21 21:55",
+  "note": "老闆仍偏好 C(向量書法版),改走 round03"
+ },
+ {
+  "id": 1266,
+  "what": "QFX 標誌 round03 待老闆選 C1/C2/C3(artifact 5Yrm6z5od8dDTHMhHCKE2Q)",
+  "why": "選定後出正式檔+AE 描光動畫",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 21:55",
+  "closed": "2026-09-21 23:06",
+  "note": "老闆定稿 C1,正式檔已出(~/qfx/brand/logo_final + 桌面 QFX_logo)"
+ },
+ {
+  "id": 1267,
+  "what": "QFX 新標誌 C1 尚未換上 qfxsolution.com(site/site-v8 仍是舊幾何字標)與 AE 描光動畫未做",
+  "why": "老闆只要求出正式檔;換站是對外改動要他點頭",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 23:06",
+  "closed": "2026-09-21 23:10",
+  "note": "網站已換新標誌(deploy f1af9ad7 線上驗證);lockup 已做;AE 動畫另開"
+ },
+ {
+  "id": 1268,
+  "what": "QFX logo AE 描光動畫(Clean Glowing 風格,朱紅光+黑底)未做",
+  "why": "老闆要求先系統學 AE+Higgsfield bridge(看教學)再做",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-21 23:10",
+  "closed": "2026-09-22 00:02",
+  "note": "v2 渲染完成 8s 1080p,桌面 QFX_logo/qfx_logo_reveal_v2.mp4,artifact XYjcFh5Jwjdh2ojWC7ac3h;待老闆看片回饋"
+ },
+ {
+  "id": 1269,
+  "what": "QFX Threads 大頭貼未更新:Threads 個人檔案根本還沒建立(登入頁只有 Join using your Meta Account)",
+  "why": "加入 Threads=新建公開個人檔案,超出『換大頭貼』範圍,需老闆拍板是否開通;開通後可直接從 IG 匯入新 logo",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-21 23:26",
+  "closed": "2026-09-21 23:49",
+  "note": "老闆核可後已開通 Threads @qfxsolution:Join using Meta Account 直接建檔(無追蹤引導頁,未追蹤任何人、未發文、公開);web 版無 Import from Instagram,改上傳同一張 avatar-dark-1080.png+照抄 IG bio;登出態驗證 verify_threads_public.png 顯示新 logo"
+ },
+ {
+  "id": 1270,
+  "what": "QFX 標誌動態 v3 五支待老闆選定",
+  "why": "已交付 artifact MrbWXRHuU2GEJfgYiukxXR,等老闆挑一支再出正式版",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 02:05",
+  "closed": "2026-09-22 05:19",
+  "note": "老闆選了 C（SPACE 線條）與 D（火花）"
+ },
+ {
+  "id": 1271,
+  "what": "AE aerender 驅動檔 commandLineRenderer.jsx 已加 QFX 鉤子",
+  "why": "AE 更新會覆蓋；GUI 不受影響但屬修改 Adobe 檔案，備份在 C:/Users/USER/qfx_ae/commandLineRenderer.orig.jsx",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-22 03:15",
+  "closed": "2026-09-22 05:02",
+  "note": "ae_render.sh 每次出片前檢查鉤子，AE 更新覆蓋後自動重打（patch_aerender.py + elev）"
+ },
+ {
+  "id": 1272,
+  "what": "QFX 廣告 Ad01 旁白為 edge-tts 測試語音",
+  "why": "正式投放前須換 Azure 商用授權同聲音或真人配音",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-22 03:16",
+  "closed": "2026-09-22 04:38",
+  "note": "Ad02 中英文已改 Gemini TTS（可商用）；Ad01 仍是 edge-tts，重錄列入下一輪"
+ },
+ {
+  "id": 1273,
+  "what": "QFX 廣告 Ad01 r9 待老闆看",
+  "why": "artifact 9UKijieqztNKxxWTR15mzE；9:16 直式與英文版尚未做",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 03:16",
+  "closed": "2026-09-22 05:19",
+  "note": "改為整份廣告片頁待看"
+ },
+ {
+  "id": 1274,
+  "what": "C 槽空間：AE 磁碟快取會暴長",
+  "why": "09-22 曾滿到 159MB；已清到 58G 並在 ae_render.sh 加守衛，但 GUI 那個 AE 的快取上限未設",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-22 03:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1275,
+  "what": "Ad01 旁白仍為 edge-tts 測試聲",
+  "why": "Ad02 已換 Gemini TTS；Ad01 11 句尚未重錄重混",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-22 04:38",
+  "closed": "2026-09-22 05:01",
+  "note": "Ad01 中英文已改 Gemini TTS 並重混"
+ },
+ {
+  "id": 1276,
+  "what": "QFX 廣告片 16 支待老闆看",
+  "why": "artifact 9UKijieqztNKxxWTR15mzE：Ad01 30s×4、Ad02 20s×4 + 15s×4；桌面 QFX_logo\\ads",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 05:19",
+  "closed": "2026-09-22 05:47",
+  "note": "併入 20 檔版"
+ },
+ {
+  "id": 1277,
+  "what": "C:\\pagefile.sys 長到 73GB，C 槽剩 16GB",
+  "why": "系統管理分頁檔要重開機才縮；建議老闆方便時重開機，或設固定上限（需管理員、重開機生效）",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-22 05:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1278,
+  "what": "QFX 廣告片 20 支待老闆看（含皇海 Ad03）",
+  "why": "artifact 9UKijieqztNKxxWTR15mzE；Ad03 KINGCONN 字樣為 AE 重建，需皇海向量 logo 原檔替換",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 05:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1279,
+  "what": "C: 剩 21G:WSL ext4.vhdx 從 270→291GB(+21G)+swap.vhdx 9.6G,需 WSL 關機後壓縮",
+  "why": "壓縮要 wsl --shutdown,會中斷所有 session 與 cron,需選時段",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-22 11:34",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1280,
+  "what": "Ad01 r13(4 支)待老闆看片回饋",
+  "why": "新版照 Manta AI 參考片重做,尚未經老闆確認",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 12:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1281,
+  "what": "DigiKey 重啟:經紀人錢傳文報價→王董選A/B→取得英文COI→寄DigiKey;重啟信與經紀人brief待老闆核可後寄",
+  "why": "王董09-22改口同意投保,DigiKey 09-16已結案,核准可能不保留",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-22 13:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1282,
+  "what": "LCSC 09-17 來信未回:問庫存在台灣還是大陸、有無大陸窗口可推薦——需王董答後回信",
+  "why": "5天未回,申請會冷掉",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-22 14:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1283,
+  "what": "WIN SOURCE/WSP Echo Chou 09-08 邀線上會議、09-17 追問有沒有收到——未回;需定誰出席+時間",
+  "why": "對方主動邀會卻被晾兩週",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-22 14:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1284,
+  "what": "皇海冷信 batch2 名單待老闆核可才寫入 queue",
+  "why": "outbound/engine/batch2_roster_preview.html:22 家/82 人,可寄 42 人(tier1 31+tier2 11);核可後併 openers_v2 再跑 queue_v2 --write",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-22 17:30",
+  "closed": "2026-09-22 18:01",
+  "note": "老闆核可,28 人寫入 queue batch 20-22"
+ },
+ {
+  "id": 1285,
+  "what": "QFX sfx_refs 音效研究(NOTES.md+統計+scripts)未進 git;第三方 mp4/wav 需加 gitignore 再 commit",
+  "why": "本次 session git add/.gitignore 修改被權限拒絕",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-22 17:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1286,
+  "what": "QFX+客戶品牌手冊與社群內容：老闆尚未看過/核可;社群文案一則都沒發",
+  "why": "對外內容必須先給老闆看 OK(08-17 親令);客戶三本由背景代理製作中",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 17:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1287,
+  "what": "QFX 品牌概念「只下一刀」(34°規則)與 RENEW 概念「重新開拍」待老闆拍板",
+  "why": "概念稿剛寫好,老闆還沒看;RENEW 版未套用到 renew-preview,也還沒給 Ray 看",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 17:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1288,
+  "what": "concept_gate 尚未在真實案子從頭跑過一次",
+  "why": "只有 selftest+三份稿過閘;下一個 QFX 廣告/客戶站開工才是首班驗收",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-22 17:38",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1289,
+  "what": "C: 只剩 2.2GB(WSL 虛擬磁碟 306GB 在 C:),AE 算圖被擋;需老闆排時間 wsl --shutdown 壓縮 vhdx,或同意刪 pip 快取 3.2GB/demucs venv 6.8GB",
+  "why": "我裝 demucs 分軌讓 vhdx 從 291→306GB;rm 被權限擋,壓縮要關 WSL=關掉我自己",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-22 17:41",
+  "closed": "2026-09-22 17:48",
+  "note": "C: 回升到 28G(非我清的,可能 swap 釋放);vhdx 仍 306G,長期仍需壓縮見 #1279"
+ },
+ {
+  "id": 1290,
+  "what": "RENEW SALON 品牌手冊 canvas 已發布(https://claude.ai/artifact/BrirFtBTuBziBoLt3xZJjB)，尚未經老闆/Ray 過目",
+  "why": "字體、使用規則、圖紋、包裝、周邊、社群文案都是提案；價格/營業時間/產品名仍是佔位符；沒做過渲染檢查",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 17:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1291,
+  "what": "皇海品牌識別書 artifact CGGCtypv41McAz9xwLgvKN：缺向量 logo、缺實拍照、社群帳號名未填、版面還沒看過實際渲染",
+  "why": "皇海只有 300px 的 PNG 標誌；蘇州/桃園沒有實拍照；除了 YouTube @kingconntech，其他平台帳號名都還不知道；規則不准自己去渲染檢查",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-22 17:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1292,
+  "what": "CHOSEN 品牌手冊+社群貼文組 canvas 待 Kevin 逐字核可(https://claude.ai/artifact/GfEAwV8XfEfwSis1utCVjw)",
+  "why": "提案頁(圖形/包裝/周邊/看板)與全部貼文文案未經店主核可；FB/X/YouTube 帳號、活動辦法連結待補；artifact 預設私有需老闆分享",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 17:46",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1293,
+  "what": "皇海冷信 batch2 首班 09-23 09:30 未在生產驗證:確認探路信無退、當日寄出數、postcheck 無告警",
+  "why": "寫入 queue 但尚未真寄",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-22 18:01",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1294,
+  "what": "研究員在 Windows 留下 C:\\Users\\USER\\bench_*.png×13 與 winprobe*_blender.py×5 未清(刪除被權限擋)",
+  "why": "cookbook 子代理 benchmark 殘留,需 elev 或手動刪",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-22 18:04",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1295,
+  "what": "blender-logo-motion 四技法只到『技法成立』,尚未交出一支對照參考片可打分的 QFX 正式 logo sting",
+  "why": "今天是學習日,正式 sting 要等老闆選路線(D_google 另一視窗在做)",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-22 18:04",
+  "closed": null,
+  "note": ""
  }
 ]
