@@ -9815,3 +9815,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-22 18:47 老闆選 ①+② 合體做 QFX 正式 sting＋CHOSEN 同法（「impress me」）。sting_combo/（combo_lib+sting_qfx+mix_sting+finish.sh）、chosen/logo_sting_v6_combo/（light 主候選、dark 備選）。1080p 分段算圖中。老闆令跨 session 交流：已與 d3/05/cc/6a 互換坑與方法，記憶已更新。
 - 09-22 19:06 QFX_sting_v1.mp4 定版(混音依老闆新口味重做:鼓點+點擊+sub,禁 whoosh/旋律);CHOSEN light v1 定版、dark 算圖中;storefront autosave 吞了 76 張預覽 PNG 已 rm --cached+gitignore。
 - 09-22 22:35 老闆判 v1 不及格→IG 16 支 logo motion 對照(17/60 vs 42-51,根因=沒有空間+沒點子)已發 Artifact;老闆定產線 Blender 建→Higgsfield 生成:Genjutsu 實測 35cr 成功(hf/genjutsu_qfx_720p_t1.mp4);聲音改自生鼓底(老闆罵搬別線音效);combo_lib 加 studio()。v2 待建(open)。
+- 09-22 23:10 v2 出片:QFX(光跡描Q/studio/雙機位/字穿環)+Genjutsu 1080p 55cr、CHOSEN(蓋子掀38°+字掉出)。比例根因=曲線bevel在尖端噴幾何→mesh bevel;scale bake 坑。交付頁 v2 已發。
