@@ -9805,3 +9805,9 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
   CC 用 winget 靜默裝;**AE 本體裝不了無頭**(個人版 CC 無 CLI、無 creativecloud:// 協定)⇒ 老闆點一次「安裝」。Media Encoder 隨 AE 自動附帶(採購文件 ❔ 已解)。
   Higgsfield 外掛 = `hf-adobe-updates.higgsfield.ai/adobe/higgsfield-cep-1.0.55.msi`(頁面是 JS 按鈕,headless 點 Windows 截 download 拿到),簽章 Higgsfield Inc. Valid,經 elev.py `msiexec /qn` 靜默裝進 x86 CEP\extensions。
   坑:①面板剛開 get_host_status 仍全 false——bridgehost log 顯示「no token yet」退避重試,約 60s 後才 connected;**第一次 false 不是壞,看 %TEMP%\CEPHtmlEngine12-AEFT-*-bridge.log** ②export_frame 的 PNG 帶 alpha,comp 背景色不會出現 ③fontFamily 預設 Helvetica 在 winrig 沒裝,會回退成別的字型——正式作品要指定已安裝字型。
+
+- 09-22 17:36 老闆令「go learn everything on blender and higgsfield」(廣告/影片生成/創意設計/logo 動態)。研究輸出 ~/qfx/research/learn_2026-09-22/,Blender 實作 ~/qfx/learn/blender_lab/(不碰 v3 目錄,另一視窗在用)。學習期零 credit。
+- 09-22 晚 **學 Local Remote → QFX 概念先行閘**:拆解研究頁 https://claude.ai/artifact/9keLuR9wCfJAdW9qhycsUL;
+  方法落成 ~/qfx/playbooks/concept_first.md + scripts/concept_gate.py(selftest 1 乾淨+14 突變全擋),接進 creative-direction/
+  brand-ad-production/website-design-team + CATALOG/GOVERNANCE(skills 7af0b44, qfx 640f6fc)。QFX 概念「只下一刀」
+  規則 34°=標誌 x-tail 實測 34.06°;RENEW 提案稿「重新開拍」(renew a0967ec,未套用)。LR 與我們無關係(老闆更正)。
