@@ -13029,5 +13029,55 @@
   "opened": "2026-09-22 19:06",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1304,
+  "what": "Ad01 r15 + 一筆朱紅 v2 待老闆看;卡片仍是平的深色矩形(Yp95 0.30<目標0.55),下一步:玻璃高光邊/漸層填色/3D 景深",
+  "why": "顏色已進參考區間但卡片材質未做;需老闆先判方向",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 19:13",
+  "closed": "2026-09-22 19:35",
+  "note": "r16 玻璃卡已做並上線(Version 19),待老闆看"
+ },
+ {
+  "id": 1305,
+  "what": "Ad01 r16 + 一筆朱紅 v2 待老闆看聽(網頁 Version 19)",
+  "why": "方向與聲音需老闆親自判",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 19:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1306,
+  "what": "下一支片選哪個客戶世界(RENEW/皇海/CHOSEN)+Higgsfield 點數核可",
+  "why": "film-grammar 要真實世界素材;規劃期零生成,需老闆拍板才花 credits",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 22:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1307,
+  "what": "QFX sting v2（光跡描 Q→朱紅 X 切下→兩機位→地板倒影）與 CHOSEN v2（蓋子掀 38°）尚未建置與算圖",
+  "why": "本輪只做參考片對照與 v2 beat 表（ig_logo_motion/COMPARISON.md 第 4 節），Blender 場景還沒改",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-22 22:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1308,
+  "what": "QFX/CHOSEN sting v2 照 COMPARISON §4 beat 表在 Blender 重建(光跡描Q/地板倒影/雙機位/字穿環/hold 微動),再走 Genjutsu 出片+AE 疊字;CHOSEN 要做出蓋子掀 38°",
+  "why": "v1 計分 17/60,老闆判不及格;v2 尚未開建",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-22 22:35",
+  "closed": null,
+  "note": ""
  }
 ]
