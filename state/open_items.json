@@ -11497,8 +11497,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-15 20:07",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-23 11:33",
+  "note": "三處修正+同類19條補齊,QA 86/0+3條回歸,commit 6310f73,preview 已發;進 App 待下次送審 build"
  },
  {
   "id": 1151,
@@ -12387,8 +12387,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-20 23:54",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-23 13:42",
+  "note": "老闆 09-23 確認 13 張是實拍非渲染,可當店內環境使用"
  },
  {
   "id": 1240,
@@ -13090,5 +13090,355 @@
   "closed": null,
   "note": "",
   "text": "CHOSEN 必賺盲盒片:規劃稿待老闆點頭→Kevin 審稿站核可;要 Kevin 給 IG 開包片原始檔(720p 太軟);「必賺」名稱風險要不要轉告 Kevin"
+ },
+ {
+  "id": 1310,
+  "what": "The Pin 廣告等老闆手機實拍 3 段台北街景(15s 橫拍 4K,放 Desktop\\QFX_logo\\plates)",
+  "why": "FOOH 需要真實街景才能做相機匹配與遮擋;不生成街景以免像 AI",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-22 23:11",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1311,
+  "what": "WSL vhdx 壓縮已排程 10:01 執行(WSLCompactOnce);完成後看 C:\\Users\\USER\\wsl-compact.log 的 RECLAIMED 數字,並接續算 r18(標誌動畫只留一段、移到片尾)",
+  "why": "壓縮會關閉 WSL 中斷本 session,需重開後確認結果",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-23 09:57",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1312,
+  "what": "DigiKey LoA 授權書待王董簽送(smartsheet 表單)+後續 DocuSign;COI 上傳方式待 Katie 回",
+  "why": "王董本人才能簽",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 10:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1313,
+  "what": "CHOSEN v7 9:16 is a grey-pad stop-gap, not a native vertical render",
+  "why": "center crop cut the wordmark; native reframe+render ~12min needs Delvin's go",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 10:45",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1314,
+  "what": "乾啦 #1150 文案修正只在 v3-preview,正式站與 iOS/Android binary 都還沒帶上",
+  "why": "正式站等老闆看過;binary 改了會重啟 Apple 審查,等審完下一版再帶",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 11:33",
+  "closed": "2026-09-23 11:39",
+  "note": "正式站已發 v15 並驗證"
+ },
+ {
+  "id": 1315,
+  "what": "DigiKey 掛牌價試算表待王董填直客小量價;本體無 logo 對策(說明+外箱貼紙)待王董確認",
+  "why": "定價與標示是王董商業決定",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 11:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1316,
+  "what": "乾啦 #1150 文案修正已上正式站,但 iOS/Android binary 尚未帶上",
+  "why": "改 binary 會重啟 Apple 審查,等本次審完下一版 build 再帶",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 11:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1317,
+  "what": "CHOSEN v8 lookdev 三張待老闆判：S2 卡牌像平面海報、金片堆是平板葉片非 Xbox 弧形肋片；S3 金色比品牌黃淡",
+  "why": "lookdev 靜幀已交付但未經老闆核可，動畫尚未開工",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 12:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1318,
+  "what": "皇海→G&H(John/Phuong)報價信被擋:王董已重寄(無RAR),待對方確認收到且PDF打得開",
+  "why": "根因=RAR附件整封被隔離+Gmail寄件進垃圾信鎖附件;重寄後尚未有對方回覆驗證;王董Gmail簽名檔kiingconn錯字未改",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 12:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1319,
+  "what": "DigiKey DDP:原產地要王董拍板(台灣 10% vs 中國 37.5% 美國關稅;蘇州組裝=中國原產)",
+  "why": "digikey/DDP_COST_MODEL.md §1.3/§1.6 已算清差 27.5 點,但要不要為 DigiKey 訂單改台灣出貨是王董決策",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-23 12:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1320,
+  "what": "DigiKey DDP:開放地區清單要王董拍板(建議先開 美/日/加/澳,歐盟英國只接 B2B 走 CPT 或給 VAT 號,其餘先不開)",
+  "why": "DDP_COST_MODEL.md §0/§7 三態表已列,等王董確認後才在 DigiKey 後台設 ship-to 地區",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 12:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1321,
+  "what": "DigiKey DDP 試算表黃欄要皇海填真實數字:台灣製成本 TWD/顆、蘇州製成本 CNY/顆、DHL 實際帳戶運價(公告價 0.5kg 到美 TWD 2,987+燃油 45%)",
+  "why": "模型預設成本=直客價 57% 與運費 US5 皆為示意,安全線/虧損判定會隨真實值變",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 12:10",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1322,
+  "what": "CHOSEN logo v8 1080p 16:9+9:16 正式算圖中（fin_16x9_a/b, fin_9x16_a/b），完成後要 finish_v8.py 溶接+混音+QA；尚未有成品",
+  "why": "GPU 與 QFX v4 共用 flock 排隊，算圖需時",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-23 13:05",
+  "closed": "2026-09-23 13:39",
+  "note": "16:9+9:16 皆完成、QA PASS、已 commit storefront 601405e+"
+ },
+ {
+  "id": 1323,
+  "what": "RENEW 走店片：拍攝腳本已交(artifact TbhkznFsQwrDrBcDSpqfm6)，等 Pocket 4 原檔上 Drive 後進 AE 做成品",
+  "why": "素材未拍；收音/出鏡人/字語言三問待老闆答",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 13:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1324,
+  "what": "QFX 官網大標換 DM Serif Display:預覽已上 font-serif.qfx-preview.pages.dev,正式站未發",
+  "why": "對外改動,等老闆看預覽點頭;site/ 工作樹已含新字,別的 session 發 main 會連帶上線",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 13:35",
+  "closed": "2026-09-23 13:50",
+  "note": "老闆看預覽 OK,已上線 qfxsolution.com 並實測"
+ },
+ {
+  "id": 1325,
+  "what": "KINGCONN logo v1 (AMD 文法) 1080p 16:9+9:16 算圖/混音/QA/compare_amd 尚未收尾",
+  "why": "背景算圖進行中,尚未 QA 與 commit",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 14:09",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1326,
+  "what": "CHOSEN logo v9（Mastercard 文法）1080p 16:9+9:16 算圖中，完成後 finish/QA/compare/commit",
+  "why": "1080p 分段算圖尚未跑完，成品未產出未 QA",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-23 14:12",
+  "closed": "2026-09-23 15:04",
+  "note": "v9 兩版 1080p 交付：QA PASS、末幀色彩 ±0、compare_mastercard.jpg 已出、storefront 已 commit/push"
+ },
+ {
+  "id": 1327,
+  "what": "皇海新 logo 提案 v2(brand/logo_v2/review.html,建議 A)等老闆挑方向;挑定後才出正式檔/換進 logo_motion_v1_amd(該資料夾目前只有參考影格,沒有 LOGO_SVG 接口)/換站台 header+favicon",
+  "why": "純提案,對外資產一律先給老闆看;AMD 動畫腳本另一視窗尚未落地",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 14:27",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1328,
+  "what": "QFX 官網 13 角色字體分工:預覽 font-serif.qfx-preview.pages.dev 已驗,正式站未發",
+  "why": "對外改動等老闆看預覽;site/ 工作樹已含改動,別的 session 發 main 會連帶上線",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 14:32",
+  "closed": "2026-09-23 14:41",
+  "note": "老闆 OK,已上線並逐角色實測"
+ },
+ {
+  "id": 1329,
+  "what": "MEMORY.md 索引 17,876 字元仍高於 hook 軟上限 17,100(本次 20,338→17,876,strict verify 綠);再降要走 hubify 併群(guard_incidents+selftest_honesty+engineering_bricks 三群合併),不能再砍子句(砍了觸發字 verify 會紅)",
+  "why": "併群是獨立任務,今天只做到 verify 綠",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 14:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1330,
+  "what": "QFX 新字標(上QFX下Solution)官網預覽已上,正式站未發",
+  "why": "等老闆看預覽;site/ 工作樹已含新 logo",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 14:47",
+  "closed": "2026-09-23 15:33",
+  "note": "老闆 OK,已上線,logo md5 線上==本機"
+ },
+ {
+  "id": 1331,
+  "what": "QFX 案例廣告 v1 三張等老闆看方向;對外前需皇海/RENEW 同意當案例、RENEW 站須正式上線",
+  "why": "只出定妝稿,尚未核可也未取得客戶同意",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 14:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1332,
+  "what": "皇海 cross-reference 頁 Request R&D evaluation 按鈕金字配金底幾乎看不見",
+  "why": "09-23 截圖時發現,未修",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-23 14:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1333,
+  "what": "KINGCONN logo v1 Direction A 尾段：1080p 算圖+finish+QA 尚未完成",
+  "why": "GPU 與 CHOSEN v9 共用 flock 排隊中，預覽第一輪還沒看",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-23 14:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1334,
+  "what": "KINGCONN 新標誌:Facebook 粉專(id 61594580241075)大頭貼+封面尚未換——winrig 無 FB session、無 page token、Windows Chrome 無 CDP;要老闆本人在 FB 上傳 final/icons/avatar-1024.png + social/facebook_cover_1640x924.png",
+  "why": "FB 只掛在老闆個人帳號,任何自動化都進不去",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 15:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1335,
+  "what": "KINGCONN 新標誌:Owler 公司頁 logo 已提交(社群貢獻)待 Owler 審核;09-30 回查 owler.com/company/kingconn 是否顯示新 K",
+  "why": "Owler 免費層改動走人工審核,公開頁尚未顯示",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 15:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1336,
+  "what": "KINGCONN 新標誌:1111 商搜網帳號 kingconn 登入被靜默拒絕(09-07 註冊待審核),審核過後補換 logo",
+  "why": "站方尚未審核,登入不進後台",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 15:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1337,
+  "what": "KINGCONN 新標誌:Wikidata Q141248729 的 P154 logo 需先把標誌上傳 Wikimedia Commons(等於授權自由授權),要老闆/王董決定是否釋出",
+  "why": "標誌著作權屬皇海,不能替客戶做授權決定",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 15:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1338,
+  "what": "皇海 GBP 標誌上傳採 Google 預設裁切(符號比 60% 版偏大),要調就到相片管理工具重傳 gbp-logo-1024.jpg 手動縮",
+  "why": "2026-09-23 換標時裁切對話框只按了預設儲存;不影響辨識",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 15:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1339,
+  "what": "皇海 249 份工程圖 PDF 圖框仍印舊字標,新標誌未進 CAD 圖面",
+  "why": "圖面是工程文件,換標=皇海端 CAD 重出圖,不在 09-23 站台/Google 換標範圍",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 15:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1340,
+  "what": "皇海站 site/index.html、v2.html 的 styles.css 靛藍 token(#5e6ad2)是舊模板,不在線上路徑,留著等清理",
+  "why": "09-23 換標判定不是改一個 CSS 變數的事;/ rewrite 到 v5 所以不被伺服",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 15:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1341,
+  "what": "皇海站舊標誌檔(img/logo-dark2.png、favicon.svg、icon-*.png、apple-touch-icon.png、site.webmanifest、logo-nav*.png)零引用但留在 site/,10-23 後確認外站無引用再刪",
+  "why": "09-23 換標採新檔名不覆蓋舊名(快取教訓),外站/快取可能還指舊檔",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 15:28",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1342,
+  "what": "QFX identity reel v5: boss hasn't reviewed it yet; tape/wool Blender frames read as CG and are out of the cut",
+  "why": "just delivered 09-23; the reel only has 10 unique frames, and the tape/wool materials need a real rework (fabric folds/roll layers)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 16:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1343,
+  "what": "Sonniss GDC 音效授權是否涵蓋付費客戶廣告,需寫信確認後才能用在客戶交付",
+  "why": "授權文字只列 games/film/TV/synchronised video,未明寫 advertising;對外寄信需老闆同意",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 16:21",
+  "closed": "2026-09-23 16:59",
+  "note": "09-23 老闆同意,已寄信給 sonniss@sonniss.com,改追回信"
+ },
+ {
+  "id": 1344,
+  "what": "等 Sonniss 回信:GDC 音效能否用於付費客戶廣告、archive.org 下載是否適用授權(09-23 已寄 sonniss@sonniss.com, thread 1a0cd7d3e6963a67)",
+  "why": "回覆前 Sonniss 音效只用在自家作品,不交付客戶",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 16:59",
+  "closed": null,
+  "note": ""
  }
 ]
