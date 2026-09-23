@@ -9850,3 +9850,5 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 17:05 QFX ad06 round 1 stills: 8 via nano_banana_pro (~32cr), 2 rejected (Apple logo on laptop, fake handwriting on mannequin); review page https://claude.ai/artifact/5dMqFX9hX1SrPrQKfMevx9 ; credit balance 643 < ~1,500 needed for the full 30s.
 - 09-23 17:15 QFX ad06 v2: 服務融合(裁縫=被找到/歌手=曝光/橄欖油=品牌官網,34°朱紅一刀切空→滿),三組空滿場定裝照(以空場 edit 生滿場,構圖一致);累計~60cr,餘~580。審閱頁 v2 同網址。
 - 09-23 17:35 QFX ad06 v3: 老闆要求重看參考片學工藝+cinematic storytelling;量化 grade(我們飽和 2 倍/57% 琥珀)+鏡位/運鏡統計(69% 推拉)→改單一主角三集 campaign,Ep01「The Bell」16 鏡劇本;測試靜照 3 張(t30 針像刺穿嘴唇待修)。審閱頁 v3 同網址,等老闆拍板+鈴聲是否算音效。
+- 09-23 17:35 KINGCONN logo v1 Direction A 加中文名(老闆「animation is perfect, add the company chinese name at the end」):皇海科技取自正式直式鎖定(Noto Sans TC Medium 外框 path,0.6 倍、字標下 3.5u),f276-288 淡入上浮 1.5u、整組上移 5.25u 置中,總長 300→324 格;只重算 std f276-323 兩比例,f240-275 重算比對證未變。零 credit 不發布。
+- 09-23 17:40 品牌書 v15(老闆「make this page better」):封面改 logo 置中(拿掉紅帶)、06=logo 固定點日常物件系統(2e daily+我的 v4)、08 換算圖燙箔禮盒、10 改 Stories;sfx_kit 響度單一來源 loudness_spec.py+AAC 後量測,帳本改只記最後一次通過(v6 囤了 214→37)。
