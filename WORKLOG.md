@@ -9847,3 +9847,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 17:05 QFX ad06「Over here」:老闆指定照抄 femi.sobaki / Constant Contact reel(DbJ39fwIqsM,84s 47 刀)。已看片+whisper,NOTES 在 ~/qfx/research/ad_refs/DbJ39fwIqsM,QFX 版腳本草稿 ~/qfx/brand/ads/ad06_overhere/BRIEF.md;零 credit,等老闆定旁白/選角/點數。
 - 09-23 16:50 老闆令寄信問 Sonniss 授權:已寄 sonniss@sonniss.com(付費客戶廣告是否涵蓋/archive.org 下載是否適用),thread 1a0cd7d3e6963a67,等回信。
 - 09-23 17:04 Sonniss 第一封退信(sonniss@sonniss.com 不存在,WebFetch 摘要捏造);改寄 timothy@sonniss.com cc support@(無頭瀏覽器從授權頁逐字抓),無退信。
+- 09-23 17:05 QFX ad06 round 1 stills: 8 via nano_banana_pro (~32cr), 2 rejected (Apple logo on laptop, fake handwriting on mannequin); review page https://claude.ai/artifact/5dMqFX9hX1SrPrQKfMevx9 ; credit balance 643 < ~1,500 needed for the full 30s.
