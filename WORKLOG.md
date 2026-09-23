@@ -9826,3 +9826,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 13:05 v4_steam：build_v4.py 定稿（剪影 IoU 0.92、Standard 視圖校色、9:16 原生取景）、sound_v4.py 自製音效 master -14.5 LUFS/-2.5 dB；1080p 16:9+9:16 各 4 段 ×48 格背景算圖中（render_final.sh，fin16/ fin9/）。
 - 09-23 12:40 CHOSEN logo v8 完整動畫開工（Xbox unboxing 文法 7 s）：~/storefront/clients/chosen/logo_sting_v8_xbox/anim_v8.py（A 段 3D／B 段 Standard 平面精準色兩段溶接）+ sound_v8.py（全合成，不用任何既有音檔）+ finish_v8.py。lookdev 四項缺陷修法：金蓋去 bump 噪點、燈砍半紅回深、B 段 Standard 像素對品牌色 ±1、卡牌改薄膜箔面＋金框＋浮雕。實測：官方蓋子＝膠囊上半被 38° 斜線切，不是半圓旋轉。GPU 與 QFX v4 共用 flock，只出圖不發。
 - 09-23 12:50 v4_steam 收尾：QFX_logo_v4.mp4（16:9）+ QFX_logo_v4_9x16.mp4（原生直式）+ 兩張 fps-4 sheet，qa_video 兩支 PASS（-14.6 LUFS / peak -2.4）；片尾品牌色像素級（238,237,234 / 226,60,34）；分段接縫逐格驗過。qfx 1be11af + 後續 commit 已 push。
+- 09-23 13:05 CHOSEN v8：預覽七輪定稿（卡牌埋箱底/鏡頭 sensor_fit/燈過曝/霧盒灰方塊四坑已修，LESSONS 已回寫），1080p 正式算圖起跑 render_1080.sh（16:9→9:16，A 段 3×48 格+B 段 40 格，每格 ~7 s）。open #1322。
