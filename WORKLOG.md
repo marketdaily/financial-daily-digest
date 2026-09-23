@@ -9882,3 +9882,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 21:20 QFX 著名品牌 logo 動態 batch1 完成(老闆 D1=YES):Spotify(光跡)/Microsoft(玻璃牌組)/Airbnb(繪圖機一筆畫) 各 16:9+9:16 EN/ZH 母帶+螢幕房 9:16 發文版,18 支 qa_video 全 PASS,末幀與官方 SVG 0 RGB 差;review.html + captions(lint PASS,D2=B 無 CTA);共用 rig ~/qfx/campaigns/2026-09_logo_motion_threads/rig(qfx 66577bf..);未發布、零 credit。⚠️C: 剩 6.9GB,rm 被權限擋,中間檔待老闆放行刪。
 - 09-23 21:10 QFX ad08「Impossible to Miss」(老闆否決 Gilder 內容,要現代美感→選巨型香水瓶城市裝置):13 張關鍵影格(瓶子/創辦人雙錨點參考)+Seedance 製作計畫 https://claude.ai/artifact/Dsnc1F54PEJYUCgyzZGfUb;定裝花 56cr 餘 191;老闆將買 Seedance 點數(~820)。
 - 09-23 22:55 WSL 22:36 當機根因=C: 滿(hv_storvsc 0xc0000001,第三次;22:38/22:42 兩次短開機是另一視窗 compact 流程);ad08/grid/logo v2 三個中斷 session 已在 tmux resume 內 --resume 接回(附 C:<10GB 停手規則)。
+- 09-23 23:05 ad08 plan v2(老闆:QFX 關係太弱+要全世界熱門景點):QFX 工作室地圖手放瓶子→同角度切城市巨瓶;10 城地標(巴黎/倫敦/紐約/東京/杜拜/上海/新加坡/雪梨/香港/米蘭)+首爾,21 影格;頁同網址 v3;定裝累計 104cr 餘 143;預算 A ~1,615/B ~945。WSL 22:36 C: 滿當機後接回,picks 重跑。
