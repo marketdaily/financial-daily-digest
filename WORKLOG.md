@@ -9852,3 +9852,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 17:35 QFX ad06 v3: 老闆要求重看參考片學工藝+cinematic storytelling;量化 grade(我們飽和 2 倍/57% 琥珀)+鏡位/運鏡統計(69% 推拉)→改單一主角三集 campaign,Ep01「The Bell」16 鏡劇本;測試靜照 3 張(t30 針像刺穿嘴唇待修)。審閱頁 v3 同網址,等老闆拍板+鈴聲是否算音效。
 - 09-23 17:35 KINGCONN logo v1 Direction A 加中文名(老闆「animation is perfect, add the company chinese name at the end」):皇海科技取自正式直式鎖定(Noto Sans TC Medium 外框 path,0.6 倍、字標下 3.5u),f276-288 淡入上浮 1.5u、整組上移 5.25u 置中,總長 300→324 格;只重算 std f276-323 兩比例,f240-275 重算比對證未變。零 credit 不發布。
 - 09-23 17:40 品牌書 v15(老闆「make this page better」):封面改 logo 置中(拿掉紅帶)、06=logo 固定點日常物件系統(2e daily+我的 v4)、08 換算圖燙箔禮盒、10 改 Stories;sfx_kit 響度單一來源 loudness_spec.py+AAC 後量測,帳本改只記最後一次通過(v6 囤了 214→37)。
+- 09-23 17:55 品牌書 v16:老闆「別放客戶,這整本是關於我們」→ 01 改 One cut/x-tail、04 字樣改 QFX 句、09 看板改 logo 置中、13 案例頁換成 Motion & Sound(v6 真實剪輯+混音資料);記憶已補。
