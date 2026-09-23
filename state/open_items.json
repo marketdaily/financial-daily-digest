@@ -13598,8 +13598,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-23 19:29",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-23 19:52",
+  "note": "8 張完成,NBP 以計費確認有跑"
  },
  {
   "id": 1361,
@@ -13618,6 +13618,116 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-23 19:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1363,
+  "what": "ad07 Gilder stage 2: Kling 影片(~250cr)",
+  "why": "等老闆核可 8 張靜照",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 19:52",
+  "closed": "2026-09-23 22:16",
+  "note": "Gilder 內容被老闆否決,改 ad08"
+ },
+ {
+  "id": 1364,
+  "what": "QFX reel v8: 加入另一個 session 算完的新照片(老闆「and more when the other session is done rendering」)",
+  "why": "只加了 bonnet/suitcase 兩張;其他新圖要等另一 session 算完,再用 v7c_beat/extra/reel_print.py 重構圖並加進 ~/qfx/brand/motion/reel_pool.py EXTRA,重跑兩支",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 20:46",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1365,
+  "what": "C: 剩 8.1GB(20:53)，logo batch1 渲染暫停；需老闆 OK 刪 work/ 中間檔(~1.5GB)或清其他空間",
+  "why": "d9 session rm 被權限擋；C: 每 7-10 分掉 1GB，來源多半是 vhdx 增長非本工作(work/ 僅 2.1GB)",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-23 20:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1366,
+  "what": "logo-motion batch1: 3 brands finished but not posted; waiting for Delvin to name the posting account (personal IG/Threads) and approve review.html",
+  "why": "C1: personal account only, account not named; review page ~/qfx/campaigns/2026-09_logo_motion_threads/batch1/review.html",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 21:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1367,
+  "what": "C: has only 6.9GB free; logo-motion intermediate frames (~2GB in work/) can't be deleted because rm is blocked by permissions",
+  "why": "WSL swap.vhdx grew to ~10GB, the same pattern as the 19:02 crash; needs Delvin to approve deleting work/_old, spotify/_mid, pv*, o916 or run wsl --shutdown",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-23 21:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1368,
+  "what": "logo-motion batch1 creative gaps: Microsoft panes look like colour cards, not refractive glass; Airbnb's first second of macro shots is hard to read and f72 is a flat grey frame; the room's lower third lacks desk props",
+  "why": "self-review + the second session's independent review; not re-rendered this round because C: is nearly full, fix in the next round",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 21:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1369,
+  "what": "ad08 Impossible to Miss: 等老闆買點數→瓶子連戲修正(12cr)→Seedance 探索+定稿(~1000cr)",
+  "why": "等老闆購買點數與核可計畫",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 22:16",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1370,
+  "what": "winrig C: 只剩 ~4.9GB;WSL ext4.vhdx 330GB 內部只用 285GB,需 fstrim+wsl --shutdown+compact(~45-60GB)",
+  "why": "Delvin 選「今晚稍後」做(22:30),等他說 go;期間品牌 13s v2 渲染暫停(V2_FAIL 磁碟守門擋下)",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-23 22:27",
+  "closed": "2026-09-23 22:46",
+  "note": "壓縮實測回收 0(非 sparse);改用 8GB 絕對下限讓 batch1 v2 渲染;根治需老闆決定(移遊戲/加 SSD/unsafe sparse)"
+ },
+ {
+  "id": 1371,
+  "what": "winrig C: 長期只剩 ~14GB,WSL vhdx 無法安全縮;26 品牌量產需要空間",
+  "why": "需老闆決定:移遊戲/加SSD搬 distro/接受 unsafe sparse",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-23 22:46",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1372,
+  "what": "wsl-keepalive.ps1 已改看 distro 狀態+WSL_Hold,但「distro 停了→自動拉起」分支尚未在生產實測",
+  "why": "22:45 修補,只測了 OK 分支",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-23 22:46",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1373,
+  "what": "WSL 22:36 第三度因 C: 滿當機(hv_storvsc 寫入失敗);C: 剩 13GB 且持續下降,新 SSD 到貨前隨時會再掛",
+  "why": "根治要搬 WSL 到新 SSD(下週到貨);Windows 端快取 rm 被權限擋",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-23 22:53",
   "closed": null,
   "note": ""
  }
