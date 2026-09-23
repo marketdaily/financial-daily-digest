@@ -1,36 +1,36 @@
 {
   "stats": {
-    "generated_at": "2026-09-22T08:19:24",
+    "generated_at": "2026-09-23T08:20:18",
     "horizon": "5d",
     "records_since": "2026-06-12",
-    "days_covered": 73,
-    "total_records": 4520,
+    "days_covered": 74,
+    "total_records": 4657,
     "judged_records": 3141,
     "one_day": {
-      "a_count": 1076,
-      "a_wins": 786,
-      "a_rate": 73.0,
-      "c_count": 2411,
-      "c_wins": 1540,
-      "c_rate": 63.9
+      "a_count": 1205,
+      "a_wins": 897,
+      "a_rate": 74.4,
+      "c_count": 2524,
+      "c_wins": 1600,
+      "c_rate": 63.4
     },
     "monthly": {
-      "a_count": 332,
-      "a_wins": 232,
-      "a_rate": 69.9,
+      "a_count": 390,
+      "a_wins": 283,
+      "a_rate": 72.6,
       "a_ci95": [
-        64.7,
-        74.6
+        67.9,
+        76.8
       ],
-      "a_pending": 903,
-      "c_count": 785,
-      "c_wins": 413,
-      "c_rate": 52.6,
+      "a_pending": 882,
+      "c_count": 877,
+      "c_wins": 447,
+      "c_rate": 51.0,
       "c_ci95": [
-        49.1,
-        56.1
+        47.7,
+        54.3
       ],
-      "c_pending": 1781
+      "c_pending": 1766
     },
     "quarterly": {
       "a_count": 3,
@@ -40,7 +40,7 @@
         43.8,
         100.0
       ],
-      "a_pending": 1232,
+      "a_pending": 1269,
       "c_count": 5,
       "c_wins": 2,
       "c_rate": 40.0,
@@ -48,7 +48,7 @@
         11.8,
         76.9
       ],
-      "c_pending": 2561
+      "c_pending": 2638
     },
     "holder": {
       "note": "持有者框架建議(用戶自填進場成本):judge_holder 獨立結算,不計入 A/C 頭條",
@@ -59,7 +59,7 @@
         71.3,
         78.3
       ],
-      "pending": 124
+      "pending": 147
     },
     "a_count": 995,
     "a_wins": 663,
@@ -69,11 +69,11 @@
       69.5
     ],
     "c_count": 2146,
-    "c_wins": 1282,
+    "c_wins": 1281,
     "c_rate": 59.7,
     "c_ci95": [
       57.6,
-      61.8
+      61.7
     ],
     "calibration": {
       "n": 995,
@@ -109,11 +109,11 @@
         ]
       },
       "down": {
-        "a_count": 494,
-        "a_wins": 327,
-        "a_rate": 66.2,
+        "a_count": 493,
+        "a_wins": 326,
+        "a_rate": 66.1,
         "ci95": [
-          61.9,
+          61.8,
           70.2
         ]
       }
@@ -162,11 +162,11 @@
           70.8
         ],
         "c_count": 1076,
-        "c_wins": 646,
-        "c_rate": 60.0,
+        "c_wins": 645,
+        "c_rate": 59.9,
         "c_ci95": [
-          57.1,
-          62.9
+          57.0,
+          62.8
         ],
         "era": {
           "since": "2026-06-12",
@@ -178,11 +178,11 @@
             74.3
           ],
           "c_count": 1076,
-          "c_wins": 646,
-          "c_rate": 60.0,
+          "c_wins": 645,
+          "c_rate": 59.9,
           "c_ci95_day_cluster": [
-            53.3,
-            66.6
+            53.2,
+            66.5
           ],
           "days": 67
         }
@@ -199,7 +199,7 @@
         74.4
       ],
       "c_count": 2146,
-      "c_wins": 1282,
+      "c_wins": 1281,
       "c_rate": 59.7,
       "c_ci95_day_cluster": [
         53.3,
@@ -216,11 +216,11 @@
           ]
         },
         "down": {
-          "a_count": 494,
-          "a_wins": 327,
-          "a_rate": 66.2,
+          "a_count": 493,
+          "a_wins": 326,
+          "a_rate": 66.1,
           "a_ci95": [
-            61.9,
+            61.8,
             70.2
           ]
         }
@@ -245,9 +245,9 @@
           "status": null
         },
         "hold|down": {
-          "count": 359,
-          "wins": 263,
-          "rate": 73.3,
+          "count": 358,
+          "wins": 262,
+          "rate": 73.2,
           "status": null
         },
         "sell|up": {
@@ -269,8 +269,8 @@
           "status": null
         },
         "wait|down": {
-          "count": 1048,
-          "wins": 611,
+          "count": 1045,
+          "wins": 609,
           "rate": 58.3,
           "status": null
         }
@@ -490,13 +490,13 @@
     },
     "plan_sim": {
       "note": "照卡片買價/目標/停損操作的模擬(僅日收盤近似,無盤中價,觸發偏保守)",
-      "simulated": 222,
-      "no_fill": 126,
+      "simulated": 270,
+      "no_fill": 172,
       "pending": 6,
-      "hit_target": 20,
+      "hit_target": 21,
       "hit_stop": 42,
-      "expired": 28,
-      "avg_ret_pct": 0.98,
+      "expired": 29,
+      "avg_ret_pct": 1.15,
       "expectancy_note": "勝率≠獲利,avg_ret_pct(每筆平均報酬)才是期望值",
       "by_day": [
         {
@@ -752,8 +752,9 @@
         },
         {
           "d": "2026-09-03",
-          "n_cards": 12,
+          "n_cards": 13,
           "rets": [
+            0.82,
             -1.0,
             -7.71,
             6.49,
@@ -764,11 +765,22 @@
         },
         {
           "d": "2026-09-14",
-          "n_cards": 5,
+          "n_cards": 6,
           "rets": [
+            16.55,
             8.11,
             7.59
           ]
+        },
+        {
+          "d": "2026-09-19",
+          "n_cards": 21,
+          "rets": []
+        },
+        {
+          "d": "2026-09-21",
+          "n_cards": 25,
+          "rets": []
         }
       ],
       "trades": [
@@ -1301,6 +1313,12 @@
           "ret": -7.71
         },
         {
+          "c": "2026-09-03",
+          "e": "2026-09-08",
+          "x": "2026-09-23",
+          "ret": 0.82
+        },
+        {
           "c": "2026-09-14",
           "e": "2026-09-15",
           "x": "2026-09-17",
@@ -1309,8 +1327,14 @@
         {
           "c": "2026-09-14",
           "e": "2026-09-15",
-          "x": "2026-09-22",
+          "x": "2026-09-21",
           "ret": 7.59
+        },
+        {
+          "c": "2026-09-14",
+          "e": "2026-09-15",
+          "x": "2026-09-23",
+          "ret": 16.55
         }
       ]
     },
@@ -1380,10 +1404,10 @@
       "a_wins": 103,
       "a_rate": 64.8,
       "c_count": 292,
-      "c_wins": 163,
-      "c_rate": 55.8
+      "c_wins": 162,
+      "c_rate": 55.5
     },
-    "personal_samples_added": 4027,
-    "visible_personal_added": 3308
+    "personal_samples_added": 4157,
+    "visible_personal_added": 3415
   }
 }
