@@ -9861,3 +9861,5 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 18:20 Q 錨點更正(57 視窗:圓擬合被月牙拉偏,改外弧/內弧極值框 0.3798/0.4155):stills.py 與品牌書改從 spec.json 讀(不再寫死),三張重算、品牌書 v20。
 - 09-23 18:15 QFX ad06 Ep01「The Bell」粗剪 v5 交付:17 鏡(NBP 定裝→Seedance 2.0 fast 720p)、grade 對齊參考(chroma~11/琥珀≤10%)、音效全重做(Sonniss 真實街景/晨城/room tone/咖啡館 + Kenney CC0 腳步布料 + Seedance 原生 foley 剪刀/手機/門鈴/杯盤 + VO ducking,-14.4 LUFS);品牌只藏在朱紅粗縫線+片尾一次。坑:ffmpeg drawbox 的 h 表達式不吃 t→整段黑畫面,改 enable 分步;MMAudio 權重 CC-BY-NC 不能商用。頁面 https://claude.ai/artifact/MxzK3JdByzrcWPPXzDt3xY
 - 09-23 19:00 QFX 著名品牌 logo 動態量產線規劃+法務(legal-compliance):~/qfx/campaigns/2026-09_logo_motion_threads/MASS_PRODUCTION_v2.md;零算圖(GPU 給客戶案)、不發布不聯絡。
+- 09-23 18:45 CHOSEN logo v10 開工:照抄 Artlist Layer Peel(1002934),AE 無頭 CC Page Turn 貼紙層剝開,白底;~/storefront/clients/chosen/logo_sting_v10_peel
+- 09-23 19:40 QFX 著名品牌 logo 動態量產 v2 完成:MASS_PRODUCTION_v2.md+mass_production_v2.html(qfx b9aea9b);法務🟡知情承擔,上呈 backlog,open #1355/#1356;首批 12 品牌;零算圖未發布。
