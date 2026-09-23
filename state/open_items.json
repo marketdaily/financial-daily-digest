@@ -13418,8 +13418,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-23 16:20",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-23 17:06",
+  "note": "superseded by v6 (daily objects), delivered 09-23"
  },
  {
   "id": 1343,
@@ -13458,6 +13458,36 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-23 17:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1347,
+  "what": "QFX identity reel v6 (daily objects) waiting on boss review",
+  "why": "delivered 09-23; the object photos are local Z-Image with the mark composited, not real shoots",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 17:06",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1348,
+  "what": "sfx 音效庫擴充:乾淨起音 click 只有 63 個,約 10 支片後撞 20% 重疊上限;待 Sonniss 授權回覆後下載完整 GDC 年度包或自錄 foley",
+  "why": "庫容量不足時 sfx_kit 會報錯停下,不會偷偷重用",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 17:20",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1349,
+  "what": "QFX IG 九宮格 v1 待老闆核可後發文",
+  "why": "發文前需老闆看過(08-17 親令)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 17:42",
   "closed": null,
   "note": ""
  }

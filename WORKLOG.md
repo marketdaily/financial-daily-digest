@@ -9853,3 +9853,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 17:35 KINGCONN logo v1 Direction A 加中文名(老闆「animation is perfect, add the company chinese name at the end」):皇海科技取自正式直式鎖定(Noto Sans TC Medium 外框 path,0.6 倍、字標下 3.5u),f276-288 淡入上浮 1.5u、整組上移 5.25u 置中,總長 300→324 格;只重算 std f276-323 兩比例,f240-275 重算比對證未變。零 credit 不發布。
 - 09-23 17:40 品牌書 v15(老闆「make this page better」):封面改 logo 置中(拿掉紅帶)、06=logo 固定點日常物件系統(2e daily+我的 v4)、08 換算圖燙箔禮盒、10 改 Stories;sfx_kit 響度單一來源 loudness_spec.py+AAC 後量測,帳本改只記最後一次通過(v6 囤了 214→37)。
 - 09-23 17:55 品牌書 v16:老闆「別放客戶,這整本是關於我們」→ 01 改 One cut/x-tail、04 字樣改 QFX 句、09 看板改 logo 置中、13 案例頁換成 Motion & Sound(v6 真實剪輯+混音資料);記憶已補。
+- 09-23 18:10 QFX IG 九宮格 v1(老闆「make my profile aesthetic and cinematic, pictures first」):~/qfx/brand/social_grid_v1(4 字卡 build_type.py+5 物件照+新大頭貼 out/avatar.png+captions.json),審閱頁 https://claude.ai/artifact/MdzVMc3HRkD2bRqEQUL7gK。拔掉:托特/杯(平貼)/錶(Apple)/信紙([Client]+亂碼 email)/信封平面封蠟。IG 0 貼文,未發,等老闆 OK。零 credit。
