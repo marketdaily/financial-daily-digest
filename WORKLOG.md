@@ -9878,3 +9878,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 19:49 reel v7e(老闆「logo animation at the end is slowed」):v7d 把 lockup 拆成每音一步看起來像慢動作→改原速(0.87s 與 v7b 逐格同速),標誌 3.88s 出現、4.10s 起滑都落在琴音上;照片段仍每音一刀 40 刀;頁 v5;桌面 QFX_reel_v7e_*.mp4
 - 09-23 19:55 ad07 Gilder 8 張紀實靜照 v2 完成(24cr,餘 259.33),選 G1b/G2/G3/G4b/G5a/G6a/G7a/G8b 過 deai_pass;審閱頁 v2 同網址 RVoicSg4Y9UB8nWptr1YNB;等老闆核可再進 Kling 影片(~250cr)。
 - 09-23 20:30 ad07 Gilder:QFX 元素(落款標誌真檔合成在店窗/朱紅鉛筆/朱紅線/片尾金箔標誌+標語)+花飾連戲修正+本機 ACE-Step 配樂 A/B+30s 靜照動態分鏡(0cr);定裝累計 40cr 餘 247;頁 RVoicSg4Y9UB8nWptr1YNB v3;等老闆選音樂再進 Kling。
+- 09-23 20:46 reel v8(老闆:照片太少/兩首都做/鋼琴版 11.4s/top quality):共用 reel_pool.py(+Bugatti 引擎蓋、行李箱兩張 grid v3 重構圖到 rule 0,ESRGAN 會毀碳纖維紋→Lanczos+顆粒,毛衣標籤假字擦掉);鋼琴版音樂兩遍 110 音 94 刀、GG EZ 版 37 刀,皆逐格驗過;CRF 10 近無損;寄信被 mass-email hook 擋→~/qfx/scripts/send_self_reels.py 給老闆自己跑;頁 v6
