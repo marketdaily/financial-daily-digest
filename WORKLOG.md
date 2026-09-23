@@ -9871,3 +9871,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 19:23 19:02 WSL 當機復原:C: 99%(vhdx 306G+ComfyUI 137G+pagefile 69G);清安裝檔/Temp/7z/pip/npm 約 13GB→C: 22GB;4 個互動 session 重開並通知續跑;batch1 知名品牌 logo 背景續跑;下週新 SSD 4TB+RAM 到貨後搬 WSL。open #1358
 - 09-23 19:25 (WSL 當機後接回)v7b 已確認完成無需重做;品牌書 v22 依老闆「主軸不是 one cut」拔光 One cut/只下一刀/The cut is still us/畫布標題,01 改「標誌在中心,世界圍著它/讓全世界找到你」、04/09 改 Get found。
 - 09-23 19:40 QFX IG 九宮格 v3.2(老闆 5 張 what's-in-my-bag 參考+指定 Nautilus/Royal Oak/Bugatti/Koenigsegg/籌碼/行李箱/高爾夫/QFX 黑卡):~/qfx/brand/social_grid_v3,iPhone preset 1,錶盤假字與 Bugatti 假車標清掉;審閱頁同網址 v7。0 貼文、零 credit,等老闆「發」。
+- 09-23 19:30 ad07 The Gilder 去 AI 感：老闆說「ITS YOUR SKILL ISSUE」，研究三路(research/deai_20260923)。根因=genai-prompt-pro §4.5 那套 rig block(cinematic/ARRI/Deakins/底片)，改寫進 §4.4 紀實語言；重生 G2/G3 共 4cr，看起來像真實照片；~/qfx/scripts/deai_pass.py 後製；對照頁 https://claude.ai/artifact/RVoicSg4Y9UB8nWptr1YNB。其餘 6 張(~24cr)等老闆 OK。
