@@ -13490,5 +13490,55 @@
   "opened": "2026-09-23 17:42",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1350,
+  "what": "KINGCONN 正式標誌包 logo_v2/final 字形破洞:G 橫桿接點小缺口(橫式鎖定,已上線站台/Google)+直式鎖定皇海科技 海/科/技 破洞",
+  "why": "geom.text_paths 把可變字型重疊輪廓寫成 fill-rule=evenodd,重疊處被挖空;修法=skia-pathops union(動畫的中文列已用此修),但改正式包/線上站是另一件事,要老闆點頭",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 17:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1351,
+  "what": "KINGCONN logo 音效 v2 待老闆實聽(我只能用數字驗,沒有耳朵驗)",
+  "why": "咔聲限幅 11-13 dB、合成 braam 音色是否夠高級只能人耳判;~/kingconn/brand/logo_motion_v1_amd/KINGCONN_logo_v1.mp4",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 17:48",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1352,
+  "what": "QFX Ep01 The Bell: phone search-result UI not yet composited in AE (12.9s shot is a blank white screen)",
+  "why": "rough cut v5 delivered first for boss review",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 18:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1353,
+  "what": "QFX Ep01: finals at 1080p after boss approves the cut (~45cr/shot; balance ~320)",
+  "why": "rough cut uses 720p fast generation",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 18:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1354,
+  "what": "QFX Ep01: real pitched bell kept diegetically; boss rule is no pitched sounds, awaiting his call",
+  "why": "asked twice, no answer yet",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 18:13",
+  "closed": null,
+  "note": ""
  }
 ]
