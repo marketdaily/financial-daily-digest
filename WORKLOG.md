@@ -9875,3 +9875,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 19:34 reel v7c: 老闆給第二首 IG 音訊 27955095400806995,同 v7b 規則(全部照片/每打點一刀/logo 只在最後)重剪對拍 → ~/qfx/brand/motion/v7c_beat;17 刀逐格驗過,標誌 3.75s 出現、lockup 落 4.78s 最重一拍,5.7s 可無縫循環;預覽頁同網址 v3;桌面 QFX_logo\ads\QFX_reel_v7c_*.mp4;qfx a51ceee
 - 09-23 19:45 KINGCONN 換標續作(WSL 當機後):FB 粉專大頭貼+封面 ✅(老闆的代理瀏覽器 ~/.claude-browser 有 FB session,前 job 漏查)、Cybo ✅(當機前已上傳)、新開 IG+Threads @kingconntech ✅(商業帳號/中英 bio/Threads 可點連結);IG 可點連結要 App(#1361)。kingconn 1748d77d。
 - 09-23 19:46 reel v7d(老闆「you didnt capture every beat, piano key」):v7c 只抓打擊層 16 下→改抓鋼琴音符(STFT∪CQT 56 音),45 刀照片+標誌+7 步 lockup 每步落一個音,參考 Reley 每 4 格一刀已量;頁同網址 v4;桌面 QFX_reel_v7d_*.mp4
+- 09-23 19:49 reel v7e(老闆「logo animation at the end is slowed」):v7d 把 lockup 拆成每音一步看起來像慢動作→改原速(0.87s 與 v7b 逐格同速),標誌 3.88s 出現、4.10s 起滑都落在琴音上;照片段仍每音一刀 40 刀;頁 v5;桌面 QFX_reel_v7e_*.mp4
