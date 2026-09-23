@@ -9849,3 +9849,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 17:04 Sonniss 第一封退信(sonniss@sonniss.com 不存在,WebFetch 摘要捏造);改寄 timothy@sonniss.com cc support@(無頭瀏覽器從授權頁逐字抓),無退信。
 - 09-23 17:05 QFX ad06 round 1 stills: 8 via nano_banana_pro (~32cr), 2 rejected (Apple logo on laptop, fake handwriting on mannequin); review page https://claude.ai/artifact/5dMqFX9hX1SrPrQKfMevx9 ; credit balance 643 < ~1,500 needed for the full 30s.
 - 09-23 17:15 QFX ad06 v2: 服務融合(裁縫=被找到/歌手=曝光/橄欖油=品牌官網,34°朱紅一刀切空→滿),三組空滿場定裝照(以空場 edit 生滿場,構圖一致);累計~60cr,餘~580。審閱頁 v2 同網址。
+- 09-23 17:35 QFX ad06 v3: 老闆要求重看參考片學工藝+cinematic storytelling;量化 grade(我們飽和 2 倍/57% 琥珀)+鏡位/運鏡統計(69% 推拉)→改單一主角三集 campaign,Ep01「The Bell」16 鏡劇本;測試靜照 3 張(t30 針像刺穿嘴唇待修)。審閱頁 v3 同網址,等老闆拍板+鈴聲是否算音效。
