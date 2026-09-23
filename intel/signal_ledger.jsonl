@@ -1187,3 +1187,24 @@
 {"date": "2026-09-22", "code": "6902", "source": "leadflow", "level": "red", "signal": "GOGOLOOK(6902) 無消息近漲停+9.4%(連3根,5日+36.1%),疑資訊先行資金|外資+投信近3日+557張", "price_at_signal": null}
 {"date": "2026-09-22", "code": "7792", "source": "leadflow", "level": "red", "signal": "安葆(7792) 無消息近漲停+9.9%(量能6.5×,5日+21.3%),疑資訊先行資金|外資+投信近3日+752張", "price_at_signal": null}
 {"date": "2026-09-22", "code": "3541", "source": "leadflow", "level": "red", "signal": "西柏(3541) 無消息近漲停+9.8%(量能30.0×,5日+11.6%),疑資訊先行資金|外資+投信近3日僅+48張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-23", "code": "1569", "source": "margin", "level": "yellow", "signal": "濱川(1569):融資5日暴增17.7%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-09-23", "code": "2316", "source": "mops_news", "level": "red", "signal": "楠梓電(2316) 重訊[2026-09-22]:公告本公司國內第一次無擔保轉換公司債代收價款行庫及存 儲專戶行庫", "price_at_signal": null}
+{"date": "2026-09-23", "code": "3033", "source": "institutional", "level": "red", "signal": "威健(3033):外資連 5 日賣超(5日淨賣 -2,135 張)", "price_at_signal": null}
+{"date": "2026-09-23", "code": "4542", "source": "sbl", "level": "yellow", "signal": "科嶠(4542):機構借券賣出5日增10.5%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-09-23", "code": "6174", "source": "investor_conf", "level": "yellow", "signal": "安碁(6174):法說會14天後召開", "price_at_signal": null}
+{"date": "2026-09-23", "code": "6534", "source": "mops_news", "level": "red", "signal": "正瀚-創(6534) 重訊[2026-09-22]:更正112年度、113年度及114年度合併及個體中英文財務報告， 暨113年及114年第一季至第三季合併中文財務報告、 ", "price_at_signal": null}
+{"date": "2026-09-23", "code": "6534", "source": "mops_news", "level": "yellow", "signal": "正瀚-創(6534) 重訊[2026-09-22]:公告中華電信股份有限公司嘉義營運處 對本公司提起民事訴訟之更一審判決結果", "price_at_signal": null}
+{"date": "2026-09-23", "code": "3707", "source": "tw_rank", "level": "red", "signal": "漢磊(3707) 量能竄榜:今日量榜第13(近10日未進過top50,+1.0%,55,452張)", "price_at_signal": null}
+{"date": "2026-09-23", "code": "2542", "source": "tw_rank", "level": "red", "signal": "興富發(2542) 量能竄榜:今日量榜第16(近10日未進過top50,-4.6%,46,530張)", "price_at_signal": null}
+{"date": "2026-09-23", "code": "4188", "source": "leadflow", "level": "yellow", "signal": "安克(4188) 無消息近漲停+10.0%(量能2.3×,5日+4.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-23", "code": "6237", "source": "leadflow", "level": "red", "signal": "驊訊(6237) 無消息近漲停+10.0%(量能7.5×,5日+12.5%),疑資訊先行資金|外資+投信近3日僅+95張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-23", "code": "4556", "source": "leadflow", "level": "yellow", "signal": "旭然(4556) 無消息近漲停+10.0%(量能2.4×,5日+15.0%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-23", "code": "3016", "source": "leadflow", "level": "red", "signal": "嘉晶(3016) 無消息近漲停+9.8%(連2根,5日+26.0%),疑資訊先行資金|外資+投信近3日+14973張", "price_at_signal": null}
+{"date": "2026-09-23", "code": "3552", "source": "leadflow", "level": "red", "signal": "同致(3552) 無消息近漲停+10.0%(量能10.8×,5日+3.7%),疑資訊先行資金|外資+投信近3日+593張", "price_at_signal": null}
+{"date": "2026-09-23", "code": "3294", "source": "leadflow", "level": "red", "signal": "英濟(3294) 無消息近漲停+10.0%(量能5.8×,5日+15.2%),疑資訊先行資金|外資+投信近3日僅+154張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-23", "code": "4174", "source": "leadflow", "level": "red", "signal": "浩鼎(4174) 無消息近漲停+9.9%(連2根,5日+22.3%),疑資訊先行資金|外資+投信近3日+638張", "price_at_signal": null}
+{"date": "2026-09-23", "code": "3317", "source": "leadflow", "level": "red", "signal": "尼克森(3317) 無消息近漲停+9.9%(量能16.0×,5日+19.8%),疑資訊先行資金|外資+投信近3日僅-1473張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-23", "code": "6870", "source": "leadflow", "level": "red", "signal": "騰雲(6870) 無消息近漲停+9.9%(量能11.7×,5日+4.0%),疑資訊先行資金|外資+投信近3日僅+19張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-23", "code": "6118", "source": "leadflow", "level": "red", "signal": "建達(6118) 無消息近漲停+9.8%(量能10.8×,5日+11.3%),疑資訊先行資金|外資+投信近3日僅+70張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-23", "code": "6693", "source": "leadflow", "level": "yellow", "signal": "廣閎科(6693) 無消息近漲停+9.7%(量能2.6×,5日+7.1%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-23", "code": "8437", "source": "leadflow", "level": "red", "signal": "大地-KY(8437) 無消息近漲停+9.3%(量能5.3×,5日+9.7%),疑資訊先行資金|外資+投信近3日僅+17張,法人未同步=隱形買盤", "price_at_signal": null}
