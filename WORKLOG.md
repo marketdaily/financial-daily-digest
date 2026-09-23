@@ -9816,3 +9816,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-22 19:06 QFX_sting_v1.mp4 定版(混音依老闆新口味重做:鼓點+點擊+sub,禁 whoosh/旋律);CHOSEN light v1 定版、dark 算圖中;storefront autosave 吞了 76 張預覽 PNG 已 rm --cached+gitignore。
 - 09-22 22:35 老闆判 v1 不及格→IG 16 支 logo motion 對照(17/60 vs 42-51,根因=沒有空間+沒點子)已發 Artifact;老闆定產線 Blender 建→Higgsfield 生成:Genjutsu 實測 35cr 成功(hf/genjutsu_qfx_720p_t1.mp4);聲音改自生鼓底(老闆罵搬別線音效);combo_lib 加 studio()。v2 待建(open)。
 - 09-22 23:10 v2 出片:QFX(光跡描Q/studio/雙機位/字穿環)+Genjutsu 1080p 55cr、CHOSEN(蓋子掀38°+字掉出)。比例根因=曲線bevel在尖端噴幾何→mesh bevel;scale bake 坑。交付頁 v2 已發。
+- 09-23 09:45 QFX sting v3（1:1 照 Beats 拍點）1080p 抽驗抓到聚光燈燈泡在紅 X 玻璃裡反射成亮點 → 燈物件 visible_camera/glossy/transmission=False，f34 起重算（render_v3b.sh，約 20 分）。教訓：Cycles 的燈預設會被 glossy/transmission 看見，光束燈一律關三個可見性。
