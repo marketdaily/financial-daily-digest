@@ -40,8 +40,6 @@
       "allam-2-7b",
       "canopylabs/orpheus-arabic-saudi",
       "canopylabs/orpheus-v1-english",
-      "groq/compound",
-      "groq/compound-mini",
       "meta-llama/llama-prompt-guard-2-22m",
       "meta-llama/llama-prompt-guard-2-86m",
       "openai/gpt-oss-120b",
@@ -130,5 +128,5 @@
       "z-ai/glm-5.2:free"
     ]
   },
-  "updated": "2026-09-22 10:10"
+  "updated": "2026-09-23 10:20"
 }
