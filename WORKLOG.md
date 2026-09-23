@@ -9821,3 +9821,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 12:05 CHOSEN logo v8 lookdev stills（Joe Hitch Xbox unboxing 文法）：~/storefront/clients/chosen/logo_sting_v8_xbox/，3 張 1080p 定格（閉箱白棚／分層剖開金光＋卡牌／38° 官方標＋金環＋字標），零 credit、只出圖不發、GPU 走 flock /tmp/gpu_render.lock 單工。
 - 09-23 12:05 QFX logo v4_steam lookdev（Joe Hitch Steam 文法、機械加工零件版；老闆判 v3 "so fucking terrible"）：~/qfx/brand/motion/v4_steam/ 三張定妝照 S1/S2/S3+contact sheet，只算靜幀、零 credit、blender 一律 flock+systemd-run 包住。
 - 09-23 11:55 v4_steam 收尾：S1/S2/S3/M_morph 1080p 128spp 各 5.6–7.5 s；三輪迭代（紅墊圈爆紅→縫線、金屬爆白→降燈、morph 壓錯軸）；stills_sheet.jpg 與 Steam 參考格並排。LESSONS 已回寫。
+- 09-23 12:06 CHOSEN v8 lookdev 三張定稿完成：~/storefront/clients/chosen/logo_sting_v8_xbox/{S1,S2,S3}.png + stills_sheet.jpg（storefront 已 commit/push）。1080p/128spp 每張 5–10 s。坑：miter 內縮自交黑楔形（改半平面夾住＋理想膠囊）、白世界+AgX 灰底粉紅（Is Camera Ray 分流+shadow catcher）、亮面字標反光把 N 洗白（改 matte）。已回寫 blender-logo-motion LESSONS。未收：S2 的卡牌仍像平面海報、金片堆像黃銅葉片而非 Xbox 的弧形肋片；S3 金色仍比品牌 #EEBA1E 淡。
