@@ -13338,8 +13338,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-23 15:18",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-23 19:40",
+  "note": "09-23 19:15 用老闆 08-05 種好的代理瀏覽器 ~/.claude-browser/profile(FB 已登入)切進粉專身分換上 avatar-1024 + facebook_cover_1640x924;登出視角驗過;證據 kingconn/brand/logo_v2/rollout_evidence/facebook_after_loggedout.png"
  },
  {
   "id": 1335,
@@ -13538,6 +13538,86 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-23 18:13",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1355,
+  "what": "QFX 著名品牌 logo 動態量產線:法務風險待老闆書面接受(D1)+CTA 位置(D2),未拍板前一篇不發",
+  "why": "legal-compliance 判 🟡 知情承擔商業風險,法源未覆蓋須上呈",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 18:41",
+  "closed": "2026-09-23 18:52",
+  "note": "D1=YES 09-23 老闆書面接受;D2=B;D6=NT$32,000+;D9=no Artlist. 發文帳號仍待指定(不發)"
+ },
+ {
+  "id": 1356,
+  "what": "logo 動態 3D 檔 NT$48,000+ 與 USD 報價未經市場實查;Artlist 模板授權未查;12 品牌 TIPO 註冊未查",
+  "why": "規劃階段,GPU 忙客戶案,未做市場/授權核對",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 18:41",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1357,
+  "what": "CHOSEN logo v10 (Layer Peel) 待 Delvin/老闆看片拍板 + 選有無結尾和弦(v10 vs v10_notone)",
+  "why": "成品已出、QA 過,但老闆尚未看過;v9 被判 cheap/generic,v10 是否過關未知",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-23 18:54",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1358,
+  "what": "C: 只剩 13GB(99%),WSL ext4.vhdx 329GB 在 C: 上,19:02 WSL VM 被整台拔掉、所有 session 掛掉",
+  "why": "還沒清 C: / 還沒壓 vhdx(要 wsl --shutdown,會關全部分頁,需老闆挑時間)",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-23 19:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1359,
+  "what": "C: 只剩約 22GB，要等新 SSD(990 Pro 4TB)+RAM(下週到)把 WSL vhdx 與 ComfyUI 模型搬過去",
+  "why": "硬體還沒到;搬家要 wsl --shutdown;B860 組合包主機板用不到要拆賣",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-09-23 19:23",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1360,
+  "what": "ad07 Gilder: 其餘 6 張靜照用紀實語言重生(~24cr)+確認 NBP 是否被換成 NB2",
+  "why": "等老闆看對照頁核可點數",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 19:29",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1361,
+  "what": "KINGCONN IG @kingconntech 的可點擊網站連結要用 IG App 加(網頁版與手機網頁皆鎖『Editing your links is only available on mobile』,web API 會丟掉 external_url);目前 bio 末行放純文字 kingconn.com.tw,Threads 已有可點連結",
+  "why": "IG 只在原生 App 開放 Links 編輯;帳密在 ~/kingconn/.env(KC_SOCIAL_*)",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 19:40",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1362,
+  "what": "KINGCONN 新開 IG/Threads(@kingconntech)09-25 回查是否被 Meta 新帳號風控停權/要求驗證;通過後把兩個網址加進 org_schema.py sameAs + build_llms.py 四語重產部署",
+  "why": "新帳號前 48h 最常被 checkpoint;sameAs 要等帳號穩定再上 1,000+ 頁",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 19:40",
   "closed": null,
   "note": ""
  }
