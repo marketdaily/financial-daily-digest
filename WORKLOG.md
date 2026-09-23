@@ -9858,3 +9858,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 18:50 QFX IG 九宮格 v2(老闆:主軸不是 one cut → logo 核心+歐美精品世界;物件加小字;logo 定位=Q 圓環圓心並廣播 4 個 session):~/qfx/brand/social_grid_v2(Z-Image 9 場景+透視印刷 finish.py),審閱頁同網址 v2。仍未發,等老闆 OK。
 - 09-23 18:10 logo 中心=Q 圓心(老闆令,經 57 視窗轉達):stills.py 改錨點重算 box/seal/steel(≤2 px)、品牌書封面/看板位移、換上 2e 印好文案的錨點版物件圖(tote 偏 27 px 退回 2e);品牌書 v18。
 - 09-23 18:03 QFX 標誌定位中心改 Q 圓環圓心(老闆令,session 57 轉達):共用 ~/qfx/scripts/qfx_anchor.py(PIL/cv2/Blender 三用+自測),qfx_blend.logo()/combo_lib.center_on_floor()/imagery_v2 place.py 全改對 Q 圓心(舊片重算傳 "bbox"),headless 探針 Q-anchor=(0,0,0);三 skill+LESSONS 已登記。坑:曲線 bevel 在 F 尖端噴幾何,bevel 後量 bbox 錨會偏。
+- 09-23 18:20 Q 錨點更正(57 視窗:圓擬合被月牙拉偏,改外弧/內弧極值框 0.3798/0.4155):stills.py 與品牌書改從 spec.json 讀(不再寫死),三張重算、品牌書 v20。
