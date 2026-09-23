@@ -13438,6 +13438,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-23 16:59",
+  "closed": "2026-09-23 17:02",
+  "note": "第一封寄到不存在的 sonniss@sonniss.com 被退信;已改寄 timothy@ cc support@,thread 1a0cd802ebd3afd9"
+ },
+ {
+  "id": 1345,
+  "what": "等 Sonniss 回信(已寄 timothy@sonniss.com cc support@sonniss.com, thread 1a0cd802ebd3afd9, 09-23 17:02 無退信)",
+  "why": "回覆前 Sonniss 音效不交付客戶",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 17:02",
   "closed": null,
   "note": ""
  }

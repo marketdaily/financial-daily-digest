@@ -9846,3 +9846,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-23 16:30 KINGCONN logo v1 Direction A done: click at 40% of frame height (9:16 30%), push CUBIC ease-in hits the 1u gap at full speed, shrink f230-246 into the lockup; also found and fixed the lockup background being pure black instead of ink #0B0C0D (color_check was too weak), the wordmark ghost letters, and the lemon flash. KINGCONN_logo_v1{,_9x16}.mp4 QA PASS -14.2 LUFS. Zero credits, nothing sent.
 - 09-23 17:05 QFX ad06「Over here」:老闆指定照抄 femi.sobaki / Constant Contact reel(DbJ39fwIqsM,84s 47 刀)。已看片+whisper,NOTES 在 ~/qfx/research/ad_refs/DbJ39fwIqsM,QFX 版腳本草稿 ~/qfx/brand/ads/ad06_overhere/BRIEF.md;零 credit,等老闆定旁白/選角/點數。
 - 09-23 16:50 老闆令寄信問 Sonniss 授權:已寄 sonniss@sonniss.com(付費客戶廣告是否涵蓋/archive.org 下載是否適用),thread 1a0cd7d3e6963a67,等回信。
+- 09-23 17:04 Sonniss 第一封退信(sonniss@sonniss.com 不存在,WebFetch 摘要捏造);改寄 timothy@sonniss.com cc support@(無頭瀏覽器從授權頁逐字抓),無退信。
