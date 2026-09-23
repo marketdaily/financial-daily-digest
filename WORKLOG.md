@@ -9890,3 +9890,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-24 00:35 ⛔ Higgsfield 全面停用(老闆誤買 25,000 點包申請退款):不准任何生成,連靜照都不行,直到老闆放行。餘 25,129.33;23:50 後零花費(最後一筆 23:49:25,購買入帳 00:27:42)。ad08 暫停。
 - 09-24 00:43 reel piano v10 IG 版(老闆自己發 v9b 後嫌音樂延遲+畫質差):一遍音訊 5.70s 不接縫、音訊燒進檔(解碼 vs 原音 0 樣本偏移,41 個琴音剪點 40 個 0 格/最大 ±16.4ms)、9 張 grid tile 4x-UltraSharp 超取樣+主 logo 用向量母檔 ECC 對齊重印(IoU .83-.96,Q ±2px)、H.264 High 20Mbps/AAC 320k 48k/−14.0 LUFS;v9b vs v10 100% 截圖 logo 銳利度 2–10 倍;桌面 QFX_reel_piano_v10_ig.mp4;頁 v10;未發文未寄信
 - 09-24 00:46 QFX IG(全球)+Threads(台灣)經營學習→專業經營手冊(老闆令:自己帳號當代操活招牌);不發文零 credit
+- 09-24 01:35 QFX 社群:4 路研究完成(research/social_mgmt_20260924)、自動發文系統 ~/qfx/social(cron */10,彩排全過,首發 Threads 20:00/IG 21:30)、週 1-2 共 11 則排程、手冊 https://claude.ai/artifact/F7ZxeSeTM5jBVqWoeKmuYr、skill qfx-social-ops;WSL Chrome 崩潰根因=無音效裝置+WebGL;ig01/ig04 hold(AI label 待老闆)、ig03 hold(舊字標)
