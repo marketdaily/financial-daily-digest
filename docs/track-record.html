@@ -754,7 +754,7 @@ footer a { color: #a5b4fc; text-decoration: none; font-weight: 600; font-size: 1
 let RECORDS = [];
 // 資料檔版本戳:scripts/build_track_record.py 每次產出後回寫此值(?v= cache-bust)。
 // 取代原本 ?t=Date.now()+no-cache:那讓每個訪客/爬蟲都重抓 3MB,現在版本沒變就走快取/304。
-const TR_DATA_VERSION = "2026-09-23T08:20:18";
+const TR_DATA_VERSION = "2026-09-24T08:21:10";
 // 表格分頁(2026-09-03 §2.1):原本 3,500+ 筆一次塞進 DOM(29k 節點、頁高 32 萬 px),改預設 100 筆+載入更多
 const PAGE_SIZE = 100;
 let shownCount = PAGE_SIZE;
