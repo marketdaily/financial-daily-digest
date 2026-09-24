@@ -136,7 +136,7 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": null,
+  "tw": 0,
   "us": null
  },
  "sitescan": {
@@ -148,8 +148,8 @@
  "flags": {
   "hb_miss_tw": false,
   "hb_miss_us": false,
-  "guard_alert_tw": false,
+  "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-09-23T23:08:01Z"
+ "generated_utc": "2026-09-24T00:08:01Z"
 }
