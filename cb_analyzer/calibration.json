@@ -1,287 +1,287 @@
 {
- "updated": "2026-09-23",
- "n_rows": 944,
- "n_interim": 475,
- "n_final": 95,
+ "updated": "2026-09-25",
+ "n_rows": 958,
+ "n_interim": 529,
+ "n_final": 112,
  "details": [
   {
-   "bond": "30166",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.143,
-   "touched": true
-  },
-  {
-   "bond": "31494",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.05,
-   "touched": false
-  },
-  {
-   "bond": "32191",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.411,
-   "touched": true
-  },
-  {
-   "bond": "35122",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.002,
-   "touched": false
-  },
-  {
    "bond": "49675",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.397,
+   "date": "2026-08-28",
+   "age_d": 28,
+   "p_interim": 0.246,
    "touched": false
   },
   {
    "bond": "49731",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.2,
+   "date": "2026-08-28",
+   "age_d": 28,
+   "p_interim": 0.136,
    "touched": false
   },
   {
    "bond": "55363",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.007,
+   "date": "2026-08-28",
+   "age_d": 28,
+   "p_interim": 0.002,
    "touched": false
   },
   {
    "bond": "76311",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.264,
+   "date": "2026-08-28",
+   "age_d": 28,
+   "p_interim": 0.058,
    "touched": false
   },
   {
    "bond": "89365",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.007,
+   "date": "2026-08-28",
+   "age_d": 28,
+   "p_interim": 0.002,
    "touched": false
   },
   {
    "bond": "89366",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.07,
+   "date": "2026-08-28",
+   "age_d": 28,
+   "p_interim": 0.028,
    "touched": false
   },
   {
    "bond": "82993",
-   "date": "2026-08-22",
-   "age_d": 32,
-   "p_interim": 0.025,
+   "date": "2026-08-28",
+   "age_d": 28,
+   "p_interim": 0.02,
    "touched": false
   },
   {
    "bond": "15602",
-   "date": "2026-08-23",
-   "age_d": 31,
-   "p_interim": 0.253,
-   "touched": true
-  },
-  {
-   "bond": "23032",
-   "date": "2026-08-23",
-   "age_d": 31,
-   "p_interim": 0.246,
-   "touched": true
-  },
-  {
-   "bond": "24643",
-   "date": "2026-08-23",
-   "age_d": 31,
-   "p_interim": 0.219,
-   "touched": false
-  },
-  {
-   "bond": "23032",
-   "date": "2026-08-28",
-   "age_d": 26,
-   "p_interim": 0.481,
+   "date": "2026-08-29",
+   "age_d": 27,
+   "p_interim": 0.251,
    "touched": true
   },
   {
    "bond": "82993",
    "date": "2026-08-31",
-   "age_d": 23,
-   "p_interim": 0.01,
+   "age_d": 25,
+   "p_interim": 0.014,
    "touched": false
   },
   {
    "bond": "15602",
    "date": "2026-09-01",
-   "age_d": 22,
-   "p_interim": 0.049,
+   "age_d": 24,
+   "p_interim": 0.06,
    "touched": true
   },
   {
    "bond": "23032",
    "date": "2026-09-01",
-   "age_d": 22,
-   "p_interim": 0.13,
+   "age_d": 24,
+   "p_interim": 0.146,
    "touched": false
   },
   {
    "bond": "24643",
    "date": "2026-09-01",
-   "age_d": 22,
-   "p_interim": 0.097,
+   "age_d": 24,
+   "p_interim": 0.111,
    "touched": false
   },
   {
    "bond": "31494",
    "date": "2026-09-01",
-   "age_d": 22,
-   "p_interim": 0.006,
+   "age_d": 24,
+   "p_interim": 0.008,
    "touched": false
   },
   {
    "bond": "32191",
    "date": "2026-09-01",
-   "age_d": 22,
-   "p_interim": 0.536,
+   "age_d": 24,
+   "p_interim": 0.552,
    "touched": true
   },
   {
+   "bond": "76311",
+   "date": "2026-09-01",
+   "age_d": 24,
+   "p_interim": 0.037,
+   "touched": false
+  },
+  {
+   "bond": "82221",
+   "date": "2026-09-01",
+   "age_d": 24,
+   "p_interim": 0.042,
+   "touched": false
+  },
+  {
+   "bond": "89366",
+   "date": "2026-09-01",
+   "age_d": 24,
+   "p_interim": 0.018,
+   "touched": false
+  },
+  {
    "bond": "23032",
-   "date": "2026-09-04",
-   "age_d": 19,
-   "p_interim": 0.024,
+   "date": "2026-09-05",
+   "age_d": 20,
+   "p_interim": 0.027,
    "touched": false
   },
   {
    "bond": "24643",
-   "date": "2026-09-04",
-   "age_d": 19,
-   "p_interim": 0.298,
+   "date": "2026-09-05",
+   "age_d": 20,
+   "p_interim": 0.31,
    "touched": false
   },
   {
    "bond": "31415",
-   "date": "2026-09-04",
-   "age_d": 19,
+   "date": "2026-09-05",
+   "age_d": 20,
    "p_interim": 1.0,
    "touched": true
   },
   {
    "bond": "31494",
-   "date": "2026-09-04",
-   "age_d": 19,
+   "date": "2026-09-05",
+   "age_d": 20,
    "p_interim": 0.001,
    "touched": false
   },
   {
    "bond": "35834",
-   "date": "2026-09-04",
-   "age_d": 19,
-   "p_interim": 0.028,
-   "touched": false
-  },
-  {
-   "bond": "45415",
-   "date": "2026-09-04",
-   "age_d": 19,
-   "p_interim": 0.012,
+   "date": "2026-09-05",
+   "age_d": 20,
+   "p_interim": 0.033,
    "touched": false
   },
   {
    "bond": "77431",
-   "date": "2026-09-04",
+   "date": "2026-09-06",
    "age_d": 19,
-   "p_interim": 0.012,
+   "p_interim": 0.011,
    "touched": false
   },
   {
    "bond": "82221",
-   "date": "2026-09-04",
+   "date": "2026-09-06",
    "age_d": 19,
    "p_interim": 0.0,
    "touched": false
   },
   {
    "bond": "82993",
-   "date": "2026-09-04",
+   "date": "2026-09-06",
    "age_d": 19,
    "p_interim": 0.001,
    "touched": false
   },
   {
    "bond": "15602",
-   "date": "2026-09-05",
+   "date": "2026-09-07",
    "age_d": 18,
-   "p_interim": 0.002,
+   "p_interim": 0.006,
    "touched": false
   },
   {
    "bond": "22211",
-   "date": "2026-09-05",
+   "date": "2026-09-07",
    "age_d": 18,
-   "p_interim": 0.864,
+   "p_interim": 0.634,
    "touched": true
   },
   {
    "bond": "23032",
-   "date": "2026-09-05",
+   "date": "2026-09-07",
    "age_d": 18,
-   "p_interim": 0.02,
+   "p_interim": 0.03,
    "touched": false
   },
   {
    "bond": "24643",
-   "date": "2026-09-05",
+   "date": "2026-09-07",
    "age_d": 18,
-   "p_interim": 0.286,
+   "p_interim": 0.088,
    "touched": false
   },
   {
    "bond": "31415",
-   "date": "2026-09-05",
+   "date": "2026-09-07",
    "age_d": 18,
    "p_interim": 1.0,
    "touched": true
   },
   {
+   "bond": "23032",
+   "date": "2026-09-09",
+   "age_d": 16,
+   "p_interim": 0.19,
+   "touched": false
+  },
+  {
+   "bond": "24643",
+   "date": "2026-09-09",
+   "age_d": 16,
+   "p_interim": 0.025,
+   "touched": false
+  },
+  {
+   "bond": "31415",
+   "date": "2026-09-09",
+   "age_d": 16,
+   "p_interim": 1.0,
+   "touched": true
+  },
+  {
    "bond": "31494",
-   "date": "2026-09-05",
-   "age_d": 18,
+   "date": "2026-09-09",
+   "age_d": 16,
    "p_interim": 0.001,
    "touched": false
   },
   {
    "bond": "35834",
-   "date": "2026-09-05",
-   "age_d": 18,
-   "p_interim": 0.025,
+   "date": "2026-09-09",
+   "age_d": 16,
+   "p_interim": 0.026,
    "touched": false
   },
   {
    "bond": "45415",
-   "date": "2026-09-05",
-   "age_d": 18,
-   "p_interim": 0.01,
+   "date": "2026-09-09",
+   "age_d": 16,
+   "p_interim": 0.003,
    "touched": false
   },
   {
    "bond": "77431",
-   "date": "2026-09-05",
-   "age_d": 18,
-   "p_interim": 0.009,
+   "date": "2026-09-09",
+   "age_d": 16,
+   "p_interim": 0.008,
    "touched": false
   },
   {
    "bond": "82221",
-   "date": "2026-09-05",
-   "age_d": 18,
+   "date": "2026-09-09",
+   "age_d": 16,
    "p_interim": 0.0,
+   "touched": false
+  },
+  {
+   "bond": "82993",
+   "date": "2026-09-09",
+   "age_d": 16,
+   "p_interim": 0.0,
+   "touched": false
+  },
+  {
+   "bond": "15602",
+   "date": "2026-09-10",
+   "age_d": 15,
+   "p_interim": 0.005,
    "touched": false
   }
  ],
@@ -384,12 +384,12 @@
   },
   "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);live 帳本 predictions.jsonl 持續對答案;G1_brier.oos_brier_cal 是「假設全列都拿到校準」的理想值,實際部署有 oos_frac_out_of_domain 比例落回未校準 raw(見 cb_ledger.py),誠實部署量測見 oos_brier_cal_deployment_realistic"
  },
- "brier_interim": 0.1045,
+ "brier_interim": 0.1054,
  "coin_flip_brier": 0.25,
- "avg_pred_interim": 0.2403,
- "realized_interim": 0.2,
- "shrink": 0.832,
+ "avg_pred_interim": 0.2439,
+ "realized_interim": 0.2117,
+ "shrink": 0.868,
  "note": "樣本 2 筆 <20,校準閘門未開(小樣本校準=雜訊)",
  "final_hit_rate": 1.0,
- "final_avg_pred": 0.6632
+ "final_avg_pred": 0.6718
 }
