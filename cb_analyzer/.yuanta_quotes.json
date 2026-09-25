@@ -313,5 +313,26 @@
   "issue_lots": 37.0,
   "vol_21d_pct": null,
   "quote_date": "2026-09-14"
+ },
+ "32609": {
+  "start_date": "9/29(二)",
+  "name": "威剛九",
+  "bond_code": "32609",
+  "collateral": "無",
+  "tcri": 4,
+  "premium_pct": 6.48,
+  "discount_rate_pct": 4.25,
+  "opt_expiry": "2028-09-04",
+  "put_date": "2028-09-18",
+  "tenor_year": 1.97,
+  "put_price": 102.01,
+  "conv_price": 435.5,
+  "parity": 86.45,
+  "cb_price": 119.5,
+  "premium_discount_pct": 38.0,
+  "unit_price_nt": 30000.0,
+  "issue_lots": 38.0,
+  "vol_21d_pct": null,
+  "quote_date": "2026-09-29"
  }
 }
