@@ -1,10 +1,10 @@
 {
- "date": "2026-09-27",
+ "date": "2026-09-28",
  "kpi": {
   "subscribers": 32,
   "digest_clean_days_7d": "6/7",
   "fallback_7d": 0,
-  "social_posts_7d": 79
+  "social_posts_7d": 67
  },
  "digest": {
   "audit": null,
@@ -142,5 +142,5 @@
   "guard_alert_tw": false,
   "guard_alert_us": false
  },
- "generated_utc": "2026-09-27T14:38:02Z"
+ "generated_utc": "2026-09-27T16:08:01Z"
 }
