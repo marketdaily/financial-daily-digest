@@ -9895,3 +9895,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-27 13:20 SSD/RAM 收尾:distro 09-25 已在 D:\WSL\Ubuntu(990 PRO 4TB,C: 剩 430GB);RAM 64GB(3600 MT/s 未開 EXPO,#1390);.wslconfig memory 14→32GB+swap 移 D:(待 wsl --shutdown,#1389);停用兩個指向舊 C: vhdx 的壓縮排程;關 #1358/#1279/#1311/#1277/#794
 - 09-27 13:23 AE 全面精通計畫(老闆「learn everything including every button…your work is terrible」):五線並行學習→~/qfx/research/ae_mastery_0927(①效果/屬性全圖鑑 headless 實渲 ②官方手冊全章 ③表達式+腳本 API 全覆蓋 ④世界級工作室作品拆解 ⑤ad01 r18 對標無情批判)→整合進 ae-motion-pro→重做 ad01。零 credit、不發文不寄信。
 - 09-27 21:58 AE 精通五線+音樂+prompt 全數落地(ae-motion-pro: qaText/compose_qa/beatsync/aepro_x 22 helpers/runner snapshot+stall;genai-prompt-pro 重建,盲考 R5 37/40)。老闆拍板 ad01 r19=「一次搜尋找到你」+配樂 B Runway(122BPM drop 17.71s final 27.56s),背景代理開做 ~/qfx/brand/ads/ad01_r19。
+- 09-28 06:57 ad01 r19→r20 完成(四閘門全過,評審 4.5–6/10);審閱頁 https://claude.ai/artifact/8rtefEUG3gvPGbFMR7nsS2;桌面 ad01_r19/r20_*.mp4;卡美術方向,等老闆意見做 r21。runner 加 AE 記憶體/CPU 上限(一次渲染吃 36GB)。
