@@ -110,27 +110,27 @@
 {"date": "2026-09-10", "market": "us", "from": "QQQM", "to": "MRVL", "from_px": 294.97, "to_px": 235.01, "from_ret": 1.17, "to_ret": 6.08, "rel": 4.92, "win": true, "settled": true}
 {"date": "2026-09-10", "market": "us", "from": "AMZN", "to": "MRVL", "from_px": 252.4, "to_px": 235.01, "from_ret": -0.28, "to_ret": 6.08, "rel": 6.36, "win": true, "settled": true}
 {"date": "2026-09-11", "market": "tw", "from": "2308", "to": "3443", "from_px": 1675.0, "to_px": 6225.0, "from_ret": 7.1, "to_ret": 16.83, "rel": 9.73, "win": true, "settled": true}
-{"date": "2026-09-12", "market": "tw", "from": "2327", "to": "3324", "from_px": 544.0, "to_px": 1360.0}
-{"date": "2026-09-12", "market": "tw", "from": "2308", "to": "3324", "from_px": 1620.0, "to_px": 1360.0}
-{"date": "2026-09-12", "market": "us", "from": "GOOGL", "to": "SMCI", "from_px": 338.5, "to_px": 40.1}
-{"date": "2026-09-14", "market": "tw", "from": "2327", "to": "3491", "from_px": 544.0, "to_px": 1415.0}
-{"date": "2026-09-14", "market": "tw", "from": "2308", "to": "3491", "from_px": 1620.0, "to_px": 1415.0}
-{"date": "2026-09-14", "market": "tw", "from": "8299", "to": "3491", "from_px": 1990.0, "to_px": 1415.0}
-{"date": "2026-09-14", "market": "us", "from": "SPYM", "to": "SMCI", "from_px": 89.72, "to_px": 40.1}
-{"date": "2026-09-14", "market": "us", "from": "GOOGL", "to": "SMCI", "from_px": 338.5, "to_px": 40.1}
-{"date": "2026-09-16", "market": "tw", "from": "2327", "to": "2454", "from_px": 537.0, "to_px": 4430.0}
-{"date": "2026-09-16", "market": "tw", "from": "2308", "to": "2454", "from_px": 1670.0, "to_px": 4430.0}
-{"date": "2026-09-16", "market": "tw", "from": "8299", "to": "2454", "from_px": 1920.0, "to_px": 4430.0}
-{"date": "2026-09-16", "market": "us", "from": "SOXX", "to": "MSTR", "from_px": 498.85, "to_px": 129.6}
-{"date": "2026-09-16", "market": "us", "from": "AMZN", "to": "MSTR", "from_px": 248.42, "to_px": 129.6}
-{"date": "2026-09-17", "market": "tw", "from": "2308", "to": "3324", "from_px": 1710.0, "to_px": 1360.0}
-{"date": "2026-09-17", "market": "tw", "from": "8299", "to": "3324", "from_px": 1985.0, "to_px": 1360.0}
-{"date": "2026-09-17", "market": "us", "from": "SOXX", "to": "AXTI", "from_px": 502.06, "to_px": 64.3}
+{"date": "2026-09-12", "market": "tw", "from": "2327", "to": "3324", "from_px": 544.0, "to_px": 1360.0, "from_ret": 2.2, "to_ret": 16.48, "rel": 14.27, "win": true, "settled": true}
+{"date": "2026-09-12", "market": "tw", "from": "2308", "to": "3324", "from_px": 1620.0, "to_px": 1360.0, "from_ret": 15.74, "to_ret": 16.48, "rel": 0.73, "win": true, "settled": true}
+{"date": "2026-09-12", "market": "us", "from": "GOOGL", "to": "SMCI", "from_px": 338.5, "to_px": 40.1, "from_ret": 1.6, "to_ret": 12.14, "rel": 10.54, "win": true, "settled": true}
+{"date": "2026-09-14", "market": "tw", "from": "2327", "to": "3491", "from_px": 544.0, "to_px": 1415.0, "from_ret": 2.2, "to_ret": 9.35, "rel": 7.15, "win": true, "settled": true}
+{"date": "2026-09-14", "market": "tw", "from": "2308", "to": "3491", "from_px": 1620.0, "to_px": 1415.0, "from_ret": 15.74, "to_ret": 9.35, "rel": -6.39, "win": false, "settled": true}
+{"date": "2026-09-14", "market": "tw", "from": "8299", "to": "3491", "from_px": 1990.0, "to_px": 1415.0, "from_ret": 11.11, "to_ret": 9.35, "rel": -1.76, "win": false, "settled": true}
+{"date": "2026-09-14", "market": "us", "from": "SPYM", "to": "SMCI", "from_px": 89.72, "to_px": 40.1, "from_ret": 1.91, "to_ret": 12.14, "rel": 10.22, "win": true, "settled": true}
+{"date": "2026-09-14", "market": "us", "from": "GOOGL", "to": "SMCI", "from_px": 338.5, "to_px": 40.1, "from_ret": 1.6, "to_ret": 12.14, "rel": 10.54, "win": true, "settled": true}
+{"date": "2026-09-16", "market": "tw", "from": "2327", "to": "2454", "from_px": 537.0, "to_px": 4430.0, "from_ret": 6.9, "to_ret": 14.46, "rel": 7.56, "win": true, "settled": true}
+{"date": "2026-09-16", "market": "tw", "from": "2308", "to": "2454", "from_px": 1670.0, "to_px": 4430.0, "from_ret": 11.11, "to_ret": 14.46, "rel": 3.35, "win": true, "settled": true}
+{"date": "2026-09-16", "market": "tw", "from": "8299", "to": "2454", "from_px": 1920.0, "to_px": 4430.0, "from_ret": 11.59, "to_ret": 14.46, "rel": 2.87, "win": true, "settled": true}
+{"date": "2026-09-16", "market": "us", "from": "SOXX", "to": "MSTR", "from_px": 498.85, "to_px": 129.6, "from_ret": 12.68, "to_ret": 28.55, "rel": 15.87, "win": true, "settled": true}
+{"date": "2026-09-16", "market": "us", "from": "AMZN", "to": "MSTR", "from_px": 248.42, "to_px": 129.6, "from_ret": 1.35, "to_ret": 28.55, "rel": 27.2, "win": true, "settled": true}
+{"date": "2026-09-17", "market": "tw", "from": "2308", "to": "3324", "from_px": 1710.0, "to_px": 1360.0, "from_ret": 13.35, "to_ret": 23.47, "rel": 10.11, "win": true, "settled": true}
+{"date": "2026-09-17", "market": "tw", "from": "8299", "to": "3324", "from_px": 1985.0, "to_px": 1360.0, "from_ret": 7.87, "to_ret": 23.47, "rel": 15.6, "win": true, "settled": true}
+{"date": "2026-09-17", "market": "us", "from": "SOXX", "to": "AXTI", "from_px": 502.06, "to_px": 64.3, "from_ret": 9.05, "to_ret": 12.03, "rel": 2.98, "win": true, "settled": true}
 {"date": "2026-09-18", "market": "tw", "from": "2327", "to": "3443", "from_px": 529.0, "to_px": 6500.0}
 {"date": "2026-09-18", "market": "tw", "from": "00891", "to": "3443", "from_px": 35.41, "to_px": 6500.0}
 {"date": "2026-09-18", "market": "tw", "from": "2308", "to": "3443", "from_px": 1685.0, "to_px": 6500.0}
 {"date": "2026-09-18", "market": "tw", "from": "8299", "to": "3443", "from_px": 1970.0, "to_px": 6500.0}
-{"date": "2026-09-18", "market": "us", "from": "TSLA", "to": "SMCI", "from_px": 366.2, "to_px": 40.35}
+{"date": "2026-09-18", "market": "us", "from": "TSLA", "to": "SMCI", "from_px": 366.2, "to_px": 40.35, "from_ret": 2.15, "to_ret": 10.67, "rel": 8.52, "win": true, "settled": true}
 {"date": "2026-09-19", "market": "tw", "from": "2327", "to": "8299", "from_px": 550.0, "to_px": 2140.0}
 {"date": "2026-09-19", "market": "tw", "from": "006208", "to": "8299", "from_px": 251.2, "to_px": 2140.0}
 {"date": "2026-09-19", "market": "tw", "from": "2308", "to": "8299", "from_px": 1735.0, "to_px": 2140.0}
