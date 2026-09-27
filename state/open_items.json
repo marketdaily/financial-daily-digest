@@ -7936,8 +7936,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-05 22:04",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-27 13:12",
+  "note": "老闆已裝 4x16GB Kingston KF560C36-16 = 64GB;目前跑 3600 MT/s(未開 EXPO)"
  },
  {
   "id": 795,
@@ -12767,8 +12767,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-22 05:40",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-27 13:12",
+  "note": "C: 已剩 430GB,pagefile 63GB 不再造成空間危機;要不要搬 D: 或縮小留給老闆決定(需重開機)"
  },
  {
   "id": 1278,
@@ -12787,8 +12787,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-22 11:34",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-27 13:12",
+  "note": "vhdx 已搬離 C:(D:\\WSL\\Ubuntu),不再需要壓縮;swap 改 D:\\WSL\\swap.vhdx(下次 wsl --shutdown 生效)"
  },
  {
   "id": 1280,
@@ -13108,8 +13108,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-23 09:57",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-27 13:12",
+  "note": "壓縮路線作廢(vhdx 已搬 D:);WSLCompactOnce/WSL_Compact_Once 兩排程已 Disable(指向舊 C: 路徑)"
  },
  {
   "id": 1312,
@@ -13578,8 +13578,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-23 19:07",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-27 13:12",
+  "note": "09-27 查核:distro 已於 09-25 01:53 搬到 D:\\WSL\\Ubuntu(990 PRO 4TB),C: 剩 430GB;C: 上只剩 shortcut.ico"
  },
  {
   "id": 1359,
@@ -13638,8 +13638,8 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-09-23 20:46",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-23 23:44",
+  "note": "v9: 9 grid tiles in both reels, verified, desktop + page v7"
  },
  {
   "id": 1365,
@@ -13688,8 +13688,8 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-23 22:16",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-23 23:52",
+  "note": "連戲已修,改計畫 A"
  },
  {
   "id": 1370,
@@ -13708,8 +13708,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-23 22:46",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-23 23:25",
+  "note": "Delvin 選刪 F1 25:EA Cleanup 在遠端 session 卡隱形對話框,改直接刪安裝資料夾 C:\\Program Files\\EA Games\\F1 25(100GB),C: 7.1→106.9GB;EA app 解除安裝登錄項殘留無害"
  },
  {
   "id": 1372,
@@ -13728,6 +13728,176 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-23 22:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1374,
+  "what": "品牌量產 batch2:23 個品牌(排除 Very high:Hermès/Ferrari/Red Bull)winrig 兩個 worker 跑中(rig/batch2/worker.sh A/B),一牌一個 claude -p,預估 25-35h",
+  "why": "09-23 23:02 開跑,每牌交付前要我看 contact sheet 再給 Delvin;C: 只剩 ~10GB,可能撞 8GB 下限停工",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-23 23:02",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1375,
+  "what": "QFX reel v9 的 tile 04 行李袋被老闆再改(拿掉手機),兩支片要用新版重出",
+  "why": "v9 已用舊 duffle5(扶手上有手機)出片並上預覽頁 v7;等九宮格 session 重出 04 後跑 reel_grid/reframe.py duffle5 + 兩支 assemble",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-23 23:45",
+  "closed": "2026-09-23 23:48",
+  "note": "v9 re-rendered with final duffle (23:45, no phone); 95/95 + 37/37 verified; desktop + page v8"
+ },
+ {
+  "id": 1376,
+  "what": "ad08 Impossible to Miss 計畫 A:等老闆買 1,500 點(餘 129,需 1,615)→Seedance 探索+定稿+剪輯",
+  "why": "點數不足,未開始影片",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-23 23:52",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1377,
+  "what": "⛔ Higgsfield 凍結:老闆誤買 25,000 點申請退款,任何生成皆暫停直到他放行(ad08 等待中)",
+  "why": "退款處理中,未使用點數要保持不動",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-24 00:30",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1378,
+  "what": "~/qfx/ops/ig_post_2026-09-24/post/profcopy 是 @qfxsolution 登入 cookie 副本,要刪;/tmp 99% 滿(/tmp/claude-1000/bash-edit-diff ~6.6GB)害瀏覽器崩",
+  "why": "rm 被權限擋,需老闆放行",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-24 01:08",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1379,
+  "what": "AE 專業化學習計畫(09-24 老闆令):①學(2 個 Mac 研究 agent 手冊+winrig job 82665b96 看教學+拆模板)②練(分級練習+速度曲線對照)③用(重做一支前後對比)→ 產出新 skill ae-motion-pro(要登記 CATALOG/GOVERNANCE)",
+  "why": "Phase 1 進行中;Phase 2/3 未開始",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-24 01:17",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1380,
+  "what": "QFX 自家社群自動發文(cron */10)尚未在生產真的發出第一篇;首發 Threads th01 09-24 20:00、IG ig02 21:30",
+  "why": "只彩排過(不按發布),首篇要等排程時間驗證 URL 與推播",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-24 01:33",
+  "closed": "2026-09-24 03:05",
+  "note": "IG 生產首發 09-24 03:04 grid01 成功並驗證(AI content 標籤、文案、4:5);推播修好(venv python);Threads 首發 20:00 另看"
+ },
+ {
+  "id": 1381,
+  "what": "QFX IG:AI 生成擬真照片(九宮格 flat lay/identity reel v6)IG 規定要開 AI label,與『不能看起來像 AI』衝突,ig01/ig04 hold 待老闆決定",
+  "why": "要老闆取捨:標註 vs 換素材",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-24 01:33",
+  "closed": "2026-09-24 01:44",
+  "note": "老闆 09-24「post ai its fine」→ AI 擬真照片照發,程式自動開 IG Add AI label(彩排驗 on:true);ig01 今晚 21:30 首發"
+ },
+ {
+  "id": 1382,
+  "what": "QFX logo v4 reel 定版是舊無襯線字標,ig03 hold;需重合成 DM Serif 新字標定版",
+  "why": "品牌已換字標,舊版不可對外",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-24 01:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1383,
+  "what": "QFX IG 目前 0 篇:鋼琴 reel v9b 已下架、v10 因 Chrome 無音訊裝置崩潰沒發成(另一視窗),修法已寫 ops/ig_post_2026-09-24/NOTE_crash_fix.md",
+  "why": "屬另一視窗的工作,避免重複發",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-24 01:33",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1384,
+  "what": "MEMORY.md 索引 20.5KB 逼近 24.4KB 讀取上限,需 groom 到 <17KB(先確認子句在 topic 檔有副本)",
+  "why": "本 session 範圍外,需專門整理並驗連結零遺失",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-24 01:35",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1385,
+  "what": "QFX Threads 自動發文尚未在生產發出第一篇(09-24 20:00 th01),發文驗證靠 profile 文字比對",
+  "why": "彩排過,正式首發時間未到",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-24 03:05",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1386,
+  "what": "QFX 兩支 v10 IG 片把他人 IG 原創音訊燒進檔案(鋼琴=softriver.co 原創音訊,GG EZ=paddy.cartwright 原創音訊),發文前需老闆決定版權風險",
+  "why": "兩段都是 IG 使用者上傳的 Original audio,非音樂庫授權;燒進檔案經網頁上傳=在 IG 音樂庫外重發他人音訊,可能被靜音/檢舉;尚未取得上傳者同意",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-24 03:26",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1387,
+  "what": "batch2 polish list: Uber (murky + box-building city), plus weak spots noted on the page (Amazon gun CG, Samsung cleanroom wides, Netflix room, Microsoft studio) - second pass after the queue",
+  "why": "queue first, then polish round",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-24 08:03",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1388,
+  "what": "ad01 r18 AE 重做 + 麥當勞修正 + 品牌佇列 13 支:週額度 09-24 12:34 用完全部 FAIL,cron resume_0927.sh 於 09-27 10:00 起每 30 分探測自動重啟",
+  "why": "Claude 週額度見底到 09-27 10:00;winrig 09-25 凌晨曾離線約1h後重開機",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-25 01:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1389,
+  "what": "WSL .wslconfig 已改 memory 14→32GB、swap 移 D:,尚未生效",
+  "why": "生效要 wsl --shutdown,會中斷所有 WSL session,等老闆決定時機;生效後驗 free -g≈31GB、D:\\WSL\\swap.vhdx 出現、cron/keepalive 回來",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-27 13:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1390,
+  "what": "RAM 跑在 3600 MT/s(條子標 6000),BIOS 未開 EXPO",
+  "why": "要老闆進 BIOS(ASUS TUF B850M-E)開 EXPO,4 條單面 DDR5 在 AM5 通常可穩 5200-6000,開完要跑記憶體穩定性測試;需重開機",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-27 13:12",
   "closed": null,
   "note": ""
  }
