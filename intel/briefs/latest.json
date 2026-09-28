@@ -1,5 +1,5 @@
 {
- "date": "2026-09-27",
+ "date": "2026-09-28",
  "red": [
   "濱川(1569):外資連 8 日買超(5日淨買 +3,003 張)",
   "華邦電(2344):投信連 6 日賣超(棄養警訊,20日淨賣 -52,472 張)",
@@ -13,10 +13,6 @@
   "緯穎(6669):投信連 6 日賣超(棄養警訊,20日淨賣 -6,926 張)",
   "進能服(6692):外資連 5 日買超(5日淨買 +11 張)",
   "兆聯實業(6944):外資連 5 日買超(5日淨買 +356 張)",
-  "🇺🇸 AMD 目標價⬆️+14.4%→$720(Truist Financial)",
-  "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 534,256股 均價$81.6461(分2筆執行)(約$43,619,919)",
-  "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 653,320股 均價$80.8784(分4筆執行)(約$52,839,476)",
-  "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 492,124股 均價$81.1247(分3筆執行)(約$39,923,412)",
   "緯穎(6669):券資比29.6%(相對高檔,看空押注集中,軋空風險留意)",
   "金像電(2368):機構借券賣出5日遽增57.3%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)",
   "聯鈞(3450):機構借券賣出5日遽增72.7%(聰明錢加碼放空,股價走勢待確認)",
@@ -73,12 +69,9 @@
   "高力(8996):法人 20 日淨賣超 -4,295 張(未成連續型態)",
   "慶豐富(9935):法人 20 日淨賣超 -1,333 張(未成連續型態)",
   "世紀鋼(9958):法人 20 日淨買超 +1,715 張(未成連續型態)",
-  "🇺🇸 AMZN 內部人賣出:Jassy Andrew R[董事、President and CEO] 20,000股 均價$259.0107(分4筆執行)(約$5,180,214)",
-  "🇺🇸 AMZN 內部人賣出:Garman Matthew S[CEO Amazon Web Services] 14,541股 均價$259.0551(分4筆執行)(約$3,766,920)",
-  "🇺🇸 AMZN 內部人賣出:Herrington Douglas J[CEO Worldwide Amazon Stores] 6,362股 均價$259.0082(分3筆執行)(約$1,647,810)",
-  "🇺🇸 AMZN 內部人賣出:Zapolsky David[Senior Vice President] 6,172股 均價$259.1371(分4筆執行)(約$1,599,394)",
-  "🇺🇸 AMZN 內部人賣出:Zapolsky David[Senior Vice President] 9,258股 均價$259.77(約$2,404,951)",
   "🇺🇸 AMD 內部人賣出:Norrod Forrest Eugene[EVP & GM DSG] 17,261股 均價$459.9478(分13筆執行)(約$7,939,159)",
+  "🇺🇸 AAPL 內部人賣出:Newstead Jennifer 1,439股 均價$310.95(約$447,457)",
+  "🇺🇸 AMD 內部人賣出:Hu Jean X.[EVP, CFO and Treasurer] 15,000股 均價$474.0774(分8筆執行)(約$7,111,161)",
   "🏛️ AAPL 國會大額賣出:Pete Sessions(House) 申報 ≥$100,001(2026-09-22 揭露)",
   "🏛️ TSM 國會議員買進:Richard W. Allen(House) 2026-09-22 揭露",
   "時碩工業(4566) 今日漲幅排行第15(+9.9%),異常活躍",
@@ -111,13 +104,13 @@
   "增你強(3028):負債比率81.0%(較 115Q1 至 115Q2)",
   "立誠(6597):毛利率QoQ下滑-3.6個百分點(較 115Q1 至 115Q2)",
   "慶豐富(9935):負債比率70.5%(較 115Q1 至 115Q2)",
-  "安碁(6174):法說會10天後召開"
+  "安碁(6174):法說會9天後召開"
  ],
  "calibration": {
-  "updated": "2026-09-27",
-  "n_rows": 986,
-  "n_interim": 457,
-  "n_final": 90,
+  "updated": "2026-09-28",
+  "n_rows": 1000,
+  "n_interim": 474,
+  "n_final": 93,
   "model": "empirical_band_v4",
   "lam": 0.8,
   "drift": 0.07,
@@ -217,14 +210,14 @@
    },
    "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);live 帳本 predictions.jsonl 持續對答案;G1_brier.oos_brier_cal 是「假設全列都拿到校準」的理想值,實際部署有 oos_frac_out_of_domain 比例落回未校準 raw(見 cb_ledger.py),誠實部署量測見 oos_brier_cal_deployment_realistic"
   },
-  "brier_interim": 0.1043,
+  "brier_interim": 0.1014,
   "coin_flip_brier": 0.25,
-  "avg_pred_interim": 0.2519,
-  "realized_interim": 0.1969,
-  "shrink": 0.782,
+  "avg_pred_interim": 0.2528,
+  "realized_interim": 0.1962,
+  "shrink": 0.776,
   "note": "樣本 2 筆 <20,校準閘門未開(小樣本校準=雜訊)",
   "final_hit_rate": 1.0,
-  "final_avg_pred": 0.6543
+  "final_avg_pred": 0.6562
  },
  "watchlist_n": 70,
  "by_code": {
@@ -659,7 +652,7 @@
    {
     "source": "investor_conf",
     "level": "yellow",
-    "signal": "安碁(6174):法說會10天後召開"
+    "signal": "安碁(6174):法說會9天後召開"
    }
   ],
   "6274": [
@@ -802,61 +795,22 @@
   ],
   "AMD": [
    {
-    "source": "us_analyst",
-    "level": "red",
-    "signal": "🇺🇸 AMD 目標價⬆️+14.4%→$720(Truist Financial)"
-   },
-   {
     "source": "us_insider",
     "level": "yellow",
     "signal": "🇺🇸 AMD 內部人賣出:Norrod Forrest Eugene[EVP & GM DSG] 17,261股 均價$459.9478(分13筆執行)(約$7,939,159)"
-   }
-  ],
-  "AMZN": [
-   {
-    "source": "us_insider",
-    "level": "yellow",
-    "signal": "🇺🇸 AMZN 內部人賣出:Jassy Andrew R[董事、President and CEO] 20,000股 均價$259.0107(分4筆執行)(約$5,180,214)"
    },
    {
     "source": "us_insider",
     "level": "yellow",
-    "signal": "🇺🇸 AMZN 內部人賣出:Garman Matthew S[CEO Amazon Web Services] 14,541股 均價$259.0551(分4筆執行)(約$3,766,920)"
-   },
-   {
-    "source": "us_insider",
-    "level": "yellow",
-    "signal": "🇺🇸 AMZN 內部人賣出:Herrington Douglas J[CEO Worldwide Amazon Stores] 6,362股 均價$259.0082(分3筆執行)(約$1,647,810)"
-   },
-   {
-    "source": "us_insider",
-    "level": "yellow",
-    "signal": "🇺🇸 AMZN 內部人賣出:Zapolsky David[Senior Vice President] 6,172股 均價$259.1371(分4筆執行)(約$1,599,394)"
-   },
-   {
-    "source": "us_insider",
-    "level": "yellow",
-    "signal": "🇺🇸 AMZN 內部人賣出:Zapolsky David[Senior Vice President] 9,258股 均價$259.77(約$2,404,951)"
-   }
-  ],
-  "BRK-B": [
-   {
-    "source": "us_insider",
-    "level": "red",
-    "signal": "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 534,256股 均價$81.6461(分2筆執行)(約$43,619,919)"
-   },
-   {
-    "source": "us_insider",
-    "level": "red",
-    "signal": "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 653,320股 均價$80.8784(分4筆執行)(約$52,839,476)"
-   },
-   {
-    "source": "us_insider",
-    "level": "red",
-    "signal": "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 492,124股 均價$81.1247(分3筆執行)(約$39,923,412)"
+    "signal": "🇺🇸 AMD 內部人賣出:Hu Jean X.[EVP, CFO and Treasurer] 15,000股 均價$474.0774(分8筆執行)(約$7,111,161)"
    }
   ],
   "AAPL": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 AAPL 內部人賣出:Newstead Jennifer 1,439股 均價$310.95(約$447,457)"
+   },
    {
     "source": "us_congress",
     "level": "yellow",
@@ -1034,8 +988,19 @@
    "n_camps": 1
   }
  ],
- "new_confluence_since_last_run": [],
- "new_confluence_count": 0,
+ "new_confluence_since_last_run": [
+  "⚡背離:金像電(2368)×4源·2陣營",
+  "⚡背離:中華化(1727)×4源·2陣營",
+  "⚡背離:濱川(1569)×3源·2陣營",
+  "🔴匯流做空:泰谷(3339)×3源·2陣營",
+  "🔴匯流做空:智崴(5263)×3源·2陣營",
+  "⚡背離:大聯大(3702)×3源·2陣營",
+  "🔴匯流做空:星宇航空(2646)×2源·2陣營",
+  "🔴匯流做空:可寧衛(8422)×2源·2陣營",
+  "⚡背離:世紀鋼(9958)×2源·2陣營",
+  "⚡背離:晶宏(3141)×3源·1陣營"
+ ],
+ "new_confluence_count": 18,
  "sec_rule_changes": [
   {
    "date": "2026-09-16",
@@ -1054,27 +1019,27 @@
    "title": "SEC Proposes to Modernize Rules for Registered Transfer Agents",
    "link": "https://www.sec.gov/newsroom/press-releases/2026-81-sec-proposes-modernize-rules-registered-transfer-agents",
    "level": "yellow"
-  },
-  {
-   "date": "2026-08-28",
-   "title": "SEC Proposes Amendments to Exchange Act Rule 3a12-8 to Add European Union Debt Obligations",
-   "link": "https://www.sec.gov/newsroom/press-releases/2026-79-sec-proposes-amendments-exchange-act-rule-3a12-8-add-european-union-debt-obligations",
-   "level": "yellow"
   }
  ],
  "news_broad_themes": [
   {
    "type": "macro",
-   "headline": "搶升息後第一波高利｜合庫、一銀美元定存最高4.05% 公股銀最新優惠一次看",
-   "url": "https://news.cnyes.com/news/id/6616701",
-   "date": "2026-09-27"
+   "headline": "美財長貝森特籲Fed保持「開放態度」：AI生產率紅利或緩解通膨壓力",
+   "url": "https://news.cnyes.com/news/id/6617130",
+   "date": "2026-09-28"
+  },
+  {
+   "type": "political",
+   "headline": "川普表態：非常認真考慮美國柴油出口禁令",
+   "url": "https://news.cnyes.com/news/id/6617005",
+   "date": "2026-09-28"
   }
  ],
  "gold_macro": {
-  "date": "2026-09-27",
-  "xau_usd": 4284.58,
-  "level": "plain",
-  "signal": "金價 $4,285,單日漲 0.0%"
+  "date": "2026-09-28",
+  "xau_usd": 4141.56,
+  "level": "red",
+  "signal": "金價 $4,142,單日跌 3.3%——重大避險事件級變動,留意 risk regime 轉換"
  },
  "exa_events": {
   "themes": {},
