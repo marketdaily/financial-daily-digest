@@ -1,5 +1,18 @@
 {
- "date": "2026-09-27",
+ "date": "2026-09-28",
  "mode": "rss",
- "by_code": {}
+ "by_code": {
+  "NVDA": {
+   "note": "NVDA 今日 Reddit 提及 4 則(近21日均 0.3,z=3.7)|例:Thank you NVDA",
+   "total": 4,
+   "baseline": 0.3,
+   "z": 3.71,
+   "score": 0,
+   "samples": [
+    "Thank you NVDA",
+    "NVDA and meta",
+    "My portfolio strategy for this week is foolproof"
+   ]
+  }
+ }
 }
