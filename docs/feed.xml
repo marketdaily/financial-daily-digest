@@ -6,7 +6,7 @@
   <atom:link href="https://marketdaily.ai/feed.xml" rel="self" type="application/rss+xml"/>
   <description>MarketDaily 個股深度分析 — 美股、台股長尾主題,每週更新。</description>
   <language>zh-tw</language>
-  <lastBuildDate>Mon, 21 Sep 2026 16:32:17 +0800</lastBuildDate>
+  <lastBuildDate>Mon, 28 Sep 2026 16:32:08 +0800</lastBuildDate>
   <ttl>720</ttl>
   <generator>MarketDaily blog_feed.py</generator>
   <image>
@@ -14,6 +14,56 @@
     <title>MarketDaily 個股分析</title>
     <link>https://marketdaily.ai/blog/</link>
   </image>
+  <item>
+    <title>元大台灣50 (0050) 投資前必看：3 個關鍵風險解析</title>
+    <link>https://marketdaily.ai/blog/0050-投資前必看-3-個風險-202609?utm_source=rss&amp;utm_medium=feed&amp;utm_content=0050-投資前必看-3-個風險-202609</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/0050-投資前必看-3-個風險-202609</guid>
+    <pubDate>Mon, 28 Sep 2026 16:32:08 +0800</pubDate>
+    <description>許多台灣投資人對元大台灣50 (0050) 情有獨鍾，視其為台股市場的代表性指標。這檔追蹤台灣市值前 50 大企業的 ETF，以其分散風險的特性和長期穩健的表現，吸引了廣大投資者的目光。然而，即使是像 0050 這樣廣受歡迎的投資工具，也並非毫無風險。</description>
+    <category>0050</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/0050-投資前必看-3-個風險-202609.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/0050-投資前必看-3-個風險-202609.png" medium="image"/>
+  </item>
+  <item>
+    <title>中華化(1727) 多方籌碼訊號同日觀察：公開資訊巧合案例解析</title>
+    <link>https://marketdaily.ai/blog/1727-confluence-20260927?utm_source=rss&amp;utm_medium=feed&amp;utm_content=1727-confluence-20260927</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/1727-confluence-20260927</guid>
+    <pubDate>Mon, 28 Sep 2026 16:31:55 +0800</pubDate>
+    <description>在瞬息萬變的股票市場中，投資人經常會關注各種公開籌碼資訊，試圖從中尋找蛛絲馬跡。有時，某些特定股票會在同一天內，出現多個來自不同獨立來源的籌碼訊號。這類巧合性的事件，雖然不代表任何預測，但確實能反映市場當下的活躍程度。</description>
+    <category>1727</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/1727-confluence-20260927.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/1727-confluence-20260927.png" medium="image"/>
+  </item>
+  <item>
+    <title>鴻海(2317) 法說會前哨:已揭露重點與投資人關注焦點</title>
+    <link>https://marketdaily.ai/blog/2317-event-20261001?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2317-event-20261001</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2317-event-20261001</guid>
+    <pubDate>Mon, 28 Sep 2026 16:31:46 +0800</pubDate>
+    <description>台灣科技巨擘鴻海精密(2317)即將於2026年10月1日受美銀(BofA)邀請，參與一場重要的投資人會議，旨在說明公司最新的營運概況。在這次備受市場矚目的法說會召開前夕，投資人已可從公司先前公開揭露的資料中，一窺其近期營運亮點與未來發展方向。這些已公開的資訊，為我們提供了理解鴻海在當前複雜經濟環境中如何佈局的關鍵線索。</description>
+    <category>2317</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/2317-event-20261001.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/2317-event-20261001.png" medium="image"/>
+  </item>
+  <item>
+    <title>Meta (META) 供應鏈全景:上下游廠商解析</title>
+    <link>https://marketdaily.ai/blog/meta-供應鏈全景-上下游廠商解析-202609?utm_source=rss&amp;utm_medium=feed&amp;utm_content=meta-供應鏈全景-上下游廠商解析-202609</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/meta-供應鏈全景-上下游廠商解析-202609</guid>
+    <pubDate>Mon, 28 Sep 2026 16:31:38 +0800</pubDate>
+    <description>Meta Platforms (META)，前身為 Facebook，已從單純的社群媒體巨頭轉型為涵蓋虛擬實境、人工智慧等前瞻科技的綜合性企業。</description>
+    <category>META</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/meta-供應鏈全景-上下游廠商解析-202609.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/meta-供應鏈全景-上下游廠商解析-202609.png" medium="image"/>
+  </item>
+  <item>
+    <title>現金流量表怎麼看？掌握三大現金流，洞悉企業真實體質 (2026新手教學)</title>
+    <link>https://marketdaily.ai/blog/term-現金流量表-202609?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-現金流量表-202609</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/term-現金流量表-202609</guid>
+    <pubDate>Mon, 28 Sep 2026 16:31:27 +0800</pubDate>
+    <description>對於剛踏入投資領域的新手來說，財報分析常讓人望之卻步。然而，若想深入了解一家公司的營運狀況，除了損益表和資產負債表外，現金流量表怎麼看絕對是不可或缺的關鍵。</description>
+    <category>TERM</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/term-現金流量表-202609.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/term-現金流量表-202609.png" medium="image"/>
+  </item>
   <item>
     <title>台達電 (2308) 適合長期持有嗎？深入解析其投資潛力與風險</title>
     <link>https://marketdaily.ai/blog/2308-適合長期持有嗎-202609?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2308-適合長期持有嗎-202609</link>

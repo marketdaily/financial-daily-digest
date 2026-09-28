@@ -61,12 +61,22 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://marketdaily.ai/blog/0050-投資前必看-3-個風險-202609</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://marketdaily.ai/blog/0056-競爭優勢與護城河-202606</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://marketdaily.ai/blog/1727-confluence-20260823</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://marketdaily.ai/blog/1727-confluence-20260927</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -102,6 +112,11 @@
   </url>
   <url>
     <loc>https://marketdaily.ai/blog/2317-event-20260817</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://marketdaily.ai/blog/2317-event-20261001</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -431,6 +446,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://marketdaily.ai/blog/meta-供應鏈全景-上下游廠商解析-202609</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://marketdaily.ai/blog/msft-配息政策解析-202605</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -477,6 +497,11 @@
   </url>
   <url>
     <loc>https://marketdaily.ai/blog/term-毛利率與營益率-202608</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://marketdaily.ai/blog/term-現金流量表-202609</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
