@@ -1220,3 +1220,24 @@
 {"date": "2026-09-25", "code": "7711", "source": "institutional", "level": "yellow", "signal": "永擎(7711):法人 20 日淨賣超 -544 張(未成連續型態)", "price_at_signal": null}
 {"date": "2026-09-25", "code": "7711", "source": "revenue", "level": "yellow", "signal": "永擎(7711):2026/08 營收公告、YoY +1.7%、MoM -58.1%", "price_at_signal": null}
 {"date": "2026-09-25", "code": "7728", "source": "revenue", "level": "red", "signal": "光焱科技(7728):2026/08 營收公告、YoY +137.3%(強勁)、MoM +1.7%", "price_at_signal": null}
+{"date": "2026-09-29", "code": "2368", "source": "news_tw", "level": "red", "signal": "金像電(2368) 新聞[mna]:AI PCB資本合作升級！Amazon砸15.9億元入股金像電，79億元新廠CapEx同步啟動", "price_at_signal": null}
+{"date": "2026-09-29", "code": "4768", "source": "leadflow", "level": "red", "signal": "晶呈科技(4768) 無消息近漲停+10.0%(量能5.2×,5日+13.5%),疑資訊先行資金|外資+投信近3日僅-85張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-29", "code": "5220", "source": "leadflow", "level": "red", "signal": "萬達光電(5220) 無消息近漲停+10.0%(量能25.3×,5日+11.4%),疑資訊先行資金|外資+投信近3日僅+33張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-29", "code": "8935", "source": "leadflow", "level": "yellow", "signal": "邦泰(8935) 無消息近漲停+10.0%(量能2.9×,5日+9.0%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-29", "code": "6533", "source": "leadflow", "level": "red", "signal": "晶心科(6533) 無消息近漲停+10.0%(連2根,5日+12.2%),疑資訊先行資金|外資+投信近3日+1478張", "price_at_signal": null}
+{"date": "2026-09-29", "code": "2030", "source": "leadflow", "level": "red", "signal": "彰源(2030) 無消息近漲停+9.9%(連3根,5日+33.9%),疑資訊先行資金|外資+投信近3日僅-46張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-29", "code": "8227", "source": "leadflow", "level": "yellow", "signal": "巨有科技(8227) 無消息近漲停+10.0%(量能1.6×,5日+20.8%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-29", "code": "6708", "source": "leadflow", "level": "red", "signal": "天擎(6708) 無消息近漲停+9.9%(連2根,5日+18.5%),疑資訊先行資金|外資+投信近3日僅+19張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-29", "code": "7547", "source": "leadflow", "level": "red", "signal": "碩網(7547) 無消息近漲停+9.9%(連2根,5日+30.7%),疑資訊先行資金|外資+投信近3日僅+7張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-29", "code": "4195", "source": "leadflow", "level": "red", "signal": "基米-創(4195) 無消息近漲停+9.7%(連2根,5日+20.2%),疑資訊先行資金|外資+投信近3日僅+9張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-29", "code": "8201", "source": "leadflow", "level": "red", "signal": "無敵(8201) 無消息近漲停+9.8%(連2根,5日+21.2%),疑資訊先行資金|外資+投信近3日僅+44張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-29", "code": "3162", "source": "leadflow", "level": "red", "signal": "精確(3162) 無消息近漲停+9.9%(量能3.5×,5日+5.2%),疑資訊先行資金|外資+投信近3日+988張", "price_at_signal": null}
+{"date": "2026-09-29", "code": "3615", "source": "leadflow", "level": "red", "signal": "安可(3615) 無消息近漲停+9.9%(量能8.6×,5日+12.9%),疑資訊先行資金|外資+投信近3日僅+156張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-29", "code": "5309", "source": "leadflow", "level": "red", "signal": "系統電(5309) 無消息近漲停+9.9%(量能15.0×,5日+14.8%),疑資訊先行資金|外資+投信近3日+3015張", "price_at_signal": null}
+{"date": "2026-09-29", "code": "3498", "source": "leadflow", "level": "yellow", "signal": "陽程(3498) 無消息近漲停+9.8%(量能1.8×,5日+20.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-29", "code": "8027", "source": "leadflow", "level": "yellow", "signal": "鈦昇(8027) 無消息近漲停+9.8%(量能2.5×,5日+12.2%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-29", "code": "6532", "source": "leadflow", "level": "yellow", "signal": "瑞耘(6532) 無消息近漲停+9.6%(量能2.9×,5日+8.8%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-29", "code": "4772", "source": "leadflow", "level": "red", "signal": "台特化(4772) 無消息近漲停+9.1%(量能6.2×,5日+8.4%),疑資訊先行資金|外資+投信近3日僅+395張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-29", "code": "3710", "source": "leadflow", "level": "yellow", "signal": "連展投控(3710) 無消息近漲停+9.0%(量能2.1×,5日+2.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-29", "code": "4154", "source": "leadflow", "level": "red", "signal": "樂威科-KY(4154) 無消息近漲停+8.9%(量能7.4×,5日+10.7%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-29", "code": "3580", "source": "leadflow", "level": "red", "signal": "友威科(3580) 無消息近漲停+8.8%(量能5.3×,5日+14.7%),疑資訊先行資金|外資+投信近3日僅+20張,法人未同步=隱形買盤", "price_at_signal": null}
