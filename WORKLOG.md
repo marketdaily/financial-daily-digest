@@ -9897,3 +9897,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-27 21:58 AE 精通五線+音樂+prompt 全數落地(ae-motion-pro: qaText/compose_qa/beatsync/aepro_x 22 helpers/runner snapshot+stall;genai-prompt-pro 重建,盲考 R5 37/40)。老闆拍板 ad01 r19=「一次搜尋找到你」+配樂 B Runway(122BPM drop 17.71s final 27.56s),背景代理開做 ~/qfx/brand/ads/ad01_r19。
 - 09-28 06:57 ad01 r19→r20 完成(四閘門全過,評審 4.5–6/10);審閱頁 https://claude.ai/artifact/8rtefEUG3gvPGbFMR7nsS2;桌面 ad01_r19/r20_*.mp4;卡美術方向,等老闆意見做 r21。runner 加 AE 記憶體/CPU 上限(一次渲染吃 36GB)。
 - 09-30 00:59 老闆給參考 reel(@nzj.3d Gemini 3D 廣告 DblzcRaAIqB)+逐字腳本(全額退費/AI SEO/上櫃公司案例),令「照做不要質疑」;背景代理用 Blender 3D+AE+中文旁白+字幕製作 ~/qfx/brand/ads/qfx_guarantee,9:16+16:9。
+- 09-30 皇海反鏈月檢上線:tools/backlink_watch.py + cron 每月1日 09:45(US$0.06/次),新垃圾→合併 disavow 草稿+推播,無新網域靜默;首跑 68 域 0 新
