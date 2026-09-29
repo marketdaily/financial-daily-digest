@@ -1,17 +1,17 @@
 {
- "date": "2026-09-28",
+ "date": "2026-09-29",
  "mode": "rss",
  "by_code": {
-  "NVDA": {
-   "note": "NVDA 今日 Reddit 提及 4 則(近21日均 0.3,z=3.7)|例:Thank you NVDA",
-   "total": 4,
-   "baseline": 0.3,
-   "z": 3.71,
+  "MU": {
+   "note": "MU 今日 Reddit 提及 3 則(近21日均 0.2,z=2.8)|例:Made $550k in 90 days. Can't stop / won't stop 🚂",
+   "total": 3,
+   "baseline": 0.2,
+   "z": 2.81,
    "score": 0,
    "samples": [
-    "Thank you NVDA",
-    "NVDA and meta",
-    "My portfolio strategy for this week is foolproof"
+    "Made $550k in 90 days. Can't stop / won't stop 🚂",
+    "2026 WSB Index Status Check - The Empire Strikes Back",
+    "Anthropic Files for IPO"
    ]
   }
  }
