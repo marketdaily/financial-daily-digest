@@ -13588,8 +13588,8 @@
   "owner": "me",
   "risk": "high",
   "opened": "2026-09-23 19:23",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-30 01:14",
+  "note": "09-30 驗:distro 已在 D:(990 PRO 4TB),C: 剩 450GB、swap 在 D:,WSL memory=32GB 已生效(free 31GB);C: 滿根因消失"
  },
  {
   "id": 1360,
@@ -13648,8 +13648,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-23 20:54",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-30 01:14",
+  "note": "09-30 驗:distro 已在 D:(990 PRO 4TB),C: 剩 450GB、swap 在 D:,WSL memory=32GB 已生效(free 31GB);C: 滿根因消失"
  },
  {
   "id": 1366,
@@ -13668,8 +13668,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-23 21:13",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-30 01:14",
+  "note": "09-30 驗:distro 已在 D:(990 PRO 4TB),C: 剩 450GB、swap 在 D:,WSL memory=32GB 已生效(free 31GB);C: 滿根因消失"
  },
  {
   "id": 1368,
@@ -13728,8 +13728,8 @@
   "owner": "delvin",
   "risk": "high",
   "opened": "2026-09-23 22:53",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-30 01:14",
+  "note": "09-30 驗:distro 已在 D:(990 PRO 4TB),C: 剩 450GB、swap 在 D:,WSL memory=32GB 已生效(free 31GB);C: 滿根因消失"
  },
  {
   "id": 1374,
@@ -13888,8 +13888,8 @@
   "owner": "delvin",
   "risk": "med",
   "opened": "2026-09-27 13:12",
-  "closed": null,
-  "note": ""
+  "closed": "2026-09-27 13:19",
+  "note": "09-27 13:16 WSL 已重啟生效:free -g total 31GB、swap 16G 在 D:\\WSL\\swap.vhdx、cron active"
  },
  {
   "id": 1390,
@@ -13898,6 +13898,156 @@
   "owner": "delvin",
   "risk": "low",
   "opened": "2026-09-27 13:12",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1391,
+  "what": "AE 全面精通(五線學習→整合進 ae-motion-pro→重做 ad01)進行中,尚未交付",
+  "why": "09-27 老闆判 AE 作品 terrible;學習線背景跑中,重做片未產出未經老闆看",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-27 13:25",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1392,
+  "what": "AE: create ProRes 4444/EXR/PNG-seq output-module templates once in the AE GUI (Format can't be set by script)",
+  "why": "Needs an AE window, which the background rule forbids; waiting for Delvin to say when",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-27 13:59",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1393,
+  "what": "QFX 32s film music: 3 ACE-Step candidates await boss audition (~/qfx/research/ae_mastery_0927/music/candidates/cand_*_audition.m4a)",
+  "why": "taste can't be verified by measurement; none used in a delivered film yet",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-27 14:24",
+  "closed": "2026-09-27 22:36",
+  "note": "老闆 09-27 試聽後選 B Runway,用於 ad01 r19"
+ },
+ {
+  "id": 1394,
+  "what": "beatsync.jsx BS.* helpers are a sidecar proposal, not merged into ae-motion-pro lib; brand-ad-production SKILL §4 still says no music (stale vs 09-27 rule)",
+  "why": "task scope forbade editing the lib; skill text owner should update routing",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-27 14:24",
+  "closed": "2026-09-27 15:14",
+  "note": "beatsync 併入 ae-motion-pro lib+runner,技能內 AE 實測 16/16 剪點對拍、A/V 0 ms;brand-ad-production 配樂段已改現行流程"
+ },
+ {
+  "id": 1395,
+  "what": "genai_prompt_lint 仍強制已作廢的 rig block(rig_missing/cinematic_thin)並把 §4.4 結尾否定句判 prose_negation,AI 感 prompt 與紀實 prompt 得到同一個 WARN",
+  "why": "09-27 genai-prompt-pro 重建時量到,lint 改規則要動 autonomous capability+42 條自測,另開任務",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-27 14:32",
+  "closed": "2026-09-27 14:41",
+  "note": "genai_prompt_lint v2 (autonomous ca575d5): hype FAIL / documentary PASS on all 3 A/B pairs × 3 models, ad07 v1 flagged post_texture 8/8, 91 tests + mutations pass, verifier_harness 46/46"
+ },
+ {
+  "id": 1396,
+  "what": "music_arrange.py/gen_candidates.py 把 ACE-Step 1.5 授權寫成 Apache-2.0,實為 MIT;higgsfield skill 的 Seedance 2.0 範例用時間戳(官方說 2.0 不吃)",
+  "why": "09-27 prompt 研究查到,屬其他 skill/腳本,未順手改",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-27 14:36",
+  "closed": "2026-09-27 14:42",
+  "note": "qfx a59ac17: licence labels now 'model MIT; Comfy-Org repack Apache-2.0' (HF tags verified); delvin-custom: Seedance 2.0 no-timestamp notes at 7 example sites, higgsfield pytest 132 pass"
+ },
+ {
+  "id": 1397,
+  "what": "genai-prompt-pro 盲測 3 輪未達 ≥36/40 零事實錯誤(35/32/34);R3 後修正(cite_check、dry-run、逐元件查既有)尚未經第 4 輪盲測驗證",
+  "why": "coordinator 設上限 3 輪;剩餘失分全在 C2 事實細節",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-27 15:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1398,
+  "what": "RENEW 官網 /about 仍把真實照片標成「設計圖稿」(R2 writer 發現)",
+  "why": "非本任務範圍,未動客戶站",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-27 15:47",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1399,
+  "what": "皇海 disavow 合併清單(54 網域)待上傳 GSC www+apex",
+  "why": "09-27 複查新增 19 個垃圾網域;上傳會取代 09-07 舊清單,等老闆點頭",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-09-27 23:50",
+  "closed": "2026-09-28 00:44",
+  "note": "09-28 00:43 www+apex 皆顯示 54 網域,證據 offsite/evidence_20260928"
+ },
+ {
+  "id": 1400,
+  "what": "ad01 r19 delivered (4 versions, all gates PASS) but the independent critic never rated it reference level (5/5/5/4.5/5)",
+  "why": "5-round critic limit reached; remaining: flat lighting vs Raycast/Linear, no on-screen cause for the fix, thin second half, ring→Q still reads as two rings ~6 f; lens/ink edge fix not re-judged; needs boss review before any post (caption disclosure mandatory)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-28 02:31",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1401,
+  "what": "ad01 r20 delivered (4 versions, all gates PASS) but 5 fresh critics scored 4.5/5/6/5.5/5 - still not reference level",
+  "why": "5-round limit; open: ring->Q reads as fade + brush, generic post-drop cards, 9:16 not relaid out, 3 post-round-5 fixes not re-judged; boss review needed before any post (caption mandatory)",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-28 06:55",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1402,
+  "what": "ad01 r19/r20 已出片(QA 全過)但獨立評審 4.5–6/10 未達頂級;卡在美術方向(全灰無亮點、證明畫面太通用),等老闆看審閱頁 8rtefEUG3gvPGbFMR7nsS2 給方向再做 r21",
+  "why": "兩輪約 9 小時分數只動半分,再讓評審代理盲目繞圈不划算;需老闆品味判斷",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-28 06:57",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1403,
+  "what": "ad01 fun pitches A/B/C: clear in blind test but fun only 4-5/10",
+  "why": "rough 2D animatics; dead holds, abstract post-drop payoff, needle not read as a tool; needs one fix round before the boss picks",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-09-28 15:07",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1404,
+  "what": "皇海反鏈月檢推播路徑未實射",
+  "why": "09-30 首跑 0 新網域所以沒推播;推播走 weekly_brief 同一支 notify_line,首次真推在 10-01 或之後有新網域時",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-30 01:00",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1405,
+  "what": "C:\\AI_old_0930(136GB ComfyUI 舊副本)待刪",
+  "why": "09-30 已搬 D:\\AI+C:\\AI junction,t2i 實測通過;留幾天當回滾,確認 Wan/Hunyuan/ACE 工作流都正常後再刪",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-30 01:26",
   "closed": null,
   "note": ""
  }

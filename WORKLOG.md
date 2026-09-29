@@ -9898,3 +9898,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-28 06:57 ad01 r19→r20 完成(四閘門全過,評審 4.5–6/10);審閱頁 https://claude.ai/artifact/8rtefEUG3gvPGbFMR7nsS2;桌面 ad01_r19/r20_*.mp4;卡美術方向,等老闆意見做 r21。runner 加 AE 記憶體/CPU 上限(一次渲染吃 36GB)。
 - 09-30 00:59 老闆給參考 reel(@nzj.3d Gemini 3D 廣告 DblzcRaAIqB)+逐字腳本(全額退費/AI SEO/上櫃公司案例),令「照做不要質疑」;背景代理用 Blender 3D+AE+中文旁白+字幕製作 ~/qfx/brand/ads/qfx_guarantee,9:16+16:9。
 - 09-30 皇海反鏈月檢上線:tools/backlink_watch.py + cron 每月1日 09:45(US$0.06/次),新垃圾→合併 disavow 草稿+推播,無新網域靜默;首跑 68 域 0 新
+- 09-30 01:20 老闆「升級了 setup,吃滿它」:盤點 9800X3D/64GB(3600,EXPO 未開)/5080/990 PRO D:;WSL 32GB 已生效;ComfyUI 136GB 從 Kingston C: 搬 990 PRO D:(junction 保留路徑);收 C: 滿舊 open items 4 則
