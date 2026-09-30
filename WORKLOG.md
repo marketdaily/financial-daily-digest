@@ -9899,3 +9899,5 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-30 00:59 老闆給參考 reel(@nzj.3d Gemini 3D 廣告 DblzcRaAIqB)+逐字腳本(全額退費/AI SEO/上櫃公司案例),令「照做不要質疑」;背景代理用 Blender 3D+AE+中文旁白+字幕製作 ~/qfx/brand/ads/qfx_guarantee,9:16+16:9。
 - 09-30 皇海反鏈月檢上線:tools/backlink_watch.py + cron 每月1日 09:45(US$0.06/次),新垃圾→合併 disavow 草稿+推播,無新網域靜默;首跑 68 域 0 新
 - 09-30 01:20 老闆「升級了 setup,吃滿它」:盤點 9800X3D/64GB(3600,EXPO 未開)/5080/990 PRO D:;WSL 32GB 已生效;ComfyUI 136GB 從 Kingston C: 搬 990 PRO D:(junction 保留路徑);收 C: 滿舊 open items 4 則
+- 09-30 14:09 YC 台北作戰(老闆令「先做你現在能做的」):戰績核實+Paxel 隱私預檢+Startup School 申請草稿(EN)+工程師一頁計畫+兩候選方向深挖;不對外/不送出/零 credit;作戰圖 https://claude.ai/artifact/ShvD6xYBDrJncLX2zJPyFM
+- 09-30 14:49 YC 申請素材包 v1 https://claude.ai/artifact/UFyNf717nrHvhv4HuJ6Vjq :皇海案例(15 診斷/wow10/核實數字含 Micron RFQ inq:202609160001)、最厲害一件事 3 版、90 秒口述;session-context hook 加 token 遮蔽(已 push);待老闆:Micron 可否點名/hack 故事/Bob=鴻海?/3 朋友/PAT 輪替
