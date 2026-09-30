@@ -1241,3 +1241,17 @@
 {"date": "2026-09-29", "code": "3710", "source": "leadflow", "level": "yellow", "signal": "連展投控(3710) 無消息近漲停+9.0%(量能2.1×,5日+2.4%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-09-29", "code": "4154", "source": "leadflow", "level": "red", "signal": "樂威科-KY(4154) 無消息近漲停+8.9%(量能7.4×,5日+10.7%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-09-29", "code": "3580", "source": "leadflow", "level": "red", "signal": "友威科(3580) 無消息近漲停+8.8%(量能5.3×,5日+14.7%),疑資訊先行資金|外資+投信近3日僅+20張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-30", "code": "1727", "source": "mops_news", "level": "yellow", "signal": "中華化(1727) 重訊[2026-09-29]:公告本公司董事會決議授權董事長簽訂合資契約書及設立合 資公司", "price_at_signal": null}
+{"date": "2026-09-30", "code": "2368", "source": "mops_news", "level": "red", "signal": "金像電(2368) 重訊[2026-09-29]:公告本公司董事會決議115年第1次私募普通股定價及應募人資訊", "price_at_signal": null}
+{"date": "2026-09-30", "code": "3701", "source": "tw_rank", "level": "yellow", "signal": "大眾控(3701) 今日漲幅排行第19(+9.9%),異常活躍", "price_at_signal": null}
+{"date": "2026-09-30", "code": "3706", "source": "mops_news", "level": "red", "signal": "神達(3706) 重訊[2026-09-29]:（補充115/8/11公告）本公司董事會決議發行國內第一次 暨第二次無擔保轉換公司債(變更發行額度)", "price_at_signal": null}
+{"date": "2026-09-30", "code": "3518", "source": "leadflow", "level": "red", "signal": "柏騰(3518) 無消息近漲停+9.9%(連2根,5日+29.9%),疑資訊先行資金|外資+投信近3日+2659張", "price_at_signal": null}
+{"date": "2026-09-30", "code": "4577", "source": "leadflow", "level": "red", "signal": "達航科技(4577) 無消息近漲停+10.0%(量能3.2×,5日+6.7%),疑資訊先行資金|外資+投信近3日僅+268張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-30", "code": "2020", "source": "leadflow", "level": "red", "signal": "美亞(2020) 無消息近漲停+9.9%(連2根,5日+24.8%),疑資訊先行資金|外資+投信近3日僅-31張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-30", "code": "6957", "source": "leadflow", "level": "red", "signal": "裕慶-KY(6957) 無消息近漲停+9.9%(連2根,5日+27.9%),疑資訊先行資金|外資+投信近3日僅+36張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-30", "code": "8027", "source": "leadflow", "level": "red", "signal": "鈦昇(8027) 無消息近漲停+9.9%(連2根,5日+23.7%),疑資訊先行資金|外資+投信近3日+1364張", "price_at_signal": null}
+{"date": "2026-09-30", "code": "6405", "source": "leadflow", "level": "red", "signal": "悅城(6405) 無消息近漲停+10.0%(連2根,5日+20.4%),疑資訊先行資金|外資+投信近3日僅+71張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-30", "code": "5205", "source": "leadflow", "level": "red", "signal": "中茂(5205) 無消息近漲停+9.2%(量能3.8×,5日+9.2%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-30", "code": "7728", "source": "leadflow", "level": "red", "signal": "光焱科技(7728) 無消息近漲停+9.9%(量能4.3×,5日+13.8%),疑資訊先行資金|外資+投信近3日僅+69張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-09-30", "code": "3581", "source": "leadflow", "level": "yellow", "signal": "博磊(3581) 無消息近漲停+9.9%(量能2.1×,5日+13.0%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-09-30", "code": "4729", "source": "leadflow", "level": "red", "signal": "熒茂(4729) 無消息近漲停+9.8%(量能17.0×,5日+9.3%),疑資訊先行資金|外資+投信近3日僅+183張,法人未同步=隱形買盤", "price_at_signal": null}
