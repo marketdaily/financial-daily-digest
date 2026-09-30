@@ -33,7 +33,10 @@ files = sorted(glob.glob(os.path.join(d, '*.jsonl')), key=os.path.getmtime, reve
 now = time.time()
 now_dt = datetime.datetime.now(datetime.timezone.utc)
 RECENT_CUTOFF_SEC = 24 * 3600  # 超過24小時的真人對話不當「最近」顯示,避免資訊過時誤導
-HUMAN_SOURCES = ('typed', 'queued')  # 排除 tool_result 回饋/自主引擎 sdk-cli 注入/task通知
+HUMAN_SOURCES = ('typed', 'queued')
+import re
+SECRET_RE = re.compile(r'(github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{30,}|xox[abpr]-[A-Za-z0-9-]{10,}|AKIA[0-9A-Z]{16}|EAA[A-Za-z0-9]{30,}|xkeysib-[A-Za-z0-9-]{20,}|eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{5,}|[A-Za-z0-9_-]{40,})')
+PWD_RE = re.compile(r'(密碼|passw(or)?d|pwd)\s*[:：=是]', re.I)  # 排除 tool_result 回饋/自主引擎 sdk-cli 注入/task通知
 out = []
 shown = 0
 for f in files:
@@ -61,6 +64,9 @@ for f in files:
                 rec_ts = datetime.datetime.fromisoformat(o.get('timestamp', '').replace('Z', '+00:00'))
             except ValueError:
                 continue
+            t = SECRET_RE.sub('[REDACTED]', t)
+            if PWD_RE.search(t):
+                t = '[含密碼字樣,已略]'
             prompts.append(t[:100])
             if latest_ts is None or rec_ts > latest_ts:
                 latest_ts = rec_ts
