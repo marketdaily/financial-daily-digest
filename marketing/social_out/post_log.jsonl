@@ -573,3 +573,4 @@
 {"ts": "2026-09-30T15:31:29.185027", "post": "newsr_20260930_world_47d144", "results": {"threads": {"ok": true, "detail": "18418014394153862"}}}
 {"ts": "2026-09-30T16:04:33.991706", "post": "ai_28e8109ec662", "results": {"threads": {"ok": true, "detail": {"posted": ["18052704896798540", "18131571179505867", "18099068090271030", "18042701708829777"], "root": "18052704896798540"}}}}
 {"ts": "2026-09-30T16:21:38.005241", "post": "newsr_20260930_macro_d50740", "results": {"threads": {"ok": true, "detail": "18110810347886173"}}}
+{"ts": "2026-09-30T20:31:10.132007", "post": "reel_daily_2026-09-30_us", "results": {"instagram": {"ok": true, "skipped": false, "detail": "18101646449570886"}, "facebook": {"ok": true, "skipped": false, "detail": "3280692965451296"}, "youtube": {"ok": false, "skipped": true, "detail": "已暫停:Delvin拍板07-27不再用YT(帳號停權不申訴)"}, "tiktok": {"ok": false, "skipped": true, "detail": "已暫停:Delvin拍板07-29退役.勿再接勿再提setup"}}}
