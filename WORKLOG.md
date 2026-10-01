@@ -9903,3 +9903,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 09-30 14:49 YC 申請素材包 v1 https://claude.ai/artifact/UFyNf717nrHvhv4HuJ6Vjq :皇海案例(15 診斷/wow10/核實數字含 Micron RFQ inq:202609160001)、最厲害一件事 3 版、90 秒口述;session-context hook 加 token 遮蔽(已 push);待老闆:Micron 可否點名/hack 故事/Bob=鴻海?/3 朋友/PAT 輪替
 - 09-30 18:49 YC:LinkedIn 更新完成 https://www.linkedin.com/in/delvinchang(headline/About/經歷/技能/自訂網址/橫幅 B;缺大頭貼);申請表 https://claude.ai/artifact/9VJqMKPXP1GR2aEX3zFuWD;Paxel 影子資料 95 session verify 0 命中,授權碼 18:49 過期未授權,重跑=bash ~/yc_paxel_clean/.run/orchestrate.sh(25 分內要授權)
 - 10-01 00:53 老闆令「logo design run again, do all brands」「不用follow參考片自己做」「不一定要連續但要flow smooth」:batch3 範本(原創概念+concept_gate+新閘門+音樂對拍+評審 SHIP 閘)、26 品牌 worker A 開跑;cut20 動態升級另一代理進行中。
+- 10-01 13:40 YC:審稿 6/10→照改(修 155 skill 不實說法、做過的東西擴 6 項、最厲害一件事只講皇海);LinkedIn v2(headline/About/CHOSEN/新橫幅 b2);進行中:LinkedIn 頂卡改皇海+創兆描述、個人網站 delvinchang.pages.dev、公開 GitHub repo、Paxel v2 資料
