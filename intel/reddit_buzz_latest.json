@@ -1,18 +1,5 @@
 {
- "date": "2026-10-01",
+ "date": "2026-10-02",
  "mode": "rss",
- "by_code": {
-  "MU": {
-   "note": "MU 今日 Reddit 提及 4 則(近21日均 0.6,z=2.4)|例:GAIN: MU $1,080 strike 10/2 exp calls",
-   "total": 4,
-   "baseline": 0.6,
-   "z": 2.42,
-   "score": 0,
-   "samples": [
-    "GAIN: MU $1,080 strike 10/2 exp calls",
-    "When Theta Gang reaches WSB levels of autism. $MU $120K",
-    "Nike earnings are tomorrow and nobody seems to give a …💀"
-   ]
-  }
- }
+ "by_code": {}
 }
