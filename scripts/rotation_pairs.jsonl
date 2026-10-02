@@ -157,3 +157,6 @@
 {"date": "2026-10-01", "market": "tw", "from": "2327", "to": "1301", "from_px": 548.0, "to_px": 68.1}
 {"date": "2026-10-01", "market": "us", "from": "AMZN", "to": "INTC", "from_px": 249.15, "to_px": 120.23}
 {"date": "2026-10-01", "market": "us", "from": "TSLA", "to": "INTC", "from_px": 354.81, "to_px": 120.23}
+{"date": "2026-10-02", "market": "us", "from": "QQQM", "to": "AXTI", "from_px": 305.57, "to_px": 81.81}
+{"date": "2026-10-02", "market": "us", "from": "GOOGL", "to": "AXTI", "from_px": 338.24, "to_px": 81.81}
+{"date": "2026-10-02", "market": "us", "from": "AMZN", "to": "AXTI", "from_px": 248.23, "to_px": 81.81}
