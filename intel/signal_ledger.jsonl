@@ -1274,3 +1274,20 @@
 {"date": "2026-10-01", "code": "8289", "source": "leadflow", "level": "red", "signal": "泰藝(8289) 無消息近漲停+9.9%(量能7.9×,5日+15.1%),疑資訊先行資金|外資+投信近3日+516張", "price_at_signal": null}
 {"date": "2026-10-01", "code": "4760", "source": "leadflow", "level": "yellow", "signal": "勤凱(4760) 無消息近漲停+9.9%(量能2.9×,5日+9.7%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-10-01", "code": "6423", "source": "leadflow", "level": "red", "signal": "億而得(6423) 無消息近漲停+9.9%(量能10.9×,5日+10.5%),疑資訊先行資金|外資+投信近3日僅+51張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-02", "code": "2367", "source": "mops_news", "level": "yellow", "signal": "燿華(2367) 重訊[2026-10-01]:公告本公司發言人異動", "price_at_signal": null}
+{"date": "2026-10-02", "code": "2492", "source": "leadflow", "level": "red", "signal": "華新科(2492) 無消息近漲停+9.9%(連2根,5日+18.1%),疑資訊先行資金|外資+投信近3日+24104張", "price_at_signal": null}
+{"date": "2026-10-02", "code": "4906", "source": "margin", "level": "yellow", "signal": "正文(4906):融資5日暴增16.0%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-02", "code": "5434", "source": "margin", "level": "yellow", "signal": "崇越(5434):融資5日暴增17.3%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-02", "code": "6174", "source": "tw_rank", "level": "yellow", "signal": "安碁(6174) 今日漲幅排行第7(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-10-02", "code": "6174", "source": "investor_conf", "level": "red", "signal": "安碁(6174):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-10-02", "code": "6658", "source": "institutional", "level": "red", "signal": "聯策(6658):外資連 5 日買超(5日淨買 +158 張)", "price_at_signal": null}
+{"date": "2026-10-02", "code": "7711", "source": "sbl", "level": "yellow", "signal": "永擎(7711):機構借券賣出5日增13.5%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-10-02", "code": "JPM", "source": "us_sec_admin", "level": "red", "signal": "JPM 美股SEC行政程序[2026-10-02]:J.P. Morgan Securities LLC And JPMorgan Chase Bank, N.A.", "price_at_signal": null}
+{"date": "2026-10-02", "code": "6994", "source": "leadflow", "level": "red", "signal": "富威電力(6994) 無消息近漲停+9.9%(連2根,5日+17.4%),疑資訊先行資金|外資+投信近3日僅-125張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-02", "code": "8091", "source": "leadflow", "level": "yellow", "signal": "翔名(8091) 無消息近漲停+10.0%(量能2.9×,5日+9.7%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-02", "code": "5011", "source": "leadflow", "level": "red", "signal": "久陽(5011) 無消息近漲停+9.9%(量能7.8×,5日+12.4%),疑資訊先行資金|外資+投信近3日僅-28張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-02", "code": "6821", "source": "leadflow", "level": "red", "signal": "聯寶(6821) 無消息近漲停+9.9%(量能8.4×,5日+14.7%),疑資訊先行資金|外資+投信近3日僅+169張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-02", "code": "2061", "source": "leadflow", "level": "red", "signal": "風青(2061) 無消息近漲停+9.9%(連2根,5日+21.5%),疑資訊先行資金|外資+投信近3日+978張", "price_at_signal": null}
+{"date": "2026-10-02", "code": "4760", "source": "leadflow", "level": "red", "signal": "勤凱(4760) 無消息近漲停+9.9%(連2根,5日+19.6%),疑資訊先行資金|外資+投信近3日僅+208張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-02", "code": "5498", "source": "leadflow", "level": "red", "signal": "凱崴(5498) 無消息近漲停+9.9%(量能3.8×,5日+10.8%),疑資訊先行資金|外資+投信近3日+1072張", "price_at_signal": null}
+{"date": "2026-10-02", "code": "5015", "source": "leadflow", "level": "red", "signal": "華祺(5015) 無消息近漲停+9.9%(量能21.7×,5日+11.7%),疑資訊先行資金|外資+投信近3日僅+18張,法人未同步=隱形買盤", "price_at_signal": null}
