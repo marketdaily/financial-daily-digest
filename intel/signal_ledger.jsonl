@@ -1291,3 +1291,10 @@
 {"date": "2026-10-02", "code": "4760", "source": "leadflow", "level": "red", "signal": "勤凱(4760) 無消息近漲停+9.9%(連2根,5日+19.6%),疑資訊先行資金|外資+投信近3日僅+208張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-02", "code": "5498", "source": "leadflow", "level": "red", "signal": "凱崴(5498) 無消息近漲停+9.9%(量能3.8×,5日+10.8%),疑資訊先行資金|外資+投信近3日+1072張", "price_at_signal": null}
 {"date": "2026-10-02", "code": "5015", "source": "leadflow", "level": "red", "signal": "華祺(5015) 無消息近漲停+9.9%(量能21.7×,5日+11.7%),疑資訊先行資金|外資+投信近3日僅+18張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-03", "code": "3701", "source": "holders", "level": "red", "signal": "大眾控(3701):千張大戶持股比週增1.15個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-10-03", "code": "4540", "source": "holders", "level": "red", "signal": "全球傳動(4540):千張大戶持股比週增1.01個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-10-03", "code": "4906", "source": "holders", "level": "yellow", "signal": "正文(4906):千張大戶持股比週增0.90個百分點(溫和加碼,且戶數減少1戶(籌碼更集中在更少大戶手中))", "price_at_signal": null}
+{"date": "2026-10-03", "code": "5434", "source": "holders", "level": "yellow", "signal": "崇越(5434):千張大戶持股比週增0.74個百分點(溫和加碼)", "price_at_signal": null}
+{"date": "2026-10-03", "code": "6438", "source": "holders", "level": "red", "signal": "迅得(6438):千張大戶持股比週增1.34個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-10-03", "code": "6658", "source": "holders", "level": "red", "signal": "聯策(6658):千張大戶持股比週增3.55個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-10-03", "code": "1295", "source": "holders", "level": "yellow", "signal": "生合(1295):千張大戶持股比週減-3.05個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
