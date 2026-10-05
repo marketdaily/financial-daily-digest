@@ -4,17 +4,20 @@
   "subscribers": 35,
   "digest_clean_days_7d": "7/7",
   "fallback_7d": 0,
-  "social_posts_7d": 91
+  "social_posts_7d": 92
  },
  "digest": {
-  "audit": null,
+  "audit": {
+   "date": "2026-10-06",
+   "total_subscribers": 35,
+   "audit_failed": 1,
+   "fallback": 0,
+   "personalization_failed": 0,
+   "per_check": {
+    "verdict_monoculture": 1
+   }
+  },
   "trend": [
-   {
-    "date": "2026-09-28",
-    "audit_failed": 2,
-    "fallback": 0,
-    "total": 32
-   },
    {
     "date": "2026-09-29",
     "audit_failed": 1,
@@ -50,20 +53,15 @@
     "audit_failed": 2,
     "fallback": 0,
     "total": 35
+   },
+   {
+    "date": "2026-10-06",
+    "audit_failed": 1,
+    "fallback": 0,
+    "total": 35
    }
   ],
   "shifts": [
-   {
-    "date": "2026-10-01",
-    "market": "us",
-    "start": "18:20:01",
-    "done": "20:01:06",
-    "lateness_min": 1.1,
-    "verdict": "on_time",
-    "llm_tiers": {
-     "gemini": 49
-    }
-   },
    {
     "date": "2026-10-02",
     "market": "tw",
@@ -120,6 +118,17 @@
      "gemini": 54,
      "groq_free": 1
     }
+   },
+   {
+    "date": "2026-10-06",
+    "market": "tw",
+    "start": "05:20:01",
+    "done": "07:00:58",
+    "lateness_min": 1.0,
+    "verdict": "on_time",
+    "llm_tiers": {
+     "gemini": 49
+    }
    }
   ]
  },
@@ -144,5 +153,5 @@
   "guard_alert_tw": false,
   "guard_alert_us": false
  },
- "generated_utc": "2026-10-05T16:08:01Z"
+ "generated_utc": "2026-10-05T23:08:01Z"
 }
