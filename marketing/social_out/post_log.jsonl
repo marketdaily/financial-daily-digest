@@ -631,3 +631,4 @@
 {"ts": "2026-10-05T13:51:49.722890", "post": "newsr_20261005_macro_582096", "results": {"threads": {"ok": true, "detail": "18144795004566210"}}}
 {"ts": "2026-10-05T14:00:48.959051", "post": "win_2026-09-08_CRWV_wait", "results": {"instagram": {"ok": true, "skipped": false, "detail": "18075214484734601"}, "facebook": {"ok": true, "skipped": false, "detail": "1133333363197689_122138769927345835"}, "threads": {"ok": true, "skipped": false, "detail": "18111560423596952"}}}
 {"ts": "2026-10-05T15:21:37.986009", "post": "newsr_20261005_macro_31d595", "results": {"threads": {"ok": true, "detail": "18154391731515529"}}}
+{"ts": "2026-10-05T19:06:08.032164", "post": "ai_9cb5ebdd74ff", "results": {"threads": {"ok": true, "detail": {"posted": ["18093370529655501", "18142528186608455", "17986262352119939", "18102465161242390"], "root": "18093370529655501"}}}}
