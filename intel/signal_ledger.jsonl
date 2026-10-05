@@ -1298,3 +1298,13 @@
 {"date": "2026-10-03", "code": "6438", "source": "holders", "level": "red", "signal": "迅得(6438):千張大戶持股比週增1.34個百分點(大戶顯著加碼)", "price_at_signal": null}
 {"date": "2026-10-03", "code": "6658", "source": "holders", "level": "red", "signal": "聯策(6658):千張大戶持股比週增3.55個百分點(大戶顯著加碼)", "price_at_signal": null}
 {"date": "2026-10-03", "code": "1295", "source": "holders", "level": "yellow", "signal": "生合(1295):千張大戶持股比週減-3.05個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-10-05", "code": "2367", "source": "tw_rank", "level": "yellow", "signal": "燿華(2367) 今日漲幅排行第8(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-10-05", "code": "3701", "source": "leadflow", "level": "red", "signal": "大眾控(3701) 無消息近漲停+9.9%(連4根,5日+47.6%),疑資訊先行資金|外資+投信近3日+1234張", "price_at_signal": null}
+{"date": "2026-10-05", "code": "4542", "source": "institutional", "level": "red", "signal": "科嶠(4542):外資連 5 日買超(5日淨買 +86 張)", "price_at_signal": null}
+{"date": "2026-10-05", "code": "6725", "source": "institutional", "level": "red", "signal": "矽科宏晟(6725):外資連 5 日買超(5日淨買 +74 張)", "price_at_signal": null}
+{"date": "2026-10-05", "code": "3597", "source": "margin", "level": "yellow", "signal": "映興(3597):融資5日暴增28.2%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-05", "code": "4720", "source": "leadflow", "level": "red", "signal": "德淵(4720) 無消息近漲停+9.8%(連2根,5日+20.7%),疑資訊先行資金|外資+投信近3日+530張", "price_at_signal": null}
+{"date": "2026-10-05", "code": "1735", "source": "leadflow", "level": "red", "signal": "日勝化(1735) 無消息近漲停+9.9%(連2根,5日+20.0%),疑資訊先行資金|外資+投信近3日僅+73張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-05", "code": "4927", "source": "leadflow", "level": "red", "signal": "泰鼎-KY(4927) 無消息近漲停+9.9%(連2根,5日+21.1%),疑資訊先行資金|外資+投信近3日+3731張", "price_at_signal": null}
+{"date": "2026-10-05", "code": "2466", "source": "leadflow", "level": "red", "signal": "冠西電(2466) 無消息近漲停+9.9%(連3根,5日+29.7%),疑資訊先行資金|外資+投信近3日+731張", "price_at_signal": null}
+{"date": "2026-10-05", "code": "8150", "source": "tw_broker_calls", "level": "yellow", "signal": "南茂(8150) 券商喊單:外資調升↑", "price_at_signal": null}
