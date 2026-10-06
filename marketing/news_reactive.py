@@ -497,6 +497,16 @@ source since no source link is attached to the post.
 9. Traditional Chinese (zh-TW) characters ONLY, in every field. Never emit Simplified forms
    (亚这两个们时说对现实发产业经济资报导观软数变电华应场关开门问间车东马头银长国图 …).
    Mixed Simplified/Traditional output is an automatic reject.
+10. FACT BOUNDARY — this is the #1 reason drafts get rejected. An independent auditor checks
+   every sentence against <facts> only. Any sentence that states something about the world —
+   an industry relationship, a cause, a trend, a ranking, Taiwan's role in a supply chain,
+   what a market "is worried about", why a price moved — must be supported by <facts>.
+   Background knowledge you are confident about is still NOT in <facts> and will be rejected.
+   Build 「為什麼這件事重要」/「MarketDaily 觀點」/「對台灣投資人的意義」 from <facts> only;
+   anything beyond them must be written as an explicit watch-item or open question
+   (「接下來值得觀察的是…是否…」「我們會留意…」), never as a declarative statement.
+   The hook must not attribute a cause the facts do not state. Use quotation marks「」only
+   around words that appear verbatim in <facts>.
 </constraints>
 
 <output_format>

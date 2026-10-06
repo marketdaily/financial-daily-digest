@@ -14050,5 +14050,165 @@
   "opened": "2026-09-30 01:26",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1406,
+  "what": "qfx_guarantee ad: critic still NOT YET after 3 rounds (glitchy lens-wipe frames 4.75/9.0/46 s, 9:16 cut-offs, static holds, per-section colour floods); boss has not seen/heard it",
+  "why": "3-round critic budget used up; boss must audition music+voice and decide on a round 4",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-30 06:56",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1407,
+  "what": "qfx repo: 2 commits (qfx_guarantee, ~160 MB incl. mp4/wav) not pushed: remote hangs up on the pack",
+  "why": "GitHub push disconnects even with a large http.postBuffer; needs a retry, git LFS, or dropping the WAVs from the commit",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-09-30 06:56",
+  "closed": "2026-09-30 09:04",
+  "note": "binaries gitignored, history squashed before push; pushed 57c46c0"
+ },
+ {
+  "id": 1408,
+  "what": "YC 申請素材(戰績/申請草稿/工程師計畫)待老闆審,尚未送出任何申請",
+  "why": "工程師下週才談;SS 建議 10/10 前交、W27 11/3 截止",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-30 14:09",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1409,
+  "what": "Claude session log 明文含 1 把 GitHub PAT + 21 把 Google AIza 金鑰(Paxel 預檢發現)",
+  "why": "旋轉會動生產服務,需老闆核可;有效性未驗",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-30 14:14",
+  "closed": "2026-09-30 14:37",
+  "note": "複查:21 把 Google 為 base64 誤報且全失效;真正待處理=1 把有效 fine-grained PAT(team-brain/claude-skills)+marketdailyhq GitHub 明文密碼,另開新項"
+ },
+ {
+  "id": 1410,
+  "what": "輪替 marketdaily 帳號 fine-grained PAT(github…MAAC,team-brain/claude-skills 讀寫)+換 marketdailyhq GitHub 密碼並確認 2FA",
+  "why": "明文散在 session log;需老闆核可+Darren 電腦端同步更新",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-09-30 14:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1411,
+  "what": "YC Paxel 影子資料實跑：等老闆 YC 授權 → 分析上傳 → 洩漏檢查/token/刪 volume",
+  "why": "device auth 需老闆本人登入 https://paxel.ycombinator.com/auth/cli?code=HIMV644B；orchestrator 背景輪詢 90 分",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-09-30 18:20",
+  "closed": "2026-10-01 01:54",
+  "note": "Paxel 10-01 01:25 上傳完成 /results/8jlailjy;本地產物 leakcheck 0 命中;token 已填入申請表"
+ },
+ {
+  "id": 1412,
+  "what": "品牌 logo 動畫 batch3 全部 26 品牌重做中(worker A,~/qfx/campaigns/2026-09_logo_motion_threads/batch3),每品牌原創概念+評審 SHIP-READY 才 DONE",
+  "why": "老闆 10-01 令重做;逐品牌 claude -p 背景跑,約 1–2 天",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-10-01 00:53",
+  "closed": "2026-10-01 18:16",
+  "note": "10-01 老闆令停(token 太多);batch3 停在 google 重做中,amazon/google_try1 FAIL 版本保留;重啟=刪 batch3/STOP 再起 worker"
+ },
+ {
+  "id": 1413,
+  "what": "Delvin 個人 GitHub @delvinchang 待老闆本人註冊(手機行動網路,~1分鐘),之後我接手 2FA/profile/token/gh 第二帳號",
+  "why": "github.com/signup 對 winrig 家用 IP 118.168.26.36 回 403 Access restricted(curl 也 403,/login 正常);GitHub ToS 禁止自動化註冊,不繞 IP 封鎖",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-10-01 13:43",
+  "closed": "2026-10-01 18:34",
+  "note": "老闆手動註冊 delvinchang 完成,gh 獨立 config ~/.config/gh-delvinchang"
+ },
+ {
+  "id": 1414,
+  "what": "edgeaudit 開源 repo 已備妥未發布(~/oss/edgeaudit,已 stage 未 commit)",
+  "why": "本機只有品牌帳號 marketdaily,需 Delvin 個人 GitHub 登入後照 ~/oss/PUBLISH.md 發布",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-10-01 14:08",
+  "closed": "2026-10-01 18:34",
+  "note": "edgeaudit 已用 delvinchang 發布 https://github.com/delvinchang/edgeaudit,CI 綠"
+ },
+ {
+  "id": 1415,
+  "what": "QFX cut20 v4 motion rebuild: gates pass on both songs, fresh-critic motion gate not yet met (no final/v4/READY)",
+  "why": "18 critic rounds: 3 said YES (>=8 all four) but each listed polish defects; latest 7/6/7/6.5. Repeating items in cut20/NOTES.md",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-10-01 16:21",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1416,
+  "what": "皇海回信被擋:根因未以實際退信證實(推定為 09-23 DMARC 收緊)",
+  "why": "退信落在同仁本機;需老闆向皇海拿一封退信或確認回信用的信箱/程式;dmarc_report_watch 首份報告約 24-48h 後到",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-10-01 17:41",
+  "closed": "2026-10-01 18:07",
+  "note": "真因改判為 Brevo 追蹤像素,已改純文字部署"
+ },
+ {
+  "id": 1417,
+  "what": "皇海詢價通知改純文字:待下一張真實詢價確認 Gmail 收到的信無 sendibt3 像素",
+  "why": "實寄測試被寄信 hook 擋;需真實單或老闆同意寄一封測試到他 Gmail",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-10-01 18:07",
+  "closed": "2026-10-01 18:18",
+  "note": "改走公司主機 SMTP,正式站實測零追蹤+DKIM pass,每日自測守衛上線"
+ },
+ {
+  "id": 1418,
+  "what": "請皇海重寄 08-31~10-01 可能被擋的詢價回信(20 張,優先 Micron/Thales/RIEGL/G&H)",
+  "why": "舊通知信含 Brevo 像素,當時引用回覆的信可能沒送達;只有皇海知道哪些客戶沒回音",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-10-01 18:18",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1419,
+  "what": "週日 10:00 老闆說 continue 後接續 QFX 影片(清單見 memory project_resume_sunday_qfx_motion)",
+  "why": "10-01 token 用量過高老闆叫停",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-10-01 18:19",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1420,
+  "what": "ma_weekly env_scope 修復(rc=127)尚未在生產跑過,等 10-07 10:00 補跑窗首班驗證產出 6 則草稿",
+  "why": "10-06 修,今天補跑窗已過",
+  "owner": "me",
+  "risk": "med",
+  "opened": "2026-10-06 22:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1421,
+  "what": "news_reactive 起草 prompt 加事實邊界條款(Check 2 駁回率 ~50%),生產通過率待 10-07 觀察",
+  "why": "只經 dry-run 取樣驗證",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-10-06 22:37",
+  "closed": null,
+  "note": ""
  }
 ]
