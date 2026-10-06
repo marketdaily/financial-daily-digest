@@ -1308,3 +1308,9 @@
 {"date": "2026-10-05", "code": "4927", "source": "leadflow", "level": "red", "signal": "泰鼎-KY(4927) 無消息近漲停+9.9%(連2根,5日+21.1%),疑資訊先行資金|外資+投信近3日+3731張", "price_at_signal": null}
 {"date": "2026-10-05", "code": "2466", "source": "leadflow", "level": "red", "signal": "冠西電(2466) 無消息近漲停+9.9%(連3根,5日+29.7%),疑資訊先行資金|外資+投信近3日+731張", "price_at_signal": null}
 {"date": "2026-10-05", "code": "8150", "source": "tw_broker_calls", "level": "yellow", "signal": "南茂(8150) 券商喊單:外資調升↑", "price_at_signal": null}
+{"date": "2026-10-06", "code": "3533", "source": "tw_analyst", "level": "yellow", "signal": "嘉澤(3533):FactSet共識EPS預估下修至81.22元(目標價2450元)", "price_at_signal": null}
+{"date": "2026-10-06", "code": "7711", "source": "sbl", "level": "red", "signal": "永擎(7711):機構借券賣出5日遽增22.0%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": null}
+{"date": "2026-10-06", "code": "GS", "source": "us_congress", "level": "yellow", "signal": "🏛️ GS 國會議員買進:Michael Rulli(House) 2026-10-02 揭露", "price_at_signal": null}
+{"date": "2026-10-06", "code": "2485", "source": "tw_rank", "level": "red", "signal": "兆赫(2485) 量能竄榜:今日量榜第17(近10日未進過top50,-3.8%,44,396張)", "price_at_signal": null}
+{"date": "2026-10-06", "code": "1785", "source": "tw_rank", "level": "red", "signal": "光洋科(1785) 量能竄榜:今日量榜第18(近10日未進過top50,+7.8%,43,308張)", "price_at_signal": null}
+{"date": "2026-10-06", "code": "6152", "source": "leadflow", "level": "red", "signal": "百一(6152) 無消息近漲停+9.9%(連2根,5日+25.5%),疑資訊先行資金|外資+投信近3日僅+186張,法人未同步=隱形買盤", "price_at_signal": null}
