@@ -327,6 +327,9 @@ class _Chdir:
 def _variants():
     data = _fixture()  # 在換假 datetime 模組前先 unpickle(內含真 datetime 物件)
     analyzer, main = _load_modules()
+    # 2026-10-06:原本只有 run_smoke 裝這兩個樁,report_* 變體照讀活的 leadflow_latest.json
+    # (>2 天靜默回空)⇒ 平日紅、週末綠,10-01 起連紅,沒有任何程式改動。
+    _stub_live_intel_notes(analyzer)
     date = data.get("date") or "2026-07-02"
     us_many, tw_many = _many_holdings(data)
     v = {}
