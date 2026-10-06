@@ -1017,7 +1017,61 @@ def strip_code_fence(body: str) -> str:
     body = body.strip()
     body = re.sub(r"^```(?:html)?\s*\n?", "", body)
     body = re.sub(r"\n?```\s*$", "", body)
-    return body.strip()
+    return normalize_bare_blocks(body.strip())
+
+
+_BLOCK_TAG = re.compile(r"^<(?:/?(?:h[1-6]|p|ul|ol|li|div|table|thead|tbody|tr|td|th|blockquote|section|figure|figcaption|hr|br|img|pre)\b|!--)", re.I)
+_LIST_ITEM = re.compile(r"^(?:[*\-•]|\d+[.、)])\s+")
+
+
+def normalize_bare_blocks(body: str) -> str:
+    """防禦層(2026-10-06):LLM 偶爾回 markdown 混 HTML(裸段落、`*   **x:**` 清單)。
+    8299 配息文就這樣上線:沒有 <p> ⇒ meta desc 抽不到首段退回 stub、content_seo 量到正文 446 寬。
+    合法 HTML 行原樣通過;只包裹不以區塊標籤開頭的裸行。"""
+    out, para, items, open_tag = [], [], [], None
+
+    def flush():
+        nonlocal para, items
+        if items:
+            tag = "ol" if re.match(r"^\d", items[0]) else "ul"
+            out.append(f"<{tag}>" + "".join(
+                "<li>" + _LIST_ITEM.sub("", x) + "</li>" for x in items) + f"</{tag}>")
+            items = []
+        if para:
+            t = " ".join(para)
+            if t.endswith("</p>") and "<p" not in t:
+                t = t[:-4]
+            out.append("<p>" + t + "</p>")
+            para = []
+
+    for raw in body.split("\n"):
+        s = raw.strip()
+        if open_tag:
+            out.append(raw)
+            if f"</{open_tag}>" in s.lower():
+                open_tag = None
+            continue
+        if not s:
+            flush()
+            out.append("")
+            continue
+        if _BLOCK_TAG.match(s):
+            flush()
+            out.append(raw)
+            m = re.match(r"^<(p|pre|blockquote|table|ul|ol|div)\b", s, re.I)
+            if m and f"</{m.group(1).lower()}>" not in s.lower():
+                open_tag = m.group(1).lower()
+            continue
+        if _LIST_ITEM.match(s):
+            if para:
+                flush()
+            items.append(s)
+            continue
+        if items:
+            flush()
+        para.append(s)
+    flush()
+    return re.sub(r"\*\*([^*\n<>]+?)\*\*", r"<strong>\1</strong>", "\n".join(out))
 
 
 def gen_article(ticker: str, name: str, topic: str, market: str) -> dict:
