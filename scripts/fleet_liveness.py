@@ -56,6 +56,14 @@ PARENT_ARTIFACT = {
 }
 
 
+# 明列退役(2026-10-06):crontab 與所有 runner 都已無引用的一次性 job。不做「找不到引用就自動退役」
+# ——動態組名(newsroom_draft_${H})會被誤判退役,把真靜默蓋掉。恢復排程時從這裡拿掉。
+RETIRED = {
+    "eng-blog-p3": "09-16 一次性部落格批次,無排程引用",
+    "kingconn_favicon_crawl": "09-15 起 favicon_crawl_watch.py 已刪,無排程引用",
+}
+
+
 def _crontab_max_gap_days(job, horizon_days=120):
     """從 crontab 宣告的排程推「兩次觸發之間最多隔幾天」。推不出來回 None(不猜)。
 
@@ -71,7 +79,10 @@ def _crontab_max_gap_days(job, horizon_days=120):
         return None
     hit = [ln for ln in lines
            if not ln.lstrip().startswith("#")
-           and re.search(r"cron_run_and_alert\s+[\"']?" + re.escape(job) + r"\b", ln)]
+           and (re.search(r"cron_run_and_alert\s+[\"']?" + re.escape(job) + r"\b", ln)
+                # runner 型掛法(<job>_runner.sh 內部才 cron_run_and_alert),10-06 backlink_watch
+                # 每月 1 號跑卻被判 2 天靜默
+                or re.search(r"/" + re.escape(job) + r"_runner\.sh\b", ln))]
     if len(hit) != 1:                       # 0 條=不是直接掛 crontab;>1 條=多班次,別猜
         return None
     fields = hit[0].split()
@@ -209,6 +220,10 @@ def classify(jobs, today=None, parent_latest=None):
     for job, dates in sorted(jobs.items()):
         last = datetime.date.fromisoformat(dates[-1])
         age = (today - last).days
+        if job in RETIRED:
+            report[job] = {"last": dates[-1], "age_d": age, "status": "retired",
+                           "why": RETIRED[job]}
+            continue
         if any(p.search(job) for p in GATED_PATTERNS):
             report[job] = {"last": dates[-1], "age_d": age, "status": "gated"}
             continue
