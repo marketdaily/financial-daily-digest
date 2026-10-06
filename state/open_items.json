@@ -13838,8 +13838,8 @@
   "owner": "me",
   "risk": "med",
   "opened": "2026-09-24 01:35",
-  "closed": null,
-  "note": ""
+  "closed": "2026-10-06 23:03",
+  "note": "10-06 QFX 創作教訓 34 則逐字搬進 hub_qfx_creative.md,索引 22,543→16,746 字(<17,100);trim/hubify 自測全綠"
  },
  {
   "id": 1385,
@@ -14208,6 +14208,16 @@
   "owner": "me",
   "risk": "low",
   "opened": "2026-10-06 22:37",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1422,
+  "what": "夜巡積木自測 10 支修復(9 由 fork+1 記憶索引)只經手動重跑驗證,待今晚 05:xx 夜巡全庫真跑確認全綠",
+  "why": "生產夜巡尚未跑",
+  "owner": "me",
+  "risk": "low",
+  "opened": "2026-10-06 23:03",
   "closed": null,
   "note": ""
  }
