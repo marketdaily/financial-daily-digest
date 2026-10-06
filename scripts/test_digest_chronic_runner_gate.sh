@@ -28,6 +28,7 @@ run_case() {
   local R="$T/home/Delvin-agent"
   mkdir -p "$R/scripts" "$R/.venv/bin" "$T/home/.marketdaily-fallback/state" "$T/bin"
   cp "$REALLIB" "$R/scripts/"
+  cp "$SRC/scoped_env.sh" "$R/scripts/"   # 09-16 起 runner source 它;缺了 env_scope 未定義 ⇒ claude 從沒被叫到,全部情境假判 none
   cp "$RUNNER" "$T/home/.marketdaily-fallback/"
   cp "$SRC/digest_chronic_playbook.md" "$R/scripts/"
   cp "$SRC/digest_chronic_triage.py" "$R/scripts/"     # summary_line 用真的,不用假摘要
