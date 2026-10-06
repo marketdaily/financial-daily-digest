@@ -132,10 +132,15 @@ def slop_gated(gen_fn, label: str, retries: int = 1):
         if rep is None or rep["verdict"] == "clean":
             return art
         offenders = [h["pattern"] for h in rep["top_offenders"][:3]]
-        if rep["verdict"] == "watch":
-            print(f"    [slop-watch] {label} density={rep['slop_density']:.1f} {offenders}(放行,留觀察)")
-            return art
         last = attempt >= retries
+        # 2026-10-06:watch 原本第一次就放行 ⇒ 2330 供應鏈文帶「舉足輕重/不可或缺」上線,
+        # 夜巡 ai_slop_lint 的「真實 blog 全 clean」連紅三天。有重試額度就先重生,最後一次才放行。
+        if rep["verdict"] == "watch":
+            if last:
+                print(f"    [slop-watch] {label} density={rep['slop_density']:.1f} {offenders}(重試用完,放行,留觀察)")
+                return art
+            print(f"    [slop-watch] {label} density={rep['slop_density']:.1f} {offenders}→重生一次")
+            continue
         tail = "→丟棄不發(寧缺勿濫)" if last else "→重生一次"
         print(f"    [slop-SLOPPY] {label} density={rep['slop_density']:.1f} {offenders}{tail}")
         if last:
