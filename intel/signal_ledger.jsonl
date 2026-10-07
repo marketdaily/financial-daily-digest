@@ -1314,3 +1314,10 @@
 {"date": "2026-10-06", "code": "2485", "source": "tw_rank", "level": "red", "signal": "兆赫(2485) 量能竄榜:今日量榜第17(近10日未進過top50,-3.8%,44,396張)", "price_at_signal": null}
 {"date": "2026-10-06", "code": "1785", "source": "tw_rank", "level": "red", "signal": "光洋科(1785) 量能竄榜:今日量榜第18(近10日未進過top50,+7.8%,43,308張)", "price_at_signal": null}
 {"date": "2026-10-06", "code": "6152", "source": "leadflow", "level": "red", "signal": "百一(6152) 無消息近漲停+9.9%(連2根,5日+25.5%),疑資訊先行資金|外資+投信近3日僅+186張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-07", "code": "3095", "source": "institutional", "level": "red", "signal": "及成(3095):外資連 5 日買超(5日淨買 +6 張)", "price_at_signal": null}
+{"date": "2026-10-07", "code": "3450", "source": "margin", "level": "yellow", "signal": "聯鈞(3450):融資5日暴增18.0%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-07", "code": "3479", "source": "institutional", "level": "red", "signal": "安勤(3479):外資連 5 日買超(5日淨買 +311 張)", "price_at_signal": null}
+{"date": "2026-10-07", "code": "3701", "source": "twse_notetrans", "level": "yellow", "signal": "大眾控(3701):注意累計異常:115年10月5日至115年10月6日連續二次(逼近處置門檻)", "price_at_signal": null}
+{"date": "2026-10-07", "code": "6944", "source": "tw_rank", "level": "yellow", "signal": "兆聯實業(6944) 今日漲幅排行第10(+9.9%),異常活躍", "price_at_signal": null}
+{"date": "2026-10-07", "code": "2109", "source": "margin", "level": "yellow", "signal": "華豐(2109):融資5日暴增17.4%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-07", "code": "7738", "source": "sbl", "level": "yellow", "signal": "東聯互動(7738):機構借券賣出5日遽減-20.2%(回補潮,空頭力道減弱)", "price_at_signal": null}
