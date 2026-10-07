@@ -1,24 +1,84 @@
 {
-  "generated_at": "2026-09-08T10:16:24+08:00",
+  "generated_at": "2026-10-07T10:06:59+08:00",
   "based_on_spy_report": "capabilities/marketing_agents_pipeline/latest_spy_report.json",
-  "note": "2026-09-08 批次(6 則),Marketing Agents 五連跑(spy → competitive-ads-extractor → bulk-creative → ads-score → ads-meta,organic 模式,不輸出任何付費投放 spec)。ads_score / ads_score_notes 為獨立評分階段結果,與創作階段自評 score 刻意並存以保留分歧(_02/_03/_04/_05/_06 於評分階段判定 hook 三要素或獨立收藏價值未達標而封頂 70,理由與具體修法留在 ads_score_notes 供驗證者裁決;_01 為本批唯一未封頂者,79)。_01 為新聞 hook 型,caption 內數字皆為外部新聞事實(Altruist 的 Hazel 財務規劃 agent:六大規劃領域、原本耗時數小時、數字交專用計算引擎而非語言模型生成),公開可驗證出處放在 source_url,驗證者需逐字對;評分階段已註記兩處來源分歧刻意未寫進 caption(年費 $3,600/年 vs $125/seat/月、上線日 8/31 vs 9/1,故只寫「上週/9 月初」)。⚠️ 交給驗證者的三個已知待裁決點:(a) _06 caption 的「不用登入也能直接聽」在 docs/audio.html 上找不到對應文字,發前需實測該頁匿名可播;(b) _01 的 source_url 為 WealthManagement.com 報導頁,caption 末行寫「Altruist 官方發布」,驗證者宜確認是否需改標原始發布出處;(c) _04 platform 標 x,但長度與段落節奏是 IG/Threads/電子報寫法,X 上需拆 thread 或改長文格式。compliance_self_check 五欄皆由 capabilities/marketing_agents_pipeline/compliance_selfcheck.py::check_caption() 對 caption_zh 與 caption_en 分別實跑後取 AND 產生,非人工填寫;六則 caption_zh 亦以 promote_ad_creatives._is_gated() 實跑,全部 False(非留言閘門型)。status 全為 pending_review——核可只能由獨立驗證者(marketing-verify)進行,生成者不可核可自己的草稿。",
+  "note": "2026-10-07 批次(6 則),Marketing Agents 五連跑(spy → competitive-ads-extractor → bulk-creative → ads-score → ads-meta,organic 模式,不輸出任何付費投放 spec)。score/score_dims 為創作階段自評(_01/_02/_04/_06 創作代理未自評=0),ads_score/ads_score_notes 為獨立評分階段結果,兩者刻意並存以保留分歧;評分階段判 _01/_03/_04/_05/_06 hook 三要素或收藏價值未達標封頂 70,_02 為唯一未封頂者(80)。_01 為新聞 hook 型,caption 數字皆為外部新聞事實(Schwab Charley 新聞稿 2026/9/30),出處在 source_url,驗證者需逐字對。已知待裁決點:(a)_04 platform=x 但英文約 560 字元超過 X 單則上限;(b)_03 Threads 帳號現定位世界新聞,題材不搭;(c)_01『同一件事的另一個版本』對等性。compliance_self_check 五欄由 compliance_selfcheck.check_caption() 對中英 caption 分別實跑取 AND。status 全為 pending_review,核可只能由獨立驗證者(marketing-verify)進行。",
   "drafts": [
     {
-      "id": "adcreative_2026-09-08_01",
+      "id": "adcreative_2026-10-07_01",
       "platform": "instagram",
-      "angle": "新聞hook型(觸及軌):借近7天真實金融×AI新聞——Altruist 的 Hazel 財務規劃 agent 明文把「數字」從語言模型手上拿走、交給專用計算引擎——把外部新聞事實當 hook,收在 MarketDaily 的同一條線(AI 讀與整理、數字可回頭驗算/結算過的判斷公開列含輸的),打的是 spy 報告指出的兩塊 whitespace:『結果公開可查證』與『金融×AI』,且全篇寫成可直接當短影音旁白唸的形式(近14天只有 reel 有觸及,靜態卡得靠 caption 自己活)。",
-      "caption_zh": "美國理財顧問服務平台 Altruist 上週替旗下 AI 平台 Hazel 推出財務規劃 agent,把顧問原本要花好幾小時的六大財務規劃壓進幾分鐘——但真正該記下來的,是它「不做」的那件事。\n\nHazel 一次涵蓋退休、投資最佳化、現金流、遺產、稅務、保險與風險,六個過去往往要靠一整組專家分頭處理、動輒好幾小時的領域,現在幾分鐘就產出一份完整的財務規劃。\n\n可是 Altruist 在中間畫了一條線。AI 只負責讀:財務文件、客戶會議、往來溝通紀錄,把客戶的狀況整理清楚。至於所有會印在規劃書上的數字,一律丟給專門的計算程式跑,不讓語言模型自己生。用他們的說法,每一個數字都是「被算出來的」,不是「被 AI 生成的」。\n\n這條線,是今年金融 AI 最值得抄的一句話。AI 很會讀、很會整理、很會解釋;但只要是要負責任的數字,就得有一個能被回頭驗算的來源。\n\nMarketDaily 走的是同一條線。AI 幫你把一整夜的財經新聞整理成一封信,週一到週六早上七點寄到你信箱;而我們把結算過的每一筆判斷都公開列在戰績頁上,輸的那些也留在上面,任何人都能自己回頭對。目前全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n換你說說看:你比較願意用一個「什麼都幫你算好」的 AI,還是一個「敢告訴你數字從哪來」的 AI?在下面告訴我。\n\n出處:Altruist 發布,2026 年 8 月 31 日。",
-      "caption_en": "Last week Altruist — a US platform for financial advisors — shipped a financial planning agent inside its Hazel AI platform, squeezing six areas of planning that used to take advisors hours into a few minutes. But the part worth copying is what it refuses to do.\n\nHazel covers retirement, investment optimization, cash flow, estate, tax, and insurance and risk in one pass: six areas that a shop full of specialists used to work through over hours, now a comprehensive plan in minutes.\n\nExcept Altruist drew a line down the middle. The AI only reads — financial documents, client meetings, communications — and organizes the client's situation. Every number that ends up in the plan gets routed to dedicated calculation programs instead of being written by the language model. In their words, every figure is calculated, not AI-generated.\n\nThat line is the most quotable idea in finance AI this year. AI is great at reading, organizing and explaining. But any number you have to stand behind needs a source someone can go back and check.\n\nMarketDaily runs on the same line. AI turns a whole night of financial news into one email that lands in your inbox at 7am Taipei time, Monday through Saturday; and every call we have settled is listed in the open on our track record page — the losing ones stay up too, so anyone can check for themselves. Everything is free for a limited time right now; when paid plans return, early subscribers keep free access forever.\n\nYour turn: would you rather use an AI that does all the math for you, or one that tells you where the numbers came from? Tell me below.\n\nSource: Altruist announcement, Aug 31, 2026.",
-      "source_url": "https://www.wealthmanagement.com/advisor-support-platforms/altruist-launches-ai-financial-planning-agent",
-      "score": 86,
+      "angle": "新聞 hook 型(觸及軌):嘉信理財 9/30 發表 AI 助理 Charley,第一句用具體調查數字(超過 500 位受訪者、約三分之二)對比『大券商直接把 AI 放進 App』,收尾把『AI 幫你整理資訊、人留時間判斷』接到 MarketDaily 每天早上替你整理好持股新聞的資訊端空位(競品全在打交易端低門檻/零佣)。",
+      "caption_zh": "超過 500 位受訪投資人,約三分之二說 AI 幫得上忙。嘉信理財(Charles Schwab)的回應:直接把 AI 助理放進自家 App。\n\n9 月 30 日,嘉信發表生成式 AI 助理 Charley,10 月起分階段開放給符合資格的美國散戶客戶,Schwab.com 和 Schwab Mobile 都能用。\n\nCharley 能做的事:\n・用語音或打字,照你自己的說法發問\n・回你資訊,並建議下一步\n・直接完成部分操作\n・需要時轉接真人專員\n\n嘉信同時公布的調查(9 月 21 到 25 日,對象是超過 500 位嘉信客戶與潛在客戶):約三分之二的散戶認為,AI 可以處理例行事務,或在搭配專業人員的前提下,在投資裡扮演實質角色。\n\n關鍵字是「搭配」。大券商的方向不是叫 AI 替你選股,而是把查資料、整理資訊這類瑣事交出去,人把時間留給判斷。\n\n不過 Charley 只服務嘉信的美國客戶。同時看台股和美股的人,MarketDaily 做的是同一件事的另一個版本:你設定持股(最多 80 檔),週一到週六早上 7 點,跟你持股有關的新聞重點和財報提醒就整理好寄到信箱。分析內容對所有用戶完全相同,輸掉的戰績也公開列出來。\n\n目前全功能限時免費,不需要信用卡;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你會想用語音問 AI 自己的持股,還是早上直接收一封整理好的信?在下面告訴我。\n\n連結在個人檔案 → marketdaily.ai\n來源:Charles Schwab 新聞稿,2026/9/30\n",
+      "caption_en": "More than 500 investors surveyed, roughly two-thirds say AI can help. Charles Schwab's answer: put an AI assistant straight into its own app.\n\nOn September 30, Schwab unveiled Charley, a generative AI assistant rolling out in phases starting in October to eligible U.S. retail clients on Schwab.com and Schwab Mobile.\n\nWhat Charley does:\n- Take questions by voice or text, in your own words\n- Give you information and suggested next steps\n- Complete select tasks\n- Connect you with a Schwab representative when needed\n\nSchwab's survey alongside the launch (September 21 to 25, more than 500 Schwab clients and prospects): about two-thirds of retail investors say AI can handle routine tasks, or play a meaningful role in investing when paired with human expertise.\n\nThe key word is \"paired.\" The big-broker direction isn't letting AI pick stocks for you. It's handing off the lookup-and-sort chores so people keep their time for judgment.\n\nBut Charley only serves Schwab's U.S. clients. If you follow both Taiwan and U.S. stocks, MarketDaily is another version of the same idea: set your holdings (up to 80), and Monday to Saturday at 7 AM the news and earnings reminders tied to them land in your inbox, already sorted. Every user gets exactly the same analysis, and losing calls stay on the public track record too.\n\nAll features are free for a limited time, no credit card required. When paid plans return, early-bird subscribers who join now keep free access permanently.\n\nWould you rather ask an AI about your holdings by voice, or get one sorted email in the morning? Tell me below.\n\nLink in bio → marketdaily.ai\nSource: Charles Schwab press release, Sep 30, 2026\n",
+      "source_url": "https://pressroom.aboutschwab.com/press-releases/press-release/2026/Meet-Charley-Schwabs-New-AI-Powered-Assistant-Designed-to-Help-Clients-Get-Answers-and-Take-Action/default.aspx",
+      "source_facts": [
+        "2026-09-30 Schwab 發表生成式 AI 助理 Charley",
+        "10 月起分階段開放給符合資格的美國散戶客戶,Schwab.com 與 Schwab Mobile",
+        "語音或文字、用自己的話發問、取得資訊與建議下一步、完成部分任務、需要時轉接 Schwab 專員",
+        "調查:約三分之二(65%)散戶認為 AI 能執行例行任務,或在搭配人類專業時在投資中扮演有意義角色",
+        "調查對象 500+ 位 Schwab 客戶與潛在客戶,期間 2026/9/21–25"
+      ],
+      "visual_direction": "Reel 優先(近 14 天唯一有觸及的型式):第一秒大字『500+ 受訪 → 三分之二說 AI 幫得上忙』計數動畫,切到手機 App 介面示意(不使用 Schwab 商標圖,僅文字標註來源),再切到 MarketDaily 早上 7 點信箱收件畫面;結尾二選一字卡『語音問 AI vs 早上收一封信』。",
+      "score": 0,
       "score_dims": {
-        "hook_strength": 18,
+        "hook_strength": 0,
+        "cta_clarity": 0,
+        "value_match": 0,
+        "target_match": 0,
+        "risk": 0
+      },
+      "score_rationale": "待評分代理填寫(創作代理不自評)。",
+      "compliance_self_check": {
+        "no_fabricated_numbers": true,
+        "no_pro_tier_language": true,
+        "no_premium_giveaway": true,
+        "no_guarantee_language": true,
+        "no_stock_analysis_premium_claim": true
+      },
+      "status": "approved",
+      "ads_score": 62,
+      "ads_score_notes": "強項：每個數字都對得上新聞稿（500+ 受訪、約三分之二＝65%、9/21–25、9/30 發表），合規口徑正確（80 檔上限、分析內容全體相同、限時免費加早鳥的標準說法，沒有 Pro、沒有保證字眼）。「關鍵字是搭配」這段把大券商的做法接到 MarketDaily 整理資訊的定位，銜接得很順。整體分項大約是 hook 12、CTA 14、value 13、target 13、risk 17。\n\n弱點（兩項硬性加權都沒過，所以分數壓在 70 以下）：\n1. 第一句沒有具名主體。嘉信到第二句才出現，「三分之二說 AI 幫得上忙」也只是溫和的共識，談不上衝突。而且這份調查是嘉信問自家客戶的，數字分量偏弱。建議改成像「嘉信理財把 AI 塞進 App 的同一週，自己的調查卻顯示三分之一客戶不買單」這種主體、數字、衝突都在第一句的寫法。\n2. 這篇是觸及軌，但 caption 主要在轉述 Charley 有哪些功能，屬於新聞摘要，讀者沒有理由收藏。可以補一個能存下來的實用清單，例如「哪些投資瑣事適合交給 AI、哪些判斷要自己做」。\n3. 另有兩個風險。說 MarketDaily 是 Charley「同一件事的另一個版本」誇大了對等性，Charley 能對話、能代辦操作，日報只是寄信。結尾「語音問 AI 還是收信」的二選一，也忽略了站上本來就有 AI 對話（每日 30 則），等於自己把一個賣點拿掉了。"
+    },
+    {
+      "id": "adcreative_2026-10-07_02",
+      "platform": "instagram",
+      "angle": "AI 神用法型(觸及軌):教一句可直接複製的 prompt,讓 ChatGPT 停止順著你講、改列出持股的 3 個看空理由並附查證來源;迷你教學拉收藏,結尾接「MarketDaily 每天把功課做好」的資訊端空位(競品都在打交易端零佣/送禮)",
+      "caption_zh": "一句 prompt,讓 AI 從「拍你馬屁」變成「列出 3 個看空理由」。\n\n問 ChatGPT「我這檔持股好不好」,它很容易先順著你講。換個問法,它就會開始替你做真正的功課。\n\n📋 直接複製這段:\n「請扮演一位持懷疑態度的研究員。我持有〔公司名〕。不要評價我的決定好或壞,直接列出 3 個這家公司未來表現可能不如預期的理由。每個理由附上:① 我該觀察的具體指標 ② 可以去哪份公開資料查證(財報、法說會、重大訊息)。資料不足就直接說不知道,不要猜。」\n\n接著三步:\n1️⃣ 把〔公司名〕換成你自己的持股\n2️⃣ 追問一句:「這 3 個理由裡,哪一個最容易被我忽略?為什麼?」\n3️⃣ 把它列的指標抄下來,下次財報公布時逐一對照\n\n⚠️ AI 會講錯。它給你的是一張功課清單,不是答案,也不是買賣建議;每一條都要回原始資料查證。\n\n這份功課每天自己做很花時間。MarketDaily 週一到週六早上 7 點,把你自選持股(美股+台股,最多 80 檔)的相關新聞、財報提醒、板塊輪動整理好寄到你的信箱。所有分析內容對全體用戶完全相同。\n\n目前全功能限時免費,不需要信用卡;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。👉 marketdaily.ai\n\n你問 AI 投資問題時,最常被它哪句話敷衍?在下面告訴我。\n\n#AI #ChatGPT #投資 #美股 #台股 #財報",
+      "caption_en": "One prompt that turns AI from flattering you into listing 3 reasons to be bearish.\n\nAsk ChatGPT \"Is my stock a good pick?\" and it tends to agree with you. Change the question and it starts doing real homework for you.\n\n📋 Copy this:\n\"Act as a skeptical researcher. I hold [company name]. Don't judge whether my decision is good or bad. List 3 reasons this company could underperform expectations. For each reason, give me: ① the specific metric I should watch ② which public source I can verify it in (earnings reports, earnings calls, official filings). If the data isn't enough, say you don't know. Don't guess.\"\n\nThen three steps:\n1️⃣ Swap [company name] for one of your own holdings\n2️⃣ Follow up: \"Which of these 3 reasons am I most likely to overlook, and why?\"\n3️⃣ Write down the metrics it lists and check them one by one when the next earnings report comes out\n\n⚠️ AI gets things wrong. What it gives you is a homework list, not an answer and not a buy or sell call. Verify every point against the original source.\n\nDoing this homework yourself every day takes time. MarketDaily sends the news, earnings reminders and sector rotation for your watchlist (US + Taiwan stocks, up to 80 tickers) to your inbox at 7 AM, Monday to Saturday. All analysis is exactly the same for every user.\n\nAll features are free for a limited time, no credit card required. When paid plans return, early-bird subscribers who join now keep free access permanently. 👉 marketdaily.ai\n\nWhen you ask AI about investing, what's the line it dodges you with most? Tell me below.\n\n#AI #ChatGPT #investing #stocks #earnings",
+      "score": 0,
+      "score_dims": {
+        "hook_strength": 0,
+        "cta_clarity": 0,
+        "value_match": 0,
+        "target_match": 0,
+        "risk": 0
+      },
+      "score_rationale": "待評分代理填寫。創作備註:第一秒 hook=具體數字(一句 prompt / 3 個看空理由)+對比(拍馬屁 vs 看空);caption 本體是可直接複製的 prompt+三步驟(高收藏型);未提任何個股、價位或買賣建議,明文提醒 AI 會錯、非買賣建議;產品數字只用固定規格(週一到週六 7 點、80 檔);免費化早鳥口徑照抄;互動用純提問「在下面告訴我」,全文不含「留言」二字,不要求關鍵字、不承諾連結;無 LINE CTA;中英語意一致(週一到週六,未寫每天寄送)。建議做成 reel:第一秒畫面=聊天框把「好眼光!」刪掉、打出「看空理由 1/2/3」。",
+      "compliance_self_check": {
+        "no_fabricated_numbers": true,
+        "no_pro_tier_language": true,
+        "no_premium_giveaway": true,
+        "no_guarantee_language": true,
+        "no_stock_analysis_premium_claim": true
+      },
+      "status": "approved",
+      "ads_score": 80,
+      "ads_score_notes": "強項：第一句「一句 prompt，讓 AI 從『拍你馬屁』變成『列出 3 個看空理由』」有具體數字（一句／3 個）和明確對比（拍馬屁 vs 看空），符合 hook 公式。本體是可以直接複製的 prompt，加上三步驟和查證提醒，有獨立收藏與教學價值。合規也乾淨：沒提個股、沒喊價位、明寫不是買賣建議；早鳥口徑照抄現行版本，80 檔、週一到週六 7 點都是固定規格。兩條硬性加權都合格，所以分數不受 70 上限限制。\n\n弱點：一是「具名主體」偏弱，中文首句只寫泛稱的「AI」，ChatGPT 到第二段才出現，建議首句直接寫「ChatGPT」。二是 caption 太長，CTA 被埋在第 7 段，而且同一則有三個出口（marketdaily.ai 連結、提問互動、hashtag），互相搶注意力；「所有分析內容對全體用戶完全相同」這句法務腔太重，會拖慢閱讀，建議移到 bio 或刪掉。另外平台排錯了：IG 實測每則約 3 views，Threads 每則 165-570 views，觸及軌素材應該優先改發 Threads。分項：hook 16、CTA 14、value 17、target 16、risk 17。"
+    },
+    {
+      "id": "adcreative_2026-10-07_03",
+      "platform": "threads",
+      "angle": "機制差異化:把『AI 假訊息過濾』拆成三道可查證的關卡(白名單媒體→擋『據悉/消息人士稱』類模糊說法→兩家以上媒體或一線通訊社才標已查證),對準競品全在打交易端話術、沒人講資訊可信度的空位;機制與 fake_news_filter.py + config.VAGUE_KEYWORDS 實作逐條對應",
+      "caption_zh": "「據悉」「消息人士稱」——你今天滑到的財經新聞,有幾則是這樣開頭的?\n\nMarketDaily 的 AI 挑新聞之前,先過三關:\n① 只收白名單裡的財經媒體,來路不明的轉貼不收\n② 標題或摘要出現「據悉、傳聞、匿名人士、消息人士稱」這類說法的,先擋掉\n③ 同一件事要有兩家以上媒體都報了,或出自路透、美聯社這類一線通訊社,才標成「已查證」排在前面\n\n過得了這三關的,才會進你的日報。週一到週六早上 7 點送到信箱,持股最多 80 檔,美股、台股一起看。\n\n目前全功能限時免費,不需要信用卡;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你比較常被哪一種消息帶著走:「某大廠傳出急單」,還是「聽說主力在進貨」?在下面告訴我。\nmarketdaily.ai",
+      "caption_en": "\"Sources say.\" \"Reportedly.\" How many of the market headlines you scrolled past today started like that?\n\nBefore MarketDaily's AI picks a story, it has to clear three checks:\n1) It must come from a whitelisted financial outlet. Random reposts don't get in.\n2) Headlines or summaries leaning on \"reportedly,\" \"rumored,\" \"allegedly\" or \"sources say\" are dropped.\n3) A story is marked \"verified\" and ranked first only when two or more outlets report it, or it comes from a top wire service like Reuters or AP.\n\nOnly what survives all three makes it into your briefing. Delivered to your inbox Monday to Saturday at 7 AM, covering up to 80 holdings across US and Taiwan stocks.\n\nAll features are free for a limited time, no credit card needed. When paid plans return, early-bird subscribers who join now keep free access for good.\n\nWhich one pulls you in more often: \"a big supplier just landed a rush order\" or \"word is the big players are buying\"? Tell me below.\nmarketdaily.ai",
+      "score": 78,
+      "score_dims": {
+        "hook_strength": 16,
         "cta_clarity": 15,
         "value_match": 18,
-        "target_match": 17,
-        "risk": 18
+        "target_match": 16,
+        "risk": 13
       },
-      "score_rationale": "Hook(18/20):第一句具名主體 Altruist + 具體對比(六大規劃領域、好幾小時→幾分鐘)+ 反直覺轉折(「它不做的那件事」),不靠自家數字就有新聞張力;扣分在 Altruist 對台灣讀者知名度低於 Google/Bloomberg 這類名字。CTA(15/20):純二選一提問(算好給你 vs 告訴你數字從哪來)+「在下面告訴我」,刻意不用「留言」動詞、不要求關鍵字、不承諾私訊連結(promote 的 _is_gated 實測 False);扣分在沒有硬導流動作,是刻意換觸及與安全。value_match(18/20):新聞的分工線(AI 讀、引擎算)剛好等於 MarketDaily 可查證的機制,收尾不是硬轉。target_match(17/20):打「用 AI 但不敢全信 AI」的自主投資人,對應 spy 報告 whitespace『結果公開可查證』與『金融×AI』(競品廣告完全空白);全篇寫成短影音旁白句式,回應近14天只有 reel 有觸及。risk(18/20):外部事實三項皆可逐字驗——六個規劃領域(retirement / investment optimization / cash flow analysis / estate planning / tax strategy / insurance and risk)、數字由 dedicated calculation programs 產生而非 AI 生成、原本耗時 hours;刻意不寫年費(來源互相矛盾:一說 $3,600/年、一說比照 tax planning 的 $125/seat/月)、不寫確切上線日(來源分歧 8/31 與 9/1,故只寫「上週/9 月初」)。自家側零寫死數字,只講機制。",
+      "score_rationale": "Hook 直接引用讀者天天看到的模糊字眼(據悉/消息人士稱),第一句就能看懂,也能自己對照;三關機制具體,而且和 fake_news_filter.py 的白名單、VAGUE_KEYWORDS、跨源/一線通訊社判 verified 實作逐條相符,不是空泛的『AI 過濾』。結尾用二選一純提問拉互動,沒有要求留特定關鍵字、沒有承諾給連結,也避開了『留言』這個動詞。扣分:Threads 純文字長度偏長;另外引號裡的兩個例句是虛構的市場傳聞樣式,不是真實消息、也沒點名個股,但驗證者可能會再確認不構成喊單。",
       "compliance_self_check": {
         "no_fabricated_numbers": true,
         "no_pro_tier_language": true,
@@ -27,52 +87,25 @@
         "no_stock_analysis_premium_claim": true
       },
       "status": "approved",
-      "ads_score": 79,
-      "ads_score_notes": "強項:hook 完整命中「具名主體+具體數字+衝突」公式(Altruist/Hazel、六大領域、好幾小時→幾分鐘、「但真正該記下來的是它不做的那件事」),且整篇有獨立教學價值——「AI 只負責讀、數字一律交專用引擎算」是可被單獨截圖收藏的原則,不靠自家產品也成立;合規面乾淨(零捏造數字、無 Pro/試讀/邀請碼舊文案、無保證字眼),且「週一到週六早上 7 點」與「結算過的判斷含輸的公開在戰績頁」我已對 docs/index.html 與 docs/track-record.html 逐字核過屬實。弱點:①觸及軌代價付得太滿——全篇 70% 在替 Altruist 立品牌、MarketDaily 只佔一段,讀者記得的是 Hazel 不是我們,而 CTA 只有二選一提問、沒有任何落點(連「簡介連結」都沒提),等於這則的收益完全押在觸及而無轉換面;②第 5 段把「限時免費+早鳥永久保留」整句樣板塞進教學節奏中間,是全篇唯一讀起來像廣告的地方,直接壓低收藏意願,建議移到最後一行或本則刪掉;③「上週推出」讓貼文有保鮮期(今天 09-08 已是第二週),重貼/轉 reel 會失準,改「9 月初」即可;④Altruist 在台灣近乎無名,hook 的具名主體換不到辨識紅利,可在第一句補一句身分定錨(「美國理財顧問平台 Altruist」)止血。自評 86 偏高,主因是把「刻意不導流」當成滿分理由,但它實際上就是失分。",
-      "verifier_edits": "修正 5 處外部事實與 1 處中英不一致(全為小型事實錯誤,修正後全部檢查重跑通過):\n\n1) 出處日期錯誤:草稿寫「2026 年 9 月初 / early September 2026」,但 WebFetch source_url(wealthmanagement.com)與 WebSearch 交叉確認發布日為 **2026-08-31**(週一,距今 8 天,在 14 天內)。已改成「2026 年 8 月 31 日 / Aug 31, 2026」。註:「上週推出/Last week」本身正確(8/31 落在 8/31–9/6 那一週,今天 9/8 週二)。\n\n2) 主體描述不精確:草稿寫「Altruist 上週推出的 AI 理財規劃師 Hazel」,實際上 Hazel 是既有 AI 平台(2 月已上 tax planning agent、6 月開候補),上週推出的是 Hazel 平台底下的**財務規劃 agent**。已改為「上週替旗下 AI 平台 Hazel 推出財務規劃 agent / shipped a financial planning agent inside its Hazel AI platform」。同時依 ads_score_notes 建議補上身分定錨「美國理財顧問服務平台」。\n\n3) 來源沒說的細節:草稿寫 AI 讀「會議逐字稿 / meeting transcripts」,但來源逐字查證「transcripts / meeting notes / recordings」皆 **not present**,原文是 financial documents、client meetings、communications。已改成「財務文件、客戶會議、往來溝通紀錄 / financial documents, client meetings, communications」。\n\n4) 同理,「產出一份可以直接給客戶看的規劃 / client-ready plan」來源未支持,改為來源逐字可證的「完整的財務規劃 / comprehensive plan in minutes」;「六個過去要一項一項手工做的領域」改為來源原文可證的「往往要靠一整組專家分頭處理、動輒好幾小時」(原文:\"work that a shop full of specialists would do\"、\"historically took advisors hours\")。\n\n5) 用詞對齊來源:「投資配置」→「投資最佳化」(來源為 investment optimization);「計算引擎」→「計算程式」(來源為 dedicated calculation programs);「被 AI 寫出來的」→「被 AI 生成的」(對齊 \"AI-generated\")。\n\n6) 中英口徑不一致:zh「未來恢復收費後」是既定語氣,en 原寫「if paid plans ever return」是假設語氣,且與 pricing.html 英文版「Paid plans will return in the future, but early subscribers keep full free access forever」不符。已改為「when paid plans return, early subscribers keep free access forever」。en 另補「7am Taipei time」與 pricing.html 的「Mon–Sat at 7AM TWT」對齊。\n\n已核對通過的項目:\n- 寄送排程「週一到週六早上七點」逐字對上 docs/pricing.html「週一到週六早上 7 點直送信箱」(免費版週日休息,caption 未宣稱每天)。\n- 「結算過的每一筆判斷都公開列在戰績頁上,輸的那些也留在上面」屬實:docs/data/track-record.json 的 records 含 win 1725 / loss 1330 = 3055,恰等於 stats.judged_records 3055;docs/track-record.html 有「❌ 輸」篩選並逐筆渲染。\n- 零寫死勝率/訂戶數/百分比;無 Pro/免費試讀/邀請碼/送 Premium/保證·穩賺·絕對·100%/老師·大師·神算;無喊進喊出個股;無 LINE CTA;無任何 URL(非留言閘門型,CTA 只是提問,不會撞 _is_gated 與休眠中的 comment funnel)。\n- 未把個股分析與付費連結,早鳥口徑逐字對上 pricing.html,未暗示未來分析內容收費。\n- 品牌距離:對照 latest_spy_report.json(TradingView / 富途牛牛 / Morning Brew / The Hustle / Robinhood),競品 hook 全是入金獎賞、0 佣、下單控制類促銷,本則為新聞拆解+機制可查證,無貼近或照抄。\n- compliance_selfcheck.check_caption() 對修正後 caption_zh(與 caption_en 另跑一次)五項全 True。\n\n來源:https://www.wealthmanagement.com/advisor-support-platforms/altruist-launches-ai-financial-planning-agent"
+      "ads_score": 62,
+      "ads_score_notes": "強項：三關機制具體，跟 fake_news_filter.py 的實作逐條對得上，不是空泛的「AI 過濾」。合規也乾淨：限時免費加早鳥的口徑正確，80 檔上限與現行規則一致，沒有喊單、保證或 Pro 字眼。結尾用二選一純提問，不靠誘導換互動。弱點：第一句 hook 沒套「具名主體+具體數字+對比/衝突」公式。它沒有具名主體也沒有數字，只是一句泛問「有幾則是這樣開頭」，所以觸發硬性上限，不得高於 70（原自評 78 偏高）。收藏價值也不足：這三關本來可以寫成「教你自己判斷一則財經新聞可不可信」的獨立教學，現在包成產品功能介紹，後半還有方案和 CTA，讀者沒有理由收藏。另外它是股票日報的推廣文，這個 Threads 帳號現在的定位是世界新聞，題材不搭；純文字也偏長。建議修法：hook 改成具名數字的寫法，例如「今天 N 則台股新聞裡，有 X 則用『據悉』開頭」，N 和 X 要用真實統計，不能編造。正文先寫成讀者自己就能照做的三步查證法，產品只放最後一句。",
+      "verifier_edits": "One change, in caption_en only: replaced \"anonymous sources\" with \"allegedly\" in check 2. Reason: config.VAGUE_KEYWORDS has no English keyword \"anonymous sources\". Its English entries are rumored, sources say, reportedly, allegedly and unconfirmed. The Chinese 匿名人士 is in the list, so the zh caption stays as written. Before the edit, the English caption claimed English headlines saying \"anonymous sources\" get dropped, which the filter does not do. Both captions still list examples of the same kind of vague phrasing, so they still mean the same thing.\n\nChecks rerun after the edit, all passing:\n(1) Facts match the code. fake_news_filter.py is called from main.py, and each step is in the code: the whitelist check (NEWS_WHITELIST_DOMAINS / TW_NEWS_WHITELIST_DOMAINS), dropping title+description that contains a vague keyword, verified = TIER1 (it includes reuters.com and apnews.com) or 2+ domains, and verified stories sorted first. Product claims match docs/pricing.html: Mon-Sat 7 AM (pricing line 707 / EN 866), up to 80 holdings, no credit card, free for a limited time, and early-bird wording matching the official line.\n(2) zh and en agree, including the Mon-Sat schedule.\n(3) No banned wording: no win rate or subscriber counts, no Pro, trial, invite code, guarantee language, AI calling itself a teacher, or LINE. The two quoted rumor examples are generic and name no stock.\n(4) Nothing in latest_spy_report.json overlaps this copy.\n(5) compliance_selfcheck.check_caption returns all True for zh, the original en, and the fixed en.\n(6) Not a news-hook draft (no source_url).\n(7) Not a comment-gate CTA, so the marketdaily.ai URL is allowed.\n\nNot a reason to reject, but worth knowing: ads-score flagged a positioning mismatch. This is a stock-digest promo going to the Threads account, which is now positioned as a world-news account."
     },
     {
-      "id": "adcreative_2026-09-08_02",
-      "platform": "instagram",
-      "angle": "AI 神用法教學型(觸及軌):教一套可直接複製的「10 分鐘讀懂一份財報」三問 prompt——先點出最常見的錯(丟給 AI 說『幫我總結』),再給指定出處、允許它說『文件裡沒有』、比對兩季管理層用字、最後把結論變成可被推翻的假設的完整指令,收尾才接 MarketDaily 是這件功課的自動版。切 spy 的兩個 whitespace:競品(富途迎新賞/Robinhood 功能清單)全在用現金與功能買下載,沒有一家教你怎麼用 AI 把功課做深;同時把富途『把成本換算成生活場景』的公式從錢換成時間(一個下午 vs 10 分鐘)。刻意與 2026-08-17_02(反諂媚看空 prompt)區隔:那則的對象是你的持股與 AI 的諂媚傾向,本則的對象是一份文件與 AI 的幻覺傾向,主體是可重複的讀檔流程而非心理防禦。全篇零百分比、零我方戰績數字,只教方法不點名任何個股、不給任何買賣價位,個股相關內容全程未與付費連結。第一句即衝突且可直接當短影音旁白唸,對治近 14 天靜圖型全軍覆沒、只有 reel 有觸及的實測;互動採純提問,不要求特定關鍵字、不承諾私訊或連結,全文未出現「留言」二字,已用 promote_ad_creatives._is_gated() 實測 False。",
-      "caption_zh": "翻完一份季報要一個下午,我現在 10 分鐘問完——差別不是我讀得比較快,是我不再從第一頁開始讀,而且只問三題。\n\n先講最常見的錯:把財報丟給 AI 然後說「幫我總結」。摘要是它最會偷懶的地方,你會拿到一段誰都寫得出來的話。\n\n換成這樣問。把財報(或法說會逐字稿)丟進去之後,直接複製這段:\n\n「你手上這份是【公司名+哪一季】的財報。請照順序回答三題。每一題都要標出你引用的是哪一段、哪個報表欄位;找不到就直接說『這份文件裡沒有』,不要推測。\n1. 這一季跟上一季比,哪三個數字變動最大?各是變好還是變壞,文件裡給的原因是什麼?\n2. 管理層這次的用字,跟上一季比,哪裡變保守、哪裡變樂觀?把兩邊的原句都貼出來。\n3. 這份文件裡最容易被略過、但可能對未來幾季不利的一段是什麼?為什麼?\n最後補一句:要看到什麼,才代表第 3 題的疑慮成真、或者解除?」\n\n為什麼這樣問有用,四個關鍵:\n① 要它標出處 —— 編故事的成本變高,它得指得出某一段。\n② 允許它說「文件裡沒有」 —— 這句最重要,你不給它承認不知道的空間,它就會編一個給你。\n③ 問「跟上一季比,哪些字變了」 —— 語氣的轉彎通常比數字早出現,而這是人工比對最累、AI 最擅長的活。\n④ 最後一題把結論變成可以被推翻的東西,不是一段讀後感。\n\n三個提醒:\n・它報的每個數字,回原始財報自己對一次,它照樣會編。\n・只餵一季看不出趨勢,至少餵最近兩到三季再問第 1 題。\n・這是幫你讀懂一家公司在說什麼,不是叫你買賣任何東西——它不知道你的成本,也不知道你打算放多久。\n\n同樣一件事——把該注意的先整理好、再自己判斷——我們每天早上替你做完:週一到週六早上 7:00 寄到信箱,大盤、板塊和你追蹤的公司當天該注意什麼(最多 80 檔),看不懂的地方再問 AI 助手,每日 30 則。全功能限時免費 NT$0;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你讀財報時,習慣先翻哪一頁?在下面告訴我一句就好。",
-      "caption_en": "Reading a quarterly report cover to cover used to eat my whole afternoon. Now I am done in 10 minutes — not because I read faster, but because I stopped starting at page one and I only ask three questions.\n\nThe most common mistake first: dumping the report into AI and saying \"summarize this.\" Summaries are where it gets lazy. You get back a paragraph anyone could have written.\n\nAsk it this way instead. Drop in the filing (or the earnings call transcript), then copy this:\n\n\"The document you have is the [company + which quarter] report. Answer three questions in order. For every one, point to the exact section or line item you are quoting; if you cannot find it, say 'this document does not contain that' and do not speculate.\n1. Compared with last quarter, which three numbers moved the most? Better or worse, and what reason does the document itself give?\n2. Compared with last quarter, where did management's wording get more cautious and where did it get more optimistic? Paste both original sentences side by side.\n3. Which passage in this document is easiest to skip past but could work against the next few quarters? Why?\nThen add one line: what would we have to see for the concern in question 3 to be confirmed, or cleared?\"\n\nFour reasons this works:\n1. Demanding a citation raises the cost of making things up — it has to point at an actual passage.\n2. Letting it say \"not in this document\" is the important one. Take away its room to admit it does not know and it will invent something for you.\n3. Asking which words changed since last quarter catches tone shifts, which usually show up before the numbers do — and that comparison is the most tedious job for a human and the one AI is best at.\n4. The last question turns the conclusion into something that can be knocked down, instead of a book report.\n\nThree warnings:\n- Check every number it gives you against the original filing yourself. It still makes things up.\n- One quarter shows no trend. Feed it the last two or three before you ask question 1.\n- This is for understanding what a company is saying, not a call to buy or sell anything. It does not know your cost basis or how long you plan to hold.\n\nSame discipline — get what matters sorted first, then judge for yourself — done for you every morning: in your inbox by 7:00am, Monday through Saturday, with the index, the sectors and what to watch today for the companies you follow (up to 80 of them), plus an AI assistant for whatever you still do not get, 30 messages a day. Everything is free right now at NT$0; when we do restore charging, everyone who subscribes now keeps free access permanently as an early subscriber.\n\nWhen you open a financial report, which page do you turn to first? Tell me below in one line.",
-      "score": 88,
+      "id": "adcreative_2026-10-07_04",
+      "platform": "x",
+      "angle": "產品日常：拆開一封日報的結構（持股逐檔→新聞精選附假訊息過濾→板塊輪動＋財報提醒），佔競品都在打交易端低門檻/零佣時沒人打的「每天早上替你整理好」資訊端空位；結尾用純提問拉互動",
+      "caption_zh": "一封 MarketDaily 日報拆開長這樣：\n\n① 最上面：你的持股，逐檔講今天該注意什麼（美股、台股都收，最多 80 檔）\n② 5 大新聞精選，先過一道假訊息過濾\n③ 板塊輪動＋財報提醒\n戰績另外公開在網站上，輸的也照列\n\n週一到週六早上 7 點到信箱。你打開信會先看哪一段？在下面告訴我。\n\n目前全功能限時免費，不需要信用卡；未來恢復收費後，現在訂閱的早鳥用戶永久保留免費使用權。\nmarketdaily.ai",
+      "caption_en": "What's inside one MarketDaily brief:\n\n1. Top: your holdings, one by one, with what to watch today (US + Taiwan stocks, up to 80 tickers)\n2. 5 top news picks, run through a misinformation filter first\n3. Sector rotation + earnings reminders\nOur track record is public on the site, losses included\n\nLands in your inbox at 7 AM, Monday to Saturday. Which section would you read first? Tell me below.\n\nAll features are free for a limited time, no credit card needed. When paid plans return, early-bird subscribers who join now keep free access for life.\nmarketdaily.ai",
+      "score": 0,
       "score_dims": {
-        "hook_strength": 17,
-        "cta_clarity": 16,
-        "value_match": 18,
-        "target_match": 18,
-        "risk": 19
+        "hook_strength": 0,
+        "cta_clarity": 0,
+        "value_match": 0,
+        "target_match": 0,
+        "risk": 0
       },
-      "score_rationale": "hook_strength 17:第一句就是具體對比(一個下午 vs 10 分鐘)並立刻給出反直覺解釋(不是讀得快,是不從第一頁讀),前 3 秒可直接當旁白唸;扣分在時間對比屬個人經驗而非可查證外部事實,張力略低於新聞型。cta_clarity 16:主 CTA 是純提問(先翻哪一頁),低摩擦、零關鍵字要求,但沒有硬性導流動作(刻意——留言閘門禁用且不承諾連結),轉換即時性因此偏弱。value_match 18:整段是可原地照抄執行的迷你教學(高收藏率型態),四個「為什麼有效」把方法變成可遷移的原則,結尾自然接到產品是同一件事的自動版。target_match 18:命中 30-45 歲自己看財報但時間不夠的散戶,場景是他們真的會做的動作(丟一份財報給 ChatGPT),且與 spy 顯示的競品全空白區重疊。risk 19:零百分比、零我方戰績數字、不點名個股、不給買賣價位、個股內容未與付費連結、口徑照 pricing 現值(NT$0 限時免費+早鳥永久保留)、中英逐段語意一致(週一到週六一致、80 檔一致、每日 30 則一致);未達滿分只因文中出現「這一季/上一季」的操作性描述,驗證者仍需確認未被讀成選股建議。",
-      "compliance_self_check": {
-        "no_fabricated_numbers": true,
-        "no_pro_tier_language": true,
-        "no_premium_giveaway": true,
-        "no_guarantee_language": true,
-        "no_stock_analysis_premium_claim": true
-      },
-      "status": "approved",
-      "ads_score": 70,
-      "ads_score_notes": "強項:整段是可原地照抄執行的迷你教學(可複製 prompt + 四點「為什麼有效」+ 三個幻覺提醒),獨立收藏/教學價值明確合格,且 risk 面近乎滿分——零百分比、零戰績數字、不點名個股、不給買賣價位、NT$0 限時免費+早鳥口徑與現行一致、中英逐段語意對得上、無「留言」關鍵字閘門風險。弱點:第一句 hook 只滿足公式三要素中的兩個(有「一個下午 vs 10 分鐘」的數字與對比,但缺具名主體,主體是泛稱的「我/一份季報」,且那組數字屬自述經驗不可查證)⇒ 依硬性加權判不合格、score 封頂 70;次要弱點是主 CTA 為純提問、無任何導流動作,轉換即時性偏弱。修法:首句改為具名主體開頭(例:「[某公司] 上季財報 80 頁,我 10 分鐘只問三題」),或以可查證外部事實(頁數/字數)取代「一個下午」。",
-      "verifier_edits": "改一處(中英同步),其餘一字未動。\n\n原文 zh:「我們每天做的就是這件事的自動版:週一到週六早上 7:00 寄到信箱,把大盤、板塊和你追蹤的公司當天該注意什麼先整理好(最多 80 檔)…」\n原文 en:「The automated version of this is what we do every day: … already sorted out (up to 80 of them) …」\n\n改為 zh:「同樣一件事——把該注意的先整理好、再自己判斷——我們每天早上替你做完:週一到週六早上 7:00 寄到信箱,大盤、板塊和你追蹤的公司當天該注意什麼(最多 80 檔)…」\n改為 en:「Same discipline — get what matters sorted first, then judge for yourself — done for you every morning: in your inbox by 7:00am, Monday through Saturday, … (up to 80 of them) …」\n\n為什麼:整段前文教的是「用三問 prompt 讀完一份財報/法說會逐字稿」,原句把 MarketDaily 說成「這件事的自動版」=宣稱產品會自動幫你讀財報並逐季比對管理層用字。對照 docs/pricing.html 現行功能表(每日大盤摘要、5 大新聞精選、加密動向、板塊輪動概覽、個人化持倉分析最多 80 檔、即將公布財報提醒、日報深度自選、AI 投資助手每日 30 則、重大新聞即時推播),並沒有這項能力——「即將公布財報提醒」只是提醒,不是代讀財報。這是超出產品現值的能力宣稱,故改成不誇大的銜接,後面的功能列舉與口徑完全保留。\n\n修正後重跑全部檢查(全過):\n- compliance_selfcheck.check_caption(caption_zh) 五項全 True(no_fabricated_numbers / no_pro_tier_language / no_premium_giveaway / no_guarantee_language / no_stock_analysis_premium_claim),all_pass=True\n- promote_ad_creatives._is_gated(caption_zh)=False(全文無「留言」、無任何 URL)\n- promote_ad_creatives._slop_verdict(zh+en)=clean,density 0.0\n- pricing.html 現值逐字對帳:週一到週六早上 7 點 ✓、最多 80 檔 ✓、每日 30 則 ✓、NT$0 ✓、早鳥永久保留免費使用權 ✓\n- 中英語意逐段一致(含 Monday through Saturday / 7:00am / 80 / 30 messages a day / NT$0 / early subscriber)\n- 禁用字掃描:%、Pro、保證/絕對/100%/穩賺/老師/大師/神算、試讀、邀請碼、LINE、http 皆無\n- 無 source_url ⇒ 非新聞 hook 型,無外部事實需查核;caption_zh 836 字,遠低於 IG 2200 上限(caption_en 依 promote_ad_creatives 設計不發文)\n- 品牌距離:對照 latest_spy_report.json(富途迎新賞/0 佣、Robinhood 功能清單、TradingView、Morning Brew),本則走 prompt 教學角度,無近似"
-    },
-    {
-      "id": "adcreative_2026-09-08_03",
-      "platform": "threads",
-      "angle": "機制差異化：把「AI 假訊息過濾」寫成四道今天逐條對照過生產程式碼的關卡（來源白名單整則丟掉 → 臆測字眼直接剔除 → 多源對照但單一來源照給只掛標籤 → 事後認帳連判錯的都留著、原始資料開放自行驗算），並把前三關寫成讀者自己讀新聞也能複用的清單、第四關留給讀者查我們。切的 whitespace 是 spy 今日實抓的空白區：六個競品全在用現金鉤（富途入金賞／Robinhood 功能清單／tastytrade 借位），沒有一家把「我們怎麼判斷、判錯了怎麼算」攤開；全篇零百分比零我方數字，只講機制。⚠️ 與 2026-08-17_03（同 whitespace 被駁回）刻意錯開三處：①刪掉「校準表」（今日重驗 docs/track-record.html grep calibration|校準 仍 0 命中，只留頁面真的有的 Wilson 信賴區間＋raw JSON 公開）②不寫系統裡不存在的「待查」標籤，改寫成實作真的做的事＝照樣給你看但掛「單一來源」、不冒充成已確認 ③不把訊號卡的多模型委員會塞進新聞過濾敘事，改用真實存在的 VAGUE_KEYWORDS 剔除層當第二關。同時吃下上輪 ads-score 的兩點修法：hook 改成具名可停滑的具體字眼（直接引「據悉／傳聞／匿名人士」），四關改寫成讀者可自行複用的查核清單而非純第一人稱產品口吻。",
-      "caption_zh": "「據悉」「傳聞」「匿名人士」——標題或摘要出現這幾個詞,那則新聞就進不了你的日報。\n\nAI 過濾假訊息不是一句形容詞,是四道真的會擋東西的關卡:\n\n① 來源白名單:媒體不在清單裡,整則丟掉,標題再聳動也一樣。\n② 臆測字眼:含「聽說/據悉/傳聞/匿名人士/rumored/reportedly/unconfirmed」的直接剔除。\n③ 多源對照:同一件事有兩家以上才標「多源確認」;只有一家的照樣給你看,但掛上「單一來源」——不冒充成已確認。\n④ 事後認帳:做過的判斷全留在戰績頁,錯的也不刪,附勝率信賴區間,原始資料整份開放讓你自己驗算。\n\n前三關你自己讀新聞也能照用;第四關是留給你檢查我們的。\n\n週一到週六早上 7 點寄到信箱,最多 80 檔持股一起顧。全功能限時免費開放;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你上一次因為一則後來被打臉的新聞改了決定,是什麼時候?在下面告訴我。",
-      "caption_en": "\"Reportedly.\" \"Sources say.\" \"Unconfirmed.\" If those words are in the headline or the summary, that story never reaches your brief.\n\nAI filtering out bad information isn't an adjective. It's four gates that actually throw things out:\n\n1. Source whitelist - if the outlet isn't on the list, the whole story is dropped, however good the headline looks.\n2. Speculative wording - anything carrying \"rumored / reportedly / allegedly / sources say / unconfirmed\" is cut on the spot.\n3. Cross-source check - a story is tagged \"multi-source confirmed\" only when two or more outlets carry it. If only one does, you still see it, tagged \"single source\" - never dressed up as confirmed.\n4. Own the record - every call stays on the public track-record page, the wrong ones included, with confidence intervals on the win rate and the raw data fully open so you can check the math yourself.\n\nThe first three you can run on your own reading. The fourth one is there for you to check us with.\n\nIn your inbox at 7am, Monday through Saturday, tracking up to 80 of your holdings. Everything is free for a limited time; when paid plans return, everyone who subscribes now keeps free access permanently as an early subscriber.\n\nWhen was the last time a story that later fell apart changed a decision of yours? Tell me below.",
-      "score": 88,
-      "score_dims": {
-        "hook_strength": 18,
-        "cta_clarity": 16,
-        "value_match": 19,
-        "target_match": 17,
-        "risk": 18
-      },
-      "score_rationale": "hook_strength 18：首句不是概念對比而是三個可辨識的具名字眼（「據悉」「傳聞」「匿名人士」），讀者一秒對號入座自己昨天看到的標題，且三秒內唸得完、可直接當 reel 開場上字卡——對治近 14 天實測（reel n=21 avg_reach 9.9、靜圖 news_reactive/win_card avg 2.2）「靜態卡得靠 caption 自己活」；未給滿分是它仍是文字型 hook，無具體事件當引信。cta_clarity 16：結尾是純回憶型提問（上一次被後來被打臉的新聞改變決定是什麼時候），不要求特定關鍵字、不承諾私訊或連結，全文未出現「留言」二字，已用 promote_ad_creatives._is_gated() 實跑得 False；扣分是無硬性訂閱動詞。value_match 19：四關逐條對得上今日生產程式碼（fake_news_filter.filter_and_label 的白名單 continue 丟棄、config.py:48-51 VAGUE_KEYWORDS 剔除、verified=tier1 or ≥2 domains 對應 analyzer.py:4515/4947「✅ 多源確認」與 4525/4953「⚠️ 單一來源」、docs/track-record.html:638/1133「連輸的都留下來」＋884-897 Wilson 信賴區間＋516「原始資料全部公開在 /data/track-record.json,歡迎自行驗算」），規格句對上 pricing.html:707/735/691；全篇零百分比、零訂戶數、零勝率。target_match 17：正打既有 pain「假新聞太多不知道哪些可信」，落在 spy 今日確認的 whitespace（六品牌全打錢誘餌與功能清單，無人敢公開結算自己的判斷），Threads 長文體裁吻合，403 字在 500 上限內；扣分是純文字平台觸及上限低於 reel。risk 18：compliance_selfcheck.check_caption() 實跑 5 項全 true；無 Pro／試讀／不綁卡／邀請碼、無保證類詞、不喊個股、個股分析未與付費掛鉤、organic-only、無 LINE CTA、中英語意逐段一致（週一到週六未寫成每天）；保留 2 分僅因機制敘述本質上要驗證者再對一次生產碼。",
+      "score_rationale": "待評分代理填寫",
       "compliance_self_check": {
         "no_fabricated_numbers": true,
         "no_pro_tier_language": true,
@@ -81,53 +114,26 @@
         "no_stock_analysis_premium_claim": true
       },
       "status": "rejected",
-      "ads_score": 68,
-      "ads_score_notes": "強項:四道關卡逐條對得上生產程式碼(config.py:40-51 白名單+VAGUE_KEYWORDS 字眼逐字相符、fake_news_filter.py:45 直接 continue 丟棄、analyzer.py:4515/4525 兩個標籤、track-record.html:516/638/884 的「連輸的都留下來」+Wilson CI+raw JSON 自行驗算),全篇零百分比零我方數字,且前三關寫成離開產品也成立的查核清單——觸及軌要的「獨立收藏/教學價值」這關實打實過了,切的 whitespace(六個競品全打現金鉤,沒人敢攤開自己怎麼判、判錯怎麼算)也是真空白。弱點:第一句 hook 只中「對比/衝突」1/3,無任何數字、無具名主體(三個引號詞是詞彙不是主體),賭注押在讀者對抽象詞的敏感度上——依硬性加權封頂 70;其次 CTA 只有回憶型提問,全篇零動作動詞零訂閱路徑,它自評 hook 18/cta 16 是灌水(自己的 rationale 都承認「無硬性訂閱動詞」),且 403 字純文字體裁本身觸及上限就低於 reel。修法:hook 改成帶數字+具名的版本(例:「白名單 16 家媒體以外的新聞,不管標題多聳動,一則都進不了你的日報」),結尾補一個低摩擦動作動詞。",
-      "reject_reason": "第③關的機制敘述與生產程式碼不符,且是「反向」不符——文案保證的正是實際會發生的事。\n\ncaption_zh 原文:「③ 多源對照:同一件事有兩家以上才標「多源確認」;只有一家的照樣給你看,但掛上「單一來源」——不冒充成已確認。」\ncaption_en 原文:「a story is tagged \"multi-source confirmed\" only when two or more outlets carry it. If only one does, you still see it, tagged \"single source\" - never dressed up as confirmed.」\n\n真相來源(生產碼):\n- fake_news_filter.py:63-65 `is_tier1 = _match_whitelist(domain, TIER1_DOMAINS)` / `is_multi = len(all_domains) >= 2` / `article[\"verified\"] = is_tier1 or is_multi`\n- analyzer.py:969 `tag = \"✅\" if a.get(\"verified\") else \"⚠️\"`;analyzer.py:4515/4947 verified→「✅ 多源確認」、4525/4953 否則「⚠️ 單一來源」\n\n⇒ 只有 reuters/cnbc/ft/apnews/wsj/bloomberg 其中一家報的單一來源新聞,`verified=True`,讀者看到的標籤就是「✅ 多源確認」。文案宣稱的「兩家以上『才』標多源確認」「only when two or more outlets carry it」在 tier-1 分支下為假,而緊接的「不冒充成已確認 / never dressed up as confirmed」正好是這個分支實際在做的事(一家=多源確認)。這不是日期/錯字級的小錯,是把一個不存在的更嚴格保證寫成賣點,且整篇的角度就是「你來查我們的機制」,對外發出後可被任何一位讀者用當天日報的單一路透新聞當場打臉——命中記憶教訓「官網宣稱的機制實際不存在」。\n\n不予就地修正的理由:要修就得把③改成「兩家以上、或來自一線通訊社才標多源確認」,那已經是換掉一條實質賣點主張(且改完後「不冒充成已確認」這句仍站不住),超出「小型事實錯誤可修正」的範圍,依「寧可錯殺不可錯放」駁回,交回上游改寫後重驗。\n\n其餘檢查皆通過(供改寫時保留):pricing.html:707「週一到週六早上 7 點」與 :735「最多 80 檔」對得上、早鳥口徑對得上 :691、中英語意一致、compliance_selfcheck.check_caption() 5 項全 true、無 Pro/試讀/邀請碼/保證類詞/LINE CTA、無寫死百分比與訂戶數、與 spy 今日六個競品(全打入金賞與功能清單)無貼近風險、①②④三關逐條對得上生產碼。",
-      "verifier_edits": "未做任何修正(問題屬實質主張層級,非小型事實錯誤);未更動任何檔案。"
+      "ads_score": 60,
+      "ads_score_notes": "強項：合規方面很乾淨。早鳥用的是官方原文，沒有 Pro、試用或保證收益的字眼，「戰績公開，輸的也照列」也能建立信任。80 檔上限和 7AM 送達都是可以查證的具體數字，「每天早上替你整理好」也確實補上了競品沒在打的資訊端空位（分項分數：hook 7/20、CTA 12/20、value 13/20、target 13/20、risk 15/20）。弱點：有兩項硬性加權都沒過，所以分數上限是 70。第一，首句「一封 MarketDaily 日報拆開長這樣」沒有具名主體、具體數字或衝突，只是在講自家產品，滑過去也不會停。第二，整則是產品功能清單，沒有讀者會想收藏的獨立教學價值。另外還有兩個問題：英文版約 560 字元，超過 X 單則 280 字的上限，要拆成串或砍短；「5 大新聞精選」和「假訊息過濾」這兩個賣點發出前要先跟現行日報逐字核對。修法建議：改用真實具名事件起手，例如「昨晚 X 公司財報後盤後 -8%，今早 7 點你的信箱已經寫好持有者該看哪三件事」，再帶出結構。",
+      "reject_reason": "This post is for X, and both captions are over X's 280-unit limit for a single post. Fixing that means a rewrite or splitting it into a thread, which is a content decision, not a small factual correction I'm allowed to make. caption_en is 564 characters, about twice the limit. caption_zh is 208 characters, and X counts CJK characters at double weight, so it comes to roughly 380 units. Posting either one would fail or get truncated, and the auto-poster would cut off the early-bird terms (「目前全功能限時免費…早鳥用戶永久保留免費使用權」) and the marketdaily.ai link at the end, so readers would see an offer with incomplete terms. Everything else checked out: (1) All the claims match docs/pricing.html: \"週一到週六早上 7 點\", \"最多 80 檔\", \"5 大新聞精選（假訊息過濾）\", \"板塊輪動\", \"即將公布財報提醒\", \"不需信用卡\". The early-bird wording is the official version, nothing hints that analysis will be paid later, and there is no Pro, trial, giveaway or guarantee language. (2) docs/data/track-record.json does list losing records, so \"輸的也照列\" is true. (3) Chinese and English say the same thing, both Mon–Sat. (4) No overlap with the competitor report latest_spy_report.json. (5) Re-running compliance_selfcheck.check_caption(caption_zh) passed all 5 checks. One more fix for the rewrite: \"7 AM\" in caption_en should say \"7 AM Taiwan time (TWT)\", because X readers are international and pricing.html uses \"7AM TWT\". To fix: split it into a thread (hook plus structure in the first post, early-bird terms and link in the second), or cut each version to fit within 280 units, then send it back through verification."
     },
     {
-      "id": "adcreative_2026-09-08_04",
-      "platform": "x",
-      "angle": "產品日常「開箱」:逐段講一封日報的版面順序(30秒重點→你的持股下一步→可跳過的進階分析→結論→新手專區),用結構本身當賣點,不引用任何當日數字。對應 whitespace「沒人敢把產品內部長相攤開來給人看」——競品全在打入金獎賞與功能清單堆疊(富途/Robinhood),而富途的『把抽象換算成生活場景』公式在這裡被換成『把抽象的產品換算成你眼睛掃過去的順序』。全篇寫成可直接當短影音旁白唸的口語段落(對應成效指引①:靜態卡沒觸及,caption 必須自己活),結尾用純二選一提問拉互動(對應指引②,不要求關鍵字、不承諾私訊連結)。",
-      "caption_zh": "打開一封 MarketDaily 日報,你第一眼會看到什麼?\n\n最上面是「30 秒看完今天重點」——就那幾行,趕時間的話看完可以直接關掉。\n\n往下才是你自己選的股票,台股美股一支一支排開,每支底下寫的是下一步要做什麼,不是丟一句「再觀察」就沒了。\n\n再往下是大盤、板塊輪動、市場氣氛、財報行事曆,中間還橫著一條線寫著:以下是大盤與進階分析——想深入再看,不看也不影響你上面的操作。\n\n最後收在「今天的結論」跟新手專區——名詞看不懂,那裡有解釋。\n\n週一到週六早上 7 點寄到信箱,週日休息。\n\n順序是刻意排的:先給你要做的事,再給你背景。不是把一整天的市場倒在你面前,叫你自己挑。\n\n現在全功能限時免費,NT$0;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n你是看完最上面那幾行就關掉的人,還是會一路滑到最下面的人?在下面告訴我一句。",
-      "caption_en": "What do you actually see when you open a MarketDaily briefing?\n\nTop of the email: \"today in 30 seconds\" — a few lines. If you're in a hurry, read them and close the tab.\n\nBelow that come the stocks you picked yourself, US and Taiwan listed out one by one, each with what to do next — not a shrug that says \"keep watching.\"\n\nFurther down: the index, sector rotation, market mood, the earnings calendar. There's a divider in between that says so: the index and advanced analysis ahead, read it if you want to go deeper, skipping it won't change what you do above.\n\nIt closes with \"today's takeaway\" and a beginners' section — if a term lost you, it's explained there.\n\nIn your inbox 7 AM, Monday through Saturday. Sundays off.\n\nThe order is deliberate: what to do first, background second. Not the whole market dumped on you to sort out yourself.\n\nEverything is free for now, NT$0. When paid plans return, everyone who subscribes now keeps free access permanently as an early subscriber.\n\nAre you the type who reads the top few lines and closes it, or the type who scrolls all the way down? Tell me below.",
-      "score": 86,
-      "score_dims": {
-        "hook_strength": 17,
-        "cta_clarity": 15,
-        "value_match": 18,
-        "target_match": 17,
-        "risk": 19
-      },
-      "score_rationale": "hook_strength 17:開場是具體的第二人稱疑問句(「你第一眼會看到什麼」),不是抽象承諾,且第一句就能當旁白第一句唸;扣分在它是產品導向而非痛點導向,對還沒訂閱的人吸力略遜於時間成本角度。cta_clarity 15:刻意不放連結型 CTA,改用二選一提問拉互動(留言閘門全面禁止,承諾給連結兌現不了);行動明確但屬於低承諾行動,故不給滿分。value_match 18:整篇講的是產品真實版面順序(30 秒重點 / 持股逐支下一步 / 進階分析分隔線 / 今天的結論 / 新手專區),逐項對照 2026-09-08 實際 digest HTML 的 section-label 與 advanced-divider 文字,零杜撰;寄達節奏與免費口徑照 pricing 現值寫。target_match 17:打的是「訂了電子報但沒空讀完」的上班族投資者,用版面順序回答他真正的疑慮(要花多久、可不可以只讀一段);對完全沒在讀財經信的人略遠。risk 19:全篇零百分比、零勝率、零訂戶數,唯一數字是不隨時間變動的產品規格(30 秒 / 7 點 / 週一到週六 / NT$0);不喊個股、不談進出場價位、不把個股分析與付費連結;唯一殘留風險是『每支底下寫的是下一步要做什麼』需驗證者確認不被讀成投資建議承諾——已用『不是丟一句再觀察就沒了』框成內容體例描述而非績效宣稱。",
-      "compliance_self_check": {
-        "no_fabricated_numbers": true,
-        "no_pro_tier_language": true,
-        "no_premium_giveaway": true,
-        "no_guarantee_language": true,
-        "no_stock_analysis_premium_claim": true
-      },
-      "status": "approved",
-      "ads_score": 64,
-      "ads_score_notes": "強項:合規與事實面幾乎滿分——全篇零勝率/零訂戶數/零百分比,唯一數字是不會過期的產品規格(30 秒、7 點、週一到週六、NT$0),免費+早鳥口徑照現值寫,不喊個股也不把個股分析與付費掛鉤,且「先給你要做的事、再給你背景」這句把版面順序講成一個有記憶點的產品哲學,對已訂閱但沒空讀完的上班族 TA 命中度高。弱點:第一句「打開一封 MarketDaily 日報,你第一眼會看到什麼?」只有具名主體,缺具體數字也缺對比/衝突,是典型的自問自答暖場句(改成「一封日報 2,000 字,我把最重要的放在前 30 秒讀得完的地方——剩下的你可以不看」這類「數字+捨棄什麼」的對撞句才夠),而 caption 本體是產品導覽而非可獨立收藏的教學(讀者收藏它得不到任何離開 MarketDaily 也用得上的東西,對照競品那種「資訊排序法則」型貼文明顯吃虧);兩項硬性加權皆未達標,故封頂 70。附帶問題:platform 標 x 但長度與段落節奏是 IG/Threads/電子報寫法,X 上需拆 thread 或改長文格式,且全篇無任何訂閱入口,觸及軌若沒接後續轉換動線等於白跑。原自評 86(hook 17/20)高估,hook 實際約 11-12。",
-      "verifier_edits": "只改一處(中英各一句),其餘全文未動。\n\n改了什麼:caption 把日報裡的分隔線當引文寫,原文引成「以下是進階分析,想深入再看,不看也不影響你上面的操作」,但 docs/output/digest_2026-09-08.html 實際字串是「📊 以下是大盤與進階分析 — 想深入再看，不看也不影響你上面的操作」,漏了「大盤與」。既然以「中間還橫著一條線寫著:」的形式呈現為逐字引用,就補回成「以下是大盤與進階分析——想深入再看,不看也不影響你上面的操作」。caption_en 對應句由 \"advanced analysis ahead\" 改為 \"the index and advanced analysis ahead\",維持中英語意一致。\n\n為什麼:引用產品內文字串必須與實物逐字一致,否則後續任何人拿 caption 去對日報會對不上;此為純事實面對齊,不影響 hook、CTA、口徑。\n\n修正後重跑全部檢查:compliance_selfcheck.check_caption() 對修正後 zh/en 皆 5/5 true;禁詞掃描零命中;數字僅 30 秒 / 7 點 / NT$0(皆為 _ALLOWED_NUMERIC 內的固定產品規格);pricing.html「週一到週六早上 7 點」「NT$0」「未來恢復收費後早鳥永久免費」逐字相符;版面順序對到 digest 實際 section offset(30 秒重點 19767 → 詳細進出場計畫 20201 → 進階分析分隔線 35654 → 今天的結論 41756 → 新手專區/看不懂的名詞 42645);無 source_url 故非新聞 hook 型;CTA 為純二選一提問、全文零 URL、非留言閘門型;spy 報告競品 hook(入金獎賞/0 佣金/daily payouts)與本篇零重疊。"
-    },
-    {
-      "id": "adcreative_2026-09-08_05",
+      "id": "adcreative_2026-10-07_05",
       "platform": "facebook",
-      "angle": "信任與合規(讀者自驗清單型):把「免費與付費看到完全相同的個股分析」從我方宣告改寫成【交給讀者的三題檢查清單】——①同一檔股票付錢與沒付錢看到的字是否一樣 ②講錯的那幾次還留在網站上嗎 ③憑什麼收你的錢(整理 vs 賣看法),明說「這三題可以拿去問任何一家,包括我們」,再逐題給我們的答案(無投顧牌照→依法個股解讀不得因付費變多/變深/變早,產品裡沒有升級解鎖鈕;戰績頁判錯的留著不刪+台股美股分開+信賴區間+未到期標待結算;NT$0 限時免費+早鳥永久保留)。切的是 spy 今日實抓的 whitespace:六個競品全在打錢誘餌(富途迎新賞/真 0 佣/月供 ETF、Robinhood 功能清單堆疊),沒有一家敢把「你收到的內容跟付錢的人一不一樣」拿出來被檢驗。刻意與同 whitespace 的兩則前作錯開:2026-07-31_05 主體是「就算有人付錢也跟你一模一樣」的平等宣告、2026-08-17_05 主體是「付費牆在我們產品裡不存在」的缺席敘事,兩者主語都是我們;本則主語換成【你】,把驗證權交出去,型態從宣告改成可帶走的三題工具(對應 spy 觀察到的富途「換算成生活場景」公式思路:抽象承諾→可執行動作)。首句 3 秒講完衝突、三題天然是三張字卡,直接可當短影音旁白唸——對治近 14 天實測靜態圖卡全軍覆沒、只有 reel 有觸及。互動採純提問(「這三題過得了幾題?在下面告訴我」),不要求特定關鍵字、不承諾私訊或連結,全文零「留言/留一句/留個」字樣,已用 promote_ad_creatives._is_gated() 實測 False。全篇零我方百分比與戰績數字,只講機制;數字僅用固定產品規格(7 點、80 檔、每日 30 則、週一到週六)。",
-      "caption_zh": "想知道一個財經內容產品有沒有偷藏東西不給你?問三個問題就好。\n\n第一題:同一檔股票,沒付錢的人跟有付錢的人,看到的字是不是一模一樣?\n第二題:他們講錯的那幾次,現在還留在網站上嗎?\n第三題:他們憑什麼收你的錢——賣的是幫你整理,還是賣你一個看法?\n\n這三題不是拿來考別人的,是拿來考我們自己。我把答案先攤在這裡,你自己去對。\n\n第一題。MarketDaily 沒有投顧牌照,依法任何個別股票的解讀都不能因為誰付了錢就變多、變深、變早。所以我們乾脆寫成產品鐵則:個股分析對全體用戶完全相同,不因付費而有任何差別。產品裡根本沒有那顆「升級才解鎖」的按鈕。\n\n第二題。戰績頁把結算過的每一筆都列出來,判錯的留在上面不刪,台股美股分開、還附上信賴區間讓你自己看樣本夠不夠,還沒到期的標成待結算,不會偷偷從清單消失。\n\n第三題。現在全站零收費、不用信用卡,全功能限時免費;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。週一到週六早上 7 點寄到信箱,自己的持股最多 80 檔都幫你顧著,AI 助手每日 30 則隨你問。\n\n一句話:這三題你可以拿去問任何一家,包括我們。\n\n你現在在追的財經內容,這三題過得了幾題?在下面告訴我。",
-      "caption_en": "Want to know whether a finance content product is holding something back from you? Three questions is all it takes.\n\nOne: for the same stock, do people who pay and people who do not see exactly the same words?\nTwo: are the calls they got wrong still on their site today?\nThree: what exactly are they charging for - organising information for you, or selling you a view?\n\nThese are not questions for grilling other people. They are the ones we point at ourselves. Here are our answers up front, so you can check them.\n\nQuestion one. MarketDaily holds no investment advisory licence, so by law the read on any individual stock cannot become more, deeper or earlier just because someone paid. We wrote it in as a product rule: single-stock analysis is identical for every user, never differentiated by payment. There is no \"upgrade to unlock\" button inside the product at all.\n\nQuestion two. The track record page lists every settled call, keeps the wrong ones instead of deleting them, splits Taiwan and US, and shows confidence intervals so you can judge whether the sample is big enough. Calls that have not matured yet are marked pending - nothing quietly disappears from the list.\n\nQuestion three. The whole site costs nothing right now, no credit card, all features free for a limited time; when pricing returns, early-bird subscribers who join now keep free access permanently. It lands in your inbox at 7am Monday through Saturday, covers up to 80 of your own holdings, and the AI assistant takes 30 questions a day.\n\nIn one line: ask these three questions of anyone, us included.\n\nThe finance content you follow right now - how many of the three does it pass? Tell me below.",
-      "score": 88,
+      "angle": "信任與合規：個股分析對全體用戶完全相同，沒有「VIP 版」。競品都在打低門檻、零佣、送禮這些交易端話術，我們打的是資訊端的公平與透明，並且用可驗證的法規理由（個股分析不得與付費掛鉤）支撐這句話，結尾用二選一提問拉互動",
+      "caption_zh": "【同一份分析，沒有「VIP 版」】\n很多投資服務的套路：免費只給你看標題，付費才看得到完整內容。\nMarketDaily 不這樣做。個股分析對全體用戶完全相同，不分先後、不分深淺、不分檔數。\n這不是一句口號，是寫進公司規則的一條：依台灣法規，個股分析不能跟付費掛鉤，所以這部分對全體用戶永遠免費且相同。\n\n你會收到的：\n・週一到週六早上 7 點，你自選持股（最多 80 檔）的美股＋台股日報\n・板塊輪動、財報提醒、5 大新聞精選（附假訊息過濾）\n・AI 投資助手每日 30 則提問\n・戰績頁公開，連看錯的都列出來\n\n目前全功能限時免費開放，不需要信用卡。未來恢復收費後，現在訂閱的早鳥用戶永久保留免費使用權。\n\n你挑投資資訊來源時最在意哪一個：分析透明，還是送到得早？在下面告訴我。\nmarketdaily.ai",
+      "caption_en": "[Same analysis for everyone. No \"VIP edition.\"]\nA lot of investing services work like this: the free tier gets the headline, the paid tier gets the full story.\nMarketDaily doesn't. Individual stock analysis is identical for every user: same timing, same depth, same number of tickers.\nThat's not a slogan, it's a company rule: under Taiwan regulations, individual stock analysis can't be tied to payment, so that part stays free and identical for all users, permanently.\n\nWhat you get:\n- A US + Taiwan stock briefing on the holdings you pick (up to 80), Monday to Saturday at 7AM\n- Sector rotation, earnings reminders, and 5 top news picks (with misinformation filtering)\n- AI investing assistant: 30 questions a day\n- A public track record page that lists the calls we got wrong, too\n\nAll features are free for a limited time right now, no credit card needed. When paid plans return, early birds who subscribe now keep free access permanently.\n\nWhen you pick an investing info source, what matters more: transparent analysis, or getting it early? Tell me below.\nmarketdaily.ai",
+      "visual_direction": "短 reel（6 到 8 秒，9:16，同時出 4:5 給 FB 動態）。第 0 秒：兩份一模一樣的日報畫面左右並排，上方標籤一邊寫「你」、一邊寫「任何人」；第 1 到 2 秒：兩份畫面滑到中間疊成同一份，中間跳出大大的「＝」；第 3 秒以後帶出標題「同一份分析，沒有 VIP 版」，最後一格是 marketdaily.ai。深色底配單一強調色，畫面上不出現任何個股代號、價位或百分比。",
+      "score": 72,
       "score_dims": {
-        "hook_strength": 17,
-        "cta_clarity": 16,
-        "value_match": 19,
-        "target_match": 18,
-        "risk": 18
+        "hook_strength": 14,
+        "cta_clarity": 14,
+        "value_match": 16,
+        "target_match": 14,
+        "risk": 14
       },
-      "score_rationale": "hook_strength 17/20:首句是可視覺化的懸念+明確數量承諾(「偷藏東西不給你?問三個問題就好」),3 秒內講完衝突且天然拆成三張字卡,符合近 14 天實測「只有 reel 有觸及、靜態卡得靠 caption 自己活」的成效指引;扣分處是「三個問題」屬教學清單型 hook,情緒張力低於對撞型首句。cta_clarity 16/20:結尾為單一封閉式問題(過得了幾題),回答門檻低於開放題,且全文只有一個行動要求;不含任何連結/關鍵字承諾,故不擋 promote,但也因此沒有硬導流,轉換路徑靠 profile,扣分。value_match 19/20:三題全部對應可驗證的真實機制(法規約束→分析對全體用戶相同、戰績頁保留錯判+信賴區間+待結算、NT$0 限時免費與早鳥口徑),且完全避開百分比與我方戰績數字,下週重跑不會變假話。target_match 18/20:TA=被各家財經內容/券商 App 洗過、對「付費才看得到」有實際被擋經驗的自主投資人;三題的語言是他們平常挑產品的語言,而非品牌語言。risk 18/20:五項自檢全過、_is_gated False、無 LINE/付費投放/個股喊進喊出;殘餘風險僅在「拿三題考別人」的語氣可能被讀成影射同業,已用『這三題不是拿來考別人的,是拿來考我們自己』就地中和。",
+      "score_rationale": "差異化明確，也有法規依據，是競品沒在打的空位，可信度高。風險：『公平』這個角度的情緒拉力比省時間或具體數字弱，第一秒的視覺 hook 要靠『兩份合一』的動態撐起來；結尾二選一可以拉互動，但沒有要求留特定關鍵字，也沒有承諾給連結。caption 偏長，FB 可以接受，IG 或 Threads 要再縮。內文完全不出現『留言』這個動詞，避開跟『早鳥』共現時被誤判成閘門型 CTA。",
       "compliance_self_check": {
         "no_fabricated_numbers": true,
         "no_pro_tier_language": true,
@@ -136,25 +142,25 @@
         "no_stock_analysis_premium_claim": true
       },
       "status": "approved",
-      "ads_score": 66,
-      "ads_score_notes": "強項:三題檢查清單是真正可帶走的工具(主語換成「你」、把驗證權交出去),且三題答案我逐條回線上頁面查證全部屬實——戰績頁確有保留輸單/台美分開/Wilson 95% 區間/⏳結算中,80 檔、30 則、週一到週六 7 點、限時免費+早鳥也都對得上 pricing/index 現值,零捏造數字、零 Premium 舊文案、無喊進喊出,下週重跑不會變假話,收藏/教學價值這一關穩過。弱點:hook 直接卡死上限——「想知道一個財經內容產品有沒有偷藏東西不給你?問三個問題就好」三軸中斷兩軸,無具名主體(「一個財經內容產品」是空殼佔位,沒有 MarketDaily、沒有對手、沒有敵人),「三個問題」只是流程計數不是有賭注的數字,且用最疲的「想知道…嗎?」疑問句開場;依硬性加權 score 不得高於 70,再扣是因為結尾純提問、全文零導流路徑(靠 profile 撿),以及草稿自評 hook_strength 17/20 與 88 總分明顯灌水=評分層本身失準。修法:首句改成具名+具體數字+衝突,例如「六家券商今天都在發迎新賞,沒有一家敢回答:付錢的人跟你看到的字一不一樣?」把敵人與對比放進第一句,三題清單原封不動往下接。",
-      "verifier_edits": "無修改。查核依據:①pricing.html 現值逐字對上「週一到週六早上 7 點」「80 檔」「每日 30 則」「NT$0/不用信用卡」「未領有投顧執照」「早鳥永久保留免費使用權」,頁面只有單一 NT$0 卡、無升級解鎖鈕;②track-record.html/json 佐證「輸的留著(❌輸 篩選+FAQ)」「台美分開(by_market)」「Wilson 95% 區間有渲染」「未到期顯示⏳結算中」;③中英逐句對齊無分歧(Mon-Sat 與週一到週六一致);④compliance_selfcheck.check_caption(zh 與 en)皆 5/5 true;⑤promote_ad_creatives._is_gated=False 且 caption 內零 URL;⑥spy report(2026-09-08)六競品全打入金賞/0 佣/功能清單,無句型重疊;⑦非新聞 hook 型(無 source_url)。"
+      "ads_score": 54,
+      "ads_score_notes": "強項：這篇的定位跟競品都不一樣（主打資訊公平，不打交易端話術），而且有能查證的法規理由撐腰（個股分析不得與付費掛鉤）。合規用語都乾淨：80 檔、每日 30 則、早鳥口徑都符合現行事實，沒有寫死勝率，也沒有「保證」「Pro」這類字。弱點：兩項硬性加權都沒過，所以分數不能超過 70，再往下扣。第一句「【同一份分析，沒有 VIP 版】／很多投資服務的套路」沒有具名主體、沒有具體數字，衝突也只是泛指「很多服務」，達不到「具名主體＋數字＋對比」的 hook 公式。整段 caption 是產品功能清單加訂閱口徑，沒有讀者會想收藏的教學或獨立價值；結尾二選一太軟，「附假訊息過濾」這個宣稱也沒有對到可驗證的機制。改法有兩個方向：第一句改成具體對比（例如「同一檔 2330，付費會員和免費讀者看到的分析：MarketDaily 是 0 字差異」），或把正文改成「判斷一個投資資訊服務是否把分析鎖在付費牆後的 3 個檢查點」這類可收藏的教學。另外 FB 目前 0 追蹤者，這篇應改投 Threads。"
     },
     {
-      "id": "adcreative_2026-09-08_06",
+      "id": "adcreative_2026-10-07_06",
       "platform": "instagram",
-      "angle": "借富途「把抽象成本換算成生活場景」的 hook 公式,但把換算標的從『錢』換成『時間』(我們沒有入金獎賞可打):用「刷牙那三分鐘」把新功能語音快報的價值具體化。打的是 whitespace 中沒人碰的『形態』差異——對手全在打入金獎賞與功能清單堆疊,沒有一家把財經內容做成可以用聽的;整段 caption 寫成能直接當短影音旁白唸的形式(近 14 天只有 reel 有觸及,靜態卡得靠 caption 自己活),結尾用純二選一提問拉互動,不要求任何關鍵字、不承諾私訊連結。",
-      "caption_zh": "你早上刷牙的那三分鐘,能不能順便把台股美股聽完?\n\n現在可以了——MarketDaily 的語音快報。\n\n每個交易日,AI 把當天那份日報濃縮成一段三分鐘的語音:早上一集講台股,晚上一集講美股。你不用坐下來讀完,通勤、洗漱、開車的路上聽完就好。\n\n訂閱者還有專屬版本——除了當天的市場重點,其餘只留跟你持股有關的那幾段。\n\n(週六早上是文字版週末回顧,那天讓耳朵放假。)\n\n完全免費,不用登入也能直接聽公版那集 → marketdaily.ai/audio\n全功能限時免費開放中;未來恢復收費後,現在訂閱的早鳥用戶永久保留免費使用權。\n\n內容為公開資訊整理,不構成投資建議,投資一定有風險。\n\n你是讀派還是聽派?在下面直接跟我說。",
-      "caption_en": "Those three minutes you spend brushing your teeth — could you also get through the TW and US markets?\n\nNow you can — with MarketDaily's audio brief.\n\nEvery trading day, AI condenses that day's full report into a three-minute listen: a morning episode on Taiwan stocks, an evening one on US stocks. No sitting down to read — just play it on your commute, in the bathroom, or in the car.\n\nSubscribers get a personal edition too: beyond the day's market highlights, it keeps only the parts tied to your own holdings.\n\n(Saturday mornings are a written weekend recap instead — your ears get the day off.)\n\nCompletely free, and you can play the public episode without even logging in → marketdaily.ai/audio\nEverything is free for a limited time right now; if paid plans return later, early subscribers keep free access permanently.\n\nContent is a summary of public information, not investment advice. All investing carries risk.\n\nAre you a reader or a listener? Tell me below.",
-      "score": 88,
+      "angle": "新功能『每個交易日早晚各一集、每集 3 分鐘的語音快報』(marketdaily.ai/audio):競品全打交易端的低門檻和零佣金，沒有人做『用聽的掌握盤勢』這種資訊端角度。素材做成 reel(唯一有觸及的型式),第一秒畫面是耳機加上台股晨間和美股晚間兩條音波，用讀派還是聽派的二選一拉互動",
+      "caption_zh": "🎧 財經新聞，改用聽的。\n\n每個交易日早晚各一集語音快報，每集 3 分鐘：\n☀️ 早上｜台股晨間快報\n🌙 晚上｜美股晚間快報\n\n刷牙、通勤、開車時按下播放就好，眼睛不用離開路。\n日報信裡還有一個專屬連結，打開是只唸你自己持股的版本，跟你無關的不浪費你時間。\n\n週末不出語音。內容為公開資訊整理，不構成投資建議，所有分析對每位用戶都一樣。\n目前全功能限時免費開放；未來恢復收費後，現在訂閱的早鳥用戶永久保留免費使用權。\n\n你是讀派還是聽派？在下面告訴我 👇\n🔗 marketdaily.ai/audio",
+      "caption_en": "🎧 Market news, now in your ears.\n\nTwo audio briefs every trading day, 3 minutes each:\n☀️ Morning | Taiwan market brief\n🌙 Evening | US market brief\n\nHit play while you brush your teeth, commute, or drive. No screen needed.\nYour daily email also carries a personal link to a version that covers only the stocks you hold, nothing you don't care about.\n\nNo audio on weekends. Content summarizes public information and is not investment advice; every user gets the same analysis.\nAll features are free for a limited time. When paid plans return, early-bird subscribers who join now keep free access for life.\n\nAre you a reader or a listener? Tell me below 👇\n🔗 marketdaily.ai/audio",
+      "visual_direction": "9:16 reel,8 到 12 秒。0-1s:深色底，一副耳機加一條跳動的音波，大字「財經新聞，改用聽的」。1-4s:音波分成兩軌，標「☀️ 台股晨間」和「🌙 美股晚間」,配 3:00 倒數計時。4-8s:手機畫面播放 marketdaily.ai/audio 的頁面(真實截圖),旁邊是刷牙、通勤的生活剪影。結尾卡片:「讀派 or 聽派？」加網址。音軌直接用一集真實快報的開頭 3 秒，不烘版權音樂",
+      "score": 0,
       "score_dims": {
-        "hook_strength": 17,
-        "cta_clarity": 17,
-        "value_match": 18,
-        "target_match": 17,
-        "risk": 19
+        "hook_strength": 0,
+        "cta_clarity": 0,
+        "value_match": 0,
+        "target_match": 0,
+        "risk": 0
       },
-      "score_rationale": "Hook 17/20:第一句就是生活場景換算(刷牙三分鐘),是富途唯一全命中的公式骨架、且對手全無人用在『時間』軸上;可直接當短影音旁白第一句唸,符合 D 指引①;扣分在『刷牙』畫面感偏日常、不如金錢誘餌刺激。CTA 17/20:單一明確落點 marketdaily.ai/audio(不用登入=零摩擦),結尾二選一提問拉互動且完全避開留言閘門型措辭(未使用『留言/留一句』任何動詞,已用 promote 的 _is_gated 判準實測 False);扣分在同一則有『去聽』與『回答問題』兩個動作。value_match 18/20:全部講機制不講數字——每交易日兩集、專屬版依持股過濾、週六文字版、完全免費——與 audio.html 線上現值逐條對得上,零寫死百分比。target_match 17/20:精準打通勤/開車/洗漱這段既有的空白時間,正是 30-45 歲上班族投資者的真實情境;扣分在偏『新功能公告』、對還沒訂閱的人少一層痛點鋪陳。risk 19/20:compliance_selfcheck.check_caption() 五欄全 True;無 Pro/試讀/不綁卡/邀請碼、無保證類字眼、不喊個股、語音快報對所有人免費(不與付費掛鉤,合規鐵則)、含免責聲明與強制早鳥口徑;中英語意逐段一致(交易日/週六文字版/免登入皆對齊,未寫成『每天』)。",
+      "score_rationale": "由評分代理填寫",
       "compliance_self_check": {
         "no_fabricated_numbers": true,
         "no_pro_tier_language": true,
@@ -163,9 +169,15 @@
         "no_stock_analysis_premium_claim": true
       },
       "status": "approved",
-      "ads_score": 64,
-      "ads_score_notes": "強項:合規與事實層是全稿最硬的部分——零寫死數字、早鳥口徑與免責聲明齊備、語音快報對全體免費不與付費掛鉤,且「3 分鐘/週六文字版週末回顧」逐條對得上 /home/userdelvin/Delvin-agent/docs/audio.html 線上現值,CTA 單一落點零摩擦、中英逐段語意一致。弱點:兩道硬性加權皆不合格,故封頂 70——①第一句「你早上刷牙的那三分鐘,能不能順便把台股美股聽完?」只命中公式三要素中的「數字」,無具名主體(MarketDaily 遲到第二句才出現)、對比僅是生活場景並置而非衝突,且是 rubric 明列扣分的軟性反問句型;②caption 從頭到尾是新功能公告,沒有任何可獨立收藏/教學的資訊(無框架、無可帶走的判斷法),在「近 14 天只有 reel 有觸及、靜態得靠 caption 自己活」的前提下正好缺了唯一能救它的那層,結尾二選一提問互動門檻低但也不產生保存動機。自評 88 過高,hook_strength 17/20 與 value_match 18/20 尤其虛高。修法:第一句改成具名主體+數字+衝突(例:「MarketDaily 把 3,000 字日報壓成 3 分鐘語音——比你等紅燈的時間還短」),中段插一段可收藏的「通勤聽盤三步驟/該聽哪一段」教學骨架,把公告降級成證據。另:「不用登入也能直接聽」這句在 audio.html 上找不到對應文字,發前需實測驗證。",
-      "verifier_edits": "兩處小型事實修正(修正後全部檢查重跑,皆通過):\n\n1. 刪「新上線的」/「Say hello to MarketDaily's new audio brief」→「MarketDaily 的語音快報」/「Now you can — with MarketDaily's audio brief」。理由:`git log -- docs/audio.html` 顯示語音快報 2026-07-08 上線(feat(audio): 日報 3 分鐘語音快報上線),距今兩個月,個人化版本也在 07-11 上線,對外稱「新上線/new」與現值不符。\n\n2. 「訂閱者還有專屬版本——只講跟你持股有關的那幾段,其他全部跳過」→「除了當天的市場重點,其餘只留跟你持股有關的那幾段」(英文同步改為 \"beyond the day's market highlights, it keeps only the parts tied to your own holdings\")。理由:`audio_brief/personal.py` docstring 的內容規則明寫「市場重點:第一條(避坑/頭條)必唸;其餘 bullets 有提到他的持股才唸」,原文「其他全部跳過」是過度宣稱(而且描述的是使用者實際會聽到什麼)。\n\n修正後複驗結果:\n- compliance_selfcheck.check_caption() 中英各五欄全 True(no_fabricated_numbers / no_pro_tier_language / no_premium_giveaway / no_guarantee_language / no_stock_analysis_premium_claim)。\n- promote_ad_creatives._is_gated(caption_zh) = False → 非留言閘門型,允許帶 URL(第 7 項不適用)。\n- 中英逐段語意一致:每個交易日兩集、Saturday 文字版週末回顧、免登入公版、早鳥口徑、免責聲明、結尾二選一提問全部對齊,未出現「每天 vs Mon-Sat」型錯位。\n- 零阿拉伯數字(中英皆用 三分鐘 / three-minute),無勝率/訂戶數/百分比;無 Pro、免費試讀、邀請碼、送 Premium、保證/穩賺/絕對/100%、老師/大師/神算、個股喊進喊出、LINE CTA。\n- 事實逐條對得上 docs/audio.html 現值(每個交易日早晚各一集、3 分鐘、台股晨間/美股晚間、週末不製作且週六早上為文字版週末回顧);marketdaily.ai/audio 實測 HTTP 200,公版 mp3(media.marketdaily.ai/audio_2026-09-08_tw.mp3)無憑證即 200 → 「不用登入也能直接聽」為真(推翻上游 ads_score 對這句的疑慮)。\n- 產線現況佐證:manifest 近三週逐交易日 tw+us 齊全;09-05/09-06 無音檔=週末(digest_2026-09-05.html 為文字版週末回顧),09-07 無 us 集=美股勞動節休市(docs/output/ 無 digest_2026-09-07_us.html),非故障。今日個人化檔已產出(audio_brief/out/pnarr_2026-09-08_tw_*)。\n- pricing.html 對照:全站零收費、方案僅 Premium(caption 未提任何方案/價格),早鳥口徑與 price_sub 一致;語音快報對全體免費、個人化只需免費訂閱,未與付費掛鉤(COMPLIANCE_STRUCTURE.md §永久規則 1/3 通過)。track-record.json 未被引用,無戰績數字。\n- 品牌距離:latest_spy_report.json 六個對手 creative 全是入金獎賞/零佣金/預測市場/咖啡電商,與本則「刷牙三分鐘用聽的」無任何句型或訴求重疊。"
+      "fact_sources": [
+        "docs/audio.html zh.hero_p: 每個交易日早晚各一集,AI 把當天日報濃縮成 3 分鐘語音…完全免費",
+        "docs/audio.html zh.ep_tag_tw/ep_tag_us: 台股晨間快報/美股晚間快報",
+        "docs/audio.html zh.weekend_notice: 週末不製作語音快報",
+        "audio_brief/personal.py docstring: 個人專屬 mp3 透過 email 連結 ?u={token},只唸該訂閱者實收個股(長度隨持股伸縮，所以 caption 不說專屬版是 3 分鐘)"
+      ],
+      "notes": "刻意不寫「每天」,改寫「每個交易日」,因為週末沒有語音。caption 裡沒有用「留言」這個動詞，避免跟強制口徑裡的「早鳥」一起出現時被 _is_gated() 誤判。兩語 check_caption() 五項全部通過",
+      "ads_score": 58,
+      "ads_score_notes": "強項：合規很乾淨。所有事實都對得到 docs/audio.html 和 audio_brief/personal.py，有寫明「每個交易日」和「週末不出」，早鳥口徑逐字正確，也有寫「所有分析對每位用戶都一樣」；「刷牙、通勤、開車」的使用情境和 reel 第一秒的耳機音波畫面，也對到資訊端沒人做的定位空隙。分項約 Hook 8／CTA 13／Value 14／Target 13／Risk 19。弱點：兩項硬性加權都不合格，所以分數上限是 70，再往下扣。第一，第一句「財經新聞，改用聽的」沒有具名主體，「3 分鐘」被壓到第二段，也沒有對比或衝突。建議改成「台股開盤前 3 分鐘，耳機裡就聽完昨晚美股收盤」這類寫法，具名、有數字，也有讀和聽的對比。第二，觸及軌的 caption 只是產品公告，沒有能獨立收藏的教學價值；IG caption 裡的網址也點不了，CTA 只剩「讀派還是聽派」一個二選一，太薄。"
     }
   ]
 }
