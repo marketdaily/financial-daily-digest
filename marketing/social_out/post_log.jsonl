@@ -664,3 +664,4 @@
 {"ts": "2026-10-07T14:00:49.434753", "post": "win_2026-09-07_2464_wait", "results": {"instagram": {"ok": true, "skipped": false, "detail": "17913975465527473"}, "facebook": {"ok": true, "skipped": false, "detail": "1133333363197689_122139254565345835"}, "threads": {"ok": true, "skipped": false, "detail": "17909588604481068"}}}
 {"ts": "2026-10-07T14:51:49.053775", "post": "newsr_20261007_googl", "results": {"threads": {"ok": true, "detail": "18075511151559923"}}}
 {"ts": "2026-10-07T15:41:41.034839", "post": "newsr_20261007_world_c5130a", "results": {"threads": {"ok": true, "detail": "17883924606513454"}}}
+{"ts": "2026-10-07T16:06:16.588544", "post": "ai_1898b57b0944", "results": {"threads": {"ok": true, "detail": {"posted": ["18124447993902284", "17905844859563603", "18346071997264502", "17957348304255484"], "root": "18124447993902284"}}}}
