@@ -1321,3 +1321,33 @@
 {"date": "2026-10-07", "code": "6944", "source": "tw_rank", "level": "yellow", "signal": "兆聯實業(6944) 今日漲幅排行第10(+9.9%),異常活躍", "price_at_signal": null}
 {"date": "2026-10-07", "code": "2109", "source": "margin", "level": "yellow", "signal": "華豐(2109):融資5日暴增17.4%(散戶追高過熱)", "price_at_signal": null}
 {"date": "2026-10-07", "code": "7738", "source": "sbl", "level": "yellow", "signal": "東聯互動(7738):機構借券賣出5日遽減-20.2%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "1727", "source": "margin", "level": "red", "signal": "中華化(1727):融資5日驟減-26.8%(疑似斷頭/停損潮,股價走勢待確認)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "2316", "source": "margin", "level": "yellow", "signal": "楠梓電(2316):融資5日暴增16.1%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "2492", "source": "mops_news", "level": "red", "signal": "華新科(2492) 重訊[2026-10-07]:公告本公司國內第二次無擔保轉換公司債代收價款 及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-08", "code": "3147", "source": "institutional", "level": "yellow", "signal": "大綜(3147):法人 20 日淨賣超 -321 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "3147", "source": "revenue", "level": "red", "signal": "大綜(3147):2026/08 營收公告、YoY +233.5%(強勁)、MoM -1.9%", "price_at_signal": null}
+{"date": "2026-10-08", "code": "3147", "source": "margin", "level": "yellow", "signal": "大綜(3147):融資5日暴增69.5%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "3702", "source": "margin", "level": "red", "signal": "大聯大(3702):融資5日驟減-30.5%(疑似斷頭/停損潮,股價走勢待確認)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "4540", "source": "sbl", "level": "yellow", "signal": "全球傳動(4540):機構借券賣出5日遽減-25.5%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "4556", "source": "institutional", "level": "yellow", "signal": "旭然(4556):法人 20 日淨買超 +271 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "4556", "source": "revenue", "level": "yellow", "signal": "旭然(4556):2026/08 營收公告、YoY +18.7%、MoM -24.2%", "price_at_signal": null}
+{"date": "2026-10-08", "code": "4556", "source": "sbl", "level": "yellow", "signal": "旭然(4556):機構借券賣出5日遽減-28.9%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "4916", "source": "institutional", "level": "yellow", "signal": "事欣科(4916):法人 20 日淨買超 +678 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "4916", "source": "revenue", "level": "red", "signal": "事欣科(4916):2026/08 營收公告、YoY +83.0%(強勁)、MoM +6.3%", "price_at_signal": null}
+{"date": "2026-10-08", "code": "6174", "source": "leadflow", "level": "red", "signal": "安碁(6174) 無消息近漲停+10.0%(連3根,5日+28.0%),疑資訊先行資金|外資+投信近3日僅-25張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-08", "code": "6658", "source": "margin", "level": "yellow", "signal": "聯策(6658):融資5日暴增21.6%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-08", "code": "7738", "source": "mops_news", "level": "red", "signal": "東聯互動(7738) 重訊[2026-10-07]:公告本公司國內第一次無擔保轉換公司債代收價款行庫 及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-08", "code": "3597", "source": "tw_rank", "level": "yellow", "signal": "映興(3597) 今日漲幅排行第12(+9.9%),異常活躍", "price_at_signal": null}
+{"date": "2026-10-08", "code": "3597", "source": "leadflow", "level": "red", "signal": "映興(3597) 無消息近漲停+9.9%(連4根,5日+43.8%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-08", "code": "3287", "source": "leadflow", "level": "yellow", "signal": "廣寰科(3287) 無消息近漲停+10.0%(量能1.8×,5日+4.3%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-08", "code": "8086", "source": "leadflow", "level": "red", "signal": "宏捷科(8086) 無消息近漲停+10.0%(連2根,5日+33.9%),疑資訊先行資金|外資+投信近3日+4315張", "price_at_signal": null}
+{"date": "2026-10-08", "code": "4973", "source": "leadflow", "level": "yellow", "signal": "廣穎(4973) 無消息近漲停+10.0%(量能2.9×,5日+8.8%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-08", "code": "6127", "source": "leadflow", "level": "red", "signal": "九豪(6127) 無消息近漲停+9.9%(量能7.1×,5日+12.9%),疑資訊先行資金|外資+投信近3日+3180張", "price_at_signal": null}
+{"date": "2026-10-08", "code": "6510", "source": "leadflow", "level": "yellow", "signal": "精測(6510) 無消息近漲停+9.9%(量能1.5×,5日+10.7%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-08", "code": "3265", "source": "leadflow", "level": "red", "signal": "台星科(3265) 無消息近漲停+9.9%(連2根,5日+28.9%),疑資訊先行資金|外資+投信近3日+579張", "price_at_signal": null}
+{"date": "2026-10-08", "code": "3290", "source": "leadflow", "level": "red", "signal": "東浦(3290) 無消息近漲停+9.8%(量能8.6×,5日+11.6%),疑資訊先行資金|外資+投信近3日僅+474張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-08", "code": "4430", "source": "leadflow", "level": "red", "signal": "耀億(4430) 無消息近漲停+9.8%(量能28.2×,5日+9.8%),疑資訊先行資金|外資+投信近3日僅+6張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-08", "code": "3073", "source": "leadflow", "level": "yellow", "signal": "天方能源(3073) 無消息近漲停+9.8%(量能2.6×,5日+9.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-08", "code": "1781", "source": "leadflow", "level": "red", "signal": "合世(1781) 無消息近漲停+9.8%(量能43.0×,5日+9.1%),疑資訊先行資金|外資+投信近3日僅+71張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-08", "code": "4157", "source": "leadflow", "level": "red", "signal": "太景*-KY(4157) 無消息近漲停+9.1%(量能10.9×,5日+6.9%),疑資訊先行資金|外資+投信近3日+669張", "price_at_signal": null}
+{"date": "2026-10-08", "code": "6725", "source": "investor_conf", "level": "red", "signal": "矽科宏晟(6725):法說會5天內召開(波動事件窗口逼近)|簡報摘要:全球半導體產業持續擴產的關鍵核心夥伴、先進製程化學品供應系統市場領先、策略性全球布局：總部位於台灣並設有海外子公司", "price_at_signal": null}
