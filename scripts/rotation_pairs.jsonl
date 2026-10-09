@@ -164,3 +164,5 @@
 {"date": "2026-10-07", "market": "us", "from": "DRAM", "to": "NBIS", "from_px": 59.52, "to_px": 249.87}
 {"date": "2026-10-08", "market": "us", "from": "QQQM", "to": "MU", "from_px": 311.94, "to_px": 1088.0}
 {"date": "2026-10-08", "market": "us", "from": "META", "to": "MU", "from_px": 721.31, "to_px": 1088.0}
+{"date": "2026-10-10", "market": "us", "from": "DRAM", "to": "LITE", "from_px": 57.19, "to_px": 1103.36}
+{"date": "2026-10-10", "market": "tw", "from": "8299", "to": "6510", "from_px": 2060.0, "to_px": 3320.0}
