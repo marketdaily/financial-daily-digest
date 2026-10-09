@@ -334,5 +334,26 @@
   "issue_lots": 38.0,
   "vol_21d_pct": null,
   "quote_date": "2026-09-29"
+ },
+ "30062": {
+  "start_date": "10/12(一)",
+  "name": "晶豪科二",
+  "bond_code": "30062",
+  "collateral": "富邦銀",
+  "tcri": 5,
+  "premium_pct": 9.77,
+  "discount_rate_pct": 3.25,
+  "opt_expiry": "2029-09-18",
+  "put_date": "2029-10-02",
+  "tenor_year": 2.98,
+  "put_price": 100.0,
+  "conv_price": 308.0,
+  "parity": 86.85,
+  "cb_price": 117.95,
+  "premium_discount_pct": 36.0,
+  "unit_price_nt": 20000.0,
+  "issue_lots": 66.0,
+  "vol_21d_pct": null,
+  "quote_date": "2026-10-12"
  }
 }
