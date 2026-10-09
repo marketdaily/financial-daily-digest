@@ -1351,3 +1351,6 @@
 {"date": "2026-10-08", "code": "1781", "source": "leadflow", "level": "red", "signal": "合世(1781) 無消息近漲停+9.8%(量能43.0×,5日+9.1%),疑資訊先行資金|外資+投信近3日僅+71張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-08", "code": "4157", "source": "leadflow", "level": "red", "signal": "太景*-KY(4157) 無消息近漲停+9.1%(量能10.9×,5日+6.9%),疑資訊先行資金|外資+投信近3日+669張", "price_at_signal": null}
 {"date": "2026-10-08", "code": "6725", "source": "investor_conf", "level": "red", "signal": "矽科宏晟(6725):法說會5天內召開(波動事件窗口逼近)|簡報摘要:全球半導體產業持續擴產的關鍵核心夥伴、先進製程化學品供應系統市場領先、策略性全球布局：總部位於台灣並設有海外子公司", "price_at_signal": null}
+{"date": "2026-10-09", "code": "2492", "source": "twse_notetrans", "level": "yellow", "signal": "華新科(2492):注意累計異常:115年10月7日至115年10月8日連續二次(逼近處置門檻)", "price_at_signal": null}
+{"date": "2026-10-09", "code": "3533", "source": "holders", "level": "red", "signal": "嘉澤(3533):千張大戶持股比週增1.23個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-10-09", "code": "6438", "source": "mops_news", "level": "red", "signal": "迅得(6438) 重訊[2026-10-08]:公告本公司國內第三次無擔保轉換公司債收足債款", "price_at_signal": null}
