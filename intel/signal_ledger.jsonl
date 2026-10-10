@@ -1354,3 +1354,4 @@
 {"date": "2026-10-09", "code": "2492", "source": "twse_notetrans", "level": "yellow", "signal": "華新科(2492):注意累計異常:115年10月7日至115年10月8日連續二次(逼近處置門檻)", "price_at_signal": null}
 {"date": "2026-10-09", "code": "3533", "source": "holders", "level": "red", "signal": "嘉澤(3533):千張大戶持股比週增1.23個百分點(大戶顯著加碼)", "price_at_signal": null}
 {"date": "2026-10-09", "code": "6438", "source": "mops_news", "level": "red", "signal": "迅得(6438) 重訊[2026-10-08]:公告本公司國內第三次無擔保轉換公司債收足債款", "price_at_signal": null}
+{"date": "2026-10-10", "code": "7738", "source": "holders", "level": "yellow", "signal": "東聯互動(7738):千張大戶持股比週減-3.66個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
