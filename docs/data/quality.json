@@ -1,10 +1,10 @@
 {
- "date": "2026-10-10",
+ "date": "2026-10-11",
  "kpi": {
   "subscribers": 35,
   "digest_clean_days_7d": "5/7",
   "fallback_7d": 0,
-  "social_posts_7d": 75
+  "social_posts_7d": 67
  },
  "digest": {
   "audit": null,
@@ -128,7 +128,7 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": 0,
+  "tw": null,
   "us": null
  },
  "sitescan": {
@@ -140,8 +140,8 @@
  "flags": {
   "hb_miss_tw": false,
   "hb_miss_us": false,
-  "guard_alert_tw": true,
+  "guard_alert_tw": false,
   "guard_alert_us": false
  },
- "generated_utc": "2026-10-10T00:38:01Z"
+ "generated_utc": "2026-10-10T16:08:01Z"
 }
