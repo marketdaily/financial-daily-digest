@@ -1,5 +1,5 @@
 {
- "date": "2026-10-10",
+ "date": "2026-10-11",
  "red": [
   "華邦電(2344):投信連 14 日賣超(棄養警訊,20日淨賣 -69,168 張)",
   "金像電(2368):投信連 4 日買超(認養訊號,20日淨買 +7,370 張)",
@@ -20,6 +20,19 @@
   "高力(8996):投信連 5 日賣超(棄養警訊,20日淨賣 +1,472 張)",
   "慶豐富(9935):投信連 3 日賣超(棄養警訊,20日淨賣 +106 張)",
   "世紀鋼(9958):外資連 6 日賣超(5日淨賣 -901 張)",
+  "及成(3095):2026/09 營收公告、YoY +21.1%(強勁)、MoM +12.3%",
+  "宜特(3289):2026/09 營收公告、YoY -21.5%(衰退)、MoM -3.1%",
+  "由田(3455):2026/09 營收公告、YoY +23.4%(強勁)、MoM +2.7%、⚠️ 當月與累計 YoY 方向相反=可能轉折",
+  "映興(3597):2026/09 營收公告、YoY +50.1%(強勁)、MoM +17.9%",
+  "旭然(4556):2026/09 營收公告、YoY +39.4%(強勁)、MoM +16.2%",
+  "智崴(5263):2026/09 營收公告、YoY +124.2%(強勁)、MoM -16.2%",
+  "安碁(6174):2026/09 營收公告、YoY +32.9%(強勁)、MoM +1.2%",
+  "台燿(6274):2026/09 營收公告、YoY +114.8%(強勁)、MoM +3.6%",
+  "綠茵(6846):2026/09 營收公告、YoY +31.0%(強勁)、MoM +21.5%、⚠️ 當月與累計 YoY 方向相反=可能轉折",
+  "宸曜(6922):2026/09 營收公告、YoY +79.4%(強勁)、MoM -7.3%",
+  "光焱科技(7728):2026/09 營收公告、YoY +69.0%(強勁)、MoM +65.1%",
+  "正淩(8147):2026/09 營收公告、YoY +45.9%(強勁)、MoM +3.3%",
+  "群聯(8299):2026/09 營收公告、YoY +370.3%(強勁)、MoM +8.4%",
   "🇺🇸 MSFT ⬇️ Buy→Sell(Citigroup)",
   "🇺🇸 MSFT ⬇️ Overweight→Underweight(Barclays)",
   "🇺🇸 MSFT ⬇️ Outperform→Underperform(RBC Capital)",
@@ -41,7 +54,7 @@
   "智崴(5263):毛利率QoQ驟降-6.4個百分點(較 115Q1 至 115Q2)",
   "可寧衛*(8422):毛利率QoQ驟降-11.1個百分點(較 115Q1 至 115Q2)",
   "世紀鋼(9958):毛利率QoQ驟降-7.3個百分點(較 115Q1 至 115Q2)",
-  "矽科宏晟(6725):法說會3天內召開(波動事件窗口逼近)|簡報摘要:全球半導體產業資本支出持續增長、累計超過27項獨家專利與營業秘密、維持50%股利發放率長期目標|圖表:2025-2026年各月營收·2025年 12月 360 → 累計 3,816、各年度營收·營業收入 2025年 3,816 → 1H26 1,884、年度損益表·營業收入 2025年 3,816 → 1H26 1,884"
+  "矽科宏晟(6725):法說會2天內召開(波動事件窗口逼近)|簡報摘要:全球半導體產業資本支出持續成長、累計超過27項獨家專利與營業秘密、維持50%股利發放率長期目標|圖表:2025-2026年各月營收·2025年 12月 360 → 累計 3,816、各年度營收·營業收入 2025年 3,816 → 1H26 1,884、年度損益表·營業收入 2025年 3,816 → 1H26 1,884"
  ],
  "yellow": [
   "濱川(1569):法人 20 日淨買超 +2,062 張(未成連續型態)",
@@ -71,10 +84,16 @@
   "正淩(8147):法人 20 日淨賣超 -623 張(未成連續型態)",
   "群聯(8299):法人 20 日淨買超 +1,318 張(未成連續型態)",
   "可寧衛(8422):法人 20 日淨賣超 -7,696 張(未成連續型態)",
-  "🇺🇸 AAPL 內部人賣出:Newstead Jennifer 2,399股 均價$332.01(約$796,492)",
+  "生合(1295):2026/09 營收公告、YoY +10.8%、MoM +6.2%、⚠️ 當月與累計 YoY 方向相反=可能轉折",
+  "泰谷(3339):2026/09 營收公告、YoY -4.6%、MoM -6.9%",
+  "安勤(3479):2026/09 營收公告、YoY +15.3%、MoM -0.8%",
+  "科嶠(4542):2026/09 營收公告、YoY -7.6%、MoM -41.6%、⚠️ 當月與累計 YoY 方向相反=可能轉折",
+  "立誠(6597):2026/09 營收公告、YoY -12.2%、MoM -0.1%",
+  "東聯互動(7738):2026/09 營收公告、YoY +19.9%、MoM -4.0%",
   "🇺🇸 META 內部人賣出:Anderson Aaron[Chief Accounting Officer] 3,240股 均價$618.0579(約$2,002,508)",
   "🇺🇸 NVDA 內部人賣出:STEVENS MARK A[董事] 400,000股 均價$228.7848(分3筆執行)(約$91,513,920)",
   "🇺🇸 NVDA 內部人賣出:STEVENS MARK A[董事] 622,239股 均價$231.6199(分4筆執行)(約$144,122,935)",
+  "🇺🇸 TSLA 內部人賣出:Taneja Vaibhav[Chief Financial Officer] 2,605股 均價$360.134(約$938,419)",
   "🏛️ GS 國會議員買進:Michael Rulli(House) 2026-10-02 揭露",
   "安碁(6174) 今日漲幅排行第10(+10.0%),異常活躍",
   "映興(3597) 今日漲幅排行第12(+9.9%),異常活躍",
@@ -110,9 +129,9 @@
   "慶豐富(9935):負債比率70.5%(較 115Q1 至 115Q2)"
  ],
  "calibration": {
-  "updated": "2026-10-10",
-  "n_rows": 1162,
-  "n_interim": 476,
+  "updated": "2026-10-11",
+  "n_rows": 1176,
+  "n_interim": 468,
   "n_final": 95,
   "model": "empirical_band_v4",
   "lam": 0.8,
@@ -213,11 +232,11 @@
    },
    "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);live 帳本 predictions.jsonl 持續對答案;G1_brier.oos_brier_cal 是「假設全列都拿到校準」的理想值,實際部署有 oos_frac_out_of_domain 比例落回未校準 raw(見 cb_ledger.py),誠實部署量測見 oos_brier_cal_deployment_realistic"
   },
-  "brier_interim": 0.1067,
+  "brier_interim": 0.1072,
   "coin_flip_brier": 0.25,
-  "avg_pred_interim": 0.2913,
-  "realized_interim": 0.1996,
-  "shrink": 0.685,
+  "avg_pred_interim": 0.2939,
+  "realized_interim": 0.203,
+  "shrink": 0.691,
   "note": "樣本 2 筆 <20,校準閘門未開(小樣本校準=雜訊)",
   "final_hit_rate": 1.0,
   "final_avg_pred": 0.6515
@@ -407,6 +426,11 @@
     "source": "institutional",
     "level": "yellow",
     "signal": "宜特(3289):法人 20 日淨買超 +468 張(未成連續型態)"
+   },
+   {
+    "source": "revenue",
+    "level": "red",
+    "signal": "宜特(3289):2026/09 營收公告、YoY -21.5%(衰退)、MoM -3.1%"
    }
   ],
   "3339": [
@@ -414,6 +438,11 @@
     "source": "institutional",
     "level": "yellow",
     "signal": "泰谷(3339):法人 20 日淨買超 +318 張(未成連續型態)"
+   },
+   {
+    "source": "revenue",
+    "level": "yellow",
+    "signal": "泰谷(3339):2026/09 營收公告、YoY -4.6%、MoM -6.9%"
    },
    {
     "source": "tw_financials",
@@ -448,6 +477,11 @@
     "source": "institutional",
     "level": "red",
     "signal": "安勤(3479):外資連 6 日買超(5日淨買 +341 張)"
+   },
+   {
+    "source": "revenue",
+    "level": "yellow",
+    "signal": "安勤(3479):2026/09 營收公告、YoY +15.3%、MoM -0.8%"
    }
   ],
   "3533": [
@@ -510,6 +544,11 @@
     "signal": "科嶠(4542):法人 20 日淨賣超 -294 張(未成連續型態)"
    },
    {
+    "source": "revenue",
+    "level": "yellow",
+    "signal": "科嶠(4542):2026/09 營收公告、YoY -7.6%、MoM -41.6%、⚠️ 當月與累計 YoY 方向相反=可能轉折"
+   },
+   {
     "source": "sbl",
     "level": "yellow",
     "signal": "科嶠(4542):機構借券賣出5日增15.3%(溫和加碼放空)"
@@ -520,6 +559,11 @@
     "source": "institutional",
     "level": "yellow",
     "signal": "旭然(4556):法人 20 日淨買超 +271 張(未成連續型態)"
+   },
+   {
+    "source": "revenue",
+    "level": "red",
+    "signal": "旭然(4556):2026/09 營收公告、YoY +39.4%(強勁)、MoM +16.2%"
    },
    {
     "source": "sbl",
@@ -565,6 +609,11 @@
     "signal": "智崴(5263):法人 20 日淨賣超 -277 張(未成連續型態)"
    },
    {
+    "source": "revenue",
+    "level": "red",
+    "signal": "智崴(5263):2026/09 營收公告、YoY +124.2%(強勁)、MoM -16.2%"
+   },
+   {
     "source": "tw_financials",
     "level": "red",
     "signal": "智崴(5263):毛利率QoQ驟降-6.4個百分點(較 115Q1 至 115Q2)"
@@ -584,6 +633,11 @@
     "signal": "安碁(6174):法人 20 日淨買超 +1,495 張(未成連續型態)"
    },
    {
+    "source": "revenue",
+    "level": "red",
+    "signal": "安碁(6174):2026/09 營收公告、YoY +32.9%(強勁)、MoM +1.2%"
+   },
+   {
     "source": "tw_rank",
     "level": "yellow",
     "signal": "安碁(6174) 今日漲幅排行第10(+10.0%),異常活躍"
@@ -599,6 +653,11 @@
     "source": "institutional",
     "level": "red",
     "signal": "台燿(6274):投信連 5 日買超(認養訊號,20日淨買 -11,377 張)"
+   },
+   {
+    "source": "revenue",
+    "level": "red",
+    "signal": "台燿(6274):2026/09 營收公告、YoY +114.8%(強勁)、MoM +3.6%"
    },
    {
     "source": "tw_rank",
@@ -664,6 +723,11 @@
     "source": "institutional",
     "level": "red",
     "signal": "宸曜(6922):外資連 6 日賣超(5日淨賣 -95 張)"
+   },
+   {
+    "source": "revenue",
+    "level": "red",
+    "signal": "宸曜(6922):2026/09 營收公告、YoY +79.4%(強勁)、MoM -7.3%"
    }
   ],
   "6937": [
@@ -701,6 +765,11 @@
     "signal": "正淩(8147):法人 20 日淨賣超 -623 張(未成連續型態)"
    },
    {
+    "source": "revenue",
+    "level": "red",
+    "signal": "正淩(8147):2026/09 營收公告、YoY +45.9%(強勁)、MoM +3.3%"
+   },
+   {
     "source": "sbl",
     "level": "red",
     "signal": "正淩(8147):機構借券賣出5日遽增22.0%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)"
@@ -711,6 +780,11 @@
     "source": "institutional",
     "level": "yellow",
     "signal": "群聯(8299):法人 20 日淨買超 +1,318 張(未成連續型態)"
+   },
+   {
+    "source": "revenue",
+    "level": "red",
+    "signal": "群聯(8299):2026/09 營收公告、YoY +370.3%(強勁)、MoM +8.4%"
    }
   ],
   "8422": [
@@ -766,6 +840,82 @@
     "signal": "世紀鋼(9958):毛利率QoQ驟降-7.3個百分點(較 115Q1 至 115Q2)"
    }
   ],
+  "1295": [
+   {
+    "source": "revenue",
+    "level": "yellow",
+    "signal": "生合(1295):2026/09 營收公告、YoY +10.8%、MoM +6.2%、⚠️ 當月與累計 YoY 方向相反=可能轉折"
+   }
+  ],
+  "3095": [
+   {
+    "source": "revenue",
+    "level": "red",
+    "signal": "及成(3095):2026/09 營收公告、YoY +21.1%(強勁)、MoM +12.3%"
+   }
+  ],
+  "3455": [
+   {
+    "source": "revenue",
+    "level": "red",
+    "signal": "由田(3455):2026/09 營收公告、YoY +23.4%(強勁)、MoM +2.7%、⚠️ 當月與累計 YoY 方向相反=可能轉折"
+   }
+  ],
+  "3597": [
+   {
+    "source": "revenue",
+    "level": "red",
+    "signal": "映興(3597):2026/09 營收公告、YoY +50.1%(強勁)、MoM +17.9%"
+   },
+   {
+    "source": "tw_rank",
+    "level": "yellow",
+    "signal": "映興(3597) 今日漲幅排行第12(+9.9%),異常活躍"
+   },
+   {
+    "source": "margin",
+    "level": "yellow",
+    "signal": "映興(3597):融資5日暴增45.0%(散戶追高過熱)"
+   }
+  ],
+  "6597": [
+   {
+    "source": "revenue",
+    "level": "yellow",
+    "signal": "立誠(6597):2026/09 營收公告、YoY -12.2%、MoM -0.1%"
+   },
+   {
+    "source": "tw_financials",
+    "level": "yellow",
+    "signal": "立誠(6597):毛利率QoQ下滑-3.6個百分點(較 115Q1 至 115Q2)"
+   }
+  ],
+  "6846": [
+   {
+    "source": "revenue",
+    "level": "red",
+    "signal": "綠茵(6846):2026/09 營收公告、YoY +31.0%(強勁)、MoM +21.5%、⚠️ 當月與累計 YoY 方向相反=可能轉折"
+   }
+  ],
+  "7728": [
+   {
+    "source": "revenue",
+    "level": "red",
+    "signal": "光焱科技(7728):2026/09 營收公告、YoY +69.0%(強勁)、MoM +65.1%"
+   }
+  ],
+  "7738": [
+   {
+    "source": "revenue",
+    "level": "yellow",
+    "signal": "東聯互動(7738):2026/09 營收公告、YoY +19.9%、MoM -4.0%"
+   },
+   {
+    "source": "holders",
+    "level": "yellow",
+    "signal": "東聯互動(7738):千張大戶持股比週減-3.66個百分點(大戶出脫,籌碼鬆動)"
+   }
+  ],
   "MSFT": [
    {
     "source": "us_analyst",
@@ -781,13 +931,6 @@
     "source": "us_analyst",
     "level": "red",
     "signal": "🇺🇸 MSFT ⬇️ Outperform→Underperform(RBC Capital)"
-   }
-  ],
-  "AAPL": [
-   {
-    "source": "us_insider",
-    "level": "yellow",
-    "signal": "🇺🇸 AAPL 內部人賣出:Newstead Jennifer 2,399股 均價$332.01(約$796,492)"
    }
   ],
   "META": [
@@ -809,23 +952,18 @@
     "signal": "🇺🇸 NVDA 內部人賣出:STEVENS MARK A[董事] 622,239股 均價$231.6199(分4筆執行)(約$144,122,935)"
    }
   ],
+  "TSLA": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 TSLA 內部人賣出:Taneja Vaibhav[Chief Financial Officer] 2,605股 均價$360.134(約$938,419)"
+   }
+  ],
   "GS": [
    {
     "source": "us_congress",
     "level": "yellow",
     "signal": "🏛️ GS 國會議員買進:Michael Rulli(House) 2026-10-02 揭露"
-   }
-  ],
-  "3597": [
-   {
-    "source": "tw_rank",
-    "level": "yellow",
-    "signal": "映興(3597) 今日漲幅排行第12(+9.9%),異常活躍"
-   },
-   {
-    "source": "margin",
-    "level": "yellow",
-    "signal": "映興(3597):融資5日暴增45.0%(散戶追高過熱)"
    }
   ],
   "6534": [
@@ -835,13 +973,6 @@
     "signal": "正瀚-創(6534):機構借券賣出5日遽減-20.4%(回補潮,空頭力道減弱)"
    }
   ],
-  "7738": [
-   {
-    "source": "holders",
-    "level": "yellow",
-    "signal": "東聯互動(7738):千張大戶持股比週減-3.66個百分點(大戶出脫,籌碼鬆動)"
-   }
-  ],
   "JPM": [
    {
     "source": "us_sec_admin",
@@ -849,29 +980,35 @@
     "signal": "JPM 美股SEC行政程序[2026-10-02]:J.P. Morgan Securities LLC And JPMorgan Chase Bank, N.A."
    }
   ],
-  "6597": [
-   {
-    "source": "tw_financials",
-    "level": "yellow",
-    "signal": "立誠(6597):毛利率QoQ下滑-3.6個百分點(較 115Q1 至 115Q2)"
-   }
-  ],
   "6725": [
    {
     "source": "investor_conf",
     "level": "red",
-    "signal": "矽科宏晟(6725):法說會3天內召開(波動事件窗口逼近)|簡報摘要:全球半導體產業資本支出持續增長、累計超過27項獨家專利與營業秘密、維持50%股利發放率長期目標|圖表:2025-2026年各月營收·2025年 12月 360 → 累計 3,816、各年度營收·營業收入 2025年 3,816 → 1H26 1,884、年度損益表·營業收入 2025年 3,816 → 1H26 1,884"
+    "signal": "矽科宏晟(6725):法說會2天內召開(波動事件窗口逼近)|簡報摘要:全球半導體產業資本支出持續成長、累計超過27項獨家專利與營業秘密、維持50%股利發放率長期目標|圖表:2025-2026年各月營收·2025年 12月 360 → 累計 3,816、各年度營收·營業收入 2025年 3,816 → 1H26 1,884、年度損益表·營業收入 2025年 3,816 → 1H26 1,884"
    }
   ]
  },
  "new_red_since_last_run": [
-  "高力(8996):千張大戶持股比週增1.34個百分點(大戶顯著加碼)",
-  "🇺🇸 MSFT ⬇️ Buy→Sell(Citigroup)",
-  "🇺🇸 MSFT ⬇️ Outperform→Underperform(RBC Capital)",
-  "🇺🇸 MSFT ⬇️ Overweight→Underweight(Barclays)"
+  "光焱科技(7728):2026/09 營收公告、YoY +69.0%(強勁)、MoM +65.1%",
+  "及成(3095):2026/09 營收公告、YoY +21.1%(強勁)、MoM +12.3%",
+  "台燿(6274):2026/09 營收公告、YoY +114.8%(強勁)、MoM +3.6%",
+  "安碁(6174):2026/09 營收公告、YoY +32.9%(強勁)、MoM +1.2%",
+  "宜特(3289):2026/09 營收公告、YoY -21.5%(衰退)、MoM -3.1%",
+  "宸曜(6922):2026/09 營收公告、YoY +79.4%(強勁)、MoM -7.3%",
+  "旭然(4556):2026/09 營收公告、YoY +39.4%(強勁)、MoM +16.2%",
+  "映興(3597):2026/09 營收公告、YoY +50.1%(強勁)、MoM +17.9%",
+  "智崴(5263):2026/09 營收公告、YoY +124.2%(強勁)、MoM -16.2%",
+  "正淩(8147):2026/09 營收公告、YoY +45.9%(強勁)、MoM +3.3%"
  ],
- "new_red_count": 2,
+ "new_red_count": 13,
  "confluence_top": [
+  {
+   "code": "6174",
+   "name": "安碁",
+   "kind": "divergence",
+   "conviction": 3,
+   "n_camps": 3
+  },
   {
    "code": "3450",
    "name": "聯鈞",
@@ -887,10 +1024,45 @@
    "n_camps": 2
   },
   {
+   "code": "5263",
+   "name": "智崴",
+   "kind": "divergence",
+   "conviction": 3,
+   "n_camps": 2
+  },
+  {
+   "code": "6274",
+   "name": "台燿",
+   "kind": "confluence_bull",
+   "conviction": 3,
+   "n_camps": 2
+  },
+  {
+   "code": "8147",
+   "name": "正淩",
+   "kind": "divergence",
+   "conviction": 3,
+   "n_camps": 2
+  },
+  {
    "code": "1727",
    "name": "中華化",
    "kind": "confluence_bear",
    "conviction": 3,
+   "n_camps": 2
+  },
+  {
+   "code": "4556",
+   "name": "旭然",
+   "kind": "confluence_bull",
+   "conviction": 3,
+   "n_camps": 2
+  },
+  {
+   "code": "6922",
+   "name": "宸曜",
+   "kind": "divergence",
+   "conviction": 2,
    "n_camps": 2
   },
   {
@@ -908,6 +1080,13 @@
    "n_camps": 2
   },
   {
+   "code": "3289",
+   "name": "宜特",
+   "kind": "divergence",
+   "conviction": 2,
+   "n_camps": 2
+  },
+  {
    "code": "3339",
    "name": "泰谷",
    "kind": "divergence",
@@ -915,9 +1094,9 @@
    "n_camps": 2
   },
   {
-   "code": "5263",
-   "name": "智崴",
-   "kind": "confluence_bear",
+   "code": "8299",
+   "name": "群聯",
+   "kind": "confluence_bull",
    "conviction": 2,
    "n_camps": 2
   },
@@ -929,16 +1108,16 @@
    "n_camps": 2
   },
   {
-   "code": "3147",
-   "name": "大綜",
-   "kind": "confluence_bear",
+   "code": "3597",
+   "name": "映興",
+   "kind": "divergence",
    "conviction": 2,
    "n_camps": 2
   },
   {
-   "code": "6174",
-   "name": "安碁",
-   "kind": "divergence",
+   "code": "3147",
+   "name": "大綜",
+   "kind": "confluence_bear",
    "conviction": 2,
    "n_camps": 2
   },
@@ -962,68 +1141,21 @@
    "kind": "divergence",
    "conviction": 2,
    "n_camps": 1
-  },
-  {
-   "code": "3209",
-   "name": "全科",
-   "kind": "confluence_bear",
-   "conviction": 2,
-   "n_camps": 1
-  },
-  {
-   "code": "8996",
-   "name": "高力",
-   "kind": "divergence",
-   "conviction": 2,
-   "n_camps": 1
-  },
-  {
-   "code": "2344",
-   "name": "華邦電",
-   "kind": "divergence",
-   "conviction": 2,
-   "n_camps": 1
-  },
-  {
-   "code": "2492",
-   "name": "華新科",
-   "kind": "confluence_bull",
-   "conviction": 2,
-   "n_camps": 1
-  },
-  {
-   "code": "6274",
-   "name": "台燿",
-   "kind": "confluence_bull",
-   "conviction": 2,
-   "n_camps": 1
-  },
-  {
-   "code": "6669",
-   "name": "緯穎",
-   "kind": "confluence_bear",
-   "conviction": 2,
-   "n_camps": 1
-  },
-  {
-   "code": "8147",
-   "name": "正淩",
-   "kind": "confluence_bear",
-   "conviction": 2,
-   "n_camps": 1
   }
  ],
  "new_confluence_since_last_run": [
-  "🔴匯流做空:智崴(5263)×2源·2陣營",
-  "🔴匯流做空:可寧衛(8422)×2源·2陣營",
-  "⚡背離:嘉澤(3533)×3源·1陣營",
-  "⚡背離:金像電(2368)×2源·1陣營",
-  "⚡背離:華邦電(2344)×2源·1陣營",
-  "🟢匯流做多:華新科(2492)×2源·1陣營",
-  "🔴匯流做空:正淩(8147)×2源·1陣營",
-  "🟢匯流做多:迅得(6438)×2源·1陣營"
+  "⚡背離:安碁(6174)×3源·3陣營",
+  "⚡背離:智崴(5263)×3源·2陣營",
+  "⚡背離:正淩(8147)×3源·2陣營",
+  "🟢匯流做多:旭然(4556)×3源·2陣營",
+  "⚡背離:宸曜(6922)×2源·2陣營",
+  "🔴匯流做空:楠梓電(2316)×2源·2陣營",
+  "⚡背離:宜特(3289)×2源·2陣營",
+  "⚡背離:泰谷(3339)×2源·2陣營",
+  "🟢匯流做多:群聯(8299)×2源·2陣營",
+  "⚡背離:映興(3597)×2源·2陣營"
  ],
- "new_confluence_count": 8,
+ "new_confluence_count": 14,
  "sec_rule_changes": [
   {
    "date": "2026-09-16",
@@ -1035,15 +1167,15 @@
  "news_broad_themes": [
   {
    "type": "macro",
-   "headline": "「降息漲、升息也漲」根本不正常？台股暴衝背後的2大結構隱憂！達人:Q4 佈局小心這隻「AI黑天鵝」！",
-   "url": "https://news.cnyes.com/news/id/6627357",
-   "date": "2026-10-10"
+   "headline": "本週操盤筆記：美CPI牽動升息預期！美股財報季開跑、台積電法說和ASML接力登場",
+   "url": "https://news.cnyes.com/news/id/6626795",
+   "date": "2026-10-11"
   },
   {
    "type": "political",
-   "headline": "《巴隆》川普放寬俄羅斯柴油制裁仍「難壓油價」！美國柴油年漲逾70%、烏克蘭批助長俄國",
-   "url": "https://news.cnyes.com/news/id/6627217",
-   "date": "2026-10-10"
+   "headline": "普丁傳達伊朗停戰構想給川普！俄承諾增供逾400萬噸柴油、美暫緩制裁",
+   "url": "https://news.cnyes.com/news/id/6627502",
+   "date": "2026-10-11"
   }
  ],
  "gold_macro": null,
@@ -1053,5 +1185,5 @@
   "budget_used": 0,
   "budget_cap": 800
  },
- "signal_ledger_new": 1
+ "signal_ledger_new": 6
 }
