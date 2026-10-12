@@ -1361,3 +1361,27 @@
 {"date": "2026-10-11", "code": "4556", "source": "revenue", "level": "red", "signal": "旭然(4556):2026/09 營收公告、YoY +39.4%(強勁)、MoM +16.2%", "price_at_signal": null}
 {"date": "2026-10-11", "code": "3095", "source": "revenue", "level": "red", "signal": "及成(3095):2026/09 營收公告、YoY +21.1%(強勁)、MoM +12.3%", "price_at_signal": null}
 {"date": "2026-10-11", "code": "6846", "source": "revenue", "level": "red", "signal": "綠茵(6846):2026/09 營收公告、YoY +31.0%(強勁)、MoM +21.5%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
+{"date": "2026-10-12", "code": "2367", "source": "revenue", "level": "yellow", "signal": "燿華(2367):2026/09 營收公告、YoY +3.5%、MoM +1.4%", "price_at_signal": null}
+{"date": "2026-10-12", "code": "4556", "source": "margin", "level": "yellow", "signal": "旭然(4556):融資5日暴增39.5%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6438", "source": "revenue", "level": "red", "signal": "迅得(6438):2026/09 營收公告、YoY +30.8%(強勁)、MoM +13.7%", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6658", "source": "revenue", "level": "yellow", "signal": "聯策(6658):2026/09 營收公告、YoY +5.4%、MoM -5.3%", "price_at_signal": null}
+{"date": "2026-10-12", "code": "7711", "source": "revenue", "level": "red", "signal": "永擎(7711):2026/09 營收公告、YoY +41.9%(強勁)、MoM +109.7%", "price_at_signal": null}
+{"date": "2026-10-12", "code": "3413", "source": "revenue", "level": "yellow", "signal": "京鼎(3413):2026/09 營收公告、YoY +14.5%、MoM +4.9%", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6534", "source": "revenue", "level": "yellow", "signal": "正瀚-創(6534):2026/09 營收公告、YoY +11.5%、MoM +196.5%", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6534", "source": "margin", "level": "yellow", "signal": "正瀚-創(6534):融資5日暴增16.8%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-12", "code": "2424", "source": "leadflow", "level": "red", "signal": "隴華(2424) 無消息近漲停+9.8%(連2根,5日+27.7%),疑資訊先行資金|外資+投信近3日僅-10張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6114", "source": "leadflow", "level": "red", "signal": "久威(6114) 無消息近漲停+10.0%(量能6.9×,5日+6.2%),疑資訊先行資金|外資+投信近3日僅-7張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6548", "source": "leadflow", "level": "red", "signal": "長科*(6548) 無消息近漲停+10.0%(量能5.1×,5日+10.8%),疑資訊先行資金|外資+投信近3日+2203張", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6925", "source": "leadflow", "level": "yellow", "signal": "意藍(6925) 無消息近漲停+10.0%(量能2.8×,5日+14.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6261", "source": "leadflow", "level": "red", "signal": "久元(6261) 無消息近漲停+9.9%(量能7.4×,5日+6.5%),疑資訊先行資金|外資+投信近3日僅-270張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-12", "code": "1742", "source": "leadflow", "level": "red", "signal": "台蠟(1742) 無消息近漲停+9.9%(量能24.7×,5日+10.6%),疑資訊先行資金|外資+投信近3日僅+63張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-12", "code": "9103", "source": "leadflow", "level": "red", "signal": "美德醫療-DR(9103) 無消息近漲停+9.9%(連2根,5日+30.5%),疑資訊先行資金|外資+投信近3日+1059張", "price_at_signal": null}
+{"date": "2026-10-12", "code": "1615", "source": "leadflow", "level": "red", "signal": "大山(1615) 無消息近漲停+9.9%(連2根,5日+19.1%),疑資訊先行資金|外資+投信近3日僅+51張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-12", "code": "8431", "source": "leadflow", "level": "yellow", "signal": "匯鑽科(8431) 無消息近漲停+9.9%(量能2.3×,5日+2.2%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6156", "source": "leadflow", "level": "red", "signal": "松上(6156) 無消息近漲停+9.9%(量能4.9×,5日+17.0%),疑資訊先行資金|外資+投信近3日+716張", "price_at_signal": null}
+{"date": "2026-10-12", "code": "2305", "source": "leadflow", "level": "red", "signal": "全友(2305) 無消息近漲停+9.9%(連2根,5日+18.1%),疑資訊先行資金|外資+投信近3日+3555張", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6210", "source": "leadflow", "level": "red", "signal": "慶生(6210) 無消息近漲停+9.8%(量能12.8×,5日+10.1%),疑資訊先行資金|外資+投信近3日僅+11張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-12", "code": "8455", "source": "leadflow", "level": "red", "signal": "大拓-KY(8455) 無消息近漲停+8.6%(量能8.3×,5日+14.0%),疑資訊先行資金|外資+投信近3日僅+0張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-12", "code": "3713", "source": "leadflow", "level": "red", "signal": "新晶投控(3713) 無消息近漲停+9.8%(連2根,5日+18.1%),疑資訊先行資金|外資+投信近3日僅+7張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-12", "code": "6185", "source": "leadflow", "level": "red", "signal": "幃翔(6185) 無消息近漲停+9.8%(量能4.8×,5日+8.4%),疑資訊先行資金|外資+投信近3日僅+268張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-12", "code": "7740", "source": "investor_conf", "level": "red", "signal": "熙特爾-創(7740):法說會1天內召開(波動事件窗口逼近)|簡報摘要:從儲能系統整合走向AI 電力基礎設施、延伸至AIDC電力基礎設施、2026上半年營收與獲利快速成長", "price_at_signal": null}
