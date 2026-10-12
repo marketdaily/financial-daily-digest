@@ -191,7 +191,17 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://marketdaily.ai/blog/2412-event-20261013</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://marketdaily.ai/blog/2412-除權息時間與歷史紀錄-202607</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://marketdaily.ai/blog/2492-confluence-20261011</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -216,12 +226,22 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://marketdaily.ai/blog/2891-配息政策解析-202610</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://marketdaily.ai/blog/2891-除權息時間與歷史紀錄-202607</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://marketdaily.ai/blog/2891-除權息時間與歷史紀錄-202608</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://marketdaily.ai/blog/2891-除權息時間與歷史紀錄-202610</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -447,6 +467,11 @@
   </url>
   <url>
     <loc>https://marketdaily.ai/blog/macro-台灣中央銀行升降息-202609</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://marketdaily.ai/blog/macro-台灣中央銀行升降息-202610</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
