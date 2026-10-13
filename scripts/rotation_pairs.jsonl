@@ -173,3 +173,6 @@
 {"date": "2026-10-12", "market": "us", "from": "GOOGL", "to": "LITE", "from_px": 351.66, "to_px": 1103.36}
 {"date": "2026-10-13", "market": "tw", "from": "2317", "to": "2308", "from_px": 244.5, "to_px": 1900.0}
 {"date": "2026-10-13", "market": "tw", "from": "8299", "to": "2308", "from_px": 2055.0, "to_px": 1900.0}
+{"date": "2026-10-13", "market": "us", "from": "DRAM", "to": "LITE", "from_px": 54.72, "to_px": 995.41}
+{"date": "2026-10-13", "market": "us", "from": "SOXX", "to": "LITE", "from_px": 544.85, "to_px": 995.41}
+{"date": "2026-10-13", "market": "us", "from": "MU", "to": "LITE", "from_px": 989.04, "to_px": 995.41}
