@@ -105,7 +105,6 @@
       "qwen3.5:9b"
     ],
     "openrouter": [
-      "apodex/apodex-1.1-mini:free",
       "cohere/north-mini-code:free",
       "dots-studio/dots-3-note-preview:free",
       "google/gemma-4-26b-a4b-it:free",
@@ -122,5 +121,5 @@
       "thinkingmachines/inkling:free"
     ]
   },
-  "updated": "2026-10-13 10:10"
+  "updated": "2026-10-14 10:10"
 }
