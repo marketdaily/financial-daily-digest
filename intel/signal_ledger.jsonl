@@ -1408,3 +1408,18 @@
 {"date": "2026-10-13", "code": "3311", "source": "leadflow", "level": "yellow", "signal": "閎暉(3311) 無消息近漲停+20.7%(量能1.7×,5日+14.0%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-10-13", "code": "6924", "source": "leadflow", "level": "red", "signal": "榮惠-KY創(6924) 無消息近漲停+18.4%(量能12.6×,5日+18.4%),疑資訊先行資金|外資+投信近3日僅-7張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-13", "code": "3483", "source": "leadflow", "level": "red", "signal": "力致(3483) 無消息近漲停+13.4%(量能10.0×,5日+10.8%),疑資訊先行資金|外資+投信近3日+512張", "price_at_signal": null}
+{"date": "2026-10-14", "code": "2492", "source": "margin", "level": "red", "signal": "華新科(2492):融資5日驟減-21.0%(疑似斷頭/停損潮,股價同期止穩,籌碼出清轉機留意)", "price_at_signal": null}
+{"date": "2026-10-14", "code": "3147", "source": "mops_news", "level": "yellow", "signal": "大綜(3147) 重訊[2026-10-13]:更正115年8月背書保證資訊揭露明細表", "price_at_signal": null}
+{"date": "2026-10-14", "code": "3702", "source": "sbl", "level": "red", "signal": "大聯大(3702):機構借券賣出5日遽增33.0%(聰明錢加碼放空,股價走勢待確認)", "price_at_signal": null}
+{"date": "2026-10-14", "code": "4566", "source": "investor_conf", "level": "red", "signal": "時碩工業(4566):法說會2天內召開(波動事件窗口逼近)|簡報摘要:穩健穿越景氣循環、AI液冷業務快速成長、泰國新廠區投入運作", "price_at_signal": null}
+{"date": "2026-10-14", "code": "6274", "source": "mops_news", "level": "red", "signal": "台燿(6274) 重訊[2026-10-13]:公告本公司國內第六次無擔保轉換公司債代收價款行庫 及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-14", "code": "7728", "source": "institutional", "level": "red", "signal": "光焱科技(7728):外資連 5 日賣超(5日淨賣 -33 張)", "price_at_signal": null}
+{"date": "2026-10-14", "code": "8467", "source": "leadflow", "level": "red", "signal": "波力-KY(8467) 無消息近漲停+9.9%(連2根,5日+25.0%),疑資訊先行資金|外資+投信近3日僅+21張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-14", "code": "4542", "source": "sbl", "level": "red", "signal": "科嶠(4542):機構借券賣出5日遽增21.8%(聰明錢加碼放空,股價走勢待確認)", "price_at_signal": null}
+{"date": "2026-10-14", "code": "7772", "source": "leadflow", "level": "yellow", "signal": "耀穎(7772) 無消息近漲停+10.0%(一價鎖死,5日-8.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-14", "code": "6290", "source": "leadflow", "level": "red", "signal": "良維(6290) 無消息近漲停+10.0%(量能4.4×,5日+0.7%),疑資訊先行資金|外資+投信近3日+4794張", "price_at_signal": null}
+{"date": "2026-10-14", "code": "8444", "source": "leadflow", "level": "red", "signal": "綠河-KY(8444) 無消息近漲停+10.0%(量能12.6×,5日-23.9%),疑資訊先行資金|外資+投信近3日僅+2張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-14", "code": "3663", "source": "leadflow", "level": "yellow", "signal": "鑫科(3663) 無消息近漲停+9.9%(量能2.6×,5日+5.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-14", "code": "6894", "source": "leadflow", "level": "red", "signal": "衛司特(6894) 無消息近漲停+9.8%(量能6.8×,5日+11.8%),疑資訊先行資金|外資+投信近3日僅+95張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-14", "code": "8043", "source": "leadflow", "level": "red", "signal": "蜜望實(8043) 無消息近漲停+9.9%(量能5.5×,5日+8.7%),疑資訊先行資金|外資+投信近3日+1575張", "price_at_signal": null}
+{"date": "2026-10-14", "code": "6532", "source": "leadflow", "level": "red", "signal": "瑞耘(6532) 無消息近漲停+9.6%(量能5.2×,5日+13.1%),疑資訊先行資金|外資+投信近3日僅-261張,法人未同步=隱形買盤", "price_at_signal": null}
