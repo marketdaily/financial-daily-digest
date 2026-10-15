@@ -79,7 +79,6 @@
       "mistral-ocr-3",
       "mistral-ocr-3-0",
       "mistral-ocr-4",
-      "mistral-ocr-4-0",
       "mistral-ocr-4-1",
       "mistral-ocr-latest",
       "mistral-small-2603",
@@ -121,5 +120,5 @@
       "thinkingmachines/inkling:free"
     ]
   },
-  "updated": "2026-10-14 10:10"
+  "updated": "2026-10-15 10:10"
 }
