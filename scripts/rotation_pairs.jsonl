@@ -189,3 +189,7 @@
 {"date": "2026-10-16", "market": "tw", "from": "2308", "to": "4542", "from_px": 1630.0, "to_px": 325.5}
 {"date": "2026-10-16", "market": "tw", "from": "2454", "to": "4542", "from_px": 4165.0, "to_px": 325.5}
 {"date": "2026-10-16", "market": "tw", "from": "8299", "to": "4542", "from_px": 1830.0, "to_px": 325.5}
+{"date": "2026-10-16", "market": "us", "from": "MRVL", "to": "CRCL", "from_px": 241.24, "to_px": 86.97}
+{"date": "2026-10-16", "market": "us", "from": "AMD", "to": "CRCL", "from_px": 562.23, "to_px": 86.97}
+{"date": "2026-10-16", "market": "us", "from": "DRAM", "to": "CRCL", "from_px": 49.33, "to_px": 86.97}
+{"date": "2026-10-16", "market": "us", "from": "SOXX", "to": "CRCL", "from_px": 514.71, "to_px": 86.97}
