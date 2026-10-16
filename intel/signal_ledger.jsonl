@@ -1429,3 +1429,18 @@
 {"date": "2026-10-15", "code": "3485", "source": "leadflow", "level": "red", "signal": "敘豐(3485) 無消息近漲停+10.0%(連2根,5日+11.0%),疑資訊先行資金|外資+投信近3日僅+75張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-15", "code": "2429", "source": "leadflow", "level": "red", "signal": "銘旺科(2429) 無消息近漲停+9.3%(連3根,5日+26.9%),疑資訊先行資金|外資+投信近3日僅-144張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-15", "code": "6269", "source": "leadflow", "level": "red", "signal": "台郡(6269) 無消息近漲停+9.9%(連2根,5日+14.2%),疑資訊先行資金|外資+投信近3日+1353張", "price_at_signal": null}
+{"date": "2026-10-16", "code": "2012", "source": "margin", "level": "yellow", "signal": "春雨(2012):融資5日暴增24.8%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-16", "code": "2530", "source": "mops_news", "level": "yellow", "signal": "華建(2530) 重訊[2026-10-15]:公告本公司審計委員會委員異動", "price_at_signal": null}
+{"date": "2026-10-16", "code": "4906", "source": "tw_rank", "level": "yellow", "signal": "正文(4906) 今日漲幅排行第19(+9.9%),異常活躍", "price_at_signal": null}
+{"date": "2026-10-16", "code": "6196", "source": "institutional", "level": "red", "signal": "帆宣(6196):投信連 7 日買超(認養訊號,20日淨買 -75 張)", "price_at_signal": null}
+{"date": "2026-10-16", "code": "6196", "source": "revenue", "level": "red", "signal": "帆宣(6196):2026/09 營收公告、YoY +88.5%(強勁)、MoM -0.6%", "price_at_signal": null}
+{"date": "2026-10-16", "code": "7610", "source": "institutional", "level": "yellow", "signal": "聯友金屬-創(7610):法人 20 日淨賣超 -871 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-10-16", "code": "7610", "source": "revenue", "level": "red", "signal": "聯友金屬-創(7610):2026/09 營收公告、YoY +722.8%(強勁)、MoM -5.4%", "price_at_signal": null}
+{"date": "2026-10-16", "code": "7711", "source": "margin", "level": "red", "signal": "永擎(7711):融資5日驟減-16.2%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-10-16", "code": "7738", "source": "margin", "level": "red", "signal": "東聯互動(7738):融資5日驟減-18.5%(疑似斷頭/停損潮,股價同期止穩,籌碼出清轉機留意)", "price_at_signal": null}
+{"date": "2026-10-16", "code": "6517", "source": "leadflow", "level": "red", "signal": "保勝光學(6517) 無消息近漲停+10.0%(連2根,5日+16.7%),疑資訊先行資金|外資+投信近3日僅+308張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-16", "code": "6148", "source": "leadflow", "level": "yellow", "signal": "驊宏資(6148) 無消息近漲停+10.0%(量能2.4×,5日+12.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-16", "code": "2380", "source": "leadflow", "level": "red", "signal": "虹光(2380) 無消息近漲停+9.9%(連2根,5日+18.9%),疑資訊先行資金|外資+投信近3日僅+26張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-16", "code": "6751", "source": "leadflow", "level": "red", "signal": "智聯服務(6751) 無消息近漲停+9.9%(量能19.9×,5日+6.0%),疑資訊先行資金|外資+投信近3日僅-6張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-16", "code": "5398", "source": "leadflow", "level": "red", "signal": "慕康生醫(5398) 無消息近漲停+9.8%(量能4.3×,5日+9.5%),疑資訊先行資金|外資+投信近3日僅+116張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-16", "code": "1815", "source": "leadflow", "level": "yellow", "signal": "富喬(1815) 無消息近漲停+9.8%(量能2.5×,5日+3.7%),疑資訊先行資金", "price_at_signal": null}
