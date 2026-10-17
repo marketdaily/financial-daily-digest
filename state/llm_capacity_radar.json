@@ -118,8 +118,9 @@
       "poolside/laguna-s-2.1:free",
       "poolside/laguna-xs-2.1:free",
       "thinkingmachines/inkling-small:free",
-      "thinkingmachines/inkling:free"
+      "thinkingmachines/inkling:free",
+      "xingchen-agi/xing4.0-29b-a4b:free"
     ]
   },
-  "updated": "2026-10-16 10:10"
+  "updated": "2026-10-17 10:10"
 }
