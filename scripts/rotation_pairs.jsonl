@@ -160,10 +160,10 @@
 {"date": "2026-10-02", "market": "us", "from": "QQQM", "to": "AXTI", "from_px": 305.57, "to_px": 81.81, "from_ret": 0.23, "to_ret": -20.27, "rel": -20.5, "win": false, "settled": true}
 {"date": "2026-10-02", "market": "us", "from": "GOOGL", "to": "AXTI", "from_px": 338.24, "to_px": 81.81, "from_ret": 2.38, "to_ret": -20.27, "rel": -22.65, "win": false, "settled": true}
 {"date": "2026-10-02", "market": "us", "from": "AMZN", "to": "AXTI", "from_px": 248.23, "to_px": 81.81, "from_ret": 4.34, "to_ret": -20.27, "rel": -24.61, "win": false, "settled": true}
-{"date": "2026-10-05", "market": "us", "from": "AMZN", "to": "ARM", "from_px": 251.52, "to_px": 307.49}
-{"date": "2026-10-07", "market": "us", "from": "DRAM", "to": "NBIS", "from_px": 59.52, "to_px": 249.87}
-{"date": "2026-10-08", "market": "us", "from": "QQQM", "to": "MU", "from_px": 311.94, "to_px": 1088.0}
-{"date": "2026-10-08", "market": "us", "from": "META", "to": "MU", "from_px": 721.31, "to_px": 1088.0}
+{"date": "2026-10-05", "market": "us", "from": "AMZN", "to": "ARM", "from_px": 251.52, "to_px": 307.49, "from_ret": 3.23, "to_ret": -15.73, "rel": -18.97, "win": false, "settled": true}
+{"date": "2026-10-07", "market": "us", "from": "DRAM", "to": "NBIS", "from_px": 59.52, "to_px": 249.87, "from_ret": -16.45, "to_ret": -21.56, "rel": -5.12, "win": false, "settled": true}
+{"date": "2026-10-08", "market": "us", "from": "QQQM", "to": "MU", "from_px": 311.94, "to_px": 1088.0, "from_ret": -2.62, "to_ret": -10.1, "rel": -7.48, "win": false, "settled": true}
+{"date": "2026-10-08", "market": "us", "from": "META", "to": "MU", "from_px": 721.31, "to_px": 1088.0, "from_ret": 2.2, "to_ret": -10.1, "rel": -12.29, "win": false, "settled": true}
 {"date": "2026-10-10", "market": "us", "from": "DRAM", "to": "LITE", "from_px": 57.19, "to_px": 1103.36}
 {"date": "2026-10-10", "market": "tw", "from": "8299", "to": "6510", "from_px": 2060.0, "to_px": 3320.0}
 {"date": "2026-10-12", "market": "tw", "from": "2317", "to": "6510", "from_px": 249.0, "to_px": 3320.0}
