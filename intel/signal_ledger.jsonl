@@ -1450,3 +1450,12 @@
 {"date": "2026-10-17", "code": "7610", "source": "sbl", "level": "yellow", "signal": "聯友金屬-創(7610):機構借券賣出5日增10.9%(溫和加碼放空)", "price_at_signal": null}
 {"date": "2026-10-17", "code": "3147", "source": "holders", "level": "red", "signal": "大綜(3147):千張大戶持股比週增2.36個百分點(大戶顯著加碼)", "price_at_signal": null}
 {"date": "2026-10-17", "code": "5434", "source": "holders", "level": "red", "signal": "崇越(5434):千張大戶持股比週增1.03個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-10-19", "code": "2344", "source": "tw_analyst", "level": "yellow", "signal": "華邦電(2344):FactSet共識EPS預估上修至25.84元(目標價230元)", "price_at_signal": null}
+{"date": "2026-10-19", "code": "4556", "source": "margin", "level": "red", "signal": "旭然(4556):融資5日驟減-18.7%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-10-19", "code": "5498", "source": "tw_rank", "level": "red", "signal": "凱崴(5498) 量能竄榜:今日量榜第17(近10日未進過top50,+9.9%,47,047張)", "price_at_signal": null}
+{"date": "2026-10-19", "code": "3533", "source": "margin", "level": "red", "signal": "嘉澤(3533):融資5日驟減-16.6%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-10-19", "code": "6756", "source": "leadflow", "level": "red", "signal": "威鋒電子(6756) 無消息近漲停+10.0%(連2根,5日+25.9%),疑資訊先行資金|外資+投信近3日僅-48張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-19", "code": "6708", "source": "leadflow", "level": "yellow", "signal": "天擎(6708) 無消息近漲停+10.0%(量能1.6×,5日-14.2%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-19", "code": "8089", "source": "leadflow", "level": "red", "signal": "康全電訊(8089) 無消息近漲停+9.9%(量能9.5×,5日+14.4%),疑資訊先行資金|外資+投信近3日僅+278張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-19", "code": "8074", "source": "leadflow", "level": "red", "signal": "鉅橡(8074) 無消息近漲停+9.9%(量能5.7×,5日+10.1%),疑資訊先行資金|外資+投信近3日僅+53張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-19", "code": "8472", "source": "leadflow", "level": "red", "signal": "納維康(8472) 無消息近漲停+9.3%(量能5.4×,5日+11.2%),疑資訊先行資金|外資+投信近3日僅-4張,法人未同步=隱形買盤", "price_at_signal": null}
