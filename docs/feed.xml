@@ -6,7 +6,7 @@
   <atom:link href="https://marketdaily.ai/feed.xml" rel="self" type="application/rss+xml"/>
   <description>MarketDaily 個股深度分析 — 美股、台股長尾主題,每週更新。</description>
   <language>zh-tw</language>
-  <lastBuildDate>Mon, 12 Oct 2026 16:32:53 +0800</lastBuildDate>
+  <lastBuildDate>Mon, 19 Oct 2026 16:35:55 +0800</lastBuildDate>
   <ttl>720</ttl>
   <generator>MarketDaily blog_feed.py</generator>
   <image>
@@ -14,6 +14,46 @@
     <title>MarketDaily 個股分析</title>
     <link>https://marketdaily.ai/blog/</link>
   </image>
+  <item>
+    <title>Meta (META) 近期財報重點解析：社群巨頭的未來成長動能</title>
+    <link>https://marketdaily.ai/blog/meta-近期財報重點-202610?utm_source=rss&amp;utm_medium=feed&amp;utm_content=meta-近期財報重點-202610</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/meta-近期財報重點-202610</guid>
+    <pubDate>Mon, 19 Oct 2026 16:35:55 +0800</pubDate>
+    <description>投資人對於Meta (META) 近期財報重點的關注度持續高漲，尤其是在其轉型元宇宙的策略下，市場無不期待能從財報中窺見未來成長的潛力。過去 12 個月以來，Meta 展現了在廣告業務上的韌性與效率提升，同時也持續投入於其長期願景。本文將深入解析 Meta 近期財報的關鍵數據與策略方向，幫助您更全面地理解這家社群媒體巨頭的現況與展望。</description>
+    <category>META</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/meta-近期財報重點-202610.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/meta-近期財報重點-202610.png" medium="image"/>
+  </item>
+  <item>
+    <title>鴻海(2317) 法說會前哨:已揭露重點與投資人關注</title>
+    <link>https://marketdaily.ai/blog/2317-event-20261020?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2317-event-20261020</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/2317-event-20261020</guid>
+    <pubDate>Mon, 19 Oct 2026 16:35:37 +0800</pubDate>
+    <description>台灣科技巨擘鴻海（2317）即將於 2026 年 10 月 20 日 應凱基證券邀請，參加投資人會議，說明公司營運概況。在這次備受市場矚目的法說會召開前夕，投資人無不密切關注公司先前已公開揭露的相關資料，希望能從中掌握鴻海未來的發展方向與潛在機會。</description>
+    <category>2317</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/2317-event-20261020.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/2317-event-20261020.png" medium="image"/>
+  </item>
+  <item>
+    <title>投資新手常犯錯誤 2026：避開這 5 個陷阱，開啟你的穩健投資之路</title>
+    <link>https://marketdaily.ai/blog/guide-新手投資最常犯的5個錯誤-202610?utm_source=rss&amp;utm_medium=feed&amp;utm_content=guide-新手投資最常犯的5個錯誤-202610</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/guide-新手投資最常犯的5個錯誤-202610</guid>
+    <pubDate>Mon, 19 Oct 2026 16:35:27 +0800</pubDate>
+    <description>對於剛踏入投資世界的朋友來說，心情總是既期待又怕受傷害。你可能聽過許多致富神話，也可能看過不少投資失利的故事。在資訊爆炸的時代，投資新手常犯錯誤有哪些？又該如何在 2026 年的市場中，避開這些常見的陷阱，為自己打造一個更穩健的投資起點？</description>
+    <category>GUIDE</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/guide-新手投資最常犯的5個錯誤-202610.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/guide-新手投資最常犯的5個錯誤-202610.png" medium="image"/>
+  </item>
+  <item>
+    <title>失業率是什麼？解析對股市的影響與2026年展望</title>
+    <link>https://marketdaily.ai/blog/macro-失業率-202610?utm_source=rss&amp;utm_medium=feed&amp;utm_content=macro-失業率-202610</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/macro-失業率-202610</guid>
+    <pubDate>Mon, 19 Oct 2026 16:35:10 +0800</pubDate>
+    <description>在眾多經濟指標中，失業率無疑是衡量一個國家經濟健康狀況的關鍵指標之一。它不僅反映了勞動市場的供需狀況，更是消費者信心、企業獲利能力乃至整體經濟成長動能的重要風向球。</description>
+    <category>MACRO</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/macro-失業率-202610.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/macro-失業率-202610.png" medium="image"/>
+  </item>
   <item>
     <title>中信金 (2891) 配息政策深度解析：股東權益與未來展望的關鍵考量</title>
     <link>https://marketdaily.ai/blog/2891-配息政策解析-202610?utm_source=rss&amp;utm_medium=feed&amp;utm_content=2891-配息政策解析-202610</link>
