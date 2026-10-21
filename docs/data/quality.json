@@ -4,7 +4,7 @@
   "subscribers": 44,
   "digest_clean_days_7d": "5/7",
   "fallback_7d": 0,
-  "social_posts_7d": 33
+  "social_posts_7d": 34
  },
  "digest": {
   "audit": null,
@@ -142,5 +142,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-10-21T02:38:02Z"
+ "generated_utc": "2026-10-21T03:08:01Z"
 }
