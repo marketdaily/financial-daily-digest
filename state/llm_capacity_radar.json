@@ -90,11 +90,19 @@
       "voxtral-mini-latest",
       "voxtral-mini-realtime-2602",
       "voxtral-mini-realtime-latest",
+      "voxtral-mini-transcribe-3",
+      "voxtral-mini-transcribe-3-0",
       "voxtral-mini-transcribe-realtime-2602",
+      "voxtral-mini-transcribe-realtime-3",
+      "voxtral-mini-transcribe-realtime-3-0",
       "voxtral-mini-tts-2603",
+      "voxtral-mini-tts-3",
+      "voxtral-mini-tts-3-0",
       "voxtral-mini-tts-latest",
       "voxtral-small-2507",
-      "voxtral-small-latest"
+      "voxtral-small-latest",
+      "voxtral-small-transcribe-3",
+      "voxtral-small-transcribe-3-0"
     ],
     "ollama": [
       "nomic-embed-text:latest",
@@ -123,5 +131,5 @@
       "xingchen-agi/xing4.0-29b-a4b:free"
     ]
   },
-  "updated": "2026-10-20 10:10"
+  "updated": "2026-10-21 10:10"
 }
