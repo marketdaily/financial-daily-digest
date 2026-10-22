@@ -1477,3 +1477,10 @@
 {"date": "2026-10-21", "code": "4584", "source": "leadflow", "level": "red", "signal": "君帆(4584) 無消息近漲停+10.0%(量能12.5×,5日+10.0%),疑資訊先行資金|外資+投信近3日僅+4張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-21", "code": "8291", "source": "leadflow", "level": "yellow", "signal": "尚茂(8291) 無消息近漲停+9.9%(量能2.0×,5日-13.9%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-10-21", "code": "5465", "source": "leadflow", "level": "red", "signal": "富驊(5465) 無消息近漲停+9.2%(量能4.0×,5日+12.4%),疑資訊先行資金|外資+投信近3日+510張", "price_at_signal": null}
+{"date": "2026-10-22", "code": "3339", "source": "mops_news", "level": "red", "signal": "泰谷(3339) 重訊[2026-10-21]:公告本公司國內第五次有擔保轉換公司債之代收價款 行庫及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-22", "code": "4526", "source": "tw_rank", "level": "red", "signal": "東台(4526) 量能竄榜:今日量榜第14(近10日未進過top50,+7.9%,56,588張)", "price_at_signal": null}
+{"date": "2026-10-22", "code": "3095", "source": "margin", "level": "yellow", "signal": "及成(3095):融資5日暴增22.1%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-22", "code": "7730", "source": "leadflow", "level": "red", "signal": "暉盛-創(7730) 無消息近漲停+10.0%(連2根,5日+21.9%),疑資訊先行資金|外資+投信近3日僅+215張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-22", "code": "6697", "source": "leadflow", "level": "red", "signal": "東捷資訊(6697) 無消息近漲停+9.9%(量能40.3×,5日+12.8%),疑資訊先行資金|外資+投信近3日僅+15張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-22", "code": "6874", "source": "leadflow", "level": "red", "signal": "倍力(6874) 無消息近漲停+9.9%(量能23.9×,5日+12.2%),疑資訊先行資金|外資+投信近3日僅+55張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-22", "code": "7584", "source": "leadflow", "level": "red", "signal": "樂意(7584) 無消息近漲停+9.9%(量能13.7×,5日+18.8%),疑資訊先行資金|外資+投信近3日僅-6張,法人未同步=隱形買盤", "price_at_signal": null}
