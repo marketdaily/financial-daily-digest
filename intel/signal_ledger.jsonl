@@ -1484,3 +1484,10 @@
 {"date": "2026-10-22", "code": "6697", "source": "leadflow", "level": "red", "signal": "東捷資訊(6697) 無消息近漲停+9.9%(量能40.3×,5日+12.8%),疑資訊先行資金|外資+投信近3日僅+15張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-22", "code": "6874", "source": "leadflow", "level": "red", "signal": "倍力(6874) 無消息近漲停+9.9%(量能23.9×,5日+12.2%),疑資訊先行資金|外資+投信近3日僅+55張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-22", "code": "7584", "source": "leadflow", "level": "red", "signal": "樂意(7584) 無消息近漲停+9.9%(量能13.7×,5日+18.8%),疑資訊先行資金|外資+投信近3日僅-6張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-23", "code": "2492", "source": "sbl", "level": "red", "signal": "華新科(2492):機構借券賣出5日遽增21.1%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": null}
+{"date": "2026-10-23", "code": "4566", "source": "mops_news", "level": "red", "signal": "時碩工業(4566) 重訊[2026-10-22]:公告本公司國內第四次無擔保轉換公司債代收價款行庫及 存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-23", "code": "4906", "source": "holders", "level": "red", "signal": "正文(4906):千張大戶持股比週增1.07個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-10-23", "code": "4916", "source": "holders", "level": "yellow", "signal": "事欣科(4916):千張大戶持股比週增0.82個百分點(溫和加碼)", "price_at_signal": null}
+{"date": "2026-10-23", "code": "6438", "source": "margin", "level": "red", "signal": "迅得(6438):融資5日驟減-20.6%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-10-23", "code": "8147", "source": "mops_news", "level": "red", "signal": "正淩(8147) 重訊[2026-10-22]:公告本公司國內第四次無擔保轉換公司債代收價款及 存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-23", "code": "6597", "source": "mops_news", "level": "red", "signal": "立誠(6597) 重訊[2026-10-22]:公告本公司國內第一次無擔保轉換公司債之委託代收債款 及存儲專戶行庫", "price_at_signal": null}
