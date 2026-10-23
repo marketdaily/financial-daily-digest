@@ -1,5 +1,5 @@
 {
- "ts": "2026-10-22T10:50:05",
+ "ts": "2026-10-23T10:50:06",
  "weekly_ran": false,
  "results": {
   "finmind": {
@@ -7,16 +7,16 @@
    "note": "http=200 rows=2"
   },
   "fmp": {
-   "ok": true,
-   "note": "http=200"
+   "ok": false,
+   "note": "http=429"
   },
   "newsapi": {
    "ok": true,
    "note": "http=200"
   },
   "fred": {
-   "ok": false,
-   "note": "exc: Expecting value: line 1 column 1 (char 0)"
+   "ok": true,
+   "note": "http=200"
   },
   "brevo": {
    "ok": true,
