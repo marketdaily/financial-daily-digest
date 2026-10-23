@@ -754,3 +754,4 @@
 {"ts": "2026-10-23T12:51:40.693305", "post": "newsr_20261023_macro_183904", "results": {"threads": {"ok": true, "detail": "18051659687811823"}}}
 {"ts": "2026-10-23T13:05:33.870938", "post": "ai_a4567f47f96e", "results": {"threads": {"ok": true, "detail": {"posted": ["18137206690631164", "18168353962473222", "17925667143429061", "18118590772969346"], "root": "18137206690631164"}}}}
 {"ts": "2026-10-23T13:41:51.542676", "post": "newsr_20261023_meta", "results": {"threads": {"ok": true, "detail": "18115818833043955"}}}
+{"ts": "2026-10-23T14:00:46.891740", "post": "win_2026-09-23_QMCO_hold", "results": {"instagram": {"ok": true, "skipped": false, "detail": "18641799505029176"}, "facebook": {"ok": true, "skipped": false, "detail": "1133333363197689_122142795009345835"}, "threads": {"ok": true, "skipped": false, "detail": "18075295262773532"}}}
