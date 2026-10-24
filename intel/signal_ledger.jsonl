@@ -1491,3 +1491,4 @@
 {"date": "2026-10-23", "code": "6438", "source": "margin", "level": "red", "signal": "迅得(6438):融資5日驟減-20.6%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
 {"date": "2026-10-23", "code": "8147", "source": "mops_news", "level": "red", "signal": "正淩(8147) 重訊[2026-10-22]:公告本公司國內第四次無擔保轉換公司債代收價款及 存儲專戶行庫", "price_at_signal": null}
 {"date": "2026-10-23", "code": "6597", "source": "mops_news", "level": "red", "signal": "立誠(6597) 重訊[2026-10-22]:公告本公司國內第一次無擔保轉換公司債之委託代收債款 及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-24", "code": "6438", "source": "holders", "level": "yellow", "signal": "迅得(6438):千張大戶持股比週減-1.18個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
