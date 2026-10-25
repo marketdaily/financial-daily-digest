@@ -1,5 +1,5 @@
 {
- "date": "2026-10-24",
+ "date": "2026-10-25",
  "red": [
   "楠梓電(2316):投信連 5 日賣超(棄養警訊,20日淨賣 -329 張)",
   "華邦電(2344):投信連 4 日賣超(棄養警訊,20日淨賣 -61,220 張)",
@@ -13,14 +13,6 @@
   "緯穎(6669):投信連 8 日賣超(棄養警訊,20日淨賣 -14,627 張)",
   "尖點(8021):外資連 7 日賣超(5日淨賣 -3,880 張)",
   "高力(8996):投信連 5 日買超(認養訊號,20日淨買 +3,205 張)",
-  "生合(1295) 重訊[2026-10-23]:公告本公司國內第一次無擔保轉換公司債(生合一)遇颱風影 響， 調整得標價款、投標處理費及得標手續費解交日作業及原 掛牌日",
-  "🇺🇸 TSLA 目標價⬆️+11.2%→$420(BNP Paribas)",
-  "🇺🇸 META 目標價⬆️+47.0%→$950(Mizuho Securities)",
-  "🇺🇸 TSLA 目標價⬆️+24.6%→$475(Stifel Nicolaus)",
-  "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 695,014股 均價$78.9758(分4筆執行)(約$54,889,287)",
-  "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 1,381,397股 均價$76.4766(分8筆執行)(約$105,644,546)",
-  "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 667,118股 均價$77.7393(分4筆執行)(約$51,861,286)",
-  "🇺🇸 BRK-B 群聚買進:2 位內部人 10 天內同時買進(BERKSHIRE HATHAWAY INC、O'Sullivan Michael J.)",
   "大聯大(3702):融資5日驟減-21.0%(疑似斷頭/停損潮,股價走勢待確認)",
   "迅得(6438):融資5日驟減-20.6%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)",
   "中華化(1727):機構借券賣出5日遽增48.8%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)",
@@ -67,9 +59,8 @@
   "正淩(8147):法人 20 日淨賣超 -829 張(未成連續型態)",
   "群聯(8299):法人 20 日淨賣超 -1,795 張(未成連續型態)",
   "慶豐富(9935):法人 20 日淨賣超 -302 張(未成連續型態)",
-  "🇺🇸 AMD 內部人賣出:Papermaster Mark D[Chief Technology Officer & EVP] 28,811股 均價$471.8707(分8筆執行)(約$13,595,067)",
-  "🇺🇸 AAPL 內部人賣出:Newstead Jennifer 2,399股 均價$339.62(約$814,748)",
   "🇺🇸 NVDA 內部人賣出:STEVENS MARK A[董事] 1,366,000股 均價$219.727(分2筆執行)(約$300,147,082)",
+  "🇺🇸 ARM 內部人賣出:Child Jason[Chief Financial Officer] 10,400股 均價$300.0(約$3,120,000)",
   "🏛️ NVDA 國會議員買進:Cleo Fields(House) 2026-10-22 揭露",
   "🏛️ TSM 國會議員買進:Cleo Fields(House) 2026-10-22 揭露",
   "華新科(2492) 今日成交量排行第15(-9.2%),異常活躍",
@@ -98,14 +89,14 @@
   "世界健身-KY(2762):負債比率85.3%(較 115Q1 至 115Q2)",
   "立誠(6597):毛利率QoQ下滑-3.6個百分點(較 115Q1 至 115Q2)",
   "慶豐富(9935):負債比率70.5%(較 115Q1 至 115Q2)",
-  "華邦電(2344):法說會10天後召開",
-  "群聯(8299):法說會13天後召開"
+  "華邦電(2344):法說會9天後召開",
+  "群聯(8299):法說會12天後召開"
  ],
  "calibration": {
-  "updated": "2026-10-24",
-  "n_rows": 1340,
-  "n_interim": 475,
-  "n_final": 95,
+  "updated": "2026-10-25",
+  "n_rows": 1352,
+  "n_interim": 480,
+  "n_final": 98,
   "model": "empirical_band_v4",
   "lam": 0.8,
   "drift": 0.07,
@@ -205,14 +196,14 @@
    },
    "caveat": "universe=現存發行公司(倖存者偏差);判定閘門一律用 band_lo(最差年份);live 帳本 predictions.jsonl 持續對答案;G1_brier.oos_brier_cal 是「假設全列都拿到校準」的理想值,實際部署有 oos_frac_out_of_domain 比例落回未校準 raw(見 cb_ledger.py),誠實部署量測見 oos_brier_cal_deployment_realistic"
   },
-  "brier_interim": 0.1132,
+  "brier_interim": 0.114,
   "coin_flip_brier": 0.25,
-  "avg_pred_interim": 0.3201,
-  "realized_interim": 0.2,
-  "shrink": 0.625,
+  "avg_pred_interim": 0.3225,
+  "realized_interim": 0.2042,
+  "shrink": 0.633,
   "note": "樣本 2 筆 <20,校準閘門未開(小樣本校準=雜訊)",
   "final_hit_rate": 1.0,
-  "final_avg_pred": 0.6515
+  "final_avg_pred": 0.6495
  },
  "watchlist_n": 61,
  "by_code": {
@@ -276,7 +267,7 @@
    {
     "source": "investor_conf",
     "level": "yellow",
-    "signal": "華邦電(2344):法說會10天後召開"
+    "signal": "華邦電(2344):法說會9天後召開"
    }
   ],
   "2367": [
@@ -634,7 +625,7 @@
    {
     "source": "investor_conf",
     "level": "yellow",
-    "signal": "群聯(8299):法說會13天後召開"
+    "signal": "群聯(8299):法說會12天後召開"
    }
   ],
   "8996": [
@@ -656,68 +647,6 @@
     "signal": "慶豐富(9935):負債比率70.5%(較 115Q1 至 115Q2)"
    }
   ],
-  "1295": [
-   {
-    "source": "mops_news",
-    "level": "red",
-    "signal": "生合(1295) 重訊[2026-10-23]:公告本公司國內第一次無擔保轉換公司債(生合一)遇颱風影 響， 調整得標價款、投標處理費及得標手續費解交日作業及原 掛牌日"
-   }
-  ],
-  "TSLA": [
-   {
-    "source": "us_analyst",
-    "level": "red",
-    "signal": "🇺🇸 TSLA 目標價⬆️+11.2%→$420(BNP Paribas)"
-   },
-   {
-    "source": "us_analyst",
-    "level": "red",
-    "signal": "🇺🇸 TSLA 目標價⬆️+24.6%→$475(Stifel Nicolaus)"
-   }
-  ],
-  "META": [
-   {
-    "source": "us_analyst",
-    "level": "red",
-    "signal": "🇺🇸 META 目標價⬆️+47.0%→$950(Mizuho Securities)"
-   }
-  ],
-  "AMD": [
-   {
-    "source": "us_insider",
-    "level": "yellow",
-    "signal": "🇺🇸 AMD 內部人賣出:Papermaster Mark D[Chief Technology Officer & EVP] 28,811股 均價$471.8707(分8筆執行)(約$13,595,067)"
-   }
-  ],
-  "BRK-B": [
-   {
-    "source": "us_insider",
-    "level": "red",
-    "signal": "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 695,014股 均價$78.9758(分4筆執行)(約$54,889,287)"
-   },
-   {
-    "source": "us_insider",
-    "level": "red",
-    "signal": "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 1,381,397股 均價$76.4766(分8筆執行)(約$105,644,546)"
-   },
-   {
-    "source": "us_insider",
-    "level": "red",
-    "signal": "🇺🇸 BRK-B 內部人買進:BERKSHIRE HATHAWAY INC 667,118股 均價$77.7393(分4筆執行)(約$51,861,286)"
-   },
-   {
-    "source": "us_insider",
-    "level": "red",
-    "signal": "🇺🇸 BRK-B 群聚買進:2 位內部人 10 天內同時買進(BERKSHIRE HATHAWAY INC、O'Sullivan Michael J.)"
-   }
-  ],
-  "AAPL": [
-   {
-    "source": "us_insider",
-    "level": "yellow",
-    "signal": "🇺🇸 AAPL 內部人賣出:Newstead Jennifer 2,399股 均價$339.62(約$814,748)"
-   }
-  ],
   "NVDA": [
    {
     "source": "us_insider",
@@ -728,6 +657,13 @@
     "source": "us_congress",
     "level": "yellow",
     "signal": "🏛️ NVDA 國會議員買進:Cleo Fields(House) 2026-10-22 揭露"
+   }
+  ],
+  "ARM": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 ARM 內部人賣出:Child Jason[Chief Financial Officer] 10,400股 均價$300.0(約$3,120,000)"
    }
   ],
   "TSM": [
@@ -820,10 +756,8 @@
    }
   ]
  },
- "new_red_since_last_run": [
-  "生合(1295) 重訊[2026-10-23]:公告本公司國內第一次無擔保轉換公司債(生合一)遇颱風影 響， 調整得標價款、投標處理費及得標手續費解交日作業及原 掛牌日"
- ],
- "new_red_count": 1,
+ "new_red_since_last_run": [],
+ "new_red_count": 0,
  "confluence_top": [
   {
    "code": "6438",
@@ -967,30 +901,27 @@
   }
  ],
  "new_confluence_since_last_run": [
-  "⚡背離:金像電(2368)×2源·1陣營",
-  "🔴匯流做空:華邦電(2344)×2源·1陣營"
+  "⚡背離:大聯大(3702)×3源·2陣營",
+  "🟢匯流做多:濱川(1569)×2源·1陣營",
+  "🔴匯流做空:聯鈞(3450)×2源·1陣營",
+  "🔴匯流做空:科嶠(4542)×2源·1陣營",
+  "⚡背離:嘉澤(3533)×2源·1陣營"
  ],
- "new_confluence_count": 2,
+ "new_confluence_count": 5,
  "sec_rule_changes": [],
  "news_broad_themes": [
   {
-   "type": "macro",
-   "headline": "Fed週三會議有哪些看點？專家：短期升息壓力仍在",
-   "url": "https://news.cnyes.com/news/id/6636975",
-   "date": "2026-10-24"
-  },
-  {
    "type": "political",
-   "headline": "阿拉斯加LNG開發案遭爆獲俄國受制裁企業融資！Novatek涉入營運引發合規疑慮",
-   "url": "https://news.cnyes.com/news/id/6637118",
-   "date": "2026-10-24"
+   "headline": "歐巴馬開炮川普助攻民主黨期中選舉！痛批貪腐、伊朗戰略失當、嘲諷白宮翻修",
+   "url": "https://news.cnyes.com/news/id/6637350",
+   "date": "2026-10-25"
   }
  ],
  "gold_macro": {
-  "date": "2026-10-24",
+  "date": "2026-10-25",
   "xau_usd": 3996.2,
-  "level": "yellow",
-  "signal": "金價 $3,996,單日跌 0.9%,創 30 日新低($4,033)——避險需求退潮"
+  "level": "plain",
+  "signal": "金價 $3,996,單日漲 0.0%"
  },
  "exa_events": {
   "themes": {},
@@ -998,5 +929,5 @@
   "budget_used": 0,
   "budget_cap": 800
  },
- "signal_ledger_new": 1
+ "signal_ledger_new": 0
 }
