@@ -1,5 +1,5 @@
 {
- "date": "2026-10-25",
+ "date": "2026-10-26",
  "red": [
   "楠梓電(2316):投信連 5 日賣超(棄養警訊,20日淨賣 -329 張)",
   "華邦電(2344):投信連 4 日賣超(棄養警訊,20日淨賣 -61,220 張)",
@@ -59,8 +59,10 @@
   "正淩(8147):法人 20 日淨賣超 -829 張(未成連續型態)",
   "群聯(8299):法人 20 日淨賣超 -1,795 張(未成連續型態)",
   "慶豐富(9935):法人 20 日淨賣超 -302 張(未成連續型態)",
-  "🇺🇸 NVDA 內部人賣出:STEVENS MARK A[董事] 1,366,000股 均價$219.727(分2筆執行)(約$300,147,082)",
   "🇺🇸 ARM 內部人賣出:Child Jason[Chief Financial Officer] 10,400股 均價$300.0(約$3,120,000)",
+  "🇺🇸 META 內部人賣出:Cox Christopher K[Chief Product Officer] 40,000股 均價$712.7565(分2筆執行)(約$28,510,260)",
+  "🇺🇸 META 內部人賣出:Olivan Javier[Chief Operating Officer] 1,575股 均價$680.27(分5筆執行)(約$1,071,425)",
+  "🇺🇸 NVDA 內部人賣出:Teter Timothy S.[EVP, General Counsel and Sec] 30,460股 均價$222.8015(分3筆執行)(約$6,786,534)",
   "🏛️ NVDA 國會議員買進:Cleo Fields(House) 2026-10-22 揭露",
   "🏛️ TSM 國會議員買進:Cleo Fields(House) 2026-10-22 揭露",
   "華新科(2492) 今日成交量排行第15(-9.2%),異常活躍",
@@ -89,14 +91,14 @@
   "世界健身-KY(2762):負債比率85.3%(較 115Q1 至 115Q2)",
   "立誠(6597):毛利率QoQ下滑-3.6個百分點(較 115Q1 至 115Q2)",
   "慶豐富(9935):負債比率70.5%(較 115Q1 至 115Q2)",
-  "華邦電(2344):法說會9天後召開",
-  "群聯(8299):法說會12天後召開"
+  "華邦電(2344):法說會8天後召開",
+  "群聯(8299):法說會11天後召開"
  ],
  "calibration": {
-  "updated": "2026-10-25",
-  "n_rows": 1352,
-  "n_interim": 480,
-  "n_final": 98,
+  "updated": "2026-10-26",
+  "n_rows": 1364,
+  "n_interim": 479,
+  "n_final": 97,
   "model": "empirical_band_v4",
   "lam": 0.8,
   "drift": 0.07,
@@ -198,12 +200,12 @@
   },
   "brier_interim": 0.114,
   "coin_flip_brier": 0.25,
-  "avg_pred_interim": 0.3225,
-  "realized_interim": 0.2042,
-  "shrink": 0.633,
+  "avg_pred_interim": 0.3241,
+  "realized_interim": 0.2025,
+  "shrink": 0.625,
   "note": "樣本 2 筆 <20,校準閘門未開(小樣本校準=雜訊)",
   "final_hit_rate": 1.0,
-  "final_avg_pred": 0.6495
+  "final_avg_pred": 0.6479
  },
  "watchlist_n": 61,
  "by_code": {
@@ -267,7 +269,7 @@
    {
     "source": "investor_conf",
     "level": "yellow",
-    "signal": "華邦電(2344):法說會9天後召開"
+    "signal": "華邦電(2344):法說會8天後召開"
    }
   ],
   "2367": [
@@ -625,7 +627,7 @@
    {
     "source": "investor_conf",
     "level": "yellow",
-    "signal": "群聯(8299):法說會12天後召開"
+    "signal": "群聯(8299):法說會11天後召開"
    }
   ],
   "8996": [
@@ -647,23 +649,35 @@
     "signal": "慶豐富(9935):負債比率70.5%(較 115Q1 至 115Q2)"
    }
   ],
-  "NVDA": [
-   {
-    "source": "us_insider",
-    "level": "yellow",
-    "signal": "🇺🇸 NVDA 內部人賣出:STEVENS MARK A[董事] 1,366,000股 均價$219.727(分2筆執行)(約$300,147,082)"
-   },
-   {
-    "source": "us_congress",
-    "level": "yellow",
-    "signal": "🏛️ NVDA 國會議員買進:Cleo Fields(House) 2026-10-22 揭露"
-   }
-  ],
   "ARM": [
    {
     "source": "us_insider",
     "level": "yellow",
     "signal": "🇺🇸 ARM 內部人賣出:Child Jason[Chief Financial Officer] 10,400股 均價$300.0(約$3,120,000)"
+   }
+  ],
+  "META": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 META 內部人賣出:Cox Christopher K[Chief Product Officer] 40,000股 均價$712.7565(分2筆執行)(約$28,510,260)"
+   },
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 META 內部人賣出:Olivan Javier[Chief Operating Officer] 1,575股 均價$680.27(分5筆執行)(約$1,071,425)"
+   }
+  ],
+  "NVDA": [
+   {
+    "source": "us_insider",
+    "level": "yellow",
+    "signal": "🇺🇸 NVDA 內部人賣出:Teter Timothy S.[EVP, General Counsel and Sec] 30,460股 均價$222.8015(分3筆執行)(約$6,786,534)"
+   },
+   {
+    "source": "us_congress",
+    "level": "yellow",
+    "signal": "🏛️ NVDA 國會議員買進:Cleo Fields(House) 2026-10-22 揭露"
    }
   ],
   "TSM": [
@@ -901,27 +915,25 @@
   }
  ],
  "new_confluence_since_last_run": [
-  "⚡背離:大聯大(3702)×3源·2陣營",
-  "🟢匯流做多:濱川(1569)×2源·1陣營",
-  "🔴匯流做空:聯鈞(3450)×2源·1陣營",
-  "🔴匯流做空:科嶠(4542)×2源·1陣營",
-  "⚡背離:嘉澤(3533)×2源·1陣營"
+  "⚡背離:迅得(6438)×4源·2陣營",
+  "⚡背離:時碩工業(4566)×3源·2陣營",
+  "🔴匯流做空:楠梓電(2316)×2源·2陣營",
+  "🔴匯流做空:泰谷(3339)×2源·2陣營",
+  "🔴匯流做空:中華化(1727)×3源·1陣營",
+  "🔴匯流做空:台燿(6274)×3源·1陣營",
+  "⚡背離:華新科(2492)×2源·1陣營",
+  "🟢匯流做多:正文(4906)×2源·1陣營",
+  "🔴匯流做空:啟碁(6285)×2源·1陣營",
+  "⚡背離:緯穎(6669)×2源·1陣營"
  ],
- "new_confluence_count": 5,
+ "new_confluence_count": 13,
  "sec_rule_changes": [],
- "news_broad_themes": [
-  {
-   "type": "political",
-   "headline": "歐巴馬開炮川普助攻民主黨期中選舉！痛批貪腐、伊朗戰略失當、嘲諷白宮翻修",
-   "url": "https://news.cnyes.com/news/id/6637350",
-   "date": "2026-10-25"
-  }
- ],
+ "news_broad_themes": [],
  "gold_macro": {
-  "date": "2026-10-25",
-  "xau_usd": 3996.2,
+  "date": "2026-10-26",
+  "xau_usd": 4010.79,
   "level": "plain",
-  "signal": "金價 $3,996,單日漲 0.0%"
+  "signal": "金價 $4,011,單日漲 0.4%"
  },
  "exa_events": {
   "themes": {},
