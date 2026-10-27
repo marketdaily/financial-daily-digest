@@ -52,4 +52,8 @@
 ## 📒 修法帳本(每次修完 append 一節,≤6 行:日期 / key / 根因 / 修法 / 測試)
 > 這是**你自己的技能**。下一次同類立案時,先讀這裡——別重新發明。
 
-(尚無條目;第一次立案由你寫下第一條)
+### 2026-10-27 / personal_audio
+- 根因:競態。runner 07:20/20:00 公版 TTS 後立刻跑 personal.py;日報生成遲到(LLM 慢路徑)時 manifest 晚到(07:22/07:38/20:22/20:29),personal.py 印「無 manifest」回 0、每日鎖已拿走 ⇒ 整班 N/N 消失且 rc=0 零告警。判讀法:比 `audio_brief/out/` 的 manifest 與 audio_*.mp3 mtime,失分班 manifest 一律較晚且無 personal_*.json。
+- 修法:`manifest.kick_personal_if_missed()`——main.py 寫完 manifest 時,若公版 audio_*.json 已在且 personal_*.json 不在 ⇒ 背景 detached 補跑 personal.py(log=personal_kick_*.log);personal.py 加同班 O_EXCL 鎖(過期 1h 回收)防雙跑。
+- 未涵蓋:manifest 整班沒寫(10-23 us)=main.py 沒跑完/雲端代打,非本競態,仍由 postcheck 告警。
+- 測試:`scripts/test_personal_audio_late_manifest.py`(四種判定+鎖+main.py 接線突變會咬)。

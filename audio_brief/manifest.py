@@ -17,6 +17,8 @@ import hmac
 import json
 import os
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -117,3 +119,24 @@ def write_manifest(entries: list, date: str, edition: str):
                                ensure_ascii=False, indent=1), encoding="utf-8")
     os.chmod(path, 0o600)
     return path
+
+
+def kick_personal_if_missed(date: str, edition: str, popen=subprocess.Popen):
+    """manifest 晚於語音產線落地時補跑 personal.py(2026-10-27 慢性失分根因)。
+
+    video_brief runner 在 07:20/20:00 窗口跑完公版 TTS 就接著跑 personal.py;生成遲到
+    (LLM 慢路徑)時 manifest 還沒寫,personal.py 印「無 manifest」回 0、每日鎖已拿走,
+    當班個人音檔永遠不會產出。判準:公版音檔 meta 已在(=runner 那一步已經過去)
+    而個人產出 summary 不在 → 由寫 manifest 的這一端背景補跑。回傳狀態字串。"""
+    if os.environ.get("MD_FAILOVER") == "1":
+        return "skip:failover"
+    if not (OUT / f"audio_{date}_{edition}.json").exists():
+        return "skip:runner_pending"
+    if (OUT / f"personal_{date}_{edition}.json").exists():
+        return "skip:already_done"
+    log = OUT / f"personal_kick_{date}_{edition}.log"
+    with open(log, "ab") as fh:
+        popen([sys.executable, str(HERE / "personal.py"), date, edition],
+              cwd=str(HERE.parent), stdout=fh, stderr=subprocess.STDOUT,
+              stdin=subprocess.DEVNULL, start_new_session=True)
+    return f"kicked:{log.name}"

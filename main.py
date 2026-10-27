@@ -1198,8 +1198,11 @@ def run():
             from audio_brief.manifest import write_manifest
             _mp = write_manifest(audio_entries, data["date"], "us" if MARKET == "us" else "tw")
             print(f"🎙 個人語音 manifest:{len(audio_entries)} 份 → {_mp}")
+            if _mp:
+                from audio_brief.manifest import kick_personal_if_missed
+                print(f"🎙 個人語音補跑判定:{kick_personal_if_missed(data['date'], 'us' if MARKET == 'us' else 'tw')}")
         except Exception as e:
-            print(f"   ⚠️ 語音 manifest 寫檔失敗({e})")
+            print(f"   ⚠️ 語音 manifest 寫檔/補跑失敗({e})")
 
     success_count += _flush_outbox(outbox, data["date"], send_transactional_email, BREVO_API_KEY)
 

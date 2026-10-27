@@ -16,7 +16,9 @@ pa_ 不可列舉,只有 email 連結本人打得開。F5 整體不可用 → 退
 """
 import asyncio
 import json
+import os
 import sys
+import time
 import urllib.request
 import wave
 from datetime import datetime
@@ -156,11 +158,41 @@ def synth_user_f5(cache, text, raw_wav):
         w.writeframes(b"".join(frames))
 
 
+PERSONAL_LOCK_STALE_S = 3600
+
+
+def _acquire_lock(date_str, edition):
+    """runner 與 main.py 補跑可能撞同一班:同班同時只准一支在跑。"""
+    lock = OUT / f"personal_{date_str}_{edition}.lock"
+    OUT.mkdir(parents=True, exist_ok=True)
+    try:
+        if lock.exists() and time.time() - lock.stat().st_mtime > PERSONAL_LOCK_STALE_S:
+            lock.unlink()
+        fd = os.open(str(lock), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.write(fd, str(os.getpid()).encode())
+        os.close(fd)
+        return lock
+    except FileExistsError:
+        return None
+
+
 def process(date_str, edition):
     mpath = OUT / f"manifest_{date_str}_{edition}.json"
     if not mpath.exists():
-        print(f"無 manifest({mpath.name}),個人語音跳過(週末/secret 未設/當日無個人化)")
+        print(f"無 manifest({mpath.name}),個人語音先跳過(週末/secret 未設/日報還在生成;"
+              f"main.py 寫 manifest 時會自動補跑)")
         return 0
+    lock = _acquire_lock(date_str, edition)
+    if lock is None:
+        print(f"個人語音 {date_str}_{edition} 已有另一支在跑,跳過")
+        return 0
+    try:
+        return _process_locked(date_str, edition, mpath)
+    finally:
+        lock.unlink(missing_ok=True)
+
+
+def _process_locked(date_str, edition, mpath):
     bpath = VB_OUT / f"brief_{date_str}_{edition}.json"
     if not bpath.exists():
         print(f"✗ 缺公版 brief({bpath.name}),先跑 video_brief/extract.py")
