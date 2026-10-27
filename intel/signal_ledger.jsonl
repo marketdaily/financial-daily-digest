@@ -1492,3 +1492,10 @@
 {"date": "2026-10-23", "code": "8147", "source": "mops_news", "level": "red", "signal": "正淩(8147) 重訊[2026-10-22]:公告本公司國內第四次無擔保轉換公司債代收價款及 存儲專戶行庫", "price_at_signal": null}
 {"date": "2026-10-23", "code": "6597", "source": "mops_news", "level": "red", "signal": "立誠(6597) 重訊[2026-10-22]:公告本公司國內第一次無擔保轉換公司債之委託代收債款 及存儲專戶行庫", "price_at_signal": null}
 {"date": "2026-10-24", "code": "6438", "source": "holders", "level": "yellow", "signal": "迅得(6438):千張大戶持股比週減-1.18個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-10-27", "code": "6669", "source": "tw_broker_calls", "level": "yellow", "signal": "緯穎(6669) 券商喊單:美系外資調高↑", "price_at_signal": null}
+{"date": "2026-10-27", "code": "2012", "source": "margin", "level": "red", "signal": "春雨(2012):融資5日驟減-16.8%(疑似斷頭/停損潮,股價走勢待確認)", "price_at_signal": null}
+{"date": "2026-10-27", "code": "3597", "source": "margin", "level": "red", "signal": "映興(3597):融資5日驟減-19.8%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-10-27", "code": "3379", "source": "leadflow", "level": "red", "signal": "彬台(3379) 無消息近漲停+10.0%(量能4.8×,5日+6.9%),疑資訊先行資金|外資+投信近3日僅+51張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-27", "code": "5426", "source": "leadflow", "level": "red", "signal": "振發(5426) 無消息近漲停+9.9%(量能31.2×,5日+21.3%),疑資訊先行資金|外資+投信近3日僅-645張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-27", "code": "7704", "source": "leadflow", "level": "red", "signal": "明遠精密(7704) 無消息近漲停+9.9%(連2根,5日+22.5%),疑資訊先行資金|外資+投信近3日僅+106張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-27", "code": "6245", "source": "leadflow", "level": "red", "signal": "立端(6245) 無消息近漲停+9.1%(量能5.3×,5日+9.3%),疑資訊先行資金|外資+投信近3日+602張", "price_at_signal": null}
