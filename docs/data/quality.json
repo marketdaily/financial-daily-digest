@@ -4,7 +4,7 @@
   "subscribers": 45,
   "digest_clean_days_7d": "6/7",
   "fallback_7d": 10,
-  "social_posts_7d": 101
+  "social_posts_7d": 104
  },
  "digest": {
   "audit": {
@@ -134,11 +134,13 @@
     "date": "2026-10-27",
     "market": "us",
     "start": "18:20:00",
-    "done": null,
-    "lateness_min": null,
-    "verdict": "incomplete",
+    "done": "20:41:06",
+    "lateness_min": 41.1,
+    "verdict": "late",
     "llm_tiers": {
-     "cf_free": 1
+     "cf_free": 18,
+     "groq_free": 49,
+     "other_free70b": 29
     }
    }
   ]
@@ -162,7 +164,7 @@
   "hb_miss_tw": false,
   "hb_miss_us": false,
   "guard_alert_tw": true,
-  "guard_alert_us": false
+  "guard_alert_us": true
  },
- "generated_utc": "2026-10-27T10:38:01Z"
+ "generated_utc": "2026-10-27T13:08:01Z"
 }
