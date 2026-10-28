@@ -1491,3 +1491,19 @@
 {"date": "2026-10-23", "code": "6438", "source": "margin", "level": "red", "signal": "迅得(6438):融資5日驟減-20.6%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
 {"date": "2026-10-23", "code": "8147", "source": "mops_news", "level": "red", "signal": "正淩(8147) 重訊[2026-10-22]:公告本公司國內第四次無擔保轉換公司債代收價款及 存儲專戶行庫", "price_at_signal": null}
 {"date": "2026-10-23", "code": "6597", "source": "mops_news", "level": "red", "signal": "立誠(6597) 重訊[2026-10-22]:公告本公司國內第一次無擔保轉換公司債之委託代收債款 及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-28", "code": "3289", "source": "mops_news", "level": "red", "signal": "宜特(3289) 重訊[2026-10-27]:公告本公司國內第六次無擔保轉換公司債代收價款行庫 及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-28", "code": "3702", "source": "mops_news", "level": "red", "signal": "大聯大(3702) 重訊[2026-10-27]:公告本公司董事會通過營業分割讓與案", "price_at_signal": null}
+{"date": "2026-10-28", "code": "6438", "source": "holders", "level": "yellow", "signal": "迅得(6438):千張大戶持股比週減-1.18個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-10-28", "code": "8021", "source": "margin", "level": "red", "signal": "尖點(8021):融資5日驟減-15.9%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-10-28", "code": "2012", "source": "margin", "level": "red", "signal": "春雨(2012):融資5日驟減-20.2%(疑似斷頭/停損潮,股價走勢待確認)", "price_at_signal": null}
+{"date": "2026-10-28", "code": "3379", "source": "leadflow", "level": "red", "signal": "彬台(3379) 無消息近漲停+10.0%(連2根,5日+17.2%),疑資訊先行資金|外資+投信近3日僅+50張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-28", "code": "4706", "source": "leadflow", "level": "yellow", "signal": "大恭(4706) 無消息近漲停+10.0%(量能2.6×,5日+15.1%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-28", "code": "4526", "source": "leadflow", "level": "red", "signal": "東台(4526) 無消息近漲停+10.0%(連3根,5日+43.5%),疑資訊先行資金|外資+投信近3日+23627張", "price_at_signal": null}
+{"date": "2026-10-28", "code": "3260", "source": "leadflow", "level": "yellow", "signal": "威剛(3260) 無消息近漲停+10.0%(量能2.9×,5日+8.3%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-28", "code": "1595", "source": "leadflow", "level": "yellow", "signal": "川寶(1595) 無消息近漲停+10.0%(量能2.0×,5日-0.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-28", "code": "4716", "source": "leadflow", "level": "yellow", "signal": "大立(4716) 無消息近漲停+10.0%(量能2.6×,5日+13.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-28", "code": "5230", "source": "leadflow", "level": "yellow", "signal": "雷笛克光學(5230) 無消息近漲停+10.0%(量能1.5×,5日+5.7%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-28", "code": "3581", "source": "leadflow", "level": "red", "signal": "博磊(3581) 無消息近漲停+10.0%(量能10.1×,5日+13.7%),疑資訊先行資金|外資+投信近3日僅+205張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-28", "code": "3321", "source": "leadflow", "level": "red", "signal": "同泰(3321) 無消息近漲停+9.9%(連2根,5日+16.4%),疑資訊先行資金|外資+投信近3日僅-43張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-28", "code": "2221", "source": "leadflow", "level": "yellow", "signal": "大甲(2221) 無消息近漲停+9.8%(量能1.7×,5日+12.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-28", "code": "4714", "source": "leadflow", "level": "red", "signal": "永捷(4714) 無消息近漲停+9.8%(量能4.7×,5日+6.2%),疑資訊先行資金|外資+投信近3日+1215張", "price_at_signal": null}
