@@ -1,5 +1,18 @@
 {
- "date": "2026-10-27",
+ "date": "2026-10-29",
  "mode": "rss",
- "by_code": {}
+ "by_code": {
+  "META": {
+   "note": "META 今日 Reddit 提及 3 則(近21日均 0.3,z=2.7)|例:EBAY has outperformed AMZN, GOOG, MSFT and META over the pas",
+   "total": 3,
+   "baseline": 0.3,
+   "z": 2.71,
+   "score": 0,
+   "samples": [
+    "EBAY has outperformed AMZN, GOOG, MSFT and META over the pas",
+    "Oracle is backing off from cash burning. Will more companies",
+    "AI situation, are data infrastructure companies attracting i"
+   ]
+  }
+ }
 }
