@@ -1499,3 +1499,15 @@
 {"date": "2026-10-27", "code": "5426", "source": "leadflow", "level": "red", "signal": "振發(5426) 無消息近漲停+9.9%(量能31.2×,5日+21.3%),疑資訊先行資金|外資+投信近3日僅-645張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-27", "code": "7704", "source": "leadflow", "level": "red", "signal": "明遠精密(7704) 無消息近漲停+9.9%(連2根,5日+22.5%),疑資訊先行資金|外資+投信近3日僅+106張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-27", "code": "6245", "source": "leadflow", "level": "red", "signal": "立端(6245) 無消息近漲停+9.1%(量能5.3×,5日+9.3%),疑資訊先行資金|外資+投信近3日+602張", "price_at_signal": null}
+{"date": "2026-10-29", "code": "2344", "source": "investor_conf", "level": "red", "signal": "華邦電(2344):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-10-29", "code": "3597", "source": "sbl", "level": "yellow", "signal": "映興(3597):機構借券賣出5日增18.9%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-10-29", "code": "3597", "source": "leadflow", "level": "yellow", "signal": "映興(3597) 無消息近漲停+9.9%(量能1.5×,5日-7.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-29", "code": "3702", "source": "mops_news", "level": "red", "signal": "大聯大(3702) 重訊[2026-10-28]:公告本公司國內第四次無擔保轉換公司債委託代收 價款行庫及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-29", "code": "6196", "source": "institutional", "level": "yellow", "signal": "帆宣(6196):法人 20 日淨買超 +2,047 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-10-29", "code": "6937", "source": "mops_news", "level": "red", "signal": "天虹(6937) 重訊[2026-10-28]:公告本公司發行國內第一次無擔保轉換公司債代 收價款行庫及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-29", "code": "2012", "source": "sbl", "level": "yellow", "signal": "春雨(2012):機構借券賣出5日遽減-22.2%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-10-29", "code": "3432", "source": "leadflow", "level": "red", "signal": "台端(3432) 無消息近漲停+9.8%(連2根,5日+8.6%),疑資訊先行資金|外資+投信近3日僅+14張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-29", "code": "5245", "source": "leadflow", "level": "yellow", "signal": "智晶(5245) 無消息近漲停+10.0%(量能2.4×,5日+0.8%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-29", "code": "6233", "source": "leadflow", "level": "red", "signal": "旺玖(6233) 無消息近漲停+10.0%(量能22.1×,5日+14.2%),疑資訊先行資金|外資+投信近3日+878張", "price_at_signal": null}
+{"date": "2026-10-29", "code": "3332", "source": "leadflow", "level": "red", "signal": "幸康(3332) 無消息近漲停+9.9%(量能18.0×,5日+14.9%),疑資訊先行資金|外資+投信近3日僅-16張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-29", "code": "8272", "source": "leadflow", "level": "red", "signal": "全景軟體(8272) 無消息近漲停+9.9%(量能22.9×,5日+13.1%),疑資訊先行資金|外資+投信近3日僅-3張,法人未同步=隱形買盤", "price_at_signal": null}
