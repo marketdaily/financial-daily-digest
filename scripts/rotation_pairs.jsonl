@@ -216,6 +216,7 @@
 {"date": "2026-10-21", "market": "us", "from": "GOOGL", "to": "TSLA", "from_px": 340.27, "to_px": 373.71}
 {"date": "2026-10-21", "market": "us", "from": "MU", "to": "TSLA", "from_px": 896.07, "to_px": 373.71}
 {"date": "2026-10-24", "market": "tw", "from": "2308", "to": "4989", "from_px": 1560.0, "to_px": 71.0}
+<<<<<<< HEAD
 {"date": "2026-10-26", "market": "tw", "from": "2327", "to": "5475", "from_px": 507.0, "to_px": 196.0}
 {"date": "2026-10-26", "market": "tw", "from": "2317", "to": "5475", "from_px": 245.0, "to_px": 196.0}
 {"date": "2026-10-27", "market": "tw", "from": "2330", "to": "4989", "from_px": 2385.0, "to_px": 71.0}
@@ -223,3 +224,7 @@
 {"date": "2026-10-28", "market": "tw", "from": "00891", "to": "4542", "from_px": 34.53, "to_px": 358.0}
 {"date": "2026-10-28", "market": "tw", "from": "8299", "to": "4542", "from_px": 1910.0, "to_px": 358.0}
 {"date": "2026-10-28", "market": "tw", "from": "2454", "to": "4542", "from_px": 3960.0, "to_px": 358.0}
+=======
+>>>>>>> 6507fac1 (chore(digest): persist public archive 2026-10-23 (winrig))
+{"date": "2026-10-30", "market": "tw", "from": "2330", "to": "2303", "from_px": 2415.0, "to_px": 115.5}
+{"date": "2026-10-30", "market": "tw", "from": "2454", "to": "2303", "from_px": 4045.0, "to_px": 115.5}
