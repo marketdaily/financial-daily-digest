@@ -142,13 +142,13 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": null,
+  "tw": 1,
   "us": null
  },
  "sitescan": {
-  "date": "2026-10-28",
-  "fails": 1,
-  "first_scan_fails": 1,
+  "date": "2026-10-29",
+  "fails": 2,
+  "first_scan_fails": 2,
   "fixed_in_place": false
  },
  "flags": {
@@ -157,5 +157,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-10-29T00:08:01Z"
+ "generated_utc": "2026-10-29T00:38:02Z"
 }
