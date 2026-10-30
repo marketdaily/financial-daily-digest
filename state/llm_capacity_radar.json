@@ -68,6 +68,8 @@
       "mistral-code-latest",
       "mistral-embed",
       "mistral-embed-2312",
+      "mistral-large-4",
+      "mistral-large-4-0",
       "mistral-medium",
       "mistral-medium-2604",
       "mistral-medium-3",
@@ -130,5 +132,5 @@
       "xingchen-agi/xing4.0-29b-a4b:free"
     ]
   },
-  "updated": "2026-10-28 10:10"
+  "updated": "2026-10-30 10:10"
 }
