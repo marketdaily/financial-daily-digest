@@ -228,3 +228,7 @@
 >>>>>>> 6507fac1 (chore(digest): persist public archive 2026-10-23 (winrig))
 {"date": "2026-10-30", "market": "tw", "from": "2330", "to": "2303", "from_px": 2415.0, "to_px": 115.5}
 {"date": "2026-10-30", "market": "tw", "from": "2454", "to": "2303", "from_px": 4045.0, "to_px": 115.5}
+{"date": "2026-10-30", "market": "us", "from": "MRVL", "to": "NOW", "from_px": 218.34, "to_px": 109.67}
+{"date": "2026-10-30", "market": "us", "from": "MRVL", "to": "NOW", "from_px": 218.34, "to_px": 109.67}
+{"date": "2026-10-30", "market": "us", "from": "DRAM", "to": "NOW", "from_px": 51.75, "to_px": 109.67}
+{"date": "2026-10-30", "market": "us", "from": "MU", "to": "NOW", "from_px": 934.27, "to_px": 109.67}
