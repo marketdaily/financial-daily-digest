@@ -1,17 +1,53 @@
 {
- "date": "2026-10-29",
+ "date": "2026-10-30",
  "mode": "rss",
  "by_code": {
-  "META": {
-   "note": "META 今日 Reddit 提及 3 則(近21日均 0.3,z=2.7)|例:EBAY has outperformed AMZN, GOOG, MSFT and META over the pas",
-   "total": 3,
-   "baseline": 0.3,
-   "z": 2.71,
+  "INTC": {
+   "note": "INTC 今日 Reddit 提及 7 則(近21日均 0.1,z=6.9)|例:INTC 250k LOSS",
+   "total": 7,
+   "baseline": 0.1,
+   "z": 6.9,
    "score": 0,
    "samples": [
-    "EBAY has outperformed AMZN, GOOG, MSFT and META over the pas",
-    "Oracle is backing off from cash burning. Will more companies",
-    "AI situation, are data infrastructure companies attracting i"
+    "INTC 250k LOSS",
+    "Shout out to the guy who took advantage of my limit order.",
+    "Saw the other INTC post and figured I'd show mine."
+   ]
+  },
+  "GOOGL": {
+   "note": "GOOGL 今日 Reddit 提及 4 則(近21日均 0.1,z=3.9)|例:Having the worst year of my life so far tbh",
+   "total": 4,
+   "baseline": 0.1,
+   "z": 3.86,
+   "score": 0,
+   "samples": [
+    "Having the worst year of my life so far tbh",
+    "Opened a $350k Position in Alphabet (GOOGL) at $278 Average ",
+    "Buying the dip on individual stocks or adding to index funds"
+   ]
+  },
+  "AMZN": {
+   "note": "AMZN 今日 Reddit 提及 4 則(近21日均 0.2,z=3.8)|例:Genuinely scared , NQ could be down nearly 3% by NY OPEN",
+   "total": 4,
+   "baseline": 0.2,
+   "z": 3.76,
+   "score": 0,
+   "samples": [
+    "Genuinely scared , NQ could be down nearly 3% by NY OPEN",
+    "It's not a crash. It's a correction",
+    "Did AMZN go down just because Meta and Google did or am i mi"
+   ]
+  },
+  "GOOG": {
+   "note": "GOOG 今日 Reddit 提及 3 則(近21日均 0.1,z=2.9)|例:Genuinely scared , NQ could be down nearly 3% by NY OPEN",
+   "total": 3,
+   "baseline": 0.1,
+   "z": 2.86,
+   "score": 0,
+   "samples": [
+    "Genuinely scared , NQ could be down nearly 3% by NY OPEN",
+    "It's not a crash. It's a correction",
+    "Market is down but this is bringing us statistically backed "
    ]
   }
  }
