@@ -1,22 +1,13 @@
 {
- "date": "2026-10-30",
+ "date": "2026-10-31",
  "kpi": {
   "subscribers": 45,
   "digest_clean_days_7d": "6/7",
   "fallback_7d": 10,
-  "social_posts_7d": 90
+  "social_posts_7d": 71
  },
  "digest": {
-  "audit": {
-   "date": "2026-10-30",
-   "total_subscribers": 45,
-   "audit_failed": 1,
-   "fallback": 0,
-   "personalization_failed": 0,
-   "per_check": {
-    "ticker_no_zh_name": 1
-   }
-  },
+  "audit": null,
   "trend": [
    {
     "date": "2026-10-21",
@@ -151,8 +142,8 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": 0,
-  "us": 0
+  "tw": null,
+  "us": null
  },
  "sitescan": {
   "date": "2026-10-30",
@@ -162,9 +153,9 @@
  },
  "flags": {
   "hb_miss_tw": false,
-  "hb_miss_us": true,
-  "guard_alert_tw": true,
-  "guard_alert_us": true
+  "hb_miss_us": false,
+  "guard_alert_tw": false,
+  "guard_alert_us": false
  },
- "generated_utc": "2026-10-30T13:38:00Z"
+ "generated_utc": "2026-10-30T16:08:01Z"
 }
