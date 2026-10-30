@@ -1511,3 +1511,32 @@
 {"date": "2026-10-29", "code": "6233", "source": "leadflow", "level": "red", "signal": "旺玖(6233) 無消息近漲停+10.0%(量能22.1×,5日+14.2%),疑資訊先行資金|外資+投信近3日+878張", "price_at_signal": null}
 {"date": "2026-10-29", "code": "3332", "source": "leadflow", "level": "red", "signal": "幸康(3332) 無消息近漲停+9.9%(量能18.0×,5日+14.9%),疑資訊先行資金|外資+投信近3日僅-16張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-29", "code": "8272", "source": "leadflow", "level": "red", "signal": "全景軟體(8272) 無消息近漲停+9.9%(量能22.9×,5日+13.1%),疑資訊先行資金|外資+投信近3日僅-3張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-30", "code": "1569", "source": "mops_news", "level": "yellow", "signal": "濱川(1569) 重訊[2026-10-29]:代子公司蘇州濱川精密工業有限公司公告背書保證達「資金貸與及 背書保證處理準則」第二十五條第一項第四款之規定", "price_at_signal": null}
+{"date": "2026-10-30", "code": "2451", "source": "investor_conf", "level": "yellow", "signal": "創見(2451):法說會7天後召開", "price_at_signal": null}
+{"date": "2026-10-30", "code": "2455", "source": "institutional", "level": "red", "signal": "全新(2455):投信連 9 日買超(認養訊號,20日淨買 -1,880 張)", "price_at_signal": null}
+{"date": "2026-10-30", "code": "2455", "source": "mops_news", "level": "red", "signal": "全新(2455) 重訊[2026-10-29]:公告本公司董事會決議發行國內第四次無擔保轉換公司債", "price_at_signal": null}
+{"date": "2026-10-30", "code": "2455", "source": "mops_news", "level": "yellow", "signal": "全新(2455) 重訊[2026-10-29]:公告本公司代理發言人異動", "price_at_signal": null}
+{"date": "2026-10-30", "code": "2455", "source": "revenue", "level": "red", "signal": "全新(2455):2026/09 營收公告、YoY +29.5%(強勁)、MoM -4.6%", "price_at_signal": null}
+{"date": "2026-10-30", "code": "3023", "source": "institutional", "level": "red", "signal": "信邦(3023):外資連 7 日賣超(5日淨賣 -3,178 張)", "price_at_signal": null}
+{"date": "2026-10-30", "code": "3023", "source": "revenue", "level": "red", "signal": "信邦(3023):2026/09 營收公告、YoY +25.5%(強勁)、MoM +2.1%", "price_at_signal": null}
+{"date": "2026-10-30", "code": "3023", "source": "sbl", "level": "yellow", "signal": "信邦(3023):機構借券賣出5日增13.5%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-10-30", "code": "3597", "source": "sbl", "level": "red", "signal": "映興(3597):機構借券賣出5日遽增34.4%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": null}
+{"date": "2026-10-30", "code": "6182", "source": "institutional", "level": "yellow", "signal": "合晶(6182):法人 20 日淨賣超 -27,022 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-10-30", "code": "6182", "source": "revenue", "level": "yellow", "signal": "合晶(6182):2026/09 營收公告、YoY +13.5%、MoM +0.6%", "price_at_signal": null}
+{"date": "2026-10-30", "code": "6231", "source": "institutional", "level": "yellow", "signal": "系微(6231):法人 20 日淨賣超 -271 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-10-30", "code": "6231", "source": "revenue", "level": "red", "signal": "系微(6231):2026/09 營收公告、YoY +31.6%(強勁)、MoM +75.4%", "price_at_signal": null}
+{"date": "2026-10-30", "code": "7751", "source": "institutional", "level": "yellow", "signal": "竑騰(7751):法人 20 日淨買超 +230 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-10-30", "code": "7751", "source": "revenue", "level": "red", "signal": "竑騰(7751):2026/09 營收公告、YoY +57.0%(強勁)、MoM +14.0%", "price_at_signal": null}
+{"date": "2026-10-30", "code": "3221", "source": "mops_news", "level": "red", "signal": "台嘉碩(3221) 重訊[2026-10-29]:公告本公司董事會通過限制員工權利股票收回註銷減資基準日", "price_at_signal": null}
+{"date": "2026-10-30", "code": "3221", "source": "revenue", "level": "red", "signal": "台嘉碩(3221):2026/09 營收公告、YoY +26.3%(強勁)、MoM +10.4%", "price_at_signal": null}
+{"date": "2026-10-30", "code": "3221", "source": "investor_conf", "level": "yellow", "signal": "台嘉碩(3221):法說會6天後召開", "price_at_signal": null}
+{"date": "2026-10-30", "code": "6486", "source": "revenue", "level": "red", "signal": "互動(6486):2026/09 營收公告、YoY -47.8%(衰退)、MoM -88.6%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
+{"date": "2026-10-30", "code": "6486", "source": "margin", "level": "yellow", "signal": "互動(6486):融資5日暴增23.1%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-10-30", "code": "6486", "source": "investor_conf", "level": "yellow", "signal": "互動(6486):法說會6天後召開", "price_at_signal": null}
+{"date": "2026-10-30", "code": "2352", "source": "tw_rank", "level": "red", "signal": "佳世達(2352) 量能竄榜:今日量榜第7(近10日未進過top50,+3.0%,78,760張)", "price_at_signal": null}
+{"date": "2026-10-30", "code": "6441", "source": "leadflow", "level": "yellow", "signal": "廣錠(6441) 無消息近漲停+10.0%(量能2.6×,5日+2.8%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-10-30", "code": "6865", "source": "leadflow", "level": "red", "signal": "偉康科技(6865) 無消息近漲停+10.0%(量能12.8×,5日+5.8%),疑資訊先行資金|外資+投信近3日僅+5張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-30", "code": "5245", "source": "leadflow", "level": "red", "signal": "智晶(5245) 無消息近漲停+9.9%(連2根,5日+17.8%),疑資訊先行資金|外資+投信近3日僅+129張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-30", "code": "4568", "source": "leadflow", "level": "red", "signal": "科際精密(4568) 無消息近漲停+9.9%(連2根,5日+25.3%),疑資訊先行資金|外資+投信近3日僅+14張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-30", "code": "9950", "source": "leadflow", "level": "red", "signal": "萬國通(9950) 無消息近漲停+9.9%(量能24.5×,5日+1.7%),疑資訊先行資金|外資+投信近3日僅-3張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-30", "code": "3325", "source": "leadflow", "level": "red", "signal": "旭品(3325) 無消息近漲停+9.7%(量能9.2×,5日+6.3%),疑資訊先行資金|外資+投信近3日僅+127張,法人未同步=隱形買盤", "price_at_signal": null}
