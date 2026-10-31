@@ -1540,3 +1540,14 @@
 {"date": "2026-10-30", "code": "4568", "source": "leadflow", "level": "red", "signal": "科際精密(4568) 無消息近漲停+9.9%(連2根,5日+25.3%),疑資訊先行資金|外資+投信近3日僅+14張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-30", "code": "9950", "source": "leadflow", "level": "red", "signal": "萬國通(9950) 無消息近漲停+9.9%(量能24.5×,5日+1.7%),疑資訊先行資金|外資+投信近3日僅-3張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-10-30", "code": "3325", "source": "leadflow", "level": "red", "signal": "旭品(3325) 無消息近漲停+9.7%(量能9.2×,5日+6.3%),疑資訊先行資金|外資+投信近3日僅+127張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-10-31", "code": "1569", "source": "sbl", "level": "yellow", "signal": "濱川(1569):機構借券賣出5日遽減-20.6%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-10-31", "code": "2344", "source": "mops_news", "level": "red", "signal": "華邦電(2344) 重訊[2026-10-30]:公告本公司發行國內第四次及第五次無擔保轉換公司債 代收價款行庫及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-10-31", "code": "2451", "source": "holders", "level": "red", "signal": "創見(2451):千張大戶持股比週增1.06個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-10-31", "code": "2455", "source": "holders", "level": "yellow", "signal": "全新(2455):千張大戶持股比週減-1.02個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-10-31", "code": "4566", "source": "sbl", "level": "red", "signal": "時碩工業(4566):機構借券賣出5日遽增20.5%(聰明錢加碼放空,股價逆勢上漲,留意提前卡位/後續壓力)", "price_at_signal": null}
+{"date": "2026-10-31", "code": "4916", "source": "holders", "level": "red", "signal": "事欣科(4916):千張大戶持股比週增3.49個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-10-31", "code": "6182", "source": "mops_news", "level": "yellow", "signal": "合晶(6182) 重訊[2026-10-30]:公告更正資金貸與資訊揭露明細表", "price_at_signal": null}
+{"date": "2026-10-31", "code": "6486", "source": "investor_conf", "level": "red", "signal": "互動(6486):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-10-31", "code": "3221", "source": "holders", "level": "yellow", "signal": "台嘉碩(3221):千張大戶持股比週增0.96個百分點(溫和加碼)", "price_at_signal": null}
+{"date": "2026-10-31", "code": "3221", "source": "investor_conf", "level": "red", "signal": "台嘉碩(3221):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-10-31", "code": "AMZN", "source": "us_analyst", "level": "yellow", "signal": "🇺🇸 AMZN 目標價⬆️+4.7%→$250(D.A. Davidson)", "price_at_signal": null}
