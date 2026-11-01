@@ -1551,3 +1551,4 @@
 {"date": "2026-10-31", "code": "3221", "source": "holders", "level": "yellow", "signal": "台嘉碩(3221):千張大戶持股比週增0.96個百分點(溫和加碼)", "price_at_signal": null}
 {"date": "2026-10-31", "code": "3221", "source": "investor_conf", "level": "red", "signal": "台嘉碩(3221):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
 {"date": "2026-10-31", "code": "AMZN", "source": "us_analyst", "level": "yellow", "signal": "🇺🇸 AMZN 目標價⬆️+4.7%→$250(D.A. Davidson)", "price_at_signal": null}
+{"date": "2026-11-01", "code": "2451", "source": "investor_conf", "level": "red", "signal": "創見(2451):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
