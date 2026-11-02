@@ -230,3 +230,6 @@
 {"date": "2026-10-30", "market": "us", "from": "MU", "to": "NOW", "from_px": 934.27, "to_px": 109.67}
 {"date": "2026-11-02", "market": "tw", "from": "2317", "to": "6488", "from_px": 245.5, "to_px": 756.0}
 {"date": "2026-11-02", "market": "tw", "from": "8299", "to": "6488", "from_px": 1930.0, "to_px": 756.0}
+{"date": "2026-11-02", "market": "us", "from": "AMD", "to": "MRVL", "from_px": 504.8, "to_px": 196.4}
+{"date": "2026-11-02", "market": "us", "from": "META", "to": "AMD", "from_px": 614.99, "to_px": 504.8}
+{"date": "2026-11-02", "market": "us", "from": "MU", "to": "AMD", "from_px": 884.74, "to_px": 504.8}
