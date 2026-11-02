@@ -1552,3 +1552,9 @@
 {"date": "2026-10-31", "code": "3221", "source": "investor_conf", "level": "red", "signal": "台嘉碩(3221):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
 {"date": "2026-10-31", "code": "AMZN", "source": "us_analyst", "level": "yellow", "signal": "🇺🇸 AMZN 目標價⬆️+4.7%→$250(D.A. Davidson)", "price_at_signal": null}
 {"date": "2026-11-01", "code": "2451", "source": "investor_conf", "level": "red", "signal": "創見(2451):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-11-02", "code": "3023", "source": "margin", "level": "yellow", "signal": "信邦(3023):融資5日暴增23.0%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-11-02", "code": "3533", "source": "investor_conf", "level": "yellow", "signal": "嘉澤(3533):法說會11天後召開", "price_at_signal": null}
+{"date": "2026-11-02", "code": "6182", "source": "institutional", "level": "red", "signal": "合晶(6182):外資連 5 日買超(5日淨買 +2,573 張)", "price_at_signal": null}
+{"date": "2026-11-02", "code": "6234", "source": "leadflow", "level": "yellow", "signal": "高僑(6234) 無消息近漲停+9.9%(量能2.9×,5日+8.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-02", "code": "1815", "source": "leadflow", "level": "red", "signal": "富喬(1815) 無消息近漲停+9.9%(連2根,5日+0.0%),疑資訊先行資金|外資+投信近3日僅-18280張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-02", "code": "2949", "source": "leadflow", "level": "red", "signal": "欣新網(2949) 無消息近漲停+8.8%(量能4.5×,5日+6.2%),疑資訊先行資金|外資+投信近3日僅+2張,法人未同步=隱形買盤", "price_at_signal": null}
