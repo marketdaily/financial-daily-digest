@@ -6,7 +6,7 @@
   <atom:link href="https://marketdaily.ai/feed.xml" rel="self" type="application/rss+xml"/>
   <description>MarketDaily 個股深度分析 — 美股、台股長尾主題,每週更新。</description>
   <language>zh-tw</language>
-  <lastBuildDate>Mon, 19 Oct 2026 16:35:55 +0800</lastBuildDate>
+  <lastBuildDate>Mon, 02 Nov 2026 16:30:57 +0800</lastBuildDate>
   <ttl>720</ttl>
   <generator>MarketDaily blog_feed.py</generator>
   <image>
@@ -14,6 +14,36 @@
     <title>MarketDaily 個股分析</title>
     <link>https://marketdaily.ai/blog/</link>
   </image>
+  <item>
+    <title>迪士尼 (DIS) 近期財報重點解析：串流、樂園與未來成長動能</title>
+    <link>https://marketdaily.ai/blog/dis-近期財報重點-202611?utm_source=rss&amp;utm_medium=feed&amp;utm_content=dis-近期財報重點-202611</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/dis-近期財報重點-202611</guid>
+    <pubDate>Mon, 02 Nov 2026 16:30:57 +0800</pubDate>
+    <description>對於全球數百萬投資者而言，華特迪士尼公司 (NYSE: DIS) 不僅僅是娛樂巨頭，更是其投資組合中不可或缺的一部分。隨著 2026 年的腳步邁進，迪士尼近期財報的發布再次成為市場焦點。究竟這份財報揭示了哪些關鍵資訊？從串流媒體的表現到主題樂園的復甦，本文將深入解析迪士尼的營運現況與未來潛在的成長動能。</description>
+    <category>DIS</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/dis-近期財報重點-202611.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/dis-近期財報重點-202611.png" medium="image"/>
+  </item>
+  <item>
+    <title>博通 (AVGO) 供應鏈全景:上下游廠商解析</title>
+    <link>https://marketdaily.ai/blog/avgo-供應鏈全景-上下游廠商解析-202611?utm_source=rss&amp;utm_medium=feed&amp;utm_content=avgo-供應鏈全景-上下游廠商解析-202611</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/avgo-供應鏈全景-上下游廠商解析-202611</guid>
+    <pubDate>Mon, 02 Nov 2026 16:30:47 +0800</pubDate>
+    <description>在當今快速變化的科技產業中，博通 (Broadcom, AVGO) 作為一家領先的半導體和基礎設施軟體解決方案供應商，其供應鏈的穩定性與效率對於其全球競爭力至關重要。</description>
+    <category>AVGO</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/avgo-供應鏈全景-上下游廠商解析-202611.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/avgo-供應鏈全景-上下游廠商解析-202611.png" medium="image"/>
+  </item>
+  <item>
+    <title>本益比是什麼？2026 年新手投資人怎麼看 PE Ratio？</title>
+    <link>https://marketdaily.ai/blog/term-本益比-PE-Ratio-202611?utm_source=rss&amp;utm_medium=feed&amp;utm_content=term-本益比-PE-Ratio-202611</link>
+    <guid isPermaLink="true">https://marketdaily.ai/blog/term-本益比-PE-Ratio-202611</guid>
+    <pubDate>Mon, 02 Nov 2026 16:30:37 +0800</pubDate>
+    <description>對於剛踏入股票市場的投資新手來說，面對琳瑯滿目的財報數字和專業術語，往往感到無從下手。其中，「本益比是什麼？」這個問題，幾乎是每位新手都會遇到的第一個重要課題。</description>
+    <category>TERM</category>
+    <media:thumbnail url="https://marketdaily.ai/blog/og/term-本益比-PE-Ratio-202611.png"/>
+    <media:content url="https://marketdaily.ai/blog/og/term-本益比-PE-Ratio-202611.png" medium="image"/>
+  </item>
   <item>
     <title>Meta (META) 近期財報重點解析：社群巨頭的未來成長動能</title>
     <link>https://marketdaily.ai/blog/meta-近期財報重點-202610?utm_source=rss&amp;utm_medium=feed&amp;utm_content=meta-近期財報重點-202610</link>
