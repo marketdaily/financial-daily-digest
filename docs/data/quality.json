@@ -10,11 +10,11 @@
   "audit": {
    "date": "2026-11-03",
    "total_subscribers": 45,
-   "audit_failed": 2,
+   "audit_failed": 1,
    "fallback": 0,
    "personalization_failed": 0,
    "per_check": {
-    "ticker_no_zh_name": 2
+    "verdict_monoculture": 1
    }
   },
   "trend": [
@@ -56,25 +56,12 @@
    },
    {
     "date": "2026-11-03",
-    "audit_failed": 2,
+    "audit_failed": 1,
     "fallback": 0,
     "total": 45
    }
   ],
   "shifts": [
-   {
-    "date": "2026-10-30",
-    "market": "tw",
-    "start": "05:20:02",
-    "done": "07:37:56",
-    "lateness_min": 37.9,
-    "verdict": "late",
-    "llm_tiers": {
-     "gemini": 1,
-     "groq_free": 10,
-     "other_free70b": 68
-    }
-   },
    {
     "date": "2026-10-30",
     "market": "us",
@@ -142,6 +129,20 @@
      "groq_free": 7,
      "other_free70b": 46
     }
+   },
+   {
+    "date": "2026-11-03",
+    "market": "us",
+    "start": "18:20:01",
+    "done": "20:01:11",
+    "lateness_min": 1.2,
+    "verdict": "on_time",
+    "llm_tiers": {
+     "gemini": 19,
+     "groq_free": 18,
+     "cf_free": 14,
+     "other_free70b": 12
+    }
    }
   ]
  },
@@ -166,5 +167,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-11-03T00:38:01Z"
+ "generated_utc": "2026-11-03T12:08:01Z"
 }
