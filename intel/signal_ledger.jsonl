@@ -1558,3 +1558,15 @@
 {"date": "2026-11-02", "code": "6234", "source": "leadflow", "level": "yellow", "signal": "高僑(6234) 無消息近漲停+9.9%(量能2.9×,5日+8.5%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-11-02", "code": "1815", "source": "leadflow", "level": "red", "signal": "富喬(1815) 無消息近漲停+9.9%(連2根,5日+0.0%),疑資訊先行資金|外資+投信近3日僅-18280張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-11-02", "code": "2949", "source": "leadflow", "level": "red", "signal": "欣新網(2949) 無消息近漲停+8.8%(量能4.5×,5日+6.2%),疑資訊先行資金|外資+投信近3日僅+2張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-03", "code": "2455", "source": "sbl", "level": "red", "signal": "全新(2455):機構借券賣出5日遽增38.6%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": null}
+{"date": "2026-11-03", "code": "3221", "source": "institutional", "level": "yellow", "signal": "台嘉碩(3221):法人 20 日淨賣超 -474 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-03", "code": "4566", "source": "margin", "level": "red", "signal": "時碩工業(4566):融資5日驟減-20.0%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-03", "code": "4906", "source": "mops_news", "level": "red", "signal": "正文(4906) 重訊[2026-11-02]:公告本公司國內第七次暨第八次無擔保轉換公司債 代收價款行庫及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-11-03", "code": "4916", "source": "mops_news", "level": "red", "signal": "事欣科(4916) 重訊[2026-11-02]:公告本公司國內第六次無擔保轉換公司債之委託代收價款及 存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-11-03", "code": "6196", "source": "sbl", "level": "yellow", "signal": "帆宣(6196):機構借券賣出5日增12.4%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-11-03", "code": "6937", "source": "margin", "level": "red", "signal": "天虹(6937):融資5日驟減-19.1%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-03", "code": "7610", "source": "investor_conf", "level": "yellow", "signal": "聯友金屬-創(7610):法說會8天後召開", "price_at_signal": null}
+{"date": "2026-11-03", "code": "5434", "source": "mops_news", "level": "red", "signal": "崇越(5434) 重訊[2026-11-02]:115年現金增資認股基準日及相關事宜", "price_at_signal": null}
+{"date": "2026-11-03", "code": "6938", "source": "leadflow", "level": "red", "signal": "藍新資訊(6938) 無消息近漲停+10.0%(量能21.7×,5日+8.9%),疑資訊先行資金|外資+投信近3日僅+77張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-03", "code": "8437", "source": "leadflow", "level": "yellow", "signal": "大地-KY(8437) 無消息近漲停+9.9%(量能1.8×,5日-7.1%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-03", "code": "7819", "source": "leadflow", "level": "red", "signal": "精誠金融(7819) 無消息近漲停+9.9%(量能6.7×,5日+3.2%),疑資訊先行資金|外資+投信近3日僅-2張,法人未同步=隱形買盤", "price_at_signal": null}
