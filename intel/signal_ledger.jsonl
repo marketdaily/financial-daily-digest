@@ -1570,3 +1570,14 @@
 {"date": "2026-11-03", "code": "6938", "source": "leadflow", "level": "red", "signal": "藍新資訊(6938) 無消息近漲停+10.0%(量能21.7×,5日+8.9%),疑資訊先行資金|外資+投信近3日僅+77張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-11-03", "code": "8437", "source": "leadflow", "level": "yellow", "signal": "大地-KY(8437) 無消息近漲停+9.9%(量能1.8×,5日-7.1%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-11-03", "code": "7819", "source": "leadflow", "level": "red", "signal": "精誠金融(7819) 無消息近漲停+9.9%(量能6.7×,5日+3.2%),疑資訊先行資金|外資+投信近3日僅-2張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-04", "code": "2012", "source": "institutional", "level": "yellow", "signal": "春雨(2012):法人 20 日淨買超 +213 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-04", "code": "2455", "source": "institutional", "level": "yellow", "signal": "全新(2455):法人 20 日淨賣超 -2,729 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-04", "code": "3023", "source": "institutional", "level": "yellow", "signal": "信邦(3023):法人 20 日淨賣超 -3,375 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-04", "code": "4540", "source": "margin", "level": "red", "signal": "全球傳動(4540):融資5日驟減-16.4%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-04", "code": "6182", "source": "tw_rank", "level": "yellow", "signal": "合晶(6182) 今日成交量排行第19(-2.9%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-04", "code": "6182", "source": "margin", "level": "red", "signal": "合晶(6182):融資5日驟減-20.8%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-04", "code": "7711", "source": "mops_news", "level": "red", "signal": "永擎(7711) 重訊[2026-11-03]:公告本公司董事會決議辦理限制員工權利新股收 回註銷減資事宜", "price_at_signal": null}
+{"date": "2026-11-04", "code": "7711", "source": "mops_news", "level": "yellow", "signal": "永擎(7711) 重訊[2026-11-03]:公告本公司公司治理主管異動", "price_at_signal": null}
+{"date": "2026-11-04", "code": "8996", "source": "mops_news", "level": "yellow", "signal": "高力(8996) 重訊[2026-11-03]:公告本公司董事會決議通過參與設立合資公司", "price_at_signal": null}
+{"date": "2026-11-04", "code": "3207", "source": "leadflow", "level": "yellow", "signal": "耀勝(3207) 無消息近漲停+9.9%(量能2.4×,5日+2.7%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-04", "code": "4533", "source": "leadflow", "level": "red", "signal": "協易機(4533) 無消息近漲停+9.9%(量能13.5×,5日+5.6%),疑資訊先行資金|外資+投信近3日+1642張", "price_at_signal": null}
