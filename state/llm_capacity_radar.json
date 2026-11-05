@@ -27,8 +27,8 @@
     },
     "openrouter:nemotron-ultra-550b": {
       "alive": true,
-      "note": "200",
-      "unknown_streak": 0
+      "note": "問不到 · ReadTimeout: HTTPSConnectionPool(host='openrouter.ai', port=443(重試後仍如此)",
+      "unknown_streak": 1
     }
   },
   "models": {
@@ -125,10 +125,8 @@
       "nvidia/nemotron-3.5-lightning:free",
       "nvidia/nemotron-3.5-super-vl:free",
       "recursive/flint-v1.0:free",
-      "thinkingmachines/inkling-small:free",
-      "thinkingmachines/inkling:free",
       "xingchen-agi/xing4.0-29b-a4b:free"
     ]
   },
-  "updated": "2026-11-04 10:10"
+  "updated": "2026-11-05 10:10"
 }
