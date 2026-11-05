@@ -1,44 +1,14 @@
 {
- "date": "2026-10-29",
+ "date": "2026-11-06",
  "kpi": {
-  "subscribers": 45,
+  "subscribers": 46,
   "digest_clean_days_7d": "6/7",
-  "fallback_7d": 10,
-  "social_posts_7d": 60
+  "fallback_7d": 9,
+  "social_posts_7d": 0
  },
  "digest": {
   "audit": null,
   "trend": [
-   {
-    "date": "2026-10-20",
-    "audit_failed": 1,
-    "fallback": 0,
-    "total": 44
-   },
-   {
-    "date": "2026-10-21",
-    "audit_failed": 1,
-    "fallback": 0,
-    "total": 44
-   },
-   {
-    "date": "2026-10-22",
-    "audit_failed": 1,
-    "fallback": 0,
-    "total": 44
-   },
-   {
-    "date": "2026-10-23",
-    "audit_failed": 1,
-    "fallback": 1,
-    "total": 44
-   },
-   {
-    "date": "2026-10-24",
-    "audit_failed": 3,
-    "fallback": 0,
-    "total": 44
-   },
    {
     "date": "2026-10-26",
     "audit_failed": 0,
@@ -50,85 +20,120 @@
     "audit_failed": 1,
     "fallback": 0,
     "total": 45
+   },
+   {
+    "date": "2026-10-30",
+    "audit_failed": 1,
+    "fallback": 0,
+    "total": 45
+   },
+   {
+    "date": "2026-11-02",
+    "audit_failed": 3,
+    "fallback": 0,
+    "total": 45
+   },
+   {
+    "date": "2026-11-03",
+    "audit_failed": 1,
+    "fallback": 0,
+    "total": 45
+   },
+   {
+    "date": "2026-11-04",
+    "audit_failed": 1,
+    "fallback": 0,
+    "total": 45
+   },
+   {
+    "date": "2026-11-05",
+    "audit_failed": 1,
+    "fallback": 0,
+    "total": 46
    }
   ],
   "shifts": [
    {
-    "date": "2026-10-27",
+    "date": "2026-11-03",
     "market": "tw",
-    "start": "05:20:01",
-    "done": "07:23:16",
-    "lateness_min": 23.3,
+    "start": "05:20:02",
+    "done": "07:34:54",
+    "lateness_min": 34.9,
     "verdict": "late",
     "llm_tiers": {
-     "gemini": 1,
-     "groq_free": 8,
-     "other_free70b": 64,
-     "local_last_resort": 1
+     "gemini": 13,
+     "groq_free": 7,
+     "other_free70b": 46
     }
    },
    {
-    "date": "2026-10-27",
+    "date": "2026-11-03",
     "market": "us",
-    "start": "18:20:00",
-    "done": "20:41:06",
-    "lateness_min": 41.1,
-    "verdict": "late",
+    "start": "18:20:01",
+    "done": "20:01:11",
+    "lateness_min": 1.2,
+    "verdict": "on_time",
     "llm_tiers": {
-     "cf_free": 18,
-     "groq_free": 49,
-     "other_free70b": 29
+     "gemini": 19,
+     "groq_free": 18,
+     "cf_free": 14,
+     "other_free70b": 12
     }
    },
    {
-    "date": "2026-10-28",
+    "date": "2026-11-04",
     "market": "tw",
-    "start": "05:20:01",
-    "done": "07:46:49",
-    "lateness_min": 46.8,
+    "start": "05:20:00",
+    "done": "07:18:45",
+    "lateness_min": 18.8,
     "verdict": "late",
     "llm_tiers": {
+     "gemini": 3,
      "other_free70b": 61,
      "groq_free": 10,
      "local_last_resort": 2
     }
    },
    {
-    "date": "2026-10-28",
+    "date": "2026-11-04",
     "market": "us",
     "start": "18:20:01",
-    "done": null,
-    "lateness_min": null,
-    "verdict": "incomplete",
+    "done": "20:12:34",
+    "lateness_min": 12.6,
+    "verdict": "on_time",
     "llm_tiers": {
-     "cf_free": 20,
-     "groq_free": 32,
-     "gemini": 4,
-     "other_free70b": 29
+     "gemini": 15,
+     "groq_free": 23,
+     "cf_free": 14,
+     "other_free70b": 13
     }
    },
    {
-    "date": "2026-10-29",
+    "date": "2026-11-05",
     "market": "tw",
     "start": "05:20:02",
-    "done": "08:00:15",
-    "lateness_min": 60.2,
+    "done": "07:49:54",
+    "lateness_min": 49.9,
     "verdict": "late",
     "llm_tiers": {
-     "gemini": 4,
-     "other_free70b": 57,
-     "groq_free": 10
+     "gemini": 1,
+     "groq_free": 10,
+     "other_free70b": 64,
+     "local_last_resort": 1
     }
    },
    {
-    "date": "2026-10-29",
+    "date": "2026-11-05",
     "market": "us",
-    "start": "18:20:00",
-    "done": null,
-    "lateness_min": null,
-    "verdict": "incomplete",
+    "start": "18:20:02",
+    "done": "20:06:02",
+    "lateness_min": 6.0,
+    "verdict": "on_time",
     "llm_tiers": {
-     "cf_free": 1
+     "gemini": 20,
+     "groq_free": 17,
+     "cf_free": 12,
+     "other_free70b": 14
     }
    }
   ]
@@ -139,20 +144,20 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": 1,
+  "tw": null,
   "us": null
  },
  "sitescan": {
-  "date": "2026-10-29",
-  "fails": 2,
-  "first_scan_fails": 2,
+  "date": "2026-11-05",
+  "fails": 1,
+  "first_scan_fails": 1,
   "fixed_in_place": false
  },
  "flags": {
   "hb_miss_tw": false,
   "hb_miss_us": false,
-  "guard_alert_tw": true,
+  "guard_alert_tw": false,
   "guard_alert_us": false
  },
- "generated_utc": "2026-10-29T10:38:01Z"
+ "generated_utc": "2026-11-05T16:08:01Z"
 }
