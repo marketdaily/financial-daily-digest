@@ -27,8 +27,8 @@
     },
     "openrouter:nemotron-ultra-550b": {
       "alive": true,
-      "note": "問不到 · ReadTimeout: HTTPSConnectionPool(host='openrouter.ai', port=443(重試後仍如此)",
-      "unknown_streak": 1
+      "note": "200",
+      "unknown_streak": 0
     }
   },
   "models": {
@@ -119,14 +119,14 @@
       "google/gemma-4-26b-a4b-it:free",
       "google/gemma-4-31b-it:free",
       "liquid/lfm-2.5-2.6b:free",
+      "liquid/lfm-3-1.7b:free",
       "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
       "nvidia/nemotron-3-ultra-550b-a55b:free",
-      "nvidia/nemotron-3.5-content-safety:free",
       "nvidia/nemotron-3.5-lightning:free",
       "nvidia/nemotron-3.5-super-vl:free",
       "recursive/flint-v1.0:free",
       "xingchen-agi/xing4.0-29b-a4b:free"
     ]
   },
-  "updated": "2026-11-05 10:10"
+  "updated": "2026-11-07 10:10"
 }
