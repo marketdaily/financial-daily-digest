@@ -1599,3 +1599,20 @@
 {"date": "2026-11-06", "code": "8147", "source": "margin", "level": "red", "signal": "正淩(8147):融資5日驟減-32.5%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
 {"date": "2026-11-06", "code": "3219", "source": "leadflow", "level": "yellow", "signal": "倚強科(3219) 無消息近漲停+10.0%(量能2.2×,5日-8.4%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-11-06", "code": "6720", "source": "leadflow", "level": "red", "signal": "久昌(6720) 無消息近漲停+9.9%(量能4.5×,5日-4.3%),疑資訊先行資金|外資+投信近3日僅-9張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-07", "code": "2451", "source": "tw_financials", "level": "red", "signal": "創見(2451):毛利率QoQ驟降-6.7個百分點(較 115Q2 至 115Q3)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "2455", "source": "twse_notetrans", "level": "yellow", "signal": "全新(2455):注意累計異常:115年11月5日至115年11月6日連續二次115年10月27日至115年11月6日等九個營業日已有五次(逼近處置門檻)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "3147", "source": "mops_news", "level": "red", "signal": "大綜(3147) 重訊[2026-11-06]:公告本公司國內第一次無擔保轉換公司債之委託代收價款及 存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-11-07", "code": "3147", "source": "holders", "level": "yellow", "signal": "大綜(3147):千張大戶持股比週減-2.77個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "3413", "source": "mops_news", "level": "yellow", "signal": "京鼎(3413) 重訊[2026-11-06]:代重要子公司UniEQ Integrated Technology Co., Ltd. 公告取得土地與廠房相關事宜", "price_at_signal": null}
+{"date": "2026-11-07", "code": "3413", "source": "mops_news", "level": "red", "signal": "京鼎(3413) 重訊[2026-11-06]:代重要子公司UniEQ Integrated Technology Co., Ltd 公告辦理現金增資", "price_at_signal": null}
+{"date": "2026-11-07", "code": "4916", "source": "sbl", "level": "yellow", "signal": "事欣科(4916):機構借券賣出5日增15.2%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "6182", "source": "holders", "level": "yellow", "signal": "合晶(6182):千張大戶持股比週減-1.30個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "6196", "source": "mops_news", "level": "yellow", "signal": "帆宣(6196) 重訊[2026-11-06]:代子公司亞達科技股份有限公司公告取得不動產使用權資產", "price_at_signal": null}
+{"date": "2026-11-07", "code": "6196", "source": "sbl", "level": "red", "signal": "帆宣(6196):機構借券賣出5日遽增22.2%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "6285", "source": "margin", "level": "red", "signal": "啟碁(6285):融資5日驟減-16.8%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "6669", "source": "tw_financials", "level": "yellow", "signal": "緯穎(6669):負債比率72.7%(較 115Q2 至 115Q3)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "7711", "source": "holders", "level": "yellow", "signal": "永擎(7711):千張大戶持股比週減-1.41個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "8299", "source": "mops_news", "level": "yellow", "signal": "群聯(8299) 重訊[2026-11-06]:公告本公司取得營業用設備達新台幣5億元以上", "price_at_signal": null}
+{"date": "2026-11-07", "code": "8147", "source": "holders", "level": "yellow", "signal": "正淩(8147):千張大戶持股比週減-3.10個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "6486", "source": "holders", "level": "yellow", "signal": "互動(6486):千張大戶持股比週增0.61個百分點(溫和加碼)", "price_at_signal": null}
+{"date": "2026-11-07", "code": "9935", "source": "holders", "level": "yellow", "signal": "慶豐富(9935):千張大戶持股比週增0.50個百分點(溫和加碼)", "price_at_signal": null}
