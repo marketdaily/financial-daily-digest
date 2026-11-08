@@ -1,35 +1,24 @@
 {
- "date": "2026-11-05",
+ "date": "2026-11-09",
  "kpi": {
   "subscribers": 46,
   "digest_clean_days_7d": "6/7",
-  "fallback_7d": 9,
-  "social_posts_7d": 28
+  "fallback_7d": 10,
+  "social_posts_7d": 12
  },
  "digest": {
   "audit": {
-   "date": "2026-11-05",
+   "date": "2026-11-09",
    "total_subscribers": 46,
-   "audit_failed": 1,
-   "fallback": 0,
+   "audit_failed": 2,
+   "fallback": 10,
    "personalization_failed": 0,
    "per_check": {
-    "ticker_no_zh_name": 1
+    "ticker_no_zh_name": 1,
+    "tldr_too_short": 1
    }
   },
   "trend": [
-   {
-    "date": "2026-10-26",
-    "audit_failed": 0,
-    "fallback": 9,
-    "total": 44
-   },
-   {
-    "date": "2026-10-27",
-    "audit_failed": 1,
-    "fallback": 0,
-    "total": 45
-   },
    {
     "date": "2026-10-30",
     "audit_failed": 1,
@@ -59,64 +48,21 @@
     "audit_failed": 1,
     "fallback": 0,
     "total": 46
+   },
+   {
+    "date": "2026-11-06",
+    "audit_failed": 1,
+    "fallback": 0,
+    "total": 46
+   },
+   {
+    "date": "2026-11-09",
+    "audit_failed": 2,
+    "fallback": 10,
+    "total": 46
    }
   ],
   "shifts": [
-   {
-    "date": "2026-11-03",
-    "market": "tw",
-    "start": "05:20:02",
-    "done": "07:34:54",
-    "lateness_min": 34.9,
-    "verdict": "late",
-    "llm_tiers": {
-     "gemini": 13,
-     "groq_free": 7,
-     "other_free70b": 46
-    }
-   },
-   {
-    "date": "2026-11-03",
-    "market": "us",
-    "start": "18:20:01",
-    "done": "20:01:11",
-    "lateness_min": 1.2,
-    "verdict": "on_time",
-    "llm_tiers": {
-     "gemini": 19,
-     "groq_free": 18,
-     "cf_free": 14,
-     "other_free70b": 12
-    }
-   },
-   {
-    "date": "2026-11-04",
-    "market": "tw",
-    "start": "05:20:00",
-    "done": "07:18:45",
-    "lateness_min": 18.8,
-    "verdict": "late",
-    "llm_tiers": {
-     "gemini": 3,
-     "other_free70b": 61,
-     "groq_free": 10,
-     "local_last_resort": 2
-    }
-   },
-   {
-    "date": "2026-11-04",
-    "market": "us",
-    "start": "18:20:01",
-    "done": "20:12:34",
-    "lateness_min": 12.6,
-    "verdict": "on_time",
-    "llm_tiers": {
-     "gemini": 15,
-     "groq_free": 23,
-     "cf_free": 14,
-     "other_free70b": 13
-    }
-   },
    {
     "date": "2026-11-05",
     "market": "tw",
@@ -144,6 +90,60 @@
      "cf_free": 12,
      "other_free70b": 14
     }
+   },
+   {
+    "date": "2026-11-06",
+    "market": "tw",
+    "start": "05:20:00",
+    "done": "07:28:48",
+    "lateness_min": 28.8,
+    "verdict": "late",
+    "llm_tiers": {
+     "gemini": 2,
+     "local_last_resort": 9,
+     "other_free70b": 58,
+     "groq_free": 9
+    }
+   },
+   {
+    "date": "2026-11-06",
+    "market": "us",
+    "start": "18:20:02",
+    "done": "20:48:01",
+    "lateness_min": 48.0,
+    "verdict": "late",
+    "llm_tiers": {
+     "gemini": 16,
+     "groq_free": 30,
+     "cf_free": 18,
+     "other_free70b": 19
+    }
+   },
+   {
+    "date": "2026-11-07",
+    "market": "tw",
+    "start": "05:20:01",
+    "done": null,
+    "lateness_min": null,
+    "verdict": "incomplete",
+    "llm_tiers": {
+     "gemini": 4,
+     "other_free70b": 96,
+     "groq_free": 8
+    }
+   },
+   {
+    "date": "2026-11-09",
+    "market": "tw",
+    "start": "05:20:01",
+    "done": "07:01:14",
+    "lateness_min": 1.2,
+    "verdict": "on_time",
+    "llm_tiers": {
+     "gemini": 31,
+     "groq_free": 24,
+     "cf_free": 13
+    }
    }
   ]
  },
@@ -153,20 +153,20 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": 1,
-  "us": 0
+  "tw": null,
+  "us": null
  },
  "sitescan": {
-  "date": "2026-11-05",
-  "fails": 1,
-  "first_scan_fails": 1,
+  "date": "2026-11-08",
+  "fails": 2,
+  "first_scan_fails": 2,
   "fixed_in_place": false
  },
  "flags": {
   "hb_miss_tw": false,
   "hb_miss_us": false,
-  "guard_alert_tw": true,
-  "guard_alert_us": true
+  "guard_alert_tw": false,
+  "guard_alert_us": false
  },
- "generated_utc": "2026-11-05T13:38:02Z"
+ "generated_utc": "2026-11-08T23:08:00Z"
 }
