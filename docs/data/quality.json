@@ -157,9 +157,9 @@
   "us": null
  },
  "sitescan": {
-  "date": "2026-11-08",
-  "fails": 2,
-  "first_scan_fails": 2,
+  "date": "2026-11-09",
+  "fails": 1,
+  "first_scan_fails": 1,
   "fixed_in_place": false
  },
  "flags": {
@@ -168,5 +168,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-11-09T00:08:02Z"
+ "generated_utc": "2026-11-09T00:38:02Z"
 }
