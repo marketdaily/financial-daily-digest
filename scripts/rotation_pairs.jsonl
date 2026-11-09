@@ -296,3 +296,4 @@
 {"date": "2026-10-21", "market": "us", "from": "GOOGL", "to": "TSLA", "from_px": 340.27, "to_px": 373.71, "from_ret": -2.95, "to_ret": 4.59, "rel": 7.54, "win": true, "settled": true}
 {"date": "2026-10-21", "market": "us", "from": "MU", "to": "TSLA", "from_px": 896.07, "to_px": 373.71, "from_ret": 7.61, "to_ret": 4.59, "rel": -3.02, "win": false, "settled": true}
 {"date": "2026-11-07", "market": "us", "from": "TSLA", "to": "IONQ", "from_px": 358.22, "to_px": 32.62}
+{"date": "2026-11-09", "market": "us", "from": "QCOM", "to": "IONQ", "from_px": 165.41, "to_px": 32.62}
