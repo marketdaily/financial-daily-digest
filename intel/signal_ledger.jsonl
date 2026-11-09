@@ -1616,3 +1616,9 @@
 {"date": "2026-11-07", "code": "8147", "source": "holders", "level": "yellow", "signal": "正淩(8147):千張大戶持股比週減-3.10個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
 {"date": "2026-11-07", "code": "6486", "source": "holders", "level": "yellow", "signal": "互動(6486):千張大戶持股比週增0.61個百分點(溫和加碼)", "price_at_signal": null}
 {"date": "2026-11-07", "code": "9935", "source": "holders", "level": "yellow", "signal": "慶豐富(9935):千張大戶持股比週增0.50個百分點(溫和加碼)", "price_at_signal": null}
+{"date": "2026-11-09", "code": "3479", "source": "investor_conf", "level": "yellow", "signal": "安勤(3479):法說會9天後召開", "price_at_signal": null}
+{"date": "2026-11-09", "code": "4916", "source": "tw_rank", "level": "yellow", "signal": "事欣科(4916) 今日漲幅排行第13(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-09", "code": "6486", "source": "institutional", "level": "yellow", "signal": "互動(6486):法人 20 日淨買超 +231 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-09", "code": "3189", "source": "tw_rank", "level": "red", "signal": "景碩(3189) 量能竄榜:今日量榜第19(近10日未進過top50,+2.8%,44,516張)", "price_at_signal": null}
+{"date": "2026-11-09", "code": "7828", "source": "leadflow", "level": "yellow", "signal": "創新服務(7828) 無消息近漲停+10.0%(一價鎖死,5日-7.6%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-09", "code": "6231", "source": "investor_conf", "level": "red", "signal": "系微(6231):法說會2天內召開(波動事件窗口逼近)", "price_at_signal": null}
