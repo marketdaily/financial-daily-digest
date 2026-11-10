@@ -1622,3 +1622,13 @@
 {"date": "2026-11-09", "code": "3189", "source": "tw_rank", "level": "red", "signal": "景碩(3189) 量能竄榜:今日量榜第19(近10日未進過top50,+2.8%,44,516張)", "price_at_signal": null}
 {"date": "2026-11-09", "code": "7828", "source": "leadflow", "level": "yellow", "signal": "創新服務(7828) 無消息近漲停+10.0%(一價鎖死,5日-7.6%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-11-09", "code": "6231", "source": "investor_conf", "level": "red", "signal": "系微(6231):法說會2天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-11-10", "code": "3209", "source": "tw_rank", "level": "yellow", "signal": "全科(3209) 今日漲幅排行第8(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-10", "code": "4566", "source": "mops_news", "level": "yellow", "signal": "時碩工業(4566) 重訊[2026-11-09]:代子公司Global Tek GmbH公告資金貸與他人超限改善計畫", "price_at_signal": null}
+{"date": "2026-11-10", "code": "6196", "source": "tw_financials", "level": "yellow", "signal": "帆宣(6196):負債比率74.0%(較 115Q2 至 115Q3)", "price_at_signal": null}
+{"date": "2026-11-10", "code": "7740", "source": "mops_news", "level": "red", "signal": "熙特爾-創(7740) 重訊[2026-11-09]:本公司董事會決議修正國內第一次無擔保轉換公司債計畫內容", "price_at_signal": null}
+{"date": "2026-11-10", "code": "7740", "source": "mops_news", "level": "yellow", "signal": "熙特爾-創(7740) 重訊[2026-11-09]:依公開發行公司資金貸與及背書保證處理準則 第二十五條第一項第二、三款規定公告", "price_at_signal": null}
+{"date": "2026-11-10", "code": "4556", "source": "tw_rank", "level": "yellow", "signal": "旭然(4556) 今日漲幅排行第2(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-10", "code": "6725", "source": "margin", "level": "red", "signal": "矽科宏晟(6725):融資5日驟減-44.4%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-10", "code": "3444", "source": "leadflow", "level": "yellow", "signal": "利機(3444) 無消息近漲停+10.0%(量能2.2×,5日+8.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-10", "code": "6278", "source": "leadflow", "level": "red", "signal": "台表科(6278) 無消息近漲停+9.8%(連2根,5日-4.8%),疑資訊先行資金|外資+投信近3日僅-2145張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-10", "code": "6715", "source": "leadflow", "level": "red", "signal": "嘉基(6715) 無消息近漲停+10.0%(連2根,5日+6.6%),疑資訊先行資金|外資+投信近3日僅+163張,法人未同步=隱形買盤", "price_at_signal": null}
