@@ -125,8 +125,9 @@
       "nvidia/nemotron-3.5-lightning:free",
       "nvidia/nemotron-3.5-super-vl:free",
       "recursive/flint-v1.0:free",
+      "thinkingmachines/inkling-2-small:free",
       "xingchen-agi/xing4.0-29b-a4b:free"
     ]
   },
-  "updated": "2026-11-09 10:10"
+  "updated": "2026-11-10 10:10"
 }
