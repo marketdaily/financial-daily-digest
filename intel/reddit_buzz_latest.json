@@ -1,18 +1,5 @@
 {
- "date": "2026-11-09",
+ "date": "2026-11-10",
  "mode": "rss",
- "by_code": {
-  "NVDA": {
-   "note": "NVDA 今日 Reddit 提及 5 則(近21日均 0.6,z=4.4)|例:Jensen Huang’s wang caused a 0.25% decrease in the global st",
-   "total": 5,
-   "baseline": 0.6,
-   "z": 4.43,
-   "score": 0,
-   "samples": [
-    "Jensen Huang’s wang caused a 0.25% decrease in the global st",
-    "$1300 to $155k, added another $45k today with SPX calls",
-    "$55,000 gain in 55 seconds flipping $NVDA calls at open"
-   ]
-  }
- }
+ "by_code": {}
 }
