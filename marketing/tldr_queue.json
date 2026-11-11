@@ -2,6 +2,128 @@
   "_comment": "日報自動裂變候選佇列(P2.5打法6資料層)——只含公版存檔結構化數字區塊萃取的短文,發文前仍須逐字核對 caption_zh(feedback_social_post_verify)。本檔不會被自動發文流程讀取。",
   "candidates": [
     {
+      "date": "2026-11-11",
+      "variant": "us",
+      "indicators": [
+        {
+          "label": "VIX 恐慌指數",
+          "value": "18.69",
+          "sub": "平靜"
+        },
+        {
+          "label": "恐貪指數",
+          "value": "65/100",
+          "sub": "Greed"
+        },
+        {
+          "label": "美國10年債",
+          "value": "4.98%",
+          "sub": "升息預期參考"
+        },
+        {
+          "label": "黃金 / 原油",
+          "value": "$4056.3 / $87.16",
+          "sub": "+0.65% / +1.30%"
+        },
+        {
+          "label": "USD/TWD 匯率",
+          "value": "32.84",
+          "sub": "台幣升值"
+        }
+      ],
+      "sectors": [
+        {
+          "name": "XLF 金融",
+          "move": "▲ +0.52%",
+          "pct": 0.52
+        },
+        {
+          "name": "XLE 能源",
+          "move": "▲ +0.44%",
+          "pct": 0.44
+        },
+        {
+          "name": "XLC 通訊",
+          "move": "▲ +0.37%",
+          "pct": 0.37
+        },
+        {
+          "name": "XLI 工業",
+          "move": "▼ -0.09%",
+          "pct": -0.09
+        },
+        {
+          "name": "XLK 科技",
+          "move": "▼ -1.15%",
+          "pct": -1.15
+        }
+      ],
+      "caption_zh": "📊 2026-11-11 美股盤後市場脈搏\nVIX 18.69(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.98% · USD/TWD 32.84\n板塊輪動:XLF 金融 領漲 ▲ +0.52%、XLK 科技 重挫 ▼ -1.15%\n完整日報 → link in bio",
+      "caption_len": 148,
+      "source_archive": "docs/output/digest_2026-11-11_us.html"
+    },
+    {
+      "date": "2026-11-11",
+      "variant": "tw",
+      "indicators": [
+        {
+          "label": "VIX 恐慌指數",
+          "value": "19.46",
+          "sub": "平靜"
+        },
+        {
+          "label": "恐貪指數",
+          "value": "65/100",
+          "sub": "Greed"
+        },
+        {
+          "label": "美國10年債",
+          "value": "4.98%",
+          "sub": "升息預期參考"
+        },
+        {
+          "label": "黃金 / 原油",
+          "value": "$4039.1 / $86.43",
+          "sub": "-1.83% / -0.48%"
+        },
+        {
+          "label": "USD/TWD 匯率",
+          "value": "32.98",
+          "sub": "台幣貶值"
+        }
+      ],
+      "sectors": [
+        {
+          "name": "XLF 金融",
+          "move": "▲ +0.52%",
+          "pct": 0.52
+        },
+        {
+          "name": "XLE 能源",
+          "move": "▲ +0.44%",
+          "pct": 0.44
+        },
+        {
+          "name": "XLC 通訊",
+          "move": "▲ +0.37%",
+          "pct": 0.37
+        },
+        {
+          "name": "XLI 工業",
+          "move": "▼ -0.09%",
+          "pct": -0.09
+        },
+        {
+          "name": "XLK 科技",
+          "move": "▼ -1.15%",
+          "pct": -1.15
+        }
+      ],
+      "caption_zh": "📊 2026-11-11 台股盤後市場脈搏\nVIX 19.46(平靜) · 恐貪指數 65/100(Greed) · 美10年債 4.98% · USD/TWD 32.98\n板塊輪動:XLF 金融 領漲 ▲ +0.52%、XLK 科技 重挫 ▼ -1.15%\n完整日報 → link in bio",
+      "caption_len": 148,
+      "source_archive": "docs/output/digest_2026-11-11.html"
+    },
+    {
       "date": "2026-11-09",
       "variant": "us",
       "indicators": [
