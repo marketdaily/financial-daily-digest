@@ -300,3 +300,6 @@
 {"date": "2026-11-10", "market": "us", "from": "QCOM", "to": "COHR", "from_px": 171.47, "to_px": 225.19}
 {"date": "2026-11-10", "market": "us", "from": "QQQM", "to": "COHR", "from_px": 279.52, "to_px": 225.19}
 {"date": "2026-11-11", "market": "tw", "from": "2330", "to": "3443", "from_px": 2285.0, "to_px": 7170.0}
+{"date": "2026-11-11", "market": "us", "from": "QQQM", "to": "AVGO", "from_px": 277.87, "to_px": 331.98}
+{"date": "2026-11-11", "market": "us", "from": "SPYM", "to": "AVGO", "from_px": 88.28, "to_px": 331.98}
+{"date": "2026-11-11", "market": "us", "from": "META", "to": "AVGO", "from_px": 641.39, "to_px": 331.98}
