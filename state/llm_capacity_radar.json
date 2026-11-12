@@ -114,6 +114,7 @@
       "qwen3.5:9b"
     ],
     "openrouter": [
+      "baidu/ernie-5.5-flash-preview:free",
       "cohere/north-mini-code:free",
       "dots-studio/dots-3-note-preview:free",
       "google/gemma-4-26b-a4b-it:free",
@@ -128,5 +129,5 @@
       "thinkingmachines/inkling-2-small:free"
     ]
   },
-  "updated": "2026-11-11 10:10"
+  "updated": "2026-11-12 10:10"
 }
