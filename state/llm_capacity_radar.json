@@ -70,6 +70,7 @@
       "mistral-embed-2312",
       "mistral-large-4",
       "mistral-large-4-0",
+      "mistral-large-latest",
       "mistral-medium",
       "mistral-medium-2604",
       "mistral-medium-3",
@@ -114,6 +115,7 @@
       "qwen3.5:9b"
     ],
     "openrouter": [
+      "apodex/apodex-1.1-mini:free",
       "baidu/ernie-5.5-flash-preview:free",
       "cohere/north-mini-code:free",
       "dots-studio/dots-3-note-preview:free",
@@ -125,9 +127,10 @@
       "nvidia/nemotron-3-ultra-550b-a55b:free",
       "nvidia/nemotron-3.5-lightning:free",
       "nvidia/nemotron-3.5-super-vl:free",
+      "particle-ai/particle-1:free",
       "recursive/flint-v1.0:free",
       "thinkingmachines/inkling-2-small:free"
     ]
   },
-  "updated": "2026-11-12 10:10"
+  "updated": "2026-11-13 10:10"
 }
