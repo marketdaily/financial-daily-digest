@@ -1,17 +1,17 @@
 {
- "date": "2026-11-12",
+ "date": "2026-11-13",
  "mode": "rss",
  "by_code": {
   "NVDA": {
-   "note": "NVDA 今日 Reddit 提及 4 則(近21日均 0.9,z=2.5)|例:68k -> 6k -> 1m in 7 trading days on 0DTE SPY/SPX",
-   "total": 4,
-   "baseline": 0.9,
-   "z": 2.51,
+   "note": "NVDA 今日 Reddit 提及 11 則(近21日均 1.1,z=7.2)|例:I'm out!",
+   "total": 11,
+   "baseline": 1.1,
+   "z": 7.19,
    "score": 0,
    "samples": [
-    "68k -> 6k -> 1m in 7 trading days on 0DTE SPY/SPX",
-    "Everyone who bought the \"first Jensen dip\" on Oct 29, how's ",
-    "Not going to buy NVDA now…"
+    "I'm out!",
+    "Deal or no deal, is NVDA done? Will Jensen Huang be reinstal",
+    "NVDA earnings next week"
    ]
   }
  }
