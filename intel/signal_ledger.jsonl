@@ -1632,3 +1632,81 @@
 {"date": "2026-11-10", "code": "3444", "source": "leadflow", "level": "yellow", "signal": "利機(3444) 無消息近漲停+10.0%(量能2.2×,5日+8.5%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-11-10", "code": "6278", "source": "leadflow", "level": "red", "signal": "台表科(6278) 無消息近漲停+9.8%(連2根,5日-4.8%),疑資訊先行資金|外資+投信近3日僅-2145張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-11-10", "code": "6715", "source": "leadflow", "level": "red", "signal": "嘉基(6715) 無消息近漲停+10.0%(連2根,5日+6.6%),疑資訊先行資金|外資+投信近3日僅+163張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-13", "code": "1785", "source": "institutional", "level": "yellow", "signal": "光洋科(1785):法人 20 日淨買超 +15,719 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "1785", "source": "revenue", "level": "red", "signal": "光洋科(1785):2026/10 營收公告、YoY +52.8%(強勁)、MoM +0.7%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "1785", "source": "holders", "level": "yellow", "signal": "光洋科(1785):千張大戶持股比週減-1.37個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2059", "source": "institutional", "level": "red", "signal": "川湖(2059):外資連 6 日賣超(5日淨賣 -693 張)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2059", "source": "revenue", "level": "red", "signal": "川湖(2059):2026/10 營收公告、YoY +191.1%(強勁)、MoM +2.2%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2059", "source": "sbl", "level": "yellow", "signal": "川湖(2059):機構借券賣出5日增18.5%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2059", "source": "tw_analyst", "level": "yellow", "signal": "川湖(2059):FactSet共識EPS預估下修至330.1元(目標價14000元)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2313", "source": "institutional", "level": "red", "signal": "華通(2313):投信連 3 日賣超(棄養警訊,20日淨賣 +7,415 張)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2313", "source": "revenue", "level": "red", "signal": "華通(2313):2026/10 營收公告、YoY +24.7%(強勁)、MoM +1.9%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2313", "source": "tw_rank", "level": "yellow", "signal": "華通(2313) 今日成交量排行第19(+4.8%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2347", "source": "institutional", "level": "red", "signal": "聯強(2347):投信連 3 日賣超(棄養警訊,20日淨賣 +4,829 張)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2347", "source": "revenue", "level": "red", "signal": "聯強(2347):2026/10 營收公告、YoY +59.5%(強勁)、MoM -34.5%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2347", "source": "margin", "level": "yellow", "signal": "聯強(2347):融資5日暴增76.3%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2347", "source": "sbl", "level": "yellow", "signal": "聯強(2347):機構借券賣出5日增16.4%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2455", "source": "twse_punish", "level": "red", "signal": "全新(2455):處置中(第一次處置):最近十個營業日已有六次,期間 115/11/11～115/11/17", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2455", "source": "tw_analyst", "level": "red", "signal": "全新(2455):FactSet共識目標價調升至710元(+12.25%)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3033", "source": "mops_news", "level": "yellow", "signal": "威健(3033) 重訊[2026-11-12]:公告本公司會計主管及稽核主管異動", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3033", "source": "tw_financials", "level": "yellow", "signal": "威健(3033):負債比率79.7%(較 115Q2 至 115Q3)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3090", "source": "institutional", "level": "yellow", "signal": "日電貿(3090):法人 20 日淨賣超 -13,189 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3090", "source": "revenue", "level": "red", "signal": "日電貿(3090):2026/10 營收公告、YoY +48.2%(強勁)、MoM +8.8%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3095", "source": "tw_financials", "level": "yellow", "signal": "及成(3095):負債比率80.5%(較 115Q2 至 115Q3)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3147", "source": "tw_financials", "level": "yellow", "signal": "大綜(3147):負債比率79.7%(較 115Q2 至 115Q3)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3479", "source": "investor_conf", "level": "red", "signal": "安勤(3479):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3491", "source": "institutional", "level": "yellow", "signal": "昇達科(3491):法人 20 日淨買超 +623 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3491", "source": "revenue", "level": "red", "signal": "昇達科(3491):2026/10 營收公告、YoY +20.1%(強勁)、MoM -5.8%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3491", "source": "margin", "level": "yellow", "signal": "昇達科(3491):融資5日暴增27.0%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "4540", "source": "institutional", "level": "red", "signal": "全球傳動(4540):外資連 6 日買超(5日淨買 +1,006 張)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "4540", "source": "mops_news", "level": "yellow", "signal": "全球傳動(4540) 重訊[2026-11-12]:代子公司全傳科技(江蘇)有限公司公告向本公司取得機器設備，一年內累計交易 金額達公告申報標準", "price_at_signal": null}
+{"date": "2026-11-13", "code": "4912", "source": "institutional", "level": "red", "signal": "聯德控股-KY(4912):外資連 6 日買超(5日淨買 +144 張)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "4912", "source": "revenue", "level": "yellow", "signal": "聯德控股-KY(4912):2026/10 營收公告、YoY +4.6%、MoM -19.2%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "4916", "source": "institutional", "level": "red", "signal": "事欣科(4916):外資連 6 日買超(5日淨買 +12,912 張)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "4916", "source": "margin", "level": "yellow", "signal": "事欣科(4916):融資5日暴增47.3%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "5263", "source": "margin", "level": "yellow", "signal": "智崴(5263):融資5日暴增15.1%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "5263", "source": "investor_conf", "level": "red", "signal": "智崴(5263):法說會0天內召開(波動事件窗口逼近)|簡報摘要:營運型及授權型收入占比提升至23%、Flyover Attractions 營收創歷史新高、室內型樂園崛起帶來新機會", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6166", "source": "institutional", "level": "yellow", "signal": "凌華(6166):法人 20 日淨賣超 -1,427 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6166", "source": "revenue", "level": "red", "signal": "凌華(6166):2026/10 營收公告、YoY +57.1%(強勁)、MoM -0.2%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6166", "source": "sbl", "level": "yellow", "signal": "凌華(6166):機構借券賣出5日增11.5%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6182", "source": "investor_conf", "level": "red", "signal": "合晶(6182):法說會3天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6191", "source": "institutional", "level": "red", "signal": "精成科(6191):投信連 8 日買超(認養訊號,20日淨買 +198 張)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6191", "source": "revenue", "level": "red", "signal": "精成科(6191):2026/10 營收公告、YoY +79.2%(強勁)、MoM +27.3%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6196", "source": "margin", "level": "yellow", "signal": "帆宣(6196):融資5日暴增32.4%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6290", "source": "institutional", "level": "yellow", "signal": "良維(6290):法人 20 日淨賣超 -2,859 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6290", "source": "revenue", "level": "yellow", "signal": "良維(6290):2026/10 營收公告、YoY -2.3%、MoM -11.6%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6414", "source": "institutional", "level": "yellow", "signal": "樺漢(6414):法人 20 日淨賣超 -263 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6414", "source": "revenue", "level": "red", "signal": "樺漢(6414):2026/10 營收公告、YoY +39.3%(強勁)、MoM -8.7%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6894", "source": "institutional", "level": "yellow", "signal": "衛司特(6894):法人 20 日淨賣超 -216 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6894", "source": "revenue", "level": "red", "signal": "衛司特(6894):2026/10 營收公告、YoY +74.2%(強勁)、MoM -8.1%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "7744", "source": "institutional", "level": "yellow", "signal": "崴寶(7744):法人 20 日淨賣超 -228 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "7744", "source": "mops_news", "level": "red", "signal": "崴寶(7744) 重訊[2026-11-12]:公告本公司董事會決議通過對子公司 W&B PRECISION TECHNOLOGY (VIET NAM) COMPANY", "price_at_signal": null}
+{"date": "2026-11-13", "code": "7744", "source": "revenue", "level": "red", "signal": "崴寶(7744):2026/10 營收公告、YoY +177.0%(強勁)、MoM +10.0%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8028", "source": "institutional", "level": "yellow", "signal": "昇陽半導體(8028):法人 20 日淨買超 +1,018 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8028", "source": "revenue", "level": "red", "signal": "昇陽半導體(8028):2026/10 營收公告、YoY +34.8%(強勁)、MoM +7.4%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8255", "source": "institutional", "level": "yellow", "signal": "朋程(8255):法人 20 日淨賣超 -447 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8255", "source": "revenue", "level": "yellow", "signal": "朋程(8255):2026/10 營收公告、YoY -8.1%、MoM -4.2%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8289", "source": "institutional", "level": "yellow", "signal": "泰藝(8289):法人 20 日淨買超 +792 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8289", "source": "revenue", "level": "red", "signal": "泰藝(8289):2026/10 營收公告、YoY +39.6%(強勁)、MoM -2.9%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8299", "source": "mops_news", "level": "red", "signal": "群聯(8299) 重訊[2026-11-12]:公告本公司本次買回庫藏股金額達新台幣三億元以上", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8358", "source": "institutional", "level": "yellow", "signal": "金居(8358):法人 20 日淨賣超 -10,688 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8358", "source": "revenue", "level": "red", "signal": "金居(8358):2026/10 營收公告、YoY +58.0%(強勁)、MoM +0.4%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8358", "source": "holders", "level": "yellow", "signal": "金居(8358):千張大戶持股比週減-2.93個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8473", "source": "institutional", "level": "yellow", "signal": "山林水(8473):法人 20 日淨賣超 -903 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8473", "source": "mops_news", "level": "red", "signal": "山林水(8473) 重訊[2026-11-12]:公告本公司董事會決議現金增資發行新股", "price_at_signal": null}
+{"date": "2026-11-13", "code": "8473", "source": "revenue", "level": "yellow", "signal": "山林水(8473):2026/10 營收公告、YoY -5.9%、MoM -21.1%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6923", "source": "mops_news", "level": "yellow", "signal": "中台(6923) 重訊[2026-11-12]:公告本公司會計主管及財務主管異動", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6923", "source": "mops_news", "level": "red", "signal": "中台(6923) 重訊[2026-11-12]:公告本公司董事會決議發行國內第一次無擔保轉換公司債", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6923", "source": "revenue", "level": "red", "signal": "中台(6923):2026/10 營收公告、YoY +38.3%(強勁)、MoM +19.6%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "7788", "source": "revenue", "level": "red", "signal": "松川精密(7788):2026/10 營收公告、YoY +53.6%(強勁)、MoM -3.2%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3450", "source": "mops_news", "level": "yellow", "signal": "聯鈞(3450) 重訊[2026-11-12]:公告本公司董事會授權董事長得視廠房擴充計劃需求及依 「取得或處分資產處理程序」，洽詢適宜標的物並做詢比議價。", "price_at_signal": null}
+{"date": "2026-11-13", "code": "5285", "source": "revenue", "level": "red", "signal": "界霖(5285):2026/10 營收公告、YoY +43.2%(強勁)、MoM +2.0%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6184", "source": "revenue", "level": "yellow", "signal": "大豐電(6184):2026/10 營收公告、YoY -0.4%、MoM -1.5%、⚠️ 當月與累計 YoY 方向相反=可能轉折", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6914", "source": "revenue", "level": "yellow", "signal": "阜爾運通(6914):2026/10 營收公告、YoY +11.0%、MoM -5.0%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6574", "source": "revenue", "level": "red", "signal": "霈方(6574):2026/10 營收公告、YoY +57.7%(強勁)、MoM +23.4%", "price_at_signal": null}
+{"date": "2026-11-13", "code": "2027", "source": "tw_rank", "level": "red", "signal": "大成鋼(2027) 量能竄榜:今日量榜第9(近10日未進過top50,-9.3%,69,265張)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3715", "source": "tw_rank", "level": "red", "signal": "定穎投控(3715) 量能竄榜:今日量榜第13(近10日未進過top50,-1.4%,59,866張)", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6938", "source": "leadflow", "level": "yellow", "signal": "藍新資訊(6938) 無消息近漲停+10.0%(量能1.5×,5日+8.3%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-13", "code": "3570", "source": "leadflow", "level": "red", "signal": "大塚(3570) 無消息近漲停+9.9%(連2根,5日+32.4%),疑資訊先行資金|外資+投信近3日僅-23張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-13", "code": "6462", "source": "leadflow", "level": "yellow", "signal": "神盾(6462) 無消息近漲停+9.9%(量能2.1×,5日+13.3%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-13", "code": "4533", "source": "leadflow", "level": "yellow", "signal": "協易機(4533) 無消息近漲停+9.9%(量能2.4×,5日+20.9%),疑資訊先行資金", "price_at_signal": null}
