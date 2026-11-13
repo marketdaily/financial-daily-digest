@@ -55,19 +55,6 @@
   "shifts": [
    {
     "date": "2026-11-11",
-    "market": "tw",
-    "start": "05:20:01",
-    "done": "07:32:05",
-    "lateness_min": 32.1,
-    "verdict": "late",
-    "llm_tiers": {
-     "gemini": 4,
-     "other_free70b": 54,
-     "groq_free": 9
-    }
-   },
-   {
-    "date": "2026-11-11",
     "market": "us",
     "start": "18:20:01",
     "done": "20:01:17",
@@ -135,6 +122,17 @@
      "other_free70b": 17,
      "local_last_resort": 1
     }
+   },
+   {
+    "date": "2026-11-14",
+    "market": "tw",
+    "start": "05:20:01",
+    "done": null,
+    "lateness_min": null,
+    "verdict": "incomplete",
+    "llm_tiers": {
+     "gemini": 1
+    }
    }
   ]
  },
@@ -159,5 +157,5 @@
   "guard_alert_tw": false,
   "guard_alert_us": false
  },
- "generated_utc": "2026-11-13T16:08:01Z"
+ "generated_utc": "2026-11-13T21:38:00Z"
 }
