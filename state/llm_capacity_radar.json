@@ -68,9 +68,6 @@
       "mistral-code-latest",
       "mistral-embed",
       "mistral-embed-2312",
-      "mistral-large-4",
-      "mistral-large-4-0",
-      "mistral-large-latest",
       "mistral-medium",
       "mistral-medium-2604",
       "mistral-medium-3",
@@ -115,13 +112,12 @@
       "qwen3.5:9b"
     ],
     "openrouter": [
-      "apodex/apodex-1.1-mini:free",
       "baidu/ernie-5.5-flash-preview:free",
       "cohere/north-mini-code:free",
       "dots-studio/dots-3-note-preview:free",
       "google/gemma-4-26b-a4b-it:free",
       "google/gemma-4-31b-it:free",
-      "liquid/lfm-2.5-2.6b:free",
+      "inclusionai/ling-3.2-flash:free",
       "liquid/lfm-3-1.7b:free",
       "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
       "nvidia/nemotron-3-ultra-550b-a55b:free",
@@ -132,5 +128,5 @@
       "thinkingmachines/inkling-2-small:free"
     ]
   },
-  "updated": "2026-11-13 10:10"
+  "updated": "2026-11-14 10:10"
 }
