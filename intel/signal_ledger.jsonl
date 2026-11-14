@@ -1710,3 +1710,16 @@
 {"date": "2026-11-13", "code": "3570", "source": "leadflow", "level": "red", "signal": "大塚(3570) 無消息近漲停+9.9%(連2根,5日+32.4%),疑資訊先行資金|外資+投信近3日僅-23張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-11-13", "code": "6462", "source": "leadflow", "level": "yellow", "signal": "神盾(6462) 無消息近漲停+9.9%(量能2.1×,5日+13.3%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-11-13", "code": "4533", "source": "leadflow", "level": "yellow", "signal": "協易機(4533) 無消息近漲停+9.9%(量能2.4×,5日+20.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-14", "code": "2313", "source": "holders", "level": "red", "signal": "華通(2313):千張大戶持股比週增1.49個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-11-14", "code": "3209", "source": "tw_financials", "level": "yellow", "signal": "全科(3209):負債比率73.9%(較 115Q2 至 115Q3)", "price_at_signal": null}
+{"date": "2026-11-14", "code": "3289", "source": "mops_news", "level": "red", "signal": "宜特(3289) 重訊[2026-11-13]:公告本公司國內第六次無擔保轉換公司債收足應募價款", "price_at_signal": null}
+{"date": "2026-11-14", "code": "4540", "source": "mops_news", "level": "red", "signal": "全球傳動(4540) 重訊[2026-11-13]:公告本公司發行國內第三次有擔保轉換公司債代收價款行 庫及存儲專戶行庫", "price_at_signal": null}
+{"date": "2026-11-14", "code": "4912", "source": "holders", "level": "yellow", "signal": "聯德控股-KY(4912):千張大戶持股比週減-3.44個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-14", "code": "6182", "source": "mops_news", "level": "red", "signal": "合晶(6182) 重訊[2026-11-13]:代子公司銳正公告決議辦理現金增資", "price_at_signal": null}
+{"date": "2026-11-14", "code": "6191", "source": "holders", "level": "yellow", "signal": "精成科(6191):千張大戶持股比週增0.53個百分點(溫和加碼)", "price_at_signal": null}
+{"date": "2026-11-14", "code": "6290", "source": "holders", "level": "red", "signal": "良維(6290):千張大戶持股比週增1.20個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-11-14", "code": "6414", "source": "sbl", "level": "yellow", "signal": "樺漢(6414):機構借券賣出5日增15.8%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-11-14", "code": "6414", "source": "tw_analyst", "level": "yellow", "signal": "樺漢(6414):FactSet共識EPS預估上修至28.25元(目標價500元)", "price_at_signal": null}
+{"date": "2026-11-14", "code": "7610", "source": "tw_financials", "level": "yellow", "signal": "聯友金屬-創(7610):毛利率QoQ下滑-3.0個百分點(較 115Q2 至 115Q3)", "price_at_signal": null}
+{"date": "2026-11-14", "code": "8028", "source": "holders", "level": "red", "signal": "昇陽半導體(8028):千張大戶持股比週增1.10個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-11-14", "code": "8147", "source": "holders", "level": "red", "signal": "正淩(8147):千張大戶持股比週增2.42個百分點(大戶顯著加碼)", "price_at_signal": null}
