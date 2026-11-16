@@ -315,3 +315,6 @@
 {"date": "2026-11-13", "market": "us", "from": "SOXX", "to": "AMD", "from_px": 154.99, "to_px": 585.3}
 {"date": "2026-11-13", "market": "us", "from": "MU", "to": "AMD", "from_px": 798.44, "to_px": 585.3}
 {"date": "2026-11-16", "market": "tw", "from": "2317", "to": "5475", "from_px": 241.0, "to_px": 211.0}
+{"date": "2026-11-16", "market": "us", "from": "QCOM", "to": "AVGO", "from_px": 172.47, "to_px": 347.01}
+{"date": "2026-11-16", "market": "us", "from": "SOXX", "to": "AVGO", "from_px": 149.3, "to_px": 347.01}
+{"date": "2026-11-16", "market": "us", "from": "QQQM", "to": "AVGO", "from_px": 279.97, "to_px": 347.01}
