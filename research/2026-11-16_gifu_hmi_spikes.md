@@ -15,7 +15,7 @@
 | 7 | 頂欄時鐘/帳號/角色 | ⏳ | | |
 | 8 | 自訂字型 | ⏳ | | |
 | 9 | 素材預算 vs 60.58MB | ⏳ | | |
-| 10 | 遠端交付 SOP | ⏳ | | |
+| 10 | 遠端交付 SOP | ✅ | 離線模擬包(專案檔+bat,客戶裝免費 EB 即可雙擊跑)實測;USB 用 `project.cxob` 實際產出;遠端桌面/乙太網路下載流程+埠號;EasyAccess 2.0=每台一次性授權 RZACEA020(官方規格書);SOP+客戶清單 | 10_*.png |
 | 11 | OMRON NX102 EtherNet/IP 標籤匯入 | ✅ | 驅動 OMRON_EIP_NJ_SERIES(ID 445 V5.70,44818)匯入 17 標籤含 8 個 42 元素陣列→綁物件→編譯 0 錯誤→模擬讀寫;tag 陣列捲動=`TAG[列 + INDEX n]`,索引值直接=捲動列數 | 11_*.png |
 
 ## 逐項紀錄
@@ -100,3 +100,13 @@
 - 模擬限制:離線模擬的 OMRON 設備是 EB 自帶的記憶體模擬,**沒有接真 PLC**;真 PLC 的 Publish/安全通訊/網段在第 3 週現場驗(清單見下)。
 - 給客戶工程師的設定步驟:`research/gifu_nx102/NX102_Weintek_連線設定步驟_給客戶工程師.md`(Publish Only、ANSI 匯出、韌體 V1.49+ DIP 1/2 ON **必須重新上電**、使用者驗證、44818、LAN1/LAN2 分網段、直連排錯、請客戶提供清單)。
 - 暫設:spike.cmtp 起始視窗改為 12(方便模擬),收尾時改回 10。
+
+### 10. 遠端交付(✅ 11-16 21:00)
+- **離線模擬包**:cxob 是 gzip→tar,解出 `mt8000/project`;EB 自己模擬時也是把這個檔(逐位元相同)交給 `cMTViewer.exe -fs <檔> -allinone`(另帶 `-mp=` 參數,實測不帶也能跑)。
+  - 做法 1(實測可跑,**不外送**):自帶執行檔的精簡包 225MB(用 `WINEDEBUG=+loaddll` 找出 viewer 實際載入的 DLL/外掛/資料檔,驅動只留 OMRON NJ)。只補 DLL 會崩潰,要連資料檔一起帶。因威綸使用條款 §6.2 禁止未經許可複製,只留內部備查(`~/gifu_spike/pfx/drive_c/deliver/_internal_selfcontained_DO_NOT_SEND`)。
+  - ⭐ 做法 2(交付用):專案檔 + `run_offline_sim.bat`(呼叫客戶自己安裝的 `C:\EBpro\cMTViewer.exe`,沒裝會提示)。從乾淨路徑雙擊 bat 實測開啟、輸入、捲動正常(`10_a_offline_sim_bat.png`)。實測包 `research/gifu_remote_delivery/GIFU_HMI_spike_delivery_test.zip`(1.4MB)。
+- **USB/SD 下載**:「建立下載資料」→「下載資料建立成功」,cMT 系列產出就是根目錄一個 `project.cxob`(1.0MB,`10_b_build_download_usb_ok.png`),解開比對與模擬專案逐位元相同。面板端:插 USB→Download→密碼(對話框可在面板系統設定 Miscellaneous 關掉/打開)。
+- **遠端桌面 + 乙太網路**:客戶現場 PC 裝 EB、同網段,我們遠端進去「下載 (PC→HMI)」;跨路由器下載埠 TCP 20248、HMI 通訊 8000、EasyAccess 443(EB 說明書埠號表)。
+- **EasyAccess 2.0(cMT)**:官方 Weincloud EasyAccess 2.0 Datasheet(eng 20250305):每台 HMI **一次性授權費**、支援 **All cMT X/cMT Series**、啟用卡 **RZACEA020**、100kB/s / 3GB 每月(加量卡 RZSCEAT05/10)。第 3 週交付不需要;「3 個月試用」屬於 Dashboard 不是 EasyAccess(查證時差點混淆)。
+  來源:Weintek 官方規格書 PDF(經銷商鏡像 nnz-ipc.ru/files/documentation/weintek/EasyAccess_2.0_Datasheet_ENG_20250313.pdf;weintek.com 產品頁無授權文字)。
+- SOP 7 步 + 客戶準備清單:`research/gifu_remote_delivery/遠端交付SOP_第3週_客戶準備清單.md`。
