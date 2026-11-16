@@ -13,7 +13,7 @@
 | 5 | 刀具列表 42×8 捲動/高亮/編輯/鎖定 | ✅ | 11 列×10 物件 + 索引暫存器 LW-9200 捲動;選列高亮跟刀走、捲到底停 42、編輯寫入、檢測中 LB 鎖基準刀長皆實測 | 05_*.png |
 | 6 | 中英文切換 | ⏳ | | |
 | 7 | 頂欄時鐘/帳號/角色 | ⏳ | | |
-| 8 | 自訂字型 | ⏳ | | |
+| 8 | 自訂字型 | ✅ | 可以:安裝到 Windows 字型的 TTF 會在編譯時子集化嵌入 cxob(`mt8000/pub/fonts/`),動態數值也用該字型;Google Fonts 原檔需先過 `hmi_font_prep.py`(去 DSIG/GDEF/GPOS/GSUB)否則「無法產生字型檔案」 | 08_*.png |
 | 9 | 素材預算 vs 60.58MB | ⏳ | | |
 | 10 | 遠端交付 SOP | ✅ | 離線模擬包(專案檔+bat,客戶裝免費 EB 即可雙擊跑)實測;USB 用 `project.cxob` 實際產出;遠端桌面/乙太網路下載流程+埠號;EasyAccess 2.0=每台一次性授權 RZACEA020(官方規格書);SOP+客戶清單 | 10_*.png |
 | 11 | OMRON NX102 EtherNet/IP 標籤匯入 | ✅ | 驅動 OMRON_EIP_NJ_SERIES(ID 445 V5.70,44818)匯入 17 標籤含 8 個 42 元素陣列→綁物件→編譯 0 錯誤→模擬讀寫;tag 陣列捲動=`TAG[列 + INDEX n]`,索引值直接=捲動列數 | 11_*.png |
@@ -110,3 +110,12 @@
 - **EasyAccess 2.0(cMT)**:官方 Weincloud EasyAccess 2.0 Datasheet(eng 20250305):每台 HMI **一次性授權費**、支援 **All cMT X/cMT Series**、啟用卡 **RZACEA020**、100kB/s / 3GB 每月(加量卡 RZSCEAT05/10)。第 3 週交付不需要;「3 個月試用」屬於 Dashboard 不是 EasyAccess(查證時差點混淆)。
   來源:Weintek 官方規格書 PDF(經銷商鏡像 nnz-ipc.ru/files/documentation/weintek/EasyAccess_2.0_Datasheet_ENG_20250313.pdf;weintek.com 產品頁無授權文字)。
 - SOP 7 步 + 客戶準備清單:`research/gifu_remote_delivery/遠端交付SOP_第3週_客戶準備清單.md`。
+
+### 8. 自訂字型(✅ 11-16 21:10)
+- **機制(實測)**:EB 文字/數值物件可選任何已安裝到 Windows 的 TTF;編譯勾「建立字型檔案」時,**把用到的字形子集化後直接嵌進 cxob** 的 `mt8000/pub/fonts/fontN.ttf`(例:微軟正黑體只帶 761 字形/116KB,我們的 Anton 只帶 212 字形/31KB)。下載到面板時一起帶過去,面板不用另外裝字型。
+- **踩到的坑(已解)**:直接用 Google Fonts 的 Anton-Regular.ttf → 編譯失敗「無法產生字型檔案 (Anton Regular),請選用其他字型…或複製到 C:\EBPro\windows_font」(`08_a_font_error_hint.png`)。照提示放進 Windows Fonts + windows_font、修正登錄路徑、重開 EB 都還是失敗 → 做對照組:改名的 Arial 副本成功、**去掉 DSIG/GDEF/GPOS/GSUB 四張表(fsType 設 8)的 Anton 成功**,編譯 0 錯誤(`08_b_compile_custom_font_ok.png`,cxob 內確認 `GIFU AntonB` 212 字形、0–9 齊)。
+  - 結論:EB 的字型子集器吃不下某些現代 OpenType 字型的表格;**正式用字前一律先跑** `research/gifu_fonts/hmi_font_prep.py 原檔.ttf 輸出.ttf "GIFU 字型名"`(去四表+改名;去掉的是字距/連字表,HMI 數字與標籤不受影響)。只接受 TrueType 輪廓(glyf);OTF/CFF 要先轉。
+  - 改名同時避開 SIL OFL「保留字型名稱」條款;商用字型要先確認授權允許修改與嵌入到設備。
+- **模擬實測**:動態數值物件(LW-6300,字型 GIFU AntonB)輸入 2468 → 顯示為 Anton 窄粗體,旁邊對照 Arial 靜態字(`08_c_sim_custom_font_dynamic.png`)。
+- 限制:Wine 版模擬器大字級會縮小(#3 已記),所以本機只驗 16 號;實際字級外觀第 3 週實機確認。若某字型處理後仍失敗,退路=靜態標題出 PNG、動態數值用已驗證可嵌入的字型(本次 GIFU AntonB 已證實可用)。
+- 另一個只在 Wine 才有的坑:放在 Linux `~/.fonts` 的字型會被 Wine 登錄成 `Z:\...` 路徑,EB 找不到;真 Windows 上「為所有使用者安裝」即可,不會遇到。
