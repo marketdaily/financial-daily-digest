@@ -16,7 +16,8 @@
 | 8 | 自訂字型 | ✅ | 可以:安裝到 Windows 字型的 TTF 會在編譯時子集化嵌入 cxob(`mt8000/pub/fonts/`),動態數值也用該字型;Google Fonts 原檔需先過 `hmi_font_prep.py`(去 DSIG/GDEF/GPOS/GSUB)否則「無法產生字型檔案」 | 08_*.png |
 | 9 | 素材預算 vs 60.58MB | ✅ | 1920 全頁背景+30 張狀態圖+刀具列表底圖實放編譯:全案 8.52MB、剩 55.48MB;EB **原封不動存 PNG**(不重壓)⇒ 預算=檔案大小;每頁背景用 256 色 PNG 或 JPG 可從 1.86MB 壓到 0.4–0.7MB,10 頁設計稿也只吃 ~1/4 容量 | 09_a_compile_assets_0err.png |
 | 10 | 遠端交付 SOP | ✅ | 離線模擬包(專案檔+bat,客戶裝免費 EB 即可雙擊跑)實測;USB 用 `project.cxob` 實際產出;遠端桌面/乙太網路下載流程+埠號;EasyAccess 2.0=每台一次性授權 RZACEA020(官方規格書);SOP+客戶清單 | 10_*.png |
-| 11 | OMRON NX102 EtherNet/IP 標籤匯入 | ✅ | 驅動 OMRON_EIP_NJ_SERIES(ID 445 V5.70,44818)匯入 17 標籤含 8 個 42 元素陣列→綁物件→編譯 0 錯誤→模擬讀寫;tag 陣列捲動=`TAG[列 + INDEX n]`,索引值直接=捲動列數 | 11_*.png |
+| 12 | 客戶 Excel→EB 標籤 txt | ✅ | `scripts/gifu_tags_excel2eb.py`:四欄 Excel 轉 #11 驗證過的 txt,有錯不出檔;16 標籤往返與實際匯入檔逐位元相同,20 項單元測試 | — |
+| 11 | OMRON NX102 EtherNet/IP 標籤匯入 | ✅ | 驅動 OMRON_EIP_NJ_SERIES(ID 445 V5.70,44818)匯入 16 標籤含 7 個 42 元素陣列→綁物件→編譯 0 錯誤→模擬讀寫;tag 陣列捲動=`TAG[列 + INDEX n]`,索引值直接=捲動列數 | 11_*.png |
 
 ## 逐項紀錄
 
@@ -111,7 +112,7 @@
 ### 11. OMRON NX102-1200 EtherNet/IP 標籤匯入(✅ 11-16 20:45)
 - 驅動:系統參數→新增設備→OMRON Corporation→**EtherNet/IP (NJ/NX Series)**(OMRON_EIP_NJ_SERIES.c33,ID 445,V5.70),乙太網路,IP 測試設 192.168.250.1,埠固定 44818。
 - 匯入標籤:「匯入標籤」→字串型別處理選預設→Import Files(*.txt)→「SINT/INT/DINT 二進制存取?」選否(INT 速度值要保留正負號)→「成功匯入標籤資訊」(`11_a_import_ok.png`)。
-- ⭐ **實測踩到的坑(已解)**:陣列若寫成 `ARRAY[0..41] OF BOOL`,EB 照樣顯示「成功匯入」,但**陣列那幾行被安靜略過**(第一次只進 9 個純量)。用 8 種寫法對照測試,只有 CX-Designer 式 `BOOL[42]`(元素數)被接受。改寫後 **17/17 全進**(`11_b_tags_17.png`:BOOL/UINT/INT/REAL 純量 + BOOL[42]×3、LREAL[42]×2、REAL[42]、UDINT[42])。另:再次匯入是**整份取代**不是追加。
+- ⭐ **實測踩到的坑(已解)**:陣列若寫成 `ARRAY[0..41] OF BOOL`,EB 照樣顯示「成功匯入」,但**陣列那幾行被安靜略過**(第一次只進 9 個純量)。用 8 種寫法對照測試,只有 CX-Designer 式 `BOOL[42]`(元素數)被接受。改寫後 **16/16 全進**(`11_b_tags_17.png`,檔名的 17 是把表頭算進去的筆誤,11-17 更正:BOOL/UINT/INT/REAL 純量 + BOOL[42]×3、LREAL[42]×2、REAL[42]、UDINT[42])。另:再次匯入是**整份取代**不是追加。
   - 防呆:`research/gifu_nx102/nx_tags_check.py 原檔 輸出檔` 自動把 `ARRAY[0..N] OF T` 轉 `T[N+1]`、抓下標非 0/不支援型別/TAGLINK≠TRUE、印出變數數。拿上面失敗的 v1 檔跑,輸出與實測成功檔內容逐位元相同(僅 CRLF/LF 差,兩種換行都實測可匯入)。
   - 正確格式範例(cp950/ANSI,可直接匯入):`research/gifu_nx102/NX102_GlobalVariables_CX-Designer_sample.txt`(UTF-8 檢視版 `NX102_sample_utf8_view.txt`)。
 - 綁物件(新視窗 12「TAG_NX102」,不動 #1–#5):物件位址欄變成「標籤」,從標籤瀏覽器點進陣列選元素;型別自動帶入(REAL→32-bit Float、**LREAL→64-bit Double**、BOOL 陣列→BitArray)。
@@ -156,6 +157,15 @@
   5. 同一張底圖在多頁共用時只匯入一次(圖片庫項目重複引用不重複計)。
   6. 每次大批換圖後重編譯看「圖片大小」一行,超過 30MB 就回頭檢查是否有未量化的大圖。
 - 限制:JPG 在面板上的實際畫質未上機看(Wine 模擬器畫質不代表實機);第 3 週實機抽一張 JPG 背景確認色帶。
+
+### 12. 客戶 Excel 變數表 → EB 標籤 txt 轉換器(✅ 11-17 07:40)
+- 工具:`scripts/gifu_tags_excel2eb.py 客戶變數表.xlsx 輸出.txt [--crlf] [--sheet 名稱]`。Excel 第一列表頭依名稱比對(欄序不拘,中英皆可):**變數名稱 / 資料型態 / 陣列長度 / 說明**。
+- 輸出 = #11 實測匯入成功的格式:cp950、Tab 分隔、表頭 `HOST NAME DATATYPE ADDRESS COMMENT TAGLINK RW POU`、TAGLINK=TRUE、RW=RW、陣列一律寫 `T[N]`。
+- 陣列兩種寫法都收:`BOOL` + 陣列長度 42,或資料型態直接寫 `ARRAY[0..41] OF BOOL`(自動轉 `BOOL[42]`,避開 EB「顯示成功但安靜略過」的坑)。
+- **有任何問題就不輸出**(避免半套檔被匯入),逐列列出:名稱非英數底線/數字開頭、名稱重複(不分大小寫)、陣列下標不是從 0 開始、型態欄與長度欄元素數不一致、結構/列舉型別(要客戶改匯出成員)、STRING 陣列、說明含 cp950 打不出的字(簡體字會在 EB 變亂碼)。`STRING[20]` 視為字串長度不是陣列。
+- **驗證**:把 #11 實際匯入成功的 txt 反向拆成 Excel(`research/gifu_nx102/客戶變數表_範例_16標籤.xlsx`,陣列刻意一半用「長度欄」、一半用 `ARRAY[..] OF` 寫法)→ 轉 txt → 與 `C:\work\nx102_tags.txt`(EB 匯入成功的那一份)**逐位元組相同**(`cmp` 無差異)。依指示不再開 EB 重匯。
+- 單元測試:`python3 scripts/test_gifu_tags_excel2eb.py`,20 項全過(往返比對 ×3 含 --crlf、各種錯誤列、表頭英文/亂序、空白列、有錯不出檔)。
+- 範例 Excel 可直接當「請客戶填的範本」寄出(由老闆轉交)。
 
 ### 10. 遠端交付(✅ 11-16 21:00)
 - **離線模擬包**:cxob 是 gzip→tar,解出 `mt8000/project`;EB 自己模擬時也是把這個檔(逐位元相同)交給 `cMTViewer.exe -fs <檔> -allinone`(另帶 `-mp=` 參數,實測不帶也能跑)。
