@@ -9907,3 +9907,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 10-01 17:42 YC Paxel v2 完成:4 份報告上傳(builder-agent kbjd6tbp/qfx-code 6pfxbckl/storefront j411gvu0/client-a-site jnwsdy5e),leakcheck 0 命中,暫存 volume 已刪;教訓:orchestrator 成功後清 volume,重跑前必重灌影子資料;drive.py 要選 Analyze ALL projects
 - 10-01 18:16 老闆令停止(token 太多):cut20 動態升級代理、logo batch3 worker 全停。成品保留:cut20/final/v3(已過關的兩首對拍版)、v4 未過關;batch3 amazon/google_try1 FAIL 版。
 - 10-06 22:xx 長假回歸全面體檢:日報/newsroom 正常;修 ma_weekly rc=127(env_scope 包在 timeout 內,10-01 起整週未產)、refactor_harness 假紅(report_* 未樁 leadflow)、fleet_liveness 月跑誤判+退役名單、皇海 compat lint drop-in、news_reactive 起草事實邊界;自主機器夜巡 10 支自測交 fork 修
+- 11-16 15:20 景翔 HMI 交付前技術驗證續跑(上輪撞 5h 上限):Wine+Xvfb :77 背景跑 EBPro,11 項逐項建/編譯/模擬/截圖→research/2026-11-16_gifu_hmi_spikes.md;不聯絡客戶
