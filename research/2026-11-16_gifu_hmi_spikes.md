@@ -17,6 +17,7 @@
 | 9 | 素材預算 vs 60.58MB | ✅ | 1920 全頁背景+30 張狀態圖+刀具列表底圖實放編譯:全案 8.52MB、剩 55.48MB;EB **原封不動存 PNG**(不重壓)⇒ 預算=檔案大小;每頁背景用 256 色 PNG 或 JPG 可從 1.86MB 壓到 0.4–0.7MB,10 頁設計稿也只吃 ~1/4 容量 | 09_a_compile_assets_0err.png |
 | 10 | 遠端交付 SOP | ✅ | 離線模擬包(專案檔+bat,客戶裝免費 EB 即可雙擊跑)實測;USB 用 `project.cxob` 實際產出;遠端桌面/乙太網路下載流程+埠號;EasyAccess 2.0=每台一次性授權 RZACEA020(官方規格書);SOP+客戶清單 | 10_*.png |
 | 12 | 客戶 Excel→EB 標籤 txt | ✅ | `scripts/gifu_tags_excel2eb.py`:四欄 Excel 轉 #11 驗證過的 txt,有錯不出檔;16 標籤往返與實際匯入檔逐位元相同,20 項單元測試 | — |
+| 13 | 客戶 Network Publish 警報 | 🛠 | 依 W501 推定=同一全域變數跨工作讀寫的並行性警告(非 HMI 需要);排查步驟給客戶工程師,待回傳警告原文定案 | — |
 | 11 | OMRON NX102 EtherNet/IP 標籤匯入 | ✅ | 驅動 OMRON_EIP_NJ_SERIES(ID 445 V5.70,44818)匯入 16 標籤含 7 個 42 元素陣列→綁物件→編譯 0 錯誤→模擬讀寫;tag 陣列捲動=`TAG[列 + INDEX n]`,索引值直接=捲動列數 | 11_*.png |
 
 ## 逐項紀錄
@@ -166,6 +167,20 @@
 - **驗證**:把 #11 實際匯入成功的 txt 反向拆成 Excel(`research/gifu_nx102/客戶變數表_範例_16標籤.xlsx`,陣列刻意一半用「長度欄」、一半用 `ARRAY[..] OF` 寫法)→ 轉 txt → 與 `C:\work\nx102_tags.txt`(EB 匯入成功的那一份)**逐位元組相同**(`cmp` 無差異)。依指示不再開 EB 重匯。
 - 單元測試:`python3 scripts/test_gifu_tags_excel2eb.py`,20 項全過(往返比對 ×3 含 --crlf、各種錯誤列、表頭英文/亂序、空白列、有錯不出檔)。
 - 範例 Excel 可直接當「請客戶填的範本」寄出(由老闆轉交)。
+
+### 13. 客戶回報:設 Network Publish: Publish Only 後跳警報、要在「工作設定的變數設定」再輸入一次(🛠 排查法已備,待客戶回傳訊息原文)
+- **判讀**:HMI(CIP 訊息存取)**本身不需要**在 Task Settings 登記任何變數;外部存取是 CPU 每個週期在「System common processing 2」用 *Variable Access Time* 處理的(W501 p.5-16)。客戶說的「工作設定的變數設定」對應 **Task Settings → Settings for Exclusive Control of Variables in Tasks**(W501 p.4-12:指定 refreshing task / accessing task,RUN 中不可改、下載才生效)。在那裡填了警告就消失 ⇒ 最可能是**同一個全域變數被兩個以上的工作讀寫**,Sysmac 檢查程式時給的並行性警告(W501 5-9-1 p.5-124~5-126:「從非 refreshing/accessing 的工作讀寫已設 refreshing task 的變數,檢查時給 warning;accessing task 裡寫入則報 error」)。Publish Only 只是讓這些變數剛好被拉成跨工作使用的全域變數,本身不是原因。
+- **常見原因與排除(依可能性)**:
+  1. 跨工作讀寫 → 建議 HMI 變數只在一個工作(Primary Periodic Task)讀寫;必須跨工作就照 W501 Method 1 設 refreshing task(=寫的那個工作,整個陣列/結構只能一個),多工作都寫就用 Lock/Unlock(Method 2)。
+  2. Publish Only 的變數又被放進 EtherNet/IP Tag Set → W501 p.6-68 明載「Publish Only 不能用於標籤資料連結」;OMRON TN 的症狀是 Tag 變粉紅色+「未登錄於變數表的網路變數」。HMI 變數不要進 Tag Set,真要資料連結就改 Input/Output。
+  3. 用 AT 指到 I/O 的裝置變數在非 I/O 控制工作裡寫入 → 檢查報錯(W501 p.5-112)。HMI 變數不要 AT 到 I/O。
+  4. 改了 Network Publish/工作設定沒重新下載、陣列只設部分元素、或誤選 Do not publish(能匯入但通訊失敗)。
+- **限制**:警告原文沒拿到,OMRON 公開資料查不到這句警告的逐字內容(論壇/OMRON US TN 要登入),以上是依官方手冊機制推定;**拿到客戶截圖後 5 分鐘內可定案**。
+- **給客戶工程師的繁中步驟**(可直接轉交):`research/gifu_nx102/NX102_NetworkPublish警報排查_給客戶工程師.md`(第 0 步先抓訊息原文 → 跨工作 → Tag Set → AT → 下載確認 → 回傳清單)。
+- 來源:
+  - OMRON W501《NJ/NX-series CPU Unit Software User's Manual》https://files.omron.eu/downloads/latest/manual/en/w501_nj_nx-series_cpu_unit_software_users_manual_en.pdf (p.4-12、5-16、5-112、5-123~5-126、6-68)
+  - OMRON US TN「NX Built-in EIP Tag Set issue」(需登入,引用搜尋摘要)https://omronelectronicsllc.freshdesk.com/en/support/solutions/articles/150000200529-tn-nx-built-in-eip-tag-set-issue
+  - Weintek 連線指南(Publish Only / Do not publish 行為,#11 已引用)https://dl.weintek.com/public/PLC_Connect_Guide/OMRON_EtherNet_IP_NJ_NX_Series.pdf
 
 ### 10. 遠端交付(✅ 11-16 21:00)
 - **離線模擬包**:cxob 是 gzip→tar,解出 `mt8000/project`;EB 自己模擬時也是把這個檔(逐位元相同)交給 `cMTViewer.exe -fs <檔> -allinone`(另帶 `-mp=` 參數,實測不帶也能跑)。
