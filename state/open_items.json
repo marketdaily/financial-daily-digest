@@ -14220,5 +14220,105 @@
   "opened": "2026-10-06 23:03",
   "closed": null,
   "note": ""
+ },
+ {
+  "id": 1423,
+  "what": "皇海 7USB2-F0-0020-B 3D(STEP)已建好,尚未交給 Fion/RD、未在 SolidWorks 開過",
+  "why": "等 Delvin 看過再回信;部分細節(內部端子彎折、背板方孔位置)是照片推估非圖面標註",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-11-09 11:01",
+  "closed": "2026-11-09 11:42",
+  "note": "被 v3 取代"
+ },
+ {
+  "id": 1424,
+  "what": "皇海 7USB2-F0-0020-B v3 3D(STEP)待 Fion/RD 確認:頂面彈片照老闆指示做長方形但圖面是梯形;STEP 未在 SolidWorks 開過",
+  "why": "需實物/RD 確認圖面與指示的衝突",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-11-09 11:42",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1425,
+  "what": "皇海 7USB2-F0-0020-B:3D 照 rev B 標稱;乾威實物量測 3 處偏離(7.60→7.74/7.77 超差、3.00→3.13 超差、5.70→5.78/5.80 邊緣),待 Fion 決定 3D 要跟圖面還是實物",
+  "why": "量測檔顯示新供應商乾威件不符 rev B,圖面可能改版",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-11-09 11:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1426,
+  "what": "皇海 7DCJK-FF-0358 3D 已做好(草稿在 Gmail 待寄 Fion);照 rev A 標稱,精騰實物 6.0→5.73 超差、中心針 1.4→1.54(日本客戶要 ~1.0)",
+  "why": "等 Delvin 點頭寄出;3D 跟圖面還是實物待 Fion 決定",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-11-13 13:49",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1427,
+  "what": "景翔HMI:訂金22,000未收,收款日=啟動日;收款前只做內部驗證",
+  "why": "11/16 寄 v4 合約,等客戶用印付款",
+  "owner": "delvin",
+  "risk": "med",
+  "opened": "2026-11-16 11:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1428,
+  "what": "景翔HMI:交付前技術驗證 spike(winrig job 6613dee1)結果未審",
+  "why": "EasyBuilder 11 項風險點實測中,報告 research/2026-11-16_gifu_hmi_spikes.md",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-11-16 11:32",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1429,
+  "what": "景翔HMI:PLC 品牌/型號/連線方式待客戶回覆",
+  "why": "決定驅動能否原生;Fanuc/新代/寶元需 Modbus 繞",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-11-16 11:32",
+  "closed": "2026-11-16 11:53",
+  "note": "11/16 客戶回 OMRON NX102-1200 / Ethernet;EB 有原生 OMRON EtherNet/IP (NJ/NX Series) 驅動"
+ },
+ {
+  "id": 1430,
+  "what": "winrig claude OAuth 10/30 起過期,newsroom_draft/news_reactive 等 claude -p 排程停擺約 16 天,零告警",
+  "why": "11/16 Delvin 已重新登入恢復;但沒有守衛偵測『claude -p 認證失效』,下次還會靜默",
+  "owner": "me",
+  "risk": "high",
+  "opened": "2026-11-16 11:39",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1431,
+  "what": "景翔HMI:NX102 連線三要件待客戶給(Sysmac 變數 Network Publish 匯出 txt/NX102 韌體版本與安全通訊設定/PLC 與面板 IP)",
+  "why": "tag 式驅動要匯入變數檔;韌體 1.64+ 安全通訊會擋第三方 HMI",
+  "owner": "delvin",
+  "risk": "high",
+  "opened": "2026-11-16 11:53",
+  "closed": null,
+  "note": ""
+ },
+ {
+  "id": 1432,
+  "what": "景翔 HMI:客戶 Network Publish 警報待客戶回傳警告原文截圖才能定案(目前依 W501 推定為跨工作並行性警告)",
+  "why": "需客戶提供訊息原文,不能自行聯絡",
+  "owner": "delvin",
+  "risk": "low",
+  "opened": "2026-11-17 07:21",
+  "closed": null,
+  "note": ""
  }
 ]
