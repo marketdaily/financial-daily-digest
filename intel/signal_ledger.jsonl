@@ -1723,3 +1723,19 @@
 {"date": "2026-11-14", "code": "7610", "source": "tw_financials", "level": "yellow", "signal": "聯友金屬-創(7610):毛利率QoQ下滑-3.0個百分點(較 115Q2 至 115Q3)", "price_at_signal": null}
 {"date": "2026-11-14", "code": "8028", "source": "holders", "level": "red", "signal": "昇陽半導體(8028):千張大戶持股比週增1.10個百分點(大戶顯著加碼)", "price_at_signal": null}
 {"date": "2026-11-14", "code": "8147", "source": "holders", "level": "red", "signal": "正淩(8147):千張大戶持股比週增2.42個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-11-16", "code": "2059", "source": "institutional", "level": "yellow", "signal": "川湖(2059):法人 20 日淨買超 +296 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-16", "code": "2313", "source": "institutional", "level": "yellow", "signal": "華通(2313):法人 20 日淨賣超 -20,497 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-16", "code": "5285", "source": "institutional", "level": "yellow", "signal": "界霖(5285):法人 20 日淨賣超 -319 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-16", "code": "6191", "source": "institutional", "level": "yellow", "signal": "精成科(6191):法人 20 日淨買超 +1,925 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-16", "code": "6574", "source": "institutional", "level": "red", "signal": "霈方(6574):外資連 5 日賣超(5日淨賣 -67 張)", "price_at_signal": null}
+{"date": "2026-11-16", "code": "7610", "source": "institutional", "level": "red", "signal": "聯友金屬-創(7610):外資連 5 日買超(5日淨買 +554 張)", "price_at_signal": null}
+{"date": "2026-11-16", "code": "7744", "source": "margin", "level": "red", "signal": "崴寶(7744):融資5日驟減-40.1%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-16", "code": "9904", "source": "tw_rank", "level": "red", "signal": "寶成(9904) 量能竄榜:今日量榜第18(近10日未進過top50,+3.1%,47,266張)", "price_at_signal": null}
+{"date": "2026-11-16", "code": "2323", "source": "tw_rank", "level": "red", "signal": "中環(2323) 量能竄榜:今日量榜第20(近10日未進過top50,+6.4%,45,191張)", "price_at_signal": null}
+{"date": "2026-11-16", "code": "7765", "source": "leadflow", "level": "red", "signal": "中華資安(7765) 無消息近漲停+9.8%(連2根,5日+25.4%),疑資訊先行資金|外資+投信近3日僅+339張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-16", "code": "5310", "source": "leadflow", "level": "red", "signal": "天剛(5310) 無消息近漲停+10.0%(量能10.7×,5日+10.2%),疑資訊先行資金|外資+投信近3日僅+19張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-16", "code": "6884", "source": "leadflow", "level": "red", "signal": "海柏特(6884) 無消息近漲停+10.0%(量能34.7×,5日+12.3%),疑資訊先行資金|外資+投信近3日僅+37張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-16", "code": "6690", "source": "leadflow", "level": "red", "signal": "安碁資訊(6690) 無消息近漲停+9.9%(連2根,5日+25.3%),疑資訊先行資金|外資+投信近3日僅-475張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-16", "code": "2471", "source": "leadflow", "level": "red", "signal": "資通(2471) 無消息近漲停+10.0%(連3根,5日+50.1%),疑資訊先行資金|外資+投信近3日僅-651張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-16", "code": "6949", "source": "leadflow", "level": "red", "signal": "沛爾生醫*-創(6949) 無消息近漲停+10.0%(連2根,5日+23.6%),疑資訊先行資金|外資+投信近3日+1674張", "price_at_signal": null}
+{"date": "2026-11-16", "code": "5212", "source": "leadflow", "level": "red", "signal": "凌網(5212) 無消息近漲停+9.9%(量能32.7×,5日+15.7%),疑資訊先行資金|外資+投信近3日僅+26張,法人未同步=隱形買盤", "price_at_signal": null}
