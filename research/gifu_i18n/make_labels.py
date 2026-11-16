@@ -10,6 +10,9 @@ L = [  # name, [(zh, en) per state]
  ("L_HDR_TIME",   [("觸發時間", "Time")]),
  ("L_HDR_MSG",    [("警報訊息", "Message")]),
  ("L_CAPTION",    [("目前警報", "Active Alarms")]),
+ ("L_ROLE",       [("未登入", "Not logged in"), ("操作員", "Operator"), ("工程師", "Engineer"), ("管理員", "Administrator")]),
+ ("L_LOGIN",      [("登入", "Login")]),
+ ("L_LOGOUT",     [("登出", "Logout")]),
 ]
 NL, NS = 8, max(len(s) for _, s in L)
 wb = openpyxl.Workbook(); ws = wb.active; ws.title = "標籤"

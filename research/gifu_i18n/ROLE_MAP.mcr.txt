@@ -1,0 +1,19 @@
+macro_command main()
+unsigned short p, r
+bool li
+GetData(p, "Local HMI", LW, 9222, 1)
+r = 1
+li = true
+if p == 0 then
+r = 0
+li = false
+end if
+if p >= 2 then
+r = 2
+end if
+if p >= 4095 then
+r = 3
+end if
+SetData(r, "Local HMI", LW, 6420, 1)
+SetData(li, "Local HMI", LB, 6421, 1)
+end macro_command
