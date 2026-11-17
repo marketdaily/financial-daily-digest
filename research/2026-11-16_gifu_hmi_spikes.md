@@ -2,6 +2,8 @@
 ## 給老闆的白話結論(11-17)
 景翔這台 HMI 設計稿要求的 11 個技術點**全部驗證完成**(在 EasyBuilder 實建、編譯 0 錯誤,能模擬的都在模擬器實跑截圖):三狀態圖、路徑動畫、無效值顯示「--」、環形功率表、42 刀位刀具列表(捲動/高亮/編輯/檢測中鎖定)、中英切換(含警報)、頂欄時鐘/帳號/角色、自訂字型、OMRON NX102 標籤直讀、遠端交付流程;素材容量也量過,全套圖放進去只用掉約兩成,不會爆。客戶給的 Excel 變數表我們現在一鍵就能轉成 HMI 匯入檔(格式錯誤會先擋下來)。**還要客戶給的**:① 正式的 Excel 變數表(變數名稱/資料型態/陣列長度/說明)或 Sysmac 匯出的 txt;② 他們設 Network Publish 後跳的那個警告**原文截圖**+工作(Task)清單——依 OMRON 手冊看,最可能是同一個變數被兩個工作同時用到,不是 HMI 的問題,排查步驟已寫好可直接轉給他們工程師;③ PLC/HMI 的 IP、韌體版本、DIP 開關已切且重新上電的確認;④ 角色權限(幾種角色、誰能改什麼)、警報清單、正式設計稿圖檔。實機上才能確認的(大字級外觀、JPG 畫質、真 PLC 連線)排在第 3 週現場。
 
+**11-17 補(#14,客戶改用 FINS 位址模式)**:客戶說改用 OMRON Ethernet(FINS)讀 PLC 的固定位址(%W/%H/%D),不開 Network Publish ⇒ 之前那個警報在新做法裡不會出現。已在 HMI 實建驗證:W、H 區開關燈、D 區整數與小數、42 刀刀具列表(一刀一組 D 區位址,上下捲動、寫入、捲到底停住都正常),編譯 0 錯誤。給客戶的 Excel 位址表範本做好了(含 PLC 端 15 項設定對照)。**要提醒客戶的兩件事**:① NX102 的 W/H/D 記憶體**預設是關的**,要在 Sysmac 的 Memory Settings 打開;② 放在 H/D 區的變數**一定要勾 Retain**、W 區的**不能勾**,否則 Sysmac 會報錯。真 PLC 連線與 32 位元數值字序排第 3 週現場驗。
+
 
 內部驗證,非交付物。判定只有兩種終點:✅已做到(建物件→編譯0錯誤→模擬器實跑→截圖)/ 🛠 學習計畫+替代做法+驗證完成。
 環境:winrig 原生 EasyBuilder Pro 被 Smart App Control 擋(CodeIntegrity 3118),改用 **Wine 11.22 可攜版 + Xvfb :77 虛擬螢幕**跑 EBPro V6.09.02.608(完全背景,不碰實體螢幕)。工作專案 Wine `C:\work\spike.cmtp`(=`~/gifu_spike/pfx/drive_c/work/`),截圖 `research/gifu_spike_shots/`。
@@ -22,6 +24,7 @@
 | 11 | OMRON NX102 EtherNet/IP 標籤匯入 | ✅ | 驅動 OMRON_EIP_NJ_SERIES(ID 445 V5.70,44818)匯入 16 標籤含 7 個 42 元素陣列→綁物件→編譯 0 錯誤→模擬讀寫;tag 陣列捲動=`TAG[列 + INDEX n]`,索引值直接=捲動列數 | 11_*.png |
 | 12 | 客戶 Excel→EB 標籤 txt | ✅ | `scripts/gifu_tags_excel2eb.py`:四欄 Excel 轉 #11 驗證過的 txt,有錯不出檔;16 標籤往返與實際匯入檔逐位元相同,20 項單元測試 | — |
 | 13 | 客戶 Network Publish 警報 | 🛠 | 依 W501 推定=同一全域變數跨工作讀寫的並行性警告(非 HMI 需要);排查步驟給客戶工程師,待回傳警告原文定案 | — |
+| 14 | OMRON Ethernet(FINS)+ AT 位址 | ✅ | 驅動 OMRON_ETHERNET(ID 435 V2.00,FINS/UDP 9600);W_Bit 000/H_Bit 5500 位元、D1000 16-bit、D1002 Float 編譯 0 錯誤、模擬讀寫;刀具列「D2000+4×刀+IDX2」(Float+UDINT+D_Bit 旗標)捲動/寫入/停底全實測;位址表 Excel 範本+NX102 設定確認表 | 14_strip_*.png |
 
 ## 逐項紀錄
 
@@ -184,6 +187,39 @@
   - OMRON W501《NJ/NX-series CPU Unit Software User's Manual》https://files.omron.eu/downloads/latest/manual/en/w501_nj_nx-series_cpu_unit_software_users_manual_en.pdf (p.4-12、5-16、5-112、5-123~5-126、6-68)
   - OMRON US TN「NX Built-in EIP Tag Set issue」(需登入,引用搜尋摘要)https://omronelectronicsllc.freshdesk.com/en/support/solutions/articles/150000200529-tn-nx-built-in-eip-tag-set-issue
   - Weintek 連線指南(Publish Only / Do not publish 行為,#11 已引用)https://dl.weintek.com/public/PLC_Connect_Guide/OMRON_EtherNet_IP_NJ_NX_Series.pdf
+
+### 14. OMRON Ethernet(FINS)+ Sysmac AT 位址模式(✅ 11-17 16:40)
+客戶確認改走 FINS:NX102 變數用 AT 指到 CJ 記憶體(W/H/D),HMI 用 OMRON Ethernet 驅動直接讀寫位址,**不開 Network Publish**(⇒ #13 的警報在這條路上不會出現)。
+- **設備**:系統參數→新增設備→OMRON Corporation→**Ethernet** = `OMRON_ETHERNET.c33`(設備 ID 435,V2.00),乙太網路、預設勾「使用 UDP」、埠 9600;測試 IP 192.168.250.1。另有「Ethernet (FINS/TCP)」與「CJ/CS/CP (Ethernet - FINS/TCP)」兩個 TCP 版驅動,依客戶指定用 UDP 版。專案現在同時有設備 4(EIP,#11)與設備 5(OMRON Ethernet)。
+- **位址格式(Weintek 官方指南+EB 位址視窗原文一致)**:位元 `DDDDDdd`,**最後 2 碼是位元 00–15**;字組 `DDDDD`。⇒ Sysmac `%W0.00`→`W_Bit 000`、`%W1.07`→`W_Bit 107`、`%H55.00`→`H_Bit 5500`、`%D1000`→`D 1000`。可用區:CIO/W/H/A/D/T/C/EM0–EMC(位元與字組皆有)。
+- **新視窗 15「OMRON_FINS」物件**:BL_0 指示燈+TS_0 切換 = `W_Bit 000`;BL_1+TS_1 = `H_Bit 5500`;NE_0 = `D 1000` 16-bit Unsigned;NE_1 = `D 1002` **32-bit Float** 2 位小數(佔 D1002–1003)。
+- **刀具列表(42 刀)換成「裝置位址+索引暫存器」**:每刀一組 4 字組 `D2000+4n`(+0 重量 REAL、+2 壽命 UDINT、+3 旗標字 bit0 前洗/bit1 後洗/bit2 斷刀)。
+  - 物件:重量 NE_2–6 = `D 2000/2004/…/2016 + Index 2`(32-bit Float);壽命 NE_7–11 = `D 2002/…/2018 + Index 2`(32-bit Unsigned);旗標 TS_2 = `D_Bit 200300 + Index 2`。建法:第一列設好後「多重複製 Y×5、位址間隔 4」。
+  - 位址視窗在 OMRON Ethernet 的 D/D_Bit 上**有「索引暫存器」勾選、可選 Index 0–31**,用 Index 2(LW-9202),避開 #5/#11 已用的 0/1。
+  - 捲動不用巨集:Set Word 寫 LW-9202「遞加 JOG+ 4,最大 148」/「遞減 JOG− 4,最小 0」(148 = 37 刀×4 ⇒ 最後一頁顯示刀 38–42)。
+  - ⭐ 位元套索引的規則(EB 說明書 indexregister.htm):「位元位址套索引時,以 16 個位元(=1 字組)為單位偏移」⇒ 索引值 4 讓 D_Bit 200300 變成 D2007.00,**和字組物件同一個索引值就對齊同一刀**,不需要另一組索引。(Tag 驅動 #11 則是元素為單位,兩者不同。)
+- **編譯**:0 錯誤 0 警告(8.52MB,剩 55.48MB)`14_a_compile_0err.png`。
+- **模擬器實測**(OMRON Ethernet 離線模擬=EB 內建記憶體模擬,未接真 PLC):
+  - `14_strip_bits_words.png`:初始全 OFF → 切 W0.00、H55.00 兩燈亮 → 輸入 D1000=1234、D1002=3.14,關 W0.00 後 H55.00 仍亮(兩區獨立);監看面板顯示物件位址 `OMRON Ethernet W_Bit-0`。
+  - `14_strip_tool_index.png`:IDX=0 寫入刀 1–5(1.10/100…5.50/500)→ ▼ IDX=4 顯示刀 2–6 → 在 IDX=4 第 5 列寫 6.60/600(=寫進刀 6 的 D2020/D2022)→ ▼×45 **停在 148** → ▲ 回 IDX=4 刀 6 仍是 6.60/600 → IDX=0 刀 1–5 全回來。
+  - `14_strip_dbit_index.png`:IDX=0 打開 D2003.00 → ▼ IDX=4 顯示 OFF(D2007.00,刀 2)→ ▲ 回 ON。
+- **給客戶的位址表 Excel**:`research/gifu_nx102/gifu_FINS_address_table_template.xlsx`
+  - 「位址表」欄位:**變數名稱 / AT 位址 / 資料型態 / 陣列長度 / 讀寫 / 說明** + Retain(H/D/EM 必須 ON)+ 灰底兩欄我方填(HMI 位址、佔用範圍)。讀寫/型態/Retain 有下拉選單。預填客戶的實例:`%W0.00` BOOL×24(佔 W0.00–W1.07 → W_Bit 000~107)、`%W2.00` BOOL×16(W_Bit 200~215)、`%W100` 輸出(型態待確認)、`%H55.00` BOOL×37(佔 H55.00–H57.04 → H_Bit 5500~5704)、D1000 UINT、D1002 REAL、刀具組 D2000–D2167。
+  - 「NX102 FINS 設定確認」15 項(建議值+客戶填實際值+手冊出處),「填寫說明」頁附 3 個官方 URL。
+- **NX102 端要確認的(OMRON 官方手冊原文)**:
+  1. FINS 開關:Controller Setup → Built-in EtherNet/IP Port Settings → FINS Settings → FINS/UDP 選 **Use**(選 Do not use 時 FINS 伺服器不回應)。NX102 FINS/UDP、FINS/TCP **都支援,預設埠都是 9600**(可改),TCP 最多 16 連線(W596 1-4、2-1)。HMI 用 UDP 版驅動,TCP 可關。
+  2. 節點號:FINS/UDP 的 IP→FINS 位址轉換選 **Automatic generation** ⇒ **IP 最後一碼 = FINS 節點號**(W596 2-3;Weintek 指南步驟 2 同樣要求自動產生)。⇒ HMI 與 NX102 同網段、IP 末碼不可撞其他 FINS 節點。
+  3. ⚠️ **CJ 記憶體預設全部停用**:Controller Setup → **Memory Settings**(Memory Settings for CJ-series Units)的 CIO/WR/HR/DM/EM 預設都是 **Disable**;啟用後預設字數 CIO 6,144、WR 512、**HR 512(上限 1,536)**、DM 32,768,下載後生效、RUN 中不可改(W501 4-11-3)。沒啟用的區,AT 指過去會報錯、HMI 讀不到。本案至少要開 WR、HR(≥58 字)、DM(≥2,168 字)。
+  4. ⚠️ **Retain 必須跟區域一致**:CIO/WR 用「無 Retain」變數,**HR/DM/EM 用「有 Retain」變數**,不一致會報錯(W501 4-11-3 註 *1/*2、6-3-8)⇒ 客戶 `%H55.00` 那個陣列要勾 Retain。
+  5. AT 寫法:位元 `%W0.00`(字組.位元)、字組 `%D100`;**整個陣列只設一個起點 AT**(W501 6-3-8)。客戶口述的「%W000」應是 `%W0.00`,位址表請照這寫法填。
+  6. **FINS 寫入保護**(Operation Settings → FINS Settings → Security Settings)開著時,MEMORY AREA WRITE 不執行 ⇒ HMI 只能讀不能寫,要關(W596 2-5、2-6)。有開 Packet Filter 要放行 FINS(W596 2-1)。
+- **還沒驗、排第 3 週現場**:真 PLC 的 FINS 回應(離線模擬不經網路);**32-bit REAL/UDINT 的字組順序**(用 PLC 寫一個已知值如 3.14 到 D1002 看 HMI 是否顯示 3.14,錯了就在 EB 該設備開字組交換);Weintek 指南建議 PLC 站號 0,若無回應改填 NX102 的節點號。
+- 小註:模擬時把起始視窗改成 15,收尾已改回 13 並存檔。Wine 下 EB 的下拉清單偶爾留下一塊黑色未重繪視窗擋住欄位,用 `mvwin.py <id> 3000 3000` 移開即可(不影響專案)。
+- 來源:
+  - Weintek OMRON Ethernet 連線指南(格式 DDDDDdd、UDP 9600、站號 0、NJ/NX 設 FINS 9600+自動產生)https://dl.weintek.com/public/PLC_Connect_Guide/OMRON_Ethernet.pdf
+  - OMRON W596《NX-series CPU Unit FINS Function User's Manual》https://files.omron.eu/downloads/latest/manual/en/w596_nx-series_-_cpu_unit_fins_function_users_manual_en.pdf (1-4、1-5、2-1、2-3、2-5、2-6、2-7)
+  - OMRON W501《NJ/NX-series CPU Unit Software User's Manual》https://files.omron.eu/downloads/latest/manual/en/w501_nj_nx-series_cpu_unit_software_users_manual_en.pdf (4-11 Memory Settings for CJ-series Units、6-3-8 AT Specification)
+  - EB 說明書 索引暫存器(EBPro 內建 help `indexregister.htm`)
 
 ### 10. 遠端交付(✅ 11-16 21:00)
 - **離線模擬包**:cxob 是 gzip→tar,解出 `mt8000/project`;EB 自己模擬時也是把這個檔(逐位元相同)交給 `cMTViewer.exe -fs <檔> -allinone`(另帶 `-mp=` 參數,實測不帶也能跑)。

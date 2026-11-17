@@ -9910,3 +9910,4 @@ fortune-ai 那支測試躺一個月沒人知道,就是這個缺口的證據。�
 - 11-16 15:20 景翔 HMI 交付前技術驗證續跑(上輪撞 5h 上限):Wine+Xvfb :77 背景跑 EBPro,11 項逐項建/編譯/模擬/截圖→research/2026-11-16_gifu_hmi_spikes.md;不聯絡客戶
 - 11-17 01:15 景翔 HMI 驗證續跑(#6/#7/#9 + Excel→EB 轉換 + Network Publish 排查):沿用 Wine+Xvfb :77;不聯絡客戶
 - 11-17 07:50 景翔 HMI 收尾:#9 素材預算(8.52MB/剩55.48MB,PNG 原樣存入)、scripts/gifu_tags_excel2eb.py(16 標籤往返逐位元一致,20 測試)、Network Publish 警報排查(W501)+客戶工程師步驟、老闆白話結論;#11 標籤數更正 17→16;不聯絡客戶
+- 11-17 16:45 景翔 HMI #14 OMRON Ethernet(FINS)AT 位址模式驗證:W/H 位元、D 字組/Float、D 區+索引暫存器刀具列(含 D_Bit)編譯 0 錯誤+模擬實測;客戶位址表 Excel 範本+NX102 FINS 設定確認(W596/W501);不聯絡客戶
