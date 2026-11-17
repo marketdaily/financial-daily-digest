@@ -1755,3 +1755,11 @@
 {"date": "2026-11-16", "code": "2471", "source": "leadflow", "level": "red", "signal": "資通(2471) 無消息近漲停+10.0%(連3根,5日+50.1%),疑資訊先行資金|外資+投信近3日僅-651張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-11-16", "code": "6949", "source": "leadflow", "level": "red", "signal": "沛爾生醫*-創(6949) 無消息近漲停+10.0%(連2根,5日+23.6%),疑資訊先行資金|外資+投信近3日+1674張", "price_at_signal": null}
 {"date": "2026-11-16", "code": "5212", "source": "leadflow", "level": "red", "signal": "凌網(5212) 無消息近漲停+9.9%(量能32.7×,5日+15.7%),疑資訊先行資金|外資+投信近3日僅+26張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-17", "code": "3147", "source": "margin", "level": "red", "signal": "大綜(3147):融資5日驟減-19.7%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-17", "code": "4912", "source": "institutional", "level": "yellow", "signal": "聯德控股-KY(4912):法人 20 日淨賣超 -729 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-17", "code": "6414", "source": "institutional", "level": "red", "signal": "樺漢(6414):外資連 5 日賣超(5日淨賣 -393 張)", "price_at_signal": null}
+{"date": "2026-11-17", "code": "7788", "source": "institutional", "level": "yellow", "signal": "松川精密(7788):法人 20 日淨買超 +201 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-17", "code": "7788", "source": "margin", "level": "red", "signal": "松川精密(7788):融資5日驟減-15.7%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-17", "code": "8358", "source": "institutional", "level": "red", "signal": "金居(8358):投信連 3 日賣超(棄養警訊,20日淨賣 -777 張)", "price_at_signal": null}
+{"date": "2026-11-17", "code": "6894", "source": "margin", "level": "red", "signal": "衛司特(6894):融資5日驟減-20.6%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-17", "code": "5013", "source": "leadflow", "level": "yellow", "signal": "強新(5013) 無消息近漲停+9.9%(量能1.8×,5日+0.6%),疑資訊先行資金", "price_at_signal": null}
