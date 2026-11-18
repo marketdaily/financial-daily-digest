@@ -1,20 +1,23 @@
 {
  "date": "2026-11-18",
  "kpi": {
-  "subscribers": 47,
+  "subscribers": 48,
   "digest_clean_days_7d": "6/7",
-  "fallback_7d": 4,
-  "social_posts_7d": 28
+  "fallback_7d": 5,
+  "social_posts_7d": 44
  },
  "digest": {
-  "audit": null,
+  "audit": {
+   "date": "2026-11-18",
+   "total_subscribers": 48,
+   "audit_failed": 1,
+   "fallback": 1,
+   "personalization_failed": 0,
+   "per_check": {
+    "verdict_monoculture": 1
+   }
+  },
   "trend": [
-   {
-    "date": "2026-11-09",
-    "audit_failed": 1,
-    "fallback": 0,
-    "total": 46
-   },
    {
     "date": "2026-11-10",
     "audit_failed": 1,
@@ -50,23 +53,15 @@
     "audit_failed": 3,
     "fallback": 0,
     "total": 47
+   },
+   {
+    "date": "2026-11-18",
+    "audit_failed": 1,
+    "fallback": 1,
+    "total": 48
    }
   ],
   "shifts": [
-   {
-    "date": "2026-11-14",
-    "market": "tw",
-    "start": "05:20:01",
-    "done": null,
-    "lateness_min": null,
-    "verdict": "incomplete",
-    "llm_tiers": {
-     "gemini": 2,
-     "local_last_resort": 1,
-     "other_free70b": 8,
-     "groq_free": 5
-    }
-   },
    {
     "date": "2026-11-16",
     "market": "tw",
@@ -130,7 +125,24 @@
     "lateness_min": null,
     "verdict": "incomplete",
     "llm_tiers": {
-     "gemini": 1
+     "gemini": 1,
+     "groq_free": 15,
+     "other_free70b": 56,
+     "local_last_resort": 1
+    }
+   },
+   {
+    "date": "2026-11-18",
+    "market": "us",
+    "start": "18:20:00",
+    "done": "20:35:28",
+    "lateness_min": 35.5,
+    "verdict": "late",
+    "llm_tiers": {
+     "gemini": 13,
+     "groq_free": 30,
+     "cf_free": 14,
+     "other_free70b": 29
     }
    }
   ]
@@ -141,20 +153,20 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": null,
+  "tw": 1,
   "us": null
  },
  "sitescan": {
-  "date": "2026-11-17",
-  "fails": 0,
-  "first_scan_fails": null,
+  "date": "2026-11-18",
+  "fails": 1,
+  "first_scan_fails": 1,
   "fixed_in_place": false
  },
  "flags": {
-  "hb_miss_tw": false,
+  "hb_miss_tw": true,
   "hb_miss_us": false,
-  "guard_alert_tw": false,
+  "guard_alert_tw": true,
   "guard_alert_us": false
  },
- "generated_utc": "2026-11-17T21:38:00Z"
+ "generated_utc": "2026-11-18T12:38:01Z"
 }
