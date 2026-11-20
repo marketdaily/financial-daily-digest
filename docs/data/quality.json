@@ -154,7 +154,7 @@
  },
  "postcheck": {
   "tw": 0,
-  "us": null
+  "us": 1
  },
  "sitescan": {
   "date": "2026-11-20",
@@ -168,5 +168,5 @@
   "guard_alert_tw": true,
   "guard_alert_us": true
  },
- "generated_utc": "2026-11-20T13:08:02Z"
+ "generated_utc": "2026-11-20T13:38:01Z"
 }
