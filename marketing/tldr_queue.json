@@ -2,6 +2,138 @@
   "_comment": "日報自動裂變候選佇列(P2.5打法6資料層)——只含公版存檔結構化數字區塊萃取的短文,發文前仍須逐字核對 caption_zh(feedback_social_post_verify)。本檔不會被自動發文流程讀取。",
   "candidates": [
     {
+      "date": "2026-11-20",
+      "variant": "us",
+      "indicators": [
+        {
+          "label": "VIX 恐慌指數",
+          "value": "29.52",
+          "sub": "警戒"
+        },
+        {
+          "label": "恐貪指數",
+          "value": "30/100",
+          "sub": "Fear"
+        },
+        {
+          "label": "美國10年債",
+          "value": "5.05%",
+          "sub": "升息預期參考"
+        },
+        {
+          "label": "黃金 / 原油",
+          "value": "$3577.5 / $81.12",
+          "sub": "-2.93% / -1.60%"
+        },
+        {
+          "label": "USD/TWD 匯率",
+          "value": "32.92",
+          "sub": "台幣升貶"
+        }
+      ],
+      "sectors": [
+        {
+          "name": "XLE 能源",
+          "move": "▼ -0.65%",
+          "pct": -0.65
+        },
+        {
+          "name": "XLP 必需消費",
+          "move": "▼ -1.45%",
+          "pct": -1.45
+        },
+        {
+          "name": "XLF 金融",
+          "move": "▼ -1.49%",
+          "pct": -1.49
+        },
+        {
+          "name": "XLK 科技",
+          "move": "▼ -1.90%",
+          "pct": -1.9
+        },
+        {
+          "name": "XLY 非必需消費",
+          "move": "▼ -2.79%",
+          "pct": -2.79
+        },
+        {
+          "name": "XLC 通訊",
+          "move": "▼ -2.67%",
+          "pct": -2.67
+        }
+      ],
+      "caption_zh": "📊 2026-11-20 美股盤後市場脈搏\nVIX 29.52(警戒) · 恐貪指數 30/100(Fear) · 美10年債 5.05% · USD/TWD 32.92\n板塊輪動:XLE 能源 領漲 ▼ -0.65%、XLY 非必需消費 重挫 ▼ -2.79%\n完整日報 → link in bio",
+      "caption_len": 150,
+      "source_archive": "docs/output/digest_2026-11-20_us.html"
+    },
+    {
+      "date": "2026-11-20",
+      "variant": "tw",
+      "indicators": [
+        {
+          "label": "VIX 恐慌指數",
+          "value": "28.44",
+          "sub": "警戒"
+        },
+        {
+          "label": "恐貪指數",
+          "value": "30/100",
+          "sub": "Fear"
+        },
+        {
+          "label": "美國10年債",
+          "value": "5.05%",
+          "sub": "升息預期參考"
+        },
+        {
+          "label": "黃金 / 原油",
+          "value": "$3653.5 / $83.16",
+          "sub": "-2.36% / +1.03%"
+        },
+        {
+          "label": "USD/TWD 匯率",
+          "value": "33.02",
+          "sub": "台幣貶值"
+        }
+      ],
+      "sectors": [
+        {
+          "name": "XLE 能源",
+          "move": "▼ -0.65%",
+          "pct": -0.65
+        },
+        {
+          "name": "XLP 必需消費",
+          "move": "▼ -1.45%",
+          "pct": -1.45
+        },
+        {
+          "name": "XLF 金融",
+          "move": "▼ -1.49%",
+          "pct": -1.49
+        },
+        {
+          "name": "XLK 科技",
+          "move": "▼ -1.90%",
+          "pct": -1.9
+        },
+        {
+          "name": "XLC 通訊",
+          "move": "▼ -2.67%",
+          "pct": -2.67
+        },
+        {
+          "name": "XLY 非必需消費",
+          "move": "▼ -2.79%",
+          "pct": -2.79
+        }
+      ],
+      "caption_zh": "📊 2026-11-20 台股盤後市場脈搏\nVIX 28.44(警戒) · 恐貪指數 30/100(Fear) · 美10年債 5.05% · USD/TWD 33.02\n板塊輪動:XLE 能源 領漲 ▼ -0.65%、XLY 非必需消費 重挫 ▼ -2.79%\n完整日報 → link in bio",
+      "caption_len": 150,
+      "source_archive": "docs/output/digest_2026-11-20.html"
+    },
+    {
       "date": "2026-11-19",
       "variant": "us",
       "indicators": [
