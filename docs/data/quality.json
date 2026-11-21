@@ -1,22 +1,13 @@
 {
- "date": "2026-11-21",
+ "date": "2026-11-22",
  "kpi": {
   "subscribers": 49,
   "digest_clean_days_7d": "6/7",
   "fallback_7d": 5,
-  "social_posts_7d": 55
+  "social_posts_7d": 54
  },
  "digest": {
-  "audit": {
-   "date": "2026-11-21",
-   "total_subscribers": 49,
-   "audit_failed": 2,
-   "fallback": 0,
-   "personalization_failed": 0,
-   "per_check": {
-    "ticker_no_zh_name": 2
-   }
-  },
+  "audit": null,
   "trend": [
    {
     "date": "2026-11-13",
@@ -151,7 +142,7 @@
   "disabled": false
  },
  "postcheck": {
-  "tw": 0,
+  "tw": null,
   "us": null
  },
  "sitescan": {
@@ -163,8 +154,8 @@
  "flags": {
   "hb_miss_tw": false,
   "hb_miss_us": false,
-  "guard_alert_tw": true,
+  "guard_alert_tw": false,
   "guard_alert_us": false
  },
- "generated_utc": "2026-11-21T00:38:01Z"
+ "generated_utc": "2026-11-21T16:08:01Z"
 }
