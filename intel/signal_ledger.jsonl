@@ -1763,3 +1763,41 @@
 {"date": "2026-11-17", "code": "8358", "source": "institutional", "level": "red", "signal": "金居(8358):投信連 3 日賣超(棄養警訊,20日淨賣 -777 張)", "price_at_signal": null}
 {"date": "2026-11-17", "code": "6894", "source": "margin", "level": "red", "signal": "衛司特(6894):融資5日驟減-20.6%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
 {"date": "2026-11-17", "code": "5013", "source": "leadflow", "level": "yellow", "signal": "強新(5013) 無消息近漲停+9.9%(量能1.8×,5日+0.6%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-21", "code": "1785", "source": "institutional", "level": "red", "signal": "光洋科(1785):投信連 3 日買超(認養訊號,20日淨買 +2,436 張)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "2059", "source": "margin", "level": "red", "signal": "川湖(2059):融資5日驟減-42.1%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "2344", "source": "margin", "level": "red", "signal": "華邦電(2344):融資5日驟減-21.5%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "2451", "source": "margin", "level": "red", "signal": "創見(2451):融資5日驟減-23.3%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "3023", "source": "investor_conf", "level": "yellow", "signal": "信邦(3023):法說會18天後召開", "price_at_signal": null}
+{"date": "2026-11-21", "code": "3090", "source": "institutional", "level": "red", "signal": "日電貿(3090):投信連 3 日賣超(棄養警訊,20日淨賣 -1,046 張)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "3090", "source": "margin", "level": "red", "signal": "日電貿(3090):融資5日驟減-27.7%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "3289", "source": "margin", "level": "red", "signal": "宜特(3289):融資5日驟減-23.1%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "3374", "source": "institutional", "level": "red", "signal": "精材(3374):外資連 5 日賣超(5日淨賣 -8,999 張)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "3374", "source": "margin", "level": "red", "signal": "精材(3374):融資5日驟減-15.3%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "3374", "source": "holders", "level": "yellow", "signal": "精材(3374):千張大戶持股比週減-4.22個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "3491", "source": "holders", "level": "yellow", "signal": "昇達科(3491):千張大戶持股比週增0.95個百分點(溫和加碼)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "3706", "source": "margin", "level": "red", "signal": "神達(3706):融資5日驟減-15.0%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "4906", "source": "margin", "level": "red", "signal": "正文(4906):融資5日驟減-23.0%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "4906", "source": "investor_conf", "level": "yellow", "signal": "正文(4906):法說會11天後召開", "price_at_signal": null}
+{"date": "2026-11-21", "code": "4912", "source": "margin", "level": "red", "signal": "聯德控股-KY(4912):融資5日驟減-17.2%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "5285", "source": "margin", "level": "red", "signal": "界霖(5285):融資5日驟減-22.4%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "5285", "source": "holders", "level": "red", "signal": "界霖(5285):千張大戶持股比週增1.49個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "6196", "source": "margin", "level": "red", "signal": "帆宣(6196):融資5日驟減-24.5%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "6231", "source": "margin", "level": "red", "signal": "系微(6231):融資5日驟減-35.0%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "6231", "source": "holders", "level": "yellow", "signal": "系微(6231):千張大戶持股比週減-2.35個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "6290", "source": "margin", "level": "red", "signal": "良維(6290):融資5日驟減-20.4%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "6290", "source": "holders", "level": "yellow", "signal": "良維(6290):千張大戶持股比週減-1.41個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "7610", "source": "holders", "level": "yellow", "signal": "聯友金屬-創(7610):千張大戶持股比週減-1.32個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "7610", "source": "twse_punish", "level": "red", "signal": "聯友金屬-創(7610):處置中(第一次處置):連續三次,期間 115/11/20～115/11/26", "price_at_signal": null}
+{"date": "2026-11-21", "code": "7751", "source": "institutional", "level": "red", "signal": "竑騰(7751):外資連 6 日買超(5日淨買 +228 張)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "7788", "source": "institutional", "level": "red", "signal": "松川精密(7788):投信連 3 日買超(認養訊號,20日淨買 +2,810 張)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "7788", "source": "sbl", "level": "red", "signal": "松川精密(7788):機構借券賣出5日遽增28.6%(聰明錢加碼放空,股價同期續跌,空頭訊號確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "7788", "source": "holders", "level": "red", "signal": "松川精密(7788):千張大戶持股比週增2.17個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "8028", "source": "margin", "level": "red", "signal": "昇陽半導體(8028):融資5日驟減-33.8%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "8028", "source": "holders", "level": "yellow", "signal": "昇陽半導體(8028):千張大戶持股比週減-2.54個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "8299", "source": "margin", "level": "red", "signal": "群聯(8299):融資5日驟減-16.3%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "8358", "source": "margin", "level": "red", "signal": "金居(8358):融資5日驟減-25.9%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "8473", "source": "institutional", "level": "red", "signal": "山林水(8473):外資連 6 日賣超(5日淨賣 -536 張)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "4566", "source": "twse_notetrans", "level": "yellow", "signal": "時碩工業(4566):注意累計異常:115年11月19日至115年11月20日連續二次(逼近處置門檻)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "6725", "source": "tw_rank", "level": "yellow", "signal": "矽科宏晟(6725) 今日漲幅排行第6(+9.9%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-21", "code": "8255", "source": "margin", "level": "red", "signal": "朋程(8255):融資5日驟減-20.1%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-21", "code": "6414", "source": "holders", "level": "yellow", "signal": "樺漢(6414):千張大戶持股比週減-1.13個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
