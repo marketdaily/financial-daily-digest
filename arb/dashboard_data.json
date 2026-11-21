@@ -486,7 +486,7 @@
   }
  ],
  "aud_twd": 22.7615,
- "generated": "2026-11-20T01:13:54.781424+00:00",
+ "generated": "2026-11-21T01:13:43.441361+00:00",
  "rate_jpy_twd": 0.206507,
  "rate_source": "open.er-api.com",
  "rate_usd_twd": 32.4,
@@ -504,26 +504,8 @@
    "grade": "A",
    "tw_kw": "scotty cameron select",
    "live": {
-    "count": 15,
+    "count": 16,
     "items": [
-     {
-      "title": "スコッティキャメロン Special SELECT NEWPORT 2 スペシャル セレクト ニューポート2 35インチ",
-      "jpy": 20000,
-      "landed": 6433,
-      "gen": "special",
-      "anchor_applies": true,
-      "buyee": "https://buyee.jp/item/yahoo/auction/w1201481242",
-      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/w1201481242",
-      "margin_f2f": 3315,
-      "margin_shopee": 2475,
-      "roi": 52,
-      "biddable": true,
-      "seller_rating": 99.9,
-      "seller_good": 86661,
-      "seller_bad": 95,
-      "ok_to_buy": true,
-      "reason": "可買"
-     },
      {
       "title": "SCOTTY CAMERON SPECIAL SELECT FLOWBACK 5.5 スコッティキャメロン スペシャルセレクト フローバック5.5 パター メンズ 35インチ",
       "jpy": 22980,
@@ -537,7 +519,7 @@
       "roi": 36,
       "biddable": true,
       "seller_rating": 98.8,
-      "seller_good": 2709,
+      "seller_good": 2712,
       "seller_bad": 32,
       "ok_to_buy": false,
       "reason": "賣家好評率 98.8% 低於門檻 99.0%"
@@ -555,7 +537,7 @@
       "roi": 36,
       "biddable": true,
       "seller_rating": 98.8,
-      "seller_good": 2709,
+      "seller_good": 2712,
       "seller_bad": 32,
       "ok_to_buy": false,
       "reason": "賣家好評率 98.8% 低於門檻 99.0%"
@@ -570,7 +552,25 @@
       "yahoo": "https://auctions.yahoo.co.jp/jp/auction/f1249820899",
       "margin_f2f": 2158,
       "margin_shopee": 1318,
-      "roi": 28
+      "roi": 28,
+      "biddable": true,
+      "seller_rating": 99.8,
+      "seller_good": 12061,
+      "seller_bad": 22,
+      "ok_to_buy": true,
+      "reason": "可買"
+     },
+     {
+      "title": "タイトリスト SCOTTY CAMERON Special select NEWPORT 2 34インチ パター PT フレックスその他 スコッティキャメロン スペシャルセレクト",
+      "jpy": 27627,
+      "landed": 8272,
+      "gen": "special",
+      "anchor_applies": true,
+      "buyee": "https://buyee.jp/item/yahoo/auction/t1253069222",
+      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/t1253069222",
+      "margin_f2f": 1476,
+      "margin_shopee": 636,
+      "roi": 18
      },
      {
       "title": "スコッティキャメロン スペシャルセレクト ファストバック1.5 2020パター",
@@ -622,7 +622,7 @@
    "tw_note": "⚠️ 台灣無可靠行情(樣本不足或型號混雜)——不計毛利",
    "grade": "B",
    "live": {
-    "count": 16,
+    "count": 15,
     "items": [
      {
       "title": "Scotty Cameron スペシャル セレクト Newport 2.5 34インチ US仕様 2020年 スコッティ キャメロン Special Select ニューポート ブ",
@@ -638,7 +638,7 @@
       "note": "世代 special 與售價錨(None)不符,無法計算毛利",
       "biddable": false,
       "seller_rating": 100.0,
-      "seller_good": 82304,
+      "seller_good": 82309,
       "seller_bad": 28,
       "ok_to_buy": false,
       "reason": "不可下標(多為賣家設了投標者評價限制)"
@@ -682,17 +682,17 @@
       "reason": "可買"
      },
      {
-      "title": "スコッティキャメロン セレクト ニューポート2 パター SCOTTY CAMERON select NEWPORT 2",
-      "jpy": 21000,
-      "landed": 6674,
-      "gen": null,
+      "title": "スコッティキャメロン スタジオセレクト ニューポート2.6 NEWPORT2.6 送料込み",
+      "jpy": 32800,
+      "landed": 9519,
+      "gen": "studio",
       "anchor_applies": true,
-      "buyee": "https://buyee.jp/item/yahoo/auction/p1252391244",
-      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/p1252391244",
+      "buyee": "https://buyee.jp/item/yahoo/auction/f1251299691",
+      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/f1251299691",
       "margin_f2f": null,
       "margin_shopee": null,
       "roi": null,
-      "note": "世代 不明 與售價錨(None)不符,無法計算毛利"
+      "note": "世代 studio 與售價錨(None)不符,無法計算毛利"
      },
      {
       "title": "【正規品】34インチ スコッティキャメロン スタジオセレクト ニューポート2 パター ピン 削り出し SCOTTY CAMERON STUDIO SELECT NEWPORT 2",
@@ -708,13 +708,13 @@
       "note": "世代 studio 與售價錨(None)不符,無法計算毛利"
      },
      {
-      "title": "ツイストネック！！SC セレクト ニューポート 2 ☆ ミラーフィニッシュ！正規品です！",
-      "jpy": 36000,
-      "landed": 10291,
+      "title": "★Titleist SCOTTY CAMERON ニューポート2 パター 34インチ 中古品★",
+      "jpy": 15000,
+      "landed": 5228,
       "gen": null,
       "anchor_applies": true,
-      "buyee": "https://buyee.jp/item/yahoo/auction/1252815986",
-      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/1252815986",
+      "buyee": "https://buyee.jp/item/yahoo/auction/x1251001613",
+      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/x1251001613",
       "margin_f2f": null,
       "margin_shopee": null,
       "roi": null,
@@ -725,9 +725,9 @@
     "buyee_search": "https://buyee.jp/item/search/query/%E3%82%B9%E3%82%B3%E3%83%83%E3%83%86%E3%82%A3%E3%82%AD%E3%83%A3%E3%83%A1%E3%83%AD%E3%83%B3%20%E3%83%8B%E3%83%A5%E3%83%BC%E3%83%9D%E3%83%BC%E3%83%882"
    },
    "market": {
-    "count30d": 74,
-    "median_jpy": 28000,
-    "landed": 8362,
+    "count30d": 71,
+    "median_jpy": 28500,
+    "landed": 8482,
     "margin_f2f": null,
     "margin_shopee": null,
     "roi": null
@@ -768,6 +768,24 @@
       "reason": "可買"
      },
      {
+      "title": "引っかけと噴け上がりを適度に抑えるシャフト！★フジクラ/スピーダーNX グリーン/50S/長さ41.25インチ/9323",
+      "jpy": 10000,
+      "landed": 3321,
+      "gen": null,
+      "anchor_applies": true,
+      "buyee": "https://buyee.jp/item/yahoo/auction/h1250726302",
+      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/h1250726302",
+      "margin_f2f": 6331,
+      "margin_shopee": 5499,
+      "roi": 191,
+      "biddable": true,
+      "seller_rating": 99.1,
+      "seller_good": 12342,
+      "seller_bad": 111,
+      "ok_to_buy": true,
+      "reason": "可買"
+     },
+     {
       "title": "ボールが捕まり過ぎないシャフト！★フジクラ/スピーダーNX グリーン/50S/長さ43.375インチ/9229",
       "jpy": 12000,
       "landed": 3803,
@@ -795,25 +813,7 @@
       "yahoo": "https://auctions.yahoo.co.jp/jp/auction/l1233351542",
       "margin_f2f": 5728,
       "margin_shopee": 4896,
-      "roi": 146,
-      "biddable": true,
-      "seller_rating": 99.0,
-      "seller_good": 26306,
-      "seller_bad": 263,
-      "ok_to_buy": true,
-      "reason": "可買"
-     },
-     {
-      "title": "ボールが捕まり過ぎないシャフト！★フジクラ/スピーダーNX グリーン/60S/長さ41.75インチ/9230",
-      "jpy": 13000,
-      "landed": 4044,
-      "gen": null,
-      "anchor_applies": true,
-      "buyee": "https://buyee.jp/item/yahoo/auction/p1249471433",
-      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/p1249471433",
-      "margin_f2f": 5608,
-      "margin_shopee": 4776,
-      "roi": 139
+      "roi": 146
      },
      {
       "title": "スピーダーNXグリーン　50S　テーラメイドスリーブ付",
@@ -844,7 +844,7 @@
     "buyee_search": "https://buyee.jp/item/search/query/%E3%82%B9%E3%83%94%E3%83%BC%E3%83%80%E3%83%BC%20NX%20%E3%82%B0%E3%83%AA%E3%83%BC%E3%83%B3"
    },
    "market": {
-    "count30d": 68,
+    "count30d": 67,
     "median_jpy": 14800,
     "landed": 4478,
     "margin_f2f": 5174,
@@ -866,8 +866,26 @@
    "grade": "B",
    "tw_kw": "scotty cameron super select",
    "live": {
-    "count": 33,
+    "count": 32,
     "items": [
+     {
+      "title": "美品　SCOTTY CAMERON スコッティキャメロン スーパーセレクト SQUARE BACK2 ジャパン ３４インチ",
+      "jpy": 30000,
+      "landed": 8844,
+      "gen": "super",
+      "anchor_applies": true,
+      "buyee": "https://buyee.jp/item/yahoo/auction/h1249147532",
+      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/h1249147532",
+      "margin_f2f": 5423,
+      "margin_shopee": 4222,
+      "roi": 61,
+      "biddable": true,
+      "seller_rating": 99.7,
+      "seller_good": 1486,
+      "seller_bad": 5,
+      "ok_to_buy": true,
+      "reason": "可買"
+     },
      {
       "title": "【Used】Scotty Cameron Super Select Squareback 2 Long Design 38インチ 2024年 Titleist スーパーセレクト【及",
       "jpy": 35000,
@@ -881,7 +899,7 @@
       "roi": 42,
       "biddable": true,
       "seller_rating": 99.8,
-      "seller_good": 9526,
+      "seller_good": 9527,
       "seller_bad": 14,
       "ok_to_buy": true,
       "reason": "可買"
@@ -899,7 +917,7 @@
       "roi": 35,
       "biddable": true,
       "seller_rating": 99.8,
-      "seller_good": 12058,
+      "seller_good": 12061,
       "seller_bad": 22,
       "ok_to_buy": true,
       "reason": "可買"
@@ -914,49 +932,31 @@
       "yahoo": "https://auctions.yahoo.co.jp/jp/auction/o1252704020",
       "margin_f2f": 3716,
       "margin_shopee": 2515,
-      "roi": 35,
-      "biddable": true,
-      "seller_rating": 99.4,
-      "seller_good": 57944,
-      "seller_bad": 371,
-      "ok_to_buy": true,
-      "reason": "可買"
-     },
-     {
-      "title": "【中古】スーパーセレクトニューポート2 SUPER SELECT NEWPORT2 オリジナルスチール[34インチ]　5684",
-      "jpy": 38326,
-      "landed": 10852,
-      "gen": "super",
-      "anchor_applies": true,
-      "buyee": "https://buyee.jp/item/yahoo/auction/c1248262256",
-      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/c1248262256",
-      "margin_f2f": 3415,
-      "margin_shopee": 2214,
-      "roi": 31
+      "roi": 35
      },
      {
       "title": "スコッティキャメロン スーパーセレクト SUPER SELECT ニューポート2 パター 34インチ　6389",
-      "jpy": 38493,
-      "landed": 10892,
+      "jpy": 37900,
+      "landed": 10749,
       "gen": "super",
       "anchor_applies": true,
       "buyee": "https://buyee.jp/item/yahoo/auction/h1247818348",
       "yahoo": "https://auctions.yahoo.co.jp/jp/auction/h1247818348",
-      "margin_f2f": 3375,
-      "margin_shopee": 2174,
-      "roi": 31
+      "margin_f2f": 3518,
+      "margin_shopee": 2317,
+      "roi": 33
      },
      {
-      "title": "スーパー セレクト GOLO 6　34インチ　極上美品中古",
-      "jpy": 38800,
-      "landed": 10966,
+      "title": "タイトリスト SCOTTY CAMERON SUPER SELECT GOLO 6 33インチ パター PT フレックスその他 スコッティキャメロン スーパーセレクト",
+      "jpy": 37980,
+      "landed": 10768,
       "gen": "super",
       "anchor_applies": true,
-      "buyee": "https://buyee.jp/item/yahoo/auction/s1247175430",
-      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/s1247175430",
-      "margin_f2f": 3301,
-      "margin_shopee": 2100,
-      "roi": 30
+      "buyee": "https://buyee.jp/item/yahoo/auction/h1253158746",
+      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/h1253158746",
+      "margin_f2f": 3499,
+      "margin_shopee": 2298,
+      "roi": 32
      }
     ],
     "search_url": "https://auctions.yahoo.co.jp/search/search?p=%E3%82%B9%E3%82%B3%E3%83%83%E3%83%86%E3%82%A3%E3%82%AD%E3%83%A3%E3%83%A1%E3%83%AD%E3%83%B3%20%E3%82%B9%E3%83%BC%E3%83%91%E3%83%BC%E3%82%BB%E3%83%AC%E3%82%AF%E3%83%88&n=50",
@@ -985,26 +985,8 @@
    "grade": "TEST",
    "tw_kw": "tour ad di",
    "live": {
-    "count": 34,
+    "count": 29,
     "items": [
-     {
-      "title": "AKIRA ADR STRONG BLACK Ⅱ　10.5°　ツアーAD　DJ7S",
-      "jpy": 8000,
-      "landed": 2839,
-      "gen": null,
-      "anchor_applies": true,
-      "buyee": "https://buyee.jp/item/yahoo/auction/b1252445768",
-      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/b1252445768",
-      "margin_f2f": 4408,
-      "margin_shopee": 3768,
-      "roi": 155,
-      "biddable": true,
-      "seller_rating": 99.8,
-      "seller_good": 529,
-      "seller_bad": 1,
-      "ok_to_buy": true,
-      "reason": "可買"
-     },
      {
       "title": "■GRAPHITE DESIGN グラファイトデザイン TOUR AD ツアーAD DI-6（S） シャフト ウッド用 FLEX=S■",
       "jpy": 8500,
@@ -1018,7 +1000,7 @@
       "roi": 145,
       "biddable": true,
       "seller_rating": 99.5,
-      "seller_good": 13374,
+      "seller_good": 13378,
       "seller_bad": 74,
       "ok_to_buy": true,
       "reason": "可買"
@@ -1051,19 +1033,25 @@
       "yahoo": "https://auctions.yahoo.co.jp/jp/auction/u1249971266",
       "margin_f2f": 3926,
       "margin_shopee": 3286,
-      "roi": 118
+      "roi": 118,
+      "biddable": true,
+      "seller_rating": 99.1,
+      "seller_good": 12342,
+      "seller_bad": 111,
+      "ok_to_buy": true,
+      "reason": "可買"
      },
      {
-      "title": "グラファイトデザイン　ツアーAD DI 6S ピン　G430 フェアウェイウッド　中古美品",
-      "jpy": 13000,
-      "landed": 4044,
+      "title": "タイトリスト ドライバ―用 TOUR AD DI-6(S) 1W NEWカラー ツアーAD GT1 GT2 GT3 GT4 TSR3 GTS2 GTS3 GTS4 TSR FI T",
+      "jpy": 12800,
+      "landed": 3996,
       "gen": null,
       "anchor_applies": true,
-      "buyee": "https://buyee.jp/item/yahoo/auction/q1246104537",
-      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/q1246104537",
-      "margin_f2f": 3203,
-      "margin_shopee": 2563,
-      "roi": 79
+      "buyee": "https://buyee.jp/item/yahoo/auction/n1249821270",
+      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/n1249821270",
+      "margin_f2f": 3251,
+      "margin_shopee": 2611,
+      "roi": 81
      },
      {
       "title": "【シャフト単体】ツアーAD DI-6(S)　テーラーメイド・5W用　中古品",
@@ -1076,13 +1064,25 @@
       "margin_f2f": 3203,
       "margin_shopee": 2563,
       "roi": 79
+     },
+     {
+      "title": "グラファイトデザイン　ツアーAD DI 6S ピン　G430 フェアウェイウッド　中古美品",
+      "jpy": 13000,
+      "landed": 4044,
+      "gen": null,
+      "anchor_applies": true,
+      "buyee": "https://buyee.jp/item/yahoo/auction/q1246104537",
+      "yahoo": "https://auctions.yahoo.co.jp/jp/auction/q1246104537",
+      "margin_f2f": 3203,
+      "margin_shopee": 2563,
+      "roi": 79
      }
     ],
     "search_url": "https://auctions.yahoo.co.jp/search/search?p=%E3%83%84%E3%82%A2%E3%83%BCAD%20DI-6&n=50",
     "buyee_search": "https://buyee.jp/item/search/query/%E3%83%84%E3%82%A2%E3%83%BCAD%20DI-6"
    },
    "market": {
-    "count30d": 96,
+    "count30d": 95,
     "median_jpy": 15700,
     "landed": 4695,
     "margin_f2f": 2552,
