@@ -1801,3 +1801,25 @@
 {"date": "2026-11-21", "code": "6725", "source": "tw_rank", "level": "yellow", "signal": "矽科宏晟(6725) 今日漲幅排行第6(+9.9%),異常活躍", "price_at_signal": null}
 {"date": "2026-11-21", "code": "8255", "source": "margin", "level": "red", "signal": "朋程(8255):融資5日驟減-20.1%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
 {"date": "2026-11-21", "code": "6414", "source": "holders", "level": "yellow", "signal": "樺漢(6414):千張大戶持股比週減-1.13個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
+{"date": "2026-11-23", "code": "3221", "source": "institutional", "level": "red", "signal": "台嘉碩(3221):外資連 5 日買超(5日淨買 +659 張)", "price_at_signal": null}
+{"date": "2026-11-23", "code": "4542", "source": "margin", "level": "red", "signal": "科嶠(4542):融資5日驟減-20.9%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-23", "code": "6191", "source": "margin", "level": "red", "signal": "精成科(6191):融資5日驟減-17.9%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-23", "code": "6923", "source": "institutional", "level": "red", "signal": "中台(6923):外資連 5 日買超(5日淨買 +79 張)", "price_at_signal": null}
+{"date": "2026-11-23", "code": "7740", "source": "margin", "level": "red", "signal": "熙特爾-創(7740):融資5日驟減-18.2%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-23", "code": "7788", "source": "tw_rank", "level": "yellow", "signal": "松川精密(7788) 今日漲幅排行第18(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-23", "code": "8255", "source": "institutional", "level": "red", "signal": "朋程(8255):外資連 5 日買超(5日淨買 +165 張)", "price_at_signal": null}
+{"date": "2026-11-23", "code": "8473", "source": "margin", "level": "red", "signal": "山林水(8473):融資5日驟減-15.8%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-23", "code": "6725", "source": "leadflow", "level": "red", "signal": "矽科宏晟(6725) 無消息近漲停+10.0%(連2根,5日+3.6%),疑資訊先行資金|外資+投信近3日僅-67張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-23", "code": "6614", "source": "leadflow", "level": "red", "signal": "資拓宏宇(6614) 無消息近漲停+10.0%(連2根,5日+10.5%),疑資訊先行資金|外資+投信近3日僅+369張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-23", "code": "6465", "source": "leadflow", "level": "yellow", "signal": "威潤(6465) 無消息近漲停+10.0%(量能2.2×,5日-6.8%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-23", "code": "3205", "source": "leadflow", "level": "red", "signal": "佰研(3205) 無消息近漲停+10.0%(量能3.1×,5日-2.3%),疑資訊先行資金|外資+投信近3日僅+62張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-23", "code": "8040", "source": "leadflow", "level": "yellow", "signal": "九暘(8040) 無消息近漲停+10.0%(量能1.7×,5日-7.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-23", "code": "6274", "source": "leadflow", "level": "yellow", "signal": "台燿(6274) 無消息近漲停+10.0%(量能1.7×,5日-21.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-23", "code": "5481", "source": "leadflow", "level": "yellow", "signal": "新華(5481) 無消息近漲停+9.9%(量能2.9×,5日-0.3%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-23", "code": "5289", "source": "leadflow", "level": "yellow", "signal": "宜鼎(5289) 無消息近漲停+9.9%(量能1.6×,5日-10.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-23", "code": "5457", "source": "leadflow", "level": "red", "signal": "宣德(5457) 無消息近漲停+9.9%(連3根,5日+29.9%),疑資訊先行資金|外資+投信近3日僅+105張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-23", "code": "6435", "source": "leadflow", "level": "yellow", "signal": "大中(6435) 無消息近漲停+9.8%(量能1.6×,5日-11.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-23", "code": "8087", "source": "leadflow", "level": "yellow", "signal": "麗升能源(8087) 無消息近漲停+9.5%(量能2.3×,5日-23.3%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-23", "code": "6222", "source": "leadflow", "level": "yellow", "signal": "立軒(6222) 無消息近漲停+9.4%(量能1.7×,5日-2.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-23", "code": "5301", "source": "leadflow", "level": "red", "signal": "寶得利(5301) 無消息近漲停+9.1%(量能3.4×,5日-5.4%),疑資訊先行資金|外資+投信近3日僅+2張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-23", "code": "6732", "source": "leadflow", "level": "yellow", "signal": "昇佳電子(6732) 無消息近漲停+9.0%(量能2.3×,5日-2.2%),疑資訊先行資金", "price_at_signal": null}
