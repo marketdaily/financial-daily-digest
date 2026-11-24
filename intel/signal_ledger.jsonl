@@ -1823,3 +1823,22 @@
 {"date": "2026-11-23", "code": "6222", "source": "leadflow", "level": "yellow", "signal": "立軒(6222) 無消息近漲停+9.4%(量能1.7×,5日-2.9%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-11-23", "code": "5301", "source": "leadflow", "level": "red", "signal": "寶得利(5301) 無消息近漲停+9.1%(量能3.4×,5日-5.4%),疑資訊先行資金|外資+投信近3日僅+2張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-11-23", "code": "6732", "source": "leadflow", "level": "yellow", "signal": "昇佳電子(6732) 無消息近漲停+9.0%(量能2.3×,5日-2.2%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "3221", "source": "mops_news", "level": "yellow", "signal": "台嘉碩(3221) 重訊[2026-11-23]:(補公告)代重要子公司太盟光電科技股份有限公司公告 向關係人取得使用權資產", "price_at_signal": null}
+{"date": "2026-11-24", "code": "6231", "source": "institutional", "level": "red", "signal": "系微(6231):外資連 5 日買超(5日淨買 +532 張)", "price_at_signal": null}
+{"date": "2026-11-24", "code": "6231", "source": "leadflow", "level": "yellow", "signal": "系微(6231) 無消息近漲停+10.0%(一價鎖死,5日-7.0%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "7711", "source": "institutional", "level": "red", "signal": "永擎(7711):外資連 5 日買超(5日淨買 +951 張)", "price_at_signal": null}
+{"date": "2026-11-24", "code": "2603", "source": "tw_rank", "level": "red", "signal": "長榮(2603) 量能竄榜:今日量榜第18(近10日未進過top50,+9.6%,44,062張)", "price_at_signal": null}
+{"date": "2026-11-24", "code": "2308", "source": "leadflow", "level": "red", "signal": "台達電(2308) 無消息近漲停+9.6%(連2根,5日+2.8%),疑資訊先行資金|外資+投信近3日僅-3918張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-24", "code": "2454", "source": "leadflow", "level": "red", "signal": "聯發科(2454) 無消息近漲停+9.9%(連2根,5日+5.5%),疑資訊先行資金|外資+投信近3日僅-2043張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-24", "code": "3665", "source": "leadflow", "level": "red", "signal": "貿聯-KY(3665) 無消息近漲停+9.8%(連3根,5日+11.3%),疑資訊先行資金|外資+投信近3日僅+494張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-24", "code": "4739", "source": "leadflow", "level": "red", "signal": "康普(4739) 無消息近漲停+8.9%(連2根,5日+6.0%),疑資訊先行資金|外資+投信近3日僅-255張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-24", "code": "3564", "source": "leadflow", "level": "yellow", "signal": "其陽(3564) 無消息近漲停+10.0%(一價鎖死,5日-10.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "4741", "source": "leadflow", "level": "yellow", "signal": "泓瀚(4741) 無消息近漲停+10.0%(一價鎖死,5日-12.5%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "4979", "source": "leadflow", "level": "yellow", "signal": "華星光(4979) 無消息近漲停+10.0%(一價鎖死,5日-11.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "5228", "source": "leadflow", "level": "yellow", "signal": "鈺鎧(5228) 無消息近漲停+10.0%(一價鎖死,5日-6.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "5340", "source": "leadflow", "level": "yellow", "signal": "建榮(5340) 無消息近漲停+10.0%(一價鎖死,5日-9.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "5386", "source": "leadflow", "level": "yellow", "signal": "青雲(5386) 無消息近漲停+10.0%(一價鎖死,5日-8.0%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "5426", "source": "leadflow", "level": "yellow", "signal": "振發(5426) 無消息近漲停+10.0%(一價鎖死,5日-11.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "5438", "source": "leadflow", "level": "yellow", "signal": "東友(5438) 無消息近漲停+10.0%(一價鎖死,5日-8.3%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "6021", "source": "leadflow", "level": "yellow", "signal": "美好證(6021) 無消息近漲停+10.0%(一價鎖死,5日-0.9%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-24", "code": "6548", "source": "leadflow", "level": "yellow", "signal": "長科*(6548) 無消息近漲停+10.0%(一價鎖死,5日-2.4%),疑資訊先行資金", "price_at_signal": null}
