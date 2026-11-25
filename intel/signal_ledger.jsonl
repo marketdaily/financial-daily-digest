@@ -1842,3 +1842,9 @@
 {"date": "2026-11-24", "code": "5438", "source": "leadflow", "level": "yellow", "signal": "東友(5438) 無消息近漲停+10.0%(一價鎖死,5日-8.3%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-11-24", "code": "6021", "source": "leadflow", "level": "yellow", "signal": "美好證(6021) 無消息近漲停+10.0%(一價鎖死,5日-0.9%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-11-24", "code": "6548", "source": "leadflow", "level": "yellow", "signal": "長科*(6548) 無消息近漲停+10.0%(一價鎖死,5日-2.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-25", "code": "2059", "source": "tw_rank", "level": "yellow", "signal": "川湖(2059) 今日漲幅排行第18(+4.9%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-25", "code": "3491", "source": "margin", "level": "red", "signal": "昇達科(3491):融資5日驟減-20.0%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-25", "code": "5434", "source": "sbl", "level": "yellow", "signal": "崇越(5434):機構借券賣出5日遽減-22.7%(回補潮,空頭力道減弱)", "price_at_signal": null}
+{"date": "2026-11-25", "code": "7788", "source": "sbl", "level": "yellow", "signal": "松川精密(7788):機構借券賣出5日增16.3%(溫和加碼放空)", "price_at_signal": null}
+{"date": "2026-11-25", "code": "3095", "source": "margin", "level": "red", "signal": "及成(3095):融資5日驟減-17.9%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-25", "code": "6184", "source": "margin", "level": "red", "signal": "大豐電(6184):融資5日驟減-15.2%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
