@@ -1848,3 +1848,15 @@
 {"date": "2026-11-25", "code": "7788", "source": "sbl", "level": "yellow", "signal": "松川精密(7788):機構借券賣出5日增16.3%(溫和加碼放空)", "price_at_signal": null}
 {"date": "2026-11-25", "code": "3095", "source": "margin", "level": "red", "signal": "及成(3095):融資5日驟減-17.9%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
 {"date": "2026-11-25", "code": "6184", "source": "margin", "level": "red", "signal": "大豐電(6184):融資5日驟減-15.2%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-26", "code": "3033", "source": "mops_news", "level": "red", "signal": "威健(3033) 重訊[2026-11-25]:公告本公司發行國內第八次無擔保轉換公司債完成訂價", "price_at_signal": null}
+{"date": "2026-11-26", "code": "3147", "source": "tw_rank", "level": "yellow", "signal": "大綜(3147) 今日漲幅排行第3(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-26", "code": "3374", "source": "tw_rank", "level": "yellow", "signal": "精材(3374) 今日成交額排行第17(+1.2%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-26", "code": "4916", "source": "margin", "level": "red", "signal": "事欣科(4916):融資5日驟減-21.8%(疑似斷頭/停損潮,股價同期續跌,趨勢確認)", "price_at_signal": null}
+{"date": "2026-11-26", "code": "6166", "source": "institutional", "level": "red", "signal": "凌華(6166):外資連 5 日買超(5日淨買 +312 張)", "price_at_signal": null}
+{"date": "2026-11-26", "code": "7610", "source": "tw_rank", "level": "yellow", "signal": "聯友金屬-創(7610) 今日漲幅排行第19(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-26", "code": "7728", "source": "tw_rank", "level": "yellow", "signal": "光焱科技(7728) 今日漲幅排行第10(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-26", "code": "7788", "source": "margin", "level": "yellow", "signal": "松川精密(7788):融資5日暴增20.2%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-11-26", "code": "5381", "source": "leadflow", "level": "red", "signal": "光譜(5381) 無消息近漲停+10.0%(連2根,5日+8.3%),疑資訊先行資金|外資+投信近3日僅-132張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-26", "code": "6190", "source": "leadflow", "level": "red", "signal": "萬泰科(6190) 無消息近漲停+9.9%(連2根,5日+3.3%),疑資訊先行資金|外資+投信近3日僅+326張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-26", "code": "6134", "source": "leadflow", "level": "red", "signal": "萬旭(6134) 無消息近漲停+9.9%(連2根,5日+6.8%),疑資訊先行資金|外資+投信近3日僅-16張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-26", "code": "8277", "source": "leadflow", "level": "red", "signal": "商丞(8277) 無消息近漲停+9.7%(連2根,5日+14.5%),疑資訊先行資金|外資+投信近3日僅-6張,法人未同步=隱形買盤", "price_at_signal": null}
