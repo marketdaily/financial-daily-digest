@@ -1860,3 +1860,14 @@
 {"date": "2026-11-26", "code": "6190", "source": "leadflow", "level": "red", "signal": "萬泰科(6190) 無消息近漲停+9.9%(連2根,5日+3.3%),疑資訊先行資金|外資+投信近3日僅+326張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-11-26", "code": "6134", "source": "leadflow", "level": "red", "signal": "萬旭(6134) 無消息近漲停+9.9%(連2根,5日+6.8%),疑資訊先行資金|外資+投信近3日僅-16張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-11-26", "code": "8277", "source": "leadflow", "level": "red", "signal": "商丞(8277) 無消息近漲停+9.7%(連2根,5日+14.5%),疑資訊先行資金|外資+投信近3日僅-6張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-27", "code": "2059", "source": "margin", "level": "yellow", "signal": "川湖(2059):融資5日暴增15.2%(散戶追高過熱)", "price_at_signal": null}
+{"date": "2026-11-27", "code": "2347", "source": "institutional", "level": "yellow", "signal": "聯強(2347):法人 20 日淨賣超 -31,009 張(未成連續型態)", "price_at_signal": null}
+{"date": "2026-11-27", "code": "3221", "source": "tw_rank", "level": "yellow", "signal": "台嘉碩(3221) 今日漲幅排行第13(+9.9%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-27", "code": "4906", "source": "investor_conf", "level": "red", "signal": "正文(4906):法說會5天內召開(波動事件窗口逼近)", "price_at_signal": null}
+{"date": "2026-11-27", "code": "6914", "source": "institutional", "level": "red", "signal": "阜爾運通(6914):外資連 5 日買超(5日淨買 +45 張)", "price_at_signal": null}
+{"date": "2026-11-27", "code": "8028", "source": "institutional", "level": "red", "signal": "昇陽半導體(8028):投信連 3 日買超(認養訊號,20日淨買 -841 張)", "price_at_signal": null}
+{"date": "2026-11-27", "code": "8289", "source": "tw_rank", "level": "yellow", "signal": "泰藝(8289) 今日漲幅排行第2(+10.0%),異常活躍", "price_at_signal": null}
+{"date": "2026-11-27", "code": "2413", "source": "leadflow", "level": "red", "signal": "環科(2413) 無消息近漲停+10.0%(連3根,5日+25.0%),疑資訊先行資金|外資+投信近3日僅-281張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-27", "code": "3011", "source": "leadflow", "level": "red", "signal": "今皓(3011) 無消息近漲停+10.0%(連3根,5日+24.5%),疑資訊先行資金|外資+投信近3日僅-153張,法人未同步=隱形買盤", "price_at_signal": null}
+{"date": "2026-11-27", "code": "3685", "source": "leadflow", "level": "yellow", "signal": "元創精密(3685) 無消息近漲停+9.9%(量能1.7×,5日+23.4%),疑資訊先行資金", "price_at_signal": null}
+{"date": "2026-11-27", "code": "4916", "source": "leadflow", "level": "red", "signal": "事欣科(4916) 無消息近漲停+9.9%(連3根,5日+11.0%),疑資訊先行資金|外資+投信近3日+5753張", "price_at_signal": null}
