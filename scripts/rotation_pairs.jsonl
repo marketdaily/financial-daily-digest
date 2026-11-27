@@ -343,3 +343,7 @@
 {"date": "2026-11-26", "market": "tw", "from": "2330", "to": "2454", "from_px": 2150.0, "to_px": 3645.0}
 {"date": "2026-11-27", "market": "tw", "from": "2454", "to": "7717", "from_px": 3705.0, "to_px": 506.0}
 {"date": "2026-11-27", "market": "tw", "from": "2330", "to": "7717", "from_px": 2145.0, "to_px": 506.0}
+{"date": "2026-11-27", "market": "us", "from": "QQQM", "to": "IBM", "from_px": 261.05, "to_px": 243.47}
+{"date": "2026-11-27", "market": "us", "from": "META", "to": "IBM", "from_px": 609.89, "to_px": 243.47}
+{"date": "2026-11-27", "market": "us", "from": "GOOGL", "to": "IBM", "from_px": 273.1, "to_px": 243.47}
+{"date": "2026-11-27", "market": "us", "from": "TSLA", "to": "IBM", "from_px": 380.14, "to_px": 243.47}
