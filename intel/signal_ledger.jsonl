@@ -1871,3 +1871,6 @@
 {"date": "2026-11-27", "code": "3011", "source": "leadflow", "level": "red", "signal": "今皓(3011) 無消息近漲停+10.0%(連3根,5日+24.5%),疑資訊先行資金|外資+投信近3日僅-153張,法人未同步=隱形買盤", "price_at_signal": null}
 {"date": "2026-11-27", "code": "3685", "source": "leadflow", "level": "yellow", "signal": "元創精密(3685) 無消息近漲停+9.9%(量能1.7×,5日+23.4%),疑資訊先行資金", "price_at_signal": null}
 {"date": "2026-11-27", "code": "4916", "source": "leadflow", "level": "red", "signal": "事欣科(4916) 無消息近漲停+9.9%(連3根,5日+11.0%),疑資訊先行資金|外資+投信近3日+5753張", "price_at_signal": null}
+{"date": "2026-11-28", "code": "2059", "source": "holders", "level": "red", "signal": "川湖(2059):千張大戶持股比週增1.37個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-11-28", "code": "3221", "source": "holders", "level": "red", "signal": "台嘉碩(3221):千張大戶持股比週增1.00個百分點(大戶顯著加碼)", "price_at_signal": null}
+{"date": "2026-11-28", "code": "5285", "source": "holders", "level": "yellow", "signal": "界霖(5285):千張大戶持股比週減-2.71個百分點(大戶出脫,籌碼鬆動)", "price_at_signal": null}
